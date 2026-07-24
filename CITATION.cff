@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it as below."
+title: "Sunflower-Formal: a machine-checked Coq account of the Erdős–Rado sunflower problem"
+type: software
+authors:
+  - family-names: "Falk"
+    given-names: "Thomas"
+    alias: "thomas-falk-research"
+keywords:
+  - Coq
+  - formal verification
+  - sunflower lemma
+  - Erdős–Rado
+  - Hall's marriage theorem
+  - Kőnig's theorem
+  - combinatorics
+license: MIT
+abstract: >-
+  Machine-checked Coq (8.18, stdlib-only) proofs of the Erdős–Rado
+  sunflower upper bound, the matching exponential lower bound
+  f(n,k) >= (k-1)^n + 1, the exact value f(2,3) = 7, and constructive
+  Hall and Kőnig theorems; the open Sunflower Conjecture is stated
+  formally, and the single axiom in the development is the published
+  Alweiss–Lovett–Wu–Zhang 2020 bound, cited and used by nothing.

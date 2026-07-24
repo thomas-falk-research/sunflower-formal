@@ -1,0 +1,18 @@
+-Q coq Sunflower
+-arg -w -arg -notation-overridden,-deprecated-syntactic-definition,-deprecated-hint-without-locality
+
+coq/Sets.v
+coq/Sunflower.v
+coq/Graph.v
+coq/Matching.v
+coq/HallCore.v
+coq/KoenigHall.v
+coq/Pigeonhole.v
+coq/ErdosRado.v
+coq/ErdosRado_Greedy.v
+coq/LowerBound.v
+coq/ProductLowerBound.v
+coq/Spread.v
+coq/Conjecture.v
+coq/SmallCases.v
+coq/F23.v

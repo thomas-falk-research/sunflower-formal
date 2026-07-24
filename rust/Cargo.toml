@@ -1,0 +1,13 @@
+[package]
+name = "sunflower-formal"
+version = "0.1.0"
+edition = "2021"
+description = "Computational companion to the Coq sunflower formalization: brute-force k-sunflower detection and f(n,k) tabulation for small inputs."
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]

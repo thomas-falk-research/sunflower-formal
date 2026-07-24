@@ -1,0 +1,36 @@
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  coq:
+    name: Coq proofs + axiom audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+          coqc --version
+      - name: Build all proofs and run the Print Assumptions audit
+        run: |
+          make verify 2>&1 | tee /tmp/verify.log
+      - name: Gate - every audited theorem must be closed
+        run: |
+          closed=$(grep -c "Closed under the global context" /tmp/verify.log)
+          echo "closed theorems: $closed (expected 16)"
+          test "$closed" -eq 16
+          ! grep -q "Axioms:" /tmp/verify.log
+
+  rust:
+    name: Rust brute-force cross-checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the 22 small-case assertions
+        run: |
+          cd rust
+          cargo test --release
