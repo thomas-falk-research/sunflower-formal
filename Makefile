@@ -43,10 +43,14 @@ print-assumptions: coq
 	    'Spread.sunflower_lift_set' \
 	    'Spread.link_sunflower_lift' \
 	    'Spread.w_spread_legacy_degenerate' \
+	    'Spread.RaoSpread_Spread' \
 	    'SpreadReduction.spread_reduction' \
 	    'SpreadReduction.elementary_spread_disjoint' \
-	    'SpreadReduction.spread_erdos_rado' ; do \
-	  result=$$(printf 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound F23 SmallCases Pigeonhole Sunflower HallCore KoenigHall Spread SpreadReduction.\nPrint Assumptions %s.\n' "$$thm" \
+	    'SpreadReduction.spread_erdos_rado' \
+	    'Conjecture.spread_conjecture_suffices' \
+	    'ALWZ.spread_singletons' \
+	    'ALWZ.elementary_applies_to_singletons' ; do \
+	  result=$$(printf 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound F23 SmallCases Pigeonhole Sunflower HallCore KoenigHall Spread SpreadReduction ALWZ Conjecture.\nPrint Assumptions %s.\n' "$$thm" \
 	    | coqtop -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
 	  printf "  %-55s %s\n" "$$thm" "$$result"; \
 	done

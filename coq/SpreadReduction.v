@@ -76,14 +76,24 @@ Qed.
 
 (** ** The hypothesis supplied by a spread lemma
 
-    "Every [r]-spread distinct family of [m]-sets, [1 ≤ m ≤ n],
-    contains [k] pairwise disjoint members." *)
+    This is Rao's Lemma 2, relativised to a bound [n] on the set size:
+
+    > every [r]-spread family of more than [r^m] sets of size [m],
+    > [1 ≤ m ≤ n], contains [k] pairwise disjoint members
+
+    with [r]-spread in Rao's absolute sense ([Spread.RaoSpread]). Both
+    hypotheses are as in the source: the size bound [r^m < |F|] and the
+    absolute degree bound. Note this is *weaker* than the corresponding
+    statement for fractionally-spread families, since
+    [Spread.RaoSpread_Spread] shows the hypotheses here imply
+    [Spread F r]. *)
 
 Definition SpreadYieldsDisjoint (n k r : nat) : Prop :=
   forall (m : nat) (F : Family),
     1 <= m -> m <= n ->
-    Uniform m F -> Distinct F -> 1 <= length F ->
-    Spread F r ->
+    Uniform m F -> Distinct F ->
+    r ^ m < length F ->
+    RaoSpread m F r ->
     exists S : list (list nat),
       incl S F /\ NoDup S /\ length S = k /\ PairwiseDisjoint S.
 
@@ -116,9 +126,9 @@ Proof.
     inversion HD as [|? ? Hni _]; subst.
     apply (Hni [] (or_introl eq_refl)); apply SetEq_refl.
   - (* uniformity S m' *)
-    destruct (spread_witness F r) as [T|] eqn:Ewit.
+    destruct (rao_witness (S m') F r) as [T|] eqn:Ewit.
     + (* Some member-subset T is over-represented: recurse into the link. *)
-      apply spread_witness_some in Ewit as [Hcand Hviol].
+      apply rao_witness_some in Ewit as [Hcand [Hne Hviol]].
       destruct (@in_cands_inv F T Hcand) as [A [HAF HTsub]].
       assert (HAnd : NoDup A).
       { unfold Uniform in HU; rewrite Forall_forall in HU.
@@ -131,19 +141,10 @@ Proof.
       assert (HTlen : length T <= S m').
       { rewrite <- HAlen. apply NoDup_incl_length; assumption. }
       assert (HTpos : 1 <= length T).
-      { destruct T as [|t T0]; [|simpl; lia].
-        exfalso; simpl in Hviol; rewrite deg_nil in Hviol; lia. }
-      (* The link is still large enough for the induction hypothesis. *)
-      assert (Hdeg : r ^ (S m' - length T) < deg T F).
-      { destruct (le_lt_dec (deg T F) (r ^ (S m' - length T))) as [Hle | Hlt];
-          [|exact Hlt].
-        exfalso.
-        assert (Hmul : r ^ (length T) * deg T F
-                       <= r ^ (length T) * r ^ (S m' - length T))
-          by (apply Nat.mul_le_mono_l; exact Hle).
-        rewrite <- Nat.pow_add_r in Hmul.
-        replace (length T + (S m' - length T)) with (S m') in Hmul by lia.
-        lia. }
+      { destruct T as [|t T0]; [contradiction | simpl; lia]. }
+      (* The link is exactly the family the induction hypothesis wants:
+         its size is [deg T F], which the violation says exceeds
+         [r ^ (S m' - |T|)]. *)
       apply (@link_sunflower_lift T F k).
       assert (Hlt : S m' - length T < S m') by lia.
       assert (Hle : S m' - length T <= n) by lia.
@@ -155,10 +156,10 @@ Proof.
       assert (HFnd : Forall (fun A : list nat => NoDup A) F).
       { unfold Uniform in HU. apply Forall_forall; intros A HA.
         rewrite Forall_forall in HU; destruct (HU A HA) as [_ Hnd]; exact Hnd. }
-      assert (Hsp : Spread F r) by (apply (@spread_witness_none F r HFnd Ewit)).
-      assert (HFpos : 1 <= length F).
-      { pose proof (pow_pos (S m') Hr) as Hp; lia. }
-      destruct (Hsyd (S m') F (le_n_S _ _ (Nat.le_0_l _)) Hmn HU HD HFpos Hsp)
+      assert (Hsp : RaoSpread (S m') F r)
+        by (apply (@rao_witness_none (S m') F r HFnd Ewit)).
+      assert (Hbig : r ^ (S m') < length F) by lia.
+      destruct (Hsyd (S m') F (le_n_S _ _ (Nat.le_0_l _)) Hmn HU HD Hbig Hsp)
         as [S0 [Hincl [Hnd0 [Hlen0 Hpd0]]]].
       assert (Hne : Forall (fun A : list nat => A <> []) S0).
       { apply Forall_forall; intros A HA.
@@ -196,8 +197,11 @@ Qed.
 Theorem elementary_spread_disjoint :
   forall n k, 2 <= k -> SpreadYieldsDisjoint n k (n * (k - 1) + 1).
 Proof.
-  intros n k Hk m F Hm Hmn HU HD HFpos Hsp.
-  set (r := n * (k - 1) + 1).
+  intros n k Hk m F Hm Hmn HU HD Hbig Hsp.
+  set (r := n * (k - 1) + 1) in *.
+  assert (Hr1 : 1 <= r) by (unfold r; nia).
+  assert (HFpos : 1 <= length F).
+  { pose proof (pow_pos m Hr1) as Hp; unfold r in *; lia. }
   assert (HFne : Forall (fun A : list nat => A <> []) F).
   { apply Forall_forall; intros A HA.
     unfold Uniform in HU; rewrite Forall_forall in HU.
@@ -245,9 +249,14 @@ Proof.
     assert (Hge : length X * deg [x] F >= length F).
     { assert (Hd1 : deg [x] F >= K + 1) by lia. nia. }
     assert (Hnd1 : NoDup [x]) by (constructor; [simpl; tauto | constructor]).
-    specialize (Hsp [x] Hnd1).
+    specialize (Hsp [x] Hnd1 ltac:(discriminate)).
+    (* Rao-spreadness caps deg{x} at r^(m-1); the cover forces it above. *)
     simpl in Hsp.
+    assert (Hstep : r * r ^ (m - 1) = r ^ m).
+    { replace m with (S (m - 1)) at 2 by lia. simpl; reflexivity. }
     assert (Hd1 : 1 <= deg [x] F) by lia.
+    assert (Hup : r * deg [x] F <= r ^ m)
+      by (rewrite <- Hstep; apply Nat.mul_le_mono_l; exact Hsp).
     nia.
 Qed.
 

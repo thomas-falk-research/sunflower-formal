@@ -21,14 +21,14 @@ jobs:
       - name: Gate - every audited theorem must be closed
         run: |
           closed=$(grep -c "Closed under the global context" /tmp/verify.log)
-          echo "closed theorems: $closed (expected 22)"
-          test "$closed" -eq 22
+          echo "closed theorems: $closed (expected 26)"
+          test "$closed" -eq 26
           # No theorem in the closed table may depend on an axiom.
           ! grep -E '^  [A-Za-z_]+\.[A-Za-z_0-9]+ +Axioms:' /tmp/verify.log
       - name: Gate - the 2020 bound depends on exactly the spread-lemma axiom
         run: |
-          # The derived modern bound must rest on Rao20_spread_lemma ...
-          grep -q '\[axiom-dep\] Rao20_spread_lemma' /tmp/verify.log
+          # The derived modern bound must rest on Rao20_lemma2 ...
+          grep -q '\[axiom-dep\] Rao20_lemma2' /tmp/verify.log
           # ... and on nothing else: exactly one name is listed.
           names=$(sed -n 's/^  \[axiom-dep\] \([A-Za-z_][A-Za-z_0-9]*\)$/\1/p' /tmp/verify.log | wc -l)
           echo "axioms used by the modern bound: $names (expected 1)"

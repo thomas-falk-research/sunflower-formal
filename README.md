@@ -101,12 +101,28 @@ Highlights of the less-routine parts:
   quality, slightly weaker than the 1960 bound by a factor $e^n$, but
   proved along the modern route rather than the classical one.
 
+  The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
+  form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$
+  members") together with his size hypothesis — checked against the
+  paper, not reconstructed from memory. That form is *stronger* than
+  the fractional condition (`RaoSpread_Spread` proves the implication),
+  so assuming the conclusion under it is the weaker assumption.
+
   Along the way the previous file's definition of spreadness turned
   out to be *degenerate* — it quantified over lists with repeated
   entries, which forces every member of the family to be empty. That
   is now recorded as a theorem (`w_spread_legacy_degenerate`) rather
-  than silently corrected, and a concrete spread family is certified
-  by `vm_compute` as a standing non-vacuity guard.
+  than silently corrected, and a concrete family satisfying every
+  hypothesis of the axiom (with the conclusion) is certified by
+  `vm_compute` as a standing non-vacuity guard.
+
+- **The conjecture, restated without sunflowers.** Because the
+  reduction is lossless — it gives exactly $r^n$ — a spread lemma whose
+  threshold does not grow with $n$ would settle the conjecture.
+  `spread_conjecture_suffices` proves that implication, turning the
+  \$1000 problem into: *is there, for each $k$, a constant $c_k$ such
+  that every $c_k$-spread family of more than $c_k^{\,n}$ sets of size
+  $n$ has $k$ pairwise disjoint members?*
 
 ## Verifying
 
@@ -114,7 +130,7 @@ Highlights of the less-routine parts:
 make verify        # builds all 17 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (22 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (26 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
@@ -125,13 +141,18 @@ Closed under the global context
 
 followed by an `axiom-audit` section printing the *full statement* of
 the one axiom the modern bound rests on, so what is being trusted is
-visible in the build log:
+visible in the build log rather than buried in a source file:
 
 ```
   [axiom-dep] Axioms:
-  [axiom-dep] Rao20_spread_lemma
-  [axiom-dep]   : exists C : nat, 1 <= C /\ ...
+  [axiom-dep] Rao20_lemma2
+  [axiom-dep]   : exists alpha : nat,
+  [axiom-dep]       1 <= alpha /\
+  [axiom-dep]       (forall n k r : nat, ... -> SpreadYieldsDisjoint n k r)
 ```
+
+CI gates on the count, on no closed theorem listing `Axioms:`, and on
+exactly one axiom name appearing under the modern bound.
 
 Requirements: Coq 8.18 (`apt-get install coq` on Ubuntu 24.04).
 The Rust cross-checks (22 brute-force assertions tying the formal

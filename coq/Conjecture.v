@@ -79,6 +79,40 @@ Definition sunflower_conjecture_k_3 : Prop :=
   exists c : nat,
     forall n, 1 <= n -> UpperBound n 3 (S (c ^ n)).
 
+(** ** The conjecture restated in spread terms
+
+    [SpreadReduction.spread_reduction] gives [f(n,k) ≤ r^n + 1] from a
+    spread lemma with threshold [r]. The bound is *exactly* the
+    threshold raised to the uniformity — the reduction loses nothing —
+    so a spread lemma whose threshold does not grow with [n] would
+    settle the conjecture. That gives the following sufficient
+    condition, in which no sunflower appears at all:
+
+    > is there, for each [k], a constant [c k] such that every
+    > [c k]-spread family of more than [(c k)^n] sets of size [n]
+    > contains [k] pairwise disjoint members?
+
+    The known thresholds are [Θ(k log n)] (Bell–Chueluecha–Warnke) and
+    [Θ(k log (nk))] (Rao); removing the dependence on [n] is open. *)
+
+Definition spread_conjecture : Prop :=
+  exists c : nat -> nat,
+    (forall k, 2 <= k -> 1 <= c k) /\
+    (forall n k, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)).
+
+Theorem spread_conjecture_suffices :
+  spread_conjecture -> sunflower_conjecture.
+Proof.
+  intros [c [Hpos Hsyd]].
+  exists (fun k => Nat.max (k - 1) (c k)); split.
+  - intros k Hk; apply Nat.le_max_l.
+  - intros n k Hn Hk.
+    apply UpperBound_mono with (m := S ((c k) ^ n)).
+    + apply (@spread_reduction_top n k (c k)); [lia | apply Hpos; lia|].
+      apply Hsyd; lia.
+    + apply le_n_S, Nat.pow_le_mono_l, Nat.le_max_r.
+Qed.
+
 (** [sunflower_conjecture] implies [sunflower_conjecture_k_3]. *)
 
 Theorem k3_corollary :

@@ -178,6 +178,66 @@ Proof.
   nia.
 Qed.
 
+(** ** Rao's absolute form of the spread condition
+
+    Rao states spreadness in absolute rather than fractional form
+    ("Coding for sunflowers", the definition preceding his Lemma 2): a
+    sequence of sets of size [m] is [r]-spread when every *nonempty*
+    [Z] is contained in at most [r^{m-|Z|}] of them.
+
+    For a family with more than [r^m] members this is *stronger* than
+    [Spread] — see [RaoSpread_Spread] — so a lemma assuming it is a
+    weaker statement, which is what one wants of an axiom. It is also
+    the form the induction of [SpreadReduction.v] wants: the negation
+    of the condition at [T] is literally the size hypothesis the
+    recursive call needs about the link. *)
+
+Definition RaoSpread (m : nat) (F : Family) (r : nat) : Prop :=
+  forall T : list nat,
+    NoDup T -> T <> [] -> deg T F <= r ^ (m - length T).
+
+Lemma deg_pos_inv : forall T F,
+    1 <= deg T F -> exists A, In A F /\ Subset T A.
+Proof.
+  intros T F H; unfold deg in H.
+  destruct (filter (containsb T) F) as [|A L] eqn:Ef; [simpl in H; lia|].
+  assert (HA : In A (filter (containsb T) F)) by (rewrite Ef; left; reflexivity).
+  apply filter_In in HA as [HAF Hc].
+  exists A; split; [exact HAF | apply containsb_true_iff; exact Hc].
+Qed.
+
+(** A set larger than the uniformity is in no member at all. *)
+
+Lemma deg_zero_of_long : forall m F T,
+    Uniform m F -> NoDup T -> m < length T -> deg T F = 0.
+Proof.
+  intros m F T HU HT Hlt.
+  destruct (deg T F) as [|d] eqn:E; [reflexivity|].
+  exfalso.
+  destruct (@deg_pos_inv T F ltac:(lia)) as [A [HAF HTA]].
+  unfold Uniform in HU; rewrite Forall_forall in HU.
+  destruct (HU A HAF) as [HAlen HAnd].
+  assert (length T <= length A) by (apply NoDup_incl_length; assumption).
+  lia.
+Qed.
+
+Lemma RaoSpread_Spread : forall m F r,
+    Uniform m F -> RaoSpread m F r -> r ^ m < length F -> Spread F r.
+Proof.
+  intros m F r HU HR Hbig T HT.
+  destruct T as [|t T0].
+  - simpl; rewrite deg_nil; lia.
+  - destruct (le_lt_dec (length (t :: T0)) m) as [Hle | Hgt].
+    + specialize (HR (t :: T0) HT ltac:(discriminate)).
+      assert (Hp : r ^ (length (t :: T0)) * r ^ (m - length (t :: T0)) = r ^ m)
+        by (rewrite <- Nat.pow_add_r; f_equal; lia).
+      assert (Hmul : r ^ (length (t :: T0)) * deg (t :: T0) F
+                     <= r ^ (length (t :: T0)) * r ^ (m - length (t :: T0)))
+        by (apply Nat.mul_le_mono_l; exact HR).
+      lia.
+    + rewrite (@deg_zero_of_long m F (t :: T0) HU HT Hgt); lia.
+Qed.
+
 (** ** Enumerating candidate violators
 
     To decide spreadness constructively we need a finite list of
@@ -248,47 +308,57 @@ Proof.
   exists A; split; assumption.
 Qed.
 
-(** ** The spread decision procedure *)
+(** ** The spread decision procedure
 
-Definition violatesb (F : Family) (r : nat) (T : list nat) : bool :=
-  Nat.ltb (length F) (r ^ (length T) * deg T F).
+    Deciding [RaoSpread] means checking an unbounded quantifier over
+    finite sets [T]. Taking the classical negation would import
+    excluded middle; instead we search the sublists of members, which
+    is a finite list, and show that suffices. *)
 
-Definition spread_witness (F : Family) (r : nat) : option (list nat) :=
-  find (violatesb F r) (cands F).
+Definition rao_violatesb (m : nat) (F : Family) (r : nat) (T : list nat) : bool :=
+  match T with
+  | [] => false
+  | _ :: _ => Nat.ltb (r ^ (m - length T)) (deg T F)
+  end.
 
-Lemma spread_witness_some :
-  forall F r T, spread_witness F r = Some T ->
-    In T (cands F) /\ length F < r ^ (length T) * deg T F.
+Definition rao_witness (m : nat) (F : Family) (r : nat) : option (list nat) :=
+  find (rao_violatesb m F r) (cands F).
+
+Lemma rao_violatesb_false_inv : forall m F r T,
+    T <> [] -> rao_violatesb m F r T = false -> deg T F <= r ^ (m - length T).
 Proof.
-  intros F r T H; unfold spread_witness in H.
-  apply find_some in H as [Hin Hv].
-  split; [exact Hin|].
-  unfold violatesb in Hv; apply Nat.ltb_lt in Hv; exact Hv.
+  intros m F r T Hne H; destruct T as [|t T0]; [contradiction|].
+  unfold rao_violatesb in H; apply Nat.ltb_ge in H; exact H.
 Qed.
 
-(** The key completeness step: if no *sublist of a member* violates the
+Lemma rao_witness_some :
+  forall m F r T, rao_witness m F r = Some T ->
+    In T (cands F) /\ T <> [] /\ r ^ (m - length T) < deg T F.
+Proof.
+  intros m F r T H; unfold rao_witness in H.
+  apply find_some in H as [Hin Hv].
+  destruct T as [|t T0]; [discriminate|].
+  unfold rao_violatesb in Hv; apply Nat.ltb_lt in Hv.
+  repeat split; [exact Hin | discriminate | exact Hv].
+Qed.
+
+(** The completeness step: if no *sublist of a member* violates the
     spread condition, then no finite set does. Given an arbitrary
     [NoDup] set [T] of positive degree and a member [A] containing it,
     [filter (fun x => memb x T) A] is a sublist of [A] with exactly the
-    same elements — hence the same length and the same degree. *)
+    same elements — hence the same length and the same degree — and it
+    is among the candidates. *)
 
-Lemma spread_witness_none :
-  forall F r,
+Lemma rao_witness_none :
+  forall m F r,
     Forall (fun A : list nat => NoDup A) F ->
-    spread_witness F r = None ->
-    Spread F r.
+    rao_witness m F r = None ->
+    RaoSpread m F r.
 Proof.
-  intros F r Hnd Hnone T HT.
-  unfold spread_witness in Hnone.
+  intros m F r Hnd Hnone T HT Hne.
+  unfold rao_witness in Hnone.
   destruct (deg T F) as [|d] eqn:Hdeg; [lia|].
-  assert (Hex : exists A, In A F /\ Subset T A).
-  { unfold deg in Hdeg.
-    destruct (filter (containsb T) F) as [|A L] eqn:Ef; [simpl in Hdeg; lia|].
-    assert (HA : In A (filter (containsb T) F))
-      by (rewrite Ef; left; reflexivity).
-    apply filter_In in HA as [HAF Hc].
-    exists A; split; [exact HAF | apply containsb_true_iff; exact Hc]. }
-  destruct Hex as [A [HAF HTA]].
+  destruct (@deg_pos_inv T F ltac:(lia)) as [A [HAF HTA]].
   assert (HAnd : NoDup A) by (rewrite Forall_forall in Hnd; apply Hnd, HAF).
   set (T' := filter (fun x => memb x T) A).
   assert (HTT' : Subset T T').
@@ -303,23 +373,16 @@ Proof.
     assert (H2 : length T' <= length T) by (apply NoDup_incl_length; assumption).
     lia. }
   assert (Hdegeq : deg T' F = deg T F) by (apply deg_setEq; assumption).
+  assert (HT'ne : T' <> []).
+  { destruct T as [|t T0]; [contradiction|].
+    intro E. assert (Hin : In t T') by (apply HTT'; left; reflexivity).
+    rewrite E in Hin; inversion Hin. }
   assert (HT'cand : In T' (cands F))
     by (unfold T'; apply in_cands_filter; exact HAF).
   pose proof (find_none _ _ Hnone T' HT'cand) as Hv.
-  unfold violatesb in Hv.
-  apply Nat.ltb_ge in Hv.
-  rewrite Hlen, Hdegeq, Hdeg in Hv.
-  exact Hv.
-Qed.
-
-(** A violating set is necessarily nonempty: the empty set never
-    violates, since [deg [] F = |F|]. *)
-
-Lemma violator_nonempty :
-  forall F r T, length F < r ^ (length T) * deg T F -> T <> [].
-Proof.
-  intros F r T H E; subst T; simpl in H.
-  rewrite deg_nil in H; lia.
+  pose proof (@rao_violatesb_false_inv m F r T' HT'ne Hv) as Hle.
+  rewrite Hlen, Hdegeq, Hdeg in Hle.
+  exact Hle.
 Qed.
 
 (** ** The link construction

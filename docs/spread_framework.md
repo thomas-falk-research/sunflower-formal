@@ -12,7 +12,7 @@ part of it is machine-checked here.
 |---|---|
 | Reduction: "spread ⟹ $k$ disjoint members" implies $f(n,k) \le r^n+1$ | **proved** — `SpreadReduction.spread_reduction`, closed under the global context |
 | Spread lemma at the elementary parameter $r = n(k-1)+1$ | **proved** — `SpreadReduction.elementary_spread_disjoint` |
-| Spread lemma at the 2020 parameter $r = \Theta(k\log(nk))$ | **assumed** — `ALWZ.Rao20_spread_lemma`, the development's only axiom |
+| Spread lemma at the 2020 parameter $r = \Theta(k\log(nk))$ | **assumed** — `ALWZ.Rao20_lemma2`, the development's only axiom |
 
 Consequently the repository contains an *unconditional* Erdős–Rado-quality
 bound proved entirely through the modern framework
@@ -22,15 +22,27 @@ theorem whose only assumption is the spread lemma
 
 ## Spread families
 
-Let $\mathcal{F}$ be a finite family of finite sets and $r \ge 1$.
-$\mathcal{F}$ is **$r$-spread** if for every finite set $T$,
+Two forms of the condition appear in the literature. Write
+$\deg(T) = |\{A \in \mathcal{F} : T \subseteq A\}|$.
 
-$$r^{|T|}\cdot\bigl|\{A \in \mathcal{F} : T \subseteq A\}\bigr| \;\le\; |\mathcal{F}| .$$
+**Fractional form** (ALWZ, FKNP, and the wider "spread measure"
+literature). $\mathcal{F}$ is $r$-spread if for every finite set $T$,
 
-No small set is over-represented: the fraction of $\mathcal{F}$
-containing $T$ decays like $r^{-|T|}$.
+$$r^{|T|}\cdot\deg(T) \;\le\; |\mathcal{F}| .$$
 
-Coq: `Spread.Spread`, with `Spread.deg T F` for the count.
+Coq: `Spread.Spread`.
+
+**Absolute form** (Rao, "Coding for sunflowers"). For a family of sets
+of size $m$: for every **nonempty** $T$,
+
+$$\deg(T) \;\le\; r^{\,m-|T|}.$$
+
+Coq: `Spread.RaoSpread`.
+
+For a family with more than $r^m$ members the absolute form implies the
+fractional one — `Spread.RaoSpread_Spread` — so a lemma *assuming* the
+absolute form is the weaker statement. That is why the axiom below is
+stated in Rao's form, and why the reduction is proved against it.
 
 > **A defect that was found and fixed.** Earlier revisions of this
 > repository defined spreadness by quantifying over *all lists* $T$,
@@ -39,19 +51,20 @@ Coq: `Spread.Spread`, with `Spread.deg T F` for the count.
 > |\mathcal{F}|$ for every $t$, so for $r \ge 2$ no member of the family
 > may contain any element at all. This is now recorded as a theorem —
 > `Spread.w_spread_legacy_degenerate` — rather than a comment, and the
-> corrected definition quantifies over `NoDup` lists, i.e. over genuine
-> finite sets. `ALWZ.spread_singletons` exhibits a concrete spread
-> family (three singletons, $3$-spread, certified by `vm_compute`
-> through the decision procedure) as a standing guard against the same
-> mistake recurring.
+> corrected definitions quantify over `NoDup` lists, i.e. over genuine
+> finite sets. `ALWZ.rao_spread_singletons` and `ALWZ.spread_singletons`
+> exhibit a concrete family satisfying both forms (four singletons,
+> $3$-spread, certified by `vm_compute` through the decision procedure)
+> as a standing guard against the same mistake recurring.
 
 ## The reduction (proved)
 
 **Theorem** (`SpreadReduction.spread_reduction`)**.** Fix $k \ge 2$ and
 $r \ge 1$, and suppose
 
-> $(\ast)$ every $r$-spread distinct family of $m$-element sets, $1 \le
-> m \le n$, contains $k$ pairwise disjoint members.
+> $(\ast)$ every distinct family of more than $r^m$ sets of size $m$,
+> $1 \le m \le n$, that is $r$-spread in Rao's sense contains $k$
+> pairwise disjoint members.
 
 Then $f(m,k) \le r^m + 1$ for every $m \le n$: any distinct
 $m$-uniform family with more than $r^m$ members contains a
@@ -61,18 +74,18 @@ $k$-sunflower.
 a distinct family has at most one member, while $r^0 + 1 = 2$ are
 assumed. For $m \ge 1$, decide whether $\mathcal{F}$ is $r$-spread.
 
-- **Spread.** By $(\ast)$ there are $k$ pairwise disjoint members. They
-  are nonempty (uniformity $m \ge 1$) and pairwise disjoint, hence a
-  $k$-sunflower with empty core.
-- **Not spread.** There is a nonempty $T$ with $r^{|T|}\deg(T) >
-  |\mathcal{F}| > r^m$. Since $T$ is contained in some member,
-  $1 \le |T| \le m$, and cancelling $r^{|T|}$ gives $\deg(T) >
-  r^{\,m-|T|}$. The **link**
+- **Spread.** $|\mathcal{F}| > r^m$ holds by hypothesis, so $(\ast)$
+  applies and there are $k$ pairwise disjoint members. They are nonempty
+  (uniformity $m \ge 1$), hence a $k$-sunflower with empty core.
+- **Not spread.** There is a nonempty $T$ with $\deg(T) > r^{\,m-|T|}$.
+  Since $T$ is contained in some member, $1 \le |T| \le m$. The **link**
   $$\mathcal{F}_T \;=\; \{\,A \setminus T \;:\; T \subseteq A \in \mathcal{F}\,\}$$
   is $(m-|T|)$-uniform, still distinct (two members containing $T$ that
   agree off $T$ are equal), and has exactly $\deg(T) > r^{\,m-|T|}$
-  members. The induction hypothesis applies, and a $k$-sunflower in the
-  link lifts to one in $\mathcal{F}$ by merging $T$ into the core. ∎
+  members. So the induction hypothesis applies verbatim — the negated
+  spread condition *is* the size hypothesis the recursive call needs —
+  and a $k$-sunflower in the link lifts to one in $\mathcal{F}$ by
+  merging $T$ into the core. ∎
 
 Two points about the formalisation.
 
@@ -80,10 +93,10 @@ Two points about the formalisation.
 $r$-spread or some $T$ violates the condition" is an unbounded
 quantifier over sets $T$, and taking the classical negation would import
 excluded middle as an axiom — exactly the sort of hidden assumption this
-repository exists to avoid. Instead `Spread.spread_witness` searches a
+repository exists to avoid. Instead `Spread.rao_witness` searches a
 concrete finite list of candidates, the sublists of members
 (`Spread.subsets`), and returns a violator or `None`. Soundness is
-immediate; completeness (`Spread.spread_witness_none`) is the one real
+immediate; completeness (`Spread.rao_witness_none`) is the one real
 step: for an arbitrary `NoDup` set $T$ of positive degree contained in a
 member $A$, the sublist `filter (fun x => memb x T) A` has exactly the
 same elements as $T$ — hence the same cardinality and the same degree —
@@ -117,9 +130,12 @@ holds with $r = n(k-1)+1$.
 Otherwise $X = \bigcup \mathcal{D}$ has at most $(k-1)m \le (k-1)n < r$
 elements, and every member of $\mathcal{F}$ meets $X$ by maximality. By
 pigeonhole (`Pigeonhole.pigeonhole_family`) some $x \in X$ satisfies
-$|X|\cdot\deg(\{x\}) \ge |\mathcal{F}|$ with $\deg(\{x\}) \ge 1$; since
-$r > |X|$ this gives $r\cdot\deg(\{x\}) > |\mathcal{F}|$, contradicting
-spreadness at $T = \{x\}$. ∎
+$|X|\cdot\deg(\{x\}) \ge |\mathcal{F}|$ with $\deg(\{x\}) \ge 1$. Then
+
+$$r\cdot\deg(\{x\}) \;>\; |X|\cdot\deg(\{x\}) \;\ge\; |\mathcal{F}| \;>\; r^m ,$$
+
+whereas spreadness at $T = \{x\}$ gives $\deg(\{x\}) \le r^{\,m-1}$, i.e.
+$r\cdot\deg(\{x\}) \le r^m$. Contradiction. ∎
 
 Feeding this into the reduction:
 
@@ -136,13 +152,24 @@ that the framework turns out to prove nothing.
 
 ## The spread lemma (assumed)
 
-**Theorem** (ALWZ 2020; Rao 2020; BCW 2021)**.** There is an absolute
-constant $C$ such that $(\ast)$ holds whenever $r \ge Ck\log(nk)$ (Rao);
-BCW sharpen this to $r \ge Ck\log n$.
+This is Rao's Lemma 2, quoted from "Coding for sunflowers" (his $k$ is
+the set size, our $n$; his $p$ is the sunflower size, our $k$):
 
-Coq: `ALWZ.Rao20_spread_lemma`, the single axiom of the development.
-From it, `ALWZ.sunflower_bound_from_spread_lemma` derives
-$$f(n,k) \;\le\; \bigl(C k \log_2(nk+1)\bigr)^n + 1 .$$
+> **Lemma 2.** If a sequence of more than $r(p,k)^k$ sets of size $k$ is
+> $r(p,k)$-spread, then the sequence must contain $p$ disjoint sets.
+
+with $r(p,k) = \alpha\, p \log(pk)$ for a universal constant
+$\alpha > 1$, and $r$-spread in the absolute sense above. That is
+exactly $(\ast)$.
+
+Coq: `ALWZ.Rao20_lemma2`, the single axiom of the development. From it,
+`ALWZ.sunflower_bound_from_spread_lemma` derives Rao's Theorem 1,
+$$f(n,k) \;\le\; \bigl(\alpha k \log_2(kn+1)\bigr)^n + 1 .$$
+
+The Coq axiom is deliberately *weaker* than the published lemma in two
+respects: it is stated only for families of sets of one fixed size
+(the source allows size at most $k$), and `Nat.log2_up (S (k*n))`
+over-estimates $\log(kn)$, so more is demanded of $r$.
 
 The probabilistic content is the passage from spreadness to a random
 subset containing a member: for $\mathcal{F}$ an $r$-spread family with
@@ -184,13 +211,24 @@ mathematical content.
 ## Why none of this resolves the conjecture
 
 The conjecture asks for $f(n,k) \le c_k^n$ with $c_k$ independent of
-$n$. By the reduction, that is *equivalent* to a spread lemma with an
-$n$-independent threshold $r = c_k$: an $O_k(1)$-spread family of
-$n$-sets would have to contain $k$ pairwise disjoint members. The $\log
-n$ in the current threshold is not an artefact of the reduction — the
-reduction is lossless, giving exactly $r^n$ — it is a genuine feature of
-every known proof of the covering step. Removing it is the open problem,
-and this repository claims no progress on it.
+$n$. Since the reduction is lossless — it gives exactly $r^n$ — a spread
+lemma with an $n$-independent threshold would settle it. That
+sufficient condition is stated formally as
+`Conjecture.spread_conjecture`, and
+`Conjecture.spread_conjecture_suffices` proves it implies
+`Conjecture.sunflower_conjecture`:
+
+> is there, for each $k$, a constant $c_k$ such that every
+> $c_k$-spread family of more than $c_k^{\,n}$ sets of size $n$
+> contains $k$ pairwise disjoint members?
+
+This is a restatement in which no sunflower occurs. The $\log n$ in the
+current threshold is not an artefact of the reduction; it is a genuine
+feature of every known proof of the covering step. Removing it is the
+open problem, and this repository claims no progress on it. (Only the
+"⟸" direction is proved: an $O_k(1)$ spread lemma would give the
+conjecture. Whether the conjecture conversely forces such a spread
+lemma is not addressed here.)
 
 ## Provenance and references
 
@@ -222,15 +260,19 @@ and this repository claims no progress on it.
 
 | Object | Coq |
 |---|---|
-| $r$-spread | `Spread.Spread` |
 | $\deg(T)$ | `Spread.deg` |
+| $r$-spread, fractional (ALWZ/FKNP) | `Spread.Spread` |
+| $r$-spread, absolute (Rao) | `Spread.RaoSpread` |
+| absolute $\Rightarrow$ fractional | `Spread.RaoSpread_Spread` |
 | degenerate old definition + refutation | `Spread.w_spread_legacy`, `Spread.w_spread_legacy_degenerate` |
-| candidate enumeration / decision | `Spread.subsets`, `Spread.spread_witness`, `Spread.spread_witness_none` |
+| candidate enumeration / decision | `Spread.subsets`, `Spread.rao_witness`, `Spread.rao_witness_none` |
 | link $\mathcal{F}_T$ | `Spread.link`, `Spread.link_uniform`, `Spread.link_distinct` |
 | set-indexed sunflower lift | `Spread.sunflower_lift_set`, `Spread.link_sunflower_lift` |
 | hypothesis $(\ast)$ | `SpreadReduction.SpreadYieldsDisjoint` |
 | the reduction | `SpreadReduction.spread_reduction` |
 | elementary spread lemma | `SpreadReduction.elementary_spread_disjoint` |
 | unconditional bound via the framework | `SpreadReduction.spread_erdos_rado` |
-| the 2020 spread lemma (axiom) | `ALWZ.Rao20_spread_lemma` |
+| the 2020 spread lemma (axiom) | `ALWZ.Rao20_lemma2` |
 | the modern bound (derived) | `ALWZ.sunflower_bound_from_spread_lemma` |
+| non-vacuity witnesses | `ALWZ.rao_spread_singletons`, `ALWZ.spread_singletons`, `ALWZ.elementary_applies_to_singletons` |
+| conjecture restated in spread terms | `Conjecture.spread_conjecture`, `Conjecture.spread_conjecture_suffices` |

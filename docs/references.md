@@ -84,7 +84,7 @@ Erdős–Rado 1960 upper bound. We are unaware of any Mathematical
 Components or Mathlib formalisation of this theorem.
 
 If a Coq or Lean formalisation of the 2020 spread lemma becomes
-available, the axiom `Rao20_spread_lemma` in `coq/ALWZ.v` can be
+available, the axiom `Rao20_lemma2` in `coq/ALWZ.v` can be
 replaced by an import — and nothing downstream of it needs to change,
 since the passage from the spread lemma to the sunflower bound is
 already proved in `coq/SpreadReduction.v`. The interface to meet is

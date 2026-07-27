@@ -64,7 +64,7 @@ The argument splits into a *reduction* (step 3, deterministic) and a
 formalised** in `coq/SpreadReduction.v` as `spread_reduction`, and it
 gives exactly $f(n,k) \le r^n + 1$ for the spread threshold $r$. Only
 the spread lemma is assumed, as the named axiom
-`Rao20_spread_lemma` in `coq/ALWZ.v`; the modern bound is then
+`Rao20_lemma2` in `coq/ALWZ.v`; the modern bound is then
 *derived* from it. No other theorem depends on the axiom, and the
 same reduction — instantiated with an elementary spread lemma proved
 in full — yields an unconditional bound $f(n,k) \le (n(k-1)+1)^n + 1$.

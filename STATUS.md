@@ -28,12 +28,15 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `koenig_theorem` | `coq/KoenigHall.v` | König's minimax theorem: maximum matching and minimum vertex cover exist with equal size in any simple bipartite graph (via the deficiency form of Hall) |
 | `pigeonhole_family` | `coq/Pigeonhole.v` | Counting lemma: if every set in `F` meets `X` and `|F| > |X|·K` then some `x ∈ X` is in `> K` sets |
 | `sunflower_lift` | `coq/Sunflower.v` | A `k`-sunflower in `{A\{x}}` lifts to `{A}` with adjusted core |
-| `spread_reduction` | `coq/SpreadReduction.v` | **The ALWZ §4 / Rao reduction**: if every `r`-spread distinct family of `m`-sets (`1 ≤ m ≤ n`) has `k` pairwise disjoint members, then `f(m,k) ≤ r^m + 1` for all `m ≤ n` |
-| `elementary_spread_disjoint` | `coq/SpreadReduction.v` | The spread lemma at the elementary parameter: every `(n(k-1)+1)`-spread family of `m`-sets, `m ≤ n`, has `k` pairwise disjoint members |
+| `spread_reduction` | `coq/SpreadReduction.v` | **The ALWZ §4 / Rao reduction**: if every distinct family of more than `r^m` sets of size `m` (`1 ≤ m ≤ n`) that is `r`-spread has `k` pairwise disjoint members, then `f(m,k) ≤ r^m + 1` for all `m ≤ n` |
+| `elementary_spread_disjoint` | `coq/SpreadReduction.v` | The spread lemma at the elementary parameter `r = n(k-1)+1`, proved outright: maximal disjoint cover + pigeonhole |
 | `spread_erdos_rado` | `coq/SpreadReduction.v` | **`f(n,k) ≤ (n(k-1)+1)^n + 1`** — an Erdős–Rado-quality bound obtained through the spread framework, with no axioms |
 | `sunflower_lift_set` | `coq/Spread.v` | Set-indexed generalisation of `sunflower_lift`: a sunflower avoiding `T` lifts to one with `T` merged into the core |
 | `link_sunflower_lift` | `coq/Spread.v` | A `k`-sunflower in the link `{A \ T : T ⊆ A ∈ F}` lifts to a `k`-sunflower in `F` |
 | `w_spread_legacy_degenerate` | `coq/Spread.v` | Refutation of this repository's *earlier* definition of spreadness: quantifying over lists with repeats forces every member of a `w`-spread family (`w ≥ 2`) to be empty |
+| `RaoSpread_Spread` | `coq/Spread.v` | Rao's absolute spread condition, plus his size hypothesis `r^m < \|F\|`, implies the fractional (ALWZ / FKNP) one — so the axiom's hypothesis is the stronger of the two |
+| `spread_conjecture_suffices` | `coq/Conjecture.v` | **The conjecture restated without sunflowers**: a spread lemma with an `n`-independent threshold implies `sunflower_conjecture` |
+| `spread_singletons`, `elementary_applies_to_singletons` | `coq/ALWZ.v` | Reflective non-vacuity witnesses: a concrete spread family, and a concrete instance run through every hypothesis of the axiom's shape to its conclusion |
 | `k_pairwise_disjoint_sunflower` | `coq/Sunflower.v` | `k` pairwise-disjoint nonempty sets are a `k`-sunflower with empty core |
 | `max_disjoint_cover` | `coq/ErdosRado.v` | Greedy construction of a maximal-disjoint covering subfamily |
 
@@ -41,13 +44,13 @@ Every theorem in this table compiles with Coq 8.18 and reports
 
 | Statement | File | Citation |
 |-----------|------|----------|
-| `Rao20_spread_lemma` | `coq/ALWZ.v` | Alweiss–Lovett–Wu–Zhang 2020 (STOC 2020), Rao 2020 (Discrete Analysis), with FKNP19 / BCW21 refinements. **The spread lemma only**: "an `r`-spread family of sets of size ≤ `n` contains `k` pairwise disjoint members once `r ≥ Ck log(nk)`". |
+| `Rao20_lemma2` | `coq/ALWZ.v` | **Rao 2020 (Discrete Analysis 2020:2), Lemma 2**, verbatim: "if a sequence of more than `r(p,k)^k` sets of size `k` is `r(p,k)`-spread, then the sequence must contain `p` disjoint sets", with `r(p,k) = α·p·log(pk)` and `r`-spread in Rao's absolute sense (every nonempty `Z` lies in at most `r^(k-|Z|)` members). Originally Alweiss–Lovett–Wu–Zhang 2020 (STOC 2020); refined by FKNP19 / BCW21. |
 
 ### Derived from that axiom (and from nothing else)
 
 | Theorem | File | Statement |
 |---------|------|-----------|
-| `sunflower_bound_from_spread_lemma` | `coq/ALWZ.v` | `f(n,k) ≤ (C·k·log₂(nk+1))^n + 1` — the modern bound. `Print Assumptions` reports exactly `Rao20_spread_lemma`, and the `make verify` audit checks that it lists exactly one name. |
+| `sunflower_bound_from_spread_lemma` | `coq/ALWZ.v` | `f(n,k) ≤ (α·k·log₂(kn+1))^n + 1` (Rao's Theorem 1) — the modern bound. `Print Assumptions` reports exactly `Rao20_lemma2`, and the `make verify` audit checks that it lists exactly one name. |
 
 ### What changed, and why it matters
 
@@ -57,18 +60,31 @@ self-contained statement about finite families that mentions neither
 sunflowers nor bounds — and the step from it to the bound (the ALWZ §4 /
 Rao reduction) is machine-checked in `coq/SpreadReduction.v`. This
 strictly shrinks the trusted core, and it makes the interface for a
-future proof exactly Rao's theorem.
+future proof exactly Rao's Lemma 2.
+
+The statement was checked against the source rather than reconstructed:
+Rao's spread condition is *absolute* (`deg Z ≤ r^(k-|Z|)` for nonempty
+`Z`) and comes with the size hypothesis `|F| > r^k`. Together these are
+strictly stronger than the fractional condition used elsewhere in the
+literature — `Spread.RaoSpread_Spread` proves the implication — so
+stating the axiom this way assumes strictly less. Two further
+deliberate weakenings: the axiom covers only families of sets of one
+fixed size (the source allows "at most"), and `Nat.log2_up (S (k*n))`
+over-estimates `log(kn)`, so more is demanded of `r`.
 
 The same reduction, instantiated with an elementary spread lemma that
 *is* proved here, yields the axiom-free `spread_erdos_rado` above — so
-the framework is known to prove something, not merely to typecheck.
+the framework is known to prove something, not merely to typecheck. And
+`ALWZ.elementary_applies_to_singletons` runs a concrete family through
+every hypothesis of the axiom's shape to its conclusion.
 
 A defect in the previous file was found in the process and is recorded
 as a theorem rather than a comment: the old `w_spread` definition
 quantified over lists with repeated entries and is degenerate
-(`w_spread_legacy_degenerate`). The corrected `Spread` quantifies over
-`NoDup` lists, and `ALWZ.spread_singletons` certifies by `vm_compute`
-that a concrete spread family exists.
+(`w_spread_legacy_degenerate` proves it forces every member to be
+empty). The corrected definitions quantify over `NoDup` lists, and
+`ALWZ.spread_singletons` certifies by `vm_compute` that a concrete
+spread family exists.
 
 ## Stated in `coq/Conjecture.v` but **open since 1960**
 
@@ -76,6 +92,7 @@ that a concrete spread family exists.
 |-----------|------|--------|
 | **Sunflower Conjecture**: `∃ c : nat → nat, ∀ n k ≥ 2, UpperBound n k ((c k)^n + 1)` | `coq/Conjecture.v` `sunflower_conjecture` | **Open**. Erdős's $1000 prize remains unclaimed. |
 | **k = 3 special case** | `coq/Conjecture.v` `sunflower_conjecture_k_3` | **Open**. The case Erdős singled out as containing "the whole difficulty". |
+| **Spread restatement**: `∃ c, ∀ n k, SpreadYieldsDisjoint n k (c k)` | `coq/Conjecture.v` `spread_conjecture` | **Open**, and *sufficient*: `spread_conjecture_suffices` proves it implies the conjecture. An equivalent question with no sunflower in it. |
 
 ## Not formalized; proved in docs / verified computationally
 
@@ -94,9 +111,9 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (22 of them). The current
+for every theorem in the "Closed" table (26 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
-Coq development is `ALWZ.Rao20_spread_lemma`, and it is *not used* by
+Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
 
 `make verify` additionally runs an `axiom-audit` step that prints the
