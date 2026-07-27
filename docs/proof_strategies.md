@@ -59,11 +59,22 @@ The strategy:
    $k$-sunflower (else apply the shattering argument and contradict
    $\sum_i |A_i|$).
 
-The proof is intrinsically probabilistic — it argues over the
-uniform measure on subsets of $[N]$ — and is not formalised here.
-The conclusion is recorded in `coq/Spread.v` as a named axiom
-`ALWZ20_spread_bound` with literature citation; downstream theorems
-do not depend on this axiom.
+The argument splits into a *reduction* (step 3, deterministic) and a
+*spread lemma* (steps 1–2, the analytic content). **The reduction is
+formalised** in `coq/SpreadReduction.v` as `spread_reduction`, and it
+gives exactly $f(n,k) \le r^n + 1$ for the spread threshold $r$. Only
+the spread lemma is assumed, as the named axiom
+`Rao20_spread_lemma` in `coq/ALWZ.v`; the modern bound is then
+*derived* from it. No other theorem depends on the axiom, and the
+same reduction — instantiated with an elementary spread lemma proved
+in full — yields an unconditional bound $f(n,k) \le (n(k-1)+1)^n + 1$.
+See `docs/spread_framework.md`.
+
+The original ALWZ proof of the spread lemma is probabilistic, but
+Rao's is not: "Coding for sunflowers" gives an encoding/counting
+proof using only injections between finite sets and binomial
+estimates, which is why discharging the remaining axiom is a
+realistic target for this stdlib-only development.
 
 Refinements:
 - Rao 2020 [Ra20]: alternative streamlined proof, same constant up
@@ -120,6 +131,8 @@ Not relevant to the fixed-$k$ regime of the main conjecture.
 | $f(n, k) \geq k$ | lower | `coq/LowerBound.v` | **proved, zero admits** |
 | $f(n, 2) = 2$ | exact | `coq/SmallCases.v` | **proved, zero admits** |
 | $f(1, k) = k$ | exact | `coq/SmallCases.v` | **proved, zero admits** |
-| $f(n, k) \geq (k-1)^n + 1$ | lower | `docs/problem.md`, `rust/tests/` | proved in docs, computationally verified |
-| $f(n, k) \leq (C k \log n)^n$ | upper | `coq/Spread.v` | named axiom, not proved here |
+| $f(n, k) \geq (k-1)^n + 1$ | lower | `coq/ProductLowerBound.v` | **proved, zero admits** |
+| $f(n, k) \leq (n(k-1)+1)^n + 1$ | upper | `coq/SpreadReduction.v` | **proved, zero admits** (via the spread framework) |
+| spread $\Rightarrow$ sunflower reduction | — | `coq/SpreadReduction.v` | **proved, zero admits** |
+| $f(n, k) \leq (C k \log(nk))^n$ | upper | `coq/ALWZ.v` | derived from the one named axiom (the spread lemma) |
 | $f(n, k) \leq c_k^n$ (conjecture) | upper | `coq/Conjecture.v` | open since 1960 |

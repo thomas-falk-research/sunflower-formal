@@ -28,6 +28,12 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `koenig_theorem` | `coq/KoenigHall.v` | König's minimax theorem: maximum matching and minimum vertex cover exist with equal size in any simple bipartite graph (via the deficiency form of Hall) |
 | `pigeonhole_family` | `coq/Pigeonhole.v` | Counting lemma: if every set in `F` meets `X` and `|F| > |X|·K` then some `x ∈ X` is in `> K` sets |
 | `sunflower_lift` | `coq/Sunflower.v` | A `k`-sunflower in `{A\{x}}` lifts to `{A}` with adjusted core |
+| `spread_reduction` | `coq/SpreadReduction.v` | **The ALWZ §4 / Rao reduction**: if every `r`-spread distinct family of `m`-sets (`1 ≤ m ≤ n`) has `k` pairwise disjoint members, then `f(m,k) ≤ r^m + 1` for all `m ≤ n` |
+| `elementary_spread_disjoint` | `coq/SpreadReduction.v` | The spread lemma at the elementary parameter: every `(n(k-1)+1)`-spread family of `m`-sets, `m ≤ n`, has `k` pairwise disjoint members |
+| `spread_erdos_rado` | `coq/SpreadReduction.v` | **`f(n,k) ≤ (n(k-1)+1)^n + 1`** — an Erdős–Rado-quality bound obtained through the spread framework, with no axioms |
+| `sunflower_lift_set` | `coq/Spread.v` | Set-indexed generalisation of `sunflower_lift`: a sunflower avoiding `T` lifts to one with `T` merged into the core |
+| `link_sunflower_lift` | `coq/Spread.v` | A `k`-sunflower in the link `{A \ T : T ⊆ A ∈ F}` lifts to a `k`-sunflower in `F` |
+| `w_spread_legacy_degenerate` | `coq/Spread.v` | Refutation of this repository's *earlier* definition of spreadness: quantifying over lists with repeats forces every member of a `w`-spread family (`w ≥ 2`) to be empty |
 | `k_pairwise_disjoint_sunflower` | `coq/Sunflower.v` | `k` pairwise-disjoint nonempty sets are a `k`-sunflower with empty core |
 | `max_disjoint_cover` | `coq/ErdosRado.v` | Greedy construction of a maximal-disjoint covering subfamily |
 
@@ -35,7 +41,34 @@ Every theorem in this table compiles with Coq 8.18 and reports
 
 | Statement | File | Citation |
 |-----------|------|----------|
-| `ALWZ20_spread_bound` | `coq/Spread.v` | Alweiss–Lovett–Wu–Zhang 2020 (STOC 2020), with FKNP19 / Ra20 / BCW21 refinements. Probabilistic argument; full proof not formalized here. |
+| `Rao20_spread_lemma` | `coq/ALWZ.v` | Alweiss–Lovett–Wu–Zhang 2020 (STOC 2020), Rao 2020 (Discrete Analysis), with FKNP19 / BCW21 refinements. **The spread lemma only**: "an `r`-spread family of sets of size ≤ `n` contains `k` pairwise disjoint members once `r ≥ Ck log(nk)`". |
+
+### Derived from that axiom (and from nothing else)
+
+| Theorem | File | Statement |
+|---------|------|-----------|
+| `sunflower_bound_from_spread_lemma` | `coq/ALWZ.v` | `f(n,k) ≤ (C·k·log₂(nk+1))^n + 1` — the modern bound. `Print Assumptions` reports exactly `Rao20_spread_lemma`, and the `make verify` audit checks that it lists exactly one name. |
+
+### What changed, and why it matters
+
+Previously the axiom **was** the modern bound: the conclusion of the
+2020 papers was assumed wholesale. It is now the *spread lemma* — a
+self-contained statement about finite families that mentions neither
+sunflowers nor bounds — and the step from it to the bound (the ALWZ §4 /
+Rao reduction) is machine-checked in `coq/SpreadReduction.v`. This
+strictly shrinks the trusted core, and it makes the interface for a
+future proof exactly Rao's theorem.
+
+The same reduction, instantiated with an elementary spread lemma that
+*is* proved here, yields the axiom-free `spread_erdos_rado` above — so
+the framework is known to prove something, not merely to typecheck.
+
+A defect in the previous file was found in the process and is recorded
+as a theorem rather than a comment: the old `w_spread` definition
+quantified over lists with repeated entries and is degenerate
+(`w_spread_legacy_degenerate`). The corrected `Spread` quantifies over
+`NoDup` lists, and `ALWZ.spread_singletons` certifies by `vm_compute`
+that a concrete spread family exists.
 
 ## Stated in `coq/Conjecture.v` but **open since 1960**
 
@@ -50,7 +83,7 @@ Every theorem in this table compiles with Coq 8.18 and reports
 |-----------|-----|--------------|
 | `f(n, k) ≥ (k-1)^n + 1` (standard exponential lower bound) | `docs/problem.md` | **Now fully formalized** in `coq/ProductLowerBound.v` (`lower_bound_exponential`, closed under the global context) — see the "Closed" table above. The Rust brute-force checks in `rust/tests/small_cases.rs` remain as an independent computational cross-check. |
 | `f(n, k) = o(n!)` (Kostochka 1997 refinement) | `docs/proof_strategies.md` | Not verified here. |
-| `f(n, k) ≤ (C k log n)^n` (ALWZ–Rao–FKNP–BCW 2020+) | `coq/Spread.v` named axiom + `docs/spread_framework.md` | Not proved in Coq. |
+| The **spread lemma** at the 2020 parameter `r = Θ(k log(nk))` (ALWZ–Rao–FKNP–BCW) | `coq/ALWZ.v` named axiom + `docs/spread_framework.md` | Not proved in Coq. Rao's encoding proof is elementary (injections + binomial counting, no measure theory) and is the natural next target; everything downstream of it is already proved. |
 
 ## Axiom and admit audit
 
@@ -61,22 +94,33 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table. The current state of the
-codebase satisfies this; the only `Axiom` in the entire Coq
-development is `Spread.ALWZ20_spread_bound`, and it is *not used*
-by any closed theorem (confirmed by `Print Assumptions`).
+for every theorem in the "Closed" table (22 of them). The current
+state of the codebase satisfies this; the only `Axiom` in the entire
+Coq development is `ALWZ.Rao20_spread_lemma`, and it is *not used* by
+any closed theorem (confirmed by `Print Assumptions`).
+
+`make verify` additionally runs an `axiom-audit` step that prints the
+full assumption set of `ALWZ.sunflower_bound_from_spread_lemma` — the
+one theorem that does use the axiom — so the exact statement being
+trusted is visible in the build log rather than buried in a source
+file. CI gates on both: 22 `Closed under the global context` lines, no
+closed theorem listing `Axioms:`, and exactly one axiom name under the
+modern bound.
 
 To verify directly:
 
 ```bash
-echo 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound SmallCases Pigeonhole.
+echo 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound SmallCases Pigeonhole SpreadReduction ALWZ.
 Print Assumptions ErdosRado.erdos_rado_upper_bound.
 Print Assumptions ErdosRado_Greedy.erdos_rado_via_greedy.
 Print Assumptions LowerBound.lower_bound_trivial.
 Print Assumptions ProductLowerBound.lower_bound_exponential.
 Print Assumptions SmallCases.f_n_2_eq_2.
 Print Assumptions SmallCases.f_1_k_eq_k.
-Print Assumptions Pigeonhole.pigeonhole_family.' | coqtop -Q coq Sunflower 2>&1 | grep -B 1 "Closed\|Axioms"
+Print Assumptions Pigeonhole.pigeonhole_family.
+Print Assumptions SpreadReduction.spread_reduction.
+Print Assumptions SpreadReduction.spread_erdos_rado.
+Print Assumptions ALWZ.sunflower_bound_from_spread_lemma.' | coqtop -Q coq Sunflower 2>&1 | grep -B 1 "Closed\|Axioms"
 ```
 
 The Rust companion in `rust/` is an *independent* computational

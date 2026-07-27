@@ -13,6 +13,8 @@ coq/ErdosRado_Greedy.v
 coq/LowerBound.v
 coq/ProductLowerBound.v
 coq/Spread.v
+coq/SpreadReduction.v
+coq/ALWZ.v
 coq/Conjecture.v
 coq/SmallCases.v
 coq/F23.v

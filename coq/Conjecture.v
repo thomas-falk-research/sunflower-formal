@@ -17,7 +17,7 @@
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower ErdosRado LowerBound.
+From Sunflower Require Import Sets Sunflower ErdosRado LowerBound SpreadReduction.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -44,6 +44,15 @@ Proof. apply erdos_rado_upper_bound. Qed.
 Theorem theorem_trivial_lower :
   forall n k, 1 <= n -> 2 <= k -> LowerBound n k (k - 1).
 Proof. apply lower_bound_trivial. Qed.
+
+(** An independent upper bound of the same quality, obtained through
+    the *spread framework* of the 2020 proof rather than the 1960
+    argument, with the spread lemma replaced by its elementary
+    (parameter [n(k-1)+1]) instance. Axiom-free; see
+    [SpreadReduction.v]. *)
+Theorem theorem_spread_upper :
+  forall n k, 2 <= k -> UpperBound n k (S ((n * (k - 1) + 1) ^ n)).
+Proof. apply spread_erdos_rado. Qed.
 
 (** ** The conjecture *)
 
@@ -86,14 +95,17 @@ Qed.
 
     - [sunflower_conjecture] itself (the open problem since 1960).
 
-    - The Alweiss–Lovett–Wu–Zhang 2020 bound
-      [forall n k, UpperBound n k (S ((C * k * log n)^n))]
-      for some absolute constant [C] — sketched in
-      [docs/spread_framework.md] but not formalised here (it requires
-      a real-analysis layer for the probabilistic argument). The Coq
-      statement is in [Spread.v] as an unproved [Axiom] tagged with
-      its literature citation; nothing in [ErdosRado.v] or
-      [LowerBound.v] depends on it.
+    - The *spread lemma* of Alweiss–Lovett–Wu–Zhang 2020 / Rao 2020:
+      "an [r]-spread family of sets of size at most [n] contains [k]
+      pairwise disjoint members once [r ≳ k log(nk)]". This is the one
+      [Axiom] of the development, stated in [ALWZ.v] with its
+      citations. Note what is *not* assumed: the passage from that
+      lemma to the bound
+      [UpperBound n k (S ((C * k * log (n*k))^n))] is proved, in
+      [SpreadReduction.spread_reduction], and the same reduction proves
+      the axiom-free [theorem_spread_upper] above. Nothing in
+      [ErdosRado.v], [LowerBound.v], [SpreadReduction.v] or this file
+      depends on the axiom.
 
     - Kostochka's [f(n, k) = o(n!)] refinement (1997), again
       unformalised. *)

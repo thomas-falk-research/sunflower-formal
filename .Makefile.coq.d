@@ -31,12 +31,18 @@ coq/LowerBound.vos coq/LowerBound.vok coq/LowerBound.required_vos: coq/LowerBoun
 coq/ProductLowerBound.vo coq/ProductLowerBound.glob coq/ProductLowerBound.v.beautified coq/ProductLowerBound.required_vo: coq/ProductLowerBound.v coq/Sets.vo coq/Sunflower.vo coq/LowerBound.vo
 coq/ProductLowerBound.vio: coq/ProductLowerBound.v coq/Sets.vio coq/Sunflower.vio coq/LowerBound.vio
 coq/ProductLowerBound.vos coq/ProductLowerBound.vok coq/ProductLowerBound.required_vos: coq/ProductLowerBound.v coq/Sets.vos coq/Sunflower.vos coq/LowerBound.vos
-coq/Spread.vo coq/Spread.glob coq/Spread.v.beautified coq/Spread.required_vo: coq/Spread.v coq/Sets.vo coq/Sunflower.vo
-coq/Spread.vio: coq/Spread.v coq/Sets.vio coq/Sunflower.vio
-coq/Spread.vos coq/Spread.vok coq/Spread.required_vos: coq/Spread.v coq/Sets.vos coq/Sunflower.vos
-coq/Conjecture.vo coq/Conjecture.glob coq/Conjecture.v.beautified coq/Conjecture.required_vo: coq/Conjecture.v coq/Sets.vo coq/Sunflower.vo coq/ErdosRado.vo coq/LowerBound.vo
-coq/Conjecture.vio: coq/Conjecture.v coq/Sets.vio coq/Sunflower.vio coq/ErdosRado.vio coq/LowerBound.vio
-coq/Conjecture.vos coq/Conjecture.vok coq/Conjecture.required_vos: coq/Conjecture.v coq/Sets.vos coq/Sunflower.vos coq/ErdosRado.vos coq/LowerBound.vos
+coq/Spread.vo coq/Spread.glob coq/Spread.v.beautified coq/Spread.required_vo: coq/Spread.v coq/Sets.vo coq/Sunflower.vo coq/Pigeonhole.vo
+coq/Spread.vio: coq/Spread.v coq/Sets.vio coq/Sunflower.vio coq/Pigeonhole.vio
+coq/Spread.vos coq/Spread.vok coq/Spread.required_vos: coq/Spread.v coq/Sets.vos coq/Sunflower.vos coq/Pigeonhole.vos
+coq/SpreadReduction.vo coq/SpreadReduction.glob coq/SpreadReduction.v.beautified coq/SpreadReduction.required_vo: coq/SpreadReduction.v coq/Sets.vo coq/Sunflower.vo coq/Pigeonhole.vo coq/ErdosRado.vo coq/Spread.vo
+coq/SpreadReduction.vio: coq/SpreadReduction.v coq/Sets.vio coq/Sunflower.vio coq/Pigeonhole.vio coq/ErdosRado.vio coq/Spread.vio
+coq/SpreadReduction.vos coq/SpreadReduction.vok coq/SpreadReduction.required_vos: coq/SpreadReduction.v coq/Sets.vos coq/Sunflower.vos coq/Pigeonhole.vos coq/ErdosRado.vos coq/Spread.vos
+coq/ALWZ.vo coq/ALWZ.glob coq/ALWZ.v.beautified coq/ALWZ.required_vo: coq/ALWZ.v coq/Sets.vo coq/Sunflower.vo coq/Spread.vo coq/SpreadReduction.vo
+coq/ALWZ.vio: coq/ALWZ.v coq/Sets.vio coq/Sunflower.vio coq/Spread.vio coq/SpreadReduction.vio
+coq/ALWZ.vos coq/ALWZ.vok coq/ALWZ.required_vos: coq/ALWZ.v coq/Sets.vos coq/Sunflower.vos coq/Spread.vos coq/SpreadReduction.vos
+coq/Conjecture.vo coq/Conjecture.glob coq/Conjecture.v.beautified coq/Conjecture.required_vo: coq/Conjecture.v coq/Sets.vo coq/Sunflower.vo coq/ErdosRado.vo coq/LowerBound.vo coq/SpreadReduction.vo
+coq/Conjecture.vio: coq/Conjecture.v coq/Sets.vio coq/Sunflower.vio coq/ErdosRado.vio coq/LowerBound.vio coq/SpreadReduction.vio
+coq/Conjecture.vos coq/Conjecture.vok coq/Conjecture.required_vos: coq/Conjecture.v coq/Sets.vos coq/Sunflower.vos coq/ErdosRado.vos coq/LowerBound.vos coq/SpreadReduction.vos
 coq/SmallCases.vo coq/SmallCases.glob coq/SmallCases.v.beautified coq/SmallCases.required_vo: coq/SmallCases.v coq/Sets.vo coq/Sunflower.vo coq/LowerBound.vo
 coq/SmallCases.vio: coq/SmallCases.v coq/Sets.vio coq/Sunflower.vio coq/LowerBound.vio
 coq/SmallCases.vos coq/SmallCases.vok coq/SmallCases.required_vos: coq/SmallCases.v coq/Sets.vos coq/Sunflower.vos coq/LowerBound.vos
