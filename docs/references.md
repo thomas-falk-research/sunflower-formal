@@ -70,6 +70,30 @@ estimate. Both are marked below.
   The problem was posed by Erdős and Rado, which is why it turns up
   here at all.
 
+- **[BaKh09]** N. Balachandran and N. Khare, *Graphs with restricted
+  valency and matching number*. Discrete Mathematics 309 (2009),
+  4176–4180. A second, **constructive** proof of the [ChHa76] bound,
+  five pages, which also characterises the extremal graphs and the
+  cases where they are unique.
+
+  Found by a literature check scoped to one question: does the
+  [ChHa76] upper bound need Gallai–Edmonds, or would a clever
+  induction do? The answer is that it needs the matching-theory
+  primitive either way. This paper's own keywords are *Gallai's lemma*
+  and *factor-critical graph*, and it contains a new proof of Gallai's
+  lemma — so the dependency is not an artefact of Chvátal and Hanson's
+  linear-programming presentation, and the two published proofs agree
+  on what the bound rests on.
+
+  That is still much less than the full Gallai–Edmonds structure
+  theorem: Gallai's lemma is one statement ("a connected graph in which
+  every vertex is missed by some maximum matching is factor-critical")
+  with a self-contained alternating-path proof. See `docs/roadmap.md`
+  §3a for what that means for scoping. The paper is paywalled and no
+  preprint was found, so its proof was **not** read — what is recorded
+  here is its abstract and keywords, and the description of it in the
+  papers that cite it.
+
 - **[AbHa74]** H. L. Abbott and D. Hanson, *On finite $\Delta$-systems*.
   Discrete Mathematics 8 (1974), 1–12. The source usually credited for
   the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
@@ -130,7 +154,9 @@ The same holds for [ChHa76]: a formalisation of its upper bound would
 turn `CliqueLowerBound.two_cliques_lower_bound` from a lower bound into
 an exact value for every odd $k$, and would settle the sharp spread
 threshold at uniformity 2. That is the campaign described in
-`docs/roadmap.md` §3a.
+`docs/roadmap.md` §3a — and, per [BaKh09], its prerequisite is Gallai's
+lemma on factor-critical graphs, which no part of this development's
+bipartite Hall/Kőnig layer supplies.
 
 If a Coq or Lean formalisation of the 2020 spread lemma becomes
 available, the axiom `Rao20_lemma2` in `coq/ALWZ.v` can be

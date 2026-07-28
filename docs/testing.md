@@ -219,17 +219,57 @@ The empirical threshold table is printed into the build log:
 
 ```
   ground  m   k   empirical r*   proved sufficient   refuted r
+       4  1   2              1                   2   -
        6  1   3              2                   3   1
        8  1   4              3                   4   1,2
+       8  1   5              4                   5   1,2,3
+       4  2   2              1                   3   -
        5  2   3              3                   5   1,2
+       6  2   3              3                   5   1,2
+       7  2   3              3                   5   1,2
        8  2   3              3                   5   1,2
+       8  2   4              4                   7   1,2,3
+       6  3   2              1                   4   -
+       6  3   3              2                   7   1
        7  3   3              3                   7   1,2
+       8  3   3              3                   7   1,2
 ```
 
 `r*` is the least `r` above which no counterexample exists; the next
 column is `m(k-1)+1`, proved sufficient in Coq. `r*` must never exceed
 it, and at `m = 1` it is exactly `k-1`, matching
 `Audit.spread_yields_disjoint_needs_r` on the nose.
+
+Three things the table is checked for beyond that.
+
+**The refuted `r` form a prefix.** Nothing forces this: raising `r`
+weakens the spread hypothesis and simultaneously raises the size
+threshold `r^m`, so the two hypotheses pull in opposite directions, and
+a refuted `r` above an unrefuted one would mean the axiom's threshold
+cannot be read as "large enough `r`" at all. At uniformity 2 the prefix
+property follows from the Chvátal–Hanson formula; at uniformity 3 there
+is no formula, and `the_refuted_set_of_r_is_a_prefix` is search.
+
+**The `k = 2` row at uniformity 3 is decided by one member.** No `r` is
+refutable there, and the reason is the **Fano plane**: seven lines on
+seven points, every point on three and every pair on exactly one, so
+`deg T <= r^(3-|T|)` holds in all three clauses at `r = 2` — the last
+with equality. It is intersecting, so it has no two disjoint members,
+and nothing on seven points does better. It has seven members where the
+size hypothesis asks for more than `r^m = 8`, and misses by one.
+`the_fano_plane_misses_the_size_hypothesis_by_one` pins every part of
+that. A size hypothesis mis-transcribed as `>=` rather than `>` would
+turn the Fano plane into a counterexample to the axiom — which is what
+the `syd-nonstrict-size` mutation asks of the Coq statement, so the two
+checks meet on the same family.
+
+**Where the search stops is not arbitrary.** At `(m, k, r) = (3, 3, 3)`
+a counterexample needs more than 27 members of size 3 with every vertex
+in at most `r^(m-1) = 9` of them, hence at least `ceil(3*28/9) = 10`
+vertices. Ground 10 is therefore the first ground set that could hold
+one, and it is exactly where the search stops finishing within an hour.
+So the uniformity-3 rows are complete over ground sets that provably
+cannot contain a counterexample, and say nothing past that line.
 
 ### A second thing falsified before it was proved
 
@@ -462,6 +502,11 @@ it (`_CoqProject`, `tools/audited.txt`, `tools/mutations.toml`) and
 checks it against a manifest of where that count is quoted. A pattern
 that matches *nothing* is also a failure, so deleting the sentence is
 not a way to pass. `make docnumbers` runs it; CI gates on it.
+
+Its own limits, stated because they are the same kind of gap: it sees
+digits, not words, so "the seven mechanisms added" above is unchecked;
+and a count that no entry names is unchecked by construction, which the
+run reports rather than passes over.
 
 This is the same fix, one level down, that the workflow already got: the
 audited-theorem count used to be hardcoded in the CI file and is now

@@ -193,7 +193,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 |---|---|---|
 | Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 22 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
-| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it |
+| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
@@ -222,18 +222,41 @@ about the development rather than about the theorem names the
 `Print Assumptions` audit enumerates — an `Admitted` lemma outside
 that list passes the audit and fails this census.
 
+### What the thresholds say about the axiom
+
 The empirical spread thresholds from `make testbed`, all of them at or
 below the value proved sufficient by
 `SpreadReduction.spread_disjoint_above_elementary`, and exactly `k-1`
-at uniformity 1:
+at uniformity 1. Two properties are asserted as tests rather than only
+printed: the refuted `r` form a *prefix* at every grid point
+(`the_refuted_set_of_r_is_a_prefix` — nothing forces this, since raising
+`r` weakens the spread hypothesis and raises the size threshold at the
+same time), and the `k = 2` row at uniformity 3 is decided by the **Fano
+plane** missing the size hypothesis by exactly one member
+(`the_fano_plane_misses_the_size_hypothesis_by_one`).
+
+Measured off-grid at uniformity 3: `r*(3,3) = 3` for ground sets up to
+9, the same as `r*(2,3) = 3`, against an axiom threshold of
+`α·k·log₂(km+1)` which is 9 at `(m,k) = (2,3)` and 12 at `(3,3)` even at
+`α = 1`. So the growth in `m` that the published `log` predicts is not
+visible between uniformity 2 and 3 at `k = 3` — see
+[`docs/roadmap.md`](docs/roadmap.md) §3.6 for what that does and does
+not establish.
 
 ```
   ground  m   k   empirical r*   proved sufficient   refuted r
+       4  1   2              1                   2   -
        6  1   3              2                   3   1
        8  1   4              3                   4   1,2
        8  1   5              4                   5   1,2,3
+       4  2   2              1                   3   -
        5  2   3              3                   5   1,2
+       6  2   3              3                   5   1,2
+       7  2   3              3                   5   1,2
        8  2   3              3                   5   1,2
        8  2   4              4                   7   1,2,3
+       6  3   2              1                   4   -
+       6  3   3              2                   7   1
        7  3   3              3                   7   1,2
+       8  3   3              3                   7   1,2
 ```

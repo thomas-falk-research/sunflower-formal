@@ -63,6 +63,20 @@ fn two_triangles() -> Vec<Mask> {
     ]
 }
 
+/// The Fano plane: seven lines on seven points, every two meeting in
+/// exactly one point.
+fn fano() -> Vec<Mask> {
+    vec![
+        set(&[0, 1, 2]),
+        set(&[0, 3, 4]),
+        set(&[0, 5, 6]),
+        set(&[1, 3, 5]),
+        set(&[1, 4, 6]),
+        set(&[2, 3, 6]),
+        set(&[2, 4, 5]),
+    ]
+}
+
 /// The circulant graph on `n` vertices with connection set `1..=d`:
 /// `2d`-regular, `n*d` edges, simple as long as `2d < n`.
 fn circulant(n: u32, d: u32) -> Vec<Mask> {
@@ -96,6 +110,22 @@ const GRID: &[(u32, u32, usize)] = &[
     (6, 3, 3),
     (7, 3, 3),
     (8, 3, 3),
+    // Ground 9 at uniformity 3 is where this grid stops, and the reason
+    // is worth writing down. The searches that decide a *counterexample
+    // verdict* stay instant there — they exit as soon as the reachable
+    // size falls below `r^m`. The one that computes the exhaustive
+    // *maximum* does not: when the answer is "no constrained family
+    // clears the bar", which at `k = 2` is every `r`, it has to exhaust
+    // the tree, and on nine points that is minutes rather than
+    // milliseconds.
+    //
+    // So the uniformity-3 threshold measurements at ground 9 and 10 are
+    // one-off runs rather than rows here; `docs/roadmap.md` §3.6 records
+    // what they said and how to reproduce them. What they were for is
+    // covered by two cheaper checks below that are not weaker:
+    // `the_fano_plane_misses_the_size_hypothesis_by_one` pins the
+    // `k = 2` row exactly, and `the_refuted_set_of_r_is_a_prefix` pins
+    // the shape of the `k = 3` one.
 ];
 
 // ---------------------------------------------------------------
@@ -177,6 +207,33 @@ fn no_counterexample_above_the_proved_threshold() {
             );
             r += 1;
         }
+    }
+}
+
+/// Is the set of refuted `r` a *prefix*?
+///
+/// Nothing forces it to be. `SpreadYieldsDisjoint n k r` is not
+/// monotone in `r` on its face: raising `r` weakens the spread
+/// hypothesis (easier to satisfy, so more families qualify) *and*
+/// raises the size threshold `r^m` (harder to satisfy, so fewer
+/// qualify). The two pull in opposite directions, and a refuted `r`
+/// sitting above an unrefuted one would mean the axiom's threshold
+/// hypothesis cannot be read as "large enough `r`" at all.
+///
+/// At uniformity 2 the answer is known conditionally: the refuted set
+/// is `{r : CH(r, k-1) > r^2}`, a prefix because `CH(r, k-1) <= r(r+1)`
+/// closes the gap once `r >= k-1`. This checks the same shape by
+/// exhaustive search, at uniformity 3 as well, where no formula is
+/// available.
+#[test]
+fn the_refuted_set_of_r_is_a_prefix() {
+    for &(ground, m, k) in GRID {
+        let (threshold, failing) = empirical_threshold(ground, m, k);
+        let prefix: Vec<u64> = (1..threshold).collect();
+        assert_eq!(
+            failing, prefix,
+            "at ground={ground} m={m} k={k} the refuted r are {failing:?}, not the prefix              1..{threshold} — SpreadYieldsDisjoint is not monotone in r here"
+        );
     }
 }
 
@@ -460,6 +517,48 @@ fn hypotheses_are_satisfiable_across_the_grid() {
         nonvacuous > 0,
         "no grid point produced a family satisfying the spread hypotheses"
     );
+}
+
+/// Why `r*(3,2) = 1`: the Fano plane misses by one member.
+///
+/// At uniformity 3 and `k = 2` the search finds no counterexample at
+/// any `r`, over every ground set tried. That is not slack — it is one
+/// family failing one hypothesis by one.
+///
+/// A counterexample at `k = 2` is an *intersecting* family: no two
+/// members disjoint. The Fano plane is the extremal such family of
+/// 3-sets that is also spread — every point lies on 3 of the 7 lines
+/// and every pair on exactly 1, so at `r = 2` it satisfies
+/// `deg T <= r^(3-|T|)` in all three clauses, with the tightest,
+/// `deg{u,v,w} <= r^0 = 1`, holding exactly. And it has 7 members
+/// where the size hypothesis asks for more than `r^m = 8`.
+///
+/// So the `k = 2` row of the threshold table is decided by a single
+/// off-by-one, and a mis-transcription of the size hypothesis as `>=`
+/// rather than `>` would turn the Fano plane into a counterexample.
+/// `syd-nonstrict-size` in `tools/mutations.toml` is the same question
+/// asked of the Coq statement.
+#[test]
+fn the_fano_plane_misses_the_size_hypothesis_by_one() {
+    let f = fano();
+    assert!(is_uniform(3, &f) && is_distinct(&f));
+    assert_eq!(f.len(), 7);
+    // Spread at r = 2, and not at r = 1.
+    assert!(is_rao_spread(3, &f, 2, 7));
+    assert!(!is_rao_spread(3, &f, 1, 7));
+    // Intersecting: no two disjoint lines.
+    assert!(!has_k_disjoint(&f, 2));
+    assert_eq!(matching_number(&f), 1);
+    // Every hypothesis of SpreadYieldsDisjoint 3 2 2 except the size one.
+    assert_eq!(pow_sat(2, 3), 8);
+    assert!((f.len() as u64) <= pow_sat(2, 3));
+    assert_eq!(f.len() as u64 + 1, pow_sat(2, 3));
+    verify_counterexample(&f, 7, 3, 2, 2)
+        .expect_err("the Fano plane must fail exactly the size hypothesis");
+    // And nothing on seven points does better: the exhaustive maximum
+    // of a 2-spread intersecting family of 3-sets is the Fano plane's
+    // seven members.
+    assert_eq!(search(7, 3, 2, 2, false).largest.len(), 7);
 }
 
 // ---------------------------------------------------------------

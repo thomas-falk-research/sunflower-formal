@@ -61,6 +61,15 @@ const GRID: &[(u32, u64, u64)] = &[
     (9, 4, 3),
     (7, 5, 2),
     (7, 5, 3),
+    // Ground 10. The CH upper bound is the unproved half of the
+    // identification, so it is the half most worth widening. Beyond
+    // these the exhaustive search stops being affordable in CI: on this
+    // machine (10, 4, 3) takes 63s, (11, 3, 3) 85s and (10, 3, 4) 498s,
+    // against under a second for the whole grid below ground 9. All
+    // three were run once and agree with `ch`; see docs/roadmap.md.
+    (10, 2, 3),
+    (10, 2, 4),
+    (10, 3, 3),
 ];
 
 // ---------------------------------------------------------------

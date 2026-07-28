@@ -18,6 +18,10 @@ Each claim names the list it is a count of, so the file that has to
 change is never ambiguous. A regex that matches nothing is a failure
 too: deleting the sentence must not be a way to pass.
 
+What it does not cover: counts written as words ("the seven mechanisms
+added", "one survives"), and any number no entry in CLAIMS names. The
+run reports the second case rather than passing over it in silence.
+
     tools/docnumbers.py            check, exit nonzero on mismatch
     tools/docnumbers.py --list     print the counts and where they are quoted
 """
@@ -118,8 +122,15 @@ def check(verbose: bool) -> int:
         for name, (value, source) in table.items():
             where = sorted({p for n, p, _ in CLAIMS if n == name})
             print(f"  {name:<{width}}  {value:>4}   from {source}")
-            for w in where:
+            for w in where or ["(nowhere -- unchecked)"]:
                 print(f"  {'':<{width}}         quoted in {w}")
+
+    # A count with no claim is a count nothing checks. Not a failure --
+    # some are here to be read -- but it must not be silent, or the
+    # tool's own coverage drifts the way the numbers it watches did.
+    unclaimed = sorted(set(table) - {n for n, _, _ in CLAIMS})
+    if unclaimed:
+        print(f"  note: no prose quotes {', '.join(unclaimed)}")
 
     if failures:
         print("\nThe prose disagrees with the development:\n", file=sys.stderr)
