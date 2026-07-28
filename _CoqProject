@@ -18,5 +18,6 @@ coq/SpreadReduction.v
 coq/ALWZ.v
 coq/Conjecture.v
 coq/SmallCases.v
+coq/TwoUniform.v
 coq/F23.v
 coq/Audit.v

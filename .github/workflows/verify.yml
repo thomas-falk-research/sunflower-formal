@@ -25,9 +25,16 @@ jobs:
           make verify 2>&1 | tee /tmp/verify.log
       - name: Gate - every audited theorem must be closed
         run: |
+          # The expected count comes from the audit list itself, which
+          # `print-assumptions` reports. Hardcoding it here meant every
+          # added theorem needed a second, unrelated edit to this file --
+          # and a forgotten one would have been a red build rather than a
+          # silently unaudited theorem, but only by luck.
           closed=$(grep -c "Closed under the global context" /tmp/verify.log)
-          echo "closed theorems: $closed (expected 51)"
-          test "$closed" -eq 51
+          total=$(sed -n 's/^  audited theorems: \([0-9][0-9]*\)$/\1/p' /tmp/verify.log)
+          echo "closed theorems: $closed of $total audited"
+          test -n "$total" && test "$total" -gt 0
+          test "$closed" -eq "$total"
           # No theorem in the closed table may depend on an axiom.
           ! grep -E '^  [A-Za-z_]+\.[A-Za-z_0-9]+ +Axioms:' /tmp/verify.log
       - name: Gate - the 2020 bound depends on exactly the spread-lemma axiom

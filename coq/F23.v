@@ -33,7 +33,8 @@
 
 From Coq Require Import List Arith Lia Bool.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower LowerBound ProductLowerBound Reflect.
+From Sunflower Require Import Sets Sunflower LowerBound ProductLowerBound Reflect
+     TwoUniform.
 Import ListNotations.
 
 (** ** Boolean certificates
@@ -106,62 +107,20 @@ Proof.
   rewrite E1, E2, E3, E4, E5. reflexivity.
 Qed.
 
-(** ** Structure of 2-element sets *)
+(** ** Structure of 2-element sets
 
-Lemma two_set_shape :
-  forall g, length g = 2 -> NoDup g ->
-            exists (a b : nat), a <> b /\ g = [a; b].
-Proof.
-  intros g Hlen Hnd.
-  destruct g as [|a [|b [|? ?]]]; simpl in Hlen; try discriminate.
-  inversion Hnd as [|? ? Hna Hnd']; subst.
-  exists a, b. split; [|reflexivity].
-  intro E; subst; apply Hna; left; reflexivity.
-Qed.
+    [two_set_shape], [two_set_other] and [inter_two_sets_common] were
+    local to this file; they are the general shape lemmas at uniformity
+    2, so they now live in [TwoUniform.v] alongside the sunflower
+    characterisation that uses them. *)
 
-Lemma two_set_other :
-  forall (g : list nat) (v : nat),
-    length g = 2 -> NoDup g -> In v g ->
-    exists w, w <> v /\ (forall z, In z g <-> z = v \/ z = w).
-Proof.
-  intros g v Hlen Hnd Hv.
-  destruct g as [|x [|y [|? ?]]]; simpl in Hlen; try discriminate.
-  inversion Hnd as [|? ? Hnx Hnd']; subst.
-  simpl in Hv. destruct Hv as [E | [E | []]].
-  - subst x. exists y. split.
-    + intro E; subst y. apply Hnx; left; reflexivity.
-    + intros z; simpl; split.
-      * intros [E | [E | []]]; [left | right]; symmetry; exact E.
-      * intros [E | E]; subst z;
-          [left; reflexivity | right; left; reflexivity].
-  - subst y. exists x. split.
-    + intro E; subst x. apply Hnx; left; reflexivity.
-    + intros z; simpl; split.
-      * intros [E | [E | []]]; [right | left]; symmetry; exact E.
-      * intros [E | E]; subst z;
-          [right; left; reflexivity | left; reflexivity].
-Qed.
+(** ** Three members through one vertex give a sunflower
 
-Lemma inter_two_sets_common :
-  forall g h v wg wh,
-    (forall z, In z g <-> z = v \/ z = wg) -> wg <> v ->
-    (forall z, In z h <-> z = v \/ z = wh) ->
-    wg <> wh ->
-    SetEq (inter g h) [v].
-Proof.
-  intros g h v wg wh Hg Hwgv Hh Hne.
-  split; intros z Hz.
-  - apply in_inter_iff in Hz as [Hzg Hzh].
-    apply Hg in Hzg. apply Hh in Hzh.
-    destruct Hzh as [E' | E']; [subst z; left; reflexivity|].
-    destruct Hzg as [E | E]; [subst z; left; reflexivity|].
-    exfalso. subst z. exact (Hne E').
-  - destruct Hz as [E | []]. subst z.
-    apply in_inter_iff.
-    split; [apply Hg; left; reflexivity | apply Hh; left; reflexivity].
-Qed.
-
-(** ** Three members through one vertex give a sunflower *)
+    An instance of [TwoUniform.star_sunflower]: any number of distinct
+    2-sets through a common point are a sunflower with that point as
+    core. Before that lemma existed this was sixty lines of pairwise
+    case analysis, all of it the [k = 3] special case of one general
+    argument. *)
 
 Lemma three_through_vertex_sunflower :
   forall (F : Family) (v : nat) (g1 g2 g3 : list nat),
@@ -172,55 +131,20 @@ Lemma three_through_vertex_sunflower :
     ContainsKSunflower 3 F.
 Proof.
   intros F v g1 g2 g3 HU HD H1 H2 H3 H12 H13 H23 Hv1 Hv2 Hv3.
-  assert (HUm : forall g, In g F -> length g = 2 /\ NoDup g).
-  { unfold Uniform in HU. rewrite Forall_forall in HU.
-    intros g Hg. exact (HU g Hg). }
-  destruct (HUm g1 H1) as [Hl1 Hn1].
-  destruct (HUm g2 H2) as [Hl2 Hn2].
-  destruct (HUm g3 H3) as [Hl3 Hn3].
-  destruct (two_set_other g1 v Hl1 Hn1 Hv1) as [w1 [Hw1v Hch1]].
-  destruct (two_set_other g2 v Hl2 Hn2 Hv2) as [w2 [Hw2v Hch2]].
-  destruct (two_set_other g3 v Hl3 Hn3 Hv3) as [w3 [Hw3v Hch3]].
-  pose proof (@SetNoDup_pairwise F HD g1 g2 H1 H2 H12) as Hns12.
-  pose proof (@SetNoDup_pairwise F HD g1 g3 H1 H3 H13) as Hns13.
-  pose proof (@SetNoDup_pairwise F HD g2 g3 H2 H3 H23) as Hns23.
-  assert (Hw12 : w1 <> w2).
-  { intro E; subst w2. apply Hns12.
-    split; intros z Hz; [apply Hch2; apply Hch1 in Hz; exact Hz
-                        | apply Hch1; apply Hch2 in Hz; exact Hz]. }
-  assert (Hw13 : w1 <> w3).
-  { intro E; subst w3. apply Hns13.
-    split; intros z Hz; [apply Hch3; apply Hch1 in Hz; exact Hz
-                        | apply Hch1; apply Hch3 in Hz; exact Hz]. }
-  assert (Hw23 : w2 <> w3).
-  { intro E; subst w3. apply Hns23.
-    split; intros z Hz; [apply Hch3; apply Hch2 in Hz; exact Hz
-                        | apply Hch2; apply Hch3 in Hz; exact Hz]. }
-  assert (Hw21 : w2 <> w1) by (intro E; apply Hw12; symmetry; exact E).
-  assert (Hw31 : w3 <> w1) by (intro E; apply Hw13; symmetry; exact E).
-  assert (Hw32 : w3 <> w2) by (intro E; apply Hw23; symmetry; exact E).
-  exists [g1; g2; g3]. split.
-  - apply SubFamilySetEq_incl. intros x Hx.
-    destruct Hx as [E | [E | [E | []]]]; subst x; assumption.
-  - split; [reflexivity|].
-    exists [v]. split.
-    + constructor.
-      * intros B HB Hseq. destruct HB as [E | [E | []]]; subst B;
-          [exact (Hns12 Hseq) | exact (Hns13 Hseq)].
-      * constructor.
-        -- intros B HB Hseq. destruct HB as [E | []]; subst B.
-           exact (Hns23 Hseq).
-        -- constructor; [intros B HB; inversion HB | constructor].
-    + intros U V HU0 HV0 Hne.
-      destruct HU0 as [EU | [EU | [EU | []]]];
-        destruct HV0 as [EV | [EV | [EV | []]]]; subst U V;
-        try (exfalso; apply Hne; reflexivity);
-        [ apply (inter_two_sets_common g1 g2 v w1 w2 Hch1 Hw1v Hch2 Hw12)
-        | apply (inter_two_sets_common g1 g3 v w1 w3 Hch1 Hw1v Hch3 Hw13)
-        | apply (inter_two_sets_common g2 g1 v w2 w1 Hch2 Hw2v Hch1 Hw21)
-        | apply (inter_two_sets_common g2 g3 v w2 w3 Hch2 Hw2v Hch3 Hw23)
-        | apply (inter_two_sets_common g3 g1 v w3 w1 Hch3 Hw3v Hch1 Hw31)
-        | apply (inter_two_sets_common g3 g2 v w3 w2 Hch3 Hw3v Hch2 Hw32) ].
+  assert (Hincl : incl [g1; g2; g3] F).
+  { intros x [E | [E | [E | []]]]; subst x; assumption. }
+  assert (Hnd : NoDup [g1; g2; g3]).
+  { constructor; [intros [E | [E | []]]; congruence |].
+    constructor; [intros [E | []]; congruence |].
+    constructor; [intros [] | constructor]. }
+  eapply ContainsKSunflower_of_incl; [exact Hincl | reflexivity |].
+  apply star_sunflower.
+  - apply Forall_forall; intros A HA.
+    unfold Uniform in HU; rewrite Forall_forall in HU.
+    apply HU, Hincl, HA.
+  - exact (SetNoDup_incl HD Hnd Hincl).
+  - constructor; [exact Hv1|]. constructor; [exact Hv2|].
+    constructor; [exact Hv3 | constructor].
 Qed.
 
 (** ** Three pairwise-disjoint members give a sunflower *)

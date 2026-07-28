@@ -2,7 +2,8 @@ COQFILES := coq/Sets.v coq/Sunflower.v coq/Graph.v coq/Matching.v \
             coq/HallCore.v coq/KoenigHall.v coq/Pigeonhole.v coq/ErdosRado.v \
             coq/ErdosRado_Greedy.v coq/LowerBound.v coq/ProductLowerBound.v \
             coq/Spread.v coq/Reflect.v coq/SpreadReduction.v coq/ALWZ.v \
-            coq/Conjecture.v coq/SmallCases.v coq/F23.v coq/Audit.v
+            coq/Conjecture.v coq/SmallCases.v coq/TwoUniform.v \
+            coq/F23.v coq/Audit.v
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions axiom-audit
 
@@ -28,7 +29,7 @@ print-assumptions: coq
 	@echo "============================================"
 	@echo "  Print Assumptions audit (closed theorems)"
 	@echo "============================================"
-	@for thm in \
+	@total=0; for thm in \
 	    'ErdosRado.erdos_rado_upper_bound' \
 	    'ErdosRado_Greedy.erdos_rado_via_greedy' \
 	    'ErdosRado_Greedy.erdos_rado_contrapositive' \
@@ -61,6 +62,15 @@ print-assumptions: coq
 	    'Reflect.rao_spreadb_correct' \
 	    'Reflect.rao_witness_agrees' \
 	    'Reflect.rao_witness_complete' \
+	    'TwoUniform.sunflower_shape' \
+	    'TwoUniform.star_sunflower' \
+	    'TwoUniform.two_uniform_sunflower_iff' \
+	    'TwoUniform.two_uniform_sunflower_free_iff' \
+	    'TwoUniform.rao_spread_two_iff_degree' \
+	    'TwoUniform.spread_yields_disjoint_two_is_a_graph_statement' \
+	    'Audit.star_needs_uniformity_two' \
+	    'Audit.two_triangles_saturates_both_parameters' \
+	    'Audit.both_sunflower_shapes_occur' \
 	    'Audit.lower_bound_excludes_upper' \
 	    'Audit.lower_lt_upper' \
 	    'Audit.no_upper_bound_below_exponential' \
@@ -80,10 +90,13 @@ print-assumptions: coq
 	    'Audit.bounds_coherent_er' \
 	    'Audit.bounds_coherent_spread' \
 	    'Audit.bounds_coherent_f_2_3' ; do \
-	  result=$$(printf 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound F23 SmallCases Pigeonhole Sunflower HallCore KoenigHall Spread Reflect SpreadReduction ALWZ Conjecture Audit.\nPrint Assumptions %s.\n' "$$thm" \
+	  result=$$(printf 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound F23 SmallCases Pigeonhole Sunflower HallCore KoenigHall Spread Reflect SpreadReduction ALWZ Conjecture TwoUniform Audit.\nPrint Assumptions %s.\n' "$$thm" \
 	    | coqtop -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
 	  printf "  %-55s %s\n" "$$thm" "$$result"; \
-	done
+	  total=$$((total + 1)); \
+	done; \
+	echo "  --------------------------------------------"; \
+	echo "  audited theorems: $$total"
 	@echo "============================================"
 
 axiom-audit: coq

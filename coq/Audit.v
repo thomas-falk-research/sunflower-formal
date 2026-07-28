@@ -41,7 +41,7 @@
 From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
-     ProductLowerBound Spread Reflect SpreadReduction F23.
+     ProductLowerBound Spread Reflect SpreadReduction TwoUniform F23.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -558,4 +558,105 @@ Proof.
       [apply (@lower_bound_exponential 2 3); lia | exact f_2_3_upper].
   - apply (@lower_lt_upper 2 3);
       [exact f_2_3_lower | apply (@spread_erdos_rado 2 3); lia].
+Qed.
+
+(** ** The uniformity-2 characterisation
+
+    [TwoUniform.two_uniform_sunflower_free_iff] says a distinct
+    2-uniform family avoids [k]-sunflowers exactly when its matching
+    number and its maximum degree are both below [k]. Two questions
+    that answer themselves if the statement is right and do not if it
+    is not. *)
+
+(** *** Is uniformity 2 doing any work in [star_sunflower]?
+
+    [star_sunflower] says distinct 2-sets through a common point are a
+    sunflower. The [Forall (UniformSet 2)] hypothesis is the only thing
+    stopping it from being a statement about arbitrary families, and if
+    it could be dropped the whole sunflower problem would be a
+    statement about degrees at every uniformity.
+
+    It cannot. Three 3-sets through the point 1 whose pairwise
+    intersections are [{1,2}] and [{1,3}] — different sets, so no
+    common core exists at all. *)
+
+Definition three_uniform_star : Family := [[1; 2; 3]; [1; 2; 4]; [1; 3; 5]].
+
+Example star_needs_uniformity_two :
+  Uniform 3 three_uniform_star
+  /\ Distinct three_uniform_star
+  /\ Forall (fun A => In 1 A) three_uniform_star
+  /\ ~ (exists core, Sunflower three_uniform_star core).
+Proof.
+  repeat split.
+  - apply uniformb_correct; reflexivity.
+  - apply distinctb_correct; reflexivity.
+  - repeat (constructor; [simpl; auto|]); constructor.
+  - intros [core [_ Hcore]].
+    assert (H12 : SetEq (inter [1; 2; 3] [1; 2; 4]) core).
+    { apply Hcore; [simpl; auto | simpl; auto | discriminate]. }
+    assert (H13 : SetEq (inter [1; 2; 3] [1; 3; 5]) core).
+    { apply Hcore; [simpl; auto | simpl; auto | discriminate]. }
+    vm_compute in H12, H13.
+    assert (H2core : In 2 core) by (apply (proj1 H12); simpl; auto).
+    pose proof (proj2 H13 2 H2core) as Hbad.
+    simpl in Hbad; lia.
+Qed.
+
+(** *** Is [two_triangles] extremal for both parameters at once?
+
+    [F23.two_triangles] witnesses [f(2,3) >= 7], and separately refutes
+    [SpreadYieldsDisjoint 2 3 2]. Under the characterisation those are
+    not two facts: a 3-sunflower-free graph is exactly one with maximum
+    degree at most 2 and matching number at most 2, and [two_triangles]
+    is the largest such graph — six edges, which is [CH(2,2)] for the
+    Chvátal–Hanson function.
+
+    So both constraints must be *tight* on it. The bounds below are
+    derived from [two_triangles_no_sunflower] through the
+    characterisation; the matching witness and the degree value are
+    computed directly. If the characterisation were off by one in
+    either parameter, the derived bound and the computed value would
+    contradict each other here. *)
+
+Corollary two_triangles_saturates_both_parameters :
+  (forall v, deg [v] two_triangles < 3)
+  /\ ~ HasKDisjoint 3 two_triangles
+  /\ deg [0] two_triangles = 2
+  /\ HasKDisjoint 2 two_triangles.
+Proof.
+  destruct (proj1 (two_uniform_sunflower_free_iff 3 two_triangles
+                     ltac:(lia) two_triangles_uniform two_triangles_distinct)
+              two_triangles_no_sunflower) as [Hnd Hdeg].
+  split; [exact Hdeg|].
+  split; [exact Hnd|].
+  split; [vm_compute; reflexivity|].
+  exists [[0; 1]; [3; 4]].
+  split; [| split; [| split]].
+  - intros A [E | [E | []]]; subst A; simpl; auto.
+  - apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+  - reflexivity.
+  - apply pairwise_disjointb_correct; reflexivity.
+Qed.
+
+(** *** The two shapes are both realised
+
+    [sunflower_shape] splits every sunflower into a matching or a star.
+    Neither branch is decoration: [Reflect.three_pairs] is a
+    3-sunflower of the first kind and [Reflect.star3] one of the
+    second, and the characterisation sees both. *)
+
+Example both_sunflower_shapes_occur :
+  ContainsKSunflower 3 three_pairs /\ ContainsKSunflower 3 star3.
+Proof.
+  split; apply (two_uniform_sunflower_iff 3 _ ltac:(lia));
+    try (apply uniformb_correct; reflexivity);
+    try (apply distinctb_correct; reflexivity).
+  - left. exists three_pairs.
+    split; [| split; [| split]].
+    + apply incl_refl.
+    + apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+    + reflexivity.
+    + apply pairwise_disjointb_correct; reflexivity.
+  - right. exists 0. vm_compute; lia.
 Qed.
