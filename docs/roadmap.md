@@ -333,7 +333,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 32 anecdotes into a coverage metric over the
+  mutation testing from 35 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -356,6 +356,132 @@ mutation runner measured rather than by taste.
   the two historical errors touched, plus the reduction's arithmetic.
   `Sets.v`, `Graph.v`, `Matching.v` and the Hall/Kőnig layer are
   untouched.
+
+---
+
+## 5. The lower-bound side: the direct sum, and what it does not reach
+
+Almost all effort on this problem goes to the upper side. The gap is
+`(k-1)^n` against `(k log n)^n`, and the lower end had not moved in this
+repository beyond the 1960 product construction.
+
+### Done: supermultiplicativity
+
+`coq/DirectSum.v` proves that sunflower-freeness survives the direct
+sum of two families on disjoint ground sets, so with `g = f - 1`,
+
+```
+g(a + b, k) >= g(a, k) * g(b, k).
+```
+
+Instantiated at this repository's own `f(2,3) = 7` it gives
+`f(n,3) >= 6^(n/2) + 1 = 2.449...^n`, and at `two_cliques_lower_bound`
+it gives `f(n,k) >= (k(k-1))^(n/2) + 1` for odd `k` — the first bounds
+here above the product construction, by a factor geometric in `n`.
+
+Uniformity is the whole hypothesis — but only on *one* side. The proof
+splits each member of the sum at the boundary and needs the first
+family's members to have the size it splits at; it asks nothing about
+the second family's. Dropping it from both is false, and
+`Audit.uniformity_is_needed_in_the_direct_sum` is the two-member
+counterexample. The asymmetric form is the statement that is proved, and
+it was reached by the mutation runner rather than by design — see
+[`testing.md`](testing.md). Do not weaken it further.
+
+### The next target: the substitution recursion
+
+Abbott, Hanson and Sauer (*Intersection theorems for systems of sets*,
+JCTA 12 (1972) 381–389) reach `f(n,3) >= 10^(n/2 - c log n)` — a rate of
+`10^(1/2) = 3.162...` per point against the direct sum's
+`6^(1/2) = 2.449...`. The mechanism is **not** the direct sum. It is a
+*substitution* recursion
+
+```
+g(ab) >= g(a) * g(b)^a
+```
+
+— the direct sum only gives `g(ab) >= g(b)^a`, so the extra factor
+`g(a)` is the whole difference. Iterating it from a base at uniformity
+`a` drives the per-point rate to the fixed point of
+`c = c(a)^(1/b) * c(b)`, which at `a = b = 3` is `g(3)^(3/2)`; with
+`g(3) = 10` that is exactly `10^(1/2)`. The published rate and the
+published recursion agree, which is the check that says the recursion
+was transcribed correctly.
+
+Formalising it is the natural successor to `DirectSum.v` and reuses its
+whole apparatus (relabelling, the split-at-the-boundary argument). The
+construction is a blow-up: replace each point of a member of the
+`a`-uniform family by a copy of the `b`-uniform family. **What has not
+been checked is which side condition makes it sunflower-free** — the
+naive version is false, because two petals can meet inside a block
+without meeting outside it, so the projection to the `a`-uniform family
+is not a `Δ`-system. An intersecting inner family is the obvious repair
+and was not verified against the source. Settle that *computationally
+first*, the way `rust/tests/link_characterisation.rs` settled the link
+characterisation, before writing any Coq.
+
+Two caveats on the citation, both load-bearing:
+
+* the paper was **not read** — this is from secondary sources. The rate
+  and the recursion corroborate each other, the base case does not:
+  a "3-uniform family of size 10" is reported as the seed, but the
+  direct sum already gives `g(3,3) >= 12` (`two_triangles` summed with
+  two singletons, brute-force checked in
+  `rust/tests/direct_sum.rs`). So either the reported seed is at a
+  different uniformity, or it is for a different function. Read the
+  paper before building on the number `10`;
+* the correction `10^(-c log n)` is **not a constant** — it is
+  `n^(-2.303c)` for natural log — so "AHS beats `3^n` from about `n = 30`"
+  is wrong. The crossover solves `0.0527 n > 2.303 c ln n`, and with `c`
+  unquoted the honest answer is "somewhere in the hundreds at least".
+
+### What the AHS bound already settles about the spread threshold
+
+This is the part worth stating precisely, because it converts a
+measurement in [`STATUS.md`](../STATUS.md) from suggestive to decided.
+
+`SpreadReduction.spread_reduction` contraposed says: if
+`f(m,k) > r^m + 1` for a *single* `m`, then `SpreadYieldsDisjoint m' k r`
+fails for some `m' <= m`. AHS gives `f(n,3) > 3^n + 1` for all
+sufficiently large `n`. Therefore, **conditional on AHS**:
+
+> `r*(m,3) > 3` for some `m`. The measured sequence
+> `r*(1,3) = 2, r*(2,3) = 3, r*(3,3) = 3` cannot stay at 3.
+
+That is a falsifiable prediction with a source behind it, and it is the
+right reading of §3.6's flat row: the measurement is not weak evidence
+that the threshold is constant — it is a measurement taken entirely
+below the crossover, and the crossover is out of exhaustive reach by
+orders of magnitude (search dies at `m = 3`; the crossover is at `m` in
+the hundreds).
+
+It does **not** refute `Conjecture.spread_conjecture`, which asks only
+for *some* constant `c(k)`. AHS rules out `c(3) = 3`; it says nothing
+about `c(3) = 4`, since `4^n > 3.162^n`. Refuting the spread conjecture
+outright would require `f(n,3) > c^n` for every constant `c`, which is
+the negation of the sunflower conjecture itself. So:
+
+* `spread_conjecture` is **not known false**, and is not "one lemma
+  away" from anything — it implies the sunflower conjecture, so it is at
+  least as hard;
+* what *is* now pinned is the value of the constant: any proof of
+  `spread_conjecture` must produce `c(3) >= 4`, and any attempt to prove
+  `SpreadYieldsDisjoint m 3 3` in general is doomed.
+
+The `log` in the published threshold is a separate question and this
+says nothing about it. The tightness results quoted for the ALWZ/Rao
+spread lemma are for the *random-subset* form; whether the `log` is
+necessary in the **disjointness** form with Rao's size hypothesis
+`|F| > r^m` was looked for and not found in the literature. Treat "the
+`log` is known to be necessary here" as unverified.
+
+### The other bounded item on this side
+
+Compute or bound `f(3,3)` exactly. The direct sum gives `f(3,3) >= 13`;
+the Erdős–Rado upper bound gives `f(3,3) <= 49`. Closing that needs a
+better search than the current DFS (see §4), and the extremal family is
+the input to any new construction — which is how the cap-set programme
+made progress.
 
 ---
 

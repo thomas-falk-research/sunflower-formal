@@ -4,8 +4,9 @@ A self-contained Coq formalization of the **Erdős–Rado sunflower
 problem** — machine-checked proofs of the classical upper bound, the
 matching exponential lower bound, the first nontrivial exact value
 `f(2,3) = 7` and an infinite family of exact lower bounds at
-uniformity 2, the **deterministic half of the 2020 (ALWZ / Rao) spread
-proof**, constructive Hall and Kőnig theorems for the supporting
+uniformity 2, a **supermultiplicativity theorem that lifts those into
+the first lower bound here beating the product construction**, the
+**deterministic half of the 2020 (ALWZ / Rao) spread proof**, constructive Hall and Kőnig theorems for the supporting
 matching theory, and a precise formal statement of the open
 conjecture — together with a Rust computational companion that
 cross-checks the small cases by brute force, and a testing layer
@@ -46,6 +47,8 @@ claim progress on it. What is machine-checked here is the complete
 | **Uniformity 2 is degrees and matchings** | no $k$-sunflower $\iff$ matching number and maximum degree both $\le k-1$ — so $f(2,k)$ is the Chvátal–Hanson problem, which is *cited, not formalised* | `coq/TwoUniform.v` |
 | **A sunflower is a matching in a link** | $k$-sunflower $\iff$ some link has $k$ pairwise disjoint members, at every uniformity and with no hypotheses; the row above is its $\lvert Y\rvert \le 1$ case | `coq/LinkCharacterisation.v` |
 | **Lower bound at every odd $k$** | $f(2,k) \ge k(k-1) + 1$, two disjoint copies of $K_k$ | `coq/CliqueLowerBound.v` |
+| **The extremal function is supermultiplicative** | $g(a{+}b,k) \ge g(a,k)\,g(b,k)$ for $g = f-1$ — the direct sum of two sunflower-free families on disjoint ground sets | `coq/DirectSum.v` |
+| **First lower bound beating the product** | $f(n,3) \ge 6^{n/2} + 1 = 2.449\ldots^n$, and $f(n,k) \ge (k(k-1))^{n/2} + 1$ at odd $k$ — strictly above $(k-1)^n + 1$, by a factor growing geometrically | `coq/DirectSum.v` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
 | Hall's marriage theorem (1935) | constructive, Halmos–Vaughan induction | `coq/HallCore.v`, `coq/KoenigHall.v` |
@@ -61,6 +64,26 @@ So the function is bracketed
 $(k-1)^n + 1 \le f(n,k) \le (k-1)^n\, n! + 1$, with exact values at
 the boundary cases and at $(n,k) = (2,3)$ — $k = 3$ being the case
 Erdős singled out as containing "the whole difficulty."
+
+The lower end of that bracket is no longer the best thing proved here.
+Sunflower-freeness survives the direct sum of two families on disjoint
+ground sets (`coq/DirectSum.v`), so $g = f - 1$ is supermultiplicative,
+and feeding it this repository's own exact value $f(2,3) = 7$ gives
+
+$$f(n,3) \;\ge\; 6^{\lfloor n/2\rfloor} + 1 \;=\; 2.449\ldots^{\,n}$$
+
+against the product construction's $2^n$. At every odd $k$ the same
+theorem applied to the two-cliques family gives
+$f(n,k) \ge (k(k-1))^{\lfloor n/2\rfloor} + 1$, beating $(k-1)^n + 1$ by
+$(k/(k-1))^{n/2}$. The targeted search recorded under [Relation to
+prior formalizations](#relation-to-prior-formalizations) found no
+machine-checked sunflower lower bound at all, in any system, so this is
+very likely the first one above the trivial product construction — but
+that is a claim about a search, not a proved fact. It is
+still a long way from the literature: Abbott–Hanson–Sauer (1972) reach
+$3.162\ldots^n$ at $k = 3$, by a *substitution* recursion
+$g(ab) \ge g(a)\,g(b)^a$ that the direct sum does not reach — see
+[`docs/roadmap.md`](docs/roadmap.md) §5.
 
 At uniformity 2 the picture is sharper than that bracket suggests. A
 distinct family of pairs is a graph, and it avoids $k$-sunflowers
@@ -149,7 +172,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 32 mutations, 30 are killed outright, one
+  that something breaks. Of 35 mutations, 33 are killed outright, one
   survives — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
@@ -214,10 +237,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 22 Coq files, then runs the axiom audit
+make verify        # builds all 23 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (88 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (114 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
@@ -312,7 +335,8 @@ done before publishing this repository:
   library.
 - We did **not** find a machine-checked proof of an exact nontrivial
   sunflower number (such as `f(2,3) = 7`), of the exponential lower
-  bound, or of any part of the post-2020 spread argument in any
+  bound, of any lower bound *above* it (`coq/DirectSum.v`), or of any
+  part of the post-2020 spread argument in any
   system, nor a sunflower development in Coq. This was a targeted
   search, not a systematic one; corrections are welcome and will be
   credited.

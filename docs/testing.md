@@ -296,6 +296,75 @@ three other lemmas and in `Audit.no_k_disjoint_of_no_sunflower` besides.
 Deleting it was the first commit of the Coq work, not a repair after the
 fact.
 
+### A third: the direct sum, and where the exhaustive grid stops
+
+`rust/tests/direct_sum.rs` does the same job for
+`DirectSum.sum_family_no_sunflower`: every pair of `k`-sunflower-free
+families drawn from small ground sets, summed and handed to the same
+brute-force detector, which knows nothing about direct sums. The pair
+count is *pinned* (`assert_eq!(pairs, 4266)`) rather than bounded from
+below, and the derivation is written out in the test, because the
+failure mode of an exhaustive test is that it quietly stops being
+exhaustive.
+
+One cell of the grid is excluded and the comment says which: at `k = 4`
+every one of the 64 subfamilies of `K_4`'s edges is 4-sunflower-free, so
+`(4,2) x (4,2)` is 4096 pairs whose sums have 36 members apiece, each
+needing `C(36,4) = 58905` quadruples decided. A silent truncation there
+would read as "covered everything".
+
+The suite also pins the two hypotheses. Uniformity: `{0}, {0,1}` and
+`{2}, {2,3}` are sunflower-free on disjoint ground sets and their sum is
+not — the same counterexample `Audit.uniformity_is_needed_in_the_direct_sum`
+carries into the kernel. Cross-disjointness: overlapping ground sets
+make the concatenation repeat a point, so `is_valid_family` fails before
+any sunflower question is asked.
+
+Two things came out of writing it rather than out of the proof, and both
+were errors in the *test*, which is the failure mode a test suite has:
+
+* a claim that collapsing `two_triangles` by `x mod 3` creates a
+  3-sunflower. It does not — it creates duplicate members, so the image
+  is not a family at all. That is a real fact about why injectivity is
+  needed, but it is a different one, and the test now checks both
+  (`{0,1}, {0,2}, {3,4}` merged at `3 -> 0` is the case that genuinely
+  creates a sunflower);
+* a claim that the largest sum in the grid has 36 members. It has 16: at
+  `k = 3` a subfamily of `K_4` needs maximum degree at most 2, which
+  caps it at the 4-cycle. The 6-edge families only survive at `k = 4`,
+  which is the excluded cell.
+
+Neither was a problem with the theorem. Both would have made the suite
+claim more coverage than it had.
+
+### And one the mutation runner found, in the Coq
+
+`sum_family_no_sunflower` was stated with six hypotheses:
+`Uniform a F1`, `Distinct F1`, `Uniform b F2`, `Distinct F2`, the two
+sunflower-freeness assumptions, and cross-disjointness. The mutation
+`directsum-drop-uniformity` was written to check that the *second*
+uniformity was load-bearing, and the runner reported it killed — but
+reading the failure showed the kill came from the call site in
+`lower_bound_sum`, not from the proof. The proof never used
+`Uniform b F2`, nor `Distinct` on either side.
+
+So the theorem was stronger than its statement: only the family split
+off the front has to be uniform, and neither has to be distinct. The
+statement was narrowed to what the proof needs, the mutation retargeted
+at `Uniform a F1` (where it is killed by the mathematics, at the step
+that needs `|A| = a`), and the sharper claim enumerated in
+`rust/tests/direct_sum.rs` with `F2` ranging over families of arbitrary
+subsets. This is the manifest doing the job the header describes: a
+hypothesis no theorem is sensitive to is one that should not be there.
+
+The same run turned up a second thing. `lowerbound-at-least` — the
+development's one genuine survivor, which weakens `LowerBound`'s
+`length F = m` to `>=` — was killed by the new file, because two of its
+proofs discharged a size obligation by `reflexivity` and by `rewrite`ing
+with the length equation. Neither is sensitive to the *content* of
+`LowerBound`, only to its shape. They now finish with `lia` and `nia`,
+and the survivor is a survivor again.
+
 The two mutations that establish the tests bite, run by hand before the
 suite was committed:
 
@@ -390,7 +459,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-32 mutations, all with the outcome the manifest declares: 30 killed
+35 mutations, all with the outcome the manifest declares: 33 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:

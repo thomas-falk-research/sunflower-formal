@@ -438,3 +438,63 @@ two distinct points -- Audit.both_sunflower_shapes_occur is exactly that family.
 One shared point forces a *nonempty* core, not a big one. The mutation replaces \
 the second hypothesis with a copy of the first rather than deleting it, so the \
 arity and every intro pattern are unchanged and what breaks is the mathematics."""
+
+# ----------------------------------------------------------------
+# The direct sum. Both hypotheses of sum_family_no_sunflower, and the
+# one arithmetic claim that says the new bound beats the old one.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "directsum-drop-uniformity"
+file = "coq/DirectSum.v"
+question = """The direct sum needs the first family to be uniform. Is that \
+load-bearing, or an artefact of splitting members with firstn?"""
+find = """    2 <= k ->
+    Uniform a F1 ->
+    ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 ->"""
+replace = """    2 <= k ->
+    Distinct F1 ->
+    ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 ->"""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is *false*, not merely \
+unproved: Audit.uniformity_is_needed_in_the_direct_sum exhibits two two-member \
+families on disjoint ground sets, neither containing a 3-sunflower, whose direct \
+sum contains one -- and both are Distinct, which is what the mutation substitutes. \
+The hypothesis is replaced rather than deleted, so the arity and every intro \
+pattern are unchanged and what breaks is the mathematics: the proof splits each \
+member at position a and needs |A| = a to do it.
+
+This entry replaced an earlier one that mutated `Uniform b F2`. The runner \
+reported it killed, but only at the call site in lower_bound_sum -- the proof of \
+sum_family_no_sunflower never used that hypothesis, nor Distinct on either side. \
+All three were removed from the statement rather than left as decoration."""
+
+[[mutation]]
+id = "directsum-drop-cross"
+file = "coq/DirectSum.v"
+question = """Cross-disjointness is what makes the two halves of a member \
+recoverable. Does anything downstream survive without it?"""
+find = """    Uniform a F1 -> Uniform b F2 -> CrossDisjoint F1 F2 ->
+    Uniform (a + b) (sum_family F1 F2)."""
+replace = """    Uniform a F1 -> Uniform b F2 -> Uniform b F2 ->
+    Uniform (a + b) (sum_family F1 F2)."""
+expect = "killed"
+because = """Load-bearing one step earlier than the sunflower argument: without \
+disjoint ground sets the concatenation repeats a point, so the sum is not a family \
+of sets at all and NoDup_app_intro has nothing to apply to. As above the \
+hypothesis is replaced rather than deleted, so the failure is not an arity \
+mismatch."""
+
+[[mutation]]
+id = "directsum-power-off-by-one"
+file = "coq/DirectSum.v"
+question = """lower_bound_power iterates the sum t times at uniformity a. Does \
+anything notice if the exponent and the uniformity fall out of step?"""
+find = "  forall a k p t, 2 <= k -> LowerBound a k p -> LowerBound (t * a) k (p ^ t)."
+replace = "  forall a k p t, 2 <= k -> LowerBound a k p -> LowerBound (t * a) k (p ^ S t)."
+expect = "killed"
+because = """The uniformity and the size are tied together by the induction: \
+[t] copies of an [a]-uniform family of [p] members give [t*a]-uniform and [p^t], \
+and asking for [p^(t+1)] members out of the same construction is false. This is \
+the arithmetic that [cliques_beat_product] then compares against, so an \
+undetected slip here would silently inflate the headline bound."""

@@ -98,6 +98,24 @@ estimate. Both are marked below.
   Discrete Mathematics 8 (1974), 1–12. The source usually credited for
   the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
 
+- **[AHS72]** H. L. Abbott, D. Hanson, N. Sauer, *Intersection theorems
+  for systems of sets*. Journal of Combinatorial Theory Series A 12
+  (1972), 381–389. The best classical lower bound at $k = 3$:
+  $f(n,3) \gtrsim 10^{n/2 - c\log n}$, i.e. a rate of
+  $10^{1/2} = 3.162\ldots$ per point. The mechanism is a *substitution*
+  recursion $g(ab) \ge g(a)\,g(b)^a$, strictly stronger than the direct
+  sum $g(a+b) \ge g(a)g(b)$ that `coq/DirectSum.v` proves and that only
+  reaches $6^{1/2} = 2.449\ldots$. See `docs/roadmap.md` §5 for what
+  formalising it would need.
+
+  **The paper was not read.** What is recorded here is from secondary
+  sources; the rate and the recursion were checked against each other
+  (the recursion's fixed point at $a = b = 3$ is $g(3)^{3/2}$, which is
+  $10^{1/2}$ exactly when $g(3) = 10$), and they agree. The reported
+  base case does not corroborate: $g(3,3) \ge 12$ already follows from
+  the direct sum here. Read the paper before relying on any constant
+  from it.
+
 ## Pre-2020 partial results
 
 - **[Ko97]** A. V. Kostochka, *An intersection theorem for systems of

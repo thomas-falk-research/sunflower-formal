@@ -116,6 +116,38 @@ thm LinkCharacterisation.two_uniform_sunflower_iff_via_link
 thm Sunflower.SetNoDup_of_pairwise_disjoint
 thm Sunflower.pairwise_disjoint_sunflower
 
+# The direct sum. The general theorem, the two operations built on it,
+# the instantiations that beat the product construction, and the
+# arithmetic that says by how much. `relabel_preserves` is the one
+# interface the section-discharged relabelling lemmas are used through,
+# so its statement is the one that has to stay put.
+thm DirectSum.sum_family_no_sunflower
+thm DirectSum.lower_bound_sum
+thm DirectSum.lower_bound_power
+thm DirectSum.lower_bound_zero
+thm DirectSum.relabel_preserves
+thm DirectSum.rmapF_no_sunflower
+thm DirectSum.lower_bound_f_n_3
+thm DirectSum.lower_bound_f_n_3_odd
+thm DirectSum.lower_bound_cliques_power
+thm DirectSum.lower_bound_cliques_power_odd
+thm DirectSum.lower_bound_exponential_via_direct_sum
+thm DirectSum.cliques_beat_product
+thm DirectSum.six_beats_four
+thm DirectSum.sum_family_Uniform
+thm DirectSum.sum_family_Distinct
+thm Audit.bounds_coherent_direct_sum
+thm Audit.bounds_coherent_direct_sum_spread
+thm Audit.direct_sum_strictly_beyond_the_product
+thm Audit.no_upper_bound_at_clique_power
+thm Audit.the_product_route_proves_it
+thm Audit.the_direct_sum_route_proves_it
+thm Audit.f_4_3_at_least_37
+thm Audit.relabelling_separates_the_ground_sets
+thm Audit.uniformity_is_needed_in_the_direct_sum
+thm Audit.sum_family_no_sunflower_right
+thm Audit.sum_family_comm_equiv
+
 # ---- definitions ----
 #
 # The axiom first: it is the one thing in the development taken on
@@ -151,6 +183,18 @@ def TwoUniform.HasKDisjoint
 def Audit.TwoUniformCharacterisation
 def CliqueLowerBound.clique_edges
 def CliqueLowerBound.two_cliques
+
+# The direct sum. `sum_family` and `CrossDisjoint` are the definitions
+# the supermultiplicativity theorem is stated against; `rmap`/`rmapF`
+# are the relabelling. A drift in any of them changes what
+# `lower_bound_sum` claims without changing its printed statement.
+def DirectSum.sum_family
+def DirectSum.CrossDisjoint
+def DirectSum.rmap
+def DirectSum.rmapF
+def DirectSum.ev
+def DirectSum.od
+def Audit.ExponentialLowerBound
 
 # The open statements, so "what is conjectured" cannot drift either.
 def Conjecture.sunflower_conjecture

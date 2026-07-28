@@ -42,7 +42,7 @@ From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
-     CliqueLowerBound F23 LinkCharacterisation.
+     CliqueLowerBound F23 LinkCharacterisation DirectSum.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -844,3 +844,220 @@ Proof. exact two_uniform_sunflower_iff. Qed.
 
 Example the_link_route_proves_it : TwoUniformCharacterisation.
 Proof. exact two_uniform_sunflower_iff_via_link. Qed.
+
+(** ** The direct sum
+
+    [DirectSum.lower_bound_sum] is the first bound here that is not a
+    construction but an *operation* on constructions, so the questions
+    it raises are different from the ones a construction raises. Four
+    are pinned below: does it contradict any upper bound proved here;
+    is it genuinely stronger than the construction it supersedes, as a
+    statement about [UpperBound] rather than as arithmetic; does it
+    reproduce that construction; and does it say anything at a concrete
+    parameter. *)
+
+(** *** Does it contradict any upper bound the development proves?
+
+    Same idiom as [bounds_coherent_er]: the inequality is *derived*
+    from the two theorems by [lower_lt_upper], so a contradictory pair
+    would make this a machine-checked proof of [False]. *)
+
+Corollary bounds_coherent_direct_sum :
+  forall t, 1 <= t -> 6 ^ t < S ((3 - 1) ^ (t * 2) * fact (t * 2)).
+Proof.
+  intros t Ht.
+  apply (@lower_lt_upper (t * 2) 3).
+  - exact (lower_bound_f_n_3 t).
+  - apply erdos_rado_upper_bound; lia.
+Qed.
+
+Corollary bounds_coherent_direct_sum_spread :
+  forall t, 1 <= t -> 6 ^ t < S ((t * 2 * (3 - 1) + 1) ^ (t * 2)).
+Proof.
+  intros t Ht.
+  apply (@lower_lt_upper (t * 2) 3).
+  - exact (lower_bound_f_n_3 t).
+  - apply spread_erdos_rado; lia.
+Qed.
+
+(** *** Is it strictly stronger than the product construction?
+
+    [no_upper_bound_below_exponential] refutes [UpperBound n k m] for
+    every [m <= (k-1)^n], and nothing before this file refuted it any
+    higher. At uniformity [2t] that ceiling is [2^(2t)]. The direct sum
+    refutes [UpperBound] at [6^t], and [six_beats_four] places that
+    strictly above the ceiling — for every [t >= 1], with the gap
+    growing geometrically. So the second conjunct is a statement the
+    rest of the development cannot prove. *)
+
+Corollary direct_sum_strictly_beyond_the_product :
+  forall t, 1 <= t ->
+    2 ^ (t * 2) < 6 ^ t /\ ~ UpperBound (t * 2) 3 (6 ^ t).
+Proof.
+  intros t Ht.
+  split; [exact (six_beats_four t Ht)|].
+  apply lower_bound_excludes_upper, lower_bound_f_n_3.
+Qed.
+
+(** [1 <= t] is not decoration: at [t = 0] both sides are the empty
+    product, so the inequality is [1 < 1]. The improvement starts at
+    uniformity 2 and compounds from there. *)
+
+Corollary no_upper_bound_at_clique_power :
+  forall k t, 3 <= k -> Nat.Odd k -> 1 <= t ->
+    (k - 1) ^ (t * 2) < (k * (k - 1)) ^ t /\
+    ~ UpperBound (t * 2) k ((k * (k - 1)) ^ t).
+Proof.
+  intros k t Hk Hodd Ht.
+  split; [apply cliques_beat_product; lia|].
+  apply lower_bound_excludes_upper, lower_bound_cliques_power; assumption.
+Qed.
+
+(** *** Does it reproduce the construction it supersedes?
+
+    The [t]-fold direct sum of the trivial [(k-1)]-point family is the
+    product family of [ProductLowerBound.v], so the exponential lower
+    bound should fall out of the general theorem as well as out of its
+    own dedicated induction. Both routes are checked against one named
+    specification by [exact], the same way the two routes to the
+    uniformity-2 characterisation are: if either statement drifts, the
+    corresponding line stops typechecking. The routes share exactly one
+    step, the canonicalisation lemma [contains_sunflower_literal], which
+    both use to turn an abstract sunflower into a literal subfamily.
+    Past that they diverge completely: [ProductLowerBound] reasons about
+    [prod_family] by an induction on blocks, and [DirectSum] never
+    mentions it. *)
+
+Definition ExponentialLowerBound : Prop :=
+  forall n k, 1 <= n -> 2 <= k -> LowerBound n k ((k - 1) ^ n).
+
+Example the_product_route_proves_it : ExponentialLowerBound.
+Proof. exact lower_bound_exponential. Qed.
+
+Example the_direct_sum_route_proves_it : ExponentialLowerBound.
+Proof. exact lower_bound_exponential_via_direct_sum. Qed.
+
+(** *** What does it say at a concrete parameter?
+
+    At uniformity 4 and [k = 3]: the product family has 16 members and
+    the direct sum of two copies of [two_triangles] has 36, so
+    [f(4,3) >= 37] where the development previously reached only
+    [f(4,3) >= 17]. Both numbers are the general theorems evaluated,
+    not separate constructions. *)
+
+Example f_4_3_at_least_37 :
+  LowerBound 4 3 36 /\ ~ UpperBound 4 3 36 /\ LowerBound 4 3 16.
+Proof.
+  split; [exact (lower_bound_f_n_3 2)|].
+  split; [apply lower_bound_excludes_upper; exact (lower_bound_f_n_3 2)|].
+  exact (@lower_bound_exponential 4 3 ltac:(lia) ltac:(lia)).
+Qed.
+
+(** *** Is the relabelling doing anything?
+
+    [rmapF] is what lets two families from [LowerBound]'s existential be
+    placed on disjoint ground sets. Evaluating it says both that it
+    moves the points and that the two images are disjoint — the
+    property [sum_family_no_sunflower] needs and cannot check for
+    itself. *)
+
+Example relabelling_separates_the_ground_sets :
+  rmapF ev [[0; 1]; [1; 2]] = [[0; 2]; [2; 4]]
+  /\ rmapF od [[0; 1]; [1; 2]] = [[1; 3]; [3; 5]]
+  /\ length (sum_family (rmapF ev two_triangles) (rmapF od two_triangles)) = 36.
+Proof. repeat split; vm_compute; reflexivity. Qed.
+
+(** *** Is the asymmetry real?
+
+    [DirectSum.sum_family_no_sunflower] asks only the *first* family to
+    be uniform, because the proof splits each member of the sum at the
+    front. That is a fact about the proof, not about the construction:
+    the two sums are the same family of sets with the halves swapped,
+    and [ContainsKSunflower_equiv] says the predicate cannot tell them
+    apart. So either side's uniformity is enough, and this is where it
+    can be said, since the invariance lemma lives here.
+
+    What fails is dropping it from both, which is the next entry. *)
+
+Lemma sum_family_comm_equiv :
+  forall F1 F2, FamilyEquiv (sum_family F1 F2) (sum_family F2 F1).
+Proof.
+  assert (H : forall F1 F2, SubFamilySetEq (sum_family F1 F2) (sum_family F2 F1)).
+  { intros F1 F2 C HC.
+    apply in_sum_family_iff in HC as [A [B [HA [HB E]]]]; subst C.
+    exists (B ++ A); split.
+    - apply in_sum_family_iff; exists B, A.
+      split; [exact HB | split; [exact HA | reflexivity]].
+    - split; intros x Hx; apply in_app_or in Hx; apply in_or_app; tauto. }
+  intros F1 F2; split; apply H.
+Qed.
+
+Corollary sum_family_no_sunflower_right :
+  forall b k (F1 F2 : Family),
+    2 <= k ->
+    Uniform b F2 ->
+    ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 ->
+    CrossDisjoint F1 F2 ->
+    ~ ContainsKSunflower k (sum_family F1 F2).
+Proof.
+  intros b k F1 F2 Hk HU2 Hno1 Hno2 Hcross Hc.
+  assert (Hcross' : CrossDisjoint F2 F1).
+  { intros A B HA HB; apply Disjoint_sym; exact (Hcross B A HB HA). }
+  apply (sum_family_no_sunflower b k F2 F1 Hk HU2 Hno2 Hno1 Hcross').
+  apply (@ContainsKSunflower_equiv k (sum_family F1 F2) (sum_family F2 F1)
+           (sum_family_comm_equiv F1 F2)).
+  exact Hc.
+Qed.
+
+(** *** Is uniformity doing any work in the direct sum?
+
+    It is, and the counterexample is as small as it can be. Drop
+    uniformity from [DirectSum.sum_family_no_sunflower] and the theorem
+    is false: [{0}, {0,1}] and [{2}, {2,3}] have two members each, so
+    neither contains a 3-sunflower for the trivial reason, their ground
+    sets are disjoint, and their direct sum contains one.
+
+    The mechanism is exactly the second bullet of the file's case
+    analysis. There the argument runs "two first halves coincide, so
+    their common value is the constant intersection, so it sits inside
+    every first half — and since all of them have size [a], all of them
+    coincide". Without uniformity the last step fails: [{0}] sits inside
+    [{0,1}] without equalling it, and the sunflower below is built out
+    of precisely that containment, with the same containment happening
+    on the other side ([{2}] inside [{2,3}]).
+
+    So this is not a gap in the proof that a cleverer argument would
+    close. The hypothesis is the theorem. *)
+
+Example uniformity_is_needed_in_the_direct_sum :
+  ~ ContainsKSunflower 3 [[0]; [0; 1]]
+  /\ ~ ContainsKSunflower 3 [[2]; [2; 3]]
+  /\ CrossDisjoint [[0]; [0; 1]] [[2]; [2; 3]]
+  /\ Distinct (sum_family [[0]; [0; 1]] [[2]; [2; 3]])
+  /\ ContainsKSunflower 3 (sum_family [[0]; [0; 1]] [[2]; [2; 3]]).
+Proof.
+  split; [apply no_k_sunflower_short_family; simpl; lia|].
+  split; [apply no_k_sunflower_short_family; simpl; lia|].
+  split.
+  { intros A B HA HB x HxA HxB.
+    simpl in HA, HB.
+    destruct HA as [E | [E | []]]; destruct HB as [E' | [E' | []]];
+      subst A B; simpl in HxA, HxB; lia. }
+  split; [apply distinctb_correct; reflexivity|].
+  apply (@ContainsKSunflower_of_incl 3 [[0; 2]; [0; 2; 3]; [0; 1; 2]] _ [0; 2]).
+  - intros A HA; simpl in HA |- *; tauto.
+  - reflexivity.
+  - split; [apply set_nodupb_correct; reflexivity|].
+    intros A B HA HB Hne.
+    simpl in HA, HB.
+    destruct HA as [E | [E | [E | []]]]; destruct HB as [E' | [E' | [E' | []]]];
+      subst A B; try (exfalso; apply Hne; reflexivity);
+      split; intros x Hx; simpl in Hx |- *; lia.
+Qed.
+
+(** The other hypothesis, cross-disjointness, is load-bearing one step
+    earlier: overlapping ground sets make the concatenation repeat a
+    point, so the sum is not even a family of sets. [sum_family_Uniform]
+    is where that is used, and the mutation [directsum-drop-cross] in
+    [tools/mutations.toml] is what checks that no later proof quietly
+    survives without it. *)
