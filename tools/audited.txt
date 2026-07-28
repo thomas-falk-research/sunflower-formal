@@ -1,0 +1,135 @@
+# The audit list: everything whose *statement* is checked mechanically.
+#
+# Single source for two targets:
+#
+#   make print-assumptions   `Print Assumptions` on every `thm` line, and
+#                            CI gates on all of them being closed. The
+#                            list reports its own size, so the count is
+#                            never duplicated in the workflow.
+#   make statements          Snapshot every line's statement into
+#                            tools/statements.txt and fail if one moved
+#                            without the baseline moving with it.
+#
+# `thm` lines are printed with `Check` (the statement only, not the
+# proof). `def` lines are printed with `Print` (the body, because for a
+# definition the body *is* the statement) and carry the definitions the
+# two historical statement errors touched -- a weakened `RaoSpread` or a
+# degenerate spread condition would show up as a moved statement here
+# even though every theorem naming it still compiles.
+#
+# Adding a theorem: add it here, run `make statements-accept`, and commit
+# the baseline in the same commit. A statement that changes without its
+# baseline changing fails CI, which is the point.
+
+# ---- theorems ----
+thm ErdosRado.erdos_rado_upper_bound
+thm ErdosRado_Greedy.erdos_rado_via_greedy
+thm ErdosRado_Greedy.erdos_rado_contrapositive
+thm LowerBound.lower_bound_trivial
+thm LowerBound.no_k_sunflower_short_family
+thm ProductLowerBound.lower_bound_exponential
+thm ProductLowerBound.prod_family_no_literal_sunflower
+thm F23.f_2_3_eq_7
+thm HallCore.hall_abstract
+thm KoenigHall.hall_marriage_theorem
+thm KoenigHall.koenig_theorem
+thm F23.f_2_3_lower
+thm SmallCases.f_n_2_eq_2
+thm SmallCases.f_1_k_eq_k
+thm Pigeonhole.pigeonhole_family
+thm Sunflower.sunflower_lift
+thm Spread.sunflower_lift_set
+thm Spread.link_sunflower_lift
+thm Spread.w_spread_legacy_degenerate
+thm Spread.RaoSpread_Spread
+thm SpreadReduction.spread_reduction
+thm SpreadReduction.elementary_spread_disjoint
+thm SpreadReduction.spread_disjoint_above_elementary
+thm SpreadReduction.spread_erdos_rado
+thm Conjecture.spread_conjecture_suffices
+thm ALWZ.spread_singletons
+thm ALWZ.elementary_applies_to_singletons
+thm ALWZ.threshold_is_inside_the_gap
+thm ALWZ.axiom_hypotheses_satisfiable_in_the_gap
+thm Reflect.rao_spreadb_correct
+thm Reflect.rao_witness_agrees
+thm Reflect.rao_witness_complete
+thm TwoUniform.sunflower_shape
+thm TwoUniform.star_sunflower
+thm TwoUniform.two_uniform_sunflower_iff
+thm TwoUniform.two_uniform_sunflower_free_iff
+thm TwoUniform.rao_spread_two_iff_degree
+thm TwoUniform.spread_yields_disjoint_two_is_a_graph_statement
+thm CliqueLowerBound.two_cliques_no_sunflower
+thm CliqueLowerBound.two_cliques_lower_bound
+thm CliqueLowerBound.no_upper_bound_at_ch
+thm CliqueLowerBound.lower_bound_2_3_from_cliques
+thm Audit.star_needs_uniformity_two
+thm Audit.distinct_is_load_bearing_in_the_degree_identification
+thm Audit.two_triangles_saturates_both_parameters
+thm Audit.both_sunflower_shapes_occur
+thm Audit.lower_bound_excludes_upper
+thm Audit.upper_bound_excludes_lower
+thm Audit.lower_lt_upper
+thm Audit.no_upper_bound_below_exponential
+thm Audit.LowerBound_antitone
+thm Audit.LowerBound_ge_equiv
+thm Audit.ContainsKSunflower_mono
+thm Audit.ContainsKSunflower_incl
+thm Audit.ContainsKSunflower_equiv
+thm Audit.ContainsKSunflower_member_perm
+thm Audit.ContainsKSunflower_perm
+thm Audit.sunflower_core_unique
+thm Audit.distinct_strictly_stronger
+thm LowerBound.pairwise_disjoint_ground_bound
+thm Audit.no_k_disjoint_of_no_sunflower
+thm Audit.spread_yields_disjoint_below_threshold
+thm Audit.spread_yields_disjoint_needs_r
+thm Audit.spread_yields_disjoint_sandwich
+thm Audit.no_spread_yields_disjoint_2_3_2
+thm Audit.no_spread_yields_disjoint_2_3_2_alt
+thm Audit.bounds_coherent_er
+thm Audit.bounds_coherent_spread
+thm Audit.bounds_coherent_f_2_3
+thm Audit.bounds_coherent_clique
+thm Audit.clique_construction_is_two_triangles_reordered
+thm Audit.oddness_is_needed
+
+# ---- definitions ----
+#
+# The axiom first: it is the one thing in the development taken on
+# trust, so a silent change to what it says is the worst thing that
+# could happen here.
+def ALWZ.Rao20_lemma2
+
+# The spread layer: both historical errors lived here.
+def Spread.deg
+def Spread.RaoSpread
+def Spread.Spread
+def Spread.link
+def SpreadReduction.SpreadYieldsDisjoint
+
+# The core combinatorial definitions every bound is stated against.
+def Sets.SetEq
+def Sets.Subset
+def Sets.Disjoint
+def Sets.SetNoDup
+def Sunflower.Sunflower
+def Sunflower.KSunflower
+def Sunflower.SubFamilySetEq
+def Sunflower.ContainsKSunflower
+def Sunflower.Uniform
+def Sunflower.UniformSet
+def Sunflower.Distinct
+def Sunflower.PairwiseDisjoint
+def Sunflower.UpperBound
+def Sunflower.LowerBound
+
+# Uniformity 2.
+def TwoUniform.HasKDisjoint
+def CliqueLowerBound.clique_edges
+def CliqueLowerBound.two_cliques
+
+# The open statements, so "what is conjectured" cannot drift either.
+def Conjecture.sunflower_conjecture
+def Conjecture.spread_conjecture

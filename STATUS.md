@@ -57,7 +57,7 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `no_spread_yields_disjoint_2_3_2`, `..._alt` | `coq/Audit.v` | `~ SpreadYieldsDisjoint 2 3 2`, proved twice by disjoint arguments: the five-cycle via the ground-set bound, and `two_triangles` via the reflective 3-sunflower detector |
 | `sunflower_shape` | `coq/TwoUniform.v` | Every sunflower on `≥ 2` members is pairwise disjoint or passes through a common point — the core is empty or it is not. No uniformity hypothesis |
 | `star_sunflower` | `coq/TwoUniform.v` | The converse at uniformity 2: distinct 2-sets through a common point *are* a sunflower with that point as core. False at uniformity 3 (`Audit.star_needs_uniformity_two`) |
-| `two_uniform_sunflower_iff`, `two_uniform_sunflower_free_iff` | `coq/TwoUniform.v` | **A distinct 2-uniform family has no `k`-sunflower exactly when its matching number and its maximum degree are both `≤ k-1`.** So `f(2,k)` *is* the Chvátal–Hanson extremal problem at `D = ν = k-1`, not merely bounded by it |
+| `two_uniform_sunflower_iff`, `two_uniform_sunflower_free_iff` | `coq/TwoUniform.v` | **A distinct 2-uniform family has no `k`-sunflower exactly when its matching number and its maximum degree are both `≤ k-1`.** So `f(2,k)` *is* the Chvátal–Hanson extremal problem at `D = ν = k-1`, not merely bounded by it. The extremal function itself is cited ([Chvátal–Hanson 1976](docs/references.md)) and not formalised; no theorem here depends on it |
 | `rao_spread_two_iff_degree` | `coq/TwoUniform.v` | At uniformity 2 the spread condition is a maximum-degree bound: `RaoSpread 2 F r ↔ ∀ v, deg [v] F ≤ r`. The `\|T\| = 2` clause asks `deg T F ≤ r⁰ = 1`, which `Distinct` already gives |
 | `spread_yields_disjoint_two_is_a_graph_statement` | `coq/TwoUniform.v` | **The spread hypothesis at uniformity 2 is the same extremal problem**: a graph with maximum degree `≤ r` and more than `r²` edges has `k` disjoint edges |
 | `two_cliques_no_sunflower`, `two_cliques_lower_bound` | `coq/CliqueLowerBound.v` | **`f(2,k) ≥ k(k-1) + 1` for every odd `k`** — two disjoint copies of `K_k`, an infinite family of exact sunflower lower bounds generalising `two_triangles`. Degree bound is local; matching bound is a parity argument, and `Audit.oddness_is_needed` shows the parity hypothesis is load-bearing |
@@ -138,7 +138,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (67 of them). The current
+for every theorem in the "Closed" table (72 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -180,7 +180,7 @@ assertions tying the formal bounds to concrete instances, and
 
 `Print Assumptions` says nothing about whether a definition means what
 its name claims, which is the failure mode this development has
-produced twice. Three further checks target it; the methodology, and
+produced twice. Four further checks target it; the methodology, and
 what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
@@ -189,9 +189,10 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
+| Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 
-Current mutation results: 24 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 22 killed outright, one genuine
+Current mutation results: 29 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 27 killed outright, one genuine
 survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem), and one positive control (`canary-alpha-rename`,

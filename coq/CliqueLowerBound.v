@@ -6,15 +6,21 @@
 
     >  f(2,k) >= k(k-1) + 1.
 
-    Why that shape and no other is the Chvátal–Hanson theorem:
+    Why that shape and no other is the Chvátal–Hanson theorem
+    ([ChHa76], cited but *not* formalised here):
     [CH(D, nu) = nu*D + floor(D/2) * floor(nu / ceil(D/2))] is the
     largest number of edges in a graph of maximum degree at most [D]
     and matching number at most [nu], and at [D = nu = k-1] with [k]
     odd the maximiser is exactly two copies of [K_k]. By
     [TwoUniform.two_uniform_sunflower_free_iff] those two parameters
     are precisely what a 2-uniform family must keep below [k] to avoid
-    a [k]-sunflower, so [f(2,k) = CH(k-1,k-1) + 1] and this file proves
-    the lower half of it.
+    a [k]-sunflower.
+
+    Nothing in this file depends on [ChHa76]: what is proved below is
+    the lower bound, from the construction directly. The citation is
+    what says the construction is *optimal* -- that
+    [f(2,k) = k(k-1) + 1] rather than merely [>=] -- and that half is
+    open here.
 
     The two constraints are checked separately and for different
     reasons. The *degree* bound is local: a vertex of [K_k] has [k-1]

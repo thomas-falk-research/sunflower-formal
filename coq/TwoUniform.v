@@ -23,8 +23,17 @@
     >      and every vertex lies in fewer than [k] members,
 
     i.e. exactly when its matching number and its maximum degree are
-    both at most [k-1]. So [f(2,k)] is the Chvátal–Hanson extremal
+    both at most [k-1]. So [f(2,k)] *is* the Chvátal–Hanson extremal
     problem at [D = nu = k-1], and not merely bounded by it.
+
+    That identification is what this file proves. The extremal function
+    itself is not proved here and nothing below depends on it: [ChHa76]
+    evaluates it, and taking that on citation gives
+    [f(2,k) = CH(k-1,k-1) + 1] and a sharp spread threshold
+    [r*(2,k) = k]. What the repository proves outright is the lower half
+    at odd [k] ([CliqueLowerBound.two_cliques_lower_bound]). See
+    [docs/references.md] for which results are used and which are
+    merely cited.
 
     Third, the same two parameters govern the *spread* hypothesis
     ([rao_spread_two_iff_degree]): at uniformity 2 the spread condition
@@ -282,8 +291,11 @@ Qed.
     2-uniform family avoids [k]-sunflowers exactly when its matching
     number and its maximum degree are both at most [k-1].
 
-    This is what makes [f(2,k) = CH(k-1,k-1) + 1] for the
-    Chvátal–Hanson function [CH], rather than merely bounded by it. *)
+    This is what makes [f(2,k)] the Chvátal–Hanson extremal problem
+    rather than something merely bounded by it. The value
+    [f(2,k) = CH(k-1,k-1) + 1] then follows from [ChHa76], which is
+    cited rather than formalised — no theorem in this development
+    depends on it. *)
 
 Corollary two_uniform_sunflower_free_iff :
   forall (k : nat) (F : Family),

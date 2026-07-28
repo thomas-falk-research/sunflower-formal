@@ -176,11 +176,15 @@ Qed.
 
 (** [LowerBound] pins the family size with an equality. The variant
     that only asks for *at least* [m] members defines the same
-    predicate — antitonicity is exactly what makes the two agree. The
-    mutation [lowerbound-at-least] in [tools/mutations.toml] weakens
-    the definition this way and the build breaks; this theorem is why
-    that break is a property of four tactic scripts and not of the
-    mathematics. *)
+    predicate — antitonicity is exactly what makes the two agree.
+
+    The mutation [lowerbound-at-least] in [tools/mutations.toml]
+    weakens the definition this way, and is the development's one
+    genuine survivor: this theorem is why nothing can notice. It used
+    to be recorded as a script-level kill, because four proofs proved
+    the size hypothesis with tactics that only worked against [=]; they
+    now use [rewrite ...; lia], which works against either, so what the
+    mutation reports is a property of the definition. *)
 
 Definition LowerBoundGE (n k m : nat) : Prop :=
   exists F : Family,
@@ -551,6 +555,49 @@ Proof.
     assert (H2core : In 2 core) by (apply (proj1 H12); simpl; auto).
     pose proof (proj2 H13 2 H2core) as Hbad.
     simpl in Hbad; lia.
+Qed.
+
+(** *** Is [Distinct] doing any work in the degree identification?
+
+    [rao_spread_two_iff_degree] says [RaoSpread 2 F r] is exactly the
+    maximum-degree bound. That rests entirely on [Distinct]: the
+    [|T| = 2] clause of the spread condition asks [deg T F <= r ^ 0 =
+    1], and it is distinctness, not uniformity, that supplies it.
+
+    Drop it and the identification is false in the interesting
+    direction. [[0;1]] and [[1;0]] are the same set written twice —
+    [NoDup] as a list of lists, not [Distinct] — every vertex has
+    degree 2, and yet the family is not 2-spread, because the 2-set
+    [{0,1}] lies in two members. So the degree bound holds and
+    [RaoSpread] fails.
+
+    Same family as [distinct_strictly_stronger], which is the point:
+    the design choice recorded there is what makes the identification
+    true here. *)
+
+Definition repeated_edge : Family := [[0; 1]; [1; 0]].
+
+Example distinct_is_load_bearing_in_the_degree_identification :
+  Uniform 2 repeated_edge
+  /\ NoDup repeated_edge
+  /\ ~ Distinct repeated_edge
+  /\ (forall v, deg [v] repeated_edge <= 2)
+  /\ ~ RaoSpread 2 repeated_edge 2.
+Proof.
+  split; [apply uniformb_correct; reflexivity|].
+  split.
+  { constructor; [intros [E | []]; discriminate |].
+    constructor; [intros [] | constructor]. }
+  split.
+  { intro H; apply distinctb_correct in H; vm_compute in H; discriminate. }
+  split.
+  { intros v; destruct v as [|[|v]]; vm_compute; lia. }
+  intro Hspread.
+  assert (HndT : NoDup [0; 1])
+    by (constructor; [intros [E | []]; discriminate |];
+        constructor; [intros [] | constructor]).
+  pose proof (Hspread [0; 1] HndT ltac:(discriminate)) as Hb.
+  vm_compute in Hb; lia.
 Qed.
 
 (** *** Is [two_triangles] extremal for both parameters at once?

@@ -12,7 +12,7 @@ layer and its limits are in [`testing.md`](testing.md).
 ## Done: the testing layer
 
 Both errors this development has produced were errors of *statement*,
-invisible to the kernel. Four mechanisms now target that class — see
+invisible to the kernel. Five mechanisms now target that class — see
 [`testing.md`](testing.md). Everything below is safer for having them,
 and new definitions should arrive with the corresponding checks rather
 than acquire them later:
@@ -24,7 +24,11 @@ than acquire them later:
   for `Spread.rao_witness`;
 * a new hypothesis gets a mutation in `tools/mutations.toml`. If the
   mutation survives, the hypothesis is doing no work — find out why
-  before writing anything on top of it.
+  before writing anything on top of it;
+* a new audited name goes in `tools/audited.txt`, and the statement
+  baseline is regenerated (`make statements-accept`) in the same
+  commit. That way the diff of `tools/statements.txt` is the review
+  question "did this change what we claim?" answered in advance.
 
 ---
 
@@ -118,7 +122,12 @@ CH(D, ν) = νD + ⌊D/2⌋·⌊ν/⌈D/2⌉⌋
 ```
 
 is the largest number of edges with maximum degree ≤ `D` and matching
-number ≤ `ν`, and
+number ≤ `ν`.
+
+**What is proved here is the identification, not the formula.** `CH` is
+cited, not formalised, and no Coq theorem depends on it. Taking it on
+citation gives two consequences, both of which should be read as
+"conditional on [ChHa76]" wherever they appear:
 
 * `f(2,k) = CH(k-1, k-1) + 1`;
 * the sharp spread threshold is `min{r : CH(r, k-1) ≤ r²}`, which
@@ -127,7 +136,9 @@ number ≤ `ν`, and
 
 The formula was checked against the source and then falsified five
 ways in `rust/tests/chvatal_hanson.rs`; the predicted thresholds match
-what `rust/tests/spread_axiom.rs` measures by exhaustive search.
+what `rust/tests/spread_axiom.rs` measures by exhaustive search. That
+is falsification, not proof — closing §3a below is what would turn
+either bullet into a theorem.
 
 **Done: the lower bound at odd `k`.**
 `CliqueLowerBound.two_cliques_lower_bound` gives `f(2,k) ≥ k(k-1)+1`
@@ -190,27 +201,19 @@ mutation runner measured rather than by taste.
   brackets the axiom's shape between `k-1` and `n(k-1)`. Both ends are
   loose. Narrowing either narrows what the axiom is actually assuming.
 
-* **Statement-hash baselines.** This repository's failure mode is
-  statement drift, and nothing makes "did this change what we claim?"
-  a mechanical question. Print each audited theorem's statement,
-  canonicalise, hash, store; CI fails if a hash moves without the
-  baseline moving in the same commit. Snapshot testing for claims. It
-  separates statement changes from proof changes in review — which is
-  the distinction that would have caught both historical errors at
-  review time rather than by rereading.
-
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 24 anecdotes into a coverage metric over the
+  mutation testing from 29 anecdotes into a coverage metric over the
   definitions.
 
-* **Derive the audit list from source annotations** rather than the
-  hand-maintained Makefile list. The hardcoded count in CI is gone —
-  the list reports its own size — but the list itself is still
-  hand-maintained, so a theorem can still be added without being
-  audited. Gating the numbers quoted in `README`/`STATUS` is the same
-  kind of gap.
+* **Derive the audit list from source annotations.** `tools/audited.txt`
+  is now the single source, the hardcoded count in CI is gone, and
+  `coq/Audit.v` is checked for completeness against it. Everywhere else
+  the list is still curated by hand, so a theorem added to another file
+  can be added without being audited. An annotation — a marker comment
+  the extractor reads — would close that. Gating the numbers quoted in
+  `README`/`STATUS` is the same kind of gap.
 
 * **Widen the mutation manifest.** It currently covers the definitions
   the two historical errors touched, plus the reduction's arithmetic.

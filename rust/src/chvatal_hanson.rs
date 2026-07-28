@@ -44,6 +44,15 @@
 //! The roadmap listed the Rao campaign and the `f(2,k)` program as
 //! alternatives. They are the same extremal function seen twice.
 //!
+//! **What the Coq development proves is the identification, not the
+//! formula.** `coq/TwoUniform.v` proves that a 2-uniform family avoids
+//! `k`-sunflowers exactly when these two parameters are bounded, and
+//! that `RaoSpread 2 F r` is the degree bound;
+//! `coq/CliqueLowerBound.v` proves the lower half at odd `k`. `CH`
+//! itself is cited and not formalised, so both consequences above are
+//! conditional on it — which is why this module falsifies the formula
+//! against exhaustive search rather than taking it on trust.
+//!
 //! # What is checked here
 //!
 //! The formula is *recalled* from the literature, so it is treated the
