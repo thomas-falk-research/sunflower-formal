@@ -73,6 +73,7 @@ class Result:
     file: str
     question: str
     expect: str
+    control: bool
     outcome: str          # "killed" | "killed-script" | "survived" | "timeout"
     killed_in: str | None  # the .v file whose compilation failed
     detail: str
@@ -222,7 +223,8 @@ def run_one(mut: dict, timeout: int) -> Result:
 
     return Result(
         id=mut["id"], file=mut["file"], question=mut["question"],
-        expect=mut["expect"], outcome=outcome, killed_in=failing,
+        expect=mut["expect"], control=bool(mut.get("control", False)),
+        outcome=outcome, killed_in=failing,
         detail=detail, seconds=round(time.time() - start, 1),
     )
 
@@ -279,13 +281,21 @@ def main() -> int:
         print(f"  {r.id:<26} {r.expect:<13} {r.outcome:<13} {r.killed_in or '-'}")
     print("-" * 78)
 
-    survivors = [r for r in results if r.outcome == "survived"]
+    controls = [r for r in results if r.control]
+    survivors = [r for r in results if r.outcome == "survived" and not r.control]
     script_kills = [r for r in results if r.outcome == "killed-script"]
     unexpected = [r for r in results if not r.ok]
     print(f"  killed: {sum(1 for r in results if r.outcome == 'killed')}"
           f"   killed (script only): {len(script_kills)}"
           f"   survived: {len(survivors)}"
+          f"   controls passing: {sum(1 for r in controls if r.ok)}/{len(controls)}"
           f"   unexpected: {len(unexpected)}")
+
+    if not controls:
+        print()
+        print("  WARNING: no control mutation in the manifest. Without one, a "
+              "harness that\n  failed to apply its edits would report every "
+              "mutation killed and still pass.")
 
     if survivors:
         print()

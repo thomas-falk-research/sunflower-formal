@@ -132,10 +132,14 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 23 mutations, 22 are killed outright and
-  one is killed only at the level of tactics — a distinction the
-  harness verifies by applying declared repairs, rather than asserting.
-  See [`docs/testing.md`](docs/testing.md).
+  that something breaks. Of 24 mutations, 22 are killed outright, one
+  is killed only at the level of tactics — a distinction the harness
+  verifies by applying declared repairs rather than asserting — and one
+  is a positive control that must survive. Underneath them, `coqchk`
+  re-verifies every module with Coq's separate kernel checker and
+  gates on a whole-library assumption census, which is what makes
+  "zero admits" a claim about the development rather than about a list
+  of theorem names. See [`docs/testing.md`](docs/testing.md).
 
   The search found the five-cycle, which is now a theorem: together
   with the disjoint-blocks family it shows the axiom's conclusion is
@@ -189,7 +193,18 @@ to concrete instances, plus the falsification testbed below):
 cd rust && cargo test --release
 ```
 
-Two further checks target what `Print Assumptions` cannot see — whether
+`coqchk` re-checks every module with Coq's *separate* kernel
+implementation and prints a whole-library assumption census — unlike
+the audit above, which covers only the theorem names the Makefile
+enumerates:
+
+```bash
+make coqchk        # independent re-check; exactly one axiom library-wide
+```
+
+CI gates on that census listing exactly `Sunflower.ALWZ.Rao20_lemma2`,
+and on no reliance on type-in-type, unsafe fixpoints, or assumed
+positivity. Two further checks target what no kernel can see — whether
 the *definitions* say what their names claim:
 
 ```bash
@@ -197,7 +212,7 @@ make mutants       # weaken each definition in turn; see what breaks
 make testbed       # exhaustive falsification of the spread hypothesis
 ```
 
-Both are CI jobs. The methodology, and what it does and does not
+All are CI jobs. The methodology, and what it does and does not
 cover, is in [`docs/testing.md`](docs/testing.md).
 
 Per-theorem status, including exactly what is and is not proved, is

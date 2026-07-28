@@ -262,6 +262,29 @@ expect = "killed"
 # The finite-set layer.
 # ----------------------------------------------------------------
 
+# ----------------------------------------------------------------
+# A positive control.
+#
+# Every other mutation here is expected to break something. If the
+# harness were broken -- a sandbox that fails to build for an unrelated
+# reason, an edit that silently fails to apply -- every mutation would
+# report `killed` and the suite would still pass. This one must
+# survive, so the `survived` path is exercised on every run.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "canary-alpha-rename"
+file = "coq/Sets.v"
+question = """Control: renaming a bound variable changes nothing. If this is \
+reported killed, the harness is broken, not the development."""
+find = "Definition Subset (A B : list nat) : Prop := forall x, In x A -> In x B."
+replace = "Definition Subset (A B : list nat) : Prop := forall e, In e A -> In e B."
+expect = "survived"
+control = true
+because = """Alpha-equivalence: Coq terms are identified up to the names of \
+bound variables, so this is not a change to the development at all. It is here \
+to prove the suite can report `survived`, which no other entry does."""
+
 [[mutation]]
 id = "seteq-one-sided"
 file = "coq/Sets.v"

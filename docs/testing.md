@@ -25,11 +25,57 @@ kind:
    the direction of the strengthening is itself a theorem.
 
 Neither error was found by the kernel. Both were found by rereading
-the source. This document describes the four mechanisms added so that
+the source. This document describes the five mechanisms added so that
 a third one does not have to be.
 
 None of them is a substitute for reading the paper. All of them are
 cheaper than reading it again.
+
+---
+
+## 0. Independent re-checking — `make coqchk`
+
+Before the definition-level checks, one thing worth tightening at the
+kernel level.
+
+`make verify` runs `Print Assumptions` on a list of theorem names
+enumerated in the Makefile. That is exactly as complete as the list.
+An `Admitted` lemma somewhere else in the development, a second
+`Axiom`, or a global `Parameter` would not appear — the audit would
+report 51 closed theorems and pass. This is not hypothetical: appending
+
+```coq
+Lemma smuggled_in : forall n : nat, n = n + 0.
+Proof.
+Admitted.
+```
+
+to `coq/Sets.v` compiles, and the `Print Assumptions` audit stays
+green.
+
+`coqchk` is a separate program from `coqc`. It re-typechecks the
+compiled proof terms with its own kernel implementation — no
+elaborator, no tactics, no unification — and prints a census of the
+**whole library**:
+
+```
+* Theory: Set is predicative
+* Axioms:
+    Sunflower.ALWZ.Rao20_lemma2
+* Constants/Inductives relying on type-in-type: <none>
+* Constants/Inductives relying on unsafe (co)fixpoints: <none>
+* Inductives whose positivity is assumed: <none>
+```
+
+CI gates on that axiom list being exactly one name, and on all three
+escape hatches being empty. With the admit above in place the census
+reads `Sunflower.Sets.smuggled_in` and the gate fails, which is the
+point.
+
+Two claims this makes good on that `Print Assumptions` alone does not:
+"zero admits **anywhere**", and "no reliance on type-in-type, unsafe
+fixpoints, or assumed positivity" — none of which anything checked
+before.
 
 ---
 
@@ -201,6 +247,15 @@ breaks.
   development is sensitive to. Sometimes benign; sometimes it means a
   condition is decorative, which is the shape of a misstatement.
 
+One entry is a **positive control**: `canary-alpha-rename` renames a
+bound variable in `Sets.Subset`, which by alpha-equivalence is not a
+change to the development at all, and is declared `survived`. Without
+it, a harness whose sandbox failed to build for some unrelated reason
+would report every mutation killed and pass with flying colours — and
+the `survived` code path would never execute, since nothing else in
+the manifest exercises it. The runner warns if the manifest has no
+control.
+
 `tools/mutations.toml` records, for each mutation, the question it
 asks and the outcome expected. The runner checks the expectations, so
 the manifest is a **regression test on the load-bearingness of every
@@ -243,9 +298,9 @@ result, and a new theorem making the answer precise.
 
 ### Current results
 
-23 mutations, all with the outcome the manifest declares: 22 killed
-outright, one killed at script level only, none surviving. The
-mutations that matter most:
+24 mutations, all with the outcome the manifest declares: 22 killed
+outright, one killed at script level only, one control surviving as it
+must, no genuine survivors. The mutations that matter most:
 
 | Mutation | Asks | Dies in |
 |---|---|---|
@@ -296,9 +351,22 @@ what is checked:
 
 ```bash
 make verify     # build + Print Assumptions audit (51 closed theorems)
+make coqchk     # independent re-check of every module, whole-library census
 make mutants    # perturb each definition, check what breaks
 make testbed    # exhaustive falsification + differential checks
 cd rust && cargo test --release   # everything on the Rust side
 ```
 
-CI runs all three as separate jobs on every push.
+CI runs all four as separate jobs on every push, with `RUSTFLAGS=-D
+warnings` on the Rust side.
+
+## Known gaps in the checking itself
+
+* **One Coq version.** Only 8.18, the version `apt` ships on
+  Ubuntu 24.04. The portability claim is untested against 8.19+; a
+  matrix would need opam and roughly an order of magnitude more CI
+  time.
+* **No `clippy`.** The Rust side denies warnings but does not lint.
+* **The docs' numbers are hand-maintained.** CI gates on 51 closed
+  theorems, but nothing checks that `README.md` and `STATUS.md` still
+  say 51.

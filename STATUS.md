@@ -173,16 +173,35 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 19 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 
-Current mutation results: 23 mutations, all matching the outcome
+Current mutation results: 24 mutations, all matching the outcome
 declared in `tools/mutations.toml` — 22 killed outright, one
 (`lowerbound-at-least`) killed only at the level of tactic scripts,
 which the harness establishes by applying declared repairs that touch
 no statement, and which `Audit.LowerBound_ge_equiv` explains as a
-theorem. None survive.
+theorem, and one positive control (`canary-alpha-rename`, an
+alpha-rename that must survive, so the `survived` path is exercised on
+every run). No genuine survivors.
+
+`make coqchk` re-verifies all 19 modules with Coq's separate kernel
+checker and reports the assumptions of the whole library:
+
+```
+* Axioms:
+    Sunflower.ALWZ.Rao20_lemma2
+* Constants/Inductives relying on type-in-type: <none>
+* Constants/Inductives relying on unsafe (co)fixpoints: <none>
+* Inductives whose positivity is assumed: <none>
+```
+
+CI gates on all four lines. This is what makes "zero admits" a claim
+about the development rather than about the 51 theorem names the
+`Print Assumptions` audit enumerates — an `Admitted` lemma outside
+that list passes the audit and fails this census.
 
 The empirical spread thresholds from `make testbed`, all of them at or
 below the value proved sufficient by

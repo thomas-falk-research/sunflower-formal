@@ -4,7 +4,7 @@ COQFILES := coq/Sets.v coq/Sunflower.v coq/Graph.v coq/Matching.v \
             coq/Spread.v coq/Reflect.v coq/SpreadReduction.v coq/ALWZ.v \
             coq/Conjecture.v coq/SmallCases.v coq/F23.v coq/Audit.v
 
-.PHONY: all coq verify rust test testbed mutants clean print-assumptions axiom-audit
+.PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions axiom-audit
 
 all: coq rust
 
@@ -18,7 +18,9 @@ verify: clean coq print-assumptions axiom-audit
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."
-	@echo "[verify] For the definition-level checks the kernel cannot make:"
+	@echo "[verify] For an independent re-check of every module:"
+	@echo "[verify]   make coqchk   -- re-typecheck with Coq's separate kernel checker"
+	@echo "[verify] For the definition-level checks no kernel can make:"
 	@echo "[verify]   make mutants  -- perturb each definition, see what breaks"
 	@echo "[verify]   make testbed  -- exhaustive falsification of the spread axiom"
 
@@ -91,6 +93,31 @@ axiom-audit: coq
 	@printf 'From Sunflower Require Import ALWZ.\nPrint Assumptions ALWZ.sunflower_bound_from_spread_lemma.\n' \
 	  | coqtop -Q coq Sunflower 2>/dev/null \
 	  | sed -n '/^Axioms:/,/^$$/p' | sed 's/^/  [axiom-dep] /'
+	@echo "===================================================="
+
+COQMODULES := $(patsubst coq/%.v,Sunflower.%,$(COQFILES))
+
+# Independent re-verification.
+#
+# coqchk is a separate program from coqc: it re-typechecks the compiled
+# proof terms with its own kernel implementation, with no elaborator, no
+# tactics, and no unification. Two things it gives that
+# `print-assumptions` cannot.
+#
+# First, it covers the *whole library* rather than a curated list of
+# theorem names. `Print Assumptions` only ever reports on the theorems
+# the Makefile happens to name; an `Admitted` lemma somewhere else, or a
+# second `Axiom`, would go unreported. coqchk's context summary lists
+# every assumption in every module.
+#
+# Second, it reports the escape hatches nothing else here checks:
+# type-in-type, unsafe (co)fixpoints, and inductives whose positivity is
+# assumed. CI gates on all three being empty.
+coqchk: coq
+	@echo "===================================================="
+	@echo "  coqchk -- independent re-check of every module"
+	@echo "===================================================="
+	coqchk -Q coq Sunflower -o -silent $(COQMODULES)
 	@echo "===================================================="
 
 rust:
