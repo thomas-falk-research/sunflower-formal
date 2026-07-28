@@ -42,7 +42,7 @@ From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
-     CliqueLowerBound F23 LinkCharacterisation DirectSum
+     CliqueLowerBound F23 LinkCharacterisation DirectSum Intersecting
      SpreadRestrictions SliceRank.
 Import ListNotations.
 
@@ -1218,4 +1218,88 @@ Proof.
       [exact lower_bound_3_3_14 | apply erdos_rado_upper_bound; lia].
   - apply (@lower_lt_upper 3 3);
       [exact lower_bound_3_3_14 | apply (@spread_erdos_rado 3 3); lia].
+Qed.
+
+(** ** Doubling an intersecting family
+
+    [Intersecting.doubling_lower_bound] generalises [two_triangles]:
+    two disjoint copies of an *intersecting* sunflower-free family are
+    sunflower-free. The hypothesis that is easy to overlook is
+    "intersecting", so that is what gets pinned. *)
+
+(** *** Is the intersecting hypothesis load-bearing?
+
+    It is, and the counterexample is as small as a counterexample can
+    be. [{0}, {1}] is 1-uniform, distinct and 3-sunflower-free for the
+    trivial reason that it has two members — but it is not intersecting,
+    and its doubling is four singletons, any three of which are pairwise
+    disjoint and so a 3-sunflower with empty core.
+
+    Without the hypothesis the theorem is false at [b = 1], and the
+    whole [iota] programme rests on it. *)
+
+Example intersecting_is_needed_in_the_doubling :
+  Uniform 1 [[0]; [1]] /\ Distinct [[0]; [1]]
+  /\ ~ ContainsKSunflower 3 [[0]; [1]]
+  /\ ~ Intersecting [[0]; [1]]
+  /\ ContainsKSunflower 3 (double [[0]; [1]]).
+Proof.
+  split; [apply uniformb_correct; vm_compute; reflexivity|].
+  split; [apply distinctb_correct; vm_compute; reflexivity|].
+  split; [apply no_k_sunflower_short_family; simpl; lia|].
+  split.
+  { intro H.
+    apply (H [0] [1] (or_introl eq_refl) (or_intror (or_introl eq_refl))).
+    intros x [E | []] [E' | []]; subst x; discriminate. }
+  apply (@ContainsKSunflower_of_incl 3 [[0]; [2]; [1]] _ []).
+  - intros A HA; vm_compute in HA |- *; tauto.
+  - reflexivity.
+  - split; [apply set_nodupb_correct; reflexivity|].
+    intros A B HA HB Hne.
+    simpl in HA, HB.
+    destruct HA as [E | [E | [E | []]]]; destruct HB as [E' | [E' | [E' | []]]];
+      subst A B; try (exfalso; apply Hne; reflexivity);
+      split; intros x Hx; vm_compute in Hx |- *; tauto.
+Qed.
+
+(** *** Does the sharper seed contradict anything?
+
+    [f(3,3) >= 21] against both upper bounds, derived rather than
+    restated. And against the two weaker lower bounds it replaces: the
+    ground-set search's 15 and the direct sum's 13. *)
+
+Corollary bounds_coherent_3_3_sharp :
+  20 < S ((3 - 1) ^ 3 * fact 3) /\ 20 < S (7 ^ 3)
+  /\ 12 < 14 /\ 14 < 20.
+Proof.
+  split.
+  { apply (@lower_lt_upper 3 3);
+      [exact lower_bound_3_3_20 | apply erdos_rado_upper_bound; lia]. }
+  split.
+  { apply (@lower_lt_upper 3 3);
+      [exact lower_bound_3_3_20 | apply (@spread_erdos_rado 3 3); lia]. }
+  split; lia.
+Qed.
+
+(** *** Is the doubling the construction we already had?
+
+    At [b = 2] the largest intersecting sunflower-free graph is the
+    triangle, and doubling it is [two_triangles] up to relabelling —
+    the same family that gives [f(2,3) = 7]. So the general theorem
+    subsumes the specific construction rather than sitting beside it. *)
+
+Example doubling_at_b_2_is_two_triangles :
+  double [[0; 1]; [0; 2]; [1; 2]]
+  = [[0; 2]; [0; 4]; [2; 4]; [1; 3]; [1; 5]; [3; 5]]
+  /\ LowerBound 2 3 6.
+Proof.
+  split; [vm_compute; reflexivity|].
+  apply (doubling_lower_bound 2 [[0; 1]; [0; 2]; [1; 2]]);
+    [ lia
+    | apply uniformb_correct; vm_compute; reflexivity
+    | apply distinctb_correct; vm_compute; reflexivity
+    | apply intersectingb_correct; vm_compute; reflexivity
+    | intro Hc;
+      pose proof (sunflower3b_sound [[0; 1]; [0; 2]; [1; 2]] Hc) as E;
+      vm_compute in E; discriminate ].
 Qed.

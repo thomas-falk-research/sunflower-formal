@@ -151,6 +151,29 @@ thm Audit.uniformity_is_needed_in_the_direct_sum
 # the sunflower-free restriction is not, and is what the reduction
 # actually needs, so it is the weaker interface for a future proof of
 # Rao's Lemma 2.
+
+# Intersecting families. iota(b) -- the largest intersecting
+# sunflower-free b-uniform family -- is the right quantity for the
+# lower bound: doubling gives g(b) >= 2 iota(b), and the substitution
+# (verified computationally, not formalised) gives the AHS rate
+# iota(b)^(1/(b-1)).
+thm Intersecting.intersectingb_correct
+thm Intersecting.Intersecting_rmapF
+thm Intersecting.no_sunflower_across
+thm Intersecting.SetNoDup_app
+thm Intersecting.double_Uniform
+thm Intersecting.double_Distinct
+thm Intersecting.double_no_sunflower
+thm Intersecting.doubling_lower_bound
+thm Intersecting.lower_bound_3_3_20
+thm Intersecting.no_upper_bound_3_3_20
+thm Intersecting.lower_bound_f_n_3_sharp
+thm Intersecting.twenty_beats_six
+thm Intersecting.sharp_beats_previous
+thm Audit.intersecting_is_needed_in_the_doubling
+thm Audit.bounds_coherent_3_3_sharp
+thm Audit.doubling_at_b_2_is_two_triangles
+
 thm SpreadRestrictions.every_uniform_family_is_a_link
 thm SpreadRestrictions.every_uniform_family_IsLink
 thm SpreadRestrictions.link_restriction_is_vacuous
@@ -233,6 +256,9 @@ def Audit.ExponentialLowerBound
 # polynomial-method file carries rather than assumes. A drift in any of
 # these changes what is being claimed without changing any statement
 # that mentions them.
+def Intersecting.Intersecting
+def Intersecting.double
+def Intersecting.iota3
 def SpreadRestrictions.IsLink
 def SpreadRestrictions.SpreadYieldsDisjointOnLinks
 def SpreadRestrictions.SpreadBoundsSunflowerFree

@@ -582,3 +582,40 @@ linear-in-ground-set form outright false -- prod_family 2 6 is 64 sunflower-free
 theorem by a falsehood, and the arithmetic in bounded_ground_set_settles_k3 stops \
 going through. Only the last exponent is changed, so the shape and every \
 hypothesis are untouched."""
+
+# ----------------------------------------------------------------
+# Doubling an intersecting family.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "intersecting-drop-hypothesis"
+file = "coq/Intersecting.v"
+question = """Two disjoint copies of a sunflower-free family. Is "intersecting" \
+what makes it work, or would any sunflower-free family do?"""
+find = """    1 <= b -> Uniform b H -> Distinct H ->
+    Intersecting H -> ~ ContainsKSunflower 3 H ->
+    ~ ContainsKSunflower 3 (double H)."""
+replace = """    1 <= b -> Uniform b H -> Distinct H ->
+    Distinct H -> ~ ContainsKSunflower 3 H ->
+    ~ ContainsKSunflower 3 (double H)."""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false at b = 1: \
+Audit.intersecting_is_needed_in_the_doubling exhibits {0}, {1} -- sunflower-free \
+because it has two members -- whose doubling is four singletons, any three of \
+which are pairwise disjoint and so a 3-sunflower. The whole iota programme, \
+including the reconstruction of the Abbott-Hanson-Sauer rate, rests on this one \
+hypothesis. It is replaced by a copy of its neighbour rather than deleted, so the \
+arity is unchanged."""
+
+[[mutation]]
+id = "double-same-parity"
+file = "coq/Intersecting.v"
+question = """The two copies are placed on even and odd points. Does anything \
+notice if they land on top of each other?"""
+find = "Definition double (H : Family) : Family := rmapF ev H ++ rmapF od H."
+replace = "Definition double (H : Family) : Family := rmapF ev H ++ rmapF ev H."
+expect = "killed"
+because = """Load-bearing: with both copies on the even points the two halves are \
+literally the same family, so the result is not Distinct and its length is not \
+2 * length H. The parity split is what makes the copies disjoint without computing \
+anybody's maximum."""

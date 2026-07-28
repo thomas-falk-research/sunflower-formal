@@ -49,6 +49,7 @@ claim progress on it. What is machine-checked here is the complete
 | **Lower bound at every odd $k$** | $f(2,k) \ge k(k-1) + 1$, two disjoint copies of $K_k$ | `coq/CliqueLowerBound.v` |
 | **The extremal function is supermultiplicative** | $g(a{+}b,k) \ge g(a,k)\,g(b,k)$ for $g = f-1$ — the direct sum of two sunflower-free families on disjoint ground sets | `coq/DirectSum.v` |
 | **First lower bound beating the product** | $f(n,3) \ge 6^{n/2} + 1 = 2.449\ldots^n$, and $f(n,k) \ge (k(k-1))^{n/2} + 1$ at odd $k$ — strictly above $(k-1)^n + 1$, by a factor growing geometrically | `coq/DirectSum.v` |
+| **`g(b) ≥ 2·ι(b)`** | two disjoint copies of an *intersecting* sunflower-free family are sunflower-free; `ι(3) = 10` by exhaustive search gives $f(3,3) \ge 21$ and $f(n,3) \ge 20^{n/3}+1 = 2.714\ldots^n$ | `coq/Intersecting.v` |
 | **The link restriction is vacuous** | every uniform family is a link, so a spread lemma restricted to the families the sunflower recursion produces implies the unrestricted one | `coq/SpreadRestrictions.v` |
 | **The reduction needs strictly less** | it only ever applies the spread lemma to *sunflower-free* families, so a weaker hypothesis suffices — the narrower interface for a future proof of Rao's Lemma 2 | `coq/SpreadRestrictions.v` |
 | **What the polynomial method is missing** | Naslund–Sawin's $constant^n$ bound is in the *ground set*; one further fact — that extremal uniform families live on $O(m)$ points — would turn it into the conjecture at $k=3$ | `coq/SliceRank.v` |
@@ -72,10 +73,12 @@ The lower end of that bracket is no longer the best thing proved here.
 Sunflower-freeness survives the direct sum of two families on disjoint
 ground sets (`coq/DirectSum.v`), so $g = f - 1$ is supermultiplicative,
 and feeding it this repository's own exact value $f(2,3) = 7$ gives
+$f(n,3) \ge 6^{\lfloor n/2\rfloor} + 1 = 2.449\ldots^{\,n}$ against the
+product construction's $2^n$. Seeding it instead with $f(3,3) \ge 21$ —
+which `coq/Intersecting.v` gets by doubling the largest *intersecting*
+sunflower-free 3-uniform family, $\iota(3) = 10$ — gives
 
-$$f(n,3) \;\ge\; 6^{\lfloor n/2\rfloor} + 1 \;=\; 2.449\ldots^{\,n}$$
-
-against the product construction's $2^n$. At every odd $k$ the same
+$$f(n,3) \;\ge\; 20^{\lfloor n/3\rfloor} + 1 \;=\; 2.714\ldots^{\,n}.$$ At every odd $k$ the same
 theorem applied to the two-cliques family gives
 $f(n,k) \ge (k(k-1))^{\lfloor n/2\rfloor} + 1$, beating $(k-1)^n + 1$ by
 $(k/(k-1))^{n/2}$. The targeted search recorded under [Relation to
@@ -175,7 +178,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 39 mutations, 37 are killed outright, one
+  that something breaks. Of 41 mutations, 39 are killed outright, one
   survives — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
@@ -240,10 +243,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 25 Coq files, then runs the axiom audit
+make verify        # builds all 26 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (137 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (153 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

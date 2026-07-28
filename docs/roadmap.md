@@ -333,7 +333,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 39 anecdotes into a coverage metric over the
+  mutation testing from 41 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -388,51 +388,76 @@ counterexample. The asymmetric form is the statement that is proved, and
 it was reached by the mutation runner rather than by design — see
 [`testing.md`](testing.md). Do not weaken it further.
 
-### The next target: the substitution recursion
+### Done, in part: the recursion reconstructed and its seed measured
 
-Abbott, Hanson and Sauer (*Intersection theorems for systems of sets*,
-JCTA 12 (1972) 381–389) reach `f(n,3) >= 10^(n/2 - c log n)` — a rate of
-`10^(1/2) = 3.162...` per point against the direct sum's
-`6^(1/2) = 2.449...`. The mechanism is **not** the direct sum. It is a
-*substitution* recursion
+The mechanism is **not** the direct sum. It is a *substitution*: blow up
+each point of a member of an `a`-uniform family into a member of a
+`b`-uniform one, on ground set `V x W`. That is `ab`-uniform with
+`|G| * |H|^a` members, and it is sunflower-free exactly when the **inner
+family is intersecting** — that is what makes the projection to `V` a
+delta-system, since `phi_i(v)` and `phi_j(v)` then always meet.
+
+So the quantity that matters is
 
 ```
-g(ab) >= g(a) * g(b)^a
+iota(b)  =  the largest *intersecting* 3-sunflower-free b-uniform family
 ```
 
-— the direct sum only gives `g(ab) >= g(b)^a`, so the extra factor
-`g(a)` is the whole difference. Iterating it from a base at uniformity
-`a` drives the per-point rate to the fixed point of
-`c = c(a)^(1/b) * c(b)`, which at `a = b = 3` is `g(3)^(3/2)`; with
-`g(3) = 10` that is exactly `10^(1/2)`. The published rate and the
-published recursion agree, which is the check that says the recursion
-was transcribed correctly.
+and three things follow, all checked:
 
-Formalising it is the natural successor to `DirectSum.v` and reuses its
-whole apparatus (relabelling, the split-at-the-boundary argument). The
-construction is a blow-up: replace each point of a member of the
-`a`-uniform family by a copy of the `b`-uniform family. **What has not
-been checked is which side condition makes it sunflower-free** — the
-naive version is false, because two petals can meet inside a block
-without meeting outside it, so the projection to the `a`-uniform family
-is not a `Δ`-system. An intersecting inner family is the obvious repair
-and was not verified against the source. Settle that *computationally
-first*, the way `rust/tests/link_characterisation.rs` settled the link
-characterisation, before writing any Coq.
+* **Doubling.** `g(b) >= 2 iota(b)`, because two disjoint copies of an
+  intersecting sunflower-free family are sunflower-free. Formalised:
+  `Intersecting.doubling_lower_bound`. At `b = 2` this *is*
+  `two_triangles`, so it generalises the construction behind
+  `f(2,3) = 7`.
+* **Substitution.** `g(ab) >= g(a) * iota(b)^a`. Verified
+  computationally in `rust/tests/intersecting.rs` (`g(4) >= 54` and
+  `g(6) >= 600`, against the direct sum's 36 and 216), with a control
+  showing it breaks the moment the inner family is not intersecting.
+  **Not formalised** — see below.
+* **The rate.** Iterating has fixed point `c^b = c * iota(b)`, i.e.
+  `iota(b)^(1/(b-1))` per point.
 
-Two caveats on the citation, both load-bearing:
+Measured exhaustively (`rust/examples/iota_scan.rs`):
 
-* the paper was **not read** — this is from secondary sources. The rate
-  and the recursion corroborate each other. **Correction to an earlier
-  note here:** the reported seed, "a 3-uniform family of size 10", was
-  written up as contradicting `g(3,3) >= 12` from the direct sum. It
-  does not. `rust/examples/ground_scan.rs` measures `N(3,6) = 10`
-  exactly — the seed is the maximum on *six* points, and the direct
-  sum's 12 lives on eight. Two different quantities, both correct;
-* the correction `10^(-c log n)` is **not a constant** — it is
-  `n^(-2.303c)` for natural log — so "AHS beats `3^n` from about `n = 30`"
-  is wrong. The crossover solves `0.0527 n > 2.303 c ln n`, and with `c`
-  unquoted the honest answer is "somewhere in the hundreds at least".
+```
+  iota(2) = 3   (the triangle, on 3 points)      rate 3
+  iota(3) = 10  (on 6 points, stable to 12)      rate 10^(1/2) = 3.1623
+  iota(4) >= 24 (on 8 points, still climbing)
+```
+
+`iota(3) = 10` gives exactly the published 1972 constant. **On this
+reading, `iota(3) = 10` is the content of that paper.** The paper was
+still not read; that the reconstruction reproduces both `iota(2) = 3`
+with `g(2) = 6` and the published `3.162` is the evidence for it.
+
+### The two things to do next, in order
+
+**1. Push `iota(4)`.** The record moves the moment some `b` has
+`iota(b) > 10^((b-1)/2)`:
+
+```
+  b = 4   needs iota(4) >=  32     (have >= 24 at ground 8)
+  b = 5   needs iota(5) >= 101
+  b = 6   needs iota(6) >= 317
+```
+
+`iota(2)` plateaus at ground 3 and `iota(3)` at ground 6, so `iota(4)`
+plausibly plateaus around ground 9 — which is exactly where the search
+stops finishing. The symmetry reduction (anchor a member at
+`{0,...,b-1}`, keep only the sets meeting it) is already in; the next
+one to add is a bound better than "everything remaining could be added".
+**This is the highest-value computation in the repository.**
+
+**2. Formalise the substitution.** It is verified but not proved, and it
+is the difference between a rate of `20^(1/3) = 2.714` (what the
+doubling plus `DirectSum.lower_bound_power` gives, and what is proved)
+and `10^(1/2) = 3.162` (what AHS reach). The construction decomposes as
+`substitute(G,H) = union over A in G of (direct sum over v in A of H_v)`,
+so `DirectSum` supplies most of the machinery; what is new is the
+projection argument and the case analysis on how many of the three
+outer sets coincide. Estimated a session on its own. Do not start it in
+the same session as anything else.
 
 ### What the AHS bound already settles about the spread threshold
 

@@ -459,7 +459,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-39 mutations, all with the outcome the manifest declares: 37 killed
+41 mutations, all with the outcome the manifest declares: 39 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:
@@ -628,6 +628,39 @@ warnings` on the Rust side.
   checked exhaustively; everywhere else `tools/audited.txt` is curated
   by hand, so a theorem added elsewhere can still go unaudited. Driving
   the list from source annotations is the fix, and is on the roadmap.
+
+### A fifth: checking a reconstruction against the literature
+
+`rust/tests/intersecting.rs` tests something unusual — not a statement
+about to be proved, but a *reading* of a paper nobody here has read.
+
+The Abbott–Hanson–Sauer rate of `3.162...` was reverse-engineered into a
+substitution recursion whose fixed point is `iota(b)^(1/(b-1))`, with
+`iota(b)` the largest *intersecting* sunflower-free `b`-uniform family.
+A reconstruction like that is a guess, and the way to treat a guess is
+to look for the ways it could be wrong:
+
+* it predicts `iota(2) = 3` with the doubling equal to `two_triangles`,
+  the family behind the proved value `f(2,3) = 7`. Measured: 3, and the
+  doubling is `two_triangles` relabelled (`Audit.doubling_at_b_2_is_two_triangles`);
+* it predicts a rate of `iota(3)^(1/2)`, so the published `3.162` means
+  `iota(3) = 10`. Measured exhaustively: 10, first attained on six
+  points and stable to twelve;
+* it predicts the substitution is sunflower-free *only* because the
+  inner family is intersecting. Both halves are checked: the
+  construction is sunflower-free at two instances (`g(4) >= 54`,
+  `g(6) >= 600`) and stops being so the moment one member of the inner
+  family is swapped for a disjoint one.
+
+Three independent predictions, three hits, and the failure mode is
+exercised rather than assumed. That is what the confidence rests on —
+not on the reconstruction being obvious, which it is not.
+
+The doubling half is then proved in Coq (`Intersecting.doubling_lower_bound`)
+and its hypothesis pinned by a counterexample
+(`Audit.intersecting_is_needed_in_the_doubling`). **The substitution half
+is not proved**, and the difference is a factor in the rate: `20^(1/3)`
+proved against `10^(1/2)` verified. `docs/roadmap.md` §5 says so.
 
 ### A fourth: measuring where a question starts
 
