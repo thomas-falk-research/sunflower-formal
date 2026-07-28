@@ -19,3 +19,7 @@ rust/Cargo.lock
 *.swp
 .DS_Store
 .Makefile.coq.d
+
+# Python bytecode (tools/)
+__pycache__/
+*.pyc

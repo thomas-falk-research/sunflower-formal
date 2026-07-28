@@ -7,7 +7,8 @@ matching exponential lower bound, the first nontrivial exact value
 proof**, constructive Hall and Kőnig theorems for the supporting
 matching theory, and a precise formal statement of the open
 conjecture — together with a Rust computational companion that
-cross-checks the small cases by brute force.
+cross-checks the small cases by brute force, and a testing layer
+aimed at the errors the kernel cannot catch.
 
 Everything compiles with stock **Coq 8.18** and the standard library
 only (no Mathematical Components, no Flocq, no plugins beyond `lia`).
@@ -49,6 +50,8 @@ claim progress on it. What is machine-checked here is the complete
 | 2020 spread lemma | $r$-spread $\Rightarrow k$ disjoint members for $r \ge Ck\log(nk)$ — **the one named axiom**, cited | `coq/ALWZ.v` |
 | ALWZ/Rao 2020 bound | $f(n,k) \le (Ck\log(nk))^n + 1$ — **derived** from that axiom alone | `coq/ALWZ.v` |
 | The conjecture itself | formal statement, **open** | `coq/Conjecture.v` |
+| Definition audit | complementarity of the bounds, encoding-invariance, non-vacuity of the axiom's shape | `coq/Audit.v` |
+| Differential spread checker | a second decision procedure, proved to agree with the first | `coq/Reflect.v` |
 
 So the function is bracketed
 $(k-1)^n + 1 \le f(n,k) \le (k-1)^n\, n! + 1$, with exact values at
@@ -116,6 +119,30 @@ Highlights of the less-routine parts:
   hypothesis of the axiom (with the conclusion) is certified by
   `vm_compute` as a standing non-vacuity guard.
 
+- **Testing what the kernel cannot check.** Both errors this
+  development has produced were errors of *statement*, not of proof: a
+  spread definition that quantified over lists with repeats and so
+  forced every member to be empty, and an axiom stated with the
+  fractional spread condition where the source uses the absolute one.
+  Neither could fail a build. Four mechanisms now target that class of
+  error — coherence theorems that would derive `False` if two of the
+  development's own bounds contradicted each other (`coq/Audit.v`); a
+  second, independently-implemented spread decision procedure proved
+  to agree with the first (`coq/Reflect.v`); an exhaustive search for
+  counterexamples to the axiom's shape over small ground sets
+  (`make testbed`); and mutation testing of the definitions
+  (`make mutants`), which weakens one hypothesis at a time and checks
+  that something breaks. Of 23 mutations, 22 are killed outright and
+  one is killed only at the level of tactics — a distinction the
+  harness verifies by applying declared repairs, rather than asserting.
+  See [`docs/testing.md`](docs/testing.md).
+
+  The search found the five-cycle, which is now a theorem: together
+  with the disjoint-blocks family it shows the axiom's conclusion is
+  *false* below `r = k-1`, while `spread_disjoint_above_elementary`
+  shows it is *true* above `r = n(k-1)`. The axiom asserts something
+  about the gap in between — neither vacuous nor already proved.
+
 - **The conjecture, restated without sunflowers.** Because the
   reduction is lossless — it gives exactly $r^n$ — a spread lemma whose
   threshold does not grow with $n$ would settle the conjecture.
@@ -127,10 +154,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 17 Coq files, then runs the axiom audit
+make verify        # builds all 19 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (26 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (49 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
@@ -155,12 +182,23 @@ CI gates on the count, on no closed theorem listing `Axioms:`, and on
 exactly one axiom name appearing under the modern bound.
 
 Requirements: Coq 8.18 (`apt-get install coq` on Ubuntu 24.04).
-The Rust cross-checks (22 brute-force assertions tying the formal
-bounds to concrete instances):
+The Rust cross-checks (brute-force assertions tying the formal bounds
+to concrete instances, plus the falsification testbed below):
 
 ```bash
 cd rust && cargo test --release
 ```
+
+Two further checks target what `Print Assumptions` cannot see — whether
+the *definitions* say what their names claim:
+
+```bash
+make mutants       # weaken each definition in turn; see what breaks
+make testbed       # exhaustive falsification of the spread hypothesis
+```
+
+Both are CI jobs. The methodology, and what it does and does not
+cover, is in [`docs/testing.md`](docs/testing.md).
 
 Per-theorem status, including exactly what is and is not proved, is
 tracked in [`STATUS.md`](STATUS.md).
@@ -235,7 +273,8 @@ assistance (Anthropic's Claude), directed and reviewed by the
 maintainer. Correctness does not rest on how the proofs were
 written: every theorem is independently checked by the Coq kernel,
 and the `make verify` audit prints the assumption set of each
-headline theorem. The one axiom in the development is a *published*
+headline theorem, with `make mutants` and `make testbed` attacking the
+definitions themselves. The one axiom in the development is a *published*
 theorem (ALWZ 2020) recorded as such, not a gap being papered over.
 
 ## License

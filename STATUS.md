@@ -39,6 +39,20 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `spread_singletons`, `elementary_applies_to_singletons` | `coq/ALWZ.v` | Reflective non-vacuity witnesses: a concrete spread family, and a concrete instance run through every hypothesis of the axiom's shape to its conclusion |
 | `k_pairwise_disjoint_sunflower` | `coq/Sunflower.v` | `k` pairwise-disjoint nonempty sets are a `k`-sunflower with empty core |
 | `max_disjoint_cover` | `coq/ErdosRado.v` | Greedy construction of a maximal-disjoint covering subfamily |
+| `spread_disjoint_above_elementary` | `coq/SpreadReduction.v` | The elementary spread lemma for *every* `r > n(k-1)`, not just `r = n(k-1)+1` — the upper half of the axiom's truth sandwich |
+| `rao_spreadb_correct`, `rao_witness_agrees`, `rao_witness_complete` | `coq/Reflect.v` | A second decision procedure for `RaoSpread`, searching the subsets of an explicit ground set, proved to return the same verdict as `Spread.rao_witness` on every input — a differential test between two independent searches, discharged by the kernel |
+| `lower_bound_excludes_upper`, `lower_lt_upper` | `coq/Audit.v` | **`UpperBound` and `LowerBound` are complementary**, and every lower bound lies strictly below every upper bound |
+| `no_upper_bound_below_exponential` | `coq/Audit.v` | `~ UpperBound n k m` for every `m ≤ (k-1)^n` — the first quantified refutation of `UpperBound` in the development |
+| `LowerBound_antitone`, `LowerBound_ge_equiv` | `coq/Audit.v` | `LowerBound` is downward closed, and the `= m` and `≥ m` forms of it define the same predicate |
+| `ContainsKSunflower_equiv`, `ContainsKSunflower_perm` | `coq/Audit.v` | Containing a sunflower is a property of the family *of sets*: invariant under permuting the family and under set-equal replacement of members |
+| `sunflower_core_unique` | `coq/Audit.v` | A sunflower with at least two petals determines its core up to `SetEq` |
+| `distinct_strictly_stronger` | `coq/Audit.v` | `[[0;1];[1;0]]` is `NoDup` and not `Distinct` — the design choice is not cosmetic |
+| `pairwise_disjoint_ground_bound` | `coq/Audit.v` | `k` pairwise disjoint `m`-sets need `km` ground elements |
+| `no_k_disjoint_of_no_sunflower` | `coq/Audit.v` | A sunflower-free family has no `k` pairwise disjoint members — the bridge that makes every sunflower-free family in the repository a candidate counterexample to the spread hypothesis |
+| `spread_yields_disjoint_below_threshold`, `spread_yields_disjoint_needs_r` | `coq/Audit.v` | **The axiom's shape is false** whenever `r^m < k-1`; at `m = 1`, whenever `r < k-1` |
+| `spread_yields_disjoint_sandwich` | `coq/Audit.v` | **False below `k-1`, true above `n(k-1)`** — the axiom asserts something about the gap, and is neither vacuous nor already proved |
+| `no_spread_yields_disjoint_2_3_2`, `..._alt` | `coq/Audit.v` | `~ SpreadYieldsDisjoint 2 3 2`, proved twice by disjoint arguments: the five-cycle via the ground-set bound, and `two_triangles` via the reflective 3-sunflower detector |
+| `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
 
@@ -111,7 +125,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (26 of them). The current
+for every theorem in the "Closed" table (49 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -120,14 +134,14 @@ any closed theorem (confirmed by `Print Assumptions`).
 full assumption set of `ALWZ.sunflower_bound_from_spread_lemma` — the
 one theorem that does use the axiom — so the exact statement being
 trusted is visible in the build log rather than buried in a source
-file. CI gates on both: 22 `Closed under the global context` lines, no
+file. CI gates on both: 49 `Closed under the global context` lines, no
 closed theorem listing `Axioms:`, and exactly one axiom name under the
 modern bound.
 
 To verify directly:
 
 ```bash
-echo 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound SmallCases Pigeonhole SpreadReduction ALWZ.
+echo 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound SmallCases Pigeonhole SpreadReduction ALWZ Reflect Audit.
 Print Assumptions ErdosRado.erdos_rado_upper_bound.
 Print Assumptions ErdosRado_Greedy.erdos_rado_via_greedy.
 Print Assumptions LowerBound.lower_bound_trivial.
@@ -137,9 +151,48 @@ Print Assumptions SmallCases.f_1_k_eq_k.
 Print Assumptions Pigeonhole.pigeonhole_family.
 Print Assumptions SpreadReduction.spread_reduction.
 Print Assumptions SpreadReduction.spread_erdos_rado.
-Print Assumptions ALWZ.sunflower_bound_from_spread_lemma.' | coqtop -Q coq Sunflower 2>&1 | grep -B 1 "Closed\|Axioms"
+Print Assumptions ALWZ.sunflower_bound_from_spread_lemma.
+Print Assumptions Audit.spread_yields_disjoint_sandwich.
+Print Assumptions Reflect.rao_witness_agrees.' | coqtop -Q coq Sunflower 2>&1 | grep -B 1 "Closed\|Axioms"
 ```
 
 The Rust companion in `rust/` is an *independent* computational
-cross-check; see `rust/tests/small_cases.rs` for the 22 brute-force
-assertions tying the formal bounds to concrete instances.
+cross-check; see `rust/tests/small_cases.rs` for the brute-force
+assertions tying the formal bounds to concrete instances, and
+`rust/tests/spread_axiom.rs` for the falsification testbed.
+
+## Definition-level testing
+
+`Print Assumptions` says nothing about whether a definition means what
+its name claims, which is the failure mode this development has
+produced twice. Three further checks target it; the methodology, and
+what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
+
+| Check | Command | What it would catch |
+|---|---|---|
+| Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
+| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it |
+| Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
+
+Current mutation results: 23 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 22 killed outright, one
+(`lowerbound-at-least`) killed only at the level of tactic scripts,
+which the harness establishes by applying declared repairs that touch
+no statement, and which `Audit.LowerBound_ge_equiv` explains as a
+theorem. None survive.
+
+The empirical spread thresholds from `make testbed`, all of them at or
+below the value proved sufficient by
+`SpreadReduction.spread_disjoint_above_elementary`, and exactly `k-1`
+at uniformity 1:
+
+```
+  ground  m   k   empirical r*   proved sufficient   refuted r
+       6  1   3              2                   3   1
+       8  1   4              3                   4   1,2
+       8  1   5              4                   5   1,2,3
+       5  2   3              3                   5   1,2
+       8  2   3              3                   5   1,2
+       8  2   4              4                   7   1,2,3
+       7  3   3              3                   7   1,2
+```

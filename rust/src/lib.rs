@@ -20,7 +20,11 @@
 pub mod sunflower;
 pub mod bounds;
 pub mod construction;
+pub mod spread;
+pub mod testbed;
 
 pub use sunflower::{find_k_sunflower, is_k_sunflower, Sunflower};
 pub use bounds::{erdos_rado_bound, f_nk_exact};
 pub use construction::{disjoint_blocks, product_family};
+pub use spread::{has_k_disjoint, is_rao_spread, matching_number};
+pub use testbed::{find_counterexample, search, verify_counterexample};
