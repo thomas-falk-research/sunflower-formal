@@ -17,7 +17,7 @@
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower ErdosRado LowerBound.
+From Sunflower Require Import Sets Sunflower ErdosRado LowerBound SpreadReduction.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -45,6 +45,15 @@ Theorem theorem_trivial_lower :
   forall n k, 1 <= n -> 2 <= k -> LowerBound n k (k - 1).
 Proof. apply lower_bound_trivial. Qed.
 
+(** An independent upper bound of the same quality, obtained through
+    the *spread framework* of the 2020 proof rather than the 1960
+    argument, with the spread lemma replaced by its elementary
+    (parameter [n(k-1)+1]) instance. Axiom-free; see
+    [SpreadReduction.v]. *)
+Theorem theorem_spread_upper :
+  forall n k, 2 <= k -> UpperBound n k (S ((n * (k - 1) + 1) ^ n)).
+Proof. apply spread_erdos_rado. Qed.
+
 (** ** The conjecture *)
 
 (** The open Erdős–Rado Sunflower Conjecture, stated as a formal Coq
@@ -70,6 +79,40 @@ Definition sunflower_conjecture_k_3 : Prop :=
   exists c : nat,
     forall n, 1 <= n -> UpperBound n 3 (S (c ^ n)).
 
+(** ** The conjecture restated in spread terms
+
+    [SpreadReduction.spread_reduction] gives [f(n,k) ≤ r^n + 1] from a
+    spread lemma with threshold [r]. The bound is *exactly* the
+    threshold raised to the uniformity — the reduction loses nothing —
+    so a spread lemma whose threshold does not grow with [n] would
+    settle the conjecture. That gives the following sufficient
+    condition, in which no sunflower appears at all:
+
+    > is there, for each [k], a constant [c k] such that every
+    > [c k]-spread family of more than [(c k)^n] sets of size [n]
+    > contains [k] pairwise disjoint members?
+
+    The known thresholds are [Θ(k log n)] (Bell–Chueluecha–Warnke) and
+    [Θ(k log (nk))] (Rao); removing the dependence on [n] is open. *)
+
+Definition spread_conjecture : Prop :=
+  exists c : nat -> nat,
+    (forall k, 2 <= k -> 1 <= c k) /\
+    (forall n k, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)).
+
+Theorem spread_conjecture_suffices :
+  spread_conjecture -> sunflower_conjecture.
+Proof.
+  intros [c [Hpos Hsyd]].
+  exists (fun k => Nat.max (k - 1) (c k)); split.
+  - intros k Hk; apply Nat.le_max_l.
+  - intros n k Hn Hk.
+    apply UpperBound_mono with (m := S ((c k) ^ n)).
+    + apply (@spread_reduction_top n k (c k)); [lia | apply Hpos; lia|].
+      apply Hsyd; lia.
+    + apply le_n_S, Nat.pow_le_mono_l, Nat.le_max_r.
+Qed.
+
 (** [sunflower_conjecture] implies [sunflower_conjecture_k_3]. *)
 
 Theorem k3_corollary :
@@ -86,14 +129,17 @@ Qed.
 
     - [sunflower_conjecture] itself (the open problem since 1960).
 
-    - The Alweiss–Lovett–Wu–Zhang 2020 bound
-      [forall n k, UpperBound n k (S ((C * k * log n)^n))]
-      for some absolute constant [C] — sketched in
-      [docs/spread_framework.md] but not formalised here (it requires
-      a real-analysis layer for the probabilistic argument). The Coq
-      statement is in [Spread.v] as an unproved [Axiom] tagged with
-      its literature citation; nothing in [ErdosRado.v] or
-      [LowerBound.v] depends on it.
+    - The *spread lemma* of Alweiss–Lovett–Wu–Zhang 2020 / Rao 2020:
+      "an [r]-spread family of sets of size at most [n] contains [k]
+      pairwise disjoint members once [r ≳ k log(nk)]". This is the one
+      [Axiom] of the development, stated in [ALWZ.v] with its
+      citations. Note what is *not* assumed: the passage from that
+      lemma to the bound
+      [UpperBound n k (S ((C * k * log (n*k))^n))] is proved, in
+      [SpreadReduction.spread_reduction], and the same reduction proves
+      the axiom-free [theorem_spread_upper] above. Nothing in
+      [ErdosRado.v], [LowerBound.v], [SpreadReduction.v] or this file
+      depends on the axiom.
 
     - Kostochka's [f(n, k) = o(n!)] refinement (1997), again
       unformalised. *)

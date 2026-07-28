@@ -14,11 +14,19 @@ keywords:
   - Hall's marriage theorem
   - Kőnig's theorem
   - combinatorics
+  - spread families
+  - Alweiss-Lovett-Wu-Zhang
 license: MIT
 abstract: >-
   Machine-checked Coq (8.18, stdlib-only) proofs of the Erdős–Rado
   sunflower upper bound, the matching exponential lower bound
   f(n,k) >= (k-1)^n + 1, the exact value f(2,3) = 7, and constructive
-  Hall and Kőnig theorems; the open Sunflower Conjecture is stated
-  formally, and the single axiom in the development is the published
-  Alweiss–Lovett–Wu–Zhang 2020 bound, cited and used by nothing.
+  Hall and Kőnig theorems. The deterministic half of the 2020
+  Alweiss-Lovett-Wu-Zhang / Rao spread argument is formalised: the
+  reduction "every r-spread family of small sets has k pairwise
+  disjoint members implies f(n,k) <= r^n + 1" is proved, and yields an
+  unconditional bound f(n,k) <= (n(k-1)+1)^n + 1 when instantiated
+  with an elementary spread lemma proved here. The open Sunflower
+  Conjecture is stated formally, and the single axiom in the
+  development is the published 2020 spread lemma, cited and used only
+  by the one theorem explicitly derived from it.
