@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
 
+# A superseded run tells you nothing; cancel it rather than pay for it.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   coq:
     name: Coq proofs + axiom audit
@@ -21,8 +26,8 @@ jobs:
       - name: Gate - every audited theorem must be closed
         run: |
           closed=$(grep -c "Closed under the global context" /tmp/verify.log)
-          echo "closed theorems: $closed (expected 26)"
-          test "$closed" -eq 26
+          echo "closed theorems: $closed (expected 51)"
+          test "$closed" -eq 51
           # No theorem in the closed table may depend on an axiom.
           ! grep -E '^  [A-Za-z_]+\.[A-Za-z_0-9]+ +Axioms:' /tmp/verify.log
       - name: Gate - the 2020 bound depends on exactly the spread-lemma axiom
@@ -34,12 +39,72 @@ jobs:
           echo "axioms used by the modern bound: $names (expected 1)"
           test "$names" -eq 1
 
-  rust:
-    name: Rust brute-force cross-checks
+  coqchk:
+    name: Independent re-check (coqchk)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Run the 22 small-case assertions
+      - name: Install Coq 8.18
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      # coqchk re-typechecks the compiled proof terms with its own kernel
+      # implementation -- no elaborator, no tactics, no unification. Unlike
+      # the Print Assumptions audit above, which reports on a list of
+      # theorem names the Makefile happens to enumerate, this covers every
+      # constant in every module.
+      - name: Re-check every module with the separate kernel checker
+        run: |
+          make coqchk 2>&1 | tee /tmp/coqchk.log
+      - name: Gate - whole-library assumption census
+        run: |
+          # An Admitted lemma, a second Axiom, or a global Parameter
+          # anywhere in the 19 modules would appear here. Exactly one name
+          # is allowed, and it is the cited one.
+          axioms=$(grep -E '^    Sunflower\.' /tmp/coqchk.log | tr -d '[:space:]')
+          echo "library axioms: [$axioms]"
+          test "$axioms" = "Sunflower.ALWZ.Rao20_lemma2"
+      - name: Gate - no kernel escape hatches anywhere
+        run: |
+          grep -q 'relying on type-in-type: <none>' /tmp/coqchk.log
+          grep -q 'relying on unsafe (co)fixpoints: <none>' /tmp/coqchk.log
+          grep -q 'positivity is assumed: <none>' /tmp/coqchk.log
+
+  mutants:
+    name: Mutation testing of the definitions
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Coq 8.18
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+      # Each mutation weakens one definition and rebuilds. The manifest
+      # in tools/mutations.toml declares the outcome expected for each;
+      # the runner exits nonzero if any differs, so a hypothesis that
+      # silently stops being load-bearing fails the build. The manifest
+      # also carries a positive control -- a semantically inert edit that
+      # must survive -- so a harness failing to apply its edits at all
+      # cannot pass by reporting everything killed.
+      - name: Perturb each definition and check what breaks
+        run: |
+          make mutants MUTANT_JOBS=3
+
+  rust:
+    name: Rust cross-checks + spread falsification testbed
+    runs-on: ubuntu-24.04
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+      - uses: actions/checkout@v4
+      - name: Small-case brute-force cross-checks
         run: |
           cd rust
-          cargo test --release
+          cargo test --release --test small_cases
+          cargo test --release --lib
+      # Exhaustive search over families of m-subsets of a small ground
+      # set, looking for counterexamples to the spread hypothesis at
+      # parameters where the proved theorems say there can be none.
+      - name: Spread falsification testbed
+        run: |
+          make testbed

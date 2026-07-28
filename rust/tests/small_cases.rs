@@ -102,7 +102,7 @@ fn product_family_3_2_no_4_sunflower() {
 // should be at most that. (For all tested small cases.)
 
 #[test]
-fn f_2_3_within_ER_bound() {
+fn f_2_3_within_er_bound() {
     let (m, _) = f_nk_exact(2, 3, 5);
     let er = sunflower_formal::bounds::erdos_rado_bound(2, 3);
     // Theorem: f(n,k) <= ER_bound(n,k). Strict for small cases.

@@ -96,6 +96,20 @@ Proof.
   apply H; auto; lia.
 Qed.
 
+Lemma Uniform_NoDup : forall n F,
+    Uniform n F -> Forall (fun A : list nat => NoDup A) F.
+Proof.
+  unfold Uniform; intros n F HF.
+  rewrite Forall_forall in *; intros A HA; destruct (HF A HA); assumption.
+Qed.
+
+Lemma Uniform_length : forall n F A,
+    Uniform n F -> In A F -> length A = n.
+Proof.
+  unfold Uniform; intros n F A HF HA.
+  rewrite Forall_forall in HF; destruct (HF A HA); assumption.
+Qed.
+
 Lemma Uniform_sublist : forall n F S,
     Uniform n F -> incl S F -> Uniform n S.
 Proof.

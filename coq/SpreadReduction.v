@@ -192,16 +192,24 @@ Qed.
     [|Scov| ≥ k] we are done. Otherwise [X = ⋃ Scov] has at most
     [(k-1)·m ≤ (k-1)·n < r] elements and every member of [F] meets [X],
     so by pigeonhole some [x ∈ X] satisfies [|X|·deg{x} ≥ |F|]; since
-    [r > |X|] this gives [r·deg{x} > |F|], contradicting spreadness. *)
+    [r > |X|] this gives [r·deg{x} > |F|], contradicting spreadness.
 
-Theorem elementary_spread_disjoint :
-  forall n k, 2 <= k -> SpreadYieldsDisjoint n k (n * (k - 1) + 1).
+    The argument needs nothing of [r] beyond [r > n(k-1)], so it is
+    stated for every such [r] rather than for the single value
+    [n(k-1)+1]. That matters for the audit: [SpreadYieldsDisjoint] is
+    *not* monotone in [r] on general grounds — raising [r] weakens the
+    spread hypothesis but also raises the size threshold [r^m] — so
+    "true for all large [r]" has to be proved, and is proved here.
+    [Audit.spread_yields_disjoint_sandwich] pairs it with a matching
+    refutation below [k-1]. *)
+
+Theorem spread_disjoint_above_elementary :
+  forall n k r, 2 <= k -> n * (k - 1) < r -> SpreadYieldsDisjoint n k r.
 Proof.
-  intros n k Hk m F Hm Hmn HU HD Hbig Hsp.
-  set (r := n * (k - 1) + 1) in *.
-  assert (Hr1 : 1 <= r) by (unfold r; nia).
+  intros n k r Hk Hrbig m F Hm Hmn HU HD Hbig Hsp.
+  assert (Hr1 : 1 <= r) by nia.
   assert (HFpos : 1 <= length F).
-  { pose proof (pow_pos m Hr1) as Hp; unfold r in *; lia. }
+  { pose proof (pow_pos m Hr1) as Hp; lia. }
   assert (HFne : Forall (fun A : list nat => A <> []) F).
   { apply Forall_forall; intros A HA.
     unfold Uniform in HU; rewrite Forall_forall in HU.
@@ -228,7 +236,7 @@ Proof.
       apply Hincl in HB. unfold Uniform in HU.
       rewrite Forall_forall in HU; apply HU; exact HB. }
     assert (HXlt : length X < r).
-    { unfold r. assert (Hs : length Scov <= k - 1) by lia. nia. }
+    { assert (Hs : length Scov <= k - 1) by lia. nia. }
     assert (HXpos : 1 <= length X).
     { destruct (Nat.eq_dec (length X) 0) as [E0 | Hne0]; [|lia].
       exfalso. apply length_zero_iff_nil in E0.
@@ -259,6 +267,10 @@ Proof.
       by (rewrite <- Hstep; apply Nat.mul_le_mono_l; exact Hsp).
     nia.
 Qed.
+
+Corollary elementary_spread_disjoint :
+  forall n k, 2 <= k -> SpreadYieldsDisjoint n k (n * (k - 1) + 1).
+Proof. intros n k Hk; apply spread_disjoint_above_elementary; lia. Qed.
 
 (** ** An unconditional bound, proved through the spread framework
 

@@ -33,52 +33,15 @@
 
 From Coq Require Import List Arith Lia Bool.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower LowerBound ProductLowerBound.
+From Sunflower Require Import Sets Sunflower LowerBound ProductLowerBound Reflect.
 Import ListNotations.
 
-(** ** Boolean certificates *)
+(** ** Boolean certificates
 
-Fixpoint nodupb (l : list nat) : bool :=
-  match l with
-  | [] => true
-  | x :: r => negb (memb x r) && nodupb r
-  end.
-
-Lemma nodupb_NoDup : forall l, nodupb l = true -> NoDup l.
-Proof.
-  induction l as [|x r IH]; simpl; intros H; [constructor|].
-  apply andb_true_iff in H as [H1 H2].
-  constructor; [|apply IH; exact H2].
-  apply negb_true_iff in H1. rewrite memb_false_iff in H1. exact H1.
-Qed.
-
-Definition uniform2b (F : Family) : bool :=
-  forallb (fun A => (length A =? 2) && nodupb A) F.
-
-Lemma uniform2b_Uniform : forall F, uniform2b F = true -> Uniform 2 F.
-Proof.
-  intros F H. apply Forall_forall. intros A HA.
-  unfold uniform2b in H. rewrite forallb_forall in H.
-  specialize (H A HA). apply andb_true_iff in H as [H1 H2].
-  split; [apply Nat.eqb_eq; exact H1 | apply nodupb_NoDup; exact H2].
-Qed.
-
-Fixpoint set_nodupb (F : Family) : bool :=
-  match F with
-  | [] => true
-  | A :: r => forallb (fun B => negb (seteqb A B)) r && set_nodupb r
-  end.
-
-Lemma set_nodupb_SetNoDup : forall F, set_nodupb F = true -> SetNoDup F.
-Proof.
-  induction F as [|A r IH]; simpl; intros H; [constructor|].
-  apply andb_true_iff in H as [H1 H2].
-  constructor; [|apply IH; exact H2].
-  intros B HB Hseq.
-  rewrite forallb_forall in H1. specialize (H1 B HB).
-  apply negb_true_iff in H1.
-  apply seteqb_correct in Hseq. congruence.
-Qed.
+    The generic certificates ([nodupb], [uniformb], [distinctb], and
+    their [iff] correctness lemmas) live in [Reflect.v]; only the
+    3-sunflower detector, which is specific to this file, is defined
+    here. *)
 
 (** A boolean 3-sunflower detector, complete with respect to
     [ContainsKSunflower 3]: any abstract 3-sunflower canonicalises
@@ -601,10 +564,10 @@ Definition two_triangles : Family :=
   [[0; 1]; [1; 2]; [0; 2]; [3; 4]; [4; 5]; [3; 5]].
 
 Lemma two_triangles_uniform : Uniform 2 two_triangles.
-Proof. apply uniform2b_Uniform. reflexivity. Qed.
+Proof. apply uniformb_correct. reflexivity. Qed.
 
 Lemma two_triangles_distinct : Distinct two_triangles.
-Proof. apply set_nodupb_SetNoDup. reflexivity. Qed.
+Proof. apply distinctb_correct. reflexivity. Qed.
 
 Lemma two_triangles_no_sunflower : ~ ContainsKSunflower 3 two_triangles.
 Proof.
