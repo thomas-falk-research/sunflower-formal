@@ -98,6 +98,19 @@ estimate. Both are marked below.
   Discrete Mathematics 8 (1974), 1–12. The source usually credited for
   the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
 
+- **[NaSa17]** E. Naslund, W. Sawin, *Upper bounds for sunflower-free
+  sets*. Forum of Mathematics Sigma 5 (2017), e15. The slice-rank
+  method — the machinery that settled cap set — applied to the sunflower
+  problem: a 3-sunflower-free family of subsets of $[n]$ has at most
+  $3(n+1)C^n$ members with $C = 3/2^{2/3} < 1.89$. A $constant^n$ bound
+  of exactly the conjectured shape, but in the **ground set** rather
+  than the uniformity. `coq/SliceRank.v` carries it as a hypothesis
+  (not an axiom) and proves that one further fact — that extremal
+  uniform families live on $O(m)$ points — would turn it into the
+  conjecture at $k = 3$. Constant confirmed against the abstract and
+  against a later paper improving the polynomial factor; the proof was
+  not read.
+
 - **[AHS72]** H. L. Abbott, D. Hanson, N. Sauer, *Intersection theorems
   for systems of sets*. Journal of Combinatorial Theory Series A 12
   (1972), 381–389. The best classical lower bound at $k = 3$:

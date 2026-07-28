@@ -145,6 +145,39 @@ thm Audit.the_direct_sum_route_proves_it
 thm Audit.f_4_3_at_least_37
 thm Audit.relabelling_separates_the_ground_sets
 thm Audit.uniformity_is_needed_in_the_direct_sum
+
+# Which restrictions of the spread lemma have content. The link
+# restriction is vacuous (the class of links is every uniform family);
+# the sunflower-free restriction is not, and is what the reduction
+# actually needs, so it is the weaker interface for a future proof of
+# Rao's Lemma 2.
+thm SpreadRestrictions.every_uniform_family_is_a_link
+thm SpreadRestrictions.every_uniform_family_IsLink
+thm SpreadRestrictions.link_restriction_is_vacuous
+thm SpreadRestrictions.every_sunflower_free_family_is_a_link
+thm SpreadRestrictions.lift_reflects_sunflowers
+thm SpreadRestrictions.syd_implies_sunflower_free_bound
+thm SpreadRestrictions.sunflower_free_bounded
+thm SpreadRestrictions.no_lower_bound_above
+thm Audit.two_triangles_is_a_link
+thm Audit.no_spread_bounds_sunflower_free_2_3_2
+
+# The polynomial method. The bridge lemma is unconditional; everything
+# downstream carries NaslundSawinBound and GroundBounded as hypotheses,
+# so all of it is closed under the global context.
+thm SliceRank.sunflower_iff_no_point_in_exactly_two
+thm SliceRank.ns_free_has_no_sunflower
+thm SliceRank.ns_bounds_by_ground_set
+thm SliceRank.bounded_ground_set_settles_k3
+thm SliceRank.bounded_ground_set_excludes_lower_bounds
+thm SliceRank.cube_bounded
+thm Audit.ns_exponential_is_load_bearing
+thm Audit.ground_bounded_at_m_2
+thm Audit.searched_beats_constructed_at_3_3
+thm Audit.bounds_coherent_3_3
+thm SliceRank.lower_bound_3_3_14
+thm SliceRank.no_upper_bound_3_3_14
+thm SliceRank.ground9_max_is_grounded
 thm Audit.sum_family_no_sunflower_right
 thm Audit.sum_family_comm_equiv
 
@@ -195,6 +228,22 @@ def DirectSum.rmapF
 def DirectSum.ev
 def DirectSum.od
 def Audit.ExponentialLowerBound
+
+# The two restricted spread hypotheses, and the two Props the
+# polynomial-method file carries rather than assumes. A drift in any of
+# these changes what is being claimed without changing any statement
+# that mentions them.
+def SpreadRestrictions.IsLink
+def SpreadRestrictions.SpreadYieldsDisjointOnLinks
+def SpreadRestrictions.SpreadBoundsSunflowerFree
+def SpreadRestrictions.lift_to_link
+def SpreadRestrictions.fresh_block
+def SliceRank.InExactlyTwo
+def SliceRank.NSSunflowerFree
+def SliceRank.Grounded
+def SliceRank.NaslundSawinBound
+def SliceRank.GroundBounded
+def SliceRank.ground9_max
 
 # The open statements, so "what is conjectured" cannot drift either.
 def Conjecture.sunflower_conjecture

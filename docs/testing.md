@@ -459,7 +459,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-35 mutations, all with the outcome the manifest declares: 33 killed
+39 mutations, all with the outcome the manifest declares: 37 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:
@@ -628,3 +628,42 @@ warnings` on the Rust side.
   checked exhaustively; everywhere else `tools/audited.txt` is curated
   by hand, so a theorem added elsewhere can still go unaudited. Driving
   the list from source annotations is the fix, and is on the roadmap.
+
+### A fourth: measuring where a question starts
+
+`rust/tests/ground_set.rs` is a different use of the same machinery. It
+does not falsify a statement about to be proved; it measures a quantity
+nobody here knew — `N(m,g)`, the largest `m`-uniform 3-sunflower-free
+family on `g` points — because `coq/SliceRank.v` shows that where that
+sequence plateaus is the one fact standing between the Naslund–Sawin
+bound and the sunflower conjecture at `k = 3`.
+
+Three guards, because a search is easier to believe than to check:
+
+* **against what is already proved.** `N(1,g)` must stabilise at 2 and
+  `N(2,g)` at 6, which are `f(1,3) = 3` and `f(2,3) = 7` — both exact
+  values with machine-checked proofs. A search disagreeing with
+  `F23.f_2_3_eq_7` would be broken, and this is the cheapest way to
+  find that out;
+* **against full enumeration.** At parameters small enough to enumerate
+  every subfamily, branch-and-bound must return the same maximum. The
+  pruning is where a max-search goes wrong, and the bound it uses is
+  the weak one, so this is not a formality;
+* **against itself.** `N(m,g)` is non-decreasing in `g` — a family on
+  `g` points is a family on `g+1`. A violation would mean the search
+  pruned something it should not have.
+
+The measurement then fed back into the Coq. `N(3,9) = 14` is the
+exhaustive maximum at nine points, and its witness transcribes to
+`SliceRank.lower_bound_3_3_14`: `f(3,3) >= 15`, where the direct sum
+reaches 13. The Coq side re-derives sunflower-freeness from the family
+with the reflective detector, so nothing is taken on the search's word —
+what the search supplied is a candidate, not a proof.
+
+It also corrected a claim written here one session earlier. The
+Abbott–Hanson–Sauer construction is reported to be seeded by a 3-uniform
+family of size 10; that had been written up as contradicting the direct
+sum's 12 at the same uniformity. `N(3,6) = 10` exactly — the seed is a
+maximum on *six* points and the direct sum's 12 lives on eight. Two
+different quantities, no contradiction, and the note said otherwise
+until something computed both.

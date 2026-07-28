@@ -42,7 +42,8 @@ From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
-     CliqueLowerBound F23 LinkCharacterisation DirectSum.
+     CliqueLowerBound F23 LinkCharacterisation DirectSum
+     SpreadRestrictions SliceRank.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -1061,3 +1062,160 @@ Qed.
     is where that is used, and the mutation [directsum-drop-cross] in
     [tools/mutations.toml] is what checks that no later proof quietly
     survives without it. *)
+
+(** ** The two restrictions of the spread lemma
+
+    [SpreadRestrictions] settles two readings of "the recursion's
+    families are special" in opposite directions. Both deserve a
+    non-vacuity check, because a restriction that turns out to be
+    vacuous and one that turns out to have content look identical until
+    someone checks. *)
+
+(** *** Is the link restriction really vacuous, or only unprovable?
+
+    Vacuous: [two_triangles] — a family with no obvious "I am a link"
+    about it — is exhibited as the link of an explicit 3-uniform family,
+    by computation rather than by the general theorem. If the
+    construction were wrong, this would not evaluate. *)
+
+Example two_triangles_is_a_link :
+  link (fresh_block two_triangles 1) (lift_to_link two_triangles 1)
+  = two_triangles
+  /\ length (lift_to_link two_triangles 1) = 6
+  /\ Uniform 3 (lift_to_link two_triangles 1).
+Proof.
+  split; [vm_compute; reflexivity|].
+  split; [vm_compute; reflexivity|].
+  apply uniformb_correct; vm_compute; reflexivity.
+Qed.
+
+(** *** Does the sunflower-free restriction have content?
+
+    It does, in the only sense available without proving the two
+    hypotheses inequivalent: it is *implied* by the unrestricted one
+    ([SpreadRestrictions.syd_implies_sunflower_free_bound]) and it is
+    enough to run the reduction, so the development asks for strictly
+    less than it did. What is checked here is that the weaker hypothesis
+    is not vacuous — it fails at parameters where the stronger one
+    fails, so it is not accidentally trivial.
+
+    At [(m,k,r) = (2,3,2)] the five-cycle is 2-spread with 5 > 4
+    members and sunflower-free, so it refutes the restricted form too. *)
+
+Lemma c5_no_sunflower : ~ ContainsKSunflower 3 c5.
+Proof.
+  intro Hc.
+  pose proof (sunflower3b_sound c5 Hc) as E; vm_compute in E; discriminate.
+Qed.
+
+Theorem no_spread_bounds_sunflower_free_2_3_2 :
+  ~ SpreadBoundsSunflowerFree 2 3 2.
+Proof.
+  intro H.
+  assert (Hb : length c5 <= 2 ^ 2).
+  { apply (H 2 c5); try lia.
+    - exact c5_uniform.
+    - exact c5_distinct.
+    - exact c5_no_sunflower.
+    - exact c5_rao_spread. }
+  vm_compute in Hb; lia.
+Qed.
+
+(** ** The polynomial method
+
+    [SliceRank] names the one fact that stands between Naslund–Sawin and
+    the conjecture at [k = 3]. Two things are worth pinning: that the
+    axiom's exponential is load-bearing rather than decoration, and that
+    the missing hypothesis is realised at the one exact value known
+    here. *)
+
+(** *** Is the exponential in [NaslundSawin] doing work?
+
+    Replace [C ^ n] by a linear function of the ground set and the
+    statement is false, witnessed by the product family: [prod_family 2 6]
+    is 64 sunflower-free 6-sets on 12 points, against [3 * (12 + 1) = 39].
+
+    So the axiom is not a weak statement dressed up — anything that
+    proves it has to see the exponential. *)
+
+Theorem ns_exponential_is_load_bearing :
+  ~ (forall (U : list nat) (F : Family),
+        NoDup U -> Distinct F -> Grounded F U ->
+        ~ ContainsKSunflower 3 F ->
+        length F <= 3 * (length U + 1)).
+Proof.
+  intro H.
+  assert (Hno : ~ ContainsKSunflower 3 (prod_family 2 6)).
+  { intro Hc.
+    destruct (contains_sunflower_literal 3 (prod_family 2 6) Hc)
+      as [S [core [Hincl [Hnd [Hlen Hsun]]]]].
+    exact (prod_family_no_literal_sunflower 2 3 ltac:(lia) ltac:(lia) 6 S core
+             Hincl Hnd Hlen Hsun). }
+  assert (Hb : length (prod_family 2 6) <= 3 * (length (seq 0 12) + 1)).
+  { apply H.
+    - apply seq_NoDup.
+    - apply prod_family_SetNoDup.
+    - intros A HA y Hy.
+      apply in_seq; split; [lia|].
+      pose proof (prod_family_bounded 2 6 A y HA Hy); lia.
+    - exact Hno. }
+  rewrite prod_family_length, seq_length in Hb.
+  vm_compute in Hb; lia.
+Qed.
+
+(** *** Is [GroundBounded] realised anywhere?
+
+    At the one exact value this development knows. [f(2,3) = 7], so the
+    extremal 2-uniform sunflower-free family has six members, and
+    [two_triangles] realises it on six points — [3 * m] with [m = 2].
+    That is the [m = 2] row of the table in [SliceRank]'s header,
+    machine-checked rather than measured. *)
+
+Example ground_bounded_at_m_2 :
+  Uniform 2 two_triangles /\ Distinct two_triangles
+  /\ length two_triangles = 6
+  /\ ~ ContainsKSunflower 3 two_triangles
+  /\ Grounded two_triangles (seq 0 6)
+  /\ length (seq 0 6) <= 3 * 2.
+Proof.
+  split; [apply uniformb_correct; vm_compute; reflexivity|].
+  split; [apply distinctb_correct; vm_compute; reflexivity|].
+  split; [vm_compute; reflexivity|].
+  split; [exact two_triangles_no_sunflower|].
+  split.
+  { unfold Grounded.
+    apply (proj1 (groundedb_correct two_triangles (seq 0 6))).
+    vm_compute; reflexivity. }
+  vm_compute; lia.
+Qed.
+
+(** *** Does the searched family beat the constructed one?
+
+    [SliceRank.lower_bound_3_3_14] comes from an exhaustive search;
+    [DirectSum.lower_bound_f_n_3_odd] at [t = 1] comes from a
+    construction. They are bounds on the same quantity, so they must be
+    comparable and the search must not be *below* the construction —
+    the search is exhaustive over nine points, and the direct-sum family
+    at uniformity 3 lives on eight, so it was inside the search space.
+
+    Derived from the two formal statements rather than restated: if the
+    search had returned something smaller than the construction, this
+    would be a proof that the construction is not what it says. *)
+
+Corollary searched_beats_constructed_at_3_3 :
+  LowerBound 3 3 12 /\ LowerBound 3 3 14 /\ 12 < 14.
+Proof.
+  split; [exact (lower_bound_f_n_3_odd 1)|].
+  split; [exact lower_bound_3_3_14 | lia].
+Qed.
+
+(** And it does not contradict either upper bound. *)
+
+Corollary bounds_coherent_3_3 : 14 < S (2 ^ 3 * fact 3) /\ 14 < S (7 ^ 3).
+Proof.
+  split.
+  - apply (@lower_lt_upper 3 3);
+      [exact lower_bound_3_3_14 | apply erdos_rado_upper_bound; lia].
+  - apply (@lower_lt_upper 3 3);
+      [exact lower_bound_3_3_14 | apply (@spread_erdos_rado 3 3); lia].
+Qed.

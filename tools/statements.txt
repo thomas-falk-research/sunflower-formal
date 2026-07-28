@@ -343,6 +343,75 @@ ce2d3fa830dac319  thm Audit.f_4_3_at_least_37
 b3d15fba701de0bd  thm Audit.uniformity_is_needed_in_the_direct_sum
     uniformity_is_needed_in_the_direct_sum : ~ ContainsKSunflower 3 ((0 :: nil) :: (0 :: 1 :: nil) :: nil)%list /\ ~ ContainsKSunflower 3 ((2 :: nil) :: (2 :: 3 :: nil) :: nil)%list /\ CrossDisjoint ((0 :: nil) :: (0 :: 1 :: nil) :: nil)%list ((2 :: nil) :: (2 :: 3 :: nil) :: nil)%list /\ Distinct (sum_family ((0 :: nil) :: (0 :: 1 :: nil) :: nil)%list ((2 :: nil) :: (2 :: 3 :: nil) :: nil)%list) /\ ContainsKSunflower 3 (sum_family ((0 :: nil) :: (0 :: 1 :: nil) :: nil)%list ((2 :: nil) :: (2 :: 3 :: nil) :: nil)%list)
 
+c516f365fab36867  thm SpreadRestrictions.every_uniform_family_is_a_link
+    every_uniform_family_is_a_link : forall (j d : nat) (G : Family), Uniform j G -> Distinct G -> link (fresh_block G d) (lift_to_link G d) = G /\ Uniform (d + j) (lift_to_link G d) /\ Distinct (lift_to_link G d) /\ length (fresh_block G d) = d /\ List.NoDup (fresh_block G d)
+
+15409099bf804234  thm SpreadRestrictions.every_uniform_family_IsLink
+    every_uniform_family_IsLink : forall (m : nat) (F : Family), Uniform m F -> Distinct F -> IsLink m F
+
+55d721691180e108  thm SpreadRestrictions.link_restriction_is_vacuous
+    link_restriction_is_vacuous : forall n k r : nat, SpreadYieldsDisjointOnLinks n k r -> SpreadYieldsDisjoint n k r
+
+5ddc5abc6655b44b  thm SpreadRestrictions.every_sunflower_free_family_is_a_link
+    every_sunflower_free_family_is_a_link : forall (k j d : nat) (G : Family), 2 <= k -> Uniform j G -> Distinct G -> ~ ContainsKSunflower k G -> Uniform (d + j) (lift_to_link G d) /\ Distinct (lift_to_link G d) /\ ~ ContainsKSunflower k (lift_to_link G d) /\ link (fresh_block G d) (lift_to_link G d) = G
+
+c631706f59ea4356  thm SpreadRestrictions.lift_reflects_sunflowers
+    lift_reflects_sunflowers : forall (k j d : nat) (G : Family), Uniform j G -> Distinct G -> ContainsKSunflower k G -> ContainsKSunflower k (lift_to_link G d)
+
+eed1758554688da4  thm SpreadRestrictions.syd_implies_sunflower_free_bound
+    syd_implies_sunflower_free_bound : forall n k r : nat, 2 <= k -> SpreadYieldsDisjoint n k r -> SpreadBoundsSunflowerFree n k r
+
+dd5eee677be2ae5c  thm SpreadRestrictions.sunflower_free_bounded
+    sunflower_free_bounded : forall n k r : nat, 2 <= k -> 1 <= r -> SpreadBoundsSunflowerFree n k r -> forall (m : nat) (F : Family), m <= n -> Uniform m F -> Distinct F -> ~ ContainsKSunflower k F -> length F <= PeanoNat.Nat.pow r m
+
+2f9c5ee962990024  thm SpreadRestrictions.no_lower_bound_above
+    no_lower_bound_above : forall n k r : nat, 2 <= k -> 1 <= r -> SpreadBoundsSunflowerFree n k r -> forall m j : nat, m <= n -> PeanoNat.Nat.pow r m < j -> ~ LowerBound m k j
+
+23cb435805cffd56  thm Audit.two_triangles_is_a_link
+    two_triangles_is_a_link : link (fresh_block two_triangles 1) (lift_to_link two_triangles 1) = two_triangles /\ length (lift_to_link two_triangles 1) = 6 /\ Uniform 3 (lift_to_link two_triangles 1)
+
+5e9c449b21ca0f33  thm Audit.no_spread_bounds_sunflower_free_2_3_2
+    no_spread_bounds_sunflower_free_2_3_2 : ~ SpreadBoundsSunflowerFree 2 3 2
+
+10d55eab4349bb64  thm SliceRank.sunflower_iff_no_point_in_exactly_two
+    sunflower_iff_no_point_in_exactly_two : forall A B C : list nat, SetEq (inter A B) (inter A C) /\ SetEq (inter A B) (inter B C) <-> (forall x : nat, ~ InExactlyTwo x A B C)
+
+1b27238b8e64963b  thm SliceRank.ns_free_has_no_sunflower
+    ns_free_has_no_sunflower : forall F : Family, NSSunflowerFree F -> ~ ContainsKSunflower 3 F
+
+f92cde5233c9e541  thm SliceRank.ns_bounds_by_ground_set
+    ns_bounds_by_ground_set : NaslundSawinBound -> forall (m : nat) (U : list nat) (F : Family), List.NoDup U -> Uniform m F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> PeanoNat.Nat.pow (length F) 3 * PeanoNat.Nat.pow 4 (length U) <= 27 * PeanoNat.Nat.pow (length U + 1) 3 * PeanoNat.Nat.pow 27 (length U)
+
+30fef48894b9c4f4  thm SliceRank.bounded_ground_set_settles_k3
+    bounded_ground_set_settles_k3 : NaslundSawinBound -> forall c : nat, 1 <= c -> GroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m
+
+9face5fd746f6638  thm SliceRank.bounded_ground_set_excludes_lower_bounds
+    bounded_ground_set_excludes_lower_bounds : NaslundSawinBound -> forall c : nat, 1 <= c -> GroundBounded c -> forall m j : nat, 1 <= m -> PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m < j -> ~ LowerBound m 3 j
+
+1be5f49bb399f3ac  thm SliceRank.cube_bounded
+    cube_bounded : forall n : nat, 1 <= n -> PeanoNat.Nat.pow n 3 <= PeanoNat.Nat.pow 8 n
+
+d7ac3d5054cb1e02  thm Audit.ns_exponential_is_load_bearing
+    ns_exponential_is_load_bearing : ~ (forall (U : list nat) (F : Family), List.NoDup U -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 3 * (length U + 1))
+
+a817cca2a0ae31c5  thm Audit.ground_bounded_at_m_2
+    ground_bounded_at_m_2 : Uniform 2 two_triangles /\ Distinct two_triangles /\ length two_triangles = 6 /\ ~ ContainsKSunflower 3 two_triangles /\ Grounded two_triangles (List.seq 0 6) /\ length (List.seq 0 6) <= 3 * 2
+
+f49d832129ab650d  thm Audit.searched_beats_constructed_at_3_3
+    searched_beats_constructed_at_3_3 : LowerBound 3 3 12 /\ LowerBound 3 3 14 /\ 12 < 14
+
+73f09c618a00d7a3  thm Audit.bounds_coherent_3_3
+    bounds_coherent_3_3 : 14 < S (PeanoNat.Nat.pow 2 3 * Factorial.fact 3) /\ 14 < S (PeanoNat.Nat.pow 7 3)
+
+1a62daf597c65695  thm SliceRank.lower_bound_3_3_14
+    lower_bound_3_3_14 : LowerBound 3 3 14
+
+1f0379479c32e60d  thm SliceRank.no_upper_bound_3_3_14
+    no_upper_bound_3_3_14 : ~ UpperBound 3 3 14
+
+f3ba43b1d5eb9791  thm SliceRank.ground9_max_is_grounded
+    ground9_max_is_grounded : Grounded ground9_max (List.seq 0 9)
+
 7b6fd7f64182be1a  thm Audit.sum_family_no_sunflower_right
     sum_family_no_sunflower_right : forall (b k : nat) (F1 F2 : Family), 2 <= k -> Uniform b F2 -> ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 -> CrossDisjoint F1 F2 -> ~ ContainsKSunflower k (sum_family F1 F2)
 
@@ -441,6 +510,39 @@ ee23dae37ece6454  def Audit.TwoUniformCharacterisation
 
 e25478fd8269820a  def Audit.ExponentialLowerBound
     ExponentialLowerBound = forall n k : nat, 1 <= n -> 2 <= k -> LowerBound n k (PeanoNat.Nat.pow (k - 1) n) : Prop
+
+1fafef50dad7d192  def SpreadRestrictions.IsLink
+    IsLink = fun (m : nat) (F : Family) => exists (d : nat) (Y : list nat) (F0 : Family), 1 <= d /\ List.NoDup Y /\ length Y = d /\ Uniform (d + m) F0 /\ Distinct F0 /\ link Y F0 = F : nat -> Family -> Prop Arguments IsLink m%nat_scope F
+
+1c97eedb0da4cb12  def SpreadRestrictions.SpreadYieldsDisjointOnLinks
+    SpreadYieldsDisjointOnLinks = fun n k r : nat => forall (m : nat) (F : Family), 1 <= m -> m <= n -> Uniform m F -> Distinct F -> IsLink m F -> PeanoNat.Nat.pow r m < length F -> RaoSpread m F r -> exists S : list (list nat), List.incl S F /\ List.NoDup S /\ length S = k /\ PairwiseDisjoint S : nat -> nat -> nat -> Prop Arguments SpreadYieldsDisjointOnLinks (n k r)%nat_scope
+
+e0e73beb2766f10b  def SpreadRestrictions.SpreadBoundsSunflowerFree
+    SpreadBoundsSunflowerFree = fun n k r : nat => forall (m : nat) (F : Family), 1 <= m -> m <= n -> Uniform m F -> Distinct F -> ~ ContainsKSunflower k F -> RaoSpread m F r -> length F <= PeanoNat.Nat.pow r m : nat -> nat -> nat -> Prop Arguments SpreadBoundsSunflowerFree (n k r)%nat_scope
+
+80c3a928b4369d62  def SpreadRestrictions.lift_to_link
+    lift_to_link = fun (G : Family) (d : nat) => sum_family (fresh_block G d :: nil)%list G : Family -> nat -> Family Arguments lift_to_link G d%nat_scope
+
+21b5eb739b61bf91  def SpreadRestrictions.fresh_block
+    fresh_block = fun (G : Family) (d : nat) => block (S (ground_max G)) d : Family -> nat -> list nat Arguments fresh_block G d%nat_scope
+
+e68409ac1648065a  def SliceRank.InExactlyTwo
+    InExactlyTwo = fun (x : nat) (A B C : list nat) => List.In x A /\ List.In x B /\ ~ List.In x C \/ List.In x A /\ ~ List.In x B /\ List.In x C \/ ~ List.In x A /\ List.In x B /\ List.In x C : nat -> list nat -> list nat -> list nat -> Prop Arguments InExactlyTwo x%nat_scope (A B C)%list_scope
+
+a9463114669f8b1d  def SliceRank.NSSunflowerFree
+    NSSunflowerFree = fun F : Family => forall A B C : list nat, List.In A F -> List.In B F -> List.In C F -> A <> B -> A <> C -> B <> C -> exists x : nat, InExactlyTwo x A B C : Family -> Prop Arguments NSSunflowerFree F
+
+f955f5fc37494880  def SliceRank.Grounded
+    Grounded = fun (F : Family) (U : list nat) => forall A : list nat, List.In A F -> Subset A U : Family -> list nat -> Prop Arguments Grounded F U%list_scope
+
+74be478c0c69b1b9  def SliceRank.NaslundSawinBound
+    NaslundSawinBound = forall (U : list nat) (F : Family), List.NoDup U -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> PeanoNat.Nat.pow (length F) 3 * PeanoNat.Nat.pow 4 (length U) <= 27 * PeanoNat.Nat.pow (length U + 1) 3 * PeanoNat.Nat.pow 27 (length U) : Prop
+
+e70110d144cccd76  def SliceRank.GroundBounded
+    GroundBounded = fun c : nat => forall m j : nat, 1 <= m -> LowerBound m 3 j -> exists (F : Family) (U : list nat), Uniform m F /\ Distinct F /\ length F = j /\ ~ ContainsKSunflower 3 F /\ List.NoDup U /\ Grounded F U /\ length U <= c * m : nat -> Prop Arguments GroundBounded c%nat_scope
+
+748b5c178e38978f  def SliceRank.ground9_max
+    ground9_max = ((0 :: 1 :: 2 :: nil) :: (0 :: 1 :: 3 :: nil) :: (0 :: 2 :: 3 :: nil) :: (1 :: 2 :: 3 :: nil) :: (0 :: 4 :: 5 :: nil) :: (1 :: 4 :: 5 :: nil) :: (0 :: 4 :: 6 :: nil) :: (1 :: 4 :: 6 :: nil) :: (2 :: 5 :: 7 :: nil) :: (3 :: 6 :: 7 :: nil) :: (2 :: 5 :: 8 :: nil) :: (3 :: 6 :: 8 :: nil) :: (2 :: 7 :: 8 :: nil) :: (3 :: 7 :: 8 :: nil) :: nil)%list : Family
 
 a9556658e41ea030  def Conjecture.sunflower_conjecture
     sunflower_conjecture = exists c : nat -> nat, (forall k : nat, 2 <= k -> k - 1 <= c k) /\ (forall n k : nat, 1 <= n -> 2 <= k -> UpperBound n k (S (PeanoNat.Nat.pow (c k) n))) : Prop

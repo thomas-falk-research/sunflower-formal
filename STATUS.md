@@ -82,6 +82,15 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `uniformity_is_needed_in_the_direct_sum` | `coq/Audit.v` | **The uniformity hypothesis is the theorem.** `{0}, {0,1}` and `{2}, {2,3}` have two members each, so neither contains a 3-sunflower; their ground sets are disjoint; and their direct sum contains one, with core `{0,2}`. The mechanism is exactly the step uniformity licenses — without it `{0}` sits inside `{0,1}` without equalling it |
 | `sum_family_no_sunflower_right`, `sum_family_comm_equiv` | `coq/Audit.v` | The asymmetry in `sum_family_no_sunflower` is about the proof, not the construction: the two sums are the same family with the halves swapped, so *either* side's uniformity suffices. Needs `ContainsKSunflower_equiv`, which is why it lives here |
 | `f_4_3_at_least_37` | `coq/Audit.v` | The general theorems evaluated: `f(4,3) >= 37` where the development previously reached `f(4,3) >= 17` |
+| `lower_bound_3_3_14`, `no_upper_bound_3_3_14` | `coq/SliceRank.v` | **`f(3,3) ≥ 15`** — a 14-member 3-uniform family on nine points, the exhaustive maximum `N(3,9)` found by `rust/examples/ground_scan.rs` and re-checked here by the reflective detector, so the Coq side takes nothing from the search. Beats the direct sum's 13 at the same uniformity. It does *not* improve the rate: `14^(1/3) = 2.41` is below `6^(1/2) = 2.449` |
+| `every_uniform_family_is_a_link`, `link_restriction_is_vacuous` | `coq/SpreadRestrictions.v` | **The class of iterated links is every uniform family.** For any uniform distinct `G` and any `d`, glueing `d` fresh points onto every member gives a uniform distinct `F` of uniformity `d + j` with `link Y F = G` *literally*. So a spread lemma restricted to the families the recursion produces implies the unrestricted one — the restriction restricts nothing, and the "characterise the class of iterated links" direction is closed with a theorem |
+| `every_sunflower_free_family_is_a_link` | `coq/SpreadRestrictions.v` | The same inside the sunflower-free world, so the recursion cannot be fed a narrower class by insisting its inputs be sunflower-free either |
+| `sunflower_free_bounded`, `syd_implies_sunflower_free_bound` | `coq/SpreadRestrictions.v` | **The reduction needs strictly less than it assumes.** Run contrapositively, every family reaching the spread lemma is sunflower-free, so `SpreadBoundsSunflowerFree` — "a sunflower-free `r`-spread `m`-uniform family has at most `r^m` members" — suffices, and it is implied by `SpreadYieldsDisjoint`. That is the weaker interface for a future proof of Rao's Lemma 2. Cost, recorded: it yields the bound rather than the sunflower, so the `UpperBound` form would need decidability of `ContainsKSunflower`, which is not proved here |
+| `no_lower_bound_above` | `coq/SpreadRestrictions.v` | The same conclusion in the `LowerBound`-complement form, which is constructive |
+| `sunflower_iff_no_point_in_exactly_two` | `coq/SliceRank.v` | **Three sets are a sunflower exactly when no point lies in exactly two of them.** Unconditional, both directions, no hypotheses. This is the form the slice-rank method consumes, and why it reaches `{0,1}^n` at all — the condition is per-coordinate |
+| `bounded_ground_set_settles_k3` | `coq/SliceRank.v` | **What the polynomial method is missing, named.** Naslund–Sawin bound a sunflower-free family of subsets of `[n]` by `3(n+1)C^n`, `C < 1.89` — a `constant^n` bound in the **ground set**, where the conjecture needs one in the **uniformity**. Assuming that bound and `GroundBounded c` (extremal `m`-uniform families live on `c·m` points) gives `f(m,3) ≤ (27^(c+1))^m + 1`: the conjecture at `k = 3`. Both are `Prop`s carried as hypotheses, **not axioms**, so the trusted core is unchanged |
+| `ns_exponential_is_load_bearing`, `ground_bounded_at_m_2` | `coq/Audit.v` | The cited bound's exponential is not decoration — the linear-in-ground-set form is false, witnessed by `prod_family 2 6` (64 sunflower-free 6-sets on 12 points against 39). And `GroundBounded` is realised at the one exact value known here: `two_triangles` attains `f(2,3) - 1 = 6` on `6 = 3m` points |
+| `two_triangles_is_a_link`, `no_spread_bounds_sunflower_free_2_3_2` | `coq/Audit.v` | The link construction evaluated on a family with nothing link-like about it; and the restricted spread hypothesis refuted at `(2,3,2)` by the five-cycle, so weakening it did not make it vacuous |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -156,7 +165,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (114 of them). The current
+for every theorem in the "Closed" table (137 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -203,22 +212,22 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 23 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 25 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 35 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 33 killed outright, one genuine
+Current mutation results: 39 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 37 killed outright, one genuine
 survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem), and one positive control (`canary-alpha-rename`,
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 23 modules with Coq's separate kernel
+`make coqchk` re-verifies all 25 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

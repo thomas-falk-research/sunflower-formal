@@ -23,4 +23,6 @@ coq/CliqueLowerBound.v
 coq/F23.v
 coq/LinkCharacterisation.v
 coq/DirectSum.v
+coq/SpreadRestrictions.v
+coq/SliceRank.v
 coq/Audit.v

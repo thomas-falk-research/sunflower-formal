@@ -498,3 +498,87 @@ because = """The uniformity and the size are tied together by the induction: \
 and asking for [p^(t+1)] members out of the same construction is false. This is \
 the arithmetic that [cliques_beat_product] then compares against, so an \
 undetected slip here would silently inflate the headline bound."""
+
+# ----------------------------------------------------------------
+# Which restrictions of the spread lemma have content.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "restrictions-fresh-not-fresh"
+file = "coq/SpreadRestrictions.v"
+question = """The lifted core is taken one point *above* the family's ground set. \
+Is the [S] load-bearing, or would the maximum itself do?"""
+find = """Definition fresh_block (G : Family) (d : nat) : list nat :=
+  block (S (ground_max G)) d."""
+replace = """Definition fresh_block (G : Family) (d : nat) : list nat :=
+  block (ground_max G) d."""
+expect = "killed"
+because = """Load-bearing, and the mutated construction is wrong rather than \
+merely unproved: starting at the maximum itself puts the core's first point \
+inside the family's ground set, so the glued members repeat a point and the link \
+no longer recovers G. Everything in the file rests on that disjointness."""
+
+[[mutation]]
+id = "restrictions-drop-freeness"
+file = "coq/SpreadRestrictions.v"
+question = """sunflower_free_bounded bounds *sunflower-free* families. Is that \
+hypothesis what makes the induction go through, or is it decoration?"""
+find = """      Uniform m F -> Distinct F -> ~ ContainsKSunflower k F ->
+      length F <= r ^ m."""
+replace = """      Uniform m F -> Distinct F -> Distinct F ->
+      length F <= r ^ m."""
+expect = "killed"
+because = """Load-bearing twice over, and the mutated statement is false: without \
+it the claim is that every uniform distinct family has at most r^m members, which \
+Audit.no_upper_bound_below_exponential already refutes. In the proof it is needed \
+both to pass sunflower-freeness down to the link and to apply the restricted \
+spread hypothesis at the base. The hypothesis is replaced by a copy of its \
+neighbour rather than deleted, so the arity is unchanged."""
+
+# ----------------------------------------------------------------
+# The polynomial method.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "slicerank-exactly-two-loses-a-case"
+file = "coq/SliceRank.v"
+question = """"In exactly two" has three cases, one per omitted set. Does the \
+sunflower characterisation notice if one is lost?"""
+find = """  (In x A /\\ In x B /\\ ~ In x C)
+  \\/ (In x A /\\ ~ In x B /\\ In x C)
+  \\/ (~ In x A /\\ In x B /\\ In x C)."""
+replace = """  (In x A /\\ In x B /\\ ~ In x C)
+  \\/ (In x A /\\ In x B /\\ ~ In x C)
+  \\/ (~ In x A /\\ In x B /\\ In x C)."""
+expect = "killed"
+because = """Load-bearing: with the "x in A and C but not B" case lost, \
+"no point lies in exactly two" no longer implies inter A B = inter A C, and the \
+forward direction of sunflower_iff_no_point_in_exactly_two is false. This is the \
+bridge to the polynomial-method literature, so a silent slip here would \
+mis-describe what the slice rank is actually bounding. The lost case is replaced \
+by a copy of the first rather than deleted, so the disjunction keeps its arity."""
+
+[[mutation]]
+id = "slicerank-ns-linear"
+file = "coq/SliceRank.v"
+question = """Is the exponential in the Naslund-Sawin bound doing work, or would \
+a polynomial bound carry the reduction just as well?"""
+find = """Definition NaslundSawinBound : Prop :=
+  forall (U : list nat) (F : Family),
+    NoDup U -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    (length F) ^ 3 * 4 ^ (length U)
+    <= 27 * (length U + 1) ^ 3 * 27 ^ (length U)."""
+replace = """Definition NaslundSawinBound : Prop :=
+  forall (U : list nat) (F : Family),
+    NoDup U -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    (length F) ^ 3 * 4 ^ (length U)
+    <= 27 * (length U + 1) ^ 3 * 27 * (length U)."""
+expect = "killed"
+because = """Load-bearing. Audit.ns_exponential_is_load_bearing proves the \
+linear-in-ground-set form outright false -- prod_family 2 6 is 64 sunflower-free \
+6-sets on 12 points against a bound of 39 -- so the mutation replaces a cited \
+theorem by a falsehood, and the arithmetic in bounded_ground_set_settles_k3 stops \
+going through. Only the last exponent is changed, so the shape and every \
+hypothesis are untouched."""
