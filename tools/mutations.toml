@@ -169,34 +169,25 @@ file = "coq/Sunflower.v"
 question = "LowerBound pins the family size exactly. Is the equality used?"
 find = "    Uniform n F /\\ Distinct F /\\ length F = m /\\ ~ ContainsKSunflower k F."
 replace = "    Uniform n F /\\ Distinct F /\\ length F >= m /\\ ~ ContainsKSunflower k F."
-expect = "killed-script"
-because = """The two forms are equivalent -- Audit.LowerBound_ge_equiv proves it, \
-by taking the first m members of a sunflower-free family of size at least m -- so \
-no theorem can distinguish them, and the equality in the definition is \
-documentation rather than a constraint. What breaks is four `apply H` steps whose \
-goal has turned from `=` into `<=`. The repairs below are those four steps and \
-nothing else; that the development builds again with them is the machine-checked \
-form of "this hypothesis carries no mathematical weight"."""
+expect = "survived"
+because = """A genuine survivor, and the only one: the equality carries no \
+mathematical weight. Audit.LowerBound_ge_equiv proves the two forms define the \
+same predicate -- take the first m members of a sunflower-free family of size at \
+least m -- so no theorem can distinguish them, and the equality in the definition \
+is documentation rather than a constraint.
 
-[[mutation.repairs]]
-file = "coq/LowerBound.v"
-find = "  - apply disjoint_blocks_length."
-replace = "  - rewrite disjoint_blocks_length; lia."
+This used to be declared `killed-script`, with four `apply H` steps repaired \
+because their goal had turned from `=` into `<=`. That was an artefact of how \
+those four proofs were written, not a fact about the definition, and it had the \
+failure mode such artefacts have: adding CliqueLowerBound.two_cliques_lower_bound \
+-- a theorem with no bearing on this question -- turned the outcome into `killed` \
+and failed the build. The five size-hypothesis steps are now written as \
+`rewrite ...; lia`, which proves the goal in either form, so what this mutation \
+reports is a property of the definition rather than of the tactic scripts.
 
-[[mutation.repairs]]
-file = "coq/ProductLowerBound.v"
-find = "  split; [apply prod_family_length|]"
-replace = "  split; [rewrite prod_family_length; lia|]"
-
-[[mutation.repairs]]
-file = "coq/F23.v"
-find = "  split; [reflexivity | exact two_triangles_no_sunflower]."
-replace = "  split; [simpl; lia | exact two_triangles_no_sunflower]."
-
-[[mutation.repairs]]
-file = "coq/Audit.v"
-find = "  - apply firstn_length_le; lia."
-replace = "  - rewrite firstn_length_le; lia."
+A survivor here is the *expected* outcome, checked against the manifest like any \
+other. If it were ever killed again, some theorem would have started depending on \
+the equality, and LowerBound_ge_equiv would be the thing to re-examine."""
 
 [[mutation]]
 id = "subfamily-literal"
@@ -265,11 +256,13 @@ expect = "killed"
 # ----------------------------------------------------------------
 # A positive control.
 #
-# Every other mutation here is expected to break something. If the
+# Nearly every mutation here is expected to break something. If the
 # harness were broken -- a sandbox that fails to build for an unrelated
 # reason, an edit that silently fails to apply -- every mutation would
 # report `killed` and the suite would still pass. This one must
-# survive, so the `survived` path is exercised on every run.
+# survive, so the `survived` path is exercised on every run whatever
+# the development does. (`lowerbound-at-least` also survives, but that
+# is a fact about the development, and could change.)
 # ----------------------------------------------------------------
 
 [[mutation]]
@@ -283,7 +276,8 @@ expect = "survived"
 control = true
 because = """Alpha-equivalence: Coq terms are identified up to the names of \
 bound variables, so this is not a change to the development at all. It is here \
-to prove the suite can report `survived`, which no other entry does."""
+to prove the suite can report `survived` independently of anything the \
+development happens to prove."""
 
 [[mutation]]
 id = "seteq-one-sided"
@@ -302,3 +296,80 @@ find = """Definition Disjoint (A B : list nat) : Prop :=
 replace = """Definition Disjoint (A B : list nat) : Prop :=
   forall x, In x A -> In x B -> True."""
 expect = "killed"
+
+# ----------------------------------------------------------------
+# Uniformity 2: the characterisation and the identification
+#
+# coq/TwoUniform.v turns two questions into one extremal problem, and
+# both directions of that turn have hypotheses that could quietly stop
+# carrying weight. These ask whether they still do.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "twouniform-degree-off-by-one"
+file = "coq/TwoUniform.v"
+question = """The characterisation bounds the maximum degree by k-1. Is the \
+strictness real, or would k do?"""
+find = "forall v, deg [v] F < k"
+replace = "forall v, deg [v] F <= k"
+expect = "killed"
+
+[[mutation]]
+id = "star-sunflower-uniformity-3"
+file = "coq/TwoUniform.v"
+question = """star_sunflower says 2-sets through a point are a sunflower. Is \
+uniformity 2 load-bearing, or would any fixed uniformity do?"""
+find = "    Forall (UniformSet 2) S ->"
+replace = "    Forall (UniformSet 3) S ->"
+expect = "killed"
+because = """It is load-bearing, and Audit.star_needs_uniformity_two is the \
+counterexample the kill corresponds to: [1;2;3], [1;2;4], [1;3;5] all contain 1 \
+and have pairwise intersections {1,2} and {1,3}, so no common core exists at all. \
+If this survived, the whole sunflower problem would be a statement about degrees \
+at every uniformity, which is exactly what it is not."""
+
+[[mutation]]
+id = "rao-two-nodup-not-distinct"
+file = "coq/TwoUniform.v"
+question = """The spread condition at uniformity 2 collapses to a degree bound. \
+Is Distinct what makes it collapse, or would NoDup do?"""
+find = """    Uniform 2 F -> Distinct F ->
+    (RaoSpread 2 F r <-> forall v, deg [v] F <= r)."""
+replace = """    Uniform 2 F -> NoDup F ->
+    (RaoSpread 2 F r <-> forall v, deg [v] F <= r)."""
+expect = "killed"
+because = """Distinct is exactly what supplies the |T| = 2 clause -- deg T F <= \
+r^0 = 1 -- and NoDup does not. Audit.distinct_is_load_bearing_in_the_degree_ \
+identification exhibits the separating family: [0;1] and [1;0] are one set \
+written twice, every vertex has degree 2, and the family is not 2-spread because \
+the 2-set {0,1} lies in two members. Same family as distinct_strictly_stronger, \
+which is the point -- that design choice is what makes this identification true."""
+
+[[mutation]]
+id = "haskdisjoint-drop-nodup"
+file = "coq/TwoUniform.v"
+question = "Does HasKDisjoint need its members to be distinct?"
+find = "    incl S F /\\ NoDup S /\\ length S = k /\\ PairwiseDisjoint S."
+replace = "    incl S F /\\ True /\\ length S = k /\\ PairwiseDisjoint S."
+expect = "killed"
+because = """Replaced by True rather than deleted, so the conjunction keeps its \
+shape and every destructuring pattern still applies -- what breaks is the \
+mathematics, not the intro patterns. Without NoDup, [[0;1];[0;1]] is a \
+"pairwise disjoint" family of size 2 (the condition quantifies over A <> B, and \
+there is no such pair), so HasKDisjoint 2 would hold of a one-edge family that \
+has no 2-sunflower."""
+
+[[mutation]]
+id = "clique-matching-slack"
+file = "coq/CliqueLowerBound.v"
+question = """The matching bound on each clique is tight. Does the parity \
+argument need the tightness, or only the bound?"""
+find = "length S = s0 + s1 /\\ 2 * s0 <= length U0 /\\ 2 * s1 <= length U1."
+replace = "length S = s0 + s1 /\\ 2 * s0 <= length U0 + 1 /\\ 2 * s1 <= length U1 + 1."
+expect = "killed"
+because = """The mutated lemma is still *true* -- it is strictly weaker. What \
+dies is two_cliques_no_sunflower, which is the point: the whole construction \
+works because k disjoint edges would need every one of the 2k vertices matched, \
+and one vertex of slack per component is exactly enough to let an odd component \
+off the hook. This is the mutation that says the oddness argument is doing the \
+work, not the counting."""

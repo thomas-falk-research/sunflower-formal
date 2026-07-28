@@ -3,7 +3,8 @@
 A self-contained Coq formalization of the **Erdős–Rado sunflower
 problem** — machine-checked proofs of the classical upper bound, the
 matching exponential lower bound, the first nontrivial exact value
-`f(2,3) = 7`, the **deterministic half of the 2020 (ALWZ / Rao) spread
+`f(2,3) = 7` and an infinite family of exact lower bounds at
+uniformity 2, the **deterministic half of the 2020 (ALWZ / Rao) spread
 proof**, constructive Hall and Kőnig theorems for the supporting
 matching theory, and a precise formal statement of the open
 conjecture — together with a Rust computational companion that
@@ -42,6 +43,8 @@ claim progress on it. What is machine-checked here is the complete
 | Exponential lower bound (1960) | $f(n,k) \ge (k-1)^n + 1$ | `coq/ProductLowerBound.v` |
 | Boundary exact values | $f(n,2) = 2$, $\; f(1,k) = k$ | `coq/SmallCases.v` |
 | **Exact value at $k=3$** | $f(2,3) = 7$ | `coq/F23.v` |
+| **Uniformity 2 is degrees and matchings** | no $k$-sunflower $\iff$ matching number and maximum degree both $\le k-1$ — so $f(2,k)$ is the Chvátal–Hanson problem, which is *cited, not formalised* | `coq/TwoUniform.v` |
+| **Lower bound at every odd $k$** | $f(2,k) \ge k(k-1) + 1$, two disjoint copies of $K_k$ | `coq/CliqueLowerBound.v` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
 | Hall's marriage theorem (1935) | constructive, Halmos–Vaughan induction | `coq/HallCore.v`, `coq/KoenigHall.v` |
@@ -57,6 +60,19 @@ So the function is bracketed
 $(k-1)^n + 1 \le f(n,k) \le (k-1)^n\, n! + 1$, with exact values at
 the boundary cases and at $(n,k) = (2,3)$ — $k = 3$ being the case
 Erdős singled out as containing "the whole difficulty."
+
+At uniformity 2 the picture is sharper than that bracket suggests. A
+distinct family of pairs is a graph, and it avoids $k$-sunflowers
+exactly when its matching number and its maximum degree are both at
+most $k-1$ (`coq/TwoUniform.v`) — so $f(2,k)$ *is* the Chvátal–Hanson
+extremal problem at $D = \nu = k-1$, and the spread hypothesis at
+uniformity 2 is the same problem again. That identification is proved
+here; the extremal function itself is not. $f(2,k) \ge k(k-1)+1$ for
+every odd $k$ is proved outright, from two disjoint copies of $K_k$
+(`coq/CliqueLowerBound.v`). Taking [Chvátal–Hanson 1976](docs/references.md) on citation upgrades that
+to equality and pins the sharp spread threshold at $r = k$ against the
+$2k-1$ this development proves — both conditional, both falsified
+rather than assumed in `rust/tests/chvatal_hanson.rs`.
 
 Highlights of the less-routine parts:
 
@@ -124,7 +140,7 @@ Highlights of the less-routine parts:
   spread definition that quantified over lists with repeats and so
   forced every member to be empty, and an axiom stated with the
   fractional spread condition where the source uses the absolute one.
-  Neither could fail a build. Four mechanisms now target that class of
+  Neither could fail a build. Five mechanisms now target that class of
   error — coherence theorems that would derive `False` if two of the
   development's own bounds contradicted each other (`coq/Audit.v`); a
   second, independently-implemented spread decision procedure proved
@@ -132,10 +148,14 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 24 mutations, 22 are killed outright, one
-  is killed only at the level of tactics — a distinction the harness
-  verifies by applying declared repairs rather than asserting — and one
-  is a positive control that must survive. Underneath them, `coqchk`
+  that something breaks. Of 29 mutations, 27 are killed outright, one
+  survives — `LowerBound`'s `length F = m` really is documentation, as
+  `Audit.LowerBound_ge_equiv` proves — and one is a positive control
+  that must survive. Fifth, statement baselines (`make statements`):
+  every audited theorem's statement and every core definition's body is
+  recorded in `tools/statements.txt`, and CI fails if one moves without
+  the baseline moving in the same commit — which is what turns "did this
+  change what we claim?" from a rereading exercise into a one-line diff. Underneath them, `coqchk`
   re-verifies every module with Coq's separate kernel checker and
   gates on a whole-library assumption census, which is what makes
   "zero admits" a claim about the development rather than about a list
@@ -161,7 +181,7 @@ Highlights of the less-routine parts:
 make verify        # builds all 19 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (51 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (72 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

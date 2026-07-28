@@ -41,7 +41,8 @@
 From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
-     ProductLowerBound Spread Reflect SpreadReduction F23.
+     ProductLowerBound Spread Reflect SpreadReduction TwoUniform
+     CliqueLowerBound F23.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -168,18 +169,22 @@ Proof.
   - apply (@Uniform_sublist n F (firstn m' F) HU (incl_firstn m' F)).
   - apply (@SetNoDup_incl (firstn m' F) F HD (NoDup_firstn m' (SetNoDup_NoDup HD))
              (incl_firstn m' F)).
-  - apply firstn_length_le; lia.
+  - rewrite firstn_length_le; lia.
   - intro Hc; apply Hns.
     apply (@ContainsKSunflower_incl k (firstn m' F) F (incl_firstn m' F) Hc).
 Qed.
 
 (** [LowerBound] pins the family size with an equality. The variant
     that only asks for *at least* [m] members defines the same
-    predicate — antitonicity is exactly what makes the two agree. The
-    mutation [lowerbound-at-least] in [tools/mutations.toml] weakens
-    the definition this way and the build breaks; this theorem is why
-    that break is a property of four tactic scripts and not of the
-    mathematics. *)
+    predicate — antitonicity is exactly what makes the two agree.
+
+    The mutation [lowerbound-at-least] in [tools/mutations.toml]
+    weakens the definition this way, and is the development's one
+    genuine survivor: this theorem is why nothing can notice. It used
+    to be recorded as a script-level kill, because four proofs proved
+    the size hypothesis with tactics that only worked against [=]; they
+    now use [rewrite ...; lia], which works against either, so what the
+    mutation reports is a property of the definition. *)
 
 Definition LowerBoundGE (n k m : nat) : Prop :=
   exists F : Family,
@@ -248,12 +253,9 @@ Proof.
   - intro H; apply distinctb_correct in H; vm_compute in H; discriminate.
 Qed.
 
-(** ** How many pairwise disjoint [m]-sets fit in a ground set
-
-    [k] pairwise disjoint sets of size [m] use [km] distinct elements.
-    This is the only tool needed to refute the spread hypothesis at
-    parameters where the published threshold has not yet been
-    reached. *)
+(** [length_le_1_of_all_eq] stays here; the counting bound it sits next
+    to moved to [LowerBound.v], where the pairwise-disjoint
+    constructions it bounds are built. *)
 
 Lemma length_le_1_of_all_eq :
   forall (X : Type) (L : list X),
@@ -267,54 +269,6 @@ Proof.
   left; reflexivity.
 Qed.
 
-Lemma NoDup_concat_pairwise_disjoint :
-  forall S : list (list nat),
-    NoDup S ->
-    Forall (fun A : list nat => NoDup A) S ->
-    PairwiseDisjoint S ->
-    NoDup (concat S).
-Proof.
-  intros S; induction S as [|A S' IH]; simpl; intros Hnd Hall Hpd; [constructor|].
-  inversion Hnd as [|? ? HniA Hnd']; subst.
-  inversion Hall as [|? ? HndA Hall']; subst.
-  apply NoDup_app_intro.
-  - exact HndA.
-  - apply IH; [exact Hnd' | exact Hall' |].
-    intros C D HC HD HCD; apply Hpd; [right; exact HC | right; exact HD | exact HCD].
-  - intros x HxA Hxc.
-    apply in_concat in Hxc as [B [HB HxB]].
-    assert (HAB : A <> B) by (intro E; subst B; contradiction).
-    apply (Hpd A B (or_introl eq_refl) (or_intror HB) HAB x HxA HxB).
-Qed.
-
-Lemma length_concat_uniform :
-  forall m S, Uniform m S -> length (concat S) = length S * m.
-Proof.
-  intros m S; unfold Uniform; induction S as [|A S' IH]; simpl; intros H;
-    [reflexivity|].
-  inversion H as [|? ? HUA H']; subst.
-  destruct HUA as [HAlen _].
-  rewrite app_length, HAlen, (IH H'); reflexivity.
-Qed.
-
-Theorem pairwise_disjoint_ground_bound :
-  forall (S : list (list nat)) (U : list nat) (m : nat),
-    NoDup S -> NoDup U ->
-    Uniform m S ->
-    (forall A, In A S -> Subset A U) ->
-    PairwiseDisjoint S ->
-    length S * m <= length U.
-Proof.
-  intros S U m HndS HndU HU Hsub Hpd.
-  assert (Hnc : NoDup (concat S)).
-  { apply NoDup_concat_pairwise_disjoint;
-      [exact HndS | apply (@Uniform_NoDup m S HU) | exact Hpd]. }
-  assert (Hincl : incl (concat S) U).
-  { intros x Hx; apply in_concat in Hx as [A [HA HxA]].
-    apply (Hsub A HA); exact HxA. }
-  pose proof (NoDup_incl_length Hnc Hincl) as Hle.
-  rewrite (@length_concat_uniform m S HU) in Hle; exact Hle.
-Qed.
 
 (** ** Is the axiom's shape ever false?
 
@@ -558,4 +512,211 @@ Proof.
       [apply (@lower_bound_exponential 2 3); lia | exact f_2_3_upper].
   - apply (@lower_lt_upper 2 3);
       [exact f_2_3_lower | apply (@spread_erdos_rado 2 3); lia].
+Qed.
+
+(** ** The uniformity-2 characterisation
+
+    [TwoUniform.two_uniform_sunflower_free_iff] says a distinct
+    2-uniform family avoids [k]-sunflowers exactly when its matching
+    number and its maximum degree are both below [k]. Two questions
+    that answer themselves if the statement is right and do not if it
+    is not. *)
+
+(** *** Is uniformity 2 doing any work in [star_sunflower]?
+
+    [star_sunflower] says distinct 2-sets through a common point are a
+    sunflower. The [Forall (UniformSet 2)] hypothesis is the only thing
+    stopping it from being a statement about arbitrary families, and if
+    it could be dropped the whole sunflower problem would be a
+    statement about degrees at every uniformity.
+
+    It cannot. Three 3-sets through the point 1 whose pairwise
+    intersections are [{1,2}] and [{1,3}] — different sets, so no
+    common core exists at all. *)
+
+Definition three_uniform_star : Family := [[1; 2; 3]; [1; 2; 4]; [1; 3; 5]].
+
+Example star_needs_uniformity_two :
+  Uniform 3 three_uniform_star
+  /\ Distinct three_uniform_star
+  /\ Forall (fun A => In 1 A) three_uniform_star
+  /\ ~ (exists core, Sunflower three_uniform_star core).
+Proof.
+  repeat split.
+  - apply uniformb_correct; reflexivity.
+  - apply distinctb_correct; reflexivity.
+  - repeat (constructor; [simpl; auto|]); constructor.
+  - intros [core [_ Hcore]].
+    assert (H12 : SetEq (inter [1; 2; 3] [1; 2; 4]) core).
+    { apply Hcore; [simpl; auto | simpl; auto | discriminate]. }
+    assert (H13 : SetEq (inter [1; 2; 3] [1; 3; 5]) core).
+    { apply Hcore; [simpl; auto | simpl; auto | discriminate]. }
+    vm_compute in H12, H13.
+    assert (H2core : In 2 core) by (apply (proj1 H12); simpl; auto).
+    pose proof (proj2 H13 2 H2core) as Hbad.
+    simpl in Hbad; lia.
+Qed.
+
+(** *** Is [Distinct] doing any work in the degree identification?
+
+    [rao_spread_two_iff_degree] says [RaoSpread 2 F r] is exactly the
+    maximum-degree bound. That rests entirely on [Distinct]: the
+    [|T| = 2] clause of the spread condition asks [deg T F <= r ^ 0 =
+    1], and it is distinctness, not uniformity, that supplies it.
+
+    Drop it and the identification is false in the interesting
+    direction. [[0;1]] and [[1;0]] are the same set written twice —
+    [NoDup] as a list of lists, not [Distinct] — every vertex has
+    degree 2, and yet the family is not 2-spread, because the 2-set
+    [{0,1}] lies in two members. So the degree bound holds and
+    [RaoSpread] fails.
+
+    Same family as [distinct_strictly_stronger], which is the point:
+    the design choice recorded there is what makes the identification
+    true here. *)
+
+Definition repeated_edge : Family := [[0; 1]; [1; 0]].
+
+Example distinct_is_load_bearing_in_the_degree_identification :
+  Uniform 2 repeated_edge
+  /\ NoDup repeated_edge
+  /\ ~ Distinct repeated_edge
+  /\ (forall v, deg [v] repeated_edge <= 2)
+  /\ ~ RaoSpread 2 repeated_edge 2.
+Proof.
+  split; [apply uniformb_correct; reflexivity|].
+  split.
+  { constructor; [intros [E | []]; discriminate |].
+    constructor; [intros [] | constructor]. }
+  split.
+  { intro H; apply distinctb_correct in H; vm_compute in H; discriminate. }
+  split.
+  { intros v; destruct v as [|[|v]]; vm_compute; lia. }
+  intro Hspread.
+  assert (HndT : NoDup [0; 1])
+    by (constructor; [intros [E | []]; discriminate |];
+        constructor; [intros [] | constructor]).
+  pose proof (Hspread [0; 1] HndT ltac:(discriminate)) as Hb.
+  vm_compute in Hb; lia.
+Qed.
+
+(** *** Is [two_triangles] extremal for both parameters at once?
+
+    [F23.two_triangles] witnesses [f(2,3) >= 7], and separately refutes
+    [SpreadYieldsDisjoint 2 3 2]. Under the characterisation those are
+    not two facts: a 3-sunflower-free graph is exactly one with maximum
+    degree at most 2 and matching number at most 2, and [two_triangles]
+    is the largest such graph — six edges, which is [CH(2,2)] for the
+    Chvátal–Hanson function.
+
+    So both constraints must be *tight* on it. The bounds below are
+    derived from [two_triangles_no_sunflower] through the
+    characterisation; the matching witness and the degree value are
+    computed directly. If the characterisation were off by one in
+    either parameter, the derived bound and the computed value would
+    contradict each other here. *)
+
+Corollary two_triangles_saturates_both_parameters :
+  (forall v, deg [v] two_triangles < 3)
+  /\ ~ HasKDisjoint 3 two_triangles
+  /\ deg [0] two_triangles = 2
+  /\ HasKDisjoint 2 two_triangles.
+Proof.
+  destruct (proj1 (two_uniform_sunflower_free_iff 3 two_triangles
+                     ltac:(lia) two_triangles_uniform two_triangles_distinct)
+              two_triangles_no_sunflower) as [Hnd Hdeg].
+  split; [exact Hdeg|].
+  split; [exact Hnd|].
+  split; [vm_compute; reflexivity|].
+  exists [[0; 1]; [3; 4]].
+  split; [| split; [| split]].
+  - intros A [E | [E | []]]; subst A; simpl; auto.
+  - apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+  - reflexivity.
+  - apply pairwise_disjointb_correct; reflexivity.
+Qed.
+
+(** *** The two shapes are both realised
+
+    [sunflower_shape] splits every sunflower into a matching or a star.
+    Neither branch is decoration: [Reflect.three_pairs] is a
+    3-sunflower of the first kind and [Reflect.star3] one of the
+    second, and the characterisation sees both. *)
+
+Example both_sunflower_shapes_occur :
+  ContainsKSunflower 3 three_pairs /\ ContainsKSunflower 3 star3.
+Proof.
+  split; apply (two_uniform_sunflower_iff 3 _ ltac:(lia));
+    try (apply uniformb_correct; reflexivity);
+    try (apply distinctb_correct; reflexivity).
+  - left. exists three_pairs.
+    split; [| split; [| split]].
+    + apply incl_refl.
+    + apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+    + reflexivity.
+    + apply pairwise_disjointb_correct; reflexivity.
+  - right. exists 0. vm_compute; lia.
+Qed.
+
+(** ** The clique lower bound
+
+    [CliqueLowerBound.two_cliques_lower_bound] gives [f(2,k) >= k(k-1)+1]
+    for every odd [k], from two disjoint copies of [K_k]. Three
+    questions. *)
+
+(** *** Does it contradict any upper bound the development proves?
+
+    Derived, not restated: if [k(k-1)] members could be forced to
+    contain a [k]-sunflower, the line below would be a proof of [False]
+    from two machine-checked theorems. *)
+
+Corollary bounds_coherent_clique :
+  forall k, 3 <= k -> Nat.Odd k -> k * (k - 1) < S ((k - 1) ^ 2 * fact 2).
+Proof.
+  intros k Hk Hodd.
+  apply (@lower_lt_upper 2 k).
+  - apply two_cliques_lower_bound; assumption.
+  - apply erdos_rado_upper_bound; lia.
+Qed.
+
+(** *** Is it the same construction as the one already formalised?
+
+    At [k = 3] it must be, or one of the two witnesses is wrong. The
+    clique construction emits the six edges in a different order, so
+    the families are not equal as lists — they are equal as families,
+    which is what [FamilyEquiv] says and what
+    [ContainsKSunflower_equiv] then makes interchangeable. *)
+
+Example clique_construction_is_two_triangles_reordered :
+  FamilyEquiv (two_cliques [0; 1; 2] [3; 4; 5]) two_triangles.
+Proof.
+  split; apply SubFamilySetEq_incl; intros A HA;
+    vm_compute in HA |- *; tauto.
+Qed.
+
+(** *** Is oddness of [k] doing work, or is it an artefact of the proof?
+
+    It is doing work. Two copies of [K_k] have [2k] vertices, and [k]
+    disjoint edges would have to match all of them; each component
+    blocks that only because it has an odd number of vertices. At
+    [k = 4] the same construction has four disjoint edges and therefore
+    *does* contain a 4-sunflower, so the hypothesis cannot simply be
+    dropped — the even case needs the other Chvátal–Hanson extremal
+    graph, which is not two cliques. *)
+
+Example oddness_is_needed :
+  ContainsKSunflower 4 (two_cliques [0; 1; 2; 3] [4; 5; 6; 7]).
+Proof.
+  apply (two_uniform_sunflower_iff 4 _ ltac:(lia)).
+  - apply two_cliques_uniform; apply nodupb_correct; reflexivity.
+  - apply two_cliques_distinct;
+      [apply nodupb_correct; reflexivity
+      | apply nodupb_correct; reflexivity
+      | apply disjointb_correct; reflexivity].
+  - left. exists [[0; 1]; [2; 3]; [4; 5]; [6; 7]].
+    split; [| split; [| split]].
+    + intros A HA; vm_compute in HA |- *; tauto.
+    + apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+    + reflexivity.
+    + apply pairwise_disjointb_correct; reflexivity.
 Qed.

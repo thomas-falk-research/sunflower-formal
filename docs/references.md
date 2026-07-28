@@ -2,7 +2,15 @@
 
 Original sources, refinements, and surveys on the Sunflower
 Conjecture. Cross-referenced from `coq/Spread.v`, `coq/ALWZ.v`,
-`coq/Conjecture.v`, and `docs/proof_strategies.md`.
+`coq/Conjecture.v`, `coq/TwoUniform.v`, `coq/CliqueLowerBound.v`, and
+`docs/proof_strategies.md`.
+
+Two results here are *used* rather than merely cited: [Ra20] Lemma 2,
+which is the development's one axiom, and [ChHa76], which is not
+formalised at all and which no theorem in the development depends on —
+it is the source of the numbers `rust/src/chvatal_hanson.rs` computes
+and of the claim that those numbers are the truth rather than an upper
+estimate. Both are marked below.
 
 ## Original problem
 
@@ -30,6 +38,41 @@ Conjecture. Cross-referenced from `coq/Spread.v`, `coq/ALWZ.v`,
 
 - **[Er90, Er95, Er97c, Er97d]** Further restatements by Erdős in
   various combinatorics proceedings.
+
+## Uniformity 2: the extremal function behind $f(2,k)$
+
+- **[ChHa76]** V. Chvátal and D. Hanson, *Degrees and matchings*.
+  Journal of Combinatorial Theory Series B 20 (1976), 128–138.
+  Evaluates the largest number of edges in a simple graph with maximum
+  degree at most $D$ and matching number at most $\nu$:
+
+  $$\mathrm{CH}(D,\nu) \;=\; \nu D + \left\lfloor \tfrac{D}{2} \right\rfloor
+     \left\lfloor \frac{\nu}{\lceil D/2 \rceil} \right\rfloor .$$
+
+  Their proof has a linear-programming flavour and goes through Berge's
+  matching formula. The extremal graphs are disjoint unions of
+  *odd near-regular* components — a maximum-degree-$D$ graph on
+  $2\lceil D/2 \rceil + 1$ vertices — together with stars $K_{1,D}$
+  spending the leftover matching budget; at $D = \nu = k-1$ with $k$
+  odd this is two disjoint copies of $K_k$.
+
+  **Not formalised, and nothing in the Coq development depends on it.**
+  `coq/TwoUniform.v` proves the *identification* — that a distinct
+  2-uniform family avoids $k$-sunflowers exactly when these two
+  parameters are at most $k-1$, and that `RaoSpread 2 F r` is the
+  degree bound — which is what makes $f(2,k)$ this extremal problem.
+  Given [ChHa76], that yields $f(2,k) = \mathrm{CH}(k-1,k-1)+1$ and a
+  sharp spread threshold $r^*(2,k) = k$; the repository proves the
+  lower half outright for odd $k$ (`coq/CliqueLowerBound.v`) and treats
+  the rest as cited. The formula is falsified against exhaustive search
+  in `rust/tests/chvatal_hanson.rs` rather than taken on trust.
+
+  The problem was posed by Erdős and Rado, which is why it turns up
+  here at all.
+
+- **[AbHa74]** H. L. Abbott and D. Hanson, *On finite $\Delta$-systems*.
+  Discrete Mathematics 8 (1974), 1–12. The source usually credited for
+  the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
 
 ## Pre-2020 partial results
 
@@ -82,6 +125,12 @@ This is, to the best knowledge of the authors at the time of
 writing, the only fully machine-checked formalisation of the
 Erdős–Rado 1960 upper bound. We are unaware of any Mathematical
 Components or Mathlib formalisation of this theorem.
+
+The same holds for [ChHa76]: a formalisation of its upper bound would
+turn `CliqueLowerBound.two_cliques_lower_bound` from a lower bound into
+an exact value for every odd $k$, and would settle the sharp spread
+threshold at uniformity 2. That is the campaign described in
+`docs/roadmap.md` §3a.
 
 If a Coq or Lean formalisation of the 2020 spread lemma becomes
 available, the axiom `Rao20_lemma2` in `coq/ALWZ.v` can be

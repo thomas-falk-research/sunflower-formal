@@ -25,7 +25,7 @@ kind:
    the direction of the strengthening is itself a theorem.
 
 Neither error was found by the kernel. Both were found by rereading
-the source. This document describes the five mechanisms added so that
+the source. This document describes the six mechanisms added so that
 a third one does not have to be.
 
 None of them is a substitute for reading the paper. All of them are
@@ -42,7 +42,8 @@ kernel level.
 enumerated in the Makefile. That is exactly as complete as the list.
 An `Admitted` lemma somewhere else in the development, a second
 `Axiom`, or a global `Parameter` would not appear — the audit would
-report 51 closed theorems and pass. This is not hypothetical: appending
+report every name on the list as closed, and pass. This is not
+hypothetical: appending
 
 ```coq
 Lemma smuggled_in : forall n : nat, n = n + 0.
@@ -282,25 +283,39 @@ again once they are applied, the kill was script level and the runner
 reports `killed-script` rather than `killed`. That distinction is
 machine-checked, not asserted.
 
-Exactly one mutation in the current manifest lands there.
+No mutation in the current manifest lands there, and the story of how
+that changed is the argument for not leaving one there.
+
 `lowerbound-at-least` weakens `LowerBound`'s `length F = m` to
-`length F ≥ m` and the build breaks in four places, all of them
-`apply H` steps whose goal changed shape. Replacing them with
-`rewrite H; lia` restores it. The mathematics was never involved: the
-two forms of `LowerBound` define the same predicate, and
+`length F ≥ m`. It used to break the build in four places, all of them
+`apply H` steps whose goal had changed shape, and it was declared
+`killed-script` with those four steps as repairs. The mathematics was
+never involved: the two forms define the same predicate, and
 `Audit.LowerBound_ge_equiv` proves it — from a sunflower-free family
 of size at least `m`, its first `m` members are a sunflower-free family
-of size exactly `m`.
+of size exactly `m`. That theorem was written *because* the mutation
+asked the question.
 
-That theorem was written *because* the mutation asked the question.
-Which is the methodology working: a perturbation, an unexpected
-result, and a new theorem making the answer precise.
+The four repairs were an artefact of how those proofs were written, and
+artefacts of that kind do not stay put. Adding
+`CliqueLowerBound.two_cliques_lower_bound` — a theorem about cliques,
+with no bearing on whether `LowerBound`'s equality matters — introduced
+a fifth brittle step, turned the outcome into `killed`, and failed the
+build. The five steps are now written as `rewrite …; lia`, which proves
+the goal in either form, and the mutation is declared `survived`: what
+it reports is now a property of the definition rather than of the
+tactic scripts.
+
+`repairs` remains part of the manifest format, because the wrinkle it
+addresses is real. The lesson is that a script-level kill is a debt,
+not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-24 mutations, all with the outcome the manifest declares: 22 killed
-outright, one killed at script level only, one control surviving as it
-must, no genuine survivors. The mutations that matter most:
+29 mutations, all with the outcome the manifest declares: 27 killed
+outright, one genuine survivor (`lowerbound-at-least`, for the reason
+above), and one control surviving as it must. The mutations that
+matter most:
 
 | Mutation | Asks | Dies in |
 |---|---|---|
@@ -312,6 +327,9 @@ must, no genuine survivors. The mutations that matter most:
 | `syd-nonstrict-size` | Is the size hypothesis `r^m < \|F\|` strict where it is used? | `SpreadReduction.v` |
 | `reduction-off-by-one` | Is the `+1` in `f(m,k) ≤ r^m + 1` load-bearing? | `SpreadReduction.v` |
 | `axiom-exponent` | Is the exponent in the derived modern bound checked by the reduction? | `ALWZ.v` |
+| `rao-two-nodup-not-distinct` | Is `Distinct` what collapses the spread condition to a degree bound at uniformity 2, or would `NoDup` do? | `TwoUniform.v` |
+| `star-sunflower-uniformity-3` | Is uniformity 2 load-bearing, or are sunflowers about degrees at every uniformity? | `TwoUniform.v` |
+| `clique-matching-slack` | Weakens a *true* lemma by one. Does the parity argument need the matching bound to be tight? | `CliqueLowerBound.v` |
 
 Run it with:
 
@@ -325,6 +343,68 @@ Each mutant is a full rebuild in a sandbox copy; the working tree is
 never touched. A full pass takes about a minute.
 
 ---
+
+---
+
+## 5. Statement baselines — `tools/statements.py`
+
+Everything above asks whether a definition *means* something. This asks
+the blunter question underneath it: is the statement still the one that
+was reviewed?
+
+Nothing else here can tell. A theorem whose hypothesis quietly weakened
+compiles, reports `Closed under the global context`, passes `coqchk`,
+and — if the weakening is one no other theorem exercises — survives
+mutation testing too, because mutation testing perturbs the *current*
+source and asks what breaks. It has no memory of what the source used
+to say. That is the gap: both historical errors were introduced by
+writing a statement, not by breaking one, and a check that only ever
+looks at HEAD cannot see the difference.
+
+So `tools/audited.txt` names what is audited, and
+`tools/statements.txt` records what each name currently says:
+
+```
+1f71b1599cd9eb36  def ALWZ.Rao20_lemma2
+    *** [ Rao20_lemma2 : exists alpha : nat, 1 <= alpha /\ (forall n k r : nat,
+    1 <= n -> 2 <= k -> alpha * k * PeanoNat.Nat.log2_up (S (k * n)) <= r ->
+    SpreadYieldsDisjoint n k r) ]
+```
+
+`make statements` regenerates and diffs; CI gates on it. A statement
+that moves without the baseline moving in the same commit fails the
+build, so changing what the development claims becomes a deliberate act
+with a reviewable one-line diff — separated from the several hundred
+lines of tactic churn it would otherwise hide in. That separation is
+the point. Both historical errors would have been visible at review
+time as a changed line in this file rather than found by rereading the
+source months later.
+
+Two kinds of entry, because for a definition the body *is* the
+statement:
+
+| | printed with | records |
+|---|---|---|
+| `thm NAME` | `Check` | the type, not the proof term — so refactoring a proof moves nothing |
+| `def NAME` | `Print` | the body, so a weakened `RaoSpread` shows up here even though every theorem naming it still compiles unchanged |
+
+The `def` entries are chosen for that second column: the axiom first,
+then the spread layer where both errors lived, then the core
+definitions every bound is stated against, then the conjecture itself
+so that "what is open" cannot drift either.
+
+The tool also checks that every `Theorem`, `Corollary` and `Example` in
+`coq/Audit.v` is on the list. That file exists to be audited, so a
+statement there that no target names is a check nobody runs — and the
+guard is not hypothetical, it was written after an entry was silently
+dropped from the list while it was being moved out of the `Makefile`.
+
+**What it does not catch.** A change to a definition no entry names.
+And a change that is genuinely equivalent but printed differently: the
+Coq printer is the oracle, so a notation change moves hashes even when
+nothing else did. It is a tripwire, not a semantics — the complement of
+mutation testing, which asks whether a hypothesis is load-bearing where
+this asks only whether it is still there.
 
 ## What this does not cover
 
@@ -350,10 +430,11 @@ what is checked:
 ## Reproducing
 
 ```bash
-make verify     # build + Print Assumptions audit (51 closed theorems)
+make verify     # build + Print Assumptions audit + statement baselines
 make coqchk     # independent re-check of every module, whole-library census
 make mutants    # perturb each definition, check what breaks
 make testbed    # exhaustive falsification + differential checks
+make statements # every audited statement against tools/statements.txt
 cd rust && cargo test --release   # everything on the Rust side
 ```
 
@@ -367,6 +448,11 @@ warnings` on the Rust side.
   matrix would need opam and roughly an order of magnitude more CI
   time.
 * **No `clippy`.** The Rust side denies warnings but does not lint.
-* **The docs' numbers are hand-maintained.** CI gates on 51 closed
-  theorems, but nothing checks that `README.md` and `STATUS.md` still
-  say 51.
+* **The docs' numbers are hand-maintained.** CI no longer hardcodes
+  the audited-theorem count — `make print-assumptions` reports the size
+  of its own list and the gate compares against that — but nothing
+  checks that `README.md` and `STATUS.md` quote the same number.
+* **The audit list is complete only for `coq/Audit.v`.** That file is
+  checked exhaustively; everywhere else `tools/audited.txt` is curated
+  by hand, so a theorem added elsewhere can still go unaudited. Driving
+  the list from source annotations is the fix, and is on the roadmap.

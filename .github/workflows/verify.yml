@@ -22,14 +22,34 @@ jobs:
           coqc --version
       - name: Build all proofs and run the Print Assumptions audit
         run: |
+          # Without pipefail the exit status of this step is tee's, so a
+          # failing build would be reported as a pass and only caught
+          # indirectly by the gates below.
+          set -o pipefail
           make verify 2>&1 | tee /tmp/verify.log
       - name: Gate - every audited theorem must be closed
         run: |
+          # The expected count comes from the audit list itself, which
+          # `print-assumptions` reports. Hardcoding it here meant every
+          # added theorem needed a second, unrelated edit to this file --
+          # and a forgotten one would have been a red build rather than a
+          # silently unaudited theorem, but only by luck.
           closed=$(grep -c "Closed under the global context" /tmp/verify.log)
-          echo "closed theorems: $closed (expected 51)"
-          test "$closed" -eq 51
+          total=$(sed -n 's/^  audited theorems: \([0-9][0-9]*\)$/\1/p' /tmp/verify.log)
+          echo "closed theorems: $closed of $total audited"
+          test -n "$total" && test "$total" -gt 0
+          test "$closed" -eq "$total"
           # No theorem in the closed table may depend on an axiom.
           ! grep -E '^  [A-Za-z_]+\.[A-Za-z_0-9]+ +Axioms:' /tmp/verify.log
+      - name: Gate - no statement changed without its baseline changing
+        run: |
+          # Neither the kernel, Print Assumptions, nor coqchk can see a
+          # change of *statement*: a theorem whose hypothesis quietly
+          # weakened still compiles, still reports closed, and still
+          # re-typechecks. tools/statements.txt records what every
+          # audited name says, so such a change has to arrive as a
+          # reviewable diff in that file or fail here.
+          make statements
       - name: Gate - the 2020 bound depends on exactly the spread-lemma axiom
         run: |
           # The derived modern bound must rest on Rao20_lemma2 ...
@@ -59,7 +79,7 @@ jobs:
       - name: Gate - whole-library assumption census
         run: |
           # An Admitted lemma, a second Axiom, or a global Parameter
-          # anywhere in the 19 modules would appear here. Exactly one name
+          # anywhere in the library would appear here. Exactly one name
           # is allowed, and it is the cited one.
           axioms=$(grep -E '^    Sunflower\.' /tmp/coqchk.log | tr -d '[:space:]')
           echo "library axioms: [$axioms]"
