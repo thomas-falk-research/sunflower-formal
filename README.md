@@ -157,7 +157,7 @@ Highlights of the less-routine parts:
 make verify        # builds all 19 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (49 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (51 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
@@ -201,7 +201,8 @@ Both are CI jobs. The methodology, and what it does and does not
 cover, is in [`docs/testing.md`](docs/testing.md).
 
 Per-theorem status, including exactly what is and is not proved, is
-tracked in [`STATUS.md`](STATUS.md).
+tracked in [`STATUS.md`](STATUS.md); what is worth doing next, and
+what to avoid, is in [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Design notes
 

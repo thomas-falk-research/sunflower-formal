@@ -54,6 +54,8 @@ print-assumptions: coq
 	    'Conjecture.spread_conjecture_suffices' \
 	    'ALWZ.spread_singletons' \
 	    'ALWZ.elementary_applies_to_singletons' \
+	    'ALWZ.threshold_is_inside_the_gap' \
+	    'ALWZ.axiom_hypotheses_satisfiable_in_the_gap' \
 	    'Reflect.rao_spreadb_correct' \
 	    'Reflect.rao_witness_agrees' \
 	    'Reflect.rao_witness_complete' \

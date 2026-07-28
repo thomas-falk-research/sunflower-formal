@@ -73,7 +73,7 @@
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower Spread SpreadReduction.
+From Sunflower Require Import Sets Sunflower Spread Reflect SpreadReduction.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -221,4 +221,91 @@ Proof.
   - apply four_singletons_distinct.
   - apply rao_spread_singletons_big.
   - apply rao_spread_singletons.
+Qed.
+
+(** ** Non-vacuity *inside the gap*
+
+    The guard above runs at [n = 1], [k = 3], [r = 3] — parameters
+    where [SpreadReduction.spread_disjoint_above_elementary] also
+    applies, so it says nothing about the range the axiom exists for.
+    The point of the axiom is precisely the range where the elementary
+    lemma is silent.
+
+    Take [n = 20], [k = 3], and the most demanding admissible
+    [alpha = 1]. The axiom's threshold is
+    [1 * 3 * log2_up (S (3 * 20)) = 18], while the elementary lemma
+    needs [r > n(k-1) = 40]. So [SpreadYieldsDisjoint 20 3 18] is an
+    instance this development cannot prove: it is exactly what is being
+    assumed, and not a restatement of something already available.
+
+    Its hypotheses are satisfiable. The circulant graph on 37 vertices
+    with connection set [{1,...,9}] is simple and 18-regular, so as a
+    2-uniform family it is 18-spread in Rao's absolute sense, and its
+    333 edges clear [18^2 = 324].
+
+    And where the assumed instance's prediction *can* be checked
+    independently, it holds. [spread_disjoint_above_elementary] at
+    [n = 2] covers families of uniformity at most 2 for any [r > 4], so
+    the three pairwise disjoint edges the axiom promises for this
+    family are produced below without using the axiom.
+
+    None of this verifies Rao's Lemma 2, and nothing here could. What
+    it rules out is the failure mode that actually matters for an
+    axiom — asserting something with no models — at a parameter where
+    the assumption is doing real work. The exhaustive version of the
+    same check, over every family on small ground sets, is in
+    [rust/tests/spread_axiom.rs]; the definition-level checks it
+    belongs to are described in [docs/testing.md]. *)
+
+(** The circulant graph on [n] vertices with connection set
+    [{1, ..., d}]: the edges [{i, i+j mod n}]. Simple and [2d]-regular
+    when [2d < n], hence [r]-spread for any [r >= 2d]. *)
+
+Definition circulant (n d : nat) : Family :=
+  flat_map (fun i => map (fun j => [i; Nat.modulo (i + S j) n]) (seq 0 d))
+           (seq 0 n).
+
+(** The threshold the axiom demands, as a function of its parameters. *)
+
+Definition rao_threshold (alpha n k : nat) : nat :=
+  alpha * k * Nat.log2_up (S (k * n)).
+
+Definition C37 : Family := circulant 37 9.
+
+Example threshold_is_inside_the_gap :
+  rao_threshold 1 20 3 = 18 /\ rao_threshold 1 20 3 < 20 * (3 - 1).
+Proof. split; vm_compute; [reflexivity | lia]. Qed.
+
+Lemma C37_uniform : Uniform 2 C37.
+Proof. apply uniformb_correct; vm_compute; reflexivity. Qed.
+
+Lemma C37_distinct : Distinct C37.
+Proof. apply distinctb_correct; vm_compute; reflexivity. Qed.
+
+Lemma C37_big : rao_threshold 1 20 3 ^ 2 < length C37.
+Proof. vm_compute; lia. Qed.
+
+Lemma C37_rao_spread : RaoSpread 2 C37 (rao_threshold 1 20 3).
+Proof.
+  apply (@rao_witness_none 2 C37 (rao_threshold 1 20 3)).
+  - apply (@Uniform_NoDup 2 C37 C37_uniform).
+  - vm_compute; reflexivity.
+Qed.
+
+Theorem axiom_hypotheses_satisfiable_in_the_gap :
+  Uniform 2 C37 /\
+  Distinct C37 /\
+  rao_threshold 1 20 3 ^ 2 < length C37 /\
+  RaoSpread 2 C37 (rao_threshold 1 20 3) /\
+  (exists S : list (list nat),
+      incl S C37 /\ NoDup S /\ length S = 3 /\ PairwiseDisjoint S).
+Proof.
+  split; [exact C37_uniform |].
+  split; [exact C37_distinct |].
+  split; [exact C37_big |].
+  split; [exact C37_rao_spread |].
+  apply (@spread_disjoint_above_elementary 2 3 (rao_threshold 1 20 3)
+           ltac:(lia) ltac:(vm_compute; lia) 2 C37);
+    [lia | lia | exact C37_uniform | exact C37_distinct
+     | exact C37_big | exact C37_rao_spread].
 Qed.

@@ -295,7 +295,7 @@ what is checked:
 ## Reproducing
 
 ```bash
-make verify     # build + Print Assumptions audit (49 closed theorems)
+make verify     # build + Print Assumptions audit (51 closed theorems)
 make mutants    # perturb each definition, check what breaks
 make testbed    # exhaustive falsification + differential checks
 cd rust && cargo test --release   # everything on the Rust side

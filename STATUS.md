@@ -1,7 +1,9 @@
 # Per-Theorem Proof Status
 
 Run `make verify` for the live audit. Below is the static state of
-the development.
+the development. Definition-level testing — the checks the kernel
+cannot make — is described in [`docs/testing.md`](docs/testing.md);
+what to work on next is in [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Closed (machine-checked, zero admits, zero axioms used)
 
@@ -37,6 +39,7 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `RaoSpread_Spread` | `coq/Spread.v` | Rao's absolute spread condition, plus his size hypothesis `r^m < \|F\|`, implies the fractional (ALWZ / FKNP) one — so the axiom's hypothesis is the stronger of the two |
 | `spread_conjecture_suffices` | `coq/Conjecture.v` | **The conjecture restated without sunflowers**: a spread lemma with an `n`-independent threshold implies `sunflower_conjecture` |
 | `spread_singletons`, `elementary_applies_to_singletons` | `coq/ALWZ.v` | Reflective non-vacuity witnesses: a concrete spread family, and a concrete instance run through every hypothesis of the axiom's shape to its conclusion |
+| `threshold_is_inside_the_gap`, `axiom_hypotheses_satisfiable_in_the_gap` | `coq/ALWZ.v` | **Non-vacuity where the axiom is actually doing work.** At `n = 20`, `k = 3` the axiom's threshold is 18 while the elementary lemma needs `r > 40`, so `SpreadYieldsDisjoint 20 3 18` is an instance this development cannot prove. The circulant graph `C₃₇(1..9)` — 18-regular, 333 edges > 18² — satisfies every hypothesis of it, and the conclusion it predicts is confirmed without the axiom |
 | `k_pairwise_disjoint_sunflower` | `coq/Sunflower.v` | `k` pairwise-disjoint nonempty sets are a `k`-sunflower with empty core |
 | `max_disjoint_cover` | `coq/ErdosRado.v` | Greedy construction of a maximal-disjoint covering subfamily |
 | `spread_disjoint_above_elementary` | `coq/SpreadReduction.v` | The elementary spread lemma for *every* `r > n(k-1)`, not just `r = n(k-1)+1` — the upper half of the axiom's truth sandwich |
@@ -125,7 +128,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (49 of them). The current
+for every theorem in the "Closed" table (51 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -134,7 +137,7 @@ any closed theorem (confirmed by `Print Assumptions`).
 full assumption set of `ALWZ.sunflower_bound_from_spread_lemma` — the
 one theorem that does use the axiom — so the exact statement being
 trusted is visible in the build log rather than buried in a source
-file. CI gates on both: 49 `Closed under the global context` lines, no
+file. CI gates on both: 51 `Closed under the global context` lines, no
 closed theorem listing `Axioms:`, and exactly one axiom name under the
 modern bound.
 
