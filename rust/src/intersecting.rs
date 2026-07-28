@@ -231,6 +231,83 @@ pub fn iota(ground: u32, b: u32, budget: u64, seed: usize) -> (usize, Vec<u32>, 
     (s.best, s.best_family, done)
 }
 
+/// Is there an intersecting sunflower-free `b`-uniform family of at
+/// least `target` members on `ground` points?
+///
+/// Two reductions beyond `iota`, and together they are the difference
+/// between hours and minutes.
+///
+/// **The decision framing.** Seeding the incumbent at `target - 1` makes
+/// the bound `|cur| + |cands| <= target - 1` kill every branch that
+/// cannot reach the target. Asking for the exact maximum wastes all of
+/// that.
+///
+/// **The second member, up to symmetry.** The stabiliser of the anchor
+/// `A = {0,...,b-1}` is `Sym(A) x Sym(rest)`, and it acts on the other
+/// `b`-sets with exactly `b - 1` orbits — one per value of
+/// `|B ∩ A| = 1, ..., b-1`. So instead of branching over every candidate
+/// for the second member, branch over one representative each. At
+/// `b = 4, ground = 10` that is 3 branches rather than 195.
+///
+/// Correct because any family containing `A` with two or more members
+/// has *some* second member, and a stabiliser element carries it to a
+/// representative while fixing `A` and preserving both intersecting-ness
+/// and sunflower-freeness. The branches overlap, which costs nothing for
+/// a maximum.
+///
+/// Returns `(reached, witness, exhaustive)`.
+pub fn iota_decide(
+    ground: u32,
+    b: u32,
+    target: usize,
+    budget: u64,
+) -> (bool, Vec<u32>, bool) {
+    if ground < b || target < 2 {
+        return (false, Vec::new(), true);
+    }
+    let anchor: u32 = (1u32 << b) - 1;
+    let all: Vec<u32> = m_subsets(ground, b)
+        .into_iter()
+        .map(u32::from)
+        .filter(|s| *s != anchor && s & anchor != 0)
+        .collect();
+
+    let mut exhaustive = true;
+    for j in 1..b {
+        // Representative with |rep ∩ anchor| = j: the first j points of
+        // the anchor, then the first b-j points outside it.
+        if b + (b - j) > ground {
+            continue;
+        }
+        let mut rep: u32 = (1u32 << j) - 1;
+        for t in 0..(b - j) {
+            rep |= 1 << (b + t);
+        }
+        let cands: Vec<u32> = all
+            .iter()
+            .copied()
+            .filter(|&y| {
+                y != rep && y & rep != 0 && !is_sunflower(anchor, rep, y)
+            })
+            .collect();
+        let mut s = CandSearch {
+            best: target - 1,
+            best_family: Vec::new(),
+            nodes: 0,
+            budget,
+        };
+        let mut cur = vec![anchor, rep];
+        s.rec(&cands, &mut cur);
+        if s.nodes > s.budget {
+            exhaustive = false;
+        }
+        if !s.best_family.is_empty() {
+            return (true, s.best_family, true);
+        }
+    }
+    (false, Vec::new(), exhaustive)
+}
+
 /// Verify a family is `b`-uniform, distinct, sunflower-free, and
 /// (optionally) intersecting. Independent of the search.
 pub fn verify(f: &[u32], b: u32, intersecting: bool) -> Result<(), String> {

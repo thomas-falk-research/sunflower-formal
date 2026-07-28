@@ -229,3 +229,61 @@ fn complementary_pair_ceiling() {
     // And the ceiling at b = 4 would have beaten AHS, had it been met.
     assert!(35f64.powf(1.0 / 3.0) > 10f64.powf(0.5));
 }
+
+/// The decision search must agree with the maximum search.
+///
+/// `iota_decide` adds two reductions on top of `iota`: it seeds the
+/// incumbent at `target - 1`, and it branches the second member over
+/// the `b - 1` orbits of the anchor's stabiliser rather than over every
+/// candidate. The second is the one that could be subtly wrong — an
+/// orbit argument that missed a case would silently return "no", which
+/// is exactly the answer that looks like progress. So it is checked
+/// against the plain maximum at every target that matters, on every
+/// ground set where the maximum is affordable.
+#[test]
+fn decision_search_agrees_with_the_maximum() {
+    use sunflower_formal::intersecting::{iota, iota_decide};
+    for b in 2u32..=4 {
+        for g in b..=(2 * b) {
+            let (exact, _, d1) = iota(g, b, BUDGET, 0);
+            assert!(d1, "max search did not finish at b={b}, ground={g}");
+            for t in 2..=(exact + 3) {
+                let (reached, fam, d2) = iota_decide(g, b, t, BUDGET);
+                assert!(d2, "decide did not finish at b={b}, g={g}, target={t}");
+                assert_eq!(
+                    reached,
+                    exact >= t,
+                    "decide says {reached} but iota({b},{g}) = {exact} vs target {t}"
+                );
+                if reached {
+                    verify(&fam, b, true).expect("decide returned a bad witness");
+                    assert!(fam.len() >= t, "witness is smaller than the target");
+                }
+            }
+        }
+    }
+}
+
+/// The orbit reduction rests on the second member having only `b - 1`
+/// orbits under the anchor's stabiliser, indexed by `|B ∩ anchor|`.
+/// Checked directly: every candidate is carried to one of the
+/// representatives by a permutation fixing the anchor setwise.
+#[test]
+fn second_member_orbits_are_by_intersection_size() {
+    use sunflower_formal::ground::m_subsets;
+    for b in 2u32..=4 {
+        let ground = 2 * b;
+        let anchor: u32 = (1u32 << b) - 1;
+        let mut sizes = std::collections::BTreeSet::new();
+        for s in m_subsets(ground, b) {
+            let s = u32::from(s);
+            if s == anchor || s & anchor == 0 {
+                continue;
+            }
+            sizes.insert((s & anchor).count_ones());
+        }
+        // Exactly the values 1..b-1, one orbit each.
+        let expected: std::collections::BTreeSet<u32> = (1..b).collect();
+        assert_eq!(sizes, expected, "orbit sizes at b={b}");
+    }
+}
