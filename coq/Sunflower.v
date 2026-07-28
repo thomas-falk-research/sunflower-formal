@@ -237,39 +237,51 @@ Qed.
 Definition PairwiseDisjoint (S : list (list nat)) : Prop :=
   forall A B, In A S -> In B S -> A <> B -> Disjoint A B.
 
-(** Pairwise-disjoint nonempty sets have pairwise non-set-equal members. *)
+(** Pairwise-disjoint sets are automatically distinct *as sets*: two
+    literally distinct members that were set-equal would have to be
+    disjoint from each other, hence both empty — and the only list with
+    no elements is [[]], so they would be literally equal after all,
+    contradicting [NoDup].
 
-Lemma SetNoDup_of_pairwise_disjoint_nonempty :
-  forall S, NoDup S ->
-    Forall (fun A : list nat => A <> []) S ->
-    PairwiseDisjoint S ->
-    SetNoDup S.
+    No nonemptiness hypothesis is needed, and assuming one would be
+    more than decoration. A family may contain a set equal to the core
+    of a sunflower it belongs to — [{1}, {1,2}, {1,3}] is a 3-sunflower
+    with core [{1}] — and that member's petal in the link over the core
+    is empty. [LinkCharacterisation.v] needs exactly this case, and the
+    exhaustive check in [rust/tests/link_characterisation.rs] is what
+    found it: excluding the empty petal breaks the characterisation on
+    non-uniform families and on no uniform one, which is why the
+    hypothesis looked harmless for as long as it did. *)
+
+Lemma SetNoDup_of_pairwise_disjoint :
+  forall S, NoDup S -> PairwiseDisjoint S -> SetNoDup S.
 Proof.
-  intros S Hnd HFne Hpd.
+  intros S Hnd Hpd.
   induction Hnd as [|A S HniA HndS IH]; [constructor|].
-  inversion HFne as [|? ? HAne HFne']; subst.
   constructor.
   - intros B HB Hseq.
     assert (HABne : A <> B).
     { intro E; subst B; contradiction. }
     pose proof (Hpd A B (or_introl eq_refl) (or_intror HB) HABne) as Hdis.
-    destruct A as [|a A']; [apply HAne; reflexivity|].
-    assert (Ha : In a (a :: A')) by (left; reflexivity).
-    destruct Hseq as [Hs _]. apply Hs in Ha.
-    apply (Hdis a); [left; reflexivity | exact Ha].
-  - apply IH; [exact HFne' | unfold PairwiseDisjoint in *; intros C D HC HD HCD;
-                apply Hpd; auto; right; auto].
+    destruct A as [|a A'].
+    + (* [A] is empty, so [B] is too, so both are [[]]. *)
+      destruct B as [|b B']; [apply HABne; reflexivity|].
+      destruct Hseq as [_ Hs]. exact (Hs b (or_introl eq_refl)).
+    + assert (Ha : In a (a :: A')) by (left; reflexivity).
+      destruct Hseq as [Hs _]. apply Hs in Ha.
+      apply (Hdis a); [left; reflexivity | exact Ha].
+  - apply IH; unfold PairwiseDisjoint in *; intros C D HC HD HCD;
+      apply Hpd; auto; right; auto.
 Qed.
 
 Lemma pairwise_disjoint_sunflower :
   forall S,
     NoDup S ->
-    Forall (fun A : list nat => A <> []) S ->
     PairwiseDisjoint S ->
     Sunflower S [].
 Proof.
-  intros S Hnd HFne Hpd; split.
-  - apply SetNoDup_of_pairwise_disjoint_nonempty; auto.
+  intros S Hnd Hpd; split.
+  - apply SetNoDup_of_pairwise_disjoint; auto.
   - intros A B HA HB Hne.
     pose proof (Hpd A B HA HB Hne) as Hdis.
     rewrite (Disjoint_inter_empty Hdis).
@@ -279,10 +291,9 @@ Qed.
 Corollary k_pairwise_disjoint_sunflower :
   forall k S,
     NoDup S -> length S = k ->
-    Forall (fun A : list nat => A <> []) S ->
     PairwiseDisjoint S ->
     KSunflower k S.
 Proof.
-  intros k S Hnd Hlen HFne Hpd; split; [exact Hlen|].
+  intros k S Hnd Hlen Hpd; split; [exact Hlen|].
   exists []; apply pairwise_disjoint_sunflower; auto.
 Qed.

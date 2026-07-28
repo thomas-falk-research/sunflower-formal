@@ -50,6 +50,15 @@ jobs:
           # audited name says, so such a change has to arrive as a
           # reviewable diff in that file or fail here.
           make statements
+      - name: Gate - the prose's numbers match the lists they count
+        run: |
+          # README.md and STATUS.md quote counts -- how many modules, how
+          # many audited theorems, how many mutations -- that are
+          # hand-copied from lists elsewhere in the repository. Three of
+          # them were already stale when this gate was added. The
+          # audited-theorem count is the same drift this workflow itself
+          # used to have, one level up.
+          make docnumbers
       - name: Gate - the 2020 bound depends on exactly the spread-lemma axiom
         run: |
           # The derived modern bound must rest on Rao20_lemma2 ...

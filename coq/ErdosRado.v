@@ -223,10 +223,6 @@ Proof.
     assert (HSkpd : PairwiseDisjoint Sk).
     { unfold PairwiseDisjoint. intros B C HB HC HBC.
       apply Hpd; [apply HSkincl_cov; exact HB | apply HSkincl_cov; exact HC | exact HBC]. }
-    assert (HSkne : Forall (fun A : list nat => A <> []) Sk).
-    { apply Forall_forall; intros A HA.
-      assert (HAF : In A F) by (apply HSkincl; exact HA).
-      rewrite Forall_forall in HFne; apply HFne; exact HAF. }
     exists Sk; split.
     + apply SubFamilySetEq_incl; exact HSkincl.
     + apply k_pairwise_disjoint_sunflower; auto.

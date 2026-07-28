@@ -12,7 +12,7 @@ layer and its limits are in [`testing.md`](testing.md).
 ## Done: the testing layer
 
 Both errors this development has produced were errors of *statement*,
-invisible to the kernel. Five mechanisms now target that class — see
+invisible to the kernel. Seven mechanisms now target that class — see
 [`testing.md`](testing.md). Everything below is safer for having them,
 and new definitions should arrive with the corresponding checks rather
 than acquire them later:
@@ -28,7 +28,13 @@ than acquire them later:
 * a new audited name goes in `tools/audited.txt`, and the statement
   baseline is regenerated (`make statements-accept`) in the same
   commit. That way the diff of `tools/statements.txt` is the review
-  question "did this change what we claim?" answered in advance.
+  question "did this change what we claim?" answered in advance;
+* a new *statement*, before it is proved, gets enumerated against an
+  independent oracle. `rust/tests/link_characterisation.rs` is the
+  worked example: half an hour of falsification found the case that
+  would have made a session's Coq work state something narrower than
+  intended, and it found it on non-uniform families that no existing
+  test generated.
 
 ---
 
@@ -183,6 +189,43 @@ be the `k = 3` instance of the `CH` upper bound: it holds because
 `CH(3,2) = 7 ≤ 9`. Small enough that a direct argument may beat
 waiting for 3a.
 
+## 3.5. Done: the link characterisation, and what it did not buy
+
+`LinkCharacterisation.sunflower_iff_link_matching` proves
+
+```
+ContainsKSunflower k F  <->  exists Y, HasKDisjoint k (link Y F)
+```
+
+with no hypotheses — no uniformity, no `Distinct`, no bound on `k`. It
+makes §3's uniformity-2 characterisation the case `|Y| <= 1`, re-derived
+in `two_uniform_sunflower_iff_via_link` by a route sharing no step with
+the original, and it turns `Spread.link_sunflower_lift` from a one-way
+reduction into an equivalence.
+
+Read honestly, it is a restatement. It says what shape the problem has:
+sunflower-freeness at width `k` is the assertion that a *family* of
+matching problems, one per candidate core and each in a derived family
+of strictly smaller uniformity, has no solution. That is a better thing
+to state theorems against than the raw definition, and
+`sunflower_core_lies_in_a_member` bounds which cores need checking. It
+is not leverage on the bound, and re-deriving `spread_reduction` through
+it was not attempted; the `log n` is not in the statement.
+
+Two things came out of the falsification rather than the proof, and both
+outlived it:
+
+* `Sunflower.pairwise_disjoint_sunflower`'s nonemptiness hypothesis was
+  decoration, in four lemmas and in `Audit.no_k_disjoint_of_no_sunflower`
+  — which also carried `1 <= m -> Uniform m F` for the same reason and
+  no longer does;
+* no uniform family distinguishes the reading that excludes the empty
+  petal from the one that allows it, so the enumeration had to be
+  widened to arbitrary sets before it could say anything. That is a
+  general lesson about this testbed: it enumerates uniform families
+  because the *conjecture* is about uniform families, and a statement
+  proved with no uniformity hypothesis is under-tested by it.
+
 ## 4. Smaller targets
 
 Concrete, bounded, and each motivated by something the testbed or the
@@ -204,7 +247,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 29 anecdotes into a coverage metric over the
+  mutation testing from 32 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -212,8 +255,8 @@ mutation runner measured rather than by taste.
   `coq/Audit.v` is checked for completeness against it. Everywhere else
   the list is still curated by hand, so a theorem added to another file
   can be added without being audited. An annotation — a marker comment
-  the extractor reads — would close that. Gating the numbers quoted in
-  `README`/`STATUS` is the same kind of gap.
+  the extractor reads — would close that. (The sibling gap, the numbers
+  quoted in `README`/`STATUS`, is closed: `make docnumbers`.)
 
 * **Widen the mutation manifest.** It currently covers the definitions
   the two historical errors touched, plus the reduction's arithmetic.

@@ -25,7 +25,7 @@ kind:
    the direction of the strengthening is itself a theorem.
 
 Neither error was found by the kernel. Both were found by rereading
-the source. This document describes the six mechanisms added so that
+the source. This document describes the seven mechanisms added so that
 a third one does not have to be.
 
 None of them is a substitute for reading the paper. All of them are
@@ -231,6 +231,44 @@ column is `m(k-1)+1`, proved sufficient in Coq. `r*` must never exceed
 it, and at `m = 1` it is exactly `k-1`, matching
 `Audit.spread_yields_disjoint_needs_r` on the nose.
 
+### A second thing falsified before it was proved
+
+The same machinery, pointed at a statement rather than at the axiom.
+`LinkCharacterisation.sunflower_iff_link_matching` says a family has a
+`k`-sunflower exactly when some link of it has `k` pairwise disjoint
+members. Before any of it was written in Coq,
+`rust/tests/link_characterisation.rs` enumerated the equivalence against
+the brute-force pairwise-intersection detector in `sunflower.rs` — which
+knows nothing about links — over every family on five and six points at
+uniformities 2 and 3, over every family of *arbitrary* sets on four
+points, and over a deterministic sample at ground 7. The witnesses are
+checked to cross over in both directions, not only the two booleans.
+
+It found something. Under uniformity the equivalence is insensitive to
+whether the empty petal counts: at uniformity `m` at most one member can
+equal a given core, so the empty petal never has a second petal to be
+disjoint from. Without uniformity it does, and the equivalence needs it
+to count — `{1}, {1,2}, {1,3}` is a 3-sunflower with core `{1}` whose
+first member contributes the empty petal.
+`Sunflower.pairwise_disjoint_sunflower` carried a nonemptiness
+hypothesis that excluded exactly that case, and it was decoration in
+three other lemmas and in `Audit.no_k_disjoint_of_no_sunflower` besides.
+Deleting it was the first commit of the Coq work, not a repair after the
+fact.
+
+The two mutations that establish the tests bite, run by hand before the
+suite was committed:
+
+| Mutation of `link.rs` | Killed by |
+|---|---|
+| drop the empty petal from `link` | the non-uniform enumeration only — both uniform suites pass |
+| restrict candidate cores to `∅` and the singletons | uniformity 3, the non-uniform enumeration, and the ground-7 sample — uniformity 2 passes, which is `two_uniform_only_small_cores` |
+
+Neither is in `tools/mutations.toml`: that manifest perturbs Coq
+definitions, and these perturb the Rust oracle. They are recorded here
+because "the check would have caught it" is a claim, and an unrun claim
+is worth what an untested proof is.
+
 ## 4. Mutation testing — `tools/mutate.py`
 
 The three mechanisms above test the definitions the development *has*.
@@ -312,7 +350,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-29 mutations, all with the outcome the manifest declares: 27 killed
+32 mutations, all with the outcome the manifest declares: 30 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:
@@ -406,6 +444,29 @@ nothing else did. It is a tripwire, not a semantics — the complement of
 mutation testing, which asks whether a hypothesis is load-bearing where
 this asks only whether it is still there.
 
+## 6. The numbers in the prose — `tools/docnumbers.py`
+
+One level up from statement baselines. `tools/statements.txt` stops a
+theorem's *statement* from drifting; this stops the *description of the
+development* from drifting away from the development.
+
+Every count in `README.md` and `STATUS.md` — how many Coq files, how
+many audited theorems, how many mutations and how many of them are
+killed — is a hand-copied consequence of a list elsewhere in the
+repository. When this check was written, three of them were already
+wrong: the README said 19 Coq files against 22, and `STATUS.md` said 21
+modules in two places. Each was true when it was written.
+
+So `tools/docnumbers.py` derives each count from the list that defines
+it (`_CoqProject`, `tools/audited.txt`, `tools/mutations.toml`) and
+checks it against a manifest of where that count is quoted. A pattern
+that matches *nothing* is also a failure, so deleting the sentence is
+not a way to pass. `make docnumbers` runs it; CI gates on it.
+
+This is the same fix, one level down, that the workflow already got: the
+audited-theorem count used to be hardcoded in the CI file and is now
+reported by `make print-assumptions` from its own list.
+
 ## What this does not cover
 
 Worth being explicit, since the point of the exercise is honesty about
@@ -435,10 +496,11 @@ make coqchk     # independent re-check of every module, whole-library census
 make mutants    # perturb each definition, check what breaks
 make testbed    # exhaustive falsification + differential checks
 make statements # every audited statement against tools/statements.txt
+make docnumbers # every number the prose quotes against the lists it counts
 cd rust && cargo test --release   # everything on the Rust side
 ```
 
-CI runs all four as separate jobs on every push, with `RUSTFLAGS=-D
+CI runs these as separate jobs on every push, with `RUSTFLAGS=-D
 warnings` on the Rust side.
 
 ## Known gaps in the checking itself
@@ -448,10 +510,6 @@ warnings` on the Rust side.
   matrix would need opam and roughly an order of magnitude more CI
   time.
 * **No `clippy`.** The Rust side denies warnings but does not lint.
-* **The docs' numbers are hand-maintained.** CI no longer hardcodes
-  the audited-theorem count — `make print-assumptions` reports the size
-  of its own list and the gate compares against that — but nothing
-  checks that `README.md` and `STATUS.md` quote the same number.
 * **The audit list is complete only for `coq/Audit.v`.** That file is
   checked exhaustively; everywhere else `tools/audited.txt` is curated
   by hand, so a theorem added elsewhere can still go unaudited. Driving
