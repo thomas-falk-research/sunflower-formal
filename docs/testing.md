@@ -42,7 +42,8 @@ kernel level.
 enumerated in the Makefile. That is exactly as complete as the list.
 An `Admitted` lemma somewhere else in the development, a second
 `Axiom`, or a global `Parameter` would not appear — the audit would
-report 51 closed theorems and pass. This is not hypothetical: appending
+report every name on the list as closed, and pass. This is not
+hypothetical: appending
 
 ```coq
 Lemma smuggled_in : forall n : nat, n = n + 0.
@@ -282,25 +283,39 @@ again once they are applied, the kill was script level and the runner
 reports `killed-script` rather than `killed`. That distinction is
 machine-checked, not asserted.
 
-Exactly one mutation in the current manifest lands there.
+No mutation in the current manifest lands there, and the story of how
+that changed is the argument for not leaving one there.
+
 `lowerbound-at-least` weakens `LowerBound`'s `length F = m` to
-`length F ≥ m` and the build breaks in four places, all of them
-`apply H` steps whose goal changed shape. Replacing them with
-`rewrite H; lia` restores it. The mathematics was never involved: the
-two forms of `LowerBound` define the same predicate, and
+`length F ≥ m`. It used to break the build in four places, all of them
+`apply H` steps whose goal had changed shape, and it was declared
+`killed-script` with those four steps as repairs. The mathematics was
+never involved: the two forms define the same predicate, and
 `Audit.LowerBound_ge_equiv` proves it — from a sunflower-free family
 of size at least `m`, its first `m` members are a sunflower-free family
-of size exactly `m`.
+of size exactly `m`. That theorem was written *because* the mutation
+asked the question.
 
-That theorem was written *because* the mutation asked the question.
-Which is the methodology working: a perturbation, an unexpected
-result, and a new theorem making the answer precise.
+The four repairs were an artefact of how those proofs were written, and
+artefacts of that kind do not stay put. Adding
+`CliqueLowerBound.two_cliques_lower_bound` — a theorem about cliques,
+with no bearing on whether `LowerBound`'s equality matters — introduced
+a fifth brittle step, turned the outcome into `killed`, and failed the
+build. The five steps are now written as `rewrite …; lia`, which proves
+the goal in either form, and the mutation is declared `survived`: what
+it reports is now a property of the definition rather than of the
+tactic scripts.
+
+`repairs` remains part of the manifest format, because the wrinkle it
+addresses is real. The lesson is that a script-level kill is a debt,
+not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
 24 mutations, all with the outcome the manifest declares: 22 killed
-outright, one killed at script level only, one control surviving as it
-must, no genuine survivors. The mutations that matter most:
+outright, one genuine survivor (`lowerbound-at-least`, for the reason
+above), and one control surviving as it must. The mutations that
+matter most:
 
 | Mutation | Asks | Dies in |
 |---|---|---|
@@ -350,7 +365,7 @@ what is checked:
 ## Reproducing
 
 ```bash
-make verify     # build + Print Assumptions audit (51 closed theorems)
+make verify     # build + Print Assumptions audit (67 closed theorems)
 make coqchk     # independent re-check of every module, whole-library census
 make mutants    # perturb each definition, check what breaks
 make testbed    # exhaustive falsification + differential checks
@@ -367,6 +382,9 @@ warnings` on the Rust side.
   matrix would need opam and roughly an order of magnitude more CI
   time.
 * **No `clippy`.** The Rust side denies warnings but does not lint.
-* **The docs' numbers are hand-maintained.** CI gates on 51 closed
-  theorems, but nothing checks that `README.md` and `STATUS.md` still
-  say 51.
+* **The docs' numbers are hand-maintained.** CI no longer hardcodes
+  the audited-theorem count — `make print-assumptions` reports the size
+  of its own list and the gate compares against that — but nothing
+  checks that `README.md` and `STATUS.md` quote the same number, nor
+  that a theorem added to the development reaches the audit list at
+  all. The list is still hand-maintained.

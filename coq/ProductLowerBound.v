@@ -463,7 +463,7 @@ Proof.
   exists (prod_family (k - 1) n).
   split; [apply prod_family_Uniform|].
   split; [apply prod_family_SetNoDup|].
-  split; [apply prod_family_length|].
+  split; [rewrite prod_family_length; lia|].
   intro Hcontains.
   destruct (contains_sunflower_literal k (prod_family (k - 1) n) Hcontains)
     as [S [core [Hincl [Hnd [Hlen Hsun]]]]].

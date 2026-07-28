@@ -8,7 +8,7 @@
 //! everything it did not prove — by running them against exhaustive
 //! enumeration and against numbers measured independently.
 //!
-//! Five things are checked, in dependency order:
+//! Six things are checked, in dependency order:
 //!
 //! 1. **the identification itself** — that `RaoSpread 2 F r` is a
 //!    maximum-degree bound. Everything else assumes it;
@@ -21,7 +21,11 @@
 //! 4. **the spread threshold** `r*(2,k) = min{r : CH(r,k-1) <= r^2}`,
 //!    against the thresholds `spread_axiom.rs` measures by search;
 //! 5. **the sunflower number** `f(2,k) = CH(k-1,k-1)+1`, against
-//!    exhaustive tabulation and against `F23.f_2_3_eq_7`.
+//!    exhaustive tabulation and against `F23.f_2_3_eq_7`;
+//! 6. **the Coq lower bound** — that the two-clique family
+//!    `CliqueLowerBound.two_cliques_lower_bound` proves sunflower-free
+//!    really is, according to the sunflower detector, and that its
+//!    oddness hypothesis is load-bearing.
 
 use sunflower_formal::bounds::f_nk_exact;
 use sunflower_formal::chvatal_hanson::{
@@ -356,4 +360,77 @@ fn print_ch_table() {
         "\n  CH is Chvatal-Hanson, JCTB 20 (1976) 128-138. Both columns are\n  \
          consequences of it at uniformity 2; neither is proved in Coq yet.\n"
     );
+}
+
+// ---------------------------------------------------------------
+// 6. The Coq lower bound
+// ---------------------------------------------------------------
+
+/// `CliqueLowerBound.two_cliques_lower_bound`: for odd `k`, two
+/// disjoint copies of `K_k` have `k(k-1)` edges, maximum degree
+/// `k-1`, matching number `k-1`, and hence no `k`-sunflower.
+///
+/// The first four claims are the two parameters the Coq proof bounds;
+/// the last is checked with the sunflower detector, which knows
+/// nothing about degrees or matchings. It is exponential in `k`, so it
+/// runs only where it can — the point of the Coq proof is that it does
+/// not have to.
+#[test]
+fn coq_clique_lower_bound_is_sunflower_free() {
+    use sunflower_formal::spread::mask_to_set;
+    use sunflower_formal::sunflower::find_k_sunflower;
+
+    for k in [3u64, 5, 7, 9] {
+        let f = extremal(k - 1, k - 1);
+        assert_eq!(f.len() as u64, k * (k - 1), "edge count at k = {k}");
+        assert_eq!(f.len() as u64 + 1, f_2_k(k), "f(2,{k})");
+        assert_eq!(max_degree(&f, 32) as u64, k - 1, "max degree at k = {k}");
+        assert_eq!(matching_number(&f) as u64, k - 1, "matching number at k = {k}");
+    }
+    for k in [3usize, 5] {
+        let f = extremal(k as u64 - 1, k as u64 - 1);
+        let sets: Vec<Vec<u32>> = f.iter().map(|&a| mask_to_set(a)).collect();
+        assert!(
+            find_k_sunflower(&sets, k).is_none(),
+            "two copies of K_{k} contain a {k}-sunflower"
+        );
+    }
+}
+
+/// `Audit.oddness_is_needed`: the oddness hypothesis is not an
+/// artefact of the proof. At even `k` the same construction has a
+/// perfect matching — `k` disjoint edges, hence a `k`-sunflower — so
+/// the even case genuinely needs the other extremal graph.
+#[test]
+fn two_cliques_fail_at_even_k() {
+    use sunflower_formal::spread::mask_to_set;
+    use sunflower_formal::sunflower::find_k_sunflower;
+
+    for k in [4usize, 6] {
+        let mut f: Vec<Mask> = Vec::new();
+        for base in [0u32, k as u32] {
+            for i in 0..k as u32 {
+                for j in (i + 1)..k as u32 {
+                    f.push(1 << (base + i) | 1 << (base + j));
+                }
+            }
+        }
+        assert_eq!(max_degree(&f, 32), k - 1);
+        assert_eq!(
+            matching_number(&f),
+            k,
+            "two copies of K_{k} with k even have a perfect matching"
+        );
+        let sets: Vec<Vec<u32>> = f.iter().map(|&a| mask_to_set(a)).collect();
+        assert!(
+            find_k_sunflower(&sets, k).is_some(),
+            "k disjoint edges but no {k}-sunflower"
+        );
+        // ... and the true extremal graph at even k is a different one,
+        // with strictly more edges than two cliques would give.
+        assert!(
+            ch(k as u64 - 1, k as u64 - 1) > (k as u64 - 1) * (k as u64 - 1),
+            "CH at even k should beat the two-clique count"
+        );
+    }
 }

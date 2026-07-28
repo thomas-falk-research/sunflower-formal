@@ -16,7 +16,7 @@
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower.
+From Sunflower Require Import Sets Sunflower HallCore.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -250,7 +250,7 @@ Proof.
   split; [|split; [|split]].
   - apply disjoint_blocks_Uniform; exact Hn.
   - apply disjoint_blocks_SetNoDup; exact Hn.
-  - apply disjoint_blocks_length.
+  - rewrite disjoint_blocks_length; lia.
   - apply no_k_sunflower_short_family.
     rewrite disjoint_blocks_length. lia.
 Qed.
@@ -264,4 +264,66 @@ Proof.
   intros n k Hn Hk Hup.
   destruct (lower_bound_trivial Hn Hk) as [F [HU [HD [Hlen Hno]]]].
   apply Hno. apply Hup; [exact HU | exact HD | lia].
+Qed.
+
+(** ** How many pairwise disjoint [m]-sets fit in a ground set
+
+    The counting counterpart of the constructions above: [disjoint_blocks]
+    packs [count] pairwise disjoint [n]-sets into [count * n] points, and
+    this says nothing can do better. [k] pairwise disjoint sets of size
+    [m] use [km] distinct elements, so a ground set of fewer than [km]
+    points admits no such family.
+
+    Used to refute the spread hypothesis below its threshold
+    ([Audit.spread_yields_disjoint_below_threshold]) and to bound the
+    matching number of the clique constructions in
+    [CliqueLowerBound.v]. *)
+
+Lemma NoDup_concat_pairwise_disjoint :
+  forall S : list (list nat),
+    NoDup S ->
+    Forall (fun A : list nat => NoDup A) S ->
+    PairwiseDisjoint S ->
+    NoDup (concat S).
+Proof.
+  intros S; induction S as [|A S' IH]; simpl; intros Hnd Hall Hpd; [constructor|].
+  inversion Hnd as [|? ? HniA Hnd']; subst.
+  inversion Hall as [|? ? HndA Hall']; subst.
+  apply NoDup_app_intro.
+  - exact HndA.
+  - apply IH; [exact Hnd' | exact Hall' |].
+    intros C D HC HD HCD; apply Hpd; [right; exact HC | right; exact HD | exact HCD].
+  - intros x HxA Hxc.
+    apply in_concat in Hxc as [B [HB HxB]].
+    assert (HAB : A <> B) by (intro E; subst B; contradiction).
+    apply (Hpd A B (or_introl eq_refl) (or_intror HB) HAB x HxA HxB).
+Qed.
+
+Lemma length_concat_uniform :
+  forall m S, Uniform m S -> length (concat S) = length S * m.
+Proof.
+  intros m S; unfold Uniform; induction S as [|A S' IH]; simpl; intros H;
+    [reflexivity|].
+  inversion H as [|? ? HUA H']; subst.
+  destruct HUA as [HAlen _].
+  rewrite app_length, HAlen, (IH H'); reflexivity.
+Qed.
+
+Theorem pairwise_disjoint_ground_bound :
+  forall (S : list (list nat)) (U : list nat) (m : nat),
+    NoDup S -> NoDup U ->
+    Uniform m S ->
+    (forall A, In A S -> Subset A U) ->
+    PairwiseDisjoint S ->
+    length S * m <= length U.
+Proof.
+  intros S U m HndS HndU HU Hsub Hpd.
+  assert (Hnc : NoDup (concat S)).
+  { apply NoDup_concat_pairwise_disjoint;
+      [exact HndS | apply (@Uniform_NoDup m S HU) | exact Hpd]. }
+  assert (Hincl : incl (concat S) U).
+  { intros x Hx; apply in_concat in Hx as [A [HA HxA]].
+    apply (Hsub A HA); exact HxA. }
+  pose proof (NoDup_incl_length Hnc Hincl) as Hle.
+  rewrite (@length_concat_uniform m S HU) in Hle; exact Hle.
 Qed.

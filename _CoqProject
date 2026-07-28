@@ -19,5 +19,6 @@ coq/ALWZ.v
 coq/Conjecture.v
 coq/SmallCases.v
 coq/TwoUniform.v
+coq/CliqueLowerBound.v
 coq/F23.v
 coq/Audit.v

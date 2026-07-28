@@ -50,11 +50,21 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `ContainsKSunflower_equiv`, `ContainsKSunflower_perm` | `coq/Audit.v` | Containing a sunflower is a property of the family *of sets*: invariant under permuting the family and under set-equal replacement of members |
 | `sunflower_core_unique` | `coq/Audit.v` | A sunflower with at least two petals determines its core up to `SetEq` |
 | `distinct_strictly_stronger` | `coq/Audit.v` | `[[0;1];[1;0]]` is `NoDup` and not `Distinct` — the design choice is not cosmetic |
-| `pairwise_disjoint_ground_bound` | `coq/Audit.v` | `k` pairwise disjoint `m`-sets need `km` ground elements |
+| `pairwise_disjoint_ground_bound` | `coq/LowerBound.v` | `k` pairwise disjoint `m`-sets need `km` ground elements |
 | `no_k_disjoint_of_no_sunflower` | `coq/Audit.v` | A sunflower-free family has no `k` pairwise disjoint members — the bridge that makes every sunflower-free family in the repository a candidate counterexample to the spread hypothesis |
 | `spread_yields_disjoint_below_threshold`, `spread_yields_disjoint_needs_r` | `coq/Audit.v` | **The axiom's shape is false** whenever `r^m < k-1`; at `m = 1`, whenever `r < k-1` |
 | `spread_yields_disjoint_sandwich` | `coq/Audit.v` | **False below `k-1`, true above `n(k-1)`** — the axiom asserts something about the gap, and is neither vacuous nor already proved |
 | `no_spread_yields_disjoint_2_3_2`, `..._alt` | `coq/Audit.v` | `~ SpreadYieldsDisjoint 2 3 2`, proved twice by disjoint arguments: the five-cycle via the ground-set bound, and `two_triangles` via the reflective 3-sunflower detector |
+| `sunflower_shape` | `coq/TwoUniform.v` | Every sunflower on `≥ 2` members is pairwise disjoint or passes through a common point — the core is empty or it is not. No uniformity hypothesis |
+| `star_sunflower` | `coq/TwoUniform.v` | The converse at uniformity 2: distinct 2-sets through a common point *are* a sunflower with that point as core. False at uniformity 3 (`Audit.star_needs_uniformity_two`) |
+| `two_uniform_sunflower_iff`, `two_uniform_sunflower_free_iff` | `coq/TwoUniform.v` | **A distinct 2-uniform family has no `k`-sunflower exactly when its matching number and its maximum degree are both `≤ k-1`.** So `f(2,k)` *is* the Chvátal–Hanson extremal problem at `D = ν = k-1`, not merely bounded by it |
+| `rao_spread_two_iff_degree` | `coq/TwoUniform.v` | At uniformity 2 the spread condition is a maximum-degree bound: `RaoSpread 2 F r ↔ ∀ v, deg [v] F ≤ r`. The `\|T\| = 2` clause asks `deg T F ≤ r⁰ = 1`, which `Distinct` already gives |
+| `spread_yields_disjoint_two_is_a_graph_statement` | `coq/TwoUniform.v` | **The spread hypothesis at uniformity 2 is the same extremal problem**: a graph with maximum degree `≤ r` and more than `r²` edges has `k` disjoint edges |
+| `two_cliques_no_sunflower`, `two_cliques_lower_bound` | `coq/CliqueLowerBound.v` | **`f(2,k) ≥ k(k-1) + 1` for every odd `k`** — two disjoint copies of `K_k`, an infinite family of exact sunflower lower bounds generalising `two_triangles`. Degree bound is local; matching bound is a parity argument, and `Audit.oddness_is_needed` shows the parity hypothesis is load-bearing |
+| `no_upper_bound_at_ch` | `coq/CliqueLowerBound.v` | `~ UpperBound 2 k (k(k-1))` for odd `k` |
+| `lower_bound_2_3_from_cliques` | `coq/CliqueLowerBound.v` | `LowerBound 2 3 6` re-derived from the general construction, sharing no step with `F23.f_2_3_lower`: that one evaluates a reflective detector on a literal family, this one counts degrees and matchings in a symbolic one |
+| `star_needs_uniformity_two`, `two_triangles_saturates_both_parameters`, `both_sunflower_shapes_occur` | `coq/Audit.v` | The uniformity-2 hypothesis is load-bearing; `two_triangles` is tight for *both* parameters at once, so it attains `CH(2,2)`; both branches of the shape lemma are realised |
+| `bounds_coherent_clique`, `clique_construction_is_two_triangles_reordered`, `oddness_is_needed` | `coq/Audit.v` | The clique bound contradicts no proved upper bound; at `k = 3` it is `two_triangles` reordered; at even `k` the same construction *does* contain a `k`-sunflower |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -128,7 +138,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (51 of them). The current
+for every theorem in the "Closed" table (67 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -137,9 +147,11 @@ any closed theorem (confirmed by `Print Assumptions`).
 full assumption set of `ALWZ.sunflower_bound_from_spread_lemma` — the
 one theorem that does use the axiom — so the exact statement being
 trusted is visible in the build log rather than buried in a source
-file. CI gates on both: 51 `Closed under the global context` lines, no
-closed theorem listing `Axioms:`, and exactly one axiom name under the
-modern bound.
+file. CI gates on both: as many `Closed under the global context`
+lines as there are audited theorems — a count the audit list reports
+itself, rather than a number duplicated in the workflow — no closed
+theorem listing `Axioms:`, and exactly one axiom name under the modern
+bound.
 
 To verify directly:
 
@@ -173,21 +185,20 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 19 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 21 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 
 Current mutation results: 24 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 22 killed outright, one
-(`lowerbound-at-least`) killed only at the level of tactic scripts,
-which the harness establishes by applying declared repairs that touch
-no statement, and which `Audit.LowerBound_ge_equiv` explains as a
-theorem, and one positive control (`canary-alpha-rename`, an
-alpha-rename that must survive, so the `survived` path is exercised on
-every run). No genuine survivors.
+declared in `tools/mutations.toml` — 22 killed outright, one genuine
+survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
+documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
+proves as a theorem), and one positive control (`canary-alpha-rename`,
+an alpha-rename that must survive, so the `survived` path is exercised
+on every run whatever the development does).
 
-`make coqchk` re-verifies all 19 modules with Coq's separate kernel
+`make coqchk` re-verifies all 21 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```
@@ -199,7 +210,7 @@ checker and reports the assumptions of the whole library:
 ```
 
 CI gates on all four lines. This is what makes "zero admits" a claim
-about the development rather than about the 51 theorem names the
+about the development rather than about the theorem names the
 `Print Assumptions` audit enumerates — an `Admitted` lemma outside
 that list passes the audit and fails this census.
 

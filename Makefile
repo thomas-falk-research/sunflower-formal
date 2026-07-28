@@ -3,7 +3,7 @@ COQFILES := coq/Sets.v coq/Sunflower.v coq/Graph.v coq/Matching.v \
             coq/ErdosRado_Greedy.v coq/LowerBound.v coq/ProductLowerBound.v \
             coq/Spread.v coq/Reflect.v coq/SpreadReduction.v coq/ALWZ.v \
             coq/Conjecture.v coq/SmallCases.v coq/TwoUniform.v \
-            coq/F23.v coq/Audit.v
+            coq/CliqueLowerBound.v coq/F23.v coq/Audit.v
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions axiom-audit
 
@@ -68,6 +68,10 @@ print-assumptions: coq
 	    'TwoUniform.two_uniform_sunflower_free_iff' \
 	    'TwoUniform.rao_spread_two_iff_degree' \
 	    'TwoUniform.spread_yields_disjoint_two_is_a_graph_statement' \
+	    'CliqueLowerBound.two_cliques_no_sunflower' \
+	    'CliqueLowerBound.two_cliques_lower_bound' \
+	    'CliqueLowerBound.no_upper_bound_at_ch' \
+	    'CliqueLowerBound.lower_bound_2_3_from_cliques' \
 	    'Audit.star_needs_uniformity_two' \
 	    'Audit.two_triangles_saturates_both_parameters' \
 	    'Audit.both_sunflower_shapes_occur' \
@@ -80,7 +84,7 @@ print-assumptions: coq
 	    'Audit.ContainsKSunflower_perm' \
 	    'Audit.sunflower_core_unique' \
 	    'Audit.distinct_strictly_stronger' \
-	    'Audit.pairwise_disjoint_ground_bound' \
+	    'LowerBound.pairwise_disjoint_ground_bound' \
 	    'Audit.no_k_disjoint_of_no_sunflower' \
 	    'Audit.spread_yields_disjoint_below_threshold' \
 	    'Audit.spread_yields_disjoint_needs_r' \
@@ -89,8 +93,11 @@ print-assumptions: coq
 	    'Audit.no_spread_yields_disjoint_2_3_2_alt' \
 	    'Audit.bounds_coherent_er' \
 	    'Audit.bounds_coherent_spread' \
-	    'Audit.bounds_coherent_f_2_3' ; do \
-	  result=$$(printf 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound F23 SmallCases Pigeonhole Sunflower HallCore KoenigHall Spread Reflect SpreadReduction ALWZ Conjecture TwoUniform Audit.\nPrint Assumptions %s.\n' "$$thm" \
+	    'Audit.bounds_coherent_f_2_3' \
+	    'Audit.bounds_coherent_clique' \
+	    'Audit.clique_construction_is_two_triangles_reordered' \
+	    'Audit.oddness_is_needed' ; do \
+	  result=$$(printf 'From Sunflower Require Import ErdosRado ErdosRado_Greedy LowerBound ProductLowerBound F23 SmallCases Pigeonhole Sunflower HallCore KoenigHall Spread Reflect SpreadReduction ALWZ Conjecture TwoUniform CliqueLowerBound Audit.\nPrint Assumptions %s.\n' "$$thm" \
 	    | coqtop -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
 	  printf "  %-55s %s\n" "$$thm" "$$result"; \
 	  total=$$((total + 1)); \

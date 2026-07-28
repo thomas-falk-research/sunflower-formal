@@ -504,7 +504,7 @@ Proof.
   exists two_triangles.
   split; [exact two_triangles_uniform|].
   split; [exact two_triangles_distinct|].
-  split; [reflexivity | exact two_triangles_no_sunflower].
+  split; [simpl; lia | exact two_triangles_no_sunflower].
 Qed.
 
 Theorem not_upper_bound_2_3_6 : ~ UpperBound 2 3 6.

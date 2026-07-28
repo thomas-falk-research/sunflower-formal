@@ -169,34 +169,25 @@ file = "coq/Sunflower.v"
 question = "LowerBound pins the family size exactly. Is the equality used?"
 find = "    Uniform n F /\\ Distinct F /\\ length F = m /\\ ~ ContainsKSunflower k F."
 replace = "    Uniform n F /\\ Distinct F /\\ length F >= m /\\ ~ ContainsKSunflower k F."
-expect = "killed-script"
-because = """The two forms are equivalent -- Audit.LowerBound_ge_equiv proves it, \
-by taking the first m members of a sunflower-free family of size at least m -- so \
-no theorem can distinguish them, and the equality in the definition is \
-documentation rather than a constraint. What breaks is four `apply H` steps whose \
-goal has turned from `=` into `<=`. The repairs below are those four steps and \
-nothing else; that the development builds again with them is the machine-checked \
-form of "this hypothesis carries no mathematical weight"."""
+expect = "survived"
+because = """A genuine survivor, and the only one: the equality carries no \
+mathematical weight. Audit.LowerBound_ge_equiv proves the two forms define the \
+same predicate -- take the first m members of a sunflower-free family of size at \
+least m -- so no theorem can distinguish them, and the equality in the definition \
+is documentation rather than a constraint.
 
-[[mutation.repairs]]
-file = "coq/LowerBound.v"
-find = "  - apply disjoint_blocks_length."
-replace = "  - rewrite disjoint_blocks_length; lia."
+This used to be declared `killed-script`, with four `apply H` steps repaired \
+because their goal had turned from `=` into `<=`. That was an artefact of how \
+those four proofs were written, not a fact about the definition, and it had the \
+failure mode such artefacts have: adding CliqueLowerBound.two_cliques_lower_bound \
+-- a theorem with no bearing on this question -- turned the outcome into `killed` \
+and failed the build. The five size-hypothesis steps are now written as \
+`rewrite ...; lia`, which proves the goal in either form, so what this mutation \
+reports is a property of the definition rather than of the tactic scripts.
 
-[[mutation.repairs]]
-file = "coq/ProductLowerBound.v"
-find = "  split; [apply prod_family_length|]"
-replace = "  split; [rewrite prod_family_length; lia|]"
-
-[[mutation.repairs]]
-file = "coq/F23.v"
-find = "  split; [reflexivity | exact two_triangles_no_sunflower]."
-replace = "  split; [simpl; lia | exact two_triangles_no_sunflower]."
-
-[[mutation.repairs]]
-file = "coq/Audit.v"
-find = "  - apply firstn_length_le; lia."
-replace = "  - rewrite firstn_length_le; lia."
+A survivor here is the *expected* outcome, checked against the manifest like any \
+other. If it were ever killed again, some theorem would have started depending on \
+the equality, and LowerBound_ge_equiv would be the thing to re-examine."""
 
 [[mutation]]
 id = "subfamily-literal"
@@ -265,11 +256,13 @@ expect = "killed"
 # ----------------------------------------------------------------
 # A positive control.
 #
-# Every other mutation here is expected to break something. If the
+# Nearly every mutation here is expected to break something. If the
 # harness were broken -- a sandbox that fails to build for an unrelated
 # reason, an edit that silently fails to apply -- every mutation would
 # report `killed` and the suite would still pass. This one must
-# survive, so the `survived` path is exercised on every run.
+# survive, so the `survived` path is exercised on every run whatever
+# the development does. (`lowerbound-at-least` also survives, but that
+# is a fact about the development, and could change.)
 # ----------------------------------------------------------------
 
 [[mutation]]
@@ -283,7 +276,8 @@ expect = "survived"
 control = true
 because = """Alpha-equivalence: Coq terms are identified up to the names of \
 bound variables, so this is not a change to the development at all. It is here \
-to prove the suite can report `survived`, which no other entry does."""
+to prove the suite can report `survived` independently of anything the \
+development happens to prove."""
 
 [[mutation]]
 id = "seteq-one-sided"

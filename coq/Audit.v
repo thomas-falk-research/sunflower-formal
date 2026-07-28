@@ -41,7 +41,8 @@
 From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
-     ProductLowerBound Spread Reflect SpreadReduction TwoUniform F23.
+     ProductLowerBound Spread Reflect SpreadReduction TwoUniform
+     CliqueLowerBound F23.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -168,7 +169,7 @@ Proof.
   - apply (@Uniform_sublist n F (firstn m' F) HU (incl_firstn m' F)).
   - apply (@SetNoDup_incl (firstn m' F) F HD (NoDup_firstn m' (SetNoDup_NoDup HD))
              (incl_firstn m' F)).
-  - apply firstn_length_le; lia.
+  - rewrite firstn_length_le; lia.
   - intro Hc; apply Hns.
     apply (@ContainsKSunflower_incl k (firstn m' F) F (incl_firstn m' F) Hc).
 Qed.
@@ -248,12 +249,9 @@ Proof.
   - intro H; apply distinctb_correct in H; vm_compute in H; discriminate.
 Qed.
 
-(** ** How many pairwise disjoint [m]-sets fit in a ground set
-
-    [k] pairwise disjoint sets of size [m] use [km] distinct elements.
-    This is the only tool needed to refute the spread hypothesis at
-    parameters where the published threshold has not yet been
-    reached. *)
+(** [length_le_1_of_all_eq] stays here; the counting bound it sits next
+    to moved to [LowerBound.v], where the pairwise-disjoint
+    constructions it bounds are built. *)
 
 Lemma length_le_1_of_all_eq :
   forall (X : Type) (L : list X),
@@ -267,54 +265,6 @@ Proof.
   left; reflexivity.
 Qed.
 
-Lemma NoDup_concat_pairwise_disjoint :
-  forall S : list (list nat),
-    NoDup S ->
-    Forall (fun A : list nat => NoDup A) S ->
-    PairwiseDisjoint S ->
-    NoDup (concat S).
-Proof.
-  intros S; induction S as [|A S' IH]; simpl; intros Hnd Hall Hpd; [constructor|].
-  inversion Hnd as [|? ? HniA Hnd']; subst.
-  inversion Hall as [|? ? HndA Hall']; subst.
-  apply NoDup_app_intro.
-  - exact HndA.
-  - apply IH; [exact Hnd' | exact Hall' |].
-    intros C D HC HD HCD; apply Hpd; [right; exact HC | right; exact HD | exact HCD].
-  - intros x HxA Hxc.
-    apply in_concat in Hxc as [B [HB HxB]].
-    assert (HAB : A <> B) by (intro E; subst B; contradiction).
-    apply (Hpd A B (or_introl eq_refl) (or_intror HB) HAB x HxA HxB).
-Qed.
-
-Lemma length_concat_uniform :
-  forall m S, Uniform m S -> length (concat S) = length S * m.
-Proof.
-  intros m S; unfold Uniform; induction S as [|A S' IH]; simpl; intros H;
-    [reflexivity|].
-  inversion H as [|? ? HUA H']; subst.
-  destruct HUA as [HAlen _].
-  rewrite app_length, HAlen, (IH H'); reflexivity.
-Qed.
-
-Theorem pairwise_disjoint_ground_bound :
-  forall (S : list (list nat)) (U : list nat) (m : nat),
-    NoDup S -> NoDup U ->
-    Uniform m S ->
-    (forall A, In A S -> Subset A U) ->
-    PairwiseDisjoint S ->
-    length S * m <= length U.
-Proof.
-  intros S U m HndS HndU HU Hsub Hpd.
-  assert (Hnc : NoDup (concat S)).
-  { apply NoDup_concat_pairwise_disjoint;
-      [exact HndS | apply (@Uniform_NoDup m S HU) | exact Hpd]. }
-  assert (Hincl : incl (concat S) U).
-  { intros x Hx; apply in_concat in Hx as [A [HA HxA]].
-    apply (Hsub A HA); exact HxA. }
-  pose proof (NoDup_incl_length Hnc Hincl) as Hle.
-  rewrite (@length_concat_uniform m S HU) in Hle; exact Hle.
-Qed.
 
 (** ** Is the axiom's shape ever false?
 
@@ -659,4 +609,67 @@ Proof.
     + reflexivity.
     + apply pairwise_disjointb_correct; reflexivity.
   - right. exists 0. vm_compute; lia.
+Qed.
+
+(** ** The clique lower bound
+
+    [CliqueLowerBound.two_cliques_lower_bound] gives [f(2,k) >= k(k-1)+1]
+    for every odd [k], from two disjoint copies of [K_k]. Three
+    questions. *)
+
+(** *** Does it contradict any upper bound the development proves?
+
+    Derived, not restated: if [k(k-1)] members could be forced to
+    contain a [k]-sunflower, the line below would be a proof of [False]
+    from two machine-checked theorems. *)
+
+Corollary bounds_coherent_clique :
+  forall k, 3 <= k -> Nat.Odd k -> k * (k - 1) < S ((k - 1) ^ 2 * fact 2).
+Proof.
+  intros k Hk Hodd.
+  apply (@lower_lt_upper 2 k).
+  - apply two_cliques_lower_bound; assumption.
+  - apply erdos_rado_upper_bound; lia.
+Qed.
+
+(** *** Is it the same construction as the one already formalised?
+
+    At [k = 3] it must be, or one of the two witnesses is wrong. The
+    clique construction emits the six edges in a different order, so
+    the families are not equal as lists — they are equal as families,
+    which is what [FamilyEquiv] says and what
+    [ContainsKSunflower_equiv] then makes interchangeable. *)
+
+Example clique_construction_is_two_triangles_reordered :
+  FamilyEquiv (two_cliques [0; 1; 2] [3; 4; 5]) two_triangles.
+Proof.
+  split; apply SubFamilySetEq_incl; intros A HA;
+    vm_compute in HA |- *; tauto.
+Qed.
+
+(** *** Is oddness of [k] doing work, or is it an artefact of the proof?
+
+    It is doing work. Two copies of [K_k] have [2k] vertices, and [k]
+    disjoint edges would have to match all of them; each component
+    blocks that only because it has an odd number of vertices. At
+    [k = 4] the same construction has four disjoint edges and therefore
+    *does* contain a 4-sunflower, so the hypothesis cannot simply be
+    dropped — the even case needs the other Chvátal–Hanson extremal
+    graph, which is not two cliques. *)
+
+Example oddness_is_needed :
+  ContainsKSunflower 4 (two_cliques [0; 1; 2; 3] [4; 5; 6; 7]).
+Proof.
+  apply (two_uniform_sunflower_iff 4 _ ltac:(lia)).
+  - apply two_cliques_uniform; apply nodupb_correct; reflexivity.
+  - apply two_cliques_distinct;
+      [apply nodupb_correct; reflexivity
+      | apply nodupb_correct; reflexivity
+      | apply disjointb_correct; reflexivity].
+  - left. exists [[0; 1]; [2; 3]; [4; 5]; [6; 7]].
+    split; [| split; [| split]].
+    + intros A HA; vm_compute in HA |- *; tauto.
+    + apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+    + reflexivity.
+    + apply pairwise_disjointb_correct; reflexivity.
 Qed.

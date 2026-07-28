@@ -102,45 +102,80 @@ not yield.
 
 ---
 
-## 3. If Rao stalls: the `f(2,k)` program
+## 3. The uniformity-2 programme: what is done and what is left
 
-`f(2,k)` is the Chvátal–Hanson extremal problem at `D = ν = k-1`.
-Working from that formula (**verify against the source** — this is
-recalled, not checked):
+Settled: **`f(2,k)` and the spread threshold at uniformity 2 are the
+same extremal function.** A distinct 2-uniform family is a graph; it
+avoids `k`-sunflowers exactly when its matching number and maximum
+degree are both at most `k-1`
+(`TwoUniform.two_uniform_sunflower_free_iff`), and `RaoSpread 2 F r`
+is exactly the maximum-degree bound `deg [v] F ≤ r`
+(`TwoUniform.rao_spread_two_iff_degree`). So both questions are
+Chvátal–Hanson, *Degrees and matchings*, JCTB 20 (1976) 128–138:
 
-* `f(2,k) = k(k-1) + 1` for odd `k`;
-* `f(2,k) = (k-1)² + (k-2)/2 + 1` for even `k`.
+```
+CH(D, ν) = νD + ⌊D/2⌋·⌊ν/⌈D/2⌉⌋
+```
 
-At `k = 3` this gives 7, matching `F23.f_2_3_eq_7` — a good sign the
-recollection is right, and the first thing to confirm.
+is the largest number of edges with maximum degree ≤ `D` and matching
+number ≤ `ν`, and
 
-**The lower bound is the completable half.** For odd `k` it is two
-disjoint copies of `K_k`: max degree `k-1`, matching number `k-1`,
-`k(k-1)` edges — literally `F23.two_triangles` generalised. That gives
-an infinite family of exact sunflower lower bounds, still (as far as
-was found) unformalised anywhere.
+* `f(2,k) = CH(k-1, k-1) + 1`;
+* the sharp spread threshold is `min{r : CH(r, k-1) ≤ r²}`, which
+  evaluates to **`r*(2,k) = k`** for every `k ≥ 3` — against the
+  `2k-1` that `spread_disjoint_above_elementary` proves.
 
-**The upper bound is the hard half** and needs its own campaign. The
-naive counts (`2νD`, `ν(2D-1)`) are tight only at `k = 3`, which is
-why `F23.v` works and will not generalise.
+The formula was checked against the source and then falsified five
+ways in `rust/tests/chvatal_hanson.rs`; the predicted thresholds match
+what `rust/tests/spread_axiom.rs` measures by exhaustive search.
 
-Wanted underneath it: the structural lemma that for 2-uniform families
-a `k`-sunflower is either `k` disjoint edges or `k` edges through a
-point. That would let `F23.v` be re-derived more cleanly.
+**Done: the lower bound at odd `k`.**
+`CliqueLowerBound.two_cliques_lower_bound` gives `f(2,k) ≥ k(k-1)+1`
+from two disjoint copies of `K_k`, generalising `F23.two_triangles`.
 
----
+### 3a. The `CH` upper bound — the main remaining target here
 
-## 4. Smaller targets opened up by this session
+Proving `CH` is an upper bound would deliver, in one theorem, an
+infinite family of *exact* sunflower numbers and the sharp spread
+threshold at uniformity 2. It needs its own campaign. The naive counts
+(`2νD`, `ν(2D-1)`) are tight only at `k = 3`, which is exactly why
+`F23.v`'s counting argument works and will not generalise.
 
-Concrete, bounded, and each motivated by something the testbed
-measured rather than by taste.
+Chvátal and Hanson's own proof has a linear-programming flavour and
+goes through Berge's matching formula (the deficiency form of
+Tutte–Berge). The repository already has the Hall/Kőnig layer, which
+is the bipartite case of that; how much of it transfers is the first
+thing to find out, and the honest answer may be "not much" — Berge is
+about general graphs, and Gallai–Edmonds is a serious piece of work to
+formalise.
 
-* **The threshold at uniformity 2.** `make testbed` reports `r* = 3`
-  for `(m,k) = (2,3)` over every ground set up to 9. Coq proves
-  `r ≥ 3` is necessary (`Audit.no_spread_yields_disjoint_2_3_2`) but
-  nothing proves `r = 3` suffices — the elementary lemma only gives
-  `r = 5`. Proving `SpreadYieldsDisjoint 2 3 3` would be the first
-  sharp spread threshold in the development.
+A cheaper intermediate that is worth doing first regardless: the case
+`D = ν = k-1` only, which is all `f(2,k)` needs. That is a narrower
+statement than the full two-parameter theorem and may admit a direct
+argument.
+
+### 3b. The even-`k` lower bound
+
+At even `k` the extremal graph is *not* two cliques —
+`Audit.oddness_is_needed` shows two copies of `K_k` acquire a perfect
+matching, hence a `k`-sunflower. It is one near-`(k-1)`-regular graph
+on `k+1` vertices plus `(k-2)/2` stars, giving
+`f(2,k) ≥ (k-1)² + (k-2)/2 + 1`. `rust/src/chvatal_hanson.rs`
+constructs it; the Coq work is defining a near-regular graph
+symbolically (`K_{k+2}` minus a minimum edge cover) and counting its
+edges, which is more fiddly than hard.
+
+### 3c. `SpreadYieldsDisjoint 2 3 3`
+
+The first sharp spread threshold in the development, and now known to
+be the `k = 3` instance of the `CH` upper bound: it holds because
+`CH(3,2) = 7 ≤ 9`. Small enough that a direct argument may beat
+waiting for 3a.
+
+## 4. Smaller targets
+
+Concrete, bounded, and each motivated by something the testbed or the
+mutation runner measured rather than by taste.
 
 * **Generalise the five-cycle refutation.** `C₅` refutes `r = 2` at
   `(m,k) = (2,3)`. The odd cycle `C_{2k-1}` should refute any `r` with
@@ -155,11 +190,27 @@ measured rather than by taste.
   brackets the axiom's shape between `k-1` and `n(k-1)`. Both ends are
   loose. Narrowing either narrows what the axiom is actually assuming.
 
-* **Fewer script-level kills.** `lowerbound-at-least` is killed only
-  because four `apply H` steps break when a goal changes from `=` to
-  `≥`. Writing those as `rewrite H; lia` would make the mutation
-  survive outright, which is the honest outcome. Low value on its own,
-  but the same brittleness will distort future mutation results.
+* **Statement-hash baselines.** This repository's failure mode is
+  statement drift, and nothing makes "did this change what we claim?"
+  a mechanical question. Print each audited theorem's statement,
+  canonicalise, hash, store; CI fails if a hash moves without the
+  baseline moving in the same commit. Snapshot testing for claims. It
+  separates statement changes from proof changes in review — which is
+  the distinction that would have caught both historical errors at
+  review time rather than by rereading.
+
+* **Generate the mutations instead of hand-writing them.** For every
+  `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
+  drop. Then report which definitions no mutation covers. That turns
+  mutation testing from 24 anecdotes into a coverage metric over the
+  definitions.
+
+* **Derive the audit list from source annotations** rather than the
+  hand-maintained Makefile list. The hardcoded count in CI is gone —
+  the list reports its own size — but the list itself is still
+  hand-maintained, so a theorem can still be added without being
+  audited. Gating the numbers quoted in `README`/`STATUS` is the same
+  kind of gap.
 
 * **Widen the mutation manifest.** It currently covers the definitions
   the two historical errors touched, plus the reduction's arithmetic.
@@ -170,8 +221,10 @@ measured rather than by taste.
 
 ## What not to do
 
-* **Do not run the Rao campaign and the `f(2,k)` campaign in the same
-  session.** Both are grinds; interleaving them is how both stall.
+* **Do not run the Rao campaign and the `CH` upper-bound campaign in
+  the same session.** Both are grinds; interleaving them is how both
+  stall. That they turn out to share an extremal function does not
+  make them one piece of work.
 
 * **Do not expect progress on the conjecture itself.** The `log n` is
   a conceptual barrier, not bookkeeping.
