@@ -129,8 +129,13 @@ test: rust
 # Exhaustive search for counterexamples to the spread hypothesis, plus
 # the differential checks against the Coq definitions. --nocapture so
 # the empirical threshold table reaches the build log.
+#
+# The second suite falsifies the Chvatal-Hanson identification: that one
+# extremal function governs both the sharp spread threshold at
+# uniformity 2 and the exact sunflower numbers f(2,k).
 testbed:
 	cd rust && cargo test --release --test spread_axiom -- --nocapture
+	cd rust && cargo test --release --test chvatal_hanson -- --nocapture
 
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.

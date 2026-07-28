@@ -19,6 +19,7 @@
 
 pub mod sunflower;
 pub mod bounds;
+pub mod chvatal_hanson;
 pub mod construction;
 pub mod spread;
 pub mod testbed;
