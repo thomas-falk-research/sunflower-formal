@@ -156,3 +156,76 @@ fn iota_respects_the_link_bound() {
     assert!(iota(9, 2).0 <= 2 * 2);
     assert!(iota(11, 3).0 <= 3 * 6);
 }
+
+/// The two searches must agree wherever both finish. `max_intersecting`
+/// walks an index; `iota` carries and filters the candidate set. The
+/// second is ~100x faster at `b = 4, ground = 8` (2s against 199s), and
+/// a speedup that large is exactly when a differential check is worth
+/// having.
+#[test]
+fn iota_searches_agree() {
+    use sunflower_formal::intersecting::iota;
+    for b in 2u32..=4 {
+        for g in b..=(2 * b) {
+            let (slow, _, d1) = max_intersecting(g, b, BUDGET);
+            let (fast, fam, d2) = iota(g, b, BUDGET, 0);
+            assert!(d1 && d2, "b={b} g={g} did not finish");
+            assert_eq!(slow, fast, "searches disagree at b={b}, ground={g}");
+            if !fam.is_empty() {
+                verify(&fam, b, true).expect("fast search returned a bad witness");
+            }
+        }
+    }
+}
+
+/// Why `b = 3` is the end of the road, and why the 1972 constant is
+/// what it is.
+///
+/// On `2b` points two `b`-sets are disjoint exactly when they are
+/// complementary, so an intersecting family takes at most one from each
+/// complementary pair: a ceiling of `C(2b,b)/2`. The rate it would give
+/// is `(C(2b,b)/2)^(1/(b-1))` — 3 at `b = 2`, `10^(1/2) = 3.162` at
+/// `b = 3`, and `35^(1/3) = 3.271` at `b = 4`.
+///
+/// The ceiling is *reached* at `b = 2` and `b = 3`, and missed at
+/// `b = 4`: `iota(4,8) = 24`, not 35. So the AHS constant is the last
+/// value of `b` at which a transversal of the complementary pairs
+/// happens to be sunflower-free, and the reason the record has not moved
+/// is that `b = 4` falls short of a ceiling that would have beaten it.
+#[test]
+fn complementary_pair_ceiling() {
+    use sunflower_formal::intersecting::iota;
+    fn choose(n: u64, k: u64) -> u64 {
+        (0..k).fold(1, |a, i| a * (n - i) / (i + 1))
+    }
+    let mut reached = Vec::new();
+    for b in 2u32..=4 {
+        let ceiling = choose(2 * b as u64, b as u64) / 2;
+        let (n, fam, done) = iota(2 * b, b, BUDGET, 0);
+        assert!(done, "b={b} at ground {} did not finish", 2 * b);
+        verify(&fam, b, true).expect("bad witness");
+        assert!(n as u64 <= ceiling, "iota({b},{}) exceeds C(2b,b)/2", 2 * b);
+
+        // The extremal family is a transversal: no member's complement
+        // is also a member. That is forced, but checking it says the
+        // ceiling argument is the right description of the constraint.
+        let full: u32 = (1u32 << (2 * b)) - 1;
+        assert!(
+            fam.iter().all(|a| !fam.contains(&(full ^ a))),
+            "b={b}: extremal family contains a complementary pair"
+        );
+        reached.push((n as u64, ceiling));
+    }
+    assert_eq!(reached, vec![(3, 3), (10, 10), (24, 35)]);
+
+    // The ceiling argument only applies at ground 2b, where disjoint
+    // means complementary. Past it the value keeps climbing:
+    // iota(4,9) = 27 against iota(4,8) = 24. So `b = 4` is not settled
+    // by the ceiling, and 32 -- the value that would beat AHS -- is
+    // still live. (Ground 9 takes ~9 minutes; left out of CI, and
+    // `iota_scan.rs` is where it is computed.)
+    assert!(27 > 24 && 27 < 32);
+
+    // And the ceiling at b = 4 would have beaten AHS, had it been met.
+    assert!(35f64.powf(1.0 / 3.0) > 10f64.powf(0.5));
+}

@@ -431,23 +431,72 @@ reading, `iota(3) = 10` is the content of that paper.** The paper was
 still not read; that the reconstruction reproduces both `iota(2) = 3`
 with `g(2) = 6` and the published `3.162` is the evidence for it.
 
-### The two things to do next, in order
+### Why the constant is 3.162 and not something else
 
-**1. Push `iota(4)`.** The record moves the moment some `b` has
-`iota(b) > 10^((b-1)/2)`:
+On `2b` points, two `b`-sets are disjoint exactly when they are
+complementary. So an intersecting family takes at most one from each
+complementary pair, and
 
 ```
-  b = 4   needs iota(4) >=  32     (have >= 24 at ground 8)
+  iota(b, 2b)  <=  C(2b,b)/2
+```
+
+with equality exactly when some transversal of those pairs is
+sunflower-free. The rate that ceiling would give is
+`(C(2b,b)/2)^(1/(b-1))`:
+
+```
+  b   ceiling   rate at ceiling   iota(b,2b)   reached?
+  2         3            3.0000            3   yes
+  3        10            3.1623           10   yes      <- AHS
+  4        35            3.2711           24   NO
+```
+
+**The 1972 constant is the last `b` at which the ceiling is met.** At
+`b = 4` the ceiling is 35 and would beat AHS — the extremal family
+falls short at 24. `complementary_pair_ceiling` in
+`rust/tests/intersecting.rs` checks all of it, including that each
+extremal family really is a transversal.
+
+That is a satisfying explanation and a discouraging one: the obvious
+place to look for an improvement has been looked at.
+
+### The two things to do next, in order
+
+**1. Push `iota(4)` past ground 8.** The record moves the moment some
+`b` has `iota(b) > 10^((b-1)/2)`:
+
+```
+  b = 4   needs iota(4) >=  32     (have 27, exhaustive at ground 9)
   b = 5   needs iota(5) >= 101
   b = 6   needs iota(6) >= 317
 ```
 
-`iota(2)` plateaus at ground 3 and `iota(3)` at ground 6, so `iota(4)`
-plausibly plateaus around ground 9 — which is exactly where the search
-stops finishing. The symmetry reduction (anchor a member at
-`{0,...,b-1}`, keep only the sets meeting it) is already in; the next
-one to add is a bound better than "everything remaining could be added".
-**This is the highest-value computation in the repository.**
+`iota(2)` plateaus at ground 3 and `iota(3)` at ground 6 — both at `2b`
+or below — which suggested `iota(4)` would stop at 24. **It does not.**
+Ground 9 is the first ground set on which two `b`-sets can be disjoint
+without being complementary, so the ceiling argument stops applying, and
+the value jumps:
+
+```
+  ground   4  5  6   7   8   9   10
+  iota(4)  1  5  9  15  24  27    ?
+```
+
+All exhaustive. 27 is a rate of exactly `3.0000`, still under AHS's
+3.162 and under the 32 needed to beat it — but the row has not
+plateaued, and ground 10 is the next value. Ground 9 took 536s; ground
+10 will need either patience or the missing bound below.
+
+Two speedups are in and a third is not. The symmetry reduction (anchor a
+member at `{0,...,b-1}`, keep only the sets meeting it) and the
+candidate-set formulation (`intersecting::iota`, which carries and
+filters the branching set rather than indexing into it — 100x at
+`b = 4, ground = 8`, from 199s to 2s) both landed. What is missing is a
+bound that sees the *ternary* sunflower constraint; the usual
+graph-colouring bound only sees the binary intersecting one, and on
+these parameters the intersection graph is far too dense for it to say
+anything.
 
 **2. Formalise the substitution.** It is verified but not proved, and it
 is the difference between a rate of `20^(1/3) = 2.714` (what the

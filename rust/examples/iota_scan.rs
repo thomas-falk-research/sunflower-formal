@@ -2,7 +2,7 @@
 //!
 //! The Abbott-Hanson-Sauer rate is iota(b)^(1/(b-1)); iota(3) = 10 gives
 //! their 10^(1/2) = 3.162. Any b with iota(b) > 10^((b-1)/2) improves it.
-use sunflower_formal::intersecting::{max_intersecting_from, verify};
+use sunflower_formal::intersecting::{iota, verify};
 
 fn main() {
     let budget: u64 = std::env::args().nth(1).and_then(|s| s.parse().ok())
@@ -15,7 +15,7 @@ fn main() {
         let mut seed = 0usize;
         for g in b..=(4 * b).min(16) {
             let t = std::time::Instant::now();
-            let (n, fam, done) = max_intersecting_from(g, b, budget, seed);
+            let (n, fam, done) = iota(g, b, budget, seed);
             if !fam.is_empty() {
                 verify(&fam, b, true).expect("witness is not an intersecting sf family");
             }

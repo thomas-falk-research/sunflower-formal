@@ -154,6 +154,83 @@ pub fn max_intersecting_from(
     (s.best, s.best_family, done)
 }
 
+/// Candidate-set search: the same problem, but the branching set is
+/// carried explicitly and filtered at every step instead of being
+/// indexed into.
+///
+/// The index-based bound is "everything left could be added", which for
+/// an intersecting family is wildly optimistic — most remaining sets are
+/// already dead because they miss something in the partial family.
+/// Filtering makes the bound `|cur| + |cands|` over the sets still
+/// genuinely addable, which prunes near the root rather than at the
+/// leaves.
+///
+/// Every pair is still checked: when `x` is added the survivors are
+/// filtered against every pair `(c, x)` for `c` in the partial family,
+/// and pairs internal to that family were filtered when their later
+/// element was added.
+struct CandSearch {
+    best: usize,
+    best_family: Vec<u32>,
+    nodes: u64,
+    budget: u64,
+}
+
+impl CandSearch {
+    fn rec(&mut self, cands: &[u32], cur: &mut Vec<u32>) {
+        self.nodes += 1;
+        if self.nodes > self.budget {
+            return;
+        }
+        if cur.len() > self.best {
+            self.best = cur.len();
+            self.best_family = cur.clone();
+        }
+        for idx in 0..cands.len() {
+            if cur.len() + (cands.len() - idx) <= self.best {
+                return;
+            }
+            let x = cands[idx];
+            let next: Vec<u32> = cands[idx + 1..]
+                .iter()
+                .copied()
+                .filter(|&y| y & x != 0 && !cur.iter().any(|&a| is_sunflower(a, x, y)))
+                .collect();
+            cur.push(x);
+            self.rec(&next, cur);
+            cur.pop();
+            if self.nodes > self.budget {
+                return;
+            }
+        }
+    }
+}
+
+/// `iota(b, ground)` by candidate-set search. Same answer as
+/// `max_intersecting_from`; `iota_searches_agree` checks that wherever
+/// both finish.
+pub fn iota(ground: u32, b: u32, budget: u64, seed: usize) -> (usize, Vec<u32>, bool) {
+    if ground < b {
+        return (seed, Vec::new(), true);
+    }
+    let anchor: u32 = (1u32 << b) - 1;
+    let cands: Vec<u32> = m_subsets(ground, b)
+        .into_iter()
+        .map(u32::from)
+        .filter(|s| *s != anchor && s & anchor != 0)
+        .collect();
+    let mut s = CandSearch {
+        best: seed,
+        best_family: Vec::new(),
+        nodes: 0,
+        budget,
+    };
+    let mut cur = vec![anchor];
+    s.rec(&cands, &mut cur);
+    let done = s.nodes <= s.budget;
+    (s.best, s.best_family, done)
+}
+
 /// Verify a family is `b`-uniform, distinct, sunflower-free, and
 /// (optionally) intersecting. Independent of the search.
 pub fn verify(f: &[u32], b: u32, intersecting: bool) -> Result<(), String> {
