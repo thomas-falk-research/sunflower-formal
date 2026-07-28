@@ -44,6 +44,7 @@ claim progress on it. What is machine-checked here is the complete
 | Boundary exact values | $f(n,2) = 2$, $\; f(1,k) = k$ | `coq/SmallCases.v` |
 | **Exact value at $k=3$** | $f(2,3) = 7$ | `coq/F23.v` |
 | **Uniformity 2 is degrees and matchings** | no $k$-sunflower $\iff$ matching number and maximum degree both $\le k-1$ — so $f(2,k)$ is the Chvátal–Hanson problem, which is *cited, not formalised* | `coq/TwoUniform.v` |
+| **A sunflower is a matching in a link** | $k$-sunflower $\iff$ some link has $k$ pairwise disjoint members, at every uniformity and with no hypotheses; the row above is its $\lvert Y\rvert \le 1$ case | `coq/LinkCharacterisation.v` |
 | **Lower bound at every odd $k$** | $f(2,k) \ge k(k-1) + 1$, two disjoint copies of $K_k$ | `coq/CliqueLowerBound.v` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
@@ -140,7 +141,7 @@ Highlights of the less-routine parts:
   spread definition that quantified over lists with repeats and so
   forced every member to be empty, and an axiom stated with the
   fractional spread condition where the source uses the absolute one.
-  Neither could fail a build. Five mechanisms now target that class of
+  Neither could fail a build. Six mechanisms now target that class of
   error — coherence theorems that would derive `False` if two of the
   development's own bounds contradicted each other (`coq/Audit.v`); a
   second, independently-implemented spread decision procedure proved
@@ -148,14 +149,17 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 29 mutations, 27 are killed outright, one
+  that something breaks. Of 32 mutations, 30 are killed outright, one
   survives — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
   every audited theorem's statement and every core definition's body is
   recorded in `tools/statements.txt`, and CI fails if one moves without
   the baseline moving in the same commit — which is what turns "did this
-  change what we claim?" from a rereading exercise into a one-line diff. Underneath them, `coqchk`
+  change what we claim?" from a rereading exercise into a one-line diff.
+  Sixth, one level up again, `make docnumbers` checks every count this
+  prose quotes about itself against the list it is a count of — three
+  were already wrong when that gate was written. Underneath them, `coqchk`
   re-verifies every module with Coq's separate kernel checker and
   gates on a whole-library assumption census, which is what makes
   "zero admits" a claim about the development rather than about a list
@@ -166,6 +170,38 @@ Highlights of the less-routine parts:
   *false* below `r = k-1`, while `spread_disjoint_above_elementary`
   shows it is *true* above `r = n(k-1)`. The axiom asserts something
   about the gap in between — neither vacuous nor already proved.
+
+- **A sunflower is a matching in a link.** For $Y \subseteq A, B$ the
+  identity $A \cap B = Y \iff (A \setminus Y) \cap (B \setminus Y) =
+  \emptyset$ turns both halves of the definition of a sunflower into one
+  matching condition in one derived family
+  (`coq/LinkCharacterisation.v`):
+
+  $$\text{a } k\text{-sunflower} \iff \exists Y,\ \text{the link
+  } \{A \setminus Y : Y \subseteq A \in \mathcal{F}\}\ \text{has
+  } k \text{ pairwise disjoint members}.$$
+
+  No uniformity, no distinctness, no hypothesis on $k$. This makes the
+  uniformity-2 characterisation above the case $|Y| \le 1$ — proved as
+  a corollary, by a route sharing no step with the original — and turns
+  `link_sunflower_lift` from a one-way reduction into an equivalence.
+  Above uniformity 2 the quantifier over $Y$ is doing work:
+  $\{0,1,2\}, \{0,1,3\}, \{0,1,4\}$ has a 3-sunflower whose only
+  core is $\{0,1\}$, and no core of size $\le 1$ works for it.
+
+  It was falsified before it was proved. The equivalence was enumerated
+  against a brute-force sunflower detector over every family on five and
+  six points at uniformities 2 and 3, over every family of *arbitrary*
+  sets on four points, and over a sample at ground 7
+  (`rust/tests/link_characterisation.rs`). The non-uniform enumeration
+  earned its keep: it found that a member may equal the core of a
+  sunflower it belongs to, contributing the *empty* petal to the link —
+  a case no uniform family exhibits, and one that
+  `pairwise_disjoint_sunflower`'s nonemptiness hypothesis used to
+  exclude. That hypothesis is now gone, and it was decoration in three
+  other lemmas too.
+
+  What it does not buy: nothing here bears on the conjecture's bound.
 
 - **The conjecture, restated without sunflowers.** Because the
   reduction is lossless — it gives exactly $r^n$ — a spread lemma whose
@@ -178,10 +214,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 19 Coq files, then runs the axiom audit
+make verify        # builds all 22 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (72 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (88 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

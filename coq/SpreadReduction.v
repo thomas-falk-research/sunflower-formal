@@ -161,12 +161,6 @@ Proof.
       assert (Hbig : r ^ (S m') < length F) by lia.
       destruct (Hsyd (S m') F (le_n_S _ _ (Nat.le_0_l _)) Hmn HU HD Hbig Hsp)
         as [S0 [Hincl [Hnd0 [Hlen0 Hpd0]]]].
-      assert (Hne : Forall (fun A : list nat => A <> []) S0).
-      { apply Forall_forall; intros A HA.
-        assert (HAF : In A F) by (apply Hincl; exact HA).
-        unfold Uniform in HU; rewrite Forall_forall in HU.
-        destruct (HU A HAF) as [HAlen _].
-        destruct A; [simpl in HAlen; lia | discriminate]. }
       exists S0; split.
       * apply SubFamilySetEq_incl; exact Hincl.
       * apply k_pairwise_disjoint_sunflower; assumption.

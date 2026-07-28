@@ -373,3 +373,68 @@ works because k disjoint edges would need every one of the 2k vertices matched, 
 and one vertex of slack per component is exactly enough to let an odd component \
 off the hook. This is the mutation that says the oddness argument is doing the \
 work, not the counting."""
+
+# ----------------------------------------------------------------
+# The link characterisation.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "link-char-drop-k-bound"
+file = "coq/LinkCharacterisation.v"
+question = """The full equivalence needs no hypothesis on k, but the \
+sunflower-to-link direction is stated with 2 <= k. Is that hypothesis real, or \
+an artefact of routing through contains_sunflower_literal?"""
+find = """  forall k F,
+    2 <= k -> ContainsKSunflower k F ->
+    exists Y, (exists A, In A F /\\ Subset Y A) /\\ HasKDisjoint k (link Y F)."""
+replace = """  forall k F,
+    ContainsKSunflower k F ->
+    exists Y, (exists A, In A F /\\ Subset Y A) /\\ HasKDisjoint k (link Y F)."""
+expect = "killed"
+because = """It is real, and the mutated statement is *false*, not merely \
+unproved: at k = 0 the empty family contains the empty sunflower, and the \
+conclusion asserts a member of it. The 2 <= k is what makes "the core lies \
+inside a member" available, and small_sunflower_gives_link_matching is why the \
+full equivalence still needs no hypothesis on k -- it routes k <= 1 through the \
+empty core instead."""
+
+[[mutation]]
+id = "small-cores-drop-uniformity"
+file = "coq/LinkCharacterisation.v"
+question = """At uniformity 2 every core that carries a matching has at most one \
+point. Is the uniformity doing the work, or would any distinct family do?"""
+find = """    2 <= k -> Uniform 2 F -> Distinct F ->
+    HasKDisjoint k (link Y F) ->
+    forall u v, In u Y -> In v Y -> u = v."""
+replace = """    2 <= k -> Distinct F ->
+    HasKDisjoint k (link Y F) ->
+    forall u v, In u Y -> In v Y -> u = v."""
+expect = "killed"
+because = """The uniformity is the whole content, and the mutated statement is \
+false: Audit.core_of_size_two_is_needed exhibits a distinct 3-uniform family \
+whose only working core is {0,1}. This is the mutation that says TwoUniform.v is \
+a statement about graphs rather than about sunflowers -- and the exhaustive \
+enumeration in rust/tests/link_characterisation.rs kills the same reading \
+computationally, at uniformity 3 and on non-uniform families both."""
+
+[[mutation]]
+id = "link-char-common-point-one"
+file = "coq/LinkCharacterisation.v"
+question = """two_common_points_force_a_big_core needs *two* shared points. Is \
+the second one load-bearing, or would one common point already force a big \
+core?"""
+find = """    2 <= k -> u <> v ->
+    Forall (fun A => In u A) F -> Forall (fun A => In v A) F ->
+    HasKDisjoint k (link Y F) ->
+    exists a b, In a Y /\\ In b Y /\\ a <> b."""
+replace = """    2 <= k -> u <> v ->
+    Forall (fun A => In u A) F -> Forall (fun A => In u A) F ->
+    HasKDisjoint k (link Y F) ->
+    exists a b, In a Y /\\ In b Y /\\ a <> b."""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false: a star of 2-sets \
+through one point has a k-sunflower with the singleton core {u}, which has no \
+two distinct points -- Audit.both_sunflower_shapes_occur is exactly that family. \
+One shared point forces a *nonempty* core, not a big one. The mutation replaces \
+the second hypothesis with a copy of the first rather than deleting it, so the \
+arity and every intro pattern are unchanged and what breaks is the mathematics."""

@@ -21,4 +21,5 @@ coq/SmallCases.v
 coq/TwoUniform.v
 coq/CliqueLowerBound.v
 coq/F23.v
+coq/LinkCharacterisation.v
 coq/Audit.v

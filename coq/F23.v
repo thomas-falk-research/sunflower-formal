@@ -190,9 +190,6 @@ Proof.
            apply He23; symmetry; exact E.
         -- constructor; [intros [] | constructor].
     + reflexivity.
-    + constructor; [exact Hne1|].
-      constructor; [exact Hne2|].
-      constructor; [exact Hne3 | constructor].
     + intros A B HA HB Hne.
       destruct HA as [EA | [EA | [EA | []]]];
         destruct HB as [EB | [EB | [EB | []]]]; subst A B;

@@ -61,6 +61,15 @@ const GRID: &[(u32, u64, u64)] = &[
     (9, 4, 3),
     (7, 5, 2),
     (7, 5, 3),
+    // Ground 10. The CH upper bound is the unproved half of the
+    // identification, so it is the half most worth widening. Beyond
+    // these the exhaustive search stops being affordable in CI: on this
+    // machine (10, 4, 3) takes 63s, (11, 3, 3) 85s and (10, 3, 4) 498s,
+    // against under a second for the whole grid below ground 9. All
+    // three were run once and agree with `ch`; see docs/roadmap.md.
+    (10, 2, 3),
+    (10, 2, 4),
+    (10, 3, 3),
 ];
 
 // ---------------------------------------------------------------
@@ -394,6 +403,70 @@ fn coq_clique_lower_bound_is_sunflower_free() {
             find_k_sunflower(&sets, k).is_none(),
             "two copies of K_{k} contain a {k}-sunflower"
         );
+    }
+}
+
+/// `CliqueLowerBound.clique_edges`, re-implemented and differenced
+/// against the general extremal construction.
+///
+/// The two are built from different ideas. `clique_edges l` is Coq's:
+/// every 2-subset of a vertex list, recursively. `extremal(d, v)` is
+/// this crate's reading of the Chvátal–Hanson extremal graph: `v/⌈d/2⌉`
+/// *odd near-regular* components — a complete graph on `2⌈d/2⌉+1`
+/// vertices minus a minimum edge cover — plus stars for the remainder.
+/// At `d = v = k-1` with `k` odd those two descriptions must coincide,
+/// because a complete graph on `k` vertices is already `(k-1)`-regular
+/// and has nothing to remove. If they did not, one of the two readings
+/// of "the extremal graph at odd `k`" would be wrong, and the Coq
+/// lower bound and the CH formula would be about different objects.
+///
+/// `Audit.clique_construction_is_two_triangles_reordered` makes the
+/// same comparison inside the kernel, but only at `k = 3`, where the
+/// answer is six edges and every construction agrees. This is `k = 5`
+/// and `k = 7`, where they need not.
+#[test]
+fn coq_clique_edges_agrees_with_the_extremal_construction() {
+    /// Coq's `CliqueLowerBound.clique_edges`, verbatim: every 2-subset
+    /// of `l`, each written with its earlier endpoint first.
+    fn clique_edges(l: &[u32]) -> Vec<Mask> {
+        match l {
+            [] => Vec::new(),
+            [v, rest @ ..] => rest
+                .iter()
+                .map(|w| 1 << v | 1 << w)
+                .chain(clique_edges(rest))
+                .collect(),
+        }
+    }
+
+    for k in [3u32, 5, 7] {
+        let u0: Vec<u32> = (0..k).collect();
+        let u1: Vec<u32> = (k..2 * k).collect();
+        // Coq's `two_cliques U0 U1 = clique_edges U0 ++ clique_edges U1`.
+        let mut coq: Vec<Mask> = clique_edges(&u0);
+        coq.extend(clique_edges(&u1));
+        let mut rust = extremal(k as u64 - 1, k as u64 - 1);
+
+        assert_eq!(
+            coq.len() as u64,
+            k as u64 * (k as u64 - 1),
+            "clique_edges has the wrong count at k = {k}"
+        );
+        // Equal as *families*: the two constructions emit the edges in
+        // different orders, which is exactly what `FamilyEquiv` is for
+        // on the Coq side.
+        coq.sort_unstable();
+        rust.sort_unstable();
+        assert_eq!(
+            coq,
+            rust,
+            "at k = {k} the Coq construction is {} and this crate's is {}",
+            family_to_coq(&coq),
+            family_to_coq(&rust)
+        );
+        // And it is extremal: two copies of K_k attain CH(k-1, k-1).
+        verify_extremal(&coq, k as u64 - 1, k as u64 - 1)
+            .unwrap_or_else(|e| panic!("two copies of K_{k} are not extremal: {e}"));
     }
 }
 

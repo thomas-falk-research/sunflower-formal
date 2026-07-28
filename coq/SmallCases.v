@@ -128,10 +128,6 @@ Proof.
       + intro Hin. apply HniA. rewrite <- (firstn_skipn k' L).
         apply in_or_app; left; exact Hin.
       + apply IH; exact Hnd'. }
-  assert (HSkne : Forall (fun A : list nat => A <> []) Sk).
-  { apply Forall_forall; intros A HA. apply HSkincl in HA.
-    unfold Uniform in HU; rewrite Forall_forall in HU.
-    pose proof (uniform_1_singleton (HU A HA)) as [a E]; subst A; discriminate. }
   assert (HSkpd : PairwiseDisjoint Sk).
   { unfold PairwiseDisjoint. intros A B HA HB HAB.
     apply HSkincl in HA; apply HSkincl in HB.

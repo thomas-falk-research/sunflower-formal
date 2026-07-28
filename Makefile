@@ -12,7 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        axiom-audit statements statements-accept
+        axiom-audit statements statements-accept docnumbers
 
 all: coq rust
 
@@ -22,7 +22,7 @@ coq: Makefile.coq
 Makefile.coq: _CoqProject $(COQFILES)
 	coq_makefile -f _CoqProject -o Makefile.coq
 
-verify: clean coq print-assumptions axiom-audit statements
+verify: clean coq print-assumptions axiom-audit statements docnumbers
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."
@@ -100,6 +100,17 @@ statements: coq
 statements-accept: coq
 	@python3 tools/statements.py --accept
 
+# The numbers the prose quotes about the development itself: how many
+# modules, how many audited theorems, how many mutations. Each is a
+# hand-copied count of a list elsewhere in the repository, and each one
+# was true when it was written. Needs no build. See tools/docnumbers.py.
+docnumbers:
+	@echo "===================================================="
+	@echo "  Quoted numbers vs the lists they count"
+	@echo "===================================================="
+	@python3 tools/docnumbers.py
+	@echo "===================================================="
+
 rust:
 	cd rust && cargo build --release
 
@@ -113,9 +124,15 @@ test: rust
 # The second suite falsifies the Chvatal-Hanson identification: that one
 # extremal function governs both the sharp spread threshold at
 # uniformity 2 and the exact sunflower numbers f(2,k).
+#
+# The third falsifies the link characterisation -- that a k-sunflower
+# with core Y is exactly k members through Y with pairwise disjoint
+# petals -- against a brute-force sunflower detector that knows nothing
+# about links. It ran before the Coq proof, not after it.
 testbed:
 	cd rust && cargo test --release --test spread_axiom -- --nocapture
 	cd rust && cargo test --release --test chvatal_hanson -- --nocapture
+	cd rust && cargo test --release --test link_characterisation -- --nocapture
 
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.

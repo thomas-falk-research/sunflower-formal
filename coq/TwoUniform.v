@@ -271,10 +271,7 @@ Proof.
     intros [[S [Hincl [Hnd [Hlen Hpd]]]] | [v Hv]].
     + (* Pairwise disjoint 2-sets: a sunflower with empty core. *)
       eapply ContainsKSunflower_of_incl; [exact Hincl | exact Hlen |].
-      apply pairwise_disjoint_sunflower; [exact Hnd | | exact Hpd].
-      apply Forall_forall. intros A HA.
-      destruct (HUm A (Hincl A HA)) as [Hl _].
-      intro E; rewrite E in Hl; discriminate.
+      apply pairwise_disjoint_sunflower; [exact Hnd | exact Hpd].
     + (* A star: a sunflower with core [v]. *)
       assert (HndF : NoDup F) by (apply SetNoDup_NoDup; exact HD).
       destruct (deg_gives_star F v k HndF Hv)

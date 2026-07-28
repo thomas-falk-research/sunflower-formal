@@ -42,7 +42,7 @@ From Coq Require Import List Arith Lia Bool Permutation.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
-     CliqueLowerBound F23.
+     CliqueLowerBound F23 LinkCharacterisation.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -426,11 +426,18 @@ Qed.
 (** ** A second witness, by a completely different argument
 
     A family already known to contain no [k]-sunflower cannot contain
-    [k] pairwise disjoint members either: pairwise disjoint nonempty
-    sets *are* a sunflower, with empty core. Every sunflower-free
-    family in the repository is therefore a ready-made candidate
-    counterexample to the spread hypothesis, needing only a spread
-    check.
+    [k] pairwise disjoint members either: pairwise disjoint sets *are*
+    a sunflower, with empty core. Every sunflower-free family in the
+    repository is therefore a ready-made candidate counterexample to
+    the spread hypothesis, needing only a spread check.
+
+    No uniformity is needed — the empty set is disjoint from everything
+    and is a legitimate petal of the empty core, so the statement holds
+    of families containing it too. It used to carry [1 <= m] and
+    [Uniform m F] to rule that case out; see
+    [Sunflower.SetNoDup_of_pairwise_disjoint] for why they were
+    decoration, and [LinkCharacterisation.v] for where the case is
+    load-bearing rather than merely admissible.
 
     Applied to [F23.two_triangles] — the six-edge family that witnesses
     [f(2,3) >= 7] — this refutes [SpreadYieldsDisjoint 2 3 2] a second
@@ -441,18 +448,14 @@ Qed.
     would not mean what its name says. *)
 
 Lemma no_k_disjoint_of_no_sunflower :
-  forall k m F S,
-    1 <= m -> Uniform m F -> ~ ContainsKSunflower k F ->
+  forall k F S,
+    ~ ContainsKSunflower k F ->
     incl S F -> NoDup S -> length S = k -> PairwiseDisjoint S -> False.
 Proof.
-  intros k m F S Hm HU Hns Hincl Hnd Hlen Hpd.
+  intros k F S Hns Hincl Hnd Hlen Hpd.
   apply Hns.
   apply (@ContainsKSunflower_of_incl k S F []); [exact Hincl | exact Hlen |].
-  apply pairwise_disjoint_sunflower; [exact Hnd | | exact Hpd].
-  apply Forall_forall; intros A HA.
-  assert (HAF : In A F) by (apply Hincl, HA).
-  pose proof (@Uniform_length m F A HU HAF) as Hl.
-  destruct A; [simpl in Hl; lia | discriminate].
+  apply pairwise_disjoint_sunflower; [exact Hnd | exact Hpd].
 Qed.
 
 Lemma two_triangles_rao_spread : RaoSpread 2 two_triangles 2.
@@ -469,8 +472,8 @@ Proof.
               two_triangles_uniform two_triangles_distinct
               ltac:(vm_compute; lia) two_triangles_rao_spread)
     as [S [Hincl [Hnd [Hlen Hpd]]]].
-  apply (@no_k_disjoint_of_no_sunflower 3 2 two_triangles S);
-    [lia | exact two_triangles_uniform | exact two_triangles_no_sunflower
+  apply (@no_k_disjoint_of_no_sunflower 3 two_triangles S);
+    [exact two_triangles_no_sunflower
      | exact Hincl | exact Hnd | exact Hlen | exact Hpd].
 Qed.
 
@@ -720,3 +723,124 @@ Proof.
     + reflexivity.
     + apply pairwise_disjointb_correct; reflexivity.
 Qed.
+
+(** ** The link characterisation
+
+    [LinkCharacterisation.sunflower_iff_link_matching] says a family
+    has a [k]-sunflower exactly when some link of it has [k] pairwise
+    disjoint members. Three questions, each of which the exhaustive
+    enumeration in `rust/tests/link_characterisation.rs` also asks
+    computationally.
+
+    The first two pin down the cases where a *weaker* reading of the
+    statement — one that a uniform family cannot distinguish, or one
+    restricted to the cores the uniformity-2 theorem uses — would still
+    have compiled. *)
+
+(** *** May a member of a sunflower equal its core?
+
+    It may, and the characterisation needs it to. [{1}, {1,2}, {1,3}]
+    is a 3-sunflower with core [{1}] — every pairwise intersection is
+    [{1}], including [{1} ∩ {1,2}] — and the member equal to the core
+    contributes the *empty* petal to the link, which is disjoint from
+    everything.
+
+    So [Sunflower.pairwise_disjoint_sunflower] must not require its
+    members to be nonempty. It used to. No uniform family exhibits the
+    case, because at uniformity [m] at most one member can equal a
+    given [Y], so the empty petal never has a second petal to be
+    disjoint from; the non-uniform enumeration is what found it. *)
+
+Definition core_is_a_member : Family := [[1]; [1; 2]; [1; 3]].
+
+Example a_member_may_equal_the_core :
+  link [1] core_is_a_member = [[]; [2]; [3]]
+  /\ HasKDisjoint 3 (link [1] core_is_a_member)
+  /\ ContainsKSunflower 3 core_is_a_member.
+Proof.
+  assert (Hm : HasKDisjoint 3 (link [1] core_is_a_member)).
+  { exists [[]; [2]; [3]].
+    split; [| split; [| split]].
+    - intros A HA; vm_compute in HA |- *; tauto.
+    - apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+    - reflexivity.
+    - apply pairwise_disjointb_correct; reflexivity. }
+  split; [vm_compute; reflexivity|].
+  split; [exact Hm|].
+  exact (link_matching_gives_sunflower 3 core_is_a_member [1] Hm).
+Qed.
+
+(** *** Are cores of size two or more ever needed?
+
+    At uniformity 2 they never are
+    ([LinkCharacterisation.two_uniform_only_small_cores]), which is
+    what makes [TwoUniform.v] a statement about graphs. Above it they
+    are, and the smallest witness is three 3-sets through a common
+    pair.
+
+    [{0,1,2}, {0,1,3}, {0,1,4}] is a 3-sunflower with core [{0,1}].
+    Every member contains both 0 and 1, so
+    [two_common_points_force_a_big_core] rules out every core with
+    fewer than two points at once — the empty core (the family is not a
+    matching), and every singleton (a link over one of the two shared
+    points still passes through the other).
+
+    This is what the [exists Y] in the characterisation is quantifying
+    over, and it is why the statement is not a restatement of
+    [sunflower_shape]. *)
+
+Definition common_pair : Family := [[0; 1; 2]; [0; 1; 3]; [0; 1; 4]].
+
+Example core_of_size_two_is_needed :
+  Uniform 3 common_pair /\ Distinct common_pair
+  /\ HasKDisjoint 3 (link [0; 1] common_pair)
+  /\ ContainsKSunflower 3 common_pair
+  /\ (forall Y, HasKDisjoint 3 (link Y common_pair) ->
+                exists a b, In a Y /\ In b Y /\ a <> b).
+Proof.
+  assert (Hm : HasKDisjoint 3 (link [0; 1] common_pair)).
+  { exists [[2]; [3]; [4]].
+    split; [| split; [| split]].
+    - intros A HA; vm_compute in HA |- *; tauto.
+    - apply SetNoDup_NoDup, distinctb_correct; reflexivity.
+    - reflexivity.
+    - apply pairwise_disjointb_correct; reflexivity. }
+  split; [apply uniformb_correct; reflexivity|].
+  split; [apply distinctb_correct; reflexivity|].
+  split; [exact Hm|].
+  split; [exact (link_matching_gives_sunflower 3 common_pair [0; 1] Hm)|].
+  intros Y HY.
+  apply (two_common_points_force_a_big_core 3 common_pair 0 1 Y);
+    [lia | lia | | | exact HY];
+    apply Forall_forall; intros A HA;
+    destruct HA as [E | [E | [E | []]]]; subst A; simpl; auto.
+Qed.
+
+(** *** Do the two routes to the uniformity-2 characterisation agree?
+
+    [TwoUniform.two_uniform_sunflower_iff] is proved through
+    [sunflower_shape] and [star_sunflower].
+    [LinkCharacterisation.two_uniform_sunflower_iff_via_link] proves
+    the same statement from the general characterisation and two
+    counting facts about links, mentioning neither. Two independent
+    routes to one statement: if they disagreed, one of the two notions
+    would not mean what its name says.
+
+    The specification is named once and both routes are checked
+    against it by [exact]. That is the whole content: if either
+    theorem's statement drifts, the corresponding line stops
+    typechecking. Writing it as an implication between the two would
+    have been vacuous — [P <-> P] is provable by [reflexivity], so it
+    would check nothing about either proof. *)
+
+Definition TwoUniformCharacterisation : Prop :=
+  forall (k : nat) (F : Family),
+    2 <= k -> Uniform 2 F -> Distinct F ->
+    (ContainsKSunflower k F
+     <-> HasKDisjoint k F \/ (exists v, k <= deg [v] F)).
+
+Example the_shape_route_proves_it : TwoUniformCharacterisation.
+Proof. exact two_uniform_sunflower_iff. Qed.
+
+Example the_link_route_proves_it : TwoUniformCharacterisation.
+Proof. exact two_uniform_sunflower_iff_via_link. Qed.
