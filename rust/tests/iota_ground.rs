@@ -175,6 +175,54 @@ fn the_link_degree_bound_holds_and_is_tight_where_the_family_is_regular() {
     );
 }
 
+/// What tightness forces, checked rather than inferred.
+///
+/// Equality in `b|F| <= g N(b-1,g-1)` says every point has degree exactly
+/// `N(b-1,g-1)`, so every *link* is a maximum-size sunflower-free
+/// `(b-1)`-uniform family on the other `g-1` points. That is a statement
+/// about `g` derived families, not about the one family, and it is the
+/// structure `docs/roadmap.md` section 7 proposes running backwards: glue
+/// extremal `N(b-1,g-1)` families together to build an `iota(b,g)`.
+///
+/// Verified here on the two tight rows that are cheap, with the links
+/// re-checked from scratch by a detector that knows nothing about how
+/// they arose.
+#[test]
+fn at_the_tight_rows_every_link_is_extremal() {
+    for (b, g, target) in [(3u32, 6u32, 10usize), (4, 8, 24)] {
+        let (found, fam, _) = iota_decide(g, b, target, BUDGET);
+        assert!(found);
+        let cap = general(b - 1, g - 1);
+        assert_eq!(b as usize * fam.len(), g as usize * cap, "row is not tight");
+
+        for x in 0..g {
+            // The link at x: members through x, with x removed and the
+            // ground set renumbered to skip it.
+            let link: Vec<u16> = fam
+                .iter()
+                .filter(|a| *a >> x & 1 == 1)
+                .map(|a| {
+                    let low = a & ((1u32 << x) - 1);
+                    let high = (a >> (x + 1)) << x;
+                    (low | high) as u16
+                })
+                .collect();
+            assert_eq!(
+                link.len(),
+                cap,
+                "link at {x} of the ({b},{g}) witness has {} members, not N({},{}) = {cap}",
+                link.len(),
+                b - 1,
+                g - 1
+            );
+            // And it really is a sunflower-free (b-1)-uniform family on
+            // g-1 points -- so it attains N(b-1,g-1), i.e. it is extremal.
+            sunflower_formal::ground::verify(&link, b - 1)
+                .unwrap_or_else(|e| panic!("link at {x} of ({b},{g}): {e}"));
+        }
+    }
+}
+
 /// The headline structure fact, on its own: the `b = 3` extremal family
 /// is 5-regular on six points with diversity 5 out of 10 -- exactly half.
 /// `coq/Intersecting.v:iota3` is the transcription of this family, so the
