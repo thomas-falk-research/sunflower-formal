@@ -52,6 +52,12 @@
     content of that paper, and the record moves as soon as some [b] has
     [iota(b) > 10^((b-1)/2)] — [iota(4) >= 32] would do it.
 
+    It does not, through ten points. Exhaustive search gives
+    [iota(4,9) = 27] (a rate of exactly 3.0000) and no family of 32 or
+    more on ten points, so [b = 4] does not beat the 1972 rate there.
+    Grounds eleven and up are open and, at the measured 89x cost per
+    extra point, out of reach of the present search.
+
     The reconstruction is ours and the paper was not read; that it
     reproduces both [iota(2) = 3] with [g(2) = 6] and the published
     constant exactly is the evidence for it. See [docs/roadmap.md] §5.

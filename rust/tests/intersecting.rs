@@ -165,8 +165,15 @@ fn iota_respects_the_link_bound() {
 #[test]
 fn iota_searches_agree() {
     use sunflower_formal::intersecting::iota;
+    // Ground is capped below 2b at b = 4: the index-based search needs
+    // 199s at (4, 8) and the candidate-set one 2s, so including that
+    // point would put a 200-second test in CI to re-derive an agreement
+    // the smaller grounds already establish. The (4, 8) value itself is
+    // pinned in `complementary_pair_ceiling`, which uses only the fast
+    // search.
     for b in 2u32..=4 {
-        for g in b..=(2 * b) {
+        let top = if b == 4 { 7 } else { 2 * b };
+        for g in b..=top {
             let (slow, _, d1) = max_intersecting(g, b, BUDGET);
             let (fast, fam, d2) = iota(g, b, BUDGET, 0);
             assert!(d1 && d2, "b={b} g={g} did not finish");

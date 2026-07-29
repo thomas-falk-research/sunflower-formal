@@ -423,7 +423,8 @@ Measured exhaustively (`rust/examples/iota_scan.rs`):
 ```
   iota(2) = 3   (the triangle, on 3 points)      rate 3
   iota(3) = 10  (on 6 points, stable to 12)      rate 10^(1/2) = 3.1623
-  iota(4) >= 24 (on 8 points, still climbing)
+  iota(4) = 27  (on 9 points)                    rate 3.0000
+  iota(4) < 32  (on 10 points)                   AHS not beaten there
 ```
 
 `iota(3) = 10` gives exactly the published 1972 constant. **On this
