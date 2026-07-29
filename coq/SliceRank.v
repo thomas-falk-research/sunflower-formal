@@ -261,15 +261,28 @@ Qed.
     [B = 27 ^ (c+1)]. The constant is not chased — see the scoping note
     in [docs/roadmap.md]; any explicit [B] makes the point. *)
 
-Theorem bounded_ground_set_settles_k3 :
+(** The arithmetic on its own, with no mention of where the small ground
+    set came from: a sunflower-free family living on at most [c * m]
+    points has at most [(27^(c+1))^m] members.
+
+    Extracted because a second hypothesis feeds the same computation.
+    [coq/IotaGround.v] bounds the ground set of *intersecting*
+    sunflower-free families instead — a hypothesis the measurements
+    support, where this one's general form is still climbing — and
+    reaches the conjecture through the same forty lines. Neither theorem
+    should own them. *)
+
+Lemma ns_bound_to_exponential :
   NaslundSawinBound ->
-  forall c, 1 <= c -> GroundBounded c ->
-    forall m j, 1 <= m -> LowerBound m 3 j -> j <= (27 ^ (c + 1)) ^ m.
+  forall c m (F : Family) (U : list nat),
+    1 <= c -> 1 <= m ->
+    Distinct F -> ~ ContainsKSunflower 3 F ->
+    NoDup U -> Grounded F U -> length U <= c * m ->
+    length F <= (27 ^ (c + 1)) ^ m.
 Proof.
-  intros NS c Hc HGB m j Hm HL.
-  destruct (HGB m j Hm HL) as [F [U [HUF [HDF [Hlen [Hno [HndU [HG Hu]]]]]]]].
+  intros NS c m F U Hc Hm HDF Hno HndU HG Hu.
   pose proof (NS U F HndU HDF HG Hno) as Hns.
-  rewrite Hlen in Hns.
+  set (j := length F) in *.
   set (u := length U) in *.
   set (x := c * m).
   assert (Hx : 1 <= x) by (unfold x; nia).
@@ -313,6 +326,17 @@ Proof.
     assert (Hfin : 27 ^ (x + 3 * m + x + x) <= 27 ^ ((c + 1) * (m * 3))).
     { apply Nat.pow_le_mono_r; [lia | unfold x; nia]. }
     lia. }
+  lia.
+Qed.
+
+Theorem bounded_ground_set_settles_k3 :
+  NaslundSawinBound ->
+  forall c, 1 <= c -> GroundBounded c ->
+    forall m j, 1 <= m -> LowerBound m 3 j -> j <= (27 ^ (c + 1)) ^ m.
+Proof.
+  intros NS c Hc HGB m j Hm HL.
+  destruct (HGB m j Hm HL) as [F [U [HUF [HDF [Hlen [Hno [HndU [HG Hu]]]]]]]].
+  pose proof (ns_bound_to_exponential NS c m F U Hc Hm HDF Hno HndU HG Hu) as Hb.
   lia.
 Qed.
 

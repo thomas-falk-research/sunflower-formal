@@ -74,6 +74,15 @@ Proof.
   unfold Subset; intros A B x H; rewrite in_inter_iff in H; tauto.
 Qed.
 
+(** Intersection is commutative up to [SetEq] — not literally, since
+    [inter] filters [A] and so inherits [A]'s order. *)
+
+Lemma inter_comm_SetEq : forall A B, SetEq (inter A B) (inter B A).
+Proof.
+  intros A B; split; intros x Hx; apply in_inter_iff in Hx as [H1 H2];
+    apply in_inter_iff; split; assumption.
+Qed.
+
 Lemma inter_NoDup : forall A B, NoDup A -> NoDup (inter A B).
 Proof.
   intros A B HA. unfold inter.

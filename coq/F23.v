@@ -107,6 +107,97 @@ Proof.
   rewrite E1, E2, E3, E4, E5. reflexivity.
 Qed.
 
+(** ** The converse, and decidability
+
+    [sunflower3b_sound] is the hard direction: it needs
+    [contains_sunflower_literal] to canonicalise an abstract sunflower —
+    whose members are only *set-equal* to members of [F] — into a literal
+    triple. The converse needs nothing: a triple the detector accepts is
+    a sunflower with core [inter A B], and its three members are literal
+    members of [F].
+
+    Together they make [ContainsKSunflower 3] decidable, which is not
+    obvious from the definition: [ContainsKSunflower] quantifies over
+    *arbitrary* lists of sets that happen to be set-equal to members,
+    which is an infinite search space. It is the canonicalisation that
+    collapses it to a finite one.
+
+    Two places in the development were paying for the absence of this.
+    [SpreadRestrictions] records that its restricted route "delivers the
+    bound, not the sunflower", so recovering the [UpperBound] form needed
+    decidability; and the same gap sits between a bound on sunflower-free
+    families and [Conjecture.sunflower_conjecture_k_3]. Both are closed
+    by [contains_3_sunflower_dec]. *)
+
+Lemma sunflower3b_complete :
+  forall F, sunflower3b F = true -> ContainsKSunflower 3 F.
+Proof.
+  intros F E.
+  apply existsb_exists in E as [A [HA E]].
+  apply existsb_exists in E as [B [HB E]].
+  apply existsb_exists in E as [C [HC E]].
+  unfold sunflower_tripleb in E.
+  apply andb_true_iff in E as [E E5].
+  apply andb_true_iff in E as [E E4].
+  apply andb_true_iff in E as [E E3].
+  apply andb_true_iff in E as [E1 E2].
+  apply negb_true_iff in E1, E2, E3.
+  (* The three "not set-equal" flags. *)
+  assert (NAB : ~ SetEq A B)
+    by (intro H; apply seteqb_correct in H; congruence).
+  assert (NAC : ~ SetEq A C)
+    by (intro H; apply seteqb_correct in H; congruence).
+  assert (NBC : ~ SetEq B C)
+    by (intro H; apply seteqb_correct in H; congruence).
+  (* Not set-equal is stronger than not literally equal. *)
+  assert (HAB : A <> B) by (intro Heq; subst B; apply NAB, SetEq_refl).
+  assert (HAC : A <> C) by (intro Heq; subst C; apply NAC, SetEq_refl).
+  assert (HBC : B <> C) by (intro Heq; subst C; apply NBC, SetEq_refl).
+  apply seteqb_correct in E4, E5.
+  assert (Hsnd : SetNoDup [A; B; C]).
+  { constructor; [intros U [E'|[E'|[]]]; subst U; assumption|].
+    constructor; [intros U [E'|[]]; subst U; assumption|].
+    constructor; [intros U [] | constructor]. }
+  apply (@ContainsKSunflower_of_incl 3 [A; B; C] F (inter A B)).
+  - intros U [E'|[E'|[E'|[]]]]; subst U; assumption.
+  - reflexivity.
+  - split.
+    + exact Hsnd.
+    + intros U V HU HV Hne.
+      destruct HU as [E'|[E'|[E'|[]]]]; subst U;
+        destruct HV as [E'|[E'|[E'|[]]]]; subst V;
+        try (exfalso; apply Hne; reflexivity).
+      * apply SetEq_refl.
+      * apply SetEq_sym; exact E4.
+      * apply inter_comm_SetEq.
+      * apply SetEq_sym; exact E5.
+      * eapply SetEq_trans; [apply inter_comm_SetEq | apply SetEq_sym; exact E4].
+      * eapply SetEq_trans; [apply inter_comm_SetEq | apply SetEq_sym; exact E5].
+Qed.
+
+Theorem contains_3_sunflower_dec :
+  forall F, {ContainsKSunflower 3 F} + {~ ContainsKSunflower 3 F}.
+Proof.
+  intros F; destruct (sunflower3b F) eqn:E.
+  - left; exact (sunflower3b_complete F E).
+  - right; intro Hc; apply sunflower3b_sound in Hc; congruence.
+Defined.
+
+(** The form the bound-to-[UpperBound] step actually consumes: a family
+    with no sunflower is bounded, so a family that is not bounded has
+    one. Without decidability this direction is only [~ ~ Contains]. *)
+
+Corollary upper_bound_of_sunflower_free_bound :
+  forall n m,
+    (forall F : Family,
+        Uniform n F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= m) ->
+    UpperBound n 3 (S m).
+Proof.
+  intros n m Hb F HU HD Hlen.
+  destruct (contains_3_sunflower_dec F) as [Hc | Hno]; [exact Hc|].
+  exfalso; pose proof (Hb F HU HD Hno); lia.
+Qed.
+
 (** ** Structure of 2-element sets
 
     [two_set_shape], [two_set_other] and [inter_two_sets_common] were

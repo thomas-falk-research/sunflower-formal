@@ -129,10 +129,28 @@ test: rust
 # with core Y is exactly k members through Y with pairwise disjoint
 # petals -- against a brute-force sunflower detector that knows nothing
 # about links. It ran before the Coq proof, not after it.
+#
+# The fourth falsifies the sandwich 2 iota(b) <= g(b) <= 2b iota(b),
+# step by step: that a maximal disjoint subfamily of a sunflower-free
+# family has at most two members, that its union is small and meets
+# everything, that some point lies in |F|/(2b) members, and that the
+# star there is an iota witness. Mostly on randomly grown *maximal*
+# sunflower-free families rather than the extremal ones, which are few
+# and structured. It also ran before the Coq proof.
+#
+# The fifth measures the ground set the intersecting problem needs. It
+# is the evidence for pointing the polynomial method's missing
+# hypothesis at iota rather than at g: the general row N(3,g) is still
+# climbing at nine points, the intersecting row iota(3,g) has not moved
+# since six and is checked flat to fourteen. It also checks the link
+# degree bound b|F| <= g N(b-1,g-1) and, at the rows where that is met
+# with equality, that the extremal family really is regular.
 testbed:
 	cd rust && cargo test --release --test spread_axiom -- --nocapture
 	cd rust && cargo test --release --test chvatal_hanson -- --nocapture
 	cd rust && cargo test --release --test link_characterisation -- --nocapture
+	cd rust && cargo test --release --test iota_sandwich -- --nocapture
+	cd rust && cargo test --release --test iota_ground -- --nocapture
 
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.

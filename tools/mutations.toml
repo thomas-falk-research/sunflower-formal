@@ -640,3 +640,137 @@ The product family of ProductLowerBound is 3-uniform, distinct and sunflower-fre
 with 2^3 = 8 members on six points, and scaling the same construction past 3*N \
 members refutes any fixed b*N. The hypothesis is replaced by a copy of its \
 neighbour rather than deleted, so the arity is unchanged."""
+
+# ----------------------------------------------------------------
+# The star bound: g(b) <= 2b iota(b), and the sandwich it closes.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "star-bound-drop-positive-uniformity"
+file = "coq/Intersecting.v"
+question = """The star bound takes a maximal disjoint subfamily, which needs every \
+member nonempty. Is 1 <= b doing that, or is it decoration?"""
+find = """  forall b N (F : Family),
+    1 <= b ->
+    Uniform b F -> Distinct F ->
+    ~ ContainsKSunflower 3 F ->"""
+replace = """  forall b N (F : Family),
+    0 <= b ->
+    Uniform b F -> Distinct F ->
+    ~ ContainsKSunflower 3 F ->"""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false at b = 0: \
+Audit.positive_uniformity_is_needed_in_the_star_bound exhibits the one-member \
+family {emptyset}, which is 0-uniform, distinct and sunflower-free, against \
+iota(0) = 0 -- no 0-uniform family is intersecting, since the empty set is \
+disjoint from itself -- so the bound would read 1 <= 0. The hypothesis is \
+weakened to a trivially true one rather than deleted, so the arity is unchanged."""
+
+[[mutation]]
+id = "star-bound-halve-the-factor"
+file = "coq/Intersecting.v"
+question = """The cover spans at most 2b points because at most two members are \
+pairwise disjoint. Is the 2 the count of disjoint members, or slack in the \
+estimate?"""
+find = "    length F <= 2 * b * N."
+replace = "    length F <= b * N."
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false at b = 1: \
+Audit.the_factor_two_b_is_attained proves g(1) = 2 and iota(1) = 1, so the bound \
+is met with equality at 2b and refuted at b. The 2 counts the two members a \
+maximal disjoint subfamily of a 3-sunflower-free family can have; it is not \
+slack."""
+
+[[mutation]]
+id = "star-is-the-wrong-side"
+file = "coq/Intersecting.v"
+question = """The star at x is the members *through* x. Would the members avoiding \
+x do just as well -- is anything actually using which side it is?"""
+find = """Definition star (x : nat) (F : Family) : Family :=
+  filter (fun A => memb x A) F."""
+replace = """Definition star (x : nat) (F : Family) : Family :=
+  filter (fun A => negb (memb x A)) F."""
+expect = "killed"
+because = """Load-bearing: the whole point of the star is that its members share a \
+point, hence pairwise meet, hence form an intersecting family. The complement has \
+no such property and star_Intersecting stops being provable. Audit.star_correct \
+pins the intended reading, and Audit.star_and_link_agree ties the count to the \
+link at the same point."""
+
+[[mutation]]
+id = "gatmost-drop-distinct"
+file = "coq/IotaRate.v"
+question = """GAtMost bounds sunflower-free families. Is Distinct what makes that a \
+finite quantity, or would uniformity alone do?"""
+find = """  forall F : Family,
+    Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= M."""
+replace = """  forall F : Family,
+    Uniform b F -> Uniform b F -> ~ ContainsKSunflower 3 F -> length F <= M."""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false for every M: repeating \
+one set gives a uniform, sunflower-free family of any length -- a sunflower needs \
+its petals SetNoDup, so a family of copies never contains one. Distinct is what \
+makes g(b) a number at all, and without it the equivalence with the conjecture \
+would be an equivalence between two false statements. The hypothesis is replaced \
+by a copy of its neighbour rather than deleted, so the arity is unchanged."""
+
+# ----------------------------------------------------------------
+# The ground-set link bound, and the hypothesis pointed at iota.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "ground-bound-drop-grounded"
+file = "coq/IotaGround.v"
+question = """The incidence count sums over the ground set. Is Grounded what \
+puts every member's points inside it, or is the count right anyway?"""
+find = """  forall b N (U : list nat) (F : Family),
+    NoDup U -> Uniform b F -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    (forall (V : list nat) (G : Family),
+        NoDup V -> S (length V) <= length U ->
+        Uniform (b - 1) G -> Distinct G -> Grounded G V ->
+        ~ ContainsKSunflower 3 G -> length G <= N) ->
+    b * length F <= length U * N."""
+replace = """  forall b N (U : list nat) (F : Family),
+    NoDup U -> Uniform b F -> Distinct F -> NoDup U ->
+    ~ ContainsKSunflower 3 F ->
+    (forall (V : list nat) (G : Family),
+        NoDup V -> S (length V) <= length U ->
+        Uniform (b - 1) G -> Distinct G -> Grounded G V ->
+        ~ ContainsKSunflower 3 G -> length G <= N) ->
+    b * length F <= length U * N."""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false: with no constraint \
+tying F to U, take U = [] and any nonempty family -- the left side is positive and \
+the right side is zero. Grounded is what makes the row sum b|F| equal the column \
+sum. The hypothesis is replaced by a copy of its neighbour rather than deleted, so \
+the arity is unchanged."""
+
+[[mutation]]
+id = "ground-bound-forget-the-ground-set"
+file = "coq/IotaGround.v"
+question = """The bound is |U| times the link bound. Does the ground-set factor \
+do anything, or would the link bound alone suffice?"""
+find = "    b * length F <= length U * N."
+replace = "    b * length F <= N."
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false: two_triangles is \
+2-uniform on six points with N(1,5) = 2, so the true bound is 2*6 = 12 = 6*2 and \
+the mutated one would demand 12 <= 2. Audit.the_ground_bound_is_attained pins the \
+equality. The ground-set factor is the whole difference between this bound and \
+Intersecting.intersecting_link_bound, which counts over one member instead."""
+
+[[mutation]]
+id = "iota-ground-quadratic"
+file = "coq/IotaGround.v"
+question = """IotaGroundBounded asks for a ground set linear in the uniformity. Is \
+linearity load-bearing, or would any polynomial do?"""
+find = "      /\\ NoDup U /\\ Grounded H' U /\\ length U <= c * b."
+replace = "      /\\ NoDup U /\\ Grounded H' U /\\ length U <= c * b * b."
+expect = "killed"
+because = """Load-bearing, and it is the whole point. Naslund-Sawin bounds a \
+sunflower-free family on u points by roughly 1.89^u, so a ground set linear in b \
+gives C^b -- an exponential bound in the uniformity, which is the conjecture -- \
+and a quadratic one gives C^(b*b), which is not a bound of the conjectured shape \
+at all. The measurements support the linear form: the intersecting row plateaus at \
+2b and stays flat to fourteen points."""

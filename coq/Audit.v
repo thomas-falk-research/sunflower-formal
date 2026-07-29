@@ -43,7 +43,7 @@ From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
      CliqueLowerBound F23 LinkCharacterisation DirectSum Intersecting
-     SpreadRestrictions SliceRank.
+     Conjecture IotaRate SpreadRestrictions SliceRank IotaGround.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -1341,3 +1341,298 @@ Example iota_bound_beats_the_ground_set :
     ~ ContainsKSunflower 3 F ->
     length F <= 18.
 Proof. exact iota_three_at_most_eighteen. Qed.
+
+(** *** Does [star] mean "the members through this point"?
+
+    [Intersecting.star] is [filter (memb x)], which is what the
+    pigeonhole counts, so the risk is not that it is wrong but that the
+    theorem is stated against the wrong counter. Two checks: the
+    membership characterisation, and that the star and the *link* at a
+    point have the same size.
+
+    The second is the one worth having. The two bounds on [iota] in this
+    development go opposite ways and use opposite devices — the upper
+    bound [iota(b) <= b*g(b-1)] counts the link at a popular point, the
+    lower bound [g(b) <= 2b*iota(b)] counts the star at one — and if
+    those two counts disagreed, one of the theorems would be about a
+    quantity nobody named. *)
+
+Theorem star_correct :
+  forall x F A, In A (star x F) <-> In A F /\ In x A.
+Proof.
+  intros x F A; unfold star; rewrite filter_In; split; intros [Ha Hb].
+  - split; [exact Ha | apply memb_true_iff; exact Hb].
+  - split; [exact Ha | apply memb_true_iff; exact Hb].
+Qed.
+
+Theorem star_and_link_agree :
+  forall x F, length (star x F) = length (link [x] F).
+Proof.
+  intros x F; rewrite length_link; unfold deg, star.
+  f_equal; apply filter_ext_eq; intros B; symmetry; apply containsb_singleton.
+Qed.
+
+(** *** Is the factor [2b] in the star bound decoration?
+
+    No: it is *attained* at [b = 1]. Two disjoint singletons are
+    sunflower-free (a family of two members contains no 3-sunflower for
+    the silliest reason), so [g(1) = 2]; and an intersecting 1-uniform
+    distinct family has one member, so [iota(1) = 1]. Hence
+    [g(1) = 2 = 2*1*iota(1)] with equality, and no constant below 2
+    works at [b = 1].
+
+    That does not say [2b] is sharp for every [b] — the exhaustive
+    sample in [rust/tests/iota_sandwich.rs] reaches only 3 of the 4
+    available at [b = 2] and 2.75 of the 6 at [b = 3]. It says the
+    factor is not an artefact of a lazy estimate at the one place both
+    ends are known exactly. *)
+
+Lemma zero_uniform_at_most_one :
+  forall G : Family, Uniform 0 G -> Distinct G -> length G <= 1.
+Proof.
+  intros G HU HD.
+  destruct G as [|A [|B G'']]; simpl; [lia | lia |].
+  exfalso.
+  unfold Uniform in HU.
+  inversion HU as [|? ? HUA HU']; subst.
+  inversion HU' as [|? ? HUB HU'']; subst.
+  destruct HUA as [HAlen _]; destruct HUB as [HBlen _].
+  destruct A as [|a A0]; [|simpl in HAlen; lia].
+  destruct B as [|b B0]; [|simpl in HBlen; lia].
+  inversion HD as [|? ? Hni _]; subst.
+  apply (Hni [] (or_introl eq_refl)); apply SetEq_refl.
+Qed.
+
+Theorem iota_one_is_one : IotaAtMost 1 1.
+Proof.
+  intros H HU HD HI Hno.
+  apply (intersecting_link_bound 1 1 H); try assumption; [lia|].
+  intros G HUG HDG _; simpl in HUG.
+  exact (@zero_uniform_at_most_one G HUG HDG).
+Qed.
+
+Theorem the_factor_two_b_is_attained :
+  LowerBound 1 3 2 /\ IotaAtMost 1 1 /\ ~ GAtMost 1 1.
+Proof.
+  assert (HL : LowerBound 1 3 2).
+  { exists [[0]; [1]].
+    split; [apply uniformb_correct; vm_compute; reflexivity|].
+    split; [apply distinctb_correct; vm_compute; reflexivity|].
+    (* [simpl; lia] rather than [reflexivity]: the mutation
+       [lowerbound-at-least] turns this equation into [>=], and a proof
+       sensitive to which one it is would kill the development's one
+       genuine mutation survivor without saying anything. *)
+    split; [simpl; lia|].
+    apply (@no_k_sunflower_short_family [[0]; [1]] 3); simpl; lia. }
+  split; [exact HL|]; split; [exact iota_one_is_one|].
+  intros Hg; destruct HL as [F [HU [HD [Hlen Hno]]]].
+  pose proof (Hg F HU HD Hno); lia.
+Qed.
+
+(** *** Is [1 <= b] in the star bound load-bearing?
+
+    Yes, and the counterexample is the smallest one there is. At [b = 0]
+    the family [{∅}] is 0-uniform, distinct and sunflower-free with one
+    member, while *no* 0-uniform family is intersecting at all — [∅] is
+    disjoint from itself — so [iota(0) = 0] and the bound [2*0*0] would
+    read [0 >= 1].
+
+    The mechanism is exactly the step the hypothesis licenses: the proof
+    needs every member nonempty before it can take a maximal disjoint
+    subfamily, and at [b = 0] the empty set is disjoint from everything
+    including itself, so the greedy cover never starts. *)
+
+Theorem iota_zero_is_zero : IotaAtMost 0 0.
+Proof.
+  intros H HU HD HI Hno.
+  destruct H as [|A H']; simpl; [lia|].
+  exfalso.
+  unfold Uniform in HU; inversion HU as [|? ? HUA _]; subst.
+  destruct HUA as [HAlen _].
+  destruct A as [|a A0]; [|simpl in HAlen; lia].
+  apply (HI [] [] (or_introl eq_refl) (or_introl eq_refl)).
+  intros y Hy; inversion Hy.
+Qed.
+
+Theorem positive_uniformity_is_needed_in_the_star_bound :
+  Uniform 0 [[]] /\ Distinct [[]] /\ ~ ContainsKSunflower 3 [[]]
+  /\ IotaAtMost 0 0 /\ 2 * 0 * 0 < length ([[]] : Family).
+Proof.
+  repeat split.
+  - apply uniformb_correct; vm_compute; reflexivity.
+  - apply distinctb_correct; vm_compute; reflexivity.
+  - apply (@no_k_sunflower_short_family [[]] 3); simpl; lia.
+  - exact iota_zero_is_zero.
+  - simpl; lia.
+Qed.
+
+(** *** Does [IotaAtMost] pin anything, or is it satisfiable at every [N]?
+
+    Both ends are proved, so the truth boundary of [IotaAtMost 3 N] is
+    trapped: false at 9, true at 18. The measured value is 10, which is
+    inside that window and is the only thing the search is being trusted
+    for. A definition that was accidentally vacuous — satisfied at every
+    [N] — would fail the first half. *)
+
+Theorem iota_three_between_ten_and_eighteen :
+  ~ IotaAtMost 3 9 /\ IotaAtMost 3 18.
+Proof.
+  split.
+  - intros Hi.
+    pose proof (Hi iota3 iota3_uniform iota3_distinct iota3_intersecting
+                  iota3_no_sunflower) as Hle.
+    vm_compute in Hle; lia.
+  - intros H HU HD HI Hno; exact (iota_three_at_most_eighteen H HU HD HI Hno).
+Qed.
+
+(** *** Does the star bound contradict anything already proved?
+
+    [IotaRate.g_three_at_most_108] caps every sunflower-free 3-uniform
+    family at 108 members. Every lower bound the development proves at
+    uniformity 3 must sit below it, and the check is the bound *applied*
+    to the lower bound's own witness — so a contradictory pair would
+    make this line a derivation of [False] rather than a restatement of
+    two numbers. *)
+
+Corollary bounds_coherent_star_bound :
+  forall m, LowerBound 3 3 m -> m <= 108.
+Proof.
+  intros m [F [HU [HD [Hlen Hno]]]].
+  (* [pose ...; lia], not [rewrite <- Hlen]: see
+     [IotaRate.every_construction_is_within_2b_of_iota]. *)
+  pose proof (g_three_at_most_108 F HU HD Hno) as Hle; lia.
+Qed.
+
+Corollary bounds_coherent_iota_sandwich : 20 <= 108 /\ 15 <= 108.
+Proof.
+  split; apply bounds_coherent_star_bound;
+    [ exact lower_bound_3_3_20
+    | exact (@LowerBound_antitone 3 3 20 15 lower_bound_3_3_20 ltac:(lia)) ].
+Qed.
+
+(** *** Is the equivalence with the conjecture really an equivalence?
+
+    Both sides are open, so neither can be witnessed. What *can* be
+    checked is that the two directions are not the same statement read
+    twice: the forward one is a bound on intersecting families producing
+    an [UpperBound], the backward one is an [UpperBound] producing a
+    bound on intersecting families. Composing them in either order is
+    the identity on the proposition, which is what
+    [conjecture_k_3_iff_iota_exponential] asserts — recorded here
+    against a named specification so a later weakening of either
+    direction shows up as a moved statement. *)
+
+Definition IotaEquivalence : Prop :=
+  sunflower_conjecture_k_3 <-> IotaExponential.
+
+Theorem the_iota_route_proves_the_equivalence : IotaEquivalence.
+Proof. exact conjecture_k_3_iff_iota_exponential. Qed.
+
+(** *** Is the detector's converse the converse?
+
+    [F23.sunflower3b] is now proved sound *and* complete, so it decides
+    [ContainsKSunflower 3]. Two checks that the pair says what it should:
+    the decision agrees with the boolean on a family that has a sunflower
+    and on one that does not. [two_triangles] is the interesting side —
+    it is the six-member family behind [f(2,3) = 7], and if the detector
+    accepted it the value would be wrong. *)
+
+Theorem the_detector_decides :
+  sunflower3b two_triangles = false
+  /\ ~ ContainsKSunflower 3 two_triangles
+  /\ sunflower3b [[0]; [1]; [2]] = true
+  /\ ContainsKSunflower 3 [[0]; [1]; [2]].
+Proof.
+  split; [vm_compute; reflexivity|].
+  split; [exact two_triangles_no_sunflower|].
+  split; [vm_compute; reflexivity|].
+  apply sunflower3b_complete; vm_compute; reflexivity.
+Qed.
+
+(** *** Does the double count count the right thing?
+
+    [IotaGround.degsum] and [IotaGround.sizesum] are two sums over the
+    same incidence table, and the theorem that they agree is what turns
+    the link bound into a ground-set bound. The risk is not that the
+    identity is false — it is proved — but that either side is summing
+    something other than what its name says. So: evaluate both on a
+    family whose incidences can be counted by hand.
+
+    [two_triangles] has six 2-sets on six points, every point in exactly
+    two of them. Degrees sum to 12; sizes sum to 12; and both equal
+    [2 * 6]. A [degsum] that had transposed its filters, or a [sizesum]
+    that counted members rather than points, would miss. *)
+
+Example the_double_count_is_the_incidence_count :
+  degsum [0;1;2;3;4;5] two_triangles = 12
+  /\ sizesum [0;1;2;3;4;5] two_triangles = 12
+  /\ degsum [0;1;2;3;4;5] two_triangles = 2 * length two_triangles.
+Proof.
+  split; [vm_compute; reflexivity|].
+  split; vm_compute; reflexivity.
+Qed.
+
+(** *** Is the ground-set link bound tight, or is it an estimate?
+
+    Tight, at the one place the development can check it in the kernel:
+    [two_triangles] is 2-uniform on six points with [N(1,5) = 2], and
+    [2 * 6 = 6 * 2] exactly. Equality forces the family to be regular and
+    every link to be extremal, which is what the measured rows show at
+    [(2,3)], [(3,6)], [(4,8)] and [(4,9)] as well
+    ([rust/examples/iota_ground.rs]).
+
+    So the bound is not a lazy estimate that happens to be provable — at
+    uniformity 2 it is an identity, and the slack at larger ground sets
+    is the honest content of the inequality. *)
+
+Example the_ground_bound_is_attained :
+  2 * length two_triangles <= length [0;1;2;3;4;5] * 2
+  /\ 2 * length two_triangles = length [0;1;2;3;4;5] * 2.
+Proof.
+  split; vm_compute; (reflexivity || lia).
+Qed.
+
+(** *** Does the intersecting ground hypothesis differ from the general one?
+
+    Both settle [k = 3], and [IotaGround.both_ground_hypotheses_settle_k3]
+    puts them side by side so the difference is visible as a statement
+    rather than as prose. Neither implies the other — [GroundBounded]
+    demands the small ground set of *every* sunflower-free family and
+    [IotaGroundBounded] only of intersecting ones, so the first is
+    stronger there; but the first also produces a family of the same size
+    and the second is free to produce any equally large sunflower-free
+    one, so it is weaker there. What separates them is not logic, it is
+    that the measurements support one and not the other.
+
+    Recorded against a named specification, so a later weakening of
+    either shows up as a moved statement. *)
+
+Definition GroundHypotheses : Prop :=
+  NaslundSawinBound ->
+  forall c, 1 <= c ->
+    (GroundBounded c -> forall m j, 1 <= m -> LowerBound m 3 j
+                                    -> j <= (27 ^ (c + 1)) ^ m)
+    /\ (IotaGroundBounded c -> sunflower_conjecture_k_3).
+
+Theorem the_two_ground_hypotheses_are_both_sufficient : GroundHypotheses.
+Proof. exact both_ground_hypotheses_settle_k3. Qed.
+
+(** *** Is [N(3,g) <= 2g] any use, or is it above the trivial ceiling?
+
+    Below it, and by a lot. On ten points the trivial bound is
+    [C(10,3) = 120] and Erdős–Rado gives 48 at uniformity 3; the link
+    count gives 20. It is still above the measured 14, and it does not
+    decide whether the row plateaus — which is the question
+    [SliceRank.v] actually needs — but it is the first proved cap on
+    that row. *)
+
+Example the_ground_cap_beats_erdos_rado_at_ten :
+  forall (U : list nat) (F : Family),
+    NoDup U -> length U <= 10 ->
+    Uniform 3 F -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    length F <= 20 /\ 20 < 48.
+Proof.
+  intros U F HndU Hu HU HD HG Hno.
+  split; [exact (n_three_ten_at_most_twenty U F HndU Hu HU HD HG Hno) | lia].
+Qed.
