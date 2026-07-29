@@ -1247,13 +1247,22 @@ the orbit split, the stabiliser still has order `4! * 5!` at `(4,9)`, and
 CDCL is famously bad at symmetric UNSAT. The general row has far less
 symmetry to fight, which is exactly where SAT won.
 
-**What was asked and not decided**, stated so the next session does not
-re-run it: `iota(4,10) >= 28` did not settle in an hour of cadical (the
-question §7 says `IotaGroundBounded` turns on); `iota(4,11) >= 32` did
-not settle in thirty minutes; `iota(5,10) >= 43` did not settle in
-sixteen; `N(3,10) >= 17` did not settle in the time it was given. Every
-one of those is an UNSAT-side question on a symmetric instance, and the
-one on a *general* row — `N(3,10) >= 17` — is the least hopeless of them.
+**What was asked and not decided**, with its cost, so the next session
+does not re-run it blind:
+
+```
+  question              solver time    verdict
+  iota(4,10) >= 28      60 min         undecided   <- what IotaGroundBounded turns on
+  N(3,10)    >= 17      55 min         undecided
+  iota(4,11) >= 32      30 min         undecided   <- 32 would beat AHS
+  iota(5,10) >= 43      16 min         undecided
+```
+
+Every one is an UNSAT-side question, and every one is symmetric. Note
+that `N(3,10) >= 16` was SAT in **0.02 seconds** and `>= 17` did not
+finish in fifty-five minutes: the cliff between the two sides is
+enormous, and it is the whole reason to break symmetry rather than buy
+time.
 
 So the honest summary is: **SAT is transformative on the witness side and
 on the general row, and it is not a free win on the intersecting UNSAT
