@@ -158,7 +158,24 @@ estimate. Both are marked below.
   method from Erdős–Rado 1960 to the present. Used here for two
   literature checks recorded in `docs/roadmap.md` §5:
 
-  1. it corroborates the [AHS72] recursion and seed (above);
+  1. it corroborates the [AHS72] recursion and seed (above), **with one
+     caveat found on a second reading and recorded here rather than
+     glossed**. [Kup25] defines its extremal function as
+     $\phi(k,s) := \max\{|\mathcal F| : \mathcal F$ consists of sets of
+     size $\le k$ and contains no $\Delta(s+1)$-system$\}$ — so its
+     second argument is *one less* than the number of petals. Under that
+     definition its two [AHS72] sentences do not agree with each other:
+     the seed is described as "a 3-uniform family of size 10 and with no
+     $\Delta(3)$-system" (three petals), while the bound is written
+     $\phi(k,3) \ge 10^{k/2 - c\log k}$, which under the stated
+     definition forbids $\Delta(4)$-systems (four petals). One of the two
+     is off by one. **The mathematics in this repository does not depend
+     on which**: the substitution is verified computationally for
+     3-sunflowers in `rust/tests/intersecting.rs`, and $\iota(3) = 10$ is
+     exhaustive. What is affected is the *attribution* — until [AHS72] is
+     read, "the 1972 bound is $10^{n/2}$ for 3-sunflowers" is corroborated
+     by an internally inconsistent secondary source, and should be
+     treated as such;
   2. it does **not** name an extremal function for *intersecting*
      sunflower-free families, and contains no reduction of the
      sunflower problem to intersecting families. That is a negative
@@ -167,6 +184,28 @@ estimate. Both are marked below.
      was searched.
 
   Only the sections reachable from the arXiv HTML were read.
+
+### Who evaluated $f(2,k)$ first
+
+[Kup25] reports that [AHS72] "showed that $\phi(2,s) = s(s+1)$ for even
+$s$ and $s^2 + \frac{s-1}{2}$ for odd $s$". Under [Kup25]'s own
+definition (second argument = petals minus one) that is the largest
+2-uniform family with no $(s+1)$-sunflower, i.e. $f(2,s+1) - 1$ in this
+repository's notation. Checked against this repository's own
+Chvátal–Hanson oracle in `rust/examples/ahs_convention.rs`, the quoted
+formula equals $CH(s,s)$ **exactly** for every $s$ from 2 to 8 — and
+`chvatal_hanson::f_2_k` computes $f(2,k) = CH(k-1,k-1) + 1$, so the two
+agree with the offset the definition predicts.
+
+The consequence for this repository: **the exact values $f(2,k)$ appear
+to be due to [AHS72] in 1972, not to [CH76] in 1976.** What [CH76] adds
+is the full two-parameter function $CH(D,\nu)$ for $D \ne \nu$; the
+sunflower problem only ever needs the diagonal. `docs/roadmap.md` §3a
+names "the $CH$ upper bound" as the main remaining target at uniformity
+2, and if the diagonal is what is wanted then [AHS72]'s argument may be
+the shorter one to formalise. Both papers remain unread; this is an
+inference from a survey's quoted formula matching a computed table, and
+is recorded as that.
 
 ## Pre-2020 partial results
 
@@ -201,6 +240,35 @@ estimate. Both are marked below.
 
 - **[Stoeckl]** S. Stoeckl, presentation achieving $C = 64$ in the
   streamlined proof.
+
+## Shifting, and the shifted case
+
+- **[Mis26]** Tapas Kumar Mishra, *Erdős Rado Sunflower Theorem for
+  Shifted Families*. arXiv:2606.02667, v1 1 June 2026, v2 8 June 2026,
+  math.CO. Proves the Erdős–Rado conjecture **for shifted families**:
+  writing $f'(k,s)$ for the least $m$ such that every *shifted* family of
+  more than $m$ $k$-sets contains an $s$-sunflower, Theorem 1 gives
+  $f'(k,s) \le s^{2k}$ for $k \le s-1$ and $f'(k,s) \le 2f'(k-1,s)$
+  otherwise, hence Corollary 1: $f'(k,s) \le s^{2s-2}2^k$. Uniform
+  families; "shifted" is the standard fixed-point-of-all-$(i,j)$-shifts
+  condition, the same as `Compression.LeftCompressed`. **The paper gives
+  no lower bound and no extremal family**, and does not discuss whether
+  shifting preserves sunflower-freeness.
+
+  `coq/Compression.v` determines the same quantity exactly:
+  $f'(k,s) = \binom{k+s-2}{k} + 1$, attained by all $k$-subsets of a
+  $(k+s-2)$-set. That is **polynomial in $k$ of degree $s-2$**, against
+  the exponential $s^{2s-2}2^k$, and it is sharp rather than an estimate.
+  `compressed_lives_on_m_plus_k_minus_two_points` is the machine-checked
+  half (a shifted $s$-sunflower-free $k$-uniform family lives on $k+s-2$
+  points); the count and the attainment are exhaustively verified in
+  `rust/tests/shifting.rs` over 62 parameter points and proved in prose
+  there. See `docs/roadmap.md` §8.
+
+  This is also the answer to "has anyone pointed shifting at this
+  problem?": yes, two months before this was written, and the question is
+  live. [Kup25], the survey of the Δ-system method, contains no
+  discussion of shifting at all.
 
 ## Surveys and textbooks
 

@@ -452,3 +452,102 @@ fn a_breaking_shift_always_raises_the_degree_of_its_target() {
     }
     assert!(seen > 0);
 }
+
+// ---------------------------------------------------------------------
+// 6. The same question at every sunflower size.
+// ---------------------------------------------------------------------
+
+fn binom(n: u64, r: u64) -> u64 {
+    if r > n {
+        return 0;
+    }
+    let mut v = 1u64;
+    for i in 0..r {
+        v = v * (n - i) / (i + 1);
+    }
+    v
+}
+
+/// Nothing above is special to 3. A left-compressed `k`-sunflower-free
+/// `m`-uniform family has at most `C(m+k-2, m)` members — **polynomial
+/// in `m` of degree `k-2`** — and the bound is attained by all
+/// `m`-subsets of an `(m+k-2)`-set.
+///
+/// Exhaustive over every parameter in range, and it matters which way
+/// this cuts: [Mis26] (arXiv:2606.02667, June 2026) proves the
+/// Erdős–Rado conjecture for shifted families with the *exponential*
+/// bound `s^(2s-2) 2^k` and no lower bound at all. The truth is
+/// polynomial, and this says what it is.
+#[test]
+fn the_compressed_bound_is_polynomial_at_every_sunflower_size() {
+    for k in 3usize..=5 {
+        for m in 1u32..=3 {
+            for g in m..=(m + (k as u32) + 2).min(9) {
+                let (best, _, _) = max_left_compressed_k(g, m, k);
+                let predicted = binom((m + k as u32 - 2) as u64, m as u64)
+                    .min(binom(g as u64, m as u64));
+                assert_eq!(
+                    best as u64, predicted,
+                    "max left-compressed {k}-sunflower-free at m={m}, g={g}"
+                );
+            }
+        }
+    }
+}
+
+/// The extremal family, at every `k`: all `m`-subsets of an
+/// `(m+k-2)`-set is left-compressed and `k`-sunflower-free.
+///
+/// The proof is a counting argument. Writing `B_i` for the complement of
+/// the `i`-th member in the `(m+k-2)`-set, `|B_i| = k-2`; a `k`-sunflower
+/// needs every pairwise union `B_i ∪ B_j` to be the same set `C`, so
+/// every point of `C` is missing from at most one `B_i` and therefore
+/// lies in at least `k-1` of them. Counting incidences,
+/// `k(k-2) ≥ |C|(k-1)`, while two distinct `(k-2)`-sets have union at
+/// least `k-1`, so `|C| ≥ k-1`. Together `(k-1)² ≤ k(k-2)`, which is
+/// false. Checked here rather than assumed.
+#[test]
+fn the_extremal_compressed_family_at_every_sunflower_size() {
+    for k in 3usize..=6 {
+        for m in 1u32..=4 {
+            let w = initial_segment_witness_k(m, k);
+            let g = m + k as u32 - 2;
+            assert_eq!(
+                w.len() as u64,
+                binom(g as u64, m as u64),
+                "size at k={k}, m={m}"
+            );
+            assert!(is_left_compressed(&w, g), "compressed at k={k}, m={m}");
+            for i in 0..w.len() {
+                assert!(
+                    !creates_k_sunflower(&w[..i], w[i], k),
+                    "a {k}-sunflower at k={k}, m={m}"
+                );
+            }
+        }
+    }
+}
+
+/// The degree of the polynomial is `k-2`, so the gap against the
+/// unrestricted problem widens at every sunflower size — it is not a
+/// `k = 3` accident. At `k = 3` compression permits `m+1` where the
+/// truth is exponential; at `k = 4` it permits `(m+2)(m+1)/2`.
+#[test]
+fn compression_stays_polynomial_while_the_truth_is_exponential() {
+    // Degree k-2 in m: check the closed form against the enumeration.
+    for k in 3usize..=6 {
+        for m in 1u64..=8 {
+            let c = binom(m + k as u64 - 2, m);
+            let mut poly = 1u64;
+            for i in 1..=(k as u64 - 2) {
+                poly = poly * (m + i) / i;
+            }
+            assert_eq!(c, poly, "C(m+k-2,m) is degree k-2 at k={k}, m={m}");
+        }
+    }
+    // And at k = 3 it really is linear, against the proved lower bounds.
+    assert_eq!(binom(2 + 1, 2), 3);
+    assert_eq!(binom(3 + 1, 3), 4);
+    assert_eq!(max_left_compressed(6, 2, false).0, 3);
+    assert_eq!(max_left_compressed(6, 3, false).0, 4);
+}

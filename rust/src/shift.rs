@@ -359,3 +359,120 @@ pub fn max_link_matching(f: &[Mask], ground: u32) -> (usize, Mask) {
     }
     (best, arg)
 }
+
+// ---------------------------------------------------------------------
+// The same question at every sunflower size
+// ---------------------------------------------------------------------
+
+/// Are the `k` sets at `idx` a `k`-sunflower? All pairwise intersections
+/// equal.
+pub fn is_k_sunflower_masks(sets: &[Mask]) -> bool {
+    if sets.len() < 2 {
+        return false;
+    }
+    let core = sets[0] & sets[1];
+    for i in 0..sets.len() {
+        for j in (i + 1)..sets.len() {
+            if sets[i] & sets[j] != core {
+                return false;
+            }
+        }
+    }
+    true
+}
+
+/// Would adding `x` to `cur` complete a `k`-sunflower?
+pub fn creates_k_sunflower(cur: &[Mask], x: Mask, k: usize) -> bool {
+    if cur.len() + 1 < k {
+        return false;
+    }
+    let mut idx: Vec<usize> = (0..(k - 1)).collect();
+    let n = cur.len();
+    loop {
+        let mut petals: Vec<Mask> = idx.iter().map(|&i| cur[i]).collect();
+        petals.push(x);
+        if is_k_sunflower_masks(&petals) {
+            return true;
+        }
+        let mut p = k - 1;
+        loop {
+            if p == 0 {
+                return false;
+            }
+            p -= 1;
+            if idx[p] < n - (k - 1 - p) {
+                idx[p] += 1;
+                for q in (p + 1)..(k - 1) {
+                    idx[q] = idx[q - 1] + 1;
+                }
+                break;
+            }
+        }
+    }
+}
+
+/// The largest left-compressed `k`-sunflower-free `m`-uniform family on
+/// `ground` points, and a witness. Same down-set enumeration as
+/// `max_left_compressed`, which is the `k = 3` case.
+pub fn max_left_compressed_k(ground: u32, m: u32, k: usize) -> (usize, Vec<Mask>, u64) {
+    let mut sets = subsets_of_size(ground, m);
+    sets.sort_by_key(|&a| (elements(a).into_iter().sum::<u32>(), a));
+    let index: std::collections::HashMap<Mask, usize> =
+        sets.iter().enumerate().map(|(n, &a)| (a, n)).collect();
+    let covers: Vec<Vec<usize>> = sets
+        .iter()
+        .map(|&a| {
+            elements(a)
+                .into_iter()
+                .filter(|&x| x >= 1 && a >> (x - 1) & 1 == 0)
+                .map(|x| index[&((a & !(1 << x)) | (1 << (x - 1)))])
+                .collect()
+        })
+        .collect();
+
+    struct S {
+        best: usize,
+        witness: Vec<Mask>,
+        nodes: u64,
+    }
+    fn rec(
+        idx: usize,
+        sets: &[Mask],
+        covers: &[Vec<usize>],
+        taken: &mut Vec<bool>,
+        cur: &mut Vec<Mask>,
+        k: usize,
+        s: &mut S,
+    ) {
+        s.nodes += 1;
+        if cur.len() > s.best {
+            s.best = cur.len();
+            s.witness = cur.clone();
+        }
+        if idx == sets.len() {
+            return;
+        }
+        let x = sets[idx];
+        if covers[idx].iter().all(|&c| taken[c]) && !creates_k_sunflower(cur, x, k) {
+            taken[idx] = true;
+            cur.push(x);
+            rec(idx + 1, sets, covers, taken, cur, k, s);
+            cur.pop();
+            taken[idx] = false;
+        }
+        rec(idx + 1, sets, covers, taken, cur, k, s);
+    }
+
+    let mut s = S { best: 0, witness: Vec::new(), nodes: 0 };
+    let mut taken = vec![false; sets.len()];
+    let mut cur = Vec::new();
+    rec(0, &sets, &covers, &mut taken, &mut cur, k, &mut s);
+    (s.best, s.witness, s.nodes)
+}
+
+/// All `m`-subsets of an `(m + k - 2)`-set: the conjectured extremal
+/// left-compressed `k`-sunflower-free family, of size `C(m+k-2, m)`.
+pub fn initial_segment_witness_k(m: u32, k: usize) -> Vec<Mask> {
+    let g = m + (k as u32) - 2;
+    subsets_of_size(g, m)
+}

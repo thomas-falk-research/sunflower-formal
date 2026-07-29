@@ -1077,6 +1077,45 @@ not by a constant, but completely:
 > `m`-uniform family has at most `m + 1` members, on *any* ground set.
 > Attained, by all `m`-subsets of an `(m+1)`-set.
 
+### And nothing about it is special to 3
+
+The chain argument runs at every sunflower size. A compressed family that
+reaches past `m + k - 3` contains `k` sets `{0,...,m-2} ∪ {t}`, and those
+are a `k`-sunflower. So:
+
+> **`Compression.compressed_lives_on_m_plus_k_minus_two_points`.** A
+> left-compressed `k`-sunflower-free `m`-uniform family is supported on
+> `m + k - 2` points, hence has at most `C(m+k-2, m)` members —
+> **polynomial in `m` of degree `k-2`** — and all `m`-subsets of an
+> `(m+k-2)`-set attain it.
+
+**Why that is worth stating precisely: the question is live.** [Mis26]
+(arXiv:2606.02667, 1 June 2026) proves the Erdős–Rado conjecture *for
+shifted families*, with `f'(k,s) ≤ s^(2s-2) 2^k` — exponential in the
+uniformity — and gives no lower bound and no extremal family. The theorem
+above says the truth is polynomial, and says exactly what it is:
+
+```
+  f'(k,s)  =  C(k+s-2, k) + 1
+```
+
+The ground-set half is machine-checked. The count and the attainment are
+exhaustive in `rust/tests/shifting.rs` over 62 parameter points
+(`k = 3,4,5`, `m ≤ 3`, every ground set in range, zero mismatches), and
+the attainment has a short proof worth recording:
+
+> Write `B_i` for the complement of the `i`-th member in the
+> `(m+k-2)`-set, so `|B_i| = k-2`. A `k`-sunflower forces every pairwise
+> union `B_i ∪ B_j` to be one set `C`, so each point of `C` is missing
+> from at most one `B_i` and lies in at least `k-1` of them. Counting
+> incidences, `k(k-2) ≥ |C|(k-1)`; and two distinct `(k-2)`-sets have
+> union at least `k-1`, so `|C| ≥ k-1`. Together `(k-1)² ≤ k(k-2)`, which
+> is false.
+
+Note which way this cuts. It is *not* progress on the conjecture — it
+makes the shifted case easier, and the shifted case is exactly the one
+the rest of this section shows is unreachable from the general one.
+
 The proof is the whole story in three steps. A compressed family is a
 down-set in the dominance order, so from any member it contains the chain
 `{0,...,m-2} ∪ {t}` for every `t` up to that member's largest point
@@ -1159,11 +1198,13 @@ intersecting family gets. The two are pointed in opposite directions.
 ### What this closes, and what it does not
 
 **Closed.** Do not look for a shifting proof of a sunflower bound, and do
-not look for a shifted extremal family — there are none above `m+1`
-members. The `(e)` question, "is there a compression that *does* preserve
-sunflower-freeness?", is answered in the negative for every operation
-whose fixed points are the left-compressed families, because
-`compressed_bound` bounds those regardless of how they were reached.
+not look for a shifted extremal family — there are none above
+`C(m+k-2, m)` members. The `(e)` question, "is there a compression that
+*does* preserve sunflower-freeness?", is answered in the negative for
+every operation whose fixed points are the left-compressed families,
+because `compressed_bound` bounds those regardless of how they were
+reached. And the shifted case itself is closed: `f'(k,s)` is now exactly
+known, so there is nothing further to extract from [Mis26]'s direction.
 
 **Open.** An operation with a *different* normal form is not excluded by
 any of this. What the diagnosis suggests is that the right normal form is
@@ -1290,6 +1331,89 @@ Two cheaper things to try first, in order: a symmetry-breaking
 preprocessor (`BreakID`) in front of the solver, and a portfolio — the
 solvers here disagree wildly in behaviour on symmetric instances and only
 cadical has been measured.
+
+## 10. Where the effort should go now
+
+Sections 8 and 9 changed the ordering. This is the standing list, ranked,
+with what changed against each.
+
+### Moved up
+
+**Prove `iota(3) = 10` exactly.** `iota(3) <= 18` is proved
+(`Intersecting.iota_three_at_most_eighteen`), 10 is measured and stable to
+fourteen points, and closing `[10,18]` is a finite case analysis: an
+intersecting 3-uniform family is the union of the three stars at a fixed
+member's points, each star's link is a sunflower-free graph and so has at
+most `g(2) = 6` members, so the whole family lives on at most thirteen
+points.
+
+Two things pushed this up. First, it is the first exact value of the
+quantity §5 proves the conjecture is *equivalent* to. Second — and this is
+new — §8 shows the standard route to a result of this shape is
+unavailable, so there is no cheaper mechanised alternative waiting. Doing
+it by hand is worth more than it was, not less.
+
+**Build instead of search, and identify the object — now one item.**
+§5 item 0 and the old "identify the extremal configuration" were separate.
+They should not be. The sixteen-member witness the SAT layer found for
+`N(3,10)` (§9) is
+
+```
+  {0,1,2} {0,1,3} {0,2,3} {1,2,3}        all four triples of {0,1,2,3}
+  {0,4,5} {1,4,5} {0,4,6} {1,4,6} {0,5,6} {1,5,6}
+  {2,7,8} {3,7,8} {2,7,9} {3,7,9} {2,8,9} {3,8,9}
+```
+
+— a `K4` core plus two triangle-blowups, four plus six plus six. Nobody
+designed it; a SAT solver returned it and an independent checker verified
+it. And its first four members are **exactly**
+`Compression.compressed_bound`'s extremal family at `m = 3`, the largest a
+compressed family may be.
+
+That is the locally-`L` construction hypothesis turning up unprompted:
+extremal families look like small rigid pieces glued along a core. The
+experiment is unchanged — enumerate extremal `N(b-1,g-1)` families up to
+isomorphism, search the gluings — but it now has a worked example to
+generalise from rather than only the `(3,6)` object. Caveat unchanged:
+the rigidity is proved only at tight rows, so this produces lower bounds,
+and finding nothing proves nothing.
+
+### Removed
+
+**"Point EKR machinery at `iota`" collapses into the ground-set
+question.** §5 item 0 listed this as the genuinely new angle the
+equivalence opens. It is not a separate angle. Every Erdős–Ko–Rado-type
+bound is in terms of the ground set `n` — `C(n-1,b-1)` for EKR itself,
+`C(n-3,b-2)` for Frankl's diversity theorem — and the conjecture needs
+`C^b`. The only way any of them yields `C^b` is if `n = O(b)`. So a route
+through intersecting-family theory needs ground-boundedness *first*, and
+once you have ground-boundedness the exponential bound is immediate
+anyway: a family on `O(b)` points has at most `2^{O(b)}` members, with no
+EKR needed.
+
+What survives is the sharpened version already in §7: `IotaGroundBounded`
+is the question, and diversity theorems are relevant only as evidence
+about *which* families can be extremal, not as a source of bounds.
+
+### Unchanged
+
+**Rao's Lemma 2** (§1) is still the highest-value single target and still
+a multi-session campaign on its own. **The entropy measurement** (§5's
+correlated-covers item) is still uniquely unclaimed and still cheap.
+
+### Bounded items, with one reordering
+
+The uniformity-2 campaign (§3a) may have the wrong citation attached. See
+`docs/references.md`: the exact values `f(2,k)` appear to be due to
+[AHS72] in 1972 rather than [CH76] in 1976, since [Kup25] quotes an
+[AHS72] formula that equals `CH(s,s)` at every `s` this repository can
+compute. Only the *diagonal* `CH(D,D)` is ever needed here, and if
+[AHS72]'s argument for the diagonal is shorter than [CH76]'s for the full
+two-parameter function, that is the one to formalise. **Read the paper
+before starting the campaign**, not after.
+
+Formalising the AHS substitution (§5 item 2) is unchanged and still a
+session on its own.
 
 ---
 

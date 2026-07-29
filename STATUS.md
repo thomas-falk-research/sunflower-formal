@@ -123,6 +123,8 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `two_triangles_is_a_link`, `no_spread_bounds_sunflower_free_2_3_2` | `coq/Audit.v` | The link construction evaluated on a family with nothing link-like about it; and the restricted spread hypothesis refuted at `(2,3,2)` by the five-cycle, so weakening it did not make it vacuous |
 | `compress_to_chain` | `coq/Compression.v` | A left-compressed family contains the whole chain below any member: from `A ∈ F` and `t ∈ A` with `t ≥ m-1`, compression produces `{0,...,m-2} ∪ {t}`. Induction on `Σ x` over the members, which is the potential that makes the compression terminate in the first place |
 | `three_chains_are_a_sunflower` | `coq/Compression.v` | Three sets `{0,...,m-2} ∪ {t}` with distinct `t ≥ m-1` are a 3-sunflower with core `{0,...,m-2}`. The obstruction, in one lemma |
+| `chain_step`, `chain_down`, `chains_length`, `chains_sunflower` | `coq/Compression.v` | The chain machinery at every sunflower size: a compressed family that contains `{0,…,m-2} ∪ {t}` contains the whole chain below it, and `k` of those are a `k`-sunflower with core `{0,…,m-2}` |
+| `compressed_lives_on_m_plus_k_minus_two_points`, `compressed_ground_at_three` | `coq/Compression.v` | **Nothing about the compression bound is special to 3.** A left-compressed `k`-sunflower-free `m`-uniform family is supported on `m + k - 2` points, hence has at most `C(m+k-2, m)` members — **polynomial in `m` of degree `k-2`** — and all `m`-subsets of an `(m+k-2)`-set attain it. Against [Mis26] (arXiv:2606.02667, June 2026), which proves the Erdős–Rado conjecture for shifted families with the *exponential* `s^(2s-2)·2^k` and no lower bound: the shifted sunflower number is `f'(k,s) = C(k+s-2,k) + 1`, exactly. The ground-set half is the theorem; the count and attainment are exhaustive over 62 parameter points in `rust/tests/shifting.rs`. The `k = 3` case is checked to agree with the specialised statement rather than asserted to |
 | `compressed_lives_on_m_plus_one_points` | `coq/Compression.v` | **A left-compressed 3-sunflower-free `m`-uniform family is supported on `{0,...,m}`.** Not `c·m` points for some constant — `m+1` points, exactly, and with no dependence on the ground set it started on |
 | `compressed_bound`, `compressed_bound_is_attained` | `coq/Compression.v` | **Hence it has at most `m+1` members, and `m+1` is attained.** Against `g(b) ≥ 2·ι(b)`, which is exponential: compression does not cost a constant here, it collapses the problem from exponential to linear. Every member is an `m`-subset of an `(m+1)`-set, so it is determined by the one point it omits, and that map is injective on a `Distinct` family |
 | `compression_would_give_ground_bounded`, `compression_would_settle_k3` | `coq/Compression.v` | **What the shifting method would have bought.** If compression preserved sunflower-freeness, `SliceRank.GroundBounded 2` would follow — on `m+1` points rather than `2m` — and with Naslund–Sawin, the conjecture at `k = 3` with constant `27³`. The implication holds. It is the hypothesis that fails |
@@ -206,7 +208,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (233 of them). The current
+for every theorem in the "Closed" table (239 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).

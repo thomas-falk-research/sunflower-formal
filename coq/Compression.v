@@ -394,6 +394,152 @@ Proof.
     exists (seg (m - 1)); apply three_chains_are_a_sunflower; lia.
 Qed.
 
+(** ** The same at every sunflower size
+
+    Nothing above is special to 3. The chain argument runs at every [k]:
+    a compressed family that reaches past [m + k - 3] contains [k] sets
+    [{0,...,m-2} ∪ {t}], and those are a [k]-sunflower. So a
+    left-compressed [k]-sunflower-free [m]-uniform family lives on
+    [m + k - 2] points, and therefore has at most [C(m+k-2, m)] members —
+    **polynomial in [m] of degree [k-2]**, and exact: all [m]-subsets of
+    an [(m+k-2)]-set attain it.
+
+    That is worth stating precisely because the question is live.
+    [Mis26] (arXiv:2606.02667, June 2026) proves the Erdős–Rado
+    conjecture *for shifted families*, with the bound
+    [f'(k,s) <= s^(2s-2) 2^k] — exponential in the uniformity, and with
+    no lower bound. The theorem here says the truth is polynomial, and
+    says what it is. See [docs/references.md]. *)
+
+Lemma chain_step :
+  forall F m x,
+    LeftCompressed F -> m - 1 <= x ->
+    (exists B, In B F /\ SetEq B (chain m (S x))) ->
+    (exists B, In B F /\ SetEq B (chain m x)).
+Proof.
+  intros F m x Hlc Hx [B [HB Hseq]].
+  assert (HSx : In (S x) B)
+    by (apply (proj2 Hseq); rewrite in_chain; left; reflexivity).
+  assert (Hnx : ~ In x B).
+  { intro Hin; apply (proj1 Hseq) in Hin; rewrite in_chain in Hin; lia. }
+  destruct (Hlc B x (S x) HB ltac:(lia) HSx Hnx) as [C [HC Hcs]].
+  exists C; split; [exact HC|].
+  eapply SetEq_trans; [exact Hcs|]; unfold shift_member; split.
+  - intros z Hz; simpl in Hz; rewrite in_chain.
+    destruct Hz as [E | Hz]; [left; auto|].
+    rewrite in_rem_iff in Hz; destruct Hz as [Hz Hzn].
+    apply (proj1 Hseq) in Hz; rewrite in_chain in Hz.
+    destruct Hz as [E | L]; [contradiction | right; exact L].
+  - intros z Hz; rewrite in_chain in Hz; simpl.
+    destruct Hz as [E | L]; [left; auto|].
+    right; rewrite in_rem_iff; split; [| lia].
+    apply (proj2 Hseq); rewrite in_chain; right; exact L.
+Qed.
+
+Lemma chain_down :
+  forall F m d t,
+    LeftCompressed F -> m - 1 <= t - d ->
+    (exists B, In B F /\ SetEq B (chain m t)) ->
+    (exists B, In B F /\ SetEq B (chain m (t - d))).
+Proof.
+  intros F m d; induction d as [|d IH]; intros t Hlc Hge Hex.
+  - rewrite Nat.sub_0_r in *; exact Hex.
+  - destruct (Nat.eq_dec (t - S d) (t - d)) as [E | NE].
+    + rewrite E; apply IH; [exact Hlc | lia | exact Hex].
+    + assert (Hstep : t - d = S (t - S d)) by lia.
+      apply chain_step; [exact Hlc | lia |].
+      rewrite <- Hstep; apply IH; [exact Hlc | lia | exact Hex].
+Qed.
+
+(** [chains m lo n] is [chain m lo, ..., chain m (lo + n - 1)]. *)
+
+Fixpoint chains (m lo n : nat) : Family :=
+  match n with
+  | 0 => []
+  | S n' => chain m lo :: chains m (S lo) n'
+  end.
+
+Lemma chains_length : forall m lo n, length (chains m lo n) = n.
+Proof.
+  intros m lo n; revert lo; induction n as [|n IH]; intro lo; simpl;
+    [reflexivity | rewrite IH; reflexivity].
+Qed.
+
+Lemma in_chains : forall m lo n A,
+    In A (chains m lo n) -> exists t, lo <= t /\ t < lo + n /\ A = chain m t.
+Proof.
+  intros m lo n; revert lo; induction n as [|n IH]; intros lo A HA;
+    simpl in HA; [contradiction|].
+  destruct HA as [E | HA].
+  - exists lo; repeat split; [lia | lia | auto].
+  - destruct (IH (S lo) A HA) as [t [H1 [H2 H3]]].
+    exists t; repeat split; [lia | lia | exact H3].
+Qed.
+
+Lemma chains_sunflower : forall m n lo,
+    m - 1 <= lo -> Sunflower (chains m lo n) (seg (m - 1)).
+Proof.
+  intros m n; induction n as [|n IH]; intros lo Hlo; split.
+  - constructor.
+  - intros A B HA; simpl in HA; contradiction.
+  - simpl; constructor.
+    + intros B HB Hseq.
+      apply in_chains in HB as [t [H1 [H2 H3]]]; subst B.
+      apply (chain_not_setEq (m := m) (x := lo) (y := t)); [lia | lia | exact Hseq].
+    + exact (proj1 (IH (S lo) ltac:(lia))).
+  - intros A B HA HB Hne.
+    apply in_chains in HA as [ta [Ha1 [_ Ea]]].
+    apply in_chains in HB as [tb [Hb1 [_ Eb]]].
+    subst A B.
+    apply chain_inter; [lia | lia |].
+    intro E; subst tb; apply Hne; reflexivity.
+Qed.
+
+Theorem compressed_lives_on_m_plus_k_minus_two_points :
+  forall F m k,
+    1 <= m -> 2 <= k -> LeftCompressed F -> Uniform m F ->
+    ~ ContainsKSunflower k F ->
+    forall A, In A F -> Subset A (seg (m + k - 2)).
+Proof.
+  intros F m k Hm Hk Hlc Hun Hno A HA x Hx.
+  rewrite in_seg.
+  destruct (Nat.ltb_spec x (m + k - 2)) as [Hlt | Hge]; [exact Hlt|].
+  exfalso.
+  assert (Hxm : m - 1 <= x) by lia.
+  assert (Htop : exists B, In B F /\ SetEq B (chain m x))
+    by (apply compress_to_chain with (A := A); assumption).
+  (* Every rung from m-1 up to m+k-3 is reachable, and there are k of
+     them, so they are a k-sunflower. *)
+  assert (Hrung : forall t, m - 1 <= t -> t <= x ->
+                  exists B, In B F /\ SetEq B (chain m t)).
+  { intros t H1 H2.
+    assert (E : t = x - (x - t)) by lia.
+    rewrite E; apply chain_down; [exact Hlc | lia | exact Htop]. }
+  apply Hno.
+  exists (chains m (m - 1) k); split.
+  - intros C HC; apply in_chains in HC as [t [H1 [H2 H3]]]; subst C.
+    destruct (Hrung t ltac:(lia) ltac:(lia)) as [B [HB Hseq]].
+    exists B; split; [exact HB | apply SetEq_sym; exact Hseq].
+  - split; [apply chains_length|].
+    exists (seg (m - 1)); apply chains_sunflower; lia.
+Qed.
+
+(** At [k = 3] this is [compressed_lives_on_m_plus_one_points], and the
+    two agree — the specialisation is checked rather than asserted. *)
+
+Corollary compressed_ground_at_three :
+  forall F m,
+    1 <= m -> LeftCompressed F -> Uniform m F ->
+    ~ ContainsKSunflower 3 F ->
+    forall A, In A F -> Subset A (seg (S m)).
+Proof.
+  intros F m Hm Hlc Hun Hno A HA.
+  assert (E : m + 3 - 2 = S m) by lia.
+  rewrite <- E.
+  apply (compressed_lives_on_m_plus_k_minus_two_points (F := F) (m := m) (k := 3));
+    assumption || lia.
+Qed.
+
 (** ** And therefore has at most [m + 1] members
 
     Every member is an [m]-subset of an [(m+1)]-set, so it is determined

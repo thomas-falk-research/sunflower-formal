@@ -384,6 +384,12 @@ def Conjecture.spread_conjecture
 # clause would turn the refutation into a statement about nothing.
 thm Compression.compress_to_chain
 thm Compression.three_chains_are_a_sunflower
+thm Compression.chain_step
+thm Compression.chain_down
+thm Compression.chains_length
+thm Compression.chains_sunflower
+thm Compression.compressed_lives_on_m_plus_k_minus_two_points
+thm Compression.compressed_ground_at_three
 thm Compression.compressed_lives_on_m_plus_one_points
 thm Compression.compressed_bound
 thm Compression.compressed_bound_is_attained
@@ -407,5 +413,6 @@ thm Audit.compression_collapses_the_problem
 def Compression.shift_member
 def Compression.LeftCompressed
 def Compression.chain
+def Compression.chains
 def Compression.shift_family
 def Compression.CompressionPreservesSunflowerFree

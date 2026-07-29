@@ -823,6 +823,24 @@ e86e08bec70e4583  def Conjecture.spread_conjecture
 579d28daa8f7e597  thm Compression.three_chains_are_a_sunflower
     three_chains_are_a_sunflower : forall m x y z : nat, m - 1 <= x -> m - 1 <= y -> m - 1 <= z -> x <> y -> x <> z -> y <> z -> Sunflower (chain m x :: chain m y :: chain m z :: nil) (seg (m - 1))
 
+4ee8743f8ea313a3  thm Compression.chain_step
+    chain_step : forall (F : Family) (m x : nat), LeftCompressed F -> m - 1 <= x -> (exists B : list nat, List.In B F /\ SetEq B (chain m (S x))) -> exists B : list nat, List.In B F /\ SetEq B (chain m x)
+
+0b9a6f5bed55ddc5  thm Compression.chain_down
+    chain_down : forall (F : Family) (m d t : nat), LeftCompressed F -> m - 1 <= t - d -> (exists B : list nat, List.In B F /\ SetEq B (chain m t)) -> exists B : list nat, List.In B F /\ SetEq B (chain m (t - d))
+
+34bb5c8ee3d1047b  thm Compression.chains_length
+    chains_length : forall m lo n : nat, length (chains m lo n) = n
+
+531554319946363d  thm Compression.chains_sunflower
+    chains_sunflower : forall m n lo : nat, m - 1 <= lo -> Sunflower (chains m lo n) (seg (m - 1))
+
+8cacca13d0b249a4  thm Compression.compressed_lives_on_m_plus_k_minus_two_points
+    compressed_lives_on_m_plus_k_minus_two_points : forall (F : Family) (m k : nat), 1 <= m -> 2 <= k -> LeftCompressed F -> Uniform m F -> ~ ContainsKSunflower k F -> forall A : list nat, List.In A F -> Subset A (seg (m + k - 2))
+
+0e3d4895df4bceff  thm Compression.compressed_ground_at_three
+    compressed_ground_at_three : forall (F : Family) (m : nat), 1 <= m -> LeftCompressed F -> Uniform m F -> ~ ContainsKSunflower 3 F -> forall A : list nat, List.In A F -> Subset A (seg (S m))
+
 4103f588d183b245  thm Compression.compressed_lives_on_m_plus_one_points
     compressed_lives_on_m_plus_one_points : forall (F : Family) (m : nat), 1 <= m -> LeftCompressed F -> Uniform m F -> ~ ContainsKSunflower 3 F -> forall A : list nat, List.In A F -> Subset A (seg (S m))
 
@@ -888,6 +906,9 @@ b9468a0feaf1e8ad  thm Audit.compression_collapses_the_problem
 
 b94c8ec38e80df57  def Compression.chain
     chain = fun m t : nat => (t :: seg (m - 1))%list : nat -> nat -> list nat Arguments chain (m t)%nat_scope
+
+6aad640eba9240f7  def Compression.chains
+    chains = fix chains (m lo n : nat) {struct n} : Family := match n with | 0 => nil | S n' => (chain m lo :: chains m (S lo) n')%list end : nat -> nat -> nat -> Family Arguments chains (m lo n)%nat_scope
 
 639642dfb2f4b6fa  def Compression.shift_family
     shift_family = fun (i j : nat) (F : Family) => List.map (shift_one i j F) F : nat -> nat -> Family -> Family Arguments shift_family (i j)%nat_scope F
