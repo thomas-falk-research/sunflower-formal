@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 49 anecdotes into a coverage metric over the
+  mutation testing from 53 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -1015,6 +1015,142 @@ specific target.
 the one that matters, against `C(10,3) = 120` from counting and 48 from
 Erdős–Rado. It is still above the measured 14 and it does **not** decide
 whether the row plateaus. It narrows the search, it does not replace it.
+
+## 8. Settled: compression is the wrong tool, and by how much
+
+Shifting is *the* instrument of extremal set theory — Erdős–Ko–Rado,
+Hilton–Milner and most of Frankl's work are proved with it — and this
+repository had never touched it. For `i < j` the `(i,j)`-shift replaces
+`A` by `(A \ {j}) ∪ {i}` when `j ∈ A`, `i ∉ A` and the image is not
+already present. It preserves `|F|`, uniformity, intersecting-ness and
+the matching number, and it terminates, so any family compresses to a
+**left-compressed** one of the same size supported on an initial segment
+of the ground set. That is where the structure comes from.
+
+It does not survive contact with sunflower-freeness. Both the measurement
+(`rust/tests/shifting.rs`, exhaustive) and the proof (`coq/Compression.v`)
+are in, and the failure is sharper than expected.
+
+### It fails at the first opportunity
+
+Exhaustively over every sunflower-free family in range at `m = 2, 3` and
+`g <= 6`: the smallest family some single shift destroys has **three
+members**, which is the least a 3-sunflower can have. The witness is
+
+```
+  {0,1}  {0,2}  {1,3}        pairwise intersections {0}, {1}, empty
+        --(0,1)-shift-->
+  {0,1}  {0,2}  {0,3}        a star: a sunflower with core {0}
+```
+
+Only `{1,3}` moves — `{0,1}` already has `0` and `{0,2}` has no `1`. Four
+points is the least ground set that admits a counterexample, and
+`Compression.two_members_cannot_acquire_a_sunflower` says two members
+never can. So there is no range of small parameters in which compression
+is safe.
+
+### The maximum is not attained by a compressed family either
+
+That is the weaker statement one would actually want, and it also fails —
+not by a constant, but completely:
+
+> **`Compression.compressed_bound`.** A left-compressed 3-sunflower-free
+> `m`-uniform family has at most `m + 1` members, on *any* ground set.
+> Attained, by all `m`-subsets of an `(m+1)`-set.
+
+The proof is the whole story in three steps. A compressed family is a
+down-set in the dominance order, so from any member it contains the chain
+`{0,...,m-2} ∪ {t}` for every `t` up to that member's largest point
+(`compress_to_chain`, induction on `Σ x`, which is the potential that
+makes the compression terminate). Any three of those chains have pairwise
+intersection exactly `{0,...,m-2}` — a 3-sunflower
+(`three_chains_are_a_sunflower`). So no member may reach past `m`, the
+family lives on `{0,...,m}`
+(`compressed_lives_on_m_plus_one_points`), and an `m`-subset of an
+`(m+1)`-set is determined by the point it omits.
+
+Measured first, proved second, and the table is flat in the ground set —
+which is the content:
+
+```
+  m   N(m,g) at the plateau   iota(m)          left-compressed max
+  1   2                       1                2
+  2   6                       3                3
+  3   10 (g=6), 14 (g=9)      10               4
+  4   -                       27 (g=9)         5
+  5   -                       -                6
+  6   -                       -                7
+```
+
+Exhaustive at every `m <= 6` and every ground set in range. The
+intersecting question behaves identically (`m+1` from `m >= 2` on), even
+though intersecting-ness is precisely the property shifting was built to
+preserve.
+
+### What it would have bought, as a theorem
+
+This is worth stating because it is the "too good to be true" version,
+and the implication really does hold. §7 names `GroundBounded c` as the
+one missing fact that turns Naslund–Sawin into the conjecture at `k = 3`.
+Compression would deliver it outright — on `m+1` points, not `c·m`:
+
+```
+  CompressionPreservesSunflowerFree  ==>  GroundBounded 2
+  CompressionPreservesSunflowerFree  +  [NaSa17]  ==>  f(m,3) <= (27^3)^m + 1
+```
+
+both machine-checked (`compression_would_give_ground_bounded`,
+`compression_would_settle_k3`). And then the hypothesis is refuted
+outright, twice by disjoint arguments:
+`compression_does_not_preserve_sunflower_freeness` runs six 2-uniform
+sunflower-free sets against a compressed maximum of three, and
+`compression_would_overfill_the_ground_set` runs the same six against a
+three-point ground set.
+
+### Why it fails, exactly
+
+`LinkCharacterisation.sunflower_iff_link_matching` says a family is
+sunflower-free exactly when **every** link has matching number `<= 2`.
+Measured over every counterexample in range, and on `two_triangles`
+specifically:
+
+* the **empty** link survives every shift — `ν(F)` never rises, which is
+  the standard fact that shifting does not increase the matching number;
+* a **singleton** link is what breaks, every time. Shifting `two_triangles`
+  takes the maximum link matching from 2 to 4, always at a *point*.
+
+That is the whole diagnosis. Shifting towards `i` is exactly the
+operation that inflates `deg(i)` — verified: a breaking shift always
+raises `deg(i)` — and `IotaGround.link_degree_ground_bound` is exactly
+the theorem that caps `deg(i)` by `N(b-1,g-1)`. Compression optimises the
+quantity sunflower-freeness bounds.
+
+Intersecting-ness is the *single* empty-link condition `ν <= 1`. That is
+why the instrument works for Erdős–Ko–Rado and cannot work here:
+**EKR is a condition on one link, sunflower-freeness is a condition on
+all of them, and shifting commutes with the empty one only.**
+
+The same thing in the vocabulary §5 and §7 already use: compression
+drives *diversity* `|F| - maxdeg` to **1**, the least a family with more
+than one member can have, while the extremal `ι` families sit at roughly
+`|F|/2` — 5 of 10 at `(3,6)`, 15 of 27 at `(4,9)`. Compression pushes
+towards a star; the extremal objects are provably as far from a star as an
+intersecting family gets. The two are pointed in opposite directions.
+
+### What this closes, and what it does not
+
+**Closed.** Do not look for a shifting proof of a sunflower bound, and do
+not look for a shifted extremal family — there are none above `m+1`
+members. The `(e)` question, "is there a compression that *does* preserve
+sunflower-freeness?", is answered in the negative for every operation
+whose fixed points are the left-compressed families, because
+`compressed_bound` bounds those regardless of how they were reached.
+
+**Open.** An operation with a *different* normal form is not excluded by
+any of this. What the diagnosis suggests is that the right normal form is
+**regular**, not compressed — which is what §7's tightness analysis
+already found the extremal objects to be. Nobody has a compression whose
+fixed points are regular hypergraphs.
 
 ---
 

@@ -43,7 +43,7 @@ From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
      CliqueLowerBound F23 LinkCharacterisation DirectSum Intersecting
-     Conjecture IotaRate SpreadRestrictions SliceRank IotaGround.
+     Conjecture IotaRate SpreadRestrictions SliceRank IotaGround Compression.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -1635,4 +1635,141 @@ Example the_ground_cap_beats_erdos_rado_at_ten :
 Proof.
   intros U F HndU Hu HU HD HG Hno.
   split; [exact (n_three_ten_at_most_twenty U F HndU Hu HU HD HG Hno) | lia].
+Qed.
+
+(** ** Compression: does [LeftCompressed] mean "the shift does not move
+       it"?
+
+    [Compression.LeftCompressed] is stated as a closure property of the
+    family; [Compression.shift_family] is the operation itself. Nothing
+    in the kernel forces the two to be about the same thing, and the
+    whole file turns on their agreeing. They do, in both directions.
+
+    The [i < j] is not decoration: an upward shift is not constrained by
+    [LeftCompressed] and really can move a compressed family, which is
+    why the equivalence is stated for [i < j] and no wider. *)
+
+Lemma map_id_of_pointwise :
+  forall (f : list nat -> list nat) (F : Family),
+    (forall A, In A F -> f A = A) -> map f F = F.
+Proof.
+  intros f F; induction F as [|A F IH]; simpl; intro H; [reflexivity|].
+  rewrite (H A (or_introl eq_refl)); f_equal.
+  apply IH; intros B HB; apply H; right; exact HB.
+Qed.
+
+Lemma map_id_on_members :
+  forall (f : list nat -> list nat) (F : Family),
+    map f F = F -> forall A, In A F -> f A = A.
+Proof.
+  intros f F; induction F as [|A F IH]; simpl; intros Hmap B HB; [contradiction|].
+  injection Hmap as Hhead Htail.
+  destruct HB as [E | HB]; [subst B; exact Hhead | apply IH; assumption].
+Qed.
+
+Theorem compressed_iff_the_shift_does_not_move_it :
+  forall F,
+    LeftCompressed F <-> (forall i j, i < j -> shift_family i j F = F).
+Proof.
+  intro F; split.
+  - intros Hlc i j Hij; unfold shift_family.
+    assert (Hid : forall A, In A F -> shift_one i j F A = A).
+    { intros A HA; unfold shift_one.
+      destruct (memb j A && negb (memb i A)
+                && negb (setmemb (shift_member i j A) F)) eqn:Eg;
+        [| reflexivity].
+      exfalso.
+      apply Bool.andb_true_iff in Eg as [Eg Eimg].
+      apply Bool.andb_true_iff in Eg as [Ej Ei].
+      apply Bool.negb_true_iff in Eimg.
+      assert (HjA : In j A) by (apply memb_true_iff; exact Ej).
+      assert (HiA : ~ In i A)
+        by (apply memb_false_iff, Bool.negb_true_iff; exact Ei).
+      destruct (Hlc A i j HA Hij HjA HiA) as [B [HB Hseq]].
+      unfold setmemb in Eimg.
+      assert (Hex : existsb (fun C => seteqb (shift_member i j A) C) F = true).
+      { apply existsb_exists; exists B; split;
+          [exact HB | apply seteqb_correct, SetEq_sym; exact Hseq]. }
+      congruence. }
+    apply map_id_of_pointwise; exact Hid.
+  - intros Hfix A i j HA Hij HjA HiA.
+    specialize (Hfix i j Hij); unfold shift_family in Hfix.
+    assert (Hone : shift_one i j F A = A)
+      by (eapply map_id_on_members; [exact Hfix | exact HA]).
+    unfold shift_one in Hone.
+    destruct (memb j A && negb (memb i A)
+              && negb (setmemb (shift_member i j A) F)) eqn:Eg.
+    + (* The guard fired, so A moved to a set containing i — but it did
+         not move, and i is not in A. *)
+      exfalso; apply HiA; rewrite <- Hone; unfold shift_member; left; reflexivity.
+    + apply Bool.andb_false_iff in Eg as [Eg | Eimg].
+      * apply Bool.andb_false_iff in Eg as [Ej | Ei].
+        -- rewrite (proj2 (memb_true_iff j A) HjA) in Ej; discriminate.
+        -- apply Bool.negb_false_iff, memb_true_iff in Ei; contradiction.
+      * apply Bool.negb_false_iff in Eimg; unfold setmemb in Eimg.
+        apply existsb_exists in Eimg as [B [HB Hb]].
+        exists B; split; [exact HB | apply SetEq_sym, seteqb_correct; exact Hb].
+Qed.
+
+(** *** And it is not vacuous in either direction
+
+    [two_triangles] attains [f(2,3) - 1 = 6] and a compressed family at
+    uniformity 2 has at most three members, so it cannot be compressed —
+    derived from [compressed_bound] rather than checked. The shift that
+    moves it is then exhibited outright, so the negative statement has a
+    positive witness behind it. *)
+
+Theorem two_triangles_is_not_compressed : ~ LeftCompressed two_triangles.
+Proof.
+  intro Hlc.
+  assert (Hb : length two_triangles <= 2 + 1).
+  { apply compressed_bound with (m := 2);
+      [lia | exact Hlc | exact two_triangles_uniform
+       | exact two_triangles_distinct | exact two_triangles_no_sunflower]. }
+  simpl in Hb; lia.
+Qed.
+
+Theorem the_shift_really_moves_two_triangles :
+  shift_family 0 3 two_triangles <> two_triangles.
+Proof. vm_compute; intro H; discriminate. Qed.
+
+(** *** The obstruction, evaluated
+
+    The abstract argument produces three sets of the form
+    [{0,...,m-2} ∪ {t}] and calls them a sunflower. At [m = 3] those are
+    [{0,1,2}], [{0,1,3}] and [{0,1,4}], and the reflective detector
+    agrees — so [three_chains_are_a_sunflower] is about the same objects
+    the search would have found. *)
+
+Theorem the_chain_obstruction_is_real :
+  ContainsKSunflower 3 [chain 3 2; chain 3 3; chain 3 4]
+  /\ [chain 3 2; chain 3 3; chain 3 4] = [[2;0;1]; [3;0;1]; [4;0;1]].
+Proof.
+  split; [apply sunflower3b_complete | ]; vm_compute; reflexivity.
+Qed.
+
+(** *** The collapse, in numbers
+
+    What compression permits against what the development proves exists,
+    at the two uniformities where both are known. Not a constant factor:
+    3 against 6 at uniformity 2, and 4 against 20 at uniformity 3, where
+    the compressed bound stays linear and the truth is exponential. *)
+
+Theorem compression_collapses_the_problem :
+  (forall F, LeftCompressed F -> Uniform 2 F -> Distinct F ->
+             ~ ContainsKSunflower 3 F -> length F <= 3)
+  /\ LowerBound 2 3 6
+  /\ (forall F, LeftCompressed F -> Uniform 3 F -> Distinct F ->
+                ~ ContainsKSunflower 3 F -> length F <= 4)
+  /\ LowerBound 3 3 20.
+Proof.
+  split; [| split; [exact f_2_3_lower | split; [| exact lower_bound_3_3_20]]].
+  - intros F Hlc Hun Hd Hno.
+    assert (H : length F <= 2 + 1)
+      by (apply compressed_bound with (m := 2); assumption || lia).
+    lia.
+  - intros F Hlc Hun Hd Hno.
+    assert (H : length F <= 3 + 1)
+      by (apply compressed_bound with (m := 3); assumption || lia).
+    lia.
 Qed.

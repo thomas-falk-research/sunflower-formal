@@ -368,3 +368,35 @@ def Audit.GroundHypotheses
 # The open statements, so "what is conjectured" cannot drift either.
 def Conjecture.sunflower_conjecture
 def Conjecture.spread_conjecture
+
+# Compression: the shifting method, and the theorem that it cannot be
+# used here. `LeftCompressed` is the fixed-point condition of the
+# (i,j)-shift and `shift_family` is the operation; Audit checks they are
+# the same thing. `CompressionPreservesSunflowerFree` losing its size
+# clause would turn the refutation into a statement about nothing.
+thm Compression.compress_to_chain
+thm Compression.three_chains_are_a_sunflower
+thm Compression.compressed_lives_on_m_plus_one_points
+thm Compression.compressed_bound
+thm Compression.compressed_bound_is_attained
+thm Compression.triangle_compressed
+thm Compression.shift_family_length
+thm Compression.shift_family_uniform
+thm Compression.the_shift_is_the_star
+thm Compression.shift_may_create_a_sunflower
+thm Compression.two_members_cannot_acquire_a_sunflower
+thm Compression.compression_would_give_ground_bounded
+thm Compression.compression_would_settle_k3
+thm Compression.compression_does_not_preserve_sunflower_freeness
+thm Compression.compression_would_overfill_the_ground_set
+thm Audit.compressed_iff_the_shift_does_not_move_it
+thm Audit.two_triangles_is_not_compressed
+thm Audit.the_shift_really_moves_two_triangles
+thm Audit.the_chain_obstruction_is_real
+thm Audit.compression_collapses_the_problem
+
+def Compression.shift_member
+def Compression.LeftCompressed
+def Compression.chain
+def Compression.shift_family
+def Compression.CompressionPreservesSunflowerFree

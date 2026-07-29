@@ -119,6 +119,16 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `the_double_count_is_the_incidence_count`, `the_ground_bound_is_attained` | `coq/Audit.v` | Both sums evaluated on `two_triangles`, where the incidences can be counted by hand (12 each way), and the bound shown to hold *with equality* there — so it is an identity at uniformity 2, not a lazy estimate |
 | `the_two_ground_hypotheses_are_both_sufficient`, `the_ground_cap_beats_erdos_rado_at_ten` | `coq/Audit.v` | The pair of sufficient conditions recorded against a named specification, and the new cap checked to be below the bound it is meant to improve |
 | `two_triangles_is_a_link`, `no_spread_bounds_sunflower_free_2_3_2` | `coq/Audit.v` | The link construction evaluated on a family with nothing link-like about it; and the restricted spread hypothesis refuted at `(2,3,2)` by the five-cycle, so weakening it did not make it vacuous |
+| `compress_to_chain` | `coq/Compression.v` | A left-compressed family contains the whole chain below any member: from `A ∈ F` and `t ∈ A` with `t ≥ m-1`, compression produces `{0,...,m-2} ∪ {t}`. Induction on `Σ x` over the members, which is the potential that makes the compression terminate in the first place |
+| `three_chains_are_a_sunflower` | `coq/Compression.v` | Three sets `{0,...,m-2} ∪ {t}` with distinct `t ≥ m-1` are a 3-sunflower with core `{0,...,m-2}`. The obstruction, in one lemma |
+| `compressed_lives_on_m_plus_one_points` | `coq/Compression.v` | **A left-compressed 3-sunflower-free `m`-uniform family is supported on `{0,...,m}`.** Not `c·m` points for some constant — `m+1` points, exactly, and with no dependence on the ground set it started on |
+| `compressed_bound`, `compressed_bound_is_attained` | `coq/Compression.v` | **Hence it has at most `m+1` members, and `m+1` is attained.** Against `g(b) ≥ 2·ι(b)`, which is exponential: compression does not cost a constant here, it collapses the problem from exponential to linear. Every member is an `m`-subset of an `(m+1)`-set, so it is determined by the one point it omits, and that map is injective on a `Distinct` family |
+| `compression_would_give_ground_bounded`, `compression_would_settle_k3` | `coq/Compression.v` | **What the shifting method would have bought.** If compression preserved sunflower-freeness, `SliceRank.GroundBounded 2` would follow — on `m+1` points rather than `2m` — and with Naslund–Sawin, the conjecture at `k = 3` with constant `27³`. The implication holds. It is the hypothesis that fails |
+| `compression_does_not_preserve_sunflower_freeness`, `compression_would_overfill_the_ground_set` | `coq/Compression.v` | **And it fails, twice over.** `F23.f_2_3_lower` exhibits six 2-uniform sunflower-free sets where compression permits three; and the same refutation drawn through the ground-set half instead, so neither half is carrying the other |
+| `shift_family_length`, `shift_family_uniform`, `the_shift_is_the_star`, `shift_may_create_a_sunflower` | `coq/Compression.v` | The controls and the counterexample. The shift keeps the size of the family and of every member — so a shift that lost members would not be what breaks things — and `{0,1}, {0,2}, {1,3}` is sunflower-free while its `(0,1)`-shift is the star `{0,1}, {0,2}, {0,3}`. **Three members**, which with `two_members_cannot_acquire_a_sunflower` is the least a counterexample can have: shifting fails at the first opportunity it is given |
+| `compressed_iff_the_shift_does_not_move_it` | `coq/Audit.v` | `LeftCompressed` is stated as a closure property and `shift_family` is the operation; nothing in the kernel forces them to be about the same thing, and the file turns on their agreeing. They do, in both directions, for `i < j` and no wider — an *upward* shift really can move a compressed family |
+| `two_triangles_is_not_compressed`, `the_shift_really_moves_two_triangles` | `coq/Audit.v` | The negative statement with a positive witness behind it: `two_triangles` attains `f(2,3)-1 = 6` so `compressed_bound` says it cannot be compressed, and the `(0,3)`-shift that moves it is exhibited |
+| `the_chain_obstruction_is_real`, `compression_collapses_the_problem` | `coq/Audit.v` | The abstract obstruction evaluated — at `m = 3` it is `{0,1,2}, {0,1,3}, {0,1,4}`, and the reflective detector agrees — and the collapse in numbers: 3 against 6 at uniformity 2, 4 against 20 at uniformity 3 |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -194,7 +204,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (205 of them). The current
+for every theorem in the "Closed" table (225 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -241,22 +251,22 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 28 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 29 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 49 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 47 killed outright, one genuine
+Current mutation results: 53 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 51 killed outright, one genuine
 survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem), and one positive control (`canary-alpha-rename`,
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 28 modules with Coq's separate kernel
+`make coqchk` re-verifies all 29 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

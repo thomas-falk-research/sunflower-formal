@@ -774,3 +774,67 @@ gives C^b -- an exponential bound in the uniformity, which is the conjecture -- 
 and a quadratic one gives C^(b*b), which is not a bound of the conjectured shape \
 at all. The measurements support the linear form: the intersecting row plateaus at \
 2b and stays flat to fourteen points."""
+
+# ----------------------------------------------------------------
+# Compression: the shifting method.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "compression-shift-without-the-guard"
+file = "coq/Compression.v"
+question = """The (i,j)-shift applies only when i is absent from the member. Is \
+that guard load-bearing, or is it bookkeeping the proofs could do without?"""
+find = "    In A F -> i < j -> In j A -> ~ In i A ->"
+replace = "    In A F -> i < j -> In j A ->"
+expect = "killed"
+because = """Load-bearing, and the mutated definition is unsatisfiable rather \
+than merely weaker. With i already in A, `i :: rem_elt j A` is set-equal to \
+A \\ {j}, which has m-1 points, so no m-uniform family can contain it -- the \
+mutated LeftCompressed holds of no nonempty uniform family at all, and \
+compressed_bound_is_attained becomes false. The guard is what makes the shift a \
+map from m-sets to m-sets."""
+
+[[mutation]]
+id = "compression-shift-the-wrong-way"
+file = "coq/Compression.v"
+question = """Compression pushes members towards the small end of the ground set. \
+Does the direction matter to anything proved here?"""
+find = "  i :: rem_elt j A."
+replace = "  j :: rem_elt i A."
+expect = "killed"
+because = """Load-bearing. Reversing the shift makes the fixed points final \
+segments rather than initial ones, and the concrete witness goes with it: \
+the_shift_is_the_star computes the (0,1)-shift of {01, 02, 13} and gets the star \
+at 0, which is the whole counterexample. The mutated operation moves nothing in \
+that family."""
+
+[[mutation]]
+id = "compression-chain-too-long"
+file = "coq/Compression.v"
+question = """The obstruction is a chain of sets {0,...,m-2} + {t}. Does the \
+length of the fixed part matter, or would any initial segment do?"""
+find = "Definition chain (m t : nat) : list nat := t :: seg (m - 1)."
+replace = "Definition chain (m t : nat) : list nat := t :: seg m."
+expect = "killed"
+because = """Load-bearing. The chain has to be a member of an m-uniform family, \
+so its fixed part has m-1 points and not m. With seg m it has m+1 points and \
+compress_to_chain cannot produce it -- the whole argument is that compression \
+drives every member onto this one chain, and a chain of the wrong size is not a \
+member of anything."""
+
+[[mutation]]
+id = "compression-forget-the-size"
+file = "coq/Compression.v"
+question = """CompressionPreservesSunflowerFree asserts the compressed family has \
+the same size. Is that clause doing work, or is it decoration on a hypothesis \
+that is refuted anyway?"""
+find = "      Uniform m G /\\ Distinct G /\\ length G = length F"
+replace = "      Uniform m G /\\ Distinct G"
+expect = "killed"
+because = """Load-bearing, and it is the only reason the hypothesis says \
+anything. Compression is interesting because it preserves the size of the family \
+while making it structured; drop that and the hypothesis is satisfied by the \
+empty family, so compression_does_not_preserve_sunflower_freeness has nothing to \
+contradict and compression_would_give_ground_bounded cannot produce a family of \
+the size GroundBounded asks for."""
+

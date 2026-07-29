@@ -792,3 +792,78 @@ a9556658e41ea030  def Conjecture.sunflower_conjecture
 
 e86e08bec70e4583  def Conjecture.spread_conjecture
     spread_conjecture = exists c : nat -> nat, (forall k : nat, 2 <= k -> 1 <= c k) /\ (forall n k : nat, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)) : Prop
+
+04ea515d5d0c3569  thm Compression.compress_to_chain
+    compress_to_chain : forall (F : Family) (m : nat), LeftCompressed F -> Uniform m F -> forall A : list nat, List.In A F -> forall t : nat, List.In t A -> m - 1 <= t -> exists B : list nat, List.In B F /\ SetEq B (chain m t)
+
+579d28daa8f7e597  thm Compression.three_chains_are_a_sunflower
+    three_chains_are_a_sunflower : forall m x y z : nat, m - 1 <= x -> m - 1 <= y -> m - 1 <= z -> x <> y -> x <> z -> y <> z -> Sunflower (chain m x :: chain m y :: chain m z :: nil) (seg (m - 1))
+
+4103f588d183b245  thm Compression.compressed_lives_on_m_plus_one_points
+    compressed_lives_on_m_plus_one_points : forall (F : Family) (m : nat), 1 <= m -> LeftCompressed F -> Uniform m F -> ~ ContainsKSunflower 3 F -> forall A : list nat, List.In A F -> Subset A (seg (S m))
+
+ee0a6c623a3c4553  thm Compression.compressed_bound
+    compressed_bound : forall (F : Family) (m : nat), 1 <= m -> LeftCompressed F -> Uniform m F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= m + 1
+
+a956d09e42b62433  thm Compression.compressed_bound_is_attained
+    compressed_bound_is_attained : exists F : Family, Uniform 2 F /\ Distinct F /\ LeftCompressed F /\ ~ ContainsKSunflower 3 F /\ length F = 2 + 1
+
+b3466df4ee472f57  thm Compression.triangle_compressed
+    triangle_compressed : LeftCompressed triangle
+
+382e89d55b5b8de6  thm Compression.shift_family_length
+    shift_family_length : forall (i j : nat) (F : Family), length (shift_family i j F) = length F
+
+131f0e07fdcf28e6  thm Compression.shift_family_uniform
+    shift_family_uniform : forall (i j n : nat) (F : Family), Uniform n F -> Uniform n (shift_family i j F)
+
+a89d97a18dfc06c3  thm Compression.the_shift_is_the_star
+    the_shift_is_the_star : shift_family 0 1 shift_witness = ((0 :: 1 :: nil) :: (0 :: 2 :: nil) :: (0 :: 3 :: nil) :: nil)%list
+
+06e3514aeb867ef6  thm Compression.shift_may_create_a_sunflower
+    shift_may_create_a_sunflower : ~ ContainsKSunflower 3 shift_witness /\ ContainsKSunflower 3 (shift_family 0 1 shift_witness) /\ length (shift_family 0 1 shift_witness) = length shift_witness /\ Uniform 2 (shift_family 0 1 shift_witness)
+
+ed157e55dc56f164  thm Compression.two_members_cannot_acquire_a_sunflower
+    two_members_cannot_acquire_a_sunflower : forall F : list (list nat), length F <= 2 -> ~ ContainsKSunflower 3 F
+
+be5ea580ac872a75  thm Compression.compression_would_give_ground_bounded
+    compression_would_give_ground_bounded : CompressionPreservesSunflowerFree -> GroundBounded 2
+
+7081e0f3972a32df  thm Compression.compression_would_settle_k3
+    compression_would_settle_k3 : NaslundSawinBound -> CompressionPreservesSunflowerFree -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 3) m
+
+d91c14c4b5c2d6c5  thm Compression.compression_does_not_preserve_sunflower_freeness
+    compression_does_not_preserve_sunflower_freeness : ~ CompressionPreservesSunflowerFree
+
+e3e0175bb6e244ca  thm Compression.compression_would_overfill_the_ground_set
+    compression_would_overfill_the_ground_set : ~ CompressionPreservesSunflowerFree
+
+9015ff34551b06b4  thm Audit.compressed_iff_the_shift_does_not_move_it
+    compressed_iff_the_shift_does_not_move_it : forall F : Family, LeftCompressed F <-> (forall i j : nat, i < j -> shift_family i j F = F)
+
+2da956ad3056b134  thm Audit.two_triangles_is_not_compressed
+    two_triangles_is_not_compressed : ~ LeftCompressed two_triangles
+
+d72f5a1ef9282f19  thm Audit.the_shift_really_moves_two_triangles
+    the_shift_really_moves_two_triangles : shift_family 0 3 two_triangles <> two_triangles
+
+aeb5660de48bbbc5  thm Audit.the_chain_obstruction_is_real
+    the_chain_obstruction_is_real : ContainsKSunflower 3 (chain 3 2 :: chain 3 3 :: chain 3 4 :: nil)%list /\ (chain 3 2 :: chain 3 3 :: chain 3 4 :: nil)%list = ((2 :: 0 :: 1 :: nil) :: (3 :: 0 :: 1 :: nil) :: (4 :: 0 :: 1 :: nil) :: nil)%list
+
+b9468a0feaf1e8ad  thm Audit.compression_collapses_the_problem
+    compression_collapses_the_problem : (forall F : Family, LeftCompressed F -> Uniform 2 F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= 3) /\ LowerBound 2 3 6 /\ (forall F : Family, LeftCompressed F -> Uniform 3 F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= 4) /\ LowerBound 3 3 20
+
+557419327d822ecb  def Compression.shift_member
+    shift_member = fun (i j : nat) (A : list nat) => (i :: rem_elt j A)%list : nat -> nat -> list nat -> list nat Arguments shift_member (i j)%nat_scope A%list_scope
+
+5b75af6bd351cadf  def Compression.LeftCompressed
+    LeftCompressed = fun F : Family => forall (A : list nat) (i j : nat), List.In A F -> i < j -> List.In j A -> ~ List.In i A -> exists B : list nat, List.In B F /\ SetEq B (shift_member i j A) : Family -> Prop Arguments LeftCompressed F
+
+b94c8ec38e80df57  def Compression.chain
+    chain = fun m t : nat => (t :: seg (m - 1))%list : nat -> nat -> list nat Arguments chain (m t)%nat_scope
+
+639642dfb2f4b6fa  def Compression.shift_family
+    shift_family = fun (i j : nat) (F : Family) => List.map (shift_one i j F) F : nat -> nat -> Family -> Family Arguments shift_family (i j)%nat_scope F
+
+0c74e5f43e558ad2  def Compression.CompressionPreservesSunflowerFree
+    CompressionPreservesSunflowerFree = forall (m : nat) (F : Family), 1 <= m -> Uniform m F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists G : Family, Uniform m G /\ Distinct G /\ length G = length F /\ ~ ContainsKSunflower 3 G /\ LeftCompressed G : Prop
