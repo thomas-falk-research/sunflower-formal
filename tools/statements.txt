@@ -388,6 +388,96 @@ e08ff35c416a9525  thm Intersecting.sharp_beats_previous
 7512587737ec4184  thm Intersecting.iota_three_at_most_eighteen
     iota_three_at_most_eighteen : forall F : Family, Uniform 3 F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> length F <= 18
 
+7b3f94e89c3ade78  thm Intersecting.star_Intersecting
+    star_Intersecting : forall (x : nat) (F : Family), Intersecting (star x F)
+
+76784b6b2f99938b  thm Intersecting.star_no_sunflower
+    star_no_sunflower : forall (k x : nat) (F : Family), ~ ContainsKSunflower k F -> ~ ContainsKSunflower k (star x F)
+
+0f4573940762c40d  thm Intersecting.sunflower_free_star_bound
+    sunflower_free_star_bound : forall (b N : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> (forall H : Family, Uniform b H -> Distinct H -> Intersecting H -> ~ ContainsKSunflower 3 H -> length H <= N) -> length F <= 2 * b * N
+
+df5f93524c055109  thm F23.sunflower3b_complete
+    sunflower3b_complete : forall F : Family, sunflower3b F = true -> ContainsKSunflower 3 F
+
+5e837e7aa5bc48b6  thm F23.contains_3_sunflower_dec
+    contains_3_sunflower_dec : forall F : Family, {ContainsKSunflower 3 F} + {~ ContainsKSunflower 3 F}
+
+ea58a5daf0c640d2  thm F23.upper_bound_of_sunflower_free_bound
+    upper_bound_of_sunflower_free_bound : forall n m : nat, (forall F : Family, Uniform n F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= m) -> UpperBound n 3 (S m)
+
+26eb6f81638cc300  thm IotaRate.iota_le_g
+    iota_le_g : forall b M : nat, GAtMost b M -> IotaAtMost b M
+
+1d70358dbc5eaefb  thm IotaRate.g_le_iota_scaled
+    g_le_iota_scaled : forall b N : nat, 1 <= b -> IotaAtMost b N -> GAtMost b (2 * b * N)
+
+795e51de8be6df5c  thm IotaRate.iota_g_sandwich
+    iota_g_sandwich : forall (b N : nat) (H : Family), 1 <= b -> Uniform b H -> Distinct H -> Intersecting H -> ~ ContainsKSunflower 3 H -> IotaAtMost b N -> LowerBound b 3 (2 * length H) /\ GAtMost b (2 * b * N)
+
+2f2f3c72086ac21f  thm IotaRate.every_construction_is_within_2b_of_iota
+    every_construction_is_within_2b_of_iota : forall b N m : nat, 1 <= b -> IotaAtMost b N -> LowerBound b 3 m -> m <= 2 * b * N
+
+6e5a76316afccddc  thm IotaRate.two_b_le_pow_two
+    two_b_le_pow_two : forall b : nat, 1 <= b -> 2 * b <= PeanoNat.Nat.pow 2 b
+
+491e0f51a7edfceb  thm IotaRate.scaled_power_absorbs
+    scaled_power_absorbs : forall b C : nat, 1 <= b -> 2 * b * PeanoNat.Nat.pow C b <= PeanoNat.Nat.pow (2 * C) b
+
+3cff4c0744fcd08d  thm IotaRate.iota_exponential_iff
+    iota_exponential_iff : IotaExponential <-> GExponential
+
+7c870042c049dcff  thm IotaRate.conjecture_k_3_iff_g_exponential
+    conjecture_k_3_iff_g_exponential : sunflower_conjecture_k_3 <-> GExponential
+
+5ca82d7c2c0124bc  thm IotaRate.conjecture_k_3_iff_iota_exponential
+    conjecture_k_3_iff_iota_exponential : sunflower_conjecture_k_3 <-> IotaExponential
+
+8159bf5f8051c14d  thm IotaRate.iota_bound_settles_k_3
+    iota_bound_settles_k_3 : forall C : nat, (forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow C b)) -> forall n : nat, 1 <= n -> UpperBound n 3 (S (PeanoNat.Nat.pow (2 * C) n))
+
+9283588e6ae01451  thm IotaRate.g_three_at_most_108
+    g_three_at_most_108 : GAtMost 3 108
+
+589163a82df3c37b  thm IotaRate.g_three_at_most_60_if_iota_three_is_ten
+    g_three_at_most_60_if_iota_three_is_ten : IotaAtMost 3 10 -> GAtMost 3 60
+
+1ec49bd375f7dea8  thm IotaRate.iota_three_sandwich
+    iota_three_sandwich : LowerBound 3 3 20 /\ GAtMost 3 108
+
+eb4e5c273d40fcee  thm Audit.star_correct
+    star_correct : forall (x : nat) (F : Family) (A : list nat), List.In A (star x F) <-> List.In A F /\ List.In x A
+
+7c39a5d2296ca06f  thm Audit.star_and_link_agree
+    star_and_link_agree : forall (x : nat) (F : Family), length (star x F) = length (link (x :: nil) F)
+
+3e32a8343fb9a46f  thm Audit.iota_one_is_one
+    iota_one_is_one : IotaAtMost 1 1
+
+d90568fa40d6b51d  thm Audit.iota_zero_is_zero
+    iota_zero_is_zero : IotaAtMost 0 0
+
+6bd0e3cade3db529  thm Audit.the_factor_two_b_is_attained
+    the_factor_two_b_is_attained : LowerBound 1 3 2 /\ IotaAtMost 1 1 /\ ~ GAtMost 1 1
+
+c87fe5a525e2fe75  thm Audit.positive_uniformity_is_needed_in_the_star_bound
+    positive_uniformity_is_needed_in_the_star_bound : Uniform 0 (nil :: nil)%list /\ Distinct (nil :: nil)%list /\ ~ ContainsKSunflower 3 (nil :: nil)%list /\ IotaAtMost 0 0 /\ 2 * 0 * 0 < length (nil :: nil)
+
+07c3164d0f974c05  thm Audit.iota_three_between_ten_and_eighteen
+    iota_three_between_ten_and_eighteen : ~ IotaAtMost 3 9 /\ IotaAtMost 3 18
+
+f701f46ec8920c72  thm Audit.bounds_coherent_star_bound
+    bounds_coherent_star_bound : forall m : nat, LowerBound 3 3 m -> m <= 108
+
+8746940b9bf447b7  thm Audit.bounds_coherent_iota_sandwich
+    bounds_coherent_iota_sandwich : 20 <= 108 /\ 15 <= 108
+
+05bf8eef0fa67766  thm Audit.the_iota_route_proves_the_equivalence
+    the_iota_route_proves_the_equivalence : IotaEquivalence
+
+c6df06b486c57f71  thm Audit.the_detector_decides
+    the_detector_decides : sunflower3b two_triangles = false /\ ~ ContainsKSunflower 3 two_triangles /\ sunflower3b ((0 :: nil) :: (1 :: nil) :: (2 :: nil) :: nil)%list = true /\ ContainsKSunflower 3 ((0 :: nil) :: (1 :: nil) :: (2 :: nil) :: nil)%list
+
 47578e4edeb6cc16  thm Audit.iota_bound_holds_at_the_witness
     iota_bound_holds_at_the_witness : length iota3 = 10 /\ length iota3 <= 18 /\ 10 < 18
 
@@ -579,6 +669,24 @@ cfa4fd50c0909238  def Intersecting.double
 
 ef90a11d49d38bc7  def Intersecting.iota3
     iota3 = ((0 :: 1 :: 2 :: nil) :: (0 :: 1 :: 3 :: nil) :: (0 :: 2 :: 4 :: nil) :: (1 :: 3 :: 4 :: nil) :: (2 :: 3 :: 4 :: nil) :: (1 :: 2 :: 5 :: nil) :: (0 :: 3 :: 5 :: nil) :: (2 :: 3 :: 5 :: nil) :: (0 :: 4 :: 5 :: nil) :: (1 :: 4 :: 5 :: nil) :: nil)%list : Family
+
+e0ce382a233b62f4  def Intersecting.star
+    star = fun (x : nat) (F : Family) => List.filter (fun A : list nat => memb x A) F : nat -> Family -> Family Arguments star x%nat_scope F
+
+bcfd12dc3de5529c  def IotaRate.IotaAtMost
+    IotaAtMost = fun b N : nat => forall H : Family, Uniform b H -> Distinct H -> Intersecting H -> ~ ContainsKSunflower 3 H -> length H <= N : nat -> nat -> Prop Arguments IotaAtMost (b N)%nat_scope
+
+4418b447223890ee  def IotaRate.GAtMost
+    GAtMost = fun b M : nat => forall F : Family, Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= M : nat -> nat -> Prop Arguments GAtMost (b M)%nat_scope
+
+a5416066960f21dc  def IotaRate.IotaExponential
+    IotaExponential = exists C : nat, forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow C b) : Prop
+
+960e19479a928c00  def IotaRate.GExponential
+    GExponential = exists c : nat, forall b : nat, 1 <= b -> GAtMost b (PeanoNat.Nat.pow c b) : Prop
+
+60d1e327c4fb28d5  def Audit.IotaEquivalence
+    IotaEquivalence = sunflower_conjecture_k_3 <-> IotaExponential : Prop
 
 1fafef50dad7d192  def SpreadRestrictions.IsLink
     IsLink = fun (m : nat) (F : Family) => exists (d : nat) (Y : list nat) (F0 : Family), 1 <= d /\ List.NoDup Y /\ length Y = d /\ Uniform (d + m) F0 /\ Distinct F0 /\ link Y F0 = F : nat -> Family -> Prop Arguments IsLink m%nat_scope F

@@ -337,6 +337,46 @@ were errors in the *test*, which is the failure mode a test suite has:
 Neither was a problem with the theorem. Both would have made the suite
 claim more coverage than it had.
 
+### A fourth: the sandwich, falsified step by step
+
+`rust/tests/iota_sandwich.rs` does the same job for
+`Intersecting.sunflower_free_star_bound` — `g(b) <= 2b iota(b)` — and it
+is the first suite here written to falsify a proof's *steps* rather than
+only its conclusion. The argument has four places it could be wrong, and
+each is a separate test:
+
+1. a maximal disjoint subfamily of a sunflower-free family has at most
+   two members;
+2. its union has at most `2b` points and meets every member;
+3. some point lies in at least `|F|/(2b)` members — the conclusion,
+   checked over *every* point rather than through the cover, so a broken
+   cover argument cannot make it pass;
+4. the star at a point is `b`-uniform, intersecting and sunflower-free.
+
+Splitting it that way is what makes a failure diagnostic instead of just
+red. It also means step 3 is an independent check on steps 1 and 2
+rather than a restatement of them.
+
+The sample is the point. Exhaustive maxima are few and highly
+structured — `N(3,9)` is one family — so most of it is randomly grown
+*maximal* sunflower-free families, forty per `(ground, uniformity)` from
+a fixed seed. Nothing was found: the statement survived, and the Coq
+proof went in first time.
+
+Two things it records that the theorem does not. The worst observed
+ratio `|F| / maxdeg(F)` is pinned per uniformity — 2, 3, 2.75 against
+the proved 2, 4, 6 — so how loose the bound is stays visible and a
+change in the sample is a failing assertion rather than a silent drift.
+And the arithmetic the equivalence turns on, `2b C^b <= (2C)^b`, is
+checked numerically before it is proved in Coq; without it the sandwich
+says nothing about exponential rates.
+
+Cost, recorded because it shaped the suite: `N(3,9)` takes a quarter of
+an hour and `N(3,8)` takes eighteen seconds, so the exhaustive maxima
+stop at ground 8 for uniformity 3 and every one is computed once and
+cached. The first version of the file recomputed them inside a loop and
+did not finish.
+
 ### And one the mutation runner found, in the Coq
 
 `sum_family_no_sunflower` was stated with six hypotheses:
@@ -453,13 +493,24 @@ the goal in either form, and the mutation is declared `survived`: what
 it reports is now a property of the definition rather than of the
 tactic scripts.
 
+**It happened a third time**, which is the reason this section is worth
+its length. `IotaRate.every_construction_is_within_2b_of_iota` and
+`Audit.bounds_coherent_star_bound` both destructure a `LowerBound` and
+then `rewrite <- Hlen` to turn `length F` into `m` — again a step that
+works against `=` and not against `>=`, again in theorems with no
+bearing on the question the mutation asks, and again a red build. Both
+now `pose proof` the bound and finish with `lia`. Interest is still
+being paid on a debt cleared two sessions ago; the standing rule is that
+*no* proof may discharge a `LowerBound` size obligation by `reflexivity`,
+`apply`, or `rewrite` on the length equation.
+
 `repairs` remains part of the manifest format, because the wrinkle it
 addresses is real. The lesson is that a script-level kill is a debt,
 not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-42 mutations, all with the outcome the manifest declares: 40 killed
+46 mutations, all with the outcome the manifest declares: 44 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:

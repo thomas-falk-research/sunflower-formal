@@ -67,7 +67,7 @@
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower LowerBound ProductLowerBound
-     Pigeonhole Spread Reflect F23 DirectSum.
+     Pigeonhole ErdosRado Spread Reflect SpreadReduction F23 DirectSum.
 Import ListNotations.
 
 (** ** Intersecting families *)
@@ -139,13 +139,10 @@ Proof.
   exact (no_sunflower_across A B C core (HI A B HA HB) (Hcross A C HA HC) Hab Hac).
 Qed.
 
-(** ** [SetNoDup] of an append *)
+(** ** [SetNoDup] of an append
 
-Lemma inter_comm_SetEq : forall A B, SetEq (inter A B) (inter B A).
-Proof.
-  intros A B; split; intros x Hx; apply in_inter_iff in Hx as [H1 H2];
-    apply in_inter_iff; split; assumption.
-Qed.
+    [inter_comm_SetEq], used below and by [F23]'s detector, moved to
+    [Sets.v] when the detector's converse direction needed it. *)
 
 Lemma SetNoDup_app :
   forall P Q : Family,
@@ -476,4 +473,135 @@ Proof.
   simpl in HUG.
   destruct (le_lt_dec (length G) 6) as [Hle | Hlt]; [exact Hle | exfalso].
   apply HnoG, f_2_3_upper; [exact HUG | exact HDG | lia].
+Qed.
+
+(** ** The star at a popular point
+
+    Everything above bounds [iota] from one side or builds [g] out of
+    it. What is missing is the converse construction: from a
+    sunflower-free family, produce an *intersecting* one not much
+    smaller. The star at a point is that construction, and the only
+    thing to check is that it is intersecting — which it is for the
+    silliest reason, every member contains the point.
+
+    Sunflower-freeness passes to any subfamily, so the star inherits it.
+    The content is entirely in *how large* a star can be forced to be,
+    and that is [sunflower_free_star_bound] below. *)
+
+Definition star (x : nat) (F : Family) : Family :=
+  filter (fun A => memb x A) F.
+
+Lemma star_incl : forall x F, incl (star x F) F.
+Proof. intros x F A HA; unfold star in HA; apply filter_In in HA; tauto. Qed.
+
+Lemma star_length : forall x F,
+    length (star x F) = length (filter (fun A => memb x A) F).
+Proof. reflexivity. Qed.
+
+Lemma star_Uniform : forall b x F, Uniform b F -> Uniform b (star x F).
+Proof. intros b x F HU; exact (@Uniform_sublist b F (star x F) HU (star_incl x F)). Qed.
+
+Lemma star_Distinct : forall x F, Distinct F -> Distinct (star x F).
+Proof. intros x F HD; unfold Distinct, star; apply SetNoDup_filter; exact HD. Qed.
+
+(** The reason [iota] is the right quantity to bound: a star is
+    intersecting for free. *)
+
+Lemma star_Intersecting : forall x F, Intersecting (star x F).
+Proof.
+  intros x F A B HA HB Hdis.
+  unfold star in HA, HB.
+  apply filter_In in HA as [_ HxA]; apply filter_In in HB as [_ HxB].
+  apply memb_true_iff in HxA, HxB.
+  exact (Hdis x HxA HxB).
+Qed.
+
+Lemma star_no_sunflower :
+  forall k x F, ~ ContainsKSunflower k F -> ~ ContainsKSunflower k (star x F).
+Proof.
+  intros k x F Hno [S [Hsub Hks]].
+  apply Hno; exists S; split; [|exact Hks].
+  intros A HA; destruct (Hsub A HA) as [B [HB Hseq]].
+  exists B; split; [exact (star_incl x F B HB) | exact Hseq].
+Qed.
+
+(** ** [g(b) <= 2b * iota(b)]
+
+    The converse of the doubling, and the theorem that makes [iota] and
+    [g] the same question.
+
+    A sunflower-free family has no three pairwise disjoint members
+    (three of them are a sunflower with empty core), so a *maximal*
+    pairwise-disjoint subfamily has at most two, and its union [T] has
+    at most [2b] points. Maximality says every member of [F] meets [T].
+    Pigeonhole then gives an [x] in [T] lying in at least [|F|/(2b)]
+    members, and the star at [x] is [b]-uniform, distinct, intersecting
+    and sunflower-free — an [iota] witness. Hence
+
+    >  g(b)  <=  2b * iota(b).
+
+    Paired with [doubling_lower_bound]'s [g(b) >= 2 iota(b)], the two
+    quantities are within a factor [b] of each other, so they have the
+    same exponential rate. [IotaRate.v] draws that out, and it is what
+    turns the sunflower conjecture at [k = 3] into a statement about
+    intersecting families.
+
+    As with [intersecting_link_bound], the bound on [iota] arrives as a
+    hypothesis rather than a constant: the development knows [iota(1)],
+    [iota(2)] and [iota(3)] and nothing beyond.
+
+    The factor is attained at [b = 1] — two disjoint singletons, every
+    degree 1, [|F| = 2 = 2b * iota(1)] — and loose above it: the worst
+    ratio [|F|/maxdeg] the exhaustive sample in
+    [rust/tests/iota_sandwich.rs] reaches is 3 at [b = 2] and 2.75 at
+    [b = 3], against the 4 and 6 proved here. *)
+
+Theorem sunflower_free_star_bound :
+  forall b N (F : Family),
+    1 <= b ->
+    Uniform b F -> Distinct F ->
+    ~ ContainsKSunflower 3 F ->
+    (forall H : Family,
+        Uniform b H -> Distinct H -> Intersecting H ->
+        ~ ContainsKSunflower 3 H -> length H <= N) ->
+    length F <= 2 * b * N.
+Proof.
+  intros b N F Hb HU HD Hno Hiota.
+  destruct (le_lt_dec (length F) (2 * b * N)) as [Hle | Hlt]; [exact Hle | exfalso].
+  assert (HFne : Forall (fun A : list nat => A <> []) F).
+  { apply Forall_forall; intros A HA.
+    unfold Uniform in HU; rewrite Forall_forall in HU.
+    destruct (HU A HA) as [HAlen _].
+    destruct A; [simpl in HAlen; lia | discriminate]. }
+  destruct (max_disjoint_cover HFne) as [Scov [Hincl [Hnd [Hpd Hcov]]]].
+  (* Three pairwise disjoint members would be a 3-sunflower, so the
+     maximal disjoint subfamily has at most two. *)
+  assert (Hcov2 : length Scov <= 2).
+  { destruct (le_lt_dec (length Scov) 2) as [H2 | H3]; [exact H2 | exfalso].
+    apply Hno.
+    apply (@ContainsKSunflower_of_incl 3 (firstn 3 Scov) F []).
+    - intros B HB; apply Hincl, (incl_firstn 3 Scov); exact HB.
+    - apply firstn_length_le; lia.
+    - apply pairwise_disjoint_sunflower;
+        [ apply NoDup_firstn; exact Hnd
+        | intros B C HB HC HBC; apply Hpd;
+          try (apply (incl_firstn 3 Scov); assumption); exact HBC ]. }
+  set (X := concat Scov).
+  assert (HXcov : forall A, In A F -> exists x, In x A /\ In x X)
+    by (intros A HA; apply (cover_provides_element F Scov A); auto).
+  assert (HXlen : length X <= 2 * b).
+  { assert (H1 : length X <= length Scov * b).
+    { unfold X; apply concat_uniform_length.
+      apply Forall_forall; intros B HB; apply Hincl in HB.
+      unfold Uniform in HU; rewrite Forall_forall in HU; apply HU; exact HB. }
+    nia. }
+  assert (HpigSize : length F > length X * N) by nia.
+  destruct (pigeonhole_family F X N HXcov HpigSize) as [x [_ Hcount]].
+  assert (Hstar : length (star x F) <= N).
+  { apply Hiota;
+      [ apply star_Uniform; exact HU
+      | apply star_Distinct; exact HD
+      | apply star_Intersecting
+      | apply star_no_sunflower; exact Hno ]. }
+  rewrite star_length in Hstar; lia.
 Qed.

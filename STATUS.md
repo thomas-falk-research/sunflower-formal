@@ -86,6 +86,21 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `lower_bound_3_3_20`, `lower_bound_f_n_3_sharp` | `coq/Intersecting.v` | **`f(3,3) ≥ 21`** and **`f(n,3) ≥ 20^(n/3) + 1 = 2.714...^n`**. Exhaustive search gives `ι(3) = 10` on six points; doubling it gives twenty 3-sets on twelve. Beats the previous headline `6^(n/2) = 2.449...^n`, and `twenty_beats_six` proves the gap compounds (`400^t` against `216^t` at uniformity `6t`) |
 | `intersecting_link_bound`, `iota_three_at_most_eighteen` | `coq/Intersecting.v` | **`ι(b) ≤ b·g(b-1)`** — the one thing proved about `ι` in the upward direction, everything else about it being measured. Every member of an intersecting family meets a fixed member, which has only `b` points, so some point lies in at least `|F|/b` members; the link there is sunflower-free of uniformity `b-1`. With the proved `g(2) = 6` this gives `ι(3) ≤ 18` against the measured 10 — loose, and recorded as loose, but it is what makes the search's answers checkable rather than merely reported |
 | `intersecting_is_needed_in_the_doubling` | `coq/Audit.v` | **The hypothesis is the theorem.** `{0}, {1}` is sunflower-free because it has two members, is not intersecting, and its doubling is four singletons — any three pairwise disjoint, so a 3-sunflower |
+| `sunflower_free_star_bound` | `coq/Intersecting.v` | **`g(b) ≤ 2b·ι(b)`** — the converse of the doubling. A sunflower-free family has no three pairwise disjoint members, so a *maximal* disjoint subfamily has at most two and spans at most `2b` points; maximality makes that set meet every member; pigeonhole gives a point in at least `\|F\|/(2b)` of them; and the star at that point is `b`-uniform, distinct, sunflower-free and — for the silliest reason, every member contains the point — **intersecting**. So it is an `ι` witness |
+| `star_Intersecting`, `star_no_sunflower` | `coq/Intersecting.v` | The two properties of the star the bound rests on. Intersecting-ness needs no hypothesis at all; sunflower-freeness is inherited from any superfamily |
+| `sunflower3b_complete`, `contains_3_sunflower_dec` | `coq/F23.v` | **`ContainsKSunflower 3` is decidable.** Not obvious from the definition, which quantifies over *arbitrary* lists of sets that happen to be set-equal to members — an infinite search space. `sunflower3b_sound` (already proved) collapses it via `contains_sunflower_literal`; the converse here is immediate, and together they decide. `upper_bound_of_sunflower_free_bound` is what consumes it: any bound on sunflower-free families becomes an `UpperBound`. This closes the cost recorded in `SpreadRestrictions.v` at `k = 3` |
+| `iota_le_g`, `g_le_iota_scaled`, `iota_g_sandwich` | `coq/IotaRate.v` | **`2·ι(b) ≤ g(b) ≤ 2b·ι(b)`.** The two extremal quantities are within a factor `b` of each other. `IotaAtMost b N` reads "ι(b) ≤ N" and `GAtMost b M` reads "g(b) ≤ M"; neither `g` nor `ι` is a function here, since neither is known |
+| `every_construction_is_within_2b_of_iota` | `coq/IotaRate.v` | Any sunflower-free family at uniformity `b`, **however built**, has at most `2b·ι(b)` members. So the Abbott–Hanson–Sauer substitution is not competing with other constructions — it is within a subexponential factor of the extremal function itself, and no variant of it beats computing `ι` for larger `b` |
+| `two_b_le_pow_two`, `scaled_power_absorbs` | `coq/IotaRate.v` | `2b ≤ 2^b` and hence `2b·C^b ≤ (2C)^b` — the step where the sandwich's factor disappears into the base, which is the whole reason it says anything about rates |
+| `iota_exponential_iff` | `coq/IotaRate.v` | **`ι` and `g` have the same exponential rate**: `∃C ∀b, ι(b) ≤ C^b` iff `∃c ∀b, g(b) ≤ c^b`, with `c = 2C`. Finitistic — no limit is taken, and none is needed |
+| `conjecture_k_3_iff_iota_exponential` | `coq/IotaRate.v` | **The sunflower conjecture at `k = 3` is *equivalent* to `ι(b) ≤ C^b`.** An equivalence, not a sufficient condition: Erdős's $1000 case is exactly an exponential bound on *intersecting* sunflower-free families. Unconditional — the direction back to `UpperBound` uses `contains_3_sunflower_dec` |
+| `conjecture_k_3_iff_g_exponential`, `iota_bound_settles_k_3` | `coq/IotaRate.v` | The same through `g`, and the forward direction with the constant visible: `ι(b) ≤ C^b` settles `k = 3` with `c(3) = 2C` |
+| `g_three_at_most_108`, `iota_three_sandwich` | `coq/IotaRate.v` | The sandwich at the one uniformity where both ends are known: `20 ≤ g(3) ≤ 108` with what is proved, `≤ 60` with the measured `ι(3) = 10`. **Neither improves on Erdős–Rado's 48** — recorded as such. The content is structural, not numerical |
+| `star_correct`, `star_and_link_agree` | `coq/Audit.v` | `star x F` is the members through `x`, and it has the same size as `link [x] F`. The two bounds on `ι` go opposite ways and count opposite devices — the upper one counts links, the lower one stars — so if the counts disagreed one theorem would be about a quantity nobody named |
+| `the_factor_two_b_is_attained`, `iota_one_is_one` | `coq/Audit.v` | **The factor `2b` is not slack.** At `b = 1`, `g(1) = 2` and `ι(1) = 1`, so the bound holds with equality and `GAtMost 1 1` is refuted. Above `b = 1` it is loose: the exhaustive sample in `rust/tests/iota_sandwich.rs` reaches 3 of the available 4 at `b = 2` and 2.75 of 6 at `b = 3` |
+| `positive_uniformity_is_needed_in_the_star_bound`, `iota_zero_is_zero` | `coq/Audit.v` | **`1 ≤ b` is the theorem.** At `b = 0` the family `{∅}` is 0-uniform, distinct and sunflower-free with one member, while *no* 0-uniform family is intersecting — `∅` is disjoint from itself — so `ι(0) = 0` and the bound would read `1 ≤ 0`. The mechanism is exactly the step the hypothesis licenses: the greedy disjoint cover never starts |
+| `iota_three_between_ten_and_eighteen` | `coq/Audit.v` | `~ IotaAtMost 3 9` and `IotaAtMost 3 18`: the truth boundary is trapped in `[10, 18]` by the kernel, and the measured value 10 sits at its lower end. A definition that was accidentally vacuous would fail the first half |
+| `bounds_coherent_star_bound`, `the_detector_decides` | `coq/Audit.v` | The new upper bound applied to every lower bound the development proves at uniformity 3, so a contradictory pair would be a proof of `False`; and the decision procedure evaluated on a family with a sunflower and on `two_triangles`, which must not have one |
 | `lower_bound_3_3_14`, `no_upper_bound_3_3_14` | `coq/SliceRank.v` | **`f(3,3) ≥ 15`** — a 14-member 3-uniform family on nine points, the exhaustive maximum `N(3,9)` found by `rust/examples/ground_scan.rs` and re-checked here by the reflective detector, so the Coq side takes nothing from the search. Beats the direct sum's 13 at the same uniformity. It does *not* improve the rate: `14^(1/3) = 2.41` is below `6^(1/2) = 2.449` |
 | `every_uniform_family_is_a_link`, `link_restriction_is_vacuous` | `coq/SpreadRestrictions.v` | **The class of iterated links is every uniform family.** For any uniform distinct `G` and any `d`, glueing `d` fresh points onto every member gives a uniform distinct `F` of uniformity `d + j` with `link Y F = G` *literally*. So a spread lemma restricted to the families the recursion produces implies the unrestricted one — the restriction restricts nothing, and the "characterise the class of iterated links" direction is closed with a theorem |
 | `every_sunflower_free_family_is_a_link` | `coq/SpreadRestrictions.v` | The same inside the sunflower-free world, so the recursion cannot be fed a narrower class by insisting its inputs be sunflower-free either |
@@ -156,7 +171,8 @@ spread family exists.
 | Statement | Doc | Verification |
 |-----------|-----|--------------|
 | `f(n, k) ≥ (k-1)^n + 1` (standard exponential lower bound) | `docs/problem.md` | **Now fully formalized** in `coq/ProductLowerBound.v` (`lower_bound_exponential`, closed under the global context) — see the "Closed" table above. The Rust brute-force checks in `rust/tests/small_cases.rs` remain as an independent computational cross-check. |
-| `f(n, 3) ≳ 10^(n/2) = 3.162...^n` (Abbott–Hanson–Sauer 1972) | `docs/roadmap.md` §5 | **Not proved here.** `coq/DirectSum.v` reaches `6^(n/2) = 2.449...^n` by the direct sum; AHS reach `10^(1/2)` per point by a *substitution* recursion `g(ab) ≥ g(a)·g(b)^a`, which is strictly stronger and is the next target on the lower-bound side. The rate was checked against the recursion (its fixed point is `g(3)^(3/2) = 10^(1/2)` exactly); the base case was not read from the source. |
+| `f(n, 3) ≳ 10^(n/2) = 3.162...^n` (Abbott–Hanson–Sauer 1972) | `docs/roadmap.md` §5 | **Not proved here.** `coq/DirectSum.v` reaches `6^(n/2) = 2.449...^n` by the direct sum; AHS reach `10^(1/2)` per point by a *substitution* recursion `g(ab) ≥ g(a)·ι(b)^a`, which is strictly stronger and is the remaining target on the lower-bound side. The recursion and its seed (a 3-uniform family of size 10 with no 3-sunflower) are now **corroborated verbatim against a second source**, Kupavskii's 2025 Δ-system survey — see `docs/references.md` [AHS72]/[Kup25]. The source paper is still unread, and the survey does not state the side condition this repository found by computation: the *inner* family must be intersecting. What `coq/IotaRate.v` now proves is that formalising the substitution cannot improve the rate — `every_construction_is_within_2b_of_iota` caps every construction at `2b·ι(b)` — so it is a completeness target, not a route to a better bound. |
+| The rate `ι(b)^(1/(b-1))` is flat: `3.000, 3.162, 3.000, <3.142` | `docs/roadmap.md` §5 | Measured, not proved. `ι(2)=3`, `ι(3)=10`, `ι(4,9)=27`, `ι(4,10)<32`, all exhaustive. By `IotaRate.iota_exponential_iff` this *is* the rate of the problem at `k = 3`, so a flat row is mild evidence for the conjecture there with `c(3)` near 3.2. Four values, two at the same `b`, and no monotonicity is known — weak evidence, and recorded as such. Pinned in `rust/tests/iota_sandwich.rs`. |
 | `f(n, k) = o(n!)` (Kostochka 1997 refinement) | `docs/proof_strategies.md` | Not verified here. |
 | The **spread lemma** at the 2020 parameter `r = Θ(k log(nk))` (ALWZ–Rao–FKNP–BCW) | `coq/ALWZ.v` named axiom + `docs/spread_framework.md` | Not proved in Coq. Rao's encoding proof is elementary (injections + binomial counting, no measure theory) and is the natural next target; everything downstream of it is already proved. |
 
@@ -169,7 +185,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (157 of them). The current
+for every theorem in the "Closed" table (187 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -216,22 +232,22 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 26 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 27 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
-| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector |
+| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 42 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 40 killed outright, one genuine
+Current mutation results: 46 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 44 killed outright, one genuine
 survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem), and one positive control (`canary-alpha-rename`,
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 26 modules with Coq's separate kernel
+`make coqchk` re-verifies all 27 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

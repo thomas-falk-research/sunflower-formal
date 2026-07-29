@@ -330,10 +330,25 @@ mutation runner measured rather than by taste.
   brackets the axiom's shape between `k-1` and `n(k-1)`. Both ends are
   loose. Narrowing either narrows what the axiom is actually assuming.
 
+* **Measure the cover-chain correlation.** `LinkCharacterisation` says a
+  family is sunflower-free exactly when every link has matching number
+  `<= 2`, hence a vertex cover of size `<= 2(m - |Y|)`. So every member
+  is determined by a descending chain of choices, each from a set of at
+  most `2m` points — which reproduces Erdős–Rado's `(2m)^m`, log factor
+  and all. The conjecture is exactly the statement that those covers are
+  **correlated across levels**: total entropy `O(m)` rather than
+  `m log m`. Nobody appears to have measured how correlated they are.
+  Take the extremal families this repository already has —
+  `two_triangles`, `iota3` and its doubling, the 14-member family on
+  nine points from `ground_scan` — compute the greedy cover chain, and
+  measure the overlap between consecutive covers. Cheap with the
+  existing tooling, and it is the concrete form of "pay the log once".
+  Bounded: a Rust example and a table, no Coq.
+
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 42 anecdotes into a coverage metric over the
+  mutation testing from 46 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -418,6 +433,125 @@ and three things follow, all checked:
 * **The rate.** Iterating has fixed point `c^b = c * iota(b)`, i.e.
   `iota(b)^(1/(b-1))` per point.
 
+### Done: the sandwich, and what it reframes
+
+`iota` is not merely *a* quantity that gives good constructions. Up to a
+factor `2b` it **is** `g`:
+
+```
+  2 iota(b)  <=  g(b)  <=  2b iota(b)
+```
+
+The left half is the doubling (`Intersecting.doubling_lower_bound`). The
+right half is new and is `Intersecting.sunflower_free_star_bound`: a
+sunflower-free family has no three pairwise disjoint members, so a
+*maximal* disjoint subfamily has at most two and spans at most `2b`
+points; maximality makes that set meet every member; pigeonhole gives a
+point in at least `|F|/(2b)` of them; and the star at that point is
+`b`-uniform, distinct, **intersecting** and sunflower-free. Roughly a
+hundred and fifty lines, and it went in first time — the argument is the
+first step of Erdős–Rado's own proof, read for what it produces rather
+than for what it discards.
+
+`2b` is subexponential, so the two quantities admit exponential bounds at
+the same time. `coq/IotaRate.v` draws that out in three theorems:
+
+1. **Same rate.** `iota_exponential_iff`: there is a `C` with
+   `iota(b) <= C^b` for all `b` iff there is a `c` with `g(b) <= c^b`,
+   and `c = 2C` works. No limits are taken; this is the finitistic form
+   of "`lim g(n)^(1/n) = lim iota(b)^(1/(b-1))`", and it is all that is
+   needed downstream.
+
+2. **Every construction is capped by `iota`.**
+   `every_construction_is_within_2b_of_iota`: any sunflower-free family
+   at uniformity `b`, however built, has at most `2b iota(b)` members.
+   So the Abbott–Hanson–Sauer substitution is not competing with other
+   constructions — it is within a subexponential factor of the extremal
+   function itself. **No cleverer version of it beats computing `iota`
+   for larger `b`.** That closes off a direction rather than opening
+   one, which is the useful kind of result here.
+
+3. **The conjecture at `k = 3` is a statement about intersecting
+   families.** `conjecture_k_3_iff_iota_exponential`:
+
+   ```
+   sunflower_conjecture_k_3   <->   exists C, forall b, iota(b) <= C^b
+   ```
+
+   An equivalence, not a sufficient condition. Erdős's $1000 case is
+   exactly an exponential bound on *intersecting* sunflower-free
+   families — and intersecting families are where extremal set theory is
+   strongest (Erdős–Ko–Rado, Hilton–Milner, Frankl's shifting), and
+   where, as far as the literature check below reaches, nobody has
+   pointed it.
+
+The equivalence is unconditional. Getting from "every sunflower-free
+family is small" back to `UpperBound` needs `ContainsKSunflower 3` to be
+decidable, which `F23.contains_3_sunflower_dec` now proves: the detector
+`sunflower3b` was already known to accept every sunflower
+(`sunflower3b_sound`, which is the hard direction — it needs
+`contains_sunflower_literal` to canonicalise an abstract sunflower into a
+literal triple), and `sunflower3b_complete` is the converse. That also
+closes the cost §6 records for the restricted-spread route.
+
+**What the sandwich does not buy: anything numerical.** The only bound on
+`iota` proved here is `iota(3) <= 18`, so the sandwich gives
+`g(3) <= 108` against Erdős–Rado's 48; even at the measured
+`iota(3) = 10` it gives 60. `Audit.bounds_coherent_star_bound` checks it
+against the development's own lower bounds. The content is structural —
+it says which quantity to compute, not a better value for any of them.
+
+### The measured rates, tabulated
+
+`iota(b)^(1/(b-1))` is the per-point rate the substitution extracts. By
+the sandwich it is *the* rate of the problem at `k = 3`, so it is worth
+having in one place:
+
+```
+  b   iota(b)          rate = iota(b)^(1/(b-1))
+  2   3                3.0000
+  3   10               3.1623   <- the 1972 constant
+  4   27  (ground 9)   3.0000
+  4   <32 (ground 10)  <3.1414
+```
+
+**Flat, not growing**, over every value that has been decided. Read
+through the sandwich that is mild evidence *for* the conjecture at
+`k = 3` — a growing rate is what its failure would look like — with
+`c(3)` somewhere near 3.2. It is weak evidence: four values, two of them
+at the same `b`, and the sequence is not known to be monotone. But it is
+the sequence to extend, and nobody seems to have tabulated it, because
+nobody seems to have separated `iota` from the construction that uses it.
+`rust/tests/iota_sandwich.rs` pins the row.
+
+### Literature check, and what it found
+
+Three questions were asked of the literature before any of the above was
+built. The survey [Kup25] (arXiv:2508.20132, 2025) was the main source
+and only its arXiv HTML was read.
+
+* **Is the 1972 recursion what this repository reconstructed?** Yes,
+  verbatim: *"They used a construction of a 3-uniform family of size 10
+  and with no `Δ(3)`-system, and then leveraged it to any uniformity
+  using an iterated product construction, which gives a recursion
+  `ψ(ab) ≥ ψ(a)ψ(b)^a`."* Both the recursion and the seed value 10 are
+  confirmed from a second source. **[AHS72] itself is still unread**;
+  what is now corroborated is the reconstruction, not the paper.
+
+* **Is `iota(b)` a named quantity?** Not in [Kup25]. The survey's `ψ` is
+  "the size of *their* iterated construction" — a property of one
+  construction, not an extremal function. It also does not state the
+  intersecting side condition, which this repository found by
+  computation (`rust/tests/intersecting.rs` has the control showing the
+  construction breaks without it).
+
+* **Is the sandwich, or the equivalence, known?** Not found. [Kup25]
+  contains no reduction of the sunflower problem to intersecting
+  families. This is a negative result from one survey plus targeted
+  searches, and the argument itself is elementary enough that it may
+  well be folklore; treat "new" as unverified. What is not in doubt is
+  that it is now machine-checked.
+
 Measured exhaustively (`rust/examples/iota_scan.rs`):
 
 ```
@@ -462,7 +596,27 @@ extremal family really is a transversal.
 That is a satisfying explanation and a discouraging one: the obvious
 place to look for an improvement has been looked at.
 
-### The two things to do next, in order
+### The three things to do next, in order
+
+**0. Point EKR-type machinery at intersecting sunflower-free families.**
+This is what the equivalence above opens, and it is the one genuinely new
+angle on this list. The tension to explain is stark: an intersecting
+`b`-uniform family on an unbounded ground set is *unbounded* — EKR bounds
+it only per ground set — while a *sunflower-free* one is tiny:
+`iota(3) = 10` against `C(n-1,2)`. What structural theorem accounts for
+that collapse? The extremal families are the place to start, and the one
+at `b = 3` is suggestive: its ten members on six points are exactly one
+triple from each complementary pair of the twenty triples of `[6]` — a
+transversal of the pairing `A <-> [6]\A`, and `complementary_pair_ceiling`
+in `rust/tests/intersecting.rs` checks that every extremal family at
+`b = 2, 3` is such a transversal. That is a candidate to generalise, and
+it is exactly how the cap-set programme progressed: stare at the extremal
+object until the algebraic invariant appears.
+
+Caveat, already measured: the transversal structure **stops** at `b = 4`,
+where the ceiling `C(2b,b)/2 = 35` is not met (the extremal family has
+24). So whatever the right structure is, it is not "transversal of the
+complementary pairing" — that is the `b <= 3` shadow of something else.
 
 **1. Push `iota(4)` past ground 8.** The record moves the moment some
 `b` has `iota(b) > 10^((b-1)/2)`:
@@ -520,6 +674,15 @@ so `DirectSum` supplies most of the machinery; what is new is the
 projection argument and the case analysis on how many of the three
 outer sets coincide. Estimated a session on its own. Do not start it in
 the same session as anything else.
+
+Note what the sandwich does and does not say about this item. It does
+*not* make the substitution less worth formalising — it would be the
+first machine-checked proof of the 1972 bound, and it is the gap between
+the `2.714^n` proved here and the `3.162^n` known. What it says is that
+formalising it is a *completeness* target, not a route to a better rate:
+`every_construction_is_within_2b_of_iota` caps the substitution and
+everything else at `2b iota(b)`, so improvements have to come from
+`iota`, i.e. from item 0 or item 1.
 
 ### What the AHS bound already settles about the spread threshold
 
@@ -621,9 +784,19 @@ fails.
 
 One cost, recorded rather than papered over: the restricted route
 delivers the bound, not the sunflower. Recovering the `UpperBound` form
-from it needs `ContainsKSunflower` to be decidable, which this
-development does not prove. What is proved is the `LowerBound`-
-complement form, which is the same extremal statement.
+from it needs `ContainsKSunflower` to be decidable. What is proved
+directly is the `LowerBound`-complement form, which is the same extremal
+statement.
+
+**Update: at `k = 3` the cost is gone.** `F23.contains_3_sunflower_dec`
+decides `ContainsKSunflower 3` — the reflective detector `sunflower3b`
+was already proved to accept every sunflower, and `sunflower3b_complete`
+is the converse — so `F23.upper_bound_of_sunflower_free_bound` turns any
+bound on sunflower-free families straight into an `UpperBound`. §5's
+equivalence with the conjecture is what needed it; `SpreadRestrictions`
+can use it too, and at `k = 3` the two forms of `sunflower_free_bounded`
+are now interchangeable. Nothing is claimed for general `k`: the
+detector is specific to width 3.
 
 ## 7. Named: what the polynomial method is missing
 

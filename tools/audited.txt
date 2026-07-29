@@ -172,6 +172,51 @@ thm Intersecting.twenty_beats_six
 thm Intersecting.sharp_beats_previous
 thm Intersecting.intersecting_link_bound
 thm Intersecting.iota_three_at_most_eighteen
+
+# The converse construction: the star at a popular point of a
+# sunflower-free family is an intersecting one, and the pigeonhole makes
+# it large. That is g(b) <= 2b iota(b), the other half of the sandwich.
+thm Intersecting.star_Intersecting
+thm Intersecting.star_no_sunflower
+thm Intersecting.sunflower_free_star_bound
+
+# The 3-sunflower detector decides. `sunflower3b_sound` was already
+# there; the converse is what makes ContainsKSunflower 3 decidable, and
+# decidability is what turns a bound on sunflower-free families back
+# into an UpperBound.
+thm F23.sunflower3b_complete
+thm F23.contains_3_sunflower_dec
+thm F23.upper_bound_of_sunflower_free_bound
+
+# iota and g have the same exponential rate, so the sunflower conjecture
+# at k = 3 is *equivalent* to an exponential bound on intersecting
+# families. The equivalence is the headline; the arithmetic lemmas are
+# listed because the factor 2b disappearing into the base is exactly the
+# step a reader should be able to check did not move.
+thm IotaRate.iota_le_g
+thm IotaRate.g_le_iota_scaled
+thm IotaRate.iota_g_sandwich
+thm IotaRate.every_construction_is_within_2b_of_iota
+thm IotaRate.two_b_le_pow_two
+thm IotaRate.scaled_power_absorbs
+thm IotaRate.iota_exponential_iff
+thm IotaRate.conjecture_k_3_iff_g_exponential
+thm IotaRate.conjecture_k_3_iff_iota_exponential
+thm IotaRate.iota_bound_settles_k_3
+thm IotaRate.g_three_at_most_108
+thm IotaRate.g_three_at_most_60_if_iota_three_is_ten
+thm IotaRate.iota_three_sandwich
+thm Audit.star_correct
+thm Audit.star_and_link_agree
+thm Audit.iota_one_is_one
+thm Audit.iota_zero_is_zero
+thm Audit.the_factor_two_b_is_attained
+thm Audit.positive_uniformity_is_needed_in_the_star_bound
+thm Audit.iota_three_between_ten_and_eighteen
+thm Audit.bounds_coherent_star_bound
+thm Audit.bounds_coherent_iota_sandwich
+thm Audit.the_iota_route_proves_the_equivalence
+thm Audit.the_detector_decides
 thm Audit.iota_bound_holds_at_the_witness
 thm Audit.iota_bound_beats_the_ground_set
 thm Audit.intersecting_is_needed_in_the_doubling
@@ -263,6 +308,17 @@ def Audit.ExponentialLowerBound
 def Intersecting.Intersecting
 def Intersecting.double
 def Intersecting.iota3
+def Intersecting.star
+
+# The two extremal quantities as carried bounds. `IotaAtMost` losing its
+# `Intersecting` clause, or `GAtMost` its `Distinct` one, would turn the
+# equivalence with the conjecture into an equivalence between two other
+# statements without moving any theorem's printed form.
+def IotaRate.IotaAtMost
+def IotaRate.GAtMost
+def IotaRate.IotaExponential
+def IotaRate.GExponential
+def Audit.IotaEquivalence
 def SpreadRestrictions.IsLink
 def SpreadRestrictions.SpreadYieldsDisjointOnLinks
 def SpreadRestrictions.SpreadBoundsSunflowerFree

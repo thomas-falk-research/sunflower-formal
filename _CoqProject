@@ -24,6 +24,7 @@ coq/F23.v
 coq/LinkCharacterisation.v
 coq/DirectSum.v
 coq/Intersecting.v
+coq/IotaRate.v
 coq/SpreadRestrictions.v
 coq/SliceRank.v
 coq/Audit.v

@@ -129,6 +129,45 @@ estimate. Both are marked below.
   the direct sum here. Read the paper before relying on any constant
   from it.
 
+  **Corroborated since, against [Kup25].** The survey states the bound
+  as $\phi(k,3) \ge 10^{k/2 - c\log k}$ and describes the mechanism in
+  the same terms this repository reconstructed it: *"They used a
+  construction of a 3-uniform family of size 10 and with no
+  $\Delta(3)$-system, and then leveraged it to any uniformity using an
+  iterated product construction, which gives a recursion
+  $\psi(ab) \ge \psi(a)\psi(b)^a$."* So the recursion and the seed
+  value 10 are both confirmed from a second source. Two things the
+  survey does not say, and which the reconstruction here adds:
+
+  * the **inner** family must be *intersecting* for the recursion to be
+    valid — that is what makes the projection to the outer ground set a
+    $\Delta$-system. `rust/tests/intersecting.rs` verifies the
+    construction and includes a control showing it breaks the moment
+    the inner family is not intersecting;
+  * $\psi$ in the survey is "the size of their iterated construction",
+    a property of *one* construction. Separating it into $g$ and the
+    intersecting quantity $\iota$ is what makes
+    `coq/IotaRate.v`'s sandwich say something about every construction
+    rather than about theirs.
+
+  The primary source is still unread and the $-c\log k$ correction term
+  is taken on the survey's word.
+
+- **[Kup25]** A. Kupavskii, *Delta-system method: a survey*.
+  arXiv:2508.20132 (2025). A survey of the sunflower / $\Delta$-system
+  method from Erdős–Rado 1960 to the present. Used here for two
+  literature checks recorded in `docs/roadmap.md` §5:
+
+  1. it corroborates the [AHS72] recursion and seed (above);
+  2. it does **not** name an extremal function for *intersecting*
+     sunflower-free families, and contains no reduction of the
+     sunflower problem to intersecting families. That is a negative
+     result from one survey, not a claim of novelty — see the
+     "literature check" note in `docs/roadmap.md` §5 for exactly what
+     was searched.
+
+  Only the sections reachable from the arXiv HTML were read.
+
 ## Pre-2020 partial results
 
 - **[Ko97]** A. V. Kostochka, *An intersection theorem for systems of

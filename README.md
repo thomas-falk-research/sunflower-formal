@@ -50,6 +50,9 @@ claim progress on it. What is machine-checked here is the complete
 | **The extremal function is supermultiplicative** | $g(a{+}b,k) \ge g(a,k)\,g(b,k)$ for $g = f-1$ — the direct sum of two sunflower-free families on disjoint ground sets | `coq/DirectSum.v` |
 | **First lower bound beating the product** | $f(n,3) \ge 6^{n/2} + 1 = 2.449\ldots^n$, and $f(n,k) \ge (k(k-1))^{n/2} + 1$ at odd $k$ — strictly above $(k-1)^n + 1$, by a factor growing geometrically | `coq/DirectSum.v` |
 | **`g(b) ≥ 2·ι(b)`** | two disjoint copies of an *intersecting* sunflower-free family are sunflower-free; `ι(3) = 10` by exhaustive search gives $f(3,3) \ge 21$ and $f(n,3) \ge 20^{n/3}+1 = 2.714\ldots^n$ | `coq/Intersecting.v` |
+| **`g(b) ≤ 2b·ι(b)`** | the converse: the star at the most popular point of a maximal disjoint cover is an *intersecting* sunflower-free family of at least $\lvert F\rvert/(2b)$ members | `coq/Intersecting.v` |
+| **The conjecture at $k=3$ is about intersecting families** | $2\iota(b) \le g(b) \le 2b\,\iota(b)$, so the two have the same exponential rate — and **`sunflower_conjecture_k_3` $\iff$ $\exists C\,\forall b,\ \iota(b) \le C^b$**, an equivalence, not a sufficient condition | `coq/IotaRate.v` |
+| **3-sunflowers are decidable** | `sunflower3b` is proved sound *and* complete, so any bound on sunflower-free families becomes an `UpperBound` — the step the equivalence above needs | `coq/F23.v` |
 | **The link restriction is vacuous** | every uniform family is a link, so a spread lemma restricted to the families the sunflower recursion produces implies the unrestricted one | `coq/SpreadRestrictions.v` |
 | **The reduction needs strictly less** | it only ever applies the spread lemma to *sunflower-free* families, so a weaker hypothesis suffices — the narrower interface for a future proof of Rao's Lemma 2 | `coq/SpreadRestrictions.v` |
 | **What the polynomial method is missing** | Naslund–Sawin's $constant^n$ bound is in the *ground set*; one further fact — that extremal uniform families live on $O(m)$ points — would turn it into the conjecture at $k=3$ | `coq/SliceRank.v` |
@@ -88,8 +91,28 @@ very likely the first one above the trivial product construction — but
 that is a claim about a search, not a proved fact. It is
 still a long way from the literature: Abbott–Hanson–Sauer (1972) reach
 $3.162\ldots^n$ at $k = 3$, by a *substitution* recursion
-$g(ab) \ge g(a)\,g(b)^a$ that the direct sum does not reach — see
+$g(ab) \ge g(a)\,\iota(b)^a$ that the direct sum does not reach — see
 [`docs/roadmap.md`](docs/roadmap.md) §5.
+
+**What `ι` turns out to be.** It is not just a convenient seed. The
+converse of the doubling holds up to a factor: a sunflower-free family
+has no three pairwise disjoint members, so a maximal disjoint subfamily
+spans at most $2b$ points and meets everything, and the star at the most
+popular of those points is *intersecting*, sunflower-free and has at
+least $\lvert F\rvert/(2b)$ members. So
+
+$$2\,\iota(b) \;\le\; g(b) \;\le\; 2b\,\iota(b),$$
+
+and $2b$ is subexponential. `coq/IotaRate.v` draws the consequence:
+**the sunflower conjecture at $k = 3$ is equivalent to an exponential
+bound on intersecting sunflower-free families**, and every lower-bound
+construction at uniformity $b$ — the 1972 substitution included — is
+capped at $2b\,\iota(b)$. That is a statement about *where the problem
+lives*, not a better constant: the bound it gives at $b = 3$ is
+$g(3) \le 108$, well above Erdős–Rado's 48. The measured rates
+$\iota(b)^{1/(b-1)}$ are $3.000,\, 3.162,\, 3.000,\, {<}3.142$ — flat
+over everything decided, which through the equivalence is mild evidence
+for the conjecture at $k=3$ with $c(3)$ near $3.2$.
 
 At uniformity 2 the picture is sharper than that bracket suggests. A
 distinct family of pairs is a graph, and it avoids $k$-sunflowers
@@ -178,7 +201,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 42 mutations, 40 are killed outright, one
+  that something breaks. Of 46 mutations, 44 are killed outright, one
   survives — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
@@ -243,10 +266,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 26 Coq files, then runs the axiom audit
+make verify        # builds all 27 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (157 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (187 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
