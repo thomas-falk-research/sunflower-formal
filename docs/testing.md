@@ -296,6 +296,75 @@ three other lemmas and in `Audit.no_k_disjoint_of_no_sunflower` besides.
 Deleting it was the first commit of the Coq work, not a repair after the
 fact.
 
+### A third: the direct sum, and where the exhaustive grid stops
+
+`rust/tests/direct_sum.rs` does the same job for
+`DirectSum.sum_family_no_sunflower`: every pair of `k`-sunflower-free
+families drawn from small ground sets, summed and handed to the same
+brute-force detector, which knows nothing about direct sums. The pair
+count is *pinned* (`assert_eq!(pairs, 4266)`) rather than bounded from
+below, and the derivation is written out in the test, because the
+failure mode of an exhaustive test is that it quietly stops being
+exhaustive.
+
+One cell of the grid is excluded and the comment says which: at `k = 4`
+every one of the 64 subfamilies of `K_4`'s edges is 4-sunflower-free, so
+`(4,2) x (4,2)` is 4096 pairs whose sums have 36 members apiece, each
+needing `C(36,4) = 58905` quadruples decided. A silent truncation there
+would read as "covered everything".
+
+The suite also pins the two hypotheses. Uniformity: `{0}, {0,1}` and
+`{2}, {2,3}` are sunflower-free on disjoint ground sets and their sum is
+not — the same counterexample `Audit.uniformity_is_needed_in_the_direct_sum`
+carries into the kernel. Cross-disjointness: overlapping ground sets
+make the concatenation repeat a point, so `is_valid_family` fails before
+any sunflower question is asked.
+
+Two things came out of writing it rather than out of the proof, and both
+were errors in the *test*, which is the failure mode a test suite has:
+
+* a claim that collapsing `two_triangles` by `x mod 3` creates a
+  3-sunflower. It does not — it creates duplicate members, so the image
+  is not a family at all. That is a real fact about why injectivity is
+  needed, but it is a different one, and the test now checks both
+  (`{0,1}, {0,2}, {3,4}` merged at `3 -> 0` is the case that genuinely
+  creates a sunflower);
+* a claim that the largest sum in the grid has 36 members. It has 16: at
+  `k = 3` a subfamily of `K_4` needs maximum degree at most 2, which
+  caps it at the 4-cycle. The 6-edge families only survive at `k = 4`,
+  which is the excluded cell.
+
+Neither was a problem with the theorem. Both would have made the suite
+claim more coverage than it had.
+
+### And one the mutation runner found, in the Coq
+
+`sum_family_no_sunflower` was stated with six hypotheses:
+`Uniform a F1`, `Distinct F1`, `Uniform b F2`, `Distinct F2`, the two
+sunflower-freeness assumptions, and cross-disjointness. The mutation
+`directsum-drop-uniformity` was written to check that the *second*
+uniformity was load-bearing, and the runner reported it killed — but
+reading the failure showed the kill came from the call site in
+`lower_bound_sum`, not from the proof. The proof never used
+`Uniform b F2`, nor `Distinct` on either side.
+
+So the theorem was stronger than its statement: only the family split
+off the front has to be uniform, and neither has to be distinct. The
+statement was narrowed to what the proof needs, the mutation retargeted
+at `Uniform a F1` (where it is killed by the mathematics, at the step
+that needs `|A| = a`), and the sharper claim enumerated in
+`rust/tests/direct_sum.rs` with `F2` ranging over families of arbitrary
+subsets. This is the manifest doing the job the header describes: a
+hypothesis no theorem is sensitive to is one that should not be there.
+
+The same run turned up a second thing. `lowerbound-at-least` — the
+development's one genuine survivor, which weakens `LowerBound`'s
+`length F = m` to `>=` — was killed by the new file, because two of its
+proofs discharged a size obligation by `reflexivity` and by `rewrite`ing
+with the length equation. Neither is sensitive to the *content* of
+`LowerBound`, only to its shape. They now finish with `lia` and `nia`,
+and the survivor is a survivor again.
+
 The two mutations that establish the tests bite, run by hand before the
 suite was committed:
 
@@ -390,7 +459,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-32 mutations, all with the outcome the manifest declares: 30 killed
+42 mutations, all with the outcome the manifest declares: 40 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:
@@ -559,3 +628,75 @@ warnings` on the Rust side.
   checked exhaustively; everywhere else `tools/audited.txt` is curated
   by hand, so a theorem added elsewhere can still go unaudited. Driving
   the list from source annotations is the fix, and is on the roadmap.
+
+### A fifth: checking a reconstruction against the literature
+
+`rust/tests/intersecting.rs` tests something unusual — not a statement
+about to be proved, but a *reading* of a paper nobody here has read.
+
+The Abbott–Hanson–Sauer rate of `3.162...` was reverse-engineered into a
+substitution recursion whose fixed point is `iota(b)^(1/(b-1))`, with
+`iota(b)` the largest *intersecting* sunflower-free `b`-uniform family.
+A reconstruction like that is a guess, and the way to treat a guess is
+to look for the ways it could be wrong:
+
+* it predicts `iota(2) = 3` with the doubling equal to `two_triangles`,
+  the family behind the proved value `f(2,3) = 7`. Measured: 3, and the
+  doubling is `two_triangles` relabelled (`Audit.doubling_at_b_2_is_two_triangles`);
+* it predicts a rate of `iota(3)^(1/2)`, so the published `3.162` means
+  `iota(3) = 10`. Measured exhaustively: 10, first attained on six
+  points and stable to twelve;
+* it predicts the substitution is sunflower-free *only* because the
+  inner family is intersecting. Both halves are checked: the
+  construction is sunflower-free at two instances (`g(4) >= 54`,
+  `g(6) >= 600`) and stops being so the moment one member of the inner
+  family is swapped for a disjoint one.
+
+Three independent predictions, three hits, and the failure mode is
+exercised rather than assumed. That is what the confidence rests on —
+not on the reconstruction being obvious, which it is not.
+
+The doubling half is then proved in Coq (`Intersecting.doubling_lower_bound`)
+and its hypothesis pinned by a counterexample
+(`Audit.intersecting_is_needed_in_the_doubling`). **The substitution half
+is not proved**, and the difference is a factor in the rate: `20^(1/3)`
+proved against `10^(1/2)` verified. `docs/roadmap.md` §5 says so.
+
+### A fourth: measuring where a question starts
+
+`rust/tests/ground_set.rs` is a different use of the same machinery. It
+does not falsify a statement about to be proved; it measures a quantity
+nobody here knew — `N(m,g)`, the largest `m`-uniform 3-sunflower-free
+family on `g` points — because `coq/SliceRank.v` shows that where that
+sequence plateaus is the one fact standing between the Naslund–Sawin
+bound and the sunflower conjecture at `k = 3`.
+
+Three guards, because a search is easier to believe than to check:
+
+* **against what is already proved.** `N(1,g)` must stabilise at 2 and
+  `N(2,g)` at 6, which are `f(1,3) = 3` and `f(2,3) = 7` — both exact
+  values with machine-checked proofs. A search disagreeing with
+  `F23.f_2_3_eq_7` would be broken, and this is the cheapest way to
+  find that out;
+* **against full enumeration.** At parameters small enough to enumerate
+  every subfamily, branch-and-bound must return the same maximum. The
+  pruning is where a max-search goes wrong, and the bound it uses is
+  the weak one, so this is not a formality;
+* **against itself.** `N(m,g)` is non-decreasing in `g` — a family on
+  `g` points is a family on `g+1`. A violation would mean the search
+  pruned something it should not have.
+
+The measurement then fed back into the Coq. `N(3,9) = 14` is the
+exhaustive maximum at nine points, and its witness transcribes to
+`SliceRank.lower_bound_3_3_14`: `f(3,3) >= 15`, where the direct sum
+reaches 13. The Coq side re-derives sunflower-freeness from the family
+with the reflective detector, so nothing is taken on the search's word —
+what the search supplied is a candidate, not a proof.
+
+It also corrected a claim written here one session earlier. The
+Abbott–Hanson–Sauer construction is reported to be seeded by a 3-uniform
+family of size 10; that had been written up as contradicting the direct
+sum's 12 at the same uniformity. `N(3,6) = 10` exactly — the seed is a
+maximum on *six* points and the direct sum's 12 lives on eight. Two
+different quantities, no contradiction, and the note said otherwise
+until something computed both.

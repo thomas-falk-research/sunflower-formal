@@ -75,3 +75,49 @@ mod tests {
         // we'd need to verify Erdős-Rado bound, which is large.
     }
 }
+
+/// The direct sum of two families on disjoint ground sets, matching
+/// `DirectSum.sum_family` in the Coq proof: every union of a member of
+/// `f1` with a member of `f2`.
+///
+/// The caller is responsible for the ground sets being disjoint;
+/// `direct_sum_shifted` does that by construction.
+pub fn direct_sum(f1: &[Set], f2: &[Set]) -> Family {
+    let mut out = Family::with_capacity(f1.len() * f2.len());
+    for a in f1 {
+        for b in f2 {
+            let mut s: Set = a.clone();
+            s.extend_from_slice(b);
+            s.sort_unstable();
+            out.push(s);
+        }
+    }
+    out
+}
+
+/// The largest point of a family, or `None` for the empty family.
+fn max_point(f: &[Set]) -> Option<u32> {
+    f.iter().flat_map(|s| s.iter().copied()).max()
+}
+
+/// `direct_sum` after moving `f2` clear of `f1`'s ground set. This is
+/// the operation `DirectSum.lower_bound_sum` performs; the Coq version
+/// relabels by parity (`x -> 2x` and `x -> 2x+1`) to avoid computing a
+/// maximum, but any injection into a disjoint range does the same job,
+/// and a shift keeps the families readable.
+pub fn direct_sum_shifted(f1: &[Set], f2: &[Set]) -> Family {
+    let shift = max_point(f1).map_or(0, |m| m + 1);
+    let moved: Family = f2
+        .iter()
+        .map(|s| s.iter().map(|x| x + shift).collect())
+        .collect();
+    direct_sum(f1, &moved)
+}
+
+/// The Coq relabellings themselves, so the test can check the parity
+/// encoding rather than only the shift one.
+pub fn relabel(f: &[Set], odd: bool) -> Family {
+    f.iter()
+        .map(|s| s.iter().map(|x| 2 * x + u32::from(odd)).collect())
+        .collect()
+}

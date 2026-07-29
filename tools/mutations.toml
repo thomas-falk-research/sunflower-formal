@@ -438,3 +438,205 @@ two distinct points -- Audit.both_sunflower_shapes_occur is exactly that family.
 One shared point forces a *nonempty* core, not a big one. The mutation replaces \
 the second hypothesis with a copy of the first rather than deleting it, so the \
 arity and every intro pattern are unchanged and what breaks is the mathematics."""
+
+# ----------------------------------------------------------------
+# The direct sum. Both hypotheses of sum_family_no_sunflower, and the
+# one arithmetic claim that says the new bound beats the old one.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "directsum-drop-uniformity"
+file = "coq/DirectSum.v"
+question = """The direct sum needs the first family to be uniform. Is that \
+load-bearing, or an artefact of splitting members with firstn?"""
+find = """    2 <= k ->
+    Uniform a F1 ->
+    ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 ->"""
+replace = """    2 <= k ->
+    Distinct F1 ->
+    ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 ->"""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is *false*, not merely \
+unproved: Audit.uniformity_is_needed_in_the_direct_sum exhibits two two-member \
+families on disjoint ground sets, neither containing a 3-sunflower, whose direct \
+sum contains one -- and both are Distinct, which is what the mutation substitutes. \
+The hypothesis is replaced rather than deleted, so the arity and every intro \
+pattern are unchanged and what breaks is the mathematics: the proof splits each \
+member at position a and needs |A| = a to do it.
+
+This entry replaced an earlier one that mutated `Uniform b F2`. The runner \
+reported it killed, but only at the call site in lower_bound_sum -- the proof of \
+sum_family_no_sunflower never used that hypothesis, nor Distinct on either side. \
+All three were removed from the statement rather than left as decoration."""
+
+[[mutation]]
+id = "directsum-drop-cross"
+file = "coq/DirectSum.v"
+question = """Cross-disjointness is what makes the two halves of a member \
+recoverable. Does anything downstream survive without it?"""
+find = """    Uniform a F1 -> Uniform b F2 -> CrossDisjoint F1 F2 ->
+    Uniform (a + b) (sum_family F1 F2)."""
+replace = """    Uniform a F1 -> Uniform b F2 -> Uniform b F2 ->
+    Uniform (a + b) (sum_family F1 F2)."""
+expect = "killed"
+because = """Load-bearing one step earlier than the sunflower argument: without \
+disjoint ground sets the concatenation repeats a point, so the sum is not a family \
+of sets at all and NoDup_app_intro has nothing to apply to. As above the \
+hypothesis is replaced rather than deleted, so the failure is not an arity \
+mismatch."""
+
+[[mutation]]
+id = "directsum-power-off-by-one"
+file = "coq/DirectSum.v"
+question = """lower_bound_power iterates the sum t times at uniformity a. Does \
+anything notice if the exponent and the uniformity fall out of step?"""
+find = "  forall a k p t, 2 <= k -> LowerBound a k p -> LowerBound (t * a) k (p ^ t)."
+replace = "  forall a k p t, 2 <= k -> LowerBound a k p -> LowerBound (t * a) k (p ^ S t)."
+expect = "killed"
+because = """The uniformity and the size are tied together by the induction: \
+[t] copies of an [a]-uniform family of [p] members give [t*a]-uniform and [p^t], \
+and asking for [p^(t+1)] members out of the same construction is false. This is \
+the arithmetic that [cliques_beat_product] then compares against, so an \
+undetected slip here would silently inflate the headline bound."""
+
+# ----------------------------------------------------------------
+# Which restrictions of the spread lemma have content.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "restrictions-fresh-not-fresh"
+file = "coq/SpreadRestrictions.v"
+question = """The lifted core is taken one point *above* the family's ground set. \
+Is the [S] load-bearing, or would the maximum itself do?"""
+find = """Definition fresh_block (G : Family) (d : nat) : list nat :=
+  block (S (ground_max G)) d."""
+replace = """Definition fresh_block (G : Family) (d : nat) : list nat :=
+  block (ground_max G) d."""
+expect = "killed"
+because = """Load-bearing, and the mutated construction is wrong rather than \
+merely unproved: starting at the maximum itself puts the core's first point \
+inside the family's ground set, so the glued members repeat a point and the link \
+no longer recovers G. Everything in the file rests on that disjointness."""
+
+[[mutation]]
+id = "restrictions-drop-freeness"
+file = "coq/SpreadRestrictions.v"
+question = """sunflower_free_bounded bounds *sunflower-free* families. Is that \
+hypothesis what makes the induction go through, or is it decoration?"""
+find = """      Uniform m F -> Distinct F -> ~ ContainsKSunflower k F ->
+      length F <= r ^ m."""
+replace = """      Uniform m F -> Distinct F -> Distinct F ->
+      length F <= r ^ m."""
+expect = "killed"
+because = """Load-bearing twice over, and the mutated statement is false: without \
+it the claim is that every uniform distinct family has at most r^m members, which \
+Audit.no_upper_bound_below_exponential already refutes. In the proof it is needed \
+both to pass sunflower-freeness down to the link and to apply the restricted \
+spread hypothesis at the base. The hypothesis is replaced by a copy of its \
+neighbour rather than deleted, so the arity is unchanged."""
+
+# ----------------------------------------------------------------
+# The polynomial method.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "slicerank-exactly-two-loses-a-case"
+file = "coq/SliceRank.v"
+question = """"In exactly two" has three cases, one per omitted set. Does the \
+sunflower characterisation notice if one is lost?"""
+find = """  (In x A /\\ In x B /\\ ~ In x C)
+  \\/ (In x A /\\ ~ In x B /\\ In x C)
+  \\/ (~ In x A /\\ In x B /\\ In x C)."""
+replace = """  (In x A /\\ In x B /\\ ~ In x C)
+  \\/ (In x A /\\ In x B /\\ ~ In x C)
+  \\/ (~ In x A /\\ In x B /\\ In x C)."""
+expect = "killed"
+because = """Load-bearing: with the "x in A and C but not B" case lost, \
+"no point lies in exactly two" no longer implies inter A B = inter A C, and the \
+forward direction of sunflower_iff_no_point_in_exactly_two is false. This is the \
+bridge to the polynomial-method literature, so a silent slip here would \
+mis-describe what the slice rank is actually bounding. The lost case is replaced \
+by a copy of the first rather than deleted, so the disjunction keeps its arity."""
+
+[[mutation]]
+id = "slicerank-ns-linear"
+file = "coq/SliceRank.v"
+question = """Is the exponential in the Naslund-Sawin bound doing work, or would \
+a polynomial bound carry the reduction just as well?"""
+find = """Definition NaslundSawinBound : Prop :=
+  forall (U : list nat) (F : Family),
+    NoDup U -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    (length F) ^ 3 * 4 ^ (length U)
+    <= 27 * (length U + 1) ^ 3 * 27 ^ (length U)."""
+replace = """Definition NaslundSawinBound : Prop :=
+  forall (U : list nat) (F : Family),
+    NoDup U -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    (length F) ^ 3 * 4 ^ (length U)
+    <= 27 * (length U + 1) ^ 3 * 27 * (length U)."""
+expect = "killed"
+because = """Load-bearing. Audit.ns_exponential_is_load_bearing proves the \
+linear-in-ground-set form outright false -- prod_family 2 6 is 64 sunflower-free \
+6-sets on 12 points against a bound of 39 -- so the mutation replaces a cited \
+theorem by a falsehood, and the arithmetic in bounded_ground_set_settles_k3 stops \
+going through. Only the last exponent is changed, so the shape and every \
+hypothesis are untouched."""
+
+# ----------------------------------------------------------------
+# Doubling an intersecting family.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "intersecting-drop-hypothesis"
+file = "coq/Intersecting.v"
+question = """Two disjoint copies of a sunflower-free family. Is "intersecting" \
+what makes it work, or would any sunflower-free family do?"""
+find = """    1 <= b -> Uniform b H -> Distinct H ->
+    Intersecting H -> ~ ContainsKSunflower 3 H ->
+    ~ ContainsKSunflower 3 (double H)."""
+replace = """    1 <= b -> Uniform b H -> Distinct H ->
+    Distinct H -> ~ ContainsKSunflower 3 H ->
+    ~ ContainsKSunflower 3 (double H)."""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false at b = 1: \
+Audit.intersecting_is_needed_in_the_doubling exhibits {0}, {1} -- sunflower-free \
+because it has two members -- whose doubling is four singletons, any three of \
+which are pairwise disjoint and so a 3-sunflower. The whole iota programme, \
+including the reconstruction of the Abbott-Hanson-Sauer rate, rests on this one \
+hypothesis. It is replaced by a copy of its neighbour rather than deleted, so the \
+arity is unchanged."""
+
+[[mutation]]
+id = "double-same-parity"
+file = "coq/Intersecting.v"
+question = """The two copies are placed on even and odd points. Does anything \
+notice if they land on top of each other?"""
+find = "Definition double (H : Family) : Family := rmapF ev H ++ rmapF od H."
+replace = "Definition double (H : Family) : Family := rmapF ev H ++ rmapF ev H."
+expect = "killed"
+because = """Load-bearing: with both copies on the even points the two halves are \
+literally the same family, so the result is not Distinct and its length is not \
+2 * length H. The parity split is what makes the copies disjoint without computing \
+anybody's maximum."""
+
+[[mutation]]
+id = "iota-bound-drop-intersecting"
+file = "coq/Intersecting.v"
+question = """The link bound on iota counts members meeting a fixed member. Is \
+"intersecting" what puts them all there, or would sunflower-freeness alone do?"""
+find = """    Uniform b F -> Distinct F ->
+    Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    (forall G : Family,"""
+replace = """    Uniform b F -> Distinct F ->
+    Distinct F ->
+    ~ ContainsKSunflower 3 F ->
+    (forall G : Family,"""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false: without it the members \
+need not meet the chosen one at all, so the pigeonhole has nothing to count over. \
+The product family of ProductLowerBound is 3-uniform, distinct and sunflower-free \
+with 2^3 = 8 members on six points, and scaling the same construction past 3*N \
+members refutes any fixed b*N. The hypothesis is replaced by a copy of its \
+neighbour rather than deleted, so the arity is unchanged."""

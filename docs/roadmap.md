@@ -333,7 +333,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 32 anecdotes into a coverage metric over the
+  mutation testing from 42 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -356,6 +356,346 @@ mutation runner measured rather than by taste.
   the two historical errors touched, plus the reduction's arithmetic.
   `Sets.v`, `Graph.v`, `Matching.v` and the Hall/Kőnig layer are
   untouched.
+
+---
+
+## 5. The lower-bound side: the direct sum, and what it does not reach
+
+Almost all effort on this problem goes to the upper side. The gap is
+`(k-1)^n` against `(k log n)^n`, and the lower end had not moved in this
+repository beyond the 1960 product construction.
+
+### Done: supermultiplicativity
+
+`coq/DirectSum.v` proves that sunflower-freeness survives the direct
+sum of two families on disjoint ground sets, so with `g = f - 1`,
+
+```
+g(a + b, k) >= g(a, k) * g(b, k).
+```
+
+Instantiated at this repository's own `f(2,3) = 7` it gives
+`f(n,3) >= 6^(n/2) + 1 = 2.449...^n`, and at `two_cliques_lower_bound`
+it gives `f(n,k) >= (k(k-1))^(n/2) + 1` for odd `k` — the first bounds
+here above the product construction, by a factor geometric in `n`.
+
+Uniformity is the whole hypothesis — but only on *one* side. The proof
+splits each member of the sum at the boundary and needs the first
+family's members to have the size it splits at; it asks nothing about
+the second family's. Dropping it from both is false, and
+`Audit.uniformity_is_needed_in_the_direct_sum` is the two-member
+counterexample. The asymmetric form is the statement that is proved, and
+it was reached by the mutation runner rather than by design — see
+[`testing.md`](testing.md). Do not weaken it further.
+
+### Done, in part: the recursion reconstructed and its seed measured
+
+The mechanism is **not** the direct sum. It is a *substitution*: blow up
+each point of a member of an `a`-uniform family into a member of a
+`b`-uniform one, on ground set `V x W`. That is `ab`-uniform with
+`|G| * |H|^a` members, and it is sunflower-free exactly when the **inner
+family is intersecting** — that is what makes the projection to `V` a
+delta-system, since `phi_i(v)` and `phi_j(v)` then always meet.
+
+So the quantity that matters is
+
+```
+iota(b)  =  the largest *intersecting* 3-sunflower-free b-uniform family
+```
+
+and three things follow, all checked:
+
+* **Doubling.** `g(b) >= 2 iota(b)`, because two disjoint copies of an
+  intersecting sunflower-free family are sunflower-free. Formalised:
+  `Intersecting.doubling_lower_bound`. At `b = 2` this *is*
+  `two_triangles`, so it generalises the construction behind
+  `f(2,3) = 7`.
+* **Substitution.** `g(ab) >= g(a) * iota(b)^a`. Verified
+  computationally in `rust/tests/intersecting.rs` (`g(4) >= 54` and
+  `g(6) >= 600`, against the direct sum's 36 and 216), with a control
+  showing it breaks the moment the inner family is not intersecting.
+  **Not formalised** — see below.
+* **The rate.** Iterating has fixed point `c^b = c * iota(b)`, i.e.
+  `iota(b)^(1/(b-1))` per point.
+
+Measured exhaustively (`rust/examples/iota_scan.rs`):
+
+```
+  iota(2) = 3   (the triangle, on 3 points)      rate 3
+  iota(3) = 10  (on 6 points, stable to 12)      rate 10^(1/2) = 3.1623
+  iota(4) = 27  (on 9 points)                    rate 3.0000
+  iota(4) < 32  (on 10 points)                   AHS not beaten there
+```
+
+`iota(3) = 10` gives exactly the published 1972 constant. **On this
+reading, `iota(3) = 10` is the content of that paper.** The paper was
+still not read; that the reconstruction reproduces both `iota(2) = 3`
+with `g(2) = 6` and the published `3.162` is the evidence for it.
+
+### Why the constant is 3.162 and not something else
+
+On `2b` points, two `b`-sets are disjoint exactly when they are
+complementary. So an intersecting family takes at most one from each
+complementary pair, and
+
+```
+  iota(b, 2b)  <=  C(2b,b)/2
+```
+
+with equality exactly when some transversal of those pairs is
+sunflower-free. The rate that ceiling would give is
+`(C(2b,b)/2)^(1/(b-1))`:
+
+```
+  b   ceiling   rate at ceiling   iota(b,2b)   reached?
+  2         3            3.0000            3   yes
+  3        10            3.1623           10   yes      <- AHS
+  4        35            3.2711           24   NO
+```
+
+**The 1972 constant is the last `b` at which the ceiling is met.** At
+`b = 4` the ceiling is 35 and would beat AHS — the extremal family
+falls short at 24. `complementary_pair_ceiling` in
+`rust/tests/intersecting.rs` checks all of it, including that each
+extremal family really is a transversal.
+
+That is a satisfying explanation and a discouraging one: the obvious
+place to look for an improvement has been looked at.
+
+### The two things to do next, in order
+
+**1. Push `iota(4)` past ground 8.** The record moves the moment some
+`b` has `iota(b) > 10^((b-1)/2)`:
+
+```
+  b = 4   needs iota(4) >=  32     RULED OUT through ground 10
+  b = 5   needs iota(5) >= 101
+  b = 6   needs iota(6) >= 317
+```
+
+`iota(2)` plateaus at ground 3 and `iota(3)` at ground 6 — both at `2b`
+or below — which suggested `iota(4)` would stop at 24. **It does not.**
+Ground 9 is the first ground set on which two `b`-sets can be disjoint
+without being complementary, so the ceiling argument stops applying, and
+the value jumps:
+
+```
+  ground   4  5  6   7   8   9   10
+  iota(4)  1  5  9  15  24  27   < 32
+```
+
+All exhaustive. **Ground 10 is decided and the answer is no**: there is
+no intersecting sunflower-free family of 32 or more 4-sets on ten
+points (4437s, `examples/g10.rs`). So `b = 4` does not beat
+Abbott–Hanson–Sauer through ground 10, and the exact value at ground 9
+is 27 — a rate of exactly `3.0000` against their `3.1623`.
+
+This does not close `b = 4` outright: grounds 11 and up are untouched
+and the row had not plateaued at 9. But the cost is now measured, and it
+is bad. Ground 9 decides in 50s, ground 10 in 4437s — a factor of 89 for
+one extra point. Ground 11 on the same scaling is days, and the current
+branch-and-bound has nothing left to give: the decision framing, the
+anchor symmetry, the second-member orbit reduction and the candidate-set
+bound are all in. What is missing is a bound that sees the **ternary**
+sunflower constraint; everything in there now sees only the binary
+intersecting one, and on these parameters the intersection graph is far
+too dense for that to say anything.
+
+Two speedups are in and a third is not. The symmetry reduction (anchor a
+member at `{0,...,b-1}`, keep only the sets meeting it) and the
+candidate-set formulation (`intersecting::iota`, which carries and
+filters the branching set rather than indexing into it — 100x at
+`b = 4, ground = 8`, from 199s to 2s) both landed. What is missing is a
+bound that sees the *ternary* sunflower constraint; the usual
+graph-colouring bound only sees the binary intersecting one, and on
+these parameters the intersection graph is far too dense for it to say
+anything.
+
+**2. Formalise the substitution.** It is verified but not proved, and it
+is the difference between a rate of `20^(1/3) = 2.714` (what the
+doubling plus `DirectSum.lower_bound_power` gives, and what is proved)
+and `10^(1/2) = 3.162` (what AHS reach). The construction decomposes as
+`substitute(G,H) = union over A in G of (direct sum over v in A of H_v)`,
+so `DirectSum` supplies most of the machinery; what is new is the
+projection argument and the case analysis on how many of the three
+outer sets coincide. Estimated a session on its own. Do not start it in
+the same session as anything else.
+
+### What the AHS bound already settles about the spread threshold
+
+This is the part worth stating precisely, because it converts a
+measurement in [`STATUS.md`](../STATUS.md) from suggestive to decided.
+
+`SpreadReduction.spread_reduction` contraposed says: if
+`f(m,k) > r^m + 1` for a *single* `m`, then `SpreadYieldsDisjoint m' k r`
+fails for some `m' <= m`. AHS gives `f(n,3) > 3^n + 1` for all
+sufficiently large `n`. Therefore, **conditional on AHS**:
+
+> `r*(m,3) > 3` for some `m`. The measured sequence
+> `r*(1,3) = 2, r*(2,3) = 3, r*(3,3) = 3` cannot stay at 3.
+
+That is a falsifiable prediction with a source behind it, and it is the
+right reading of §3.6's flat row: the measurement is not weak evidence
+that the threshold is constant — it is a measurement taken entirely
+below the crossover, and the crossover is out of exhaustive reach by
+orders of magnitude (search dies at `m = 3`; the crossover is at `m` in
+the hundreds).
+
+It does **not** refute `Conjecture.spread_conjecture`, which asks only
+for *some* constant `c(k)`. AHS rules out `c(3) = 3`; it says nothing
+about `c(3) = 4`, since `4^n > 3.162^n`. Refuting the spread conjecture
+outright would require `f(n,3) > c^n` for every constant `c`, which is
+the negation of the sunflower conjecture itself. So:
+
+* `spread_conjecture` is **not known false**, and is not "one lemma
+  away" from anything — it implies the sunflower conjecture, so it is at
+  least as hard;
+* what *is* now pinned is the value of the constant: any proof of
+  `spread_conjecture` must produce `c(3) >= 4`, and any attempt to prove
+  `SpreadYieldsDisjoint m 3 3` in general is doomed.
+
+The `log` in the published threshold is a separate question and this
+says nothing about it. The tightness results quoted for the ALWZ/Rao
+spread lemma are for the *random-subset* form; whether the `log` is
+necessary in the **disjointness** form with Rao's size hypothesis
+`|F| > r^m` was looked for and not found in the literature. Treat "the
+`log` is known to be necessary here" as unverified.
+
+### The other bounded item on this side
+
+Compute or bound `f(3,3)` exactly. The direct sum gives `f(3,3) >= 13`;
+the Erdős–Rado upper bound gives `f(3,3) <= 49`. Closing that needs a
+better search than the current DFS (see §4), and the extremal family is
+the input to any new construction — which is how the cap-set programme
+made progress.
+
+---
+
+## 6. Settled: two restrictions of the spread lemma
+
+The `log n` in the spread threshold is the barrier, and the standing
+hope is that the families the recursion actually feeds the spread lemma
+are special enough that a *restricted* spread lemma could beat it.
+`coq/SpreadRestrictions.v` settles two readings of that hope.
+
+### The link restriction is vacuous — do not pursue it
+
+`spread_reduction` recurses into links, so the families reaching the
+spread lemma are iterated links. That class is not narrow. It is
+everything: `every_uniform_family_is_a_link` builds, for any uniform
+distinct `G` and any `d`, a uniform distinct `F` of uniformity `d + j`
+with `link Y F = G` on the nose — glue `d` fresh points onto every
+member and take them as the core. Iterating gives every depth, and
+`every_sunflower_free_family_is_a_link` says the same inside the
+sunflower-free world.
+
+So `link_restriction_is_vacuous`: a spread lemma restricted to links
+implies the unrestricted one. Nothing is gained. This closes the
+"characterise the class of iterated links" direction with a theorem
+rather than an intuition — the class has no characterisation because it
+is everything.
+
+### The sunflower-free restriction has content, and is what is needed
+
+Run the reduction contrapositively — bound sunflower-free families
+rather than force sunflowers into large ones — and every family reaching
+the spread lemma is sunflower-free, since links of sunflower-free
+families are sunflower-free. So `spread_reduction` can be run from
+
+```
+a sunflower-free r-spread m-uniform family has at most r^m members
+```
+
+(`SpreadBoundsSunflowerFree`) instead of the disjointness form. The
+first is implied by the second (`syd_implies_sunflower_free_bound`) and
+gives the same bound on the extremal function
+(`sunflower_free_bounded`), so **it is the weaker interface for a future
+proof of Rao's Lemma 2** — §1's target can be narrowed to it, and the
+development then assumes strictly less.
+
+No claim is made that the two are equivalent; that was looked for and
+not found. The restricted form is not vacuous —
+`Audit.no_spread_bounds_sunflower_free_2_3_2` refutes it at `(2,3,2)`
+with the five-cycle, the same parameters where the unrestricted form
+fails.
+
+One cost, recorded rather than papered over: the restricted route
+delivers the bound, not the sunflower. Recovering the `UpperBound` form
+from it needs `ContainsKSunflower` to be decidable, which this
+development does not prove. What is proved is the `LowerBound`-
+complement form, which is the same extremal statement.
+
+## 7. Named: what the polynomial method is missing
+
+`coq/SliceRank.v`. Naslund–Sawin ([NaSa17]) bound a 3-sunflower-free
+family of subsets of `[n]` by `3(n+1) C^n`, `C = 3/2^(2/3) < 1.89` — a
+`constant^n` bound of exactly the conjectured shape, from the machinery
+that settled cap set. It bounds by the **ground set**; the conjecture
+bounds by the **uniformity**.
+
+That is the entire gap, and it is one hypothesis wide:
+
+```
+GroundBounded c  :=  an extremal sunflower-free m-uniform family
+                     can be realised on at most c*m points
+```
+
+`bounded_ground_set_settles_k3` proves `GroundBounded c` plus [NaSa17]
+gives `f(m,3) <= (27^(c+1))^m + 1` — the sunflower conjecture at `k = 3`,
+with an explicit constant. So the polynomial method is not blocked by
+anything internal to itself, and not by "the ground set is not a
+product" — the slice rank already handles `{0,1}^n`. It is blocked by
+`GroundBounded`.
+
+`sunflower_iff_no_point_in_exactly_two` is the bridge, proved
+unconditionally: three sets are a sunflower exactly when no point lies
+in exactly two of them. That is the form the slice rank consumes, and
+it is why the method reaches `{0,1}^n` at all — the condition is
+per-coordinate.
+
+**Neither [NaSa17] nor `GroundBounded` is an axiom here.** Both are
+`Prop`s carried as explicit hypotheses, the same shape
+`spread_reduction` uses for `SpreadYieldsDisjoint`, so the trusted core
+is unchanged and every theorem in the file is closed under the global
+context.
+
+### The measurement, and what it does not say
+
+`rust/examples/ground_scan.rs` computes `N(m,g)`, the largest `m`-uniform
+3-sunflower-free family on `g` points. It is non-decreasing in `g` and
+bounded by `f(m,3)-1`, so it plateaus; `GroundBounded c` says it
+plateaus by `g = c*m`.
+
+```
+  g        3  4  5  6  7  8  9  10
+  m = 1:   2  2  2  2  2  2  2   2     plateau at g = 2 = 2m,  value 2
+  m = 2:   3  4  5  6  6  6  6   6     plateau at g = 6 = 3m,  value 6
+  m = 3:   1  4  6 10 12 12 14   ?     still rising at g = 9 = 3m
+```
+
+Every entry shown is exhaustive. `g = 9` at `m = 3` takes 15 minutes and
+comes out at **14**, up from 12 at `g = 8` — so the `m = 3` row is *still
+climbing at `3m`*, and `c = 3` survives only if `N(3,10) = 14`. That is
+the first value the search does not decide, and it is the one that
+matters.
+
+**Do not read the ratios 2 and 3 as evidence.** Two plateaus and a row
+that has not plateaued is the smallest amount of data that could
+distinguish the two answers, and it does not. What the table is good for
+is naming the next computation: `N(3,10)`. It needs a better search than
+the current branch-and-bound — the same conclusion §4 reaches for the
+spread threshold, and probably the same fix.
+
+A by-product worth keeping: `N(3,9) = 14` beats the direct sum's 12, so
+`f(3,3) >= 15`. It does not improve the *rate* — `14^(1/3) = 2.41` is
+below `6^(1/2) = 2.449` — but it is the best value known here at
+uniformity 3, and if the AHS substitution recursion accepts this family
+the rate it would give is `14^(1/2) = 3.74` against AHS's `3.16`. Whether
+it accepts it depends on the unverified side condition in §5. Check that
+before getting excited.
+
+Also settled by the table, and worth keeping: `N(3,6) = 10`, which is
+the Abbott–Hanson–Sauer seed. See §5.
 
 ---
 
