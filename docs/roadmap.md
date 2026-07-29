@@ -944,8 +944,29 @@ seeding the incumbent at `target - 1` is what prunes, so "is
 `iota(4,10) >= 28`?" searches a strictly larger tree than the "`>= 32`?"
 that took 74 minutes. `rust/examples/iota_ladder.rs` asks it as a
 descending ladder — 31, 30, 29, 28 — printing each rung as it lands, so a
-run that is killed part-way still reports what it decided. It has not
-been run to completion here.
+run that is killed part-way still reports what it decided.
+
+**Cost, measured rather than estimated.** It was launched here and the
+*first* rung, `>= 31`, did not decide in an hour of wall clock — against
+the 74 minutes the `>= 32` query took to decide outright. So the ladder
+needs a budget measured in hours per rung and four rungs to reach 28,
+which puts it past the point where a detached process survives in this
+environment. Two ways forward, and the second is cheaper than it looks:
+
+* run one rung per session, seeded from the last, and record it;
+* give the search a bound that sees the **ternary** constraint. The
+  degree cap `deg(x) <= N(b-1, g-1)` — 14 at `(4,10)` — is such a bound,
+  and it is not in the search. It is exactly
+  `IotaGround.link_degree_ground_bound` read as a pruning rule: a partial
+  family that has already used a point fourteen times can add nothing
+  more through it. Whether it bites at these parameters is unmeasured —
+  average degree at 28 members is 11.2, close enough to 14 to be worth
+  trying and far enough not to be obvious. This is the same missing
+  ingredient §4 and §5 both name, now with a concrete candidate.
+
+What the ladder is *not* is a prerequisite for anything above: the
+theorem `IotaGroundBounded c ⟹ conjecture at k = 3` is proved, and the
+`b = 3` evidence stands on its own.
 
 ### A second thing, and it is the more solid one
 
