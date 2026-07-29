@@ -377,6 +377,46 @@ stop at ground 8 for uniformity 3 and every one is computed once and
 cached. The first version of the file recomputed them inside a loop and
 did not finish.
 
+### A fifth: a measurement that chose between two hypotheses
+
+`rust/tests/iota_ground.rs` is not falsification. It is the case where
+the search decided *which theorem to prove*, and it is worth separating
+from the rest for that reason.
+
+`coq/SliceRank.v` had carried `GroundBounded` — "an extremal
+sunflower-free `m`-uniform family lives on `O(m)` points" — as the one
+hypothesis that would turn the polynomial method into the conjecture at
+`k = 3`, together with an honest note that the measurements do not
+support it: the `m = 3` row of `N(m,g)` is still climbing at `g = 3m`.
+The same question asked of *intersecting* families answers differently:
+
+```
+  g                3  4  5  6   7   8   9  10  11  12  13  14
+  N(3,g) general:  1  4  6 10  12  12  14   ?   ?   ?   ?   ?
+  iota(3,g):       1  4  6 10  10  10  10  10  10  10  10  10
+```
+
+Equal at six points, apart from seven on. Every entry exhaustive; the
+intersecting row is *instant* even at fourteen points, where the general
+one stops finishing at ten. That contrast is the whole reason
+`coq/IotaGround.v` exists, and it was a measurement before it was a
+theorem.
+
+The suite also does something the falsification suites do not: it checks
+a *consequence of tightness*. `IotaGround.link_degree_ground_bound`
+gives `b|F| <= g N(b-1,g-1)`, and where that holds with equality the
+family must be regular — degrees sum to the maximum and each is capped
+at it. So the test computes the degree sequence and asserts regularity
+**only at the rows where it independently found equality**, and pins the
+set of tight rows. A bound that had quietly become loose, or a witness
+that had stopped being extremal, breaks it in a way a size assertion
+would not.
+
+One prediction was made from the arithmetic and confirmed by the search
+rather than the other way round: `iota(4,9) = 27` is exactly
+`9 * N(3,8) / 4 = 9 * 12 / 4`, so the extremal family had to be
+12-regular. It is.
+
 ### And one the mutation runner found, in the Coq
 
 `sum_family_no_sunflower` was stated with six hypotheses:
@@ -510,7 +550,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-46 mutations, all with the outcome the manifest declares: 44 killed
+49 mutations, all with the outcome the manifest declares: 47 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:

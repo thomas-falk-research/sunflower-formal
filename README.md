@@ -56,6 +56,8 @@ claim progress on it. What is machine-checked here is the complete
 | **The link restriction is vacuous** | every uniform family is a link, so a spread lemma restricted to the families the sunflower recursion produces implies the unrestricted one | `coq/SpreadRestrictions.v` |
 | **The reduction needs strictly less** | it only ever applies the spread lemma to *sunflower-free* families, so a weaker hypothesis suffices — the narrower interface for a future proof of Rao's Lemma 2 | `coq/SpreadRestrictions.v` |
 | **What the polynomial method is missing** | Naslund–Sawin's $constant^n$ bound is in the *ground set*; one further fact — that extremal uniform families live on $O(m)$ points — would turn it into the conjecture at $k=3$ | `coq/SliceRank.v` |
+| **The same hypothesis, where the data supports it** | that fact is unsupported for general families ($N(3,g)$ still climbing at $3m$) and *measured* for intersecting ones ($\iota(3,g)$ flat at 10 from six points to fourteen) — and by the equivalence above the intersecting version suffices | `coq/IotaGround.v` |
+| **A ground-set-aware link bound** | $b\lvert F\rvert \le \lvert U\rvert\, N(b{-}1,\lvert U\rvert{-}1)$ by double counting, met with equality at four measured rows — which forces the extremal families to be regular. Unconditionally $N(3,g) \le 2g$ | `coq/IotaGround.v` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
 | Hall's marriage theorem (1935) | constructive, Halmos–Vaughan induction | `coq/HallCore.v`, `coq/KoenigHall.v` |
@@ -201,7 +203,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 46 mutations, 44 are killed outright, one
+  that something breaks. Of 49 mutations, 47 are killed outright, one
   survives — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
@@ -266,10 +268,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 27 Coq files, then runs the axiom audit
+make verify        # builds all 28 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (187 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (205 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

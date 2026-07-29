@@ -27,4 +27,5 @@ coq/Intersecting.v
 coq/IotaRate.v
 coq/SpreadRestrictions.v
 coq/SliceRank.v
+coq/IotaGround.v
 coq/Audit.v

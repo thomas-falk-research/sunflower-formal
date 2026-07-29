@@ -43,7 +43,7 @@ From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
      CliqueLowerBound F23 LinkCharacterisation DirectSum Intersecting
-     Conjecture IotaRate SpreadRestrictions SliceRank.
+     Conjecture IotaRate SpreadRestrictions SliceRank IotaGround.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -1547,4 +1547,92 @@ Proof.
   split; [exact two_triangles_no_sunflower|].
   split; [vm_compute; reflexivity|].
   apply sunflower3b_complete; vm_compute; reflexivity.
+Qed.
+
+(** *** Does the double count count the right thing?
+
+    [IotaGround.degsum] and [IotaGround.sizesum] are two sums over the
+    same incidence table, and the theorem that they agree is what turns
+    the link bound into a ground-set bound. The risk is not that the
+    identity is false — it is proved — but that either side is summing
+    something other than what its name says. So: evaluate both on a
+    family whose incidences can be counted by hand.
+
+    [two_triangles] has six 2-sets on six points, every point in exactly
+    two of them. Degrees sum to 12; sizes sum to 12; and both equal
+    [2 * 6]. A [degsum] that had transposed its filters, or a [sizesum]
+    that counted members rather than points, would miss. *)
+
+Example the_double_count_is_the_incidence_count :
+  degsum [0;1;2;3;4;5] two_triangles = 12
+  /\ sizesum [0;1;2;3;4;5] two_triangles = 12
+  /\ degsum [0;1;2;3;4;5] two_triangles = 2 * length two_triangles.
+Proof.
+  split; [vm_compute; reflexivity|].
+  split; vm_compute; reflexivity.
+Qed.
+
+(** *** Is the ground-set link bound tight, or is it an estimate?
+
+    Tight, at the one place the development can check it in the kernel:
+    [two_triangles] is 2-uniform on six points with [N(1,5) = 2], and
+    [2 * 6 = 6 * 2] exactly. Equality forces the family to be regular and
+    every link to be extremal, which is what the measured rows show at
+    [(2,3)], [(3,6)], [(4,8)] and [(4,9)] as well
+    ([rust/examples/iota_ground.rs]).
+
+    So the bound is not a lazy estimate that happens to be provable — at
+    uniformity 2 it is an identity, and the slack at larger ground sets
+    is the honest content of the inequality. *)
+
+Example the_ground_bound_is_attained :
+  2 * length two_triangles <= length [0;1;2;3;4;5] * 2
+  /\ 2 * length two_triangles = length [0;1;2;3;4;5] * 2.
+Proof.
+  split; vm_compute; (reflexivity || lia).
+Qed.
+
+(** *** Does the intersecting ground hypothesis differ from the general one?
+
+    Both settle [k = 3], and [IotaGround.both_ground_hypotheses_settle_k3]
+    puts them side by side so the difference is visible as a statement
+    rather than as prose. Neither implies the other — [GroundBounded]
+    demands the small ground set of *every* sunflower-free family and
+    [IotaGroundBounded] only of intersecting ones, so the first is
+    stronger there; but the first also produces a family of the same size
+    and the second is free to produce any equally large sunflower-free
+    one, so it is weaker there. What separates them is not logic, it is
+    that the measurements support one and not the other.
+
+    Recorded against a named specification, so a later weakening of
+    either shows up as a moved statement. *)
+
+Definition GroundHypotheses : Prop :=
+  NaslundSawinBound ->
+  forall c, 1 <= c ->
+    (GroundBounded c -> forall m j, 1 <= m -> LowerBound m 3 j
+                                    -> j <= (27 ^ (c + 1)) ^ m)
+    /\ (IotaGroundBounded c -> sunflower_conjecture_k_3).
+
+Theorem the_two_ground_hypotheses_are_both_sufficient : GroundHypotheses.
+Proof. exact both_ground_hypotheses_settle_k3. Qed.
+
+(** *** Is [N(3,g) <= 2g] any use, or is it above the trivial ceiling?
+
+    Below it, and by a lot. On ten points the trivial bound is
+    [C(10,3) = 120] and Erdős–Rado gives 48 at uniformity 3; the link
+    count gives 20. It is still above the measured 14, and it does not
+    decide whether the row plateaus — which is the question
+    [SliceRank.v] actually needs — but it is the first proved cap on
+    that row. *)
+
+Example the_ground_cap_beats_erdos_rado_at_ten :
+  forall (U : list nat) (F : Family),
+    NoDup U -> length U <= 10 ->
+    Uniform 3 F -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    length F <= 20 /\ 20 < 48.
+Proof.
+  intros U F HndU Hu HU HD HG Hno.
+  split; [exact (n_three_ten_at_most_twenty U F HndU Hu HU HD HG Hno) | lia].
 Qed.

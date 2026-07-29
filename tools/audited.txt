@@ -250,6 +250,30 @@ thm Audit.bounds_coherent_3_3
 thm SliceRank.lower_bound_3_3_14
 thm SliceRank.no_upper_bound_3_3_14
 thm SliceRank.ground9_max_is_grounded
+
+# Point the ground-set hypothesis at iota instead of at g. The general
+# ground-set row is still climbing where GroundBounded needs it flat; the
+# intersecting row plateaus at 2b and stays there. Since the conjecture
+# at k = 3 is equivalent to a bound on intersecting families, the second
+# hypothesis is as good as the first and the measurements support it.
+thm SliceRank.ns_bound_to_exponential
+thm IotaGround.degsum_eq_sizesum
+thm IotaGround.sizesum_uniform
+thm IotaGround.degsum_le
+thm IotaGround.link_grounded
+thm IotaGround.star_at_point_bounded
+thm IotaGround.link_degree_ground_bound
+thm IotaGround.three_uniform_ground_bound
+thm IotaGround.n_three_ten_at_most_twenty
+thm IotaGround.iota_ground_bounded_gives_exponential
+thm IotaGround.iota_ground_bounded_is_exponential
+thm IotaGround.iota_ground_bounded_settles_k3
+thm IotaGround.iota_ground_bounded_excludes_lower_bounds
+thm IotaGround.both_ground_hypotheses_settle_k3
+thm Audit.the_double_count_is_the_incidence_count
+thm Audit.the_ground_bound_is_attained
+thm Audit.the_two_ground_hypotheses_are_both_sufficient
+thm Audit.the_ground_cap_beats_erdos_rado_at_ten
 thm Audit.sum_family_no_sunflower_right
 thm Audit.sum_family_comm_equiv
 
@@ -330,6 +354,16 @@ def SliceRank.Grounded
 def SliceRank.NaslundSawinBound
 def SliceRank.GroundBounded
 def SliceRank.ground9_max
+
+# The two sides of the incidence count, and the ground-set hypothesis
+# aimed at intersecting families. `IotaGroundBounded` losing the word
+# "intersecting" would turn it into a strictly different -- and, on the
+# measurements, unsupported -- conjecture without moving any theorem's
+# printed form.
+def IotaGround.degsum
+def IotaGround.sizesum
+def IotaGround.IotaGroundBounded
+def Audit.GroundHypotheses
 
 # The open statements, so "what is conjectured" cannot drift either.
 def Conjecture.sunflower_conjecture

@@ -562,6 +562,60 @@ f49d832129ab650d  thm Audit.searched_beats_constructed_at_3_3
 f3ba43b1d5eb9791  thm SliceRank.ground9_max_is_grounded
     ground9_max_is_grounded : Grounded ground9_max (List.seq 0 9)
 
+2a79cf20e47d9ac0  thm SliceRank.ns_bound_to_exponential
+    ns_bound_to_exponential : NaslundSawinBound -> forall (c m : nat) (F : Family) (U : list nat), 1 <= c -> 1 <= m -> Distinct F -> ~ ContainsKSunflower 3 F -> List.NoDup U -> Grounded F U -> length U <= c * m -> length F <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m
+
+d36f6f63a8c0e320  thm IotaGround.degsum_eq_sizesum
+    degsum_eq_sizesum : forall (U : list nat) (F : Family), degsum U F = sizesum U F
+
+28819bccf13c9abc  thm IotaGround.sizesum_uniform
+    sizesum_uniform : forall (b : nat) (U : list nat) (F : Family), List.NoDup U -> Uniform b F -> Grounded F U -> sizesum U F = b * length F
+
+54ad2d6b4c725bc2  thm IotaGround.degsum_le
+    degsum_le : forall (U : list nat) (F : Family) (N : nat), (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) <= N) -> degsum U F <= length U * N
+
+02af4e4d9216021c  thm IotaGround.link_grounded
+    link_grounded : forall (x : nat) (U : list nat) (F : Family), Grounded F U -> Grounded (link (x :: nil) F) (rem_elt x U)
+
+80227eaabee15bd7  thm IotaGround.star_at_point_bounded
+    star_at_point_bounded : forall (b N x : nat) (U : list nat) (F : Family), List.NoDup U -> List.In x U -> Uniform b F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> (forall (V : list nat) (G : Family), List.NoDup V -> S (length V) <= length U -> Uniform (b - 1) G -> Distinct G -> Grounded G V -> ~ ContainsKSunflower 3 G -> length G <= N) -> length (List.filter (fun A : list nat => memb x A) F) <= N
+
+7d49f8954c38778c  thm IotaGround.link_degree_ground_bound
+    link_degree_ground_bound : forall (b N : nat) (U : list nat) (F : Family), List.NoDup U -> Uniform b F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> (forall (V : list nat) (G : Family), List.NoDup V -> S (length V) <= length U -> Uniform (b - 1) G -> Distinct G -> Grounded G V -> ~ ContainsKSunflower 3 G -> length G <= N) -> b * length F <= length U * N
+
+f7d8fe0b9ac09a0f  thm IotaGround.three_uniform_ground_bound
+    three_uniform_ground_bound : forall (U : list nat) (F : Family), List.NoDup U -> Uniform 3 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 2 * length U
+
+d5e62fccc263d7ef  thm IotaGround.n_three_ten_at_most_twenty
+    n_three_ten_at_most_twenty : forall (U : list nat) (F : Family), List.NoDup U -> length U <= 10 -> Uniform 3 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 20
+
+ddda7e420d0f7267  thm IotaGround.iota_ground_bounded_gives_exponential
+    iota_ground_bounded_gives_exponential : NaslundSawinBound -> forall c : nat, 1 <= c -> IotaGroundBounded c -> forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) b)
+
+219a9be099ca4a33  thm IotaGround.iota_ground_bounded_is_exponential
+    iota_ground_bounded_is_exponential : NaslundSawinBound -> forall c : nat, 1 <= c -> IotaGroundBounded c -> IotaExponential
+
+4f1e04cf5e3803ce  thm IotaGround.iota_ground_bounded_settles_k3
+    iota_ground_bounded_settles_k3 : NaslundSawinBound -> forall c : nat, 1 <= c -> IotaGroundBounded c -> sunflower_conjecture_k_3
+
+1447e8a1b2b6ec7a  thm IotaGround.iota_ground_bounded_excludes_lower_bounds
+    iota_ground_bounded_excludes_lower_bounds : NaslundSawinBound -> forall c : nat, 1 <= c -> IotaGroundBounded c -> forall m j : nat, 1 <= m -> PeanoNat.Nat.pow (2 * PeanoNat.Nat.pow 27 (c + 1)) m < j -> ~ LowerBound m 3 j
+
+a10bdf285aaf3125  thm IotaGround.both_ground_hypotheses_settle_k3
+    both_ground_hypotheses_settle_k3 : NaslundSawinBound -> forall c : nat, 1 <= c -> (GroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m) /\ (IotaGroundBounded c -> sunflower_conjecture_k_3)
+
+b83c06a1dc67a049  thm Audit.the_double_count_is_the_incidence_count
+    the_double_count_is_the_incidence_count : degsum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 12 /\ sizesum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 12 /\ degsum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 2 * length two_triangles
+
+5406d11a3829de75  thm Audit.the_ground_bound_is_attained
+    the_ground_bound_is_attained : 2 * length two_triangles <= length (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) * 2 /\ 2 * length two_triangles = length (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) * 2
+
+34839ffcb9ce4ba1  thm Audit.the_two_ground_hypotheses_are_both_sufficient
+    the_two_ground_hypotheses_are_both_sufficient : GroundHypotheses
+
+393dff7e79c5c010  thm Audit.the_ground_cap_beats_erdos_rado_at_ten
+    the_ground_cap_beats_erdos_rado_at_ten : forall (U : list nat) (F : Family), List.NoDup U -> length U <= 10 -> Uniform 3 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 20 < 48
+
 7b6fd7f64182be1a  thm Audit.sum_family_no_sunflower_right
     sum_family_no_sunflower_right : forall (b k : nat) (F1 F2 : Family), 2 <= k -> Uniform b F2 -> ~ ContainsKSunflower k F1 -> ~ ContainsKSunflower k F2 -> CrossDisjoint F1 F2 -> ~ ContainsKSunflower k (sum_family F1 F2)
 
@@ -720,6 +774,18 @@ e70110d144cccd76  def SliceRank.GroundBounded
 
 748b5c178e38978f  def SliceRank.ground9_max
     ground9_max = ((0 :: 1 :: 2 :: nil) :: (0 :: 1 :: 3 :: nil) :: (0 :: 2 :: 3 :: nil) :: (1 :: 2 :: 3 :: nil) :: (0 :: 4 :: 5 :: nil) :: (1 :: 4 :: 5 :: nil) :: (0 :: 4 :: 6 :: nil) :: (1 :: 4 :: 6 :: nil) :: (2 :: 5 :: 7 :: nil) :: (3 :: 6 :: 7 :: nil) :: (2 :: 5 :: 8 :: nil) :: (3 :: 6 :: 8 :: nil) :: (2 :: 7 :: 8 :: nil) :: (3 :: 7 :: 8 :: nil) :: nil)%list : Family
+
+a125fe605f96f89b  def IotaGround.degsum
+    degsum = fix degsum (U : list nat) (F : Family) {struct U} : nat := match U with | nil => 0 | (x :: U')%list => length (List.filter (fun A : list nat => memb x A) F) + degsum U' F end : list nat -> Family -> nat Arguments degsum U%list_scope F
+
+e9220f67e7f96cb6  def IotaGround.sizesum
+    sizesum = fix sizesum (U : list nat) (F : Family) {struct F} : nat := match F with | nil => 0 | (A :: F')%list => length (List.filter (fun x : nat => memb x A) U) + sizesum U F' end : list nat -> Family -> nat Arguments sizesum U%list_scope F
+
+c65e9c99650757d1  def IotaGround.IotaGroundBounded
+    IotaGroundBounded = fun c : nat => forall (b : nat) (H : Family), 1 <= b -> Uniform b H -> Distinct H -> Intersecting H -> ~ ContainsKSunflower 3 H -> exists (H' : Family) (U : list nat), Distinct H' /\ length H' = length H /\ ~ ContainsKSunflower 3 H' /\ List.NoDup U /\ Grounded H' U /\ length U <= c * b : nat -> Prop Arguments IotaGroundBounded c%nat_scope
+
+9bc8b1f106a218c9  def Audit.GroundHypotheses
+    GroundHypotheses = NaslundSawinBound -> forall c : nat, 1 <= c -> (GroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m) /\ (IotaGroundBounded c -> sunflower_conjecture_k_3) : Prop
 
 a9556658e41ea030  def Conjecture.sunflower_conjecture
     sunflower_conjecture = exists c : nat -> nat, (forall k : nat, 2 <= k -> k - 1 <= c k) /\ (forall n k : nat, 1 <= n -> 2 <= k -> UpperBound n k (S (PeanoNat.Nat.pow (c k) n))) : Prop

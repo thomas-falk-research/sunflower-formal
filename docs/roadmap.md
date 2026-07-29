@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 46 anecdotes into a coverage metric over the
+  mutation testing from 49 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -618,6 +618,26 @@ where the ceiling `C(2b,b)/2 = 35` is not met (the extremal family has
 24). So whatever the right structure is, it is not "transversal of the
 complementary pairing" — that is the `b <= 3` shadow of something else.
 
+**Sharpened by §7's degree count.** The extremal families are *regular*,
+and provably so wherever the ground bound `b|F| <= g N(b-1,g-1)` is
+tight — which is at `(2,3)`, `(3,6)`, `(4,8)` and `(4,9)`, i.e. at every
+row measured on a small ground set. Concretely `iota(3,6)` is 5-regular
+on six points with diversity 5 out of 10, and `iota(4,9)` is 12-regular
+on nine with diversity 15 out of 27. So the extremal intersecting
+sunflower-free families are *maximally non-star*, and every one of their
+links is an extremal `N(b-1,g-1)` family. Two consequences for how to
+aim:
+
+* diversity theorems (Frankl; Hilton–Milner for the non-star case) bound
+  intersecting families precisely in the large-diversity regime, and that
+  is the regime these families are in. This is a much narrower target
+  than "point EKR at it";
+* the recursive structure is *link-extremal*: an extremal `iota` family
+  at `(b,g)` has every link extremal at `(b-1,g-1)`. That is a
+  construction rule, and checking whether it can be run backwards — glue
+  extremal `N(b-1,g-1)` families into an `iota(b,g)` — is a bounded
+  experiment that could produce families the search cannot reach.
+
 **1. Push `iota(4)` past ground 8.** The record moves the moment some
 `b` has `iota(b) > 10^((b-1)/2)`:
 
@@ -645,7 +665,12 @@ Abbott–Hanson–Sauer through ground 10, and the exact value at ground 9
 is 27 — a rate of exactly `3.0000` against their `3.1623`.
 
 This does not close `b = 4` outright: grounds 11 and up are untouched
-and the row had not plateaued at 9. But the cost is now measured, and it
+and the row had not plateaued at 9. **A different question at the same
+row is now the more valuable one** — see §7: whether `iota(4,10)` is 28
+or stays at 27 decides whether the intersecting ground-set row plateaus,
+which is what `IotaGroundBounded` turns on. `rust/examples/iota_ladder.rs`
+asks it, and it is a harder search than the `>= 32` query already run,
+because a lower target prunes less. But the cost is now measured, and it
 is bad. Ground 9 decides in 50s, ground 10 in 4437s — a factor of 89 for
 one extra point. Ground 11 on the same scaling is days, and the current
 branch-and-bound has nothing left to give: the decision framing, the
@@ -869,6 +894,106 @@ before getting excited.
 
 Also settled by the table, and worth keeping: `N(3,6) = 10`, which is
 the Abbott–Hanson–Sauer seed. See §5.
+
+### Done: point the hypothesis at `iota` instead
+
+`GroundBounded` is not the only ground-set hypothesis that would settle
+`k = 3`. §5's equivalence says the conjecture at `k = 3` is a statement
+about *intersecting* sunflower-free families, so the same argument runs
+on `iota` — and there the measurement is not ambiguous. Put the two rows
+next to each other:
+
+```
+  g                3  4  5  6   7   8   9  10  11  12  13  14
+  N(3,g) general:  1  4  6 10  12  12  14   ?   ?   ?   ?   ?
+  iota(3,g):       1  4  6 10  10  10  10  10  10  10  10  10
+```
+
+They agree at six points and then **diverge**. The general maximum climbs
+to 14 by nine points and the search stops; the intersecting one has not
+moved by fourteen, and every entry is instant — intersecting-ness prunes
+that hard. `iota(2,g)` is likewise flat at 3 from three points, where
+`N(2,g)` climbs to 6 before stopping. All exhaustive
+(`rust/tests/iota_ground.rs`).
+
+That is not an accident of small numbers. Intersecting-ness is a
+*locality* constraint: every member meets every other, so the family
+cannot spread out over a large ground set the way an arbitrary
+sunflower-free family can. It is exactly the property a ground-set bound
+needs and exactly the property the general problem lacks.
+
+`coq/IotaGround.v` composes the two:
+
+```
+IotaGroundBounded c  +  [NaSa17]  ==>  sunflower_conjecture_k_3
+```
+
+with the same explicit constant, through the same arithmetic — which is
+now factored out of `bounded_ground_set_settles_k3` as
+`SliceRank.ns_bound_to_exponential` so neither theorem owns it.
+`Audit.the_two_ground_hypotheses_are_both_sufficient` puts the two
+side by side. Neither implies the other; what separates them is that one
+has a measurement behind it.
+
+**The caveat, stated as sharply as §7 states it for the general row.**
+Two plateaus and a third row still open is still two plateaus. `iota(4)`
+is 24 at ground 8 and 27 at ground 9 — it moved — and ground 10 is only
+known to be below 32. Whether it plateaus at 9 is the decisive
+experiment, and the query for it is *harder* than the one already run:
+seeding the incumbent at `target - 1` is what prunes, so "is
+`iota(4,10) >= 28`?" searches a strictly larger tree than the "`>= 32`?"
+that took 74 minutes. `rust/examples/iota_ladder.rs` asks it as a
+descending ladder — 31, 30, 29, 28 — printing each rung as it lands, so a
+run that is killed part-way still reports what it decided. It has not
+been run to completion here.
+
+### A second thing, and it is the more solid one
+
+Counting incidences between a family and its ground set gives
+
+```
+  b * |F|  <=  |U| * N(b-1, |U|-1)
+```
+
+for *any* sunflower-free `b`-uniform family on `U`
+(`IotaGround.link_degree_ground_bound`). No intersecting hypothesis, no
+positivity hypothesis: it is double counting, with each point's column
+being a link and therefore a smaller sunflower-free family. Compare
+`Intersecting.intersecting_link_bound`, which counts over one member's
+`b` points and *does* need intersecting-ness to know every member is
+there; the two are useful in opposite regimes, and this one says
+something when the ground set is small.
+
+Two things come out of it.
+
+**It is met with equality, and equality is rigid.** Measured at the four
+rows where both sides are known:
+
+```
+  b  g   iota   b|F|   g*N(b-1,g-1)
+  2  3      3      6              6   TIGHT
+  3  6     10     30             30   TIGHT
+  4  8     24     96             96   TIGHT
+  4  9     27    108            108   TIGHT
+```
+
+Equality forces the family to be `N(b-1,g-1)`-regular and every one of its
+links to be extremal. The witnesses **are** regular — checked, not
+assumed — so `iota(3,6)`'s ten triples are 5-regular on six points and
+`iota(4,9)`'s twenty-seven 4-sets are 12-regular on nine. Their
+diversities `|F| - maxdeg` are 5 out of 10 and 15 out of 27: the extremal
+intersecting families are as far from a *star* as an intersecting family
+gets, which is precisely the regime Hilton–Milner and Frankl's diversity
+theorems are built for. That sharpens §5 item 0 from "look at EKR" to a
+specific target.
+
+**At `b = 3` it is unconditional.** The link bound there is the proved
+`g(2) = 6`, so `N(3,g) <= 2g` outright
+(`IotaGround.three_uniform_ground_bound`), and in particular
+`N(3,10) <= 20` — the first proved cap on the value this section names as
+the one that matters, against `C(10,3) = 120` from counting and 48 from
+Erdős–Rado. It is still above the measured 14 and it does **not** decide
+whether the row plateaus. It narrows the search, it does not replace it.
 
 ---
 

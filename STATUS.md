@@ -109,6 +109,15 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `sunflower_iff_no_point_in_exactly_two` | `coq/SliceRank.v` | **Three sets are a sunflower exactly when no point lies in exactly two of them.** Unconditional, both directions, no hypotheses. This is the form the slice-rank method consumes, and why it reaches `{0,1}^n` at all — the condition is per-coordinate |
 | `bounded_ground_set_settles_k3` | `coq/SliceRank.v` | **What the polynomial method is missing, named.** Naslund–Sawin bound a sunflower-free family of subsets of `[n]` by `3(n+1)C^n`, `C < 1.89` — a `constant^n` bound in the **ground set**, where the conjecture needs one in the **uniformity**. Assuming that bound and `GroundBounded c` (extremal `m`-uniform families live on `c·m` points) gives `f(m,3) ≤ (27^(c+1))^m + 1`: the conjecture at `k = 3`. Both are `Prop`s carried as hypotheses, **not axioms**, so the trusted core is unchanged |
 | `ns_exponential_is_load_bearing`, `ground_bounded_at_m_2` | `coq/Audit.v` | The cited bound's exponential is not decoration — the linear-in-ground-set form is false, witnessed by `prod_family 2 6` (64 sunflower-free 6-sets on 12 points against 39). And `GroundBounded` is realised at the one exact value known here: `two_triangles` attains `f(2,3) - 1 = 6` on `6 = 3m` points |
+| `ns_bound_to_exponential` | `coq/SliceRank.v` | The arithmetic on its own: a sunflower-free family on at most `c·m` points has at most `(27^(c+1))^m` members. Extracted because two different ground-set hypotheses feed the same computation |
+| `degsum_eq_sizesum`, `sizesum_uniform`, `degsum_le` | `coq/IotaGround.v` | Double counting the incidences between a ground set and a family — down the columns (degrees) and along the rows (sizes). The identity itself has **no hypotheses**; they enter only when the two sides are evaluated |
+| `link_degree_ground_bound` | `coq/IotaGround.v` | **`b·\|F\| ≤ \|U\|·N(b-1,\|U\|-1)`** for every sunflower-free `b`-uniform family on `U` — no intersecting hypothesis, no positivity hypothesis. Each point's column is a link, hence a smaller sunflower-free family. Complements `intersecting_link_bound`, which counts over *one member's* `b` points and needs intersecting-ness to know every member is there; this one counts over the whole ground set and says something when that set is small. Met with **equality** at `(b,g) = (2,3), (3,6), (4,8), (4,9)`, which forces those extremal families to be regular — and they are (`rust/tests/iota_ground.rs`) |
+| `three_uniform_ground_bound`, `n_three_ten_at_most_twenty` | `coq/IotaGround.v` | Unconditionally, with the proved `g(2) = 6`: **`N(3,g) ≤ 2g`**, so `N(3,10) ≤ 20` — the first proved cap on the row `SliceRank.v` names as the one that matters, against `C(10,3) = 120` and Erdős–Rado's 48. It does not decide whether the row plateaus |
+| `iota_ground_bounded_settles_k3` | `coq/IotaGround.v` | **`IotaGroundBounded c` + Naslund–Sawin ⟹ the sunflower conjecture at `k = 3`.** The same shape as `bounded_ground_set_settles_k3`, with the ground-set hypothesis pointed at *intersecting* families — which by `IotaRate` is an equivalent problem, and where the measurement is not ambiguous: `N(3,g)` climbs 10, 12, 12, 14 while `ι(3,g)` is flat at 10 from six points to fourteen, every entry exhaustive |
+| `iota_ground_bounded_gives_exponential`, `iota_ground_bounded_excludes_lower_bounds` | `coq/IotaGround.v` | The intermediate form (`IotaAtMost b ((27^(c+1))^b)`) and the `LowerBound`-complement form, which is what a search would contradict |
+| `both_ground_hypotheses_settle_k3` | `coq/IotaGround.v` | The two hypotheses side by side. Neither implies the other; what separates them is that one has a measurement behind it |
+| `the_double_count_is_the_incidence_count`, `the_ground_bound_is_attained` | `coq/Audit.v` | Both sums evaluated on `two_triangles`, where the incidences can be counted by hand (12 each way), and the bound shown to hold *with equality* there — so it is an identity at uniformity 2, not a lazy estimate |
+| `the_two_ground_hypotheses_are_both_sufficient`, `the_ground_cap_beats_erdos_rado_at_ten` | `coq/Audit.v` | The pair of sufficient conditions recorded against a named specification, and the new cap checked to be below the bound it is meant to improve |
 | `two_triangles_is_a_link`, `no_spread_bounds_sunflower_free_2_3_2` | `coq/Audit.v` | The link construction evaluated on a family with nothing link-like about it; and the restricted spread hypothesis refuted at `(2,3,2)` by the five-cycle, so weakening it did not make it vacuous |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
@@ -185,7 +194,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (187 of them). The current
+for every theorem in the "Closed" table (205 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -232,22 +241,22 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 27 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 28 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
-| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind |
+| Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 46 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 44 killed outright, one genuine
+Current mutation results: 49 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 47 killed outright, one genuine
 survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem), and one positive control (`canary-alpha-rename`,
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 27 modules with Coq's separate kernel
+`make coqchk` re-verifies all 28 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```
