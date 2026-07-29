@@ -73,8 +73,8 @@
 
 From Coq Require Import List Arith Lia Bool.
 From Coq Require Import PeanoNat Permutation.
-From Sunflower Require Import Sets Sunflower LowerBound SpreadReduction Reflect
-     F23 SliceRank.
+From Sunflower Require Import Sets Sunflower LowerBound Spread SpreadReduction Reflect
+     TwoUniform F23 LinkCharacterisation Intersecting SliceRank.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -408,8 +408,10 @@ Qed.
     [Mis26] (arXiv:2606.02667, June 2026) proves the Erdős–Rado
     conjecture *for shifted families*, with the bound
     [f'(k,s) <= s^(2s-2) 2^k] — exponential in the uniformity, and with
-    no lower bound. The theorem here says the truth is polynomial, and
-    says what it is. See [docs/references.md]. *)
+    no lower bound. The theorem here says the truth is polynomial and
+    says what it is: [f'(k,s) = C(k+s-2, k)] exactly, since [Mis26]
+    defines [f'] by "cardinality more than [m]". See
+    [docs/references.md]. *)
 
 Lemma chain_step :
   forall F m x,
@@ -892,3 +894,472 @@ Qed.
 Theorem two_members_cannot_acquire_a_sunflower :
   forall F, length F <= 2 -> ~ ContainsKSunflower 3 F.
 Proof. intros F Hlen; apply no_k_sunflower_short_family; lia. Qed.
+
+(** ** The diagnosis, as theorems rather than as prose
+
+    [LinkCharacterisation.sunflower_iff_link_matching] says
+
+    >  ContainsKSunflower k F  <->  exists Y, HasKDisjoint k (link Y F)
+
+    — sunflower-freeness is one condition *per core*. This section proves
+    that shifting preserves the condition at the **empty** core and
+    nothing else, which is the whole reason the instrument works for
+    Erdős–Ko–Rado and cannot work here.
+
+    - [link_nil_is_the_family]: the empty-core instance is literally
+      "no [k] pairwise disjoint members".
+    - [shift_preserves_no_k_disjoint]: and shifting preserves it. This is
+      the classical fact that compression does not increase the matching
+      number, proved here because it is the positive half of the
+      diagnosis and nothing in this development had it.
+    - [intersecting_is_the_empty_core_at_two]: Erdős–Ko–Rado's hypothesis
+      *is* that instance at [k = 2]. So the property shifting was built
+      for is one clause of the characterisation.
+    - [shifting_breaks_a_non_empty_core]: and at a non-empty core it
+      fails, with the three-member witness.
+
+    Put together: sunflower-freeness at uniformity [m] is a conjunction of
+    conditions indexed by the cores, shifting commutes with exactly one of
+    them, and [compressed_bound] measures what the other conditions cost —
+    everything above [C(m+k-2,m)] members. *)
+
+Lemma setmemb_true_iff : forall A F,
+    setmemb A F = true <-> exists B, In B F /\ SetEq A B.
+Proof.
+  intros A F; unfold setmemb; split.
+  - intro H; apply existsb_exists in H as [B [HB Hb]].
+    exists B; split; [exact HB | apply seteqb_correct; exact Hb].
+  - intros [B [HB Hseq]]; apply existsb_exists; exists B; split;
+      [exact HB | apply seteqb_correct; exact Hseq].
+Qed.
+
+Lemma setmemb_false_iff : forall A F,
+    setmemb A F = false <-> forall B, In B F -> ~ SetEq A B.
+Proof.
+  intros A F; split.
+  - intros H B HB Hseq.
+    assert (Ht : setmemb A F = true) by (apply setmemb_true_iff; eauto).
+    congruence.
+  - intro H; destruct (setmemb A F) eqn:E; [| reflexivity].
+    apply setmemb_true_iff in E as [B [HB Hseq]]; exfalso; apply (H B HB Hseq).
+Qed.
+
+(** What one member can do under the shift: stay, or move — and a moved
+    member acquires [i] and loses [j]. *)
+
+Lemma shift_one_cases : forall i j F A,
+    shift_one i j F A = A
+    \/ (shift_one i j F A = shift_member i j A
+        /\ In j A /\ ~ In i A /\ setmemb (shift_member i j A) F = false).
+Proof.
+  intros i j F A; unfold shift_one.
+  destruct (memb j A && negb (memb i A)
+            && negb (setmemb (shift_member i j A) F)) eqn:Eg;
+    [| left; reflexivity].
+  right.
+  apply Bool.andb_true_iff in Eg as [Eg Eimg].
+  apply Bool.andb_true_iff in Eg as [Ej Ei].
+  repeat split.
+  - apply memb_true_iff; exact Ej.
+  - apply memb_false_iff, Bool.negb_true_iff; exact Ei.
+  - apply Bool.negb_true_iff in Eimg; exact Eimg.
+Qed.
+
+Lemma in_shift_family : forall i j F B,
+    In B (shift_family i j F) -> exists A, In A F /\ shift_one i j F A = B.
+Proof.
+  intros i j F B HB; unfold shift_family in HB.
+  apply in_map_iff in HB as [A [E HA]]; exists A; split; [exact HA | exact E].
+Qed.
+
+(** A member of the shifted family that does not contain [i] did not
+    move, so it is a member of the original. *)
+
+Lemma unmoved_without_i : forall i j F B,
+    In B (shift_family i j F) -> ~ In i B -> In B F.
+Proof.
+  intros i j F B HB Hi.
+  apply in_shift_family in HB as [A [HA E]].
+  destruct (shift_one_cases i j F A) as [Estay | [Emove _]].
+  - rewrite Estay in E; subst B; exact HA.
+  - exfalso; apply Hi; rewrite <- E, Emove; unfold shift_member; left; reflexivity.
+Qed.
+
+(** A member of the shifted family without [i] is a fixed point of the
+    shift, which is what makes the guard's third clause available. *)
+
+Lemma member_of_shift_without_i_is_fixed : forall i j F B,
+    In B (shift_family i j F) -> ~ In i B -> shift_one i j F B = B.
+Proof.
+  intros i j F B HB Hi.
+  apply in_shift_family in HB as [A [HA E]].
+  destruct (shift_one_cases i j F A) as [Est | [Emv _]].
+  - rewrite Est in E; subst B; exact Est.
+  - exfalso; apply Hi; rewrite <- E, Emv; unfold shift_member; left; reflexivity.
+Qed.
+
+(** Picking a witness out of [F] for a set the family contains up to
+    [SetEq]. [setmemb] only says one exists; the repair below needs the
+    member itself. *)
+
+Definition pick (X : list nat) (F : Family) : list nat :=
+  match find (seteqb X) F with Some C => C | None => X end.
+
+Lemma pick_spec : forall X F,
+    setmemb X F = true -> In (pick X F) F /\ SetEq X (pick X F).
+Proof.
+  intros X F; unfold pick, setmemb; induction F as [|C F IH]; simpl;
+    [discriminate|].
+  destruct (seteqb X C) eqn:E; simpl.
+  - intros _; split; [left; reflexivity | apply seteqb_correct; exact E].
+  - intro H; destruct (IH H) as [H1 H2]; split; [right; exact H1 | exact H2].
+Qed.
+
+(** A member that did *not* move, although the shift applied to it, did
+    not move for the only reason left: its image was already there. *)
+
+Lemma stayed_means_image_present : forall i j F A,
+    shift_one i j F A = A -> In j A -> ~ In i A ->
+    setmemb (shift_member i j A) F = true.
+Proof.
+  intros i j F A Hstay Hj Hi; unfold shift_one in Hstay.
+  destruct (memb j A && negb (memb i A)
+            && negb (setmemb (shift_member i j A) F)) eqn:Eg.
+  - exfalso; apply Hi; rewrite <- Hstay; unfold shift_member; left; reflexivity.
+  - apply Bool.andb_false_iff in Eg as [Eg | Eimg].
+    + apply Bool.andb_false_iff in Eg as [Ej | Ei].
+      * rewrite (proj2 (memb_true_iff j A) Hj) in Ej; discriminate.
+      * apply Bool.negb_false_iff, memb_true_iff in Ei; contradiction.
+    + apply Bool.negb_false_iff in Eimg; exact Eimg.
+Qed.
+
+Lemma NoDup_map_inj_gen :
+  forall (C : Type) (f : list nat -> C) (l : Family),
+    NoDup l ->
+    (forall A B, In A l -> In B l -> f A = f B -> A = B) ->
+    NoDup (map f l).
+Proof.
+  intros C f l; induction l as [|a l IH]; simpl; intros Hnd Hinj; [constructor|].
+  inversion Hnd as [| ? ? Hni Hnd']; subst.
+  constructor.
+  - intro Hin; apply in_map_iff in Hin as [b [Hfb Hb]].
+    assert (E : a = b)
+      by (apply Hinj; [left; reflexivity | right; exact Hb | symmetry; exact Hfb]).
+    subst b; contradiction.
+  - apply IH; [exact Hnd'|].
+    intros A B HA HB; apply Hinj; right; assumption.
+Qed.
+
+(** The repair: send the one member that moved back to its preimage, and
+    the one member that carries [j] to the image the guard promised was
+    already in [F]. Everything else is untouched. *)
+
+Definition repair (i j : nat) (F : Family) (A0 B : list nat) : list nat :=
+  if in_dec_nat i B then A0
+  else if in_dec_nat j B then pick (shift_member i j B) F
+  else B.
+
+(** **Shifting does not increase the matching number.** The classical
+    fact, and the positive half of the diagnosis: this is the one clause
+    of [sunflower_iff_link_matching] that survives compression. *)
+
+Theorem shift_preserves_no_k_disjoint :
+  forall i j k F,
+    i <> j ->
+    HasKDisjoint k (shift_family i j F) -> HasKDisjoint k F.
+Proof.
+  intros i j k F Hij [S [Hincl [Hnd [Hlen Hpd]]]].
+  (* At most one member of a pairwise-disjoint list contains i. *)
+  assert (Huniq : forall A B, In A S -> In B S -> In i A -> In i B -> A = B).
+  { intros A B HA HB HiA HiB.
+    destruct (list_eq_dec Nat.eq_dec A B) as [E | NE]; [exact E|].
+    exfalso; exact (Hpd A B HA HB NE i HiA HiB). }
+  (* A member without i did not move, so it is already in F. *)
+  assert (Hnoi : forall B, In B S -> ~ In i B -> In B F).
+  { intros B HB Hi; apply (unmoved_without_i i j F B);
+      [apply Hincl; exact HB | exact Hi]. }
+  destruct (find (fun B => memb i B) S) as [B0 |] eqn:EB0.
+  - apply find_some in EB0 as [HB0S HB0i].
+    apply memb_true_iff in HB0i.
+    destruct (in_dec (list_eq_dec Nat.eq_dec) B0 F) as [HB0F | HB0F].
+    + (* Nothing moved after all. *)
+      exists S; repeat split; try assumption.
+      intros B HB; destruct (in_dec_nat i B) as [Hi | Hi].
+      * rewrite (Huniq B B0 HB HB0S Hi HB0i); exact HB0F.
+      * apply Hnoi; assumption.
+    + (* B0 moved. Recover its preimage A0 and repair. *)
+      assert (HB0sh : In B0 (shift_family i j F)) by (apply Hincl; exact HB0S).
+      apply in_shift_family in HB0sh as [A0 [HA0 Esh]].
+      destruct (shift_one_cases i j F A0) as [Estay | [Emove [HjA0 [HiA0 _]]]].
+      { exfalso; apply HB0F; rewrite <- Esh, Estay; exact HA0. }
+      rewrite Emove in Esh.
+      (* A0 is B0 with i traded back for j. *)
+      assert (HA0sub : forall x, In x A0 -> x = j \/ In x B0).
+      { intros x Hx; destruct (Nat.eq_dec x j) as [E | NE]; [left; exact E|].
+        right; rewrite <- Esh; unfold shift_member; right.
+        apply in_rem_iff; split; assumption. }
+      set (g := repair i j F A0).
+      (* Every repaired member is in F. *)
+      assert (HgF : forall B, In B S -> In (g B) F).
+      { intros B HB; unfold g, repair.
+        destruct (in_dec_nat i B) as [Hi | Hi]; [exact HA0|].
+        destruct (in_dec_nat j B) as [Hj | Hj]; [| apply Hnoi; assumption].
+        assert (HBF : In B F) by (apply Hnoi; assumption).
+        assert (Hone : shift_one i j F B = B)
+          by (apply (member_of_shift_without_i_is_fixed i j F B);
+              [apply Hincl; exact HB | exact Hi]).
+        assert (Himg : setmemb (shift_member i j B) F = true)
+          by (apply stayed_means_image_present; assumption).
+        apply pick_spec in Himg as [Hp1 _]; exact Hp1. }
+      (* What the repaired member's elements can be. *)
+      assert (HgJ : forall B, In B S -> ~ In i B -> In j B ->
+                     forall x, In x (g B) -> x = i \/ (In x B /\ x <> j)).
+      { intros B HB Hi Hj x Hx; unfold g, repair in Hx.
+        destruct (in_dec_nat i B) as [H | _]; [contradiction|].
+        destruct (in_dec_nat j B) as [_ | H]; [| contradiction].
+        assert (Hone : shift_one i j F B = B)
+          by (apply (member_of_shift_without_i_is_fixed i j F B);
+              [apply Hincl; exact HB | exact Hi]).
+        assert (Himg : setmemb (shift_member i j B) F = true)
+          by (apply stayed_means_image_present; assumption).
+        apply pick_spec in Himg as [_ Hseq].
+        apply (proj2 Hseq) in Hx; unfold shift_member in Hx; simpl in Hx.
+        destruct Hx as [E | Hx]; [left; auto|].
+        rewrite in_rem_iff in Hx; right; exact Hx. }
+      exists (map g S); repeat split.
+      * intros B HB; apply in_map_iff in HB as [C [E HC]]; subst B; apply HgF; exact HC.
+      * apply NoDup_map_inj_gen; [exact Hnd|].
+        intros A B HA HB Egg.
+        destruct (in_dec_nat i A) as [HiA | HiA]; destruct (in_dec_nat i B) as [HiB | HiB].
+        -- exact (Huniq A B HA HB HiA HiB).
+        -- exfalso.
+           assert (HjgA : In j (g A))
+             by (unfold g, repair; destruct (in_dec_nat i A);
+                 [exact HjA0 | contradiction]).
+           rewrite Egg in HjgA.
+           destruct (in_dec_nat j B) as [HjB | HjB].
+           ++ destruct (HgJ B HB HiB HjB j HjgA) as [E | [_ NE]];
+                [lia | apply NE; reflexivity].
+           ++ unfold g, repair in HjgA;
+                destruct (in_dec_nat i B); [contradiction|];
+                destruct (in_dec_nat j B); [contradiction | contradiction].
+        -- exfalso.
+           assert (HjgB : In j (g B))
+             by (unfold g, repair; destruct (in_dec_nat i B);
+                 [exact HjA0 | contradiction]).
+           rewrite <- Egg in HjgB.
+           destruct (in_dec_nat j A) as [HjA | HjA].
+           ++ destruct (HgJ A HA HiA HjA j HjgB) as [E | [_ NE]];
+                [lia | apply NE; reflexivity].
+           ++ unfold g, repair in HjgB;
+                destruct (in_dec_nat i A); [contradiction|];
+                destruct (in_dec_nat j A); [contradiction | contradiction].
+        -- destruct (in_dec_nat j A) as [HjA | HjA]; destruct (in_dec_nat j B) as [HjB | HjB].
+           ++ destruct (list_eq_dec Nat.eq_dec A B) as [E | NE]; [exact E|].
+              exfalso; exact (Hpd A B HA HB NE j HjA HjB).
+           ++ exfalso.
+              assert (HigA : In i (g A)).
+              { unfold g, repair; destruct (in_dec_nat i A); [contradiction|].
+                destruct (in_dec_nat j A); [| contradiction].
+                assert (Hone : shift_one i j F A = A)
+                  by (apply (member_of_shift_without_i_is_fixed i j F A);
+                      [apply Hincl; exact HA | exact HiA]).
+                assert (Himg : setmemb (shift_member i j A) F = true)
+                  by (apply stayed_means_image_present; assumption).
+                apply pick_spec in Himg as [_ Hseq].
+                apply (proj1 Hseq); unfold shift_member; left; reflexivity. }
+              rewrite Egg in HigA.
+              unfold g, repair in HigA;
+                destruct (in_dec_nat i B); [contradiction|];
+                destruct (in_dec_nat j B); [contradiction | contradiction].
+           ++ exfalso.
+              assert (HigB : In i (g B)).
+              { unfold g, repair; destruct (in_dec_nat i B); [contradiction|].
+                destruct (in_dec_nat j B); [| contradiction].
+                assert (Hone : shift_one i j F B = B)
+                  by (apply (member_of_shift_without_i_is_fixed i j F B);
+                      [apply Hincl; exact HB | exact HiB]).
+                assert (Himg : setmemb (shift_member i j B) F = true)
+                  by (apply stayed_means_image_present; assumption).
+                apply pick_spec in Himg as [_ Hseq].
+                apply (proj1 Hseq); unfold shift_member; left; reflexivity. }
+              rewrite <- Egg in HigB.
+              unfold g, repair in HigB;
+                destruct (in_dec_nat i A); [contradiction|];
+                destruct (in_dec_nat j A); [contradiction | contradiction].
+           ++ unfold g, repair in Egg;
+                destruct (in_dec_nat i A); [contradiction|];
+                destruct (in_dec_nat j A); [contradiction|];
+                destruct (in_dec_nat i B); [contradiction|];
+                destruct (in_dec_nat j B); [contradiction | exact Egg].
+      * rewrite map_length; exact Hlen.
+      * intros X Y HX HY Hne x HxX HxY.
+        apply in_map_iff in HX as [A [EA HA]].
+        apply in_map_iff in HY as [B [EB HB]].
+        assert (HAB : A <> B) by (intro E; subst B; congruence).
+        assert (Hdisj : Disjoint A B) by (apply Hpd; assumption).
+        subst X Y.
+        (* Elements of a repaired member: i, j, or an element of the
+           member itself. *)
+        assert (Hstep : forall C, In C S -> forall y, In y (g C) ->
+                        y = i \/ y = j \/ In y C).
+        { intros C HC y Hy.
+          destruct (in_dec_nat i C) as [HiC | HiC].
+          - assert (Hy' : In y A0)
+              by (unfold g, repair in Hy;
+                  destruct (in_dec_nat i C); [exact Hy | contradiction]).
+            destruct (HA0sub y Hy') as [E | HyB0]; [right; left; exact E|].
+            right; right; rewrite (Huniq C B0 HC HB0S HiC HB0i); exact HyB0.
+          - destruct (in_dec_nat j C) as [HjC | HjC].
+            + destruct (HgJ C HC HiC HjC y Hy) as [E | [Hy' _]];
+                [left; exact E | right; right; exact Hy'].
+            + right; right; unfold g, repair in Hy;
+                destruct (in_dec_nat i C); [contradiction|];
+                destruct (in_dec_nat j C); [contradiction | exact Hy]. }
+        (* i occurs in a repaired member only if the member lacked i and
+           had j; j occurs only if the member had i. *)
+        assert (Hi_src : forall C, In C S -> In i (g C) -> ~ In i C /\ In j C).
+        { intros C HC Hy; unfold g, repair in Hy.
+          destruct (in_dec_nat i C) as [HiC | HiC]; [contradiction|].
+          destruct (in_dec_nat j C) as [HjC | HjC]; [split; assumption|].
+          contradiction. }
+        assert (Hj_src : forall C, In C S -> In j (g C) -> In i C).
+        { intros C HC Hy.
+          destruct (in_dec_nat i C) as [HiC | HiC]; [exact HiC|].
+          destruct (in_dec_nat j C) as [HjC | HjC].
+          - destruct (HgJ C HC HiC HjC j Hy) as [E | [_ NE]];
+              [lia | exfalso; apply NE; reflexivity].
+          - exfalso; unfold g, repair in Hy;
+              destruct (in_dec_nat i C); [contradiction|];
+              destruct (in_dec_nat j C); contradiction. }
+        destruct (Nat.eq_dec x i) as [Exi | Nxi].
+        { subst x.
+          destruct (Hi_src A HA HxX) as [_ HjA].
+          destruct (Hi_src B HB HxY) as [_ HjB].
+          exact (Hdisj j HjA HjB). }
+        destruct (Nat.eq_dec x j) as [Exj | Nxj].
+        { subst x.
+          pose proof (Hj_src A HA HxX) as HiA.
+          pose proof (Hj_src B HB HxY) as HiB.
+          apply HAB; exact (Huniq A B HA HB HiA HiB). }
+        destruct (Hstep A HA x HxX) as [E | [E | HxA]]; [lia | lia |].
+        destruct (Hstep B HB x HxY) as [E | [E | HxB]]; [lia | lia |].
+        exact (Hdisj x HxA HxB).
+  - (* No member contains i at all: nothing moved. *)
+    exists S; repeat split; try assumption.
+    intros B HB; apply Hnoi; [exact HB|].
+    intro Hi; pose proof (find_none _ _ EB0 B HB) as E; simpl in E.
+    rewrite (proj2 (memb_true_iff i B) Hi) in E; discriminate.
+Qed.
+
+(** ** Which clause of the characterisation shifting commutes with
+
+    [link [] F] is [F], so the empty-core instance of
+    [sunflower_iff_link_matching] is literally "no [k] pairwise disjoint
+    members" — and that is the instance the theorem above preserves. *)
+
+Lemma memb_nil : forall x, memb x [] = false.
+Proof.
+  intro x; unfold memb; destruct (in_dec_nat x []); [contradiction | reflexivity].
+Qed.
+
+Lemma setminus_nil : forall A, setminus A [] = A.
+Proof.
+  intro A; unfold setminus; apply forallb_filter_id, forallb_forall.
+  intros x _; rewrite memb_nil; reflexivity.
+Qed.
+
+Lemma link_nil : forall F, link [] F = F.
+Proof.
+  intro F; unfold link.
+  assert (Hf : filter (containsb []) F = F)
+    by (apply forallb_filter_id, forallb_forall; intros A _; reflexivity).
+  rewrite Hf; clear Hf.
+  induction F as [|A G IH]; simpl; [reflexivity|].
+  rewrite setminus_nil, IH; reflexivity.
+Qed.
+
+Theorem shift_preserves_the_empty_core :
+  forall i j k F,
+    i <> j ->
+    HasKDisjoint k (link [] (shift_family i j F)) ->
+    HasKDisjoint k (link [] F).
+Proof.
+  intros i j k F Hij H; rewrite link_nil in *.
+  eapply shift_preserves_no_k_disjoint; [exact Hij | exact H].
+Qed.
+
+(** Erdős–Ko–Rado's hypothesis is that same instance at [k = 2]: an
+    intersecting family is one with no two disjoint members. (This
+    development's [Intersecting] is very slightly stronger — it also
+    forbids an empty member, since the empty set is disjoint from
+    itself — so the implication is the honest direction.) *)
+
+Theorem intersecting_is_the_empty_core_at_two :
+  forall F, Intersecting F -> ~ HasKDisjoint 2 F.
+Proof.
+  intros F Hint [S [Hincl [Hnd [Hlen Hpd]]]].
+  destruct S as [|A [|B [|? ?]]]; simpl in Hlen; try discriminate.
+  assert (HAB : A <> B)
+    by (inversion Hnd as [| ? ? Hni ?]; subst; intro E; subst B;
+        apply Hni; left; reflexivity).
+  apply (Hint A B (Hincl A ltac:(left; reflexivity))
+              (Hincl B ltac:(right; left; reflexivity))).
+  apply Hpd; [left; reflexivity | right; left; reflexivity | exact HAB].
+Qed.
+
+(** And at a non-empty core it fails. The star the three-member witness
+    shifts to has a 3-sunflower and **no** three pairwise disjoint
+    members — so what it acquired is a sunflower with a non-empty core,
+    which is exactly the clause compression does not commute with. *)
+
+Lemma star_has_no_three_disjoint : ~ HasKDisjoint 3 [[0;1]; [0;2]; [0;3]].
+Proof.
+  intros [S [Hincl [Hnd [Hlen Hpd]]]].
+  assert (H0 : forall X, In X [[0;1]; [0;2]; [0;3]] -> In 0 X)
+    by (intros X HX; simpl in HX;
+        destruct HX as [E | [E | [E | []]]]; subst X; simpl; auto).
+  destruct S as [|A [|B [|C [|? ?]]]]; simpl in Hlen; try discriminate.
+  assert (HAB : A <> B)
+    by (inversion Hnd as [| ? ? Hni ?]; subst; intro E; subst B;
+        apply Hni; left; reflexivity).
+  apply (Hpd A B ltac:(left; reflexivity) ltac:(right; left; reflexivity) HAB 0);
+    apply H0; apply Hincl; simpl; auto.
+Qed.
+
+Theorem shifting_breaks_a_non_empty_core :
+  ~ ContainsKSunflower 3 shift_witness
+  /\ ContainsKSunflower 3 (shift_family 0 1 shift_witness)
+  /\ ~ HasKDisjoint 3 (shift_family 0 1 shift_witness).
+Proof.
+  split; [exact shift_witness_no_sunflower|].
+  split.
+  - apply sunflower3b_complete; vm_compute; reflexivity.
+  - rewrite the_shift_is_the_star; exact star_has_no_three_disjoint.
+Qed.
+
+(** ** The diagnosis, in one statement
+
+    Sunflower-freeness is a condition per core. Compression commutes with
+    the one at the empty core — and that one, at [k = 2], is exactly the
+    hypothesis Erdős–Ko–Rado is about. It does not commute with the rest,
+    and [compressed_bound] measures what the rest cost: everything above
+    [C(m+k-2, m)] members. *)
+
+Theorem only_the_empty_core_survives_compression :
+  (forall i j k F,
+      i <> j ->
+      HasKDisjoint k (link [] (shift_family i j F)) ->
+      HasKDisjoint k (link [] F))
+  /\ (forall F, Intersecting F -> ~ HasKDisjoint 2 F)
+  /\ (~ ContainsKSunflower 3 shift_witness
+      /\ ContainsKSunflower 3 (shift_family 0 1 shift_witness)
+      /\ ~ HasKDisjoint 3 (shift_family 0 1 shift_witness))
+  /\ (forall F m,
+         1 <= m -> LeftCompressed F -> Uniform m F -> Distinct F ->
+         ~ ContainsKSunflower 3 F -> length F <= m + 1).
+Proof.
+  split; [exact @shift_preserves_the_empty_core|].
+  split; [exact intersecting_is_the_empty_core_at_two|].
+  split; [exact shifting_breaks_a_non_empty_core | exact @compressed_bound].
+Qed.

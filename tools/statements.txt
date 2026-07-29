@@ -871,6 +871,36 @@ ed157e55dc56f164  thm Compression.two_members_cannot_acquire_a_sunflower
 f1c2111d29cdffee  thm Compression.contains_sunflower_incl
     contains_sunflower_incl : forall (k : nat) (S F : list (list nat)), List.incl S F -> ContainsKSunflower k S -> ContainsKSunflower k F
 
+456f77be0abcfdc2  thm Compression.pick_spec
+    pick_spec : forall (X : list nat) (F : Family), setmemb X F = true -> List.In (pick X F) F /\ SetEq X (pick X F)
+
+27b4179d7aecf286  thm Compression.stayed_means_image_present
+    stayed_means_image_present : forall (i j : nat) (F : Family) (A : list nat), shift_one i j F A = A -> List.In j A -> ~ List.In i A -> setmemb (shift_member i j A) F = true
+
+ae302583dd2a8774  thm Compression.member_of_shift_without_i_is_fixed
+    member_of_shift_without_i_is_fixed : forall (i j : nat) (F : Family) (B : list nat), List.In B (shift_family i j F) -> ~ List.In i B -> shift_one i j F B = B
+
+eadc5bf781039beb  thm Compression.shift_preserves_no_k_disjoint
+    shift_preserves_no_k_disjoint : forall (i j k : nat) (F : Family), i <> j -> HasKDisjoint k (shift_family i j F) -> HasKDisjoint k F
+
+89b86ebbbfe639d1  thm Compression.link_nil
+    link_nil : forall F : Family, link nil F = F
+
+ef62ae2cf9ef365b  thm Compression.shift_preserves_the_empty_core
+    shift_preserves_the_empty_core : forall (i j k : nat) (F : Family), i <> j -> HasKDisjoint k (link nil (shift_family i j F)) -> HasKDisjoint k (link nil F)
+
+40ca5e88fb6884a8  thm Compression.intersecting_is_the_empty_core_at_two
+    intersecting_is_the_empty_core_at_two : forall F : Family, Intersecting F -> ~ HasKDisjoint 2 F
+
+17e073a1f6e4ad8f  thm Compression.star_has_no_three_disjoint
+    star_has_no_three_disjoint : ~ HasKDisjoint 3 ((0 :: 1 :: nil) :: (0 :: 2 :: nil) :: (0 :: 3 :: nil) :: nil)%list
+
+053bf55b00c37f3b  thm Compression.shifting_breaks_a_non_empty_core
+    shifting_breaks_a_non_empty_core : ~ ContainsKSunflower 3 shift_witness /\ ContainsKSunflower 3 (shift_family 0 1 shift_witness) /\ ~ HasKDisjoint 3 (shift_family 0 1 shift_witness)
+
+6c94b43f7eb84013  thm Compression.only_the_empty_core_survives_compression
+    only_the_empty_core_survives_compression : (forall (i j k : nat) (F : Family), i <> j -> HasKDisjoint k (link nil (shift_family i j F)) -> HasKDisjoint k (link nil F)) /\ (forall F : Family, Intersecting F -> ~ HasKDisjoint 2 F) /\ (~ ContainsKSunflower 3 shift_witness /\ ContainsKSunflower 3 (shift_family 0 1 shift_witness) /\ ~ HasKDisjoint 3 (shift_family 0 1 shift_witness)) /\ (forall (F : Family) (m : nat), 1 <= m -> LeftCompressed F -> Uniform m F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= m + 1)
+
 be5ea580ac872a75  thm Compression.compression_would_give_ground_bounded
     compression_would_give_ground_bounded : CompressionPreservesSunflowerFree -> GroundBounded 2
 
@@ -912,6 +942,15 @@ b94c8ec38e80df57  def Compression.chain
 
 639642dfb2f4b6fa  def Compression.shift_family
     shift_family = fun (i j : nat) (F : Family) => List.map (shift_one i j F) F : nat -> nat -> Family -> Family Arguments shift_family (i j)%nat_scope F
+
+6837c077ec80539a  def Compression.shift_one
+    shift_one = fun (i j : nat) (F : Family) (A : list nat) => if (memb j A && negb (memb i A) && negb (setmemb (shift_member i j A) F))%bool then shift_member i j A else A : nat -> nat -> Family -> list nat -> list nat Arguments shift_one (i j)%nat_scope F A%list_scope
+
+cf9a74e382078aa6  def Compression.pick
+    pick = fun (X : list nat) (F : Family) => match List.find (seteqb X) F with | Some C => C | None => X end : list nat -> Family -> list nat Arguments pick X%list_scope F
+
+9e00dac3e2a1ca71  def Compression.repair
+    repair = fun (i j : nat) (F : Family) (A0 B : list nat) => if in_dec_nat i B then A0 else if in_dec_nat j B then pick (shift_member i j B) F else B : nat -> nat -> Family -> list nat -> list nat -> list nat Arguments repair (i j)%nat_scope F (A0 B)%list_scope
 
 0c74e5f43e558ad2  def Compression.CompressionPreservesSunflowerFree
     CompressionPreservesSunflowerFree = forall (m : nat) (F : Family), 1 <= m -> Uniform m F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists G : Family, Uniform m G /\ Distinct G /\ length G = length F /\ ~ ContainsKSunflower 3 G /\ LeftCompressed G : Prop

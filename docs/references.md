@@ -158,24 +158,35 @@ estimate. Both are marked below.
   method from Erdős–Rado 1960 to the present. Used here for two
   literature checks recorded in `docs/roadmap.md` §5:
 
-  1. it corroborates the [AHS72] recursion and seed (above), **with one
-     caveat found on a second reading and recorded here rather than
-     glossed**. [Kup25] defines its extremal function as
-     $\phi(k,s) := \max\{|\mathcal F| : \mathcal F$ consists of sets of
-     size $\le k$ and contains no $\Delta(s+1)$-system$\}$ — so its
-     second argument is *one less* than the number of petals. Under that
-     definition its two [AHS72] sentences do not agree with each other:
-     the seed is described as "a 3-uniform family of size 10 and with no
-     $\Delta(3)$-system" (three petals), while the bound is written
-     $\phi(k,3) \ge 10^{k/2 - c\log k}$, which under the stated
-     definition forbids $\Delta(4)$-systems (four petals). One of the two
-     is off by one. **The mathematics in this repository does not depend
-     on which**: the substitution is verified computationally for
-     3-sunflowers in `rust/tests/intersecting.rs`, and $\iota(3) = 10$ is
-     exhaustive. What is affected is the *attribution* — until [AHS72] is
-     read, "the 1972 bound is $10^{n/2}$ for 3-sunflowers" is corroborated
-     by an internally inconsistent secondary source, and should be
-     treated as such;
+  1. it corroborates the [AHS72] recursion and seed (above), **with a
+     re-indexing that has to be done by hand**. The survey's own
+     definition, read off the rendered page (1.1) rather than an
+     extracted-text summary, is
+
+     > $\phi(k,s) := \max\{|\mathcal F| : \mathcal F$ consists of sets of
+     > size $\le k$ and $\mathcal F$ contains no $\Delta(s+1)$-system$\}$
+
+     — the second argument is **one less than the petal count**, which the
+     survey confirms by restating Erdős–Rado as $\phi(k,s) \le k!s^k$.
+     Under that definition its [AHS72] sentences read: the lower bound is
+     stated as $\phi(k,3) \ge 10^{k/2 - c\log k}$, i.e. about
+     $\Delta(4)$-systems and compared against the trivial $3^k$, while the
+     construction it cites is "a 3-uniform family of size 10 and with no
+     $\Delta(3)$-system", i.e. 3 petals.
+
+     That is **not** an inconsistency — a $\Delta(3)$-free family is
+     $\Delta(4)$-free, so the sentence is true as written. It is simply
+     not the statement usually attributed to [AHS72], which is the
+     3-petal one: in the survey's notation $\phi(k,2) \ge 10^{k/2-c\log k}$,
+     exponentially better than $2^k$. So "the 1972 bound is $10^{n/2}$ for
+     3-sunflowers" is *derivable* from this survey but is not what the
+     survey's sentence says, and anyone reading the constant off it should
+     re-index first. The repository's own side is unaffected and is
+     verified directly: $\iota(3) = 10$ is exhaustive and
+     `rust/tests/intersecting.rs` checks that substituting an intersecting
+     3-sunflower-free family preserves 3-sunflower-freeness. The
+     $-c\log k$ correction term remains second-hand;
+
   2. it does **not** name an extremal function for *intersecting*
      sunflower-free families, and contains no reduction of the
      sunflower problem to intersecting families. That is a negative
@@ -197,8 +208,13 @@ formula equals $CH(s,s)$ **exactly** for every $s$ from 2 to 8 — and
 `chvatal_hanson::f_2_k` computes $f(2,k) = CH(k-1,k-1) + 1$, so the two
 agree with the offset the definition predicts.
 
-The consequence for this repository: **the exact values $f(2,k)$ appear
-to be due to [AHS72] in 1972, not to [CH76] in 1976.** What [CH76] adds
+[AHS72]'s own abstract says the paper "evaluates $\phi(2,k)$ for all
+$k \ge 3$", with $\phi(n,k)$ counting petals directly — so it evaluates
+the 2-uniform sunflower number at every petal count, which is precisely
+`chvatal_hanson::f_2_k`.
+
+The consequence for this repository: **the exact values $f(2,k)$ are due
+to [AHS72] in 1972, not to [CH76] in 1976.** What [CH76] adds
 is the full two-parameter function $CH(D,\nu)$ for $D \ne \nu$; the
 sunflower problem only ever needs the diagonal. `docs/roadmap.md` §3a
 names "the $CH$ upper bound" as the main remaining target at uniformity
@@ -241,6 +257,34 @@ is recorded as that.
 - **[Stoeckl]** S. Stoeckl, presentation achieving $C = 64$ in the
   streamlined proof.
 
+## What the literature does not contain
+
+Three sources were searched for the two structural claims this
+repository makes — the sandwich $2\iota(b) \le g(b) \le 2b\,\iota(b)$ and
+the equivalence "the conjecture at $k=3$ iff $\iota(b) \le C^b$" — and
+for any use of shifting against sunflower-freeness. All three are
+negative, and negatives from sources of this weight are worth recording
+even though they are not proof of novelty.
+
+- **[Kup25]**, the survey of the Δ-system method: no extremal function
+  for intersecting sunflower-free families, no reduction of the sunflower
+  problem to the intersecting case, and **no discussion of shifting at
+  all** — in the survey of the method the problem belongs to.
+- **Lovett, *From sunflowers to thresholds*** (PCMI lecture series, IAS).
+  The word "intersecting" does **not occur in the notes** (1358 lines of
+  extracted text, zero matches). The only occurrence of "compress" is the
+  ALWZ sense of compressing a *set*, not Frankl's shift.
+- **[Mis26]** does apply shifting, and does not observe that it fails to
+  preserve sunflower-freeness.
+
+What *is* textbook is the first step of the star bound: a maximal
+disjoint subfamily, maximality, pigeonhole to a heavy point. That is
+Erdős–Rado's own argument. What this repository adds is reading the
+resulting star as an *intersecting sunflower-free family* and closing the
+loop with the doubling, which is what turns a step of a proof into an
+equivalence. Treat "new" as unverified; treat "not in the standard
+sources" as checked.
+
 ## Shifting, and the shifted case
 
 - **[Mis26]** Tapas Kumar Mishra, *Erdős Rado Sunflower Theorem for
@@ -256,8 +300,11 @@ is recorded as that.
   shifting preserves sunflower-freeness.
 
   `coq/Compression.v` determines the same quantity exactly:
-  $f'(k,s) = \binom{k+s-2}{k} + 1$, attained by all $k$-subsets of a
-  $(k+s-2)$-set. That is **polynomial in $k$ of degree $s-2$**, against
+  $f'(k,s) = \binom{k+s-2}{k}$, attained by all $k$-subsets of a
+  $(k+s-2)$-set. ([Mis26] defines $f'$ by "cardinality **more than** $m$",
+  so $f'$ *is* the extremal number and there is no $+1$; the definition
+  was read off the rendered page rather than an extracted-text summary,
+  which had it as "at least".) That is **polynomial in $k$ of degree $s-2$**, against
   the exponential $s^{2s-2}2^k$, and it is sharp rather than an estimate.
   `compressed_lives_on_m_plus_k_minus_two_points` is the machine-checked
   half (a shifted $s$-sunflower-free $k$-uniform family lives on $k+s-2$

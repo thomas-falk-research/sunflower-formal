@@ -400,6 +400,16 @@ thm Compression.the_shift_is_the_star
 thm Compression.shift_may_create_a_sunflower
 thm Compression.two_members_cannot_acquire_a_sunflower
 thm Compression.contains_sunflower_incl
+thm Compression.pick_spec
+thm Compression.stayed_means_image_present
+thm Compression.member_of_shift_without_i_is_fixed
+thm Compression.shift_preserves_no_k_disjoint
+thm Compression.link_nil
+thm Compression.shift_preserves_the_empty_core
+thm Compression.intersecting_is_the_empty_core_at_two
+thm Compression.star_has_no_three_disjoint
+thm Compression.shifting_breaks_a_non_empty_core
+thm Compression.only_the_empty_core_survives_compression
 thm Compression.compression_would_give_ground_bounded
 thm Compression.compression_would_settle_k3
 thm Compression.compression_does_not_preserve_sunflower_freeness
@@ -415,4 +425,7 @@ def Compression.LeftCompressed
 def Compression.chain
 def Compression.chains
 def Compression.shift_family
+def Compression.shift_one
+def Compression.pick
+def Compression.repair
 def Compression.CompressionPreservesSunflowerFree

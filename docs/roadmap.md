@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 53 anecdotes into a coverage metric over the
+  mutation testing from 55 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -1096,7 +1096,7 @@ uniformity — and gives no lower bound and no extremal family. The theorem
 above says the truth is polynomial, and says exactly what it is:
 
 ```
-  f'(k,s)  =  C(k+s-2, k) + 1
+  f'(k,s)  =  C(k+s-2, k)
 ```
 
 The ground-set half is machine-checked. The count and the attainment are
@@ -1165,12 +1165,48 @@ sunflower-free sets against a compressed maximum of three, and
 `compression_would_overfill_the_ground_set` runs the same six against a
 three-point ground set.
 
-### Why it fails, exactly
+### Why it fails, exactly — now a theorem, not a measurement
 
 `LinkCharacterisation.sunflower_iff_link_matching` says a family is
-sunflower-free exactly when **every** link has matching number `<= 2`.
-Measured over every counterexample in range, and on `two_triangles`
-specifically:
+sunflower-free exactly when **every** link has matching number `<= 2` —
+one condition per core. The diagnosis is that compression commutes with
+exactly one of them, and all four parts of that are now machine-checked
+(`Compression.only_the_empty_core_survives_compression`):
+
+1. **The empty core is the matching condition.** `link_nil` proves
+   `link [] F = F`, so the `Y = ∅` instance is literally "no `k` pairwise
+   disjoint members".
+2. **Compression preserves it.** `shift_preserves_no_k_disjoint` — the
+   classical fact that shifting does not increase the matching number.
+   Nothing in this development had it, and it is the *positive* half of
+   the diagnosis, so it had to be proved rather than cited. The argument
+   is the standard repair: at most one member of a disjoint family can
+   acquire `i`, so at most one moved; send it back to its preimage, and
+   if some other member carries `j`, send that one forward to the image
+   the guard promised was already present.
+3. **Erdős–Ko–Rado's hypothesis is that same instance at `k = 2`.**
+   `intersecting_is_the_empty_core_at_two`: an intersecting family is one
+   with no two disjoint members.
+4. **And at a non-empty core it fails.**
+   `shifting_breaks_a_non_empty_core`: the three-member witness shifts to
+   a family that *has* a 3-sunflower and has **no** three pairwise
+   disjoint members — so what it acquired is a sunflower with a non-empty
+   core, which is exactly the clause compression does not commute with.
+
+So the shape of the thing is: sunflower-freeness is a conjunction indexed
+by cores; shifting is a homomorphism for one index and for no other; EKR
+lives entirely at that index; and `compressed_bound` prices the rest at
+everything above `C(m+k-2, m)` members.
+
+That also explains, without appeal to solver folklore, why §9's
+intersecting instances are hard. Shifting is a *canonical form* argument
+— "assume the family is compressed" — and it is exactly that kind of
+symmetry breaking the theorem above forbids. What remains sound is
+*orbit* symmetry breaking: pick one representative per orbit of a group
+that preserves the property. The anchor is one, the second-member split
+is another, the sorted-degree constraint is a third and is not yet built.
+
+The measured version, which came first:
 
 * the **empty** link survives every shift — `ν(F)` never rises, which is
   the standard fact that shifting does not increase the matching number;
@@ -1401,13 +1437,42 @@ about *which* families can be extremal, not as a source of bounds.
 a multi-session campaign on its own. **The entropy measurement** (§5's
 correlated-covers item) is still uniquely unclaimed and still cheap.
 
+### Working note: how to read a paper
+
+Both literature findings in §8 and §9 were first taken from
+extracted text or a fetched summary, and both were wrong in a way that
+mattered.
+
+* `pdftotext` is fine for *locating* a passage and useless for quoting
+  one: sub- and superscripts, definition displays and the difference
+  between "at least" and "more than" are exactly what it drops. It
+  installs fine after `apt-get update`, despite an older note saying
+  otherwise.
+* **Render and read.** `pdftoppm -png -r 150 paper.pdf out/p` and read the
+  pages as images. Doing that on [Mis26] corrected `f'(k,s)` from
+  `C(k+s-2,k) + 1` to `C(k+s-2,k)` — the paper counts families "of
+  cardinality *more than* `m`", so `f'` **is** the extremal number — and
+  surfaced that its sunflowers require non-empty petals, which agrees
+  with this development only because uniform distinct families have that
+  for free.
+* Doing it on [Kup25] **withdrew** a claim. The survey's two [AHS72]
+  sentences looked mutually inconsistent in extracted text; on the page
+  they are not. A `Δ(3)`-free family is `Δ(4)`-free, so the bound
+  sentence is true as written — it is just not the statement usually
+  attributed to [AHS72], and needs re-indexing before the constant is
+  quoted.
+
+Two corrections and one withdrawal from one hour of looking at pixels.
+Quote from the rendered page or do not quote.
+
 ### Bounded items, with one reordering
 
-The uniformity-2 campaign (§3a) may have the wrong citation attached. See
-`docs/references.md`: the exact values `f(2,k)` appear to be due to
-[AHS72] in 1972 rather than [CH76] in 1976, since [Kup25] quotes an
-[AHS72] formula that equals `CH(s,s)` at every `s` this repository can
-compute. Only the *diagonal* `CH(D,D)` is ever needed here, and if
+The uniformity-2 campaign (§3a) has the wrong citation attached. See
+`docs/references.md`: the exact values `f(2,k)` are due to [AHS72] in
+1972 rather than [CH76] in 1976. [AHS72]'s own abstract says it
+"evaluates `φ(2,k)` for all `k >= 3`" with petals counted directly, and
+the formula [Kup25] quotes for it equals `CH(s,s)` at every `s` this
+repository can compute. Only the *diagonal* `CH(D,D)` is ever needed here, and if
 [AHS72]'s argument for the diagonal is shorter than [CH76]'s for the full
 two-parameter function, that is the one to formalise. **Read the paper
 before starting the campaign**, not after.
