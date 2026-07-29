@@ -589,6 +589,27 @@ f7d8fe0b9ac09a0f  thm IotaGround.three_uniform_ground_bound
 d5e62fccc263d7ef  thm IotaGround.n_three_ten_at_most_twenty
     n_three_ten_at_most_twenty : forall (U : list nat) (F : Family), List.NoDup U -> length U <= 10 -> Uniform 3 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 20
 
+9f67a1b0812e58c0  thm IotaGround.ground10_max_no_sunflower
+    ground10_max_no_sunflower : ~ ContainsKSunflower 3 ground10_max
+
+dc8b38abacb8619a  thm IotaGround.ground10_max_is_grounded
+    ground10_max_is_grounded : Grounded ground10_max (List.seq 0 10)
+
+89da01efc3615bf4  thm IotaGround.n_three_ten_between_sixteen_and_twenty
+    n_three_ten_between_sixteen_and_twenty : (Uniform 3 ground10_max /\ Distinct ground10_max /\ Grounded ground10_max (List.seq 0 10) /\ length (List.seq 0 10) = 10 /\ ~ ContainsKSunflower 3 ground10_max /\ length ground10_max = 16) /\ (forall (U : list nat) (F : Family), List.NoDup U -> length U <= 10 -> Uniform 3 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 20)
+
+8a66cc78cba571c5  thm IotaGround.the_general_row_climbs_from_nine_to_ten
+    the_general_row_climbs_from_nine_to_ten : length ground9_max = 14 /\ length ground10_max = 16
+
+fbed4dc38257d987  thm IotaGround.ground_bounded_needs_c_at_least_four
+    ground_bounded_needs_c_at_least_four : forall c : nat, GroundBounded c -> 4 <= c
+
+1b397b5e2ff872f0  thm IotaGround.ground_bounded_three_is_false
+    ground_bounded_three_is_false : ~ GroundBounded 3
+
+18d08f464a21d823  thm IotaGround.ground_bounded_two_is_false
+    ground_bounded_two_is_false : ~ GroundBounded 2
+
 ddda7e420d0f7267  thm IotaGround.iota_ground_bounded_gives_exponential
     iota_ground_bounded_gives_exponential : NaslundSawinBound -> forall c : nat, 1 <= c -> IotaGroundBounded c -> forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) b)
 
@@ -780,6 +801,9 @@ a125fe605f96f89b  def IotaGround.degsum
 
 e9220f67e7f96cb6  def IotaGround.sizesum
     sizesum = fix sizesum (U : list nat) (F : Family) {struct F} : nat := match F with | nil => 0 | (A :: F')%list => length (List.filter (fun x : nat => memb x A) U) + sizesum U F' end : list nat -> Family -> nat Arguments sizesum U%list_scope F
+
+c012e3a48ba02925  def IotaGround.ground10_max
+    ground10_max = ((0 :: 1 :: 2 :: nil) :: (0 :: 1 :: 3 :: nil) :: (0 :: 2 :: 3 :: nil) :: (1 :: 2 :: 3 :: nil) :: (0 :: 4 :: 5 :: nil) :: (1 :: 4 :: 5 :: nil) :: (0 :: 4 :: 6 :: nil) :: (1 :: 4 :: 6 :: nil) :: (0 :: 5 :: 6 :: nil) :: (1 :: 5 :: 6 :: nil) :: (2 :: 7 :: 8 :: nil) :: (3 :: 7 :: 8 :: nil) :: (2 :: 7 :: 9 :: nil) :: (3 :: 7 :: 9 :: nil) :: (2 :: 8 :: 9 :: nil) :: (3 :: 8 :: 9 :: nil) :: nil)%list : Family
 
 c65e9c99650757d1  def IotaGround.IotaGroundBounded
     IotaGroundBounded = fun c : nat => forall (b : nat) (H : Family), 1 <= b -> Uniform b H -> Distinct H -> Intersecting H -> ~ ContainsKSunflower 3 H -> exists (H' : Family) (U : list nat), Distinct H' /\ length H' = length H /\ ~ ContainsKSunflower 3 H' /\ List.NoDup U /\ Grounded H' U /\ length U <= c * b : nat -> Prop Arguments IotaGroundBounded c%nat_scope

@@ -126,11 +126,36 @@ jobs:
       RUSTFLAGS: -D warnings
     steps:
       - uses: actions/checkout@v4
+      - name: Install SAT solvers
+        run: |
+          # The SAT layer shells out to external solvers. Two of them,
+          # because UNSAT is the verdict no witness can confirm and
+          # tests/sat_encoding.rs requires the pair to agree before it
+          # believes anything.
+          sudo apt-get update
+          sudo apt-get install -y cadical cryptominisat
       - name: Small-case brute-force cross-checks
         run: |
           cd rust
           cargo test --release --test small_cases
           cargo test --release --lib
+      # Compression against sunflower-freeness: the controls that say
+      # the shift implemented is the textbook one, the exhaustive
+      # smallest counterexample, and the m+1 bound that coq/Compression.v
+      # proves. A change to the Coq statement that the measurement no
+      # longer supports fails here.
+      - name: Compression cross-checks
+        run: |
+          cd rust
+          cargo test --release --test shifting
+      # The SAT encoding against the branch-and-bound it replaces, on
+      # every parameter the latter can still decide. A wrong encoding
+      # would answer quickly and confidently and there would be nothing
+      # to notice.
+      - name: SAT encoding differential
+        run: |
+          cd rust
+          cargo test --release --test sat_encoding
       # Exhaustive search over families of m-subsets of a small ground
       # set, looking for counterexamples to the spread hypothesis at
       # parameters where the proved theorems say there can be none.

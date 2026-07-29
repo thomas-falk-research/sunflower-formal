@@ -508,11 +508,12 @@ the sandwich it is *the* rate of the problem at `k = 3`, so it is worth
 having in one place:
 
 ```
-  b   iota(b)          rate = iota(b)^(1/(b-1))
-  2   3                3.0000
-  3   10               3.1623   <- the 1972 constant
-  4   27  (ground 9)   3.0000
-  4   <32 (ground 10)  <3.1414
+  b   iota(b)            rate = iota(b)^(1/(b-1))
+  2   3                  3.0000
+  3   10                 3.1623   <- the 1972 constant
+  4   27   (ground 9)    3.0000
+  4   <32  (ground 10)   <3.1414
+  5   >=42 (ground 10)   >=2.5457
 ```
 
 **Flat, not growing**, over every value that has been decided. Read
@@ -581,11 +582,17 @@ sunflower-free. The rate that ceiling would give is
 `(C(2b,b)/2)^(1/(b-1))`:
 
 ```
-  b   ceiling   rate at ceiling   iota(b,2b)   reached?
-  2         3            3.0000            3   yes
-  3        10            3.1623           10   yes      <- AHS
-  4        35            3.2711           24   NO
+  b   ceiling   rate at ceiling   iota(b,2b)   reached?   fraction
+  2         3            3.0000            3   yes           1.00
+  3        10            3.1623           10   yes           1.00   <- AHS
+  4        35            3.2711           24   NO            0.69
+  5       126            3.3523        >=42   NO            >=0.33
 ```
+
+The `b = 5` row is new (§9; SAT, and the rung above it did not decide).
+The fraction of the ceiling attained is falling, not levelling: 1, 1,
+0.69, and at most a third. Whatever the extremal families are, they are
+getting further from the complementary-pair transversal, not closer.
 
 **The 1972 constant is the last `b` at which the ceiling is met.** At
 `b = 4` the ceiling is 35 and would beat AHS — the extremal family
@@ -865,24 +872,36 @@ bounded by `f(m,3)-1`, so it plateaus; `GroundBounded c` says it
 plateaus by `g = c*m`.
 
 ```
-  g        3  4  5  6  7  8  9  10
-  m = 1:   2  2  2  2  2  2  2   2     plateau at g = 2 = 2m,  value 2
-  m = 2:   3  4  5  6  6  6  6   6     plateau at g = 6 = 3m,  value 6
-  m = 3:   1  4  6 10 12 12 14   ?     still rising at g = 9 = 3m
+  g        3  4  5  6  7  8  9   10
+  m = 1:   2  2  2  2  2  2  2    2     plateau at g = 2 = 2m,  value 2
+  m = 2:   3  4  5  6  6  6  6    6     plateau at g = 6 = 3m,  value 6
+  m = 3:   1  4  6 10 12 12 14  >=16    still rising at g = 10
 ```
 
-Every entry shown is exhaustive. `g = 9` at `m = 3` takes 15 minutes and
-comes out at **14**, up from 12 at `g = 8` — so the `m = 3` row is *still
-climbing at `3m`*, and `c = 3` survives only if `N(3,10) = 14`. That is
-the first value the search does not decide, and it is the one that
-matters.
+Every entry through `g = 9` is exhaustive. `g = 9` at `m = 3` takes 15
+minutes and comes out at **14**, up from 12 at `g = 8`.
 
-**Do not read the ratios 2 and 3 as evidence.** Two plateaus and a row
-that has not plateaued is the smallest amount of data that could
-distinguish the two answers, and it does not. What the table is good for
-is naming the next computation: `N(3,10)`. It needs a better search than
-the current branch-and-bound — the same conclusion §4 reaches for the
-spread threshold, and probably the same fix.
+**`N(3,10) >= 16`, and `c = 3` is dead.** The ten-point entry was found
+by the SAT encoding (§9) in 0.02 seconds, against a branch-and-bound that
+did not finish at all, and is pinned as `IotaGround.ground10_max` with an
+independent re-verification. With the proved `N(3,g) <= 2g` it gives
+`16 <= N(3,10) <= 20`, both ends theorems
+(`n_three_ten_between_sixteen_and_twenty`).
+
+Better: the refutation of `c = 3` does not need the search at all.
+`IotaGround.ground_bounded_needs_c_at_least_four` proves
+**`GroundBounded c` forces `c >= 4`**, from the twenty-member family at
+uniformity 3 (`Intersecting.lower_bound_3_3_20`) against `N(3,g) <= 2g`:
+twenty members on `3c` points needs `20 <= 6c`. So neither of the two
+measured plateaus, at `2m` and at `3m`, is the constant.
+
+**Do not read the ratios 2 and 3 as evidence** — and now there is a
+theorem saying so, not just a caution. Two plateaus and a row that has
+not plateaued was the smallest amount of data that could distinguish the
+answers, and it did not; the ratios 2 and 3 are both refuted outright.
+What the table named as the next computation, `N(3,10)`, is now done, and
+it needed the better search §9 supplies rather than the branch-and-bound
+§4 also gave up on.
 
 A by-product worth keeping: `N(3,9) = 14` beats the direct sum's 12, so
 `f(3,3) >= 15`. It does not improve the *rate* — `14^(1/3) = 2.41` is
@@ -1151,6 +1170,117 @@ any of this. What the diagnosis suggests is that the right normal form is
 **regular**, not compressed — which is what §7's tightness analysis
 already found the extremal objects to be. Nobody has a compression whose
 fixed points are regular hypergraphs.
+
+## 9. Measured: SAT, and where it does and does not help
+
+The homegrown branch-and-bound was out of road — `iota(4,10) >= 32?`
+took 4437 seconds, `>= 31?` did not finish in an hour, a factor of 89 per
+ground point — so the questions were re-encoded as SAT and handed to
+external solvers. `rust/src/sat.rs` is the encoder and driver;
+`rust/tests/sat_encoding.rs` is what stops it from being confidently
+wrong.
+
+### The encoding
+
+One boolean per `b`-subset of `[g]`. Intersecting-ness is binary clauses,
+one per disjoint pair. Sunflower-freeness is **ternary** clauses, one per
+sunflower triple — which is exactly the constraint the branch-and-bound's
+bound could not see. "At least `t` members" is a sequential counter.
+
+Three things keep it honest, and all three are gates:
+
+* **The anchor is forced**, which is sound because relabelling preserves
+  everything (`DirectSum.relabel_preserves`); for intersecting families
+  the second member is split over the `b-1` orbits of the anchor's
+  stabiliser, the reduction `intersecting::iota_decide` already carried.
+  `the_orbit_split_decides_the_same_question` checks the split answers
+  the same question as the unsplit instance.
+* **No model is trusted.** Every satisfying assignment is decoded and
+  re-verified by `intersecting::verify`, which shares no code with the
+  encoder; `sat::solve` panics rather than returns on a bad model.
+* **UNSAT gets a second opinion.** It is the verdict no witness can
+  confirm, so `solve_agreed` runs two independent solvers (cadical and
+  cryptominisat) and refuses to answer unless they agree — the same
+  discipline `Reflect.rao_witness_agrees` applies on the Coq side.
+
+The differential test is the main defence: on every parameter the
+branch-and-bound can still decide, the two agree — `iota(b,g)` for
+`b <= 4` and `N(m,g)` for `m <= 3`, fourteen and eleven rows
+respectively.
+
+### What it bought
+
+**The general row moved, and it is the row §7 names.** `N(3,10) >= 16`,
+found in **0.02 seconds**, against a search that did not finish at all.
+Combined with the proved `N(3,g) <= 2g` this puts `N(3,10)` in `[16,20]`,
+and it says the general ground row is *still climbing at `g = 10`* —
+14 at nine points, at least 16 at ten.
+
+**`N(3,9) = 14` re-decided independently**, `>= 15` UNSAT in 243s against
+the branch-and-bound's fifteen minutes. A second exhaustive verdict on a
+value the development quotes.
+
+**`iota(5,10) >= 42`**, the first value ever computed at `b = 5` here.
+The rung above it, `>= 43`, did not decide in sixteen minutes. The
+threshold that would beat Abbott–Hanson–Sauer at `b = 5` is 101, so this
+is not on course to reach it: the rate `42^(1/4) = 2.55` is well under
+the 1972 constant, and the fraction of the complementary-pair ceiling
+attained is falling across the row (1, 1, 0.69, at most 0.33).
+
+### What it did not buy, which is the more useful half
+
+**The degree cap does not bite.** §7 named `deg(x) <= N(b-1,g-1)` as the
+missing ingredient and recorded that "whether it bites at these
+parameters is unmeasured". Measured: at `N(3,9) >= 15` the cap costs
+251s against 243s without it, and `the_degree_cap_changes_no_answer`
+confirms it moves no value. It is sound, it is a theorem, and it is
+worth nothing to a CDCL solver — which makes sense in hindsight, since
+the cap is a *consequence* of the ternary clauses and adding a consequence
+tells a clause learner nothing it could not derive.
+
+**The intersecting instances are worse for SAT than for the search.**
+`iota(4,9) >= 28` is UNSAT, and the branch-and-bound decides the whole
+`(4,9)` row in 50 seconds while cadical does not settle that one rung in
+three minutes. The instances are tiny — 2915 variables, 10611 clauses —
+and hard, which is the signature of **symmetry**: after the anchor and
+the orbit split, the stabiliser still has order `4! * 5!` at `(4,9)`, and
+CDCL is famously bad at symmetric UNSAT. The general row has far less
+symmetry to fight, which is exactly where SAT won.
+
+**What was asked and not decided**, stated so the next session does not
+re-run it: `iota(4,10) >= 28` did not settle in an hour of cadical (the
+question §7 says `IotaGroundBounded` turns on); `iota(4,11) >= 32` did
+not settle in thirty minutes; `iota(5,10) >= 43` did not settle in
+sixteen; `N(3,10) >= 17` did not settle in the time it was given. Every
+one of those is an UNSAT-side question on a symmetric instance, and the
+one on a *general* row — `N(3,10) >= 17` — is the least hopeless of them.
+
+So the honest summary is: **SAT is transformative on the witness side and
+on the general row, and it is not a free win on the intersecting UNSAT
+side.** That is a sharper statement of what is hard here than "the search
+is slow" was.
+
+### The named next step, with its soundness argument
+
+The obstruction is symmetry, so break more of it. The stabiliser of the
+anchor `A = {0,...,b-1}` is `Sym(A) x Sym([g] \ A)`, and both factors
+preserve uniformity, distinctness, intersecting-ness and
+sunflower-freeness. So a family may be relabelled to make its degree
+sequence **sorted** on each side:
+
+```
+  deg(0) >= deg(1) >= ... >= deg(b-1)     and     deg(b) >= ... >= deg(g-1)
+```
+
+That is sound, it is not implied by anything currently in the encoding,
+and it is a genuine restriction rather than a consequence — which is what
+the degree cap turned out not to be. Encoding it needs a totalizer per
+point and a pairwise comparison of the unary outputs: `O(n log n)`
+variables per point, `O(n^2)` clauses, both affordable at these sizes.
+Two cheaper things to try first, in order: a symmetry-breaking
+preprocessor (`BreakID`) in front of the solver, and a portfolio — the
+solvers here disagree wildly in behaviour on symmetric instances and only
+cadical has been measured.
 
 ---
 

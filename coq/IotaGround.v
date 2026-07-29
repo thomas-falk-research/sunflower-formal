@@ -293,6 +293,112 @@ Proof.
   pose proof (three_uniform_ground_bound U F HndU HU HD HG Hno); lia.
 Qed.
 
+(** ** The row at ten points, both ends
+
+    [SliceRank.v] names [N(3,10)] as the value the general row turns on,
+    and records that the search does not decide it. The upper end is
+    [n_three_ten_at_most_twenty] above. The lower end is this family,
+    found by the SAT encoding in [rust/src/sat.rs] and re-verified by an
+    independent checker before it was written down: sixteen 3-sets on ten
+    points, sunflower-free, degrees [(6,6,6,6,4,4,4,4,4,4)].
+
+    Its shape is worth reading. The first four members are *all* the
+    triples of [{0,1,2,3}] — which is exactly
+    [Compression.compressed_bound]'s extremal family at [m = 3], the
+    largest a compressed family may be. The other twelve are the pairs
+    from [{0,1}] joined to a triangle on [{4,5,6}] and the pairs from
+    [{2,3}] joined to a triangle on [{7,8,9}]. Four plus six plus six.
+
+    So the general row is **still climbing at ten points**: 14 at nine,
+    at least 16 at ten. That is the measurement §7 of the roadmap asks
+    for, and it goes the way that hurts [GroundBounded]. *)
+
+Definition ground10_max : Family :=
+  [[0; 1; 2]; [0; 1; 3]; [0; 2; 3]; [1; 2; 3];
+   [0; 4; 5]; [1; 4; 5]; [0; 4; 6]; [1; 4; 6]; [0; 5; 6]; [1; 5; 6];
+   [2; 7; 8]; [3; 7; 8]; [2; 7; 9]; [3; 7; 9]; [2; 8; 9]; [3; 8; 9]].
+
+Lemma ground10_max_no_sunflower : ~ ContainsKSunflower 3 ground10_max.
+Proof.
+  intro Hc.
+  pose proof (sunflower3b_sound ground10_max Hc) as E.
+  vm_compute in E; discriminate.
+Qed.
+
+Lemma ground10_max_is_grounded : Grounded ground10_max (seq 0 10).
+Proof.
+  unfold Grounded.
+  apply (proj1 (groundedb_correct ground10_max (seq 0 10))).
+  vm_compute; reflexivity.
+Qed.
+
+(** [N(3,10)] is between sixteen and twenty, and both ends are theorems.
+    The gap is four; the search closed neither end. *)
+
+Theorem n_three_ten_between_sixteen_and_twenty :
+  (Uniform 3 ground10_max /\ Distinct ground10_max
+   /\ Grounded ground10_max (seq 0 10) /\ length (seq 0 10) = 10
+   /\ ~ ContainsKSunflower 3 ground10_max /\ length ground10_max = 16)
+  /\ (forall (U : list nat) (F : Family),
+        NoDup U -> length U <= 10 ->
+        Uniform 3 F -> Distinct F -> Grounded F U ->
+        ~ ContainsKSunflower 3 F -> length F <= 20).
+Proof.
+  split; [| exact n_three_ten_at_most_twenty].
+  split; [apply uniformb_correct; vm_compute; reflexivity|].
+  split; [apply distinctb_correct; vm_compute; reflexivity|].
+  split; [exact ground10_max_is_grounded|].
+  split; [vm_compute; reflexivity|].
+  split; [exact ground10_max_no_sunflower | vm_compute; reflexivity].
+Qed.
+
+(** It beats the nine-point family, so the row really did move. *)
+
+Corollary the_general_row_climbs_from_nine_to_ten :
+  length SliceRank.ground9_max = 14 /\ length ground10_max = 16.
+Proof. split; vm_compute; reflexivity. Qed.
+
+(** ** A lower bound on the constant [GroundBounded] could have
+
+    The two halves of this file meet here, and they refute something.
+    [SliceRank.GroundBounded c] asserts that an extremal sunflower-free
+    [m]-uniform family can be realised on [c*m] points. At [m = 3] the
+    development knows a family of twenty members
+    ([Intersecting.lower_bound_3_3_20], the doubled [iota(3)]), and it
+    knows [N(3,g) <= 2g] outright. Twenty members on [3c] points needs
+    [20 <= 6c].
+
+    So **[GroundBounded c] is false for every [c <= 3]** — proved, not
+    measured. §7 of the roadmap records the measurement that the
+    [m = 3] row is "still climbing at [g = 3m]"; this is the same fact
+    with the search taken out of it, and it is stronger, because the
+    search never decided [N(3,10)] at all.
+
+    What it does not do is refute the hypothesis. [c = 4] is untouched,
+    and [bounded_ground_set_settles_k3] at [c = 4] still gives the
+    conjecture at [k = 3], with a worse constant. What it removes is the
+    reading of the two plateaus at [2m] and [3m] as evidence for a small
+    [c]: at uniformity 3 the constant is at least 4. *)
+
+Theorem ground_bounded_needs_c_at_least_four :
+  forall c, GroundBounded c -> 4 <= c.
+Proof.
+  intros c HGB.
+  destruct (HGB 3 20 ltac:(lia) lower_bound_3_3_20)
+    as [F [U [HunF [HdF [HlenF [HnoF [HndU [HG Hu]]]]]]]].
+  pose proof (three_uniform_ground_bound U F HndU HunF HdF HG HnoF) as Hb.
+  lia.
+Qed.
+
+Corollary ground_bounded_three_is_false : ~ GroundBounded 3.
+Proof. intro H; pose proof (ground_bounded_needs_c_at_least_four _ H); lia. Qed.
+
+(** The same for [c = 1] and [c = 2], which is where the two measured
+    plateaus sit — so neither of them is the constant. *)
+
+Corollary ground_bounded_two_is_false : ~ GroundBounded 2.
+Proof. intro H; pose proof (ground_bounded_needs_c_at_least_four _ H); lia. Qed.
+
 (** ** The hypothesis, pointed at intersecting families
 
     Deliberately *weaker* than what the measurement supports. The data

@@ -265,6 +265,13 @@ thm IotaGround.star_at_point_bounded
 thm IotaGround.link_degree_ground_bound
 thm IotaGround.three_uniform_ground_bound
 thm IotaGround.n_three_ten_at_most_twenty
+thm IotaGround.ground10_max_no_sunflower
+thm IotaGround.ground10_max_is_grounded
+thm IotaGround.n_three_ten_between_sixteen_and_twenty
+thm IotaGround.the_general_row_climbs_from_nine_to_ten
+thm IotaGround.ground_bounded_needs_c_at_least_four
+thm IotaGround.ground_bounded_three_is_false
+thm IotaGround.ground_bounded_two_is_false
 thm IotaGround.iota_ground_bounded_gives_exponential
 thm IotaGround.iota_ground_bounded_is_exponential
 thm IotaGround.iota_ground_bounded_settles_k3
@@ -362,6 +369,7 @@ def SliceRank.ground9_max
 # printed form.
 def IotaGround.degsum
 def IotaGround.sizesum
+def IotaGround.ground10_max
 def IotaGround.IotaGroundBounded
 def Audit.GroundHypotheses
 
