@@ -850,6 +850,9 @@ a89d97a18dfc06c3  thm Compression.the_shift_is_the_star
 ed157e55dc56f164  thm Compression.two_members_cannot_acquire_a_sunflower
     two_members_cannot_acquire_a_sunflower : forall F : list (list nat), length F <= 2 -> ~ ContainsKSunflower 3 F
 
+f1c2111d29cdffee  thm Compression.contains_sunflower_incl
+    contains_sunflower_incl : forall (k : nat) (S F : list (list nat)), List.incl S F -> ContainsKSunflower k S -> ContainsKSunflower k F
+
 be5ea580ac872a75  thm Compression.compression_would_give_ground_bounded
     compression_would_give_ground_bounded : CompressionPreservesSunflowerFree -> GroundBounded 2
 

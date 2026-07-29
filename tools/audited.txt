@@ -393,6 +393,7 @@ thm Compression.shift_family_uniform
 thm Compression.the_shift_is_the_star
 thm Compression.shift_may_create_a_sunflower
 thm Compression.two_members_cannot_acquire_a_sunflower
+thm Compression.contains_sunflower_incl
 thm Compression.compression_would_give_ground_bounded
 thm Compression.compression_would_settle_k3
 thm Compression.compression_does_not_preserve_sunflower_freeness

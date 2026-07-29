@@ -73,7 +73,8 @@
 
 From Coq Require Import List Arith Lia Bool.
 From Coq Require Import PeanoNat Permutation.
-From Sunflower Require Import Sets Sunflower LowerBound Reflect F23 SliceRank.
+From Sunflower Require Import Sets Sunflower LowerBound SpreadReduction Reflect
+     F23 SliceRank.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -567,17 +568,41 @@ Definition CompressionPreservesSunflowerFree : Prop :=
       Uniform m G /\ Distinct G /\ length G = length F
       /\ ~ ContainsKSunflower 3 G /\ LeftCompressed G.
 
+(** Sunflower-freeness passes to subfamilies, which is what lets the
+    compressed family be trimmed to the size [GroundBounded] asks for.
+    Trimming rather than exhibiting [G] outright is deliberate: relying
+    on [LowerBound]'s [length F = m] would make that equality
+    load-bearing, and [Audit.LowerBound_ge_equiv] proves it is not — the
+    mutation manifest records it as the development's one genuine
+    survivor, and this proof must not be what kills it. *)
+
+Lemma contains_sunflower_incl : forall k S F,
+    incl S F -> ContainsKSunflower k S -> ContainsKSunflower k F.
+Proof.
+  intros k S F Hincl [T [Hsub Hk]].
+  exists T; split; [| exact Hk].
+  intros A HA; destruct (Hsub A HA) as [B [HB Hseq]].
+  exists B; split; [apply Hincl; exact HB | exact Hseq].
+Qed.
+
 Theorem compression_would_give_ground_bounded :
   CompressionPreservesSunflowerFree -> GroundBounded 2.
 Proof.
   intros HC m j Hm HL.
   destruct HL as [F [Hun [Hd [Hlen Hno]]]].
   destruct (HC m F Hm Hun Hd Hno) as [G [HunG [HdG [HlenG [HnoG HlcG]]]]].
-  exists G, (seg (S m)).
-  repeat split; try assumption.
-  - lia.
+  assert (Hge : j <= length G) by lia.
+  assert (Hincl : incl (firstn j G) G) by apply incl_firstn.
+  exists (firstn j G), (seg (S m)).
+  repeat split.
+  - exact (Uniform_sublist HunG Hincl).
+  - exact (SetNoDup_incl HdG (NoDup_firstn j (SetNoDup_NoDup HdG)) Hincl).
+  - rewrite firstn_length_le; lia.
+  - intro Hc; exact (HnoG (contains_sunflower_incl Hincl Hc)).
   - apply seg_nodup.
-  - intros A HA; eapply compressed_lives_on_m_plus_one_points; eassumption.
+  - intros A HA.
+    eapply compressed_lives_on_m_plus_one_points;
+      [exact Hm | exact HlcG | exact HunG | exact HnoG | apply Hincl; exact HA].
   - rewrite seg_len; lia.
 Qed.
 

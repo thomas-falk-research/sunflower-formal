@@ -533,6 +533,23 @@ the goal in either form, and the mutation is declared `survived`: what
 it reports is now a property of the definition rather than of the
 tactic scripts.
 
+**It has now been killed by accident four times**, and the fourth was a
+*different* mechanism, so the standing rule needs both halves stated.
+
+* **Consuming a `LowerBound`.** Do not discharge a size obligation by
+  `reflexivity`, `apply`, or `rewrite` on the length equation. Finish
+  with `pose proof …; lia`, which proves the goal from `=` or from `≥`.
+* **Producing a family of a given size.** `Compression.compression_would_give_ground_bounded`
+  takes a `LowerBound m 3 j` apart and has to hand `GroundBounded` a
+  family of length *exactly* `j`. Passing the family straight through
+  works only if `LowerBound` pinned the size — so the proof was sensitive
+  to the equality, through no fault of its own, and killed the survivor.
+  The fix is the content of `Audit.LowerBound_ge_equiv` written out at
+  the point of use: take `firstn j` of the family, which is uniform,
+  distinct, grounded and sunflower-free because all four pass to
+  subfamilies. **A proof that needs a family of an exact size must trim
+  one, not assume one.**
+
 **It happened a third time**, which is the reason this section is worth
 its length. `IotaRate.every_construction_is_within_2b_of_iota` and
 `Audit.bounds_coherent_star_bound` both destructure a `LowerBound` and
