@@ -219,11 +219,18 @@ fn complementary_pair_ceiling() {
     assert_eq!(reached, vec![(3, 3), (10, 10), (24, 35)]);
 
     // The ceiling argument only applies at ground 2b, where disjoint
-    // means complementary. Past it the value keeps climbing:
-    // iota(4,9) = 27 against iota(4,8) = 24. So `b = 4` is not settled
-    // by the ceiling, and 32 -- the value that would beat AHS -- is
-    // still live. (Ground 9 takes ~9 minutes; left out of CI, and
-    // `iota_scan.rs` is where it is computed.)
+    // means complementary. Past it the value keeps climbing --
+    // iota(4,9) = 27 against iota(4,8) = 24 -- so the ceiling does not
+    // settle b = 4 on its own.
+    //
+    // Ground 9 and ground 10 are both decided, out of CI because they
+    // take 50s and 4437s respectively (`examples/g10.rs`):
+    //
+    //     iota(4,9)  = 27          rate exactly 3.0000
+    //     iota(4,10) < 32          exhaustive: no family of 32+
+    //
+    // So b = 4 does not beat AHS through ground 10. Grounds 11 and up
+    // are open, and on the observed 89x-per-point scaling they are days.
     assert!(27 > 24 && 27 < 32);
 
     // And the ceiling at b = 4 would have beaten AHS, had it been met.

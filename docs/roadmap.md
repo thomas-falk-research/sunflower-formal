@@ -467,7 +467,7 @@ place to look for an improvement has been looked at.
 `b` has `iota(b) > 10^((b-1)/2)`:
 
 ```
-  b = 4   needs iota(4) >=  32     (have 27, exhaustive at ground 9)
+  b = 4   needs iota(4) >=  32     RULED OUT through ground 10
   b = 5   needs iota(5) >= 101
   b = 6   needs iota(6) >= 317
 ```
@@ -480,13 +480,25 @@ the value jumps:
 
 ```
   ground   4  5  6   7   8   9   10
-  iota(4)  1  5  9  15  24  27    ?
+  iota(4)  1  5  9  15  24  27   < 32
 ```
 
-All exhaustive. 27 is a rate of exactly `3.0000`, still under AHS's
-3.162 and under the 32 needed to beat it — but the row has not
-plateaued, and ground 10 is the next value. Ground 9 took 536s; ground
-10 will need either patience or the missing bound below.
+All exhaustive. **Ground 10 is decided and the answer is no**: there is
+no intersecting sunflower-free family of 32 or more 4-sets on ten
+points (4437s, `examples/g10.rs`). So `b = 4` does not beat
+Abbott–Hanson–Sauer through ground 10, and the exact value at ground 9
+is 27 — a rate of exactly `3.0000` against their `3.1623`.
+
+This does not close `b = 4` outright: grounds 11 and up are untouched
+and the row had not plateaued at 9. But the cost is now measured, and it
+is bad. Ground 9 decides in 50s, ground 10 in 4437s — a factor of 89 for
+one extra point. Ground 11 on the same scaling is days, and the current
+branch-and-bound has nothing left to give: the decision framing, the
+anchor symmetry, the second-member orbit reduction and the candidate-set
+bound are all in. What is missing is a bound that sees the **ternary**
+sunflower constraint; everything in there now sees only the binary
+intersecting one, and on these parameters the intersection graph is far
+too dense for that to say anything.
 
 Two speedups are in and a third is not. The symmetry reduction (anchor a
 member at `{0,...,b-1}`, keep only the sets meeting it) and the
