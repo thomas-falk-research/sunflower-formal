@@ -459,7 +459,7 @@ not a resting place — the next unrelated theorem pays interest on it.
 
 ### Current results
 
-41 mutations, all with the outcome the manifest declares: 39 killed
+42 mutations, all with the outcome the manifest declares: 40 killed
 outright, one genuine survivor (`lowerbound-at-least`, for the reason
 above), and one control surviving as it must. The mutations that
 matter most:

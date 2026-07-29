@@ -382,6 +382,18 @@ ac0e78ad47f40d2b  thm Intersecting.double_no_sunflower
 e08ff35c416a9525  thm Intersecting.sharp_beats_previous
     sharp_beats_previous : forall t : nat, 1 <= t -> LowerBound (t * 6) 3 (PeanoNat.Nat.pow 6 (3 * t)) /\ LowerBound (t * 6) 3 (PeanoNat.Nat.pow 20 (2 * t)) /\ PeanoNat.Nat.pow 6 (3 * t) < PeanoNat.Nat.pow 20 (2 * t)
 
+429364b827649475  thm Intersecting.intersecting_link_bound
+    intersecting_link_bound : forall (b N : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> (forall G : Family, Uniform (b - 1) G -> Distinct G -> ~ ContainsKSunflower 3 G -> length G <= N) -> length F <= b * N
+
+7512587737ec4184  thm Intersecting.iota_three_at_most_eighteen
+    iota_three_at_most_eighteen : forall F : Family, Uniform 3 F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> length F <= 18
+
+47578e4edeb6cc16  thm Audit.iota_bound_holds_at_the_witness
+    iota_bound_holds_at_the_witness : length iota3 = 10 /\ length iota3 <= 18 /\ 10 < 18
+
+74b243702220e160  thm Audit.iota_bound_beats_the_ground_set
+    iota_bound_beats_the_ground_set : forall F : Family, Uniform 3 F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> length F <= 18
+
 7b86dab0f57dfbce  thm Audit.intersecting_is_needed_in_the_doubling
     intersecting_is_needed_in_the_doubling : Uniform 1 ((0 :: nil) :: (1 :: nil) :: nil)%list /\ Distinct ((0 :: nil) :: (1 :: nil) :: nil)%list /\ ~ ContainsKSunflower 3 ((0 :: nil) :: (1 :: nil) :: nil)%list /\ ~ Intersecting ((0 :: nil) :: (1 :: nil) :: nil)%list /\ ContainsKSunflower 3 (double ((0 :: nil) :: (1 :: nil) :: nil)%list)
 

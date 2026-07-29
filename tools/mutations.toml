@@ -619,3 +619,24 @@ because = """Load-bearing: with both copies on the even points the two halves ar
 literally the same family, so the result is not Distinct and its length is not \
 2 * length H. The parity split is what makes the copies disjoint without computing \
 anybody's maximum."""
+
+[[mutation]]
+id = "iota-bound-drop-intersecting"
+file = "coq/Intersecting.v"
+question = """The link bound on iota counts members meeting a fixed member. Is \
+"intersecting" what puts them all there, or would sunflower-freeness alone do?"""
+find = """    Uniform b F -> Distinct F ->
+    Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    (forall G : Family,"""
+replace = """    Uniform b F -> Distinct F ->
+    Distinct F ->
+    ~ ContainsKSunflower 3 F ->
+    (forall G : Family,"""
+expect = "killed"
+because = """Load-bearing, and the mutated statement is false: without it the members \
+need not meet the chosen one at all, so the pigeonhole has nothing to count over. \
+The product family of ProductLowerBound is 3-uniform, distinct and sunflower-free \
+with 2^3 = 8 members on six points, and scaling the same construction past 3*N \
+members refutes any fixed b*N. The hypothesis is replaced by a copy of its \
+neighbour rather than deleted, so the arity is unchanged."""

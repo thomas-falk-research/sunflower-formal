@@ -333,7 +333,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 41 anecdotes into a coverage metric over the
+  mutation testing from 42 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`

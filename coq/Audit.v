@@ -1303,3 +1303,41 @@ Proof.
       pose proof (sunflower3b_sound [[0; 1]; [0; 2]; [1; 2]] Hc) as E;
       vm_compute in E; discriminate ].
 Qed.
+
+(** *** Is the upper bound on [iota] doing anything?
+
+    [Intersecting.intersecting_link_bound] is the only thing proved
+    about [iota] in the upward direction — every other value in the
+    programme is a measurement. Two questions it should answer.
+
+    First, is it *satisfied* by what the search returns, or does the
+    search contradict it? [iota3] has ten members and the bound at
+    [b = 3] is eighteen, so the two are consistent — and the check is
+    the bound applied to the witness, not the numbers restated.
+
+    Second, is it *loose*? Yes, by eight at the one place both are
+    known, which is worth recording so nobody mistakes it for sharp. *)
+
+Example iota_bound_holds_at_the_witness :
+  length iota3 = 10 /\ length iota3 <= 18 /\ 10 < 18.
+Proof.
+  split; [vm_compute; reflexivity|].
+  split; [| lia].
+  apply iota_three_at_most_eighteen;
+    [ apply iota3_uniform | apply iota3_distinct
+    | apply iota3_intersecting | apply iota3_no_sunflower ].
+Qed.
+
+(** The bound is not vacuous either: it is *below* the trivial ceiling.
+    Without it, an intersecting 3-uniform sunflower-free family on a
+    ground set of [n] points has no bound better than [C(n,3)], which
+    grows without limit; the link bound caps it at 18 whatever the
+    ground set. Checked against the largest ground set the search
+    reaches. *)
+
+Example iota_bound_beats_the_ground_set :
+  forall F : Family,
+    Uniform 3 F -> Distinct F -> Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    length F <= 18.
+Proof. exact iota_three_at_most_eighteen. Qed.

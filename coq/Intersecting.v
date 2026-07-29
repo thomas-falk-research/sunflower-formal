@@ -67,7 +67,7 @@
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower LowerBound ProductLowerBound
-     Spread Reflect F23 DirectSum.
+     Pigeonhole Spread Reflect F23 DirectSum.
 Import ListNotations.
 
 (** ** Intersecting families *)
@@ -388,4 +388,92 @@ Proof.
   { replace (t * 6) with (2 * t * 3) by lia.
     apply lower_bound_f_n_3_sharp. }
   apply twenty_beats_six; exact Ht.
+Qed.
+
+(** ** An upper bound on [iota]
+
+    Everything about [iota] above this point is *measured* — the values
+    come from the search in [rust/examples/iota_scan.rs] and enter Coq as
+    transcribed witnesses. This is the one thing proved about it in the
+    other direction.
+
+    In an intersecting family every member meets a fixed member [A], and
+    [A] has only [b] points, so some point of it lies in at least
+    [|F| / b] members. The link there is sunflower-free of uniformity
+    [b - 1], so that many is at most [g(b-1)]:
+
+    >  iota(b)  <=  b * g(b-1).
+
+    It is loose — with the proved [g(2) = 6] it gives [iota(3) <= 18]
+    against the measured 10 — but it is what makes the measured values
+    checkable rather than merely reported, and it is the same counting
+    that bounds the whole search's range.
+
+    The [g(b-1)] bound arrives as a hypothesis rather than a constant,
+    because the development knows [g(1) = 2] and [g(2) = 6] exactly and
+    nothing beyond. *)
+
+Lemma containsb_singleton :
+  forall x A, containsb [x] A = memb x A.
+Proof. intros x A; unfold containsb; simpl; apply Bool.andb_true_r. Qed.
+
+Theorem intersecting_link_bound :
+  forall b N (F : Family),
+    1 <= b ->
+    Uniform b F -> Distinct F ->
+    Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    (forall G : Family,
+        Uniform (b - 1) G -> Distinct G ->
+        ~ ContainsKSunflower 3 G -> length G <= N) ->
+    length F <= b * N.
+Proof.
+  intros b N F Hb HU HD HI Hno Hg.
+  destruct F as [|A F']; [simpl; lia|].
+  set (FF := A :: F').
+  destruct (le_lt_dec (length FF) (b * N)) as [Hle | Hlt]; [exact Hle | exfalso].
+  (* [A] is a member, so every member meets it, and it has [b] points. *)
+  assert (HAin : In A FF) by (left; reflexivity).
+  assert (HAlen : length A = b).
+  { unfold Uniform in HU; rewrite Forall_forall in HU.
+    exact (proj1 (HU A HAin)). }
+  assert (Hcover : forall B, In B FF -> exists x, In x B /\ In x A).
+  { intros B HB.
+    destruct (Bool.bool_dec (disjointb B A) true) as [E | NE].
+    - exfalso; apply (HI B A HB HAin), disjointb_correct; exact E.
+    - apply Bool.not_true_is_false, disjointb_false_iff in NE; exact NE. }
+  assert (Hsize : length FF > length A * N) by (rewrite HAlen; lia).
+  destruct (pigeonhole_family FF A N Hcover Hsize) as [x [HxA Hdeg]].
+  (* The link at [x] is a sunflower-free [(b-1)]-uniform distinct family,
+     so the hypothesis bounds it by [N] -- contradicting the pigeonhole. *)
+  assert (Hlink : length (link [x] FF) = length (filter (fun B => memb x B) FF)).
+  { rewrite length_link; unfold deg.
+    f_equal; apply filter_ext_eq; intros B; apply containsb_singleton. }
+  assert (Hb1 : length (link [x] FF) <= N).
+  { apply Hg.
+    - replace (b - 1) with (b - length [x]) by (simpl; lia).
+      apply (@link_uniform b [x] FF HU).
+      constructor; [intros [] | constructor].
+    - exact (@link_distinct [x] FF HD).
+    - intro Hc; exact (Hno (@link_sunflower_lift [x] FF 3 Hc)). }
+  lia.
+Qed.
+
+(** Instantiated at the two values the development knows exactly.
+    [f(2,3) = 7] gives [g(2) = 6], so [iota(3) <= 18]; the search
+    measures 10. *)
+
+Corollary iota_three_at_most_eighteen :
+  forall F : Family,
+    Uniform 3 F -> Distinct F -> Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    length F <= 18.
+Proof.
+  intros F HU HD HI Hno.
+  replace 18 with (3 * 6) by reflexivity.
+  apply (intersecting_link_bound 3 6 F); try assumption; [lia|].
+  intros G HUG HDG HnoG.
+  simpl in HUG.
+  destruct (le_lt_dec (length G) 6) as [Hle | Hlt]; [exact Hle | exfalso].
+  apply HnoG, f_2_3_upper; [exact HUG | exact HDG | lia].
 Qed.

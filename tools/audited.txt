@@ -170,6 +170,10 @@ thm Intersecting.no_upper_bound_3_3_20
 thm Intersecting.lower_bound_f_n_3_sharp
 thm Intersecting.twenty_beats_six
 thm Intersecting.sharp_beats_previous
+thm Intersecting.intersecting_link_bound
+thm Intersecting.iota_three_at_most_eighteen
+thm Audit.iota_bound_holds_at_the_witness
+thm Audit.iota_bound_beats_the_ground_set
 thm Audit.intersecting_is_needed_in_the_doubling
 thm Audit.bounds_coherent_3_3_sharp
 thm Audit.doubling_at_b_2_is_two_triangles

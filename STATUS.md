@@ -84,6 +84,7 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `f_4_3_at_least_37` | `coq/Audit.v` | The general theorems evaluated: `f(4,3) >= 37` where the development previously reached `f(4,3) >= 17` |
 | `doubling_lower_bound`, `double_no_sunflower` | `coq/Intersecting.v` | **`g(b) ≥ 2·ι(b)`** where `ι(b)` is the largest *intersecting* 3-sunflower-free `b`-uniform family. Two disjoint copies of an intersecting sunflower-free family are sunflower-free: any three members put two in the same copy, and those two meet, while a member of the other copy is disjoint from both — a sunflower cannot have one pairwise intersection empty and another not. Generalises `two_triangles`, which is the `b = 2` case |
 | `lower_bound_3_3_20`, `lower_bound_f_n_3_sharp` | `coq/Intersecting.v` | **`f(3,3) ≥ 21`** and **`f(n,3) ≥ 20^(n/3) + 1 = 2.714...^n`**. Exhaustive search gives `ι(3) = 10` on six points; doubling it gives twenty 3-sets on twelve. Beats the previous headline `6^(n/2) = 2.449...^n`, and `twenty_beats_six` proves the gap compounds (`400^t` against `216^t` at uniformity `6t`) |
+| `intersecting_link_bound`, `iota_three_at_most_eighteen` | `coq/Intersecting.v` | **`ι(b) ≤ b·g(b-1)`** — the one thing proved about `ι` in the upward direction, everything else about it being measured. Every member of an intersecting family meets a fixed member, which has only `b` points, so some point lies in at least `|F|/b` members; the link there is sunflower-free of uniformity `b-1`. With the proved `g(2) = 6` this gives `ι(3) ≤ 18` against the measured 10 — loose, and recorded as loose, but it is what makes the search's answers checkable rather than merely reported |
 | `intersecting_is_needed_in_the_doubling` | `coq/Audit.v` | **The hypothesis is the theorem.** `{0}, {1}` is sunflower-free because it has two members, is not intersecting, and its doubling is four singletons — any three pairwise disjoint, so a 3-sunflower |
 | `lower_bound_3_3_14`, `no_upper_bound_3_3_14` | `coq/SliceRank.v` | **`f(3,3) ≥ 15`** — a 14-member 3-uniform family on nine points, the exhaustive maximum `N(3,9)` found by `rust/examples/ground_scan.rs` and re-checked here by the reflective detector, so the Coq side takes nothing from the search. Beats the direct sum's 13 at the same uniformity. It does *not* improve the rate: `14^(1/3) = 2.41` is below `6^(1/2) = 2.449` |
 | `every_uniform_family_is_a_link`, `link_restriction_is_vacuous` | `coq/SpreadRestrictions.v` | **The class of iterated links is every uniform family.** For any uniform distinct `G` and any `d`, glueing `d` fresh points onto every member gives a uniform distinct `F` of uniformity `d + j` with `link Y F = G` *literally*. So a spread lemma restricted to the families the recursion produces implies the unrestricted one — the restriction restricts nothing, and the "characterise the class of iterated links" direction is closed with a theorem |
@@ -168,7 +169,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (153 of them). The current
+for every theorem in the "Closed" table (157 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -222,8 +223,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 41 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 39 killed outright, one genuine
+Current mutation results: 42 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 40 killed outright, one genuine
 survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem), and one positive control (`canary-alpha-rename`,

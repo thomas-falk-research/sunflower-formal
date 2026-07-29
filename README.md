@@ -178,7 +178,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 41 mutations, 39 are killed outright, one
+  that something breaks. Of 42 mutations, 40 are killed outright, one
   survives — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
@@ -246,7 +246,7 @@ Highlights of the less-routine parts:
 make verify        # builds all 26 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (153 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (157 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
