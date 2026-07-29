@@ -132,3 +132,58 @@ fn monotone_in_the_ground_set() {
         }
     }
 }
+
+/// The ground set of a sunflower-free `k`-uniform family can be
+/// **exponentially** large: `2^(k+1) - 2` points, on `2^k` members.
+///
+/// This is the construction [FPPTZ24] (the "Odd-sunflowers" paper, JCTA
+/// 2024) uses for `g_v(k) >= 2^k - 1`, and it settles how
+/// `SliceRank.GroundBounded` may be read. The *universal* reading —
+/// "every sunflower-free `m`-uniform family lives on `O(m)` points" — is
+/// false, and this is why. `GroundBounded` survives only in its
+/// existence form: some family of each achievable size can be *realised*
+/// on `c*m` points. That distinction is load-bearing, not pedantry.
+///
+/// The same paper records that it could find no papers studying the
+/// ground-set quantity at all.
+#[test]
+fn the_ground_set_of_a_sunflower_free_family_can_be_exponential() {
+    use sunflower_formal::construction::{tree_paths, tree_paths_ground};
+    use sunflower_formal::intersecting::find_sunflower_128;
+
+    for k in 1..=6u32 {
+        let f = tree_paths(k);
+        assert_eq!(f.len(), 1usize << k, "member count at k={k}");
+        // k-uniform.
+        for m in &f {
+            assert_eq!(m.count_ones(), k, "uniformity at k={k}");
+        }
+        // Distinct.
+        let mut sorted = f.clone();
+        sorted.sort_unstable();
+        sorted.dedup();
+        assert_eq!(sorted.len(), f.len(), "distinctness at k={k}");
+        // Sunflower-free, by the independent 128-bit detector.
+        assert_eq!(find_sunflower_128(&f), None, "a 3-sunflower at k={k}");
+        // Every edge is used, so the ground set really is that big.
+        let g = tree_paths_ground(k);
+        for x in 0..g {
+            assert!(
+                f.iter().any(|m| m >> x & 1 == 1),
+                "edge {x} unused at k={k}"
+            );
+        }
+        assert!(
+            f.iter().all(|m| *m < (1u128 << g)),
+            "a member leaves the ground set at k={k}"
+        );
+        assert_eq!(g, (1u32 << (k + 1)) - 2);
+        // Exponential in the uniformity, which is the point.
+        assert!(g as usize >= (1usize << k) - 1, "g_v({k}) >= 2^{k} - 1");
+    }
+
+    // Concretely: at k = 6, sixty-four 6-sets on a hundred and
+    // twenty-six points. No linear bound in the uniformity survives.
+    assert_eq!(tree_paths(6).len(), 64);
+    assert_eq!(tree_paths_ground(6), 126);
+}

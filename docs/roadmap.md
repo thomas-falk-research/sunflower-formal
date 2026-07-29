@@ -838,6 +838,12 @@ family of subsets of `[n]` by `3(n+1) C^n`, `C = 3/2^(2/3) < 1.89` — a
 that settled cap set. It bounds by the **ground set**; the conjecture
 bounds by the **uniformity**.
 
+**Read this section with §7.5 first.** Two things found by reading the
+literature change what it says: the ground-set framing is *known* and is
+an equivalence (Hunter, via [FPPTZ24]), and the implication from a
+ground-set bound does not need the polynomial method at all. What is left
+of the framing below is the *linear* strengthening and the measurements.
+
 That is the entire gap, and it is one hypothesis wide:
 
 ```
@@ -1034,6 +1040,74 @@ specific target.
 the one that matters, against `C(10,3) = 120` from counting and 48 from
 Erdős–Rado. It is still above the measured 14 and it does **not** decide
 whether the row plateaus. It narrows the search, it does not replace it.
+
+## 7.5. Corrected: the ground-set framing is known, and the axiom is not needed
+
+Two findings from reading [FPPTZ24] (the "Odd-sunflowers" paper, JCTA
+2024) from its rendered pages, and one consequence of them that is this
+repository's own oversight.
+
+### The framing is known, and is an equivalence
+
+Its Conjecture 14 says the number of **base elements** of a
+sunflower-free `k`-uniform family is at most `c^k`, and it reports —
+crediting **Zach Hunter** — that this is *equivalent* to the Erdős–Rado
+conjecture. So `GroundBounded` is not a new angle on the problem. It is a
+**linear** strengthening (`c*m` points, not `c^m`) of a known equivalent
+formulation, and the linear form is what the `N(m,g)` measurements are
+about.
+
+### The universal reading of it is false
+
+The same paper gives `g_v(k) >= 2^k - 1`: the root-to-leaf paths of a
+depth-`k` binary tree, as edge sets, are `k`-uniform, `2^k` in number, and
+sunflower-free — two paths meet in the path to their leaves' least common
+ancestor, and among three leaves two are strictly closer than the other
+pairs, so two of the three pairwise intersections coincide and one is
+strictly longer.
+
+So **"every sunflower-free `m`-uniform family lives on `O(m)` points" is
+false for every constant.** Only the existence reading survives: some
+family of each achievable size can be *realised* on `c*m` points. That is
+what `GroundBounded` actually says, and the distinction is load-bearing
+rather than pedantic. `IotaGround.the_universal_ground_reading_is_false`
+is the `k = 3` instance — eight triples that genuinely need fourteen
+points, against `4*3 = 12` — and `rust/tests/ground_set.rs` checks the
+construction to `k = 6` (sixty-four 6-sets on a hundred and twenty-six
+points).
+
+This does **not** conflict with the measurements. `N(m,g)` is the largest
+family *on* `g` points, which is exactly the quantity the existence
+reading needs, not the quantity bounded below above.
+
+### And the polynomial method was never the load-bearing part
+
+Chasing the equivalence exposed something this development had missed.
+`SliceRank.bounded_ground_set_settles_k3` derives the conjecture from
+`GroundBounded c` **plus** `NaslundSawinBound`. The axiom is not needed:
+
+> A family of distinct subsets of a `g`-point set has at most `2^g`
+> members. That is counting. So a ground set of size `c*m` gives
+> `2^(c*m) = (2^c)^m` directly.
+
+`ground_bounded_settles_k3_by_counting` and
+`iota_ground_bounded_settles_k3_without_the_axiom` are the axiom-free
+versions, built on `grounded_family_at_most_two_to_the_ground` and
+`HallCore.sublists`, which was already in the repository. Compare:
+
+```
+  route                             hypotheses            bound
+  bounded_ground_set_settles_k3     GroundBounded + NaSa  (27^(c+1))^m
+  ground_bounded_settles_k3_by_..   GroundBounded         (2^c)^m
+```
+
+`(2^c)^m` is smaller for every `c`, and needs nothing beyond the kernel.
+What Naslund–Sawin contributes is the constant — `1.89^g` against `2^g` —
+which is a real theorem and is decoration here.
+
+**So §7's title overstates the case.** The ground-set hypothesis is the
+whole content; the polynomial method improves a constant. Quote the
+axiom-free version.
 
 ## 8. Settled: compression is the wrong tool, and by how much
 

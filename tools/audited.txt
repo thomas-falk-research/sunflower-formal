@@ -269,6 +269,14 @@ thm IotaGround.ground10_max_no_sunflower
 thm IotaGround.ground10_max_is_grounded
 thm IotaGround.n_three_ten_between_sixteen_and_twenty
 thm IotaGround.the_general_row_climbs_from_nine_to_ten
+thm IotaGround.sublists_length
+thm IotaGround.grounded_family_at_most_two_to_the_ground
+thm IotaGround.ground_bounded_settles_k3_by_counting
+thm IotaGround.iota_ground_bounded_gives_exponential_by_counting
+thm IotaGround.iota_ground_bounded_settles_k3_without_the_axiom
+thm IotaGround.tree_paths_three_no_sunflower
+thm IotaGround.tree_paths_three_needs_fourteen
+thm IotaGround.the_universal_ground_reading_is_false
 thm IotaGround.ground_bounded_needs_c_at_least_four
 thm IotaGround.ground_bounded_three_is_false
 thm IotaGround.ground_bounded_two_is_false
@@ -370,6 +378,7 @@ def SliceRank.ground9_max
 def IotaGround.degsum
 def IotaGround.sizesum
 def IotaGround.ground10_max
+def IotaGround.tree_paths_three
 def IotaGround.IotaGroundBounded
 def Audit.GroundHypotheses
 

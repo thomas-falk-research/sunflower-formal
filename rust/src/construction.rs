@@ -121,3 +121,42 @@ pub fn relabel(f: &[Set], odd: bool) -> Family {
         .map(|s| s.iter().map(|x| 2 * x + u32::from(odd)).collect())
         .collect()
 }
+
+/// Root-to-leaf paths in a rooted binary tree of depth `k`, as sets of
+/// edges — the construction [FPPTZ24] uses to show that the *ground set*
+/// of a sunflower-free `k`-uniform family can be exponentially large.
+///
+/// Edges are labelled by the binary string of the child they lead to, so
+/// there are `2^(k+1) - 2` of them, and a root-to-leaf path is the `k`
+/// prefixes of a leaf's string. That is `2^k` members, `k`-uniform, on an
+/// exponentially large ground set.
+///
+/// It is sunflower-free for a reason worth stating: two paths meet in the
+/// path to the least common ancestor of their leaves, and among any three
+/// leaves of a binary tree two are strictly closer than the third pair,
+/// so of the three pairwise intersections two coincide and one is
+/// strictly longer. Never all three equal.
+///
+/// Returned as `u128` bitmasks, so `k <= 6` (126 edges).
+pub fn tree_paths(k: u32) -> Vec<u128> {
+    assert!(k >= 1 && k <= 6, "the 128-bit encoding needs 1 <= k <= 6");
+    // Edge index for the node whose binary string is `s` of length `len`:
+    // strings of length 1 occupy 0..2, length 2 occupy 2..6, and so on.
+    let index = |len: u32, s: u32| -> u32 { (1u32 << len) - 2 + s };
+    (0..(1u32 << k))
+        .map(|leaf| {
+            let mut m: u128 = 0;
+            for len in 1..=k {
+                // the length-`len` prefix of `leaf`, read from the top
+                let s = leaf >> (k - len);
+                m |= 1u128 << index(len, s);
+            }
+            m
+        })
+        .collect()
+}
+
+/// How many edges `tree_paths(k)` uses: `2^(k+1) - 2`, every one of them.
+pub fn tree_paths_ground(k: u32) -> u32 {
+    (1u32 << (k + 1)) - 2
+}

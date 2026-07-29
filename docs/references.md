@@ -257,6 +257,61 @@ is recorded as that.
 - **[Stoeckl]** S. Stoeckl, presentation achieving $C = 64$ in the
   streamlined proof.
 
+## The ground-set framing, which is known
+
+- **[FPPTZ24]** P. Frankl, J. Pach, D. Pálvölgyi, and others, *Odd-sunflowers*.
+  Journal of Combinatorial Theory Series A 205 (2024); arXiv:2310.16701.
+  Read from the rendered pages. Three things in it bear directly on
+  `docs/roadmap.md` §7, and the first two were **not** known to this
+  repository.
+
+  1. **The ground-set framing is known and is an equivalence.** Its
+     Conjecture 14 — "the maximum number of base elements, each of which
+     is contained in at least one set of a sunflower-free $k$-uniform
+     family, is at most $c^k$" — is reported, crediting **Zach Hunter**
+     (MathOverflow), to be *equivalent* to the Erdős–Rado conjecture. So
+     `SliceRank.GroundBounded` is not a new angle; it is a *linear*
+     strengthening of a known equivalent formulation.
+
+  2. **The ground set can be exponentially large:** $g_v(k) \ge 2^k - 1$,
+     via the root-to-leaf paths of a depth-$k$ binary tree taken as edge
+     sets. So the *universal* reading of `GroundBounded` — "every
+     sunflower-free $m$-uniform family lives on $O(m)$ points" — is false
+     for every $c$, and only the existence reading the definition actually
+     has survives. `IotaGround.the_universal_ground_reading_is_false` is
+     the $k=3$ instance and `rust/tests/ground_set.rs` checks the
+     construction to $k = 6$. This does not conflict with the $N(m,g)$
+     measurements, which are about the largest family *on* $g$ points —
+     exactly the quantity the existence reading needs.
+
+  3. **"We could not find any papers studying the quantity $g_v(k)$"** —
+     their words. A 2024 paper with Frankl as a coauthor says the
+     ground-set quantity is unstudied, which is mild support for the
+     framing being unusual even though the equivalence is known.
+
+  Also in that paper, and worth not mis-citing: its Proposition 12 ("direct
+  sum constructions never reach the optimal value") is about the
+  **Erdős–Szemerédi** problem — non-uniform families on a bounded ground
+  set — not the uniform problem this repository works on. So is
+  [DEGKM97] (Deuber, Erdős, Gunderson, Kostochka, Meyer, *Intersection
+  statements for systems of sets*, JCTA 79 (1997) 118–132), whose
+  $F(n,3) \ge 1.551^{n-2}$ is a bound for that other problem and does
+  **not** displace [AHS72] as the uniform record.
+
+### What this corrects in §7
+
+Chasing Hunter's equivalence exposed a gap in this development's own
+reasoning. `SliceRank.bounded_ground_set_settles_k3` derives the
+conjecture from `GroundBounded c` **plus** `NaslundSawinBound`. The
+polynomial method is not needed: a family of distinct subsets of a
+$g$-point set has at most $2^g$ members by counting, so a ground set of
+size $c \cdot m$ gives $(2^c)^m$ directly.
+`IotaGround.ground_bounded_settles_k3_by_counting` and
+`iota_ground_bounded_settles_k3_without_the_axiom` are the axiom-free
+versions, and $(2^c)^m$ beats the $(27^{c+1})^m$ the Naslund–Sawin route
+gives, for every $c$. What [NaSa17] contributes is the constant
+($1.89^g$ against $2^g$) — a real theorem, and not the load-bearing part.
+
 ## What the literature does not contain
 
 Three sources were searched for the two structural claims this
