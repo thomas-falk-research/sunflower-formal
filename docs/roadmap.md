@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 60 anecdotes into a coverage metric over the
+  mutation testing from 62 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -1982,3 +1982,122 @@ families every intermediate core is already tight.
 * **`iota(4,10)`, with the cost understood.** It is worth what a new
   bound on `f(3,3)` is worth, which is a lot; it is not worth attacking
   with a bigger budget for the same search.
+
+---
+
+## 12. The sharp reformulation, and a target with a number in it
+
+§11 restates the conjecture at `k = 3` as `L = sup_b iota(b)^(1/b) < infinity`.
+That is the wrong normalisation, and `coq/Sharp.v` fixes it.
+
+### 12.1 Why the exponent is `1/(b-1)`
+
+The substitution `iota(ab) >= iota(a) iota(b)^a` — verified in
+`rust/tests/intersecting.rs`, still not formalised — iterated at `b^k`
+extracts a rate of `iota(b)^(1/(b-1))` per point, not `iota(b)^(1/b)`.
+The 1972 constant is a value of *that* sequence: `10^(1/2)` is
+`iota(3)^(1/(3-1))`. So the sequence to watch is
+
+```
+  b      1      2      3       4
+  iota   1      3     10      27   (on nine points, exhaustive)
+  rate   -   3.000  3.162   3.000
+```
+
+and the conjecture at `k = 3` is that it is bounded.
+
+**Formalised, as an equivalence** (`Sharp.conjecture_k_3_iff_iota_shifted`):
+
+```
+  sunflower_conjecture_k_3   <->   exists C, forall b >= 1, iota(b) <= C^(b-1)
+```
+
+Both directions are arithmetic on top of
+`IotaRate.conjecture_k_3_iff_iota_exponential`; the constant moves by a
+square in one direction and by one in the other. The **substitution is not
+needed** for the equivalence — it is needed only to know that `1/(b-1)` is
+the exponent the constructions actually achieve, which is a statement about
+lower bounds and is not claimed there.
+
+The shift is not a reindexing, and there is a theorem saying so.
+`Audit.the_shifted_bound_at_three_is_false` proves `~ IotaShiftedAt 3`:
+the base-3 form is refuted outright by the witnessed `iota(3) >= 10`
+against `3^2 = 9`. The unshifted form at base 3 is *not* refuted by that
+family (`10 <= 27`). So in the shifted normalisation the base is at least
+4, which is the finitistic content of "`L > 3`, and the value conjectured
+is `sqrt(10) = 3.162...`".
+
+### 12.2 The sharp conjecture, named
+
+```
+  AHSOptimal  :=  forall b >= 1,  iota(b)^2 <= 10^(b-1)
+```
+
+squared so nothing leaves `nat`. Equivalently `iota(b) <= 10^((b-1)/2)`;
+equivalently **Abbott–Hanson–Sauer is optimal** and `L = sqrt(10)`;
+equivalently `f(n,3) <= (2 sqrt(10))^n + 1`, about `6.33^n`.
+
+It is **met with equality at `b = 3`** and nowhere else that is decided
+(`Sharp.the_sharp_bound_is_attained_at_three`): `iota(3)^2 = 100 = 10^2`
+exactly. One more member there refutes it. That single exhaustive
+computation is what the whole constant rests on.
+
+Three consequences, all machine-checked:
+
+* `Sharp.sharp_settles_k3` — it implies the conjecture at `k = 3`, with
+  the explicit constant `c(3) = 8` (`sharp_gives_the_constant`). The
+  real-valued constant is `2 sqrt(10) = 6.32...`; 8 is the price of
+  staying in `nat` and no attempt is made to sharpen it.
+* `Sharp.sharp_beats_erdos_rado_at_three` — it gives **`f(3,3) <= 32`**
+  against Erdős–Rado's 49, from a hypothesis about uniformity 4. Read as
+  hardness: proving the sharp conjecture settles a value nobody knows.
+  Read as a target: `iota(4)` alone is worth a new bound on the first
+  unknown sunflower number.
+* `Sharp.sharp_forces_iota_three_exactly_ten` — it pins `iota(3) = 10`,
+  where the development otherwise has only `[10, 18]`.
+
+`Audit.the_sharp_bound_narrows_iota_four` records that it says strictly
+more than the kernel already knows: `iota(4)` in `[27, 192]` becomes
+`[27, 31]`.
+
+### 12.3 The threshold table — this is the thing to memorise
+
+`Sharp.refutation_threshold` turns one family into a refutation. The least
+family size that refutes at each uniformity, tabulated, pinned in
+`rust/tests/sharp_conjecture.rs`, and each rung a corollary in
+`coq/Sharp.v`:
+
+```
+  b     iota(b) known   beats AHS at   fraction   note
+  4         27                32        0.844     iota(4,10) <= 31; g >= 11 untouched
+  5         54               101        0.535
+  6        300               317        0.946     <-- 17 members short
+  7        600              1001        0.599
+  8       2187              3163        0.691     (the b = 8 row is unverified)
+  9     10,000            10,001        0.9999    <-- needs exactly ONE more set
+```
+
+**The odd tower is exactly on the threshold.**
+`Sharp.the_tower_misses_by_exactly_one`: at `b = 2j+1` the sharp bound
+reads `iota(b) <= 10^j`, a round number, and it is exactly what the
+substitution delivers when iterated on `iota(3) = 10`. So at every odd
+uniformity the record falls at one more set, and `b = 3, 9, 27, ...` all
+sit on the line. Any single improvement anywhere propagates up the whole
+tower.
+
+The even rungs are separate corollaries (`iota_four_at_least_32_refutes`,
+`iota_six_at_least_317_refutes`) because their thresholds are not round.
+
+### 12.4 How to read this
+
+Honestly, and the file says so itself. This is **not** evidence for the
+sharp conjecture beyond (i) four exhaustive values of `iota`, (ii) the
+fact that no construction in the repository reaches a threshold — which
+is *forced*, since the substitution's own fixed point is `10^(1/2)`, and
+is asserted in `rust/tests/sharp_conjecture.rs` so a bigger number is not
+mistaken for a better rate — and (iii) `iota(4,9) = 27` being provably the
+Abbott–Hanson–Sauer family (§11.5).
+
+What it is, is a target with a number in it. The cap-set programme had
+one; this one has not. Every future session can now ask "did I beat 1972?"
+and get an integer answer.

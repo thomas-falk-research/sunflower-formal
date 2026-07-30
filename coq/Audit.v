@@ -44,7 +44,7 @@ From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
      CliqueLowerBound F23 LinkCharacterisation DirectSum Intersecting
      Conjecture IotaRate SpreadRestrictions SliceRank IotaGround Compression
-     ErdosRado_Greedy Product.
+     ErdosRado_Greedy Product Sharp.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -1891,3 +1891,69 @@ Theorem the_ground_hypotheses_are_not_independent_after_all :
     /\ (IotaGroundBounded c ->
         forall m j, 1 <= m -> LowerBound m 3 j -> j <= (2 ^ c) ^ (m + 1)).
 Proof. exact Product.the_two_ground_hypotheses_are_not_independent. Qed.
+
+(** *** The sharp reformulation: is the shift a reindexing, and is the
+    sharp constant forced?
+
+    [Sharp.conjecture_k_3_iff_iota_shifted] restates the conjecture at
+    [k = 3] as [iota(b) <= C^(b-1)] rather than [iota(b) <= C^b]. Two
+    questions that has to answer.
+
+    First, does the shift *change* anything, or is [C^(b-1)] just [C^b]
+    with the constant renamed? It changes it: at [C = 3] the shifted
+    statement is **false**, refuted by the witnessed [iota(3) >= 10]
+    against [3^2 = 9], while the unshifted one at [C = 3] is not refuted
+    by that family at all ([10 <= 27]). So the base in the shifted form is
+    at least 4 — which is exactly the base
+    [Sharp.sharp_gives_base_four] produces from the sharp bound, and it
+    is the finitistic content of "[L] is above 3, and [sqrt(10) = 3.162]
+    is the value conjectured".
+
+    Second, would a definition that had become accidentally vacuous be
+    caught? It would: a vacuously true [IotaAtMost] would make this
+    theorem unprovable. *)
+
+Theorem the_shifted_bound_at_three_is_false : ~ Sharp.IotaShiftedAt 3.
+Proof.
+  intros H.
+  pose proof (Product.iota_at_least_le_at_most 3 10 (3 ^ (3 - 1))
+                Product.iota_three_at_least_ten (H 3 ltac:(lia))) as Hle.
+  vm_compute in Hle; lia.
+Qed.
+
+(** *** The sharp conjecture fits under the development's own bounds
+
+    [Sharp.AHSOptimal] implies [f(3,3) <= 32]
+    ([Sharp.sharp_beats_erdos_rado_at_three]), and the development proves
+    [f(3,3) >= 21] ([Intersecting.lower_bound_3_3_20]). This is that pair
+    fed to [lower_lt_upper], so if the sharp bound contradicted a lower
+    bound already proved here, this line would be a proof of [False] and
+    would fail to be provable in the form written. It is the
+    [bounds_coherent_*] pattern applied to a hypothesis rather than to a
+    theorem. *)
+
+Corollary bounds_coherent_sharp : Sharp.AHSOptimal -> 20 < 32.
+Proof.
+  intros Hs.
+  apply (lower_lt_upper (n := 3) (k := 3));
+    [exact lower_bound_3_3_20
+    | exact (proj1 (Sharp.sharp_beats_erdos_rado_at_three Hs))].
+Qed.
+
+(** *** And it says strictly more than the development knows
+
+    A hypothesis that only re-derived what is already proved would be
+    worth nothing. [Audit.iota_four_between_27_and_192] traps [iota(4)]
+    in [[27, 192]] with what is proved; the sharp bound closes that to
+    [[27, 31]]. Both ends are kept in the statement so the narrowing is
+    visible rather than asserted. *)
+
+Theorem the_sharp_bound_narrows_iota_four :
+  Sharp.AHSOptimal ->
+  ~ IotaAtMost 4 26 /\ IotaAtMost 4 192 /\ IotaAtMost 4 31 /\ 26 < 31 < 192.
+Proof.
+  intros Hs.
+  split; [exact Product.not_iota_four_at_most_26|].
+  split; [exact (proj2 iota_four_between_27_and_192)|].
+  split; [exact (Sharp.sharp_forces_iota_four_at_most_31 Hs) | lia].
+Qed.

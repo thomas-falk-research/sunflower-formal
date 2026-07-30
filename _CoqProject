@@ -30,4 +30,5 @@ coq/SliceRank.v
 coq/IotaGround.v
 coq/Compression.v
 coq/Product.v
+coq/Sharp.v
 coq/Audit.v

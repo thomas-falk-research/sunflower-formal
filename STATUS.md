@@ -150,6 +150,14 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `iota_four_at_least_27`, `lower_bound_4_3_54`, `f_4_3_at_least_55_beats_37` | `coq/Product.v` | **`f(4,3) ≥ 55`**, where `Audit.f_4_3_at_least_37` reached 37. The exhaustive `ι(4,9) = 27` witness transcribed and re-derived by the reflective detector, then doubled. It does **not** improve the rate — `the_rate_at_four_does_not_beat_the_rate_at_three` proves `54^(1/4) < 20^(1/3)` — and `IotaRate.every_construction_is_within_2b_of_iota` is why nothing at a fixed uniformity can. Structurally the witness **is** the Abbott–Hanson–Sauer substitution of the triangle into itself: `|Aut| = 1296 = 6·6³` is exactly `Sym(3)` on three triples times `Sym(3)` inside each, cross-checked against `nauty` |
 | `not_iota_four_at_most_26`, `iota_four_between_27_and_192` | `coq/Product.v`, `coq/Audit.v` | The truth boundary for `ι(4)` trapped in the kernel, one uniformity above `Audit.iota_three_between_ten_and_eighteen`. The lower end is the witness; the upper end is `intersecting_link_bound` fed Erdős–Rado's `g(3) ≤ 48`. The gap is 27 to 192, and that is the honest state of knowledge |
 | `cone_needs_freshness`, `bounds_coherent_cone`, `the_cone_route_beats_the_direct_sum_at_four`, `the_ground_hypotheses_are_not_independent_after_all` | `coq/Audit.v` | The coherence theorems for the new definitions: freshness is load-bearing (the triangle coned at one of its own points is not 3-uniform), the new lower bound sits under Erdős–Rado at uniformity 4 so a contradictory pair would be a proof of `False`, 54 beats the direct sum's 36, and the retraction above is recorded against a named specification rather than as an edited comment |
+| `iota_exponential_shifted_iff`, `conjecture_k_3_iff_iota_shifted` | `coq/Sharp.v` | **The sunflower conjecture at `k = 3` is exactly `ι(b) ≤ C^(b-1)`.** The exponent `1/(b-1)`, not `1/b`, is the one the Abbott–Hanson–Sauer substitution extracts — the 1972 constant `10^(1/2)` *is* `ι(3)^(1/(3-1))` — so this is the normalisation in which `L = sup_b ι(b)^(1/(b-1))` is the constant of the problem. Both directions are arithmetic on `IotaRate.conjecture_k_3_iff_iota_exponential`, moving the constant by a square one way and by one the other; the only non-arithmetic ingredient is `Product.iota_one_at_most_one`, which is what makes the `b = 1` instance `ι(1) ≤ C⁰ = 1` true. The substitution is **not** needed for the equivalence |
+| `AHSOptimal`, `sharp_bounds_iota`, `sharp_gives_base_four` | `coq/Sharp.v` | **The sharp conjecture, named**: `ι(b)² ≤ 10^(b-1)` for every `b ≥ 1` — squared so nothing leaves `nat`. Equivalently `ι(b) ≤ 10^((b-1)/2)`; equivalently Abbott–Hanson–Sauer is optimal and `L = √10`. It gives `ι(b) ≤ 4^(b-1)`, and base 4 rather than 3 is forced: `√10 = 3.162... > 3`, checked in `rust/tests/sharp_conjecture.rs` |
+| `sharp_settles_k3`, `sharp_gives_the_constant` | `coq/Sharp.v` | **It implies Erdős's \$1000 case, with `c(3) = 8`.** The real-valued constant the sharp bound gives is `2√10 = 6.32...`; 8 is the price of staying in `nat`, and no attempt is made to sharpen it |
+| `sharp_forces_iota_four_at_most_31`, `sharp_beats_erdos_rado_at_three` | `coq/Sharp.v` | **`f(3,3) ≤ 32`**, against Erdős–Rado's 49 and this development's `f(3,3) ≥ 21` — a new bound on the *first unknown sunflower number*, from a hypothesis about uniformity 4. Read as hardness that is why `iota(4,10)` resisted two independent searches; read as a target it says one uniformity is worth a new sunflower number |
+| `sharp_forces_iota_three_exactly_ten`, `the_sharp_bound_is_attained_at_three` | `coq/Sharp.v` | The sharp bound pins `ι(3) = 10` exactly, where `Audit.iota_three_between_ten_and_eighteen` has only `[10,18]` — and it is **met with equality there**: `10² = 100 = 10²`. `b = 3` is the only decided uniformity with no slack at all, which is what fixes the constant at `√10` and why one more member there would refute the whole thing |
+| `refutation_threshold`, `iota_four_at_least_32_refutes`, `iota_six_at_least_317_refutes` | `coq/Sharp.v` | **One family refutes it**, and the threshold at every uniformity is an integer: 32 at `b = 4`, 317 at `b = 6`. The rungs of the table in `docs/roadmap.md` §12, as corollaries rather than as prose |
+| `the_tower_misses_by_exactly_one`, `iota_nine_at_least_10001_refutes` | `coq/Sharp.v` | **The odd tower sits exactly on the bound.** At `b = 2j+1` the sharp bound reads `ι(b) ≤ 10^j` — a round number, and exactly what the substitution delivers when iterated on `ι(3) = 10`. So at `b = 3, 5, 7, 9, …` the record falls at *one more set*, and `b = 9` needs 10001 against the 10,000 the substitution builds. Stated for all `j` rather than at `j = 4` because `nat` is unary and `10001` is past the point where Coq treats a numeral as an ordinary term |
+| `the_shifted_bound_at_three_is_false`, `bounds_coherent_sharp`, `the_sharp_bound_narrows_iota_four` | `coq/Audit.v` | **The shift is not a reindexing**: the base-3 shifted bound is refuted outright by the witnessed `ι(3) ≥ 10` against `3² = 9`, while the *unshifted* base-3 bound is not refuted by that family at all (`10 ≤ 27`). So any admissible base in the shifted form is at least 4 — the finitistic content of "`L > 3`". Plus: the sharp bound's `f(3,3) ≤ 32` fed to `lower_lt_upper` against the proved `f(3,3) ≥ 21`, so a contradictory pair would be a proof of `False`; and it narrows `ι(4)` from `[27,192]` to `[27,31]`, so it says strictly more than the kernel already knows |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -225,7 +233,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (304 of them). The current
+for every theorem in the "Closed" table (324 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -272,7 +280,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 30 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 31 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -280,8 +288,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 60 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 57 killed outright, two genuine
+Current mutation results: 62 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 59 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -290,7 +298,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 30 modules with Coq's separate kernel
+`make coqchk` re-verifies all 31 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

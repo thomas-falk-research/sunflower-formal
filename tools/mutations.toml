@@ -935,3 +935,46 @@ need it, or does the uniformity come from somewhere else?"""
 find = "  forall m p F, Fresh p F -> Uniform m F -> Uniform (S m) (cone p F)."
 replace = "  forall m p F, Uniform m F -> Uniform m F -> Uniform (S m) (cone p F)."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# The sharp reformulation (coq/Sharp.v).
+#
+# Only the *weakening* direction is asked of `AHSOptimal`. Lowering the
+# constant (10 -> 9) strengthens the hypothesis, and a stronger
+# hypothesis cannot break a proof that consumes it, so such a mutation
+# would survive for reasons that say nothing about the development. What
+# pins the constant from below is not a mutation but a theorem:
+# `Audit.the_shifted_bound_at_three_is_false` refutes the base-3 form
+# outright from the witnessed iota(3) >= 10.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "sharp-flat-exponent"
+file = "coq/Sharp.v"
+question = """The sharp conjecture is iota(b)^2 <= 10^(b-1), and the shift by \
+one is the whole point: 10^((b-1)/2) is the rate iota(b)^(1/(b-1)) that the \
+substitution actually extracts, and 10^(b/2) is not. Is the shift \
+load-bearing, or would a flat 10^b do?"""
+find = "  forall b N, 1 <= b -> IotaAtLeast b N -> N * N <= 10 ^ (b - 1)."
+replace = "  forall b N, 1 <= b -> IotaAtLeast b N -> N * N <= 10 ^ b."
+expect = "killed"
+
+[[mutation]]
+id = "shifted-flat-exponent"
+file = "coq/Sharp.v"
+question = """IotaShiftedAt C is IotaRate.IotaExponential's body with the \
+exponent shifted by one, and the file's whole claim is that the shift changes \
+the statement rather than renaming the constant. Flatten it back to C^b and \
+the two coincide."""
+# The runner names coq/Sharp.v as the first file to break, and that break is
+# tactical: three `exact`s there mention the shifted shape. The *mathematical*
+# kill is one file later, and it was checked by hand rather than asserted --
+# apply the mutation, repair those three tactics (they touch no statement),
+# rebuild, and coq/Audit.v fails at `the_shifted_bound_at_three_is_false` with
+# `lia` unable to find a witness: without the shift that theorem asks for
+# iota(3) > 3^3 = 27, and the witness gives only 10. So the statement is false,
+# not merely mis-scripted. Recorded here because "the check would have caught
+# it" is a claim, and an unrun claim is worth what an untested proof is.
+find = "  forall b, 1 <= b -> IotaAtMost b (C ^ (b - 1))."
+replace = "  forall b, 1 <= b -> IotaAtMost b (C ^ b)."
+expect = "killed"
