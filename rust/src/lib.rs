@@ -27,6 +27,7 @@ pub mod link;
 pub mod sat;
 pub mod shift;
 pub mod spread;
+pub mod structure;
 pub mod testbed;
 
 pub use sunflower::{find_k_sunflower, is_k_sunflower, Sunflower};
