@@ -79,8 +79,8 @@
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Sunflower LowerBound Conjecture Spread
-     Reflect F23 Intersecting IotaRate SliceRank.
+From Sunflower Require Import Sets Sunflower HallCore LowerBound Conjecture
+     Spread Reflect F23 Intersecting IotaRate SliceRank.
 Import ListNotations.
 
 (** ** Double counting the incidences between a ground set and a family
@@ -293,6 +293,281 @@ Proof.
   pose proof (three_uniform_ground_bound U F HndU HU HD HG Hno); lia.
 Qed.
 
+(** ** How [GroundBounded] must be read, and why that is not pedantry
+
+    [FPPTZ24] (the "Odd-sunflowers" paper, JCTA 2024) records that the
+    ground set of a sunflower-free [k]-uniform family can be
+    **exponentially** large: [g_v(k) >= 2^k - 1], witnessed by the
+    root-to-leaf paths of a rooted binary tree of depth [k], taken as sets
+    of edges. Two such paths meet in the path to their leaves' least
+    common ancestor, and among any three leaves two are strictly closer
+    than the other pairs, so of the three pairwise intersections two
+    coincide and one is strictly longer — never all three equal.
+
+    So the *universal* reading of [SliceRank.GroundBounded] — "every
+    sunflower-free [m]-uniform family lives on [c*m] points" — is **false
+    for every [c]**. What survives is the existence reading the definition
+    actually has: some family of each achievable size can be *realised* on
+    [c*m] points. That distinction is load-bearing.
+
+    The instance at [k = 3] is small enough to check outright: eight
+    triples that genuinely use fourteen points, against
+    [ground_bounded_needs_c_at_least_four]'s [4*3 = 12]. The construction
+    at every [k <= 6] is verified in `rust/tests/ground_set.rs`.
+
+    Note also which way this cuts for the measurements. The [N(m,g)] table
+    is the *largest family on [g] points*, which is exactly the quantity
+    the existence reading needs; it is not the quantity [FPPTZ24] bounds
+    below. The two do not conflict. *)
+
+Definition tree_paths_three : Family :=
+  [[0; 2; 6]; [0; 2; 7]; [0; 3; 8]; [0; 3; 9];
+   [1; 4; 10]; [1; 4; 11]; [1; 5; 12]; [1; 5; 13]].
+
+Lemma tree_paths_three_no_sunflower : ~ ContainsKSunflower 3 tree_paths_three.
+Proof.
+  intro Hc.
+  pose proof (sunflower3b_sound tree_paths_three Hc) as E.
+  vm_compute in E; discriminate.
+Qed.
+
+Lemma tree_paths_three_grounded : Grounded tree_paths_three (seq 0 14).
+Proof.
+  unfold Grounded.
+  apply (proj1 (groundedb_correct tree_paths_three (seq 0 14))).
+  vm_compute; reflexivity.
+Qed.
+
+(** And it does not fit on thirteen: the last member uses point 13. *)
+
+Lemma tree_paths_three_needs_fourteen : ~ Grounded tree_paths_three (seq 0 13).
+Proof.
+  intro HG.
+  assert (Hin : In [1; 5; 13] tree_paths_three) by (vm_compute; tauto).
+  specialize (HG _ Hin 13 ltac:(vm_compute; tauto)).
+  rewrite in_seq in HG; lia.
+Qed.
+
+Theorem the_universal_ground_reading_is_false :
+  Uniform 3 tree_paths_three
+  /\ Distinct tree_paths_three
+  /\ ~ ContainsKSunflower 3 tree_paths_three
+  /\ Grounded tree_paths_three (seq 0 14)
+  /\ ~ Grounded tree_paths_three (seq 0 13)
+  /\ 4 * 3 < 14.
+Proof.
+  split; [apply uniformb_correct; vm_compute; reflexivity|].
+  split; [apply distinctb_correct; vm_compute; reflexivity|].
+  split; [exact tree_paths_three_no_sunflower|].
+  split; [exact tree_paths_three_grounded|].
+  split; [exact tree_paths_three_needs_fourteen | lia].
+Qed.
+
+(** ** The row at ten points, both ends
+
+    [SliceRank.v] names [N(3,10)] as the value the general row turns on,
+    and records that the search does not decide it. The upper end is
+    [n_three_ten_at_most_twenty] above. The lower end is this family,
+    found by the SAT encoding in [rust/src/sat.rs] and re-verified by an
+    independent checker before it was written down: sixteen 3-sets on ten
+    points, sunflower-free, degrees [(6,6,6,6,4,4,4,4,4,4)].
+
+    Its shape is worth reading. The first four members are *all* the
+    triples of [{0,1,2,3}] — which is exactly
+    [Compression.compressed_bound]'s extremal family at [m = 3], the
+    largest a compressed family may be. The other twelve are the pairs
+    from [{0,1}] joined to a triangle on [{4,5,6}] and the pairs from
+    [{2,3}] joined to a triangle on [{7,8,9}]. Four plus six plus six.
+
+    So the general row is **still climbing at ten points**: 14 at nine,
+    at least 16 at ten. That is the measurement §7 of the roadmap asks
+    for, and it goes the way that hurts [GroundBounded]. *)
+
+Definition ground10_max : Family :=
+  [[0; 1; 2]; [0; 1; 3]; [0; 2; 3]; [1; 2; 3];
+   [0; 4; 5]; [1; 4; 5]; [0; 4; 6]; [1; 4; 6]; [0; 5; 6]; [1; 5; 6];
+   [2; 7; 8]; [3; 7; 8]; [2; 7; 9]; [3; 7; 9]; [2; 8; 9]; [3; 8; 9]].
+
+Lemma ground10_max_no_sunflower : ~ ContainsKSunflower 3 ground10_max.
+Proof.
+  intro Hc.
+  pose proof (sunflower3b_sound ground10_max Hc) as E.
+  vm_compute in E; discriminate.
+Qed.
+
+Lemma ground10_max_is_grounded : Grounded ground10_max (seq 0 10).
+Proof.
+  unfold Grounded.
+  apply (proj1 (groundedb_correct ground10_max (seq 0 10))).
+  vm_compute; reflexivity.
+Qed.
+
+(** [N(3,10)] is between sixteen and twenty, and both ends are theorems.
+    The gap is four; the search closed neither end. *)
+
+Theorem n_three_ten_between_sixteen_and_twenty :
+  (Uniform 3 ground10_max /\ Distinct ground10_max
+   /\ Grounded ground10_max (seq 0 10) /\ length (seq 0 10) = 10
+   /\ ~ ContainsKSunflower 3 ground10_max /\ length ground10_max = 16)
+  /\ (forall (U : list nat) (F : Family),
+        NoDup U -> length U <= 10 ->
+        Uniform 3 F -> Distinct F -> Grounded F U ->
+        ~ ContainsKSunflower 3 F -> length F <= 20).
+Proof.
+  split; [| exact n_three_ten_at_most_twenty].
+  split; [apply uniformb_correct; vm_compute; reflexivity|].
+  split; [apply distinctb_correct; vm_compute; reflexivity|].
+  split; [exact ground10_max_is_grounded|].
+  split; [vm_compute; reflexivity|].
+  split; [exact ground10_max_no_sunflower | vm_compute; reflexivity].
+Qed.
+
+(** It beats the nine-point family, so the row really did move. *)
+
+Corollary the_general_row_climbs_from_nine_to_ten :
+  length SliceRank.ground9_max = 14 /\ length ground10_max = 16.
+Proof. split; vm_compute; reflexivity. Qed.
+
+(** ** The polynomial method is not what makes the ground bound work
+
+    [SliceRank.v] presents [GroundBounded] as the one hypothesis standing
+    between Naslund–Sawin and the conjecture at [k = 3]. Reading the
+    literature turned that framing around. [FPPTZ24] (the "Odd-sunflowers"
+    paper, JCTA 2024) records a conjecture of exactly this shape — the
+    number of *base elements* of a sunflower-free [k]-uniform family is at
+    most [c^k] — and reports, crediting Zach Hunter, that it is
+    **equivalent** to the Erdős–Rado conjecture. A ground-set framing of
+    the problem is therefore known.
+
+    Chasing that down exposes something the development had missed. The
+    implication [GroundBounded c ==> conjecture] does not need the
+    polynomial method **at all**. A family of distinct subsets of a
+    [g]-point set has at most [2^g] members — pure counting — so a ground
+    set of size [c*m] gives [2^(c*m) = (2^c)^m] directly.
+
+    What Naslund–Sawin contributes is the constant: [1.89^g] against
+    [2^g]. That is a real theorem and a better constant, and it is *not*
+    what makes the implication work. Compare:
+
+    - [SliceRank.bounded_ground_set_settles_k3]: needs
+      [NaslundSawinBound], gives [(27^(c+1))^m];
+    - [ground_bounded_settles_k3_by_counting] below: needs nothing,
+      gives [(2^c)^m], which is smaller for every [c].
+
+    So the honest reading of §7 is that the ground-set hypothesis is the
+    whole content and the polynomial method is decoration on the
+    constant. The axiom-free version is the one to quote. *)
+
+Lemma sublists_length : forall l, length (sublists l) = 2 ^ length l.
+Proof.
+  induction l as [|x l IH]; simpl; [reflexivity|].
+  rewrite app_length, map_length, IH; lia.
+Qed.
+
+Lemma NoDup_map_inj_lists :
+  forall (f : list nat -> list nat) (F : Family),
+    NoDup F ->
+    (forall A B, In A F -> In B F -> f A = f B -> A = B) ->
+    NoDup (map f F).
+Proof.
+  intros f F; induction F as [|A F IH]; simpl; intros Hnd Hinj; [constructor|].
+  inversion Hnd as [| ? ? Hni Hnd']; subst.
+  constructor.
+  - intro Hin; apply in_map_iff in Hin as [B [Hfb HB]].
+    assert (E : A = B)
+      by (apply Hinj; [left; reflexivity | right; exact HB | symmetry; exact Hfb]).
+    subst B; contradiction.
+  - apply IH; [exact Hnd'|].
+    intros X Y HX HY; apply Hinj; right; assumption.
+Qed.
+
+(** Counting, and nothing more: a [Distinct] family of subsets of [U] has
+    at most [2 ^ |U|] members. Each member is pinned by which points of
+    [U] it contains, and [HallCore.sublists] enumerates the
+    possibilities. *)
+
+Theorem grounded_family_at_most_two_to_the_ground :
+  forall (U : list nat) (F : Family),
+    Distinct F -> Grounded F U -> length F <= 2 ^ length U.
+Proof.
+  intros U F Hd HG.
+  assert (Hmem : forall A x, In A F -> (In x (filter (fun y => memb y A) U) <-> In x A)).
+  { intros A x HA; split.
+    - intro Hx; apply filter_In in Hx as [_ Hb]; apply memb_true_iff; exact Hb.
+    - intro Hx; apply filter_In; split;
+        [apply (HG A HA); exact Hx | apply memb_true_iff; exact Hx]. }
+  assert (Hinj : forall A B, In A F -> In B F ->
+             filter (fun y => memb y A) U = filter (fun y => memb y B) U -> A = B).
+  { intros A B HA HB Heq.
+    apply (SetNoDup_setEq_eq Hd HA HB); split; intros x Hx.
+    - apply (Hmem B x HB); rewrite <- Heq; apply (Hmem A x HA); exact Hx.
+    - apply (Hmem A x HA); rewrite Heq; apply (Hmem B x HB); exact Hx. }
+  assert (Hnd : NoDup (map (fun A => filter (fun y => memb y A) U) F))
+    by (apply NoDup_map_inj_lists;
+        [apply SetNoDup_NoDup; exact Hd | exact Hinj]).
+  assert (Hincl : incl (map (fun A => filter (fun y => memb y A) U) F) (sublists U)).
+  { intros z Hz; apply in_map_iff in Hz as [A [E _]]; subst z;
+      apply filter_in_sublists. }
+  pose proof (NoDup_incl_length Hnd Hincl) as Hle.
+  rewrite map_length, sublists_length in Hle; exact Hle.
+Qed.
+
+(** And therefore, with no axiom and no polynomial method: *)
+
+Theorem ground_bounded_settles_k3_by_counting :
+  forall c, GroundBounded c ->
+    forall m j, 1 <= m -> LowerBound m 3 j -> j <= (2 ^ c) ^ m.
+Proof.
+  intros c HGB m j Hm HL.
+  destruct (HGB m j Hm HL) as [F [U [HunF [HdF [HlenF [HnoF [HndU [HG Hu]]]]]]]].
+  assert (Hb : length F <= 2 ^ length U)
+    by (apply grounded_family_at_most_two_to_the_ground with (U := U); assumption).
+  assert (Hmono : 2 ^ length U <= 2 ^ (c * m))
+    by (apply Nat.pow_le_mono_r; lia).
+  rewrite <- Nat.pow_mul_r; lia.
+Qed.
+
+(** ** A lower bound on the constant [GroundBounded] could have
+
+    The two halves of this file meet here, and they refute something.
+    [SliceRank.GroundBounded c] asserts that an extremal sunflower-free
+    [m]-uniform family can be realised on [c*m] points. At [m = 3] the
+    development knows a family of twenty members
+    ([Intersecting.lower_bound_3_3_20], the doubled [iota(3)]), and it
+    knows [N(3,g) <= 2g] outright. Twenty members on [3c] points needs
+    [20 <= 6c].
+
+    So **[GroundBounded c] is false for every [c <= 3]** — proved, not
+    measured. §7 of the roadmap records the measurement that the
+    [m = 3] row is "still climbing at [g = 3m]"; this is the same fact
+    with the search taken out of it, and it is stronger, because the
+    search never decided [N(3,10)] at all.
+
+    What it does not do is refute the hypothesis. [c = 4] is untouched,
+    and [bounded_ground_set_settles_k3] at [c = 4] still gives the
+    conjecture at [k = 3], with a worse constant. What it removes is the
+    reading of the two plateaus at [2m] and [3m] as evidence for a small
+    [c]: at uniformity 3 the constant is at least 4. *)
+
+Theorem ground_bounded_needs_c_at_least_four :
+  forall c, GroundBounded c -> 4 <= c.
+Proof.
+  intros c HGB.
+  destruct (HGB 3 20 ltac:(lia) lower_bound_3_3_20)
+    as [F [U [HunF [HdF [HlenF [HnoF [HndU [HG Hu]]]]]]]].
+  pose proof (three_uniform_ground_bound U F HndU HunF HdF HG HnoF) as Hb.
+  lia.
+Qed.
+
+Corollary ground_bounded_three_is_false : ~ GroundBounded 3.
+Proof. intro H; pose proof (ground_bounded_needs_c_at_least_four _ H); lia. Qed.
+
+(** The same for [c = 1] and [c = 2], which is where the two measured
+    plateaus sit — so neither of them is the constant. *)
+
+Corollary ground_bounded_two_is_false : ~ GroundBounded 2.
+Proof. intro H; pose proof (ground_bounded_needs_c_at_least_four _ H); lia. Qed.
+
 (** ** The hypothesis, pointed at intersecting families
 
     Deliberately *weaker* than what the measurement supports. The data
@@ -382,6 +657,29 @@ Qed.
     between them is a single word. What separates them is not their
     logical strength — neither implies the other — but that one of them
     has a measurement behind it. *)
+
+Theorem iota_ground_bounded_gives_exponential_by_counting :
+  forall c, IotaGroundBounded c ->
+    forall b, 1 <= b -> IotaAtMost b ((2 ^ c) ^ b).
+Proof.
+  intros c HIGB b Hb H HU HD HI Hno.
+  destruct (HIGB b H Hb HU HD HI Hno)
+    as [H' [U [HD' [Hlen [Hno' [HndU [HG Hu]]]]]]].
+  assert (Hb2 : length H' <= 2 ^ length U)
+    by (apply grounded_family_at_most_two_to_the_ground with (U := U); assumption).
+  assert (Hmono : 2 ^ length U <= 2 ^ (c * b))
+    by (apply Nat.pow_le_mono_r; lia).
+  rewrite <- Nat.pow_mul_r; lia.
+Qed.
+
+Theorem iota_ground_bounded_settles_k3_without_the_axiom :
+  forall c, 1 <= c -> IotaGroundBounded c -> sunflower_conjecture_k_3.
+Proof.
+  intros c Hc HIGB.
+  apply (proj2 conjecture_k_3_iff_iota_exponential).
+  exists (2 ^ c); intros b Hb.
+  apply (iota_ground_bounded_gives_exponential_by_counting c HIGB b Hb).
+Qed.
 
 Theorem both_ground_hypotheses_settle_k3 :
   NaslundSawinBound ->

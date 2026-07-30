@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 49 anecdotes into a coverage metric over the
+  mutation testing from 55 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -508,11 +508,12 @@ the sandwich it is *the* rate of the problem at `k = 3`, so it is worth
 having in one place:
 
 ```
-  b   iota(b)          rate = iota(b)^(1/(b-1))
-  2   3                3.0000
-  3   10               3.1623   <- the 1972 constant
-  4   27  (ground 9)   3.0000
-  4   <32 (ground 10)  <3.1414
+  b   iota(b)            rate = iota(b)^(1/(b-1))
+  2   3                  3.0000
+  3   10                 3.1623   <- the 1972 constant
+  4   27   (ground 9)    3.0000
+  4   <32  (ground 10)   <3.1414
+  5   >=42 (ground 10)   >=2.5457
 ```
 
 **Flat, not growing**, over every value that has been decided. Read
@@ -581,11 +582,17 @@ sunflower-free. The rate that ceiling would give is
 `(C(2b,b)/2)^(1/(b-1))`:
 
 ```
-  b   ceiling   rate at ceiling   iota(b,2b)   reached?
-  2         3            3.0000            3   yes
-  3        10            3.1623           10   yes      <- AHS
-  4        35            3.2711           24   NO
+  b   ceiling   rate at ceiling   iota(b,2b)   reached?   fraction
+  2         3            3.0000            3   yes           1.00
+  3        10            3.1623           10   yes           1.00   <- AHS
+  4        35            3.2711           24   NO            0.69
+  5       126            3.3523        >=42   NO            >=0.33
 ```
+
+The `b = 5` row is new (§9; SAT, and the rung above it did not decide).
+The fraction of the ceiling attained is falling, not levelling: 1, 1,
+0.69, and at most a third. Whatever the extremal families are, they are
+getting further from the complementary-pair transversal, not closer.
 
 **The 1972 constant is the last `b` at which the ceiling is met.** At
 `b = 4` the ceiling is 35 and would beat AHS — the extremal family
@@ -831,6 +838,12 @@ family of subsets of `[n]` by `3(n+1) C^n`, `C = 3/2^(2/3) < 1.89` — a
 that settled cap set. It bounds by the **ground set**; the conjecture
 bounds by the **uniformity**.
 
+**Read this section with §7.5 first.** Two things found by reading the
+literature change what it says: the ground-set framing is *known* and is
+an equivalence (Hunter, via [FPPTZ24]), and the implication from a
+ground-set bound does not need the polynomial method at all. What is left
+of the framing below is the *linear* strengthening and the measurements.
+
 That is the entire gap, and it is one hypothesis wide:
 
 ```
@@ -865,24 +878,36 @@ bounded by `f(m,3)-1`, so it plateaus; `GroundBounded c` says it
 plateaus by `g = c*m`.
 
 ```
-  g        3  4  5  6  7  8  9  10
-  m = 1:   2  2  2  2  2  2  2   2     plateau at g = 2 = 2m,  value 2
-  m = 2:   3  4  5  6  6  6  6   6     plateau at g = 6 = 3m,  value 6
-  m = 3:   1  4  6 10 12 12 14   ?     still rising at g = 9 = 3m
+  g        3  4  5  6  7  8  9   10
+  m = 1:   2  2  2  2  2  2  2    2     plateau at g = 2 = 2m,  value 2
+  m = 2:   3  4  5  6  6  6  6    6     plateau at g = 6 = 3m,  value 6
+  m = 3:   1  4  6 10 12 12 14  >=16    still rising at g = 10
 ```
 
-Every entry shown is exhaustive. `g = 9` at `m = 3` takes 15 minutes and
-comes out at **14**, up from 12 at `g = 8` — so the `m = 3` row is *still
-climbing at `3m`*, and `c = 3` survives only if `N(3,10) = 14`. That is
-the first value the search does not decide, and it is the one that
-matters.
+Every entry through `g = 9` is exhaustive. `g = 9` at `m = 3` takes 15
+minutes and comes out at **14**, up from 12 at `g = 8`.
 
-**Do not read the ratios 2 and 3 as evidence.** Two plateaus and a row
-that has not plateaued is the smallest amount of data that could
-distinguish the two answers, and it does not. What the table is good for
-is naming the next computation: `N(3,10)`. It needs a better search than
-the current branch-and-bound — the same conclusion §4 reaches for the
-spread threshold, and probably the same fix.
+**`N(3,10) >= 16`, and `c = 3` is dead.** The ten-point entry was found
+by the SAT encoding (§9) in 0.02 seconds, against a branch-and-bound that
+did not finish at all, and is pinned as `IotaGround.ground10_max` with an
+independent re-verification. With the proved `N(3,g) <= 2g` it gives
+`16 <= N(3,10) <= 20`, both ends theorems
+(`n_three_ten_between_sixteen_and_twenty`).
+
+Better: the refutation of `c = 3` does not need the search at all.
+`IotaGround.ground_bounded_needs_c_at_least_four` proves
+**`GroundBounded c` forces `c >= 4`**, from the twenty-member family at
+uniformity 3 (`Intersecting.lower_bound_3_3_20`) against `N(3,g) <= 2g`:
+twenty members on `3c` points needs `20 <= 6c`. So neither of the two
+measured plateaus, at `2m` and at `3m`, is the constant.
+
+**Do not read the ratios 2 and 3 as evidence** — and now there is a
+theorem saying so, not just a caution. Two plateaus and a row that has
+not plateaued was the smallest amount of data that could distinguish the
+answers, and it did not; the ratios 2 and 3 are both refuted outright.
+What the table named as the next computation, `N(3,10)`, is now done, and
+it needed the better search §9 supplies rather than the branch-and-bound
+§4 also gave up on.
 
 A by-product worth keeping: `N(3,9) = 14` beats the direct sum's 12, so
 `f(3,3) >= 15`. It does not improve the *rate* — `14^(1/3) = 2.41` is
@@ -1015,6 +1040,519 @@ specific target.
 the one that matters, against `C(10,3) = 120` from counting and 48 from
 Erdős–Rado. It is still above the measured 14 and it does **not** decide
 whether the row plateaus. It narrows the search, it does not replace it.
+
+## 7.5. Corrected: the ground-set framing is known, and the axiom is not needed
+
+Two findings from reading [FPPTZ24] (the "Odd-sunflowers" paper, JCTA
+2024) from its rendered pages, and one consequence of them that is this
+repository's own oversight.
+
+### The framing is known, and is an equivalence
+
+Its Conjecture 14 says the number of **base elements** of a
+sunflower-free `k`-uniform family is at most `c^k`, and it reports —
+crediting **Zach Hunter** — that this is *equivalent* to the Erdős–Rado
+conjecture. So `GroundBounded` is not a new angle on the problem. It is a
+**linear** strengthening (`c*m` points, not `c^m`) of a known equivalent
+formulation, and the linear form is what the `N(m,g)` measurements are
+about.
+
+### The universal reading of it is false
+
+The same paper gives `g_v(k) >= 2^k - 1`: the root-to-leaf paths of a
+depth-`k` binary tree, as edge sets, are `k`-uniform, `2^k` in number, and
+sunflower-free — two paths meet in the path to their leaves' least common
+ancestor, and among three leaves two are strictly closer than the other
+pairs, so two of the three pairwise intersections coincide and one is
+strictly longer.
+
+So **"every sunflower-free `m`-uniform family lives on `O(m)` points" is
+false for every constant.** Only the existence reading survives: some
+family of each achievable size can be *realised* on `c*m` points. That is
+what `GroundBounded` actually says, and the distinction is load-bearing
+rather than pedantic. `IotaGround.the_universal_ground_reading_is_false`
+is the `k = 3` instance — eight triples that genuinely need fourteen
+points, against `4*3 = 12` — and `rust/tests/ground_set.rs` checks the
+construction to `k = 6` (sixty-four 6-sets on a hundred and twenty-six
+points).
+
+This does **not** conflict with the measurements. `N(m,g)` is the largest
+family *on* `g` points, which is exactly the quantity the existence
+reading needs, not the quantity bounded below above.
+
+### And the polynomial method was never the load-bearing part
+
+Chasing the equivalence exposed something this development had missed.
+`SliceRank.bounded_ground_set_settles_k3` derives the conjecture from
+`GroundBounded c` **plus** `NaslundSawinBound`. The axiom is not needed:
+
+> A family of distinct subsets of a `g`-point set has at most `2^g`
+> members. That is counting. So a ground set of size `c*m` gives
+> `2^(c*m) = (2^c)^m` directly.
+
+`ground_bounded_settles_k3_by_counting` and
+`iota_ground_bounded_settles_k3_without_the_axiom` are the axiom-free
+versions, built on `grounded_family_at_most_two_to_the_ground` and
+`HallCore.sublists`, which was already in the repository. Compare:
+
+```
+  route                             hypotheses            bound
+  bounded_ground_set_settles_k3     GroundBounded + NaSa  (27^(c+1))^m
+  ground_bounded_settles_k3_by_..   GroundBounded         (2^c)^m
+```
+
+`(2^c)^m` is smaller for every `c`, and needs nothing beyond the kernel.
+What Naslund–Sawin contributes is the constant — `1.89^g` against `2^g` —
+which is a real theorem and is decoration here.
+
+**So §7's title overstates the case.** The ground-set hypothesis is the
+whole content; the polynomial method improves a constant. Quote the
+axiom-free version.
+
+## 8. Settled: compression is the wrong tool, and by how much
+
+Shifting is *the* instrument of extremal set theory — Erdős–Ko–Rado,
+Hilton–Milner and most of Frankl's work are proved with it — and this
+repository had never touched it. For `i < j` the `(i,j)`-shift replaces
+`A` by `(A \ {j}) ∪ {i}` when `j ∈ A`, `i ∉ A` and the image is not
+already present. It preserves `|F|`, uniformity, intersecting-ness and
+the matching number, and it terminates, so any family compresses to a
+**left-compressed** one of the same size supported on an initial segment
+of the ground set. That is where the structure comes from.
+
+It does not survive contact with sunflower-freeness. Both the measurement
+(`rust/tests/shifting.rs`, exhaustive) and the proof (`coq/Compression.v`)
+are in, and the failure is sharper than expected.
+
+### It fails at the first opportunity
+
+Exhaustively over every sunflower-free family in range at `m = 2, 3` and
+`g <= 6`: the smallest family some single shift destroys has **three
+members**, which is the least a 3-sunflower can have. The witness is
+
+```
+  {0,1}  {0,2}  {1,3}        pairwise intersections {0}, {1}, empty
+        --(0,1)-shift-->
+  {0,1}  {0,2}  {0,3}        a star: a sunflower with core {0}
+```
+
+Only `{1,3}` moves — `{0,1}` already has `0` and `{0,2}` has no `1`. Four
+points is the least ground set that admits a counterexample, and
+`Compression.two_members_cannot_acquire_a_sunflower` says two members
+never can. So there is no range of small parameters in which compression
+is safe.
+
+### The maximum is not attained by a compressed family either
+
+That is the weaker statement one would actually want, and it also fails —
+not by a constant, but completely:
+
+> **`Compression.compressed_bound`.** A left-compressed 3-sunflower-free
+> `m`-uniform family has at most `m + 1` members, on *any* ground set.
+> Attained, by all `m`-subsets of an `(m+1)`-set.
+
+### And nothing about it is special to 3
+
+The chain argument runs at every sunflower size. A compressed family that
+reaches past `m + k - 3` contains `k` sets `{0,...,m-2} ∪ {t}`, and those
+are a `k`-sunflower. So:
+
+> **`Compression.compressed_lives_on_m_plus_k_minus_two_points`.** A
+> left-compressed `k`-sunflower-free `m`-uniform family is supported on
+> `m + k - 2` points, hence has at most `C(m+k-2, m)` members —
+> **polynomial in `m` of degree `k-2`** — and all `m`-subsets of an
+> `(m+k-2)`-set attain it.
+
+**Why that is worth stating precisely: the question is live.** [Mis26]
+(arXiv:2606.02667, 1 June 2026) proves the Erdős–Rado conjecture *for
+shifted families*, with `f'(k,s) ≤ s^(2s-2) 2^k` — exponential in the
+uniformity — and gives no lower bound and no extremal family. The theorem
+above says the truth is polynomial, and says exactly what it is:
+
+```
+  f'(k,s)  =  C(k+s-2, k)
+```
+
+The ground-set half is machine-checked. The count and the attainment are
+exhaustive in `rust/tests/shifting.rs` over 62 parameter points
+(`k = 3,4,5`, `m ≤ 3`, every ground set in range, zero mismatches), and
+the attainment has a short proof worth recording:
+
+> Write `B_i` for the complement of the `i`-th member in the
+> `(m+k-2)`-set, so `|B_i| = k-2`. A `k`-sunflower forces every pairwise
+> union `B_i ∪ B_j` to be one set `C`, so each point of `C` is missing
+> from at most one `B_i` and lies in at least `k-1` of them. Counting
+> incidences, `k(k-2) ≥ |C|(k-1)`; and two distinct `(k-2)`-sets have
+> union at least `k-1`, so `|C| ≥ k-1`. Together `(k-1)² ≤ k(k-2)`, which
+> is false.
+
+Note which way this cuts. It is *not* progress on the conjecture — it
+makes the shifted case easier, and the shifted case is exactly the one
+the rest of this section shows is unreachable from the general one.
+
+The proof is the whole story in three steps. A compressed family is a
+down-set in the dominance order, so from any member it contains the chain
+`{0,...,m-2} ∪ {t}` for every `t` up to that member's largest point
+(`compress_to_chain`, induction on `Σ x`, which is the potential that
+makes the compression terminate). Any three of those chains have pairwise
+intersection exactly `{0,...,m-2}` — a 3-sunflower
+(`three_chains_are_a_sunflower`). So no member may reach past `m`, the
+family lives on `{0,...,m}`
+(`compressed_lives_on_m_plus_one_points`), and an `m`-subset of an
+`(m+1)`-set is determined by the point it omits.
+
+Measured first, proved second, and the table is flat in the ground set —
+which is the content:
+
+```
+  m   N(m,g) at the plateau   iota(m)          left-compressed max
+  1   2                       1                2
+  2   6                       3                3
+  3   10 (g=6), 14 (g=9)      10               4
+  4   -                       27 (g=9)         5
+  5   -                       -                6
+  6   -                       -                7
+```
+
+Exhaustive at every `m <= 6` and every ground set in range. The
+intersecting question behaves identically (`m+1` from `m >= 2` on), even
+though intersecting-ness is precisely the property shifting was built to
+preserve.
+
+### What it would have bought, as a theorem
+
+This is worth stating because it is the "too good to be true" version,
+and the implication really does hold. §7 names `GroundBounded c` as the
+one missing fact that turns Naslund–Sawin into the conjecture at `k = 3`.
+Compression would deliver it outright — on `m+1` points, not `c·m`:
+
+```
+  CompressionPreservesSunflowerFree  ==>  GroundBounded 2
+  CompressionPreservesSunflowerFree  +  [NaSa17]  ==>  f(m,3) <= (27^3)^m + 1
+```
+
+both machine-checked (`compression_would_give_ground_bounded`,
+`compression_would_settle_k3`). And then the hypothesis is refuted
+outright, twice by disjoint arguments:
+`compression_does_not_preserve_sunflower_freeness` runs six 2-uniform
+sunflower-free sets against a compressed maximum of three, and
+`compression_would_overfill_the_ground_set` runs the same six against a
+three-point ground set.
+
+### Why it fails, exactly — now a theorem, not a measurement
+
+`LinkCharacterisation.sunflower_iff_link_matching` says a family is
+sunflower-free exactly when **every** link has matching number `<= 2` —
+one condition per core. The diagnosis is that compression commutes with
+exactly one of them, and all four parts of that are now machine-checked
+(`Compression.only_the_empty_core_survives_compression`):
+
+1. **The empty core is the matching condition.** `link_nil` proves
+   `link [] F = F`, so the `Y = ∅` instance is literally "no `k` pairwise
+   disjoint members".
+2. **Compression preserves it.** `shift_preserves_no_k_disjoint` — the
+   classical fact that shifting does not increase the matching number.
+   Nothing in this development had it, and it is the *positive* half of
+   the diagnosis, so it had to be proved rather than cited. The argument
+   is the standard repair: at most one member of a disjoint family can
+   acquire `i`, so at most one moved; send it back to its preimage, and
+   if some other member carries `j`, send that one forward to the image
+   the guard promised was already present.
+3. **Erdős–Ko–Rado's hypothesis is that same instance at `k = 2`.**
+   `intersecting_is_the_empty_core_at_two`: an intersecting family is one
+   with no two disjoint members.
+4. **And at a non-empty core it fails.**
+   `shifting_breaks_a_non_empty_core`: the three-member witness shifts to
+   a family that *has* a 3-sunflower and has **no** three pairwise
+   disjoint members — so what it acquired is a sunflower with a non-empty
+   core, which is exactly the clause compression does not commute with.
+
+So the shape of the thing is: sunflower-freeness is a conjunction indexed
+by cores; shifting is a homomorphism for one index and for no other; EKR
+lives entirely at that index; and `compressed_bound` prices the rest at
+everything above `C(m+k-2, m)` members.
+
+That also explains, without appeal to solver folklore, why §9's
+intersecting instances are hard. Shifting is a *canonical form* argument
+— "assume the family is compressed" — and it is exactly that kind of
+symmetry breaking the theorem above forbids. What remains sound is
+*orbit* symmetry breaking: pick one representative per orbit of a group
+that preserves the property. The anchor is one, the second-member split
+is another, the sorted-degree constraint is a third and is not yet built.
+
+The measured version, which came first:
+
+* the **empty** link survives every shift — `ν(F)` never rises, which is
+  the standard fact that shifting does not increase the matching number;
+* a **singleton** link is what breaks, every time. Shifting `two_triangles`
+  takes the maximum link matching from 2 to 4, always at a *point*.
+
+That is the whole diagnosis. Shifting towards `i` is exactly the
+operation that inflates `deg(i)` — verified: a breaking shift always
+raises `deg(i)` — and `IotaGround.link_degree_ground_bound` is exactly
+the theorem that caps `deg(i)` by `N(b-1,g-1)`. Compression optimises the
+quantity sunflower-freeness bounds.
+
+Intersecting-ness is the *single* empty-link condition `ν <= 1`. That is
+why the instrument works for Erdős–Ko–Rado and cannot work here:
+**EKR is a condition on one link, sunflower-freeness is a condition on
+all of them, and shifting commutes with the empty one only.**
+
+The same thing in the vocabulary §5 and §7 already use: compression
+drives *diversity* `|F| - maxdeg` to **1**, the least a family with more
+than one member can have, while the extremal `ι` families sit at roughly
+`|F|/2` — 5 of 10 at `(3,6)`, 15 of 27 at `(4,9)`. Compression pushes
+towards a star; the extremal objects are provably as far from a star as an
+intersecting family gets. The two are pointed in opposite directions.
+
+### What this closes, and what it does not
+
+**Closed.** Do not look for a shifting proof of a sunflower bound, and do
+not look for a shifted extremal family — there are none above
+`C(m+k-2, m)` members. The `(e)` question, "is there a compression that
+*does* preserve sunflower-freeness?", is answered in the negative for
+every operation whose fixed points are the left-compressed families,
+because `compressed_bound` bounds those regardless of how they were
+reached. And the shifted case itself is closed: `f'(k,s)` is now exactly
+known, so there is nothing further to extract from [Mis26]'s direction.
+
+**Open.** An operation with a *different* normal form is not excluded by
+any of this. What the diagnosis suggests is that the right normal form is
+**regular**, not compressed — which is what §7's tightness analysis
+already found the extremal objects to be. Nobody has a compression whose
+fixed points are regular hypergraphs.
+
+## 9. Measured: SAT, and where it does and does not help
+
+The homegrown branch-and-bound was out of road — `iota(4,10) >= 32?`
+took 4437 seconds, `>= 31?` did not finish in an hour, a factor of 89 per
+ground point — so the questions were re-encoded as SAT and handed to
+external solvers. `rust/src/sat.rs` is the encoder and driver;
+`rust/tests/sat_encoding.rs` is what stops it from being confidently
+wrong.
+
+### The encoding
+
+One boolean per `b`-subset of `[g]`. Intersecting-ness is binary clauses,
+one per disjoint pair. Sunflower-freeness is **ternary** clauses, one per
+sunflower triple — which is exactly the constraint the branch-and-bound's
+bound could not see. "At least `t` members" is a sequential counter.
+
+Three things keep it honest, and all three are gates:
+
+* **The anchor is forced**, which is sound because relabelling preserves
+  everything (`DirectSum.relabel_preserves`); for intersecting families
+  the second member is split over the `b-1` orbits of the anchor's
+  stabiliser, the reduction `intersecting::iota_decide` already carried.
+  `the_orbit_split_decides_the_same_question` checks the split answers
+  the same question as the unsplit instance.
+* **No model is trusted.** Every satisfying assignment is decoded and
+  re-verified by `intersecting::verify`, which shares no code with the
+  encoder; `sat::solve` panics rather than returns on a bad model.
+* **UNSAT gets a second opinion.** It is the verdict no witness can
+  confirm, so `solve_agreed` runs two independent solvers (cadical and
+  cryptominisat) and refuses to answer unless they agree — the same
+  discipline `Reflect.rao_witness_agrees` applies on the Coq side.
+
+The differential test is the main defence: on every parameter the
+branch-and-bound can still decide, the two agree — `iota(b,g)` for
+`b <= 4` and `N(m,g)` for `m <= 3`, fourteen and eleven rows
+respectively.
+
+### What it bought
+
+**The general row moved, and it is the row §7 names.** `N(3,10) >= 16`,
+found in **0.02 seconds**, against a search that did not finish at all.
+Combined with the proved `N(3,g) <= 2g` this puts `N(3,10)` in `[16,20]`,
+and it says the general ground row is *still climbing at `g = 10`* —
+14 at nine points, at least 16 at ten.
+
+**`N(3,9) = 14` re-decided independently**, `>= 15` UNSAT in 243s against
+the branch-and-bound's fifteen minutes. A second exhaustive verdict on a
+value the development quotes.
+
+**`iota(5,10) >= 42`**, the first value ever computed at `b = 5` here.
+The rung above it, `>= 43`, did not decide in sixteen minutes. The
+threshold that would beat Abbott–Hanson–Sauer at `b = 5` is 101, so this
+is not on course to reach it: the rate `42^(1/4) = 2.55` is well under
+the 1972 constant, and the fraction of the complementary-pair ceiling
+attained is falling across the row (1, 1, 0.69, at most 0.33).
+
+### What it did not buy, which is the more useful half
+
+**The degree cap does not bite.** §7 named `deg(x) <= N(b-1,g-1)` as the
+missing ingredient and recorded that "whether it bites at these
+parameters is unmeasured". Measured: at `N(3,9) >= 15` the cap costs
+251s against 243s without it, and `the_degree_cap_changes_no_answer`
+confirms it moves no value. It is sound, it is a theorem, and it is
+worth nothing to a CDCL solver — which makes sense in hindsight, since
+the cap is a *consequence* of the ternary clauses and adding a consequence
+tells a clause learner nothing it could not derive.
+
+**The intersecting instances are worse for SAT than for the search.**
+`iota(4,9) >= 28` is UNSAT, and the branch-and-bound decides the whole
+`(4,9)` row in 50 seconds while cadical does not settle that one rung in
+three minutes. The instances are tiny — 2915 variables, 10611 clauses —
+and hard, which is the signature of **symmetry**: after the anchor and
+the orbit split, the stabiliser still has order `4! * 5!` at `(4,9)`, and
+CDCL is famously bad at symmetric UNSAT. The general row has far less
+symmetry to fight, which is exactly where SAT won.
+
+**What was asked and not decided**, with its cost, so the next session
+does not re-run it blind:
+
+```
+  question              solver time    verdict
+  iota(4,10) >= 28      60 min         undecided   <- what IotaGroundBounded turns on
+  N(3,10)    >= 17      55 min         undecided
+  iota(4,11) >= 32      30 min         undecided   <- 32 would beat AHS
+  iota(5,10) >= 43      16 min         undecided
+```
+
+Every one is an UNSAT-side question, and every one is symmetric. Note
+that `N(3,10) >= 16` was SAT in **0.02 seconds** and `>= 17` did not
+finish in fifty-five minutes: the cliff between the two sides is
+enormous, and it is the whole reason to break symmetry rather than buy
+time.
+
+So the honest summary is: **SAT is transformative on the witness side and
+on the general row, and it is not a free win on the intersecting UNSAT
+side.** That is a sharper statement of what is hard here than "the search
+is slow" was.
+
+### The named next step, with its soundness argument
+
+The obstruction is symmetry, so break more of it. The stabiliser of the
+anchor `A = {0,...,b-1}` is `Sym(A) x Sym([g] \ A)`, and both factors
+preserve uniformity, distinctness, intersecting-ness and
+sunflower-freeness. So a family may be relabelled to make its degree
+sequence **sorted** on each side:
+
+```
+  deg(0) >= deg(1) >= ... >= deg(b-1)     and     deg(b) >= ... >= deg(g-1)
+```
+
+That is sound, it is not implied by anything currently in the encoding,
+and it is a genuine restriction rather than a consequence — which is what
+the degree cap turned out not to be. Encoding it needs a totalizer per
+point and a pairwise comparison of the unary outputs: `O(n log n)`
+variables per point, `O(n^2)` clauses, both affordable at these sizes.
+Two cheaper things to try first, in order: a symmetry-breaking
+preprocessor (`BreakID`) in front of the solver, and a portfolio — the
+solvers here disagree wildly in behaviour on symmetric instances and only
+cadical has been measured.
+
+## 10. Where the effort should go now
+
+Sections 8 and 9 changed the ordering. This is the standing list, ranked,
+with what changed against each.
+
+### Moved up
+
+**Prove `iota(3) = 10` exactly.** `iota(3) <= 18` is proved
+(`Intersecting.iota_three_at_most_eighteen`), 10 is measured and stable to
+fourteen points, and closing `[10,18]` is a finite case analysis: an
+intersecting 3-uniform family is the union of the three stars at a fixed
+member's points, each star's link is a sunflower-free graph and so has at
+most `g(2) = 6` members, so the whole family lives on at most thirteen
+points.
+
+Two things pushed this up. First, it is the first exact value of the
+quantity §5 proves the conjecture is *equivalent* to. Second — and this is
+new — §8 shows the standard route to a result of this shape is
+unavailable, so there is no cheaper mechanised alternative waiting. Doing
+it by hand is worth more than it was, not less.
+
+**Build instead of search, and identify the object — now one item.**
+§5 item 0 and the old "identify the extremal configuration" were separate.
+They should not be. The sixteen-member witness the SAT layer found for
+`N(3,10)` (§9) is
+
+```
+  {0,1,2} {0,1,3} {0,2,3} {1,2,3}        all four triples of {0,1,2,3}
+  {0,4,5} {1,4,5} {0,4,6} {1,4,6} {0,5,6} {1,5,6}
+  {2,7,8} {3,7,8} {2,7,9} {3,7,9} {2,8,9} {3,8,9}
+```
+
+— a `K4` core plus two triangle-blowups, four plus six plus six. Nobody
+designed it; a SAT solver returned it and an independent checker verified
+it. And its first four members are **exactly**
+`Compression.compressed_bound`'s extremal family at `m = 3`, the largest a
+compressed family may be.
+
+That is the locally-`L` construction hypothesis turning up unprompted:
+extremal families look like small rigid pieces glued along a core. The
+experiment is unchanged — enumerate extremal `N(b-1,g-1)` families up to
+isomorphism, search the gluings — but it now has a worked example to
+generalise from rather than only the `(3,6)` object. Caveat unchanged:
+the rigidity is proved only at tight rows, so this produces lower bounds,
+and finding nothing proves nothing.
+
+### Removed
+
+**"Point EKR machinery at `iota`" collapses into the ground-set
+question.** §5 item 0 listed this as the genuinely new angle the
+equivalence opens. It is not a separate angle. Every Erdős–Ko–Rado-type
+bound is in terms of the ground set `n` — `C(n-1,b-1)` for EKR itself,
+`C(n-3,b-2)` for Frankl's diversity theorem — and the conjecture needs
+`C^b`. The only way any of them yields `C^b` is if `n = O(b)`. So a route
+through intersecting-family theory needs ground-boundedness *first*, and
+once you have ground-boundedness the exponential bound is immediate
+anyway: a family on `O(b)` points has at most `2^{O(b)}` members, with no
+EKR needed.
+
+What survives is the sharpened version already in §7: `IotaGroundBounded`
+is the question, and diversity theorems are relevant only as evidence
+about *which* families can be extremal, not as a source of bounds.
+
+### Unchanged
+
+**Rao's Lemma 2** (§1) is still the highest-value single target and still
+a multi-session campaign on its own. **The entropy measurement** (§5's
+correlated-covers item) is still uniquely unclaimed and still cheap.
+
+### Working note: how to read a paper
+
+Both literature findings in §8 and §9 were first taken from
+extracted text or a fetched summary, and both were wrong in a way that
+mattered.
+
+* `pdftotext` is fine for *locating* a passage and useless for quoting
+  one: sub- and superscripts, definition displays and the difference
+  between "at least" and "more than" are exactly what it drops. It
+  installs fine after `apt-get update`, despite an older note saying
+  otherwise.
+* **Render and read.** `pdftoppm -png -r 150 paper.pdf out/p` and read the
+  pages as images. Doing that on [Mis26] corrected `f'(k,s)` from
+  `C(k+s-2,k) + 1` to `C(k+s-2,k)` — the paper counts families "of
+  cardinality *more than* `m`", so `f'` **is** the extremal number — and
+  surfaced that its sunflowers require non-empty petals, which agrees
+  with this development only because uniform distinct families have that
+  for free.
+* Doing it on [Kup25] **withdrew** a claim. The survey's two [AHS72]
+  sentences looked mutually inconsistent in extracted text; on the page
+  they are not. A `Δ(3)`-free family is `Δ(4)`-free, so the bound
+  sentence is true as written — it is just not the statement usually
+  attributed to [AHS72], and needs re-indexing before the constant is
+  quoted.
+
+Two corrections and one withdrawal from one hour of looking at pixels.
+Quote from the rendered page or do not quote.
+
+### Bounded items, with one reordering
+
+The uniformity-2 campaign (§3a) has the wrong citation attached. See
+`docs/references.md`: the exact values `f(2,k)` are due to [AHS72] in
+1972 rather than [CH76] in 1976. [AHS72]'s own abstract says it
+"evaluates `φ(2,k)` for all `k >= 3`" with petals counted directly, and
+the formula [Kup25] quotes for it equals `CH(s,s)` at every `s` this
+repository can compute. Only the *diagonal* `CH(D,D)` is ever needed here, and if
+[AHS72]'s argument for the diagonal is shorter than [CH76]'s for the full
+two-parameter function, that is the one to formalise. **Read the paper
+before starting the campaign**, not after.
+
+Formalising the AHS substitution (§5 item 2) is unchanged and still a
+session on its own.
 
 ---
 

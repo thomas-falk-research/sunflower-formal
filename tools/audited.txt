@@ -265,6 +265,21 @@ thm IotaGround.star_at_point_bounded
 thm IotaGround.link_degree_ground_bound
 thm IotaGround.three_uniform_ground_bound
 thm IotaGround.n_three_ten_at_most_twenty
+thm IotaGround.ground10_max_no_sunflower
+thm IotaGround.ground10_max_is_grounded
+thm IotaGround.n_three_ten_between_sixteen_and_twenty
+thm IotaGround.the_general_row_climbs_from_nine_to_ten
+thm IotaGround.sublists_length
+thm IotaGround.grounded_family_at_most_two_to_the_ground
+thm IotaGround.ground_bounded_settles_k3_by_counting
+thm IotaGround.iota_ground_bounded_gives_exponential_by_counting
+thm IotaGround.iota_ground_bounded_settles_k3_without_the_axiom
+thm IotaGround.tree_paths_three_no_sunflower
+thm IotaGround.tree_paths_three_needs_fourteen
+thm IotaGround.the_universal_ground_reading_is_false
+thm IotaGround.ground_bounded_needs_c_at_least_four
+thm IotaGround.ground_bounded_three_is_false
+thm IotaGround.ground_bounded_two_is_false
 thm IotaGround.iota_ground_bounded_gives_exponential
 thm IotaGround.iota_ground_bounded_is_exponential
 thm IotaGround.iota_ground_bounded_settles_k3
@@ -362,9 +377,64 @@ def SliceRank.ground9_max
 # printed form.
 def IotaGround.degsum
 def IotaGround.sizesum
+def IotaGround.ground10_max
+def IotaGround.tree_paths_three
 def IotaGround.IotaGroundBounded
 def Audit.GroundHypotheses
 
 # The open statements, so "what is conjectured" cannot drift either.
 def Conjecture.sunflower_conjecture
 def Conjecture.spread_conjecture
+
+# Compression: the shifting method, and the theorem that it cannot be
+# used here. `LeftCompressed` is the fixed-point condition of the
+# (i,j)-shift and `shift_family` is the operation; Audit checks they are
+# the same thing. `CompressionPreservesSunflowerFree` losing its size
+# clause would turn the refutation into a statement about nothing.
+thm Compression.compress_to_chain
+thm Compression.three_chains_are_a_sunflower
+thm Compression.chain_step
+thm Compression.chain_down
+thm Compression.chains_length
+thm Compression.chains_sunflower
+thm Compression.compressed_lives_on_m_plus_k_minus_two_points
+thm Compression.compressed_ground_at_three
+thm Compression.compressed_lives_on_m_plus_one_points
+thm Compression.compressed_bound
+thm Compression.compressed_bound_is_attained
+thm Compression.triangle_compressed
+thm Compression.shift_family_length
+thm Compression.shift_family_uniform
+thm Compression.the_shift_is_the_star
+thm Compression.shift_may_create_a_sunflower
+thm Compression.two_members_cannot_acquire_a_sunflower
+thm Compression.contains_sunflower_incl
+thm Compression.pick_spec
+thm Compression.stayed_means_image_present
+thm Compression.member_of_shift_without_i_is_fixed
+thm Compression.shift_preserves_no_k_disjoint
+thm Compression.link_nil
+thm Compression.shift_preserves_the_empty_core
+thm Compression.intersecting_is_the_empty_core_at_two
+thm Compression.star_has_no_three_disjoint
+thm Compression.shifting_breaks_a_non_empty_core
+thm Compression.only_the_empty_core_survives_compression
+thm Compression.compression_would_give_ground_bounded
+thm Compression.compression_would_settle_k3
+thm Compression.compression_does_not_preserve_sunflower_freeness
+thm Compression.compression_would_overfill_the_ground_set
+thm Audit.compressed_iff_the_shift_does_not_move_it
+thm Audit.two_triangles_is_not_compressed
+thm Audit.the_shift_really_moves_two_triangles
+thm Audit.the_chain_obstruction_is_real
+thm Audit.compression_collapses_the_problem
+
+def Compression.shift_member
+def Compression.LeftCompressed
+def Compression.chain
+def Compression.chains
+def Compression.shift_family
+def Compression.shift_one
+def Compression.pick
+def Compression.repair
+def Compression.CompressionPreservesSunflowerFree

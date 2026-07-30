@@ -28,4 +28,5 @@ coq/IotaRate.v
 coq/SpreadRestrictions.v
 coq/SliceRank.v
 coq/IotaGround.v
+coq/Compression.v
 coq/Audit.v
