@@ -438,7 +438,7 @@ subsets. This is the manifest doing the job the header describes: a
 hypothesis no theorem is sensitive to is one that should not be there.
 
 The same run turned up a second thing. `lowerbound-at-least` — the
-development's one genuine survivor, which weakens `LowerBound`'s
+development's first genuine survivor, which weakens `LowerBound`'s
 `length F = m` to `>=` — was killed by the new file, because two of its
 proofs discharged a size obligation by `reflexivity` and by `rewrite`ing
 with the length equation. Neither is sensitive to the *content* of
@@ -457,6 +457,47 @@ Neither is in `tools/mutations.toml`: that manifest perturbs Coq
 definitions, and these perturb the Rust oracle. They are recorded here
 because "the check would have caught it" is a claim, and an unrun claim
 is worth what an untested proof is.
+
+### A sixth: the structure of the extremal families
+
+`rust/tests/iota_structure.rs` is the falsification suite for
+`coq/Product.v`, and it does three jobs the earlier suites do not.
+
+**It falsifies the cone before the cone was proved.** Every
+3-sunflower-free family over six `(ground, uniformity)` pairs — 35548 of
+them, a count that is *pinned*, since the failure mode of an exhaustive
+test is that it quietly stops being exhaustive — is coned and handed to
+`intersecting::verify`, which shares no code with the construction:
+uniformity, distinctness, intersecting-ness and sunflower-freeness are all
+re-derived. `link [p] (cone p F) = F` is checked as *literal* equality over
+the same enumeration, which is what `Product.link_of_cone` claims.
+
+**It kills closed forms, as assertions.** `docs/roadmap.md` §5 tabulates
+the measured `iota` values; eight guesses at a formula for them are
+evaluated and each failure is asserted, so a future session cannot
+re-propose one the data already refutes. `C(2b-1,b-1)` dies at `b = 4`,
+`3^(b-1)` at `b = 3`, the rest at `b = 2`. The trap is asserted too: all
+`b`-subsets of `[2b-1]` is intersecting and matches the
+complementary-pair ceiling, and *contains a sunflower* from `b = 3` on.
+
+**It pins the structure, and one of the pins is a differential test.** The
+automorphism group orders come from a backtracking search whose prune is
+complete — assign point images one at a time and check `deg(S) = deg(pi(S))`
+for every subset `S` of the assigned points, which for a distinct uniform
+family *is* `pi(F) = F`, so a surviving permutation needs no final check.
+All nine orders were checked against `nauty` (`dreadnaut` input is emitted
+by `examples/iota_structure --nauty`) and agree. That is what the two
+identifications rest on: `iota(3) = 10` is the unique simple 2-(6,3,2)
+design with `|Aut| = 60`, and `iota(4,9) = 27` is the Abbott–Hanson–Sauer
+substitution with `|Aut| = 1296 = 6 * 6^3` — the exact order that
+construction's symmetry predicts and nothing else would have.
+
+One bug the 128-bit path was written to fix, recorded because it is the
+same class as the truncation above: the tree-path table on `u32` masks
+reported "32 members on a 32-point support" from `b = 6`, against the 63
+points the construction actually uses. A silent overflow that reads as
+data. `structure::verify_128` and `tree_paths_128` are the repair, and the
+test asserts the support size rather than only the member count.
 
 ## 4. Mutation testing — `tools/mutate.py`
 
@@ -533,8 +574,9 @@ the goal in either form, and the mutation is declared `survived`: what
 it reports is now a property of the definition rather than of the
 tactic scripts.
 
-**It has now been killed by accident four times**, and the fourth was a
-*different* mechanism, so the standing rule needs both halves stated.
+**It has now been killed by accident five times**, and the fourth and
+fifth were *different* mechanisms, so the standing rule needs all three
+halves stated.
 
 * **Consuming a `LowerBound`.** Do not discharge a size obligation by
   `reflexivity`, `apply`, or `rewrite` on the length equation. Finish
@@ -549,6 +591,12 @@ tactic scripts.
   distinct, grounded and sunflower-free because all four pass to
   subfamilies. **A proof that needs a family of an exact size must trim
   one, not assume one.**
+* **Producing a `LowerBound` from a family already in hand.**
+  `Product.ground_bounded_implies_iota_ground_bounded` builds
+  `LowerBound b 3 (length H)` out of an intersecting witness and closed the
+  size clause with `assumption`, which finds `length H = length H` and not
+  `length H >= length H`. The fix is `lia`, which proves either. So the rule
+  covers *producing* a `LowerBound`, not only consuming one.
 
 **It happened a third time**, which is the reason this section is worth
 its length. `IotaRate.every_construction_is_within_2b_of_iota` and
@@ -565,11 +613,36 @@ being paid on a debt cleared two sessions ago; the standing rule is that
 addresses is real. The lesson is that a script-level kill is a debt,
 not a resting place — the next unrelated theorem pays interest on it.
 
+**And it happened a fifth time, in a new predicate, which is the argument
+for writing the mutation at the same time as the definition.**
+`Product.IotaAtLeast` is `LowerBound` with an intersecting clause, so
+`iotaatleast-at-least` asks it the same question. (The fifth accidental
+kill of `lowerbound-at-least` itself came from the same file, and is the
+third bullet above.) Declared `survived` — the
+two forms define the same predicate, and `Product.IotaAtLeast_antitone`
+proves it — the runner reported `killed` **twice**, and both kills were
+brittle proofs rather than mathematics:
+
+* `iota_one_at_least_one` and two witness lemmas discharged
+  `length H = N` by `reflexivity` or `vm_compute; reflexivity`;
+* `iota_at_least_g_pred` finished with `exact HlenG`, and
+  `iota_at_least_doubles` with `rewrite Hlen`;
+* `iota_ground_bounded_bounds_the_general_row` had to hand out a family of
+  size *exactly* `j` and passed one through — the second half of the
+  standing rule, and the fix is the one it names: trim with `firstn`, do
+  not assume.
+
+All five now finish with `lia`, `nia` or antitonicity, and the mutation
+survives. Writing it in the same commit as the definition is what caught
+them; the four earlier accidental kills were all found weeks later by
+unrelated theorems.
+
 ### Current results
 
-55 mutations, all with the outcome the manifest declares: 53 killed
-outright, one genuine survivor (`lowerbound-at-least`, for the reason
-above), and one control surviving as it must. The mutations that
+60 mutations, all with the outcome the manifest declares: 57 killed
+outright, two genuine survivors (`lowerbound-at-least`, for the reason
+above, and `iotaatleast-at-least`, which asks the same question of
+`Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
 matter most:
 
 | Mutation | Asks | Dies in |
@@ -585,6 +658,10 @@ matter most:
 | `rao-two-nodup-not-distinct` | Is `Distinct` what collapses the spread condition to a degree bound at uniformity 2, or would `NoDup` do? | `TwoUniform.v` |
 | `star-sunflower-uniformity-3` | Is uniformity 2 load-bearing, or are sunflowers about degrees at every uniformity? | `TwoUniform.v` |
 | `clique-matching-slack` | Weakens a *true* lemma by one. Does the parity argument need the matching bound to be tight? | `CliqueLowerBound.v` |
+| `cone-does-not-add-the-apex` | Is the added point what forces intersecting-ness, or does something else? | `Product.v` |
+| `cone-freshness-not-required` | Does `cone_Uniform` actually need `Fresh`, or does the uniformity come from elsewhere? | `Product.v` |
+| `iotaatleast-drop-intersecting` | Is the intersecting clause in `IotaAtLeast` load-bearing, or decoration? | `Product.v` |
+| `stepbounded-additive` | Is `iota(b+1) <= D * iota(b)` load-bearing, or would an additive step do? | `Product.v` |
 
 Run it with:
 
@@ -720,6 +797,8 @@ make testbed    # exhaustive falsification + differential checks
 make statements # every audited statement against tools/statements.txt
 make docnumbers # every number the prose quotes against the lists it counts
 cd rust && cargo test --release   # everything on the Rust side
+cargo run --release --example iota_structure   # the extremal families, dumped
+cargo run --release --example iota_extend      # the iota table past the search
 ```
 
 CI runs these as separate jobs on every push, with `RUSTFLAGS=-D

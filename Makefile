@@ -145,12 +145,20 @@ test: rust
 # since six and is checked flat to fourteen. It also checks the link
 # degree bound b|F| <= g N(b-1,g-1) and, at the rows where that is met
 # with equality, that the extremal family really is regular.
+#
+# The sixth falsifies coq/Product.v: the cone, on every sunflower-free
+# family in range, against a checker that knows nothing about cones; the
+# closed forms for iota that the data refutes, as assertions; the
+# automorphism group orders of the extremal families, cross-checked
+# against nauty; and the constructed rows of the iota table, rebuilt and
+# re-verified rather than quoted.
 testbed:
 	cd rust && cargo test --release --test spread_axiom -- --nocapture
 	cd rust && cargo test --release --test chvatal_hanson -- --nocapture
 	cd rust && cargo test --release --test link_characterisation -- --nocapture
 	cd rust && cargo test --release --test iota_sandwich -- --nocapture
 	cd rust && cargo test --release --test iota_ground -- --nocapture
+	cd rust && cargo test --release --test iota_structure -- --nocapture
 
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.

@@ -981,3 +981,162 @@ cf9a74e382078aa6  def Compression.pick
 
 0c74e5f43e558ad2  def Compression.CompressionPreservesSunflowerFree
     CompressionPreservesSunflowerFree = forall (m : nat) (F : Family), 1 <= m -> Uniform m F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists G : Family, Uniform m G /\ Distinct G /\ length G = length F /\ ~ ContainsKSunflower 3 G /\ LeftCompressed G : Prop
+
+687b19ad9a3dd508  thm Product.iota_at_least_le_at_most
+    iota_at_least_le_at_most : forall b N M : nat, IotaAtLeast b N -> IotaAtMost b M -> N <= M
+
+59b99c28cb0f5d52  thm Product.IotaAtLeast_antitone
+    IotaAtLeast_antitone : forall b N N' : nat, N' <= N -> IotaAtLeast b N -> IotaAtLeast b N'
+
+9df4d90ec3712dd9  thm Product.sum_family_Intersecting
+    sum_family_Intersecting : forall F1 F2 : Family, Intersecting F1 -> Intersecting (sum_family F1 F2)
+
+34502336be8a0bf6  thm Product.iota_supermultiplicative
+    iota_supermultiplicative : forall a b p q : nat, IotaAtLeast a p -> IotaAtLeast b q -> IotaAtLeast (a + b) (p * q)
+
+c52f97b724895f0e  thm Product.iota_at_least_power
+    iota_at_least_power : forall a p t : nat, IotaAtLeast a p -> 1 <= t -> IotaAtLeast (t * a) (PeanoNat.Nat.pow p t)
+
+6b6b5b481772d262  thm Product.iota_one_at_most_one
+    iota_one_at_most_one : IotaAtMost 1 1
+
+6da15c057db74788  thm Product.g_one_at_most_two
+    g_one_at_most_two : GAtMost 1 2
+
+8b8c0bc990129baa  thm Product.iota_two_at_most_four
+    iota_two_at_most_four : IotaAtMost 2 4
+
+7246b75dfe59b4ac  thm Product.submultiplicative_gives_step_bounded
+    submultiplicative_gives_step_bounded : forall D : nat, IotaSubMultiplicative D -> IotaStepBounded D
+
+4a6461aa4eeef458  thm Product.step_bounded_gives_explicit_bound
+    step_bounded_gives_explicit_bound : forall D : nat, IotaStepBounded D -> forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow D (b - 1))
+
+f260690cd518e490  thm Product.step_bounded_gives_iota_exponential
+    step_bounded_gives_iota_exponential : forall D : nat, IotaStepBounded D -> IotaExponential
+
+21a1249dbe86da07  thm Product.step_bounded_settles_k3
+    step_bounded_settles_k3 : forall D : nat, IotaStepBounded D -> sunflower_conjecture_k_3
+
+ad108723eb7173ba  thm Product.submultiplicative_settles_k3
+    submultiplicative_settles_k3 : forall D : nat, IotaSubMultiplicative D -> sunflower_conjecture_k_3
+
+584d9025b9931160  thm Product.step_bounded_gives_the_constant
+    step_bounded_gives_the_constant : forall D : nat, IotaStepBounded D -> forall n : nat, 1 <= n -> UpperBound n 3 (S (PeanoNat.Nat.pow (2 * S D) n))
+
+b565773dc463c204  thm Product.Fresh_of_Grounded
+    Fresh_of_Grounded : forall (p : nat) (F : Family) (U : list nat), Grounded F U -> ~ List.In p U -> Fresh p F
+
+074a986ee4f04783  thm Product.cone_Uniform
+    cone_Uniform : forall (m p : nat) (F : Family), Fresh p F -> Uniform m F -> Uniform (S m) (cone p F)
+
+c1bc7ed4e545aa77  thm Product.cone_Distinct
+    cone_Distinct : forall (p : nat) (F : Family), Fresh p F -> Distinct F -> Distinct (cone p F)
+
+9429a80ca1ca92d9  thm Product.cone_Intersecting
+    cone_Intersecting : forall (p : nat) (F : Family), Intersecting (cone p F)
+
+5eec3a7c10a7c402  thm Product.cone_no_sunflower
+    cone_no_sunflower : forall (p : nat) (F : Family), Fresh p F -> ~ ContainsKSunflower 3 F -> ~ ContainsKSunflower 3 (cone p F)
+
+8d263f4ebd911ef6  thm Product.iota_at_least_g_pred
+    iota_at_least_g_pred : forall m j : nat, LowerBound m 3 j -> IotaAtLeast (S m) j
+
+ad80599d20ff0762  thm Product.iota_bound_bounds_g
+    iota_bound_bounds_g : forall m N : nat, IotaAtMost (S m) N -> GAtMost m N
+
+c46021c03107b661  thm Product.iota_g_sandwich_shifted
+    iota_g_sandwich_shifted : forall m M : nat, 1 <= m -> GAtMost m M -> (forall j : nat, LowerBound m 3 j -> IotaAtLeast (S m) j) /\ IotaAtMost (S m) (S m * M)
+
+676e5466dbb3946e  thm Product.iota_four_at_most_27_would_beat_erdos_rado
+    iota_four_at_most_27_would_beat_erdos_rado : IotaAtMost 4 27 -> UpperBound 3 3 28 /\ ~ UpperBound 3 3 20 /\ 28 < 49
+
+4a4a28d989facfb5  thm Product.iota_bound_gives_upper_bound
+    iota_bound_gives_upper_bound : forall m N : nat, 1 <= m -> IotaAtMost (S m) N -> UpperBound m 3 (S N)
+
+c2830ebdc732e104  thm Product.ground_bounded_implies_iota_ground_bounded
+    ground_bounded_implies_iota_ground_bounded : forall c : nat, GroundBounded c -> IotaGroundBounded c
+
+272b5d63a8b405ab  thm Product.iota_ground_bounded_bounds_the_general_row
+    iota_ground_bounded_bounds_the_general_row : forall c : nat, IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> exists (F' : Family) (U : list nat), Distinct F' /\ length F' = j /\ ~ ContainsKSunflower 3 F' /\ List.NoDup U /\ Grounded F' U /\ length U <= c * (m + 1)
+
+097e91036c017697  thm Product.iota_ground_bounded_bounds_g_by_counting
+    iota_ground_bounded_bounds_g_by_counting : forall c : nat, IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 2 c) (m + 1)
+
+2b262c1e12827acc  thm Product.the_two_ground_hypotheses_are_not_independent
+    the_two_ground_hypotheses_are_not_independent : forall c : nat, (GroundBounded c -> IotaGroundBounded c) /\ (IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 2 c) (m + 1))
+
+27b710f49fac2294  thm Product.the_universal_iota_ground_reading_is_false
+    the_universal_iota_ground_reading_is_false : Uniform 4 cone_tree_paths_three /\ Distinct cone_tree_paths_three /\ Intersecting cone_tree_paths_three /\ ~ ContainsKSunflower 3 cone_tree_paths_three /\ length cone_tree_paths_three = 8 /\ Grounded cone_tree_paths_three (List.seq 0 15) /\ ~ Grounded cone_tree_paths_three (List.seq 0 14)
+
+8ec891cf40cf6162  thm Product.link_of_cone
+    link_of_cone : forall (p : nat) (F : Family), Fresh p F -> link (p :: nil) (cone p F) = F
+
+1d40dbdc805d298c  thm Product.only_the_empty_core_is_cheap
+    only_the_empty_core_is_cheap : (forall (p : nat) (F : Family), Intersecting (cone p F)) /\ (forall (p : nat) (F : Family), Fresh p F -> link (p :: nil) (cone p F) = F) /\ (forall F : Family, Intersecting F -> ~ HasKDisjoint 2 (link nil F)) /\ (forall m j : nat, LowerBound m 3 j -> IotaAtLeast (S m) j)
+
+2175b5fe8b08d84c  thm Product.the_split_fibres_are_not_intersecting
+    the_split_fibres_are_not_intersecting : forall (m : nat) (F : Family), Uniform m F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists (p : nat) (H : Family), Uniform (S m) H /\ Distinct H /\ Intersecting H /\ ~ ContainsKSunflower 3 H /\ length H = length F /\ link (p :: nil) H = F
+
+d8f0a59273d6eb58  thm Product.the_fibre_bound_is_g_not_iota
+    the_fibre_bound_is_g_not_iota : Uniform 3 cone_two_triangles /\ Distinct cone_two_triangles /\ Intersecting cone_two_triangles /\ ~ ContainsKSunflower 3 cone_two_triangles /\ length cone_two_triangles = 6 /\ link (6 :: nil) cone_two_triangles = two_triangles /\ ~ Intersecting two_triangles /\ IotaAtMost 2 4
+
+9ff0e5bfacd82d11  thm Product.step_bounded_needs_D_at_least_three
+    step_bounded_needs_D_at_least_three : forall D : nat, IotaStepBounded D -> 3 <= D
+
+c460c2db2c890fa5  thm Product.iota_at_least_doubles
+    iota_at_least_doubles : forall b N : nat, 1 <= b -> IotaAtLeast b N -> IotaAtLeast (S b) (2 * N)
+
+b62dd87d0d383124  thm Product.iota_four_at_least_27
+    iota_four_at_least_27 : IotaAtLeast 4 27
+
+c8e0b4b1b8415b5c  thm Product.not_iota_four_at_most_26
+    not_iota_four_at_most_26 : ~ IotaAtMost 4 26
+
+ca68011c2dd22274  thm Product.lower_bound_4_3_54
+    lower_bound_4_3_54 : LowerBound 4 3 54
+
+99aa10e7edf664df  thm Product.no_upper_bound_4_3_54
+    no_upper_bound_4_3_54 : ~ UpperBound 4 3 54
+
+7056544b803625b5  thm Product.f_4_3_at_least_55_beats_37
+    f_4_3_at_least_55_beats_37 : LowerBound 4 3 54 /\ ~ UpperBound 4 3 54 /\ 37 < 55
+
+77cb456d5c649aad  thm Product.lower_bound_f_n_3_via_iota_four
+    lower_bound_f_n_3_via_iota_four : forall t : nat, LowerBound (t * 4) 3 (PeanoNat.Nat.pow 54 t)
+
+c0ab5c335131a51e  thm Product.the_rate_at_four_does_not_beat_the_rate_at_three
+    the_rate_at_four_does_not_beat_the_rate_at_three : forall t : nat, 1 <= t -> PeanoNat.Nat.pow 54 (3 * t) < PeanoNat.Nat.pow 20 (4 * t)
+
+9bf9ee3e84826fe3  thm Audit.cone_needs_freshness
+    cone_needs_freshness : ~ Uniform 3 (cone 0 triangle) /\ Uniform 3 (cone 3 triangle) /\ Fresh 3 triangle /\ ~ Fresh 0 triangle
+
+2c93188291c62878  thm Audit.iota_four_between_27_and_192
+    iota_four_between_27_and_192 : ~ IotaAtMost 4 26 /\ IotaAtMost 4 192
+
+84c4ac91ed15417a  thm Audit.bounds_coherent_cone
+    bounds_coherent_cone : 54 < er_upper_bound 4 3
+
+b221185f3b496716  thm Audit.the_cone_route_beats_the_direct_sum_at_four
+    the_cone_route_beats_the_direct_sum_at_four : LowerBound 4 3 36 /\ LowerBound 4 3 54 /\ ~ UpperBound 4 3 54 /\ 36 < 54
+
+aadaa2af67327fb9  thm Audit.the_ground_hypotheses_are_not_independent_after_all
+    the_ground_hypotheses_are_not_independent_after_all : forall c : nat, (GroundBounded c -> IotaGroundBounded c) /\ (IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 2 c) (m + 1))
+
+4429e702e5ad832f  def Product.IotaAtLeast
+    IotaAtLeast = fun b N : nat => exists H : Family, Uniform b H /\ Distinct H /\ Intersecting H /\ length H = N /\ ~ ContainsKSunflower 3 H : nat -> nat -> Prop Arguments IotaAtLeast (b N)%nat_scope
+
+93b73ac92573e257  def Product.IotaSubMultiplicative
+    IotaSubMultiplicative = fun D : nat => forall a b p q : nat, 1 <= a -> 1 <= b -> IotaAtMost a p -> IotaAtMost b q -> IotaAtMost (a + b) (D * p * q) : nat -> Prop Arguments IotaSubMultiplicative D%nat_scope
+
+9e9fdb7ce83449d1  def Product.IotaStepBounded
+    IotaStepBounded = fun D : nat => forall b p : nat, 1 <= b -> IotaAtMost b p -> IotaAtMost (S b) (D * p) : nat -> Prop Arguments IotaStepBounded D%nat_scope
+
+5d051f7f0431499f  def Product.Fresh
+    Fresh = fun (p : nat) (F : Family) => forall A : list nat, List.In A F -> ~ List.In p A : nat -> Family -> Prop Arguments Fresh p%nat_scope F
+
+d0c4df84af86fe26  def Product.cone
+    cone = fun (p : nat) (F : Family) => List.map (fun A : list nat => (p :: A)%list) F : nat -> Family -> Family Arguments cone p%nat_scope F
+
+d4275210f1a69349  def Product.fresh_point
+    fresh_point = fun F : Family => S (maxall (List.concat F)) : Family -> nat Arguments fresh_point F
