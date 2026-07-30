@@ -203,9 +203,10 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 55 mutations, 53 are killed outright, one
-  survives — `LowerBound`'s `length F = m` really is documentation, as
-  `Audit.LowerBound_ge_equiv` proves — and one is a positive control
+  that something breaks. Of 60 mutations, 57 are killed outright, two
+  survive — `LowerBound`'s `length F = m` really is documentation, as
+  `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
+  by `Product.IotaAtLeast_antitone` — and one is a positive control
   that must survive. Fifth, statement baselines (`make statements`):
   every audited theorem's statement and every core definition's body is
   recorded in `tools/statements.txt`, and CI fails if one moves without
@@ -268,10 +269,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 29 Coq files, then runs the axiom audit
+make verify        # builds all 30 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (257 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (304 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

@@ -570,19 +570,29 @@ Proof. intro H; pose proof (ground_bounded_needs_c_at_least_four _ H); lia. Qed.
 
 (** ** The hypothesis, pointed at intersecting families
 
-    Deliberately *weaker* than what the measurement supports. The data
-    says the extremal intersecting sunflower-free family literally lives
-    on [O(b)] points, which would give a witness that is itself uniform
-    and intersecting. All that is asked here is that *some* equally large
+    Deliberately *weaker* than what the measurement supports at [b = 3].
+    All that is asked here is that *some* equally large
     sunflower-free family fits on [c * b] points — which is all the
     polynomial method consumes, and assuming less makes the theorem
     below say more.
 
     Compare [SliceRank.GroundBounded], which is the same demand made of
-    every sunflower-free family. That one is not supported by the
-    measurements and this one is; the two differ by the word
+    every sunflower-free family. The two differ by the word
     "intersecting", and [IotaRate.conjecture_k_3_iff_iota_exponential] is
-    why that word costs nothing. *)
+    why that word costs nothing.
+
+    **Two corrections from [coq/Product.v], both by the cone.** First, the
+    *universal* reading — "the extremal intersecting sunflower-free family
+    literally lives on [O(b)] points" — is **false**, exactly as it is for
+    [GroundBounded]: coning the tree-path family gives an intersecting
+    3-sunflower-free [b]-uniform family with [2^(b-1)] members on
+    [2^b - 1] points, every one used
+    ([Product.the_universal_iota_ground_reading_is_false]). This paragraph
+    said otherwise and was wrong. Second, the two hypotheses are **not**
+    independent: [Product.ground_bounded_implies_iota_ground_bounded] is
+    immediate and [Product.iota_ground_bounded_bounds_the_general_row] is
+    the converse with the uniformity shifted by one. See
+    [both_ground_hypotheses_settle_k3] below and [docs/roadmap.md] §11.2. *)
 
 Definition IotaGroundBounded (c : nat) : Prop :=
   forall b (H : Family),
@@ -654,9 +664,19 @@ Qed.
 (** ** The two hypotheses side by side
 
     Both are one sentence, both would settle [k = 3], and the difference
-    between them is a single word. What separates them is not their
-    logical strength — neither implies the other — but that one of them
-    has a measurement behind it. *)
+    between them is a single word.
+
+    **The remark that used to be here is withdrawn.** It said "what
+    separates them is not their logical strength — neither implies the
+    other — but that one of them has a measurement behind it". The first
+    half is false: [Product.ground_bounded_implies_iota_ground_bounded]
+    proves one direction outright, and the cone gives the other up to a
+    shift in the uniformity
+    ([Product.the_two_ground_hypotheses_are_not_independent],
+    [Audit.the_ground_hypotheses_are_not_independent_after_all]). So the
+    two measurements — the flat [iota(3,g)] row and the still-climbing
+    [N(3,g)] row — are measurements of the same question at two
+    uniformities, and they pull in opposite directions. *)
 
 Theorem iota_ground_bounded_gives_exponential_by_counting :
   forall c, IotaGroundBounded c ->

@@ -137,6 +137,19 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `compressed_iff_the_shift_does_not_move_it` | `coq/Audit.v` | `LeftCompressed` is stated as a closure property and `shift_family` is the operation; nothing in the kernel forces them to be about the same thing, and the file turns on their agreeing. They do, in both directions, for `i < j` and no wider — an *upward* shift really can move a compressed family |
 | `two_triangles_is_not_compressed`, `the_shift_really_moves_two_triangles` | `coq/Audit.v` | The negative statement with a positive witness behind it: `two_triangles` attains `f(2,3)-1 = 6` so `compressed_bound` says it cannot be compressed, and the `(0,3)`-shift that moves it is exhibited |
 | `the_chain_obstruction_is_real`, `compression_collapses_the_problem` | `coq/Audit.v` | The abstract obstruction evaluated — at `m = 3` it is `{0,1,2}, {0,1,3}, {0,1,4}`, and the reflective detector agrees — and the collapse in numbers: 3 against 6 at uniformity 2, 4 against 20 at uniformity 3 |
+| `iota_supermultiplicative`, `sum_family_Intersecting` | `coq/Product.v` | **`ι(a+b) ≥ ι(a)·ι(b)`.** The direct sum of two intersecting families on disjoint ground sets is intersecting — two members meet in their first halves — so `DirectSum.sum_family_no_sunflower` applies unchanged. Only the *first* family need be intersecting, for the same reason only the first need be uniform there. By Fekete this makes `ι(b)^(1/b)` increase to `L = sup_b ι(b)^(1/b)`, and **the conjecture at `k = 3` is exactly `L < ∞`** |
+| `IotaAtLeast_antitone`, `iota_at_least_le_at_most` | `coq/Product.v` | `IotaAtLeast` is `IotaRate.IotaAtMost`'s complement, and is downward closed: from a family of exactly `N` members, its first `N'` are one of exactly `N'`, because uniformity, distinctness, **intersecting-ness** and sunflower-freeness all pass to subfamilies. That is what lets every proof here *trim* a family rather than assume one |
+| `IotaSubMultiplicative`, `IotaStepBounded`, `step_bounded_settles_k3`, `submultiplicative_settles_k3` | `coq/Product.v` | **Two sufficient conditions for Erdős's \$1000 case, each with an explicit constant.** `ι(a+b) ≤ D·ι(a)·ι(b)` implies `ι(b+1) ≤ D·ι(b)` (take `a = 1`, where `iota_one_at_most_one` gives `ι(1) = 1`), which implies `ι(b) ≤ D^(b-1)` and hence the conjecture with `c(3) = 2(D+1)`. **The second is one bounded ratio**: the whole of `k = 3` follows from `ι(b+1)/ι(b)` being bounded |
+| `step_bounded_needs_D_at_least_three`, `iota_two_at_most_four`, `g_one_at_most_two` | `coq/Product.v` | **The constant is at least 3, proved.** `f(1,3) = 3` gives `g(1) = 2`, hence `ι(2) ≤ 4` through `intersecting_link_bound`; against the witnessed `ι(3) ≥ 10` that forces `10 ≤ 4D`. The same shape as `IotaGround.ground_bounded_needs_c_at_least_four`: the hypothesis is not vacuous and the data already moves its constant |
+| `cone_Uniform`, `cone_Distinct`, `cone_Intersecting`, `cone_no_sunflower`, `iota_at_least_g_pred` | `coq/Product.v` | **`g(b-1) ≤ ι(b)`** — the cone. Add one fresh point to every member: three members `A_i ∪ {p}` have pairwise intersections `(A_i ∩ A_j) ∪ {p}`, all equal exactly when the `A_i ∩ A_j` are. Intersecting-ness comes with **no hypothesis at all**. Against `Intersecting.intersecting_link_bound`'s `ι(b) ≤ b·g(b-1)` this is a second sandwich, in the uniformity rather than the size (`iota_g_sandwich_shifted`). Elementary and surely folklore; what is new is what follows |
+| `iota_bound_bounds_g`, `iota_four_at_most_27_would_beat_erdos_rado` | `coq/Product.v` | **An upper bound on `ι` is an upper bound on `g` one uniformity down**, and hence a *hardness* statement about the `docs/roadmap.md` §7 ladder: a proof of `ι(4) ≤ 27` gives `f(3,3) ≤ 28`, where Erdős–Rado gives 49 and the best lower bound here is 21. Two independent searches failed to decide `ι(4,10)`; this says why, and that a bigger budget is the wrong response |
+| `ground_bounded_implies_iota_ground_bounded`, `iota_ground_bounded_bounds_the_general_row`, `the_two_ground_hypotheses_are_not_independent` | `coq/Product.v` | **`IotaGround.both_ground_hypotheses_settle_k3`'s "neither implies the other" is wrong, and withdrawn.** One direction is immediate — `IotaGroundBounded`'s existential does not ask its witness to be intersecting or even uniform. The cone gives the other with the uniformity shifted by one, so `IotaGroundBounded c` alone bounds the *general* row by `(2^c)^(m+1)` by counting. The flat `ι(3,g)` row and the still-climbing `N(3,g)` row are the same question at two uniformities |
+| `the_universal_iota_ground_reading_is_false` | `coq/Product.v` | **And the universal reading of `IotaGroundBounded` is false too.** `coq/IotaGround.v` said "the data says the extremal intersecting sunflower-free family literally lives on `O(b)` points"; coning [FPPTZ24]'s tree-path family — the apex is the stem edge above the root, which is exactly what paths through different children were missing — gives an intersecting `b`-uniform sunflower-free family with `2^(b-1)` members on `2^b − 1` points, all used. The `b = 4` instance is eight 4-sets that genuinely need fifteen points; `rust/tests/iota_structure.rs` checks the construction to `b = 7` |
+| `link_of_cone`, `only_the_empty_core_is_cheap` | `coq/Product.v` | **The mirror image of `Compression.only_the_empty_core_survives_compression`.** `link [p] (cone p F) = F` **literally**, so the cone *imposes* the `Y = ∅` clause of `LinkCharacterisation.sunflower_iff_link_matching` for free and is the identity on every other clause; shifting preserves that clause and destroys every other. Two unrelated operations, one clause each, and it is the same clause — the one Erdős–Ko–Rado lives at |
+| `the_split_fibres_are_not_intersecting`, `the_fibre_bound_is_g_not_iota` | `coq/Product.v` | **Why a splitting argument cannot use the intersecting hypothesis.** The route to submultiplicativity buckets members by their trace on a ground-set part and bounds each fibre. The fibre of a cone over its own trace is the original family: a *general* sunflower-free family of the largest possible size. The smallest instance has fibre `F23.two_triangles`, attaining `g(2) = 6` against `ι(2) = 3`. So the fibres are bounded by `g`, the best a split gives is `ι(b) ≤ (#traces)·g(b−1)`, and that is Erdős–Rado's rate |
+| `iota_four_at_least_27`, `lower_bound_4_3_54`, `f_4_3_at_least_55_beats_37` | `coq/Product.v` | **`f(4,3) ≥ 55`**, where `Audit.f_4_3_at_least_37` reached 37. The exhaustive `ι(4,9) = 27` witness transcribed and re-derived by the reflective detector, then doubled. It does **not** improve the rate — `the_rate_at_four_does_not_beat_the_rate_at_three` proves `54^(1/4) < 20^(1/3)` — and `IotaRate.every_construction_is_within_2b_of_iota` is why nothing at a fixed uniformity can. Structurally the witness **is** the Abbott–Hanson–Sauer substitution of the triangle into itself: `|Aut| = 1296 = 6·6³` is exactly `Sym(3)` on three triples times `Sym(3)` inside each, cross-checked against `nauty` |
+| `not_iota_four_at_most_26`, `iota_four_between_27_and_192` | `coq/Product.v`, `coq/Audit.v` | The truth boundary for `ι(4)` trapped in the kernel, one uniformity above `Audit.iota_three_between_ten_and_eighteen`. The lower end is the witness; the upper end is `intersecting_link_bound` fed Erdős–Rado's `g(3) ≤ 48`. The gap is 27 to 192, and that is the honest state of knowledge |
+| `cone_needs_freshness`, `bounds_coherent_cone`, `the_cone_route_beats_the_direct_sum_at_four`, `the_ground_hypotheses_are_not_independent_after_all` | `coq/Audit.v` | The coherence theorems for the new definitions: freshness is load-bearing (the triangle coned at one of its own points is not 3-uniform), the new lower bound sits under Erdős–Rado at uniformity 4 so a contradictory pair would be a proof of `False`, 54 beats the direct sum's 36, and the retraction above is recorded against a named specification rather than as an edited comment |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -212,7 +225,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (257 of them). The current
+for every theorem in the "Closed" table (304 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -259,22 +272,25 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 29 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 30 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
+| Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 55 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 53 killed outright, one genuine
-survivor (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
+Current mutation results: 60 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 57 killed outright, two genuine
+survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
-proves as a theorem), and one positive control (`canary-alpha-rename`,
+proves as a theorem; and `iotaatleast-at-least`, the same question asked of
+`Product.IotaAtLeast`, answered the same way by
+`Product.IotaAtLeast_antitone`), and one positive control (`canary-alpha-rename`,
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 29 modules with Coq's separate kernel
+`make coqchk` re-verifies all 30 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

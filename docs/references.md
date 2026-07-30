@@ -312,6 +312,59 @@ versions, and $(2^c)^m$ beats the $(27^{c+1})^m$ the Naslund–Sawin route
 gives, for every $c$. What [NaSa17] contributes is the constant
 ($1.89^g$ against $2^g$) — a real theorem, and not the load-bearing part.
 
+## The extremal objects, identified
+
+Not references so much as a place to record what the extremal families
+*are*, since the identification is what would let the literature be
+searched properly. Both come from `rust/examples/iota_structure.rs`, whose
+automorphism-group search is cross-checked against `nauty`.
+
+- **$\iota(3) = 10$ is the unique simple 2-(6,3,2) design.** Ten triples
+  on six points, 5-regular, every pair in exactly two blocks,
+  $|\mathrm{Aut}| = 60$ and point-transitive. (60 is the order of
+  $A_5 \cong \mathrm{PSL}(2,5)$ acting on the six points of the projective
+  line over $\mathbb F_5$, which is what one would expect; the *order* is
+  what was computed, not the isomorphism type.) A 2-(6,3,2) design is the smallest nontrivial *biplane*
+  complement / twofold triple system, and the simple one is unique up to
+  isomorphism; that uniqueness is standard design theory and is **taken
+  on the literature's word here**, not verified. What is verified is the
+  parameters, the regularity and the group order.
+
+- **$\iota(4,9) = 27$ is the Abbott–Hanson–Sauer substitution of the
+  triangle into itself.** Split the nine points into three triples; take
+  every union of a pair from one triple with a pair from a different one.
+  $3 \cdot 3 \cdot 3 = \iota(2)\,\iota(2)^2$. Its automorphism group has
+  order $1296 = 6\cdot 6^3$, which is $\mathrm{Sym}(3)$ on the triples
+  times $\mathrm{Sym}(3)$ inside each — exactly the symmetry the
+  substitution predicts, and the reason to believe the identification
+  rather than merely the count. So at $b = 4$ the 1972 construction is
+  *optimal on nine points*, not one construction among many.
+
+Neither identification was searched for in the literature under its design
+name; both are stated as what the computation found. The `iota` sequence
+$1, 3, 10, 27$ is **not** in OEIS in any relevant form — ten hits, all
+coincidental (non-sum-free subsets, $\lfloor\sinh n\rfloor$, …) — and
+$1,3,10,27,54$, $3,10,24$ and the ground-set rows return nothing at all.
+Searched with the OEIS JSON API over six queries; not exhaustive over
+reformulations.
+
+## The cone, and whether it is known
+
+`Product.iota_at_least_g_pred` — adding a fresh point to every member of a
+sunflower-free $m$-uniform family gives an intersecting $(m+1)$-uniform
+one of the same size, so $g(m) \le \iota(m+1)$ — is elementary enough that
+it is almost certainly folklore. **No novelty is claimed for it.** One
+targeted search found nothing stating it, but a two-line observation is
+exactly what a literature search is worst at finding, and the search was
+not exhaustive.
+
+What the repository does claim is what follows from it, which is not
+folklore because $\iota$ is not a named quantity elsewhere (see [Kup25]
+above): the second sandwich $g(b-1) \le \iota(b) \le b\,g(b-1)$, the
+transfer of an $\iota$ upper bound into an $f(3,3)$ bound, the collapse of
+the two ground-set hypotheses into one, and the refutation of the
+universal reading of `IotaGroundBounded`. See `docs/roadmap.md` §11.
+
 ## What the literature does not contain
 
 Three sources were searched for the two structural claims this

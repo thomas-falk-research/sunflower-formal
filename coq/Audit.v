@@ -43,7 +43,8 @@ From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Pigeonhole ErdosRado LowerBound
      ProductLowerBound Spread Reflect SpreadReduction TwoUniform
      CliqueLowerBound F23 LinkCharacterisation DirectSum Intersecting
-     Conjecture IotaRate SpreadRestrictions SliceRank IotaGround Compression.
+     Conjecture IotaRate SpreadRestrictions SliceRank IotaGround Compression
+     ErdosRado_Greedy Product.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -1773,3 +1774,120 @@ Proof.
       by (apply compressed_bound with (m := 3); assumption || lia).
     lia.
 Qed.
+
+(** ** The cone, and the definitions [coq/Product.v] adds
+
+    Four questions, in the shape the rest of this file uses.
+
+    - Is the freshness hypothesis in [Product.cone] load-bearing, or
+      would any point do? ([cone_needs_freshness].)
+    - Is [Product.IotaAtLeast] the complement of [IotaRate.IotaAtMost],
+      or are the two about different quantities?
+      ([iota_four_between_27_and_192].)
+    - Does the new lower bound at uniformity 4 contradict any upper bound
+      the development proves? ([bounds_coherent_cone].)
+    - And the correction: [IotaGround.both_ground_hypotheses_settle_k3]
+      says "neither implies the other".
+      ([the_ground_hypotheses_are_not_independent_after_all].) *)
+
+(** *** The freshness hypothesis is the theorem
+
+    [Product.cone p F] prepends [p] to every member. If [p] is already in
+    a member, the image repeats a point, so it is not a set of the right
+    size at all — and the mechanism is exactly the step [Fresh] licenses.
+    The triangle coned at one of its own points is the minimal witness:
+    three 2-sets, and two of the three images fail [UniformSet 3]. *)
+
+Example cone_needs_freshness :
+  ~ Uniform 3 (Product.cone 0 triangle)
+  /\ Uniform 3 (Product.cone 3 triangle)
+  /\ Product.Fresh 3 triangle
+  /\ ~ Product.Fresh 0 triangle.
+Proof.
+  split.
+  { intro HU.
+    unfold Uniform in HU; rewrite Forall_forall in HU.
+    assert (Hin : In [0; 0; 1] (Product.cone 0 triangle))
+      by (vm_compute; tauto).
+    destruct (HU _ Hin) as [_ Hnd].
+    inversion Hnd as [|? ? Hni _]; subst; apply Hni; left; reflexivity. }
+  assert (Hfr : Product.Fresh 3 triangle).
+  { apply (Product.Fresh_of_Grounded 3 triangle (seq 0 3)).
+    - unfold Grounded.
+      apply (proj1 (groundedb_correct triangle (seq 0 3))).
+      vm_compute; reflexivity.
+    - rewrite in_seq; lia. }
+  split; [exact (Product.cone_Uniform 2 3 triangle Hfr triangle_uniform)|].
+  split; [exact Hfr|].
+  intro H.
+  apply (H [0; 1] ltac:(vm_compute; tauto)); left; reflexivity.
+Qed.
+
+(** *** The truth boundary for [iota(4)], in the kernel
+
+    The analogue of [iota_three_between_ten_and_eighteen] one uniformity
+    up. The lower end is [Product.iota_four_at_least_27], the exhaustive
+    maximum at nine points; the upper end is
+    [Intersecting.intersecting_link_bound] fed the Erdős–Rado value
+    [g(3) <= 48], which is what the development proves without any search.
+
+    The gap is enormous — 27 against 192 — and that is the honest state of
+    knowledge. What the pair rules out is a definition that had become
+    accidentally vacuous: the first half would fail. *)
+
+Theorem iota_four_between_27_and_192 :
+  ~ IotaAtMost 4 26 /\ IotaAtMost 4 192.
+Proof.
+  split; [exact Product.not_iota_four_at_most_26|].
+  intros H HU HD HI Hno.
+  replace 192 with (4 * 48) by reflexivity.
+  apply (intersecting_link_bound 4 48 H ltac:(lia) HU HD HI Hno).
+  intros G HUG HDG HnoG; simpl in HUG.
+  destruct (le_lt_dec (length G) 48) as [Hle | Hlt]; [exact Hle | exfalso].
+  assert (Her : er_upper_bound 3 3 = 49)
+    by (unfold er_upper_bound; vm_compute; reflexivity).
+  apply HnoG.
+  apply (@erdos_rado_counted 3 3 ltac:(lia) ltac:(lia));
+    [exact HUG | exact HDG | rewrite Her; lia].
+Qed.
+
+(** *** The new value at uniformity 4 fits under every proved upper bound
+
+    Derived from the two formal statements, so a contradictory pair would
+    make this a proof of [False]. [Product.lower_bound_4_3_54] against
+    Erdős–Rado's [er_upper_bound 4 3 = 385]. *)
+
+Corollary bounds_coherent_cone : 54 < er_upper_bound 4 3.
+Proof.
+  apply (lower_lt_upper (n := 4) (k := 3));
+    [exact Product.lower_bound_4_3_54
+    | apply erdos_rado_counted; lia].
+Qed.
+
+(** And it strictly improves what the development had: 54 against the
+    direct sum's 36, so it refutes an [UpperBound] the previous best did
+    not. *)
+
+Corollary the_cone_route_beats_the_direct_sum_at_four :
+  LowerBound 4 3 36 /\ LowerBound 4 3 54 /\ ~ UpperBound 4 3 54 /\ 36 < 54.
+Proof.
+  split; [exact (lower_bound_f_n_3 2)|].
+  split; [exact Product.lower_bound_4_3_54|].
+  split; [exact Product.no_upper_bound_4_3_54 | lia].
+Qed.
+
+(** *** The correction, against a named specification
+
+    [IotaGround.both_ground_hypotheses_settle_k3] puts the two
+    ground-set hypotheses side by side with the remark that "neither
+    implies the other". One direction is immediate and the cone gives the
+    other up to the constant, so the remark is withdrawn. Both halves are
+    recorded here so the retraction is a theorem rather than an edited
+    comment. *)
+
+Theorem the_ground_hypotheses_are_not_independent_after_all :
+  forall c,
+    (GroundBounded c -> IotaGroundBounded c)
+    /\ (IotaGroundBounded c ->
+        forall m j, 1 <= m -> LowerBound m 3 j -> j <= (2 ^ c) ^ (m + 1)).
+Proof. exact Product.the_two_ground_hypotheses_are_not_independent. Qed.

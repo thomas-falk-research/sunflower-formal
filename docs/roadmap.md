@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 55 anecdotes into a coverage metric over the
+  mutation testing from 60 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -513,8 +513,13 @@ having in one place:
   3   10                 3.1623   <- the 1972 constant
   4   27   (ground 9)    3.0000
   4   <32  (ground 10)   <3.1414
-  5   >=42 (ground 10)   >=2.5457
+  5   >=54 (ground 19)   >=2.7108   <- the cone, §11.6; was >=42
+  6   >=300 (ground 18)  >=3.1291
+  7   >=600 (ground 37)  >=2.9042
 ```
+
+The `b >= 5` rows come from constructions rather than search and are
+listed in full in §11.6, each verified by an independent checker.
 
 **Flat, not growing**, over every value that has been decided. Read
 through the sandwich that is mild evidence *for* the conjecture at
@@ -944,8 +949,18 @@ that hard. `iota(2,g)` is likewise flat at 3 from three points, where
 That is not an accident of small numbers. Intersecting-ness is a
 *locality* constraint: every member meets every other, so the family
 cannot spread out over a large ground set the way an arbitrary
-sunflower-free family can. It is exactly the property a ground-set bound
-needs and exactly the property the general problem lacks.
+sunflower-free family can.
+
+**But it is worth exactly one point of uniformity, and no more — see
+§11.2.** The cone (`Product.iota_at_least_g_pred`) turns any
+sunflower-free `m`-uniform family into an intersecting `(m+1)`-uniform one
+of the same size by adding a fresh point, so `g(m) <= iota(m+1)`. Two
+consequences for this section: the two hypotheses below are *not*
+independent (§11.2(c) withdraws the claim that they are), and an
+intersecting family can need `2^b - 1` ground points (§11.2(d) refutes the
+universal reading). The flat row above survives both — it measures the
+largest family *on* `g` points — but the reading of it as "intersecting
+families are small-ground" does not.
 
 `coq/IotaGround.v` composes the two:
 
@@ -957,8 +972,12 @@ with the same explicit constant, through the same arithmetic — which is
 now factored out of `bounded_ground_set_settles_k3` as
 `SliceRank.ns_bound_to_exponential` so neither theorem owns it.
 `Audit.the_two_ground_hypotheses_are_both_sufficient` puts the two
-side by side. Neither implies the other; what separates them is that one
-has a measurement behind it.
+side by side. **They are not independent, and §11.2(c) is the
+correction**: `GroundBounded c` implies `IotaGroundBounded c` outright,
+and the cone gives the converse with the uniformity shifted by one. What
+was written here — "neither implies the other; what separates them is that
+one has a measurement behind it" — is withdrawn. The measurements are
+measurements of the same question at two uniformities.
 
 **The caveat, stated as sharply as §7 states it for the general row.**
 Two plateaus and a third row still open is still two plateaus. `iota(4)`
@@ -992,6 +1011,14 @@ environment. Two ways forward, and the second is cheaper than it looks:
 What the ladder is *not* is a prerequisite for anything above: the
 theorem `IotaGroundBounded c ⟹ conjecture at k = 3` is proved, and the
 `b = 3` evidence stands on its own.
+
+**And it is not a computation, either — see §11.2(b).** By the cone,
+`g(3) <= iota(4)`, so a proof of `iota(4) <= 27` gives `f(3,3) <= 28`
+against Erdős–Rado's 49 (`Product.iota_four_at_most_27_would_beat_erdos_rado`).
+Deciding the ladder downward is at least as hard as a new bound on the
+first unknown sunflower number. That is why two independent searches did
+not settle it, and it means a bigger budget for the same search is the
+wrong response.
 
 ### A second thing, and it is the more solid one
 
@@ -1488,6 +1515,14 @@ generalise from rather than only the `(3,6)` object. Caveat unchanged:
 the rigidity is proved only at tight rows, so this produces lower bounds,
 and finding nothing proves nothing.
 
+**Two of the objects are now identified — §11.5.** `iota(3) = 10` is the
+unique simple 2-(6,3,2) design (5-regular on six points, every pair in two
+blocks, `|Aut| = 60 = |A_5|`), and `iota(4,9) = 27` **is** the
+Abbott–Hanson–Sauer substitution of the triangle into itself, with
+`|Aut| = 1296 = 6 * 6^3` exactly matching the symmetry that construction
+predicts. So at `b = 4` the 1972 construction is optimal on nine points,
+not merely good. Every group order is cross-checked against `nauty`.
+
 ### Removed
 
 **"Point EKR machinery at `iota`" collapses into the ground-set
@@ -1572,3 +1607,378 @@ session on its own.
   errors this corpus has produced were both invisible to the kernel,
   and the machinery in [`testing.md`](testing.md) only helps for
   definitions it has been pointed at.
+
+* **Do not look for submultiplicativity of `iota` by splitting the
+  ground set.** §11.3: the fibres over a nonempty trace are general
+  sunflower-free families, and the cone is the extremal witness. The
+  intersecting hypothesis is not available inside a split.
+
+* **Do not add savings across cores.** §11.4: at the extremal families
+  every core of intermediate size is already tight, so a Shearer/Han
+  argument has nothing to accumulate.
+
+---
+
+## 11. The multiplicative structure of `iota`, and the cone
+
+`IotaRate.conjecture_k_3_iff_iota_exponential` says the conjecture at
+`k = 3` *is* `iota(b) <= C^b`. That is a statement about one sequence, so
+the first question to ask of it is what multiplicative structure the
+sequence has. `coq/Product.v` answers it, and the answer reframes the
+problem twice.
+
+### 11.1 Supermultiplicativity, and the conjecture as one limit
+
+`Product.iota_supermultiplicative`: **`iota(a+b) >= iota(a) * iota(b)`.**
+The direct sum of two intersecting families on disjoint ground sets is
+intersecting — two members meet in their first halves — and
+`DirectSum.sum_family_no_sunflower` already gives sunflower-freeness. The
+only new ingredient is `sum_family_Intersecting`, and only the *first*
+family has to be intersecting, for the same reason only the first has to
+be uniform there.
+
+So `log iota` is superadditive, and Fekete's lemma applies:
+
+```
+  iota(b)^(1/b)  increases to   L = sup_b iota(b)^(1/b)  in (0, infinity]
+```
+
+and **the sunflower conjecture at `k = 3` is exactly `L < infinity`.**
+That is a restatement of Erdős's $1000 problem as the finiteness of a
+single limit. By the sandwich `2 iota(b) <= g(b) <= 2b iota(b)`, `L` is
+also `lim g(b)^(1/b)`, so it is *the* constant of the problem.
+
+No limit is taken in the Coq. What is proved is the finitistic content,
+which is that two *sufficient* conditions each settle `k = 3` with an
+explicit constant:
+
+```
+  IotaSubMultiplicative D  :  iota(a+b) <= D * iota(a) * iota(b)
+  IotaStepBounded D        :  iota(b+1) <= D * iota(b)
+```
+
+* `submultiplicative_gives_step_bounded`: the first implies the second
+  (take `a = 1`, where `iota_one_at_most_one` gives `iota(1) = 1`);
+* `step_bounded_gives_explicit_bound`: the second gives
+  `iota(b) <= D^(b-1)` by induction from `iota(1) = 1`;
+* `step_bounded_settles_k3` and `submultiplicative_settles_k3`: hence the
+  conjecture at `k = 3`, with `c(3) = 2(D+1)`
+  (`step_bounded_gives_the_constant`).
+
+**The second is one bounded ratio.** The whole of `k = 3` follows from
+`iota(b+1)/iota(b)` being bounded. That is a much more local statement
+than `exists C forall b`, and it is measurable:
+
+```
+  b   iota(b)   iota(b+1)   ratio
+  1         1           3   3.0000
+  2         3          10   3.3333
+  3        10          27   2.7000
+```
+
+Three values, all between 2.7 and 3.4. Two things bound the constant from
+below, and both are theorems rather than measurements:
+
+* `iota_at_least_doubles` — the cone composed with
+  `Intersecting.doubling_lower_bound` gives `iota(b+1) >= 2 iota(b)`, so
+  every admissible `D` is at least 2;
+* `step_bounded_needs_D_at_least_three` — with the proved
+  `iota_two_at_most_four` and the witnessed `iota(3) >= 10`,
+  `10 <= 4D`, so **`D >= 3`**. The same shape as
+  `IotaGround.ground_bounded_needs_c_at_least_four`: the hypothesis is
+  not vacuous and the data already forces its constant up.
+
+Read honestly: three ratios is thin evidence, the fourth is not decidable
+(see §11.4), and boundedness of the ratio is *strictly stronger* than the
+conjecture — `iota(b) <= C^b` does not bound any single ratio. What the
+reformulation buys is a target with one number in it.
+
+### 11.2 The cone: `g(b-1) <= iota(b)`
+
+Add one fresh point to every member of a sunflower-free `m`-uniform
+family. The result is `(m+1)`-uniform, **intersecting**, and still
+sunflower-free: three members `A_i ∪ {p}` have pairwise intersections
+`(A_i ∩ A_j) ∪ {p}`, which are all equal exactly when the `A_i ∩ A_j`
+are. `Product.iota_at_least_g_pred`.
+
+Against `Intersecting.intersecting_link_bound`'s `iota(b) <= b g(b-1)`,
+that is a **second sandwich, in the uniformity rather than in the size**:
+
+```
+  g(b-1)  <=  iota(b)  <=  b * g(b-1)
+```
+
+Elementary, and surely folklore — no claim of novelty is made for the
+construction. What is new here is that it is machine-checked and that
+four things follow from it, three of which correct something this
+repository had written down.
+
+**(a) Intersecting-ness is worth exactly one point of uniformity.** Any
+statement true of every sunflower-free family at uniformity `m` is true of
+an intersecting one at `m+1`, and conversely up to the factor `b`. So no
+argument whose only use of the intersecting hypothesis is "the pieces are
+intersecting" can beat the general argument. §7's reading of
+intersecting-ness as "a *locality* constraint … exactly the property a
+ground-set bound needs" is too optimistic by one uniformity.
+
+**(b) An upper bound on `iota` is an upper bound on `g` one uniformity
+down** (`iota_bound_bounds_g`), and that makes the §7 ladder a *hard*
+question rather than a computation. §7 names "is `iota(4,10)` 28 or does
+it stay at 27?" as the decisive experiment for `IotaGroundBounded`, and §9
+records that neither the branch-and-bound nor SAT decides it. The transfer
+says why:
+
+> `iota_four_at_most_27_would_beat_erdos_rado`: a proof of
+> `iota(4) <= 27` gives `f(3,3) <= 28`.
+
+Erdős–Rado gives 49 and the best lower bound here is `f(3,3) >= 21`. So
+the ladder is at least as hard as a new bound on the first unknown
+sunflower number. **Do not budget for it as a search.**
+
+**(c) The two ground-set hypotheses are not independent.**
+`IotaGround.both_ground_hypotheses_settle_k3` says "neither implies the
+other; what separates them is that one has a measurement behind it". The
+first half is wrong and is withdrawn:
+
+* `ground_bounded_implies_iota_ground_bounded` — immediate, because
+  `IotaGroundBounded`'s existential does not ask its witness to be
+  intersecting or even uniform;
+* `iota_ground_bounded_bounds_the_general_row` — the cone gives the
+  converse with the uniformity shifted by one, hence
+  `iota_ground_bounded_bounds_g_by_counting`:
+  `IotaGroundBounded c` alone bounds the *general* row by
+  `(2^c)^(m+1)`.
+
+So the flat `iota(3,g)` row is evidence for `GroundBounded` too, and the
+general row still climbing at `g = 10` is evidence *against*
+`IotaGroundBounded`. The two rows are not independent readings; they are
+the same question with the uniformity shifted.
+
+**(d) The universal reading of `IotaGroundBounded` is false.**
+`coq/IotaGround.v` says of it: "The data says the extremal intersecting
+sunflower-free family literally lives on `O(b)` points". It does not. Cone
+the [FPPTZ24] tree-path family — the apex is the stem edge above the root,
+which is exactly what the paths through different children of the root
+were missing — and the result is intersecting, `b`-uniform,
+3-sunflower-free, with `2^(b-1)` members on `2^b - 1` points, **every one
+of them used**. `Product.the_universal_iota_ground_reading_is_false` is
+the `b = 4` instance in the kernel; `rust/tests/iota_structure.rs` checks
+the construction to `b = 7`, where 64 members need 127 points.
+
+As in §7.5, this does not conflict with the flat `iota(3,g)` row: that
+measures the largest family *on* `g` points, which is the quantity the
+existence reading needs.
+
+### 11.3 The submultiplicativity attempt, and where it fails
+
+The prediction, written before anything was computed. Approximate
+submultiplicativity would be proved by partitioning the ground set into
+`X` and `Y`, bucketing the members of `F` by the trace `P = A ∩ X`, and
+bounding each fibre. Three things were expected to go wrong:
+
+1. there is no canonical partition — the members do not split at
+   prescribed sizes, so `|A ∩ X|` ranges over `0..a+b`;
+2. the number of traces is bounded only by `2^|X|`, and the trace family
+   is not sunflower-free;
+3. the fibres over a **nonempty** trace lose intersecting-ness, so they
+   are bounded by `g` and not by `iota`, and the uniformity drops by
+   `|P|` rather than by `a`.
+
+The third is the fatal one, and the cone is its extremal witness. Take
+`X = {p}`. Then `link [p] (cone p F) = F` **literally**
+(`Product.link_of_cone`), so the cone of a `g`-extremal family is an
+intersecting family with one nonempty trace whose fibre *is* a general
+sunflower-free family of the largest possible size.
+`the_split_fibres_are_not_intersecting` says this for every `F`;
+`the_fibre_bound_is_g_not_iota` is the smallest instance, where the fibre
+is `F23.two_triangles`, attaining `g(2) = 6` against `iota(2) = 3`.
+
+So the best a split gives is `iota(b) <= (number of traces) * g(b-1)`,
+which at `b` traces is `intersecting_link_bound` and Erdős–Rado's rate.
+**A splitting argument cannot use the intersecting hypothesis at all.**
+
+Note also what a *bounded defect* would require. Fekete gives
+`iota(a) iota(b) <= iota(a+b) <= L^(a+b)`, so
+`iota(a+b) / (iota(a) iota(b))` is bounded iff `iota(b) = Theta(L^b)` —
+no subexponential correction. Abbott–Hanson–Sauer's own bound carries one
+(`10^(b/2 - c log b)`), so constant-defect submultiplicativity is
+strictly stronger than the conjecture, and the polynomial-defect version
+`iota(a+b) <= p(a+b) iota(a) iota(b)` is the honest target. It is not
+formalised here; the constant version is, and it implies it.
+
+### 11.4 The diagnosis, in the same shape as §8
+
+`LinkCharacterisation.sunflower_iff_link_matching` makes
+sunflower-freeness a conjunction with one clause per core `Y`:
+`nu(F_Y) <= 2`. §8 proved that shifting commutes with the clause at
+`Y = ∅` and with **no other**. The cone is the mirror image:
+
+* it **imposes** the empty-core clause for free — `cone_Intersecting`
+  needs no hypothesis whatever;
+* and it is **literally the identity** on every other clause, because
+  `link [p] (cone p F) = F` on the nose.
+
+`Product.only_the_empty_core_is_cheap` records all four parts. So two
+completely different operations each touch exactly one clause of the
+conjunction, and it is the same clause — the one Erdős–Ko–Rado lives at.
+That is a sharper statement of what is hard here than either result alone:
+**the `Y = ∅` clause is free in both directions, and every clause above it
+is the whole problem.**
+
+The measurement agrees, and it is the entropy question §10 asks
+("do the savings from different cores multiply, or merely repeat?").
+`rust/tests/iota_structure.rs` computes the per-core matching numbers of
+the extremal families:
+
+```
+  iota(4,9) = 27, on nine points
+    |Y| = 0:  1 core,  0 tight
+    |Y| = 1:  9 cores, 9 tight
+    |Y| = 2: 36 cores, 36 tight
+    |Y| = 3: 54 cores, 54 tight
+    |Y| = 4: 27 cores, 0 tight (these are the members)
+```
+
+**Every** core of intermediate size is tight. There is no slack anywhere
+to trade between cores, so a Shearer/Han argument that hoped to add up
+savings from different cores has nothing to add up. That answers §10's
+entropy item in the negative before any proof is attempted, which is what
+the item asked for.
+
+### 11.5 The instrumentation, and what it identified
+
+`rust/examples/iota_structure.rs` dumps the extremal families and every
+invariant computable from them; `rust/tests/iota_structure.rs` pins them.
+Two identifications came out of it, and both are checked rather than
+guessed — the automorphism search is a backtracking walk whose prune is
+complete, and all nine group orders agree with `nauty`.
+
+**`iota(3) = 10` is the unique simple 2-(6,3,2) design.** Ten triples on
+six points, 5-regular, every pair in exactly two blocks, `|Aut| = 60`,
+point-transitive, diversity 5 of 10. (60 is the order of
+`A_5 ≅ PSL(2,5)` acting on the six points of the projective line over
+`F_5`, which is what one would expect; only the *order* was computed, not
+the isomorphism type.) §5 already knew it
+was a transversal of the complementary pairing; the design structure is
+strictly more.
+
+**`iota(4,9) = 27` is the Abbott–Hanson–Sauer substitution of the triangle
+into itself.** Split the nine points into three triples and take every
+union of a *pair* from one triple with a *pair* from a different one:
+`3 * 3 * 3 = 27`, which is exactly `iota(2) * iota(2)^2`. Its
+automorphism group has order **1296 = 6 * 6^3** — `Sym(3)` on the triples
+times `Sym(3)` inside each — which is precisely the symmetry the
+substitution predicts and nothing else would have.
+
+So at `b = 4` the 1972 construction is not merely good, it is **optimal
+on nine points**. That is the strongest evidence yet that the
+substitution is the right construction and that `L = 10^(1/2)`; it is
+also why nothing in §11.6 beats it.
+
+**OEIS: no match.** `1, 3, 10, 27` returns ten sequences, none
+combinatorial in a relevant way (non-sum-free subsets, `floor(sinh n)`,
+…); `1, 3, 10, 27, 54` and `3, 10, 24` return nothing relevant; the
+ground-set rows `1,5,9,15,24,27` and `1,4,6,10,12,12,14` return nothing at
+all. Searched with the OEIS JSON API, not exhaustively over reformulations.
+
+**Closed forms killed**, each as an assertion in
+`rust/tests/iota_structure.rs` so it cannot be re-proposed:
+
+```
+  C(2b-1, b-1)  = C(2b,b)/2   dies at b = 4: predicts 35, truth is 27
+  3^(b-1)                     dies at b = 3: predicts  9, truth is 10
+  2^(b-1), Catalan(b), b!,
+  C(2b-2, b-1), 2^b - b       die at b = 2: predict 2, truth is 3
+```
+
+And the trap: all `b`-subsets of `[2b-1]` is intersecting with
+`C(2b-1,b)` members, which matches the complementary-pair ceiling — but it
+*contains a sunflower* from `b = 3` on, so it is not an `iota` witness.
+Pinned as a test.
+
+One observation the instrumentation produced that is **not formalised**,
+recorded so it is not lost: a `(b-1)`-set lies in at most **two** members
+of a sunflower-free `b`-uniform family (its link is a family of
+singletons, so the matching number *is* the degree). Counting incidences,
+`b|F| <= 2|shadow_{b-1}(F)| <= 2 C(g, b-1)`, which is tight at
+`(b,g) = (2,3)` and `(3,6)`. It is the `|Y| = b-1` end of
+`IotaGround.link_degree_ground_bound`, whose `|Y| = 1` end is the theorem;
+the general form is `C(b,j)|F| <= C(g,j) N(b-j, g-j)`. Checked in
+`rust/tests/iota_structure.rs`.
+
+### 11.6 The `iota` table, extended
+
+Exhaustive search decides `iota(b,g)` up to `(4,9)` and stops. Past that,
+`rust/examples/iota_extend.rs` builds the best families the three
+available constructions give — the cone, the doubling, and the
+Abbott–Hanson–Sauer substitution — and hands each to an independent
+verifier:
+
+```
+  b   iota(b) >=   points   iota^(1/b)   route
+  1            1        1       1.0000   exhaustive
+  2            3        3       1.7321   exhaustive
+  3           10        6       2.1544   exhaustive
+  4           27        9       2.2795   exhaustive at g = 9; g >= 10 open
+  5           54       19       2.2206   cone(substitute(g(2), iota(2)))
+  6          300       18       2.5873   substitute(iota(2), iota(3))
+  7          600       37       2.4939   cone(substitute(g(2), iota(3)))
+  8         2187       27       2.6151   substitute(iota(2), iota(4,9)) -- unverified
+```
+
+Rows 5–7 are verified; row 8 is stated and **not** verified (2187 members
+means 1.7e9 triples, and the check was not run). The previous best at
+`b = 5` was 42 — SAT at ground 10, §9 — and `b = 6` and `b = 7` had never
+been computed at all. `b = 5` is where the cone earns its keep: 54 against
+42, and against the direct sum's `iota(2) iota(3) = 30`.
+
+`nothing_in_the_table_beats_the_1972_rate` asserts what this does **not**
+do: every entry satisfies `iota(b)^2 <= 10^(b-1)`, so none of them beats
+Abbott–Hanson–Sauer. That is forced — the substitution's own fixed point
+is `10^(1/2)` — and it is asserted so a future session does not mistake a
+bigger number for a better rate.
+
+Through the doubling these give lower bounds on `f(n,3)`:
+
+```
+  b   2 iota(b)   rate (2 iota(b))^(1/b)
+  3          20               2.7144    <- the repository's headline
+  4          54               2.7108
+  6         600               2.9042    (needs the unformalised substitution)
+```
+
+`Product.lower_bound_4_3_54` formalises the `b = 4` row: **`f(4,3) >= 55`**,
+where `Audit.f_4_3_at_least_37` reached 37. It does not improve the rate
+(`54^(1/4) < 20^(1/3)`, and
+`the_rate_at_four_does_not_beat_the_rate_at_three` proves it), and
+`IotaRate.every_construction_is_within_2b_of_iota` is why: at a fixed
+uniformity nothing can beat `iota` there.
+
+### 11.7 What this closes and what it opens
+
+**Closed.** Do not look for submultiplicativity by splitting the ground
+set — the fibres are `g`-fibres. Do not treat `GroundBounded` and
+`IotaGroundBounded` as independent hypotheses. Do not read the flat
+`iota(3,g)` row as saying extremal intersecting families are small-ground:
+they can need `2^b - 1` points. Do not budget the `iota(4,10)` ladder as a
+search: deciding it downward implies `f(3,3) <= 28`. And do not attempt a
+Shearer/Han argument that adds savings across cores — at the extremal
+families every intermediate core is already tight.
+
+**Open, and now sharper.**
+
+* **Bound the ratio `iota(b+1)/iota(b)`.** This is the whole conjecture at
+  `k = 3` (`step_bounded_settles_k3`), it needs one constant, the
+  constant is at least 3 (`step_bounded_needs_D_at_least_three`), and
+  the three measurable values are 3.00, 3.33, 2.70. Every clause of the
+  link characterisation at a nonempty core is what stands in the way, by
+  §11.4.
+* **Formalise the substitution** (§5 item 2, unchanged). It is now
+  needed for *two* things rather than one: the `g(6) >= 600` rate, and
+  rows 5–7 of the `iota` table above, which are currently verified in
+  Rust and not in Coq. And §11.5 gives it a new motivation: at `b = 4`
+  the substitution family is provably extremal, so it is not one
+  construction among many.
+* **`iota(4,10)`, with the cost understood.** It is worth what a new
+  bound on `f(3,3)` is worth, which is a lot; it is not worth attacking
+  with a bigger budget for the same search.

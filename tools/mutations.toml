@@ -873,3 +873,65 @@ repair has to produce that member. Returning the image itself gives a family \
 whose members need not be in F at all, and pick_spec's `In (pick X F) F` is \
 false."""
 
+
+# ----------------------------------------------------------------
+# The cone, and the multiplicative hypotheses (coq/Product.v).
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "cone-does-not-add-the-apex"
+file = "coq/Product.v"
+question = """The cone is supposed to *add* a point to every member. Would \
+the identity do -- i.e. is the added point what forces intersecting-ness, or \
+does something else?"""
+find = "Definition cone (p : nat) (F : Family) : Family := map (fun A => p :: A) F."
+replace = "Definition cone (p : nat) (F : Family) : Family := map (fun A => A) F."
+expect = "killed"
+
+[[mutation]]
+id = "iotaatleast-drop-intersecting"
+file = "coq/Product.v"
+question = """IotaAtLeast is IotaAtMost's complement, so it has to demand the \
+same three properties. Is the intersecting clause load-bearing, or is it \
+decoration?"""
+find = """    Uniform b H /\\ Distinct H /\\ Intersecting H
+    /\\ length H = N /\\ ~ ContainsKSunflower 3 H."""
+replace = """    Uniform b H /\\ Distinct H
+    /\\ length H = N /\\ ~ ContainsKSunflower 3 H."""
+expect = "killed"
+
+[[mutation]]
+id = "iotaatleast-at-least"
+file = "coq/Product.v"
+question = """The same question lowerbound-at-least asks of LowerBound, asked \
+of the new predicate: is IotaAtLeast's `length H = N` a constraint, or is it \
+documentation?"""
+find = """    /\\ length H = N /\\ ~ ContainsKSunflower 3 H."""
+replace = """    /\\ length H >= N /\\ ~ ContainsKSunflower 3 H."""
+expect = "survived"
+because = """Documentation, exactly as for LowerBound: from a family of at \
+least N members its first N are one of exactly N, and every property involved \
+passes to subfamilies. Every proof in Product.v that consumes an IotaAtLeast \
+finishes with `pose proof ...; lia` or `nia` rather than rewriting with the \
+equation, and every proof that produces one either trims with `firstn` \
+(iota_at_least_g_pred) or computes the length by vm_compute. The standing rule \
+in docs/testing.md §4 is written for LowerBound; this entry is what checks that \
+it was followed for the new predicate too."""
+
+[[mutation]]
+id = "stepbounded-additive"
+file = "coq/Product.v"
+question = """IotaStepBounded says the ratio iota(b+1)/iota(b) is bounded. Is \
+the multiplicative form load-bearing, or would an additive step do?"""
+find = "  forall b p, 1 <= b -> IotaAtMost b p -> IotaAtMost (S b) (D * p)."
+replace = "  forall b p, 1 <= b -> IotaAtMost b p -> IotaAtMost (S b) (D + p)."
+expect = "killed"
+
+[[mutation]]
+id = "cone-freshness-not-required"
+file = "coq/Product.v"
+question = """Fresh p F says p is in no member. Does cone_Uniform actually \
+need it, or does the uniformity come from somewhere else?"""
+find = "  forall m p F, Fresh p F -> Uniform m F -> Uniform (S m) (cone p F)."
+replace = "  forall m p F, Uniform m F -> Uniform m F -> Uniform (S m) (cone p F)."
+expect = "killed"
