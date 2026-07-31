@@ -34,8 +34,30 @@
     is not merely sufficient, it is necessary. So the whole problem at
     [k = 3] is a question about *intersecting* families — where the
     extremal set theory toolbox (Erdős–Ko–Rado, Hilton–Milner, Frankl)
-    is at its strongest, and where, as far as we have found, it has
-    never been pointed.
+    is at its strongest.
+
+    ** Correction: the intersecting side of the spread framework is not
+       untouched
+
+    A previous revision of this header added "and where, as far as we
+    have found, it has never been pointed". **Withdrawn.** [ALWZ20] §4.2
+    is titled *Intersecting set systems* and its Theorem 4.2 reads, on
+    the rendered page 13: *"If `F` is an intersecting `w`-uniform set
+    system, and for all `T`, `|F_T| <= κ^{-|T|}|F|`, then
+    `κ = O(log w)`."* — with, on the same page, *"An example from [16]
+    shows that for `κ = Ω(log w/ log log w)`, there are intersecting
+    `κ`-spread `w`-uniform set systems, so the bound in Theorem 4.2 is
+    close to tight."* So intersecting families inside the spread
+    framework are a studied object with a near-sharp answer.
+
+    What this does *not* do is displace anything below. ALWZ's Theorem
+    4.2 is about intersecting **spread** families; [IotaAtMost] is about
+    intersecting **sunflower-free** families, and neither hypothesis
+    implies the other. The sandwich and the equivalence stand. What
+    changes is the claim that nobody had looked, which was false, and
+    the elementary version of ALWZ's theorem is recorded below as a
+    theorem rather than left as a citation — see
+    [intersecting_not_spread_above_uniformity].
 
     The equivalence is unconditional. Getting from a bound on
     sunflower-free families back to [UpperBound] needs
@@ -75,8 +97,61 @@
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower LowerBound Conjecture F23
-     Intersecting.
+     Intersecting Pigeonhole Spread.
 Import ListNotations.
+
+(** ** The elementary form of ALWZ's Theorem 4.2
+
+    An intersecting family cannot be spread beyond its own uniformity.
+    Every member meets a fixed member [A], so pigeonhole on [A]'s [m]
+    points gives a point of degree at least [|F|/m], while
+    [Spread F r] caps every degree at [|F|/r]. Hence [r ≤ m].
+
+    That is the trivial bound; ALWZ's Theorem 4.2 sharpens [m] to
+    [O(log m)] and their §4.2 shows that is close to best possible. The
+    point of proving the trivial version here is that it is the shape of
+    the published statement, checked by the kernel, and it makes precise
+    what the header above withdraws: this is a studied question, and the
+    elementary answer costs fifteen lines. *)
+
+Theorem intersecting_not_spread_above_uniformity :
+  forall m (F : Family) r,
+    Uniform m F -> Intersecting F -> F <> [] -> m < r -> ~ Spread F r.
+Proof.
+  intros m F r HU HI Hne Hmr Hspread.
+  destruct F as [|A0 F']; [contradiction|].
+  set (FF := A0 :: F').
+  assert (HA0 : In A0 FF) by (left; reflexivity).
+  unfold Uniform in HU; rewrite Forall_forall in HU.
+  destruct (HU A0 HA0) as [HA0len _].
+  (* every member meets [A0] *)
+  assert (Hcov : forall B, In B FF -> exists x, In x B /\ In x A0).
+  { intros B HB.
+    destruct (disjointb B A0) eqn:E.
+    - exfalso. apply (HI B A0 HB HA0). apply disjointb_correct; exact E.
+    - apply disjointb_false_iff; exact E. }
+  assert (Hm1 : 1 <= m).
+  { destruct m as [|m']; [| lia]. exfalso.
+    destruct (Hcov A0 HA0) as [x [Hx _]].
+    destruct A0 as [|a A1]; [inversion Hx | simpl in HA0len; lia]. }
+  assert (HFpos : 1 <= length FF) by (simpl; lia).
+  set (K := (length FF - 1) / m).
+  assert (Hmne : m <> 0) by lia.
+  assert (Hpig : length FF > length A0 * K).
+  { pose proof (Nat.mul_div_le (length FF - 1) m Hmne) as Hd.
+    unfold K; rewrite HA0len; lia. }
+  destruct (pigeonhole_family FF A0 K Hcov Hpig) as [x [_ Hcount]].
+  assert (Hdeg : K + 1 <= deg [x] FF).
+  { rewrite deg_single; lia. }
+  assert (Hup : r * deg [x] FF <= length FF).
+  { pose proof (Hspread [x] (NoDup_cons x (in_nil (a := x)) (NoDup_nil nat))) as H.
+    simpl in H; rewrite Nat.mul_1_r in H; exact H. }
+  assert (Hlow : length FF <= m * (K + 1)).
+  { pose proof (Nat.div_mod_eq (length FF - 1) m) as Hdm.
+    pose proof (Nat.mod_upper_bound (length FF - 1) m Hmne) as Hub.
+    unfold K; lia. }
+  nia.
+Qed.
 
 (** ** The two extremal quantities, as bounds
 

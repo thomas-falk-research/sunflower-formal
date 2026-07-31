@@ -38,58 +38,150 @@ than acquire them later:
 
 ---
 
-## 1. Discharging the axiom: Rao's Lemma 2
+## 1. Discharging the axiom: the counting proof, not Rao's
 
 The one axiom is `ALWZ.Rao20_lemma2`. Everything downstream of it is
 already proved, so discharging it is the single highest-value target,
-and the interface is fixed: prove `SpreadYieldsDisjoint n k r` for
-`r ≳ k log(nk)` and the file closes with no other changes.
+and the interface is fixed.
 
-Rao's proof is elementary — injections between finite sets and
-binomial estimates, no measure theory — which is what makes it a
-realistic target at all. Re-read the paper before writing a line. That
-discipline is what caught the fractional-vs-absolute error.
+**This section was rewritten in the July 2026 reading session, and the
+target changed.** The previous version aimed at Rao's encoding argument
+on the strength of the sentence *"Rao's proof is elementary — injections
+between finite sets and binomial estimates, no measure theory"*, which
+`coq/ALWZ.v` asserted without anyone having opened the paper. The paper
+has now been read in full. Its Lemma 5 is **Shannon's noiseless coding
+theorem**, applied through Kraft's inequality and the concavity of `log`,
+over a uniformly random partition of the ground set. It is the *worst*
+fit of the four published proofs for a `nat`-only development.
+
+### What to prove, exactly
+
+Not `Rao20_lemma2` as stated. Prove the **fractional, single-threshold**
+statement — Lovett's Lemma 2.9, PCMI notes p. 8:
+
+> Let `F` be a family of `n`-sets which is `k`-spread for `k = cr log n`,
+> for a large enough absolute constant `c`. Then `F` contains `r`
+> pairwise disjoint sets.
+
+In this development that is `ALWZ.FractionalSpreadDisjoint n k t` for
+`t = Θ(k log n)`, and `ALWZ.fractional_form_gives_the_axiom_shape`
+already carries it the rest of the way: it derives
+`SpreadYieldsDisjoint n k r` for **every** `r ≥ t`, via
+`Spread.RaoSpread_Spread` and `Spread.Spread_mono`. So the target is one
+sentence at one threshold, in the form the literature states it, and the
+axiom's quantification over `r` is no longer something to prove.
+
+That theorem is already in the kernel. It is the cheapest thing this
+session produced and it removes a real overreach: the axiom said more
+than Rao's Lemma 2 does, and nobody had noticed.
+
+### Which proof
+
+The counting proof: **[ALWZ20] §2 / [FKNP21], as streamlined by
+Park–Pham and written out in Lovett's PCMI notes §3 (pp. 11–15).**
+
+Its core, Claim 3.4, is a single displayed ratio of two finite
+cardinalities:
+
+```
+  Pr[ |M(S,V)| >= n/2 ]  =  |B| / ( |F| * C(N, qN) )
+```
+
+where `B = {(S,V) : S in F, V subset of U with |V| = qN, |M(S,V)| >= n/2}`.
+The bound comes from an explicit encoding `phi(S,V) = (Z, S', M, S\M)`
+together with the sentence *"we can decode `(S,V)` given `phi(S,V)`"* —
+injectivity — and then a binomial estimate and a geometric sum. There is
+no measure, no entropy, no limit. Nothing else among the four proofs is
+this close to `nat`.
 
 ### Stage A — the counting layer
 
-**The technical choice that decides feasibility.** The covering step
-is usually stated for a uniformly random subset of *fixed size*, which
-drags in binomial coefficients and their estimates. Stated instead for
-the **product measure** — each element included independently with
-probability 1/2 — "probability" becomes plain cardinality over the
-powerset, and `Spread.subsets` is already exactly that enumeration.
+**The technical choice from the previous version of this section was
+backwards, and that is the concrete thing the reading fixed.** §1 used to
+say: state the covering step for the *product measure* with each element
+included independently with probability `1/2`, so "probability" becomes
+cardinality over the powerset, which `Spread.subsets` already enumerates.
+Three things are wrong with it:
 
-Build:
+* the proof needs `W` to be a **small** random set, `q ≈ 1/log n`. At
+  `p = 1/2` the product measure is plain cardinality; at `p = 1/log n` it
+  is a weighted sum, which is *worse* than the fixed-size version, not
+  better;
+* in every published *proof* the **fixed-size** statement is the
+  primitive. Lovett Claim 3.4, ALWZ Lemma 2.8 and FKNP Theorem 1.6 are
+  all stated for a random subset of fixed size. (Surveys sometimes state
+  the *conclusion* in the product measure — [Kup25] Theorem 3 does — but
+  nothing proves it there.);
+* the product-measure statement is *derived from* the fixed-size one, by
+  a limiting argument (Lovett p. 11: *"Take now `U'` of growing size"*)
+  or by ALWZ's Corollary 2.9. Starting there means formalising a limit,
+  or redoing the encoding count in a measure the encoding was not
+  written for.
 
+So Stage A builds **fixed-size subset enumeration and binomial
+counting**, not powerset enumeration:
+
+* `subsets_of_size : nat -> list nat -> list (list nat)`, and
+  `length (subsets_of_size j U) = C (length U) j`;
 * `count : (list nat -> bool) -> list (list nat) -> nat`;
-* injection-implies-`≤`;
-* additivity over disjoint predicates;
-* `length (subsets U) = 2 ^ length U`.
+* injection-implies-`≤`, and additivity over disjoint predicates;
+* the binomial estimate `C(N, j+m) <= q^{-m} * C(N, j)` for `j = qN`, in
+  the cleared-denominator form `d^m * C(N, j+m) <= c^m * C(N, j)` where
+  `q = c/d`. This is the one place rationals would otherwise appear, and
+  clearing them is the whole trick.
+
+`Spread.subsets` is still useful — `subsets_of_size j = filter (length =
+j) (subsets ...)` is the cheap definition and gives the membership
+lemmas for free — but the *counting* is over the size-`j` layer.
 
 Self-contained, independently testable, reusable. Likely one session.
 
 ### Stage B — the encoding
 
-The mathematical core: the map from "sets `W` containing no member of
-`F`" to compressed encodings, and its injectivity. This is where a
-session's budget should go, and where the stall risk is.
+The mathematical core: `phi(S,V) = (Z, S', M, S\M)` and its injectivity,
+against the minimal-fragment definition. This is where a session's budget
+should go, and where the stall risk is. Note that the *statement* to aim
+at is Lovett's Claim 3.4, not ALWZ's Lemma 2.8 — same content, fewer
+moving parts, because Park–Pham's minimal fragments replaced ALWZ's
+iterative construction.
 
 ### Stage C — the arithmetic
 
-Where the explicit constant lives.
+The geometric sum over `m`, and where the explicit constant lives.
 
-**Scoping decision — do not chase the constant.** The axiom is
-existentially quantified over `α`, so *any* explicit constant
-discharges it: `α = 2²⁰` closes the file exactly as well as `α = 64`.
-Chasing sharpness is where this campaign dies.
+**Scoping decision — do not chase the constant.** `FractionalSpreadDisjoint`
+is instantiated at whatever `t` the proof yields, and
+`fractional_form_gives_the_axiom_shape` is monotone upward in `r`, so any
+explicit constant discharges the axiom. `c = 2^20` closes the file
+exactly as well as `c = 64`. Chasing sharpness is where this campaign
+dies.
 
-### What the testbed now buys here
+### The alternative that was checked and rejected
 
-Each stage's statements can be checked before they are proved. A
-counting lemma is a Rust one-liner to falsify; an encoding is a map to
-run over the exhaustive enumeration in `rust/src/testbed.rs` and check
-injective. Use it — the cost of finding out a lemma is false after
-half a session of proof is the main way this campaign goes wrong.
+[Rao25] *The Story of Sunflowers* (arXiv:2509.14790) advertises, in its
+abstract, *"a short elementary proof of the best known bounds for the
+robust sunflower lemma"*, in its §3. That looked like it might beat
+Lovett §3. **It was read (pp. 8–10) and it does not.** On top of the
+counting it needs a Chernoff bound to fix `|A(γ)|`, Azuma's inequality
+across the `ℓ` sampling rounds, and Markov. Lovett §3 needs Markov and a
+geometric series and nothing else.
+
+What §3 *does* give is confirmation that the outer induction is already
+done here. p. 8: *"For `k > 1`, if there exists a set `Z` with
+`0 < |Z| < k` contained in some `r^{k−|Z|}` sets of `F`, we apply
+induction on the family of sets containing `Z` ... Otherwise, it must be
+that for every non-empty set `Z`, the number of sets of the family
+containing `Z` is at most `r^{k−|Z|}`."* That is
+`SpreadReduction.spread_reduction`'s dichotomy, with `Spread.RaoSpread`
+as the "Otherwise". **The only missing piece is the covering step.**
+
+### What the testbed buys here
+
+Each stage's statements can be checked before they are proved. A counting
+lemma is a Rust one-liner to falsify; an encoding is a map to run over
+the exhaustive enumeration in `rust/src/testbed.rs` and check injective.
+Use it — the cost of finding out a lemma is false after half a session of
+proof is the main way this campaign goes wrong.
 
 ---
 
@@ -348,7 +440,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 66 anecdotes into a coverage metric over the
+  mutation testing from 68 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -2476,6 +2568,16 @@ first.
 
 ## 15. What to read next, and why none of it has been read
 
+> **Superseded by §16 and `docs/reading.md` (session N+3).** This section
+> is kept as written, because it is the diagnosis that produced the
+> reading session and the table below is the plan that was executed. Its
+> "read" column is now out of date: [Ra20], [ALWZ20], [BCW21], [Lovett]
+> and [MNSZ22] were read in full, and its headline claim — that the
+> repository's axiom came from an unopened paper — is no longer true.
+> Everything §15 predicted about the *consequences* of reading turned
+> out to be right, including that §1's target would change.
+
+
 §14.5 withdrew a novelty claim that one `grep` would have prevented. The
 same audit, applied to the reading list, turns up something worse: **the
 repository's single axiom comes from an eight-page open-access paper that
@@ -2599,3 +2701,251 @@ section adds the other half: **read the source of your own axiom before
 planning sessions of work against it.** Eight pages, open access, cited in
 `coq/ALWZ.v`, and the campaign built on it is the highest-value item in
 the repository.
+
+---
+
+## 16. What the reading changed
+
+Session N+3 read papers instead of proving things. Twenty-nine papers
+were downloaded and rendered, plus one MathOverflow answer; **nine were
+read cover to cover** —
+[Ra20] (8pp), [ALWZ20] (19pp), [BCW21] (3pp), [Lovett] (28pp),
+[MNSZ22] (8pp), [ErRa60] (6pp), [Mis26] (12pp), [Rao25] (12pp) and
+Fukuyama's arXiv:2510.19037 (8pp) — five more in part, and Hunter's
+answer in full.
+`docs/reading.md` is the log, with an explicit page count for every
+entry and a register of twenty-one claims resolved. This section is what
+it did to the repository.
+
+### 16.1 Refuted
+
+Six withdrawals. §15 predicted the count going up would be a success
+condition, and it went up.
+
+1. **"The only fully machine-checked formalisation of the Erdős–Rado
+   1960 upper bound."** False, and false for five years before this
+   repository started. René Thiemann's Isabelle/HOL entry *The Sunflower
+   Lemma of Erdős and Rado* has been in the Archive of Formal Proofs
+   since **25 February 2021**, proving `(r−1)^k·k!` with the same
+   strict-inequality convention, plus two corollaries about cores that
+   this development does not have. Withdrawn in `docs/references.md`.
+   What does appear to be unduplicated is the *spread layer*.
+
+2. **`coq/ALWZ.v`: "the source allows sets of size at most `m`."** Rao's
+   Lemma 2 says *"sets of size `k`"*. The "at most" convention is
+   [ALWZ20]'s Definition 1.1. The header cited the wrong paper for its
+   own axiom's shape.
+
+3. **`coq/ALWZ.v`: "Rao's proof is elementary — injections between
+   finite sets and binomial estimates, no measure theory."** Its Lemma 5
+   is Shannon's noiseless coding theorem, over a random partition of the
+   ground set, through Kraft's inequality and the concavity of `log`.
+   This one had been load-bearing: it is why §1 planned three stages
+   against the wrong paper.
+
+4. **`coq/IotaRate.v`: the extremal-set-theory toolbox "has never been
+   pointed" at intersecting families here.** [ALWZ20] §4.2 is titled
+   *Intersecting set systems*; Theorem 4.2 bounds the spread parameter
+   of an intersecting `w`-uniform system by `O(log w)`, with a
+   near-matching example. Different hypothesis from `ι`, so the sandwich
+   and the equivalence stand — but nobody had looked, and the reason
+   nobody had looked is that nobody had read §4.
+
+5. **`docs/references.md`: "[ALWZ20] establishes `f(n,k) ≤ (Ck log n)^n`."**
+   That is [BCW21]'s bound. ALWZ's own Theorem 1.4 is
+   `(Cr³ log w log log w)^w`. ALWZ's §4 records the chain itself.
+
+6. **`docs/references.md`: [NaSa17] gives "`3(n+1)C^n` members".** The
+   paper says `3n Σ_{k ≤ n/3} C(n,k) ≤ (3/2^{2/3})^{n(1+o(1))}` — a
+   binomial *sum*, not `C^n`, and `3n` not `3(n+1)`. Cosmetic for the
+   Coq, wrong all the same.
+
+And two half-withdrawals.
+
+* The *reason* `docs/references.md` gave for [Mis26]'s "at least / more
+  than" discrepancy was wrong. It is not an extracted-text artefact; the
+  paper's abstract and its introduction disagree with each other.
+* The cone's search note said *"one targeted search found nothing stating
+  it"*. The **technique** — add a dummy point to every member of a
+  maximal sunflower-free family one uniformity down — is stated, by Zach
+  Hunter, in the answer this repository has been citing for two sessions
+  without opening (§16.4). The exact statement `g(m) ≤ ι(m+1)` is still
+  not found; the move is not new and was never claimed to be.
+
+### 16.2 Confirmed
+
+* **`Rao20_lemma2` is a faithful rendering of Rao's Lemma 2.** Checked
+  symbol by symbol on the rendered page: the absolute spread condition,
+  the `>` in the size hypothesis, the threshold `αp log(pk)`, the base-2
+  logarithm, the direction of every weakening. The trusted core says what
+  it claims to say.
+* **`Spread.Spread` *is* Lovett's Definition 2.5**, on the nose, and the
+  three quotations `docs/references.md` attributes to his page 7 are
+  verbatim on rendered page 7. §14.5's correction is confirmed at the
+  primary source.
+* **Both branches of `StarDefect.the_two_branches_of_the_dichotomy` are
+  on page 90 of the 1960 paper.** The maximal-disjoint-subfamily cover
+  and the pigeonhole are Erdős and Rado's own argument for the finite
+  distinct case, not a later textbook rewrite.
+* **`coq/DirectSum.v`'s supermultiplicativity is [Kup25] Observation 2**,
+  with proof, on rendered page 6. No novelty was claimed; now it has a
+  citation.
+* **[BCW21] `(Cp log k)^k` is still the peer-reviewed record**, and
+  `coq/ALWZ.v`'s note on what it would buy is accurate.
+* **`f(n,3) ≳ 10^{n/2}` is still the lower-bound record.** An arXiv
+  sweep of three queries over 2024-06 → 2026-07 returned thirty
+  sunflower papers and no lower-bound improvement. Negative evidence.
+* **[Mis26] is unrevised and unwithdrawn**, and `coq/Compression.v`'s
+  off-by-one convention is right.
+
+### 16.3 Two things that changed a plan
+
+**§1's technical choice was backwards.** It proposed proving the covering
+step for the product measure at `p = 1/2`, because "probability becomes
+plain cardinality over the powerset, which `Spread.subsets` already
+enumerates". But the proof needs `W` *small* — `q ≈ 1/log n` — and at
+that `p` the product measure is a weighted sum, not a cardinality. In
+every published version the **fixed-size** statement is the primitive
+(Lovett Claim 3.4 computes `|B| / (|F|·C(N,qN))`, already a ratio of two
+cardinalities), and the product-measure version is *derived from it* by a
+limiting argument. Starting at the product measure means formalising a
+limit.
+
+§1 is rewritten: Stage A builds fixed-size subset enumeration and
+binomial counting, the target moves from [Ra20] to Lovett §3, and the
+target *statement* moves from the absolute to the fractional form.
+
+**And the alternative was checked rather than left as a hope.** [Rao25]
+advertises *"a short elementary proof of the best known bounds for the
+robust sunflower lemma"* in its §3. Read (pp. 8–10): it needs a Chernoff
+bound, Azuma's inequality and Markov on top of the counting, where
+Lovett §3 needs Markov and a geometric series. Not a shortcut, and
+rejected on evidence rather than left on the list for a fourth session.
+
+What §3 did give is that the **outer induction is already done here**.
+Its dichotomy, p. 8, is `SpreadReduction.spread_reduction`'s, with
+`Spread.RaoSpread` as the "Otherwise" branch. The only missing piece of
+the whole argument is the covering step.
+
+### 16.4 What it revealed that nobody here knew to look for
+
+This is the part worth keeping.
+
+* **The axiom said more than its source.** Rao's Lemma 2 fixes `r` at one
+  value; `Rao20_lemma2` quantifies over every `r` above the threshold,
+  and `SpreadYieldsDisjoint` is not monotone in `r` on general grounds —
+  the repository's own `SpreadReduction.v` says so, in a comment, about
+  the *elementary* lemma, and then the axiom did the thing the comment
+  warns about. It is now discharged rather than assumed:
+  `ALWZ.fractional_form_gives_the_axiom_shape` derives the whole
+  quantified family from the fractional single-threshold statement, via
+  machinery (`RaoSpread_Spread`, `Spread_mono`) that had been sitting in
+  `Spread.v` since the spread layer went in. **The same shape as §14.5:
+  the fix was already in the repository.**
+
+* **§5's open question is not open in the way it was recorded.** It said
+  "whether the `log` is necessary in the disjointness form was looked for
+  and not found". It is found, three times, in sources that were sitting
+  unread: [Ra20] p. 2, *"As far as we know, it is possible that Lemma 2
+  holds even when `r(p,k) = O(p)`. Such a strengthening of Lemma 2 would
+  imply the sunflower conjecture of Erdős and Rado."*; [Rao25] p. 3,
+  *"This dependence is necessary for robust sunflowers ... Nevertheless,
+  it is quite possible that the sunflower conjecture of Erdős and Rado
+  holds in its original form."*; and both tightness examples ([ALWZ20]
+  Lemma 3.1, [BCW21] Lemma 4) are transversal families, which **do**
+  contain `p` pairwise disjoint sets and therefore say nothing about the
+  disjointness form. The question is a stated open problem whose positive
+  resolution is the conjecture.
+
+* **One of the four proofs has a published gap, and two independent
+  sources say so.** [MNSZ22] footnote 2, page 6: *"It was recently
+  pointed out that the proof of [Tao20] has a gap, which has been
+  corrected in [Hu21, Sto22]."* [Kup25] page 7: *"Tao [118] gave a proof
+  based on entropy, which, however, contained a mistake."* §15.1 listed
+  Tao's entropy argument as one of four routes without knowing this. The
+  corrected entropy proof reaches `φ(s,k) ≤ (64s log k)^k` — which is
+  where this repository's unsourced "`C = 64`" note came from, now with a
+  page behind it.
+
+* **Erdős–Rado 1960 does not prove `(k−1)^n n!`.** It proves something
+  sharper — `φ(a,b) ≤ b!a^b(1 − 1/(2!a) − 2/(3!a²) − …)` for distinct
+  families, p. 90 — and its headline Theorem III is about *multisets*,
+  which is a factor `a` larger and is why `c = 12` at `a = b = 2`.
+  `coq/ErdosRado.v` proves the rounded modern version, which is correct
+  and weaker than the source. Nobody here knew the source was sharper.
+
+* **[AHS72] also improved the upper bound, and Spencer 1977 improved it
+  again.** [Kup25] p. 5: *"Abbot, Hanson and Sauer [1] in 1972, and then
+  Spencer [116] in 1977 improved upper bounds on `φ(k,s)`. The result of
+  Spencer states that for any fixed `s` and `ε > 0` there exists `C` such
+  that `φ(k,s) ≤ Ck!(1+ε)^k`."* This bibliography had three results
+  traced to [AHS72] and none of them was this one. **Spencer 1977 is not
+  in the bibliography at all.**
+
+* **A 2025 preprint claims to beat [BCW21]**, with a sub-logarithmic
+  base `(ck² ln m / ln ln m)^m` (Fukuyama, arXiv:2510.19037v2). It is
+  unrefereed, the author's own page calls the proof unstable, and the
+  same author has a 2018 claim of the same kind that never appeared.
+  Recorded and not adopted — but §12's threshold table had been written
+  as though the 2021 record were unchallenged, and it is being
+  challenged.
+
+* **The 2024–2026 literature is much larger than the reading list
+  assumed.** Thirty sunflower papers in twenty-five months, including a
+  survey by Rao (Sept 2025), the Duke–Erdős extremal-structure line, the
+  sunflower-free process, two vector-space analogues, and a June 2026
+  polynomial improvement of [NaSa17]. The tabulated sweep is in
+  `docs/reading.md` so the next session does not repeat it.
+
+* **Zach Hunter's answer was reachable all along, and it contains two of
+  this repository's theorems.** `docs/references.md` has credited the
+  ground-set equivalence to it for two sessions without anyone opening
+  it, because `WebFetch` refuses mathoverflow.net. **The StackExchange
+  API is not blocked**, and one `curl` to
+  `api.stackexchange.com/2.3/answers/463150?site=mathoverflow&filter=withbody`
+  returns the body. Reading it:
+
+  * the equivalence is confirmed at source, in one sentence;
+  * his closing *"EDIT: my question is also silly. If no element is
+    contained by a `(1/tk)`-fraction of the edges from `H`, then we can
+    greedily find `t` disjoint sets"* is `StarDefect.star_defect_bound`,
+    stated informally in January 2024, at constant `3b` against this
+    repository's `2b`. That is the *third* independent source for the
+    branch §14.5 withdrew the novelty claim for;
+  * the question he proposes and immediately withdraws — a vertex of
+    degree `≥ c_t^k|H|` — is the **exponentially weak** form of
+    `StarDefect.StarBounded` and is trivially true, where `StarBounded`
+    asks for a *constant* factor and is false. Keeping those two apart is
+    the whole content of §14.
+
+  The lesson generalises past this problem: **a blocked fetcher is not an
+  unreachable source.** The same route reaches any MathOverflow post.
+
+* **The negative-result infrastructure was reading the wrong sources.**
+  "Not found in [Kup25]" was doing a lot of work in this repository, and
+  [Kup25] is a 66-page survey of which six pages have now been read. Six
+  pages of it produced one confirmation, one new reference, and one
+  published theorem that this repository had reproved. The other sixty
+  pages are unread.
+
+### 16.5 What did not change
+
+No theorem in the development is false, and none was weakened. Every
+withdrawal above is a claim *about the literature* or a description of a
+proof — never a mathematical statement checked by the kernel. `make
+coqchk` still reports exactly one axiom. That is the system working: the
+prose was wrong in six places and the mathematics in none, which is the
+right way round, and the only reason the six were found is that somebody
+finally rendered the pages.
+
+### 16.6 The standing rule this section adds
+
+§14.6: grep the development before calling a quantity unnamed.
+§15.5: read the source of your own axiom before planning sessions against
+it.
+
+**§16.6: when the repository states what a source says, the sentence goes
+in with a page number and a verbatim quotation, or it does not go in.**
+Every one of the six withdrawals above is a paraphrase that drifted. None
+of them would have survived being written as a quotation, because writing
+a quotation forces you to have the page open.

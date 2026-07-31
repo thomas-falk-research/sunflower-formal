@@ -203,7 +203,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 66 mutations, 63 are killed outright, two
+  that something breaks. Of 68 mutations, 65 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -272,7 +272,7 @@ Highlights of the less-routine parts:
 make verify        # builds all 33 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (341 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (343 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
@@ -383,7 +383,15 @@ derivation of exactly what depends on it).
 
 ## References
 
-See [`docs/references.md`](docs/references.md) for the full list. Key
+[`docs/reading.md`](docs/reading.md) records what was actually read —
+one entry per source, with an explicit page count, verbatim quotations
+with page numbers, and a register of every claim this repository makes
+about the literature, resolved to confirmed / refuted / not found /
+unreachable. Sources that could not be reached have entries saying so.
+
+See [`docs/references.md`](docs/references.md) for the full list, where
+every annotation now states its evidence class (*read in full / read
+pp. N–M / abstract only / unreachable / not attempted / inferred*). Key
 sources: Erdős–Rado, *Intersection theorems for systems of sets*,
 J. London Math. Soc. 35 (1960); P. Hall, *On representatives of
 subsets*, J. London Math. Soc. 10 (1935); D. Kőnig, *Gráfok és

@@ -51,6 +51,7 @@ thm ALWZ.spread_singletons
 thm ALWZ.elementary_applies_to_singletons
 thm ALWZ.threshold_is_inside_the_gap
 thm ALWZ.axiom_hypotheses_satisfiable_in_the_gap
+thm ALWZ.fractional_form_gives_the_axiom_shape
 thm Reflect.rao_spreadb_correct
 thm Reflect.rao_witness_agrees
 thm Reflect.rao_witness_complete
@@ -193,6 +194,7 @@ thm F23.upper_bound_of_sunflower_free_bound
 # families. The equivalence is the headline; the arithmetic lemmas are
 # listed because the factor 2b disappearing into the base is exactly the
 # step a reader should be able to check did not move.
+thm IotaRate.intersecting_not_spread_above_uniformity
 thm IotaRate.iota_le_g
 thm IotaRate.g_le_iota_scaled
 thm IotaRate.iota_g_sandwich
@@ -305,6 +307,7 @@ def Spread.RaoSpread
 def Spread.Spread
 def Spread.link
 def SpreadReduction.SpreadYieldsDisjoint
+def ALWZ.FractionalSpreadDisjoint
 
 # The core combinatorial definitions every bound is stated against.
 def Sets.SetEq

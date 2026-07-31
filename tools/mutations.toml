@@ -1044,3 +1044,51 @@ refutes at b = 2 (six members, maximum degree two). Does the proof notice?"""
 find = "    exists x, length F <= 2 * b * length (star x F)."
 replace = "    exists x, length F <= b * length (star x F)."
 expect = "killed"
+
+[[mutation]]
+id = "alwz-fractional-drop-spread"
+file = "coq/ALWZ.v"
+question = """The fractional spread lemma is the form the axiom's shape is now \
+derived from. Is its spread hypothesis load-bearing, or would the derivation go \
+through with a family that is merely large?"""
+find = """Definition FractionalSpreadDisjoint (n k t : nat) : Prop :=
+  forall (m : nat) (F : Family),
+    1 <= m -> m <= n ->
+    Uniform m F -> Distinct F ->
+    Spread F t ->
+    exists S : list (list nat),
+      incl S F /\\ NoDup S /\\ length S = k /\\ PairwiseDisjoint S."""
+replace = """Definition FractionalSpreadDisjoint (n k t : nat) : Prop :=
+  forall (m : nat) (F : Family),
+    1 <= m -> m <= n ->
+    Uniform m F -> Distinct F ->
+    t ^ m < length F ->
+    exists S : list (list nat),
+      incl S F /\\ NoDup S /\\ length S = k /\\ PairwiseDisjoint S."""
+expect = "killed"
+because = """Load-bearing, and it is the point of the definition. \
+fractional_form_gives_the_axiom_shape discharges the axiom's quantification over \
+r precisely because Spread is monotone downward in its parameter \
+(Spread.Spread_mono) while a bare size hypothesis is not: raising r makes t ^ m < \
+length F harder, so the derivation from a size hypothesis at threshold t to the \
+statement at every r >= t has no route. Replacing the spread clause by the size \
+clause therefore breaks the proof, which is the machine-checked form of the \
+reason Rao's single-threshold statement had to be read in the fractional form \
+before the axiom's shape could be justified."""
+
+[[mutation]]
+id = "iotarate-intersecting-spread-off-by-one"
+file = "coq/IotaRate.v"
+question = """The elementary form of ALWZ Theorem 4.2 says an intersecting \
+m-uniform family is not r-spread for r > m. Is m the right threshold, or does \
+the argument have slack?"""
+find = "    Uniform m F -> Intersecting F -> F <> [] -> m < r -> ~ Spread F r."
+replace = "    Uniform m F -> Intersecting F -> F <> [] -> m <= r -> ~ Spread F r."
+expect = "killed"
+because = """Load-bearing, and the threshold is sharp rather than slack. \
+At r = m the mutated statement is outright false: the one-member family [[0]] is \
+1-uniform, intersecting, nonempty and 1-spread, so it is a counterexample at \
+m = r = 1. The proof breaks at exactly the place that says so -- the pigeonhole \
+gives length F <= m * (K + 1) and spreadness gives r * (K + 1) <= length F, which \
+is a contradiction when r > m and no contradiction at all when r = m, leaving the \
+final nia with nothing to work with."""
