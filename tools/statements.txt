@@ -1180,6 +1180,27 @@ a7d5baa1bbc23684  thm Maximal.fano_is_maximal_intersecting
 c883e7b818708eaf  thm Maximal.regular_intersecting_ground_bound
     regular_intersecting_ground_bound : forall (b : nat) (F : Family) (U : list nat) (d : nat), 1 <= b -> F <> nil -> List.NoDup U -> Uniform b F -> Intersecting F -> Grounded F U -> (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) = d) -> length U <= b * b
 
+3af0bfc2925dba6d  thm StarDefect.star_defect_bound
+    star_defect_bound : forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 2 * b * length (star x F)
+
+ab2392a70b3b135f  thm StarDefect.star_step
+    star_step : forall c b M : nat, StarBounded c -> GAtMost b M -> GAtMost (S b) (c * M)
+
+7e319f0ab07ad51b  thm StarDefect.star_bounded_gives_explicit_bound
+    star_bounded_gives_explicit_bound : forall c b : nat, StarBounded c -> 1 <= b -> GAtMost b (2 * PeanoNat.Nat.pow c (b - 1))
+
+61f26c099b8be847  thm StarDefect.star_bounded_settles_k3
+    star_bounded_settles_k3 : forall c : nat, StarBounded c -> sunflower_conjecture_k_3
+
+b8dee0b678ec29d4  thm StarDefect.star_bounded_gives_the_constant
+    star_bounded_gives_the_constant : forall c : nat, StarBounded c -> forall n : nat, 1 <= n -> UpperBound n 3 (S (PeanoNat.Nat.pow (2 * c) n))
+
+566d5f0d4bb1b25d  thm StarDefect.star_bounded_needs_c_at_least_five
+    star_bounded_needs_c_at_least_five : forall c : nat, StarBounded c -> 5 <= c
+
+3c7e799782c62bb9  thm StarDefect.the_ratio_at_four_is_between_the_witness_and_the_ceiling
+    the_ratio_at_four_is_between_the_witness_and_the_ceiling : (forall F : Family, Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 8 * length (star x F)) /\ length doubled_iota4 = 54 /\ (forall x : nat, length (star x doubled_iota4) <= 12)
+
 c95930b9d05834b9  thm Audit.the_shifted_bound_at_three_is_false
     the_shifted_bound_at_three_is_false : ~ IotaShiftedAt 3
 
@@ -1203,6 +1224,12 @@ b221185f3b496716  thm Audit.the_cone_route_beats_the_direct_sum_at_four
 
 aadaa2af67327fb9  thm Audit.the_ground_hypotheses_are_not_independent_after_all
     the_ground_hypotheses_are_not_independent_after_all : forall c : nat, (GroundBounded c -> IotaGroundBounded c) /\ (IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 2 c) (m + 1))
+
+50bd3807ef83d62c  def StarDefect.StarBounded
+    StarBounded = fun c : nat => forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= c * length (star x F) : nat -> Prop Arguments StarBounded c%nat_scope
+
+3599a40410073e6c  def StarDefect.maxdeg_over
+    maxdeg_over = fun (X : list nat) (F : Family) => List.fold_right (fun x acc : nat => PeanoNat.Nat.max (length (star x F)) acc) 0 X : list nat -> Family -> nat Arguments maxdeg_over X%list_scope F
 
 07f7f8c941b32c4a  def Maximal.MaximalIntersecting
     MaximalIntersecting = fun (b : nat) (F : Family) => forall A : list nat, Uniform b (A :: F)%list -> Distinct (A :: F)%list -> Intersecting (A :: F)%list -> False : nat -> Family -> Prop Arguments MaximalIntersecting b%nat_scope F

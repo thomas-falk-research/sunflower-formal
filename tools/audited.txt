@@ -507,6 +507,13 @@ thm Maximal.iota4_covering_number_is_four
 thm Maximal.fano_is_maximal_intersecting
 thm Maximal.maximality_is_not_a_size_bound
 thm Maximal.regular_intersecting_ground_bound
+thm StarDefect.star_defect_bound
+thm StarDefect.star_step
+thm StarDefect.star_bounded_gives_explicit_bound
+thm StarDefect.star_bounded_settles_k3
+thm StarDefect.star_bounded_gives_the_constant
+thm StarDefect.star_bounded_needs_c_at_least_five
+thm StarDefect.the_ratio_at_four_is_between_the_witness_and_the_ceiling
 thm Audit.the_shifted_bound_at_three_is_false
 thm Audit.bounds_coherent_sharp
 thm Audit.the_sharp_bound_narrows_iota_four
@@ -516,6 +523,8 @@ thm Audit.bounds_coherent_cone
 thm Audit.the_cone_route_beats_the_direct_sum_at_four
 thm Audit.the_ground_hypotheses_are_not_independent_after_all
 
+def StarDefect.StarBounded
+def StarDefect.maxdeg_over
 def Maximal.MaximalIntersecting
 def Maximal.trace_certificate
 def Sharp.IotaShiftedAt

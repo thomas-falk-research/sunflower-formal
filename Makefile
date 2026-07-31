@@ -151,6 +151,12 @@ test: rust
 # uniformity, rebuilds every construction the repository has and
 # re-verifies it, and asserts that none of them refutes.
 #
+# The ninth falsifies coq/StarDefect.v: the greedy chain telescopes, the
+# ratio |F|/maxdeg is exactly multiplicative under the substitution and
+# therefore unbounded, every family respects the proved ceilings 2b and
+# b, and the two numbers the Coq witness rests on are checked against a
+# family rebuilt rather than quoted.
+#
 # The eighth falsifies coq/Maximal.v: the trace reduction is checked
 # against rebuilding the extended family, the maximality verdict is taken
 # twice by independent methods, the multiplicativity of the covering
@@ -172,6 +178,7 @@ testbed:
 	cd rust && cargo test --release --test iota_structure -- --nocapture
 	cd rust && cargo test --release --test sharp_conjecture -- --nocapture
 	cd rust && cargo test --release --test extension -- --nocapture
+	cd rust && cargo test --release --test star_defect -- --nocapture
 
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.

@@ -1013,3 +1013,34 @@ puts a common point into the trace. Is the clause doing the work?"""
 find = "    Uniform b (A :: F) -> Distinct (A :: F) -> Intersecting (A :: F) -> False."
 replace = "    Uniform b (A :: F) -> Distinct (A :: F) -> False."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# The Erdős–Rado ratio (coq/StarDefect.v).
+#
+# The whole file turns on one number: the factor by which a family
+# exceeds its largest point degree. Both mutations ask whether that
+# number is where the content is.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "starbounded-per-uniformity"
+file = "coq/StarDefect.v"
+question = """StarBounded asks for a constant factor. Erdős–Rado already \
+proves the factor 2b, so if the definition quietly allowed the factor to \
+depend on the uniformity it would be a theorem rather than a hypothesis, and \
+star_bounded_settles_k3 would be deriving the sunflower conjecture from \
+something already known. Is the uniformity-independence load-bearing?"""
+find = "    1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->\n    exists x, length F <= c * length (star x F)."
+replace = "    1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->\n    exists x, length F <= c * b * length (star x F)."
+expect = "killed"
+
+[[mutation]]
+id = "stardefect-drop-factor-two"
+file = "coq/StarDefect.v"
+question = """The factor 2 in star_defect_bound is the two members a maximal \
+pairwise-disjoint subfamily may have -- three would be a sunflower. Drop it \
+and the claim is that some point lies in |F|/b members, which two_triangles \
+refutes at b = 2 (six members, maximum degree two). Does the proof notice?"""
+find = "    exists x, length F <= 2 * b * length (star x F)."
+replace = "    exists x, length F <= b * length (star x F)."
+expect = "killed"

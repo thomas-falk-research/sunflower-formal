@@ -162,6 +162,10 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `iota4_is_maximal_intersecting`, `iota4_covering_number_is_four` | `coq/Maximal.v` | **The Abbott–Hanson–Sauer family at `b = 4` cannot be extended** — on any ground set, and *without using sunflower-freeness at all*: `τ(ι(4,9)) = 4`, and the only 4-sets meeting every member are the 27 members. Measured first by three independent methods that agree (minimal hitting sets, brute force over every trace, SAT with two solvers required to agree on UNSAT), at `b = 4, 6, 9` and on both cone rows; `b = 9` is the one that matters, where 10,000 members are built and 10,001 would beat 1972. The mechanism is that the covering number is *multiplicative* under the substitution, so maximality is too, and the whole 3-adic tower inherits it |
 | `fano_is_maximal_intersecting`, `maximality_is_not_a_size_bound` | `coq/Maximal.v` | **Maximal is not maximum**, and this is the guard against over-reading the row above. The Fano plane is a maximal intersecting 3-uniform family with **seven** members — every 3-set meeting all seven lines *is* a line — while `Intersecting.iota3` has **ten**. So a family nothing can be added to may be strictly smaller than one that exists |
 | `regular_intersecting_ground_bound` | `coq/Maximal.v` | **A regular intersecting `b`-uniform family lives on at most `b²` points.** Pigeonhole over one member's `b` points plus the incidence count. It is why prescribing a *transitive* group is hopeless above `g = b²` — every orbit of a transitive group is point-regular — which is the structural reason the Kramer–Mesner instrument does not transfer to a ternary negative condition. It also sharpens `Product.the_universal_iota_ground_reading_is_false`: the coned tree-path family needs `2^b − 1` points, so it **must** be irregular, and it is |
+| `star_defect_bound`, `maxdeg_over` | `coq/StarDefect.v` | **Erdős–Rado's first step, with the point named.** `Intersecting.sunflower_free_star_bound` proves it and immediately consumes it; this stops one line earlier and says every sunflower-free `b`-uniform family *has* a point of degree at least `\|F\|/(2b)`. Naming the maximiser is what lets the recursion be run parametrically, and it needs a fold over the cover's points because `pigeonhole_family` produces a point above a given degree rather than the best one |
+| `StarBounded`, `star_step`, `star_bounded_gives_explicit_bound` | `coq/StarDefect.v` | **The ratio `ρ(F) = \|F\|/maxdeg(F)` is what the recursion pays**, and the chain telescopes: `\|F\| = ρ₀·ρ₁·…·ρ_{b−1}` *exactly*. So the conjecture at `k = 3` is that the product is `C^b`, and a constant bound on one factor gives `g(b) ≤ c·g(b−1)` hence `g(b) ≤ 2c^(b−1)` |
+| `star_bounded_settles_k3`, `star_bounded_gives_the_constant` | `coq/StarDefect.v` | **One inequality with one number in it settles Erdős's \$1000 case**, with `c(3) = 2c`. That is the whole reason the quantity is worth naming |
+| `star_bounded_needs_c_at_least_five`, `the_ratio_at_four_is_between_the_witness_and_the_ceiling` | `coq/StarDefect.v` | **And it is not a constant.** `ρ` is exactly multiplicative under the Abbott–Hanson–Sauer substitution — the `\|H\|^(a−1)` in `maxdeg` cancels — so iterating on `ι(3)` gives `ρ = 2^k` at `b = 3^k`, i.e. `ρ = b^{log₃2} = b^{0.63}`, verified directly at `b = 9` where 10,000 members have maximum degree 2500. The measured row 2, 3, 2.75 looked flat only because it stopped at `b = 3`. Formalising the refutation needs `substitute` in Coq; what is proved is that the doubling of `ι(4,9)` forces `c ≥ 5` against the proved ceiling `2b = 8`. What survives is the *geometric mean*, which tends to `√10` while the maximum diverges — so no proof of the conjecture can be a per-level estimate |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -237,7 +241,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (331 of them). The current
+for every theorem in the "Closed" table (338 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -284,7 +288,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 32 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 33 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -292,8 +296,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 64 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 61 killed outright, two genuine
+Current mutation results: 66 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 63 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -302,7 +306,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 32 modules with Coq's separate kernel
+`make coqchk` re-verifies all 33 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

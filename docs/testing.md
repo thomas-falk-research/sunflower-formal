@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-64 mutations, all with the outcome the manifest declares: 61 killed
+66 mutations, all with the outcome the manifest declares: 63 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -953,3 +953,48 @@ enumerated — it is three lines from `Pigeonhole.pigeonhole_family` and
 was written as the explanation of a measurement rather than as a
 conjecture. The enumeration was added afterwards and found no
 counterexample, which is weaker evidence than the usual order gives.
+
+### A ninth: a measurement that was already there, and was being read wrong
+
+`rust/tests/star_defect.rs` is the falsification suite for
+`coq/StarDefect.v`, and it is the one entry here that exists because an
+*existing* check was being over-read.
+
+`rust/tests/iota_sandwich.rs` has pinned the worst observed
+`|F| / maxdeg(F)` per uniformity since the sandwich went in — 2, 3, 2.75
+against the proved 2, 4, 6 — as evidence of how loose the `2b` factor is.
+Read one way that row is a curiosity. Read another it is the whole
+conjecture: a *constant* bound on that ratio gives `g(b) <= c g(b-1)` and
+hence `c^b`. Nobody had asked whether it stays flat.
+
+It does not, and the suite is built to make the refutation checkable
+rather than plausible:
+
+* **The chain identity is checked, not assumed.** `|F|` is the product of
+  the ratios down the greedy chain — checked as a *telescope* (each
+  level's maximum degree is the next level's size) rather than as a
+  running product, because the individual ratios are not integers and an
+  integer product silently truncates. The first version of the example
+  did truncate, and printed `24` where the family has 27 members.
+* **Multiplicativity is checked in exact rational arithmetic.**
+  `rho(G) rho(H) = rho(substitute(G,H))` is asserted as
+  `gn * hn * fden == fnum * gd * hd`, never as a float comparison, on all
+  six buildable pairs.
+* **The tower is built, not extrapolated.** `rho = 4` at `b = 9` is
+  measured on the actual 10,000-member family, which is re-verified by
+  `structure::verify_128` first. The `b = 27` row has `10^13` members and
+  is arithmetic only; the test asserts that it is out of reach rather
+  than quietly skipping it.
+* **The proved ceilings are checked on everything.** `rho <= 2b` for
+  sunflower-free and `rho <= b` for intersecting families, on nine
+  constructions. A violation would be a counterexample to
+  `Intersecting.sunflower_free_star_bound` or to
+  `Intersecting.intersecting_link_bound`, so this is a differential test
+  against the Coq side rather than a sanity check.
+* **The two numbers the Coq rests on are rebuilt.**
+  `StarDefect.star_bounded_needs_c_at_least_five` uses exactly `54` and
+  `12`; both are recomputed here from the seed.
+
+The suite ran before any of `coq/StarDefect.v` was written, which is the
+order the rest of this document asks for and the order the previous
+entry did not manage.

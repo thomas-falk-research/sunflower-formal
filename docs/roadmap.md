@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 64 anecdotes into a coverage metric over the
+  mutation testing from 66 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -2266,3 +2266,144 @@ counterexample; that is weaker evidence than the usual order gives.
 * **A construction that is not a substitution.** Everything in §11.6 is
   built from `cone`, `double` and `substitute`, and §13.1 says all of it
   is maximal. The table cannot move without a genuinely new operation.
+
+---
+
+## 14. Settled: the Erdős–Rado ratio is unbounded, and the conjecture is about its mean
+
+§13 closed the constructions. This is about the *proof*, and it comes out
+of a quantity the repository has been measuring for three sessions
+without naming.
+
+### 14.1 The quantity Erdős–Rado's recursion pays
+
+Erdős–Rado is one step iterated: find a heavy point, recurse into its
+link. `Intersecting.sunflower_free_star_bound` proves the step. Write
+
+```
+  rho(F)  =  |F| / maxdeg(F)
+```
+
+The link at a maximum-degree point has `maxdeg(F)` members and uniformity
+`b-1`, so `|F| = rho(F) · |link|` and, descending,
+
+```
+  |F|  =  rho_0 · rho_1 · ... · rho_{b-1}
+```
+
+**exactly** — the chain telescopes, and `rust/tests/star_defect.rs`
+checks that it does on every family the repository has. Erdős–Rado bounds
+each factor by `2(b-j)` and gets `2^b b!`. **The conjecture at `k = 3` is
+precisely that the product is `C^b`.**
+
+And a constant bound on a *single* factor settles it outright:
+
+```
+  StarBounded c  :=  every sunflower-free b-uniform family has a point x
+                     with |F| <= c · deg(x)
+```
+
+gives `g(b) <= c·g(b-1)`, hence `g(b) <= 2c^(b-1)` — the whole conjecture
+from one inequality with one number in it. `StarDefect.star_bounded_settles_k3`,
+with `c(3) = 2c`.
+
+`StarDefect.star_defect_bound` is the per-family form of the step, which
+the repository lacked: it *names* the point rather than consuming it, so
+the recursion can be run parametrically (`star_step`).
+
+### 14.2 It is not a constant, and the witness is the 1972 construction
+
+`rust/tests/iota_sandwich.rs` has pinned the worst observed ratio for a
+while — **2, 3, 2.75** at uniformities 1, 2, 3 against the proved 2, 4, 6
+— and that row looks flat. A flat row is the conjecture.
+
+**It is not flat.** `rho` is *exactly multiplicative* under the
+Abbott–Hanson–Sauer substitution:
+
+```
+  |substitute(G,H)|       = |G| |H|^a
+  maxdeg(substitute(G,H)) = maxdeg(G) maxdeg(H) |H|^(a-1)
+  ==>  rho(substitute(G,H)) = rho(G) rho(H)
+```
+
+— the `|H|^(a-1)` cancels. Checked in exact rational arithmetic on all
+six buildable pairs. With `rho(iota(2)) = 3/2` and `rho(iota(3)) = 2`,
+iterating on `iota(3)` gives
+
+```
+  b = 3^k   ==>   rho = 2^k   ==>   rho = b^(log_3 2) = b^0.6309...
+```
+
+**Unbounded.** Verified directly at `b = 9`, where the substitution's
+10,000 members have maximum degree exactly 2500 and `rho = 4`. So the
+measured row was flat only because it stopped at `b = 3`, and the family
+that refutes a constant star bound is the one giving the best lower bound
+known.
+
+The doubling is the only other operation that moves `rho`, and it doubles
+it — but it cannot be iterated, because the doubling of an intersecting
+family is not intersecting (`Audit.intersecting_is_needed_in_the_doubling`).
+So the substitution is the mechanism, and it is the *same* mechanism that
+makes the lower bound good.
+
+Formalising the refutation needs `substitute` in Coq (§5 item 2). What is
+proved is the finitistic half: `StarDefect.star_bounded_needs_c_at_least_five`
+— the doubling of the exhaustively extremal `iota(4,9) = 27` is 54 members
+at uniformity 4 with every point in at most 12 of them, so any admissible
+`c` is at least 5, against the proved ceiling `2b = 8` there. Same shape
+as `step_bounded_needs_D_at_least_three` and
+`ground_bounded_needs_c_at_least_four`; what is new is that the
+constructions push it up *without limit*.
+
+### 14.3 What survives, and what it says about the `log`
+
+The average. On the same tower the product of the `b` chain ratios is
+`10^((b-1)/2)`, so their geometric mean is `|F|^(1/b)` — tending to
+`sqrt(10) = 3.162` — while the largest single factor grows like `b^0.63`:
+
+```
+   b    product        geometric mean   largest factor rho
+   3          10.00           2.1544              2.0
+   9       10000.00           2.7826              4.0
+  27       10^13              3.0303              8.0
+```
+
+That gap is exactly §4's still-unclaimed "are the covers correlated
+across levels?", and it is now answered on the best object we have:
+**they are.** The maximum is unbounded and the mean is not, so any proof
+of the conjecture has to be a statement about the whole chain and cannot
+be a per-level estimate. That is the precise form of "pay the log once",
+and it is a *lower bound on the difficulty* of the remaining problem:
+§14.2 rules out the entire class of arguments that bound one level at a
+time.
+
+### 14.4 Where this leaves the ladder
+
+Three classes of argument are now closed with theorems rather than with
+failed searches:
+
+* **canonical-form symmetry breaking** — §8, `compressed_bound`;
+* **prescribed symmetry** — §13.3, and the orbit-usability measurement;
+* **per-level degree estimates** — §14.2.
+
+What is not closed, in order of how concrete it is:
+
+* **The chain, treated as a whole.** Bound `Π rho_j` without bounding any
+  `rho_j`. Nothing in the repository attempts this and it is what the
+  conjecture is.
+* **`iota(4) >= 32` through the general row** (§13.4), still the most
+  concrete open target, still out of reach of every instrument here.
+* **Formalise the substitution** (§5 item 2). It is now needed for
+  *four* things: the `g(6) >= 600` rate, rows 5–7 of the `iota` table,
+  §13.1's general maximality theorem, and §14.2's refutation.
+
+### 14.5 Novelty, stated as what was actually checked
+
+One targeted web search for the ratio `|F|/maxdeg` as a studied quantity
+for sunflower-free families, and for a multiplicativity or unboundedness
+statement about it. Nothing found. **The search was one query, not
+exhaustive, and no paper was read.** The related published quantity is
+*diversity* `|F| - maxdeg` for intersecting families (Frankl,
+Hilton–Milner), which is a difference rather than a ratio and is used in
+the opposite regime. Treat "new" as unverified; treat "not found in one
+targeted search" as exactly that.
