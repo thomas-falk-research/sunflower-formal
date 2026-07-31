@@ -2397,13 +2397,77 @@ What is not closed, in order of how concrete it is:
   *four* things: the `g(6) >= 600` rate, rows 5–7 of the `iota` table,
   §13.1's general maximality theorem, and §14.2's refutation.
 
-### 14.5 Novelty, stated as what was actually checked
+### 14.5 Withdrawn: `rho` is spreadness, and the repository already had it
 
-One targeted web search for the ratio `|F|/maxdeg` as a studied quantity
-for sunflower-free families, and for a multiplicativity or unboundedness
-statement about it. Nothing found. **The search was one query, not
-exhaustive, and no paper was read.** The related published quantity is
-*diversity* `|F| - maxdeg` for intersecting families (Frankl,
-Hilton–Milner), which is a difference rather than a ratio and is used in
-the opposite regime. Treat "new" as unverified; treat "not found in one
-targeted search" as exactly that.
+The first version of this section said: *"one targeted web search for the
+ratio `|F|/maxdeg`… nothing found… the related published quantity is
+diversity `|F| - maxdeg`."* **That is wrong and is withdrawn.** The
+search was one query, the conclusion drawn from it was a guess, and the
+guess was about the wrong literature.
+
+`Spread.Spread F r` is `forall T, NoDup T -> r^|T| · deg T F <= |F|`, and
+has been in this repository since the spread layer went in. At `T = [x]`
+it reads `r · deg(x) <= |F|`, i.e. **exactly `rho(F) >= r`**. So `rho` is
+the singleton clause of spreadness — the parameter `kappa` of
+[ALWZ20] Definition 1.10, which that paper notes was called *regularity*
+before them, and Definition 2.5 of [Lovett]'s PCMI notes. Both read from
+rendered pages. `StarDefect.star_defect_is_the_singleton_spread_clause`
+is the identification, machine-checked, so the retraction is a theorem
+rather than an edited paragraph.
+
+What that does to the three claims above:
+
+* **`star_defect_bound` is not new.** It is the "structured" branch of
+  the classical Erdős–Rado dichotomy, stated verbatim as [Lovett]'s
+  Lemma 2.2 with the constant `(r-1)n` — which at `r = 3` is exactly the
+  `2b` proved here — and attributed to Erdős–Rado in [ALWZ20] §1.2
+  ("much like in the original proof of Erdős and Rado"). What is new *to
+  this repository* is that the branch is exposed in per-family form: the
+  **other** branch, `SpreadReduction.elementary_spread_disjoint`, has
+  been here all along, at the neighbouring constant `2b + 1`, proved by
+  the same maximal-disjoint-cover-plus-pigeonhole argument.
+  `the_two_branches_of_the_dichotomy` now puts them side by side, which
+  is the connection the previous section should have made and did not.
+* **`star_bounded_settles_k3` is textbook in shape.** It is the
+  singleton-only case of [Lovett]'s Lemma 2.6, the reduction to spread
+  families.
+* **The unboundedness is the field's own stated motivation.** Immediately
+  before Definition 2.5, [Lovett] writes: *"Note that in the proof we
+  only used the 'structured' case where a single element belongs to many
+  sets in F. But we also could have used two elements, or three elements,
+  or any number of elements. This motivates the following definitions."*
+  Generalising from one element to sets is the whole 2020 programme, and
+  it exists because the one-element parameter is not good enough. So
+  §14.2 is a quantitative instance of a known obstruction, not a
+  discovery of one.
+
+**What may still be unrecorded, narrowly.** The exact multiplicativity
+`rho(substitute(G,H)) = rho(G)·rho(H)`, and the consequence that the
+Abbott–Hanson–Sauer tower's singleton spreadness is exactly
+`b^{log_3 2}`. That is a concrete lower bound on how spread a
+sunflower-free family can be, along an explicit infinite family rather
+than at a single parameter point — which is more than the repository's
+existing non-vacuity witnesses (`ALWZ.threshold_is_inside_the_gap`) give.
+**No claim of novelty is made for it.** Two searches and two papers read
+at the relevant pages found the framing but not this computation, and
+that is not the same as its being absent.
+
+**What is unchanged.** Every theorem in §14.1–§14.3 is still true and
+still machine-checked. The conclusion of §14.3 — that a proof of the
+conjecture cannot be a per-level estimate — also stands, and is now
+better supported: it is what the literature did next.
+
+### 14.6 The lesson, since this is the second time
+
+A one-query search is not a literature check, and the failure mode is
+specific: the search was for the *shape I had invented* (`|F|/maxdeg` as
+a ratio) rather than for the *shape the field uses* (a degree bound
+relative to family size, i.e. spreadness). Searching for one's own
+notation finds nothing by construction.
+
+The check that would have caught it in seconds was not a search at all:
+**grep the repository.** `Spread.v` defines the quantity, `TwoUniform.v`
+proves it is a maximum-degree bound at uniformity 2, and
+`SpreadReduction.v` proves the complementary branch. The rule to add:
+before claiming a quantity is unnamed, look for it in the development
+first.

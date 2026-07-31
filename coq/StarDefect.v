@@ -2,11 +2,19 @@
 
     Erdős–Rado's proof is one step iterated: find a heavy point, recurse
     into its link. [Intersecting.sunflower_free_star_bound] proves the
-    step, and this file names the quantity it bounds. Write
+    step, and this file is about the quantity it bounds. Write
 
     >  rho(F)  =  |F| / maxdeg(F)
 
     for the ratio between a family's size and its largest point degree.
+
+    **Read the last section of this file first.** [rho] is not a new
+    quantity: it is the singleton clause of *spreadness*, the parameter
+    [kappa] of Alweiss–Lovett–Wu–Zhang, and [Spread.Spread] has been in
+    this repository since the spread layer went in.
+    [star_defect_is_the_singleton_spread_clause] is that identification,
+    and it is a correction to what this header said in its first
+    version.
 
     ** Why it is the quantity to watch
 
@@ -387,4 +395,100 @@ Proof.
   intros F HU HD Hno.
   destruct (star_defect_bound 4 F ltac:(lia) HU HD Hno) as [x Hx].
   exists x; lia.
+Qed.
+
+(** ** Correction: this quantity is spreadness, and it is already here
+
+    The first version of this file called [rho] an unnamed quantity and
+    recorded a one-query literature search as evidence. That was wrong,
+    and the correction is worth a theorem rather than an edited comment.
+
+    [Spread.Spread F r] is [forall T, NoDup T -> r ^ |T| * deg T F <= |F|].
+    At [T = [x]] that is [r * deg(x) <= |F|], i.e. exactly [rho(F) >= r].
+    So **[rho] is the singleton clause of spreadness** — the parameter
+    [kappa] of Alweiss–Lovett–Wu–Zhang's Definition 1.10, which they note
+    was called *regularity* before them, and Definition 2.5 of Lovett's
+    PCMI notes. Both were read from rendered pages, not from extracted
+    text; see [docs/references.md].
+
+    Three consequences for how the rest of this file should be read.
+
+    - [star_defect_bound] is **not new**. It is the "structured" branch of
+      the classical Erdős–Rado dichotomy, stated verbatim in Lovett's
+      Lemma 2.2 with the constant [(r-1)n], which at [r = 3] is exactly
+      the [2b] here. What is new to *this repository* is only that the
+      branch is exposed in per-family form: the other branch,
+      [SpreadReduction.elementary_spread_disjoint], has been here since
+      the spread layer went in, at the neighbouring constant [2b + 1].
+      [the_two_branches_of_the_dichotomy] puts them side by side.
+
+    - [star_bounded_settles_k3] is the singleton-only case of Lovett's
+      Lemma 2.6 (reduction to spread families). Textbook in shape.
+
+    - And the unboundedness is the acknowledged reason the field
+      generalised from one element to sets: *"in the proof we only used
+      the 'structured' case where a single element belongs to many sets
+      in F. But we also could have used two elements, or three elements,
+      or any number of elements. This motivates the following
+      definitions."* — Lovett, PCMI notes, page 7, immediately before
+      Definition 2.5.
+
+    What is *not* changed by any of this is the mathematics: every
+    theorem above is still true and still machine-checked. What changes
+    is the claim about novelty, which is withdrawn, and the reading —
+    this file is the repository's Erdős–Rado layer and its spread layer
+    turning out to be the same statement at [|T| = 1]. *)
+
+Lemma deg_singleton_star : forall x F, deg [x] F = length (star x F).
+Proof.
+  intros x F; unfold deg, star.
+  f_equal; apply filter_ext_eq; intros A; apply containsb_singleton.
+Qed.
+
+Theorem star_defect_is_the_singleton_spread_clause :
+  forall F r x, Spread F r -> r * length (star x F) <= length F.
+Proof.
+  intros F r x Hs.
+  pose proof (Hs [x] (NoDup_cons x (in_nil (a := x)) (NoDup_nil nat))) as H.
+  simpl in H; rewrite Nat.mul_1_r in H.
+  rewrite deg_singleton_star in H; exact H.
+Qed.
+
+(** So [StarBounded c] says exactly that **no** sunflower-free family is
+    [(c+1)]-spread at the singleton level — a non-existence statement,
+    where the spread lemma is a size bound. That is why it is so much
+    stronger, and why it is false. *)
+
+Theorem star_bounded_refutes_spread :
+  forall c, StarBounded c ->
+    forall b F,
+      1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->
+      F <> [] -> ~ Spread F (S c).
+Proof.
+  intros c Hsb b F Hb HU HD Hno Hne Hspread.
+  destruct (Hsb b F Hb HU HD Hno) as [x Hx].
+  pose proof (star_defect_is_the_singleton_spread_clause F (S c) x Hspread) as Hsp.
+  assert (Hzero : length (star x F) = 0) by nia.
+  rewrite Hzero in Hx.
+  destruct F as [|A F']; [contradiction | simpl in Hx; lia].
+Qed.
+
+(** The dichotomy, whole: a sunflower-free family either has a heavy
+    point — [star_defect_bound], the structured branch — or is spread
+    enough to contain [k] pairwise disjoint members, which is
+    [SpreadReduction.elementary_spread_disjoint], the pseudorandom
+    branch. The constants are [2b] and [2b + 1]. The repository has had
+    the second since the spread layer went in and lacked the first; that
+    is the whole of what this file adds to the classical argument. *)
+
+Theorem the_two_branches_of_the_dichotomy :
+  (forall b (F : Family),
+      1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->
+      exists x, length F <= 2 * b * length (star x F))
+  /\ (forall n, SpreadYieldsDisjoint n 3 (2 * n + 1)).
+Proof.
+  split; [exact star_defect_bound|].
+  intros n.
+  replace (2 * n + 1) with (n * (3 - 1) + 1) by lia.
+  apply elementary_spread_disjoint; lia.
 Qed.

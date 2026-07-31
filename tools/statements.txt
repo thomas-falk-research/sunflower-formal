@@ -1201,6 +1201,15 @@ b8dee0b678ec29d4  thm StarDefect.star_bounded_gives_the_constant
 3c7e799782c62bb9  thm StarDefect.the_ratio_at_four_is_between_the_witness_and_the_ceiling
     the_ratio_at_four_is_between_the_witness_and_the_ceiling : (forall F : Family, Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 8 * length (star x F)) /\ length doubled_iota4 = 54 /\ (forall x : nat, length (star x doubled_iota4) <= 12)
 
+5efbfd55ee9fdbd8  thm StarDefect.star_defect_is_the_singleton_spread_clause
+    star_defect_is_the_singleton_spread_clause : forall (F : Family) (r x : nat), Spread F r -> r * length (star x F) <= length F
+
+5fde6e07d5cbc3bf  thm StarDefect.star_bounded_refutes_spread
+    star_bounded_refutes_spread : forall c : nat, StarBounded c -> forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> F <> nil -> ~ Spread F (S c)
+
+83593f2921eb4569  thm StarDefect.the_two_branches_of_the_dichotomy
+    the_two_branches_of_the_dichotomy : (forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 2 * b * length (star x F)) /\ (forall n : nat, SpreadYieldsDisjoint n 3 (2 * n + 1))
+
 c95930b9d05834b9  thm Audit.the_shifted_bound_at_three_is_false
     the_shifted_bound_at_three_is_false : ~ IotaShiftedAt 3
 
