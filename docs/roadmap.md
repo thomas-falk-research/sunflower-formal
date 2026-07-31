@@ -2471,3 +2471,131 @@ proves it is a maximum-degree bound at uniformity 2, and
 `SpreadReduction.v` proves the complementary branch. The rule to add:
 before claiming a quantity is unnamed, look for it in the development
 first.
+
+---
+
+## 15. What to read next, and why none of it has been read
+
+§14.5 withdrew a novelty claim that one `grep` would have prevented. The
+same audit, applied to the reading list, turns up something worse: **the
+repository's single axiom comes from an eight-page open-access paper that
+nobody here has opened.** §1 plans a three-stage campaign against Rao's
+encoding argument, in detail, without having read it.
+
+So this section is the reading list, ranked, with page counts and
+reachability checked (July 2026). None of these has been read beyond the
+pages named.
+
+### 15.1 The spread lemma has four independent proofs, and we have read none
+
+```
+  source                                     pages   reachable   read
+  [Ra20] Rao, Coding for sunflowers            8     arXiv 1909.04774, open   no
+  [Lovett] PCMI notes, §3 proof               29     IAS, open                p.7 only
+  [ALWZ20] Improved bounds                    19     arXiv 1908.08483         p.4 only
+  [MNSZ22] A second moment proof               8     arXiv 2209.11347         p.1 only
+  [BCW21] Note on sunflowers                   -     Discrete Math            no
+  [Smooth] A smoother notion of spread        12     arXiv 2106.11882         no
+```
+
+[MNSZ22] page 1 lists them: the delicate counting of [ALWZ20], refined by
+[FKNP21]; Shannon's noiseless coding theorem ([Ra20]); manipulations of
+Shannon entropy ([Tao20]); and their own truncated second moment. **Four
+routes, and the repository has planned its campaign against the one whose
+prerequisite — Shannon coding — is the worst fit for a `nat`-only
+development.**
+
+That matters for §1's scoping. Stage A's technical choice — state the
+covering step for the *product measure* so "probability" becomes plain
+cardinality over the powerset, which `Spread.subsets` already enumerates
+— is exactly right for the **counting** proof ([ALWZ20]/[FKNP21]) and for
+nothing else. The entropy and second-moment routes both need real-valued
+machinery this development does not have. So the first hour of the Rao
+campaign should be spent reading, not proving, and the target may well
+change from [Ra20] to [ALWZ20] §2 or [Lovett] §3.
+
+Read in this order, all as rendered pages: [Ra20] (it is the axiom, and it
+is eight pages), then [Lovett] §3 (self-contained and pedagogical), then
+[ALWZ20] §2 for Definition 2.1, the *weighted* spread notion the axiom is
+probably better stated against.
+
+**One question these settle that this repository has open.** §5 records:
+*"whether the `log` is necessary in the disjointness form with Rao's size
+hypothesis was looked for and not found in the literature."* [ALWZ20]
+page 4 says its own bound is sharp — *"For fixed α, β, the bound of
+`(log w)^{w(1+o(1))}` for robust sunflowers in Theorem 1.9 is sharp; it
+cannot be improved beyond `(log w)^{w(1-o(1))}`. We give an example
+demonstrating this in Lemma 3.1"* — but that is the *robust sunflower*
+form, not the disjointness form. Reading Lemma 3.1 decides whether the
+open question is open.
+
+### 15.2 [AHS72] is still unread, and three separate results rest on it
+
+`iota(3) = 10`, the substitution recursion, and the exact values `f(2,k)`
+all trace to Abbott–Hanson–Sauer 1972 (JCTA 12, 381–389). The repository
+has a *reconstruction*, corroborated against [Kup25] and confirmed by its
+own exhaustive searches, and that is genuinely good evidence — but the
+paper has been on the unread list for three sessions. It is Elsevier 1972
+and likely paywalled; if no legitimate copy is reachable, **record that
+and stop**, per the standing rule. Do not formalise anything that depends
+on a guess at its contents.
+
+### 15.3 The next campaign: two candidates, ranked
+
+**Primary — formalise `substitute` (§5 item 2).** It has quietly become
+load-bearing for *four* results rather than one:
+
+* the `g(6) >= 600` rate, which is the gap between the proved `2.714^n`
+  and the known `3.162^n`;
+* rows 5–7 of the `iota` table (§11.6), currently Rust-only;
+* §13.1's general maximality theorem — "maximality is multiplicative
+  under substitution" — which is stated about `substitute` and cannot be
+  proved without it;
+* §14.2's `rho` unboundedness, same reason.
+
+It is the only item on the list whose work is known to be finite: the
+construction decomposes as `union over A in G of (direct sum over v in A
+of H_v)`, so `DirectSum` supplies most of the machinery, and the roadmap
+has estimated it at one session for two sessions running. Doing it
+converts three computational claims into theorems and unblocks two
+negative results that are currently half-formal.
+
+**Alternate — the spread campaign (§1/M4), preceded by the reading.**
+Better motivated than it was: `StarDefect` showed that this repository's
+Erdős–Rado layer and its spread layer are the *same statement* at
+`|T| = 1` (`star_defect_is_the_singleton_spread_clause`), and
+`SpreadRestrictions` already proves the weaker interface suffices.
+Discharging `Rao20_lemma2` makes every conditional theorem here
+unconditional and makes `make coqchk` report nothing at all. Multi-session,
+and the first session is reading plus Stage A's counting layer.
+
+### 15.4 Three cheap experiments, any of which fits beside either campaign
+
+* **The full spread profile of the best-known constructions.** `rho` is
+  the `|T| = 1` clause. Measure the rest: for each family in §11.6, the
+  largest `kappa` for which it is `kappa`-spread in the full sense
+  (`deg T <= |F|/kappa^{|T|}` for all `T`). That says how close the 1972
+  construction sits to the spread lemma's *hypothesis*, which is what the
+  published tightness examples are about, and every piece of machinery it
+  needs is already written (`Spread.deg`, `ratio.rs`, the `iota` table).
+  Nobody has done it because `rho` was not identified as spreadness until
+  §14.5.
+* **The cover chain, not the degree chain** (§4, still unclaimed after
+  four sessions). §14 measured the ratio `|F|/maxdeg` down the greedy
+  chain. Erdős–Rado's actual bookkeeping is over *vertex covers of the
+  links* — at most `2(b-j)` points at level `j` — and how much consecutive
+  covers overlap is still unmeasured. That is the literal form of "are the
+  covers correlated across levels".
+* **`iota(4) >= 32` through the general row** (§13.4). Unchanged, still
+  the most concrete open target, still out of reach of branch-and-bound,
+  SAT and prescribed symmetry. The unused lever is the rigidity: at
+  `g = 16` the proved `N(3,g) <= 2g` would have to be met with equality,
+  forcing regularity and extremal links, and no encoder here knows that.
+
+### 15.5 The standing rule this section adds
+
+§14.6 says: grep the development before calling a quantity unnamed. This
+section adds the other half: **read the source of your own axiom before
+planning sessions of work against it.** Eight pages, open access, cited in
+`coq/ALWZ.v`, and the campaign built on it is the highest-value item in
+the repository.

@@ -265,6 +265,19 @@ is recorded as that.
 - **[BCW21]** T. Bell, S. Chueluecha, L. Warnke, *Note on sunflowers*.
   Discrete Mathematics 344 (2021). Refines the constant.
 
+- **[MNSZ22]** E. Mossel, J. Niles-Weed, N. Sun, I. Zadik, *A second
+  moment proof of the spread lemma*. arXiv:2209.11347, 8 pages. **Page 1
+  read from the rendered image; the proof was not read.** Recorded here
+  because its abstract enumerates what this repository needed to know
+  before scoping `docs/roadmap.md` §1: the spread lemma has **four**
+  independent proofs — *"delicate counting arguments"* ([ALWZ20],
+  refined by [FKNP21]), *"Shannon's noiseless coding theorem"*
+  ([Ra20]), *"manipulations of Shannon entropy bounds"* (Tao 2020), and
+  their own *"truncated second moment calculation"* via the planting
+  trick. §1 plans its campaign against [Ra20], whose prerequisite is the
+  worst fit of the four for a `nat`-only development; see
+  `docs/roadmap.md` §15.1.
+
 - **[Lovett]** S. Lovett, *From sunflowers to thresholds*. PCMI lecture
   series, IAS. **Read from rendered pages** (page 7), not from extracted
   text. Two things in it bear directly on `coq/StarDefect.v`, and both
