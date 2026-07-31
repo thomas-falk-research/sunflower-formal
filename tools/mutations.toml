@@ -935,3 +935,112 @@ need it, or does the uniformity come from somewhere else?"""
 find = "  forall m p F, Fresh p F -> Uniform m F -> Uniform (S m) (cone p F)."
 replace = "  forall m p F, Uniform m F -> Uniform m F -> Uniform (S m) (cone p F)."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# The sharp reformulation (coq/Sharp.v).
+#
+# Only the *weakening* direction is asked of `AHSOptimal`. Lowering the
+# constant (10 -> 9) strengthens the hypothesis, and a stronger
+# hypothesis cannot break a proof that consumes it, so such a mutation
+# would survive for reasons that say nothing about the development. What
+# pins the constant from below is not a mutation but a theorem:
+# `Audit.the_shifted_bound_at_three_is_false` refutes the base-3 form
+# outright from the witnessed iota(3) >= 10.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "sharp-flat-exponent"
+file = "coq/Sharp.v"
+question = """The sharp conjecture is iota(b)^2 <= 10^(b-1), and the shift by \
+one is the whole point: 10^((b-1)/2) is the rate iota(b)^(1/(b-1)) that the \
+substitution actually extracts, and 10^(b/2) is not. Is the shift \
+load-bearing, or would a flat 10^b do?"""
+find = "  forall b N, 1 <= b -> IotaAtLeast b N -> N * N <= 10 ^ (b - 1)."
+replace = "  forall b N, 1 <= b -> IotaAtLeast b N -> N * N <= 10 ^ b."
+expect = "killed"
+
+[[mutation]]
+id = "shifted-flat-exponent"
+file = "coq/Sharp.v"
+question = """IotaShiftedAt C is IotaRate.IotaExponential's body with the \
+exponent shifted by one, and the file's whole claim is that the shift changes \
+the statement rather than renaming the constant. Flatten it back to C^b and \
+the two coincide."""
+# The runner names coq/Sharp.v as the first file to break, and that break is
+# tactical: three `exact`s there mention the shifted shape. The *mathematical*
+# kill is one file later, and it was checked by hand rather than asserted --
+# apply the mutation, repair those three tactics (they touch no statement),
+# rebuild, and coq/Audit.v fails at `the_shifted_bound_at_three_is_false` with
+# `lia` unable to find a witness: without the shift that theorem asks for
+# iota(3) > 3^3 = 27, and the witness gives only 10. So the statement is false,
+# not merely mis-scripted. Recorded here because "the check would have caught
+# it" is a claim, and an unrun claim is worth what an untested proof is.
+find = "  forall b, 1 <= b -> IotaAtMost b (C ^ (b - 1))."
+replace = "  forall b, 1 <= b -> IotaAtMost b (C ^ b)."
+expect = "killed"
+
+# ----------------------------------------------------------------
+# The maximality reduction (coq/Maximal.v).
+#
+# `maximal_of_trace_certificate` turns a `forallb` over the sublists of
+# one ground set into a statement quantified over *every* list. Two
+# hypotheses carry that, and neither is obvious.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "maximal-drop-grounded"
+file = "coq/Maximal.v"
+question = """The trace reduction says a candidate interacts with the family \
+only through its trace on the ground set the family already uses. That needs \
+the family to *be* on that ground set: without `Grounded F U` the certificate \
+is a computation about a set of points the members may not live in, and the \
+common point of the candidate and a member need not land in the trace at all. \
+Is the hypothesis load-bearing?"""
+find = """    NoDup U -> Grounded F U ->
+    trace_certificate b F U = true ->"""
+replace = """    NoDup U ->
+    trace_certificate b F U = true ->"""
+expect = "killed"
+
+[[mutation]]
+id = "maximalintersecting-drop-intersecting"
+file = "coq/Maximal.v"
+question = """MaximalIntersecting says no b-set can be added keeping the family \
+uniform, distinct and intersecting. Drop the intersecting clause and it claims \
+no b-set can be added at all, which is false for every family -- and the trace \
+argument has nothing left to consume, since intersecting-ness is exactly what \
+puts a common point into the trace. Is the clause doing the work?"""
+find = "    Uniform b (A :: F) -> Distinct (A :: F) -> Intersecting (A :: F) -> False."
+replace = "    Uniform b (A :: F) -> Distinct (A :: F) -> False."
+expect = "killed"
+
+# ----------------------------------------------------------------
+# The Erdős–Rado ratio (coq/StarDefect.v).
+#
+# The whole file turns on one number: the factor by which a family
+# exceeds its largest point degree. Both mutations ask whether that
+# number is where the content is.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "starbounded-per-uniformity"
+file = "coq/StarDefect.v"
+question = """StarBounded asks for a constant factor. Erdős–Rado already \
+proves the factor 2b, so if the definition quietly allowed the factor to \
+depend on the uniformity it would be a theorem rather than a hypothesis, and \
+star_bounded_settles_k3 would be deriving the sunflower conjecture from \
+something already known. Is the uniformity-independence load-bearing?"""
+find = "    1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->\n    exists x, length F <= c * length (star x F)."
+replace = "    1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->\n    exists x, length F <= c * b * length (star x F)."
+expect = "killed"
+
+[[mutation]]
+id = "stardefect-drop-factor-two"
+file = "coq/StarDefect.v"
+question = """The factor 2 in star_defect_bound is the two members a maximal \
+pairwise-disjoint subfamily may have -- three would be a sunflower. Drop it \
+and the claim is that some point lies in |F|/b members, which two_triangles \
+refutes at b = 2 (six members, maximum degree two). Does the proof notice?"""
+find = "    exists x, length F <= 2 * b * length (star x F)."
+replace = "    exists x, length F <= b * length (star x F)."
+expect = "killed"

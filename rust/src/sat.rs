@@ -354,22 +354,44 @@ fn scratch_dir() -> PathBuf {
 /// `intersecting::verify`, which shares no code with this module; a model
 /// that does not check out is a hard error rather than a result.
 pub fn solve(inst: &Instance, solver: Solver, seconds: u64) -> std::io::Result<Verdict> {
-    // The name has to be unique per call, not per question: two
-    // instances of the same shape are solved concurrently by the test
-    // suite, and sharing a path silently corrupts both.
+    let tag = format!("{}-{}-{}", inst.ground, inst.b, inst.target);
+    let text = run_solver(&inst.cnf, solver, seconds, &tag)?;
+
+    let verdict = parse_output(&text, inst, solver);
+    if let Verdict::Sat(ref fam) = verdict {
+        crate::intersecting::verify(fam, inst.b, inst.intersecting)
+            .unwrap_or_else(|e| panic!("{} returned a bad model: {e}", solver.binary()));
+        assert!(
+            fam.len() >= inst.target,
+            "{} returned a model of size {} below the target {}",
+            solver.binary(),
+            fam.len(),
+            inst.target
+        );
+    }
+    Ok(verdict)
+}
+
+/// Write a CNF, run one solver on it, and return its raw output.
+///
+/// Split out of [`solve`] so that questions whose variables are *not*
+/// "one boolean per `b`-set" can use the same plumbing --
+/// `extend::addable` asks about one boolean per ground *point*. The
+/// temp-file name carries the process id and an atomic sequence number
+/// because the test suite solves several instances of the same shape
+/// concurrently, and a shared path silently corrupts both.
+fn run_solver(cnf: &Cnf, solver: Solver, seconds: u64, tag: &str) -> std::io::Result<String> {
     static SEQ: AtomicU64 = AtomicU64::new(0);
     let dir = scratch_dir();
     let stamp = format!(
-        "sf-{}-{}-{}-{}-{}-{}",
-        inst.ground,
-        inst.b,
-        inst.target,
+        "sf-{}-{}-{}-{}",
+        tag,
         solver.binary(),
         std::process::id(),
         SEQ.fetch_add(1, Ordering::Relaxed)
     );
     let cnf_path = dir.join(format!("{stamp}.cnf"));
-    std::fs::write(&cnf_path, inst.cnf.to_dimacs())?;
+    std::fs::write(&cnf_path, cnf.to_dimacs())?;
     let out_path = dir.join(format!("{stamp}.out"));
 
     let mut cmd = Command::new(solver.binary());
@@ -408,20 +430,93 @@ pub fn solve(inst: &Instance, solver: Solver, seconds: u64) -> std::io::Result<V
     };
     let _ = std::fs::remove_file(&cnf_path);
     let _ = std::fs::remove_file(&out_path);
+    Ok(text)
+}
 
-    let verdict = parse_output(&text, inst, solver);
-    if let Verdict::Sat(ref fam) = verdict {
-        crate::intersecting::verify(fam, inst.b, inst.intersecting)
-            .unwrap_or_else(|e| panic!("{} returned a bad model: {e}", solver.binary()));
-        assert!(
-            fam.len() >= inst.target,
-            "{} returned a model of size {} below the target {}",
-            solver.binary(),
-            fam.len(),
-            inst.target
-        );
+/// A verdict on a bare CNF: the assignment is indexed by `variable - 1`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RawVerdict {
+    Sat(Vec<bool>),
+    Unsat,
+    Unknown,
+}
+
+impl RawVerdict {
+    pub fn label(&self) -> &'static str {
+        match self {
+            RawVerdict::Sat(_) => "SAT",
+            RawVerdict::Unsat => "UNSAT",
+            RawVerdict::Unknown => "UNKNOWN",
+        }
     }
-    Ok(verdict)
+}
+
+/// Solve a bare CNF. **The caller must verify the model**: nothing here
+/// knows what the variables mean, so nothing here can check them.
+pub fn solve_cnf(cnf: &Cnf, solver: Solver, seconds: u64, tag: &str) -> std::io::Result<RawVerdict> {
+    let text = run_solver(cnf, solver, seconds, tag)?;
+    Ok(parse_raw(&text, cnf.nvars, solver))
+}
+
+/// Two independent solvers, and a verdict only when they agree — the
+/// same discipline [`solve_agreed`] applies, for the raw form. UNSAT is
+/// the verdict no witness can confirm, so it is the one that needs it.
+pub fn solve_cnf_agreed(
+    cnf: &Cnf,
+    a: Solver,
+    b: Solver,
+    seconds: u64,
+    tag: &str,
+) -> std::io::Result<RawVerdict> {
+    let va = solve_cnf(cnf, a, seconds, tag)?;
+    let vb = solve_cnf(cnf, b, seconds, tag)?;
+    match (&va, &vb) {
+        (RawVerdict::Unknown, _) | (_, RawVerdict::Unknown) => Ok(RawVerdict::Unknown),
+        (RawVerdict::Unsat, RawVerdict::Unsat) => Ok(RawVerdict::Unsat),
+        (RawVerdict::Sat(_), RawVerdict::Sat(_)) => Ok(va),
+        _ => panic!(
+            "solvers disagree on {tag}: {} says {}, {} says {}",
+            a.binary(),
+            va.label(),
+            b.binary(),
+            vb.label()
+        ),
+    }
+}
+
+fn parse_raw(text: &str, nvars: usize, solver: Solver) -> RawVerdict {
+    if solver == Solver::Minisat {
+        match text.lines().next().map(str::trim) {
+            Some("UNSAT") => return RawVerdict::Unsat,
+            Some("SAT") => {}
+            _ => return RawVerdict::Unknown,
+        }
+    } else if text.contains("s UNSATISFIABLE") {
+        return RawVerdict::Unsat;
+    } else if !text.contains("s SATISFIABLE") {
+        return RawVerdict::Unknown;
+    }
+    let mut assign = vec![false; nvars];
+    for line in text.lines() {
+        let body = if solver == Solver::Minisat {
+            if line.trim() == "SAT" {
+                continue;
+            }
+            line
+        } else if let Some(rest) = line.strip_prefix("v ") {
+            rest
+        } else {
+            continue;
+        };
+        for tok in body.split_whitespace() {
+            if let Ok(v) = tok.parse::<i32>() {
+                if v > 0 && (v as usize) <= nvars {
+                    assign[v as usize - 1] = true;
+                }
+            }
+        }
+    }
+    RawVerdict::Sat(assign)
 }
 
 fn parse_output(text: &str, inst: &Instance, solver: Solver) -> Verdict {

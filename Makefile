@@ -146,6 +146,23 @@ test: rust
 # degree bound b|F| <= g N(b-1,g-1) and, at the rows where that is met
 # with equality, that the extremal family really is regular.
 #
+# The seventh is the standing falsification target for the sharp
+# conjecture iota(b)^2 <= 10^(b-1): it tabulates the threshold at every
+# uniformity, rebuilds every construction the repository has and
+# re-verifies it, and asserts that none of them refutes.
+#
+# The ninth falsifies coq/StarDefect.v: the greedy chain telescopes, the
+# ratio |F|/maxdeg is exactly multiplicative under the substitution and
+# therefore unbounded, every family respects the proved ceilings 2b and
+# b, and the two numbers the Coq witness rests on are checked against a
+# family rebuilt rather than quoted.
+#
+# The eighth falsifies coq/Maximal.v: the trace reduction is checked
+# against rebuilding the extended family, the maximality verdict is taken
+# twice by independent methods, the multiplicativity of the covering
+# number is pinned, and the "maximal is not maximum" witnesses are
+# checked before they were transcribed into Coq.
+#
 # The sixth falsifies coq/Product.v: the cone, on every sunflower-free
 # family in range, against a checker that knows nothing about cones; the
 # closed forms for iota that the data refutes, as assertions; the
@@ -159,6 +176,9 @@ testbed:
 	cd rust && cargo test --release --test iota_sandwich -- --nocapture
 	cd rust && cargo test --release --test iota_ground -- --nocapture
 	cd rust && cargo test --release --test iota_structure -- --nocapture
+	cd rust && cargo test --release --test sharp_conjecture -- --nocapture
+	cd rust && cargo test --release --test extension -- --nocapture
+	cd rust && cargo test --release --test star_defect -- --nocapture
 
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.

@@ -1108,6 +1108,117 @@ ca68011c2dd22274  thm Product.lower_bound_4_3_54
 c0ab5c335131a51e  thm Product.the_rate_at_four_does_not_beat_the_rate_at_three
     the_rate_at_four_does_not_beat_the_rate_at_three : forall t : nat, 1 <= t -> PeanoNat.Nat.pow 54 (3 * t) < PeanoNat.Nat.pow 20 (4 * t)
 
+b5c048c2d332857c  thm Sharp.iota_exponential_shifted_iff
+    iota_exponential_shifted_iff : IotaExponentialShifted <-> IotaExponential
+
+14a0f512e696eb0f  thm Sharp.conjecture_k_3_iff_iota_shifted
+    conjecture_k_3_iff_iota_shifted : sunflower_conjecture_k_3 <-> IotaExponentialShifted
+
+ceb44ae68009fa8b  thm Sharp.sharp_bounds_iota
+    sharp_bounds_iota : AHSOptimal -> forall b M : nat, 1 <= b -> PeanoNat.Nat.pow 10 (b - 1) < S M * S M -> IotaAtMost b M
+
+e84d445382cef853  thm Sharp.sharp_gives_base_four
+    sharp_gives_base_four : AHSOptimal -> IotaShiftedAt 4
+
+3d3df230f24837d5  thm Sharp.sharp_gives_iota_shifted
+    sharp_gives_iota_shifted : AHSOptimal -> IotaExponentialShifted
+
+541075bd6c8462ba  thm Sharp.sharp_settles_k3
+    sharp_settles_k3 : AHSOptimal -> sunflower_conjecture_k_3
+
+79d3d0cda9a0162e  thm Sharp.sharp_gives_the_constant
+    sharp_gives_the_constant : AHSOptimal -> forall n : nat, 1 <= n -> UpperBound n 3 (S (PeanoNat.Nat.pow 8 n))
+
+9761c11a79422e54  thm Sharp.sharp_forces_iota_four_at_most_31
+    sharp_forces_iota_four_at_most_31 : AHSOptimal -> IotaAtMost 4 31
+
+aa02378f19e280ec  thm Sharp.sharp_beats_erdos_rado_at_three
+    sharp_beats_erdos_rado_at_three : AHSOptimal -> UpperBound 3 3 32 /\ ~ UpperBound 3 3 20 /\ 32 < 49
+
+052400513a28e226  thm Sharp.sharp_forces_iota_three_exactly_ten
+    sharp_forces_iota_three_exactly_ten : AHSOptimal -> IotaAtMost 3 10 /\ IotaAtLeast 3 10
+
+d6793ca0576a484c  thm Sharp.refutation_threshold
+    refutation_threshold : forall b N : nat, 1 <= b -> IotaAtLeast b N -> PeanoNat.Nat.pow 10 (b - 1) < N * N -> ~ AHSOptimal
+
+c3f5da6a5feb07c6  thm Sharp.iota_four_at_least_32_refutes
+    iota_four_at_least_32_refutes : IotaAtLeast 4 32 -> ~ AHSOptimal
+
+bbc3b7e247254515  thm Sharp.iota_six_at_least_317_refutes
+    iota_six_at_least_317_refutes : IotaAtLeast 6 317 -> ~ AHSOptimal
+
+0959bddb386beabe  thm Sharp.the_tower_misses_by_exactly_one
+    the_tower_misses_by_exactly_one : forall j : nat, IotaAtLeast (2 * j + 1) (S (PeanoNat.Nat.pow 10 j)) -> ~ AHSOptimal
+
+8d413d88eb23db6d  thm Sharp.iota_nine_at_least_10001_refutes
+    iota_nine_at_least_10001_refutes : IotaAtLeast 9 (Nat.of_num_uint (Number.UIntDecimal (Decimal.D1 (Decimal.D0 (Decimal.D0 (Decimal.D0 (Decimal.D1 Decimal.Nil))))))) -> ~ AHSOptimal
+
+b77fa6e6c41de05e  thm Sharp.the_sharp_bound_is_attained_at_three
+    the_sharp_bound_is_attained_at_three : 10 * 10 = PeanoNat.Nat.pow 10 (3 - 1) /\ (IotaAtLeast 3 11 -> ~ AHSOptimal)
+
+1041aa89ea52e4ba  thm Sharp.the_witnessed_values_are_inside_the_sharp_bound
+    the_witnessed_values_are_inside_the_sharp_bound : 3 * 3 <= PeanoNat.Nat.pow 10 (2 - 1) /\ 10 * 10 <= PeanoNat.Nat.pow 10 (3 - 1) /\ 27 * 27 <= PeanoNat.Nat.pow 10 (4 - 1)
+
+1055ba83b0da091b  thm Maximal.maximal_intersecting_is_maximal_iota
+    maximal_intersecting_is_maximal_iota : forall (b : nat) (F : Family), MaximalIntersecting b F -> forall A : list nat, Uniform b (A :: F)%list -> Distinct (A :: F)%list -> Intersecting (A :: F)%list -> ~ ContainsKSunflower 3 (A :: F)%list -> False
+
+999a2bc90b230e5d  thm Maximal.maximal_of_trace_certificate
+    maximal_of_trace_certificate : forall (b : nat) (F : Family) (U : list nat), List.NoDup U -> Grounded F U -> trace_certificate b F U = true -> MaximalIntersecting b F
+
+3478701be776b859  thm Maximal.iota4_is_maximal_intersecting
+    iota4_is_maximal_intersecting : MaximalIntersecting 4 iota4
+
+a755d241f1bf9e7a  thm Maximal.iota4_covering_number_is_four
+    iota4_covering_number_is_four : (forall T : list nat, List.In T (sublists (List.seq 0 9)) -> blocksb T iota4 = true -> 4 <= length T) /\ blocksb (0 :: 1 :: 2 :: 3 :: nil) iota4 = true
+
+a7d5baa1bbc23684  thm Maximal.fano_is_maximal_intersecting
+    fano_is_maximal_intersecting : MaximalIntersecting 3 fano
+
+6767cfaa777787c4  thm Maximal.maximality_is_not_a_size_bound
+    maximality_is_not_a_size_bound : MaximalIntersecting 3 fano /\ length fano = 7 /\ Uniform 3 iota3 /\ Distinct iota3 /\ Intersecting iota3 /\ length iota3 = 10 /\ 7 < 10
+
+c883e7b818708eaf  thm Maximal.regular_intersecting_ground_bound
+    regular_intersecting_ground_bound : forall (b : nat) (F : Family) (U : list nat) (d : nat), 1 <= b -> F <> nil -> List.NoDup U -> Uniform b F -> Intersecting F -> Grounded F U -> (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) = d) -> length U <= b * b
+
+3af0bfc2925dba6d  thm StarDefect.star_defect_bound
+    star_defect_bound : forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 2 * b * length (star x F)
+
+ab2392a70b3b135f  thm StarDefect.star_step
+    star_step : forall c b M : nat, StarBounded c -> GAtMost b M -> GAtMost (S b) (c * M)
+
+7e319f0ab07ad51b  thm StarDefect.star_bounded_gives_explicit_bound
+    star_bounded_gives_explicit_bound : forall c b : nat, StarBounded c -> 1 <= b -> GAtMost b (2 * PeanoNat.Nat.pow c (b - 1))
+
+61f26c099b8be847  thm StarDefect.star_bounded_settles_k3
+    star_bounded_settles_k3 : forall c : nat, StarBounded c -> sunflower_conjecture_k_3
+
+b8dee0b678ec29d4  thm StarDefect.star_bounded_gives_the_constant
+    star_bounded_gives_the_constant : forall c : nat, StarBounded c -> forall n : nat, 1 <= n -> UpperBound n 3 (S (PeanoNat.Nat.pow (2 * c) n))
+
+566d5f0d4bb1b25d  thm StarDefect.star_bounded_needs_c_at_least_five
+    star_bounded_needs_c_at_least_five : forall c : nat, StarBounded c -> 5 <= c
+
+3c7e799782c62bb9  thm StarDefect.the_ratio_at_four_is_between_the_witness_and_the_ceiling
+    the_ratio_at_four_is_between_the_witness_and_the_ceiling : (forall F : Family, Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 8 * length (star x F)) /\ length doubled_iota4 = 54 /\ (forall x : nat, length (star x doubled_iota4) <= 12)
+
+5efbfd55ee9fdbd8  thm StarDefect.star_defect_is_the_singleton_spread_clause
+    star_defect_is_the_singleton_spread_clause : forall (F : Family) (r x : nat), Spread F r -> r * length (star x F) <= length F
+
+5fde6e07d5cbc3bf  thm StarDefect.star_bounded_refutes_spread
+    star_bounded_refutes_spread : forall c : nat, StarBounded c -> forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> F <> nil -> ~ Spread F (S c)
+
+83593f2921eb4569  thm StarDefect.the_two_branches_of_the_dichotomy
+    the_two_branches_of_the_dichotomy : (forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= 2 * b * length (star x F)) /\ (forall n : nat, SpreadYieldsDisjoint n 3 (2 * n + 1))
+
+c95930b9d05834b9  thm Audit.the_shifted_bound_at_three_is_false
+    the_shifted_bound_at_three_is_false : ~ IotaShiftedAt 3
+
+e45b398398d70244  thm Audit.bounds_coherent_sharp
+    bounds_coherent_sharp : AHSOptimal -> 20 < 32
+
+83ceb270f49c2f69  thm Audit.the_sharp_bound_narrows_iota_four
+    the_sharp_bound_narrows_iota_four : AHSOptimal -> ~ IotaAtMost 4 26 /\ IotaAtMost 4 192 /\ IotaAtMost 4 31 /\ 26 < 31 < 192
+
 9bf9ee3e84826fe3  thm Audit.cone_needs_freshness
     cone_needs_freshness : ~ Uniform 3 (cone 0 triangle) /\ Uniform 3 (cone 3 triangle) /\ Fresh 3 triangle /\ ~ Fresh 0 triangle
 
@@ -1122,6 +1233,27 @@ b221185f3b496716  thm Audit.the_cone_route_beats_the_direct_sum_at_four
 
 aadaa2af67327fb9  thm Audit.the_ground_hypotheses_are_not_independent_after_all
     the_ground_hypotheses_are_not_independent_after_all : forall c : nat, (GroundBounded c -> IotaGroundBounded c) /\ (IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 2 c) (m + 1))
+
+50bd3807ef83d62c  def StarDefect.StarBounded
+    StarBounded = fun c : nat => forall (b : nat) (F : Family), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> exists x : nat, length F <= c * length (star x F) : nat -> Prop Arguments StarBounded c%nat_scope
+
+3599a40410073e6c  def StarDefect.maxdeg_over
+    maxdeg_over = fun (X : list nat) (F : Family) => List.fold_right (fun x acc : nat => PeanoNat.Nat.max (length (star x F)) acc) 0 X : list nat -> Family -> nat Arguments maxdeg_over X%list_scope F
+
+07f7f8c941b32c4a  def Maximal.MaximalIntersecting
+    MaximalIntersecting = fun (b : nat) (F : Family) => forall A : list nat, Uniform b (A :: F)%list -> Distinct (A :: F)%list -> Intersecting (A :: F)%list -> False : nat -> Family -> Prop Arguments MaximalIntersecting b%nat_scope F
+
+accc23b5b3c621f2  def Maximal.trace_certificate
+    trace_certificate = fun (b : nat) (F : Family) (U : list nat) => List.forallb (fun T : list nat => implb (PeanoNat.Nat.leb (length T) b && blocksb T F) (PeanoNat.Nat.eqb (length T) b && List.existsb (fun B : list nat => seteqb T B) F)) (sublists U) : nat -> Family -> list nat -> bool Arguments trace_certificate b%nat_scope F U%list_scope
+
+43c285a26a9b8526  def Sharp.IotaShiftedAt
+    IotaShiftedAt = fun C : nat => forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow C (b - 1)) : nat -> Prop Arguments IotaShiftedAt C%nat_scope
+
+0fc9a8154740189b  def Sharp.IotaExponentialShifted
+    IotaExponentialShifted = exists C : nat, IotaShiftedAt C : Prop
+
+43bf75d3a443b28a  def Sharp.AHSOptimal
+    AHSOptimal = forall b N : nat, 1 <= b -> IotaAtLeast b N -> N * N <= PeanoNat.Nat.pow 10 (b - 1) : Prop
 
 4429e702e5ad832f  def Product.IotaAtLeast
     IotaAtLeast = fun b N : nat => exists H : Family, Uniform b H /\ Distinct H /\ Intersecting H /\ length H = N /\ ~ ContainsKSunflower 3 H : nat -> nat -> Prop Arguments IotaAtLeast (b N)%nat_scope

@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-60 mutations, all with the outcome the manifest declares: 57 killed
+66 mutations, all with the outcome the manifest declares: 63 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -887,3 +887,114 @@ sum's 12 at the same uniformity. `N(3,6) = 10` exactly — the seed is a
 maximum on *six* points and the direct sum's 12 lives on eight. Two
 different quantities, no contradiction, and the note said otherwise
 until something computed both.
+
+### A seventh: a target with a number in it
+
+`rust/tests/sharp_conjecture.rs` is not falsification of a statement
+about to be proved. It is the *target* `coq/Sharp.v` names — the sharp
+conjecture `iota(b)^2 <= 10^(b-1)`, i.e. that Abbott–Hanson–Sauer is
+optimal — kept in a form a future session can check against in one line.
+
+Three jobs, and the third is the one that earns it a place here.
+
+* **The thresholds are tabulated and pinned.** `threshold(b)` is the
+  least family size at uniformity `b` that refutes; the values at
+  `b = 4..9` are written out by hand *and* computed, because a threshold
+  table that silently drifted is exactly the failure mode a future
+  session would not notice. The integer square root is by bisection with
+  an upper limit that has to clear `10^(b-1)` at the largest `b` any
+  caller uses — the first version returned a plausible wrong answer at
+  `b = 27` rather than failing.
+* **Every construction is rebuilt, not quoted.** The rows of the `iota`
+  table are reconstructed from their seeds and re-verified by
+  `structure::verify_128` before being measured against the threshold.
+* **None of them refutes, and that is asserted.** It is forced — the
+  substitution's own fixed point is `10^(1/2)` — so the assertion is
+  there to stop a bigger number being mistaken for a better rate. The
+  `b = 8` row of `docs/roadmap.md` §11.6 is *not* rebuilt, and its
+  absence from the rebuilt list is asserted too, because it is recorded
+  there as unverified.
+
+### An eighth: the maximality campaign, checked three ways
+
+`rust/tests/extension.rs` is the falsification suite for
+`coq/Maximal.v`, and it exists because the campaign's answer is a
+negative — "nothing can be added" — which is the kind of answer that is
+easiest to get wrong by asking the wrong question.
+
+* **The reduction is checked, not assumed.** The whole method rests on a
+  candidate interacting with the family only through its trace on the
+  support. So for every trace of the small rows — 327 of them, a count
+  that is pinned — the trace verdict is checked against *actually
+  building* the extended family and handing it to
+  `structure::verify_128`. If the reduction were wrong the two would
+  disagree.
+* **The verdict is taken twice.** A minimal-hitting-set enumeration and
+  a brute-force trace walk must agree; the third method, SAT with two
+  solvers required to agree on UNSAT, lives in
+  `examples/extend_ahs.rs` because it shells out. At `b = 9`, where
+  10,000 members are built and 10,001 would beat 1972, the brute force
+  is `1.4e8` traces and is not run — so that row is the hitting-set
+  method cross-checked against SAT, and the test says so.
+* **The mechanism is pinned, not just the answer.** `tau` of each
+  substitution family equals its uniformity *and* equals the product of
+  the factors' covering numbers. That multiplicativity is why the answer
+  is no, so a construction that changed would show up here rather than as
+  a different verdict.
+* **And the counter-reading is pinned too.** Maximal is not maximum: the
+  Fano plane is maximal intersecting with seven members against
+  `iota(3) = 10`, and a six-member maximal intersecting *sunflower-free*
+  family exists. Both were found here and checked here before being
+  transcribed into Coq.
+
+One entry runs in the other order and says so in the file:
+`Maximal.regular_intersecting_ground_bound` was proved before it was
+enumerated — it is three lines from `Pigeonhole.pigeonhole_family` and
+was written as the explanation of a measurement rather than as a
+conjecture. The enumeration was added afterwards and found no
+counterexample, which is weaker evidence than the usual order gives.
+
+### A ninth: a measurement that was already there, and was being read wrong
+
+`rust/tests/star_defect.rs` is the falsification suite for
+`coq/StarDefect.v`, and it is the one entry here that exists because an
+*existing* check was being over-read.
+
+`rust/tests/iota_sandwich.rs` has pinned the worst observed
+`|F| / maxdeg(F)` per uniformity since the sandwich went in — 2, 3, 2.75
+against the proved 2, 4, 6 — as evidence of how loose the `2b` factor is.
+Read one way that row is a curiosity. Read another it is the whole
+conjecture: a *constant* bound on that ratio gives `g(b) <= c g(b-1)` and
+hence `c^b`. Nobody had asked whether it stays flat.
+
+It does not, and the suite is built to make the refutation checkable
+rather than plausible:
+
+* **The chain identity is checked, not assumed.** `|F|` is the product of
+  the ratios down the greedy chain — checked as a *telescope* (each
+  level's maximum degree is the next level's size) rather than as a
+  running product, because the individual ratios are not integers and an
+  integer product silently truncates. The first version of the example
+  did truncate, and printed `24` where the family has 27 members.
+* **Multiplicativity is checked in exact rational arithmetic.**
+  `rho(G) rho(H) = rho(substitute(G,H))` is asserted as
+  `gn * hn * fden == fnum * gd * hd`, never as a float comparison, on all
+  six buildable pairs.
+* **The tower is built, not extrapolated.** `rho = 4` at `b = 9` is
+  measured on the actual 10,000-member family, which is re-verified by
+  `structure::verify_128` first. The `b = 27` row has `10^13` members and
+  is arithmetic only; the test asserts that it is out of reach rather
+  than quietly skipping it.
+* **The proved ceilings are checked on everything.** `rho <= 2b` for
+  sunflower-free and `rho <= b` for intersecting families, on nine
+  constructions. A violation would be a counterexample to
+  `Intersecting.sunflower_free_star_bound` or to
+  `Intersecting.intersecting_link_bound`, so this is a differential test
+  against the Coq side rather than a sanity check.
+* **The two numbers the Coq rests on are rebuilt.**
+  `StarDefect.star_bounded_needs_c_at_least_five` uses exactly `54` and
+  `12`; both are recomputed here from the seed.
+
+The suite ran before any of `coq/StarDefect.v` was written, which is the
+order the rest of this document asks for and the order the previous
+entry did not manage.

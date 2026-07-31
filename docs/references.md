@@ -241,6 +241,19 @@ is recorded as that.
   Establishes $f(n, k) \leq (C k \log n)^n$, replacing the $n!$
   factor.
 
+  **Definition 1.10, read from the rendered page 4**: *"We say that a
+  $w$-set system $\mathcal F$ is $\kappa$-spread if
+  $|\mathcal F| \ge \kappa^w$ and
+  $|\mathcal F_T| \le \kappa^{-|T|}|\mathcal F|$ for all non-empty
+  $T$"*, followed by *"The paper [16] calls these 'regular set systems',
+  but we use the more descriptive term 'spread'."* So the notion predates
+  the paper. The same page states the dichotomy in the form this
+  repository re-derived: *"either $\mathcal F$ is $\kappa$-spread, or
+  there is a link $\mathcal F_T$ of size
+  $|\mathcal F_T| \ge \kappa^{w-|T|}$. In the latter 'structured' case,
+  we can simply pass to the link and apply induction, much like in the
+  original proof of Erdős and Rado."* See `docs/roadmap.md` §14.5.
+
 - **[Ra20]** A. Rao, *Coding for sunflowers*. Discrete Analysis 2020.
   arXiv 1909.04774. Alternative proof with similar bound.
 
@@ -251,6 +264,55 @@ is recorded as that.
 
 - **[BCW21]** T. Bell, S. Chueluecha, L. Warnke, *Note on sunflowers*.
   Discrete Mathematics 344 (2021). Refines the constant.
+
+- **[MNSZ22]** E. Mossel, J. Niles-Weed, N. Sun, I. Zadik, *A second
+  moment proof of the spread lemma*. arXiv:2209.11347, 8 pages. **Page 1
+  read from the rendered image; the proof was not read.** Recorded here
+  because its abstract enumerates what this repository needed to know
+  before scoping `docs/roadmap.md` §1: the spread lemma has **four**
+  independent proofs — *"delicate counting arguments"* ([ALWZ20],
+  refined by [FKNP21]), *"Shannon's noiseless coding theorem"*
+  ([Ra20]), *"manipulations of Shannon entropy bounds"* (Tao 2020), and
+  their own *"truncated second moment calculation"* via the planting
+  trick. §1 plans its campaign against [Ra20], whose prerequisite is the
+  worst fit of the four for a `nat`-only development; see
+  `docs/roadmap.md` §15.1.
+
+- **[Lovett]** S. Lovett, *From sunflowers to thresholds*. PCMI lecture
+  series, IAS. **Read from rendered pages** (page 7), not from extracted
+  text. Two things in it bear directly on `coq/StarDefect.v`, and both
+  correct a claim this repository made.
+
+  1. **Definition 2.5 (Spread family)**: *"Let `F` be a family of sets,
+     and let `k > 1`. We say that `F` is `k`-spread if for every set
+     `T`, `|F_T| <= |F|/k^{|T|}`."* At `|T| = 1` that is
+     `maxdeg(F) <= |F|/k`, i.e. exactly the ratio `rho(F) = |F|/maxdeg(F)`
+     being at least `k`. So `rho` is the singleton clause of spreadness,
+     which is `Spread.Spread` in this development and has been since the
+     spread layer went in. `docs/roadmap.md` §14.5 withdraws the claim
+     that it was an unnamed quantity;
+     `StarDefect.star_defect_is_the_singleton_spread_clause` is the
+     identification as a theorem.
+
+  2. **Lemma 2.2 (Sunflower lemma, again)** proves Erdős–Rado by the
+     dichotomy this repository re-derived: with `k = (r-1)n`, either some
+     element lies in a `1/k`-fraction of the sets — recurse into its link
+     — or every element lies in strictly fewer, and then a maximal
+     pairwise-disjoint subfamily must have `r` members. At `r = 3` the
+     constant `(r-1)n` is exactly the `2b` of
+     `StarDefect.star_defect_bound` and one below the `2b+1` of
+     `SpreadReduction.elementary_spread_disjoint`, which is the other
+     branch and was already here.
+
+  And the sentence that says why the singleton parameter cannot be a
+  constant, immediately before Definition 2.5: *"Note that in the proof
+  we only used the 'structured' case where a single element belongs to
+  many sets in `F`. But we also could have used two elements, or three
+  elements, or any number of elements. This motivates the following
+  definitions."* Generalising from one element to sets is the whole 2020
+  programme. The earlier note recorded here — that the word
+  "intersecting" does not occur in these notes — stands and is
+  unaffected.
 
 - **[Hu]** L. Hu, exposition/blog streamlining the proof.
 

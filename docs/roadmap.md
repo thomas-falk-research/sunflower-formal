@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 60 anecdotes into a coverage metric over the
+  mutation testing from 66 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -1982,3 +1982,620 @@ families every intermediate core is already tight.
 * **`iota(4,10)`, with the cost understood.** It is worth what a new
   bound on `f(3,3)` is worth, which is a lot; it is not worth attacking
   with a bigger budget for the same search.
+
+---
+
+## 12. The sharp reformulation, and a target with a number in it
+
+§11 restates the conjecture at `k = 3` as `L = sup_b iota(b)^(1/b) < infinity`.
+That is the wrong normalisation, and `coq/Sharp.v` fixes it.
+
+### 12.1 Why the exponent is `1/(b-1)`
+
+The substitution `iota(ab) >= iota(a) iota(b)^a` — verified in
+`rust/tests/intersecting.rs`, still not formalised — iterated at `b^k`
+extracts a rate of `iota(b)^(1/(b-1))` per point, not `iota(b)^(1/b)`.
+The 1972 constant is a value of *that* sequence: `10^(1/2)` is
+`iota(3)^(1/(3-1))`. So the sequence to watch is
+
+```
+  b      1      2      3       4
+  iota   1      3     10      27   (on nine points, exhaustive)
+  rate   -   3.000  3.162   3.000
+```
+
+and the conjecture at `k = 3` is that it is bounded.
+
+**Formalised, as an equivalence** (`Sharp.conjecture_k_3_iff_iota_shifted`):
+
+```
+  sunflower_conjecture_k_3   <->   exists C, forall b >= 1, iota(b) <= C^(b-1)
+```
+
+Both directions are arithmetic on top of
+`IotaRate.conjecture_k_3_iff_iota_exponential`; the constant moves by a
+square in one direction and by one in the other. The **substitution is not
+needed** for the equivalence — it is needed only to know that `1/(b-1)` is
+the exponent the constructions actually achieve, which is a statement about
+lower bounds and is not claimed there.
+
+The shift is not a reindexing, and there is a theorem saying so.
+`Audit.the_shifted_bound_at_three_is_false` proves `~ IotaShiftedAt 3`:
+the base-3 form is refuted outright by the witnessed `iota(3) >= 10`
+against `3^2 = 9`. The unshifted form at base 3 is *not* refuted by that
+family (`10 <= 27`). So in the shifted normalisation the base is at least
+4, which is the finitistic content of "`L > 3`, and the value conjectured
+is `sqrt(10) = 3.162...`".
+
+### 12.2 The sharp conjecture, named
+
+```
+  AHSOptimal  :=  forall b >= 1,  iota(b)^2 <= 10^(b-1)
+```
+
+squared so nothing leaves `nat`. Equivalently `iota(b) <= 10^((b-1)/2)`;
+equivalently **Abbott–Hanson–Sauer is optimal** and `L = sqrt(10)`;
+equivalently `f(n,3) <= (2 sqrt(10))^n + 1`, about `6.33^n`.
+
+It is **met with equality at `b = 3`** and nowhere else that is decided
+(`Sharp.the_sharp_bound_is_attained_at_three`): `iota(3)^2 = 100 = 10^2`
+exactly. One more member there refutes it. That single exhaustive
+computation is what the whole constant rests on.
+
+Three consequences, all machine-checked:
+
+* `Sharp.sharp_settles_k3` — it implies the conjecture at `k = 3`, with
+  the explicit constant `c(3) = 8` (`sharp_gives_the_constant`). The
+  real-valued constant is `2 sqrt(10) = 6.32...`; 8 is the price of
+  staying in `nat` and no attempt is made to sharpen it.
+* `Sharp.sharp_beats_erdos_rado_at_three` — it gives **`f(3,3) <= 32`**
+  against Erdős–Rado's 49, from a hypothesis about uniformity 4. Read as
+  hardness: proving the sharp conjecture settles a value nobody knows.
+  Read as a target: `iota(4)` alone is worth a new bound on the first
+  unknown sunflower number.
+* `Sharp.sharp_forces_iota_three_exactly_ten` — it pins `iota(3) = 10`,
+  where the development otherwise has only `[10, 18]`.
+
+`Audit.the_sharp_bound_narrows_iota_four` records that it says strictly
+more than the kernel already knows: `iota(4)` in `[27, 192]` becomes
+`[27, 31]`.
+
+### 12.3 The threshold table — this is the thing to memorise
+
+`Sharp.refutation_threshold` turns one family into a refutation. The least
+family size that refutes at each uniformity, tabulated, pinned in
+`rust/tests/sharp_conjecture.rs`, and each rung a corollary in
+`coq/Sharp.v`:
+
+```
+  b     iota(b) known   beats AHS at   fraction   note
+  4         27                32        0.844     iota(4,10) <= 31; g >= 11 untouched
+  5         54               101        0.535
+  6        300               317        0.946     <-- 17 members short
+  7        600              1001        0.599
+  8       2187              3163        0.691     (the b = 8 row is unverified)
+  9     10,000            10,001        0.9999    <-- needs exactly ONE more set
+```
+
+**The odd tower is exactly on the threshold.**
+`Sharp.the_tower_misses_by_exactly_one`: at `b = 2j+1` the sharp bound
+reads `iota(b) <= 10^j`, a round number, and it is exactly what the
+substitution delivers when iterated on `iota(3) = 10`. So at every odd
+uniformity the record falls at one more set, and `b = 3, 9, 27, ...` all
+sit on the line. Any single improvement anywhere propagates up the whole
+tower.
+
+The even rungs are separate corollaries (`iota_four_at_least_32_refutes`,
+`iota_six_at_least_317_refutes`) because their thresholds are not round.
+
+### 12.4 How to read this
+
+Honestly, and the file says so itself. This is **not** evidence for the
+sharp conjecture beyond (i) four exhaustive values of `iota`, (ii) the
+fact that no construction in the repository reaches a threshold — which
+is *forced*, since the substitution's own fixed point is `10^(1/2)`, and
+is asserted in `rust/tests/sharp_conjecture.rs` so a bigger number is not
+mistaken for a better rate — and (iii) `iota(4,9) = 27` being provably the
+Abbott–Hanson–Sauer family (§11.5).
+
+What it is, is a target with a number in it. The cap-set programme had
+one; this one has not. Every future session can now ask "did I beat 1972?"
+and get an integer answer.
+
+---
+
+## 13. Settled: the 1972 families are maximal, and prescribed symmetry does not transfer
+
+§12 gives the threshold at every uniformity. This is the campaign that
+went at it, and both halves come back negative — with theorems rather
+than with "the search did not find anything".
+
+### 13.1 The cheapest question nobody had asked
+
+At `b = 9` the substitution `substitute(iota(3), iota(3))` builds 10,000
+members and the threshold is 10,001. **Can one more 9-set be added?**
+
+The question looks like it has to be re-asked per ground set. It does
+not. A candidate `C` interacts with the family only through its trace
+`S = C ∩ support(F)` — a point in no member contributes to no
+intersection — so `C` meets `A` iff `S` does and `A ∩ C = A ∩ S`.
+Enumerating traces answers the question **for every ground set at once**,
+and `Maximal.maximal_of_trace_certificate` is that reduction: a `forallb`
+over `HallCore.sublists U` implies a statement quantified over every list
+`A`, with no ground-set hypothesis in it.
+
+Measured first (`rust/examples/extend_ahs.rs`), three independent methods
+that agree — minimal hitting sets, brute force over every trace where
+affordable, and SAT with two solvers required to agree on UNSAT:
+
+```
+  family                                b    members   tau   addable
+  substitute(iota(2), iota(2))          4         27     4   none
+  substitute(iota(2), iota(3))          6        300     6   none
+  substitute(iota(3), iota(3))          9      10000     9   none
+  cone(substitute(g(2), iota(2)))       5         54     -   none
+  cone(substitute(g(2), iota(3)))       7        600     -   none
+```
+
+**Every row is maximal on every ground set.** For the three pure
+substitutions the verdict does not even use sunflower-freeness: no
+`b`-set meets every member except the members themselves.
+
+The mechanism is that the **covering number is multiplicative**. A set
+`C` meets every member of `substitute(G,H)` exactly when
+`{v : C_v is a transversal of H}` is a transversal of `G`, so
+`tau(substitute(G,H)) >= tau(G) tau(H)`; and an intersecting family is
+met by each of its own members, so `tau <= ab`. When `tau(G) = a` and
+`tau(H) = b` the two meet and the minimum transversals are exactly the
+members — so **maximality is multiplicative under substitution**, and
+since `iota(2)` and `iota(3)` are both maximal the whole 3-adic tower is.
+`rust/tests/extension.rs` pins `tau` on every pair.
+
+Formalised: `Maximal.iota4_is_maximal_intersecting` at `b = 4`, through
+the general reduction, reflectively, with no ground set. The general
+statement needs `substitute` in Coq, which is §5 item 2's session.
+
+### 13.2 What that does *not* say
+
+**Maximal is not maximum.** `Maximal.maximality_is_not_a_size_bound` is
+the witness: the **Fano plane** is a maximal intersecting 3-uniform
+family — `tau = 3`, and the seven 3-sets meeting all seven lines are
+exactly the lines — with *seven* members, while `Intersecting.iota3` is
+an intersecting 3-uniform family with *ten*. Inside the sunflower-free
+world the gap is the same: random greedy growth finds a **six**-member
+intersecting sunflower-free 3-uniform family to which nothing can be
+added on any ground set, against `iota(3) = 10`.
+
+So §13.1 closes one route to the record and says nothing about whether
+the record is reachable by another. Do not read it as evidence for
+`AHSOptimal`.
+
+### 13.3 Kramer–Mesner does not transfer, and here is why
+
+If the 1972 families cannot be extended, a record family has different
+symmetry — so prescribe a group and search its orbits, which is how
+record designs are found. `rust/src/orbit.rs` builds it: group closure,
+orbits on `b`-subsets, and a max-clique-shaped search with the ternary
+condition checked incrementally (`A, B, x` is a sunflower iff
+`A ∩ B ⊆ x` and `x ∩ (A △ B) = ∅`, so the pairs of the current family
+live in buckets indexed by `A ∩ B` and a candidate costs `2^b` lookups
+rather than a scan over 50000 pairs). Validated against
+`intersecting::iota` with the trivial group at six parameter points,
+including the exhaustive maxima `iota(3,6) = 10` and `iota(4,7) = 15`.
+
+**136 (ground, group) pairs, every one exhausted, nothing found.**
+
+```
+  row                                     grounds        groups   verdict
+  b = 4, target 32, intersecting          11..16             41   none; 0 usable orbits
+  b = 3, target 32, general (cone)        16..22             50   none; 0 usable orbits
+  b = 5, target 317, general (cone)       15..20             45   none; best reached 100
+```
+
+The first two rows are the finding. **Zero orbits were usable** — not
+"the search failed", but "there was nothing to search". A `G`-invariant
+sunflower-free family is a union of orbits, so *every orbit must itself
+be sunflower-free*, i.e. have no three pairwise disjoint members. An
+orbit of a group acting on a ground set much larger than `3b` almost
+always contains three disjoint translates, and then it is dead before
+the search starts. At `b = 3` on sixteen points, no orbit of any group
+in the list survives; at `b = 5` on fifteen, where `3b = g` exactly, most
+of them do — and that row *is* searched, exhaustively, and comes back
+empty with a best of 100 against the target 317.
+
+That is the structural reason the classical instrument does not carry
+over, and it is the same shape as §8's diagnosis of shifting. The
+Kramer–Mesner method works for designs because the condition is
+**linear and positive** — cover every `t`-set `lambda` times, so orbits
+add up. Sunflower-freeness is **ternary and negative**, so orbits do not
+add up; they veto.
+
+Half of it is a theorem. If `G` is transitive on the ground set then
+every orbit is **point-regular**, and
+`Maximal.regular_intersecting_ground_bound` proves
+
+> a regular intersecting `b`-uniform family lives on at most `b^2` points.
+
+Two consequences. It is why prescribing a transitive group is hopeless
+above `g = b^2`. And it sharpens
+`Product.the_universal_iota_ground_reading_is_false`: the cone of the
+tree-path family needs `2^b - 1` points, far past `b^2`, so it *must* be
+irregular — and it is, the apex having degree `|F|` while every other
+point has less. **The universal ground reading fails only on irregular
+families**, and §7's measurement that the extremal `iota` families *are*
+regular puts all of them comfortably inside `b^2`.
+
+One order-of-work note, recorded because the repository's rule is the
+other way round: `regular_intersecting_ground_bound` was proved before it
+was enumerated. It is three lines from `Pigeonhole.pigeonhole_family` and
+the incidence count, and it was written as the explanation of a
+measurement rather than as a conjecture to test. The enumeration in
+`rust/tests/extension.rs` was added afterwards and found no
+counterexample; that is weaker evidence than the usual order gives.
+
+### 13.4 What is left at the top of the ladder
+
+* **`iota(4) >= 32`, through the general row.** By the cone, a
+  *3-uniform* sunflower-free family with 32 members gives `iota(4) >= 32`,
+  refutes `Sharp.AHSOptimal`, and gives `f(3,3) >= 33`. The proved
+  `N(3,g) <= 2g` forces `g >= 16` and at `g = 16` the bound would have to
+  be met with equality — which by §7 forces the family to be regular and
+  every link extremal. That is a **rigid** target, not a wide search, and
+  it is the most concrete thing left on the list. The prescribed-group
+  route to it is closed by §13.3. The SAT route **was** run here, and it
+  is recorded with its cost the way §9 records the others:
+
+```
+    question           solver     time    verdict
+    N(3,16) >= 30      cadical    601s    undecided
+```
+
+  `cargo run --release --example sat_run -- general 3 16 30 33`. That is
+  not the target rung — it is three *below* it. `C(16,3) = 560` variables
+  is a small instance; the ternary clauses are what make it hard. So the
+  general row at sixteen points is out of reach of every instrument in
+  the repository — branch-and-bound, SAT and prescribed symmetry — and
+  moving it needs a new one rather than a bigger budget. The lever
+  nothing currently uses is the rigidity: at `g = 16` the bound
+  `N(3,g) <= 2g` would have to be met with **equality**, which by §7
+  forces the family to be regular with every link extremal, and neither
+  the SAT encoding nor the orbit search knows that.
+* **Formalise the substitution** (§5 item 2). Now needed for a third
+  thing: the general maximality theorem of §13.1 is stated about
+  `substitute` and cannot be proved without it.
+* **A construction that is not a substitution.** Everything in §11.6 is
+  built from `cone`, `double` and `substitute`, and §13.1 says all of it
+  is maximal. The table cannot move without a genuinely new operation.
+
+---
+
+## 14. Settled: the Erdős–Rado ratio is unbounded, and the conjecture is about its mean
+
+§13 closed the constructions. This is about the *proof*, and it comes out
+of a quantity the repository has been measuring for three sessions
+without naming.
+
+### 14.1 The quantity Erdős–Rado's recursion pays
+
+Erdős–Rado is one step iterated: find a heavy point, recurse into its
+link. `Intersecting.sunflower_free_star_bound` proves the step. Write
+
+```
+  rho(F)  =  |F| / maxdeg(F)
+```
+
+The link at a maximum-degree point has `maxdeg(F)` members and uniformity
+`b-1`, so `|F| = rho(F) · |link|` and, descending,
+
+```
+  |F|  =  rho_0 · rho_1 · ... · rho_{b-1}
+```
+
+**exactly** — the chain telescopes, and `rust/tests/star_defect.rs`
+checks that it does on every family the repository has. Erdős–Rado bounds
+each factor by `2(b-j)` and gets `2^b b!`. **The conjecture at `k = 3` is
+precisely that the product is `C^b`.**
+
+And a constant bound on a *single* factor settles it outright:
+
+```
+  StarBounded c  :=  every sunflower-free b-uniform family has a point x
+                     with |F| <= c · deg(x)
+```
+
+gives `g(b) <= c·g(b-1)`, hence `g(b) <= 2c^(b-1)` — the whole conjecture
+from one inequality with one number in it. `StarDefect.star_bounded_settles_k3`,
+with `c(3) = 2c`.
+
+`StarDefect.star_defect_bound` is the per-family form of the step, which
+the repository lacked: it *names* the point rather than consuming it, so
+the recursion can be run parametrically (`star_step`).
+
+### 14.2 It is not a constant, and the witness is the 1972 construction
+
+`rust/tests/iota_sandwich.rs` has pinned the worst observed ratio for a
+while — **2, 3, 2.75** at uniformities 1, 2, 3 against the proved 2, 4, 6
+— and that row looks flat. A flat row is the conjecture.
+
+**It is not flat.** `rho` is *exactly multiplicative* under the
+Abbott–Hanson–Sauer substitution:
+
+```
+  |substitute(G,H)|       = |G| |H|^a
+  maxdeg(substitute(G,H)) = maxdeg(G) maxdeg(H) |H|^(a-1)
+  ==>  rho(substitute(G,H)) = rho(G) rho(H)
+```
+
+— the `|H|^(a-1)` cancels. Checked in exact rational arithmetic on all
+six buildable pairs. With `rho(iota(2)) = 3/2` and `rho(iota(3)) = 2`,
+iterating on `iota(3)` gives
+
+```
+  b = 3^k   ==>   rho = 2^k   ==>   rho = b^(log_3 2) = b^0.6309...
+```
+
+**Unbounded.** Verified directly at `b = 9`, where the substitution's
+10,000 members have maximum degree exactly 2500 and `rho = 4`. So the
+measured row was flat only because it stopped at `b = 3`, and the family
+that refutes a constant star bound is the one giving the best lower bound
+known.
+
+The doubling is the only other operation that moves `rho`, and it doubles
+it — but it cannot be iterated, because the doubling of an intersecting
+family is not intersecting (`Audit.intersecting_is_needed_in_the_doubling`).
+So the substitution is the mechanism, and it is the *same* mechanism that
+makes the lower bound good.
+
+Formalising the refutation needs `substitute` in Coq (§5 item 2). What is
+proved is the finitistic half: `StarDefect.star_bounded_needs_c_at_least_five`
+— the doubling of the exhaustively extremal `iota(4,9) = 27` is 54 members
+at uniformity 4 with every point in at most 12 of them, so any admissible
+`c` is at least 5, against the proved ceiling `2b = 8` there. Same shape
+as `step_bounded_needs_D_at_least_three` and
+`ground_bounded_needs_c_at_least_four`; what is new is that the
+constructions push it up *without limit*.
+
+### 14.3 What survives, and what it says about the `log`
+
+The average. On the same tower the product of the `b` chain ratios is
+`10^((b-1)/2)`, so their geometric mean is `|F|^(1/b)` — tending to
+`sqrt(10) = 3.162` — while the largest single factor grows like `b^0.63`:
+
+```
+   b    product        geometric mean   largest factor rho
+   3          10.00           2.1544              2.0
+   9       10000.00           2.7826              4.0
+  27       10^13              3.0303              8.0
+```
+
+That gap is exactly §4's still-unclaimed "are the covers correlated
+across levels?", and it is now answered on the best object we have:
+**they are.** The maximum is unbounded and the mean is not, so any proof
+of the conjecture has to be a statement about the whole chain and cannot
+be a per-level estimate. That is the precise form of "pay the log once",
+and it is a *lower bound on the difficulty* of the remaining problem:
+§14.2 rules out the entire class of arguments that bound one level at a
+time.
+
+### 14.4 Where this leaves the ladder
+
+Three classes of argument are now closed with theorems rather than with
+failed searches:
+
+* **canonical-form symmetry breaking** — §8, `compressed_bound`;
+* **prescribed symmetry** — §13.3, and the orbit-usability measurement;
+* **per-level degree estimates** — §14.2.
+
+What is not closed, in order of how concrete it is:
+
+* **The chain, treated as a whole.** Bound `Π rho_j` without bounding any
+  `rho_j`. Nothing in the repository attempts this and it is what the
+  conjecture is.
+* **`iota(4) >= 32` through the general row** (§13.4), still the most
+  concrete open target, still out of reach of every instrument here.
+* **Formalise the substitution** (§5 item 2). It is now needed for
+  *four* things: the `g(6) >= 600` rate, rows 5–7 of the `iota` table,
+  §13.1's general maximality theorem, and §14.2's refutation.
+
+### 14.5 Withdrawn: `rho` is spreadness, and the repository already had it
+
+The first version of this section said: *"one targeted web search for the
+ratio `|F|/maxdeg`… nothing found… the related published quantity is
+diversity `|F| - maxdeg`."* **That is wrong and is withdrawn.** The
+search was one query, the conclusion drawn from it was a guess, and the
+guess was about the wrong literature.
+
+`Spread.Spread F r` is `forall T, NoDup T -> r^|T| · deg T F <= |F|`, and
+has been in this repository since the spread layer went in. At `T = [x]`
+it reads `r · deg(x) <= |F|`, i.e. **exactly `rho(F) >= r`**. So `rho` is
+the singleton clause of spreadness — the parameter `kappa` of
+[ALWZ20] Definition 1.10, which that paper notes was called *regularity*
+before them, and Definition 2.5 of [Lovett]'s PCMI notes. Both read from
+rendered pages. `StarDefect.star_defect_is_the_singleton_spread_clause`
+is the identification, machine-checked, so the retraction is a theorem
+rather than an edited paragraph.
+
+What that does to the three claims above:
+
+* **`star_defect_bound` is not new.** It is the "structured" branch of
+  the classical Erdős–Rado dichotomy, stated verbatim as [Lovett]'s
+  Lemma 2.2 with the constant `(r-1)n` — which at `r = 3` is exactly the
+  `2b` proved here — and attributed to Erdős–Rado in [ALWZ20] §1.2
+  ("much like in the original proof of Erdős and Rado"). What is new *to
+  this repository* is that the branch is exposed in per-family form: the
+  **other** branch, `SpreadReduction.elementary_spread_disjoint`, has
+  been here all along, at the neighbouring constant `2b + 1`, proved by
+  the same maximal-disjoint-cover-plus-pigeonhole argument.
+  `the_two_branches_of_the_dichotomy` now puts them side by side, which
+  is the connection the previous section should have made and did not.
+* **`star_bounded_settles_k3` is textbook in shape.** It is the
+  singleton-only case of [Lovett]'s Lemma 2.6, the reduction to spread
+  families.
+* **The unboundedness is the field's own stated motivation.** Immediately
+  before Definition 2.5, [Lovett] writes: *"Note that in the proof we
+  only used the 'structured' case where a single element belongs to many
+  sets in F. But we also could have used two elements, or three elements,
+  or any number of elements. This motivates the following definitions."*
+  Generalising from one element to sets is the whole 2020 programme, and
+  it exists because the one-element parameter is not good enough. So
+  §14.2 is a quantitative instance of a known obstruction, not a
+  discovery of one.
+
+**What may still be unrecorded, narrowly.** The exact multiplicativity
+`rho(substitute(G,H)) = rho(G)·rho(H)`, and the consequence that the
+Abbott–Hanson–Sauer tower's singleton spreadness is exactly
+`b^{log_3 2}`. That is a concrete lower bound on how spread a
+sunflower-free family can be, along an explicit infinite family rather
+than at a single parameter point — which is more than the repository's
+existing non-vacuity witnesses (`ALWZ.threshold_is_inside_the_gap`) give.
+**No claim of novelty is made for it.** Two searches and two papers read
+at the relevant pages found the framing but not this computation, and
+that is not the same as its being absent.
+
+**What is unchanged.** Every theorem in §14.1–§14.3 is still true and
+still machine-checked. The conclusion of §14.3 — that a proof of the
+conjecture cannot be a per-level estimate — also stands, and is now
+better supported: it is what the literature did next.
+
+### 14.6 The lesson, since this is the second time
+
+A one-query search is not a literature check, and the failure mode is
+specific: the search was for the *shape I had invented* (`|F|/maxdeg` as
+a ratio) rather than for the *shape the field uses* (a degree bound
+relative to family size, i.e. spreadness). Searching for one's own
+notation finds nothing by construction.
+
+The check that would have caught it in seconds was not a search at all:
+**grep the repository.** `Spread.v` defines the quantity, `TwoUniform.v`
+proves it is a maximum-degree bound at uniformity 2, and
+`SpreadReduction.v` proves the complementary branch. The rule to add:
+before claiming a quantity is unnamed, look for it in the development
+first.
+
+---
+
+## 15. What to read next, and why none of it has been read
+
+§14.5 withdrew a novelty claim that one `grep` would have prevented. The
+same audit, applied to the reading list, turns up something worse: **the
+repository's single axiom comes from an eight-page open-access paper that
+nobody here has opened.** §1 plans a three-stage campaign against Rao's
+encoding argument, in detail, without having read it.
+
+So this section is the reading list, ranked, with page counts and
+reachability checked (July 2026). None of these has been read beyond the
+pages named.
+
+### 15.1 The spread lemma has four independent proofs, and we have read none
+
+```
+  source                                     pages   reachable   read
+  [Ra20] Rao, Coding for sunflowers            8     arXiv 1909.04774, open   no
+  [Lovett] PCMI notes, §3 proof               29     IAS, open                p.7 only
+  [ALWZ20] Improved bounds                    19     arXiv 1908.08483         p.4 only
+  [MNSZ22] A second moment proof               8     arXiv 2209.11347         p.1 only
+  [BCW21] Note on sunflowers                   -     Discrete Math            no
+  [Smooth] A smoother notion of spread        12     arXiv 2106.11882         no
+```
+
+[MNSZ22] page 1 lists them: the delicate counting of [ALWZ20], refined by
+[FKNP21]; Shannon's noiseless coding theorem ([Ra20]); manipulations of
+Shannon entropy ([Tao20]); and their own truncated second moment. **Four
+routes, and the repository has planned its campaign against the one whose
+prerequisite — Shannon coding — is the worst fit for a `nat`-only
+development.**
+
+That matters for §1's scoping. Stage A's technical choice — state the
+covering step for the *product measure* so "probability" becomes plain
+cardinality over the powerset, which `Spread.subsets` already enumerates
+— is exactly right for the **counting** proof ([ALWZ20]/[FKNP21]) and for
+nothing else. The entropy and second-moment routes both need real-valued
+machinery this development does not have. So the first hour of the Rao
+campaign should be spent reading, not proving, and the target may well
+change from [Ra20] to [ALWZ20] §2 or [Lovett] §3.
+
+Read in this order, all as rendered pages: [Ra20] (it is the axiom, and it
+is eight pages), then [Lovett] §3 (self-contained and pedagogical), then
+[ALWZ20] §2 for Definition 2.1, the *weighted* spread notion the axiom is
+probably better stated against.
+
+**One question these settle that this repository has open.** §5 records:
+*"whether the `log` is necessary in the disjointness form with Rao's size
+hypothesis was looked for and not found in the literature."* [ALWZ20]
+page 4 says its own bound is sharp — *"For fixed α, β, the bound of
+`(log w)^{w(1+o(1))}` for robust sunflowers in Theorem 1.9 is sharp; it
+cannot be improved beyond `(log w)^{w(1-o(1))}`. We give an example
+demonstrating this in Lemma 3.1"* — but that is the *robust sunflower*
+form, not the disjointness form. Reading Lemma 3.1 decides whether the
+open question is open.
+
+### 15.2 [AHS72] is still unread, and three separate results rest on it
+
+`iota(3) = 10`, the substitution recursion, and the exact values `f(2,k)`
+all trace to Abbott–Hanson–Sauer 1972 (JCTA 12, 381–389). The repository
+has a *reconstruction*, corroborated against [Kup25] and confirmed by its
+own exhaustive searches, and that is genuinely good evidence — but the
+paper has been on the unread list for three sessions. It is Elsevier 1972
+and likely paywalled; if no legitimate copy is reachable, **record that
+and stop**, per the standing rule. Do not formalise anything that depends
+on a guess at its contents.
+
+### 15.3 The next campaign: two candidates, ranked
+
+**Primary — formalise `substitute` (§5 item 2).** It has quietly become
+load-bearing for *four* results rather than one:
+
+* the `g(6) >= 600` rate, which is the gap between the proved `2.714^n`
+  and the known `3.162^n`;
+* rows 5–7 of the `iota` table (§11.6), currently Rust-only;
+* §13.1's general maximality theorem — "maximality is multiplicative
+  under substitution" — which is stated about `substitute` and cannot be
+  proved without it;
+* §14.2's `rho` unboundedness, same reason.
+
+It is the only item on the list whose work is known to be finite: the
+construction decomposes as `union over A in G of (direct sum over v in A
+of H_v)`, so `DirectSum` supplies most of the machinery, and the roadmap
+has estimated it at one session for two sessions running. Doing it
+converts three computational claims into theorems and unblocks two
+negative results that are currently half-formal.
+
+**Alternate — the spread campaign (§1/M4), preceded by the reading.**
+Better motivated than it was: `StarDefect` showed that this repository's
+Erdős–Rado layer and its spread layer are the *same statement* at
+`|T| = 1` (`star_defect_is_the_singleton_spread_clause`), and
+`SpreadRestrictions` already proves the weaker interface suffices.
+Discharging `Rao20_lemma2` makes every conditional theorem here
+unconditional and makes `make coqchk` report nothing at all. Multi-session,
+and the first session is reading plus Stage A's counting layer.
+
+### 15.4 Three cheap experiments, any of which fits beside either campaign
+
+* **The full spread profile of the best-known constructions.** `rho` is
+  the `|T| = 1` clause. Measure the rest: for each family in §11.6, the
+  largest `kappa` for which it is `kappa`-spread in the full sense
+  (`deg T <= |F|/kappa^{|T|}` for all `T`). That says how close the 1972
+  construction sits to the spread lemma's *hypothesis*, which is what the
+  published tightness examples are about, and every piece of machinery it
+  needs is already written (`Spread.deg`, `ratio.rs`, the `iota` table).
+  Nobody has done it because `rho` was not identified as spreadness until
+  §14.5.
+* **The cover chain, not the degree chain** (§4, still unclaimed after
+  four sessions). §14 measured the ratio `|F|/maxdeg` down the greedy
+  chain. Erdős–Rado's actual bookkeeping is over *vertex covers of the
+  links* — at most `2(b-j)` points at level `j` — and how much consecutive
+  covers overlap is still unmeasured. That is the literal form of "are the
+  covers correlated across levels".
+* **`iota(4) >= 32` through the general row** (§13.4). Unchanged, still
+  the most concrete open target, still out of reach of branch-and-bound,
+  SAT and prescribed symmetry. The unused lever is the rigidity: at
+  `g = 16` the proved `N(3,g) <= 2g` would have to be met with equality,
+  forcing regularity and extremal links, and no encoder here knows that.
+
+### 15.5 The standing rule this section adds
+
+§14.6 says: grep the development before calling a quantity unnamed. This
+section adds the other half: **read the source of your own axiom before
+planning sessions of work against it.** Eight pages, open access, cited in
+`coq/ALWZ.v`, and the campaign built on it is the highest-value item in
+the repository.
