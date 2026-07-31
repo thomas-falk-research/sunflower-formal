@@ -2242,9 +2242,24 @@ counterexample; that is weaker evidence than the usual order gives.
   be met with equality — which by §7 forces the family to be regular and
   every link extremal. That is a **rigid** target, not a wide search, and
   it is the most concrete thing left on the list. The prescribed-group
-  route to it is closed by §13.3; the SAT route was not run here (the
-  ternary clause count at `g = 16` is a few million and was judged past
-  this session's remaining budget) and is the obvious next experiment.
+  route to it is closed by §13.3. The SAT route **was** run here, and it
+  is recorded with its cost the way §9 records the others:
+
+```
+    question           solver     time    verdict
+    N(3,16) >= 30      cadical    601s    undecided
+```
+
+  `cargo run --release --example sat_run -- general 3 16 30 33`. That is
+  not the target rung — it is three *below* it. `C(16,3) = 560` variables
+  is a small instance; the ternary clauses are what make it hard. So the
+  general row at sixteen points is out of reach of every instrument in
+  the repository — branch-and-bound, SAT and prescribed symmetry — and
+  moving it needs a new one rather than a bigger budget. The lever
+  nothing currently uses is the rigidity: at `g = 16` the bound
+  `N(3,g) <= 2g` would have to be met with **equality**, which by §7
+  forces the family to be regular with every link extremal, and neither
+  the SAT encoding nor the orbit search knows that.
 * **Formalise the substitution** (§5 item 2). Now needed for a third
   thing: the general maximality theorem of §13.1 is stated about
   `substitute` and cannot be proved without it.
