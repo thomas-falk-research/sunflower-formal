@@ -158,6 +158,10 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `refutation_threshold`, `iota_four_at_least_32_refutes`, `iota_six_at_least_317_refutes` | `coq/Sharp.v` | **One family refutes it**, and the threshold at every uniformity is an integer: 32 at `b = 4`, 317 at `b = 6`. The rungs of the table in `docs/roadmap.md` §12, as corollaries rather than as prose |
 | `the_tower_misses_by_exactly_one`, `iota_nine_at_least_10001_refutes` | `coq/Sharp.v` | **The odd tower sits exactly on the bound.** At `b = 2j+1` the sharp bound reads `ι(b) ≤ 10^j` — a round number, and exactly what the substitution delivers when iterated on `ι(3) = 10`. So at `b = 3, 5, 7, 9, …` the record falls at *one more set*, and `b = 9` needs 10001 against the 10,000 the substitution builds. Stated for all `j` rather than at `j = 4` because `nat` is unary and `10001` is past the point where Coq treats a numeral as an ordinary term |
 | `the_shifted_bound_at_three_is_false`, `bounds_coherent_sharp`, `the_sharp_bound_narrows_iota_four` | `coq/Audit.v` | **The shift is not a reindexing**: the base-3 shifted bound is refuted outright by the witnessed `ι(3) ≥ 10` against `3² = 9`, while the *unshifted* base-3 bound is not refuted by that family at all (`10 ≤ 27`). So any admissible base in the shifted form is at least 4 — the finitistic content of "`L > 3`". Plus: the sharp bound's `f(3,3) ≤ 32` fed to `lower_lt_upper` against the proved `f(3,3) ≥ 21`, so a contradictory pair would be a proof of `False`; and it narrows `ι(4)` from `[27,192]` to `[27,31]`, so it says strictly more than the kernel already knows |
+| `MaximalIntersecting`, `maximal_of_trace_certificate` | `coq/Maximal.v` | **"Can one more set be added?" is a finite question, on every ground set at once.** A candidate interacts with a family only through its *trace* on the support — a point in no member contributes to no intersection — so a `forallb` over `HallCore.sublists U` implies a statement quantified over **every list `A`**, with no ground-set hypothesis in it. Both hypotheses are load-bearing and have mutations: without `Grounded F U` the certificate is about the wrong points, and without the intersecting clause there is no common point to put in the trace |
+| `iota4_is_maximal_intersecting`, `iota4_covering_number_is_four` | `coq/Maximal.v` | **The Abbott–Hanson–Sauer family at `b = 4` cannot be extended** — on any ground set, and *without using sunflower-freeness at all*: `τ(ι(4,9)) = 4`, and the only 4-sets meeting every member are the 27 members. Measured first by three independent methods that agree (minimal hitting sets, brute force over every trace, SAT with two solvers required to agree on UNSAT), at `b = 4, 6, 9` and on both cone rows; `b = 9` is the one that matters, where 10,000 members are built and 10,001 would beat 1972. The mechanism is that the covering number is *multiplicative* under the substitution, so maximality is too, and the whole 3-adic tower inherits it |
+| `fano_is_maximal_intersecting`, `maximality_is_not_a_size_bound` | `coq/Maximal.v` | **Maximal is not maximum**, and this is the guard against over-reading the row above. The Fano plane is a maximal intersecting 3-uniform family with **seven** members — every 3-set meeting all seven lines *is* a line — while `Intersecting.iota3` has **ten**. So a family nothing can be added to may be strictly smaller than one that exists |
+| `regular_intersecting_ground_bound` | `coq/Maximal.v` | **A regular intersecting `b`-uniform family lives on at most `b²` points.** Pigeonhole over one member's `b` points plus the incidence count. It is why prescribing a *transitive* group is hopeless above `g = b²` — every orbit of a transitive group is point-regular — which is the structural reason the Kramer–Mesner instrument does not transfer to a ternary negative condition. It also sharpens `Product.the_universal_iota_ground_reading_is_false`: the coned tree-path family needs `2^b − 1` points, so it **must** be irregular, and it is |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
@@ -233,7 +237,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (324 of them). The current
+for every theorem in the "Closed" table (331 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -280,7 +284,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 31 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 32 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -288,8 +292,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 62 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 59 killed outright, two genuine
+Current mutation results: 64 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 61 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -298,7 +302,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 31 modules with Coq's separate kernel
+`make coqchk` re-verifies all 32 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

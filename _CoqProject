@@ -31,4 +31,5 @@ coq/IotaGround.v
 coq/Compression.v
 coq/Product.v
 coq/Sharp.v
+coq/Maximal.v
 coq/Audit.v

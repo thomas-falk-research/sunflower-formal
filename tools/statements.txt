@@ -1159,6 +1159,27 @@ b77fa6e6c41de05e  thm Sharp.the_sharp_bound_is_attained_at_three
 1041aa89ea52e4ba  thm Sharp.the_witnessed_values_are_inside_the_sharp_bound
     the_witnessed_values_are_inside_the_sharp_bound : 3 * 3 <= PeanoNat.Nat.pow 10 (2 - 1) /\ 10 * 10 <= PeanoNat.Nat.pow 10 (3 - 1) /\ 27 * 27 <= PeanoNat.Nat.pow 10 (4 - 1)
 
+1055ba83b0da091b  thm Maximal.maximal_intersecting_is_maximal_iota
+    maximal_intersecting_is_maximal_iota : forall (b : nat) (F : Family), MaximalIntersecting b F -> forall A : list nat, Uniform b (A :: F)%list -> Distinct (A :: F)%list -> Intersecting (A :: F)%list -> ~ ContainsKSunflower 3 (A :: F)%list -> False
+
+999a2bc90b230e5d  thm Maximal.maximal_of_trace_certificate
+    maximal_of_trace_certificate : forall (b : nat) (F : Family) (U : list nat), List.NoDup U -> Grounded F U -> trace_certificate b F U = true -> MaximalIntersecting b F
+
+3478701be776b859  thm Maximal.iota4_is_maximal_intersecting
+    iota4_is_maximal_intersecting : MaximalIntersecting 4 iota4
+
+a755d241f1bf9e7a  thm Maximal.iota4_covering_number_is_four
+    iota4_covering_number_is_four : (forall T : list nat, List.In T (sublists (List.seq 0 9)) -> blocksb T iota4 = true -> 4 <= length T) /\ blocksb (0 :: 1 :: 2 :: 3 :: nil) iota4 = true
+
+a7d5baa1bbc23684  thm Maximal.fano_is_maximal_intersecting
+    fano_is_maximal_intersecting : MaximalIntersecting 3 fano
+
+6767cfaa777787c4  thm Maximal.maximality_is_not_a_size_bound
+    maximality_is_not_a_size_bound : MaximalIntersecting 3 fano /\ length fano = 7 /\ Uniform 3 iota3 /\ Distinct iota3 /\ Intersecting iota3 /\ length iota3 = 10 /\ 7 < 10
+
+c883e7b818708eaf  thm Maximal.regular_intersecting_ground_bound
+    regular_intersecting_ground_bound : forall (b : nat) (F : Family) (U : list nat) (d : nat), 1 <= b -> F <> nil -> List.NoDup U -> Uniform b F -> Intersecting F -> Grounded F U -> (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) = d) -> length U <= b * b
+
 c95930b9d05834b9  thm Audit.the_shifted_bound_at_three_is_false
     the_shifted_bound_at_three_is_false : ~ IotaShiftedAt 3
 
@@ -1182,6 +1203,12 @@ b221185f3b496716  thm Audit.the_cone_route_beats_the_direct_sum_at_four
 
 aadaa2af67327fb9  thm Audit.the_ground_hypotheses_are_not_independent_after_all
     the_ground_hypotheses_are_not_independent_after_all : forall c : nat, (GroundBounded c -> IotaGroundBounded c) /\ (IotaGroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 2 c) (m + 1))
+
+07f7f8c941b32c4a  def Maximal.MaximalIntersecting
+    MaximalIntersecting = fun (b : nat) (F : Family) => forall A : list nat, Uniform b (A :: F)%list -> Distinct (A :: F)%list -> Intersecting (A :: F)%list -> False : nat -> Family -> Prop Arguments MaximalIntersecting b%nat_scope F
+
+accc23b5b3c621f2  def Maximal.trace_certificate
+    trace_certificate = fun (b : nat) (F : Family) (U : list nat) => List.forallb (fun T : list nat => implb (PeanoNat.Nat.leb (length T) b && blocksb T F) (PeanoNat.Nat.eqb (length T) b && List.existsb (fun B : list nat => seteqb T B) F)) (sublists U) : nat -> Family -> list nat -> bool Arguments trace_certificate b%nat_scope F U%list_scope
 
 43c285a26a9b8526  def Sharp.IotaShiftedAt
     IotaShiftedAt = fun C : nat => forall b : nat, 1 <= b -> IotaAtMost b (PeanoNat.Nat.pow C (b - 1)) : nat -> Prop Arguments IotaShiftedAt C%nat_scope

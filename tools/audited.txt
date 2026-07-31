@@ -500,6 +500,13 @@ thm Sharp.the_tower_misses_by_exactly_one
 thm Sharp.iota_nine_at_least_10001_refutes
 thm Sharp.the_sharp_bound_is_attained_at_three
 thm Sharp.the_witnessed_values_are_inside_the_sharp_bound
+thm Maximal.maximal_intersecting_is_maximal_iota
+thm Maximal.maximal_of_trace_certificate
+thm Maximal.iota4_is_maximal_intersecting
+thm Maximal.iota4_covering_number_is_four
+thm Maximal.fano_is_maximal_intersecting
+thm Maximal.maximality_is_not_a_size_bound
+thm Maximal.regular_intersecting_ground_bound
 thm Audit.the_shifted_bound_at_three_is_false
 thm Audit.bounds_coherent_sharp
 thm Audit.the_sharp_bound_narrows_iota_four
@@ -509,6 +516,8 @@ thm Audit.bounds_coherent_cone
 thm Audit.the_cone_route_beats_the_direct_sum_at_four
 thm Audit.the_ground_hypotheses_are_not_independent_after_all
 
+def Maximal.MaximalIntersecting
+def Maximal.trace_certificate
 def Sharp.IotaShiftedAt
 def Sharp.IotaExponentialShifted
 def Sharp.AHSOptimal

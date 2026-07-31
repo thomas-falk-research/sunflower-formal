@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-62 mutations, all with the outcome the manifest declares: 59 killed
+64 mutations, all with the outcome the manifest declares: 61 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -887,3 +887,69 @@ sum's 12 at the same uniformity. `N(3,6) = 10` exactly — the seed is a
 maximum on *six* points and the direct sum's 12 lives on eight. Two
 different quantities, no contradiction, and the note said otherwise
 until something computed both.
+
+### A seventh: a target with a number in it
+
+`rust/tests/sharp_conjecture.rs` is not falsification of a statement
+about to be proved. It is the *target* `coq/Sharp.v` names — the sharp
+conjecture `iota(b)^2 <= 10^(b-1)`, i.e. that Abbott–Hanson–Sauer is
+optimal — kept in a form a future session can check against in one line.
+
+Three jobs, and the third is the one that earns it a place here.
+
+* **The thresholds are tabulated and pinned.** `threshold(b)` is the
+  least family size at uniformity `b` that refutes; the values at
+  `b = 4..9` are written out by hand *and* computed, because a threshold
+  table that silently drifted is exactly the failure mode a future
+  session would not notice. The integer square root is by bisection with
+  an upper limit that has to clear `10^(b-1)` at the largest `b` any
+  caller uses — the first version returned a plausible wrong answer at
+  `b = 27` rather than failing.
+* **Every construction is rebuilt, not quoted.** The rows of the `iota`
+  table are reconstructed from their seeds and re-verified by
+  `structure::verify_128` before being measured against the threshold.
+* **None of them refutes, and that is asserted.** It is forced — the
+  substitution's own fixed point is `10^(1/2)` — so the assertion is
+  there to stop a bigger number being mistaken for a better rate. The
+  `b = 8` row of `docs/roadmap.md` §11.6 is *not* rebuilt, and its
+  absence from the rebuilt list is asserted too, because it is recorded
+  there as unverified.
+
+### An eighth: the maximality campaign, checked three ways
+
+`rust/tests/extension.rs` is the falsification suite for
+`coq/Maximal.v`, and it exists because the campaign's answer is a
+negative — "nothing can be added" — which is the kind of answer that is
+easiest to get wrong by asking the wrong question.
+
+* **The reduction is checked, not assumed.** The whole method rests on a
+  candidate interacting with the family only through its trace on the
+  support. So for every trace of the small rows — 327 of them, a count
+  that is pinned — the trace verdict is checked against *actually
+  building* the extended family and handing it to
+  `structure::verify_128`. If the reduction were wrong the two would
+  disagree.
+* **The verdict is taken twice.** A minimal-hitting-set enumeration and
+  a brute-force trace walk must agree; the third method, SAT with two
+  solvers required to agree on UNSAT, lives in
+  `examples/extend_ahs.rs` because it shells out. At `b = 9`, where
+  10,000 members are built and 10,001 would beat 1972, the brute force
+  is `1.4e8` traces and is not run — so that row is the hitting-set
+  method cross-checked against SAT, and the test says so.
+* **The mechanism is pinned, not just the answer.** `tau` of each
+  substitution family equals its uniformity *and* equals the product of
+  the factors' covering numbers. That multiplicativity is why the answer
+  is no, so a construction that changed would show up here rather than as
+  a different verdict.
+* **And the counter-reading is pinned too.** Maximal is not maximum: the
+  Fano plane is maximal intersecting with seven members against
+  `iota(3) = 10`, and a six-member maximal intersecting *sunflower-free*
+  family exists. Both were found here and checked here before being
+  transcribed into Coq.
+
+One entry runs in the other order and says so in the file:
+`Maximal.regular_intersecting_ground_bound` was proved before it was
+enumerated — it is three lines from `Pigeonhole.pigeonhole_family` and
+was written as the explanation of a measurement rather than as a
+conjecture. The enumeration was added afterwards and found no
+counterexample, which is weaker evidence than the usual order gives.

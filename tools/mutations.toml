@@ -978,3 +978,38 @@ the two coincide."""
 find = "  forall b, 1 <= b -> IotaAtMost b (C ^ (b - 1))."
 replace = "  forall b, 1 <= b -> IotaAtMost b (C ^ b)."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# The maximality reduction (coq/Maximal.v).
+#
+# `maximal_of_trace_certificate` turns a `forallb` over the sublists of
+# one ground set into a statement quantified over *every* list. Two
+# hypotheses carry that, and neither is obvious.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "maximal-drop-grounded"
+file = "coq/Maximal.v"
+question = """The trace reduction says a candidate interacts with the family \
+only through its trace on the ground set the family already uses. That needs \
+the family to *be* on that ground set: without `Grounded F U` the certificate \
+is a computation about a set of points the members may not live in, and the \
+common point of the candidate and a member need not land in the trace at all. \
+Is the hypothesis load-bearing?"""
+find = """    NoDup U -> Grounded F U ->
+    trace_certificate b F U = true ->"""
+replace = """    NoDup U ->
+    trace_certificate b F U = true ->"""
+expect = "killed"
+
+[[mutation]]
+id = "maximalintersecting-drop-intersecting"
+file = "coq/Maximal.v"
+question = """MaximalIntersecting says no b-set can be added keeping the family \
+uniform, distinct and intersecting. Drop the intersecting clause and it claims \
+no b-set can be added at all, which is false for every family -- and the trace \
+argument has nothing left to consume, since intersecting-ness is exactly what \
+puts a common point into the trace. Is the clause doing the work?"""
+find = "    Uniform b (A :: F) -> Distinct (A :: F) -> Intersecting (A :: F) -> False."
+replace = "    Uniform b (A :: F) -> Distinct (A :: F) -> False."
+expect = "killed"

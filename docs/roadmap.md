@@ -348,7 +348,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 62 anecdotes into a coverage metric over the
+  mutation testing from 64 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -2101,3 +2101,153 @@ Abbott–Hanson–Sauer family (§11.5).
 What it is, is a target with a number in it. The cap-set programme had
 one; this one has not. Every future session can now ask "did I beat 1972?"
 and get an integer answer.
+
+---
+
+## 13. Settled: the 1972 families are maximal, and prescribed symmetry does not transfer
+
+§12 gives the threshold at every uniformity. This is the campaign that
+went at it, and both halves come back negative — with theorems rather
+than with "the search did not find anything".
+
+### 13.1 The cheapest question nobody had asked
+
+At `b = 9` the substitution `substitute(iota(3), iota(3))` builds 10,000
+members and the threshold is 10,001. **Can one more 9-set be added?**
+
+The question looks like it has to be re-asked per ground set. It does
+not. A candidate `C` interacts with the family only through its trace
+`S = C ∩ support(F)` — a point in no member contributes to no
+intersection — so `C` meets `A` iff `S` does and `A ∩ C = A ∩ S`.
+Enumerating traces answers the question **for every ground set at once**,
+and `Maximal.maximal_of_trace_certificate` is that reduction: a `forallb`
+over `HallCore.sublists U` implies a statement quantified over every list
+`A`, with no ground-set hypothesis in it.
+
+Measured first (`rust/examples/extend_ahs.rs`), three independent methods
+that agree — minimal hitting sets, brute force over every trace where
+affordable, and SAT with two solvers required to agree on UNSAT:
+
+```
+  family                                b    members   tau   addable
+  substitute(iota(2), iota(2))          4         27     4   none
+  substitute(iota(2), iota(3))          6        300     6   none
+  substitute(iota(3), iota(3))          9      10000     9   none
+  cone(substitute(g(2), iota(2)))       5         54     -   none
+  cone(substitute(g(2), iota(3)))       7        600     -   none
+```
+
+**Every row is maximal on every ground set.** For the three pure
+substitutions the verdict does not even use sunflower-freeness: no
+`b`-set meets every member except the members themselves.
+
+The mechanism is that the **covering number is multiplicative**. A set
+`C` meets every member of `substitute(G,H)` exactly when
+`{v : C_v is a transversal of H}` is a transversal of `G`, so
+`tau(substitute(G,H)) >= tau(G) tau(H)`; and an intersecting family is
+met by each of its own members, so `tau <= ab`. When `tau(G) = a` and
+`tau(H) = b` the two meet and the minimum transversals are exactly the
+members — so **maximality is multiplicative under substitution**, and
+since `iota(2)` and `iota(3)` are both maximal the whole 3-adic tower is.
+`rust/tests/extension.rs` pins `tau` on every pair.
+
+Formalised: `Maximal.iota4_is_maximal_intersecting` at `b = 4`, through
+the general reduction, reflectively, with no ground set. The general
+statement needs `substitute` in Coq, which is §5 item 2's session.
+
+### 13.2 What that does *not* say
+
+**Maximal is not maximum.** `Maximal.maximality_is_not_a_size_bound` is
+the witness: the **Fano plane** is a maximal intersecting 3-uniform
+family — `tau = 3`, and the seven 3-sets meeting all seven lines are
+exactly the lines — with *seven* members, while `Intersecting.iota3` is
+an intersecting 3-uniform family with *ten*. Inside the sunflower-free
+world the gap is the same: random greedy growth finds a **six**-member
+intersecting sunflower-free 3-uniform family to which nothing can be
+added on any ground set, against `iota(3) = 10`.
+
+So §13.1 closes one route to the record and says nothing about whether
+the record is reachable by another. Do not read it as evidence for
+`AHSOptimal`.
+
+### 13.3 Kramer–Mesner does not transfer, and here is why
+
+If the 1972 families cannot be extended, a record family has different
+symmetry — so prescribe a group and search its orbits, which is how
+record designs are found. `rust/src/orbit.rs` builds it: group closure,
+orbits on `b`-subsets, and a max-clique-shaped search with the ternary
+condition checked incrementally (`A, B, x` is a sunflower iff
+`A ∩ B ⊆ x` and `x ∩ (A △ B) = ∅`, so the pairs of the current family
+live in buckets indexed by `A ∩ B` and a candidate costs `2^b` lookups
+rather than a scan over 50000 pairs). Validated against
+`intersecting::iota` with the trivial group at six parameter points,
+including the exhaustive maxima `iota(3,6) = 10` and `iota(4,7) = 15`.
+
+**136 (ground, group) pairs, every one exhausted, nothing found.**
+
+```
+  row                                     grounds        groups   verdict
+  b = 4, target 32, intersecting          11..16             41   none; 0 usable orbits
+  b = 3, target 32, general (cone)        16..22             50   none; 0 usable orbits
+  b = 5, target 317, general (cone)       15..20             45   none; best reached 100
+```
+
+The first two rows are the finding. **Zero orbits were usable** — not
+"the search failed", but "there was nothing to search". A `G`-invariant
+sunflower-free family is a union of orbits, so *every orbit must itself
+be sunflower-free*, i.e. have no three pairwise disjoint members. An
+orbit of a group acting on a ground set much larger than `3b` almost
+always contains three disjoint translates, and then it is dead before
+the search starts. At `b = 3` on sixteen points, no orbit of any group
+in the list survives; at `b = 5` on fifteen, where `3b = g` exactly, most
+of them do — and that row *is* searched, exhaustively, and comes back
+empty with a best of 100 against the target 317.
+
+That is the structural reason the classical instrument does not carry
+over, and it is the same shape as §8's diagnosis of shifting. The
+Kramer–Mesner method works for designs because the condition is
+**linear and positive** — cover every `t`-set `lambda` times, so orbits
+add up. Sunflower-freeness is **ternary and negative**, so orbits do not
+add up; they veto.
+
+Half of it is a theorem. If `G` is transitive on the ground set then
+every orbit is **point-regular**, and
+`Maximal.regular_intersecting_ground_bound` proves
+
+> a regular intersecting `b`-uniform family lives on at most `b^2` points.
+
+Two consequences. It is why prescribing a transitive group is hopeless
+above `g = b^2`. And it sharpens
+`Product.the_universal_iota_ground_reading_is_false`: the cone of the
+tree-path family needs `2^b - 1` points, far past `b^2`, so it *must* be
+irregular — and it is, the apex having degree `|F|` while every other
+point has less. **The universal ground reading fails only on irregular
+families**, and §7's measurement that the extremal `iota` families *are*
+regular puts all of them comfortably inside `b^2`.
+
+One order-of-work note, recorded because the repository's rule is the
+other way round: `regular_intersecting_ground_bound` was proved before it
+was enumerated. It is three lines from `Pigeonhole.pigeonhole_family` and
+the incidence count, and it was written as the explanation of a
+measurement rather than as a conjecture to test. The enumeration in
+`rust/tests/extension.rs` was added afterwards and found no
+counterexample; that is weaker evidence than the usual order gives.
+
+### 13.4 What is left at the top of the ladder
+
+* **`iota(4) >= 32`, through the general row.** By the cone, a
+  *3-uniform* sunflower-free family with 32 members gives `iota(4) >= 32`,
+  refutes `Sharp.AHSOptimal`, and gives `f(3,3) >= 33`. The proved
+  `N(3,g) <= 2g` forces `g >= 16` and at `g = 16` the bound would have to
+  be met with equality — which by §7 forces the family to be regular and
+  every link extremal. That is a **rigid** target, not a wide search, and
+  it is the most concrete thing left on the list. The prescribed-group
+  route to it is closed by §13.3; the SAT route was not run here (the
+  ternary clause count at `g = 16` is a few million and was judged past
+  this session's remaining budget) and is the obvious next experiment.
+* **Formalise the substitution** (§5 item 2). Now needed for a third
+  thing: the general maximality theorem of §13.1 is stated about
+  `substitute` and cannot be proved without it.
+* **A construction that is not a substitution.** Everything in §11.6 is
+  built from `cone`, `double` and `substitute`, and §13.1 says all of it
+  is maximal. The table cannot move without a genuinely new operation.
