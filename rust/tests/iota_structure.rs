@@ -374,6 +374,115 @@ fn iota_three_is_the_two_six_three_two_design() {
     assert_eq!(structure::diversity(&f), 5);
 }
 
+/// **The uniqueness, verified rather than cited.** `docs/references.md`
+/// recorded "that uniqueness is standard design theory and is *taken on
+/// the literature's word here*, not verified" — the Handbook of
+/// Combinatorial Designs is not open access and the July 2026 reading
+/// session could not reach a primary source for it.
+///
+/// It does not need one. There are only `C(20,10) = 184756` ways to pick
+/// ten triples from the twenty on six points, so the question is decided
+/// by enumeration: exactly **12** of them are simple 2-(6,3,2) designs,
+/// and all 12 lie in a **single** isomorphism class under `Sym(6)`.
+/// `720 / 12 = 60` re-derives the automorphism group order a second way,
+/// independently of `structure::automorphisms`, which is the point of
+/// doing it here rather than trusting the citation.
+///
+/// (60 is `|PSL(2,5)| = |A_5|` acting on the six points of the projective
+/// line over `F_5`; its two orbits on triples are the two complementary
+/// 2-(6,3,2) designs, swapped by `PGL(2,5)`. The *order* is what is
+/// computed; the isomorphism type is not, and is not claimed.)
+#[test]
+fn the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited() {
+    // All 3-subsets of a 6-set, as bitmasks.
+    let triples: Vec<u32> = (0..6u32)
+        .flat_map(|a| ((a + 1)..6).flat_map(move |b| ((b + 1)..6).map(move |c| (a, b, c))))
+        .map(|(a, b, c)| (1 << a) | (1 << b) | (1 << c))
+        .collect();
+    assert_eq!(triples.len(), 20);
+
+    let pairs: Vec<u32> = (0..6u32)
+        .flat_map(|a| ((a + 1)..6).map(move |b| (1u32 << a) | (1 << b)))
+        .collect();
+    assert_eq!(pairs.len(), 15);
+
+    // Every simple 2-(6,3,2) design, by exhaustion over C(20,10).
+    let mut designs: Vec<Vec<u32>> = Vec::new();
+    let mut choice = [0usize; 10];
+    fn rec(
+        start: usize,
+        depth: usize,
+        choice: &mut [usize; 10],
+        triples: &[u32],
+        pairs: &[u32],
+        out: &mut Vec<Vec<u32>>,
+    ) {
+        if depth == 10 {
+            let blocks: Vec<u32> = choice.iter().map(|&i| triples[i]).collect();
+            // lambda = 2: every pair lies in exactly two blocks.
+            if pairs
+                .iter()
+                .all(|&p| blocks.iter().filter(|&&b| b & p == p).count() == 2)
+            {
+                out.push(blocks);
+            }
+            return;
+        }
+        for i in start..triples.len() {
+            choice[depth] = i;
+            rec(i + 1, depth + 1, choice, triples, pairs, out);
+        }
+    }
+    rec(0, 0, &mut choice, &triples, &pairs, &mut designs);
+    assert_eq!(designs.len(), 12, "labelled simple 2-(6,3,2) designs");
+
+    // Canonical form under Sym(6): the lexicographically least relabelling.
+    fn canon(blocks: &[u32]) -> Vec<u32> {
+        let mut best: Option<Vec<u32>> = None;
+        let mut perm = [0u32; 6];
+        fn perms(k: usize, used: u32, perm: &mut [u32; 6], f: &mut impl FnMut(&[u32; 6])) {
+            if k == 6 {
+                f(perm);
+                return;
+            }
+            for v in 0..6u32 {
+                if used & (1 << v) == 0 {
+                    perm[k] = v;
+                    perms(k + 1, used | (1 << v), perm, f);
+                }
+            }
+        }
+        perms(0, 0, &mut perm, &mut |p| {
+            let mut img: Vec<u32> = blocks
+                .iter()
+                .map(|&b| {
+                    (0..6u32)
+                        .filter(|i| b & (1 << i) != 0)
+                        .fold(0u32, |a, i| a | 1 << p[i as usize])
+                })
+                .collect();
+            img.sort_unstable();
+            if best.as_ref().is_none_or(|cur| img < *cur) {
+                best = Some(img);
+            }
+        });
+        best.unwrap()
+    }
+
+    let mut classes: Vec<Vec<u32>> = designs.iter().map(|d| canon(d)).collect();
+    classes.sort();
+    classes.dedup();
+    assert_eq!(classes.len(), 1, "isomorphism classes of simple 2-(6,3,2)");
+
+    // |Aut| = |Sym(6)| / (orbit size), computed without touching
+    // structure::automorphisms -- and agreeing with it.
+    assert_eq!(720 / designs.len(), 60);
+    assert_eq!(structure::automorphisms(&iota3()).0, 60);
+
+    // And the object the search found really is in that class.
+    assert_eq!(canon(&iota3()), classes[0]);
+}
+
 /// `iota(4,9) = 27` **is** the Abbott–Hanson–Sauer substitution of the
 /// triangle into itself. Three triples of points; every union of a pair
 /// from one triple with a pair from another. `|Aut| = 6 * 6^3 = 1296` is

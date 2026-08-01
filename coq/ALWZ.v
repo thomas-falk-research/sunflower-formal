@@ -36,15 +36,44 @@
     our names, and is relativised to all set sizes [m ≤ n] at once,
     which is what the induction of the reduction consumes; since the
     threshold [α k log(k m)] is monotone in [m], a single [r] works for
-    every level.
+    every level. That relativisation is not an invention here: it is
+    literally the hypothesis of Lovett's Lemma 2.6 — *"Assume that for
+    all n' ≤ n, every family of n'-sets which is k-spread contains an
+    r-sunflower"* — PCMI notes p. 8, read from the rendered page.
 
-    Two respects in which the axiom below is *weaker* than the
-    published lemma, deliberately:
+    *** How the axiom differs from the published sentence
 
-    - it is stated only for families of sets of one fixed size [m],
-      whereas the source allows sets of size at most [m];
-    - [Nat.log2_up (S (k * n))] over-estimates [log(kn)], so more is
-      demanded of [r] than the source demands.
+    Read against the source in July 2026 (`docs/reading.md`, register
+    row A1), on rendered pages of the Discrete Analysis version:
+
+    - **weaker**: [Nat.log2_up (S (k * n))] over-estimates [log(kn)],
+      so more is demanded of [r] than the source demands;
+    - **weaker**: the axiom carries a [Distinct] hypothesis, whereas
+      Rao states his Lemma 2 for *sequences* — his footnote 2 says
+      *"Here we state the results for sequences of sets because some
+      applications require the ability to reason about sequences that
+      may repeat sets"* [Ra20, p. 2]. Assuming less is the safe
+      direction;
+    - **stronger, and this one was not recorded before**: Rao's Lemma 2
+      fixes [r] at the single value [r(p,k) = α p log(pk)], while the
+      axiom below quantifies over *every* [r] above the threshold.
+      [SpreadYieldsDisjoint] is not monotone in [r] on general grounds —
+      raising [r] weakens the spread hypothesis but also raises the
+      size threshold [r^m] — so this is a real extension of the
+      sentence, even though Rao's proof supports it.
+      [fractional_form_gives_the_axiom_shape] below discharges exactly
+      that extension: it derives the whole [forall r] family from the
+      *fractional* single-threshold statement, which is the form Lovett
+      states as Lemma 2.9 and which is monotone for free. What is left
+      genuinely assumed is one sentence at one threshold.
+
+    A previous revision of this header claimed the axiom was weaker
+    because "the source allows sets of size at most [m]". **Withdrawn.**
+    Rao's Lemma 2 says *"a sequence of more than r(p,k)^k sets of size
+    k"* — size exactly [k]. The "at most" convention belongs to
+    [ALWZ20], whose Definition 1.1 reads *"a w-set system if each set in
+    F has size at most w"* (p. 1, rendered). The two sources differ, and
+    this file cited the wrong one.
 
     *** Provenance
 
@@ -65,11 +94,22 @@
       [Θ(k log n)], which by the same reduction gives the often quoted
       [(C k log n)^n].
 
-    Rao's proof is elementary — injections between finite sets and
-    binomial estimates, no measure theory — so it is a realistic
-    formalisation target; discharging this axiom is the natural next
-    step for this development, and is the reason the axiom has been
-    reformulated as the spread lemma rather than the final bound. *)
+    A previous revision of this header said *"Rao's proof is elementary
+    — injections between finite sets and binomial estimates, no measure
+    theory — so it is a realistic formalisation target"*. **Withdrawn.**
+    The paper was read in full in July 2026. Its §3 proves Lemma 2 from
+    Lemma 4, whose proof runs over a uniformly random partition of the
+    ground set and a uniformly random [W] of size at least [γn], and
+    whose engine is Lemma 5 — *"if X is a random variable ... and π is
+    an encoding ... then E[|π(X)|] ≥ H(X)"*, i.e. **Shannon's noiseless
+    coding theorem**, applied through Kraft's inequality and the
+    concavity of [log]. Real-valued logarithms and expectations are
+    load-bearing throughout. Of the four published proofs it is the
+    *worst* fit for a [nat]-only development, not the best. The counting
+    proof — [ALWZ20] §2 as streamlined by Park–Pham and written out in
+    Lovett's PCMI notes §3 — is the target this repository should aim
+    at; see [docs/roadmap.md] §1, rewritten against it, and
+    [docs/reading.md] register row C17. *)
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
@@ -86,6 +126,45 @@ Axiom Rao20_lemma2 :
       1 <= n -> 2 <= k ->
       alpha * k * Nat.log2_up (S (k * n)) <= r ->
       SpreadYieldsDisjoint n k r.
+
+(** ** The fractional form, and what the axiom adds to it
+
+    Rao's Lemma 2 is stated at one value of [r] and in the *absolute*
+    form. Lovett's Definition 2.5 — *"Let `F` be a family of sets, and
+    let `k > 1`. We say that `F` is `k`-spread if for every set `T`,
+    `|F_T| <= |F|/k^{|T|}`"* (PCMI notes p. 7, rendered) — is
+    [Spread.Spread] exactly, and his Lemma 2.9 is the disjointness
+    statement against it: *"Let `F` be a family of n-sets which is
+    k-spread for k = cr log n ... Then `F` contains r pairwise disjoint
+    sets"* (p. 8, rendered). The fractional form needs no size
+    hypothesis, because [Spread F t] with [t ≥ 2] already forces
+    [|F| ≥ t^m] on an [m]-uniform family.
+
+    That difference is the whole of the "for all [r]" question.
+    [Spread] *is* monotone downward in its parameter
+    ([Spread.Spread_mono]), and [Spread.RaoSpread_Spread] converts the
+    axiom's hypotheses into it. So the fractional statement at a single
+    threshold implies the axiom's entire quantified shape, and the
+    quantification stops being something assumed. *)
+
+Definition FractionalSpreadDisjoint (n k t : nat) : Prop :=
+  forall (m : nat) (F : Family),
+    1 <= m -> m <= n ->
+    Uniform m F -> Distinct F ->
+    Spread F t ->
+    exists S : list (list nat),
+      incl S F /\ NoDup S /\ length S = k /\ PairwiseDisjoint S.
+
+Theorem fractional_form_gives_the_axiom_shape :
+  forall n k t,
+    FractionalSpreadDisjoint n k t ->
+    forall r, t <= r -> SpreadYieldsDisjoint n k r.
+Proof.
+  intros n k t Hfrac r Hle m F Hm Hmn HU HD Hbig Hrao.
+  apply (Hfrac m F Hm Hmn HU HD).
+  apply (@Spread_mono F r t); [| exact Hle].
+  exact (@RaoSpread_Spread m F r HU Hrao Hbig).
+Qed.
 
 (** ** Rao 2020, Theorem 1, derived *)
 

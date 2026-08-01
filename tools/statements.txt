@@ -94,6 +94,9 @@ e10cb4c2a2b98d6b  thm ALWZ.elementary_applies_to_singletons
 5a73637a391650d9  thm ALWZ.axiom_hypotheses_satisfiable_in_the_gap
     axiom_hypotheses_satisfiable_in_the_gap : Uniform 2 C37 /\ Distinct C37 /\ PeanoNat.Nat.pow (rao_threshold 1 20 3) 2 < length C37 /\ RaoSpread 2 C37 (rao_threshold 1 20 3) /\ (exists S0 : list (list nat), List.incl S0 C37 /\ List.NoDup S0 /\ length S0 = 3 /\ PairwiseDisjoint S0)
 
+4487aa9b76f21a8e  thm ALWZ.fractional_form_gives_the_axiom_shape
+    fractional_form_gives_the_axiom_shape : forall n k t : nat, FractionalSpreadDisjoint n k t -> forall r : nat, t <= r -> SpreadYieldsDisjoint n k r
+
 495eac4f33a7ac97  thm Reflect.rao_spreadb_correct
     rao_spreadb_correct : forall (m : nat) (F : list (list nat)) (r : nat) (U : list nat), List.NoDup U -> List.Forall (fun A : list nat => List.NoDup A) F -> (forall A : list nat, List.In A F -> Subset A U) -> rao_spreadb m F r U = true <-> RaoSpread m F r
 
@@ -406,6 +409,27 @@ df5f93524c055109  thm F23.sunflower3b_complete
 ea58a5daf0c640d2  thm F23.upper_bound_of_sunflower_free_bound
     upper_bound_of_sunflower_free_bound : forall n m : nat, (forall F : Family, Uniform n F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F <= m) -> UpperBound n 3 (S m)
 
+a57d17ae4f9854a9  thm IotaRate.intersecting_not_spread_above_uniformity
+    intersecting_not_spread_above_uniformity : forall (m : nat) (F : Family) (r : nat), Uniform m F -> Intersecting F -> F <> nil -> m < r -> ~ Spread F r
+
+24bdc5b5af078924  thm IotaRate.spread_threshold_bounds_g
+    spread_threshold_bounds_g : forall m r : nat, 1 <= r -> SpreadYieldsDisjoint m 3 r -> GAtMost m (PeanoNat.Nat.pow r m)
+
+646dbb306a075ff8  thm IotaRate.g_lower_bound_refutes_spread_threshold
+    g_lower_bound_refutes_spread_threshold : forall m r N : nat, 1 <= r -> PeanoNat.Nat.pow r m < N -> LowerBound m 3 N -> ~ SpreadYieldsDisjoint m 3 r
+
+b4a88bc143492991  thm IotaRate.flat_threshold_at_three_forces_g_three_at_most_27
+    flat_threshold_at_three_forces_g_three_at_most_27 : SpreadYieldsDisjoint 3 3 3 -> GAtMost 3 27
+
+cfe97be463ab5839  thm IotaRate.two_is_refuted_at_uniformity_two
+    two_is_refuted_at_uniformity_two : ~ SpreadYieldsDisjoint 2 3 2
+
+ddaff15bf6544ed5  thm IotaRate.substitution_would_refute_the_flat_threshold_at_nine
+    substitution_would_refute_the_flat_threshold_at_nine : LowerBound 9 3 (PeanoNat.Nat.pow 3 9 + 317) -> ~ SpreadYieldsDisjoint 9 3 3
+
+c193241faf913303  thm IotaRate.substitution_would_force_c_three_at_least_four
+    substitution_would_force_c_three_at_least_four : LowerBound 9 3 (PeanoNat.Nat.pow 3 9 + 317) -> forall c : nat -> nat, (forall k : nat, 2 <= k -> 1 <= c k) -> (forall n k : nat, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)) -> 4 <= c 3
+
 26eb6f81638cc300  thm IotaRate.iota_le_g
     iota_le_g : forall b M : nat, GAtMost b M -> IotaAtMost b M
 
@@ -684,6 +708,9 @@ ae9f5aa59e041675  def Spread.Spread
 
 5ac1eb6d53b40115  def SpreadReduction.SpreadYieldsDisjoint
     SpreadYieldsDisjoint = fun n k r : nat => forall (m : nat) (F : Family), 1 <= m -> m <= n -> Uniform m F -> Distinct F -> PeanoNat.Nat.pow r m < length F -> RaoSpread m F r -> exists S : list (list nat), List.incl S F /\ List.NoDup S /\ length S = k /\ PairwiseDisjoint S : nat -> nat -> nat -> Prop Arguments SpreadYieldsDisjoint (n k r)%nat_scope
+
+fbb260e9c2c185d2  def ALWZ.FractionalSpreadDisjoint
+    FractionalSpreadDisjoint = fun n k t : nat => forall (m : nat) (F : Family), 1 <= m -> m <= n -> Uniform m F -> Distinct F -> Spread F t -> exists S : list (list nat), List.incl S F /\ List.NoDup S /\ length S = k /\ PairwiseDisjoint S : nat -> nat -> nat -> Prop Arguments FractionalSpreadDisjoint (n k t)%nat_scope
 
 a6c15dca9d0a604d  def Sets.SetEq
     SetEq = fun A B : list nat => Subset A B /\ Subset B A : list nat -> list nat -> Prop Arguments SetEq (A B)%list_scope

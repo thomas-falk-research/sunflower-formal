@@ -38,58 +38,197 @@ than acquire them later:
 
 ---
 
-## 1. Discharging the axiom: Rao's Lemma 2
+## 1. Discharging the axiom: the counting proof, not Rao's
 
 The one axiom is `ALWZ.Rao20_lemma2`. Everything downstream of it is
 already proved, so discharging it is the single highest-value target,
-and the interface is fixed: prove `SpreadYieldsDisjoint n k r` for
-`r ≳ k log(nk)` and the file closes with no other changes.
+and the interface is fixed.
 
-Rao's proof is elementary — injections between finite sets and
-binomial estimates, no measure theory — which is what makes it a
-realistic target at all. Re-read the paper before writing a line. That
-discipline is what caught the fractional-vs-absolute error.
+**This section was rewritten in the July 2026 reading session, and the
+target changed.** The previous version aimed at Rao's encoding argument
+on the strength of the sentence *"Rao's proof is elementary — injections
+between finite sets and binomial estimates, no measure theory"*, which
+`coq/ALWZ.v` asserted without anyone having opened the paper. The paper
+has now been read in full. Its Lemma 5 is **Shannon's noiseless coding
+theorem**, applied through Kraft's inequality and the concavity of `log`,
+over a uniformly random partition of the ground set. It is the *worst*
+fit of the four published proofs for a `nat`-only development.
+
+### What to prove, exactly
+
+Not `Rao20_lemma2` as stated. Prove the **fractional, single-threshold**
+statement — Lovett's Lemma 2.9, PCMI notes p. 8:
+
+> Let `F` be a family of `n`-sets which is `k`-spread for `k = cr log n`,
+> for a large enough absolute constant `c`. Then `F` contains `r`
+> pairwise disjoint sets.
+
+In this development that is `ALWZ.FractionalSpreadDisjoint n k t` for
+`t = Θ(k log n)`, and `ALWZ.fractional_form_gives_the_axiom_shape`
+already carries it the rest of the way: it derives
+`SpreadYieldsDisjoint n k r` for **every** `r ≥ t`, via
+`Spread.RaoSpread_Spread` and `Spread.Spread_mono`. So the target is one
+sentence at one threshold, in the form the literature states it, and the
+axiom's quantification over `r` is no longer something to prove.
+
+That theorem is already in the kernel. It is the cheapest thing this
+session produced and it removes a real overreach: the axiom said more
+than Rao's Lemma 2 does, and nobody had noticed.
+
+### Which proof
+
+The counting proof: **[ALWZ20] §2 / [FKNP21], as streamlined by
+Park–Pham and written out in Lovett's PCMI notes §3 (pp. 11–15).**
+
+Its core, Claim 3.4, is a single displayed ratio of two finite
+cardinalities:
+
+```
+  Pr[ |M(S,V)| >= n/2 ]  =  |B| / ( |F| * C(N, qN) )
+```
+
+where `B = {(S,V) : S in F, V subset of U with |V| = qN, |M(S,V)| >= n/2}`.
+The bound comes from an explicit encoding `phi(S,V) = (Z, S', M, S\M)`
+together with the sentence *"we can decode `(S,V)` given `phi(S,V)`"* —
+injectivity — and then a binomial estimate and a geometric sum. There is
+no measure, no entropy, no limit. Nothing else among the four proofs is
+this close to `nat`.
+
+### Read at proof level, August 2026 — the exact skeleton
+
+[Lovett] §3 was re-read line by line before any of the staging below was
+written. The whole proof is six statements, and their dependency graph is
+a chain:
+
+```
+  Def 3.2   minimal fragment  M(S,V) = min-size element of
+                              { S' \ V : S' in F, S' subset S u V }
+  Obs 1-3   M subset S ; M disjoint from V ; M empty iff some S' subset V
+  Claim 3.3 Z := V u M(S,V), F' := { S' in F : S' subset Z }.
+            Then F' nonempty, and every S' in F' has S' \ V = M(S,V).
+  Claim 3.4 THE COUNT.  Pr[ |M(S,V)| >= n/2 ]  =  |B| / (|F| * C(N,qN))
+            bounded by an explicit encoding.
+  Claim 3.5 Markov on 3.4, plus Exercise 3.1 (spreadness survives
+            shrinking sets and passing to a (1-eps)-subfamily).
+  Claim 3.6 Iterate: if F_t contains the empty set then union V_i
+            contains a member of F_0.
+  Lemma 3.1 Apply 3.5 log n times; product of (1 - 10^{-n/2^i}) >= 0.8.
+```
+
+**Three things this changes about the staging, none of which were visible
+from the section's summary.**
+
+1. **Claim 3.6 and Claim 3.3 are arithmetic-free.** 3.6 is an induction on
+   `t` with no numbers in it at all, and it is the claim that actually
+   produces the conclusion. 3.3 is pure set algebra. Together they are
+   perhaps a third of the proof and they need nothing but `Sets.v`.
+
+2. **The encoding's injectivity is an equation, not an argument.** Claim
+   3.4 defines `phi(S,V) = (Z, S', M, S \ M)` and justifies it in one
+   sentence: *"we can decode `(S,V)` given `phi(S,V)` since
+   `S = M u (S \ M)` and `V = Z \ M`"*. So the formal obligation is not
+   "`phi` is injective" — it is `psi (phi (S,V)) = (S,V)` for an explicit
+   `psi`, which is a rewrite, not a case analysis. This is the single
+   most useful thing the proof-level read produced.
+
+3. **There is exactly one binomial estimate in the whole proof**:
+   `C(N, qN+m) <= q^{-m} C(N, qN)`. Everything else is `C(n,m) <= 2^n`
+   and a geometric sum. The earlier plan budgeted for "binomial estimates"
+   in the plural; there is one.
 
 ### Stage A — the counting layer
 
-**The technical choice that decides feasibility.** The covering step
-is usually stated for a uniformly random subset of *fixed size*, which
-drags in binomial coefficients and their estimates. Stated instead for
-the **product measure** — each element included independently with
-probability 1/2 — "probability" becomes plain cardinality over the
-powerset, and `Spread.subsets` is already exactly that enumeration.
+**The technical choice from an earlier version of this section was
+backwards.** §1 used to say: state the covering step for the *product
+measure* with each element included independently with probability `1/2`,
+so "probability" becomes cardinality over the powerset, which
+`Spread.subsets` already enumerates. Three things are wrong with it:
 
-Build:
+* the proof needs `V` to be a **small** random set, `q = p/log n`. At
+  `p = 1/2` the product measure is plain cardinality; at `p = 1/log n` it
+  is a weighted sum, which is *worse* than the fixed-size version;
+* in every published *proof* the **fixed-size** statement is the
+  primitive. Lovett Claim 3.4, ALWZ Lemma 2.8 and FKNP Theorem 1.6 are
+  all stated for a random subset of fixed size. (Surveys sometimes state
+  the *conclusion* in the product measure — [Kup25] Theorem 3 does — but
+  nothing proves it there.);
+* the product-measure statement is *derived from* the fixed-size one, by
+  a limiting argument. Lovett p. 11, in full: *"Take now `U'` of growing
+  size; the limiting distribution of `W` converges to `Bin(U,p)`."*
+  Starting at the product measure means formalising that limit.
 
-* `count : (list nat -> bool) -> list (list nat) -> nat`;
-* injection-implies-`≤`;
-* additivity over disjoint predicates;
-* `length (subsets U) = 2 ^ length U`.
+So Stage A builds **fixed-size subset enumeration and one binomial
+ratio**, not powerset enumeration:
 
-Self-contained, independently testable, reusable. Likely one session.
+* `subsets_of_size : nat -> list nat -> list (list nat)`, with
+  `length (subsets_of_size j U) = C (length U) j`;
+* `count : (list nat -> bool) -> list (list nat) -> nat`, injection
+  implies `<=`, additivity over disjoint predicates;
+* `C (n, m) <= 2 ^ n`;
+* **the one estimate**: `C(N, j+m) * c^m <= C(N, j) * d^m` for `j = qN`
+  and `q = c/d`. Cleared denominators, so it stays in `nat`. This is the
+  only place rationals would otherwise appear.
 
-### Stage B — the encoding
+`Spread.subsets` still helps — `subsets_of_size j = filter (length = j)
+(subsets ...)` is the cheap definition and gives membership for free —
+but the *counting* is over the size-`j` layer.
 
-The mathematical core: the map from "sets `W` containing no member of
-`F`" to compressed encodings, and its injectivity. This is where a
-session's budget should go, and where the stall risk is.
+Independently testable, and the Rust testbed can falsify every line of it.
 
-### Stage C — the arithmetic
+### Stage B — the encoding, and it is smaller than it looked
 
-Where the explicit constant lives.
+* `minimal_fragment : Family -> list nat -> list nat -> list nat`,
+  picking the first element of minimal length in an explicit enumeration
+  (Lovett's *"breaking ties arbitrarily"* becomes "first in the
+  enumeration", which is what makes it a function rather than a choice);
+* the three observations, and **Claim 3.3** — set algebra, no arithmetic;
+* `phi` and an explicit `psi`, with `psi (phi (S,V)) = (S,V)`;
+* **Claim 3.4**'s count, assembling Stage A's four pieces.
 
-**Scoping decision — do not chase the constant.** The axiom is
-existentially quantified over `α`, so *any* explicit constant
-discharges it: `α = 2²⁰` closes the file exactly as well as `α = 64`.
-Chasing sharpness is where this campaign dies.
+The stall risk is here, but it is smaller than the previous version of
+this section assumed, because the injectivity obligation is an equation.
 
-### What the testbed now buys here
+### Stage C — the iteration
 
-Each stage's statements can be checked before they are proved. A
-counting lemma is a Rust one-liner to falsify; an encoding is a map to
-run over the exhaustive enumeration in `rust/src/testbed.rs` and check
-injective. Use it — the cost of finding out a lemma is false after
-half a session of proof is the main way this campaign goes wrong.
+* **Claim 3.5**: Markov, which in the fixed-size setting is the counting
+  statement "if the average over `V` is at least `(1-eps)|F|` then most
+  `V` are good", plus Exercise 3.1's two spreadness-preservation lemmas;
+* **Claim 3.6**: induction on `t`. Arithmetic-free, and it is the step
+  that yields the conclusion;
+* the `log n` iteration and the product `prod (1 - 10^{-n/2^i}) >= 0.8`.
+
+**Scoping decision — do not chase the constant.**
+`FractionalSpreadDisjoint` is instantiated at whatever `t` the proof
+yields, and `fractional_form_gives_the_axiom_shape` is monotone upward in
+`r`, so any explicit constant discharges the axiom. `c = 2^20` closes the
+file exactly as well as `c = 64`.
+
+### The alternative that was checked and rejected
+
+[Rao25] *The Story of Sunflowers* (arXiv:2509.14790) advertises, in its
+abstract, *"a short elementary proof of the best known bounds for the
+robust sunflower lemma"*, in its §3. That looked like it might beat
+Lovett §3. **It was read (pp. 8–10) and it does not.** On top of the
+counting it needs a Chernoff bound to fix `|A(γ)|`, Azuma's inequality
+across the `ℓ` sampling rounds, and Markov. Lovett §3 needs Markov and a
+geometric series and nothing else.
+
+What §3 *does* give is confirmation that the outer induction is already
+done here. p. 8: *"For `k > 1`, if there exists a set `Z` with
+`0 < |Z| < k` contained in some `r^{k−|Z|}` sets of `F`, we apply
+induction on the family of sets containing `Z` ... Otherwise, it must be
+that for every non-empty set `Z`, the number of sets of the family
+containing `Z` is at most `r^{k−|Z|}`."* That is
+`SpreadReduction.spread_reduction`'s dichotomy, with `Spread.RaoSpread`
+as the "Otherwise". **The only missing piece is the covering step.**
+
+### What the testbed buys here
+
+Each stage's statements can be checked before they are proved. A counting
+lemma is a Rust one-liner to falsify; an encoding is a map to run over
+the exhaustive enumeration in `rust/src/testbed.rs` and check injective.
+Use it — the cost of finding out a lemma is false after half a session of
+proof is the main way this campaign goes wrong.
 
 ---
 
@@ -348,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 66 anecdotes into a coverage metric over the
+  mutation testing from 69 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -2476,6 +2615,16 @@ first.
 
 ## 15. What to read next, and why none of it has been read
 
+> **Superseded by §16 and `docs/reading.md` (session N+3).** This section
+> is kept as written, because it is the diagnosis that produced the
+> reading session and the table below is the plan that was executed. Its
+> "read" column is now out of date: [Ra20], [ALWZ20], [BCW21], [Lovett]
+> and [MNSZ22] were read in full, and its headline claim — that the
+> repository's axiom came from an unopened paper — is no longer true.
+> Everything §15 predicted about the *consequences* of reading turned
+> out to be right, including that §1's target would change.
+
+
 §14.5 withdrew a novelty claim that one `grep` would have prevented. The
 same audit, applied to the reading list, turns up something worse: **the
 repository's single axiom comes from an eight-page open-access paper that
@@ -2599,3 +2748,837 @@ section adds the other half: **read the source of your own axiom before
 planning sessions of work against it.** Eight pages, open access, cited in
 `coq/ALWZ.v`, and the campaign built on it is the highest-value item in
 the repository.
+
+---
+
+## 16. What the reading changed
+
+Session N+3 read papers instead of proving things. Thirty-five papers
+were downloaded and rendered, plus one MathOverflow answer; **twelve were
+read cover to cover** (§17 added two to §16's nine, §19 added a twelfth) —
+[Ra20] (8pp), [ALWZ20] (19pp), [BCW21] (3pp), [Lovett] (28pp),
+[MNSZ22] (8pp), [ErRa60] (6pp), [Mis26] (12pp), [Rao25] (12pp) and
+Fukuyama's arXiv:2510.19037 (8pp); added in §17, [Kup25] (66pp) and
+[NaSa17] (5pp); added in §19, [KuZa22] (27pp). Seven more in part, and
+Hunter's answer in full.
+`docs/reading.md` is the log, with an explicit page count for every
+entry and a register of twenty-one claims resolved. This section is what
+it did to the repository.
+
+### 16.1 Refuted
+
+Six withdrawals — **five, after §17.6 withdrew one of them.** §15
+predicted the count going up would be a success condition, and it went
+up; §17 is what happens when the same discipline is turned on this
+section.
+
+1. **"The only fully machine-checked formalisation of the Erdős–Rado
+   1960 upper bound."** False, and false for five years before this
+   repository started. René Thiemann's Isabelle/HOL entry *The Sunflower
+   Lemma of Erdős and Rado* has been in the Archive of Formal Proofs
+   since **25 February 2021**, proving `(r−1)^k·k!` with the same
+   strict-inequality convention, plus two corollaries about cores that
+   this development does not have. Withdrawn in `docs/references.md`.
+   What does appear to be unduplicated is the *spread layer*.
+
+2. **`coq/ALWZ.v`: "the source allows sets of size at most `m`."** Rao's
+   Lemma 2 says *"sets of size `k`"*. The "at most" convention is
+   [ALWZ20]'s Definition 1.1. The header cited the wrong paper for its
+   own axiom's shape.
+
+3. **`coq/ALWZ.v`: "Rao's proof is elementary — injections between
+   finite sets and binomial estimates, no measure theory."** Its Lemma 5
+   is Shannon's noiseless coding theorem, over a random partition of the
+   ground set, through Kraft's inequality and the concavity of `log`.
+   This one had been load-bearing: it is why §1 planned three stages
+   against the wrong paper.
+
+4. **`coq/IotaRate.v`: the extremal-set-theory toolbox "has never been
+   pointed" at intersecting families here.** [ALWZ20] §4.2 is titled
+   *Intersecting set systems*; Theorem 4.2 bounds the spread parameter
+   of an intersecting `w`-uniform system by `O(log w)`, with a
+   near-matching example. Different hypothesis from `ι`, so the sandwich
+   and the equivalence stand — but nobody had looked, and the reason
+   nobody had looked is that nobody had read §4.
+
+5. **`docs/references.md`: "[ALWZ20] establishes `f(n,k) ≤ (Ck log n)^n`."**
+   That is [BCW21]'s bound. ALWZ's own Theorem 1.4 is
+   `(Cr³ log w log log w)^w`. ALWZ's §4 records the chain itself.
+
+6. ~~**`docs/references.md`: [NaSa17] gives "`3(n+1)C^n` members".**~~
+   **This withdrawal is itself withdrawn — see §17.6.** It was based on
+   the abstract; Theorem 3 on page 2 says `3(n+1)`, and `C^n` does bound
+   the binomial sum exactly. The original wording was right. **Five
+   withdrawals stand, not six.**
+
+And two half-withdrawals.
+
+* The *reason* `docs/references.md` gave for [Mis26]'s "at least / more
+  than" discrepancy was wrong. It is not an extracted-text artefact; the
+  paper's abstract and its introduction disagree with each other.
+* The cone's search note said *"one targeted search found nothing stating
+  it"*. The **technique** — add a dummy point to every member of a
+  maximal sunflower-free family one uniformity down — is stated, by Zach
+  Hunter, in the answer this repository has been citing for two sessions
+  without opening (§16.4). The exact statement `g(m) ≤ ι(m+1)` is still
+  not found; the move is not new and was never claimed to be.
+
+### 16.2 Confirmed
+
+* **`Rao20_lemma2` is a faithful rendering of Rao's Lemma 2.** Checked
+  symbol by symbol on the rendered page: the absolute spread condition,
+  the `>` in the size hypothesis, the threshold `αp log(pk)`, the base-2
+  logarithm, the direction of every weakening. The trusted core says what
+  it claims to say.
+* **`Spread.Spread` *is* Lovett's Definition 2.5**, on the nose, and the
+  three quotations `docs/references.md` attributes to his page 7 are
+  verbatim on rendered page 7. §14.5's correction is confirmed at the
+  primary source.
+* **Both branches of `StarDefect.the_two_branches_of_the_dichotomy` are
+  on page 90 of the 1960 paper.** The maximal-disjoint-subfamily cover
+  and the pigeonhole are Erdős and Rado's own argument for the finite
+  distinct case, not a later textbook rewrite.
+* **`coq/DirectSum.v`'s supermultiplicativity is [Kup25] Observation 2**,
+  with proof, on rendered page 6. No novelty was claimed; now it has a
+  citation.
+* **[BCW21] `(Cp log k)^k` is still the peer-reviewed record**, and
+  `coq/ALWZ.v`'s note on what it would buy is accurate.
+* **`f(n,3) ≳ 10^{n/2}` is still the lower-bound record.** An arXiv
+  sweep of three queries over 2024-06 → 2026-07 returned thirty
+  sunflower papers and no lower-bound improvement. Negative evidence.
+* **[Mis26] is unrevised and unwithdrawn**, and `coq/Compression.v`'s
+  off-by-one convention is right.
+
+### 16.3 Two things that changed a plan
+
+**§1's technical choice was backwards.** It proposed proving the covering
+step for the product measure at `p = 1/2`, because "probability becomes
+plain cardinality over the powerset, which `Spread.subsets` already
+enumerates". But the proof needs `W` *small* — `q ≈ 1/log n` — and at
+that `p` the product measure is a weighted sum, not a cardinality. In
+every published version the **fixed-size** statement is the primitive
+(Lovett Claim 3.4 computes `|B| / (|F|·C(N,qN))`, already a ratio of two
+cardinalities), and the product-measure version is *derived from it* by a
+limiting argument. Starting at the product measure means formalising a
+limit.
+
+§1 is rewritten: Stage A builds fixed-size subset enumeration and
+binomial counting, the target moves from [Ra20] to Lovett §3, and the
+target *statement* moves from the absolute to the fractional form.
+
+**And the alternative was checked rather than left as a hope.** [Rao25]
+advertises *"a short elementary proof of the best known bounds for the
+robust sunflower lemma"* in its §3. Read (pp. 8–10): it needs a Chernoff
+bound, Azuma's inequality and Markov on top of the counting, where
+Lovett §3 needs Markov and a geometric series. Not a shortcut, and
+rejected on evidence rather than left on the list for a fourth session.
+
+What §3 did give is that the **outer induction is already done here**.
+Its dichotomy, p. 8, is `SpreadReduction.spread_reduction`'s, with
+`Spread.RaoSpread` as the "Otherwise" branch. The only missing piece of
+the whole argument is the covering step.
+
+### 16.4 What it revealed that nobody here knew to look for
+
+This is the part worth keeping.
+
+* **The axiom said more than its source.** Rao's Lemma 2 fixes `r` at one
+  value; `Rao20_lemma2` quantifies over every `r` above the threshold,
+  and `SpreadYieldsDisjoint` is not monotone in `r` on general grounds —
+  the repository's own `SpreadReduction.v` says so, in a comment, about
+  the *elementary* lemma, and then the axiom did the thing the comment
+  warns about. It is now discharged rather than assumed:
+  `ALWZ.fractional_form_gives_the_axiom_shape` derives the whole
+  quantified family from the fractional single-threshold statement, via
+  machinery (`RaoSpread_Spread`, `Spread_mono`) that had been sitting in
+  `Spread.v` since the spread layer went in. **The same shape as §14.5:
+  the fix was already in the repository.**
+
+* **§5's open question is not open in the way it was recorded.** It said
+  "whether the `log` is necessary in the disjointness form was looked for
+  and not found". It is found, three times, in sources that were sitting
+  unread: [Ra20] p. 2, *"As far as we know, it is possible that Lemma 2
+  holds even when `r(p,k) = O(p)`. Such a strengthening of Lemma 2 would
+  imply the sunflower conjecture of Erdős and Rado."*; [Rao25] p. 3,
+  *"This dependence is necessary for robust sunflowers ... Nevertheless,
+  it is quite possible that the sunflower conjecture of Erdős and Rado
+  holds in its original form."*; and both tightness examples ([ALWZ20]
+  Lemma 3.1, [BCW21] Lemma 4) are transversal families, which **do**
+  contain `p` pairwise disjoint sets and therefore say nothing about the
+  disjointness form. The question is a stated open problem whose positive
+  resolution is the conjecture.
+
+* **One of the four proofs has a published gap, and two independent
+  sources say so.** [MNSZ22] footnote 2, page 6: *"It was recently
+  pointed out that the proof of [Tao20] has a gap, which has been
+  corrected in [Hu21, Sto22]."* [Kup25] page 7: *"Tao [118] gave a proof
+  based on entropy, which, however, contained a mistake."* §15.1 listed
+  Tao's entropy argument as one of four routes without knowing this. The
+  corrected entropy proof reaches `φ(s,k) ≤ (64s log k)^k` — which is
+  where this repository's unsourced "`C = 64`" note came from, now with a
+  page behind it.
+
+* **Erdős–Rado 1960 does not prove `(k−1)^n n!`.** It proves something
+  sharper — `φ(a,b) ≤ b!a^b(1 − 1/(2!a) − 2/(3!a²) − …)` for distinct
+  families, p. 90 — and its headline Theorem III is about *multisets*,
+  which is a factor `a` larger and is why `c = 12` at `a = b = 2`.
+  `coq/ErdosRado.v` proves the rounded modern version, which is correct
+  and weaker than the source. Nobody here knew the source was sharper.
+
+* **[AHS72] also improved the upper bound, and Spencer 1977 improved it
+  again.** [Kup25] p. 5: *"Abbot, Hanson and Sauer [1] in 1972, and then
+  Spencer [116] in 1977 improved upper bounds on `φ(k,s)`. The result of
+  Spencer states that for any fixed `s` and `ε > 0` there exists `C` such
+  that `φ(k,s) ≤ Ck!(1+ε)^k`."* This bibliography had three results
+  traced to [AHS72] and none of them was this one. **Spencer 1977 is not
+  in the bibliography at all.**
+
+* **A 2025 preprint claims to beat [BCW21]**, with a sub-logarithmic
+  base `(ck² ln m / ln ln m)^m` (Fukuyama, arXiv:2510.19037v2). It is
+  unrefereed, the author's own page calls the proof unstable, and the
+  same author has a 2018 claim of the same kind that never appeared.
+  Recorded and not adopted — but §12's threshold table had been written
+  as though the 2021 record were unchallenged, and it is being
+  challenged.
+
+* **The 2024–2026 literature is much larger than the reading list
+  assumed.** Thirty sunflower papers in twenty-five months, including a
+  survey by Rao (Sept 2025), the Duke–Erdős extremal-structure line, the
+  sunflower-free process, two vector-space analogues, and a June 2026
+  polynomial improvement of [NaSa17]. The tabulated sweep is in
+  `docs/reading.md` so the next session does not repeat it.
+
+* **Zach Hunter's answer was reachable all along, and it contains two of
+  this repository's theorems.** `docs/references.md` has credited the
+  ground-set equivalence to it for two sessions without anyone opening
+  it, because `WebFetch` refuses mathoverflow.net. **The StackExchange
+  API is not blocked**, and one `curl` to
+  `api.stackexchange.com/2.3/answers/463150?site=mathoverflow&filter=withbody`
+  returns the body. Reading it:
+
+  * the equivalence is confirmed at source, in one sentence;
+  * his closing *"EDIT: my question is also silly. If no element is
+    contained by a `(1/tk)`-fraction of the edges from `H`, then we can
+    greedily find `t` disjoint sets"* is `StarDefect.star_defect_bound`,
+    stated informally in January 2024, at constant `3b` against this
+    repository's `2b`. That is the *third* independent source for the
+    branch §14.5 withdrew the novelty claim for;
+  * the question he proposes and immediately withdraws — a vertex of
+    degree `≥ c_t^k|H|` — is the **exponentially weak** form of
+    `StarDefect.StarBounded` and is trivially true, where `StarBounded`
+    asks for a *constant* factor and is false. Keeping those two apart is
+    the whole content of §14.
+
+  The lesson generalises past this problem: **a blocked fetcher is not an
+  unreachable source.** The same route reaches any MathOverflow post.
+
+* **The negative-result infrastructure was reading the wrong sources.**
+  "Not found in [Kup25]" was doing a lot of work in this repository, and
+  [Kup25] is a 66-page survey of which six pages have now been read. Six
+  pages of it produced one confirmation, one new reference, and one
+  published theorem that this repository had reproved. The other sixty
+  pages are unread.
+
+### 16.5 What did not change
+
+No theorem in the development is false, and none was weakened. Every
+withdrawal above is a claim *about the literature* or a description of a
+proof — never a mathematical statement checked by the kernel. `make
+coqchk` still reports exactly one axiom. That is the system working: the
+prose was wrong in six places and the mathematics in none, which is the
+right way round, and the only reason the six were found is that somebody
+finally rendered the pages.
+
+### 16.6 The standing rule this section adds
+
+§14.6: grep the development before calling a quantity unnamed.
+§15.5: read the source of your own axiom before planning sessions against
+it.
+
+**§16.6: when the repository states what a source says, the sentence goes
+in with a page number and a verbatim quotation, or it does not go in.**
+Every one of the six withdrawals above is a paraphrase that drifted. None
+of them would have survived being written as a quotation, because writing
+a quotation forces you to have the page open.
+
+---
+
+## 17. The second pass: reading the survey properly, and what that cost
+
+§16 was written after reading nine papers cover to cover. This section is
+what changed when the reading went on — [Kup25] in full rather than two
+pages, [ASU12], the MathOverflow answer, and one exhaustive computation.
+It is shorter than §16 and more uncomfortable, because two of its entries
+are corrections to §16 itself.
+
+### 17.1 Withdrawn from §16's own session
+
+**`pdftotext` cannot establish absence, and this repository has now been
+bitten by that inside the very session that was written to stop it.**
+
+Register row B12 was recorded as *"one clean negative: the strings
+'covering number', 'transversal' and 'maximal intersecting' do not occur
+anywhere in [Kup25]'s 66 pages"*, from a page-by-page extracted-text
+search. Then page 19 was rendered:
+
+> he ... shows that `G` should be empty using a simple, but somewhat
+> tedious, 'covering number' argument which we avoid. [Kup25, p. 19]
+
+The extractor had broken the phrase across a line — `'covering` then
+`number'` — so a two-word search missed it in a document that contains
+it. Page 59 has *"intersecting families with covering number 2"*. Both
+withdrawn in `docs/references.md`.
+
+The rule the reading discipline already had — *quote only from rendered
+pages* — was obeyed. The rule it did not have is the other half:
+**a negative from extracted text is not a negative at all.** Searching
+is as much a source of false claims as quoting, and it was the untested
+half.
+
+**And the search vocabulary was wrong independently of the extractor.**
+[Kup25] §1.7 is *about* the covering-number material, under the names
+**base**, **nucleus**, **generating set**, **crosscut** and **minimal
+cover**, crediting Erdős–Lovász, Füredi, Frankl and
+Ahlswede–Khachatrian. p. 52: *"the produced sets ... give exactly the
+family of **minimal covers** for the sets in `F` ... In a recent paper of
+Frankl [52], the family of minimal covers is efficiently analyzed in
+order to bound the maximal diversity of an intersecting family."* §14.6
+said "search for the field's notation, not yours". The field has five
+notations for this one, and none of them is "covering number".
+
+### 17.2 Verified rather than cited
+
+**`ι(3) = 10` is the unique simple 2-(6,3,2) design, and that is now
+checked.** `docs/references.md` had it as *"standard design theory and
+taken on the literature's word here, not verified"*, because the Handbook
+of Combinatorial Designs is not open access. It never needed the
+Handbook: there are `C(20,10) = 184756` ways to choose ten triples from
+the twenty on six points. Exactly **12** are simple 2-(6,3,2) designs and
+all 12 form a **single** isomorphism class, so `|Aut| = 720/12 = 60` — a
+second, independent derivation of the group order, agreeing with
+`structure::automorphisms`.
+`rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`.
+
+A paywall is not always a blocker. Sometimes the claim behind it is a
+finite check.
+
+### 17.3 The vocabulary problem, which is the general form of §17.1
+
+§14.6 said: search for the field's notation, not yours. That was right and
+too weak. This session's corpus contains **five** names for a sunflower
+and **five** for a cover, and every "not found" in this repository has
+been run against one or two of each.
+
+```
+  the object            sunflower  Delta-system  s-star  weak sunflower
+                        pseudo-sunflower  near-sunflower
+  the covering notion   cover  base  nucleus  generating set  crosscut
+                        minimal cover
+```
+
+`s-star` is [Kup25] fn. 6, p. 21, *"a name that appears in the follow-up
+papers of Frankl and Füredi"*. `weak sunflower` is Erdős–Milner–Rado, via
+[FPPTZ24] p. 1. The covering names are [Kup25] §1.7 and Definition 39.
+
+**A negative search result is only as good as its worst synonym**, and
+none of this repository's negatives has been run against this list. They
+are all downgraded accordingly in `docs/reading.md`; none is deleted,
+because the searches did happen and are worth knowing about.
+
+### 17.4 What the full survey revealed
+
+Five things, none of which the two-page read had reached.
+
+* **`Spread.Spread` is a tool of the Δ-system method itself.** §1.7,
+  p. 49: *"r-spread families in many ways behave like sunflowers with r
+  petals, albeit they are much easier to find"*, via the
+  **peeling-simplification** procedure; p. 53 names the **spread
+  approximation** method of Kupavskii and Zakharov. Two research
+  programmes built on this repository's central definition, and the
+  bibliography had neither.
+
+* **`SpreadReduction.spread_reduction`'s conclusion is Observation 58.**
+  p. 50, two lines: *"If `G ⊂ ([n] choose ℓ)` is such that there is no
+  `X` such that `G(X)` is `r`-spread, then `|G| ≤ r^ℓ`"* — followed by
+  *"This bound is already better than the bound coming from not
+  containing a sunflower."* No novelty was claimed for the reduction and
+  none is now; but it is worth knowing it is a remark elsewhere.
+
+* **`g` is the leading constant of a published asymptotic.** Theorem 37,
+  p. 35 (Frankl–Füredi): `f(n,k,ℓ,s) = (φ(ℓ+1,s) + o(1))·C(n−ℓ−1,k−ℓ−1)`
+  for the Duke–Erdős forbidden-sunflower problem. At `ℓ=1, s=2` the
+  constant is `φ(2,2) = f(2,3) − 1 = 6`, which `coq/F23.v` proves. The
+  small exact values are not only local curiosities.
+
+* **A third name for a sunflower.** Footnote 6, p. 21: `Δ(s)`-systems
+  are called **`s`-stars** "in the follow-up papers of Frankl and
+  Füredi". Every negative search in this repository has used "sunflower"
+  or "Δ-system".
+
+* **The Hall layer has a second customer.** Theorem 29 (Frankl–Katona),
+  p. 29, is proved by a containment bipartite graph and *"a Hall's
+  condition in disguise"* — `coq/HallCore.v`, `coq/KoenigHall.v` and
+  `coq/Matching.v`, built for the uniformity-2 programme, are exactly
+  that machinery.
+
+### 17.5 Two citations settled, one still shut
+
+* **[AHS72]**, in full, and now with the closure established rather than
+  assumed:
+
+  > H. L. Abbott, D. Hanson and N. Sauer, *Intersection theorems for
+  > systems of sets*. **Journal of Combinatorial Theory, Series A**,
+  > vol. **12**, issue **3**, May **1972**, pp. **381–389**. Elsevier.
+  > **DOI `10.1016/0097-3165(72)90103-3`.**
+
+  The citation is from [Kup25] p. 62, the bibliographic detail verified
+  against Crossref. [Kup25] omits the series letter; JCT split at volume
+  10 (1971), so volume 12 is Series A and the two agree.
+
+  **It is closed, and that is a fact rather than a failed search.**
+  OpenAlex's record for that DOI reports `oa_status: "closed"` and
+  `any_repository_has_fulltext: false` — no open copy in any indexed
+  repository. Five retrieval routes are recorded in `docs/reading.md`;
+  the fourth session in a row to try should not be a fifth. §15.2's
+  instruction stands: **record it and stop.**
+
+  One detail worth keeping: an earlier attempt this session guessed the
+  DOI suffix as `-4` and got a 404. The real suffix is `-3`. Same lesson
+  as §17.7.
+* **Spencer 1977**, in full, from [Kup25] p. 66: *Canadian Mathematical
+  Bulletin 20 (1977), N2, 249–254*, doi:10.4153/CMB-1977-038-7.
+  Unreachable — Cambridge Core, no open access.
+* **[Ko97]'s bound** had two incompatible renderings in §16's sources.
+  [ASU12] Theorem 2.2 agrees with [Rao25] on
+  `cs!·(log log log s / log log s)^s`; [Kup25] p. 5 is garbled. Fixed.
+* **"Lu" vs "Hu"** is settled: [Kup25]'s reference list, p. 65, gives
+  **Lunjia Hu**. Its body text is the typo.
+
+### 17.6 A withdrawal of a withdrawal
+
+§16 listed six withdrawals. One of them was wrong.
+
+It said `docs/references.md` misquoted [NaSa17] as *"`3(n+1)C^n`
+members"* when the paper says `3n Σ_{k≤n/3} C(n,k)`. That came from
+reading **page 1**, the abstract. Pages 2–5 were then read, and
+**Theorem 3 on page 2** is:
+
+> `|F| ≤ 3(n+1) Σ_{k ≤ n/3} C(n,k)`, and `μ₃^S ≤ 3/2^{2/3} = 1.889881574…`
+
+The abstract and the theorem disagree about the polynomial factor, and
+the theorem is the claim. And `Σ_{k≤n/3} C(n,k) ≤ 2^{H(1/3)n}` with
+`H(1/3) = log₂3 − 2/3`, so `(3/2^{2/3})^n` bounds it exactly — the
+original `3(n+1)C^n` was right in the factor *and* in the shape. **§16's
+sixth withdrawal is withdrawn.** Five stand.
+
+The reading discipline's rule 3 says nothing is quoted from an abstract.
+This session then based a correction on one. **Page 1 is not the paper**,
+and abstracts disagree with their own theorems often enough to matter —
+[Mis26] does it too, "at least" against "more than", which §16 already
+recorded without drawing the general moral.
+
+### 17.7 One more failure mode, recorded because it wasted a read
+
+The first attempt at [ASU12] fetched `arXiv:1109.6216`, an identifier
+recalled rather than looked up. That is *Observation of the Perseus galaxy
+cluster with the MAGIC telescopes*, and four of its pages were rendered
+and read before the mismatch was obvious. [ASU12] is not on arXiv at all.
+
+**Identifiers get looked up, never recalled** — the same rule as
+quotations, for the same reason, and it belongs beside §16.6.
+
+### 17.8 The corpus is pinned now
+
+`docs/papers/` holds 35 records: SHA-256 of the exact bytes rendered and
+read, page count from `pdfinfo`, source URL, retrieval date, and the
+licence the publisher states. `fetch.sh` rebuilds the corpus and fails on
+a hash mismatch, so a paper revised upstream cannot be quoted as the
+version that was read. Fourteen PDFs are stored — the ones whose licence
+permits it, decided from arXiv's OAI-PMH licence field rather than by
+assumption — and `pdf/.gitignore` is a whitelist generated from that
+flag, so rebuilding the full corpus locally cannot become a copyright
+problem in a later commit.
+
+This session spent its first hour re-fetching what the last one had
+already found. That was the last time.
+
+---
+
+## 18. What the reading changes about the plan
+
+§16 and §17 recorded what the papers said. This section is what to do
+about it. It is a reprioritisation, and it moves one item to the top that
+was not on the list at all.
+
+### 18.1 The thing that was already here, three times, unconnected
+
+The repository contains all three of these and has never put them in the
+same sentence:
+
+* **`Conjecture.spread_conjecture`** — "is there, for each `k`, a constant
+  `c k` such that every `c k`-spread family of more than `(c k)^n` sets
+  of size `n` contains `k` pairwise disjoint members?" — with
+  `spread_conjecture_suffices` proving it implies the Erdős–Rado
+  conjecture. Machine-checked, since the spread layer went in.
+* **§3.6's `empirical_threshold`** — exhaustive search for the smallest
+  `r` with `SpreadYieldsDisjoint m k r`. It measures `r*(2,3) = 3` and
+  `r*(3,3) = 3`: **flat in the uniformity**, against the axiom's
+  `Θ(k log km)` which is 9 and 12 at those points. §3.6 read that as
+  "the axiom is loose".
+* **[Ra20] p. 2** — *"As far as we know, it is possible that Lemma 2
+  holds even when `r(p,k) = O(p)`. Such a strengthening of Lemma 2 would
+  imply the sunflower conjecture of Erdős and Rado."*
+
+These are one question. `spread_conjecture` **is** Rao's `r(p,k) = O(p)`.
+`empirical_threshold` **is** a measurement of its hypothesis. And §3.6's
+flat table is data on a named open problem whose positive resolution is
+the conjecture — not a remark about a loose axiom.
+
+`coq/Conjecture.v` already says *"removing the dependence on `n` is
+open"*. What nobody here knew is that the source says it too, says it
+would settle the conjecture, and that this repository is measuring it.
+
+### 18.2 The first concrete consequence: `r*` must break, and at `m = 9`
+
+If `r*(m,3) = 3` for all `m` then `spread_conjecture_suffices` gives
+`f(m,3) ≤ 3^m + 1`. The 1972 lower bound is `≈ 3.162^m`. **So the flat
+table cannot stay flat**, and the repository's own constructions say
+where it breaks first:
+
+```
+   m   3^m       best known lower bound on g(m)     route
+   2         9            6   g(2) = 6 exact
+   3        27           20   g(3) >= 2*iota(3)
+   4        81           54   g(4) >= 2*iota(4)
+   6       729          600   g(6) >= g(2)*iota(3)^2
+   7      2187         1080   g(7) >= g(3)*g(4)   (direct sum)
+   8      6561         5400   g(8) >= g(4)*iota(2)^4
+   9     19683        20000   g(9) >= g(3)*iota(3)^3   <-- BREAKS
+  12    531441       540000   g(12) >= g(4)*iota(3)^4
+```
+
+`g(9) ≥ g(3)·ι(3)³ ≥ 20·1000 = 20000 > 19683 = 3⁹`, margin **317**.
+
+**And the near side: at both measured points the inequality is tight.**
+`spread_reduction` gives `g(m) ≤ r^m` for any working `r`, so
+
+>  `r*(m,3)  ≥  ⌈ g(m)^(1/m) ⌉`
+
+is a theorem — `IotaRate.spread_threshold_bounds_g` and its
+contrapositive `g_lower_bound_refutes_spread_threshold`, which is the
+integer form and needs no roots. Evaluate it where both sides are known:
+
+```
+   m    g(m)        ceil(g(m)^(1/m))     measured r*(m,3)
+   2    6 (exact)   ceil(2.449) = 3      3        <- tight
+   3    >= 20       ceil(2.714) = 3      3        <- tight
+```
+
+**Tight at both.** Two points is nearly nothing and this is recorded as a
+hint, not a result. But if `r*(m,3) = ⌈g(m)^(1/m)⌉` in general then the
+spread-threshold sequence and the extremal-rate sequence are *the same
+object*, and since the 1972 rate is `10^(1/2) = 3.162...` the threshold
+should settle at **4** — the conjecture true with a nearly sharp
+constant.
+
+**It has a falsifiable consequence available now.** `r*(3,3) = 3` forces
+`g(3) ≤ 27` (`flat_threshold_at_three_forces_g_three_at_most_27`), and
+this development only knows `20 ≤ g(3) ≤ 48` — 20 from
+`Intersecting.lower_bound_3_3_20`, 48 from Erdős–Rado. So:
+
+> **Computing `g(3)` exactly decides `r*(3,3)`.** If `g(3) > 27` the flat
+> table breaks at uniformity 3 rather than 9, and the whole tightness
+> pattern dies at its second data point.
+
+That is a far cheaper search than widening `empirical_threshold` past
+ground 10, and it is the same computation as §18.3 item 2 approached
+from the other side. **Two open computations that are one computation.**
+
+Both inputs are already machine-checked — `g(3) ≥ 20` is
+`IotaRate.iota_three_sandwich`, `ι(3) ≥ 10` is `Intersecting.iota3`. The
+only missing piece is the substitution itself, which is **already §15.3's
+primary campaign**. Formalising `substitute` therefore buys a fifth
+result nobody had counted:
+
+> **`~ SpreadYieldsDisjoint 9 3 3`** — and hence `c(3) ≥ 4` in
+> `spread_conjecture`, the first lower bound on the constant in the
+> spread reformulation.
+
+That is a negative result about a named open problem, machine-checked,
+from constructions the repository already owns. It is the sharpest thing
+on this list and it did not exist before the reading, because nobody knew
+§3.6 and §2 were the same question.
+
+**Note the direct sum cannot do it.** `g(a+b) ≥ g(a)g(b)` from `g(2)=6`
+gives `6^{m/2} = 2.449^m < 3^m` forever. Only the substitution crosses 3.
+That is the cleanest statement yet of why §5's "the direct sum does not
+reach 3.162" matters, and it retires the question of whether
+`substitute` is worth the session.
+
+### 18.3 Priorities that go up
+
+1. **`substitute`, unchanged as the primary campaign, but for a fifth
+   reason** (§18.2). It was already load-bearing for four results.
+2. **Extend `empirical_threshold`.** §3.6 stalls at ground 10 for
+   `(3,3,3)` and says *"widening it needs a better search, not a bigger
+   budget"*. That is now the highest-value computation in the repository,
+   because the quantity it measures is a published open problem. The
+   ground-10 case is also exactly where a counterexample could first
+   live.
+3. **`φ(3,s)` for small `s`.** [Kup25] Theorem 37 makes `φ(ℓ+1,s)` the
+   leading constant of the Frankl–Füredi asymptotic for the Duke–Erdős
+   problem. The repository's exhaustive small-case machinery computes
+   exactly this. `φ(2,2) = 6` is already `coq/F23.v`. Cheap, and it has
+   an external consumer for the first time.
+4. ~~**The spread-approximation literature** ([KuZa22], [Ku23]).~~
+   **Done — see §19.** [KuZa22] read in full, [Ku23] in part. The answer
+   is yes: `Spread.Spread` is the definition at the centre of a
+   programme whose selling point is that it is elementary where the
+   alternatives are algebraic, and its base layer is three statements
+   this repository already has.
+5. **Frankl–Katona (Theorem 29), as a second customer for the Hall
+   layer.** `HallCore.v`, `KoenigHall.v` and `Matching.v` exist for the
+   uniformity-2 programme and are otherwise unused; [Kup25] p. 29 proves
+   Theorem 29 by "a Hall's condition in disguise". Cheap reuse.
+
+### 18.4 Priorities that go down
+
+1. **`coq/ErdosRado.v` as a headline result.** Duplicated in Isabelle
+   since February 2021, and the AFP entry proves more. Keep it as
+   infrastructure; stop presenting it as the contribution.
+2. **Novelty framing generally.** With five names for a sunflower and
+   five for a cover, and every search here having used two of each, "not
+   found" is not worth much. The `ι` programme should be sold on what it
+   *is* — a machine-checked equivalence — not on being unpublished.
+   `IotaRate`'s value does not depend on the literature search, and it
+   should stop resting on one.
+3. **[AHS72].** OpenAlex says `oa_status: closed`,
+   `any_repository_has_fulltext: false`. Four sessions have tried. Stop.
+4. **Chasing the axiom's constant.** Unchanged, and now cheaper to
+   avoid: `fractional_form_gives_the_axiom_shape` is monotone upward in
+   `r`, so any explicit constant closes the file.
+
+### 18.5 The moonshot, restated
+
+The repository is not going to prove the sunflower conjecture. Thirty
+arXiv papers in twenty-five months did not move the lower bound off 1972,
+the upper bound has not moved since 2021 except for one unrefereed
+preprint, and the four proofs of the spread lemma are one gapped, two
+analytic, one formalisable.
+
+What it can uniquely do, in order:
+
+1. **Discharge `Rao20_lemma2`.** No prover has a spread lemma. The target
+   is now precisely scoped: `FractionalSpreadDisjoint` at one threshold,
+   by the counting proof of Lovett §3, over fixed-size subsets. Everything
+   downstream is already proved and `fractional_form_gives_the_axiom_shape`
+   already bridges the forms.
+2. **Be the machine-checked reference for the spread framework**, which
+   the reading shows is becoming general-purpose machinery rather than a
+   sunflower-specific trick.
+3. **Be the exhaustive-data source for the small constants**, which
+   turn out to appear in published asymptotics rather than only here.
+4. **Compute the sharp spread threshold sequence `r*(m,3)`.**
+
+The fourth is the one worth calling a moonshot, and it is new. `r*(m,k)`
+is the smallest `r` for which `SpreadYieldsDisjoint m k r` holds. By
+`spread_conjecture_suffices`, **whether `r*(m,3)` is bounded in `m` is
+the sunflower conjecture at `k = 3`**, and its limiting value is the
+constant. So the sequence is not evidence about the problem; it *is* the
+problem, one finite computation at a time:
+
+```
+   m        1    2    3    4    5    6    7    8    9   ...
+   r*(m,3)  ?    3    3    ?    ?    ?    ?    ?   >=4  ...
+                 |    |                            |
+                 exhaustive (§3.6)                  §18.2
+```
+
+Two entries measured, one bounded below, and six unknown between them.
+Nobody has computed this sequence. The repository is the only place with
+all three of the pieces it needs — a formal statement of
+`SpreadYieldsDisjoint`, a machine-checked reduction from it to the
+bound, and an exhaustive testbed — and §3.6 has already found the exact
+obstacle, which is search quality at ground 10 rather than budget.
+
+If `r*(m,3)` settles at 4, that is `f(m,3) <= 4^m + 1` against the
+1972 lower bound of `3.162^m`, and the conjecture is true with a nearly
+sharp constant. If it grows, the conjecture is false. Either answer is
+worth more than another conditional theorem, and the first six terms are
+finite.
+
+The first three items are engineering with a known finish. The fourth is
+a question nobody has asked in this form, that this repository is built
+to answer, and whose first term past the measured range it can already
+bound. That is a better portfolio than "prove the conjecture", and it is
+what the reading actually supports.
+
+### 18.6 The methodological rules, consolidated
+
+§14.6, §15.5, §16.6, §17 each added one. Together:
+
+1. **Grep the development before calling a quantity unnamed.**
+2. **Read the source of your own axiom before planning against it.**
+3. **A claim about a source goes in with a page number and a verbatim
+   quotation, or it does not go in.**
+4. **`pdftotext` cannot establish absence.** Line breaks defeat phrase
+   search silently.
+5. **A negative is only as good as its worst synonym.** Five names for a
+   sunflower, five for a cover.
+6. **Page 1 is not the paper.** Abstracts disagree with their own
+   theorems — [NaSa17] and [Mis26] both do.
+7. **Identifiers get looked up, never recalled.** One guessed arXiv ID
+   cost four pages of an astrophysics paper; one guessed DOI suffix cost
+   a 404.
+8. **A paywall is not always a blocker.** Sometimes the claim behind it
+   is a finite check — the 2-(6,3,2) uniqueness took one enumeration.
+
+---
+
+## 19. What the spread-approximation literature says the spread layer is for
+
+§18.3 named [KuZa22] and [Ku23] as the highest-value unread items,
+because if `Spread.Spread` is becoming general infrastructure then the
+spread layer is worth more than this conjecture. Both are now read in
+full. The answer is yes, and it is more specific than expected.
+
+### 19.1 Spread replaces representation theory and Fourier analysis
+
+[KuZa22] abstract, p. 1: the method is *"based on the notion of `r`-spread
+families and builds on the recent breakthrough result of Alweiss, Lovett,
+Wu and Zhang for the Erdős–Rado 'Sunflower Conjecture'"*, and *"can work
+in a variety of sparse settings"*. Its Theorem 2 proves the
+Ahlswede–Khachatrian theorem for **permutations** in a new range, and
+p. 3 says why that matters:
+
+> The proof is also much simpler and avoids the use of heavy machinery of
+> the previous authors.
+
+The machinery avoided is named on [Ku23] p. 2: *"Early approaches to this
+question were algebraic, based on Hoffman-Delsarte type bounds and
+representation theory. The approach of [5] combines junta
+approximations, coming from Boolean Analysis, with representation theory.
+Zakharov and the author introduced a combinatorial technique of spread
+approximations that is based on the breakthrough in the Erdős–Rado
+sunflower problem due to Alweiss, Lovett, Wu and Zhang."*
+
+**That is the strategic fact.** `Spread.Spread` is the definition at the
+centre of a programme whose selling point is that it is *elementary where
+the alternatives are algebraic*. Elementary-where-the-alternatives-are-
+algebraic is exactly what a `nat`-only Coq development can host, and
+nothing else in this repository's reach has that property.
+
+### 19.2 Three of this repository's theorems are its primitives
+
+Reading [Ku23] §3 — which p. 1 advertises as *"a self-contained
+presentation of the spread approximation technique"*, so it is the entry
+point — the method's base layer is three statements this development
+already has:
+
+* **Observation 11**: *"let `X` be an inclusion-maximal set that
+  satisfies `|F(X)| >= r^{-|X|}|F|`. Then `F(X)` is `r`-spread as a
+  family in `2^{[n]\X}`."* That is `Spread.rao_witness` finding a
+  violator and `Spread.link` stripping it, with maximality doing the
+  work.
+* **Observation 12**: *"If for some `α > 1` and `F ⊂ C([n],k)` we have
+  `|F| > α^k` then `F` contains an `α`-spread subfamily of the form
+  `F(X)` for some set `X` of size strictly smaller than `k`."* That is
+  `SpreadReduction.spread_reduction`'s dichotomy. Kupavskii's proof is
+  two sentences, and he adds *"this observation together with Theorem 10
+  implies bound (1)"* — the sunflower bound.
+* **Theorem 13** is the peeling procedure built on top, and [Ku23] p. 6
+  says of the next one: *"Theorem 14 alone can be seen as a strengthening
+  of one of the important parts of the Delta-system method."*
+
+So `spread_reduction` is not a step on the way to one conjecture; it is
+the base of an active method. That is a better argument for the spread
+layer than anything in §16–18, and it was not available before reading.
+
+### 19.3 The sunflower bound is a subroutine, so the constant matters
+
+[KuZa22] Lemma 14 bounds `|W_i| <= (C_0 q log_2 q)^{q-i-t}` with
+`C_0 < 2^15`, and it gets there by applying the sunflower bound (their
+equation (1), with `C = 2^10`) to a family shown in Lemma 14(iii) not to
+contain a sunflower with `q-i-t+2` petals.
+
+**Improvements to the sunflower bound propagate into this method's
+constants.** That is a use for the [BCW21] refinement, and for the
+sharper `r*` measurement of §18.2, that this repository did not know it
+had.
+
+### 19.4 And `τ` is a tool there, not a curiosity
+
+Register row B12 asked whether covering numbers of intersecting
+hypergraphs are studied. [KuZa22] Lemma 14(v) uses `τ` directly, defining
+it inline: *"Recall that, for a family `F`, `τ(F)` is the size of the
+smallest set `Y` such that `Y ∩ F ≠ ∅` for each `F ∈ F`."* Combined with
+[Kup25] §1.7's minimal-cover material, B12's original "not found" is
+comprehensively wrong, and §17.1 already withdrew it.
+
+### 19.5 What this does *not* say
+
+The spread approximation method needs `p`-random subsets, expectations,
+Markov, Chernoff-type estimates and real-valued `τ`, `ε`, `θ`. **It is not
+formalisable here as it stands**, and nothing above claims otherwise.
+What is formalisable is its base layer — Observations 11 and 12 — which
+this repository already has, and the ALWZ input (Theorem 10), which is
+§1's campaign.
+
+The honest reading is: **discharging `Rao20_lemma2` would put a
+machine-checked floor under an active research programme, not just under
+this repository's own conditional theorems.** That raises §1's value and
+does not change its difficulty.
+
+### 19.6 Tier 4, and where it stops
+
+* **Coding theory / the Terwilliger algebra.** [Schrijver05] read pp. 1–2
+  of 8. The method is block-diagonalisation of the (non-commutative)
+  Terwilliger algebra of the Hamming cube — a C\*-algebra — followed by
+  semidefinite programming. **Roadmap M2 should be marked not viable for
+  this development**: it needs complex matrices, positive
+  semidefiniteness and a numerical SDP solver, none of which are `nat`
+  and none of which exist here. The Johnson-scheme connection [Kup25]
+  p. 55 points at is real, but it is on the far side of that stack.
+* **Flag algebras, design nonexistence, Stanley–Reisner** — not read. See
+  §19.7 for why.
+
+### 19.7 Five wrong identifiers in one session
+
+Four Tier-4 arXiv IDs were recalled rather than looked up. They fetched,
+in order: a PDE paper on a symmetry problem; *What Scalars Should We
+Use?*; a condensed-matter paper on heat conduction in an anharmonic
+crystal; and a lattice-QCD paper on kaon masses. A fifth, for [ASU12],
+fetched an astrophysics paper on the Perseus cluster and four of its
+pages were read before the mismatch was obvious.
+
+All five were caught by rendering page 1 before reading — which is now
+the rule, and is why only one of them cost anything. §17.7 stated the
+lesson from a single instance; five instances make it a procedure:
+
+> **Fetch, render page 1, confirm the title and authors, and only then
+> read.** An identifier that was not copied from a reference list or a
+> Crossref record is a guess, and guesses resolve to real papers about
+> other subjects.
+
+Correct citations, obtained from Crossref, for whoever picks these up:
+
+```
+  Schrijver 2005   New code upper bounds from the Terwilliger algebra and
+                   semidefinite programming.  IEEE Trans. Inform. Theory
+                   51:2859-2866.  doi 10.1109/tit.2005.851748.  GREEN OA
+                   at ir.cwi.nl/pub/14098/14098B.pdf  [read pp.1-2 of 8]
+  Gijswijt-Schrijver-Tanaka 2006  New upper bounds for nonbinary codes
+                   based on the Terwilliger algebra and SDP.  JCTA
+                   113:1719-1731.  doi 10.1016/j.jcta.2006.03.010. CLOSED
+  Razborov 2007    Flag algebras.  J. Symbolic Logic 72(4):1239-1282.
+                   doi 10.2178/jsl/1203350785.  CLOSED
+  Frankl 1978      On intersecting families of finite sets.  JCTA
+                   24:146-161.  doi 10.1016/0097-3165(78)90003-1. CLOSED
+  Fueredi 1983     On finite set-systems whose every intersection is a
+                   kernel of a star.  Discrete Math. 47:129-132.
+                   doi 10.1016/0012-365x(83)90081-x.  CLOSED
+```
+
+OpenAlex reports `oa_status: closed` for all four of the closed ones, so
+these are index-confirmed rather than search-exhausted, the same standard
+§17.5 applied to [AHS72].

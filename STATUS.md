@@ -173,7 +173,25 @@ Every theorem in this table compiles with Coq 8.18 and reports
 
 | Statement | File | Citation |
 |-----------|------|----------|
-| `Rao20_lemma2` | `coq/ALWZ.v` | **Rao 2020 (Discrete Analysis 2020:2), Lemma 2**, verbatim: "if a sequence of more than `r(p,k)^k` sets of size `k` is `r(p,k)`-spread, then the sequence must contain `p` disjoint sets", with `r(p,k) = α·p·log(pk)` and `r`-spread in Rao's absolute sense (every nonempty `Z` lies in at most `r^(k-|Z|)` members). Originally Alweiss–Lovett–Wu–Zhang 2020 (STOC 2020); refined by FKNP19 / BCW21. |
+| `Rao20_lemma2` | `coq/ALWZ.v` | **Rao 2020 (Discrete Analysis 2020:2), Lemma 2**, verbatim from the rendered page 2: *"If a sequence of more than `r(p,k)^k` sets of size `k` is `r(p,k)`-spread, then the sequence must contain `p` disjoint sets"*, with `r(p,k) = α·p·log(pk)` and `r`-spread in Rao's absolute sense (*"for every non-empty set `Z ⊂ [n]`, the number of elements of the sequence that contain `Z` is at most `r^{k−|Z|}`"*). Originally Alweiss–Lovett–Wu–Zhang 2020 (Annals 194(3), 2021); refined by FKNP21 / BCW21. |
+
+**The paper was read in full in July 2026** and the axiom was checked
+symbol by symbol against it (`docs/reading.md`, register row A1). The
+statement is faithful. Two things the header said about the *gap* were
+not:
+
+* it claimed the axiom is weaker because *"the source allows sets of size
+  at most `m`"*. Rao says "of size `k`" — the "at most" convention is
+  [ALWZ20]'s. **Withdrawn.**
+* it did not record that the axiom quantifies over **every** `r` above
+  the threshold, while Rao fixes one. `SpreadYieldsDisjoint` is not
+  monotone in `r` on general grounds, so that was a real extension of the
+  published sentence. It is now **derived rather than assumed**:
+  `ALWZ.fractional_form_gives_the_axiom_shape` obtains the whole
+  quantified family from the *fractional* single-threshold statement
+  (Lovett's Lemma 2.9), through `Spread.RaoSpread_Spread` and
+  `Spread.Spread_mono`.
+
 
 ### Derived from that axiom (and from nothing else)
 
@@ -242,7 +260,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (341 of them). The current
+for every theorem in the "Closed" table (349 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -297,8 +315,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 66 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 63 killed outright, two genuine
+Current mutation results: 69 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 66 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
