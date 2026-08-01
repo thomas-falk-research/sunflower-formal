@@ -191,9 +191,17 @@ estimate. Both are marked below.
   Naslund–Sawin's $O\!\left(n^{1/2}(3/2^{2/3})^n\right)$. **The base is
   unchanged**, so `NaslundSawinBound` is unaffected in substance.
 
-- **[AHS72]** H. L. Abbott, D. Hanson, N. Sauer, *Intersection theorems
-  for systems of sets*. Journal of Combinatorial Theory Series A 12
-  (1972), 381–389. The best classical lower bound at $k = 3$:
+- **[AHS72]** H. L. Abbott, D. Hanson and N. Sauer, *Intersection
+  theorems for systems of sets*. **Journal of Combinatorial Theory,
+  Series A**, vol. **12**, issue **3**, May **1972**, pp. **381–389**.
+  Elsevier. **DOI `10.1016/0097-3165(72)90103-3`** — verified against
+  Crossref, not recalled.
+
+  **Closed access, established rather than assumed.** OpenAlex's record
+  for that DOI gives `oa_status: "closed"` and
+  `any_repository_has_fulltext: false`, so no open copy exists in any
+  indexed repository. Five retrieval routes are recorded in
+  `docs/reading.md`. The best classical lower bound at $k = 3$:
   $f(n,3) \gtrsim 10^{n/2 - c\log n}$, i.e. a rate of
   $10^{1/2} = 3.162\ldots$ per point. The mechanism is a *substitution*
   recursion $g(ab) \ge g(a)\,g(b)^a$, strictly stronger than the direct

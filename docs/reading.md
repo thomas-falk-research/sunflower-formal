@@ -388,9 +388,36 @@ any `Δ(> a)`-system"*, constructed on p. 89 as all maps `B → A`. This is
 the transversal family that reappears as every tightness example in the
 2020–2021 papers.
 
-### [AHS72] Abbott, Hanson, Sauer, JCTA 12 (1972) 381–389 — **UNREACHABLE**
+### [AHS72] — **UNREACHABLE**, and now definitively so
 
-Four attempts, all recorded:
+**The full citation, verified against Crossref rather than recalled:**
+
+> H. L. Abbott, D. Hanson and N. Sauer, *Intersection theorems for
+> systems of sets*. **Journal of Combinatorial Theory, Series A**,
+> volume **12**, issue **3**, May **1972**, pages **381–389**.
+> Publisher: Elsevier. **DOI: `10.1016/0097-3165(72)90103-3`.**
+
+Two notes on the citation itself. [Kup25] p. 62 renders the journal as
+"J. Combinatorial Theory 12 (1972)" without the series letter — JCT split
+into Series A and Series B at volume 10 (1971), so volume 12 is Series A
+and the two agree. And an earlier attempt in this session guessed the DOI
+suffix as `-4`, which is why it returned 404; the real one ends `-3`.
+**Guessed identifiers 404; looked-up ones do not.**
+
+**It is closed access, and that is now established rather than assumed.**
+OpenAlex's record for the DOI reports
+
+```
+  open_access: {is_oa: False, oa_status: "closed",
+                oa_url: None, any_repository_has_fulltext: False}
+```
+
+— i.e. no open copy exists in any indexed repository, not merely none
+that this session found. That is a stronger negative than a list of
+failed fetches, and it is the right kind: a machine-readable answer from
+a comprehensive index rather than an exhausted search.
+
+Five attempts, all recorded:
 
 1. `sciencedirect.com/science/article/pii/0097316572901034/pdf` → HTTP 403.
 2. `doi.org/10.1016/0097-3165(72)90103-4` → HTTP 404 (DOI suffix guessed).
@@ -399,6 +426,9 @@ Four attempts, all recorded:
    and the archive index has no entry for it. Confirmed by grepping the
    full index for "Intersection theorem": the four hits are ER60, EKR61,
    ER69 II, EMR74 III.
+5. `doi.org/10.1016/0097-3165(72)90103-3` with the **correct** DOI →
+   resolves to the ScienceDirect landing page; the PDF endpoint returns
+   HTTP 403.
 
 **Elsevier paywall, no legitimate open copy found. Recorded as unread.**
 Per `docs/roadmap.md` §15.2's own instruction: nothing further is built

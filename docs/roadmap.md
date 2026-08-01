@@ -3075,10 +3075,28 @@ Five things, none of which the two-page read had reached.
 
 ### 17.5 Two citations settled, one still shut
 
-* **[AHS72]**, in full, from [Kup25] p. 62: *H. L. Abbott, D. Hanson, and
-  N. Sauer, "Intersection theorems for systems of sets", Journal of
-  Combinatorial Theory 12 (1972), 381–389.* Volume 12 of JCT is Series A.
-  Still unreachable behind Elsevier; five routes now recorded.
+* **[AHS72]**, in full, and now with the closure established rather than
+  assumed:
+
+  > H. L. Abbott, D. Hanson and N. Sauer, *Intersection theorems for
+  > systems of sets*. **Journal of Combinatorial Theory, Series A**,
+  > vol. **12**, issue **3**, May **1972**, pp. **381–389**. Elsevier.
+  > **DOI `10.1016/0097-3165(72)90103-3`.**
+
+  The citation is from [Kup25] p. 62, the bibliographic detail verified
+  against Crossref. [Kup25] omits the series letter; JCT split at volume
+  10 (1971), so volume 12 is Series A and the two agree.
+
+  **It is closed, and that is a fact rather than a failed search.**
+  OpenAlex's record for that DOI reports `oa_status: "closed"` and
+  `any_repository_has_fulltext: false` — no open copy in any indexed
+  repository. Five retrieval routes are recorded in `docs/reading.md`;
+  the fourth session in a row to try should not be a fifth. §15.2's
+  instruction stands: **record it and stop.**
+
+  One detail worth keeping: an earlier attempt this session guessed the
+  DOI suffix as `-4` and got a 404. The real suffix is `-3`. Same lesson
+  as §17.7.
 * **Spencer 1977**, in full, from [Kup25] p. 66: *Canadian Mathematical
   Bulletin 20 (1977), N2, 249–254*, doi:10.4153/CMB-1977-038-7.
   Unreachable — Cambridge Core, no open access.
