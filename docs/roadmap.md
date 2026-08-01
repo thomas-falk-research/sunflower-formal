@@ -4120,7 +4120,56 @@ sunflower-free families, the cross-intersecting lemma and the LP — for
 one member, on a route that provably cannot reach 20. Recorded rather
 than built.
 
-### 21.5 State of the numbers
+### 21.5 `tau`: half of §8 was already done, and the other half closes it
+
+§8 of the brief called measuring `tau` "cheap and never done". Half of it
+had been done in an earlier session and the brief did not know:
+`rust/tests/extension.rs::the_covering_number_is_multiplicative_under_substitution`
+already measures `tau(triangle) = 2`, `tau(iota3) = 3`, `tau(g(2)) = 4`,
+and checks `tau(substitute(G,H)) = tau(G)·tau(H)` on four pairs.
+`extend::covering_number` has been there the whole time. Rule 1 again,
+from the other side: grep before calling something undone, not only
+before calling a quantity unnamed.
+
+**The other half kills the route, and the brief's premise was wrong.**
+§8 predicted `tau(b) = b^{log₃ 2} ≈ b^{0.63}` for the AHS tower. That
+needs a base with `tau = 2` at uniformity 3. The measured value is
+`tau(iota3) = 3`. Since `tau` *and* uniformity both multiply under
+substitution, the tower has
+
+```
+    tau  =  tau(base)^k  =  b(base)^k  =  b
+```
+
+— **`tau = b` exactly**, which is the largest it can be: an intersecting
+family is covered by any one of its own members, so `tau <= b` always,
+and the 1972 families sit at the ceiling rather than well below it.
+
+Then the arithmetic §8 asked for. The elementary greedy bound for an
+intersecting `b`-uniform family with covering number `tau` is
+`|F| <= b^tau` — every member meets a fixed member, giving `b` branches
+per level, and `tau` levels exhaust a cover. (Elementary, and *not*
+attributed: no priority search was run, and `docs/reading.md` B12 records
+the surrounding literature under *base*, *nucleus*, *crosscut* and
+*minimal cover* without this inequality. Rule 3 — so it is claimed only
+as arithmetic done here.) At `tau = b` that is
+
+```
+    |F|  <=  b^b  =  b! · e^b / sqrt(2 pi b)
+```
+
+the **same `n!` barrier**, reached a third way this session.
+`rust/tests/tau_rate.rs` pins `tau = b` on the tower and checks the
+Stirling identity, including that `b^b` does beat Erdős–Rado's
+`b! 4^b = (4b/e)^b` by `(e/4)^b` — so the route is not worthless, it is
+just on the wrong side of the barrier. To reach `C^b` from a
+`tau`-indexed bound the extremal families would need `tau = O(log b)`.
+They have the maximum.
+
+So §8 closes the way §2 and §3 did: real route, checkable arithmetic,
+stops at `n!`.
+
+### 21.6 State of the numbers
 
 ```
   quantity     was                 now                 how
@@ -4134,7 +4183,7 @@ than built.
 
 Nothing on the lower-bound side moved. No search was run this session.
 
-### 21.6 What this changes about the plan
+### 21.7 What this changes about the plan
 
 **Down, and closed rather than answered.**
 
@@ -4153,13 +4202,30 @@ Nothing on the lower-bound side moved. No search was run this session.
    and §21.2 is a second independent confirmation that the whole family
    of counting arguments stops at `n! C^n`.
 
+4. **`tau` as a route to `C^b`.** Closed (§21.5). The extremal families
+   have `tau = b`, the maximum, and `|F| <= b^tau` at `tau = b` is `b^b`.
+   What survives is the *measurement*, which is real and was already in
+   the repository: `tau` is multiplicative and the tower sits at the
+   ceiling. That is a structural fact about the 1972 families worth
+   keeping; it is not a bound.
+
 **Unchanged and now the only headline left.** The axiom (§1). It was the
 highest-value engineering item before this session and nothing here moved
 it — except to remove the one idea that claimed to make it optional.
 
-**A note on what this session is.** Its output is two closed targets, one
-correction to a lemma that had been derived but never checked, and one
-term worth a single member of `g(3)`. The closures are the valuable part:
-§2 was the brief's headline and would have consumed the session, and it
-was refuted by reading four lines on a page the register had already
-cited and by evaluating a recursion in a fifty-line script.
+**A note on what this session is.** Its output is **three closed
+targets** (§2, §3, §8), one correction to a lemma that had been derived
+but never checked, one hypothesis added to a lemma whose sketch omitted
+it, and one term worth a single member of `g(3)`. The closures are the
+valuable part: §2 was the brief's headline and would have consumed the
+session, and it was refuted by reading four lines on a page the register
+had already cited and by evaluating a recursion in a fifty-line script.
+
+All three closures have the same shape, and it is worth naming. Each
+route reaches `n! · C^n` and stops: the counting recursion pays `b` per
+level to pigeonhole, the 4.2 chain pays `b` per level to re-intersect,
+and the `tau` bound pays `b` in the exponent because `tau = b`. §1 said
+the `n!` is the barrier and that no sharpening of the counting recursion
+removes it. This session is three more instruments arriving at the same
+wall from three directions, which is stronger evidence for §1's claim
+than §1 had.
