@@ -144,9 +144,10 @@ fn main() {
             if n >= target { "*** BEATS 1972 ***" } else { "" }
         )
         .ok();
-        if n >= target {
-            writeln!(sink, "FAMILY {:?}", fam).ok();
-        }
+        // Dump the family on *every* improvement, not only on a record.
+        // The first pass logged sizes alone and a killed run left a best
+        // of 78 at b = 5 with no witness to show for it.
+        writeln!(sink, "FAMILY {n} {fam:?}").ok();
         sink.flush().ok();
     });
     verify(&found.family, b, intersecting).expect("final family invalid");

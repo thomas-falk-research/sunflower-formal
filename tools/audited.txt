@@ -548,7 +548,6 @@ def Product.IotaStepBounded
 def Product.Fresh
 def Product.cone
 def Product.fresh_point
-thm PureLink.degsum_eq_meetsum
 thm PureLink.pure_link_intersecting
 thm PureLink.cover_recursion
 thm PureLink.iota_recursion

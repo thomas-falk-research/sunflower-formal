@@ -192,6 +192,10 @@ const SAMPLE: usize = 400;
 const MAX_EVICT: usize = 3;
 /// How long an evicted set stays out.
 const TABU: u64 = 6;
+/// How often the ruin-and-recreate kick fires.
+const KICK_EVERY: u64 = 600;
+/// The kick drops `|F| / RUIN_DIVISOR` members, at least two.
+const RUIN_DIVISOR: usize = 7;
 
 /// What a run found.
 pub struct Found {
@@ -328,10 +332,17 @@ pub fn search<F: FnMut(usize, &[u32])>(
             }
         }
 
-        // A harder kick now and then, so the walk is not confined to
-        // one basin.
-        if step % 4096 == 0 && fam.len() > 4 {
-            for _ in 0..3 {
+        // Ruin and recreate. A seeded run starts inside a rigid basin --
+        // the 1972 families are maximal (§13.1), so single swaps cannot
+        // leave one -- and evicting a *fraction* of the family and
+        // refilling is what gets out. The incumbent is kept separately,
+        // so a kick that loses ground costs nothing but time.
+        if step % KICK_EVERY == 0 && fam.len() > 4 {
+            let drop = (fam.len() / RUIN_DIVISOR).max(2);
+            for _ in 0..drop {
+                if fam.len() <= 1 {
+                    break;
+                }
                 let i = rng.below(fam.len());
                 if fam[i] != anchor {
                     let gone = fam.swap_remove(i);

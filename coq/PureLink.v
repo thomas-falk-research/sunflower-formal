@@ -87,83 +87,28 @@
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower Spread Pigeonhole ErdosRado
-                             SpreadReduction F23 Intersecting IotaRate Product.
+                             SpreadReduction F23 Intersecting IotaRate IotaGround Product.
 Import ListNotations.
 
 Set Implicit Arguments.
 
 (** ** Counting a family against a point set
 
-    [meets X A] is how many points of [X] lie in [A]; [degsum] sums the
-    degree over [X] and [meetsum] sums [meets] over [F]. They are the
-    same number, which is the only fact either is for. *)
+    [IotaGround] already has this layer and it is reused rather than
+    rebuilt: [degsum U F] sums the degree over the points of [U],
+    [sizesum U F] sums [|A ∩ U|] over the members, [degsum_eq_sizesum] is
+    the identity between them, and [degsum_le] bounds the first by
+    [|U| * N]. Rule 1 of [docs/roadmap.md] §18.6, applied to this file
+    after it had been written the other way.
+
+    The one thing added is a name for [sizesum]'s summand, because the
+    partition below filters on it. *)
 
 Definition meets (X A : list nat) : nat :=
   length (filter (fun x => memb x A) X).
 
-Fixpoint degsum (X : list nat) (F : Family) : nat :=
-  match X with
-  | [] => 0
-  | x :: X' => deg [x] F + degsum X' F
-  end.
-
-Fixpoint meetsum (X : list nat) (F : Family) : nat :=
-  match F with
-  | [] => 0
-  | A :: F' => meets X A + meetsum X F'
-  end.
-
-Lemma deg_singleton_cons :
-  forall x A F,
-    deg [x] (A :: F) = (if memb x A then 1 else 0) + deg [x] F.
-Proof.
-  intros x A F; unfold deg; simpl.
-  destruct (memb x A); simpl; reflexivity.
-Qed.
-
-Lemma meets_cons :
-  forall x X A,
-    meets (x :: X) A = (if memb x A then 1 else 0) + meets X A.
-Proof.
-  intros x X A; unfold meets; simpl.
-  destruct (memb x A); reflexivity.
-Qed.
-
-Lemma degsum_nil_family : forall X, degsum X [] = 0.
-Proof.
-  induction X as [|x X IH]; simpl; [reflexivity|].
-  unfold deg; simpl; lia.
-Qed.
-
-Lemma degsum_cons_family :
-  forall X A F, degsum X (A :: F) = meets X A + degsum X F.
-Proof.
-  induction X as [|x X IH]; intros A F.
-  - simpl; unfold meets; simpl; lia.
-  - simpl degsum; rewrite deg_singleton_cons, IH, meets_cons.
-    destruct (memb x A); lia.
-Qed.
-
-(** The identity: both sides count the incidences between [X] and [F]. *)
-
-Theorem degsum_eq_meetsum : forall X F, degsum X F = meetsum X F.
-Proof.
-  intros X F; induction F as [|A F IH]; simpl.
-  - apply degsum_nil_family.
-  - rewrite degsum_cons_family, IH; reflexivity.
-Qed.
-
-Lemma degsum_le :
-  forall X F N,
-    (forall x, In x X -> deg [x] F <= N) ->
-    degsum X F <= length X * N.
-Proof.
-  induction X as [|x X IH]; intros F N H; simpl; [lia|].
-  assert (Hx : deg [x] F <= N) by (apply H; left; reflexivity).
-  assert (Hrest : degsum X F <= length X * N)
-    by (apply IH; intros y Hy; apply H; right; exact Hy).
-  lia.
-Qed.
+Lemma sizesum_cons : forall X A F, sizesum X (A :: F) = meets X A + sizesum X F.
+Proof. reflexivity. Qed.
 
 (** ** The pure part
 
@@ -186,33 +131,35 @@ Qed.
     least twice. That is the whole content of the count: the pure members
     are charged once and everything else twice. *)
 
-Lemma meetsum_lower :
+Lemma sizesum_lower :
   forall X F,
     (forall A, In A F -> 1 <= meets X A) ->
-    2 * length F <= length (purefam X F) + meetsum X F.
+    2 * length F <= length (purefam X F) + sizesum X F.
 Proof.
-  intros X F; induction F as [|A F IH]; intros H; simpl; [lia|].
+  intros X F; induction F as [|A F IH]; intros H; [simpl; lia|].
   assert (HA : 1 <= meets X A) by (apply H; left; reflexivity).
-  assert (Hrest : 2 * length F <= length (purefam X F) + meetsum X F)
+  assert (Hrest : 2 * length F <= length (purefam X F) + sizesum X F)
     by (apply IH; intros B HB; apply H; right; exact HB).
-  unfold purefam in *; simpl.
-  destruct (Nat.eqb (meets X A) 1) eqn:E; simpl.
-  - apply Nat.eqb_eq in E; lia.
-  - apply Nat.eqb_neq in E; lia.
+  rewrite sizesum_cons.
+  change (purefam X (A :: F)) with
+    (if Nat.eqb (meets X A) 1 then A :: purefam X F else purefam X F).
+  destruct (Nat.eqb (meets X A) 1) eqn:E.
+  - apply Nat.eqb_eq in E; simpl length; lia.
+  - apply Nat.eqb_neq in E; simpl length; lia.
 Qed.
 
-Lemma meetsum_pure :
-  forall X G, (forall A, In A G -> meets X A = 1) -> meetsum X G = length G.
+Lemma sizesum_pure :
+  forall X G, (forall A, In A G -> meets X A = 1) -> sizesum X G = length G.
 Proof.
-  intros X G; induction G as [|A G IH]; intros H; simpl; [reflexivity|].
-  rewrite (H A (or_introl eq_refl)), IH; [lia|].
+  intros X G; induction G as [|A G IH]; intros H; [reflexivity|].
+  rewrite sizesum_cons, (H A (or_introl eq_refl)), IH; [reflexivity|].
   intros B HB; apply H; right; exact HB.
 Qed.
 
 Lemma purefam_degsum :
   forall X F, length (purefam X F) = degsum X (purefam X F).
 Proof.
-  intros X F; rewrite degsum_eq_meetsum, meetsum_pure; [reflexivity|].
+  intros X F; rewrite degsum_eq_sizesum, sizesum_pure; [reflexivity|].
   intros A HA; exact (purefam_meets_one X F A HA).
 Qed.
 
@@ -355,14 +302,21 @@ Qed.
     [Ni] bound [g(b-1)] and [iota(b-1)] the way this development always
     carries extremal values, as bounds rather than as functions. *)
 
+Lemma star_length_is_link_length :
+  forall x F, length (filter (fun A => memb x A) F) = length (link [x] F).
+Proof.
+  intros x F; rewrite length_link; unfold deg.
+  f_equal; symmetry; apply filter_ext_eq; intros B; apply containsb_singleton.
+Qed.
+
 Lemma link_at_point_bounded :
   forall b Ng (F : Family) (x : nat),
     1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->
     GAtMost (b - 1) Ng ->
-    deg [x] F <= Ng.
+    length (filter (fun A => memb x A) F) <= Ng.
 Proof.
   intros b Ng F x Hb HU HD Hno Hg.
-  rewrite <- (length_link [x] F); apply Hg.
+  rewrite star_length_is_link_length; apply Hg.
   - replace (b - 1) with (b - length [x]) by (simpl; lia).
     apply (@link_uniform b [x] F HU).
     constructor; [intros [] | constructor].
@@ -375,7 +329,7 @@ Lemma pure_link_at_point_bounded :
     2 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->
     In A0 F -> In x A0 -> In x X -> Subset A0 X ->
     IotaAtMost (b - 1) Ni ->
-    deg [x] (purefam X F) <= Ni.
+    length (filter (fun A => memb x A) (purefam X F)) <= Ni.
 Proof.
   intros b Ni F X A0 x Hb HU HD Hno HA0 HxA0 HxX HA0X Hi.
   assert (HUp : Uniform b (purefam X F))
@@ -387,7 +341,7 @@ Proof.
     destruct Hc as [S [Hsub Hks]]; exists S; split; [|exact Hks].
     intros D HD'; destruct (Hsub D HD') as [E [HE Hseq]].
     exists E; split; [apply (purefam_incl X F); exact HE | exact Hseq]. }
-  rewrite <- (length_link [x] (purefam X F)); apply Hi.
+  rewrite star_length_is_link_length; apply Hi.
   - replace (b - 1) with (b - length [x]) by (simpl; lia).
     apply (@link_uniform b [x] (purefam X F) HUp).
     constructor; [intros [] | constructor].
@@ -416,8 +370,8 @@ Proof.
     assert (Hin : In z (filter (fun w => memb w A) X))
       by (apply filter_In; split; [exact HzX | apply memb_true_iff; exact HzA]).
     destruct (filter (fun w => memb w A) X); [destruct Hin | simpl; lia]. }
-  pose proof (meetsum_lower X F Hmeet) as Hlow.
-  rewrite <- degsum_eq_meetsum in Hlow.
+  pose proof (sizesum_lower X F Hmeet) as Hlow.
+  rewrite <- degsum_eq_sizesum in Hlow.
   (* The two halves of the sum. *)
   assert (Hall : degsum X F <= length X * Ng).
   { apply degsum_le; intros x _.

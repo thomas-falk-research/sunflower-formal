@@ -652,7 +652,7 @@ having in one place:
   3   10                 3.1623   <- the 1972 constant
   4   27   (ground 9)    3.0000
   4   <32  (ground 10)   <3.1414
-  5   >=54 (ground 19)   >=2.7108   <- the cone, §11.6; was >=42
+  5   >=78 (ground 15)   >=2.9718   <- plateau search, §20.6; was >=54
   6   >=300 (ground 18)  >=3.1291
   7   >=600 (ground 37)  >=2.9042
 ```
@@ -2059,7 +2059,7 @@ verifier:
   2            3        3       1.7321   exhaustive
   3           10        6       2.1544   exhaustive
   4           27        9       2.2795   exhaustive at g = 9; g >= 10 open
-  5           54       19       2.2206   cone(substitute(g(2), iota(2)))
+  5           78       15       2.3901   plateau search, §20.6 (was 54)
   6          300       18       2.5873   substitute(iota(2), iota(3))
   7          600       37       2.4939   cone(substitute(g(2), iota(3)))
   8         2187       27       2.6151   substitute(iota(2), iota(4,9)) -- unverified
@@ -2209,7 +2209,7 @@ family size that refutes at each uniformity, tabulated, pinned in
 ```
   b     iota(b) known   beats AHS at   fraction   note
   4         27                32        0.844     iota(4,10) <= 31; g >= 11 untouched
-  5         54               101        0.535
+  5         78               101        0.772
   6        300               317        0.946     <-- 17 members short
   7        600              1001        0.599
   8       2187              3163        0.691     (the b = 8 row is unverified)
@@ -3582,3 +3582,304 @@ Correct citations, obtained from Crossref, for whoever picks these up:
 OpenAlex reports `oa_status: closed` for all four of the closed ones, so
 these are index-confirmed rather than search-exhausted, the same standard
 §17.5 applied to [AHS72].
+
+---
+
+## 20. The construction session: what moved, and the cheap experiment that died
+
+§18 set three targets with numbers in them — `iota(4) >= 32`, `iota(6) >= 317`,
+and "compute `g(3)` exactly, because it decides `r*(3,3)`". This section is
+what a session aimed at all three actually produced. None of the three
+happened. Something else did, and it closed the third target rather than
+answering it.
+
+### 20.1 The observation, which is one sentence
+
+Erdős–Rado's step takes a maximal pairwise-disjoint subfamily `M ⊆ F`, notes
+that every member meets `T = ∪M` (else `M` was not maximal), and bounds
+`|F|` by `|T|` times the largest degree — each degree being a link, hence a
+`(b-1)`-uniform sunflower-free family, hence at most `g(b-1)`. That gives
+`g(b) <= 2b · g(b-1)`.
+
+Not all of those members cost `g(b-1)`. Call a member **pure at `x`** when it
+meets `T` in `x` and in nothing else. Then
+
+> the pure members at `x`, with `x` removed, form an **intersecting** family.
+
+Suppose two of them, `A \ x` and `B \ x`, were disjoint. Let `A₀` be the
+member of the matching `M` through `x`. Then `A₀ \ x` lies inside `T`, and
+purity says `A \ x` and `B \ x` do not — so `A \ x`, `B \ x` and `A₀ \ x` are
+three **pairwise disjoint** members of the link at `x`, which is a sunflower
+with empty core there, which lifts to a sunflower in `F` with core `{x}`.
+
+That is the whole argument. `coq/PureLink.v` is
+`pure_link_intersecting`, and the hypothesis doing the work is
+`Subset A0 X` — that the matching member through `x` lies inside the cover.
+The mutation `purelink-drop-cover-inside-x` is there because that is the
+clause a reader would assume is bookkeeping.
+
+### 20.2 The recursion
+
+Double counting `Σ_{x ∈ T} deg(x) = Σ_{A ∈ F} |A ∩ T|` (`degsum_eq_meetsum`)
+against `2|F| <= |pure| + Σ_A |A ∩ T|` — every member meets `T` at least
+once and every impure member at least twice — and bounding the pure part by
+`iota(b-1)` instead of `g(b-1)` gives `cover_recursion`:
+
+```
+    2 * |F|  <=  |T| * ( g(b-1) + iota(b-1) )
+```
+
+with `|T| <= 2b` in general and `|T| = b` when `F` is intersecting, so
+
+```
+    g(b)      <=  b * ( g(b-1) + iota(b-1) )
+    2 iota(b) <=  b * ( g(b-1) + iota(b-1) )
+```
+
+Since `2 iota(m) <= g(m)` (`Intersecting.doubling_lower_bound`) the step is
+never worse than Erdős–Rado's and is a factor `4/3` better when the doubling
+is tight. **It reproduces both values this development knows exactly**, which
+is the only check available on it:
+
+```
+   b   this recursion              Erdős–Rado    truth
+   1   iota(1) <= 1,  g(1) <= 2         -        1,  2       exact
+   2   iota(2) <= 3,  g(2) <= 6     g(2) <= 12   3,  6       exact
+   3   iota(3) <= 13, g(3) <= 27    g(3) <= 36   10, >= 20
+   4   iota(4) <= 80, g(4) <= 160   g(4) <= 288  >= 27, >= 54
+```
+
+Against what was here before: `iota(3) <= 18`
+(`Intersecting.iota_three_at_most_eighteen`), `iota(4)` in `[27, 192]`
+(`Audit.the_sharp_bound_narrows_iota_four`), and `f(3,3) <= 49`.
+
+> **`f(3,3) <= 28`**, unconditionally — `PureLink.f_3_3_at_most_28`.
+
+`Sharp.sharp_beats_erdos_rado_at_three` reaches 32 from a hypothesis about
+uniformity 4; `Product.iota_four_at_most_27_would_beat_erdos_rado` reaches 28
+from a hypothesis nobody can discharge. This is 28 from nothing, and it
+narrows the first unknown sunflower number to `21 <= f(3,3) <= 28`.
+
+### 20.3 The novelty check, which came back negative
+
+**The asymptotic content is not new, and the sentence that says so was
+already in this repository.** §17 recorded it from [Kup25] p. 5 and filed it
+as "a reference the bibliography lacks entirely":
+
+> *"Abbot, Hanson and Sauer [1] in 1972, and then Spencer [116] in 1977
+> improved upper bounds on `φ(k,s)`. The result of Spencer states that for
+> any fixed `s` and `ε > 0` there exists `C` such that
+> `φ(k,s) ⩽ C k!(1 + ε)^k`."*  [Kup25, p. 5]
+
+`φ(k,2)` is `g(k)` — the survey says on the same page that the maximum is
+attained on sets of size exactly `k`. Spencer's `(1+ε)^k` for every `ε`
+beats `(3/2)^k` outright, so the recursion here is asymptotically
+**subsumed by a 1977 result**, and by whatever [AHS72] proved before it.
+
+The reading did its job and the register was the thing that did it: the
+quote was three sessions old, sitting in `docs/reading.md` under a heading
+nobody had reason to revisit, and it took thirty seconds to find because
+§17.8 pinned the corpus. That is the first time the reading layer has
+*prevented* a claim rather than corrected one.
+
+**What is not subsumed is the finite values.** Spencer's `C` is not named,
+so the bound says nothing at `k = 3`; the survey records no exact value of
+`φ(3,2)`, and searching it for `φ(3`, "exact value" and "is known" finds
+none. So `g(3) <= 27` and `f(3,3) <= 28` are new *to this development*,
+possibly not to 1972 or 1977, and both of those are index-confirmed closed
+(§17.5, §15.2). No priority is claimed.
+
+### 20.4 The support bound, and `iota(3) = 10` exactly
+
+`IotaAtMost b N` quantifies over every ground set, so no search decides it.
+`PureLink.intersecting_support_bound` is what makes one search enough, and
+it is three lines: every member of an intersecting family meets a fixed
+member, so contributes at most `b - 1` points beyond it, and
+
+```
+    an n-member intersecting b-uniform family has support <= b + (b-1)(n-1).
+```
+
+At `b = 3`, `n = 11` that is **23 points**. `rust/src/wide.rs` is the same
+exact search on `u64` masks with the `b`-subsets generated combinatorially
+rather than by scanning `0 .. 2^g` — the 16-point ceiling in
+`intersecting::iota_decide` was never a limit on the search, only on the
+enumeration, and it was the only thing between this development and a
+statement about `iota(b)` rather than `iota(b, g)`.
+
+```
+    iota(3) >= 11 on 23 points?   exhaustive, none.     < 1s
+    iota(3) >= 12 on 25 points?   exhaustive, none.     < 1s
+```
+
+> **`iota(3) = 10`.** The development had `[10, 18]`.
+
+Two things it settles. `Sharp.sharp_forces_iota_three_exactly_ten` is now
+redundant — the sharp conjecture does not have to be assumed to pin
+`iota(3)`. And `Sharp.the_sharp_bound_is_attained_at_three` —
+`iota(3)² = 100 = 10²` exactly — is now known to be an equality between two
+known values rather than between a value and a bound: **the 1972 rate is exactly
+optimal at uniformity 3**, and every refutation of `AHSOptimal` has to happen
+at `b >= 4`.
+
+The chain is not one machine-checked object and the file says so. The support
+bound is Coq; the step from "support has at most 23 points" to "the family
+may be taken to live on `{0,...,22}`" is a relabelling that
+`DirectSum.relabel_preserves` does not cover, because it wants a globally
+invertible map rather than one invertible on the support; the search is Rust.
+The relabelling is the same step `iota_decide` already leans on when it forces
+the anchor, and it is argued there.
+
+### 20.5 The cheap experiment died, and that is the useful part
+
+§18.2 and §3.1 named the cheapest decisive thing on the list:
+
+> `IotaRate.flat_threshold_at_three_forces_g_three_at_most_27` — if
+> `r*(3,3) = 3` then `g(3) <= 27`, and this development only knows
+> `20 <= g(3) <= 48`. **Computing `g(3)` exactly decides `r*(3,3)`.** If
+> `g(3) > 27` the flat table breaks at uniformity 3.
+
+`g(3) <= 27` is now a theorem. So `g(3) > 27` is impossible, and **the
+experiment cannot refute `r*(3,3) = 3` however it comes out.** The cheapest
+decisive item on §18's list was not decisive; it was a consequence of
+something provable, and proving it removed the decision rather than making
+it.
+
+What survives is worth writing down. §18.2's tightness pattern is
+`r*(m,3) >= ceil(g(m)^(1/m))`, tight at both measured points. At `m = 3` the
+bound `g(3) <= 27` gives `ceil(g(3)^(1/3)) <= 3` **exactly** — `27^(1/3) = 3`
+on the nose — so the pattern is not merely consistent with `r*(3,3) = 3`,
+it is *saturated* by it: one more member in `g(3)` and the prediction would
+move to 4. That is a sharper statement of the tightness than two data points
+were, and it is the first time the pattern has been pinned from above.
+
+`g(3)` is still worth computing exactly — it is now known to lie in
+`[20, 27]`, seven values wide, and it feeds `iota(4) >= g(3)` through the
+cone. It is no longer the decisive experiment.
+
+### 20.6 The searches, with their cost
+
+The point of the session was `iota(4) >= 32` and `iota(6) >= 317`.
+`rust/src/plateau.rs` is what was built for it: a plateau search that gives
+up on deciding and only tries to find, since a record needs a witness and a
+witness needs no exhaustiveness argument. Two moves — fill to maximality,
+then force a non-member in and evict the fewest members that block it — with
+a short tabu list on what was evicted. The candidate test is bucketed by
+`A ∩ x`, which is `2^b` values, so a candidate costs a few pair-checks rather
+than `|F|²/2`; at `|F| = 300` that is the difference between 45000 pair
+lookups and about twenty.
+
+**The bar it has to clear is `iota(4,9) = 27`**, the 1972 family, rigid and
+exhaustively known. It rediscovers it from nothing in about two seconds, and
+`plateau_reaches_the_known_maxima` is a test rather than a remark because a
+search that cannot do that has no business being pointed at `b = 6`.
+
+**And it did not beat 1972.** The parameters run, with what they reached:
+
+```
+  question         grounds    seed   reached  target  verdict
+  iota(4) >= 32    11..15       27      27      32    never left the seed
+  iota(6) >= 317   18..21      300     300     317    never left the seed
+  iota(5) >= 101   12..20        -      78     101    54 -> 78, a new best
+  g(3)    >= 21    12..20       20      20      21    never left the seed
+  g(4)    >= 101   18..21       54      54     101    never left the seed
+```
+
+Three of the five rows never moved off the construction they started from,
+in hundreds of thousands of forced moves each — including after
+ruin-and-recreate kicks that discard an eighth of the family and refill.
+That is the same finding as §13.1's, reached by a different instrument:
+**the 1972 families are not merely maximal, they are isolated.** Every
+neighbourhood the plateau search can reach from them is worse.
+
+The one row that moved is the one where the substitution cannot be used at
+all. `b = 5` is prime, so `substitute` has no factorisation to work with and
+the repository's 54 came from the cone of a 4-uniform family; the search
+found **78 on fifteen points**, pinned in `rust/tests/iota_five.rs` and
+verified by `intersecting::verify`. That is `iota(5)^(1/4) = 2.972` against
+the 1972 rate of 3.162 and against the conjectured `iota(5) = 100`, so it is
+a new best for this development and **not** a record. The gap it closes is
+`54 -> 78` of the `54 -> 100` the sharp conjecture allows, and
+`iota_five_does_not_beat_1972` asserts exactly that so the number is not
+mistaken for a rate.
+
+That the only movement is at the only uniformity where the substitution has
+nothing to say is the sharpest form of §13.1's finding this session
+produced. Where the 1972 construction exists, local search does not improve
+it. Where it does not exist, local search beats what the repository had by
+44%.
+
+### 20.7 What `g(4) >= 101` would have been, and why it is on the list
+
+Worth recording because it is not obvious and it is where a future session
+should point first. The cone gives `iota(b) >= g(b-1)` (§11.2), so a large
+*general* family one uniformity down beats 1972 exactly as an intersecting
+one at the target uniformity would:
+
+```
+    g(4) >= 101   =>   iota(5) >= 101   =>   rate 101^(1/4) = 3.1702 > 3.16228
+    g(5) >= 317   =>   iota(6) >= 317
+```
+
+The general row is far less constrained than the intersecting one — §9 already
+found that SAT is transformative there and useless on the intersecting UNSAT
+side — and `g(4)` is known only to lie in `[54, 160]`, the upper end being new
+here. So `g(4)` is a live target with 47 to find, on a search space where the
+one instrument that has ever worked at these sizes is known to work.
+
+The plateau search does not find it, from the doubling seed or from nothing.
+
+### 20.8 What this session changes about the plan
+
+**Up.**
+
+1. **`g(4)`, through the cone.** §20.7. It has replaced `iota(4) >= 32` as
+   the most concrete unsolved number, because the search space is the one
+   where SAT wins and because the interval is now bounded on both sides.
+2. **`g(3)` exactly, but for a different reason.** No longer decisive for
+   `r*(3,3)` (§20.5). Still worth seven values, and it feeds
+   `iota(4) >= g(3)`.
+3. **`u64` everywhere in the exact layer.** `rust/src/wide.rs` cost twenty
+   lines and removed a ceiling that had silently shaped every question asked
+   of `iota` — the reason nobody had asked for `iota(3)` rather than
+   `iota(3, g)` is that the enumerator could not express it.
+
+**Down.**
+
+1. **`flat_threshold_at_three_forces_g_three_at_most_27` as an experiment.**
+   Closed by §20.5. Keep the theorem; stop calling it a decision procedure.
+2. **Local search against the 1972 families.** Five parameter rows,
+   hundreds of thousands of moves, three of them motionless. Whatever beats
+   the substitution is not one eviction, or eight, away from it.
+3. **`iota(3)` as an open interval.** It is 10.
+
+**Unchanged.** The axiom (§1) is still the highest-value engineering item and
+was not touched this session.
+
+
+### 20.9 Two defects in the instruments, found by using them
+
+Both are the kind of thing that is invisible until something depends on it.
+
+**`plateau_run` logged sizes without families.** The first pass reached 78 at
+`b = 5` in a run that was later killed, and the log recorded the number and
+nothing else — the family dump was conditional on beating the 1972 target, so
+every result that was interesting but not a record was thrown away. The 78
+had to be found a second time. Fixed: the family is written on *every*
+improvement. This is the incremental-flush rule (§0 of the session brief)
+applied to the thing actually worth flushing rather than to the progress
+line.
+
+**`tools/mutate.py` has been misattributing every kill after `Sharp.v`.**
+The "first file to break" column comes from the first `File "..."` header in
+the build output. Coq emits those for *warnings* too, and `coq/Sharp.v` line
+353 has one about large `nat` literals — so every mutation whose kill lands
+later in the build order was reported as breaking `Sharp.v`. Both of this
+session's new mutations were, and the file they actually break is
+`PureLink.v`. Fixed: walk back from the first `Error` to the header above it.
+
+The verdicts were never wrong — `killed` is decided by the exit code, not by
+the regex — so no recorded outcome changes. What was wrong is the one column
+a reader uses to check that a mutation broke the thing it was aimed at, which
+is the whole point of the column. It had been wrong since `Sharp.v` was
+added.
