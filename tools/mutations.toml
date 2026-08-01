@@ -1144,3 +1144,65 @@ the union of a maximal *matching* rather than any transversal. Purity says a \
 pure member meets X only at x; that makes it miss A0 \\ x only because A0 sits \
 inside X. Without it A0 may reach outside the cover, the third set of the \
 would-be 3-matching meets the other two, and there is no sunflower to lift."""
+
+# ----------------------------------------------------------------
+# The correction term and the trace class (session N+5).
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "purelink-heavy-drop-k-ge-two"
+file = "coq/PureLink.v"
+question = """sizesum_lower_heavy charges a marked member k rather than 2. \
+Does the proof need k >= 2, or is the charge sound for any k?"""
+find = "    2 <= k ->\n    (forall A, In A F -> 1 <= meets X A) ->"
+replace = "    (forall A, In A F -> 1 <= meets X A) ->"
+expect = "killed"
+because = """Load-bearing. With k < 2 a marked member may meet the cover \
+exactly once, which puts it in the pure part -- so the pure count grows by \
+one at the same time as the charge claims a surplus, and the member is paid \
+for twice. The heavy branch discharges the pure case from k <= meets X A and \
+2 <= k together; drop either and it is no longer a contradiction."""
+
+[[mutation]]
+id = "purelink-sharp-surplus-off-by-one"
+file = "coq/PureLink.v"
+question = """The matching members meet the cover in all b of their points \
+where the count charges 2, a surplus of b - 2 apiece. Is b - 2 the right \
+surplus, or would b - 1 also go through?"""
+find = "    2 * length F + (b - 2) * length M <= length (concat M) * (Ng + Ni)."
+replace = "    2 * length F + (b - 1) * length M <= length (concat M) * (Ng + Ni)."
+expect = "killed"
+because = """The surplus is exactly b - 2 and not a rounding: a matching \
+member contributes b to the degree sum and is charged 2 by sizesum_lower, so \
+b - 2 is recovered and no more. Claiming b - 1 credits a point that was never \
+double-counted, and sizesum_lower_heavy cannot supply it."""
+
+[[mutation]]
+id = "purelink-trace-drop-s-inside-a0"
+file = "coq/PureLink.v"
+question = """trace_class_intersecting needs the matching member A0 to CONTAIN \
+the trace S. Is that hypothesis doing work, or is "A0 lies inside the cover" \
+enough -- as the sketch of this lemma assumed?"""
+find = "    In A0 F -> Subset A0 X -> Subset S A0 -> length S < b ->"
+replace = "    In A0 F -> Subset A0 X -> length S < b ->"
+expect = "killed"
+because = """Load-bearing, and this is the hypothesis the derivation of the \
+trace decomposition left out. The sunflower is assembled in link S F, so all \
+three sets -- A \\ S, B \\ S and A0 \\ S -- must lie in that link, which means \
+A0 must contain S. At |S| = 1 it holds automatically because every point of \
+the cover lies in some matching member, which is why pure_link_intersecting \
+never had to state it. At |S| >= 2 a trace class whose S straddles two \
+matching members satisfies every other hypothesis and is not intersecting."""
+
+[[mutation]]
+id = "intersectingspread-link-drop-nodup"
+file = "coq/IntersectingSpread.v"
+question = """link_bounded bounds deg T F by g(b - |T|) for an arbitrary T. \
+Is NoDup T load-bearing, given that deg already ignores repeats?"""
+find = "    NoDup T -> GAtMost (b - length T) Ng ->\n    deg T F <= Ng."
+replace = "    GAtMost (b - length T) Ng ->\n    deg T F <= Ng."
+expect = "killed"
+because = """Load-bearing through link_uniform: the link at T has uniformity \
+b - |T| only when T has no repeats, and a repeating T makes b - length T \
+smaller than the members of the link actually are. This is the same defect \
+w_spread_legacy_degenerate records for the spread condition, one level down."""

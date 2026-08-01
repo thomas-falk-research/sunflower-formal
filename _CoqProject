@@ -33,5 +33,6 @@ coq/Product.v
 coq/Sharp.v
 coq/Maximal.v
 coq/StarDefect.v
+coq/IntersectingSpread.v
 coq/PureLink.v
 coq/Audit.v
