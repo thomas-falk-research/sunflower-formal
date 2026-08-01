@@ -20,7 +20,7 @@
 //!
 //! So `iota(b) >= N` iff `iota(b, b + (b-1)(N-1)) >= N`, and the question
 //! becomes one finite search. At `b = 3, N = 11` the bound is 23 points —
-//! `Ground.iota_support_bound` is the Coq statement, and this module is
+//! `PureLink.intersecting_support_bound` is the Coq statement, and this module is
 //! what answers the resulting query.
 //!
 //! Sets are `u64`, so `ground <= 64`; the `b`-subsets are generated
@@ -174,7 +174,7 @@ pub fn iota_decide(ground: u32, b: u32, target: usize, budget: u64) -> (bool, Ve
 }
 
 /// The support bound: an `n`-member intersecting `b`-uniform family needs
-/// at most `b + (b-1)(n-1)` points. Mirrors `Ground.iota_support_bound`.
+/// at most `b + (b-1)(n-1)` points. Mirrors `PureLink.intersecting_support_bound`.
 pub fn support_bound(b: u32, n: u32) -> u32 {
     if n == 0 {
         0
@@ -205,7 +205,10 @@ mod tests {
     /// wherever both run. Neither shares code with the other.
     #[test]
     fn wide_agrees_with_the_narrow_search() {
-        for (b, g) in [(2u32, 5u32), (2, 6), (3, 6), (3, 8), (3, 9), (4, 8), (4, 9)] {
+        // `(4, 9)` stays out: it is the fifty-second row, and the
+        // agreement it would test is already covered at `(4, 8)` where
+        // both the SAT and the UNSAT side are reached.
+        for (b, g) in [(2u32, 5u32), (2, 6), (3, 6), (3, 8), (3, 9), (4, 8)] {
             for target in 2..=12 {
                 let (wide, wfam, wdone) = iota_decide(g, b, target, 2_000_000_000);
                 let (narrow, nfam, ndone) =

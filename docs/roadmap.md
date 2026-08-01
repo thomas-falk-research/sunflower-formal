@@ -3620,7 +3620,7 @@ clause a reader would assume is bookkeeping.
 
 ### 20.2 The recursion
 
-Double counting `Σ_{x ∈ T} deg(x) = Σ_{A ∈ F} |A ∩ T|` (`degsum_eq_meetsum`)
+Double counting `Σ_{x ∈ T} deg(x) = Σ_{A ∈ F} |A ∩ T|` (`IotaGround.degsum_eq_sizesum`, reused rather than rebuilt)
 against `2|F| <= |pure| + Σ_A |A ∩ T|` — every member meets `T` at least
 once and every impure member at least twice — and bounding the pure part by
 `iota(b-1)` instead of `g(b-1)` gives `cover_recursion`:
@@ -3785,9 +3785,12 @@ search that cannot do that has no business being pointed at `b = 6`.
   g(4)    >= 101   18..21       54      54     101    never left the seed
 ```
 
-Three of the five rows never moved off the construction they started from,
-in hundreds of thousands of forced moves each — including after
-ruin-and-recreate kicks that discard an eighth of the family and refill.
+Four of the five rows never moved off the construction they started from —
+including after ruin-and-recreate kicks that discard an eighth of the family
+and refill. One run, `plateau_run 4 12 200000 99`, is the calibration:
+**200,000 forced moves in 136 seconds, best 27 throughout**, and the grid
+ran five or six seeds at each of four or five ground sets per row.
+
 That is the same finding as §13.1's, reached by a different instrument:
 **the 1972 families are not merely maximal, they are isolated.** Every
 neighbourhood the plateau search can reach from them is worse.

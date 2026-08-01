@@ -514,9 +514,17 @@ mod tests {
     }
 
     /// A seeded run never loses ground: it reports at least the seed.
+    ///
+    /// The seed is built rather than searched for: `iota(4,9) = 27` is the
+    /// substitution of the triangle into itself, and the exhaustive search
+    /// that also finds it costs fifty seconds.
     #[test]
     fn seeding_never_loses() {
-        let (_, seed, _) = crate::intersecting::iota(9, 4, 200_000_000, 0);
+        let (_, tri, _) = crate::intersecting::iota(3, 2, 10_000_000, 0);
+        let seed: Vec<u32> = crate::intersecting::substitute(&tri, 3, &tri, 3)
+            .iter()
+            .map(|&s| s as u32)
+            .collect();
         assert_eq!(seed.len(), 27);
         let f = search(9, 4, 60, 999, &seed, true, |_, _| {});
         assert!(f.best >= 27, "seeded run dropped to {}", f.best);

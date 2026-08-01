@@ -1,7 +1,7 @@
 //! `iota(3) = 10`: the support bound plus one exhaustive search.
 //!
 //! An 11-member intersecting 3-uniform sunflower-free family would have
-//! support at most `3 + 2*10 = 23` (`Ground.iota_support_bound`), so the
+//! support at most `3 + 2*10 = 23` (`PureLink.intersecting_support_bound`), so the
 //! whole unbounded question is this one query.
 use std::io::Write;
 use sunflower_formal::wide;
