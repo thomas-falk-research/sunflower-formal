@@ -545,6 +545,24 @@ Three smaller things worth carrying:
   doi:10.4153/CMB-1977-038-7. **Unreachable** — Cambridge Core, no open
   access.
 
+**Used, August 2026 (session N+4).** The Spencer sentence above was
+recorded last session as "a reference the bibliography lacks entirely" and
+left there. It has now been *applied*: `coq/PureLink.v` proves
+`g(b) <= b(g(b-1) + iota(b-1))`, hence `g(b) <= (3/2) b g(b-1)` against
+Erdős–Rado's `2b g(b-1)`, and Spencer's `C k!(1+ε)^k` for **every** `ε`
+subsumes that outright. Since the survey also says (p. 5, four lines above)
+that `φ(k,s)` is attained on sets of size exactly `k`, `φ(k,2) = g(k)` and
+the comparison is direct. So the new recursion is asymptotically not new,
+and it was checked before the claim was written rather than after —
+`roadmap.md` §20.3.
+
+What the survey does *not* contain is any exact value of `φ(3,2)`;
+searching the rendered text for `φ(3`, "exact value" and "is known" returns
+only unrelated hits about extremal numbers for paths and cycles. So the
+finite values — `g(3) <= 27`, `f(3,3) <= 28` — are new to this development
+and of unknown status against [AHS72] and [Sp77], both index-confirmed
+closed.
+
 ### [EKR61], [ErRa69-II] — downloaded, not read
 
 `users.renyi.hu/~p_erdos/1961-07.pdf` (8pp, Erdős–Ko–Rado) and

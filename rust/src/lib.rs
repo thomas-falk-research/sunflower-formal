@@ -26,12 +26,14 @@ pub mod ground;
 pub mod intersecting;
 pub mod link;
 pub mod orbit;
+pub mod plateau;
 pub mod ratio;
 pub mod sat;
 pub mod shift;
 pub mod spread;
 pub mod structure;
 pub mod testbed;
+pub mod wide;
 
 pub use sunflower::{find_k_sunflower, is_k_sunflower, Sunflower};
 pub use bounds::{erdos_rado_bound, f_nk_exact};

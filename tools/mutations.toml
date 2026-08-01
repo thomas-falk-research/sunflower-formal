@@ -1108,3 +1108,39 @@ members is perfectly consistent with r working -- indeed at m = 2, r = 3 the \
 measured threshold is 3 and g(2) = 6 <= 9 = 3^2 with room to spare. Only a \
 family strictly larger than r^m refutes r. The mutation makes the statement \
 false and the final lia has nothing to close."""
+
+# ----------------------------------------------------------------
+# The pure-link recursion.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "purelink-pure-at-two"
+file = "coq/PureLink.v"
+question = """The recursion charges the members meeting the cover exactly \
+once against iota(b-1) and everything else twice. Is "exactly once" the \
+load-bearing number, or would any threshold do?"""
+find = "  filter (fun A => Nat.eqb (meets X A) 1) F."
+replace = "  filter (fun A => Nat.eqb (meets X A) 2) F."
+expect = "killed"
+because = """Load-bearing twice over, and in opposite directions. A member \
+meeting the cover twice has two points of the cover in it, so removing one \
+leaves a set that still meets the member of the maximal matching through the \
+other -- the three sets are no longer pairwise disjoint and the pure link is \
+not intersecting. And the count 2|F| <= |pure| + sum |A cap T| needs the \
+non-pure members to contribute at least 2 each, which "meets = 2" does not \
+give for the members meeting it once."""
+
+[[mutation]]
+id = "purelink-drop-cover-inside-x"
+file = "coq/PureLink.v"
+question = """pure_link_intersecting needs the matching member A0 through x to \
+lie inside the cover X. Is that hypothesis doing work, or is "A0 is a member \
+containing x" enough?"""
+find = "    In A0 F -> In x A0 -> In x X -> Subset A0 X ->\n    Intersecting (link [x] (purefam X F))."
+replace = "    In A0 F -> In x A0 -> In x X ->\n    Intersecting (link [x] (purefam X F))."
+expect = "killed"
+because = """Load-bearing, and it is the whole reason the cover is taken to be \
+the union of a maximal *matching* rather than any transversal. Purity says a \
+pure member meets X only at x; that makes it miss A0 \\ x only because A0 sits \
+inside X. Without it A0 may reach outside the cover, the third set of the \
+would-be 3-matching meets the other two, and there is no sunflower to lift."""

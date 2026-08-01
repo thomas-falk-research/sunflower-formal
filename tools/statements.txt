@@ -1299,3 +1299,60 @@ d0c4df84af86fe26  def Product.cone
 
 d4275210f1a69349  def Product.fresh_point
     fresh_point = fun F : Family => S (maxall (List.concat F)) : Family -> nat Arguments fresh_point F
+
+cbf185ffe04571a2  thm PureLink.pure_link_intersecting
+    pure_link_intersecting : forall (b : nat) (F : Family) (X A0 : list nat) (x : nat), 2 <= b -> Uniform b F -> ~ ContainsKSunflower 3 F -> List.In A0 F -> List.In x A0 -> List.In x X -> Subset A0 X -> Intersecting (link (x :: nil) (purefam X F))
+
+f3030ba495e0426a  thm PureLink.cover_recursion
+    cover_recursion : forall (b Ng Ni : nat) (F : Family) (M : list (list nat)), 2 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.incl M F -> (forall A : list nat, List.In A F -> exists B : list nat, List.In B M /\ ~ Disjoint A B) -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni -> 2 * length F <= length (List.concat M) * (Ng + Ni)
+
+f84eec2e9db4cc99  thm PureLink.iota_recursion
+    iota_recursion : forall b Ng Ni N : nat, 2 <= b -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni -> b * (Ng + Ni) <= 2 * N + 1 -> IotaAtMost b N
+
+8174666fc4c26056  thm PureLink.g_recursion
+    g_recursion : forall b Ng Ni N : nat, 2 <= b -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni -> 2 * b * (Ng + Ni) <= 2 * N + 1 -> GAtMost b N
+
+a06aee5a26aa0056  thm PureLink.iota_two_at_most_three
+    iota_two_at_most_three : IotaAtMost 2 3
+
+913d31864a4b3bfc  thm PureLink.g_two_at_most_six
+    g_two_at_most_six : GAtMost 2 6
+
+bc227a18b06ffc4f  thm PureLink.iota_three_at_most_thirteen
+    iota_three_at_most_thirteen : IotaAtMost 3 13
+
+ae2342a97991de70  thm PureLink.g_three_at_most_27
+    g_three_at_most_27 : GAtMost 3 27
+
+c09f9e7a54785616  thm PureLink.f_3_3_at_most_28
+    f_3_3_at_most_28 : UpperBound 3 3 28
+
+1b3386ff91a6565a  thm PureLink.f_3_3_between_21_and_28
+    f_3_3_between_21_and_28 : UpperBound 3 3 28 /\ ~ UpperBound 3 3 20 /\ 28 < 49
+
+7036ff950b00c571  thm PureLink.intersecting_support_bound
+    intersecting_support_bound : forall (b : nat) (H : Family) (P : list nat), 1 <= b -> Uniform b H -> Intersecting H -> List.NoDup P -> (forall x : nat, List.In x P -> exists A : list nat, List.In A H /\ List.In x A) -> length P <= b + (b - 1) * (length H - 1)
+
+bf2668215ffd3514  thm PureLink.iota_three_eleven_needs_only_23_points
+    iota_three_eleven_needs_only_23_points : forall (H : Family) (P : list nat), Uniform 3 H -> Intersecting H -> List.NoDup P -> length H = 11 -> (forall x : nat, List.In x P -> exists A : list nat, List.In A H /\ List.In x A) -> length P <= 23
+
+0448c42df7e45157  thm PureLink.recursion_dominates_erdos_rado
+    recursion_dominates_erdos_rado : forall b Ng Ni : nat, Ni <= Ng -> b * (Ng + Ni) <= 2 * b * Ng
+
+5915e653d00a86ae  def PureLink.meets
+    meets = fun X A : list nat => length (List.filter (fun x : nat => memb x A) X) : list nat -> list nat -> nat Arguments meets (X A)%list_scope
+
+073e057ecd51fdc9  def PureLink.purefam
+    purefam = fun (X : list nat) (F : Family) => List.filter (fun A : list nat => PeanoNat.Nat.eqb (meets X A) 1) F : list nat -> Family -> Family Arguments purefam X%list_scope F
+
+f77ec7ec66da4af6  thm PureLink.iota_four_at_most_80
+    iota_four_at_most_80 : IotaAtMost 4 80
+
+71f6c448a1cfd9de  thm PureLink.g_four_at_most_160
+    g_four_at_most_160 : GAtMost 4 160
+
+70b6d965bef5cc66  thm PureLink.iota_four_at_most_74_if_iota_three_is_ten
+    iota_four_at_most_74_if_iota_three_is_ten : IotaAtMost 3 10 -> IotaAtMost 4 74
+
+a43991b0da027dec  thm PureLink.g_four_at_most_148_if_iota_three_is_ten
+    g_four_at_most_148_if_iota_three_is_ten : IotaAtMost 3 10 -> GAtMost 4 148

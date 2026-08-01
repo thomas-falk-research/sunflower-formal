@@ -192,7 +192,9 @@ fn no_construction_in_the_repository_refutes_the_sharp_conjecture() {
         (4, structure::widen(&i4), "iota(4,9) = 27, exhaustive".into()),
     ];
 
-    // b = 5: cone(substitute(g(2), iota(2))) -- 54 members.
+    // b = 5: the cone gives 54; `rust/tests/iota_five.rs` pins the 78 the
+    // plateau search found. This row stays with the construction, because
+    // this test is about what the *constructions* reach.
     {
         let g4 = intersecting::substitute(&tt, 6, &tri, 3);
         let h = structure::cone_128(&g4, 6 * 3);
@@ -246,7 +248,7 @@ fn no_construction_in_the_repository_refutes_the_sharp_conjecture() {
 fn the_fractions_of_the_threshold_are_what_section_twelve_says() {
     let known: &[(u32, u128, f64)] = &[
         (4, 27, 0.844),
-        (5, 54, 0.535),
+        (5, 78, 0.772),
         (6, 300, 0.946),
         (7, 600, 0.599),
         (8, 2187, 0.691),

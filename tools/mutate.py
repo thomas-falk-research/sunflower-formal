@@ -154,20 +154,28 @@ def build(root: Path, timeout: int) -> tuple[bool, str, str | None]:
     if proc.returncode == 0:
         return True, "", None
 
+    lines = out.splitlines()
+    # The *error's* file, not the first file mentioned anywhere. Coq emits
+    # `File "..."` headers for warnings too -- coq/Sharp.v has one about
+    # large nat literals -- so a plain search over the whole output
+    # reported Sharp.v as "the file that broke" for every kill later in the
+    # build order. Walk back from the first Error to the header above it.
     failing = None
-    match = FILE_RE.search(out)
-    if match:
-        failing = match.group(1)
-    else:
+    err = next((i for i, l in enumerate(lines) if l.startswith("Error")), None)
+    if err is not None:
+        for l in reversed(lines[:err]):
+            m = FILE_RE.match(l)
+            if m:
+                failing = m.group(1)
+                break
+    if failing is None:
         compiled = COQC_RE.findall(out)
         if compiled:
             failing = compiled[-1]
 
     detail = ""
-    for i, line in enumerate(out.splitlines()):
-        if line.startswith("Error"):
-            detail = " ".join(out.splitlines()[i:i + 3]).strip()
-            break
+    if err is not None:
+        detail = " ".join(lines[err:err + 3]).strip()
     return False, detail[:300], failing
 
 
