@@ -5,13 +5,13 @@ What was actually read, page by page, and what it changed here.
 This file exists because five sessions of machine-checked work were built
 on a literature base that had never been opened. `docs/roadmap.md` §15
 put the problem plainly: *"the repository's single axiom comes from an
-eight-page open-access paper that nobody here has opened."* This session opened it, and thirty-two other papers, plus the
+eight-page open-access paper that nobody here has opened."* This session opened it, and thirty-four other papers, plus the
 MathOverflow answer this repository had been citing without reading.
-**Eleven papers were read cover to cover** — [Ra20] 8pp, [ALWZ20] 19pp,
+**Twelve papers were read cover to cover** — [Ra20] 8pp, [ALWZ20] 19pp,
 [BCW21] 3pp, [Lovett] 28pp, [MNSZ22] 8pp, [ErRa60] 6pp, [Mis26] 12pp,
-[Rao25] 12pp, [Fuk25] 8pp, [NaSa17] 5pp and [Kup25] **66pp**, the survey
-of the method this problem belongs to — plus Hunter's answer in full and
-seven more in part.
+[Rao25] 12pp, [Fuk25] 8pp, [NaSa17] 5pp, [Kup25] **66pp** (the survey of
+the method this problem belongs to) and [KuZa22] **27pp** — plus
+Hunter's answer in full and seven more in part.
 
 ## The rules this file is written under
 
@@ -104,6 +104,7 @@ literature, resolved.
 | # | Question | Answer |
 |---|---|---|
 | C17 | Which of the four spread-lemma proofs is most formalisable in `nat`-only Coq? | **The counting proof — [ALWZ20] §2 as streamlined by Park–Pham, written out in Lovett PCMI §3.** Not Rao. See the analysis below. |
+| C18 | Does `r*(m,3)` track `⌈g(m)^{1/m}⌉`? | **Tight at both known points; recorded as a hint, not a result** | `spread_reduction` gives `g(m) ≤ r^m`, so `r*(m,3) ≥ ⌈g(m)^{1/m}⌉` is a theorem (`IotaRate.spread_threshold_bounds_g`). At `m=2`: `g(2)=6`, `⌈2.449⌉=3`, measured `r*=3`. At `m=3`: `g(3)≥20`, `⌈2.714⌉=3`, measured `r*=3`. Falsifiable now — `r*(3,3)=3` forces `g(3) ≤ 27`, against the known `20 ≤ g(3) ≤ 48`. See `docs/roadmap.md` §18.2. |
 
 ---
 
@@ -1090,13 +1091,13 @@ correct citations, from Crossref, are in `docs/roadmap.md` §19.7.
 
 The papers vanish with the container, and this session lost time
 re-fetching what the previous one had already found. `docs/papers/` is
-the fix: 29 records, each with the SHA-256 of the exact bytes that were
+the fix: 35 records, each with the SHA-256 of the exact bytes that were
 rendered and read, the page count verified with `pdfinfo`, the source
 URL, and the retrieval date. `docs/papers/fetch.sh` rebuilds the corpus
 and **fails on a hash mismatch**, so a paper revised upstream cannot be
 quoted as though it were the version that was read.
 
-Fourteen PDFs are stored. The rest are not ours to store — the arXiv
+Sixteen PDFs are stored. The rest are not ours to store — the arXiv
 non-exclusive licence grants arXiv distribution rights and not
 third-party redistribution, and the 1960/1961/1969 journal scans and the
 PCMI notes are in copyright or carry no stated licence. The

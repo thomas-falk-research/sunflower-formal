@@ -2753,13 +2753,14 @@ the repository.
 
 ## 16. What the reading changed
 
-Session N+3 read papers instead of proving things. Thirty-three papers
-were downloaded and rendered, plus one MathOverflow answer; **eleven were
-read cover to cover** (§17 added two more to §16's nine) —
+Session N+3 read papers instead of proving things. Thirty-five papers
+were downloaded and rendered, plus one MathOverflow answer; **twelve were
+read cover to cover** (§17 added two to §16's nine, §19 added a twelfth) —
 [Ra20] (8pp), [ALWZ20] (19pp), [BCW21] (3pp), [Lovett] (28pp),
 [MNSZ22] (8pp), [ErRa60] (6pp), [Mis26] (12pp), [Rao25] (12pp) and
-Fukuyama's arXiv:2510.19037 (8pp), and — added in §17 — [Kup25] (66pp)
-and [NaSa17] (5pp); seven more in part, and Hunter's answer in full.
+Fukuyama's arXiv:2510.19037 (8pp); added in §17, [Kup25] (66pp) and
+[NaSa17] (5pp); added in §19, [KuZa22] (27pp). Seven more in part, and
+Hunter's answer in full.
 `docs/reading.md` is the log, with an explicit page count for every
 entry and a register of twenty-one claims resolved. This section is what
 it did to the repository.
@@ -3188,7 +3189,7 @@ quotations, for the same reason, and it belongs beside §16.6.
 
 ### 17.8 The corpus is pinned now
 
-`docs/papers/` holds 29 records: SHA-256 of the exact bytes rendered and
+`docs/papers/` holds 35 records: SHA-256 of the exact bytes rendered and
 read, page count from `pdfinfo`, source URL, retrieval date, and the
 licence the publisher states. `fetch.sh` rebuilds the corpus and fails on
 a hash mismatch, so a paper revised upstream cannot be quoted as the
@@ -3258,6 +3259,41 @@ where it breaks first:
 
 `g(9) ≥ g(3)·ι(3)³ ≥ 20·1000 = 20000 > 19683 = 3⁹`, margin **317**.
 
+**And the near side: at both measured points the inequality is tight.**
+`spread_reduction` gives `g(m) ≤ r^m` for any working `r`, so
+
+>  `r*(m,3)  ≥  ⌈ g(m)^(1/m) ⌉`
+
+is a theorem — `IotaRate.spread_threshold_bounds_g` and its
+contrapositive `g_lower_bound_refutes_spread_threshold`, which is the
+integer form and needs no roots. Evaluate it where both sides are known:
+
+```
+   m    g(m)        ceil(g(m)^(1/m))     measured r*(m,3)
+   2    6 (exact)   ceil(2.449) = 3      3        <- tight
+   3    >= 20       ceil(2.714) = 3      3        <- tight
+```
+
+**Tight at both.** Two points is nearly nothing and this is recorded as a
+hint, not a result. But if `r*(m,3) = ⌈g(m)^(1/m)⌉` in general then the
+spread-threshold sequence and the extremal-rate sequence are *the same
+object*, and since the 1972 rate is `10^(1/2) = 3.162...` the threshold
+should settle at **4** — the conjecture true with a nearly sharp
+constant.
+
+**It has a falsifiable consequence available now.** `r*(3,3) = 3` forces
+`g(3) ≤ 27` (`flat_threshold_at_three_forces_g_three_at_most_27`), and
+this development only knows `20 ≤ g(3) ≤ 48` — 20 from
+`Intersecting.lower_bound_3_3_20`, 48 from Erdős–Rado. So:
+
+> **Computing `g(3)` exactly decides `r*(3,3)`.** If `g(3) > 27` the flat
+> table breaks at uniformity 3 rather than 9, and the whole tightness
+> pattern dies at its second data point.
+
+That is a far cheaper search than widening `empirical_threshold` past
+ground 10, and it is the same computation as §18.3 item 2 approached
+from the other side. **Two open computations that are one computation.**
+
 Both inputs are already machine-checked — `g(3) ≥ 20` is
 `IotaRate.iota_three_sandwich`, `ι(3) ≥ 10` is `Intersecting.iota3`. The
 only missing piece is the substitution itself, which is **already §15.3's
@@ -3294,10 +3330,12 @@ reach 3.162" matters, and it retires the question of whether
    problem. The repository's exhaustive small-case machinery computes
    exactly this. `φ(2,2) = 6` is already `coq/F23.v`. Cheap, and it has
    an external consumer for the first time.
-4. **The spread-approximation literature** ([KuZa22], [Ku23]). If
-   `Spread.Spread` is becoming standard infrastructure in extremal set
-   theory, a machine-checked spread layer has consumers beyond this
-   conjecture. Read those two before deciding what the layer is *for*.
+4. ~~**The spread-approximation literature** ([KuZa22], [Ku23]).~~
+   **Done — see §19.** [KuZa22] read in full, [Ku23] in part. The answer
+   is yes: `Spread.Spread` is the definition at the centre of a
+   programme whose selling point is that it is elementary where the
+   alternatives are algebraic, and its base layer is three statements
+   this repository already has.
 5. **Frankl–Katona (Theorem 29), as a second customer for the Hall
    layer.** `HallCore.v`, `KoenigHall.v` and `Matching.v` exist for the
    uniformity-2 programme and are otherwise unused; [Kup25] p. 29 proves
