@@ -59,8 +59,11 @@
     >  iota(b)  <  κ * g(b-1)  <=  κ * 2(b-1) * iota(b-1).
 
     That multiplies by [2(b-1)κ] per level, so over [b] levels it is
-    [b! (2κ)^b = b! (C log b)^b] — Erdős–Rado's [b! 4^b] made **worse** by
-    [(log b)^b]. [chain_never_beats_erdos_rado] is that comparison, and
+    [b! (2κ)^b = b! (2C log b)^b]. Erdős–Rado's own recursion
+    [g(b) <= 2b g(b-1)] unrolls to [b! 2^b] — which is
+    [(k-1)^b b!] at [k = 3], the classical constant — so the chain is
+    Erdős–Rado made **worse** by exactly [(C log b)^b].
+    [chain_never_beats_erdos_rado] is that comparison, and
     [rust/tests/alwz_chain.rs] evaluates the recursion numerically with
     the maximum over [t] taken honestly at every level: the ratio to
     Erdős–Rado is exactly 1 at every [b] and every [C], because the
