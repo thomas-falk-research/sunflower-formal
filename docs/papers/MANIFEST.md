@@ -45,8 +45,10 @@ more; it is not a claim about the contents.
 | key | authors | title | id | pp | licence | stored | read |
 |---|---|---|---|---|---|---|---|
 | `ALWZ20` | Ryan Alweiss et al. | Improved bounds for the sunflower lemma | arXiv:1908.08483v3 | 19 | arXiv non-exclusive | not stored | read in full (19 of 19 pages) |
+| `ASU12` | Noga Alon, Amir Shpilka, Christopher Umans | On Sunflowers and Matrix Multiplication | — | 16 | no licence stated (ECCC report) | not stored | read pp. 1-5 and 8 of 16 |
 | `AhNo26` | Omran Ahmadi, Hassan Norouzi | A Polynomial Improvement of Naslund--Sawin Bound for Sunflower-Free Families Using Triangular Tensors | arXiv:2606.30593v1 | 12 | CC BY 4.0 | `pdf/naslund_improved.pdf` | read p. 1 of 12 |
 | `AlHo20` | Noga Alon, Ron Holzman | Near-sunflowers and focal families | arXiv:2010.05992v1 | 11 | CC BY 4.0 | `pdf/near_sunflowers.pdf` | not read (11 pages rendered) |
+| `BCCGNSU17` | Jonah Blasiak et al. | On cap sets and the group-theoretic approach to matrix multiplication | arXiv:1605.06702v4 | 27 | CC BY 4.0 | `pdf/blasiak_capset.pdf` | not read (27 pages rendered) |
 | `BCW21` | Tolson Bell, Suchakree Chueluecha, Lutz Warnke | Note on Sunflowers | arXiv:2009.09327v2 | 3 | arXiv non-exclusive | not stored | read in full (3 of 3 pages) |
 | `DE25` | Andrey Kupavskii, Fedor Noskov | Exact results and the structure of extremal families for the Duke--Erdős forbidden sunflower problem | arXiv:2511.17142v1 | 30 | CC BY 4.0 | `pdf/dukeerdos.pdf` | not read (30 pages rendered) |
 | `EKR61` | P. Erdős, C. Ko and R. Rado | Intersection theorems for systems of finite sets | doi:10.1093/qmath/12.1.313 | 8 | in copyright (OUP); Erdos memorial archive scan | not stored | not read (8 pages rendered) |
@@ -56,9 +58,12 @@ more; it is not a claim about the contents.
 | `FPPTZ24` | Peter Frankl, János Pach, Dömötör Pálvölgyi | Odd-Sunflowers | arXiv:2310.16701v2 | 10 | CC BY 4.0 | `pdf/odd_sunflowers.pdf` | read in an earlier session (10 pages) |
 | `FPS21` | Jacob Fox, Janos Pach, Andrew Suk | Sunflowers in set systems of bounded dimension | arXiv:2103.10497v2 | 14 | CC BY 4.0 | `pdf/fox_pach_suk.pdf` | not read (14 pages rendered) |
 | `Fuk25` | Junichiro Fukuyama | Sunflower Bound with a Sub-Logarithmic Base | arXiv:2510.19037v2 | 8 | CC BY-SA 4.0 | `pdf/sublog.pdf` | read in full (8 of 8 pages) |
+| `GMR12` | Parikshit Gopalan, Raghu Meka, Omer Reingold | DNF Sparsification and a Faster Deterministic Counting Algorithm | arXiv:1205.3534v1 | 27 | arXiv non-exclusive | not stored | not read (27 pages rendered) |
 | `Gal26` | Cheng Liao | On the sunflower property and the galah property | arXiv:2606.13656v1 | 21 | arXiv non-exclusive | not stored | not read (21 pages rendered) |
 | `HLC25` | Quanyu Tang, Shengtong Zhang | Harmonic LCM patterns and sunflower-free capacity | arXiv:2512.20055v1 | 19 | arXiv non-exclusive | not stored | not read (19 pages rendered) |
 | `JMR25` | Ting-Wei Chao et al. | Uniform set systems with small VC-dimension | arXiv:2501.13850v2 | 25 | CC BY 4.0 | `pdf/vcdim2025.pdf` | not read (25 pages rendered) |
+| `Ku23` | Andrey Kupavskii | Erdos-Ko-Rado type results for partitions via spread approximations | arXiv:2309.00097v3 | 22 | CC BY 4.0 | `pdf/ku_partitions.pdf` | read pp. 1-2 and 5-8 of 22 |
+| `KuZa22` | Andrey Kupavskii, Dmitriy Zakharov | Spread approximations for forbidden intersections problems | arXiv:2203.13379v3 | 27 | arXiv non-exclusive | not stored | read in full (27 of 27 pages) |
 | `Kup25` | Andrey Kupavskii | Delta-system method: a survey | arXiv:2508.20132v1 | 66 | CC BY 4.0 | `pdf/kupavskii_survey.pdf` | read in full (66 of 66 pages) |
 | `Lovett25` | S. Lovett | From sunflowers to thresholds (PCMI lecture notes) | — | 28 | no licence stated on the source page; author's lecture notes | not stored | read in full (28 of 28 pages) |
 | `MNSZ22` | Elchanan Mossel et al. | A second moment proof of the spread lemma | arXiv:2209.11347v2 | 8 | arXiv non-exclusive | not stored | read in full (8 of 8 pages) |
@@ -70,20 +75,23 @@ more; it is not a claim about the contents.
 | `SC26` | Rob Sullivan, Jeroen Winkel | Structured sunflowers and canonical Ramsey properties | arXiv:2602.04610v2 | 16 | arXiv non-exclusive | not stored | not read (16 pages rendered) |
 | `SFP25` | Patrick Bennett, Amanda Priestley | The Sunflower-Free Process | arXiv:2509.16355v1 | 37 | CC BY 4.0 | `pdf/sfprocess.pdf` | not read (37 pages rendered) |
 | `SFS26` | Kamil Otal | On set-like sunflower-free families of subspaces over finite fields | arXiv:2605.12232v1 | 8 | CC BY 4.0 | `pdf/sfsubspaces.pdf` | not read (8 pages rendered) |
+| `Schrijver05` | Alexander Schrijver | New code upper bounds from the Terwilliger algebra and semidefinite programming | doi:10.1109/tit.2005.851748 | 8 | green OA (CWI institutional repository) | not stored | read pp. 1-2 of 8 |
 | `Smooth21` | Sam Spiro | A Smoother Notion of Spread Hypergraphs | arXiv:2106.11882v2 | 12 | arXiv non-exclusive | not stored | not read (12 pages rendered) |
 | `Thi21` | R. Thiemann | The Sunflower Lemma of Erdős and Rado | — | 14 | BSD License (AFP entry licence) | `pdf/afp_sunflowers.pdf` | read pp. 1-4 and 13-14 of 14 |
 | `VS25` | Ferdinand Ihringer, Andrey Kupavskii | The Erdős-Rado Sunflower Problem for Vector Spaces | arXiv:2505.03671v2 | 9 | arXiv non-exclusive | not stored | not read (9 pages rendered) |
 
-29 records, 14 PDFs stored,
-10 read in full.
+35 records, 16 PDFs stored,
+11 read in full.
 
 ## What bears on what
 
 | key | bears on this repository |
 |---|---|
 | `ALWZ20` | Definition 1.10 = Spread.Spread; Lemma 3.1 tightness; Thm 4.2 intersecting. |
+| `ASU12` | Thm 2.3 links the uniform and Erdos-Szemeredi conjectures; Thm 2.6 the Z_D^n equivalence. |
 | `AhNo26` | Polynomial improvement of NaSa17; base unchanged. |
 | `AlHo20` | Alon-Holzman, near-sunflowers and focal families. |
+| `BCCGNSU17` | The cap-set obstruction to the group-theoretic approach. |
 | `BCW21` | Current peer-reviewed record (Cp log k)^k. |
 | `DE25` | Duke-Erdos forbidden sunflower, extremal structure. |
 | `EKR61` | The intersecting side. |
@@ -93,9 +101,12 @@ more; it is not a claim about the contents.
 | `FPPTZ24` | Ground-set framing; credits Hunter's equivalence. |
 | `FPS21` | Sunflowers in set systems of bounded dimension. |
 | `Fuk25` | Unrefereed claim of a sub-logarithmic base. |
+| `GMR12` | DNF sparsification; a named Tier 4 application. |
 | `Gal26` | The sunflower property and the galah property. |
 | `HLC25` | Harmonic LCM patterns and sunflower-free capacity. |
 | `JMR25` | Sunflowers in set systems with small VC-dimension. |
+| `Ku23` | Self-contained presentation; Obs 11 = rao_witness+link, Obs 12 = spread_reduction. |
+| `KuZa22` | Spread as a general method; Lemma 14 consumes the sunflower bound; tau is a tool. |
 | `Kup25` | AHS72 corroboration; base/nucleus/generating-set literature. |
 | `Lovett25` | Def 2.5 = Spread.Spread; Lemma 2.6 = spread_reduction; Sec 3 = the formalisation target. |
 | `MNSZ22` | The four proofs; fn.2 p.6 records the gap in Tao's proof. |
@@ -107,6 +118,7 @@ more; it is not a claim about the contents.
 | `SC26` | Structured sunflowers and canonical Ramsey properties. |
 | `SFP25` | The sunflower-free process. |
 | `SFS26` | Set-like sunflower-free families of subspaces. |
+| `Schrijver05` | Roadmap M2's machinery; C*-algebra + SDP, hence M2 is not viable here. |
 | `Smooth21` | A smoother notion of spread. |
 | `Thi21` | Refutes the 'only machine-checked formalisation' claim. |
 | `VS25` | Erdos-Rado sunflower problem for vector spaces. |

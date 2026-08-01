@@ -412,6 +412,24 @@ ea58a5daf0c640d2  thm F23.upper_bound_of_sunflower_free_bound
 a57d17ae4f9854a9  thm IotaRate.intersecting_not_spread_above_uniformity
     intersecting_not_spread_above_uniformity : forall (m : nat) (F : Family) (r : nat), Uniform m F -> Intersecting F -> F <> nil -> m < r -> ~ Spread F r
 
+24bdc5b5af078924  thm IotaRate.spread_threshold_bounds_g
+    spread_threshold_bounds_g : forall m r : nat, 1 <= r -> SpreadYieldsDisjoint m 3 r -> GAtMost m (PeanoNat.Nat.pow r m)
+
+646dbb306a075ff8  thm IotaRate.g_lower_bound_refutes_spread_threshold
+    g_lower_bound_refutes_spread_threshold : forall m r N : nat, 1 <= r -> PeanoNat.Nat.pow r m < N -> LowerBound m 3 N -> ~ SpreadYieldsDisjoint m 3 r
+
+b4a88bc143492991  thm IotaRate.flat_threshold_at_three_forces_g_three_at_most_27
+    flat_threshold_at_three_forces_g_three_at_most_27 : SpreadYieldsDisjoint 3 3 3 -> GAtMost 3 27
+
+cfe97be463ab5839  thm IotaRate.two_is_refuted_at_uniformity_two
+    two_is_refuted_at_uniformity_two : ~ SpreadYieldsDisjoint 2 3 2
+
+ddaff15bf6544ed5  thm IotaRate.substitution_would_refute_the_flat_threshold_at_nine
+    substitution_would_refute_the_flat_threshold_at_nine : LowerBound 9 3 (PeanoNat.Nat.pow 3 9 + 317) -> ~ SpreadYieldsDisjoint 9 3 3
+
+c193241faf913303  thm IotaRate.substitution_would_force_c_three_at_least_four
+    substitution_would_force_c_three_at_least_four : LowerBound 9 3 (PeanoNat.Nat.pow 3 9 + 317) -> forall c : nat -> nat, (forall k : nat, 2 <= k -> 1 <= c k) -> (forall n k : nat, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)) -> 4 <= c 3
+
 26eb6f81638cc300  thm IotaRate.iota_le_g
     iota_le_g : forall b M : nat, GAtMost b M -> IotaAtMost b M
 

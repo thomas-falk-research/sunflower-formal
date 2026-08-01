@@ -26,6 +26,31 @@
   "bears_on": "Definition 1.10 = Spread.Spread; Lemma 3.1 tightness; Thm 4.2 intersecting."
  },
  {
+  "key": "ASU12",
+  "file": "asu12.pdf",
+  "kind": "other",
+  "arxiv": null,
+  "title": "On Sunflowers and Matrix Multiplication",
+  "authors": [
+   "Noga Alon",
+   "Amir Shpilka",
+   "Christopher Umans"
+  ],
+  "published": null,
+  "updated": null,
+  "journal_ref": "ECCC Report No. 67 (2011); CCC 2012",
+  "doi": null,
+  "license": "no licence stated (ECCC report)",
+  "url": "https://eccc.weizmann.ac.il/report/2011/067/download",
+  "retrieved": "2026-08-02",
+  "sha256": "fccf31d66f6c8ceb733e9d2cc947ad6d6a9d52d6080c133154fb553a1c9417df",
+  "bytes": 685300,
+  "pages": 16,
+  "redistributable": false,
+  "read": "read pp. 1-5 and 8 of 16",
+  "bears_on": "Thm 2.3 links the uniform and Erdos-Szemeredi conjectures; Thm 2.6 the Z_D^n equivalence."
+ },
+ {
   "key": "AhNo26",
   "file": "naslund_improved.pdf",
   "kind": "arxiv",
@@ -72,6 +97,32 @@
   "redistributable": true,
   "read": "not read (11 pages rendered)",
   "bears_on": "Alon-Holzman, near-sunflowers and focal families."
+ },
+ {
+  "key": "BCCGNSU17",
+  "file": "blasiak_capset.pdf",
+  "kind": "arxiv",
+  "arxiv": "1605.06702v4",
+  "title": "On cap sets and the group-theoretic approach to matrix multiplication",
+  "authors": [
+   "Jonah Blasiak",
+   "Thomas Church",
+   "Henry Cohn",
+   "Joshua A. Grochow"
+  ],
+  "published": "2016-05-21",
+  "updated": "2017-01-01",
+  "journal_ref": "Discrete Analysis 2017:3",
+  "doi": null,
+  "license": "http://creativecommons.org/licenses/by/4.0/",
+  "url": "https://arxiv.org/pdf/1605.06702v4",
+  "retrieved": "2026-08-02",
+  "sha256": "c93f9682aa339065fc2039914afa882707c88794327e952429f941cd80839220",
+  "bytes": 407740,
+  "pages": 27,
+  "redistributable": true,
+  "read": "not read (27 pages rendered)",
+  "bears_on": "The cap-set obstruction to the group-theoretic approach."
  },
  {
   "key": "BCW21",
@@ -291,6 +342,31 @@
   "bears_on": "Unrefereed claim of a sub-logarithmic base."
  },
  {
+  "key": "GMR12",
+  "file": "gmr_dnf.pdf",
+  "kind": "arxiv",
+  "arxiv": "1205.3534v1",
+  "title": "DNF Sparsification and a Faster Deterministic Counting Algorithm",
+  "authors": [
+   "Parikshit Gopalan",
+   "Raghu Meka",
+   "Omer Reingold"
+  ],
+  "published": "2012-05-15",
+  "updated": "2012-05-15",
+  "journal_ref": null,
+  "doi": null,
+  "license": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+  "url": "https://arxiv.org/pdf/1205.3534v1",
+  "retrieved": "2026-08-02",
+  "sha256": "34b0472d139bd607e3b51236feaa5dc3e4772654e890be9adafad554935277db",
+  "bytes": 305526,
+  "pages": 27,
+  "redistributable": false,
+  "read": "not read (27 pages rendered)",
+  "bears_on": "DNF sparsification; a named Tier 4 application."
+ },
+ {
   "key": "Gal26",
   "file": "galah.pdf",
   "kind": "arxiv",
@@ -362,6 +438,53 @@
   "redistributable": true,
   "read": "not read (25 pages rendered)",
   "bears_on": "Sunflowers in set systems with small VC-dimension."
+ },
+ {
+  "key": "Ku23",
+  "file": "ku_partitions.pdf",
+  "kind": "arxiv",
+  "arxiv": "2309.00097v3",
+  "title": "Erdos-Ko-Rado type results for partitions via spread approximations",
+  "authors": [
+   "Andrey Kupavskii"
+  ],
+  "published": "2023-08-31",
+  "updated": "2025-11-12",
+  "journal_ref": null,
+  "doi": null,
+  "license": "http://creativecommons.org/licenses/by/4.0/",
+  "url": "https://arxiv.org/pdf/2309.00097v3",
+  "retrieved": "2026-08-02",
+  "sha256": "df10d20e3809ed96b923eef3ee75bbaf8ceecbe9abb9ab7bf144f757c70c325c",
+  "bytes": 408074,
+  "pages": 22,
+  "redistributable": true,
+  "read": "read pp. 1-2 and 5-8 of 22",
+  "bears_on": "Self-contained presentation; Obs 11 = rao_witness+link, Obs 12 = spread_reduction."
+ },
+ {
+  "key": "KuZa22",
+  "file": "kuza_spreadapprox.pdf",
+  "kind": "arxiv",
+  "arxiv": "2203.13379v3",
+  "title": "Spread approximations for forbidden intersections problems",
+  "authors": [
+   "Andrey Kupavskii",
+   "Dmitriy Zakharov"
+  ],
+  "published": "2022-03-24",
+  "updated": "2024-04-01",
+  "journal_ref": "to appear in Advances in Mathematics",
+  "doi": null,
+  "license": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+  "url": "https://arxiv.org/pdf/2203.13379v3",
+  "retrieved": "2026-08-02",
+  "sha256": "5afdc60485e36ab6267fb3cba3632ff24a7858a90e84788d51a9e80ffc218120",
+  "bytes": 693231,
+  "pages": 27,
+  "redistributable": false,
+  "read": "read in full (27 of 27 pages)",
+  "bears_on": "Spread as a general method; Lemma 14 consumes the sunflower bound; tau is a tool."
  },
  {
   "key": "Kup25",
@@ -623,6 +746,29 @@
   "redistributable": true,
   "read": "not read (8 pages rendered)",
   "bears_on": "Set-like sunflower-free families of subspaces."
+ },
+ {
+  "key": "Schrijver05",
+  "file": "schrijver_terwilliger.pdf",
+  "kind": "other",
+  "arxiv": null,
+  "title": "New code upper bounds from the Terwilliger algebra and semidefinite programming",
+  "authors": [
+   "Alexander Schrijver"
+  ],
+  "published": null,
+  "updated": null,
+  "journal_ref": "IEEE Trans. Inform. Theory 51 (2005), 2859-2866",
+  "doi": "10.1109/tit.2005.851748",
+  "license": "green OA (CWI institutional repository)",
+  "url": "https://ir.cwi.nl/pub/14098/14098B.pdf",
+  "retrieved": "2026-08-02",
+  "sha256": "903d7fd4f61a25899ea6ab7ab8b013f4c7225fd00d529e471796e3081bd0d4c2",
+  "bytes": 115240,
+  "pages": 8,
+  "redistributable": false,
+  "read": "read pp. 1-2 of 8",
+  "bears_on": "Roadmap M2's machinery; C*-algebra + SDP, hence M2 is not viable here."
  },
  {
   "key": "Smooth21",

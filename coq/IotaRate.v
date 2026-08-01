@@ -97,7 +97,7 @@
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
 From Sunflower Require Import Sets Sunflower LowerBound Conjecture F23
-     Intersecting Pigeonhole Spread.
+     Intersecting Pigeonhole Spread SpreadReduction.
 Import ListNotations.
 
 (** ** The elementary form of ALWZ's Theorem 4.2
@@ -337,6 +337,174 @@ Proof.
   apply upper_bound_of_sunflower_free_bound; intros F HU HD Hno.
   pose proof (g_le_iota_scaled n (C ^ n) Hn (HC n Hn) F HU HD Hno) as Hle.
   pose proof (scaled_power_absorbs n C Hn) as Habs.
+  lia.
+Qed.
+
+(** ** The spread threshold and [g] bound each other
+
+    [docs/roadmap.md] §18 found that three things in this development are
+    one question: [Conjecture.spread_conjecture] (is there a constant
+    threshold?), §3.6's [empirical_threshold] (measure the smallest
+    working [r]), and [Ra20] p. 2 (*"it is possible that Lemma 2 holds
+    even when r(p,k) = O(p)"*). This section is the arithmetic that links
+    the last two, and it is two lines from [spread_reduction].
+
+    Write [r*(m,k)] for the smallest [r] with
+    [SpreadYieldsDisjoint m k r] — the quantity §3.6 measures by
+    exhaustive search. [spread_reduction] turns any working [r] into the
+    bound [f(m,k) ≤ r^m + 1], so a sunflower-free family has at most
+    [r^m] members:
+
+    >  SpreadYieldsDisjoint m 3 r   ->   g(m) <= r^m
+
+    which is [spread_threshold_bounds_g]. Contrapositively, any
+    construction of a sunflower-free family bigger than [r^m] refutes
+    [r], so
+
+    >  r*(m,3)  >=  ceil( g(m)^(1/m) ).
+
+    No [ceil] and no roots appear below: the integer content of that
+    inequality is exactly [g_lower_bound_refutes_spread_threshold], which
+    says every [r] with [r^m < g(m)] fails. Stating it that way keeps the
+    file [nat]-only and loses nothing.
+
+    ** Why this is worth having
+
+    It makes two open computations into one, from opposite sides.
+
+    - **The cheap side.** §3.6 measures [r*(2,3) = r*(3,3) = 3] and stalls
+      at ground 10. But [r*(3,3) = 3] *forces* [g(3) <= 27]
+      ([flat_threshold_at_three_forces_g_three_at_most_27]), and this
+      development only knows [20 <= g(3) <= 48] — 20 from
+      [Intersecting.lower_bound_3_3_20], 48 from Erdős–Rado. **So
+      computing [g(3)] exactly decides [r*(3,3)]**, and that search is far
+      cheaper than widening the threshold search past ground 10. If
+      [g(3) > 27] the flat table breaks at uniformity 3 rather than 9.
+
+    - **The far side.** [substitution_would_refute_the_flat_threshold_at_nine]
+      is §18.2 as a theorem: the Abbott–Hanson–Sauer substitution gives
+      [g(9) >= g(3)·ι(3)^3 >= 20·1000 = 20000 > 19683 = 3^9], so the flat
+      table cannot survive to uniformity 9. It is stated conditionally on
+      [LowerBound 9 3 20000] because [substitute] is not formalised yet;
+      formalising it discharges the hypothesis and yields [c(3) >= 4] in
+      [Conjecture.spread_conjecture], the first lower bound on the
+      constant there.
+
+    ** The measured points, and what they hint
+
+    At [m = 2] the inequality is **tight**: [g(2) = 6], so
+    [ceil(6^(1/2)) = 3], and the measured [r*(2,3)] is 3.
+    [two_is_refuted_at_uniformity_two] is the machine-checked half of
+    that — [2^2 = 4 < 6 = g(2)] kills [r = 2].
+
+    At [m = 3], [ceil(20^(1/3)) = 3] and the measured value is again 3.
+    Two points is nearly nothing, but if [r*(m,3)] tracks
+    [ceil(g(m)^(1/m))] in general then the spread-threshold sequence and
+    the extremal-rate sequence are the same object, and since the 1972
+    rate is [10^(1/2) = 3.162...] the threshold should settle at **4** —
+    the conjecture true with a nearly sharp constant. That is a
+    prediction, not a result, and it is recorded as one. *)
+
+Theorem spread_threshold_bounds_g :
+  forall m r, 1 <= r -> SpreadYieldsDisjoint m 3 r -> GAtMost m (r ^ m).
+Proof.
+  intros m r Hr Hsyd F HU HD Hno.
+  pose proof (@spread_reduction m 3 r ltac:(lia) Hr Hsyd m (Nat.le_refl m))
+    as Hub.
+  destruct (le_lt_dec (length F) (r ^ m)) as [Hle | Hlt]; [exact Hle|].
+  exfalso; apply Hno, Hub; [exact HU | exact HD | lia].
+Qed.
+
+(** The contrapositive, which is the integer form of
+    [r*(m,3) >= ceil(g(m)^(1/m))]: a sunflower-free family of more than
+    [r^m] members refutes [r]. *)
+
+Theorem g_lower_bound_refutes_spread_threshold :
+  forall m r N,
+    1 <= r -> r ^ m < N -> LowerBound m 3 N ->
+    ~ SpreadYieldsDisjoint m 3 r.
+Proof.
+  intros m r N Hr Hlt [F [HU [HD [Hlen Hno]]]] Hsyd.
+  pose proof (spread_threshold_bounds_g m r Hr Hsyd F HU HD Hno) as Hle.
+  lia.
+Qed.
+
+(** *** The cheap experiment, named
+
+    If the measured [r*(3,3) = 3] is the truth rather than an artefact of
+    the search stopping at ground 9, then [g(3) <= 27]. The development
+    knows [20 <= g(3) <= 48]. Closing that gap decides the threshold. *)
+
+Corollary flat_threshold_at_three_forces_g_three_at_most_27 :
+  SpreadYieldsDisjoint 3 3 3 -> GAtMost 3 27.
+Proof.
+  intros H; replace 27 with (3 ^ 3) by reflexivity.
+  apply spread_threshold_bounds_g; [lia | exact H].
+Qed.
+
+(** *** Tightness at uniformity 2, unconditionally
+
+    [g(2) = 6] and [2^2 = 4], so [r = 2] is refuted and [r*(2,3) >= 3].
+    Since the search finds [r = 3] works, [ceil(g(2)^(1/2)) = 3] is
+    exactly the threshold there. This is the one point where the
+    inequality is known tight from both sides. *)
+
+Corollary two_is_refuted_at_uniformity_two :
+  ~ SpreadYieldsDisjoint 2 3 2.
+Proof.
+  apply (@g_lower_bound_refutes_spread_threshold 2 2 6);
+    [lia | simpl; lia | exact f_2_3_lower].
+Qed.
+
+(** *** The far side: the flat table cannot reach uniformity 9
+
+    [docs/roadmap.md] §18.2. Conditional on the Abbott–Hanson–Sauer
+    substitution, which [rust/tests/intersecting.rs] verifies and
+    [rust/tests/spread_axiom.rs] pins arithmetically, but which is not
+    formalised here. Discharging [LowerBound 9 3 20000] is what the
+    [substitute] campaign buys. *)
+
+Corollary substitution_would_refute_the_flat_threshold_at_nine :
+  LowerBound 9 3 (3 ^ 9 + 317) -> ~ SpreadYieldsDisjoint 9 3 3.
+Proof.
+  intros Hlb.
+  apply (@g_lower_bound_refutes_spread_threshold 9 3 (3 ^ 9 + 317));
+    [lia | lia | exact Hlb].
+Qed.
+
+(** The size is written [3 ^ 9 + 317] rather than [20000] on purpose.
+    [3 ^ 9 = 19683], so the two are equal and the margin is 317 — but
+    written symbolically the statement stays inside linear arithmetic over
+    [3 ^ 9] as an atom, and [lia] can see it. Written as a literal, Coq
+    represents [20000] through [Init.Nat.of_num_uint] and [lia] cannot.
+    The decimal values are pinned in
+    [rust/tests/spread_axiom.rs::the_flat_threshold_must_break_and_nine_is_where],
+    which is also where the whole table of routes lives.
+
+    And the consequence for the constant in the spread reformulation.
+    [Conjecture.spread_conjecture] asks for a [c] with
+    [SpreadYieldsDisjoint n k (c k)] for every [n]; the same hypothesis
+    rules out [c 3 <= 3], so any witness has [c 3 >= 4]. Since
+    [spread_conjecture] implies the Erdős–Rado conjecture with constant
+    [c k], this is a lower bound on the constant in a named open problem.
+
+    No monotonicity of [SpreadYieldsDisjoint] in [r] is used or needed —
+    that statement is false in general, and [SpreadReduction.v] says so.
+    What is used is monotonicity of [r ^ 9], which is arithmetic. *)
+
+Corollary substitution_would_force_c_three_at_least_four :
+  LowerBound 9 3 (3 ^ 9 + 317) ->
+  forall c : nat -> nat,
+    (forall k, 2 <= k -> 1 <= c k) ->
+    (forall n k, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)) ->
+    4 <= c 3.
+Proof.
+  intros [F [HU [HD [Hlen Hno]]]] c Hpos Hc.
+  destruct (le_lt_dec 4 (c 3)) as [Hge | Hlt]; [exact Hge | exfalso].
+  assert (Hr : 1 <= c 3) by (apply Hpos; lia).
+  pose proof (spread_threshold_bounds_g 9 (c 3) Hr
+                (Hc 9 3 ltac:(lia) ltac:(lia)) F HU HD Hno) as Hle.
+  assert (Hpow : c 3 ^ 9 <= 3 ^ 9) by (apply Nat.pow_le_mono_l; lia).
   lia.
 Qed.
 

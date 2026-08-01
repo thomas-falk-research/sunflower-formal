@@ -1092,3 +1092,19 @@ m = r = 1. The proof breaks at exactly the place that says so -- the pigeonhole 
 gives length F <= m * (K + 1) and spreadness gives r * (K + 1) <= length F, which \
 is a contradiction when r > m and no contradiction at all when r = m, leaving the \
 final nia with nothing to work with."""
+
+[[mutation]]
+id = "threshold-refutation-off-by-one"
+file = "coq/IotaRate.v"
+question = """g_lower_bound_refutes_spread_threshold is the integer form of \
+r*(m,3) >= ceil(g(m)^(1/m)). Is the strict inequality r^m < N load-bearing, or \
+would a sunflower-free family of exactly r^m members already refute r?"""
+find = "    1 <= r -> r ^ m < N -> LowerBound m 3 N ->"
+replace = "    1 <= r -> r ^ m <= N -> LowerBound m 3 N ->"
+expect = "killed"
+because = """Load-bearing, and the boundary is where the whole observation lives. \
+spread_reduction gives g(m) <= r^m, so a sunflower-free family of exactly r^m \
+members is perfectly consistent with r working -- indeed at m = 2, r = 3 the \
+measured threshold is 3 and g(2) = 6 <= 9 = 3^2 with room to spare. Only a \
+family strictly larger than r^m refutes r. The mutation makes the statement \
+false and the final lia has nothing to close."""

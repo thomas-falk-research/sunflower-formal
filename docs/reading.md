@@ -984,6 +984,108 @@ the intersection of any pair of them has the same size"*, plus
 **`s`-star**, that is five names in the corpus this repository has read,
 and its searches have used two.
 
+## The spread-approximation programme — read in full
+
+### [KuZa22] Kupavskii and Zakharov, *Spread approximations for forbidden intersections problems*
+
+**Read in full: 27 of 27 rendered pages** (arXiv:2203.13379v3, 1 Apr 2024;
+to appear in Advances in Mathematics). Named in §18.3 as the highest-value
+unread item, because it decides what `Spread.Spread` is *for*.
+
+* **p. 1**, the method: *"a new approach to approximate families of sets,
+  complementing the existing 'Delta-system method' and 'junta
+  approximations method' ... based on the notion of `r`-spread families
+  and builds on the recent breakthrough result of Alweiss, Lovett, Wu and
+  Zhang for the Erdős–Rado 'Sunflower Conjecture'."*
+* **p. 3**, why it matters here: their Ahlswede–Khachatrian theorem for
+  permutations is proved without the previous authors' machinery — *"The
+  proof is also much simpler and avoids the use of heavy machinery of the
+  previous authors."* [Ku23] p. 2 names it: representation theory of
+  symmetric groups, Hoffman–Delsarte bounds, Fourier analysis.
+* **p. 5**, their spread definition is `Spread.Spread`: `μ` is `r`-spread
+  if `μ({F : X ⊂ F}) ≤ r^{−|X|}`, with `μ_F(F) = 1/|F|` the natural
+  measure of a family.
+* **p. 5, equation (1)**, the sunflower bound *with an explicit constant*:
+  a family of `k`-sets with `|F| > (C·ℓ·log₂(kℓ))^k` contains an
+  `ℓ`-sunflower, `C = 2^10`.
+* **pp. 9–12**, Lemma 10 is the peeling procedure, and **Lemma 14(iii)–(iv)
+  applies the sunflower bound as a subroutine**: `T_i` is shown to have no
+  sunflower with `q−i−t+2` petals, and (1) then bounds `|W_i| ≤
+  (C₀ q log₂ q)^{q−i−t}` with `C₀ < 2^15`.
+* **p. 12, Lemma 14(v)** uses `τ` explicitly: *"Recall that, for a family
+  `F`, `τ(F)` is the size of the smallest set `Y` such that `Y ∩ F ≠ ∅`
+  for each `F ∈ F`."* — register row B12's quantity, as a tool.
+* **pp. 21, 24**: Kruskal–Katona, and Lemma 21 on independent sets in
+  biregular bipartite graphs. More bipartite/matching machinery.
+
+### [Ku23] Kupavskii, *Erdős–Ko–Rado type results for partitions via spread approximations*
+
+**Read pp. 1–2 and 5–8 of 22** (arXiv:2309.00097v3, 12 Nov 2025). Read
+because its abstract says it is the entry point: *"As a byproduct, this
+makes the present paper a self-contained presentation of the spread
+approximation technique for `t`-intersecting problems."*
+
+Its §3 base layer is three statements this repository already has:
+
+* **Observation 11**, p. 6: *"Given `r > 1` and a family `F ⊂ 2^{[n]}`,
+  let `X` be an inclusion-maximal set that satisfies
+  `|F(X)| ≥ r^{−|X|}|F|`. Then `F(X)` is `r`-spread as a family in
+  `2^{[n]\X}`."* — `Spread.rao_witness` plus `Spread.link`, with
+  maximality doing the work.
+* **Observation 12**, p. 7: *"If for some `α > 1` and `F ⊂ C([n],k)` we
+  have `|F| > α^k` then `F` contains an `α`-spread subfamily of the form
+  `F(X)` for some set `X` of size strictly smaller than `k`."* — that is
+  `SpreadReduction.spread_reduction`'s dichotomy, proved in two
+  sentences, followed by *"this observation together with Theorem 10
+  implies bound (1)."*
+* **Theorem 13**, p. 7, is the peeling procedure; of the next one, p. 6
+  says *"Theorem 14 alone can be seen as a strengthening of one of the
+  important parts of the Delta-system method."*
+
+**Not formalisable as it stands** — `p`-random subsets, expectations,
+Markov, real-valued `τ, ε, θ`. What is formalisable is the base layer,
+which is already here, plus the ALWZ input, which is §1's campaign.
+
+## Tier 4 — where it stops
+
+### [Schrijver05] *New code upper bounds from the Terwilliger algebra and semidefinite programming*
+
+**Read pp. 1–2 of 8.** IEEE Trans. Inform. Theory 51:2859–2866,
+doi 10.1109/tit.2005.851748; **green OA** at
+`ir.cwi.nl/pub/14098/14098B.pdf`, found via OpenAlex after two guessed
+URLs 404'd.
+
+The method is block-diagonalising the non-commutative **Terwilliger
+algebra** of the Hamming cube — a C\*-algebra, `dim A_n = C(n+3,3)`,
+blocks `B_k` of order `n−2k+1` with multiplicity `C(n,k) − C(n,k−1)` —
+and then semidefinite programming. **Roadmap M2 is not viable for this
+development**: complex matrices, positive semidefiniteness and a
+numerical SDP solver, none of them `nat`. The Johnson-scheme connection
+[Kup25] p. 55 points at is real; it is on the far side of that stack.
+
+### Not read
+
+Flag algebras (Razborov 2007, J. Symbolic Logic 72(4):1239–1282,
+doi 10.2178/jsl/1203350785 — closed, and the author's copy is behind a
+TLS failure this environment cannot resolve), design-theoretic
+nonexistence, Stanley–Reisner. The covering-number primaries
+(Erdős–Lovász 1975, Frankl 1978 doi 10.1016/0097-3165(78)90003-1,
+Füredi 1983 doi 10.1016/0012-365x(83)90081-x, Ahlswede–Khachatrian 1997)
+are all **index-confirmed closed** by OpenAlex, so they are unreachable
+rather than unsearched.
+
+### Five wrong identifiers, and the procedure that caught four of them
+
+Four Tier-4 arXiv IDs were recalled rather than looked up. They fetched a
+PDE paper, *What Scalars Should We Use?*, a condensed-matter paper on
+heat conduction, and a lattice-QCD paper on kaon masses. A fifth, for
+[ASU12], fetched an astrophysics paper on the Perseus cluster — and that
+one cost four rendered pages, because it was read before being checked.
+
+**Rendering page 1 and confirming the title before reading is now the
+rule.** It caught four of the five for the price of one page each. The
+correct citations, from Crossref, are in `docs/roadmap.md` §19.7.
+
 ## The corpus is now pinned
 
 The papers vanish with the container, and this session lost time

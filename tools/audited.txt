@@ -195,6 +195,12 @@ thm F23.upper_bound_of_sunflower_free_bound
 # listed because the factor 2b disappearing into the base is exactly the
 # step a reader should be able to check did not move.
 thm IotaRate.intersecting_not_spread_above_uniformity
+thm IotaRate.spread_threshold_bounds_g
+thm IotaRate.g_lower_bound_refutes_spread_threshold
+thm IotaRate.flat_threshold_at_three_forces_g_three_at_most_27
+thm IotaRate.two_is_refuted_at_uniformity_two
+thm IotaRate.substitution_would_refute_the_flat_threshold_at_nine
+thm IotaRate.substitution_would_force_c_three_at_least_four
 thm IotaRate.iota_le_g
 thm IotaRate.g_le_iota_scaled
 thm IotaRate.iota_g_sandwich

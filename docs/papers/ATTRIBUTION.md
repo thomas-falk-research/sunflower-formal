@@ -26,6 +26,15 @@ these papers — `docs/reading.md` — is; the papers are not.
 * **Changes:** none; redistributed as retrieved on 2026-08-01
 * **SHA-256:** `171dde4d7494ce1a54e260ad8dde54bc2d881f19a8bea393196f86108a21a95a`
 
+### `pdf/blasiak_capset.pdf`
+
+* **Title:** On cap sets and the group-theoretic approach to matrix multiplication
+* **Authors:** Jonah Blasiak, Thomas Church, Henry Cohn, Joshua A. Grochow
+* **Source:** https://arxiv.org/abs/1605.06702v4
+* **Licence:** CC BY 4.0 — <http://creativecommons.org/licenses/by/4.0/>
+* **Changes:** none; redistributed as retrieved on 2026-08-02
+* **SHA-256:** `c93f9682aa339065fc2039914afa882707c88794327e952429f941cd80839220`
+
 ### `pdf/dukeerdos.pdf`
 
 * **Title:** Exact results and the structure of extremal families for the Duke--Erdős forbidden sunflower problem
@@ -70,6 +79,15 @@ these papers — `docs/reading.md` — is; the papers are not.
 * **Licence:** CC BY 4.0 — <http://creativecommons.org/licenses/by/4.0/>
 * **Changes:** none; redistributed as retrieved on 2026-08-01
 * **SHA-256:** `84eac35915967ece70d3c9a924ab11f417bf794fa0ab48563cafe6438c609b9a`
+
+### `pdf/ku_partitions.pdf`
+
+* **Title:** Erdos-Ko-Rado type results for partitions via spread approximations
+* **Authors:** Andrey Kupavskii
+* **Source:** https://arxiv.org/abs/2309.00097v3
+* **Licence:** CC BY 4.0 — <http://creativecommons.org/licenses/by/4.0/>
+* **Changes:** none; redistributed as retrieved on 2026-08-02
+* **SHA-256:** `df10d20e3809ed96b923eef3ee75bbaf8ceecbe9abb9ab7bf144f757c70c325c`
 
 ### `pdf/kupavskii_survey.pdf`
 

@@ -94,67 +94,114 @@ injectivity — and then a binomial estimate and a geometric sum. There is
 no measure, no entropy, no limit. Nothing else among the four proofs is
 this close to `nat`.
 
+### Read at proof level, August 2026 — the exact skeleton
+
+[Lovett] §3 was re-read line by line before any of the staging below was
+written. The whole proof is six statements, and their dependency graph is
+a chain:
+
+```
+  Def 3.2   minimal fragment  M(S,V) = min-size element of
+                              { S' \ V : S' in F, S' subset S u V }
+  Obs 1-3   M subset S ; M disjoint from V ; M empty iff some S' subset V
+  Claim 3.3 Z := V u M(S,V), F' := { S' in F : S' subset Z }.
+            Then F' nonempty, and every S' in F' has S' \ V = M(S,V).
+  Claim 3.4 THE COUNT.  Pr[ |M(S,V)| >= n/2 ]  =  |B| / (|F| * C(N,qN))
+            bounded by an explicit encoding.
+  Claim 3.5 Markov on 3.4, plus Exercise 3.1 (spreadness survives
+            shrinking sets and passing to a (1-eps)-subfamily).
+  Claim 3.6 Iterate: if F_t contains the empty set then union V_i
+            contains a member of F_0.
+  Lemma 3.1 Apply 3.5 log n times; product of (1 - 10^{-n/2^i}) >= 0.8.
+```
+
+**Three things this changes about the staging, none of which were visible
+from the section's summary.**
+
+1. **Claim 3.6 and Claim 3.3 are arithmetic-free.** 3.6 is an induction on
+   `t` with no numbers in it at all, and it is the claim that actually
+   produces the conclusion. 3.3 is pure set algebra. Together they are
+   perhaps a third of the proof and they need nothing but `Sets.v`.
+
+2. **The encoding's injectivity is an equation, not an argument.** Claim
+   3.4 defines `phi(S,V) = (Z, S', M, S \ M)` and justifies it in one
+   sentence: *"we can decode `(S,V)` given `phi(S,V)` since
+   `S = M u (S \ M)` and `V = Z \ M`"*. So the formal obligation is not
+   "`phi` is injective" — it is `psi (phi (S,V)) = (S,V)` for an explicit
+   `psi`, which is a rewrite, not a case analysis. This is the single
+   most useful thing the proof-level read produced.
+
+3. **There is exactly one binomial estimate in the whole proof**:
+   `C(N, qN+m) <= q^{-m} C(N, qN)`. Everything else is `C(n,m) <= 2^n`
+   and a geometric sum. The earlier plan budgeted for "binomial estimates"
+   in the plural; there is one.
+
 ### Stage A — the counting layer
 
-**The technical choice from the previous version of this section was
-backwards, and that is the concrete thing the reading fixed.** §1 used to
-say: state the covering step for the *product measure* with each element
-included independently with probability `1/2`, so "probability" becomes
-cardinality over the powerset, which `Spread.subsets` already enumerates.
-Three things are wrong with it:
+**The technical choice from an earlier version of this section was
+backwards.** §1 used to say: state the covering step for the *product
+measure* with each element included independently with probability `1/2`,
+so "probability" becomes cardinality over the powerset, which
+`Spread.subsets` already enumerates. Three things are wrong with it:
 
-* the proof needs `W` to be a **small** random set, `q ≈ 1/log n`. At
+* the proof needs `V` to be a **small** random set, `q = p/log n`. At
   `p = 1/2` the product measure is plain cardinality; at `p = 1/log n` it
-  is a weighted sum, which is *worse* than the fixed-size version, not
-  better;
+  is a weighted sum, which is *worse* than the fixed-size version;
 * in every published *proof* the **fixed-size** statement is the
   primitive. Lovett Claim 3.4, ALWZ Lemma 2.8 and FKNP Theorem 1.6 are
   all stated for a random subset of fixed size. (Surveys sometimes state
   the *conclusion* in the product measure — [Kup25] Theorem 3 does — but
   nothing proves it there.);
 * the product-measure statement is *derived from* the fixed-size one, by
-  a limiting argument (Lovett p. 11: *"Take now `U'` of growing size"*)
-  or by ALWZ's Corollary 2.9. Starting there means formalising a limit,
-  or redoing the encoding count in a measure the encoding was not
-  written for.
+  a limiting argument. Lovett p. 11, in full: *"Take now `U'` of growing
+  size; the limiting distribution of `W` converges to `Bin(U,p)`."*
+  Starting at the product measure means formalising that limit.
 
-So Stage A builds **fixed-size subset enumeration and binomial
-counting**, not powerset enumeration:
+So Stage A builds **fixed-size subset enumeration and one binomial
+ratio**, not powerset enumeration:
 
-* `subsets_of_size : nat -> list nat -> list (list nat)`, and
+* `subsets_of_size : nat -> list nat -> list (list nat)`, with
   `length (subsets_of_size j U) = C (length U) j`;
-* `count : (list nat -> bool) -> list (list nat) -> nat`;
-* injection-implies-`≤`, and additivity over disjoint predicates;
-* the binomial estimate `C(N, j+m) <= q^{-m} * C(N, j)` for `j = qN`, in
-  the cleared-denominator form `d^m * C(N, j+m) <= c^m * C(N, j)` where
-  `q = c/d`. This is the one place rationals would otherwise appear, and
-  clearing them is the whole trick.
+* `count : (list nat -> bool) -> list (list nat) -> nat`, injection
+  implies `<=`, additivity over disjoint predicates;
+* `C (n, m) <= 2 ^ n`;
+* **the one estimate**: `C(N, j+m) * c^m <= C(N, j) * d^m` for `j = qN`
+  and `q = c/d`. Cleared denominators, so it stays in `nat`. This is the
+  only place rationals would otherwise appear.
 
-`Spread.subsets` is still useful — `subsets_of_size j = filter (length =
-j) (subsets ...)` is the cheap definition and gives the membership
-lemmas for free — but the *counting* is over the size-`j` layer.
+`Spread.subsets` still helps — `subsets_of_size j = filter (length = j)
+(subsets ...)` is the cheap definition and gives membership for free —
+but the *counting* is over the size-`j` layer.
 
-Self-contained, independently testable, reusable. Likely one session.
+Independently testable, and the Rust testbed can falsify every line of it.
 
-### Stage B — the encoding
+### Stage B — the encoding, and it is smaller than it looked
 
-The mathematical core: `phi(S,V) = (Z, S', M, S\M)` and its injectivity,
-against the minimal-fragment definition. This is where a session's budget
-should go, and where the stall risk is. Note that the *statement* to aim
-at is Lovett's Claim 3.4, not ALWZ's Lemma 2.8 — same content, fewer
-moving parts, because Park–Pham's minimal fragments replaced ALWZ's
-iterative construction.
+* `minimal_fragment : Family -> list nat -> list nat -> list nat`,
+  picking the first element of minimal length in an explicit enumeration
+  (Lovett's *"breaking ties arbitrarily"* becomes "first in the
+  enumeration", which is what makes it a function rather than a choice);
+* the three observations, and **Claim 3.3** — set algebra, no arithmetic;
+* `phi` and an explicit `psi`, with `psi (phi (S,V)) = (S,V)`;
+* **Claim 3.4**'s count, assembling Stage A's four pieces.
 
-### Stage C — the arithmetic
+The stall risk is here, but it is smaller than the previous version of
+this section assumed, because the injectivity obligation is an equation.
 
-The geometric sum over `m`, and where the explicit constant lives.
+### Stage C — the iteration
 
-**Scoping decision — do not chase the constant.** `FractionalSpreadDisjoint`
-is instantiated at whatever `t` the proof yields, and
-`fractional_form_gives_the_axiom_shape` is monotone upward in `r`, so any
-explicit constant discharges the axiom. `c = 2^20` closes the file
-exactly as well as `c = 64`. Chasing sharpness is where this campaign
-dies.
+* **Claim 3.5**: Markov, which in the fixed-size setting is the counting
+  statement "if the average over `V` is at least `(1-eps)|F|` then most
+  `V` are good", plus Exercise 3.1's two spreadness-preservation lemmas;
+* **Claim 3.6**: induction on `t`. Arithmetic-free, and it is the step
+  that yields the conclusion;
+* the `log n` iteration and the product `prod (1 - 10^{-n/2^i}) >= 0.8`.
+
+**Scoping decision — do not chase the constant.**
+`FractionalSpreadDisjoint` is instantiated at whatever `t` the proof
+yields, and `fractional_form_gives_the_axiom_shape` is monotone upward in
+`r`, so any explicit constant discharges the axiom. `c = 2^20` closes the
+file exactly as well as `c = 64`.
 
 ### The alternative that was checked and rejected
 
@@ -440,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 68 anecdotes into a coverage metric over the
+  mutation testing from 69 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -3347,3 +3394,153 @@ what the reading actually supports.
    a 404.
 8. **A paywall is not always a blocker.** Sometimes the claim behind it
    is a finite check — the 2-(6,3,2) uniqueness took one enumeration.
+
+---
+
+## 19. What the spread-approximation literature says the spread layer is for
+
+§18.3 named [KuZa22] and [Ku23] as the highest-value unread items,
+because if `Spread.Spread` is becoming general infrastructure then the
+spread layer is worth more than this conjecture. Both are now read in
+full. The answer is yes, and it is more specific than expected.
+
+### 19.1 Spread replaces representation theory and Fourier analysis
+
+[KuZa22] abstract, p. 1: the method is *"based on the notion of `r`-spread
+families and builds on the recent breakthrough result of Alweiss, Lovett,
+Wu and Zhang for the Erdős–Rado 'Sunflower Conjecture'"*, and *"can work
+in a variety of sparse settings"*. Its Theorem 2 proves the
+Ahlswede–Khachatrian theorem for **permutations** in a new range, and
+p. 3 says why that matters:
+
+> The proof is also much simpler and avoids the use of heavy machinery of
+> the previous authors.
+
+The machinery avoided is named on [Ku23] p. 2: *"Early approaches to this
+question were algebraic, based on Hoffman-Delsarte type bounds and
+representation theory. The approach of [5] combines junta
+approximations, coming from Boolean Analysis, with representation theory.
+Zakharov and the author introduced a combinatorial technique of spread
+approximations that is based on the breakthrough in the Erdős–Rado
+sunflower problem due to Alweiss, Lovett, Wu and Zhang."*
+
+**That is the strategic fact.** `Spread.Spread` is the definition at the
+centre of a programme whose selling point is that it is *elementary where
+the alternatives are algebraic*. Elementary-where-the-alternatives-are-
+algebraic is exactly what a `nat`-only Coq development can host, and
+nothing else in this repository's reach has that property.
+
+### 19.2 Three of this repository's theorems are its primitives
+
+Reading [Ku23] §3 — which p. 1 advertises as *"a self-contained
+presentation of the spread approximation technique"*, so it is the entry
+point — the method's base layer is three statements this development
+already has:
+
+* **Observation 11**: *"let `X` be an inclusion-maximal set that
+  satisfies `|F(X)| >= r^{-|X|}|F|`. Then `F(X)` is `r`-spread as a
+  family in `2^{[n]\X}`."* That is `Spread.rao_witness` finding a
+  violator and `Spread.link` stripping it, with maximality doing the
+  work.
+* **Observation 12**: *"If for some `α > 1` and `F ⊂ C([n],k)` we have
+  `|F| > α^k` then `F` contains an `α`-spread subfamily of the form
+  `F(X)` for some set `X` of size strictly smaller than `k`."* That is
+  `SpreadReduction.spread_reduction`'s dichotomy. Kupavskii's proof is
+  two sentences, and he adds *"this observation together with Theorem 10
+  implies bound (1)"* — the sunflower bound.
+* **Theorem 13** is the peeling procedure built on top, and [Ku23] p. 6
+  says of the next one: *"Theorem 14 alone can be seen as a strengthening
+  of one of the important parts of the Delta-system method."*
+
+So `spread_reduction` is not a step on the way to one conjecture; it is
+the base of an active method. That is a better argument for the spread
+layer than anything in §16–18, and it was not available before reading.
+
+### 19.3 The sunflower bound is a subroutine, so the constant matters
+
+[KuZa22] Lemma 14 bounds `|W_i| <= (C_0 q log_2 q)^{q-i-t}` with
+`C_0 < 2^15`, and it gets there by applying the sunflower bound (their
+equation (1), with `C = 2^10`) to a family shown in Lemma 14(iii) not to
+contain a sunflower with `q-i-t+2` petals.
+
+**Improvements to the sunflower bound propagate into this method's
+constants.** That is a use for the [BCW21] refinement, and for the
+sharper `r*` measurement of §18.2, that this repository did not know it
+had.
+
+### 19.4 And `τ` is a tool there, not a curiosity
+
+Register row B12 asked whether covering numbers of intersecting
+hypergraphs are studied. [KuZa22] Lemma 14(v) uses `τ` directly, defining
+it inline: *"Recall that, for a family `F`, `τ(F)` is the size of the
+smallest set `Y` such that `Y ∩ F ≠ ∅` for each `F ∈ F`."* Combined with
+[Kup25] §1.7's minimal-cover material, B12's original "not found" is
+comprehensively wrong, and §17.1 already withdrew it.
+
+### 19.5 What this does *not* say
+
+The spread approximation method needs `p`-random subsets, expectations,
+Markov, Chernoff-type estimates and real-valued `τ`, `ε`, `θ`. **It is not
+formalisable here as it stands**, and nothing above claims otherwise.
+What is formalisable is its base layer — Observations 11 and 12 — which
+this repository already has, and the ALWZ input (Theorem 10), which is
+§1's campaign.
+
+The honest reading is: **discharging `Rao20_lemma2` would put a
+machine-checked floor under an active research programme, not just under
+this repository's own conditional theorems.** That raises §1's value and
+does not change its difficulty.
+
+### 19.6 Tier 4, and where it stops
+
+* **Coding theory / the Terwilliger algebra.** [Schrijver05] read pp. 1–2
+  of 8. The method is block-diagonalisation of the (non-commutative)
+  Terwilliger algebra of the Hamming cube — a C\*-algebra — followed by
+  semidefinite programming. **Roadmap M2 should be marked not viable for
+  this development**: it needs complex matrices, positive
+  semidefiniteness and a numerical SDP solver, none of which are `nat`
+  and none of which exist here. The Johnson-scheme connection [Kup25]
+  p. 55 points at is real, but it is on the far side of that stack.
+* **Flag algebras, design nonexistence, Stanley–Reisner** — not read. See
+  §19.7 for why.
+
+### 19.7 Five wrong identifiers in one session
+
+Four Tier-4 arXiv IDs were recalled rather than looked up. They fetched,
+in order: a PDE paper on a symmetry problem; *What Scalars Should We
+Use?*; a condensed-matter paper on heat conduction in an anharmonic
+crystal; and a lattice-QCD paper on kaon masses. A fifth, for [ASU12],
+fetched an astrophysics paper on the Perseus cluster and four of its
+pages were read before the mismatch was obvious.
+
+All five were caught by rendering page 1 before reading — which is now
+the rule, and is why only one of them cost anything. §17.7 stated the
+lesson from a single instance; five instances make it a procedure:
+
+> **Fetch, render page 1, confirm the title and authors, and only then
+> read.** An identifier that was not copied from a reference list or a
+> Crossref record is a guess, and guesses resolve to real papers about
+> other subjects.
+
+Correct citations, obtained from Crossref, for whoever picks these up:
+
+```
+  Schrijver 2005   New code upper bounds from the Terwilliger algebra and
+                   semidefinite programming.  IEEE Trans. Inform. Theory
+                   51:2859-2866.  doi 10.1109/tit.2005.851748.  GREEN OA
+                   at ir.cwi.nl/pub/14098/14098B.pdf  [read pp.1-2 of 8]
+  Gijswijt-Schrijver-Tanaka 2006  New upper bounds for nonbinary codes
+                   based on the Terwilliger algebra and SDP.  JCTA
+                   113:1719-1731.  doi 10.1016/j.jcta.2006.03.010. CLOSED
+  Razborov 2007    Flag algebras.  J. Symbolic Logic 72(4):1239-1282.
+                   doi 10.2178/jsl/1203350785.  CLOSED
+  Frankl 1978      On intersecting families of finite sets.  JCTA
+                   24:146-161.  doi 10.1016/0097-3165(78)90003-1. CLOSED
+  Fueredi 1983     On finite set-systems whose every intersection is a
+                   kernel of a star.  Discrete Math. 47:129-132.
+                   doi 10.1016/0012-365x(83)90081-x.  CLOSED
+```
+
+OpenAlex reports `oa_status: closed` for all four of the closed ones, so
+these are index-confirmed rather than search-exhausted, the same standard
+§17.5 applied to [AHS72].
