@@ -148,6 +148,9 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `pure_link_intersecting`, `cover_recursion` | `coq/PureLink.v` | **The pure link is intersecting.** In Erdős–Rado's step, the members meeting the maximal-matching cover `T` at exactly one point `x` — with `x` removed — pairwise intersect: two disjoint ones plus the matching member through `x` would be three pairwise disjoint sets in the link at `x`, a sunflower with core `{x}`. Double counting over all of `T` rather than at one pigeonhole point gives `2|F| ≤ |T|·(g(b-1) + ι(b-1))` |
 | `g_recursion`, `iota_recursion`, `g_two_at_most_six`, `iota_two_at_most_three` | `coq/PureLink.v` | `g(b) ≤ b(g(b-1)+ι(b-1))` and `2ι(b) ≤ b(g(b-1)+ι(b-1))`, against Erdős–Rado's `g(b) ≤ 2b·g(b-1)`. It **reproduces both values known exactly** — `g(2) = 6` and `ι(2) = 3` — from `g(1) = 2`, `ι(1) = 1`, which is the only check available on it |
 | `g_three_at_most_27`, `f_3_3_at_most_28`, `iota_three_at_most_thirteen` | `coq/PureLink.v` | **`f(3,3) ≤ 28`**, unconditionally, where Erdős–Rado gives 49 and `Sharp.sharp_beats_erdos_rado_at_three` reaches 32 only from a hypothesis about uniformity 4. With `Intersecting.lower_bound_3_3_20` the first unknown sunflower number is now `21 ≤ f(3,3) ≤ 28`. The asymptotic content is subsumed by Spencer 1977 (`docs/roadmap.md` §20.3); the finite values are not |
+| `g_three_at_most_26`, `f_3_3_at_most_27`, `cover_recursion_sharp` | `coq/PureLink.v` | **`f(3,3) ≤ 27`.** The matching members lie *inside* the cover, so each meets it in all `b` of its points while `cover_recursion` charges it 2 — a surplus of `b-2` apiece, giving `2|F| + (b-2)|M| ≤ |T|·(g(b-1) + ι(b-1))`. Worth one member of `g(3)`, six of `g(4)`, and exactly zero at `b = 2`, where the recursion is already exact — which is the only check available on it. Both ladders are kept rather than one edited |
+| `trace_class_intersecting` | `coq/PureLink.v` | `pure_link_intersecting` with the point replaced by a set, **plus the hypothesis its derivation omitted**: the matching member `A0` must *contain* the trace `S`, not merely fail to be contained in it, because all three sets of the sunflower have to live in `link S F`. Automatic at `|S| = 1`, false at `|S| ≥ 2` for a trace class straddling two matching members. `docs/roadmap.md` §21.4 |
+| `alwz42_chain_step`, `link_of_intersecting_not_intersecting`, `chain_never_beats_erdos_rado` | `coq/IntersectingSpread.v` | **What [ALWZ20] Theorem 4.2 buys at `k = 3`: nothing.** Its witness `t` is existential, so a bound must survive `t = 1`; and the link of an intersecting family is not intersecting — the triangle's link at a vertex is two disjoint singletons — so every level re-intersects at a cost of `2(b-t)`, giving `b!(C log b)^b`, *worse* than Erdős–Rado. Independently, 4.2's own proof (p. 13) is a two-line corollary of Theorem 2.5, the spread lemma, so formalising it would consume `Rao20_lemma2` rather than demote it. The 4.2 hypothesis is carried as a premise, so the file adds no axiom. `docs/roadmap.md` §21 |
 | `iota_four_at_most_80`, `g_four_at_most_160` | `coq/PureLink.v` | One rung further, where `Audit.the_sharp_bound_narrows_iota_four` had `ι(4) ∈ [27, 192]`. Still short of the `ι(4) ≤ 31` that `Sharp.AHSOptimal` would need |
 | `intersecting_support_bound` | `coq/PureLink.v` | **`IotaAtMost` is decided by one finite search.** Every member of an intersecting family meets a fixed member, so contributes at most `b-1` new points: an `n`-member intersecting `b`-uniform family has support `≤ b + (b-1)(n-1)`. At `b = 3`, `n = 11` that is 23 points; `rust/src/wide.rs` finds none there, so **`ι(3) = 10`** where this development had `[10, 18]`. The relabelling onto an initial segment is not formalised and the file says so |
 | `link_of_cone`, `only_the_empty_core_is_cheap` | `coq/Product.v` | **The mirror image of `Compression.only_the_empty_core_survives_compression`.** `link [p] (cone p F) = F` **literally**, so the cone *imposes* the `Y = ∅` clause of `LinkCharacterisation.sunflower_iff_link_matching` for free and is the identity on every other clause; shifting preserves that clause and destroys every other. Two unrelated operations, one clause each, and it is the same clause — the one Erdős–Ko–Rado lives at |
@@ -265,7 +268,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (366 of them). The current
+for every theorem in the "Closed" table (386 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -312,7 +315,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 34 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 35 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -320,8 +323,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 71 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 68 killed outright, two genuine
+Current mutation results: 75 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 72 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -330,7 +333,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 34 modules with Coq's separate kernel
+`make coqchk` re-verifies all 35 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

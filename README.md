@@ -58,7 +58,7 @@ claim progress on it. What is machine-checked here is the complete
 | **What the polynomial method is missing** | Naslund–Sawin's $constant^n$ bound is in the *ground set*; one further fact — that extremal uniform families live on $O(m)$ points — would turn it into the conjecture at $k=3$ | `coq/SliceRank.v` |
 | **The same hypothesis, where the data supports it** | that fact is unsupported for general families ($N(3,g)$ still climbing at $3m$) and *measured* for intersecting ones ($\iota(3,g)$ flat at 10 from six points to fourteen) — and by the equivalence above the intersecting version suffices | `coq/IotaGround.v` |
 | **A ground-set-aware link bound** | $b\lvert F\rvert \le \lvert U\rvert\, N(b{-}1,\lvert U\rvert{-}1)$ by double counting, met with equality at four measured rows — which forces the extremal families to be regular. Unconditionally $N(3,g) \le 2g$ | `coq/IotaGround.v` |
-| **The pure link is intersecting** | the members meeting a maximal-matching cover exactly once, with that point removed, pairwise intersect — so one of the Erdős–Rado degrees is bounded by $\iota(b{-}1)$ rather than $g(b{-}1)$, giving $2\lvert F\rvert \le \lvert T\rvert(g(b{-}1) + \iota(b{-}1))$. Reproduces $g(2)=6$ and $\iota(2)=3$ exactly; gives **$f(3,3) \le 28$** where Erdős–Rado gives 49 | `coq/PureLink.v` |
+| **The pure link is intersecting** | the members meeting a maximal-matching cover exactly once, with that point removed, pairwise intersect — so one of the Erdős–Rado degrees is bounded by $\iota(b{-}1)$ rather than $g(b{-}1)$, giving $2\lvert F\rvert \le \lvert T\rvert(g(b{-}1) + \iota(b{-}1))$. Reproduces $g(2)=6$ and $\iota(2)=3$ exactly; gives **$f(3,3) \le 28$**, and **$\le 27$** once the matching members are charged the $b$ points of the cover they actually occupy, where Erdős–Rado gives 49 | `coq/PureLink.v` |
 | **`ι(b)` is decided by one finite search** | an $n$-member intersecting $b$-uniform family has support $\le b + (b{-}1)(n{-}1)$, so a statement quantified over every ground set becomes a search on $b + (b{-}1)N$ points. At $b=3$ that is 23 points, the search is exhaustively empty at eleven members, and **$\iota(3) = 10$** exactly | `coq/PureLink.v`, `rust/src/wide.rs` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
@@ -205,7 +205,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 71 mutations, 68 are killed outright, two
+  that something breaks. Of 75 mutations, 72 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -271,10 +271,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 34 Coq files, then runs the axiom audit
+make verify        # builds all 35 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (366 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (386 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
