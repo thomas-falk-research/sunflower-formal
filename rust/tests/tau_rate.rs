@@ -23,19 +23,30 @@
 //!
 //! ## What that does to the bound
 //!
-//! For an intersecting `b`-uniform family with covering number `tau`, the
-//! elementary greedy bound is `|F| <= b^tau` — every member meets a fixed
-//! member, giving `b` branches, and `tau` levels exhaust a cover. (Stated
-//! as elementary arithmetic, not attributed: no search for priority was
-//! run, and `docs/reading.md` records the surrounding literature under
-//! *base*, *nucleus*, *crosscut* and *minimal cover* without this
-//! inequality.)
+//! There is **no `b^tau` bound in general**: at `tau = 1` every member
+//! shares a point, the family is a full star, and it is unbounded. The
+//! bound has to be derived at `tau = b` specifically, and it uses
+//! `tau = b` twice.
 //!
-//! At `tau = b` that is `b^b`. Since `b! ~ (b/e)^b`, `b^b = b! e^b` — the
-//! **same `n!` barrier** as every counting recursion, reached a third
-//! way. To get `C^b` out of a `tau`-indexed bound the extremal families
-//! would need `tau = O(1)` or `O(log b)`; they have the largest `tau` an
-//! intersecting family can have.
+//! Pick `A_1 in F`; every member meets it, so `b` branches for the first
+//! point `x_1`. Since `tau = b > 1`, `{x_1}` is not a cover, so some
+//! `A_2 in F` misses `x_1`, and every member through `x_1` meets `A_2`:
+//! `b` branches again for a point `x_2 =/= x_1`. This continues while
+//! `{x_1..x_k}` is not a cover, i.e. for `k < tau = b`, and after `b`
+//! steps the member contains `b` distinct chosen points, so *is* the set
+//! of them. Each leaf holds at most one member, giving `|F| <= b^b`.
+//!
+//! Both uses of `tau = b` are load-bearing: it keeps the branching going
+//! for `b` levels, and `b = |B|` makes the leaves singletons. (Stated as
+//! elementary arithmetic, not attributed: no search for priority was run,
+//! and `docs/reading.md` B12 records the surrounding literature under
+//! *base*, *nucleus*, *crosscut* and *minimal cover*.)
+//!
+//! Since `b! ~ (b/e)^b`, `b^b = b! e^b / sqrt(2 pi b)` — the **same `n!`
+//! barrier** as every counting recursion, reached a third way. To get
+//! `C^b` out of a `tau`-indexed bound the extremal families would need
+//! `tau = O(log b)`; they have the largest `tau` an intersecting family
+//! can have.
 //!
 //! So §8 closes the same way §2 and §3 did: the route is real, the
 //! arithmetic is checkable, and it stops at `n!`.
@@ -116,8 +127,8 @@ fn the_tower_keeps_tau_equal_to_b() {
     }
 }
 
-/// The arithmetic. `|F| <= b^tau` with `tau = b` is `b^b`, which is
-/// `b! e^b` — the `n!` barrier again, not `C^b`.
+/// The arithmetic. The greedy tree at `tau = b` gives `b^b`, which is
+/// `b! e^b / sqrt(2 pi b)` — the `n!` barrier again, not `C^b`.
 #[test]
 fn the_tau_bound_lands_on_the_same_factorial_barrier() {
     // Stirling: b! = (b/e)^b sqrt(2 pi b), so exactly

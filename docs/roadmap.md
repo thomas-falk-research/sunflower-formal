@@ -4145,18 +4145,31 @@ substitution, the tower has
 family is covered by any one of its own members, so `tau <= b` always,
 and the 1972 families sit at the ceiling rather than well below it.
 
-Then the arithmetic §8 asked for. The elementary greedy bound for an
-intersecting `b`-uniform family with covering number `tau` is
-`|F| <= b^tau` — every member meets a fixed member, giving `b` branches
-per level, and `tau` levels exhaust a cover. (Elementary, and *not*
-attributed: no priority search was run, and `docs/reading.md` B12 records
-the surrounding literature under *base*, *nucleus*, *crosscut* and
-*minimal cover* without this inequality. Rule 3 — so it is claimed only
-as arithmetic done here.) At `tau = b` that is
+Then the arithmetic §8 asked for, and it has to be done at `tau = b`
+specifically — **there is no `b^tau` bound in general**. At `tau = 1`
+every member shares a point and the family is a full star, which is
+unbounded; a first draft of this paragraph claimed `|F| <= b^tau` and
+that claim is false, with the star as its counterexample.
+
+What is true is the greedy tree at `tau = b`, and it needs `tau = b`
+twice. Pick `A_1 ∈ F`; every member meets it, so `b` branches for the
+first point `x_1`. Since `tau = b > 1`, `{x_1}` is not a cover, so some
+`A_2 ∈ F` misses `x_1`, and every member through `x_1` meets `A_2`: `b`
+branches again, for a point `x_2 =/= x_1`. This continues for as long as
+`{x_1, ..., x_k}` is not a cover — that is, for `k < tau = b` — and after
+`b` steps the member contains `b` distinct chosen points, so *is* the set
+of them. Each leaf holds at most one member, and
 
 ```
-    |F|  <=  b^b  =  b! · e^b / sqrt(2 pi b)
+    |F|  <=  b^b  =  b! · e^b / sqrt(2 pi b).
 ```
+
+Both uses of `tau = b` are load-bearing: it is what keeps the branching
+going for `b` levels, and `b = |B|` is what makes the leaves singletons.
+(Elementary, and *not* attributed: no priority search was run, and
+`docs/reading.md` B12 records the surrounding literature under *base*,
+*nucleus*, *crosscut* and *minimal cover*. Rule 3 — claimed only as
+arithmetic done here.)
 
 the **same `n!` barrier**, reached a third way this session.
 `rust/tests/tau_rate.rs` pins `tau = b` on the tower and checks the
@@ -4203,7 +4216,8 @@ Nothing on the lower-bound side moved. No search was run this session.
    of counting arguments stops at `n! C^n`.
 
 4. **`tau` as a route to `C^b`.** Closed (§21.5). The extremal families
-   have `tau = b`, the maximum, and `|F| <= b^tau` at `tau = b` is `b^b`.
+   have `tau = b`, the maximum, and the greedy tree at `tau = b` gives
+   `b^b`.
    What survives is the *measurement*, which is real and was already in
    the repository: `tau` is multiplicative and the tower sits at the
    ceiling. That is a structural fact about the 1972 families worth
