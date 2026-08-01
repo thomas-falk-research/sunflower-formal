@@ -260,7 +260,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (349 of them). The current
+for every theorem in the "Closed" table (367 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -307,7 +307,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 33 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 34 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -315,8 +315,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 69 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 66 killed outright, two genuine
+Current mutation results: 71 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 68 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -325,7 +325,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 33 modules with Coq's separate kernel
+`make coqchk` re-verifies all 34 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```
