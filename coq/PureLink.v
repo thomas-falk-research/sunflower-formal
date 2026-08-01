@@ -80,8 +80,8 @@
 
     That turns [IotaAtMost b N] — a statement quantified over every
     ground set — into a search on [b + (b-1)N] points. At [b = 3] and
-    [N = 10] the bound is 23, and `rust/tests/wide_iota.rs` reports the
-    ground-23 search exhaustively empty at eleven members. So [iota(3)]
+    [N = 10] the bound is 23, and `wide::tests::iota_three_is_exactly_ten`
+    reports the ground-23 search exhaustively empty at eleven members. So [iota(3)]
     is exactly 10, where the development previously had [[10, 18]]. *)
 
 From Coq Require Import List Arith Lia.
@@ -477,8 +477,8 @@ Proof.
 Qed.
 
 (** [Intersecting.iota_three_at_most_eighteen] is the previous bound; the
-    measured value is 10, and [iota_three_is_exactly_ten] in
-    `rust/tests/wide_iota.rs` now decides it. *)
+    measured value is 10, and `wide::tests::iota_three_is_exactly_ten`
+    now decides it. *)
 
 Corollary iota_three_at_most_thirteen : IotaAtMost 3 13.
 Proof.
