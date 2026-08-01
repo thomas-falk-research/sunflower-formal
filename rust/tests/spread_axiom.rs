@@ -239,6 +239,91 @@ fn the_refuted_set_of_r_is_a_prefix() {
 
 /// The same statement viewed the other way round: the empirical
 /// threshold never exceeds the one proved sufficient.
+/// **The measured threshold cannot stay flat, and this is where it breaks.**
+///
+/// `empirical_threshold` measures `r*(m,k)`, the smallest `r` for which
+/// `SpreadYieldsDisjoint m k r` survives exhaustive search. At `k = 3` it
+/// reads `r*(2,3) = r*(3,3) = 3`, flat in the uniformity. `docs/roadmap.md`
+/// §3.6 read that as "the axiom is loose".
+///
+/// It is more than that. `Conjecture.spread_conjecture` asks for a
+/// constant `c k` with `SpreadYieldsDisjoint n k (c k)` for every `n`, and
+/// `Conjecture.spread_conjecture_suffices` proves that settles Erdős–Rado.
+/// So `r*(m,3) = 3` for all `m` would give `f(m,3) <= 3^m + 1` — and the
+/// 1972 lower bound is `≈ 3.162^m`. The flat table is therefore a
+/// measurement of a **published open problem** ([Ra20] p. 2: *"it is
+/// possible that Lemma 2 holds even when `r(p,k) = O(p)`"*), and it must
+/// eventually rise.
+///
+/// This test pins where, using only lower bounds on `g` the repository
+/// already owns: `g(3) >= 20` (`IotaRate.iota_three_sandwich`) and
+/// `iota(3) >= 10` (`Intersecting.iota3`), combined by the
+/// Abbott–Hanson–Sauer substitution `g(ab) >= g(a) iota(b)^a`.
+///
+/// **`m = 9` is the first uniformity where `3^m` is exceeded**, with a
+/// margin of 317. Two consequences, both recorded in §18.2:
+///
+/// * once `substitute` is formalised this yields
+///   `~ SpreadYieldsDisjoint 9 3 3`, hence `c(3) >= 4` — the first lower
+///   bound on the constant in the spread reformulation;
+/// * the **direct sum cannot do it at any uniformity**. `g(a+b) >= g(a)g(b)`
+///   from `g(2) = 6` gives `6^(m/2) = 2.449^m`, which is below `3^m`
+///   forever. Only the substitution crosses 3, which is why `substitute`
+///   is the primary campaign.
+#[test]
+fn the_flat_threshold_must_break_and_nine_is_where() {
+    // Established lower bounds, all machine-checked in Coq or exhaustive.
+    let g3: u64 = 20; // 2 * iota(3), IotaRate.iota_three_sandwich
+    let i2: u64 = 3; // the triangle
+    let i3: u64 = 10; // Intersecting.iota3
+    let i4: u64 = 27; // exhaustive, rust/examples/iota_scan.rs
+
+    // Best lower bound on g(m) from the constructions the repository has.
+    // AHS substitution g(ab) >= g(a) iota(b)^a, plus the direct sum.
+    let g = |m: u32| -> u64 {
+        match m {
+            2 => 6,
+            3 => g3,
+            4 => 2 * i4,
+            6 => 6 * i3.pow(2),           // g(2) iota(3)^2
+            7 => g3 * (2 * i4),           // direct sum g(3) g(4)
+            8 => (2 * i4) * i2.pow(4),    // g(4) iota(2)^4
+            9 => g3 * i3.pow(3),          // g(3) iota(3)^3  <-- the one
+            12 => (2 * i4) * i3.pow(4),   // g(4) iota(3)^4
+            _ => unreachable!(),
+        }
+    };
+
+    // Below 9 the constructions do not reach 3^m ...
+    for m in [2u32, 3, 4, 6, 7, 8] {
+        assert!(
+            g(m) < 3u64.pow(m),
+            "m = {m}: g >= {} already exceeds 3^{m} = {}",
+            g(m),
+            3u64.pow(m)
+        );
+    }
+
+    // ... and at 9 it does.
+    assert_eq!(3u64.pow(9), 19683);
+    assert_eq!(g(9), 20000);
+    assert!(g(9) > 3u64.pow(9));
+    assert_eq!(g(9) - 3u64.pow(9), 317, "the margin, so a drift is visible");
+
+    // It stays broken.
+    assert!(g(12) > 3u64.pow(12));
+
+    // The direct sum alone never gets there: g(2)^(m/2) = 6^(m/2) < 9^(m/2).
+    // Checked to the largest j with 9^j inside u64: 9^20 fits, 9^21 does not.
+    for j in 1u32..=20 {
+        assert!(
+            6u64.pow(j) < 9u64.pow(j),
+            "direct sum from g(2) = 6 must stay below 3^(2j) at j = {j}"
+        );
+    }
+    assert!(9u64.checked_pow(21).is_none(), "20 is the last j that fits");
+}
+
 #[test]
 fn empirical_threshold_is_below_the_proved_one() {
     for &(ground, m, k) in GRID {

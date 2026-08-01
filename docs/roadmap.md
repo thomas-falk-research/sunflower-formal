@@ -3153,3 +3153,197 @@ problem in a later commit.
 
 This session spent its first hour re-fetching what the last one had
 already found. That was the last time.
+
+---
+
+## 18. What the reading changes about the plan
+
+§16 and §17 recorded what the papers said. This section is what to do
+about it. It is a reprioritisation, and it moves one item to the top that
+was not on the list at all.
+
+### 18.1 The thing that was already here, three times, unconnected
+
+The repository contains all three of these and has never put them in the
+same sentence:
+
+* **`Conjecture.spread_conjecture`** — "is there, for each `k`, a constant
+  `c k` such that every `c k`-spread family of more than `(c k)^n` sets
+  of size `n` contains `k` pairwise disjoint members?" — with
+  `spread_conjecture_suffices` proving it implies the Erdős–Rado
+  conjecture. Machine-checked, since the spread layer went in.
+* **§3.6's `empirical_threshold`** — exhaustive search for the smallest
+  `r` with `SpreadYieldsDisjoint m k r`. It measures `r*(2,3) = 3` and
+  `r*(3,3) = 3`: **flat in the uniformity**, against the axiom's
+  `Θ(k log km)` which is 9 and 12 at those points. §3.6 read that as
+  "the axiom is loose".
+* **[Ra20] p. 2** — *"As far as we know, it is possible that Lemma 2
+  holds even when `r(p,k) = O(p)`. Such a strengthening of Lemma 2 would
+  imply the sunflower conjecture of Erdős and Rado."*
+
+These are one question. `spread_conjecture` **is** Rao's `r(p,k) = O(p)`.
+`empirical_threshold` **is** a measurement of its hypothesis. And §3.6's
+flat table is data on a named open problem whose positive resolution is
+the conjecture — not a remark about a loose axiom.
+
+`coq/Conjecture.v` already says *"removing the dependence on `n` is
+open"*. What nobody here knew is that the source says it too, says it
+would settle the conjecture, and that this repository is measuring it.
+
+### 18.2 The first concrete consequence: `r*` must break, and at `m = 9`
+
+If `r*(m,3) = 3` for all `m` then `spread_conjecture_suffices` gives
+`f(m,3) ≤ 3^m + 1`. The 1972 lower bound is `≈ 3.162^m`. **So the flat
+table cannot stay flat**, and the repository's own constructions say
+where it breaks first:
+
+```
+   m   3^m       best known lower bound on g(m)     route
+   2         9            6   g(2) = 6 exact
+   3        27           20   g(3) >= 2*iota(3)
+   4        81           54   g(4) >= 2*iota(4)
+   6       729          600   g(6) >= g(2)*iota(3)^2
+   7      2187         1080   g(7) >= g(3)*g(4)   (direct sum)
+   8      6561         5400   g(8) >= g(4)*iota(2)^4
+   9     19683        20000   g(9) >= g(3)*iota(3)^3   <-- BREAKS
+  12    531441       540000   g(12) >= g(4)*iota(3)^4
+```
+
+`g(9) ≥ g(3)·ι(3)³ ≥ 20·1000 = 20000 > 19683 = 3⁹`, margin **317**.
+
+Both inputs are already machine-checked — `g(3) ≥ 20` is
+`IotaRate.iota_three_sandwich`, `ι(3) ≥ 10` is `Intersecting.iota3`. The
+only missing piece is the substitution itself, which is **already §15.3's
+primary campaign**. Formalising `substitute` therefore buys a fifth
+result nobody had counted:
+
+> **`~ SpreadYieldsDisjoint 9 3 3`** — and hence `c(3) ≥ 4` in
+> `spread_conjecture`, the first lower bound on the constant in the
+> spread reformulation.
+
+That is a negative result about a named open problem, machine-checked,
+from constructions the repository already owns. It is the sharpest thing
+on this list and it did not exist before the reading, because nobody knew
+§3.6 and §2 were the same question.
+
+**Note the direct sum cannot do it.** `g(a+b) ≥ g(a)g(b)` from `g(2)=6`
+gives `6^{m/2} = 2.449^m < 3^m` forever. Only the substitution crosses 3.
+That is the cleanest statement yet of why §5's "the direct sum does not
+reach 3.162" matters, and it retires the question of whether
+`substitute` is worth the session.
+
+### 18.3 Priorities that go up
+
+1. **`substitute`, unchanged as the primary campaign, but for a fifth
+   reason** (§18.2). It was already load-bearing for four results.
+2. **Extend `empirical_threshold`.** §3.6 stalls at ground 10 for
+   `(3,3,3)` and says *"widening it needs a better search, not a bigger
+   budget"*. That is now the highest-value computation in the repository,
+   because the quantity it measures is a published open problem. The
+   ground-10 case is also exactly where a counterexample could first
+   live.
+3. **`φ(3,s)` for small `s`.** [Kup25] Theorem 37 makes `φ(ℓ+1,s)` the
+   leading constant of the Frankl–Füredi asymptotic for the Duke–Erdős
+   problem. The repository's exhaustive small-case machinery computes
+   exactly this. `φ(2,2) = 6` is already `coq/F23.v`. Cheap, and it has
+   an external consumer for the first time.
+4. **The spread-approximation literature** ([KuZa22], [Ku23]). If
+   `Spread.Spread` is becoming standard infrastructure in extremal set
+   theory, a machine-checked spread layer has consumers beyond this
+   conjecture. Read those two before deciding what the layer is *for*.
+5. **Frankl–Katona (Theorem 29), as a second customer for the Hall
+   layer.** `HallCore.v`, `KoenigHall.v` and `Matching.v` exist for the
+   uniformity-2 programme and are otherwise unused; [Kup25] p. 29 proves
+   Theorem 29 by "a Hall's condition in disguise". Cheap reuse.
+
+### 18.4 Priorities that go down
+
+1. **`coq/ErdosRado.v` as a headline result.** Duplicated in Isabelle
+   since February 2021, and the AFP entry proves more. Keep it as
+   infrastructure; stop presenting it as the contribution.
+2. **Novelty framing generally.** With five names for a sunflower and
+   five for a cover, and every search here having used two of each, "not
+   found" is not worth much. The `ι` programme should be sold on what it
+   *is* — a machine-checked equivalence — not on being unpublished.
+   `IotaRate`'s value does not depend on the literature search, and it
+   should stop resting on one.
+3. **[AHS72].** OpenAlex says `oa_status: closed`,
+   `any_repository_has_fulltext: false`. Four sessions have tried. Stop.
+4. **Chasing the axiom's constant.** Unchanged, and now cheaper to
+   avoid: `fractional_form_gives_the_axiom_shape` is monotone upward in
+   `r`, so any explicit constant closes the file.
+
+### 18.5 The moonshot, restated
+
+The repository is not going to prove the sunflower conjecture. Thirty
+arXiv papers in twenty-five months did not move the lower bound off 1972,
+the upper bound has not moved since 2021 except for one unrefereed
+preprint, and the four proofs of the spread lemma are one gapped, two
+analytic, one formalisable.
+
+What it can uniquely do, in order:
+
+1. **Discharge `Rao20_lemma2`.** No prover has a spread lemma. The target
+   is now precisely scoped: `FractionalSpreadDisjoint` at one threshold,
+   by the counting proof of Lovett §3, over fixed-size subsets. Everything
+   downstream is already proved and `fractional_form_gives_the_axiom_shape`
+   already bridges the forms.
+2. **Be the machine-checked reference for the spread framework**, which
+   the reading shows is becoming general-purpose machinery rather than a
+   sunflower-specific trick.
+3. **Be the exhaustive-data source for the small constants**, which
+   turn out to appear in published asymptotics rather than only here.
+4. **Compute the sharp spread threshold sequence `r*(m,3)`.**
+
+The fourth is the one worth calling a moonshot, and it is new. `r*(m,k)`
+is the smallest `r` for which `SpreadYieldsDisjoint m k r` holds. By
+`spread_conjecture_suffices`, **whether `r*(m,3)` is bounded in `m` is
+the sunflower conjecture at `k = 3`**, and its limiting value is the
+constant. So the sequence is not evidence about the problem; it *is* the
+problem, one finite computation at a time:
+
+```
+   m        1    2    3    4    5    6    7    8    9   ...
+   r*(m,3)  ?    3    3    ?    ?    ?    ?    ?   >=4  ...
+                 |    |                            |
+                 exhaustive (§3.6)                  §18.2
+```
+
+Two entries measured, one bounded below, and six unknown between them.
+Nobody has computed this sequence. The repository is the only place with
+all three of the pieces it needs — a formal statement of
+`SpreadYieldsDisjoint`, a machine-checked reduction from it to the
+bound, and an exhaustive testbed — and §3.6 has already found the exact
+obstacle, which is search quality at ground 10 rather than budget.
+
+If `r*(m,3)` settles at 4, that is `f(m,3) <= 4^m + 1` against the
+1972 lower bound of `3.162^m`, and the conjecture is true with a nearly
+sharp constant. If it grows, the conjecture is false. Either answer is
+worth more than another conditional theorem, and the first six terms are
+finite.
+
+The first three items are engineering with a known finish. The fourth is
+a question nobody has asked in this form, that this repository is built
+to answer, and whose first term past the measured range it can already
+bound. That is a better portfolio than "prove the conjecture", and it is
+what the reading actually supports.
+
+### 18.6 The methodological rules, consolidated
+
+§14.6, §15.5, §16.6, §17 each added one. Together:
+
+1. **Grep the development before calling a quantity unnamed.**
+2. **Read the source of your own axiom before planning against it.**
+3. **A claim about a source goes in with a page number and a verbatim
+   quotation, or it does not go in.**
+4. **`pdftotext` cannot establish absence.** Line breaks defeat phrase
+   search silently.
+5. **A negative is only as good as its worst synonym.** Five names for a
+   sunflower, five for a cover.
+6. **Page 1 is not the paper.** Abstracts disagree with their own
+   theorems — [NaSa17] and [Mis26] both do.
+7. **Identifiers get looked up, never recalled.** One guessed arXiv ID
+   cost four pages of an astrophysics paper; one guessed DOI suffix cost
+   a 404.
+8. **A paywall is not always a blocker.** Sometimes the claim behind it
+   is a finite check — the 2-(6,3,2) uniqueness took one enumeration.
