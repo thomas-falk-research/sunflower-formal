@@ -163,21 +163,58 @@ fn the_tau_bound_lands_on_the_same_factorial_barrier() {
     }
 }
 
-/// For contrast, and to keep the comparison honest: `b^b` is *better*
-/// than Erdős–Rado's `b! 4^b = (4b/e)^b` by `(e/4)^b`, so the `tau` route
-/// is not worthless — it is just on the wrong side of the barrier.
+/// And the comparison, which is worse than "same barrier". Erdős–Rado at
+/// `k = 3` is `f(n,3) <= 2^n n! + 1` (`bounds::erdos_rado_bound`), i.e.
+/// `b! 2^b = (2b/e)^b`, and `2/e = 0.736 < 1`. So
+///
+///     b^b  >  (2b/e)^b  by a factor (e/2)^b = 1.359^b.
+///
+/// **The `tau` bound is worse than 1960 outright**, not merely on the
+/// wrong side of the barrier. An earlier draft of this file had Erdős–Rado
+/// as `b! 4^b` and concluded the opposite; `(k-1)^n n!` at `k = 3` is
+/// `2^n n!`, not `4^n n!`.
 #[test]
-fn the_tau_bound_beats_erdos_rado_but_not_the_barrier() {
+fn the_tau_bound_is_worse_than_erdos_rado() {
     for b in [10usize, 20, 40] {
         let ln_tau_bound = (b as f64) * (b as f64).ln();
         let ln_fact: f64 = (1..=b).map(|i| (i as f64).ln()).sum();
-        let ln_er = ln_fact + (b as f64) * 4f64.ln();
+        let ln_er = ln_fact + (b as f64) * 2f64.ln();
         assert!(
-            ln_tau_bound < ln_er,
-            "b={b}: b^b should beat Erdos-Rado's b! 4^b"
+            ln_tau_bound > ln_er,
+            "b={b}: b^b = {ln_tau_bound} should be WORSE than \
+             Erdos-Rado's b! 2^b = {ln_er}"
         );
-        // but both have rate bounded away from zero, i.e. both are n!·C^n
+        // The gap per level rises to e/2 = 1.359 but only slowly -- it is
+        // 1.104 at b = 10, because Stirling's ln(2 pi b)/(2b) is still
+        // worth 0.21 there. Asserted as "strictly worse, and below the
+        // limit", with the limit itself checked once after the loop; a
+        // tolerance wide enough to call 1.104 equal to 1.359 would assert
+        // nothing.
+        let gap_per_level = ((ln_tau_bound - ln_er) / b as f64).exp();
+        assert!(
+            gap_per_level > 1.0,
+            "b={b}: the tau bound should be strictly worse per level, \
+             got {gap_per_level}"
+        );
+        assert!(
+            gap_per_level < std::f64::consts::E / 2.0,
+            "b={b}: gap per level {gap_per_level} should approach e/2 \
+             from below"
+        );
+        // both have rate bounded away from zero, i.e. both are n! C^n
         let rate_tau = (ln_tau_bound / b as f64 - (b as f64).ln()).exp();
         assert!(rate_tau > 0.9, "b={b}: tau rate {rate_tau} is not exponential");
     }
+    // The asymptotic gap really is e/2, approached from below.
+    let gap = |b: usize| {
+        (1.0 - 2f64.ln()
+            - (2.0 * std::f64::consts::PI * b as f64).ln() / (2.0 * b as f64))
+            .exp()
+    };
+    assert!(gap(10) < gap(1000) && gap(1000) < std::f64::consts::E / 2.0);
+    assert!(
+        (gap(1_000_000) - std::f64::consts::E / 2.0).abs() < 0.01,
+        "the gap per level should tend to e/2, got {}",
+        gap(1_000_000)
+    );
 }

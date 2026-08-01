@@ -3993,8 +3993,8 @@ every level pays `Intersecting.sunflower_free_star_bound`'s factor
 
 which multiplies by `2(b−1)κ` per level, hence `b! · (2κ)^b`, hence
 
-> **`b! · (C log b)^b` — Erdős–Rado's `b! · 4^b` made *worse* by
-> `(log b)^b`.**
+> **`b! · (2C log b)^b` — Erdős–Rado's `b! · 2^b` made *worse* by
+> `(C log b)^b`.**
 
 `rust/tests/alwz_chain.rs` evaluates the recursion numerically with the
 maximum over `t` taken honestly at every level, from `b = 4` to `b = 24`
@@ -4173,11 +4173,16 @@ arithmetic done here.)
 
 the **same `n!` barrier**, reached a third way this session.
 `rust/tests/tau_rate.rs` pins `tau = b` on the tower and checks the
-Stirling identity, including that `b^b` does beat Erdős–Rado's
-`b! 4^b = (4b/e)^b` by `(e/4)^b` — so the route is not worthless, it is
-just on the wrong side of the barrier. To reach `C^b` from a
-`tau`-indexed bound the extremal families would need `tau = O(log b)`.
-They have the maximum.
+Stirling identity. And the comparison is worse than "same barrier":
+Erdős–Rado at `k = 3` is `b! · 2^b = (2b/e)^b`, and `2/e = 0.736 < 1`, so
+
+```
+    b^b  >  (2b/e)^b  =  Erdos-Rado,     by a factor (e/2)^b = 1.359^b.
+```
+
+**The `tau` bound is not merely on the wrong side of the barrier — it is
+worse than 1960 outright.** To reach `C^b` from a `tau`-indexed bound the
+extremal families would need `tau = O(log b)`. They have the maximum.
 
 So §8 closes the way §2 and §3 did: real route, checkable arithmetic,
 stops at `n!`.
