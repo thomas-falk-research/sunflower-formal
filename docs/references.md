@@ -153,21 +153,29 @@ estimate. Both are marked below.
 
 - **[NaSa17]** E. Naslund, W. Sawin, *Upper bounds for sunflower-free
   sets*. Forum of Mathematics Sigma 5 (2017), e15; arXiv:1606.09575.
-  **Read p. 1 of 5 (rendered).** The slice-rank method — the machinery
-  that settled cap set — applied to the sunflower problem.
+  **Read in full (5 of 5 rendered pages).** The slice-rank method — the
+  machinery that settled cap set — applied to the sunflower problem.
 
-  **Corrected.** This entry previously stated the bound as
-  *"$3(n+1)C^n$ members with $C = 3/2^{2/3}$"*. The abstract, on the
-  rendered page, says
+  **A correction made earlier in this same session is itself
+  withdrawn.** Reading only page 1, this entry was changed to say the
+  polynomial factor is $3n$ *"not $3(n+1)$"*, and that the bound is not
+  $C^n$ *"on the nose"*. Both were wrong, and reading pages 2–5 shows it.
+  **Theorem 3, rendered page 2**, is the theorem, and it says
 
-  $$|\mathcal F| \;\le\; 3n \sum_{k \le n/3}\binom{n}{k}
-    \;\le\; \left(\tfrac{3}{2^{2/3}}\right)^{n(1+o(1))}.$$
+  $$|\mathcal F| \;\le\; 3(n+1) \sum_{k \le n/3}\binom{n}{k},
+    \qquad \mu_3^S \le \frac{3}{2^{2/3}} = 1.889881574\ldots$$
 
-  The polynomial factor is $3n$, not $3(n+1)$, and the exponential
-  factor is a **binomial sum** bounded by $C^{n(1+o(1))}$ — not $C^n$ on
-  the nose. The base $C = 3/2^{2/3} < 1.89$ is right. It is a
+  The **abstract** says $3n$; the **theorem** says $3(n+1)$. They differ,
+  and the theorem is what counts. Moreover
+  $\sum_{k\le n/3}\binom{n}{k} \le 2^{H(1/3)n} = (3/2^{2/3})^n$ exactly,
+  since $H(1/3) = \log_2 3 - 2/3$, so $3(n+1)C^n$ **is** a valid bound
+  and the original wording was right on both counts. It is a
   $constant^n$ bound of the conjectured shape, but in the **ground set**
   rather than the uniformity.
+
+  Lesson, since this is now the second extraction-shaped error in one
+  session: *page 1 is not the paper either*. An abstract can disagree
+  with its own theorem — [Mis26] does it too — and the theorem wins.
 
   `coq/SliceRank.v` carries it as a hypothesis (not an axiom) and proves
   that one further fact — that extremal uniform families live on $O(m)$
@@ -285,14 +293,41 @@ estimate. Both are marked below.
      "literature check" note in `docs/roadmap.md` §5 for exactly what
      was searched.
 
-  **Read pp. 5–6 of 66 rendered pages, July 2026** (previously only the
-  arXiv HTML). Definition (1.1) on p. 5 confirms the re-indexing note
-  verbatim, and the two [AHS72] sentences on p. 6 survive rendering
-  unchanged. Also on p. 6, **Observation 2**: *"We have
-  $\phi(a+b,s) \ge \phi(a,s)\phi(b,s)$"*, with proof — that is
-  `coq/DirectSum.v`'s supermultiplicativity, and it is published. No
-  novelty was claimed for it; now it has a citation. The other 60 pages
-  were not read.
+  **READ IN FULL — 66 of 66 rendered pages, August 2026.** Definition
+  (1.1) on p. 5 confirms the re-indexing note verbatim, and the two
+  [AHS72] sentences on p. 6 survive rendering unchanged. Also on p. 6,
+  **Observation 2**: *"We have $\phi(a+b,s) \ge \phi(a,s)\phi(b,s)$"*,
+  with proof — `coq/DirectSum.v`'s supermultiplicativity, published.
+
+  Five things the full read produced, all quoted with page numbers in
+  `docs/reading.md`:
+
+  1. footnote 6, p. 21: $\Delta(s)$-systems are also called **$s$-stars**
+     *"in the follow-up papers of Frankl and Füredi"* — a third name for
+     a sunflower, which every search in this repository has missed;
+  2. §1.7, p. 49: $r$-spread families are now a *tool* of the Δ-system
+     method — *"r-spread families in many ways behave like sunflowers
+     with r petals, albeit they are much easier to find"* — through the
+     **peeling-simplification** and **spread approximation** procedures
+     of Kupavskii and Zakharov, two programmes this repository had not
+     heard of;
+  3. **Observation 58, p. 50**, is `SpreadReduction.spread_reduction`'s
+     conclusion stated as a two-line observation, followed by *"This
+     bound is already better than the bound coming from not containing a
+     sunflower."*;
+  4. **Theorem 37, p. 35** (Frankl–Füredi): for fixed $k,s$ and
+     $k \ge 2\ell+3$,
+     $f(n,k,\ell,s) = (\phi(\ell+1,s)+o(1))\binom{n-\ell-1}{k-\ell-1}$.
+     **$\phi$ — this repository's $g$ — is the leading constant**, and at
+     $\ell=1, s=2$ it is $\phi(2,2)=6$, which `coq/F23.v` proves;
+  5. p. 29, Theorem 29 (Frankl–Katona) is proved by *"a Hall's condition
+     in disguise"* on a containment bipartite graph — exactly the
+     machinery in `coq/HallCore.v` and `coq/Matching.v`.
+
+  §1.7 also reaches the covering-number literature under the names
+  **base**, **nucleus**, **generating set**, **crosscut** and **minimal
+  cover**, crediting Erdős–Lovász, Füredi, Frankl and
+  Ahlswede–Khachatrian. See the withdrawal below.
 
 ### Who evaluated $f(2,k)$ first
 
@@ -325,12 +360,13 @@ is recorded as that.
 
 - **[Ko97]** A. V. Kostochka, *An intersection theorem for systems of
   finite sets*. Acta Math. Hungarica 75 (1997), 81–88. Refinement to
-  $o(n!)$, won the consolation $100 prize. **Not read.** Two surveys
-  render the bound differently and neither was checked against the
-  paper: [Kup25] p. 5 gives
-  $\phi(k,s) \le C(s,\alpha)k!\left((\log\log k)^2/(\alpha\log\log k)\right)^k$,
-  [Rao25] p. 2 gives $O(k!\,(\log\log\log k/\log\log k)^k)$. **Inferred,
-  and inconsistently.** Do not quote either without the paper.
+  $o(n!)$, won the consolation $100 prize. **Not read; inferred, but now
+  from two agreeing sources.** [ASU12] Theorem 2.2, rendered p. 3:
+  *"There exists a constant $c$ such that every family of $s$-sets of
+  size at least $cs!\cdot(\frac{\log\log\log s}{\log\log s})^s$ contains
+  a 3-sunflower."* [Rao25] p. 2 agrees. [Kup25] p. 5's rendering
+  $(\log\log k)^2/(\alpha\log\log k)$ disagrees with both and should be
+  treated as garbled. Still not read at the source.
 
 - **[KRT99]** A. V. Kostochka, V. Rödl, L. A. Talysheva, *On systems
   of small sets with no large $\Delta$-subsystem*. Combinatorics,
@@ -554,11 +590,12 @@ is recorded as that.
   "intersecting" does not occur in these notes — stands and is
   unaffected.
 
-- **[Hu21]** L. Hu, exposition streamlining the proof; cited by
-  [MNSZ22] as one of the two corrections to the gap in [Tao20]. **Not
-  attempted.** *Name discrepancy, unresolved:* [MNSZ22] cites this as
-  **[Hu21]**, [Kup25] p. 7 writes **"Lu [75]"** for what is evidently the
-  same correction. Do not cite either spelling as settled.
+- **[Hu21]** **Lunjia Hu**, *Entropy Estimation via Two Chains:
+  Streamlining the Proof of the Sunflower Lemma* (2021), theorydish.blog;
+  cited by [MNSZ22] as one of the two corrections to the gap in [Tao20].
+  **Not read.** *Name discrepancy, resolved:* [Kup25]'s body text writes
+  "Lu [75]" on p. 7, but its own reference list on p. 65 gives **Lunjia
+  Hu**. The body text is a typo; this file's "L. Hu" was right.
 
 - **[Tao20]** T. Tao, *The sunflower lemma via Shannon entropy*,
   `terrytao.wordpress.com/2020/07/20/the-sunflower-lemma-via-shannon-entropy/`,
@@ -701,7 +738,19 @@ automorphism-group search is cross-checked against `nauty`.
   rather than merely the count. So at $b = 4$ the 1972 construction is
   *optimal on nine points*, not one construction among many.
 
-**Searched under the design names in July 2026; not resolved.** The
+**Uniqueness VERIFIED, August 2026 — by exhaustion, not by citation.**
+There are only $\binom{20}{10} = 184756$ ways to choose ten triples from
+the twenty on six points, so the question does not need the Handbook.
+Enumerated: exactly **12** are simple 2-$(6,3,2)$ designs, and all 12 lie
+in a **single** isomorphism class under $\mathrm{Sym}(6)$. That gives
+$|\mathrm{Aut}| = 720/12 = 60$ a second way, independently of
+`structure::automorphisms`, and the two agree.
+`rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`.
+The line below, that uniqueness is "taken on the literature's word", is
+**withdrawn**.
+
+The mechanism, for whoever wants the isomorphism type rather than the
+order. The
 parameter arithmetic checks out — for a 2-$(6,3,2)$ design,
 $r = \lambda(v-1)/(k-1) = 5$ and $b = vr/k = 10$, matching the computed
 10 blocks and 5-regularity — and $|\mathrm{Aut}| = 60$ is exactly
@@ -778,10 +827,22 @@ Plus an arXiv sweep, 2024-06 to 2026-07, over
 `abs:sunflower AND cat:cs.CC`, tabulated in `docs/reading.md`. **Empty is
 not absence.**
 
-- **[Kup25]**, the survey of the Δ-system method: no extremal function
-  for intersecting sunflower-free families, no reduction of the sunflower
-  problem to the intersecting case, and **no discussion of shifting at
-  all** — in the survey of the method the problem belongs to.
+- **[Kup25]**, the survey of the Δ-system method, **now read in full**:
+  no extremal function for intersecting sunflower-free families, no
+  reduction of the sunflower problem to the intersecting case, and no
+  discussion of shifting.
+
+  **WITHDRAWN, from this session's own earlier work.** A revision written
+  hours before this one added: *"the survey has no section on covering or
+  transversal numbers, and the strings 'covering number', 'transversal'
+  and 'maximal intersecting' do not occur in it at all."* That was a
+  `pdftotext` search and it is **false**. Rendered page 19 reads *"he ...
+  shows that $G$ should be empty using a simple, but somewhat tedious,
+  'covering number' argument which we avoid"* — the extractor had split
+  the phrase across a line break, so a two-word search missed it in a
+  document that contains it. Page 59 has *"intersecting families with
+  covering number 2"*. **`pdftotext` cannot establish absence**, and no
+  negative in this file rests on one any more.
 - **Lovett, *From sunflowers to thresholds*** (PCMI lecture series, IAS).
   The word "intersecting" does **not occur in the notes** (1358 lines of
   extracted text, zero matches). The only occurrence of "compress" is the
@@ -840,6 +901,93 @@ sources" as checked.
   problem?": yes, two months before this was written, and the question is
   live. [Kup25], the survey of the Δ-system method, contains no
   discussion of shifting at all.
+
+## The covering-number literature, reached at last
+
+Register row B12 asked whether covering numbers of intersecting
+hypergraphs are a studied area. They are, and [Kup25] §1.7 and §1.9.4
+point straight at them — under names this repository never searched for.
+**None of the following has been read**; they are recorded so the next
+session does not have to rediscover the vocabulary.
+
+- **[ErLo75]** P. Erdős and L. Lovász, *Problems and results on
+  3-chromatic hypergraphs and some related questions*. Infinite and
+  Finite Sets (Colloq. Keszthely 1973), Colloq. Math. Soc. János Bolyai
+  10, North-Holland (1975), 609–627. [Kup25] p. 52 credits the base
+  construction for maximal intersecting families to this paper:
+  *"essentially due to Erdős and Lovász [39]"*. **Not attempted.**
+
+- **[Fu83]** Z. Füredi, *On finite set-systems whose every intersection
+  is a kernel of a star*. Discrete Math. 47 (1983), 129–132 — the
+  *nucleus*. Also **[Fu78]** *Erdős–Ko–Rado type theorems with upper
+  bounds on the maximum degree*, Colloq. Math. Soc. J. Bolyai 25 (1978),
+  177–207. **Not attempted.**
+
+- **[Fr78]** P. Frankl, *On intersecting families of finite sets*.
+  J. Combin. Theory Ser. A 24 (1978), 146–161 — Frankl's *base*. And
+  **[Fr17]** P. Frankl, *Antichains of fixed diameter*, Moscow J. Combin.
+  Number Theory 7 (2017), which [Kup25] p. 52 says *"the family of
+  minimal covers is efficiently analyzed in order to bound the maximal
+  diversity of an intersecting family"*. **Not attempted.**
+
+- **[AhKh97]** R. Ahlswede and L. H. Khachatrian, *The Complete
+  Intersection Theorem for Systems of Finite Sets*. European J. Combin.
+  18 (1997), 125–136 — the *generating set*. **Not attempted.**
+
+- **[KuZa22]** A. Kupavskii and D. Zakharov, *Spread approximations for
+  forbidden intersections problems*, arXiv:2203.13379, to appear in
+  Advances in Mathematics; and **[Ku23]** A. Kupavskii, *Erdős–Ko–Rado
+  type results for partitions via spread approximations*,
+  arXiv:2309.00097. The **peeling-simplification** and **spread
+  approximation** methods. **Not attempted, and they are the most
+  surprising find of the reading**: the notion `Spread.Spread`
+  formalises has become a tool of the Δ-system method itself.
+
+## Applications — Tier 4
+
+- **[ASU12]** N. Alon, A. Shpilka, C. Umans, *On Sunflowers and Matrix
+  Multiplication*. ECCC Report No. 67 (2011); CCC 2012.
+  **Read pp. 1–5 and 8 of 16 (rendered).** Not on arXiv — an ECCC report.
+  Four things bear here:
+
+  * **Theorem 1.1**, p. 2, is a third independent rendering of what
+    `coq/ErdosRado.v` proves, with the same strict inequality: *"If
+    $|\mathcal F| > (k-1)^s \cdot s!$ then $\mathcal F$ contains a
+    $k$-sunflower."*
+  * **Theorem 2.2** gives [Ko97]'s bound in the form two sources agree
+    on (see the [Ko97] entry).
+  * **Theorem 2.3**, p. 3: the uniform conjecture with constant $c$
+    implies the **Erdős–Szemerédi** conjecture with $\epsilon = 1/4c$.
+    This bibliography has warned against conflating the two problems for
+    three sessions; here is the actual implication between them.
+  * **Theorem 2.6**, p. 5: the classical conjecture and the sunflower
+    conjecture in $\mathbb{Z}_D^n$ are **equivalent**, with
+    $c_k \leftrightarrow e\cdot b_k$.
+
+  The headline (p. 1): the Erdős–Rado conjecture, if true, gives *"a
+  negative answer to the 'no three disjoint equivoluminous subsets'
+  question of Coppersmith and Winograd"*, and a multicolored variant
+  kills the strong-USP route of Cohn et al.
+
+- **[BCCGNSU17]** J. Blasiak, T. Church, H. Cohn, J. A. Grochow,
+  E. Naslund, W. F. Sawin, C. Umans, *On cap sets and the group-theoretic
+  approach to matrix multiplication*. arXiv:1605.06702, 27pp.
+  **Downloaded and rendered; not read.**
+
+- **[GMR12]** P. Gopalan, R. Meka, O. Reingold, *DNF Sparsification and a
+  Faster Deterministic Counting Algorithm*. arXiv:1205.3534, 27pp.
+  **Downloaded and rendered; not read.**
+
+- **[Sp77]** J. Spencer, *Intersection theorems for systems of sets*.
+  Canadian Mathematical Bulletin 20 (1977), N2, 249–254;
+  doi:10.4153/CMB-1977-038-7. Improves the Erdős–Rado upper bound to
+  $\phi(k,s) \le Ck!(1+\epsilon)^k$ for fixed $s$ and any
+  $\epsilon > 0$, per [Kup25] p. 5. **UNREACHABLE** — Cambridge Core,
+  no open access. Full citation from [Kup25] p. 66. **Inferred.**
+
+- **[CGRSS25]** B. Cavalar, M. Göös, A. Riazanov, A. Sofronova,
+  D. Sokolov, *Monotone Circuit Complexity of Matching*, arXiv:2507.16105.
+  **Not attempted.** Discovered via [Rao25] §2.4.
 
 ## Surveys and textbooks
 

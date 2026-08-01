@@ -2706,21 +2706,23 @@ the repository.
 
 ## 16. What the reading changed
 
-Session N+3 read papers instead of proving things. Twenty-nine papers
-were downloaded and rendered, plus one MathOverflow answer; **nine were
-read cover to cover** —
+Session N+3 read papers instead of proving things. Thirty-three papers
+were downloaded and rendered, plus one MathOverflow answer; **eleven were
+read cover to cover** (§17 added two more to §16's nine) —
 [Ra20] (8pp), [ALWZ20] (19pp), [BCW21] (3pp), [Lovett] (28pp),
 [MNSZ22] (8pp), [ErRa60] (6pp), [Mis26] (12pp), [Rao25] (12pp) and
-Fukuyama's arXiv:2510.19037 (8pp) — five more in part, and Hunter's
-answer in full.
+Fukuyama's arXiv:2510.19037 (8pp), and — added in §17 — [Kup25] (66pp)
+and [NaSa17] (5pp); seven more in part, and Hunter's answer in full.
 `docs/reading.md` is the log, with an explicit page count for every
 entry and a register of twenty-one claims resolved. This section is what
 it did to the repository.
 
 ### 16.1 Refuted
 
-Six withdrawals. §15 predicted the count going up would be a success
-condition, and it went up.
+Six withdrawals — **five, after §17.6 withdrew one of them.** §15
+predicted the count going up would be a success condition, and it went
+up; §17 is what happens when the same discipline is turned on this
+section.
 
 1. **"The only fully machine-checked formalisation of the Erdős–Rado
    1960 upper bound."** False, and false for five years before this
@@ -2755,10 +2757,11 @@ condition, and it went up.
    That is [BCW21]'s bound. ALWZ's own Theorem 1.4 is
    `(Cr³ log w log log w)^w`. ALWZ's §4 records the chain itself.
 
-6. **`docs/references.md`: [NaSa17] gives "`3(n+1)C^n` members".** The
-   paper says `3n Σ_{k ≤ n/3} C(n,k) ≤ (3/2^{2/3})^{n(1+o(1))}` — a
-   binomial *sum*, not `C^n`, and `3n` not `3(n+1)`. Cosmetic for the
-   Coq, wrong all the same.
+6. ~~**`docs/references.md`: [NaSa17] gives "`3(n+1)C^n` members".**~~
+   **This withdrawal is itself withdrawn — see §17.6.** It was based on
+   the abstract; Theorem 3 on page 2 says `3(n+1)`, and `C^n` does bound
+   the binomial sum exactly. The original wording was right. **Five
+   withdrawals stand, not six.**
 
 And two half-withdrawals.
 
@@ -2949,3 +2952,186 @@ in with a page number and a verbatim quotation, or it does not go in.**
 Every one of the six withdrawals above is a paraphrase that drifted. None
 of them would have survived being written as a quotation, because writing
 a quotation forces you to have the page open.
+
+---
+
+## 17. The second pass: reading the survey properly, and what that cost
+
+§16 was written after reading nine papers cover to cover. This section is
+what changed when the reading went on — [Kup25] in full rather than two
+pages, [ASU12], the MathOverflow answer, and one exhaustive computation.
+It is shorter than §16 and more uncomfortable, because two of its entries
+are corrections to §16 itself.
+
+### 17.1 Withdrawn from §16's own session
+
+**`pdftotext` cannot establish absence, and this repository has now been
+bitten by that inside the very session that was written to stop it.**
+
+Register row B12 was recorded as *"one clean negative: the strings
+'covering number', 'transversal' and 'maximal intersecting' do not occur
+anywhere in [Kup25]'s 66 pages"*, from a page-by-page extracted-text
+search. Then page 19 was rendered:
+
+> he ... shows that `G` should be empty using a simple, but somewhat
+> tedious, 'covering number' argument which we avoid. [Kup25, p. 19]
+
+The extractor had broken the phrase across a line — `'covering` then
+`number'` — so a two-word search missed it in a document that contains
+it. Page 59 has *"intersecting families with covering number 2"*. Both
+withdrawn in `docs/references.md`.
+
+The rule the reading discipline already had — *quote only from rendered
+pages* — was obeyed. The rule it did not have is the other half:
+**a negative from extracted text is not a negative at all.** Searching
+is as much a source of false claims as quoting, and it was the untested
+half.
+
+**And the search vocabulary was wrong independently of the extractor.**
+[Kup25] §1.7 is *about* the covering-number material, under the names
+**base**, **nucleus**, **generating set**, **crosscut** and **minimal
+cover**, crediting Erdős–Lovász, Füredi, Frankl and
+Ahlswede–Khachatrian. p. 52: *"the produced sets ... give exactly the
+family of **minimal covers** for the sets in `F` ... In a recent paper of
+Frankl [52], the family of minimal covers is efficiently analyzed in
+order to bound the maximal diversity of an intersecting family."* §14.6
+said "search for the field's notation, not yours". The field has five
+notations for this one, and none of them is "covering number".
+
+### 17.2 Verified rather than cited
+
+**`ι(3) = 10` is the unique simple 2-(6,3,2) design, and that is now
+checked.** `docs/references.md` had it as *"standard design theory and
+taken on the literature's word here, not verified"*, because the Handbook
+of Combinatorial Designs is not open access. It never needed the
+Handbook: there are `C(20,10) = 184756` ways to choose ten triples from
+the twenty on six points. Exactly **12** are simple 2-(6,3,2) designs and
+all 12 form a **single** isomorphism class, so `|Aut| = 720/12 = 60` — a
+second, independent derivation of the group order, agreeing with
+`structure::automorphisms`.
+`rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`.
+
+A paywall is not always a blocker. Sometimes the claim behind it is a
+finite check.
+
+### 17.3 The vocabulary problem, which is the general form of §17.1
+
+§14.6 said: search for the field's notation, not yours. That was right and
+too weak. This session's corpus contains **five** names for a sunflower
+and **five** for a cover, and every "not found" in this repository has
+been run against one or two of each.
+
+```
+  the object            sunflower  Delta-system  s-star  weak sunflower
+                        pseudo-sunflower  near-sunflower
+  the covering notion   cover  base  nucleus  generating set  crosscut
+                        minimal cover
+```
+
+`s-star` is [Kup25] fn. 6, p. 21, *"a name that appears in the follow-up
+papers of Frankl and Füredi"*. `weak sunflower` is Erdős–Milner–Rado, via
+[FPPTZ24] p. 1. The covering names are [Kup25] §1.7 and Definition 39.
+
+**A negative search result is only as good as its worst synonym**, and
+none of this repository's negatives has been run against this list. They
+are all downgraded accordingly in `docs/reading.md`; none is deleted,
+because the searches did happen and are worth knowing about.
+
+### 17.4 What the full survey revealed
+
+Five things, none of which the two-page read had reached.
+
+* **`Spread.Spread` is a tool of the Δ-system method itself.** §1.7,
+  p. 49: *"r-spread families in many ways behave like sunflowers with r
+  petals, albeit they are much easier to find"*, via the
+  **peeling-simplification** procedure; p. 53 names the **spread
+  approximation** method of Kupavskii and Zakharov. Two research
+  programmes built on this repository's central definition, and the
+  bibliography had neither.
+
+* **`SpreadReduction.spread_reduction`'s conclusion is Observation 58.**
+  p. 50, two lines: *"If `G ⊂ ([n] choose ℓ)` is such that there is no
+  `X` such that `G(X)` is `r`-spread, then `|G| ≤ r^ℓ`"* — followed by
+  *"This bound is already better than the bound coming from not
+  containing a sunflower."* No novelty was claimed for the reduction and
+  none is now; but it is worth knowing it is a remark elsewhere.
+
+* **`g` is the leading constant of a published asymptotic.** Theorem 37,
+  p. 35 (Frankl–Füredi): `f(n,k,ℓ,s) = (φ(ℓ+1,s) + o(1))·C(n−ℓ−1,k−ℓ−1)`
+  for the Duke–Erdős forbidden-sunflower problem. At `ℓ=1, s=2` the
+  constant is `φ(2,2) = f(2,3) − 1 = 6`, which `coq/F23.v` proves. The
+  small exact values are not only local curiosities.
+
+* **A third name for a sunflower.** Footnote 6, p. 21: `Δ(s)`-systems
+  are called **`s`-stars** "in the follow-up papers of Frankl and
+  Füredi". Every negative search in this repository has used "sunflower"
+  or "Δ-system".
+
+* **The Hall layer has a second customer.** Theorem 29 (Frankl–Katona),
+  p. 29, is proved by a containment bipartite graph and *"a Hall's
+  condition in disguise"* — `coq/HallCore.v`, `coq/KoenigHall.v` and
+  `coq/Matching.v`, built for the uniformity-2 programme, are exactly
+  that machinery.
+
+### 17.5 Two citations settled, one still shut
+
+* **[AHS72]**, in full, from [Kup25] p. 62: *H. L. Abbott, D. Hanson, and
+  N. Sauer, "Intersection theorems for systems of sets", Journal of
+  Combinatorial Theory 12 (1972), 381–389.* Volume 12 of JCT is Series A.
+  Still unreachable behind Elsevier; five routes now recorded.
+* **Spencer 1977**, in full, from [Kup25] p. 66: *Canadian Mathematical
+  Bulletin 20 (1977), N2, 249–254*, doi:10.4153/CMB-1977-038-7.
+  Unreachable — Cambridge Core, no open access.
+* **[Ko97]'s bound** had two incompatible renderings in §16's sources.
+  [ASU12] Theorem 2.2 agrees with [Rao25] on
+  `cs!·(log log log s / log log s)^s`; [Kup25] p. 5 is garbled. Fixed.
+* **"Lu" vs "Hu"** is settled: [Kup25]'s reference list, p. 65, gives
+  **Lunjia Hu**. Its body text is the typo.
+
+### 17.6 A withdrawal of a withdrawal
+
+§16 listed six withdrawals. One of them was wrong.
+
+It said `docs/references.md` misquoted [NaSa17] as *"`3(n+1)C^n`
+members"* when the paper says `3n Σ_{k≤n/3} C(n,k)`. That came from
+reading **page 1**, the abstract. Pages 2–5 were then read, and
+**Theorem 3 on page 2** is:
+
+> `|F| ≤ 3(n+1) Σ_{k ≤ n/3} C(n,k)`, and `μ₃^S ≤ 3/2^{2/3} = 1.889881574…`
+
+The abstract and the theorem disagree about the polynomial factor, and
+the theorem is the claim. And `Σ_{k≤n/3} C(n,k) ≤ 2^{H(1/3)n}` with
+`H(1/3) = log₂3 − 2/3`, so `(3/2^{2/3})^n` bounds it exactly — the
+original `3(n+1)C^n` was right in the factor *and* in the shape. **§16's
+sixth withdrawal is withdrawn.** Five stand.
+
+The reading discipline's rule 3 says nothing is quoted from an abstract.
+This session then based a correction on one. **Page 1 is not the paper**,
+and abstracts disagree with their own theorems often enough to matter —
+[Mis26] does it too, "at least" against "more than", which §16 already
+recorded without drawing the general moral.
+
+### 17.7 One more failure mode, recorded because it wasted a read
+
+The first attempt at [ASU12] fetched `arXiv:1109.6216`, an identifier
+recalled rather than looked up. That is *Observation of the Perseus galaxy
+cluster with the MAGIC telescopes*, and four of its pages were rendered
+and read before the mismatch was obvious. [ASU12] is not on arXiv at all.
+
+**Identifiers get looked up, never recalled** — the same rule as
+quotations, for the same reason, and it belongs beside §16.6.
+
+### 17.8 The corpus is pinned now
+
+`docs/papers/` holds 29 records: SHA-256 of the exact bytes rendered and
+read, page count from `pdfinfo`, source URL, retrieval date, and the
+licence the publisher states. `fetch.sh` rebuilds the corpus and fails on
+a hash mismatch, so a paper revised upstream cannot be quoted as the
+version that was read. Fourteen PDFs are stored — the ones whose licence
+permits it, decided from arXiv's OAI-PMH licence field rather than by
+assumption — and `pdf/.gitignore` is a whitelist generated from that
+flag, so rebuilding the full corpus locally cannot become a copyright
+problem in a later commit.
+
+This session spent its first hour re-fetching what the last one had
+already found. That was the last time.

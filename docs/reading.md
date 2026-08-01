@@ -5,23 +5,50 @@ What was actually read, page by page, and what it changed here.
 This file exists because five sessions of machine-checked work were built
 on a literature base that had never been opened. `docs/roadmap.md` §15
 put the problem plainly: *"the repository's single axiom comes from an
-eight-page open-access paper that nobody here has opened."* This session
-opened it, and twenty-nine other papers, plus the MathOverflow answer
-this repository has been citing without reading.
+eight-page open-access paper that nobody here has opened."* This session opened it, and thirty-two other papers, plus the
+MathOverflow answer this repository had been citing without reading.
+**Eleven papers were read cover to cover** — [Ra20] 8pp, [ALWZ20] 19pp,
+[BCW21] 3pp, [Lovett] 28pp, [MNSZ22] 8pp, [ErRa60] 6pp, [Mis26] 12pp,
+[Rao25] 12pp, [Fuk25] 8pp, [NaSa17] 5pp and [Kup25] **66pp**, the survey
+of the method this problem belongs to — plus Hunter's answer in full and
+seven more in part.
 
 ## The rules this file is written under
 
 1. **Read** means: PDF downloaded, every page rendered with
    `pdftoppm -png -r 150`, every rendered page looked at. Anything less
    is reported as a page range.
-2. `pdftotext` was used **only** to locate which page a term is on. No
-   quotation in this file comes from extracted text.
+2. `pdftotext` was used **only** to locate which page a term is on, and
+   **its negatives are worthless** — see the box below. No quotation in
+   this file comes from extracted text.
 3. Every quotation is verbatim, from a rendered page, with the page
    number. Where a source is quoted second-hand that is said explicitly.
 4. Nothing is quoted from a web-search snippet, an abstract, a survey's
    description of a third paper, or training data.
 5. A source that could not be reached gets an entry saying so, with the
    reason and the attempts.
+
+> **Rule 2 was not strong enough, and this file broke it.** The first
+> pass at register row B12 concluded that the strings "covering number",
+> "transversal" and "maximal intersecting" *"do not occur anywhere in
+> [Kup25]'s 66 pages"*, from a page-by-page `pdftotext` search. Then
+> page 19 was rendered:
+>
+> > he ... shows that `G` should be empty using a simple, but somewhat
+> > tedious, 'covering number' argument which we avoid. [Kup25, p. 19]
+>
+> The extractor had broken the phrase across a line — `'covering` then
+> `number'` — so a search for the two-word string missed it, silently, in
+> a document that contains it. **`pdftotext` cannot be used to establish
+> that something is absent.** Every negative in this file that rested on
+> one has been re-derived from rendered pages or withdrawn.
+>
+> **And a negative is only as good as its worst synonym.** This corpus
+> has five names for a sunflower — *sunflower*, *Δ-system*, *`s`-star*,
+> *weak sunflower*, *pseudo-* and *near-sunflower* — and five for a
+> cover — *cover*, *base*, *nucleus*, *generating set*, *crosscut*,
+> *minimal cover*. Every "not found" here has been run against one or two
+> of each. They are recorded as searches that happened, not as absences.
 
 Evidence classes used throughout, here and in `docs/references.md`:
 
@@ -62,15 +89,15 @@ literature, resolved.
 
 | # | Claim | Verdict | Evidence |
 |---|---|---|---|
-| B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **Not found** (search described) | Not in [Kup25] (66pp, pp. 1–6 and the AHS/reference pages rendered), not in [Ra20] (8pp), not in [ALWZ20] (19pp), not in Lovett PCMI (28pp), not in [Rao25] (pp. 1–3). Searched arXiv full-text for "intersecting sunflower-free". Empty is not absence. |
+| B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **Not found** — but the search vocabulary was too narrow | Not in [Kup25] (now read in full, 66pp), [Ra20] (8pp), [ALWZ20] (19pp), [Lovett] (28pp), [Rao25] (12pp). **Caveat found this session:** [Kup25] fn. 6, p. 21, records that *"it is in this paper that `Δ(s)`-systems are called **`s`-stars**, a name that appears in the follow-up papers of Frankl and Füredi."* A third name for a sunflower, which every search here has missed. Empty is not absence, and this corpus is not vocabulary-complete. |
 | B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **Not found** | Same corpus. But see B10a — the *ingredients* are all published. |
 | B10a | "the intersecting side has never been pointed at" | **REFUTED** | [ALWZ20] §4.2, titled *Intersecting set systems*, Theorem 4.2 p. 13: *"If F is an intersecting w-uniform set system, and for all T, \|F_T\| ≤ κ^{−\|T\|}\|F\|, then κ = O(log w)."* Different hypothesis from `ι` (spread, not sunflower-free), but the claim as written is false. Withdrawn in `coq/IotaRate.v`; the elementary version is now `IotaRate.intersecting_not_spread_above_uniformity`. |
 | B11 | The cone `g(b−1) ≤ ι(b)` is folklore | **Technique found; exact statement still not found** | Hunter's answer uses the same move — *"start with a maximal `t`-sunflower-free collection in uniformity `k−1`, and then add a unique 'dummy element' to each edge"* — in exactly this context. His dummies are *distinct per edge* (which grows the ground set); the repository adds *one shared* fresh point to every member (which makes the family intersecting). Same idea, different construction, different conclusion. No novelty was claimed and none is now. |
-| B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **Not found** (weak search) | One clean negative: the strings "covering number", "transversal" and "maximal intersecting" do **not occur anywhere in [Kup25]'s 66 pages** (searched page by page with `pdftotext`, which is legitimate for locating a term), and its table of contents has no section on either. The covering-number literature proper — Erdős–Lovász, Frankl, Tuza on `τ` of intersecting hypergraphs — was **not reached**. Treat this as not attempted, not as searched. |
-| B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found** | Not in [ALWZ20] §3 (the tightness section, read), not in [Kup25] pp. 5–6. Not exhaustive. |
+| B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **The earlier "not found" is WITHDRAWN. The surrounding literature is central to the survey; the specific identity is still not found.** | [Kup25] read in full. Its §1.7 *Approaches to constructing bases* is about exactly this material, under names this repository did not search for: **base**, **nucleus**, **generating set**, **crosscut**, **minimal cover**. p. 52: *"the produced sets ... give exactly the family of **minimal covers** for the sets in `F`. These are the bases of the type used by Frankl in [44]. In a recent paper of Frankl [52], the family of minimal covers is efficiently analyzed in order to bound the maximal diversity of an intersecting family."* — and the construction is *"essentially due to Erdős and Lovász [39]"*. p. 59: *"a `d`-simplex are the simplest examples of non-trivial intersecting families, that is, **intersecting families with covering number 2**."* So `τ` of intersecting families is a studied quantity with a named literature. The multiplicativity identity itself is still not found, but the search that said the area was untouched was wrong twice over — wrong vocabulary, and a broken extractor. |
+| B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found** | Not in [ALWZ20] §3 (read), not in [Kup25] (now read in full). But note [Kup25] §1.7, p. 49: spreadness is now a *tool* in this literature — *"r-spread families in many ways behave like sunflowers with r petals, albeit they are much easier to find"* — via the Kupavskii–Zakharov **peeling-simplification** and **spread approximation** methods, neither of which this repository knew about. Not exhaustive. |
 | B14 | Zach Hunter's ground-set equivalence, credited to MathOverflow | **FOUND AND READ IN FULL** | `mathoverflow.net/a/463150`, 30 Jan 2024, answering domotorp's question 462924. Retrieved verbatim through the StackExchange API after `WebFetch` was blocked for the site. Quoted in full below; it confirms the equivalence *and* contains two further things this repository has. |
 | B15 | Prescribed-symmetry / Kramer–Mesner applied to sunflower-free families | **Not found** | Nothing in the 2024–2026 arXiv sweep, nothing in [Kup25] pp. 5–6. Not exhaustive over design-theory venues. |
-| B16 | `ι(3)=10` is the unique simple 2-(6,3,2) design; `ι(4,9)=27` is a group-divisible design | **Not verified** | The parameter arithmetic checks (`r = λ(v−1)/(k−1) = 5`, `b = vr/k = 10`) and `\|Aut\| = 60` is exactly `\|PSL(2,5)\| = \|A₅\|` acting on `PG(1,5)`, whose two orbits on triples are the two complementary 2-(6,3,2) designs. But the **uniqueness** claim was not read from any primary source: the Handbook of Combinatorial Designs is not open access and no free rendered page was obtained. Stays cited-not-verified. |
+| B16 | `ι(3)=10` is the unique simple 2-(6,3,2) design | **VERIFIED — by exhaustion, not by citation** | The Handbook of Combinatorial Designs is not open access, so the uniqueness claim could not be read. It does not need to be: there are only `C(20,10) = 184756` ways to choose ten triples from the twenty on six points. Enumerated — exactly **12** are simple 2-(6,3,2) designs, and all 12 form a **single** isomorphism class under `Sym(6)`. `720/12 = 60` re-derives `\|Aut\|` independently of `structure::automorphisms`, and agrees with it. `rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -403,59 +430,89 @@ reference the bibliography lacks entirely.
 
 ### [Kup25] Kupavskii, *Delta-system method: a survey*, arXiv:2508.20132
 
-**Read pp. 4–7 of 66 rendered pages**, plus the contents pages and the
-reference page located by `pdftotext` search. Previously only the arXiv
-HTML had been read.
+**Read in full: 66 of 66 rendered pages.** Previously two pages, and
+before that only the arXiv HTML. It is the densest single source in the
+corpus and it changes four register rows.
 
-**One negative worth recording, from the contents pages and a page-by-page
-term search:** the survey has no section on covering or transversal
-numbers, and the strings "covering number", "transversal" and "maximal
-intersecting" do not occur in it at all. Its 66 pages are about
-intersection patterns (Deza–Erdős–Frankl, Füredi's structural theorem),
-Turán-type problems, and stability. So the survey of the Δ-system method
-does not meet the covering-number literature, which is where register row
-B12 would have to be settled.
+**Confirmations, all re-checked on the rendered page:**
 
-**And p. 7 independently confirms two register findings.** §1.1.4,
-*Recent progress on the Erdős–Rado conjecture*:
+* Definition (1.1), p. 5 — `φ(k,s)` has second argument one *below* the
+  petal count. ✔
+* p. 6, the two [AHS72] sentences, verbatim as recorded. ✔
+* p. 6, **Observation 2**: *"We have `φ(a+b,s) ⩾ φ(a,s)φ(b,s)`"*, with
+  proof — `coq/DirectSum.v`'s supermultiplicativity, published.
+* p. 7, Tao's proof *"contained a mistake"*; Stoeckl's bound
+  `(64s log k)^k`.
 
-> Rao [109] gave a code-theoretic proof with a better bound; Bell,
-> Chueluecha and Warnke [7] improved upon some of the arguments of the
-> original proof, which lead to the bound `φ(s,k) ⩽ (Cs log k)^k`; Tao
-> [118] gave a proof based on entropy, **which, however, contained a
-> mistake**; Lu [75] and then Stoeckl [117] gave another entropy proof,
-> which gave the bound `φ(s,k) ⩽ (64s log k)^k`; Mossel, Niles-Weed,
-> Sun, and Zadik [103] gave a second moment proof; finally, Rao [110]
-> gave the same bound with a very short combinatorial proof in the spirit
-> of the original paper [5].
+**Five things that were not known here.**
 
-* **Tao's mistake, second source** (after [MNSZ22] fn. 2). Two
-  independent sources now say the 2020 entropy proof is wrong.
-* **`C = 64` is Stoeckl's constant** and the entropy proof is due to
-  "Lu [75] and then Stoeckl [117]". Note the name discrepancy: [MNSZ22]
-  cites the same correction as **[Hu21]**, this repository has it as
-  **"L. Hu"**, and [Kup25] writes **"Lu"**. Not resolved here; recorded so
-  the next reader knows the two spellings refer to the same correction.
-* **Rao's 2025 §3 is described as "a very short combinatorial proof"** —
-  matching what reading it found, with the caveat that "combinatorial"
-  still means Chernoff and Azuma.
+1. **A third name for a sunflower.** Footnote 6, p. 21: *"It is in this
+   paper that `Δ(s)`-systems are called **`s`-stars**, a name that
+   appears in the follow-up papers of Frankl and Füredi."* Every "not
+   found" search in this repository has used "sunflower" or
+   "Δ-system". Neither finds a Frankl–Füredi paper that says *star*.
 
-One notational point from the same page, since this repository has been
-bitten by exactly this kind of drift: [Kup25] defines `r`-spread with a
-**strict** inequality, *"`|F(X)| < r^{−|X|}|F|`"*, where [Lovett]
-Definition 2.5 and [FKNP] (4) both use `≤`, and `Spread.Spread` uses `≤`.
-Immaterial to everything here, but the field is not uniform on it.
+2. **Spreadness is a tool in the Δ-system method itself.** §1.7, p. 49:
+   *"In recent papers, Zakharov and the author [98] and then the author
+   [95] developed the peeling-simplification procedure... A family `F` is
+   `r`-spread for some `r > 1` if `|F(X)| < r^{−|X|}|F|` for any set `X`.
+   We will see that **`r`-spread families in many ways behave like
+   sunflowers with `r` petals, albeit they are much easier to find.**"*
+   And p. 53: *"Zakharov and the author recently introduced a **spread
+   approximation** method [98]."* Two research programmes built on the
+   notion `Spread.Spread` formalises, neither of which this repository
+   had heard of.
 
-Definition (1.1) on p. 5 confirms the repository's re-indexing note
-verbatim: *"`φ(k,s) := max{|F| : F` consists of sets of size `≤ k` and
-`F` contains no `Δ(s+1) − system}`"*. The second argument is one below
-the petal count. ✔
+3. **`SpreadReduction.spread_reduction`'s conclusion is Observation 58.**
+   p. 50: *"If `G ⊂ ([n] choose ℓ)` is such that there is no `X` such
+   that `G(X)` is `r`-spread, then `|G| ≤ r^ℓ`."* — two lines, followed
+   by *"This bound is already better than the bound coming from not
+   containing a sunflower."* That is exactly what this repository proves
+   as a theorem, stated as a passing observation.
 
-Also on p. 6, **Observation 2**: *"We have `φ(a+b,s) ⩾ φ(a,s)φ(b,s)`"*,
-with proof — this is `coq/DirectSum.v`'s supermultiplicativity, and it
-is published. No novelty was claimed for it; now it has a citation.
+4. **`g` is the leading constant of a Frankl–Füredi asymptotic.**
+   **Theorem 37**, p. 35: for fixed `k, s` and `k ≥ 2ℓ+3`,
+   `f(n,k,ℓ,s) = (φ(ℓ+1,s) + o(1))·C(n−ℓ−1, k−ℓ−1)`, where `f(n,k,ℓ,s)`
+   is the Duke–Erdős forbidden-sunflower-with-a-fixed-core number. At
+   `ℓ=1, s=2` the constant is `φ(2,2) = f(2,3) − 1 = 6`, which
+   `coq/F23.v` **proves**. The repository's small exact values are not
+   only curiosities; they are constants in a published asymptotic. Its
+   Example 1 on the same page is a *substitution* of exactly the AHS
+   shape, and Example 2 uses a partial Steiner system.
 
-The other 60 pages were not read.
+5. **The covering-number literature, under other names** — the answer to
+   B12, quoted in the register above. §1.7 and §1.9.4 reach
+   Erdős–Lovász, Füredi's *nucleus*, Frankl's *base*, Ahlswede–
+   Khachatrian's *generating set*, and Frankl's recent analysis of
+   *minimal covers*.
+
+Three smaller things worth carrying:
+
+* **p. 29, Theorem 29 (Frankl–Katona)** is proved by a containment
+  bipartite graph, *"a Hall's condition in disguise"*, and a matching.
+  `coq/HallCore.v`, `coq/KoenigHall.v` and `coq/Matching.v` are exactly
+  that machinery, built for the uniformity-2 programme.
+* **p. 55**: the largest `ℓ`-avoiding system is *"the independence number
+  of the generalized Johnson graph `J(n,k,ℓ)`"* — roadmap M2's Johnson
+  scheme, in this problem's own literature.
+* **p. 10**: Deza's theorem on `|A ∩ B| = ℓ` families, with the
+  **projective plane of order `k−1`** as the extremal example — an
+  intersecting family, and the closest thing in the survey to the
+  intersecting side of the sunflower question.
+
+**Two citations resolved on the reference pages** (pp. 62–66):
+
+* **[1]** *H. L. Abbott, D. Hanson, and N. Sauer, "Intersection theorems
+  for systems of sets", J. Combinatorial Theory 12 (1972), 381–389.*
+* **[75]** is **Lunjia Hu**, *Entropy Estimation via Two Chains:
+  Streamlining the Proof of the Sunflower Lemma* (2021). So the body
+  text's "Lu [75]" on p. 7 is a typo, and this repository's "L. Hu" was
+  right. Recorded because a previous revision of `docs/references.md`
+  flagged it as an unresolved discrepancy.
+* **[116]** *J. Spencer, "Intersection theorems for systems of sets",
+  Canadian Mathematical Bulletin 20 (1977), N2, 249–254*,
+  doi:10.4153/CMB-1977-038-7. **Unreachable** — Cambridge Core, no open
+  access.
 
 ### [EKR61], [ErRa69-II] — downloaded, not read
 
@@ -590,18 +647,37 @@ correction to how the repository *states* [NaSa17], below.
 
 ### [NaSa17] Naslund and Sawin, *Upper bounds for sunflower-free sets*
 
-**Read p. 1 of 5** (arXiv:1606.09575). The abstract's bound is
+**Read in full: 5 of 5 rendered pages** (arXiv:1606.09575).
 
-> `|F| ≤ 3n Σ_{k ≤ n/3} C(n,k) ≤ (3/2^{2/3})^{n(1+o(1))}`
+**This entry contains a withdrawal of a withdrawal, and it is the
+clearest lesson of the session.** After reading page 1 only, the register
+recorded that `docs/references.md` misquoted the bound: the abstract says
+`3n Σ_{k≤n/3} C(n,k)`, where the repository said `3(n+1)C^n`. Reading
+pages 2–5 shows the repository was right and the correction was wrong.
+**Theorem 3, rendered page 2:**
 
-`docs/references.md` and `coq/SliceRank.v` both render this as
-*"`3(n+1)·C^n` members, with `C = 3/2^{2/3}`"*. **That is not what the
-paper says**: the polynomial factor is `3n`, and the exponential factor
-is a binomial *sum*, bounded by `(3/2^{2/3})^{n(1+o(1))}` — not by
-`C^n` on the nose. The correction is cosmetic for the Coq
-(`NaslundSawinBound` is a carried `Prop`, and the repository proves only
-that a `2^{cm}` counting bound already beats it) but it is a misquote and
-is fixed.
+> `|F| ≤ 3(n+1) Σ_{k ≤ n/3} C(n,k)`, and `μ₃^S ≤ 3/2^{2/3} = 1.889881574…`
+
+The abstract and the theorem disagree with each other about the
+polynomial factor, and the theorem is the claim. And
+`Σ_{k≤n/3} C(n,k) ≤ 2^{H(1/3)n} = (3/2^{2/3})^n` exactly, because
+`H(1/3) = log₂3 − 2/3` — so `3(n+1)C^n` is a genuine upper bound, not a
+sloppy paraphrase.
+
+**Rule 3 said "nothing is quoted from an abstract". This session then
+based a correction on one.** Page 1 is not the paper. [Mis26] has the
+same disease — abstract "at least", introduction "more than" — so this
+is not a one-off.
+
+Two further things from the full read:
+
+* **Theorem 8, p. 4**: `μ₃^S ≤ √(1+C)` where `C ≤ 2.7552` is the capset
+  capacity (Ellenberg–Gijswijt), giving `1.938` — weaker than Theorem 3,
+  and a clean statement of how the two capacities relate.
+* **Theorem 5, p. 2**: for sunflower-free `A ⊂ (Z/DZ)^n`, `|A| ≤ c_D^n`
+  with `c_D = (3/2^{2/3})(D−1)^{2/3}`. That is the [ASU12] Conjecture 4
+  setting, and p. 2 notes the Erdős–Rado conjecture is equivalent to
+  `c_D < D^{1−ε}` [ASU12, Thm 2.7].
 
 ### [Mis26] Mishra, *Erdős Rado Sunflower Theorem for Shifted Families*, arXiv:2606.02667v2
 
@@ -779,8 +855,6 @@ and none of them is claimed here.
 ```
   fknp.pdf                 16pp   read pp.1-4 only
   smoother_spread.pdf      12pp   A smoother notion of spread
-  odd_sunflowers.pdf       10pp   FPPTZ24 (partly read in an earlier session)
-  naslund_sawin.pdf         5pp   read p.1 only
   dukeerdos.pdf            30pp   arXiv 2511.17142
   sfprocess.pdf            37pp   arXiv 2509.16355, the sunflower-free process
   vecspaces.pdf             9pp   arXiv 2505.03671
@@ -793,22 +867,113 @@ and none of them is claimed here.
   structured_canon.pdf     16pp   arXiv 2602.04610
   galah.pdf                21pp   arXiv 2606.13656
   naslund_improved.pdf     12pp   read p.1 only
-  kupavskii_survey.pdf     66pp   read pp.5-6 only
   afp_sunflowers.pdf       14pp   read pp.1-4, 13-14 only
   ekr61.pdf                 8pp   Erdos-Ko-Rado 1961
   er69_ii.pdf              13pp   Erdos-Rado, Intersection theorems II
 ```
 
-**Tier 4 was attempted only through [Rao25] §2 and Lovett §5** — the
-circuit-lower-bound and data-structure applications, which are recorded
-above. Matrix multiplication, coding theory, design nonexistence, flag
-algebras and Stanley–Reisner were **not attempted at all**. What was
-learned second-hand, from [Mis26] §7 and Lovett §5: the sunflower conjecture, if true, *rules out* proving
-`ω = 2` by abelian group algebras ([ASU12]), and the robust sunflower
-lemma is what drives the `n^{Ω(k)}` monotone circuit lower bound. Both
-were already known here. Recorded as not attempted, not as searched.
+## Tier 4 — beyond the problem
+
+### [ASU12] Alon, Shpilka, Umans, *On Sunflowers and Matrix Multiplication*
+
+**Read pp. 1–5 and 8 of 16** (ECCC Report No. 67, 2011;
+`eccc.weizmann.ac.il/report/2011/067`). The paper this repository has
+been citing second-hand for the matrix-multiplication obstruction.
+
+* **Theorem 1.1**, p. 2, is a third independent rendering of the bound
+  `coq/ErdosRado.v` proves, with the same strict inequality: *"Let `F` be
+  an arbitrary family of sets of size `s`... If `|F| > (k−1)^s · s!` then
+  `F` contains a `k`-sunflower."*
+* **Theorem 2.2 settles a discrepancy this file recorded.** *"There
+  exists a constant `c` such that every family of `s`-sets of size at
+  least `cs!·((log log log s)/(log log s))^s` contains a
+  3-sunflower"* [Ko97]. That matches [Rao25] p. 2 exactly and shows
+  [Kup25] p. 5's rendering `(log log k)²/(α log log k)` is garbled. The
+  Kostochka entry in `docs/references.md` is fixed accordingly — still
+  *inferred*, but now from two agreeing sources instead of two
+  disagreeing ones.
+* **Theorem 2.3**, p. 3, is the precise link to the *other* problem this
+  bibliography keeps warning against mis-citing: the uniform conjecture
+  with constant `c` implies the Erdős–Szemerédi conjecture with
+  `ε = 1/4c`. One direction, with a two-paragraph proof on p. 4.
+* **Theorem 2.6**, p. 5: the classical conjecture and the sunflower
+  conjecture in `Z_D^n` are **equivalent**, `c_k ↔ e·b_k`. The
+  `Conj. 1 ⇒ Conj. 3` direction encodes a vector `v` as the set
+  `{p_1^{1+v_1}, …, p_n^{1+v_n}}` over the primes.
+* The headline, p. 1: the Erdős–Rado conjecture *"implies a negative
+  answer to the 'no three disjoint equivoluminous subsets' question of
+  Coppersmith and Winograd"*, and their multicolored variant kills the
+  strong-USP route of Cohn et al. Also p. 1: a [CKSU05] construction
+  gives `(2.51…)^n` multicolored 3-sunflower-free sets, beating
+  `(2.21…)^n` [Edel04] for ordinary 3-sunflower-free sets in `Z_3^n`.
+
+### Also downloaded and rendered, not read
+
+`blasiak_capset.pdf` (27pp, arXiv:1605.06702, Blasiak–Church–Cohn–
+Grochow–Naslund–Sawin–Umans, the cap-set obstruction) and
+`gmr_dnf.pdf` (27pp, arXiv:1205.3534, Gopalan–Meka–Reingold, DNF
+sparsification).
+
+**Coding theory (Schrijver's SDP, Gijswijt, the Terwilliger algebra of
+the Johnson scheme), design-theoretic nonexistence (Fisher,
+Bruck–Ryser–Chowla), flag algebras and Stanley–Reisner were not
+attempted at all.** What was learned about the circuit side came from
+[Rao25] §2 and Lovett §5, recorded above.
+
+**One methodological note, because it cost a wasted read.** The first
+attempt at [ASU12] fetched `arXiv:1109.6216` — an identifier recalled
+from training rather than looked up. That is *Observation of the Perseus
+galaxy cluster with the MAGIC telescopes*, an astrophysics conference
+paper, and four of its pages were rendered and read before the mismatch
+was obvious. [ASU12] is not on arXiv at all; it is an ECCC report.
+**Identifiers get looked up, never recalled** — the same rule as
+quotations, for the same reason.
 
 ---
+
+### [FPPTZ24] Frankl, Pach, Pálvölgyi, *Odd-sunflowers* — pp. 1–3 re-read
+
+Read in an earlier session; pp. 1–3 re-read here for two things.
+
+* **p. 1 confirms the [DEGKM97] warning at its source**: *"They showed
+  that `μ < 1.89`, while the best currently known lower bound
+  `μ > 1.551`, follows from a construction of Deuber et al. [7]."* Both
+  numbers are about `μ = lim f(n)^{1/n}` for subsets of `[n]` — the
+  **Erdős–Szemerédi** quantity. Neither displaces [AHS72] on the uniform
+  problem, exactly as `docs/references.md` says.
+* **p. 2 is a third corroboration of [AHS72]'s mechanism**: *"The
+  starting point of our approach is a 50 years old idea of Abbott,
+  Hanson, and Sauer [2] concerning ordinary sunflowers: one can use
+  'direct sums' to recursively produce larger constructions from smaller
+  ones."*
+
+And a fourth and fifth name for the object: p. 1, *"Erdős, Milner and
+Rado [9] called a family of at least three sets a **weak sunflower** if
+the intersection of any pair of them has the same size"*, plus
+*"pseudo-sunflowers [13] and near-sunflowers [3]"*. With [Kup25]'s
+**`s`-star**, that is five names in the corpus this repository has read,
+and its searches have used two.
+
+## The corpus is now pinned
+
+The papers vanish with the container, and this session lost time
+re-fetching what the previous one had already found. `docs/papers/` is
+the fix: 29 records, each with the SHA-256 of the exact bytes that were
+rendered and read, the page count verified with `pdfinfo`, the source
+URL, and the retrieval date. `docs/papers/fetch.sh` rebuilds the corpus
+and **fails on a hash mismatch**, so a paper revised upstream cannot be
+quoted as though it were the version that was read.
+
+Fourteen PDFs are stored. The rest are not ours to store — the arXiv
+non-exclusive licence grants arXiv distribution rights and not
+third-party redistribution, and the 1960/1961/1969 journal scans and the
+PCMI notes are in copyright or carry no stated licence. The
+`redistributable` flag in `manifest.json` is read from the licence each
+publisher states, fetched from arXiv's OAI-PMH interface, which reports
+it. `docs/papers/pdf/.gitignore` is a whitelist generated from that flag,
+so rebuilding the full corpus locally cannot turn into a copyright
+problem in a later commit. `ATTRIBUTION.md` carries the per-file
+attribution CC BY requires.
 
 ## What could not be read, and why
 
@@ -817,8 +982,8 @@ were already known here. Recorded as not attempted, not as searched.
 | [AHS72], JCTA 12 (1972) 381–389 | Elsevier paywall; four routes tried (see above). No legitimate open copy. |
 | [BaKh09], Discrete Math. 309 (2009) 4176–4180 | Paywalled; unchanged from earlier sessions. |
 | [ChHa76], JCTB 20 (1976) 128–138 | Not attempted this session. |
-| Handbook of Combinatorial Designs | Not open access; the `2-(6,3,2)` uniqueness claim stays unverified. |
-| Spencer 1977 (upper bound on `φ(k,s)`) | Newly discovered via [Kup25] p. 5; not attempted. |
+| Handbook of Combinatorial Designs | Not open access. **No longer needed**: the `2-(6,3,2)` uniqueness is now verified by exhaustion in `rust/tests/iota_structure.rs`. |
+| Spencer 1977, Canad. Math. Bull. 20, 249–254 | Cambridge Core, no open access. Full citation now known from [Kup25] p. 66; doi:10.4153/CMB-1977-038-7. |
 | [Rao23], Bull. AMS 60(1):29–38 | Newly discovered via [Mis26]; not attempted. |
 | [CGRSS25], arXiv:2507.16105 | Newly discovered via [Rao25] §2.4; not attempted. |
 | [ES78], JCTA 24(3):308–313 | The primary source of the *other* (bounded-ground-set) problem this bibliography keeps warning against mis-citing without ever naming; not attempted. |
