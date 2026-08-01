@@ -3432,6 +3432,9 @@ what the reading actually supports.
    a 404.
 8. **A paywall is not always a blocker.** Sometimes the claim behind it
    is a finite check — the 2-(6,3,2) uniqueness took one enumeration.
+9. **A scripted edit that cannot find its target must fail, not no-op.**
+   Added by §20.9, which is a commit message that said a slow test row was
+   removed when it was not.
 
 ---
 
@@ -3886,3 +3889,18 @@ the regex — so no recorded outcome changes. What was wrong is the one column
 a reader uses to check that a mutation broke the thing it was aimed at, which
 is the whole point of the column. It had been wrong since `Sharp.v` was
 added.
+
+**And one own-goal, recorded because it cost twenty minutes of gate time.**
+A scripted edit meant to drop the `iota(4,10)` row — the 4437-second row of
+§9 — from `rust/tests/pure_link.rs` matched a comment that was not in the
+file, replaced nothing, wrote the file back unchanged, and reported success.
+The commit message said the row was gone; the test kept running it. Caught
+only because the suite sat on that one test for minutes and the timing did
+not match anything the row was supposed to cost.
+
+The rule this adds to §18.6's list, and it is the same shape as rule 4:
+**a scripted edit that cannot find its target must fail, not no-op.**
+`tools/mutate.py` already gets this right — `apply_edit` asserts the `find`
+string occurs exactly once and refuses to proceed otherwise, which is why the
+mutation manifest cannot silently drift. Ad-hoc edits during a session have no
+such check, and this session shipped a wrong commit message because of it.
