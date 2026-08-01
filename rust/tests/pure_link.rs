@@ -248,7 +248,12 @@ fn support_bound_holds_and_decides_iota_three() {
     assert_eq!(wide::support_bound(4, 32), 97);
 
     // The bound is respected by the extremal families themselves.
-    for (b, g) in [(2u32, 6u32), (3, 6), (3, 9), (4, 9), (4, 10)] {
+    //
+    // `iota(4,9)` costs fifty seconds and `iota(4,10)` is the 4437-second
+    // row of `docs/roadmap.md` §9; both stay out of the grid, and the
+    // uniformity-4 row enters below through the substitution instead,
+    // which builds the same 27-member family in no time.
+    for (b, g) in [(2u32, 6u32), (3, 6), (3, 9), (3, 12)] {
         let (n, fam, _) = intersecting::iota(g, b, 2_000_000_000, 0);
         if fam.is_empty() {
             continue;
