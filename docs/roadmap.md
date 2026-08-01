@@ -3620,8 +3620,8 @@ clause a reader would assume is bookkeeping.
 
 ### 20.2 The recursion
 
-Double counting `Σ_{x ∈ T} deg(x) = Σ_{A ∈ F} |A ∩ T|` (`IotaGround.degsum_eq_sizesum`, reused rather than rebuilt)
-against `2|F| <= |pure| + Σ_A |A ∩ T|` — every member meets `T` at least
+Double counting `Σ_{x ∈ T} deg(x) = Σ_{A ∈ F} |A ∩ T|` —
+`IotaGround.degsum_eq_sizesum`, reused rather than rebuilt — against `2|F| <= |pure| + Σ_A |A ∩ T|` — every member meets `T` at least
 once and every impure member at least twice — and bounding the pure part by
 `iota(b-1)` instead of `g(b-1)` gives `cover_recursion`:
 
@@ -3645,7 +3645,7 @@ is the only check available on it:
    b   this recursion              Erdős–Rado    truth
    1   iota(1) <= 1,  g(1) <= 2         -        1,  2       exact
    2   iota(2) <= 3,  g(2) <= 6     g(2) <= 12   3,  6       exact
-   3   iota(3) <= 13, g(3) <= 27    g(3) <= 36   10, >= 20
+   3   iota(3) <= 13, g(3) <= 27    g(3) <= 36   10 exact (§20.4), >= 20
    4   iota(4) <= 80, g(4) <= 160   g(4) <= 288  >= 27, >= 54
 ```
 
