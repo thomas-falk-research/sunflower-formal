@@ -3849,6 +3849,23 @@ The plateau search does not find it, from the doubling seed or from nothing.
    lines and removed a ceiling that had silently shaped every question asked
    of `iota` — the reason nobody had asked for `iota(3)` rather than
    `iota(3, g)` is that the enumerator could not express it.
+4. **One more term in `cover_recursion`, worked out and not done.** The
+   count as it stands is `2|F| <= t_1 + Σ_t deg(t)`. It does not use that
+   the members of the matching `M` lie *inside* `T`, so each contributes
+   `b` to the degree sum while counting once in `|F|`. Putting that in
+   gives
+
+   ```
+       2|F|  <=  |T| * (g(b-1) + iota(b-1))  -  (b-2) * |M|
+   ```
+
+   which is `g(3) <= 26` and hence **`f(3,3) <= 27`**, still exact at
+   `b = 2` (the correction is zero there), and `g(4) <= 156`. It was left
+   out because it landed after the mutation suite had started and
+   re-running the gate costs more than the term is worth this session. It
+   is half a page of Coq: `M` is already in scope in `g_recursion`, and
+   what is needed is `|A ∩ T| = b` for `A ∈ M` fed into the same
+   `sizesum` count.
 
 **Down.**
 
