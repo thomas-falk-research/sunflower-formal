@@ -59,6 +59,21 @@
       3     iota(3) <= 13, g(3) <= 27    g(3) <= 36   10, >= 20
     >>
 
+    ** The correction term, which the count above still throws away
+
+    [cover_recursion] charges every impure member exactly two. The
+    matching members lie *inside* the cover, so each meets it in all [b]
+    of its points — a surplus of [b - 2] apiece. Putting that in
+    ([cover_recursion_sharp]) gives
+
+    >  2 * |F| + (b - 2) * |M|  <=  |T| * (Ng + Ni)
+
+    hence [g(3) <= 26], [f(3,3) <= 27], [iota(4) <= 77] and
+    [g(4) <= 154]. The correction is zero at [b = 2], where the recursion
+    is already exact, which is the check that it was not put in
+    backwards. Both ladders are kept: the pair is the only visible
+    measure of what the term is worth.
+
     [g(3) <= 27] is [f(3,3) <= 28], where this development previously
     had only Erdős–Rado's 49 and where [Sharp.sharp_beats_erdos_rado_at_three]
     reaches 32 *conditionally*. [iota(3) <= 13] replaces
@@ -73,7 +88,8 @@
 
     ** The support bound, and why [iota(3) = 10] is now decided
 
-    [iota_support_bound] is the other half of the file and is three lines:
+    [intersecting_support_bound] is the other half of the file and is
+    three lines:
     in an intersecting family every member meets a fixed member, so
     contributes at most [b-1] new points, and an [n]-member intersecting
     [b]-uniform family therefore has support at most [b + (b-1)(n-1)].
@@ -146,6 +162,65 @@ Proof.
   destruct (Nat.eqb (meets X A) 1) eqn:E.
   - apply Nat.eqb_eq in E; simpl length; lia.
   - apply Nat.eqb_neq in E; simpl length; lia.
+Qed.
+
+(** ** The term [sizesum_lower] throws away
+
+    [sizesum_lower] charges every impure member exactly two. The members
+    of the matching are charged far more than that by the same sum: they
+    lie *inside* the cover, so each meets it in all [b] of its points
+    while contributing one to [|F|]. Recovering the difference is the
+    whole of the correction term.
+
+    [p] marks the heavy members as a boolean rather than naming the
+    matching, because the induction peels [F] one member at a time and a
+    marker survives that where a sublist has to be maintained. The bridge
+    back to the matching is [NoDup_incl_length] at the point of use, and
+    it only needs the [>=] direction. *)
+
+Lemma sizesum_lower_heavy :
+  forall X (p : list nat -> bool) k F,
+    2 <= k ->
+    (forall A, In A F -> 1 <= meets X A) ->
+    (forall A, In A F -> p A = true -> k <= meets X A) ->
+    2 * length F + (k - 2) * length (filter p F)
+      <= length (purefam X F) + sizesum X F.
+Proof.
+  intros X p k F Hk; induction F as [|A F IH]; intros Hmeet Hheavy;
+    [simpl; lia|].
+  assert (HA : 1 <= meets X A) by (apply Hmeet; left; reflexivity).
+  assert (Hrest : 2 * length F + (k - 2) * length (filter p F)
+                    <= length (purefam X F) + sizesum X F).
+  { apply IH; intros B HB; [apply Hmeet | apply Hheavy]; right; exact HB. }
+  rewrite sizesum_cons.
+  change (purefam X (A :: F)) with
+    (if Nat.eqb (meets X A) 1 then A :: purefam X F else purefam X F).
+  change (filter p (A :: F)) with
+    (if p A then A :: filter p F else filter p F).
+  destruct (p A) eqn:Hp.
+  - (* Heavy: [meets X A >= k >= 2], so [A] is not pure and the pure part
+       does not grow. The member pays [k] where the count wants [2]. *)
+    assert (Hge : k <= meets X A)
+      by (apply Hheavy; [left; reflexivity | exact Hp]).
+    destruct (Nat.eqb (meets X A) 1) eqn:E.
+    + apply Nat.eqb_eq in E; lia.
+    + simpl length; rewrite Nat.mul_succ_r; lia.
+  - destruct (Nat.eqb (meets X A) 1) eqn:E.
+    + apply Nat.eqb_eq in E; simpl length; lia.
+    + apply Nat.eqb_neq in E; simpl length; lia.
+Qed.
+
+(** A member inside the cover meets it in all of its own points. Stated
+    as [>=] because that is the direction the charge needs, and it avoids
+    any hypothesis on whether [X] repeats a point. *)
+
+Lemma meets_ge_of_subset :
+  forall X A, NoDup A -> Subset A X -> length A <= meets X A.
+Proof.
+  intros X A Hnd Hsub; unfold meets.
+  apply NoDup_incl_length; [exact Hnd|].
+  intros x Hx; apply filter_In; split;
+    [exact (Hsub x Hx) | apply memb_true_iff; exact Hx].
 Qed.
 
 Lemma sizesum_pure :
@@ -281,6 +356,100 @@ Proof.
   apply (@link_sunflower_lift [x] F 3).
   apply (@ContainsKSunflower_of_incl 3
            [setminus A [x]; setminus B [x]; C] (link [x] F) []).
+  - intros D HD; simpl in HD.
+    destruct HD as [<- | [<- | [<- | []]]].
+    + apply HinL; assumption.
+    + apply HinL; assumption.
+    + unfold C; apply HinL; assumption.
+  - reflexivity.
+  - apply pairwise_disjoint_sunflower.
+    + apply nodup_three.
+      * apply (disjoint_nonempty_neq Hdis); apply Hnonempty; exact HAF.
+      * apply (disjoint_nonempty_neq HdisAC); apply Hnonempty; exact HAF.
+      * apply (disjoint_nonempty_neq HdisBC); apply Hnonempty; exact HBF.
+    + apply pairwise_disjoint_three; assumption.
+Qed.
+
+(** ** The trace class: the same argument with the point replaced by a set
+
+    For [S ⊆ X] the *trace class* is [F_S = { A ∈ F : A ∩ X = S }], and
+    the claim is that [{A \ S : A ∈ F_S}] is intersecting — so [|F_S|] is
+    bounded by [iota(b - |S|)] rather than merely by [g(b - |S|)].
+    [pure_link_intersecting] is the shape of the case [|S| = 1].
+
+    ** The hypothesis the sketch of this lemma left out
+
+    The set that forces the sunflower is a matching member [A0], and all
+    three sets have to live in [link S F]. So [A0] must **contain** [S].
+
+    That is invisible at [|S| = 1] — [In x A0] is exactly it, and every
+    point of the cover lies in some matching member — and it was stated
+    in [docs/roadmap.md] §3 as the much weaker "[S] does not contain a
+    whole member of [M]". The two are not the same, and the difference is
+    not cosmetic: a trace class whose [S] straddles two matching members
+    lies inside no [A0], gets no sunflower, and is bounded by
+    [g(b - |S|)] and nothing better. §21.3 costs out what that does to
+    the trace LP at [b = 3].
+
+    [G] is passed as an arbitrary subfamily with the trace property
+    rather than carved out by a [filter], because every use has the
+    subfamily already in hand and a boolean trace test would need set
+    equality on lists. [Subset S A] is not a hypothesis: [in_link_inv]
+    supplies it for exactly the members [link S G] looks at. *)
+
+Lemma setminus_nonempty_of_lt :
+  forall (A S : list nat), NoDup A -> length S < length A -> setminus A S <> [].
+Proof.
+  intros A S Hnd Hlt Hemp.
+  assert (Hsub : incl A S).
+  { intros z HzA.
+    destruct (in_dec Nat.eq_dec z S) as [H | H]; [exact H | exfalso].
+    assert (Hin : In z (setminus A S))
+      by (apply in_setminus_iff; split; assumption).
+    rewrite Hemp in Hin; contradiction. }
+  pose proof (NoDup_incl_length Hnd Hsub); lia.
+Qed.
+
+Theorem trace_class_intersecting :
+  forall b (F G : Family) (X A0 S : list nat),
+    Uniform b F -> ~ ContainsKSunflower 3 F ->
+    In A0 F -> Subset A0 X -> Subset S A0 -> length S < b ->
+    incl G F ->
+    (forall A z, In A G -> In z A -> In z X -> In z S) ->
+    Intersecting (link S G).
+Proof.
+  intros b F G X A0 S HU Hno HA0 HA0X HSA0 HSb HGF Htrace.
+  intros B1 B2 HB1 HB2 Hdis.
+  apply in_link_inv in HB1 as [A [HAG [HSA E1]]].
+  apply in_link_inv in HB2 as [B [HBG [HSB E2]]].
+  assert (HAF : In A F) by (apply HGF; exact HAG).
+  assert (HBF : In B F) by (apply HGF; exact HBG).
+  subst B1 B2.
+  set (C := setminus A0 S).
+  assert (HinL : forall D, In D F -> Subset S D -> In (setminus D S) (link S F)).
+  { intros D HD HSD; unfold link; apply in_map_iff.
+    exists D; split; [reflexivity|].
+    apply filter_In; split; [exact HD | apply containsb_true_iff; exact HSD]. }
+  (* The trace condition: a point of a member of [G] outside [S] is
+     outside [X], hence outside [A0]. This is where [A0 ⊆ X] is used, and
+     it is the only place. *)
+  assert (Hcross : forall D, In D G -> Disjoint (setminus D S) C).
+  { intros D HD z HzD HzC.
+    apply in_setminus_iff in HzD as [HzD Hnz].
+    unfold C in HzC; apply in_setminus_iff in HzC as [HzA0 _].
+    apply Hnz; exact (Htrace D z HD HzD (HA0X z HzA0)). }
+  assert (HdisAC : Disjoint (setminus A S) C) by (apply Hcross; exact HAG).
+  assert (HdisBC : Disjoint (setminus B S) C) by (apply Hcross; exact HBG).
+  (* [|S| < b] is what makes every one of the three sets nonempty. *)
+  assert (Hnonempty : forall D, In D F -> setminus D S <> []).
+  { intros D HD; apply setminus_nonempty_of_lt.
+    - pose proof (@Uniform_NoDup b F HU) as HN; rewrite Forall_forall in HN.
+      exact (HN D HD).
+    - rewrite (@Uniform_length b F D HU HD); exact HSb. }
+  apply Hno.
+  apply (@link_sunflower_lift S F 3).
+  apply (@ContainsKSunflower_of_incl 3
+           [setminus A S; setminus B S; C] (link S F) []).
   - intros D HD; simpl in HD.
     destruct HD as [<- | [<- | [<- | []]]].
     + apply HinL; assumption.
@@ -455,6 +624,153 @@ Proof.
     nia. }
   pose proof (@cover_recursion b Ng Ni F M Hb HU HD Hno Hincl Hcov Hg Hi) as Hcount.
   nia.
+Qed.
+
+(** ** The correction term
+
+    [cover_recursion] does not use that the matching lies inside the
+    cover. Each [A ∈ M] satisfies [A ⊆ X], so [meets X A = b] where the
+    count charges only [2] — a surplus of [b - 2] per matching member,
+    and [|M|] of them.
+
+    The correction vanishes at [b = 2], where the recursion is already
+    exact, and is worth one member of [g(3)] and six of [g(4)]. *)
+
+Theorem cover_recursion_sharp :
+  forall b Ng Ni (F : Family) (M : list (list nat)),
+    2 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F ->
+    incl M F -> NoDup M ->
+    (forall A, In A F -> exists B, In B M /\ ~ Disjoint A B) ->
+    GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni ->
+    2 * length F + (b - 2) * length M <= length (concat M) * (Ng + Ni).
+Proof.
+  intros b Ng Ni F M Hb HU HD Hno HMF HndM Hcov Hg Hi.
+  set (X := concat M).
+  set (p := fun A : list nat =>
+              if in_dec (list_eq_dec Nat.eq_dec) A M then true else false).
+  (* Every member meets [X]. *)
+  assert (Hmeet : forall A, In A F -> 1 <= meets X A).
+  { intros A HA.
+    destruct (@cover_provides_element F M A Hcov HA) as [z [HzA HzX]].
+    unfold meets.
+    assert (Hin : In z (filter (fun w => memb w A) X))
+      by (apply filter_In; split; [exact HzX | apply memb_true_iff; exact HzA]).
+    destruct (filter (fun w => memb w A) X); [destruct Hin | simpl; lia]. }
+  (* A marked member is a matching member, hence inside the cover. *)
+  assert (Hheavy : forall A, In A F -> p A = true -> b <= meets X A).
+  { intros A HA Hp; unfold p in Hp.
+    destruct (in_dec (list_eq_dec Nat.eq_dec) A M) as [HAM | _];
+      [| discriminate].
+    unfold Uniform in HU; rewrite Forall_forall in HU.
+    destruct (HU A HA) as [Hlen Hnd].
+    rewrite <- Hlen; apply meets_ge_of_subset; [exact Hnd|].
+    intros z HzA; unfold X; apply in_concat; exists A; split; assumption. }
+  pose proof (@sizesum_lower_heavy X p b F Hb Hmeet Hheavy) as Hlow.
+  rewrite <- degsum_eq_sizesum in Hlow.
+  (* The matching injects into the marked members. *)
+  assert (HM : length M <= length (filter p F)).
+  { apply NoDup_incl_length; [exact HndM|].
+    intros B HB; apply filter_In; split; [apply HMF; exact HB|].
+    unfold p; destruct (in_dec (list_eq_dec Nat.eq_dec) B M);
+      [reflexivity | contradiction]. }
+  (* The two halves of the sum, exactly as in [cover_recursion]. *)
+  assert (Hall : degsum X F <= length X * Ng).
+  { apply degsum_le; intros x _.
+    exact (@link_at_point_bounded b Ng F x ltac:(lia) HU HD Hno Hg). }
+  assert (Hpure : length (purefam X F) <= length X * Ni).
+  { rewrite purefam_degsum; apply degsum_le; intros x HxX.
+    apply in_concat in HxX as [A0 [HA0M HxA0]].
+    apply (@pure_link_at_point_bounded b Ni F X A0 x Hb HU HD Hno).
+    - apply HMF; exact HA0M.
+    - exact HxA0.
+    - unfold X; apply in_concat; exists A0; split; assumption.
+    - intros z HzA0; unfold X; apply in_concat; exists A0; split; assumption.
+    - exact Hi. }
+  assert (Hmono : (b - 2) * length M <= (b - 2) * length (filter p F))
+    by (apply Nat.mul_le_mono_l; exact HM).
+  lia.
+Qed.
+
+(** The intersecting case gains nothing asymptotically — [|M| = 1] there —
+    but it is stated for the same reason [iota_recursion] is: the two
+    corollaries share a proof and differ only in the cover. *)
+
+Theorem iota_recursion_sharp :
+  forall b Ng Ni N,
+    2 <= b -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni ->
+    b * (Ng + Ni) <= 2 * N + 1 + (b - 2) ->
+    IotaAtMost b N.
+Proof.
+  intros b Ng Ni N Hb Hg Hi Harith H HU HD HI Hno.
+  destruct H as [|A0 H']; [simpl; lia|].
+  set (F := A0 :: H').
+  assert (HA0 : In A0 F) by (left; reflexivity).
+  assert (Hcov : forall A, In A F -> exists B, In B [A0] /\ ~ Disjoint A B).
+  { intros A HA; exists A0; split; [left; reflexivity|].
+    exact (HI A A0 HA HA0). }
+  assert (Hincl : incl [A0] F)
+    by (intros A HA; destruct HA as [E | []]; subst A; exact HA0).
+  assert (Hnd : NoDup [A0]) by (constructor; [intros [] | constructor]).
+  pose proof (@cover_recursion_sharp b Ng Ni F [A0] Hb HU HD Hno Hincl Hnd
+                Hcov Hg Hi) as Hcount.
+  assert (Hlen : length (concat [A0]) = b).
+  { simpl; rewrite app_nil_r; exact (@Uniform_length b F A0 HU HA0). }
+  rewrite Hlen in Hcount.
+  change (length [A0]) with 1 in Hcount.
+  lia.
+Qed.
+
+Theorem g_recursion_sharp :
+  forall b Ng Ni N,
+    2 <= b -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni ->
+    2 * b * (Ng + Ni) <= 2 * N + 1 + 2 * (b - 2) ->
+    GAtMost b N.
+Proof.
+  intros b Ng Ni N Hb Hg Hi Harith F HU HD Hno.
+  assert (HFne : Forall (fun A : list nat => A <> []) F).
+  { apply Forall_forall; intros A HA.
+    unfold Uniform in HU; rewrite Forall_forall in HU.
+    destruct (HU A HA) as [HAlen _].
+    destruct A; [simpl in HAlen; lia | discriminate]. }
+  destruct (max_disjoint_cover HFne) as [M [Hincl [Hnd [Hpd Hcov]]]].
+  assert (Hcov2 : length M <= 2).
+  { destruct (le_lt_dec (length M) 2) as [H2 | H3]; [exact H2 | exfalso].
+    apply Hno.
+    apply (@ContainsKSunflower_of_incl 3 (firstn 3 M) F []).
+    - intros B HB; apply Hincl, (incl_firstn 3 M); exact HB.
+    - apply firstn_length_le; lia.
+    - apply pairwise_disjoint_sunflower;
+        [ apply NoDup_firstn; exact Hnd
+        | intros B C HB HC HBC; apply Hpd;
+          try (apply (incl_firstn 3 M); assumption); exact HBC ]. }
+  assert (HXlen : length (concat M) <= length M * b).
+  { apply concat_uniform_length.
+    apply Forall_forall; intros B HB; apply Hincl in HB.
+    unfold Uniform in HU; rewrite Forall_forall in HU; apply HU; exact HB. }
+  pose proof (@cover_recursion_sharp b Ng Ni F M Hb HU HD Hno Hincl Hnd
+                Hcov Hg Hi) as Hcount.
+  (* The products [lia] cannot cancel, supplied one at a time. Writing
+     [m] for [|M|] and [S] for [Ng + Ni], the chain is
+       2|F| + (b-2)m <= |X|*S <= (m*b)*S = m*(b*S) <= m*(N + (b-2))
+     and [b*S <= N + (b-2)] is [Harith] halved — the halving is exact in
+     [nat] because [2x <= 2y+1] gives [x <= y]. *)
+  assert (Hhalf : b * (Ng + Ni) <= N + (b - 2)) by lia.
+  assert (H1 : length (concat M) * (Ng + Ni)
+                 <= length M * b * (Ng + Ni))
+    by (apply Nat.mul_le_mono_r; exact HXlen).
+  assert (H4 : length M * b * (Ng + Ni)
+                 = length M * (b * (Ng + Ni)))
+    by (symmetry; apply Nat.mul_assoc).
+  assert (H3 : length M * (b * (Ng + Ni)) <= length M * (N + (b - 2)))
+    by (apply Nat.mul_le_mono_l; exact Hhalf).
+  assert (H5 : length M * (N + (b - 2))
+                 = length M * N + length M * (b - 2))
+    by apply Nat.mul_add_distr_l.
+  assert (H6 : (b - 2) * length M = length M * (b - 2))
+    by apply Nat.mul_comm.
+  assert (H7 : length M * N <= 2 * N)
+    by (apply Nat.mul_le_mono_r; exact Hcov2).
+  lia.
 Qed.
 
 (** ** The values, bottom up
@@ -682,4 +998,93 @@ Proof.
   intro H10.
   apply (@g_recursion 4 27 10 148);
     [lia | exact g_three_at_most_27 | exact H10 | lia].
+Qed.
+
+(** ** The same ladder with the correction term
+
+    Every value above is reproved against [g_recursion_sharp] and
+    [iota_recursion_sharp]. The unsharpened corollaries are kept rather
+    than edited: they are true, they are what the count gives without the
+    matching term, and the pair is the only visible measure of what that
+    term is worth.
+
+    At [b = 2] the correction is zero and both agree, which is the check
+    that it was not put in backwards.
+
+    <<
+      quantity   without the term   with it
+      iota(2)          3                3      exact, unchanged
+      g(2)             6                6      exact, unchanged
+      iota(3)         13               13      the halving absorbs it
+      g(3)            27               26
+      f(3,3)          28               27
+      iota(4)         80               77
+      g(4)           160              154
+    >>
+
+    [iota(3)] does not move because [|M| = 1] in the intersecting case, so
+    the correction is [b - 2 = 1] against a bound that is then halved. *)
+
+Corollary iota_two_at_most_three_sharp : IotaAtMost 2 3.
+Proof.
+  apply (@iota_recursion_sharp 2 2 1 3);
+    [lia | exact g_one_at_most_two | exact iota_one_at_most_one | lia].
+Qed.
+
+Corollary g_two_at_most_six_sharp : GAtMost 2 6.
+Proof.
+  apply (@g_recursion_sharp 2 2 1 6);
+    [lia | exact g_one_at_most_two | exact iota_one_at_most_one | lia].
+Qed.
+
+(** The headline of the correction: one member off [g(3)], and with it
+    the first unknown sunflower number narrows to [[21, 27]]. *)
+
+Corollary g_three_at_most_26 : GAtMost 3 26.
+Proof.
+  apply (@g_recursion_sharp 3 6 3 26);
+    [lia | exact g_two_at_most_six | exact iota_two_at_most_three | lia].
+Qed.
+
+Corollary f_3_3_at_most_27 : UpperBound 3 3 27.
+Proof.
+  replace 27 with (S 26) by reflexivity.
+  apply (upper_bound_of_sunflower_free_bound 3 26).
+  exact g_three_at_most_26.
+Qed.
+
+Corollary f_3_3_between_21_and_27 :
+  UpperBound 3 3 27 /\ ~ UpperBound 3 3 20 /\ 27 < 28.
+Proof.
+  split; [exact f_3_3_at_most_27 | split; [exact no_upper_bound_3_3_20 | lia]].
+Qed.
+
+Corollary iota_four_at_most_77 : IotaAtMost 4 77.
+Proof.
+  apply (@iota_recursion_sharp 4 26 13 77);
+    [lia | exact g_three_at_most_26 | exact iota_three_at_most_thirteen | lia].
+Qed.
+
+Corollary g_four_at_most_154 : GAtMost 4 154.
+Proof.
+  apply (@g_recursion_sharp 4 26 13 154);
+    [lia | exact g_three_at_most_26 | exact iota_three_at_most_thirteen | lia].
+Qed.
+
+(** And against the measured [iota(3) = 10], as above. *)
+
+Corollary iota_four_at_most_71_if_iota_three_is_ten :
+  IotaAtMost 3 10 -> IotaAtMost 4 71.
+Proof.
+  intro H10.
+  apply (@iota_recursion_sharp 4 26 10 71);
+    [lia | exact g_three_at_most_26 | exact H10 | lia].
+Qed.
+
+Corollary g_four_at_most_142_if_iota_three_is_ten :
+  IotaAtMost 3 10 -> GAtMost 4 142.
+Proof.
+  intro H10.
+  apply (@g_recursion_sharp 4 26 10 142);
+    [lia | exact g_three_at_most_26 | exact H10 | lia].
 Qed.

@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 71 anecdotes into a coverage metric over the
+  mutation testing from 75 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -3921,3 +3921,330 @@ The rule this adds to §18.6's list, and it is the same shape as rule 4:
 string occurs exactly once and refuses to proceed otherwise, which is why the
 mutation manifest cannot silently drift. Ad-hoc edits during a session have no
 such check, and this session shipped a wrong commit message because of it.
+
+
+## 21. The session that closed its own headline target, and the term it
+##     shipped instead
+
+§2 of the session brief named one target and said it "might be the whole
+game": [ALWZ20] Theorem 4.2 composed with `IotaRate`'s `k = 3`
+equivalence, giving the modern bound with no spread lemma and demoting
+the axiom from load-bearing to optional. The brief also said, twice, that
+the derivation was a sketch and had not been checked.
+
+It does not work. It fails for two reasons, either of which is fatal
+alone, and the checking took about an hour. This section is that hour,
+and then what the rest of the session did instead.
+
+### 21.1 Reason one: Theorem 4.2 is a corollary of the axiom
+
+The register has carried Theorem 4.2's *statement* since §17, under B10a,
+where it refuted the claim that nobody had pointed the spread framework
+at intersecting families. Nobody had read its *proof*. On the rendered
+page 13 it is introduced by
+
+> *"We note the following corollary of Theorem 2.5:"*
+
+and proved, in full, by
+
+> *Proof.* *If `F` is intersecting then it is not `(1/2, 1/2)`-satisfying
+> (apply Lemma 1.6 for `r = 2`). Thus by the improvement of Theorem 2.5
+> from [19], it cannot be `(C log w)`-spread for a large enough constant
+> `C`.* □
+
+Theorem 2.5 **is** the spread lemma, and [19] is Rao — that is,
+`ALWZ.Rao20_lemma2`, the single axiom of this development. So formalising
+Theorem 4.2 would **consume** the axiom, not replace it. The whole point
+of the target was to get the modern bound without the axiom; 4.2 is four
+lines of the axiom.
+
+This is rule 2 — read the source of your own axiom before planning
+against it — in a form the rule did not anticipate: the thing to read was
+not the axiom but the theorem being proposed as an alternative to it.
+Rule 6 also applies. Page 13 was cited for its statement three sessions
+running, and the proof is on the same page, four lines below.
+
+### 21.2 Reason two: the arithmetic, which fails on its own
+
+Suppose 4.2 were independent. The chain is: `F` intersecting, `b`-uniform,
+sunflower-free; by 4.2's contrapositive `F` is not `κ`-spread for
+`κ ≈ C log b`, so some `T` with `t = |T| ≥ 1` has `|F| < κ^t · deg T F`;
+the link at `T` is `(b−t)`-uniform sunflower-free, so
+`iota(b) < κ^t · g(b−t)`.
+
+**`t` is existential.** An upper bound has to survive every `t`, and the
+adversary hands back `t = 1` at every level. There the chain reads
+
+```
+    iota(b)  <  κ · g(b-1)
+```
+
+and to recurse it has to get back to an *intersecting* family — because
+4.2 applies to nothing else. **The link of an intersecting family is not
+intersecting.** `IntersectingSpread.link_of_intersecting_not_intersecting`
+is the smallest witness: the triangle is intersecting, 2-uniform and
+sunflower-free, and its link at a vertex is two disjoint singletons. So
+every level pays `Intersecting.sunflower_free_star_bound`'s factor
+`2(b−1)`:
+
+```
+    iota(b)  <  κ · 2(b-1) · iota(b-1)
+```
+
+which multiplies by `2(b−1)κ` per level, hence `b! · (2κ)^b`, hence
+
+> **`b! · (2C log b)^b` — Erdős–Rado's `b! · 2^b` made *worse* by
+> `(C log b)^b`.**
+
+`rust/tests/alwz_chain.rs` evaluates the recursion numerically with the
+maximum over `t` taken honestly at every level, from `b = 4` to `b = 24`
+exactly and to `b = 200` in log space. The ratio to Erdős–Rado is exactly
+**1.000** at every `b` and every `C ∈ {1, 2, 4, 8, 16}`, because the
+Erdős–Rado clamp inside the recursion is what is binding; remove the
+clamp and the chain is strictly worse. The growth rate `g(b)^{1/b}/b`
+sits on Erdős–Rado's `2/e = 0.736` and does not move, where the ALWZ
+target sends it to zero.
+
+ALWZ's own recursion never pays the `2(b−t)` **because their spread lemma
+applies to general families**. Restricting to intersecting families is
+what makes 4.2 cheap, and it is the same restriction that makes it
+useless as a recursion step. That is the whole finding, and it is not
+visible from the statement of 4.2 — only from what it is quantified over.
+
+So the sentence §2 of the brief offered as the one nobody had written
+down —
+
+> *"The entire gap between Erdős–Rado and ALWZ, at `k = 3`, is the gap
+> between `intersecting_not_spread_above_uniformity` and Theorem 4.2."*
+
+— is **false**, and is retired here. The gap between those two statements
+is a factor `b / log b` per level. The re-intersection factor `b` per
+level sits on top of *both* of them, and it is untouched by sharpening
+either. This is §1's ceiling again, reached from a new direction: the
+`n!` is the barrier, and moving from `b` to `log b` inside a recursion
+that still pays `b` to re-intersect does not remove it.
+
+`coq/IntersectingSpread.v` is the whole argument machine-checked, with
+the 4.2 hypothesis carried as an explicit premise rather than assumed, so
+the file adds no axiom and asserts nothing about whether 4.2 is true.
+
+### 21.3 What shipped instead: the correction term, and one member of
+###      `g(3)`
+
+§20.8 item 4 had the next term of the cover recursion worked out and
+deliberately not implemented. It is in now.
+
+`cover_recursion` charges every impure member exactly two. The matching
+members lie *inside* the cover, so each meets it in all `b` of its points
+while counting once in `|F|` — a surplus of `b − 2` apiece.
+`cover_recursion_sharp` recovers it:
+
+```
+    2|F| + (b-2)|M|  <=  |T| * (g(b-1) + iota(b-1))
+```
+
+| quantity | without the term | with it |
+|---|---|---|
+| `iota(2)`, `g(2)` | 3, 6 | 3, 6 (exact, unchanged) |
+| `iota(3)` | 13 | 13 |
+| `g(3)` | 27 | **26** |
+| `f(3,3)` | 28 | **27** |
+| `iota(4)` | 80 | **77** |
+| `g(4)` | 160 | **154** |
+
+The correction vanishes at `b = 2`, where the recursion is already exact,
+which is the only check available on it. `iota(3)` does not move because
+`|M| = 1` in the intersecting case and the bound is then halved. Both
+ladders are kept rather than one edited: the unsharpened corollaries are
+true, and the pair is the only visible measure of what the term buys.
+
+The brief predicted `g(4) <= 156`; the value is 154, because `g(3)`
+improves to 26 first and feeds the next rung.
+
+> **`f(3,3)` is now bracketed `21 <= f(3,3) <= 27`.**
+
+### 21.4 The trace decomposition, costed out — and the hypothesis its
+###      derivation omitted
+
+§3 of the brief proposed computing `f(3,3)` exactly from the trace
+decomposition. Two things came out of writing it down.
+
+**The lemma as sketched is false.** The brief's claim was:
+
+> *for every `S ⊊ T` that does not contain a whole member of `M`, the
+> family `{A \ S : A ∈ F_S}` is intersecting.*
+
+The set that forces the sunflower is a matching member `A0`, and all
+three sets — `A \ S`, `B \ S`, `A0 \ S` — have to live in `link S F`. So
+`A0` must **contain** `S`, which is strictly stronger than "`S` does not
+contain a whole member of `M`". At `|S| = 1` it holds automatically,
+because every point of the cover lies in some matching member, which is
+why `pure_link_intersecting` never had to state it. At `|S| ≥ 2` a trace
+class whose `S` *straddles* two matching members lies inside no `A0`,
+satisfies every other hypothesis, and gets only `g(b − |S|)`.
+`PureLink.trace_class_intersecting` states the correct version;
+`purelink-trace-drop-s-inside-a0` is the mutation that says the extra
+hypothesis is load-bearing.
+
+**And the LP it feeds does not reach `f(3,3)`.** Writing `n_k` for the
+number of members whose trace has size `k`, the whole decomposition is
+one line: `n1 + 2n2 + 3n3 <= 6·g(2) = 36` with `n3 >= 2` forced, so
+
+```
+    |F|  =  n1 + n2 + n3  <=  n1/2 + 18 - n3/2.
+```
+
+* `n1 <= 18` (six classes at `iota(2) = 3`) gives **26** — *exactly what
+  `g_recursion_sharp` proves in half a page*. The entire trace layer buys
+  nothing over the recursion on its own.
+* `n1 <= 16` (the cross-intersecting constraint: at most two of the three
+  pure links inside a matching member are triangles, else three members
+  `{t,a,b}` have pairwise intersections all `{a,b}`) gives **25**.
+
+So cross-intersecting is worth exactly one member, and the LP stops at
+25 against a conjectured `g(3) = 20`. **The trace LP is five short and
+the slack is structural** — it sees class sizes and a degree budget and
+nothing about how classes interact. `rust/tests/trace_lp.rs` pins all of
+this, including that the per-class LP over all 41 classes (CBC) returns
+the same two values as the aggregate relaxation, so the aggregate is the
+whole content.
+
+The brief's incorrect caps happen not to change the LP's answer, because
+the degree budget is exhausted by the cheaper weight-1 classes before the
+straddling classes are reached. The error was not load-bearing for the
+number; the lemma was still false.
+
+**Not formalised, deliberately.** Getting from 26 to 25 in Coq needs the
+trace-partition layer, the classification of intersecting 2-uniform
+sunflower-free families, the cross-intersecting lemma and the LP — for
+one member, on a route that provably cannot reach 20. Recorded rather
+than built.
+
+### 21.5 `tau`: half of §8 was already done, and the other half closes it
+
+§8 of the brief called measuring `tau` "cheap and never done". Half of it
+had been done in an earlier session and the brief did not know:
+`rust/tests/extension.rs::the_covering_number_is_multiplicative_under_substitution`
+already measures `tau(triangle) = 2`, `tau(iota3) = 3`, `tau(g(2)) = 4`,
+and checks `tau(substitute(G,H)) = tau(G)·tau(H)` on four pairs.
+`extend::covering_number` has been there the whole time. Rule 1 again,
+from the other side: grep before calling something undone, not only
+before calling a quantity unnamed.
+
+**The other half kills the route, and the brief's premise was wrong.**
+§8 predicted `tau(b) = b^{log₃ 2} ≈ b^{0.63}` for the AHS tower. That
+needs a base with `tau = 2` at uniformity 3. The measured value is
+`tau(iota3) = 3`. Since `tau` *and* uniformity both multiply under
+substitution, the tower has
+
+```
+    tau  =  tau(base)^k  =  b(base)^k  =  b
+```
+
+— **`tau = b` exactly**, which is the largest it can be: an intersecting
+family is covered by any one of its own members, so `tau <= b` always,
+and the 1972 families sit at the ceiling rather than well below it.
+
+Then the arithmetic §8 asked for, and it has to be done at `tau = b`
+specifically — **there is no `b^tau` bound in general**. At `tau = 1`
+every member shares a point and the family is a full star, which is
+unbounded; a first draft of this paragraph claimed `|F| <= b^tau` and
+that claim is false, with the star as its counterexample.
+
+What is true is the greedy tree at `tau = b`, and it needs `tau = b`
+twice. Pick `A_1 ∈ F`; every member meets it, so `b` branches for the
+first point `x_1`. Since `tau = b > 1`, `{x_1}` is not a cover, so some
+`A_2 ∈ F` misses `x_1`, and every member through `x_1` meets `A_2`: `b`
+branches again, for a point `x_2 =/= x_1`. This continues for as long as
+`{x_1, ..., x_k}` is not a cover — that is, for `k < tau = b` — and after
+`b` steps the member contains `b` distinct chosen points, so *is* the set
+of them. Each leaf holds at most one member, and
+
+```
+    |F|  <=  b^b  =  b! · e^b / sqrt(2 pi b).
+```
+
+Both uses of `tau = b` are load-bearing: it is what keeps the branching
+going for `b` levels, and `b = |B|` is what makes the leaves singletons.
+(Elementary, and *not* attributed: no priority search was run, and
+`docs/reading.md` B12 records the surrounding literature under *base*,
+*nucleus*, *crosscut* and *minimal cover*. Rule 3 — claimed only as
+arithmetic done here.)
+
+the **same `n!` barrier**, reached a third way this session.
+`rust/tests/tau_rate.rs` pins `tau = b` on the tower and checks the
+Stirling identity. And the comparison is worse than "same barrier":
+Erdős–Rado at `k = 3` is `b! · 2^b = (2b/e)^b`, and `2/e = 0.736 < 1`, so
+
+```
+    b^b  >  (2b/e)^b  =  Erdos-Rado,     by a factor (e/2)^b = 1.359^b.
+```
+
+**The `tau` bound is not merely on the wrong side of the barrier — it is
+worse than 1960 outright.** To reach `C^b` from a `tau`-indexed bound the
+extremal families would need `tau = O(log b)`. They have the maximum.
+
+So §8 closes the way §2 and §3 did: real route, checkable arithmetic,
+stops at `n!`.
+
+### 21.6 State of the numbers
+
+```
+  quantity     was                 now                 how
+  f(3,3)       [21, 28]            [21, 27]            PureLink.f_3_3_at_most_27
+  g(3)         [20, 27]            [20, 26]            g_three_at_most_26
+  iota(4)      [27, 80]            [27, 77]            iota_four_at_most_77
+  g(4)         [54, 160]           [54, 154]           g_four_at_most_154
+  iota(3)      10 exact            unchanged
+  iota(5)      >= 78               unchanged
+```
+
+Nothing on the lower-bound side moved. No search was run this session.
+
+### 21.7 What this changes about the plan
+
+**Down, and closed rather than answered.**
+
+1. **[ALWZ20] Theorem 4.2 as a route to the modern bound.** Closed twice
+   over (§21.1, §21.2). It is a corollary of the axiom, and its
+   arithmetic is worse than 1960's. Do not reopen it; reopen instead the
+   question of whether the *spread lemma itself* can be applied to
+   general sunflower-free families without the axiom, which is §1 and is
+   unchanged.
+2. **The trace decomposition as a route to `f(3,3)` exactly.** Closed
+   (§21.4). It reaches 25 and stops, five short, for structural reasons.
+   Computing `f(3,3)` exactly needs canonical augmentation over actual
+   families, not an LP over trace profiles.
+3. **The counting recursion.** §1's budget was half a day and it is
+   spent. The correction term is in, it is the last term of that shape,
+   and §21.2 is a second independent confirmation that the whole family
+   of counting arguments stops at `n! C^n`.
+
+4. **`tau` as a route to `C^b`.** Closed (§21.5). The extremal families
+   have `tau = b`, the maximum, and the greedy tree at `tau = b` gives
+   `b^b`.
+   What survives is the *measurement*, which is real and was already in
+   the repository: `tau` is multiplicative and the tower sits at the
+   ceiling. That is a structural fact about the 1972 families worth
+   keeping; it is not a bound.
+
+**Unchanged and now the only headline left.** The axiom (§1). It was the
+highest-value engineering item before this session and nothing here moved
+it — except to remove the one idea that claimed to make it optional.
+
+**A note on what this session is.** Its output is **three closed
+targets** (§2, §3, §8), one correction to a lemma that had been derived
+but never checked, one hypothesis added to a lemma whose sketch omitted
+it, and one term worth a single member of `g(3)`. The closures are the
+valuable part: §2 was the brief's headline and would have consumed the
+session, and it was refuted by reading four lines on a page the register
+had already cited and by evaluating a recursion in a fifty-line script.
+
+All three closures have the same shape, and it is worth naming. Each
+route reaches `n! · C^n` and stops: the counting recursion pays `b` per
+level to pigeonhole, the 4.2 chain pays `b` per level to re-intersect,
+and the `tau` bound pays `b` in the exponent because `tau = b`. §1 said
+the `n!` is the barrier and that no sharpening of the counting recursion
+removes it. This session is three more instruments arriving at the same
+wall from three directions, which is stronger evidence for §1's claim
+than §1 had.

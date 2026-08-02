@@ -1356,3 +1356,63 @@ f77ec7ec66da4af6  thm PureLink.iota_four_at_most_80
 
 a43991b0da027dec  thm PureLink.g_four_at_most_148_if_iota_three_is_ten
     g_four_at_most_148_if_iota_three_is_ten : IotaAtMost 3 10 -> GAtMost 4 148
+
+335dbe8212e8b634  thm PureLink.sizesum_lower_heavy
+    sizesum_lower_heavy : forall (X : list nat) (p : list nat -> bool) (k : nat) (F : list (list nat)), 2 <= k -> (forall A : list nat, List.In A F -> 1 <= meets X A) -> (forall A : list nat, List.In A F -> p A = true -> k <= meets X A) -> 2 * length F + (k - 2) * length (List.filter p F) <= length (purefam X F) + sizesum X F
+
+67e52737e3080fd1  thm PureLink.trace_class_intersecting
+    trace_class_intersecting : forall (b : nat) (F G : Family) (X A0 S0 : list nat), Uniform b F -> ~ ContainsKSunflower 3 F -> List.In A0 F -> Subset A0 X -> Subset S0 A0 -> length S0 < b -> List.incl G F -> (forall (A : list nat) (z : nat), List.In A G -> List.In z A -> List.In z X -> List.In z S0) -> Intersecting (link S0 G)
+
+8bd15339cb5d2ec9  thm PureLink.cover_recursion_sharp
+    cover_recursion_sharp : forall (b Ng Ni : nat) (F : Family) (M : list (list nat)), 2 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.incl M F -> List.NoDup M -> (forall A : list nat, List.In A F -> exists B : list nat, List.In B M /\ ~ Disjoint A B) -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni -> 2 * length F + (b - 2) * length M <= length (List.concat M) * (Ng + Ni)
+
+e243c8f0793a2c9f  thm PureLink.iota_recursion_sharp
+    iota_recursion_sharp : forall b Ng Ni N : nat, 2 <= b -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni -> b * (Ng + Ni) <= 2 * N + 1 + (b - 2) -> IotaAtMost b N
+
+a039e5cbe9247f77  thm PureLink.g_recursion_sharp
+    g_recursion_sharp : forall b Ng Ni N : nat, 2 <= b -> GAtMost (b - 1) Ng -> IotaAtMost (b - 1) Ni -> 2 * b * (Ng + Ni) <= 2 * N + 1 + 2 * (b - 2) -> GAtMost b N
+
+08ec0dadafacfbee  thm PureLink.g_three_at_most_26
+    g_three_at_most_26 : GAtMost 3 26
+
+57e79905dba85346  thm PureLink.f_3_3_at_most_27
+    f_3_3_at_most_27 : UpperBound 3 3 27
+
+444347bed4fd2b0f  thm PureLink.f_3_3_between_21_and_27
+    f_3_3_between_21_and_27 : UpperBound 3 3 27 /\ ~ UpperBound 3 3 20 /\ 27 < 28
+
+b29727ae1f765048  thm PureLink.iota_four_at_most_77
+    iota_four_at_most_77 : IotaAtMost 4 77
+
+8f93250bfb90cb8f  thm PureLink.g_four_at_most_154
+    g_four_at_most_154 : GAtMost 4 154
+
+efffd74302dc6f04  thm PureLink.iota_four_at_most_71_if_iota_three_is_ten
+    iota_four_at_most_71_if_iota_three_is_ten : IotaAtMost 3 10 -> IotaAtMost 4 71
+
+12bbb6da5ea85ed1  thm PureLink.g_four_at_most_142_if_iota_three_is_ten
+    g_four_at_most_142_if_iota_three_is_ten : IotaAtMost 3 10 -> GAtMost 4 142
+
+75f568a60cc8d0d3  thm IntersectingSpread.link_bounded
+    link_bounded : forall (b Ng : nat) (F : Family) (T : list nat), Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.NoDup T -> GAtMost (b - length T) Ng -> deg T F <= Ng
+
+4cb3a33744821cb7  thm IntersectingSpread.alwz42_chain_step
+    alwz42_chain_step : forall (b Ng kappa : nat) (F : Family) (T : list nat), Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.NoDup T -> GAtMost (b - length T) Ng -> length F < PeanoNat.Nat.pow kappa (length T) * deg T F -> length F < PeanoNat.Nat.pow kappa (length T) * Ng
+
+4383d1efdaf81c5e  thm IntersectingSpread.link_of_intersecting_not_intersecting
+    link_of_intersecting_not_intersecting : Uniform 2 triangle /\ Distinct triangle /\ Intersecting triangle /\ ~ ContainsKSunflower 3 triangle /\ ~ Intersecting (link (0 :: nil) triangle)
+
+f21ef28b02e9e73b  thm IntersectingSpread.chain_recursion_at_one
+    chain_recursion_at_one : forall b Ng kappa N : nat, GAtMost (b - 1) Ng -> (forall F : Family, Uniform b F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> F <> nil -> exists x : nat, length F < kappa * deg (x :: nil) F) -> kappa * Ng <= S N -> IotaAtMost b N
+
+6951f8553ac0c5cd  thm IntersectingSpread.chain_g_recursion_at_one
+    chain_g_recursion_at_one : forall b Ng kappa N : nat, 1 <= b -> GAtMost (b - 1) Ng -> (forall F : Family, Uniform b F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> F <> nil -> exists x : nat, length F < kappa * deg (x :: nil) F) -> kappa * Ng <= S N -> GAtMost b (2 * b * N)
+
+399320330b73eb4a  thm IntersectingSpread.chain_never_beats_erdos_rado
+    chain_never_beats_erdos_rado : forall b Ng kappa : nat, 1 <= kappa -> 2 * b * Ng <= 2 * b * (kappa * Ng)
+
+fe4bddef462f8a4f  thm IntersectingSpread.chain_is_worse_by_kappa_per_level
+    chain_is_worse_by_kappa_per_level : forall b Ng kappa : nat, 2 <= kappa -> 1 <= b -> 1 <= Ng -> 2 * b * Ng < 2 * b * (kappa * Ng)
+
+2876cb4548f82787  thm IntersectingSpread.triangle_is_intersecting
+    triangle_is_intersecting : Intersecting triangle

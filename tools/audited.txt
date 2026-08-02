@@ -567,3 +567,27 @@ thm PureLink.iota_four_at_most_80
 thm PureLink.g_four_at_most_160
 thm PureLink.iota_four_at_most_74_if_iota_three_is_ten
 thm PureLink.g_four_at_most_148_if_iota_three_is_ten
+
+# The correction term (session N+5): the matching lies inside the cover.
+thm PureLink.sizesum_lower_heavy
+thm PureLink.trace_class_intersecting
+thm PureLink.cover_recursion_sharp
+thm PureLink.iota_recursion_sharp
+thm PureLink.g_recursion_sharp
+thm PureLink.g_three_at_most_26
+thm PureLink.f_3_3_at_most_27
+thm PureLink.f_3_3_between_21_and_27
+thm PureLink.iota_four_at_most_77
+thm PureLink.g_four_at_most_154
+thm PureLink.iota_four_at_most_71_if_iota_three_is_ten
+thm PureLink.g_four_at_most_142_if_iota_three_is_ten
+
+# What ALWZ Theorem 4.2 buys at k = 3, and the barrier that kills it.
+thm IntersectingSpread.link_bounded
+thm IntersectingSpread.alwz42_chain_step
+thm IntersectingSpread.link_of_intersecting_not_intersecting
+thm IntersectingSpread.chain_recursion_at_one
+thm IntersectingSpread.chain_g_recursion_at_one
+thm IntersectingSpread.chain_never_beats_erdos_rado
+thm IntersectingSpread.chain_is_worse_by_kappa_per_level
+thm IntersectingSpread.triangle_is_intersecting
