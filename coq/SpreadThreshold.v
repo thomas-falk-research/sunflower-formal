@@ -48,21 +48,10 @@ Import ListNotations.
 
 Set Implicit Arguments.
 
-(** ** Two list utilities *)
-
-Lemma In_firstn : forall {A : Type} n (l : list A) x, In x (firstn n l) -> In x l.
-Proof.
-  intros A n l x H; rewrite <- (firstn_skipn n l); apply in_or_app; left; exact H.
-Qed.
-
-Lemma NoDup_firstn : forall {A : Type} n (l : list A), NoDup l -> NoDup (firstn n l).
-Proof.
-  intros A n; induction n as [|n IH]; intros l H; simpl; [constructor|].
-  destruct l as [|a l]; simpl; [constructor|].
-  inversion H as [|? ? Hnin Hnd]; subst.
-  constructor;
-    [intros Hin; apply Hnin; eapply In_firstn; exact Hin | apply IH; exact Hnd].
-Qed.
+(** [incl_firstn] and [NoDup_firstn] are [SpreadReduction]'s; this file
+    imports them rather than restating them. The development already
+    carries four copies of the filter-partition identity under four
+    names, and rule 1 is to grep before naming. *)
 
 (** ** No [k] pairwise disjoint members
 
@@ -201,11 +190,11 @@ Proof.
   destruct (le_lt_dec (length S) 2) as [Hle|Hgt]; [exact Hle|exfalso].
   apply Hno.
   exists (firstn 3 S); repeat split.
-  - intros X HX; apply Hincl; eapply In_firstn; exact HX.
+  - intros X HX; apply Hincl; eapply incl_firstn; exact HX.
   - apply NoDup_firstn; exact Hnd.
   - rewrite firstn_length; lia.
   - intros X Y HX HY HXY; apply Hpd;
-      [eapply In_firstn; exact HX | eapply In_firstn; exact HY | exact HXY].
+      [eapply incl_firstn; exact HX | eapply incl_firstn; exact HY | exact HXY].
 Qed.
 
 Lemma concat_uniform_length :
@@ -288,11 +277,11 @@ Proof.
     { replace m with (S (m - 1)) at 1 by lia; reflexivity. }
     lia.
   - exists (firstn 3 M); repeat split.
-    + intros X HX; apply Hincl; eapply In_firstn; exact HX.
+    + intros X HX; apply Hincl; eapply incl_firstn; exact HX.
     + apply NoDup_firstn; exact Hnd.
     + rewrite firstn_length; lia.
     + intros X Y HX HY HXY; apply Hpd;
-        [eapply In_firstn; exact HX | eapply In_firstn; exact HY | exact HXY].
+        [eapply incl_firstn; exact HX | eapply incl_firstn; exact HY | exact HXY].
 Qed.
 
 (** ** Covering by pairs

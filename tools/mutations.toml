@@ -1252,3 +1252,18 @@ expect = "killed"
 because = """Sharp. The cover has at most 2m points and each carries at most \
 r^(m-1) members, so the argument closes exactly when 2m <= r; at m = n and \
 r = 2n - 1 it does not."""
+
+[[mutation]]
+id = "linkceiling-degree-off-by-one"
+file = "coq/LinkCeiling.v"
+question = """top_link_degree_at_most_two says a (b-1)-set lies in at most \
+two members of a sunflower-free family. Is 2 the constant the link \
+argument gives, or is it slack?"""
+find = "    deg Y F <= 2.\nProof.\n  intros b F Y Hb HU HD HndY HlenY Hfree."
+replace = "    deg Y F <= 1.\nProof.\n  intros b F Y Hb HU HD HndY HlenY Hfree."
+expect = "killed"
+because = """Sharp. The link over a (b-1)-set is 1-uniform, and it takes \
+*three* pairwise disjoint members to make a 3-sunflower, so two members \
+through the set are permitted and the bound cannot be improved. The \
+2-(6,3,2) design attains it at every pair, which is why iota(3) = 10 is \
+exactly the counting ceiling at six points."""

@@ -1449,3 +1449,12 @@ a47ec6e147ab2ec9  thm SpreadThreshold.r_star_four_at_most_seven
 
 967a5cc358227da7  thm SpreadThreshold.f_four_three_from_threshold
     f_four_three_from_threshold : UpperBound 4 3 2402
+
+773a21da388a7b71  thm LinkCeiling.one_uniform_pairwise_disjoint
+    one_uniform_pairwise_disjoint : forall G : Family, Uniform 1 G -> Distinct G -> PairwiseDisjoint G
+
+43930e3b53c55e81  thm LinkCeiling.top_link_degree_at_most_two
+    top_link_degree_at_most_two : forall (b : nat) (F : Family) (Y : list nat), 1 <= b -> Uniform b F -> Distinct F -> List.NoDup Y -> length Y = b - 1 -> ~ ContainsKSunflower 3 F -> deg Y F <= 2
+
+f71760fb06ca9d63  thm LinkCeiling.top_link_degree_three_uniform
+    top_link_degree_three_uniform : forall (F : Family) (Y : list nat), Uniform 3 F -> Distinct F -> List.NoDup Y -> length Y = 2 -> ~ ContainsKSunflower 3 F -> deg Y F <= 2
