@@ -35,4 +35,5 @@ coq/Maximal.v
 coq/StarDefect.v
 coq/IntersectingSpread.v
 coq/PureLink.v
+coq/SpreadThreshold.v
 coq/Audit.v

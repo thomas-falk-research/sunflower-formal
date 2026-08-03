@@ -1139,3 +1139,47 @@ attribution CC BY requires.
 | [Rao23], Bull. AMS 60(1):29–38 | Newly discovered via [Mis26]; not attempted. |
 | [CGRSS25], arXiv:2507.16105 | Newly discovered via [Rao25] §2.4; not attempted. |
 | [ES78], JCTA 24(3):308–313 | The primary source of the *other* (bounded-ground-set) problem this bibliography keeps warning against mis-citing without ever naming; not attempted. |
+
+---
+
+## An internal citation that ran backwards
+
+Not a source claim, but it belongs in the register for the same reason
+the source claims do: it was quoted three times in this repository's own
+planning documents, and it is the wrong way round.
+
+**Claim as quoted:** `r*(3,3) = 3`, because `g(3) <= 26` forces it
+(attributed to `docs/roadmap.md` §3.6 and §20.5).
+
+**What the theorem says.** `IotaRate.flat_threshold_at_three_forces_g_three_at_most_27`
+is
+
+```coq
+  SpreadYieldsDisjoint 3 3 3 -> GAtMost 3 27
+```
+
+— `r*(3,3) = 3` implies `g(3) <= 27`, an implication whose *hypothesis*
+is the thing in question. §20.5 says so in its own words: proving
+`g(3) <= 27` "**removed** the decision rather than making it — the
+experiment cannot refute `r*(3,3) = 3` however it comes out."
+
+**What §3.6's search establishes.** Its grid reaches ground 9 at
+uniformity 3, and its own text says that is "ground sets that provably
+cannot contain a counterexample plus nothing beyond". That is now exact:
+`rstar::min_ground` computes the counting floor
+`ceil(m(r^m + 1)/r^(m-1))`, and at `(m,r) = (3,3)` it is **10**. So
+grounds 6 through 9 are settled by one division, `counting_settles_the_small_ground_sets`
+settles them with zero search nodes, and the measured content of §3.6's
+uniformity-3 rows is empty. Ground 10 is open and neither the SAT
+encoding (90 minutes) nor the depth-first search reached a verdict.
+
+`r*(3,3)` is in `[3, 6]`: below by the refutation at `r = 2`, above by
+`SpreadThreshold.r_star_three_at_most_six`. It is not 3 as far as this
+repository knows, and never was.
+
+**The rule this adds.** Rule 3 asks for a page number and a quotation
+before a claim about a *source* goes in. The same applies to a claim
+about a theorem in this development: **quote the statement, and check
+which side of the arrow the claim is on.** Both §18.2 and §20.5 state
+the implication correctly; only the summary table inverted it, and a
+summary table is exactly where nobody looks for the arrow.

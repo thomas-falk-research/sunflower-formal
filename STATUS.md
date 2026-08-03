@@ -268,7 +268,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (386 of them). The current
+for every theorem in the "Closed" table (396 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -315,7 +315,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 35 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 36 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -323,8 +323,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 75 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 72 killed outright, two genuine
+Current mutation results: 78 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 75 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -333,7 +333,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 35 modules with Coq's separate kernel
+`make coqchk` re-verifies all 36 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```
@@ -368,7 +368,48 @@ Measured off-grid at uniformity 3: `r*(3,3) = 3` for ground sets up to
 `α = 1`. So the growth in `m` that the published `log` predicts is not
 visible between uniformity 2 and 3 at `k = 3` — see
 [`docs/roadmap.md`](docs/roadmap.md) §3.6 for what that does and does
-not establish.
+not establish. **It does not establish `r*(3,3) = 3`.**
+`rstar::min_ground` computes the counting floor
+`ceil(m(r^m+1)/r^(m-1))`, which at `(m,r) = (3,3)` is 10: no
+counterexample fits on 9 points, so the rows above at grounds 7, 8 and 9
+are arithmetic rather than search, and ground 10 — the first that could
+hold one — is open. `docs/roadmap.md` §22.2 records this.
+
+### The threshold sequence `r*(m,3)`
+
+`SpreadYieldsDisjoint n 3 r` is true above `r*(n,3)` and false below it,
+`spread_reduction` turns a bound on `r*` into a bound on `f(m,3)`, and
+whether the sequence is bounded in `m` **is** the sunflower conjecture at
+`k = 3`. `coq/SpreadThreshold.v` proves two upper bounds on it, both
+better than the `2n+1` of `elementary_spread_disjoint`, which was the
+only one the development had.
+
+| bound | Coq name | value at `n = 4` |
+|---|---|---|
+| `r*(n,3) ≤ 2n` | `cover_spread_disjoint` | 8 |
+| `r*(n,3) ≤ 1 + √(3n²−4n+3)` | `quadratic_spread_disjoint` | **7** |
+
+The second uses the fact that separates the spread route from every
+restricted-class route: for `B` **any** member of a family with no three
+pairwise disjoint members, `{C ∈ F : C ∩ B = ∅}` is intersecting. So
+against a matching the family is two intersecting pieces plus a cross
+piece, and the pieces that can be covered by *pairs* are smaller by a
+factor of `r`, because a pair has degree `r^(m-2)` where a point has
+`r^(m-1)`. Nothing is re-intersected, which is why this argument does not
+pay the per-level toll §21.7 closed three other routes for.
+
+```
+  m     r*(m,3)          how the ends are known
+  1     = 2   exact      r = 1 refuted / cover_spread_disjoint
+  2     = 3   exact      r = 2 refuted (C5) / exhaustive to support 16
+  3     in [3, 6]        r = 2 refuted / r_star_three_at_most_six
+  4     in [3, 7]        r = 2 refuted / r_star_four_at_most_seven
+  5     in [3, 9]        r = 2 refuted / r_star_five_at_most_nine
+  6     in [3, 11]       r = 2 refuted / r_star_six_at_most_eleven
+```
+
+`rust/tests/spread_threshold.rs` pins every entry, including the
+counterexample families themselves.
 
 ```
   ground  m   k   empirical r*   proved sufficient   refuted r

@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 75 anecdotes into a coverage metric over the
+  mutation testing from 78 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -4248,3 +4248,261 @@ the `n!` is the barrier and that no sharpening of the counting recursion
 removes it. This session is three more instruments arriving at the same
 wall from three directions, which is stronger evidence for §1's claim
 than §1 had.
+
+---
+
+## 22. The sequence that is the conjecture: two bounds on `r*(m,3)`, and
+##     what the search could and could not reach
+
+`SpreadReduction.SpreadYieldsDisjoint n 3 r` is true above `r*(n,3)` and
+false below it, `spread_reduction` turns a bound on `r*` into a bound on
+`f(m,3)`, and §18.5 is the observation that **whether the sequence is
+bounded in `m` is the sunflower conjecture at `k = 3`**. This session
+attacked the sequence directly. The output is one new theorem, one new
+instrument, and one correction to the table.
+
+### 22.1 The theorem: `r*(m,3) <= 1 + sqrt(3m^2 - 4m + 3)`
+
+`coq/SpreadThreshold.v`, axiom-free. Two bounds, both better than the
+`2n + 1` of `SpreadReduction.elementary_spread_disjoint`, which was the
+only general upper bound the development had.
+
+* **`cover_spread_disjoint`: `r*(n,3) <= 2n`.** A family with no three
+  pairwise disjoint members has a maximal matching of at most two
+  members, its union is at most `2m` points, and every member meets it.
+  Rao's *absolute* spread condition caps each point at `r^(m-1)`, so
+  `|F| <= 2m·r^(m-1)`, which is at most `r^m` as soon as `r >= 2m`. The
+  elementary bound does not use spreadness at all beyond counting cover
+  points; this uses it once.
+
+* **`quadratic_spread_disjoint`: `r*(n,3) <= 1 + sqrt(3n^2 - 4n + 3)`**,
+  about `1.74 n`. Stated in Coq without roots, as
+  `2r + 3n^2 + 2 <= r^2 + 4n`.
+
+The second is the one worth the space, because of *why* it works.
+
+> **For `B` any member of a family with no three pairwise disjoint
+> members, `{C in F : C ∩ B = ∅}` is intersecting.**
+
+Two disjoint members that both miss `B` would be three pairwise disjoint
+sets together with `B`. So against a matching `{A, B}` the family splits
+into **two intersecting pieces and a cross piece**, and each is bounded
+separately:
+
+```
+  piece                          covered by            bound
+  {C : C ∩ B = ∅}   (meets A)    a point, or pairs     r^(m-1) + (m-1)^2 r^(m-2)
+  {C : C ∩ A = ∅}   (meets B)    a point, or pairs     r^(m-1) + (m-1)^2 r^(m-2)
+  meets both                     one A-point x one     m^2 r^(m-2)
+                                 B-point
+```
+
+The saving is that **a pair has degree `r^(m-2)` where a point has
+`r^(m-1)`**, so any piece that can be covered by pairs is smaller by a
+factor of `r`. Summing gives `r^(m-2)·(2r + 3m^2 - 4m + 2)`, and `r^m`
+is `r^(m-2)·r^2`.
+
+`intersecting_piece_bound` is where the case analysis lives, and it is a
+two-way split, not a minimisation: either some member meets `A` in
+exactly one point `a1` — and then the piece is the star at `a1`, at most
+`r^(m-1)` sets, plus the members meeting both `A \ {a1}` and `C0 \ {a1}`,
+covered by `(m-1)^2` pairs — or every member meets `A` twice and the
+whole piece is covered by the `m(m-1)` ordered distinct pairs inside `A`.
+The hypothesis `m - 1 <= r` is what makes the second at most the first;
+`spreadthreshold-piece-drop-r-bound` in the mutation manifest checks it
+is load-bearing.
+
+**This is the first bound on `r*` that uses `k = 3` as structure rather
+than as the arithmetic constant `k - 1`** — `elementary_spread_disjoint`
+and `cover_spread_disjoint` are both general-`k` arguments with `k = 3`
+substituted — and it is worth naming why it can. §21.7 closed three routes because each pays `b` per
+level to re-intersect, and `IntersectingSpread.link_of_intersecting_not_intersecting`
+says why: the link of an intersecting family is not intersecting. Here
+nothing is re-intersected. The intersecting-ness is *produced* by the
+hypothesis on the family, once, at the top — which is exactly §1's
+observation that a hypothesis about **general** families does not pay the
+toll, applied to the smallest available such hypothesis.
+
+Evaluated:
+
+```
+  m      elementary 2m+1     cover 2m      quadratic     Coq name
+  1                    3            2              3     cover_spread_disjoint
+  2                    5            4              4
+  3                    7            6              6     r_star_three_at_most_six
+  4                    9            8              7     r_star_four_at_most_seven
+  5                   11           10              9     r_star_five_at_most_nine
+  6                   13           12             11     r_star_six_at_most_eleven
+  10                  21           20             18
+```
+
+`rust/tests/spread_threshold.rs` pins every row, and pins that the Coq
+condition holds at `(4,7)` and fails at `(4,6)` — the bound is sharp for
+*this argument* at the headline point, not merely sufficient.
+
+### 22.2 The correction: `r*(3,3) = 3` was never established
+
+§2 of this session's brief tabulates the sequence as `3, 3, ?` with the
+second entry attributed to "§3.6 + §20.5 (`g(3) <= 26` forces it)". Both
+halves of that attribution fail, and §3.6 and §20.5 each say so in their
+own text.
+
+* **§20.5 runs the other way.** `IotaRate.flat_threshold_at_three_forces_g_three_at_most_27`
+  is `r*(3,3) = 3 -> g(3) <= 27`. §20.5's whole point is that proving
+  `g(3) <= 27` **removed** the decision rather than making it: "the
+  experiment cannot refute `r*(3,3) = 3` however it comes out". A bound
+  on `g(3)` is a consequence, not a cause.
+
+* **§3.6's rows at grounds 8 and 9 are arithmetic, not search.** This is
+  now exact. `rstar::min_ground` computes the counting floor
+  `ceil(m(r^m + 1) / r^(m-1))`, which at `(m,r) = (3,3)` is **10**:
+  `m·|F| = Σ_x deg(x) <= ground·r^(m-1)` gives `|F| <= 3·ground/1`, i.e.
+  at most 27 members on 9 points, one short of the 28 a counterexample
+  needs. §3.6 already said "ground sets that provably cannot contain a
+  counterexample plus nothing beyond"; the new content is that
+  `counting_settles_the_small_ground_sets` decides grounds 6 through 9
+  **with zero search nodes**, so the cost of §3.6's grid at uniformity 3
+  was zero and its information content is zero too.
+
+So the honest state of the sequence is:
+
+```
+  m     r*(m,3)          lower bound from            upper bound from
+  1     = 2   exact      r = 1 refuted               cover_spread_disjoint
+  2     = 3   exact      r = 2 refuted (C5)          exhaustive, see §22.3
+  3     in [3, 6]        r = 2 refuted               r_star_three_at_most_six
+  4     in [3, 7]        r = 2 refuted               r_star_four_at_most_seven
+  5     in [3, 9]        r = 2 refuted               r_star_five_at_most_nine
+  6     in [3, 11]       r = 2 refuted               r_star_six_at_most_eleven
+  9     >= 4             §18.2, via g(9) >= 3^9      -
+```
+
+Two exact terms, not two-and-a-conjecture. The interval at `m = 4` is
+`[3, 7]`, down from `[3, 9]`, and it is the first time the top of that
+interval has moved.
+
+### 22.3 `r*(2,3) = 3`, certified rather than cited
+
+§3.6 records `r*(2,k) = k` as "known conditionally on [ChHa76]". At
+`k = 3` it is now a finite check this repository owns outright, and the
+support bound is what makes it finite:
+
+* no intersecting counterexample, since `|F| <= m·r^(m-1) = 6 <= 9 = r^m`;
+* so there is a matching `{A, B}`, `|A ∪ B| = 4`, and every member meets
+  it, giving `|F| <= 2m·r^(m-1) = 12` by `no_three_disjoint_cover_bound`;
+* a 2-set meeting a 4-set has at most one point outside it, and distinct
+  outside points lie in distinct members, so at most `|F| <= 12` of them:
+  **the support of a counterexample is at most 16 points.**
+
+`r_star_two_three_is_three` runs the exhaustive search on every ground
+set from the counting floor 7 up to 16, in both the intersecting and the
+matching case, and at uniformity 1 as well since `SpreadYieldsDisjoint 2
+3 3` quantifies over it. Nothing. **This is a Rust certificate, not a
+Coq theorem** — the support bound is proved by hand above and the search
+is the finite check it licenses. The same argument does not close
+`m = 3`: there the support bound is `6 + 2·54`, which is 114 points, and
+nothing in this session brought it down.
+
+### 22.4 The instrument: `rust/src/rstar.rs`
+
+Two independent searches for a counterexample at fixed `(m, r, ground)`,
+agreeing wherever both finish (`sat_and_dfs_agree`).
+
+* **A SAT encoding.** One variable per `m`-subset meeting the cover;
+  Sinz sequential counters for the degree caps (`O(n·k)`, where the
+  crate's existing `at_most` is `O(n·(n-k))` — the wrong way round when
+  `k` is a degree cap); the two anchors forced; and **lex-leader symmetry
+  breaking for the generators of the residual group**
+  `(Sym(A) × Sym(B)) ⋊ swap × Sym(U)`. The lex-greatest member of an
+  orbit satisfies `X >=_lex g(X)` for every `g`, so imposing it for a
+  generating set keeps a representative of every orbit. Note this is
+  **not** the degree-sequence constraint §4 and §5 name: that one needs
+  counters with exact semantics in both directions, or the ordering it
+  imposes can delete satisfying assignments, and the totaliser that gives
+  them is `O(n²)` clauses per point — too much at the sizes here. The
+  lex-leader form is `O(#variables)` per generator and needs no counters
+  at all. The intersecting-piece theorem of §22.1 enters as **binary
+  clauses** — two disjoint members that both miss an anchor — which is
+  the form CDCL propagates.
+* **A depth-first enumeration** with a filtered candidate list and three
+  counting bounds: total point-slack over `m`; a *least-point* group
+  bound; a *least-pair* group bound. The group bounds are what SAT cannot
+  do — see §22.5.
+
+Every SAT model is decoded and re-verified by `rstar::verify`, which
+shares no code with the encoder, and UNSAT is only reported when cadical
+and cryptominisat agree, the discipline `sat.rs` already applies.
+
+### 22.5 What ran for hours and decided nothing
+
+Recorded with its cost, because the negative is the useful part.
+
+* **cadical on `(m,r,ground) = (3,3,9)` did not terminate in 6m21s of
+  CPU** on a 12 051-clause instance that is *infeasible by counting*:
+  28 members × 3 points = 84 incidences against 9 points × 9 = 81. This
+  is the pigeonhole principle, which has no polynomial resolution proof,
+  and it is exactly the shape every instance here has. **The counting
+  precheck was added because of this**: `degree_ceiling` now answers such
+  grounds without a solver, in no nodes at all.
+* **cadical on `(3,3,10)` did not terminate in about half an hour**,
+  across two runs, the longer about 25 minutes. Ground 10 is the first
+  ground set that can hold a counterexample and the counting there is
+  nearly tight — 84 incidences against a capacity of 90 — which is the
+  regime CDCL is worst at.
+* **The depth-first search on `(3,3,10)` did not terminate.** Measured
+  exactly: 20 000 001 nodes in 12.9 s, largest family 22 members against
+  a target of 28, and the unbounded run reached no verdict in the time it
+  was given. The three counting bounds cut the tree but not enough; what
+  is missing is isomorph rejection, and the residual group at ground 10
+  has order `3!·3!·4!·2 = 1728`.
+* **The depth-first search on `(4,3,13)` did not terminate**, in either
+  the intersecting or the matching case. 710 candidate sets, target 82.
+* **Which way each instrument fails is itself the measurement.** The SAT
+  encoding finds counterexamples in *milliseconds* when one exists —
+  `(4,2,11)`, 29 885 variables and 65 504 clauses, 0.1 s — and cannot
+  close the negative side at all. The depth-first search closes small
+  negatives instantly and is the only one of the two that can see a
+  counting argument. They fail on opposite sides, which is why both are
+  kept and why `sat_and_dfs_agree` is a test.
+
+So `r*(3,3)` and `r*(4,3)` are still open at their lower ends, and this
+session did not move them. What it moved is the top of the interval and
+the honesty of the bottom.
+
+### 22.6 What this changes about the plan
+
+**Up.**
+
+1. **Isomorph rejection in the depth-first search.** This is now the
+   single bottleneck on every open term of the sequence, and the size of
+   the prize is measurable: 1728 at `(3,3,10)`, and larger at every
+   parameter beyond it. `nauty` is installed and canonical augmentation
+   is what it is for. The lex-leader constraint in the SAT encoding is
+   the same idea, and the SAT side is *also* stuck, so the search side is
+   where it has to be done properly.
+2. **A support bound at uniformity 3.** `r*(2,3) = 3` became certified
+   the moment the support was bounded by 16. At `(3,3)` the same argument
+   gives 114 and the search cannot reach it. Any argument that brings it
+   to, say, 14 turns an open term into a finite check. The place to look
+   is the rainbow-matching structure of the link graphs `L_x` for `x` in
+   the cover: no three of them admit a rainbow matching, and each has at
+   most `r^(m-1)` edges.
+3. **Sharpening `intersecting_piece_bound`.** The star branch is bounded
+   by `r^(m-1)`; if the piece has any member avoiding `a1` it is bounded
+   by `m·r^(m-2)` instead, which replaces `r + (m-1)^2` by `m^2 - m + 1`
+   and would give `r*(6,3) <= 10` rather than 11. It does not move `m = 4`
+   — 7 either way — which is why it was not done here.
+
+**Down.**
+
+4. **SAT as the instrument for this question.** §9 measured SAT as
+   transformative on the `iota`/`g` row, where the constraints are
+   ternary and structural. Here the constraints are *cardinality*, and
+   two instances at parameters the depth-first search dispatches in
+   milliseconds ran for over an hour. Keep the encoding — it is an
+   independent check, and it is the only place the lex-leader symmetry
+   break exists — but do not expect it to decide a term.
+5. **`g(3)` exactly as a route to `r*(3,3)`.** Already closed by §20.5;
+   §22.2 records that the brief's table had it backwards, so it is worth
+   restating: the implication runs `r*(3,3) = 3 -> g(3) <= 27` and not
+   the other way.

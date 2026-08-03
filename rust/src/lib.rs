@@ -28,6 +28,7 @@ pub mod link;
 pub mod orbit;
 pub mod plateau;
 pub mod ratio;
+pub mod rstar;
 pub mod sat;
 pub mod shift;
 pub mod spread;
