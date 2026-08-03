@@ -4754,6 +4754,25 @@ pins that. The selection that makes the design is not a linear
 functional, so the generator built on that idea was built on a false
 reading of the object.
 
+**Five: `iota(4) >= 28` at ground 10 was attempted and is *still open*,
+and the reason is worth recording.** §23.1 says a record needs eleven
+points at `b = 4`, but ground 10 is the rung §9 left undecided after an
+hour of SAT and it is the value `IotaGroundBounded` turns on, so it is
+the cheapest live question on the row. The unrestricted pool there is 210
+blocks and the question is a decision — "is there a 28-member
+intersecting sunflower-free family" — with a sharp branch-and-bound
+bound. It ran **2h28m of CPU, roughly 60% of a 4·10^9-node budget, and
+was killed by a container restart without a verdict**; a second attempt
+at a smaller budget was killed the same way inside a few minutes.
+
+That is an environment result, not a search result, and it changes what
+the next attempt should look like. A multi-hour single-threaded run is
+not a shape this repository can rely on. What it needs is a search that
+**checkpoints** — writes its frontier so a restart resumes rather than
+restarts — or one fast enough not to need to. `search_orbits` has neither
+property, and adding the first is a smaller job than adding isomorph
+rejection while being worth roughly as much on every open question here.
+
 ### 23.4 What this says about the approach
 
 The generator-program idea is the right shape for an isolated optimum and
