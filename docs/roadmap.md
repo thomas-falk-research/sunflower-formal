@@ -3435,6 +3435,11 @@ what the reading actually supports.
 9. **A scripted edit that cannot find its target must fail, not no-op.**
    Added by §20.9, which is a commit message that said a slow test row was
    removed when it was not.
+10. **Before calling a bound an advance, evaluate it against the best
+    published bound for the same quantity — including the one the
+    repository has already assumed as an axiom.** Added by §22.7, which
+    is a session that improved `r*(m,3)` from `2m+1` to `1.74m` without
+    noticing that `ALWZ.v`'s axiom already gives `O(log m)`.
 
 ---
 
@@ -4518,3 +4523,106 @@ the honesty of the bottom.
    §22.2 records that the brief's table had it backwards, so it is worth
    restating: the implication runs `r*(3,3) = 3 -> g(3) <= 27` and not
    the other way.
+
+### 22.7 What §22 is worth, stated plainly
+
+§22.1 is written as though the bound were the session's advance. It is
+not, and the correction belongs next to it rather than in a later
+session's discovery.
+
+**The growth rate of `r*(m,3)` is already a theorem, and it is better
+than anything here.** `coq/SpreadReduction.v`'s own comment on
+`spread_disjoint_above_elementary` says so:
+
+> The 2020 papers prove `[SpreadYieldsDisjoint]` for `r = Θ(k log n)`.
+
+So `r*(m,3) = O(log m)` is published. §22.1 proves `Θ(m)`. On the axis
+that matters — growth — the new bound is **strictly behind the state of
+the art**, and what it improves is one column of one table:
+
+```
+  bound on r*(m,3)                          value
+  literature (ALWZ 2020 / Rao 2020)         O(log m)
+  this repository, conditional on its axiom O(log m)
+  this repository, unconditional, before    2m + 1
+  this repository, unconditional, now       ~1.74 m
+```
+
+That is a *formalisation* improvement: `2m + 1 -> 1.74m` in the
+unconditional column of one Coq development. The arguments themselves —
+a maximal matching gives a `2m`-point cover; cover by pairs instead of
+points — are elementary and would not be new to anyone working in the
+area. Machine-checking them has value. Discovering them does not.
+
+**And the sequence is not a route to the conjecture.** §18.5 and this
+session's brief both say computing terms of `r*(m,3)` would give "the
+first evidence anyone has ever had about the growth rate" and would
+"distinguish bounded from `log m` empirically". Neither is true.
+Finitely many terms cannot distinguish a bounded sequence from `log m` —
+that is a fact about limits, not about compute — and the growth rate is
+already proved. `r*(m,3)` is an elegant way to *state* the conjecture at
+`k = 3`. It is not a way to attack it, and a session spent inside that
+frame is a session spent improving a superseded bound.
+
+**What the frame was worth.** Two things survive and both are small:
+`r*(1,3) = 2` and `r*(2,3) = 3` are now exact and certified rather than
+cited, and §22.2's correction is real. Neither is mathematics.
+
+**The standing rule this adds.** Rules 1–9 all guard against
+mis-describing a *source*. This one guards against mis-describing a
+*result*:
+
+> **10. Before calling a bound an advance, evaluate it against the best
+> published bound for the same quantity — including the one the
+> repository has already assumed as an axiom.** The axiom in this
+> development *is* the state of the art for `r*`. A new unconditional
+> bound that is asymptotically worse than the assumption sitting in
+> `ALWZ.v` is a formalisation result, and saying so is the difference
+> between a contribution and a press release.
+
+### 22.8 Where the effort should go instead, and why
+
+The evidence that AI systems can produce genuinely new mathematics on
+problems of this shape is now concrete and public, and it points away
+from what §22 did. The pattern in every case that has worked is the
+same: **a new mathematical argument or construction on a named open
+problem, with formalisation as the certificate afterwards.** The
+formalisation is how the result is made trustworthy; it is not the
+result. §22 inverts that — it is a certificate with napkin-level content
+inside it.
+
+Two targets in this repository have the right shape. Neither was touched
+this session.
+
+1. **Beat the 1972 lower bound, by searching over *generator programs*
+   rather than over families.** §5's rate to beat is `10^(1/2) = 3.162`
+   per point; the live rows are `iota(5) >= 101` (record 78, and the only
+   row local search has ever moved) and `g(4) >= 101` (record 54).
+   §20.6 measured *why* five sessions of local search failed: four of
+   five parameter rows never left their seed, so the 1972 families are
+   not merely maximal but **isolated**. Isolated optima are exactly where
+   move-based search on the object fails and where changing the *program
+   that emits the object* is the right move. The pieces are already here:
+   `intersecting::verify` is the scoring function, `construction.rs` has
+   `cone`/`double`/`substitute` as the seed program, and the missing
+   ingredient is a search whose mutation operator proposes structurally
+   different generators — group actions, cocycles, twisted products,
+   designs under the derived link conditions — rather than perturbing a
+   family. That has never been run here, and it is the method with the
+   track record on exactly this shape of problem.
+
+2. **`f(3,3)` exactly.** Bracketed `[21, 27]`, seven values wide, with
+   the structure theory already proved (§4 of the brief:
+   `trace_class_intersecting`, the straddling-class hypothesis, the
+   cross-intersecting pure links, the degree cap). A new sunflower number
+   would be the first since 1960 and is a genuinely new mathematical
+   fact rather than a re-proof. It is a finite search, and §21.4 already
+   established that the LP route stops at 25, so what is needed is
+   canonical augmentation over families — the same isomorph rejection
+   §22.6 identifies as the bottleneck everywhere else.
+
+**Down, and this is the reordering.** Discharging `Rao20_lemma2` (§3)
+stays valuable — no proof assistant has the modern bound unconditionally,
+and that is a real artifact — but it is *re-formalising a 2020 proof*.
+It is the certificate half of the recipe with the discovery half absent.
+It should be done, and it should not be done first.
