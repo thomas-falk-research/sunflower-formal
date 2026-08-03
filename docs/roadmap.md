@@ -4314,11 +4314,12 @@ is load-bearing.
 
 **This is the first bound on `r*` that uses `k = 3` as structure rather
 than as the arithmetic constant `k - 1`** — `elementary_spread_disjoint`
-and `cover_spread_disjoint` are both general-`k` arguments with `k = 3`
-substituted — and it is worth naming why it can. §21.7 closed three routes because each pays `b` per
-level to re-intersect, and `IntersectingSpread.link_of_intersecting_not_intersecting`
-says why: the link of an intersecting family is not intersecting. Here
-nothing is re-intersected. The intersecting-ness is *produced* by the
+and `cover_spread_disjoint` are both the general-`k` cover argument with
+`k = 3` substituted — and it is worth naming why it can. §21.7 closed
+three routes because each pays `b` per level to re-intersect, and
+`IntersectingSpread.link_of_intersecting_not_intersecting` says why: the
+link of an intersecting family is not intersecting. Here nothing is
+re-intersected. The intersecting-ness is *produced* by the
 hypothesis on the family, once, at the top — which is exactly §1's
 observation that a hypothesis about **general** families does not pay the
 toll, applied to the smallest available such hypothesis.
