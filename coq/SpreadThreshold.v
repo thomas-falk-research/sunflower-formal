@@ -672,6 +672,34 @@ Proof.
   exact (HU A HA).
 Qed.
 
+(** The fact the whole decomposition turns on.
+
+    For [B] *any* member of a family with no three pairwise disjoint
+    members, the subfamily missing [B] is intersecting. The proof is one
+    step — two disjoint members missing [B] are three pairwise disjoint
+    sets together with [B] — and it is the reason this route does not pay
+    the toll [IntersectingSpread.link_of_intersecting_not_intersecting]
+    charges every route that works inside a restricted class. There the
+    intersecting-ness has to be re-established at each level, and the
+    link of an intersecting family is not intersecting; here it is
+    produced once, by a hypothesis about the whole family. *)
+
+Lemma miss_member_intersecting :
+  forall m (F : Family) (B C D : list nat),
+    1 <= m -> Uniform m F -> NoKDisjoint 3 F ->
+    In B F -> In C F -> In D F ->
+    Disjoint C B -> Disjoint D B ->
+    ~ Disjoint C D.
+Proof.
+  intros m F B C D Hm HU Hno HB HC HD HCB HDB HCD.
+  assert (Hne : forall A, In A F -> A <> []).
+  { intros A HA; destruct (@uniform_mem m F A HU HA) as [Hlen _].
+    destruct A as [|a A']; [simpl in Hlen; lia | discriminate]. }
+  apply Hno.
+  exact (@three_disjoint_witness F C D B HC HD HB
+           (Hne C HC) (Hne D HD) (Hne B HB) HCD HCB HDB).
+Qed.
+
 Lemma meets_of_not_disjointb : forall C D,
     disjointb C D = false -> exists x, In x D /\ In x C.
 Proof.
@@ -727,8 +755,8 @@ Proof.
         apply disjointb_correct in HCf; apply disjointb_correct in HDf.
         destruct (disjointb C D) eqn:ECD.
         + exfalso; apply disjointb_correct in ECD.
-          apply Hno; exact (@three_disjoint_witness F C D B HCF HDF HB
-                              (Hne C HCF) (Hne D HDF) (Hne B HB) ECD HCf HDf).
+          exact (@miss_member_intersecting m F B C D ltac:(lia) HU Hno
+                   HB HCF HDF HCf HDf ECD).
         + apply disjointb_false_iff in ECD as [x [HxC HxD]].
           exists x; split; assumption. }
     (* piece two: misses A, hence meets B, and is intersecting *)
@@ -750,8 +778,8 @@ Proof.
         apply disjointb_correct in HCg; apply disjointb_correct in HDg.
         destruct (disjointb C D) eqn:ECD.
         + exfalso; apply disjointb_correct in ECD.
-          apply Hno; exact (@three_disjoint_witness F C D A HCF HDF HA
-                              (Hne C HCF) (Hne D HDF) (Hne A HA) ECD HCg HDg).
+          exact (@miss_member_intersecting m F A C D ltac:(lia) HU Hno
+                   HA HCF HDF HCg HDg ECD).
         + apply disjointb_false_iff in ECD as [x [HxC HxD]].
           exists x; split; assumption. }
     (* piece three: meets both *)

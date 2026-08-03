@@ -32,8 +32,11 @@
 //!   sets with `B`. With `A` and `B` forced this is a family of binary
 //!   clauses, and binary clauses are what a CDCL solver propagates.
 //!
-//! Those three facts are `nu_le_two_cover`, `intersecting_case_bound`
-//! and `miss_member_intersecting` in the Coq layer.
+//! In the Coq layer the first two are the branches of
+//! `SpreadThreshold.quadratic_no_three_disjoint_bound` and the cover is
+//! `SpreadThreshold.no_three_disjoint_cover_bound`; the third is
+//! `SpreadThreshold.miss_member_intersecting`, and the piece bound it
+//! feeds is `SpreadThreshold.intersecting_piece_bound`.
 //!
 //! # Symmetry
 //!

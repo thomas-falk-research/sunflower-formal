@@ -595,6 +595,7 @@ thm SpreadThreshold.cover_by_sets
 thm SpreadThreshold.cover_by_pairs
 thm SpreadThreshold.no_three_disjoint_cover_bound
 thm SpreadThreshold.cover_spread_disjoint
+thm SpreadThreshold.miss_member_intersecting
 thm SpreadThreshold.intersecting_piece_bound
 thm SpreadThreshold.cross_piece_bound
 thm SpreadThreshold.quadratic_no_three_disjoint_bound

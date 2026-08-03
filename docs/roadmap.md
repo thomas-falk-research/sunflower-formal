@@ -4450,11 +4450,18 @@ Recorded with its cost, because the negative is the useful part.
   nearly tight — 84 incidences against a capacity of 90 — which is the
   regime CDCL is worst at.
 * **The depth-first search on `(3,3,10)` did not terminate.** Measured
-  exactly: 20 000 001 nodes in 12.9 s, largest family 22 members against
-  a target of 28, and the unbounded run reached no verdict in the time it
-  was given. The three counting bounds cut the tree but not enough; what
-  is missing is isomorph rejection, and the residual group at ground 10
-  has order `3!·3!·4!·2 = 1728`.
+  exactly: 400 000 001 nodes in 251.8 s — 1.6 M nodes per second — with
+  the largest `r`-spread family of matching number 2 found being **23
+  members against a target of 28**, up from 22 at the 20 M-node mark. The
+  three counting bounds cut the tree but not enough; what is missing is
+  isomorph rejection, and the residual group at ground 10 has order
+  `3!·3!·4!·2 = 1728`.
+
+  The 23 is worth keeping even though it decides nothing. It is a lower
+  bound on the maximum, and the maximum is what has to reach 28 for
+  `r*(3,3) > 3`. Five short, after 4·10^8 nodes, is weak evidence that
+  the term really is 3 — and weak evidence is what the sequence has never
+  had at any `m > 2`.
 * **The depth-first search on `(4,3,13)` did not terminate**, in either
   the intersecting or the matching case. 710 candidate sets, target 82.
 * **Which way each instrument fails is itself the measurement.** The SAT

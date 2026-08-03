@@ -1429,6 +1429,9 @@ c49277838e07cf07  thm SpreadThreshold.no_three_disjoint_cover_bound
 1a788469fcc794a0  thm SpreadThreshold.cover_spread_disjoint
     cover_spread_disjoint : forall n : nat, 1 <= n -> SpreadYieldsDisjoint n 3 (2 * n)
 
+2bead40dfc275222  thm SpreadThreshold.miss_member_intersecting
+    miss_member_intersecting : forall (m : nat) (F : Family) (B C D : list nat), 1 <= m -> Uniform m F -> NoKDisjoint 3 F -> List.In B F -> List.In C F -> List.In D F -> Disjoint C B -> Disjoint D B -> ~ Disjoint C D
+
 401f025d9ee94d19  thm SpreadThreshold.intersecting_piece_bound
     intersecting_piece_bound : forall (m r : nat) (G : Family) (A : list nat), 2 <= m -> m - 1 <= r -> Uniform m G -> (forall T : list nat, List.NoDup T -> T <> nil -> deg T G <= PeanoNat.Nat.pow r (m - length T)) -> List.NoDup A -> length A = m -> (forall C : list nat, List.In C G -> exists x : nat, List.In x A /\ List.In x C) -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> length G <= PeanoNat.Nat.pow r (m - 1) + (m - 1) * (m - 1) * PeanoNat.Nat.pow r (m - 2)
 
