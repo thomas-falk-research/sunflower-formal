@@ -375,6 +375,32 @@ counterexample fits on 9 points, so the rows above at grounds 7, 8 and 9
 are arithmetic rather than search, and ground 10 — the first that could
 hold one — is open. `docs/roadmap.md` §22.2 records this.
 
+### Where a record could live: the counting ceiling
+
+`LinkCharacterisation` says sunflower-free means every link has matching
+number at most 2. At a `(b-1)`-set the link is 1-uniform, so its degree
+is at most 2; at a `(b-2)`-set it is a graph with `Δ ≤ 2` and `ν ≤ 2`,
+hence at most two disjoint triangles, so its degree is at most 6.
+Counting members against the subsets they contain turns each into a bound
+on `|F|`, and `genprog::size_ceiling` is the smaller:
+
+```
+  b = 4    n      8    9   10   11   12   13   14   15
+  ceiling        28   36   45   55   66   78   91  105
+
+  b = 5    n     10   11   12   13   14   15
+  ceiling        72   99  132  171  218  273
+```
+
+So **`iota(5) ≥ 101` is impossible below twelve points** and
+`iota(4) ≥ 51` is impossible below eleven — the first statement here
+about *where* a record could be rather than how big it would be. It also
+says §9's `b = 5` SAT row, run at ground 10 with a ceiling of 72, was
+asked at a ground that could not have answered it. At `b = 3` the ceiling
+is 10 at six points and `iota(3) = 10` attains it exactly; at `b = 4` the
+ceiling is 28 at eight points and an exhaustive search finds nothing
+there. See [`docs/roadmap.md`](docs/roadmap.md) §23.
+
 ### The threshold sequence `r*(m,3)`
 
 `SpreadYieldsDisjoint n 3 r` is true above `r*(n,3)` and false below it,

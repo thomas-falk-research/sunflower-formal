@@ -4626,3 +4626,159 @@ stays valuable — no proof assistant has the modern bound unconditionally,
 and that is a real artifact — but it is *re-formalising a 2020 proof*.
 It is the certificate half of the recipe with the discovery half absent.
 It should be done, and it should not be done first.
+
+---
+
+## 23. Searching over generator programs: the instrument, the bound that
+##     aims it, and four negatives
+
+§22.8 named the target: beat the 1972 lower bound by searching over the
+*programs that emit families* rather than over families, because §20.6
+measured the extremal objects as **isolated** — four of five parameter
+rows never left their seed under local search — and an isolated optimum
+is where moving the object fails and changing the generator can work.
+
+This section is that search, run. It did not move a record. What it
+produced is one bound that aims every future search on this row, one
+filled gap in §13.3, and three measured negatives.
+
+### 23.1 The counting ceiling, and where it says a record can live
+
+`LinkCharacterisation` says a family is sunflower-free exactly when every
+link has matching number at most 2. Two consequences were in the
+development as facts about *links*; neither had been turned into a bound
+on `|F|`.
+
+* A `(b-1)`-set's link is 1-uniform, so `ν <= 2` reads `deg <= 2`. Each
+  member contains `b` of them: **`|F| <= (2/b)·C(n, b-1)`**.
+* A `(b-2)`-set's link is a graph with `Δ <= 2` (from the line above) and
+  `ν <= 2`, so it is a union of paths and cycles with no 3-matching —
+  at most **two disjoint triangles**, six edges. Each member contains
+  `C(b,2)` of them: **`|F| <= (6/C(b,2))·C(n, b-2)`**.
+
+`genprog::size_ceiling` is the smaller of the two. Evaluated:
+
+```
+  b = 4    n     8    9   10   11   12   13   14   15
+  ceiling       28   36   45   55   66   78   91  105
+
+  b = 5    n    10   11   12   13   14   15
+  ceiling       72   99  132  171  218  273
+```
+
+Three readings, and the first two are the useful ones.
+
+1. **`iota(5) >= 101` is impossible below twelve points**, and
+   `iota(4) >= 51` — which reaches the same threshold through `double`
+   and `cone` — is impossible below eleven. That is the first statement
+   in this repository about *where* a record could be, as opposed to how
+   big it would have to be.
+2. **§9's `b = 5` SAT row was asked at a ground that could not answer
+   it.** It ran at ground 10, whose ceiling is 72 against a threshold of
+   101. `iota(5,10) >= 42` is a true measurement and it was never on
+   course, which §9 suspected on rate grounds and can now be said
+   exactly.
+3. **At `b = 3` the ceiling is 10 at six points, and `iota(3) = 10`.**
+   The extremal object of the whole 1972 tower saturates the counting
+   bound at its own ground set. At `b = 4` it does not: the ceiling at
+   eight points is 28 and the exhaustive search finds no 28-member family
+   there (`the_ceiling_is_not_attained_at_uniformity_four`). Whatever
+   makes `b = 3` special, it is not visible to this count.
+
+### 23.2 The instrument
+
+`rust/src/genprog.rs`. A **generator** is a parameterised program
+emitting a *pool* of candidate blocks; its score is the largest verified
+intersecting sunflower-free subfamily inside that pool. The pool is the
+hypothesis — "a record looks like this kind of object" — and the
+subfamily search is the evaluation, so structurally unrelated
+constructions land on one scale.
+
+Evaluation reuses `orbit::search_orbits` with singleton orbits. One thing
+had to be got right and was got wrong first: that routine is a
+**decision** procedure, and its bound ("what is in hand plus everything
+still to come") prunes at the root whenever the pool cannot reach the
+target, so its `best` is not a maximum. Reading it as one gives silent
+zeros on nonempty pools. `genprog::evaluate` therefore asks one decidable
+question at a time — succeed at `t`, ask `t+1`; fail exhaustively at `t`
+and the maximum is `t-1` — which keeps the bound sharp at every step.
+
+Differentially checked: the unrestricted pool at `b = 3` on six points
+returns 10, exhaustively, and every family that comes out is re-verified
+by `orbit::verify`, which shares no code with the search.
+
+### 23.3 Four negatives, with their cost
+
+**One: prescribed symmetry at `b = 5` intersecting is dead too.** §13.3
+ran `b = 4` intersecting, `b = 3` general and `b = 5` *general*, and
+found nothing. It never ran `b = 5` **intersecting**, and its own
+diagnosis said why grounds at or below `3b = 15` are the ones where
+orbits survive. §23.1 says the record needs only twelve points, so
+grounds 12–14 are both viable and below `3b` — the region where §13.3's
+reason for failure does not apply. Run (`examples/km_five.rs`): grounds
+12–16, every standard group, **every instance exhausted, best 75**
+against a record of 78 and a threshold of 101. The gap is filled and the
+answer is the same as §13.3's.
+
+**Two: SAT does not reach this row.** `iota(5)` at ground 12, asked for
+60 members — well below the 78 already in hand — was **undecided in
+241 s**. Consistent with §9's finding that the intersecting instances are
+the ones CDCL cannot do, and it rules out the obvious idea of walking the
+target up with a solver.
+
+**Three: every structured generator scores below no hypothesis at all.**
+The pools were chosen to be structurally different from `cone`, `double`
+and `substitute`, which is what §5 asks for:
+
+```
+  generator                              b   ground   best   control
+  transversals of a 4x3 grid             4       12     12        24  (g = 8)
+  the same, twisted by a weighted cocycle 4      12   <= 11        24
+  complementary selection, b = 3          3        6      8        10
+  star (= cone)                          4        8   <= 23        24
+```
+
+The transversal shape is where every product construction in the
+catalogue lives, and the cocycle twist is the algebraic move behind the
+modern cap-set constructions — §5 names it as the thing not in the
+catalogue. Both cap out far below the unrestricted search on the same
+ground set. Twisting never beat the untwisted grid at any modulus tried.
+
+**Four, and this one refutes a hypothesis of its own:** `iota(3) = 10` is
+"one triple from each complementary pair of `[6]`" — the 2-(6,3,2) design
+really does have that shape, which is what suggested the
+`complementary_half` generator. But **no weight rule finds it**: over
+every residue modulo 2, 3, 4 and 5, the best complementary selection
+contains only 8 of the 10, and `the_structured_pools_all_lose_to_no_hypothesis`
+pins that. The selection that makes the design is not a linear
+functional, so the generator built on that idea was built on a false
+reading of the object.
+
+### 23.4 What this says about the approach
+
+The generator-program idea is the right shape for an isolated optimum and
+it is *not* refuted by this — what is refuted is the specific family of
+generators a first pass produces. But the measurement to take seriously
+is §23.3's third row: on this problem the structured pools are
+**strictly worse** than the unrestricted pool at the same ground set,
+every time. That is the opposite of the cap-set situation, where the
+structure is what makes the search tractable at all, and it is a
+consequence of §13.3's observation one level up — sunflower-freeness is
+ternary and *negative*, so imposing structure removes blocks without ever
+buying a guarantee, and every block removed is a block a record might
+have needed.
+
+The honest next move is therefore not more generators of the same kind.
+It is either
+
+* **a generator whose pool is provably closed under the constraint** —
+  something whose blocks cannot form a sunflower by construction, so that
+  the pool *is* the family and there is no search inside it. Nothing in
+  the catalogue has this shape except `cone`, and that is why `cone` is
+  the only construction that has ever set a record here; or
+* **the exhaustive question at the grounds §23.1 opens**, which is
+  `iota(4) >= 28` at ten and eleven points. The ceiling permits 45 and
+  55, the record is 27 on nine points, and §9 left it undecided after an
+  hour of SAT. It is the smallest object whose existence would move
+  anything: `iota(4) >= 51` gives `g(4) >= 102` by `double` and
+  `iota(5) >= 102` by `cone`, and that beats 1972.

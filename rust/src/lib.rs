@@ -22,6 +22,7 @@ pub mod bounds;
 pub mod chvatal_hanson;
 pub mod construction;
 pub mod extend;
+pub mod genprog;
 pub mod ground;
 pub mod intersecting;
 pub mod link;
