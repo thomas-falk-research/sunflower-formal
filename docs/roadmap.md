@@ -4503,13 +4503,17 @@ the honesty of the bottom.
 
 **Down.**
 
-4. **SAT as the instrument for this question.** §9 measured SAT as
-   transformative on the `iota`/`g` row, where the constraints are
-   ternary and structural. Here the constraints are *cardinality*, and
-   two instances at parameters the depth-first search dispatches in
-   milliseconds ran for over an hour. Keep the encoding — it is an
-   independent check, and it is the only place the lex-leader symmetry
-   break exists — but do not expect it to decide a term.
+4. **SAT as the instrument for the *negative* side of this question.**
+   §9 measured SAT as transformative on the `iota`/`g` row, where the
+   constraints are ternary and structural. Here the binding constraints
+   are *cardinality*: cadical spent 6m21s failing to close `(3,3,9)`,
+   which the depth-first search dispatches in **zero nodes** because one
+   division settles it, and about half an hour on `(3,3,10)` without a
+   verdict. On the positive side it is the better instrument by a wide
+   margin — every counterexample here was found by SAT, `(4,2,11)` in
+   0.1 s over 29 885 variables. So: keep the encoding for finding
+   witnesses and as an independent check, and do not expect it to close a
+   negative.
 5. **`g(3)` exactly as a route to `r*(3,3)`.** Already closed by §20.5;
    §22.2 records that the brief's table had it backwards, so it is worth
    restating: the implication runs `r*(3,3) = 3 -> g(3) <= 27` and not
