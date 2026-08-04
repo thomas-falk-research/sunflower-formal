@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 85 anecdotes into a coverage metric over the
+  mutation testing from 87 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -5198,8 +5198,11 @@ not comparable with §23.3's.** Node counts are exact regardless.
 **The gates.**
 
 ```
-  make -j4 verify        green  (416 audited theorems, 416 "Closed under
-                                the global context", none carrying an axiom)
+  make -j4 verify        green  (424 audited theorems, 424 "Closed under
+                                the global context", none carrying an axiom
+                                -- including everything in TwoCover.v, whose
+                                dependence on Frankl is a hypothesis rather
+                                than an assumption)
   make coqchk            green  (38 modules; one axiom:
                                 Sunflower.ALWZ.Rao20_lemma2; type-in-type,
                                 unsafe (co)fixpoints and assumed positivity
@@ -5434,7 +5437,73 @@ requested. A run that reports nothing until it returns cannot be
 distinguished from a hung one, and this run spent two hours in that
 state.
 
-### 24.12 The one-line verdict
+### 24.12 The third case, as a hypothesis: `r*(3,3) ≤ 4` conditionally
+
+`coq/TwoCover.v`, eight more audited names, **and still no new axiom**.
+
+§24.10 proved `τ ≤ 2`. The remaining case is `τ = 3`, which is Frankl's
+theorem and which this development does not have. It enters as an
+explicit hypothesis, to the left of every arrow, so `make axiom-audit` is
+unchanged and `Print Assumptions` on every name in the file still reports
+"closed under the global context". The repository still has exactly one
+axiom.
+
+```coq
+  Definition TauThreeAtMost (K : nat) : Prop :=
+    forall G, Uniform 3 G -> (G intersecting) ->
+      (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->   (* τ ≥ 3 *)
+      length G <= K.
+
+  Theorem r_star_three_three_at_most_four :
+    TauThreeAtMost 16 -> SpreadYieldsDisjoint 3 3 4.
+```
+
+Three things about that statement are the point.
+
+**One: 16, not 10.** Frankl's theorem gives `|G| ≤ 10`; the split needs
+only 16, so the theorem is stated on the weaker hypothesis and Frankl is
+a corollary (`frankl_is_stronger_than_needed`,
+`r_star_three_three_at_most_four_from_frankl`). The gap the missing
+theorem has to fill is the interval `[16, 27]` — 27 being the elementary
+greedy bound for `τ = 3` that this development *could* prove and which is
+not enough.
+
+**Two: the arithmetic has no slack at all.** The split reads
+`|F| ≤ 3·r² + I(3,r)`, which at `r = 4` is `48 + I`, against `4³ = 64`.
+`48 + 16 = 64` exactly. The mutation `twocover-tau-three-seventeen`
+weakens the hypothesis to `TauThreeAtMost 17` and is killed: one more
+member and the theorem is false. The `m = 2` row of
+`SpreadYieldsDisjoint 3 3 4` is an equality too — the cover bound gives
+`2·2·4 = 16` against `4² = 16` — so nothing anywhere in this is loose.
+
+**Three: what had to be built to say it.** `split_with_piece`
+parameterises §24.2's split by the intersecting-piece bound instead of
+hard-wiring `intersecting_piece_bound`. That is the difference between 32
+and 16 at `(3,4)`, which is the difference between not closing and
+closing. And `covers_dec_search` makes "some two points cover `G`" a
+finite decision — the candidates can be taken from `concat G`, because a
+cover point lying in no member is useless — which is what lets the
+`τ ≤ 2` and `τ = 3` branches be separated constructively.
+
+**Where the sequence now stands.**
+
+```
+  m     r*(m,3)        by
+  1     = 2   exact
+  2     = 3   exact
+  3     in [3,4]       upper: TauThreeAtMost 16 (Frankl); lower: r = 2 refuted
+  4     in [3,7]       upper: quadratic / split threshold
+  5     in [3,8]
+  10    in [3,17]
+```
+
+`r*(3,3) ∈ [3,4]` is conditional and says so. Unconditionally it remains
+`[3,5]` from §24.2. Either way the first open term of the sequence that
+*is* the conjecture is now one value wide given one classical theorem,
+where this session found it three values wide and pointed at the wrong
+uniformity.
+
+### 24.13 The one-line verdict
 
 **A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
 than the development's previous best at every uniformity from 5 up and
@@ -5463,11 +5532,13 @@ the best this method can ever give. §24.10 then proved the `τ ≤ 2` half
 of that at `m = 3`: the star is extremal among two-covered families for
 every `r ≥ 4`, and `r = 4` is the exact crossover.
 
-So `r*(3,3) ≤ 4` — which would put the first open term of the sequence
-at `{3,4}` — now rests on **exactly one** unformalised classical result:
-Frankl's bound of 10 for 3-uniform intersecting families of covering
-number 3. Nothing else is missing.
+§24.12 then discharged everything else: `r*(3,3) ≤ 4` is a theorem of
+this development **conditional on one hypothesis and no new axiom** —
+that a 3-uniform intersecting family of covering number 3 has at most 16
+members, which Frankl's theorem gives with room to spare (it gives 10)
+and which the elementary greedy bound (27) does not.
 
 That is the session's real output: not the search, which decided nothing
-at either question it was asked, but a theorem and a target one lemma
-wide.
+at either question it was asked, but an unconditional theorem, a
+conditional one that closes the first open term to a single value, and a
+target that is now one classical result wide.

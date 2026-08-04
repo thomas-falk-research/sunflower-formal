@@ -572,3 +572,46 @@ fn the_two_cover_bound_makes_the_star_extremal_from_four_on() {
     assert!(10 <= 16, "Frankl's bound would be enough");
     assert_eq!(3 * 16 + 16, 64, "3*r^(m-1) + I = r^m at (m,r) = (3,4)");
 }
+
+/// The arithmetic behind `TwoCover.r_star_three_three_at_most_four`, and
+/// how much of Frankl's theorem it actually uses.
+///
+/// The split reads `|F| <= 3·r² + I(3,r)`. At `r = 4` that is `48 + I`,
+/// and `SpreadYieldsDisjoint 3 3 4` needs `4³ = 64` to be an upper bound.
+/// So `I(3,4) <= 16` is exactly enough and `17` is exactly one too many —
+/// the arithmetic has **no slack at all**, which is why the theorem is
+/// stated on `TauThreeAtMost 16` rather than on Frankl's 10.
+///
+/// The room between 10 and 16 is room in the hypothesis, not in the
+/// bound: any τ=3 bound of 16 or better closes it, and the elementary
+/// greedy bound of `3³ = 27` does not.
+#[test]
+fn the_conditional_r_star_three_three_bound_has_no_slack() {
+    let split = |r: u64, i: u64| 3 * r * r + i;
+    assert_eq!(split(4, 16), 64);
+    assert_eq!(4u64.pow(3), 64);
+    assert!(split(4, 16) <= 4u64.pow(3), "16 closes it");
+    assert!(split(4, 17) > 4u64.pow(3), "17 does not");
+
+    // The three uniformities `SpreadYieldsDisjoint 3 3 4` quantifies over.
+    // m = 1 and m = 2 come from the cover bound 2m·r^(m-1); m = 2 is also
+    // an equality, so that row is as tight as the m = 3 one.
+    for (m, cover) in [(1u32, 2 * 1 * 4u64.pow(0)), (2, 2 * 2 * 4u64.pow(1))] {
+        assert!(cover <= 4u64.pow(m), "cover bound closes m = {m}");
+    }
+    assert_eq!(2 * 2 * 4u64.pow(1), 4u64.pow(2), "m = 2 is an equality");
+
+    // Where the assumed constant sits between what is provable and what
+    // is needed.
+    let frankl = 10u64;
+    let needed = 16u64;
+    let greedy = 3u64.pow(3);
+    assert!(frankl <= needed, "Frankl's bound is stronger than needed");
+    assert!(greedy > needed, "the elementary greedy bound is not enough");
+    assert_eq!((frankl, needed, greedy), (10, 16, 27));
+
+    // And the measured maximum of the whole intersecting piece at (3,4)
+    // is 16 — consistent with, and no better than, what the hypothesis
+    // asserts about its τ = 3 part.
+    assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
+}

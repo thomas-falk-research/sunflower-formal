@@ -559,3 +559,302 @@ Proof.
     pose proof (existsb_false_forall _ _ _ Eq C HC) as E.
     apply Bool.negb_false_iff in E; apply memb_true_iff; exact E.
 Qed.
+
+(** * The third case, and what it closes
+
+    §24.9's target is [I(3,4) <= 16], where [I(m,r)] is the largest
+    [m]-uniform intersecting family satisfying Rao's condition. The
+    covering number of a 3-uniform intersecting family is at most 3, and
+    [tau <= 2] is [covered_by_two_at_most_star] above. What remains is
+    [tau = 3], and that is Frankl's theorem — a classical result this
+    development does not have.
+
+    It is taken here as an explicit **hypothesis**, not an axiom: the
+    repository has exactly one axiom ([Sunflower.ALWZ.Rao20_lemma2]) and
+    is not gaining a second. Everything below is an implication with
+    [FranklTauThree] to the left of the arrow, so [make axiom-audit] is
+    unchanged and [Print Assumptions] on every name here still reports
+    "closed under the global context".
+
+    **Only 16 is needed, not 10.** The split bound reads
+    [|F| <= 3*r^2 + I(3,r)], and at [r = 4] that is [48 + I <= 64] exactly
+    when [I <= 16]. Frankl's bound of 10 is comfortably stronger than
+    required; the elementary greedy bound for [tau = 3] is [3^3 = 27],
+    which is not. So the gap this hypothesis fills is the interval
+    [[16, 27]], and any bound of 16 or better closes it. *)
+
+Definition FranklTauThree : Prop :=
+  forall (G : Family),
+    Uniform 3 G ->
+    (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+    (* covering number at least 3: no two points meet every member *)
+    (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->
+    length G <= 10.
+
+(** [TauThreeAtMost K] is the same statement with the constant left
+    open. Frankl gives [K = 10]; everything below needs only [K = 16], so
+    that is the hypothesis the theorems actually take. *)
+
+Definition TauThreeAtMost (K : nat) : Prop :=
+  forall (G : Family),
+    Uniform 3 G ->
+    (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+    (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->
+    length G <= K.
+
+Lemma frankl_is_stronger_than_needed : FranklTauThree -> TauThreeAtMost 16.
+Proof. intros HF G HU Hint Htau; pose proof (HF G HU Hint Htau); lia. Qed.
+
+(** ** The covering-number case split
+
+    Deciding "some two points cover [G]" is a finite search, because a
+    cover point that lies in no member is useless: the candidates can be
+    taken from [concat G]. *)
+
+Lemma covers_dec_search :
+  forall (G : Family) p q,
+    existsb (fun a => existsb
+       (fun b => forallb (fun C => orb (memb a C) (memb b C)) G) (concat G))
+       (concat G) = false ->
+    G <> [] ->
+    exists C, In C G /\ ~ In p C /\ ~ In q C.
+Proof.
+  intros G p q Hsearch HGne.
+  (* a point in no member constrains nothing *)
+  assert (Hmiss : forall a, ~ In a (concat G) -> forall C, In C G -> ~ In a C).
+  { intros a Ha C HC Hin.
+    apply Ha, (proj2 (in_concat G a)); exists C; split; assumption. }
+  (* for points that do occur, the failed search hands back a witness *)
+  assert (Hpair : forall a b, In a (concat G) -> In b (concat G) ->
+                    exists C, In C G /\ ~ In a C /\ ~ In b C).
+  { intros a b Ha Hb.
+    pose proof (existsb_false_forall _ _ _ Hsearch a Ha) as E1.
+    pose proof (existsb_false_forall _ _ _ E1 b Hb) as E2.
+    destruct (existsb (fun C => negb (orb (memb a C) (memb b C))) G) eqn:Ex.
+    - apply existsb_exists in Ex as [C [HC Hneg]].
+      apply Bool.negb_true_iff, Bool.orb_false_iff in Hneg as [Ea Eb].
+      exists C; repeat split;
+        [exact HC | intros Hin; apply memb_true_iff in Hin; congruence
+         | intros Hin; apply memb_true_iff in Hin; congruence].
+    - exfalso.
+      assert (Hall : forallb (fun C => orb (memb a C) (memb b C)) G = true).
+      { apply forallb_forall; intros C HC.
+        pose proof (existsb_false_forall _ _ _ Ex C HC) as E.
+        apply Bool.negb_false_iff in E; exact E. }
+      congruence. }
+  destruct (in_dec Nat.eq_dec p (concat G)) as [Hp|Hp];
+    destruct (in_dec Nat.eq_dec q (concat G)) as [Hq|Hq].
+  - exact (Hpair p q Hp Hq).
+  - destruct (Hpair p p Hp Hp) as [C [HC [Hnp _]]].
+    exists C; repeat split; [exact HC | exact Hnp | apply (Hmiss q Hq C HC)].
+  - destruct (Hpair q q Hq Hq) as [C [HC [Hnq _]]].
+    exists C; repeat split; [exact HC | apply (Hmiss p Hp C HC) | exact Hnq].
+  - destruct G as [|M G0]; [contradiction|].
+    exists M; repeat split; [left; reflexivity | | ].
+    + apply (Hmiss p Hp M (or_introl eq_refl)).
+    + apply (Hmiss q Hq M (or_introl eq_refl)).
+Qed.
+
+(** ** [I(3,r) <= r^2] for [r >= 4], given Frankl
+
+    The star is extremal among *all* 3-uniform intersecting Rao-spread
+    families once [r >= 4] — the [tau <= 2] half proved above, the
+    [tau = 3] half assumed. *)
+
+Theorem intersecting_at_most_star :
+  forall K, TauThreeAtMost K ->
+  forall r (G : Family),
+    K <= r * r -> 4 <= r ->
+    Uniform 3 G -> RaoSpread 3 G r ->
+    (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+    length G <= r * r.
+Proof.
+  intros K HF r G HKr Hr HU HR Hint.
+  destruct (existsb (fun a => existsb
+     (fun b => forallb (fun C => orb (memb a C) (memb b C)) G) (concat G)) (concat G))
+    eqn:Esearch.
+  - (* two points cover: the case proved above *)
+    apply existsb_exists in Esearch as [a [Ha Hb']].
+    apply existsb_exists in Hb' as [b [Hb Hall]].
+    assert (Hcov : forall C, In C G -> In a C \/ In b C).
+    { intros C HC.
+      pose proof (proj1 (forallb_forall _ G) Hall C HC) as E.
+      apply Bool.orb_true_iff in E as [E|E];
+        [left | right]; apply memb_true_iff; exact E. }
+    destruct (Nat.eq_dec a b) as [<-|Hab].
+    + (* one point covers: a star *)
+      apply (@one_cover_bound r G a HR).
+      intros C HC; destruct (Hcov C HC); assumption.
+    + exact (@covered_by_two_at_most_star r G a b Hr HU HR Hint Hcov Hab).
+  - (* no two points cover: Frankl's case *)
+    destruct G as [|M G0] eqn:EG; [simpl; lia | rewrite <- EG in *].
+    assert (HGne : G <> []) by (rewrite EG; discriminate).
+    assert (Htau : forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C)
+      by (intros p q; exact (@covers_dec_search G p q Esearch HGne)).
+    eapply Nat.le_trans; [exact (HF G HU Hint Htau) | exact HKr].
+Qed.
+
+(** ** The split, with the piece bound supplied
+
+    [SpreadThreshold.split_no_three_disjoint_bound] uses
+    [intersecting_piece_bound] for the part missing [A]. Parameterising
+    that part is what lets a *measured* or *assumed* bound be plugged in,
+    and at [(3,4)] it is the difference between 32 and 16 — which is the
+    difference between not closing and closing. *)
+
+Theorem split_with_piece :
+  forall r (F : Family) (K : nat),
+    Uniform 3 F -> RaoSpread 3 F r ->
+    NoKDisjoint 3 F ->
+    (forall H, Uniform 3 H -> RaoSpread 3 H r ->
+       (forall C D, In C H -> In D H -> exists x, In x C /\ In x D) ->
+       length H <= K) ->
+    length F <= 3 * (r * r) + K.
+Proof.
+  intros r F K HU HR Hno Hpiece.
+  assert (Hne : forall A, In A F -> A <> []).
+  { intros A HA; destruct (@uniform_mem 3 F A HU HA) as [Hlen _].
+    destruct A as [|a A']; [simpl in Hlen; lia | discriminate]. }
+  destruct (existsb (fun A => existsb (fun B => disjointb A B) F) F) eqn:Hex.
+  - apply existsb_exists in Hex as [A [HA HB']].
+    apply existsb_exists in HB' as [B [HB HABb]].
+    apply disjointb_correct in HABb.
+    destruct (@uniform_mem 3 F A HU HA) as [HAlen HAnd].
+    set (f := fun C : list nat => disjointb C A).
+    assert (Hsplit : length F = length (filter f F)
+                                + length (filter (fun C => negb (f C)) F))
+      by apply length_filter_partition.
+    (* the part meeting A: covered by the three points of A *)
+    assert (HM : length (filter (fun C => negb (f C)) F) <= 3 * (r * r)).
+    { assert (HMA : length (filter (fun C => negb (f C)) F)
+                    <= length A * (r ^ (3 - 1))).
+      { apply cover_by_points.
+        - intros C HC; apply filter_In in HC as [_ HCf].
+          apply Bool.negb_true_iff in HCf; unfold f in HCf.
+          apply meets_of_not_disjointb; exact HCf.
+        - intros x _.
+          eapply Nat.le_trans; [apply deg_filter_le | eapply rao_point; exact HR]. }
+      rewrite HAlen in HMA; simpl in HMA; nia. }
+    (* the part missing A: intersecting, so the supplied bound applies *)
+    assert (HP : length (filter f F) <= K).
+    { apply Hpiece.
+      - apply uniform_filter; exact HU.
+      - intros T HT HTn.
+        eapply Nat.le_trans; [apply deg_filter_le | apply HR; assumption].
+      - intros C D HC HD.
+        apply filter_In in HC as [HCF HCf]; apply filter_In in HD as [HDF HDf].
+        unfold f in HCf, HDf.
+        apply disjointb_correct in HCf; apply disjointb_correct in HDf.
+        destruct (disjointb C D) eqn:ECD.
+        + exfalso; apply disjointb_correct in ECD.
+          exact (@miss_member_intersecting 3 F A C D ltac:(lia) HU Hno
+                   HA HCF HDF HCf HDf ECD).
+        + apply disjointb_false_iff in ECD as [x [HxC HxD]].
+          exists x; split; assumption. }
+    lia.
+  - (* F is intersecting: it is its own piece *)
+    assert (Hint : forall C D, In C F -> In D F -> exists x, In x C /\ In x D).
+    { intros C D HC HD.
+      destruct (disjointb C D) eqn:ECD.
+      - exfalso.
+        assert (Hcontra : existsb
+                  (fun A => existsb (fun B => disjointb A B) F) F = true).
+        { apply existsb_exists; exists C; split; [exact HC|].
+          apply existsb_exists; exists D; split; [exact HD | exact ECD]. }
+        congruence.
+      - apply disjointb_false_iff in ECD as [x [HxC HxD]].
+        exists x; split; assumption. }
+    pose proof (Hpiece F HU HR Hint); lia.
+Qed.
+
+(** ** The first open term of the sequence, conditionally
+
+    [docs/roadmap.md] §22.2 records [r*(3,3)] in [[3,6]]; §24.2 narrowed
+    it to [[3,5]] unconditionally. This closes it to [[3,4]] on Frankl's
+    theorem alone.
+
+    The arithmetic is exact and has no slack:
+
+<<
+      |F|  <=  3 * r^2   +   I(3,r)          (split_with_piece)
+           <=  3 * 16    +   16      =  64   =  4^3      at r = 4.
+>>
+
+    So [4^3 < |F|] is impossible, which is [SpreadYieldsDisjoint 3 3 4].
+    The two smaller uniformities come from the cover bound directly:
+    at [m = 1] it gives 2 against [4], and at [m = 2] it gives
+    [2*2*4 = 16] against [4^2 = 16] — equality, so that row is as tight
+    as this one. *)
+
+Corollary intersecting_at_most_star_from_frankl :
+  FranklTauThree ->
+  forall r (G : Family),
+    4 <= r ->
+    Uniform 3 G -> RaoSpread 3 G r ->
+    (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+    length G <= r * r.
+Proof.
+  intros HF r G Hr HU HR Hint.
+  apply (@intersecting_at_most_star 10 (fun G' a b c => HF G' a b c) r G);
+    [nia | exact Hr | exact HU | exact HR | exact Hint].
+Qed.
+
+Theorem r_star_three_three_at_most_four :
+  TauThreeAtMost 16 -> SpreadYieldsDisjoint 3 3 4.
+Proof.
+  intros HK m F Hm Hmn HU HD Hsize HR.
+  destruct (@decide_three_disjoint m F ltac:(lia) HU) as [Hyes|Hno];
+    [exact Hyes | exfalso].
+  destruct m as [|[|[|[|m']]]]; try lia.
+  - pose proof (@no_three_disjoint_cover_bound 1 4 F ltac:(lia) HU HR Hno) as Hb.
+    simpl in Hb, Hsize; lia.
+  - pose proof (@no_three_disjoint_cover_bound 2 4 F ltac:(lia) HU HR Hno) as Hb.
+    simpl in Hb, Hsize; lia.
+  - pose proof (@split_with_piece 4 F 16 HU HR Hno
+                  (fun H HUh HRh Hinth =>
+                     @intersecting_at_most_star 16 HK 4 H
+                       ltac:(lia) ltac:(lia) HUh HRh Hinth)) as Hb.
+    simpl in Hsize; lia.
+Qed.
+
+(** The sunflower number this yields, and where it stands: through
+    [spread_reduction], [f(3,3) <= 4^3 + 1 = 65]. Erdős–Rado 1960 gives
+    [3!*2^3 + 1 = 49] unconditionally, so this is still the worse bound
+    on [f] — as §24.2 says, the content is the threshold, not the
+    number. *)
+
+Corollary f_three_three_from_frankl :
+  TauThreeAtMost 16 -> UpperBound 3 3 65.
+Proof.
+  intros HK.
+  replace 65 with (S (4 ^ 3)) by reflexivity.
+  apply (@spread_reduction 3 3 4);
+    [lia | lia | apply r_star_three_three_at_most_four; exact HK | lia].
+Qed.
+
+(** And the same on Frankl's theorem as classically stated. *)
+
+Corollary r_star_three_three_at_most_four_from_frankl :
+  FranklTauThree -> SpreadYieldsDisjoint 3 3 4.
+Proof.
+  intros HF; apply r_star_three_three_at_most_four,
+    frankl_is_stronger_than_needed; exact HF.
+Qed.
+
+(** ** What is assumed, isolated
+
+    [FranklTauThree] is the *only* thing between the development and
+    [r*(3,3) <= 4]. It is a hypothesis, not an axiom: [make axiom-audit]
+    is unchanged and every name in this file is closed under the global
+    context. Two things worth recording about how much of it is used.
+
+    - **Only 16 is needed, not 10.** [split_with_piece] at [r = 4] wants
+      [I(3,4) <= 16], and [intersecting_at_most_star_from_frankl] would
+      go through with any bound up to 16 in place of Frankl's 10.
+      [frankl_is_stronger_than_needed] below is that statement.
+    - **Only the [tau = 3] case is assumed.** [tau <= 2] is
+      [covered_by_two_at_most_star], proved. So what is missing is one
+      classical theorem about one covering number, and the interval it
+      has to beat is [[16, 27]] — 27 being the elementary greedy bound
+      that this development could prove but which is not enough. *)
+

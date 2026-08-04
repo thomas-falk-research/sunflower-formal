@@ -1254,6 +1254,38 @@ r^(m-1) members, so the argument closes exactly when 2m <= r; at m = n and \
 r = 2n - 1 it does not."""
 
 [[mutation]]
+id = "twocover-tau-three-seventeen"
+file = "coq/TwoCover.v"
+question = """r_star_three_three_at_most_four assumes TauThreeAtMost 16 -- that \
+a 3-uniform intersecting family of covering number 3 has at most sixteen \
+members. Frankl's theorem gives ten, so there looks to be room. Is 16 the \
+largest constant that works, or is there slack?"""
+find = """Theorem r_star_three_three_at_most_four :
+  TauThreeAtMost 16 -> SpreadYieldsDisjoint 3 3 4."""
+replace = """Theorem r_star_three_three_at_most_four :
+  TauThreeAtMost 17 -> SpreadYieldsDisjoint 3 3 4."""
+expect = "killed"
+because = """No slack whatever. The split reads |F| <= 3*r^2 + I, which at \
+r = 4 is 48 + I, and SpreadYieldsDisjoint needs 4^3 = 64 to be an upper \
+bound. 48 + 16 = 64 exactly; 48 + 17 = 65 is one too many. The room \
+between 16 and Frankl's 10 is room in the *hypothesis*, not in the \
+arithmetic."""
+
+[[mutation]]
+id = "twocover-split-drop-cover-multiplier"
+file = "coq/TwoCover.v"
+question = """split_with_piece charges 3*r^2 for the part meeting A, one r^2 \
+per point of A. Is the multiplier real, or does one point of A already cover \
+that part?"""
+find = "    length F <= 3 * (r * r) + K."
+replace = "    length F <= r * r + K."
+expect = "killed"
+because = """Real, and it is the same multiplier SS24.2's split turns on: a \
+member meeting A can meet it at any of its three points, so cover_by_points \
+charges length A = 3 times the point degree. Dropping it would claim the \
+part meeting A is a single star."""
+
+[[mutation]]
 id = "twocover-drop-r-at-least-four"
 file = "coq/TwoCover.v"
 question = """two_cover_star_extremal assumes 4 <= r before concluding that a \

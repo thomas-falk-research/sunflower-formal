@@ -618,6 +618,14 @@ thm TwoCover.two_cover_star_extremal
 thm TwoCover.covered_by_two_at_most_star
 thm TwoCover.two_cover_bound_at_four
 thm TwoCover.one_cover_bound_at_four
+thm TwoCover.covers_dec_search
+thm TwoCover.frankl_is_stronger_than_needed
+thm TwoCover.intersecting_at_most_star
+thm TwoCover.intersecting_at_most_star_from_frankl
+thm TwoCover.split_with_piece
+thm TwoCover.r_star_three_three_at_most_four
+thm TwoCover.r_star_three_three_at_most_four_from_frankl
+thm TwoCover.f_three_three_from_frankl
 thm LinkCeiling.one_uniform_pairwise_disjoint
 thm LinkCeiling.top_link_degree_at_most_two
 thm LinkCeiling.top_link_degree_three_uniform

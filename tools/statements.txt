@@ -1498,6 +1498,30 @@ f54c3b26aff09062  thm TwoCover.covered_by_two_at_most_star
 0bbccc07e9b8e2b1  thm TwoCover.one_cover_bound_at_four
     one_cover_bound_at_four : forall (G : Family) (w : nat), RaoSpread 3 G 4 -> (forall C : list nat, List.In C G -> List.In w C) -> length G <= 16
 
+c500bdcd321bf31e  thm TwoCover.covers_dec_search
+    covers_dec_search : forall (G : Family) (p q : nat), List.existsb (fun a : nat => List.existsb (fun b : nat => List.forallb (fun C : list nat => (memb a C || memb b C)%bool) G) (List.concat G)) (List.concat G) = false -> G <> nil -> exists C : list nat, List.In C G /\ ~ List.In p C /\ ~ List.In q C
+
+de0f655a9285be1f  thm TwoCover.frankl_is_stronger_than_needed
+    frankl_is_stronger_than_needed : FranklTauThree -> TauThreeAtMost 16
+
+062744f9736689f2  thm TwoCover.intersecting_at_most_star
+    intersecting_at_most_star : forall K : nat, TauThreeAtMost K -> forall (r : nat) (G : Family), K <= r * r -> 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> length G <= r * r
+
+e4e9e4a44474b18b  thm TwoCover.intersecting_at_most_star_from_frankl
+    intersecting_at_most_star_from_frankl : FranklTauThree -> forall (r : nat) (G : Family), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> length G <= r * r
+
+4ac83c2bea6ba85c  thm TwoCover.split_with_piece
+    split_with_piece : forall (r : nat) (F : Family) (K : nat), Uniform 3 F -> RaoSpread 3 F r -> NoKDisjoint 3 F -> (forall H : Family, Uniform 3 H -> RaoSpread 3 H r -> (forall C D : list nat, List.In C H -> List.In D H -> exists x : nat, List.In x C /\ List.In x D) -> length H <= K) -> length F <= 3 * (r * r) + K
+
+259d85c42ce98812  thm TwoCover.r_star_three_three_at_most_four
+    r_star_three_three_at_most_four : TauThreeAtMost 16 -> SpreadYieldsDisjoint 3 3 4
+
+d7e37946a1926a75  thm TwoCover.r_star_three_three_at_most_four_from_frankl
+    r_star_three_three_at_most_four_from_frankl : FranklTauThree -> SpreadYieldsDisjoint 3 3 4
+
+46df788cd440c7b6  thm TwoCover.f_three_three_from_frankl
+    f_three_three_from_frankl : TauThreeAtMost 16 -> UpperBound 3 3 65
+
 773a21da388a7b71  thm LinkCeiling.one_uniform_pairwise_disjoint
     one_uniform_pairwise_disjoint : forall G : Family, Uniform 1 G -> Distinct G -> PairwiseDisjoint G
 
