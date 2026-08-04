@@ -5231,7 +5231,81 @@ never failed in a session is a gate nobody has tested.
 
 [TO FILL]
 
-### 24.9 The one-line verdict
+### 24.9 Measured: the intersecting piece bound has a factor of two of
+###      slack, and closing it would give `r*(m,3) ≤ m+1`
+
+`rstar::max_intersecting_piece` computes the quantity the threshold
+actually turns on: the largest `m`-uniform **intersecting** family
+satisfying Rao's condition. Write it `I(m,r)`. The split bound is
+
+```
+  |F|  ≤  m·r^(m-1)  +  I(m,r),
+```
+
+and `intersecting_piece_bound` supplies `r^(m-1) + (m-1)²·r^(m-2)` for
+the second term. Nobody had asked what `I` actually is.
+
+```
+  m   r   ground   5    6    7    8    9        piece bound   star
+  3   3            10   10   10   10   10            21         9
+  3   4            10   10   12   14   16            32        16
+```
+
+Every row exhausted (`the_intersecting_piece_bound_has_a_factor_of_two_of_slack`
+pins grounds 5–8; ground 9 costs 56M and 306M nodes respectively).
+
+Two things fall out.
+
+**One: the bound is off by a factor of two at `(3,3)`.** The truth is 10
+against a bound of 21. The extremal object is `C([5],3)` — every 3-subset
+of a 5-set — which is intersecting with `deg = 6` and `deg_pair = 3`, so
+it sits under both caps, and it **beats every star** (9). That is worth
+noticing on its own: the natural guess for the extremal intersecting
+family under a degree cap is a star, and at `(3,3)` it is not.
+
+**Two, and this is the one that matters: if `I(m,r)` were the star
+`r^(m-1)`, the split condition would read**
+
+```
+  m·r^(m-1) + r^(m-1) ≤ r^m     ⟺     r ≥ m + 1.
+```
+
+**`r*(m,3) ≤ m+1`** — linear with constant 1, against the `φ·m = 1.618 m`
+proved in §24.2. At `m = 10` that is 11 against 17. And `r = m` is a hard
+floor for this method whatever `I` is, since `m·r^(m-1)` alone already
+equals `r^m` there, so `m+1` is the best the two-way split can ever give.
+`the_star_would_give_r_star_at_most_m_plus_one` pins both halves.
+
+At `(3,4)` the measurement says `I = 16`, which **is** the star, exactly
+the value needed: `3·16 + 16 = 64 = 4³`. So
+
+> **`r*(3,3) ≤ 4` follows from `I(3,4) ≤ 16` alone**, and `I(3,4) = 16`
+> is exhausted for every ground set up to nine points.
+
+That would put the first open term of the sequence at `{3,4}`, one value
+from decided.
+
+**What is not proved, stated plainly.** `I(3,4) ≤ 16` is measured to
+ground 9, not proved for all grounds, and the search cannot reach ground
+10 (the ground-9 row already costs 306M nodes and each further point
+multiplies by roughly twenty). A proof would go by covering number, since
+an intersecting 3-uniform family has `τ ≤ 3`:
+
+* `τ = 1` — a star, so `|G| ≤ deg cap = 16`. Immediate.
+* `τ = 2` — cover `{p,q}`. If both sides are nonempty, an edge of one
+  side's tail forces the other side's tail into two stars, giving
+  `|G_p|, |G_q| ≤ 2·deg_pair = 8` and `|G| ≤ 8+8+4 = 20`; pushing either
+  side to 8 collapses the other to 1. Elementary, and it is a real case
+  analysis rather than a line.
+* `τ = 3` — **Frankl's theorem**, `|G| ≤ 10`, which this repository does
+  not have. The elementary greedy bound is `3³ = 27`, well short of 16.
+
+So the honest shape of the next step is: one elementary case analysis,
+and one classical theorem to formalise. That is a much more specific
+target than "sharpen `intersecting_piece_bound`", and it is worth
+strictly more — the whole table of §24.2 moves if it lands.
+
+### 24.10 The one-line verdict
 
 **A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
 than the development's previous best at every uniformity from 5 up and
@@ -5247,9 +5321,12 @@ is a cost, not a result; what it leaves behind is a verified 23-member
 object five short of a refutation, and the observation that the witness
 problem is finite with a 114-point ground bound.
 
-The lead worth taking next is not the search. It is §24.5's last
-paragraph: `r*(3,3) ≤ 4` needs only that no 3-uniform intersecting
-family with `deg ≤ 16` and `deg_pair ≤ 4` exceeds 18 members, a star
-attains 16, and the only missing case is `τ = 3`. That is a one-lemma
-target, and it would pin the first open term of the sequence to
-`{3, 4}`.
+The lead worth taking next is not the search, and §24.9 sharpened it
+past what §24.5 first said. `I(m,r)` — the true maximum of the
+intersecting piece — is **measured** at 10 against a bound of 21 at
+`(3,3)`, and at exactly the star at `(3,4)`. If the star is extremal in
+general, the split condition collapses from `r ≥ φ·m` to **`r ≥ m+1`**,
+which is the best this method can ever give, and `r*(3,3) ≤ 4` follows
+from `I(3,4) ≤ 16` alone. The remaining work is one elementary case
+analysis (`τ = 2`) and one classical theorem to formalise (Frankl, for
+`τ = 3`).

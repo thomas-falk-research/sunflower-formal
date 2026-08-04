@@ -19,8 +19,8 @@
 //!   solved values are what `docs/roadmap.md` §22 tabulates.
 
 use sunflower_formal::rstar::{
-    best_bound, cover_bound, decide, degree_ceiling, dfs, min_ground, quadratic_bound, split_bound,
-    verify, Outcome, Question, Ternary,
+    best_bound, cover_bound, decide, degree_ceiling, dfs, max_intersecting_piece, min_ground,
+    quadratic_bound, split_bound, verify, Outcome, Question, Ternary,
 };
 use sunflower_formal::spread::{has_k_disjoint, is_rao_spread, matching_number, Mask};
 
@@ -432,4 +432,86 @@ fn the_r_star_three_three_witness_problem_reaches_twenty_three() {
     // Five short of a refutation, which is the whole point of pinning it.
     assert_eq!(F.len(), 23);
     assert!((F.len() as u64) < q.target(), "not a counterexample, and not claimed as one");
+}
+
+/// How much slack is in `intersecting_piece_bound`, measured.
+///
+/// `SpreadThreshold.split_no_three_disjoint_bound` reads
+/// `|F| <= m·r^(m-1) + I(m,r)`, where `I(m,r)` is the largest
+/// `m`-uniform **intersecting** family satisfying Rao's condition, and
+/// `intersecting_piece_bound` supplies `r^(m-1) + (m-1)²·r^(m-2)` for
+/// it. Every unit between the true `I` and that bound is a unit the
+/// threshold could come down by, so the gap is worth knowing before
+/// anyone tries to prove a sharper bound.
+///
+/// It is a factor of two.
+#[test]
+fn the_intersecting_piece_bound_has_a_factor_of_two_of_slack() {
+    // (m, r, ground, exact maximum) -- every row exhausted.
+    let rows = [
+        (3u32, 3u64, 5u32, 10usize),
+        (3, 3, 6, 10),
+        (3, 3, 7, 10),
+        (3, 3, 8, 10),
+        (3, 4, 5, 10),
+        (3, 4, 6, 10),
+        (3, 4, 7, 12),
+        (3, 4, 8, 14),
+    ];
+    for (m, r, g, expect) in rows {
+        let (max, fam, _nodes, exhaustive) = max_intersecting_piece(m, r, g, u64::MAX);
+        assert!(exhaustive, "({m},{r},{g}) should exhaust");
+        assert_eq!(max, expect, "max intersecting piece at (m,r,ground)=({m},{r},{g})");
+        assert_eq!(fam.len(), max);
+        // The witness really is intersecting and really is Rao-spread.
+        for (i, &a) in fam.iter().enumerate() {
+            assert_eq!(a.count_ones(), m);
+            for &b in fam.iter().skip(i + 1) {
+                assert_ne!(a & b, 0, "the witness must be intersecting");
+            }
+        }
+        assert!(is_rao_spread(m, &fam, r, g));
+    }
+
+    // The bound the development proves, against the truth.
+    let piece_bound = |m: u64, r: u64| r.pow(m as u32 - 1) + (m - 1) * (m - 1) * r.pow(m as u32 - 2);
+    assert_eq!(piece_bound(3, 3), 21);
+    assert_eq!(piece_bound(3, 4), 32);
+    // At (3,3) the truth is 10 against 21, and it *exceeds* the star (9):
+    // C([5],3) is intersecting with deg 6 and pair-degree 3, so it fits
+    // under both caps and beats every star.
+    assert_eq!(max_intersecting_piece(3, 3, 8, u64::MAX).0, 10);
+    assert!(10 > 3u64.pow(2), "C([5],3) beats the star at (3,3)");
+}
+
+/// What closing that gap would buy, as arithmetic rather than as hope.
+///
+/// If `I(m,r)` were the star `r^(m-1)`, the split condition
+/// `m·r^(m-1) + I <= r^m` would read `(m+1)·r^(m-1) <= r^m`, i.e.
+/// **`r >= m+1`** — linear with constant 1, against the `φ·m` proved
+/// this session. And `r = m` is a hard floor for the method whatever `I`
+/// is, because `m·r^(m-1)` alone already equals `r^m` there.
+#[test]
+fn the_star_would_give_r_star_at_most_m_plus_one() {
+    for m in 2u64..=40 {
+        let r = m + 1;
+        // With I = star, the split closes at r = m+1 ...
+        assert!(
+            m * r.pow(m as u32 - 1) + r.pow(m as u32 - 1) <= r.pow(m as u32),
+            "star-sized piece should close the split at (m, m+1) = ({m}, {r})"
+        );
+        // ... and never at r = m, whatever I is, since I >= 1.
+        let r = m;
+        assert_eq!(
+            m * r.pow(m as u32 - 1),
+            r.pow(m as u32),
+            "at r = m the cover term alone is r^m, so no I can help"
+        );
+        // m+1 is below the golden-ratio bound from m = 3 on.
+        if m >= 3 {
+            assert!(m + 1 < split_bound(m), "m+1 beats the proved bound at m = {m}");
+        }
+    }
+    assert_eq!(split_bound(3), 5);
+    assert_eq!(split_bound(10), 17); // against 11
 }

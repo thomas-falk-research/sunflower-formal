@@ -862,3 +862,138 @@ pub fn dfs(q: &Question, node_limit: u64) -> DfsReport {
         truncated,
     }
 }
+
+/* ------------------------------------------------------------------ */
+/* The intersecting piece, measured rather than bounded.               */
+/* ------------------------------------------------------------------ */
+
+/// The exact maximum of the quantity `intersecting_piece_bound` bounds:
+/// the largest `m`-uniform **intersecting** family on `ground` points
+/// satisfying Rao's condition `deg T <= r^(m - |T|)` for every nonempty
+/// `T`.
+///
+/// This is the one quantity that gates further progress on the
+/// threshold. `SpreadThreshold.split_no_three_disjoint_bound` reads
+///
+/// ```text
+///   |F|  <=  (members meeting A)  +  (members missing A)
+///        <=   m * r^(m-1)         +   I(m, r)
+/// ```
+///
+/// where `I(m,r)` is exactly what this computes, and
+/// `intersecting_piece_bound` supplies `r^(m-1) + (m-1)^2 * r^(m-2)` for
+/// it. Every unit of slack between the two is a unit the threshold could
+/// come down by, so measuring `I` says how much is left on the table
+/// before anyone tries to prove a sharper bound.
+///
+/// Returns `(max, witness, nodes, exhaustive)`. `ground` must be at most
+/// 20 — the degree table is indexed by subset mask.
+pub fn max_intersecting_piece(
+    m: u32,
+    r: u64,
+    ground: u32,
+    budget: u64,
+) -> (usize, Vec<Mask>, u64, bool) {
+    assert!(ground <= 20, "the degree table is indexed by subset mask");
+    let caps: Vec<u64> = (0..=m).map(|t| pow_sat(r, m - t)).collect();
+
+    let blocks: Vec<Mask> = (0u32..(1u32 << ground))
+        .filter(|b| b.count_ones() == m)
+        .map(|b| b as Mask)
+        .collect();
+
+    struct S {
+        blocks: Vec<Mask>,
+        caps: Vec<u64>,
+        m: u32,
+        deg: Vec<u32>,
+        cur: Vec<Mask>,
+        best: Vec<Mask>,
+        nodes: u64,
+        budget: u64,
+        hit: bool,
+    }
+
+    // Adding `x` is legal when it meets every member already chosen and
+    // no subset of it is already at its cap.
+    fn fits(s: &S, x: Mask) -> bool {
+        if s.cur.iter().any(|&a| a & x == 0) {
+            return false;
+        }
+        let mut sub = x;
+        loop {
+            if sub != 0 {
+                let t = (sub as u32).count_ones();
+                if u64::from(s.deg[sub as usize]) + 1 > s.caps[t as usize] {
+                    return false;
+                }
+            }
+            if sub == 0 {
+                break;
+            }
+            sub = (sub - 1) & x;
+        }
+        true
+    }
+
+    fn bump(s: &mut S, x: Mask, d: i32) {
+        let mut sub = x;
+        loop {
+            if sub != 0 {
+                let e = &mut s.deg[sub as usize];
+                *e = (*e as i32 + d) as u32;
+            }
+            if sub == 0 {
+                break;
+            }
+            sub = (sub - 1) & x;
+        }
+    }
+
+    fn rec(s: &mut S, from: usize) {
+        s.nodes += 1;
+        if s.nodes > s.budget {
+            s.hit = true;
+            return;
+        }
+        if s.cur.len() > s.best.len() {
+            s.best = s.cur.clone();
+        }
+        // Bound: what is in hand plus every block still to come.
+        if s.cur.len() + (s.blocks.len() - from) <= s.best.len() {
+            return;
+        }
+        for i in from..s.blocks.len() {
+            if s.cur.len() + (s.blocks.len() - i) <= s.best.len() {
+                return;
+            }
+            let x = s.blocks[i];
+            if !fits(s, x) {
+                continue;
+            }
+            bump(s, x, 1);
+            s.cur.push(x);
+            rec(s, i + 1);
+            s.cur.pop();
+            bump(s, x, -1);
+            if s.hit {
+                return;
+            }
+        }
+    }
+
+    let mut s = S {
+        blocks,
+        caps,
+        m,
+        deg: vec![0u32; 1usize << ground],
+        cur: Vec::new(),
+        best: Vec::new(),
+        nodes: 0,
+        budget,
+        hit: false,
+    };
+    let _ = s.m;
+    rec(&mut s, 0);
+    (s.best.len(), s.best.clone(), s.nodes, !s.hit)
+}
