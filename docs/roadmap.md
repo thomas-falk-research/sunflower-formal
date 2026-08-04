@@ -5187,8 +5187,10 @@ not comparable with §23.3's.** Node counts are exact regardless.
   r*(3,3) DFS, ground 11                 4e9 nodes     4e9          no, truncated   2655 s
   r*(3,3) DFS, ground 12                 4e9 nodes     4e9          no, truncated   2334 s
   r*(3,3) SAT, ground 10 (cadical+cms)   2400 s CPU    2400 s       no verdict
-  make -j4 verify (clean + 408 audits)   --            --           yes, after one
+  make -j4 verify (clean + 416 audits)   --            --           yes, after one
                                                                     baseline fix
+  iota(4,10) >= 28, 4 threads            1e10 nodes    7.3 CPU-h    no, stopped
+                                                       (0/210 roots) 7066 s
   mutation suite, 3 new + control        4 mutants     4            yes, all as
                                                                     declared        146 s
 ```
@@ -5390,11 +5392,16 @@ search that parallelises and checkpoints. This session built one
 
 ```
   record_hunt_par 4 28 10 10, budget 1e10 nodes, 4 threads, checkpointed
-    elapsed          ~2 h wall
-    CPU              ~7.2 CPU-hours, 4 workers at 93% each
-    verdict          none
-    root subproblems completed   0
+    elapsed          7066 s wall (1 h 58 m)
+    CPU              26250 s = 7.3 CPU-hours, 4 workers at 93% each
+    verdict          none -- stopped by hand, budget not spent
+    root subproblems completed   0 of 210
 ```
+
+It was **stopped**, not finished: the 10^10-node budget was still
+running when the session ended it, so this is not even "undecided at
+10^10 nodes" — it is "no verdict after 7.3 CPU-hours", which is a weaker
+statement and the only one the run supports.
 
 Two things it establishes, and only one of them is about the record.
 
@@ -5434,9 +5441,9 @@ than the development's previous best at every uniformity from 5 up and
 at 3, moving the first open term of the sequence that is the conjecture
 from `[3,6]` to `[3,5]`.**
 
-No new record object: the `iota(4,10) >= 28` attempt spent seven
-CPU-hours without a verdict (§24.11), and what it established is about
-the instrument rather than the record — root splitting delivers its 4×
+No new record object: the `iota(4,10) >= 28` attempt spent 7.3
+CPU-hours and was stopped without a verdict (§24.11), and what it
+established is about the instrument rather than the record — root splitting delivers its 4×
 and delivers **no** restart-resilience at this size.
 
 Two named lines are closed by argument rather than
