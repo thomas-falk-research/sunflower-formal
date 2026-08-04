@@ -515,3 +515,60 @@ fn the_star_would_give_r_star_at_most_m_plus_one() {
     assert_eq!(split_bound(3), 5);
     assert_eq!(split_bound(10), 17); // against 11
 }
+
+/// The two-point-cover case, proved: `TwoCover.two_cover_star_extremal`.
+///
+/// An intersecting 3-uniform Rao-spread family covered by two points has
+/// at most `max(4r, 3r+4)` members — the first branch when some point
+/// other than the cover point is common to the whole `p`-side, the
+/// second when none is. That is at most `r²` — the size of a star —
+/// exactly when `r >= 4`, which is what
+/// `TwoCover.covered_by_two_at_most_star` states.
+///
+/// `r = 4` is the crossover and it is sharp on both sides: at `r = 3`
+/// the bound is 13 against `r² = 9`, and the star really is not extremal
+/// there — §24.9 measures the true maximum as 10, attained by `C([5],3)`,
+/// which has covering number **3** and so is exactly the case the Coq
+/// file does not cover.
+#[test]
+fn the_two_cover_bound_makes_the_star_extremal_from_four_on() {
+    let bound = |r: u64| (4 * r).max(3 * r + 4);
+    // (r, max(4r, 3r+4), r^2)
+    let table = [
+        (2u64, 10u64, 4u64),
+        (3, 13, 9),
+        (4, 16, 16),
+        (5, 20, 25),
+        (6, 24, 36),
+        (10, 40, 100),
+    ];
+    for (r, b, sq) in table {
+        assert_eq!(bound(r), b, "two-cover bound at r = {r}");
+        assert_eq!(r * r, sq);
+        assert_eq!(b <= sq, r >= 4, "the star is extremal exactly from r = 4 on");
+    }
+    for r in 4u64..=200 {
+        assert!(bound(r) <= r * r, "star extremal at r = {r}");
+    }
+    for r in 1u64..=3 {
+        assert!(bound(r) > r * r, "star not extremal at r = {r}");
+    }
+
+    // At r = 4 the bound is exactly the star, and exactly the measured
+    // maximum of the whole intersecting piece.
+    assert_eq!(bound(4), 16);
+    assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
+
+    // At r = 3 the measured maximum is 10, which exceeds the star (9) and
+    // sits below the two-cover bound (13) — consistent, because the
+    // object that attains it has covering number 3.
+    assert_eq!(max_intersecting_piece(3, 3, 8, u64::MAX).0, 10);
+    assert!(10 > 3 * 3 && 10 <= bound(3));
+
+    // What is still missing, as arithmetic: to conclude I(3,4) <= 16 and
+    // hence r*(3,3) <= 4, the tau = 3 case needs <= 16. The elementary
+    // greedy bound for tau = 3 is 3^3 = 27; Frankl's theorem gives 10.
+    assert!(27 > 16, "the elementary tau=3 bound is not enough");
+    assert!(10 <= 16, "Frankl's bound would be enough");
+    assert_eq!(3 * 16 + 16, 64, "3*r^(m-1) + I = r^m at (m,r) = (3,4)");
+}

@@ -610,6 +610,14 @@ thm SpreadThreshold.r_star_six_at_most_ten
 thm SpreadThreshold.r_star_ten_at_most_seventeen
 thm SpreadThreshold.r_star_four_at_most_seven_by_split
 thm SpreadThreshold.f_three_three_from_split_threshold
+thm TwoCover.three_uniform_split
+thm TwoCover.one_cover_bound
+thm TwoCover.two_cover_bound
+thm TwoCover.two_cover_bound_members
+thm TwoCover.two_cover_star_extremal
+thm TwoCover.covered_by_two_at_most_star
+thm TwoCover.two_cover_bound_at_four
+thm TwoCover.one_cover_bound_at_four
 thm LinkCeiling.one_uniform_pairwise_disjoint
 thm LinkCeiling.top_link_degree_at_most_two
 thm LinkCeiling.top_link_degree_three_uniform

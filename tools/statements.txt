@@ -1474,6 +1474,30 @@ add4288a03162479  thm SpreadThreshold.r_star_ten_at_most_seventeen
 72efbe58bf035146  thm SpreadThreshold.f_three_three_from_split_threshold
     f_three_three_from_split_threshold : UpperBound 3 3 126
 
+ef968b938cb041b2  thm TwoCover.three_uniform_split
+    three_uniform_split : forall (C : list nat) (x : nat), length C = 3 -> List.NoDup C -> List.In x C -> exists a b : nat, a <> b /\ x <> a /\ x <> b /\ List.In a C /\ List.In b C /\ (forall y : nat, List.In y C -> y = x \/ y = a \/ y = b)
+
+8c277c93b2df0fba  thm TwoCover.one_cover_bound
+    one_cover_bound : forall (r : nat) (G : Family) (w : nat), RaoSpread 3 G r -> (forall C : list nat, List.In C G -> List.In w C) -> length G <= r * r
+
+fb6e2c6a6cb4d5ab  thm TwoCover.two_cover_bound
+    two_cover_bound : forall (r : nat) (G : Family) (p q : nat), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> List.filter (fun C : list nat => negb (memb q C)) G <> nil -> List.filter (fun C : list nat => negb (memb p C)) (List.filter (fun C : list nat => memb q C) G) <> nil -> length G <= PeanoNat.Nat.max (4 * r) (3 * r + 4)
+
+fa10eba1d647bc0f  thm TwoCover.two_cover_bound_members
+    two_cover_bound_members : forall (r : nat) (G : Family) (p q : nat), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists C : list nat, List.In C G /\ ~ List.In p C) -> length G <= PeanoNat.Nat.max (4 * r) (3 * r + 4)
+
+47bc1e0b32b32af6  thm TwoCover.two_cover_star_extremal
+    two_cover_star_extremal : forall (r : nat) (G : Family) (p q : nat), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists C : list nat, List.In C G /\ ~ List.In p C) -> length G <= r * r
+
+f54c3b26aff09062  thm TwoCover.covered_by_two_at_most_star
+    covered_by_two_at_most_star : forall (r : nat) (G : Family) (p q : nat), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> length G <= r * r
+
+6dc6494b4ca0c8a1  thm TwoCover.two_cover_bound_at_four
+    two_cover_bound_at_four : forall (G : Family) (p q : nat), Uniform 3 G -> RaoSpread 3 G 4 -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists C : list nat, List.In C G /\ ~ List.In p C) -> length G <= 16
+
+0bbccc07e9b8e2b1  thm TwoCover.one_cover_bound_at_four
+    one_cover_bound_at_four : forall (G : Family) (w : nat), RaoSpread 3 G 4 -> (forall C : list nat, List.In C G -> List.In w C) -> length G <= 16
+
 773a21da388a7b71  thm LinkCeiling.one_uniform_pairwise_disjoint
     one_uniform_pairwise_disjoint : forall G : Family, Uniform 1 G -> Distinct G -> PairwiseDisjoint G
 

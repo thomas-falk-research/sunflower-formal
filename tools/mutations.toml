@@ -1254,6 +1254,58 @@ r^(m-1) members, so the argument closes exactly when 2m <= r; at m = n and \
 r = 2n - 1 it does not."""
 
 [[mutation]]
+id = "twocover-drop-r-at-least-four"
+file = "coq/TwoCover.v"
+question = """two_cover_star_extremal assumes 4 <= r before concluding that a \
+two-covered family is no bigger than a star. Both branches of the bound are \
+below r^2 for large r, so is the hypothesis real or is it there for tidiness?"""
+find = """Theorem two_cover_star_extremal :
+  forall r (G : Family) p q,
+    4 <= r ->"""
+replace = """Theorem two_cover_star_extremal :
+  forall r (G : Family) p q,
+    3 <= r ->"""
+expect = "killed"
+because = """Real, and 4 is exactly the crossover. The bound is \
+max(4r, 3r+4), and 3r + 4 <= r^2 fails at r = 3: 13 against 9. The star is \
+*not* extremal at r = 3 -- docs/roadmap.md SS24.9 measures the true maximum \
+there as 10, attained by C([5],3), which beats the star's 9."""
+
+[[mutation]]
+id = "twocover-max-to-four-r"
+file = "coq/TwoCover.v"
+question = """two_cover_bound concludes max(4r, 3r+4). The first branch is the \
+common-point case and the second the no-common-point case. Is the maximum \
+needed, or does one branch dominate?"""
+find = """Theorem two_cover_bound :
+  Gp <> [] -> Gq <> [] ->
+  length G <= Nat.max (4 * r) (3 * r + 4)."""
+replace = """Theorem two_cover_bound :
+  Gp <> [] -> Gq <> [] ->
+  length G <= 4 * r."""
+expect = "killed"
+because = """Needed. Neither branch dominates: 3r + 4 exceeds 4r for r < 4 \
+and falls below it for r > 4, and they are equal at r = 4 -- which is the \
+value the whole file is aimed at. Dropping the second branch loses the \
+no-common-point case below r = 4."""
+
+[[mutation]]
+id = "twocover-four-triples-to-three"
+file = "coq/TwoCover.v"
+question = """no_common_point_bound pins every member of Gq to one of four \
+triples. Members through u are pinned by C2 and members through v by C3, two \
+each. Is four sharp, or is one of the four unreachable?"""
+find = """    ~ In u C2 -> ~ In v C3 ->
+    length Gq <= 4."""
+replace = """    ~ In u C2 -> ~ In v C3 ->
+    length Gq <= 3."""
+expect = "killed"
+because = """Sharp. The four triples are {q,u,a2}, {q,u,b2}, {q,v,a3}, \
+{q,v,b3}: two ways to meet C2 after choosing u, two ways to meet C3 after \
+choosing v, and nothing rules out all four being present. Three would make \
+the no-common-point branch 3r + 3, which the proof does not establish."""
+
+[[mutation]]
 id = "spreadthreshold-split-drop-cover-multiplier"
 file = "coq/SpreadThreshold.v"
 question = """split_no_three_disjoint_bound charges m * r^(m-1) for the piece \

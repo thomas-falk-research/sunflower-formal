@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 82 anecdotes into a coverage metric over the
+  mutation testing from 85 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -5305,7 +5305,76 @@ and one classical theorem to formalise. That is a much more specific
 target than "sharpen `intersecting_piece_bound`", and it is worth
 strictly more — the whole table of §24.2 moves if it lands.
 
-### 24.10 The one-line verdict
+### 24.10 Proved: the two-point cover case, and the star is extremal
+###       from `r = 4` on
+
+`coq/TwoCover.v`, axiom-free, eight new audited names. This is the
+elementary half of §24.9's target, done.
+
+An intersecting 3-uniform family has covering number at most 3, so
+`I(m,r)` splits into `τ = 1, 2, 3`. The first is a star and immediate
+from the point-degree cap (`one_cover_bound`: `|G| ≤ r²`). The third is
+Frankl's theorem and is **not** here. The second is now a theorem:
+
+> **`two_cover_bound`:** if `{p,q}` covers `G` and neither point covers
+> alone, then `|G| ≤ max(4r, 3r+4)`.
+>
+> **`two_cover_star_extremal`:** hence `|G| ≤ r²` — the size of a star —
+> for every `r ≥ 4`.
+>
+> **`covered_by_two_at_most_star`:** and dropping the "neither alone"
+> hypothesis, `τ(G) ≤ 2` and `r ≥ 4` give `|G| ≤ r²` outright.
+
+`r = 4` is the exact crossover, and it is sharp on both sides:
+
+```
+  r          2    3    4    5    6   10
+  max(4r,3r+4) 10  13   16   20   24   40
+  r² (star)   4    9   16   25   36  100
+  star extremal?  no   no  yes  yes  yes  yes
+```
+
+At `r = 3` the bound is 13 against a star of 9 — and the star really is
+not extremal there. §24.9's measurement gives 10, attained by `C([5],3)`,
+which has covering number **3**. So the one case this file does not cover
+is exactly the case that breaks the pattern, which is not a coincidence.
+
+**The argument, and why it needs no graph classification.** Write `G_p`
+for the members through `p` but not `q`, `G_q` for the mirror, `G_pq` for
+both. `G_pq` is capped by the pair degree at once. Then:
+
+* **Any member of `G_q` caps `G_p` at `2r`.** A member `C'` of `G_q`
+  misses `p`, so a member of `G_p` can only meet it at one of `C'`'s two
+  points other than `q` — and it contains `p`, so it contains one of two
+  *pairs*. Two pairs, each capped at `r`.
+* **Either `G_p` has a common point besides `p`, or `G_q` has at most
+  four members.** If some `w ≠ p` lies in every member of `G_p`, the
+  single pair `{p,w}` caps `G_p` at `r`. Otherwise take `C1 = {p,u,v}` in
+  `G_p`; some `C2` misses `u` and some `C3` misses `v`. A member of `G_q`
+  meets `C1` away from `p`, so it holds `u` or `v`; if it holds `u` it
+  must still meet `C2`, which has neither `p` nor `u`, so it holds one of
+  `C2`'s two other points. That pins it to a **triple**, and a triple has
+  degree at most one under Rao's condition. Four triples, four members.
+
+The textbook route here is through the classification of graphs with
+matching number one — "a star or a triangle" — applied to the tails.
+Naming `C2` and `C3` replaces it. That matters for a formalisation:
+the classification is a real piece of graph theory and this is four
+lines of case analysis.
+
+**What is still missing, and it is one theorem.** `I(3,4) ≤ 16` needs the
+`τ = 3` case at `≤ 16`. The elementary greedy bound is `3³ = 27`;
+Frankl's theorem gives 10. So:
+
+> `r*(3,3) ≤ 4` now rests on **exactly one** unformalised classical
+> result — Frankl's bound for 3-uniform intersecting families with
+> covering number 3 — and on nothing else.
+
+Three mutations check the load-bearing parts: the `4 ≤ r` hypothesis (it
+fails at 3, by 13 against 9), the maximum (neither branch dominates, and
+they cross at exactly 4), and the four triples.
+
+### 24.11 The one-line verdict
 
 **A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
 than the development's previous best at every uniformity from 5 up and
@@ -5321,12 +5390,15 @@ is a cost, not a result; what it leaves behind is a verified 23-member
 object five short of a refutation, and the observation that the witness
 problem is finite with a 114-point ground bound.
 
-The lead worth taking next is not the search, and §24.9 sharpened it
-past what §24.5 first said. `I(m,r)` — the true maximum of the
-intersecting piece — is **measured** at 10 against a bound of 21 at
-`(3,3)`, and at exactly the star at `(3,4)`. If the star is extremal in
+The lead worth taking next is not the search. §24.9 measured `I(m,r)`,
+the true maximum of the intersecting piece, at 10 against a bound of 21
+at `(3,3)` and at exactly the star at `(3,4)`; if the star is extremal in
 general, the split condition collapses from `r ≥ φ·m` to **`r ≥ m+1`**,
-which is the best this method can ever give, and `r*(3,3) ≤ 4` follows
-from `I(3,4) ≤ 16` alone. The remaining work is one elementary case
-analysis (`τ = 2`) and one classical theorem to formalise (Frankl, for
-`τ = 3`).
+the best this method can ever give. §24.10 then proved the `τ ≤ 2` half
+of that at `m = 3`: the star is extremal among two-covered families for
+every `r ≥ 4`, and `r = 4` is the exact crossover.
+
+So `r*(3,3) ≤ 4` — which would put the first open term of the sequence
+at `{3,4}` — now rests on **exactly one** unformalised classical result:
+Frankl's bound of 10 for 3-uniform intersecting families of covering
+number 3. Nothing else is missing.
