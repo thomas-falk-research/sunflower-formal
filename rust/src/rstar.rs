@@ -741,6 +741,11 @@ pub struct DfsReport {
     pub outcome: Outcome,
     /// Largest family found satisfying every hypothesis but the size one.
     pub largest: usize,
+    /// That family itself. A size with no object behind it is not a
+    /// measurement anyone can check, and a truncated run reports nothing
+    /// else -- so the object is carried out even when it is below the
+    /// target and the outcome is `Unknown`.
+    pub largest_family: Vec<Mask>,
     pub nodes: u64,
     pub seconds: f64,
     /// True when the node limit stopped the search: `largest` is then a
@@ -786,7 +791,10 @@ pub fn dfs(q: &Question, node_limit: u64) -> DfsReport {
         return DfsReport {
             q: q.clone(),
             outcome: Outcome::None,
+            // The counting precheck reports the ceiling, not a family it
+            // found -- there is no object here, and none is claimed.
             largest: degree_ceiling(q.m, q.r, q.ground) as usize,
+            largest_family: Vec::new(),
             nodes: 0,
             seconds: 0.0,
             truncated: false,
@@ -848,6 +856,7 @@ pub fn dfs(q: &Question, node_limit: u64) -> DfsReport {
         q: q.clone(),
         outcome,
         largest,
+        largest_family: s.best.clone(),
         nodes: s.nodes,
         seconds: started.elapsed().as_secs_f64(),
         truncated,

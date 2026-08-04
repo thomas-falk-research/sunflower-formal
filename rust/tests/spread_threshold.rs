@@ -375,3 +375,48 @@ fn the_split_threshold_is_behind_erdos_rado_as_a_bound_on_f() {
         assert!(er < split_f, "Erdős–Rado should win at m = {m}");
     }
 }
+
+/// How close the `r*(3,3) >= 4` witness problem gets, as an object
+/// rather than a number.
+///
+/// `SpreadYieldsDisjoint 3 3 3` fails exactly when there is a 3-uniform
+/// family with at least 28 members, `deg <= 9`, `deg_pair <= 3`, and no
+/// three pairwise disjoint members. This is the largest such family the
+/// depth-first search met at ground 12 within 4·10^8 nodes: **23
+/// members, five short**, and it saturates *both* degree caps at once.
+///
+/// It is pinned rather than re-searched, and re-checked here against
+/// `Spread.RaoSpread`, the matching number and the uniformity by code
+/// that shares nothing with the search that found it. The deeper
+/// 4·10^9-node runs reported a largest of 24 at ground 12 — that number
+/// has no object behind it in this repository and is not pinned.
+#[test]
+fn the_r_star_three_three_witness_problem_reaches_twenty_three() {
+    const F: [Mask; 23] = [
+        7, 56, 11, 13, 14, 19, 21, 22, 25, 42, 44, 88, 161, 194, 196, 224, 289, 322, 324, 352, 545,
+        578, 580,
+    ];
+    let q = Question::new(3, 3, 10);
+    assert_eq!(q.target(), 28, "a witness needs 3^3 + 1 members");
+
+    assert!(F.iter().all(|a| a.count_ones() == 3), "3-uniform");
+    let mut seen = F.to_vec();
+    seen.sort_unstable();
+    seen.dedup();
+    assert_eq!(seen.len(), F.len(), "distinct");
+
+    // The two RaoSpread caps, and both are tight.
+    assert!(is_rao_spread(3, &F, 3, 10), "3-spread at uniformity 3");
+    let deg = |t: Mask| F.iter().filter(|&&a| a & t == t).count();
+    assert_eq!((0..10).map(|i| deg(1 << i)).max().unwrap(), 9, "point cap 9 is attained");
+    let pairs = (0..10).flat_map(|i| (i + 1..10).map(move |j| (1 << i) | (1 << j)));
+    assert_eq!(pairs.map(deg).max().unwrap(), 3, "pair cap 3 is attained");
+
+    // No three pairwise disjoint members, and two disjoint ones do exist.
+    assert!(!has_k_disjoint(&F, 3));
+    assert_eq!(matching_number(&F), 2);
+
+    // Five short of a refutation, which is the whole point of pinning it.
+    assert_eq!(F.len(), 23);
+    assert!((F.len() as u64) < q.target(), "not a counterexample, and not claimed as one");
+}

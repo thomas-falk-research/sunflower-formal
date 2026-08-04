@@ -1468,6 +1468,9 @@ a0c7088f4dd11169  thm SpreadThreshold.r_star_six_at_most_ten
 add4288a03162479  thm SpreadThreshold.r_star_ten_at_most_seventeen
     r_star_ten_at_most_seventeen : SpreadYieldsDisjoint 10 3 17
 
+18a6915142f7a7d5  thm SpreadThreshold.r_star_four_at_most_seven_by_split
+    r_star_four_at_most_seven_by_split : SpreadYieldsDisjoint 4 3 7
+
 72efbe58bf035146  thm SpreadThreshold.f_three_three_from_split_threshold
     f_three_three_from_split_threshold : UpperBound 3 3 126
 

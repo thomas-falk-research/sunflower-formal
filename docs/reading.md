@@ -1188,7 +1188,7 @@ summary table is exactly where nobody looks for the arrow.
 
 ## What re-reading the development changed, session N+7
 
-Two entries, both about statements *in this repository* rather than in
+Three entries, all about statements *in this repository* rather than in
 the literature — which is where the last three sessions' corrections have
 also come from.
 

@@ -4834,7 +4834,7 @@ Everything below is asked at `m = 3` for that reason.
 
 ### 24.2 The theorem: `r*(m,3) ≤ φ·m + O(1)`
 
-`coq/SpreadThreshold.v`, axiom-free, seven new audited names.
+`coq/SpreadThreshold.v`, axiom-free, eight new audited names.
 
 `quadratic_no_three_disjoint_bound` splits a family with no three
 pairwise disjoint members **three** ways against a matching `{A, B}` —
@@ -4879,9 +4879,9 @@ pinning every row:
 
 `split_bound_is_never_worse` pins that the new bound dominates the
 quadratic one pointwise for every `m ≤ 400`, strictly from `m = 5` on
-and at `m = 3`; `m = 4` is the one small row where they agree, which is
-why the headline `r*(4,3) ≤ 7` does not move. At `m = 1` the new bound
-is 2, which is the **exact** value of `r*(1,3)`.
+and at `m = 3`. The two agree at `m = 2` and at `m = 4`, which is why
+the headline `r*(4,3) ≤ 7` does not move. At `m = 1` the new bound is 2,
+which is the **exact** value of `r*(1,3)`.
 
 Four rows move, each a Coq corollary: `r_star_three_at_most_five`,
 `r_star_five_at_most_eight`, `r_star_six_at_most_ten`,
@@ -4956,7 +4956,142 @@ points and only ties at eleven. **The counting ceiling is best at level
 
 ### 24.5 The search: `r*(3,3) ≥ 4`, and what it would take
 
-[TO FILL: search results]
+Unwinding `SpreadYieldsDisjoint 3 3 3`, the sequence grows at its third
+term exactly when there is a family `F` with
+
+```
+  (a) 3-uniform, distinct, on any ground set
+  (b) |F| >= 28                          (= 3^3 + 1)
+  (c) deg(x)   <= 9   for every point    (RaoSpread at |T| = 1)
+  (d) deg({x,y}) <= 3 for every pair     (RaoSpread at |T| = 2)
+  (e) no three pairwise disjoint members
+```
+
+`|T| = 3` gives `deg <= 1`, automatic for a distinct family. This is
+`rstar::Question::new(3, 3, ground)` exactly, so the instrument already
+existed; what had not been done was to run it above the counting floor.
+
+**The question is finite, and the bound is 114 points.** `(e)` gives a
+maximum matching `{A, B}` whose union covers `F`, so by
+`no_three_disjoint_cover_bound` at `(m,r) = (3,3)`,
+`|F| <= 2·3·3² = 54`. Every member has at least one of its three points
+in that 6-point cover, hence at most two outside it, so at most
+`2·54 = 108` points outside carry any member at all: **any witness lives
+on at most 114 points.** The counting floor is `min_ground(3,3) = 10`
+(`ceil(3·28/9)`), so the witness, if it exists, lives on between 10 and
+114 points. That is a decidable question. It is not a small one.
+
+**Two constructions reaching 20, by hand.** Both were checked by code
+sharing nothing with the search.
+
+* Two disjoint copies of `C([5],3)` on disjoint 5-point grounds. Each
+  copy is intersecting with `deg = 6` and `deg_pair = 3` exactly; the
+  union has `ν = 2` because a member of either copy uses three of that
+  copy's five points, leaving no room for a second disjoint member
+  inside the same copy. **No cross set can be added** — all 75 of them
+  were tried and every one completes a 3-matching, e.g. `{1,4,u}` with
+  `{2,3,z}` from the first copy and `{5,6,w}` from the second.
+* `link_p = link_q = K_{3,3}` on the same six points `X ∪ Y`, plus the
+  two sets `X` and `Y`. Also 20, on eight points rather than ten, with
+  `deg = 9` and `deg_pair = 3`.
+
+Two structurally unrelated constructions stopping at the same number is
+weak evidence that 20 is a plateau rather than an accident.
+
+**One bound that was free and rules out the obvious shape.** A witness
+must have covering number at least 4: a 3-point cover gives
+`|F| <= 3·9 = 27 < 28`, and a 2-point cover gives 18. So the object
+sought has `ν(F) = 2` and `τ(F) ∈ {4,5,6}` — matching number two,
+covering number at least four. Every construction above has `τ = 3` or
+less, which is why they cannot be pushed.
+
+**The runs.** Grounds 10, 11 and 12 were run as separate background
+shells — §6(c)'s free-axis parallelism, which needs no code — with a
+`4·10⁹`-node budget each, alongside a SAT attempt at ground 10 capped at
+2400 s. `docs/reading.md` records that ground 10 was already attempted
+in an earlier session and left undecided by both instruments; these are
+larger budgets on the same question, not new questions.
+
+```
+  ground   ceiling   budget      nodes        largest   verdict
+  10          30     4e9 nodes   4,000,000,001    23     undecided (truncated)
+  11          33     4e9 nodes   4,000,000,001    23     undecided (truncated)
+  12          36     4e9 nodes   4,000,000,001    24     undecided (truncated)
+  10 (SAT)    30     2400 s CPU  --               --     undecided
+```
+
+**All three are undecided, and that is the honest report.** 4·10⁹ nodes
+is above the ~2.4·10⁹ the killed `iota(4,10)` attempt reached in §23.3
+and it did not exhaust any of these three grounds. `r*(3,3)` is
+unchanged at `[3,5]` from below.
+
+What the runs did produce is a number worth having. `largest` is the
+biggest family the search met that satisfies **every** hypothesis except
+the size one, so it is a genuine lower bound on what is feasible:
+
+> **A family satisfying (a), (c), (d), (e) with 24 members exists on 12
+> points.** Against the 28 needed, the gap is four, not the eight the
+> hand constructions suggested.
+
+That also kills the "20 is a plateau" reading above, and it is worth
+saying so plainly: two constructions agreeing is not evidence of a
+ceiling, only evidence that two people had the same idea.
+
+**The object, and the honest limit of it.** `examples/rstar_dfs.rs` now
+carries the best family out of a *truncated* run as well as a successful
+one — a size with no object behind it is not something anyone else can
+check. Re-run at ground 12 with 4·10⁸ nodes it produces a **23**-member
+family, pinned as
+`the_r_star_three_three_witness_problem_reaches_twenty_three` and
+re-verified against `Spread.RaoSpread`, the matching number and the
+uniformity by code sharing nothing with the search:
+
+```
+  [0,1,2] [3,4,5] [0,1,3] [0,2,3] [1,2,3] [0,1,4] [0,2,4] [1,2,4]
+  [0,3,4] [1,3,5] [2,3,5] [3,4,6] [0,5,7] [1,6,7] [2,6,7] [5,6,7]
+  [0,5,8] [1,6,8] [2,6,8] [5,6,8] [0,5,9] [1,6,9] [2,6,9]
+```
+
+It uses ten points although it was found at ground 12, and it
+**saturates both degree caps at once** — some point lies in 9 members
+and some pair in 3. So the object that gets closest is already against
+both walls Rao's condition puts up, which is a more specific piece of
+information about where the remaining five members would have to come
+from than anything the hand constructions gave.
+
+The 24 reported by the deeper `4·10⁹`-node runs has **no object behind
+it in this repository** — that run predates the change that dumps the
+family — and it is therefore quoted as a measurement, not pinned as a
+certificate.
+
+**What this does and does not settle.** Nothing about `r*(3,3)`: the
+witness may live on any of the grounds from 10 to 114, and three
+truncated runs at the bottom of that range rule out nothing at all. The
+node budgets are the result, and they are reported so the next attempt
+knows what it has to beat.
+
+**What it would take to finish this from the other side.** The upper
+bound could plausibly be driven to 4 without any search, and the missing
+step is small and identified. At `(m,r) = (3,4)` the two-way split gives
+
+```
+  members meeting A   <= 3·4² = 48, less 2 for A's own multiplicity   = 46
+  members missing A   <= I, the max intersecting piece
+  need                   46 + I <= 4³ = 64,   i.e.  I <= 18
+```
+
+and the intersecting piece here is a 3-uniform intersecting family with
+`deg <= 16`, `deg_pair <= 4`. A star attains exactly 16. The covering
+number cases give `τ = 2 ⟹ |G| <= 12` by an elementary cross-intersecting
+argument, and `τ = 3 ⟹ |G| <= 10` is **Frankl's theorem**, which this
+repository does not have. So
+
+> `r*(3,3) ≤ 4` follows from: *no 3-uniform intersecting family with
+> `deg ≤ 16` and `deg_pair ≤ 4` has more than 18 members.*
+
+The margin is 2 above the star, and the only missing ingredient is the
+`τ = 3` case. That is a far smaller target than anything else on this
+row, and unlike the search it does not depend on a 114-point ground set.
 
 ### 24.6 The root split, and the checkpoint that comes with it
 
@@ -5014,7 +5149,7 @@ node count there is correct rather than a bug. Asserting otherwise is
 asserting that a parallel search is not parallel, and that is exactly the
 assertion the first version of the test made.
 
-### 24.6 Fixed: the mutation harness could pass with its own check off
+### 24.7 Fixed: the mutation harness could pass with its own check off
 
 `tools/mutate.py` warned when the manifest contained no control mutation
 and then exited 0 anyway. That is the one failure this file cannot report
@@ -5024,14 +5159,61 @@ caught, and a warning nobody reads does not catch it. A missing control
 is now a failure. The control itself (`canary-alpha-rename`) was already
 present; what was missing was the guarantee that it stays.
 
-### 24.7 Costs
+### 24.8 Costs
+
+Every computation that ran over ten minutes. **All four searches ran
+concurrently on four cores, alongside a `make -j4 verify` and the Rust
+test suite, so the wall times below are for a contended machine and are
+not comparable with §23.3's.** Node counts are exact regardless.
+
+```
+  what                                   budget        spent        finished?
+  r*(3,3) DFS, ground 10                 4e9 nodes     4e9          no, truncated   2746 s
+  r*(3,3) DFS, ground 11                 4e9 nodes     4e9          no, truncated   2655 s
+  r*(3,3) DFS, ground 12                 4e9 nodes     4e9          no, truncated   2334 s
+  r*(3,3) SAT, ground 10 (cadical+cms)   2400 s CPU    2400 s       no verdict
+  make -j4 verify (clean + 408 audits)   --            --           yes, after one
+                                                                    baseline fix
+  mutation suite, 3 new + control        4 mutants     4            yes, all as
+                                                                    declared        146 s
+```
+
+**Two scheduling mistakes worth recording, both mine.**
+
+* **I over-subscribed the machine.** Four searches on four cores plus a
+  Coq rebuild plus a Rust test suite meant everything ran at roughly a
+  third of its uncontended rate, and the one test that needed 25 seconds
+  took 263. The searches were node-budgeted so the *results* are
+  unaffected, but the wall times are worthless as a baseline for anyone
+  else, which is the whole reason to record them.
+* **I did not checkpoint the runs I was most worried about losing.**
+  This session added checkpointing to `search_orbits` — and then ran the
+  `r*(3,3)` searches through `rstar::dfs`, which has none, in exactly the
+  fragile shape §23.3 warns about. Three 45-minute single-threaded runs
+  with no resume point is the thing the engineering was supposed to stop.
+  They survived; that was luck, not design.
 
 [TO FILL]
 
-### 24.8 The one-line verdict
+### 24.9 The one-line verdict
 
 **A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
 than the development's previous best at every uniformity from 5 up and
 at 3, moving the first open term of the sequence that is the conjecture
-from `[3,6]` to `[3,5]`.** No new record object, and two named lines
-(Gallai–Edmonds on links, the deeper counting ceiling) are now closed.
+from `[3,6]` to `[3,5]`.**
+
+No new record object. Two named lines are closed by argument rather than
+by budget — Gallai–Edmonds on links (§24.3, vacuous because `Δ ≤ 2` gets
+there first) and the counting ceiling below level `b-2` (§24.4, worse at
+every parameter where a record could live). The `r*(3,3) ≥ 4` search is
+**undecided** at `4·10⁹` nodes on each of grounds 10, 11 and 12, which
+is a cost, not a result; what it leaves behind is a verified 23-member
+object five short of a refutation, and the observation that the witness
+problem is finite with a 114-point ground bound.
+
+The lead worth taking next is not the search. It is §24.5's last
+paragraph: `r*(3,3) ≤ 4` needs only that no 3-uniform intersecting
+family with `deg ≤ 16` and `deg_pair ≤ 4` exceeds 18 members, a star
+attains 16, and the only missing case is `τ = 3`. That is a one-lemma
+target, and it would pin the first open term of the sequence to
+`{3, 4}`.

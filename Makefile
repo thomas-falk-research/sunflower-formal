@@ -22,7 +22,25 @@ coq: Makefile.coq
 Makefile.coq: _CoqProject $(COQFILES)
 	coq_makefile -f _CoqProject -o Makefile.coq
 
-verify: clean coq print-assumptions axiom-audit statements docnumbers
+# `verify` used to list `clean coq print-assumptions ...` as ordinary
+# prerequisites. Make is free to run unordered prerequisites in any
+# order, and under `-j` it runs them *concurrently* -- so `make -j4
+# verify` let `clean` delete .vo files while `coq` was writing them,
+# and the failure mode is a green build over a half-deleted tree rather
+# than an error. The documented workaround was "never use -j with
+# verify", which is a rule nobody remembers at the moment it matters.
+#
+# Sequencing them as explicit sub-makes fixes it at the source: the
+# order is now part of the recipe rather than a hope about scheduling,
+# and `coq` may still use -j internally, which is where the parallelism
+# was actually wanted.
+verify:
+	$(MAKE) clean
+	$(MAKE) coq
+	$(MAKE) print-assumptions
+	$(MAKE) axiom-audit
+	$(MAKE) statements
+	$(MAKE) docnumbers
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."

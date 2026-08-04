@@ -1078,10 +1078,11 @@ Corollary r_star_ten_at_most_seventeen : SpreadYieldsDisjoint 10 3 17.
 Proof. apply split_spread_disjoint; lia. Qed.
 
 (** [r*(4,3) ≤ 7] again, by the new route: [5·7 + 9 = 44 ≤ 49]. The
-    quadratic bound also gives 7 here, so [m = 4] is the one small row
-    where the two agree. *)
+    quadratic bound also gives 7 here; [m = 2] and [m = 4] are the two
+    rows where the bounds agree, and from [m = 5] on the new one is
+    strictly better at every uniformity. *)
 
-Corollary r_star_four_at_most_seven' : SpreadYieldsDisjoint 4 3 7.
+Corollary r_star_four_at_most_seven_by_split : SpreadYieldsDisjoint 4 3 7.
 Proof. apply split_spread_disjoint; lia. Qed.
 
 (** The sunflower number the sharpened threshold yields at [m = 3].
