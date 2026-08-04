@@ -4995,15 +4995,23 @@ sharing nothing with the search.
   two sets `X` and `Y`. Also 20, on eight points rather than ten, with
   `deg = 9` and `deg_pair = 3`.
 
-Two structurally unrelated constructions stopping at the same number is
-weak evidence that 20 is a plateau rather than an accident.
+Two structurally unrelated constructions stopping at the same number
+looked like weak evidence that 20 was a plateau. It was not — the search
+below reaches 24 — and the episode is worth keeping as written: two
+constructions agreeing is evidence that two attempts had the same idea,
+not that a bound exists.
 
-**One bound that was free and rules out the obvious shape.** A witness
-must have covering number at least 4: a 3-point cover gives
-`|F| <= 3·9 = 27 < 28`, and a 2-point cover gives 18. So the object
-sought has `ν(F) = 2` and `τ(F) ∈ {4,5,6}` — matching number two,
-covering number at least four. Every construction above has `τ = 3` or
-less, which is why they cannot be pushed.
+**One bound that was free, and what it does not do.** A witness must
+have covering number at least 4: a 3-point cover gives
+`|F| ≤ 3·9 = 27 < 28`, and a 2-point cover gives 18. Since `ν ≤ 2`
+forces `τ ≤ 6`, the object sought has `ν(F) = 2` and `τ(F) ∈ {4,5,6}`.
+
+That is a real necessary condition and it is **not** a discriminator
+here: the two hand constructions have `τ = 6` and `τ = 4`, and the
+23-member search object has `τ = 4`. All three already satisfy it. It
+rules out the star-like shapes — which is why no amount of pushing on a
+single cover point gets anywhere — and says nothing about why these
+particular families stop.
 
 **The runs.** Grounds 10, 11 and 12 were run as separate background
 shells — §6(c)'s free-axis parallelism, which needs no code — with a
@@ -5019,6 +5027,13 @@ larger budgets on the same question, not new questions.
   12          36     4e9 nodes   4,000,000,001    24     undecided (truncated)
   10 (SAT)    30     2400 s CPU  --               --     undecided
 ```
+
+The SAT row is cadical only: it spent its whole 2400 s CPU limit without
+a verdict, and the confirming solver `decide` runs afterwards was stopped
+by hand to free a core rather than allowed to finish. So that row is
+"cadical did not decide it in 2400 s", which is all it was ever going to
+be worth — §23.3's second item already found CDCL does not reach this
+kind of instance.
 
 **All three are undecided, and that is the honest report.** 4·10⁹ nodes
 is above the ~2.4·10⁹ the killed `iota(4,10)` attempt reached in §23.3

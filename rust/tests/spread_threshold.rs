@@ -416,6 +416,19 @@ fn the_r_star_three_three_witness_problem_reaches_twenty_three() {
     assert!(!has_k_disjoint(&F, 3));
     assert_eq!(matching_number(&F), 2);
 
+    // Covering number 4. `nu <= 2` forces `tau <= 6`, and a 3-point cover
+    // would cap the family at 3*9 = 27 < 28, so any witness needs
+    // `tau >= 4`. This object already satisfies that -- the condition is
+    // necessary but does not discriminate, which is the point of
+    // recording it.
+    let covers = |t: Mask| F.iter().all(|&a| a & t != 0);
+    let tau = (1u32..=6)
+        .find(|&k| {
+            (0u32..(1 << 10)).any(|t| (t as u32).count_ones() == k && covers(t as Mask))
+        })
+        .expect("nu <= 2 forces a cover of at most six points");
+    assert_eq!(tau, 4, "covering number of the 23-member object");
+
     // Five short of a refutation, which is the whole point of pinning it.
     assert_eq!(F.len(), 23);
     assert!((F.len() as u64) < q.target(), "not a counterexample, and not claimed as one");
