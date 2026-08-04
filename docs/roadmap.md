@@ -5196,16 +5196,20 @@ not comparable with §23.3's.** Node counts are exact regardless.
 **The gates.**
 
 ```
-  make -j4 verify        green  (408 audited theorems, 408 "Closed under
+  make -j4 verify        green  (416 audited theorems, 416 "Closed under
                                 the global context", none carrying an axiom)
-  make coqchk            green  (one axiom: Sunflower.ALWZ.Rao20_lemma2;
-                                type-in-type, unsafe (co)fixpoints and
-                                assumed positivity all <none>)
+  make coqchk            green  (38 modules; one axiom:
+                                Sunflower.ALWZ.Rao20_lemma2; type-in-type,
+                                unsafe (co)fixpoints and assumed positivity
+                                all <none>)
   cargo test --release   green  (25 suites, 0 failures)
-  python3 tools/mutate.py       green  (82 mutations: 79 killed, 2 survived
-                                as declared, 1 control passing, 0 unexpected;
-                                ~47 min on 4 cores)
-  tools/statements.py    green  (492 statements match the baseline)
+  python3 tools/mutate.py       green  (82 of the 85 run in full: 79 killed,
+                                2 survived as declared, 1 control passing,
+                                0 unexpected, ~47 min on 4 cores; the three
+                                twocover-* mutations were added afterwards
+                                and run separately, all killed as declared,
+                                with the control)
+  tools/statements.py    green  (500 statements match the baseline)
   tools/docnumbers.py    green  (12 quoted numbers match)
 ```
 
@@ -5374,14 +5378,68 @@ Three mutations check the load-bearing parts: the `4 ≤ r` hypothesis (it
 fails at 3, by 13 against 9), the maximum (neither branch dominates, and
 they cross at exactly 4), and the four triples.
 
-### 24.11 The one-line verdict
+### 24.11 The record attempt, and the limit of root splitting
+
+`iota(4,10) >= 28` is the question §23.3 calls the cheapest live one on
+the row: `iota(4,9) = 27` is exhausted-exact, ground 10 is undecided, and
+a hit gives `g(4) >= 56` against a record of 54. §23.3's attempt was
+killed twice by container restarts after 2h28m of single-threaded search
+with no verdict, and the diagnosis was that the repository needed a
+search that parallelises and checkpoints. This session built one
+(§24.6). This is it, pointed at that question.
+
+```
+  record_hunt_par 4 28 10 10, budget 1e10 nodes, 4 threads, checkpointed
+    elapsed          ~2 h wall
+    CPU              ~7.2 CPU-hours, 4 workers at 93% each
+    verdict          none
+    root subproblems completed   0
+```
+
+Two things it establishes, and only one of them is about the record.
+
+**The parallelism is real.** 372% CPU sustained across four workers with
+no lock contention visible — the "every prune is against the fixed
+target, so root subtrees share nothing" argument holds up in practice,
+not only on the small instances the differential test can exhaust twice.
+
+**The checkpointing, on this instance, is worth nothing.** Zero of the
+210 root subproblems finished in seven CPU-hours, so the frontier file
+stayed empty and a restart would have resumed from nothing. §24.6 already
+flagged root splitting as coarse at the top of the tree; the honest
+statement after running it is stronger than "coarse":
+
+> With singleton orbits, the first root subproblems are not merely larger
+> than the rest — at `(b, g) = (4, 10)` they are larger than any budget
+> this repository can afford. Root splitting buys the 4×. It does **not**
+> buy restart-resilience at this size, and treating it as though it does
+> is the same mistake §23.3 made in a new place.
+
+What would: splitting two levels deep (the pairs `(i, j)` of first and
+second taken orbit), which turns 210 subproblems into ~20000 and would
+have recorded thousands of them in the same seven hours. That is a small
+change and it is the first thing the next attempt should do.
+
+Also fixed, because it was the reason none of this was visible while it
+ran: `search_orbits_parallel` now spawns a monitor thread that reports
+nodes and completed roots every thirty seconds whenever a checkpoint is
+requested. A run that reports nothing until it returns cannot be
+distinguished from a hung one, and this run spent two hours in that
+state.
+
+### 24.12 The one-line verdict
 
 **A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
 than the development's previous best at every uniformity from 5 up and
 at 3, moving the first open term of the sequence that is the conjecture
 from `[3,6]` to `[3,5]`.**
 
-No new record object. Two named lines are closed by argument rather than
+No new record object: the `iota(4,10) >= 28` attempt spent seven
+CPU-hours without a verdict (§24.11), and what it established is about
+the instrument rather than the record — root splitting delivers its 4×
+and delivers **no** restart-resilience at this size.
+
+Two named lines are closed by argument rather than
 by budget — Gallai–Edmonds on links (§24.3, vacuous because `Δ ≤ 2` gets
 there first) and the counting ceiling below level `b-2` (§24.4, worse at
 every parameter where a record could live). The `r*(3,3) ≥ 4` search is
@@ -5402,3 +5460,7 @@ So `r*(3,3) ≤ 4` — which would put the first open term of the sequence
 at `{3,4}` — now rests on **exactly one** unformalised classical result:
 Frankl's bound of 10 for 3-uniform intersecting families of covering
 number 3. Nothing else is missing.
+
+That is the session's real output: not the search, which decided nothing
+at either question it was asked, but a theorem and a target one lemma
+wide.

@@ -716,7 +716,34 @@ pub fn search_orbits_parallel(
     }
 
     let truncated = AtomicBool::new(false);
+    let finished = AtomicBool::new(false);
+    let roots_done = AtomicUsize::new(done_before.len());
     std::thread::scope(|scope| {
+        // A run that reports nothing until it returns is a run you cannot
+        // tell from a hung one, and on a long instance that is the whole
+        // difficulty: the `iota(4,10) >= 28` attempt of docs/roadmap.md
+        // §24.11 spent hours with no way to see whether it was making
+        // progress. One monitor thread fixes it and costs nothing --
+        // it sleeps, and reads two atomics.
+        if checkpoint.is_some() {
+            scope.spawn(|| {
+                let mut last = 0u64;
+                while !finished.load(Ordering::Relaxed) {
+                    std::thread::sleep(std::time::Duration::from_secs(30));
+                    if finished.load(Ordering::Relaxed) {
+                        break;
+                    }
+                    let n = nodes.load(Ordering::Relaxed);
+                    eprintln!(
+                        "[progress] nodes={n} (+{}) roots {}/{}",
+                        n - last,
+                        roots_done.load(Ordering::Relaxed),
+                        roots
+                    );
+                    last = n;
+                }
+            });
+        }
         for _ in 0..threads.max(1) {
             scope.spawn(|| {
                 // One `Incremental` per worker: the buckets are the whole
@@ -783,6 +810,7 @@ pub fn search_orbits_parallel(
                         }
                         break;
                     }
+                    roots_done.fetch_add(1, Ordering::Relaxed);
                     if let Some(p) = checkpoint {
                         let _g = log.lock().unwrap();
                         use std::io::Write;
@@ -798,6 +826,10 @@ pub fn search_orbits_parallel(
                 if local_best.0 > g.0 {
                     *g = local_best;
                 }
+                drop(g);
+                // The last worker out stops the monitor; setting it more
+                // than once is harmless.
+                finished.store(true, Ordering::Relaxed);
             });
         }
     });
