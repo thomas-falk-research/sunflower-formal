@@ -19,8 +19,8 @@
 //!   solved values are what `docs/roadmap.md` §22 tabulates.
 
 use sunflower_formal::rstar::{
-    cover_bound, decide, degree_ceiling, dfs, min_ground, quadratic_bound, verify, Outcome,
-    Question, Ternary,
+    best_bound, cover_bound, decide, degree_ceiling, dfs, min_ground, quadratic_bound, split_bound,
+    verify, Outcome, Question, Ternary,
 };
 use sunflower_formal::spread::{has_k_disjoint, is_rao_spread, matching_number, Mask};
 
@@ -264,5 +264,114 @@ fn counterexamples_satisfy_the_quantifier_over_all_subsets() {
         let d = f.iter().filter(|&&a| a & t == t).count() as u64;
         let cap = 2u64.pow(3u32.saturating_sub(t.count_ones()));
         assert!(d <= cap, "subset {t:b} has degree {d} > {cap}");
+    }
+}
+
+
+/// The degree-sum split bound, and the four rows of §22.1's table it
+/// moves.
+///
+/// `split_bound` solves the condition of
+/// `SpreadThreshold.split_spread_disjoint`, `(m+1)r + (m-1)² ≤ r²`. The
+/// Coq corollaries are `r_star_three_at_most_five`,
+/// `r_star_five_at_most_eight`, `r_star_six_at_most_ten` and
+/// `r_star_ten_at_most_seventeen`; each is strictly below what
+/// `quadratic_spread_disjoint` gives at the same `n`.
+#[test]
+fn the_split_bound_moves_four_rows_of_the_threshold_table() {
+    // (m, quadratic, split)
+    let table = [
+        (1u64, 3u64, 2u64),
+        (2, 4, 4),
+        (3, 6, 5),
+        (4, 7, 7),
+        (5, 9, 8),
+        (6, 11, 10),
+        (7, 13, 12),
+        (8, 14, 13),
+        (10, 18, 17),
+        (15, 26, 25),
+        (20, 35, 33),
+    ];
+    for (m, quadratic, split) in table {
+        assert_eq!(quadratic_bound(m), quadratic, "quadratic bound at m = {m}");
+        assert_eq!(split_bound(m), split, "split bound at m = {m}");
+        assert_eq!(best_bound(m), quadratic.min(split), "best bound at m = {m}");
+    }
+
+    // The Coq condition holds at exactly the quoted r and fails one below,
+    // so each corollary is the threshold of the argument, not merely
+    // sufficient.
+    for (m, r) in [(3u64, 5u64), (5, 8), (6, 10), (10, 17)] {
+        assert!(
+            (m + 1) * r + (m - 1) * (m - 1) <= r * r,
+            "split condition should hold at (m, r) = ({m}, {r})"
+        );
+        let below = r - 1;
+        assert!(
+            (m + 1) * below + (m - 1) * (m - 1) > below * below,
+            "split condition should fail at (m, r) = ({m}, {below})"
+        );
+    }
+
+    // At m = 1 the split bound is 2, which is the exact value of r*(1,3):
+    // `one_is_refuted_at_every_uniformity` refutes r = 1.
+    assert_eq!(split_bound(1), 2);
+}
+
+/// The split bound is never worse than the quadratic one, at any `m`.
+///
+/// This is the claim that makes it a strict improvement rather than a
+/// second incomparable bound: the LP over the three pieces has its
+/// optimum at `2P + min(Q, S - P)`, and `quadratic_no_three_disjoint_bound`
+/// is the `Q` branch while `split_no_three_disjoint_bound` is the `S - P`
+/// branch, so whichever is smaller is the one that binds.
+#[test]
+fn split_bound_is_never_worse() {
+    for m in 1u64..=400 {
+        assert!(
+            split_bound(m) <= quadratic_bound(m),
+            "split bound {} should not exceed quadratic bound {} at m = {m}",
+            split_bound(m),
+            quadratic_bound(m)
+        );
+    }
+    // Strictly better at every m from 5 on, and at m = 3.
+    assert!(split_bound(3) < quadratic_bound(3));
+    for m in 5u64..=400 {
+        assert!(
+            split_bound(m) < quadratic_bound(m),
+            "split bound should be strictly better at m = {m}"
+        );
+    }
+    // The asymptotic constants: φ = 1.618... against √3 = 1.732...
+    assert_eq!(split_bound(1000), 1618);
+    assert_eq!(quadratic_bound(1000), 1732);
+}
+
+/// The bound the split threshold yields on the sunflower number itself,
+/// and where it stands.
+///
+/// `spread_reduction` turns `r*(3,3) <= 5` into `f(3,3) <= 5^3 + 1 = 126`
+/// (`SpreadThreshold.f_three_three_from_split_threshold`). That is a
+/// **worse** bound than Erdős–Rado 1960's `m!·2^m + 1`, which at `m = 3`
+/// is `6·8 + 1 = 49`, and both are far behind `Sharp`'s exact small-case
+/// work. The threshold is the result; the sunflower number is not.
+#[test]
+fn the_split_threshold_is_behind_erdos_rado_as_a_bound_on_f() {
+    let split_f = split_bound(3).pow(3) + 1;
+    assert_eq!(split_f, 126);
+    let erdos_rado = (1..=3u64).product::<u64>() * 2u64.pow(3) + 1;
+    assert_eq!(erdos_rado, 49);
+    assert!(
+        erdos_rado < split_f,
+        "Erdős–Rado 1960 is the better bound on f(3,3), and must be quoted as such"
+    );
+    // The same at every uniformity that fits in u64: the threshold route
+    // gives (φm)^m, Erdős–Rado gives (2m/e)^m, and φ > 2/e.
+    for m in 3u32..=12 {
+        let split_f = (split_bound(m as u64) as u128).pow(m);
+        let er = (1..=m as u128).product::<u128>() * 2u128.pow(m);
+        assert!(er < split_f, "Erdős–Rado should win at m = {m}");
     }
 }

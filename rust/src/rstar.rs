@@ -540,6 +540,31 @@ pub fn cover_bound(m: u64) -> u64 {
     2 * m
 }
 
+/// The degree-sum split bound of `SpreadThreshold.split_spread_disjoint`:
+/// splitting on a single member `A` gives `|F| <= m·r^(m-1)` for the part
+/// meeting `A` (the `m` points of `A` cover it, and each carries at most
+/// `r^(m-1)` members) plus `intersecting_piece_bound` for the part missing
+/// it, so a counterexample needs `r^2 < (m+1)r + (m-1)^2`.
+///
+/// Asymptotically this is `m·(1+√5)/2 = φ·m` against the `√3·m` of
+/// `quadratic_bound`; `split_bound_is_never_worse` pins that it dominates
+/// pointwise as well.
+pub fn split_bound(m: u64) -> u64 {
+    let rhs = (m - 1) * (m - 1);
+    let mut r = 1u64;
+    while r * r < (m + 1) * r + rhs {
+        r += 1;
+    }
+    r
+}
+
+/// The best upper bound on `r*(m,3)` the development proves: both
+/// `quadratic_spread_disjoint` and `split_spread_disjoint` are theorems, so
+/// the smaller of the two is available at every `m`.
+pub fn best_bound(m: u64) -> u64 {
+    quadratic_bound(m).min(split_bound(m))
+}
+
 /* ------------------------------------------------------------------ */
 /* An exhaustive depth-first search, for the instances whose crux is
    counting rather than structure.                                      */

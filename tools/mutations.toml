@@ -1254,6 +1254,53 @@ r^(m-1) members, so the argument closes exactly when 2m <= r; at m = n and \
 r = 2n - 1 it does not."""
 
 [[mutation]]
+id = "spreadthreshold-split-drop-cover-multiplier"
+file = "coq/SpreadThreshold.v"
+question = """split_no_three_disjoint_bound charges m * r^(m-1) for the piece \
+meeting A. The m is the number of points of A, each carrying at most r^(m-1) \
+members by rao_point. Is the multiplier real, or does one point of A already \
+cover that piece?"""
+find = """    length F <= m * r ^ (m - 1)
+                + (r ^ (m - 1) + (m - 1) * (m - 1) * r ^ (m - 2))."""
+replace = """    length F <= r ^ (m - 1)
+                + (r ^ (m - 1) + (m - 1) * (m - 1) * r ^ (m - 2))."""
+expect = "killed"
+because = """Real. A member meeting A can meet it at any of its m points, so \
+cover_by_points charges length A = m times the point degree. Dropping the \
+multiplier would claim the piece is a single star, which is exactly what \
+intersecting_piece_bound has to work to establish and what this branch \
+deliberately does not assume."""
+
+[[mutation]]
+id = "spreadthreshold-split-drop-quadratic-term"
+file = "coq/SpreadThreshold.v"
+question = """split_spread_disjoint asks (n+1)r + (n-1)^2 <= r^2. The (n-1)^2 \
+is the pair-covered part of intersecting_piece_bound. Is it load-bearing, or \
+does the cover term alone close the argument?"""
+find = "    (n + 1) * r + (n - 1) * (n - 1) <= r * r ->"
+replace = "    (n + 1) * r <= r * r ->"
+expect = "killed"
+because = """Load-bearing, and it is what makes the constant golden rather \
+than 1. Without it the condition reads r >= n + 1, which would give \
+r*(3,3) <= 4 and r*(10,3) <= 11 -- neither is proved, and the second is below \
+even the cover bound's own counting."""
+
+[[mutation]]
+id = "spreadthreshold-split-drop-r-positive"
+file = "coq/SpreadThreshold.v"
+question = """split_spread_disjoint assumes 1 <= r on top of the quadratic \
+condition. The condition looks like it should force r large on its own. Is \
+the hypothesis redundant?"""
+find = "    1 <= n -> 1 <= r ->"
+replace = "    1 <= n ->"
+expect = "killed"
+because = """Not redundant, and the reason is a genuine edge case: at n = 1 \
+the condition reads 2r <= r^2, which r = 0 satisfies. But \
+SpreadYieldsDisjoint 1 3 0 is false -- two distinct singletons are a \
+0-spread 1-uniform family with 0^1 = 0 < 2 members and no three pairwise \
+disjoint ones. 1 <= r is what excludes it."""
+
+[[mutation]]
 id = "linkceiling-degree-off-by-one"
 file = "coq/LinkCeiling.v"
 question = """top_link_degree_at_most_two says a (b-1)-set lies in at most \

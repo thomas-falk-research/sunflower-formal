@@ -299,9 +299,14 @@ def main() -> int:
           f"   controls passing: {sum(1 for r in controls if r.ok)}/{len(controls)}"
           f"   unexpected: {len(unexpected)}")
 
+    # A missing control used to be a warning, which is the one failure this
+    # file cannot afford to report softly: without a control, a harness that
+    # silently failed to apply its edits reports every mutation killed and
+    # exits 0. The warning was visible only to whoever read the output. Make
+    # it a failure, so the gate cannot pass with the check switched off.
     if not controls:
         print()
-        print("  WARNING: no control mutation in the manifest. Without one, a "
+        print("  FAIL: no control mutation in the manifest. Without one, a "
               "harness that\n  failed to apply its edits would report every "
               "mutation killed and still pass.")
 
@@ -328,7 +333,7 @@ def main() -> int:
     if args.json:
         args.json.write_text(json.dumps([asdict(r) for r in results], indent=2))
 
-    return 1 if unexpected else 0
+    return 1 if (unexpected or not controls) else 0
 
 
 def build_baseline(timeout: int) -> tuple[bool, str, str | None]:

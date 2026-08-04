@@ -1450,6 +1450,27 @@ a47ec6e147ab2ec9  thm SpreadThreshold.r_star_four_at_most_seven
 967a5cc358227da7  thm SpreadThreshold.f_four_three_from_threshold
     f_four_three_from_threshold : UpperBound 4 3 2402
 
+f98331e79e6d0c15  thm SpreadThreshold.split_no_three_disjoint_bound
+    split_no_three_disjoint_bound : forall (m r : nat) (F : Family), 2 <= m -> m - 1 <= r -> Uniform m F -> RaoSpread m F r -> NoKDisjoint 3 F -> length F <= m * PeanoNat.Nat.pow r (m - 1) + (PeanoNat.Nat.pow r (m - 1) + (m - 1) * (m - 1) * PeanoNat.Nat.pow r (m - 2))
+
+c1abed7c65986ba8  thm SpreadThreshold.split_spread_disjoint
+    split_spread_disjoint : forall n r : nat, 1 <= n -> 1 <= r -> (n + 1) * r + (n - 1) * (n - 1) <= r * r -> SpreadYieldsDisjoint n 3 r
+
+db1397d1255d9ba5  thm SpreadThreshold.r_star_three_at_most_five
+    r_star_three_at_most_five : SpreadYieldsDisjoint 3 3 5
+
+63c472bf19df3d1d  thm SpreadThreshold.r_star_five_at_most_eight
+    r_star_five_at_most_eight : SpreadYieldsDisjoint 5 3 8
+
+a0c7088f4dd11169  thm SpreadThreshold.r_star_six_at_most_ten
+    r_star_six_at_most_ten : SpreadYieldsDisjoint 6 3 10
+
+add4288a03162479  thm SpreadThreshold.r_star_ten_at_most_seventeen
+    r_star_ten_at_most_seventeen : SpreadYieldsDisjoint 10 3 17
+
+72efbe58bf035146  thm SpreadThreshold.f_three_three_from_split_threshold
+    f_three_three_from_split_threshold : UpperBound 3 3 126
+
 773a21da388a7b71  thm LinkCeiling.one_uniform_pairwise_disjoint
     one_uniform_pairwise_disjoint : forall G : Family, Uniform 1 G -> Distinct G -> PairwiseDisjoint G
 
