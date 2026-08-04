@@ -4801,3 +4801,237 @@ It is either
   hour of SAT. It is the smallest object whose existence would move
   anything: `iota(4) >= 51` gives `g(4) >= 102` by `double` and
   `iota(5) >= 102` by `cone`, and that beats 1972.
+
+## 24. The degree sum nobody took: a sharper threshold, and the first
+##     open term of the sequence
+
+**Verdict: this session produced a new theorem.** `r*(m,3)` is bounded by
+`φ·m + O(1)` where `φ` is the golden ratio, against the `√3·m` that was
+the development's best, and the first *open* term of the sequence — which
+is `m = 3`, not `m = 4` — narrows from `[3,6]` to `[3,5]`. It did not
+produce a new record object; §24.5 says what it cost to find that out.
+
+### 24.1 The correction: the first open term is m = 3
+
+The brief for this session aims §4 at `r*(4,3)` and calls its lower half
+"the highest-information experiment available". §22.2's own table says
+otherwise:
+
+```
+  m     r*(m,3)     status
+  1     = 2         exact
+  2     = 3         exact
+  3     in [3, 6]   OPEN  <- first open term
+  4     in [3, 7]   open
+```
+
+`r*(3,3)` is the first term of the sequence that is not pinned, and the
+question at `m = 3` is exactly the question the brief wants asked at
+`m = 4` — is the sequence `2, 3, 3, ...` (bounded, evidence for the
+conjecture) or `2, 3, 4, ...` (still growing, and the spread method as
+formulated cannot prove the conjecture)? — at a fraction of the size.
+Everything below is asked at `m = 3` for that reason.
+
+### 24.2 The theorem: `r*(m,3) ≤ φ·m + O(1)`
+
+`coq/SpreadThreshold.v`, axiom-free, seven new audited names.
+
+`quadratic_no_three_disjoint_bound` splits a family with no three
+pairwise disjoint members **three** ways against a matching `{A, B}` —
+the two intersecting pieces and a cross piece — and bounds each. The
+new observation is that the split throws away the one quantity Rao's
+condition makes free:
+
+> The `m` point degrees **inside a single member** have never been
+> summed. `Σ_{a ∈ A} deg({a}) ≤ m·r^(m-1)`, and every member meeting `A`
+> is counted at least once on the left.
+
+That gives a **two**-way split against a single member `A`, and it is
+both simpler and sharper than the three-way one:
+
+```
+  {C : C ∩ A ≠ ∅}   covered by the m points of A        ≤ m·r^(m-1)
+  {C : C ∩ A = ∅}   meets B, and is intersecting        ≤ r^(m-1) + (m-1)²·r^(m-2)
+```
+
+The second piece is `intersecting_piece_bound` with `B` as its anchor;
+`miss_member_intersecting` is what makes it intersecting. The cross
+piece — the one the quadratic bound pays `m²·r^(m-2)` for — is absorbed
+into the cover count at no cost. So
+
+> **`split_no_three_disjoint_bound`:**
+> `|F| ≤ (m+1)·r^(m-1) + (m-1)²·r^(m-2)`,
+>
+> **`split_spread_disjoint`:** `(m+1)·r + (m-1)² ≤ r²` implies
+> `SpreadYieldsDisjoint m 3 r`.
+
+The condition solves to `r ≥ [(m+1) + √((m+1)² + 4(m-1)²)]/2`, which is
+`m·(1+√5)/2 + O(1)`. The table, with `rust/tests/spread_threshold.rs`
+pinning every row:
+
+```
+  m        1   2   3   4   5   6   7   8  10  15  20  ...  1000
+  2m+1     3   5   7   9  11  13  15  17  21  31  41
+  cover    2   4   6   8  10  12  14  16  20  30  40
+  quadratic 3  4   6   7   9  11  13  14  18  26  35  ...  1732
+  NEW      2   4   5   7   8  10  12  13  17  25  33  ...  1618
+```
+
+`split_bound_is_never_worse` pins that the new bound dominates the
+quadratic one pointwise for every `m ≤ 400`, strictly from `m = 5` on
+and at `m = 3`; `m = 4` is the one small row where they agree, which is
+why the headline `r*(4,3) ≤ 7` does not move. At `m = 1` the new bound
+is 2, which is the **exact** value of `r*(1,3)`.
+
+Four rows move, each a Coq corollary: `r_star_three_at_most_five`,
+`r_star_five_at_most_eight`, `r_star_six_at_most_ten`,
+`r_star_ten_at_most_seventeen`.
+
+**Where this sits relative to the published literature.** Through
+`spread_reduction`, `r*(m,3) ≤ r` gives `f(m,3) ≤ r^m + 1`, so the new
+threshold gives `f(m,3) ≤ (φm)^m + 1`. That is **worse** than
+Erdős–Rado 1960's `m!·2^m + 1 ≈ (2m/e)^m` — at `m = 3` it is 126 against
+49 — and exponentially worse than the `(O(log m))^m` of ALWZ / Rao /
+Bell–Chueluecha–Warnke. `the_split_threshold_is_behind_erdos_rado_as_a_bound_on_f`
+pins that comparison as a test rather than leaving it as a remark. The
+bound is not a competitive bound on `f` and must not be quoted as one.
+Its content is about the sequence `r*(m,3)` itself, whose boundedness in
+`m` is the conjecture at `k = 3`.
+
+### 24.3 Closed: Gallai–Edmonds adds nothing to the link structure
+
+Brief §7(a) proposes pushing the Gallai–Edmonds structure theorem for
+graphs with `ν ≤ 2` through `sunflower_iff_link_matching`, and calls it
+"the best ratio of new mathematics to work on the entire list".
+
+**It is vacuous, and the argument is one line.** At a `(b-2)`-set `Y` the
+link `G_Y` is a graph with `ν(G_Y) ≤ 2` — that is the input
+Gallai–Edmonds wants. But `LinkCeiling.top_link_degree_at_most_two`
+applied at `Y ∪ {v}`, which is a `(b-1)`-set, says `deg_{G_Y}(v) ≤ 2`.
+So
+
+    Δ(G_Y) ≤ 2   **and**   ν(G_Y) ≤ 2,
+
+and a graph with `Δ ≤ 2` is already a disjoint union of paths and
+cycles. The content of Gallai–Edmonds is the structure of the
+factor-critical components of `G[D]`; `Δ ≤ 2` has made every one of them
+an odd cycle before the theorem is invoked. The classification collapses
+to the elementary statement §23.1 already used —
+
+> `G_Y` is a disjoint union of paths and cycles with `Σ⌊|C_i|/2⌋ ≤ 2`,
+
+whose edge-maximal case is two disjoint triangles, six edges. There is
+no sharper counting ceiling hiding here and no new template for the
+search: the repository had already extracted everything this link level
+contains.
+
+### 24.4 Closed: the counting ceiling is best at level b-2, not deeper
+
+The obvious follow-on — run the ceiling one level further down — is
+worse at every parameter of interest, and it is worth recording so it is
+not tried again. A `(b-3)`-set's link is 3-uniform and sunflower-free,
+hence has at most `g(3)` members, giving
+`|F| ≤ (g(3)/C(b,3))·C(n, b-3)`.
+
+What the development knows unconditionally is `20 ≤ g(3) ≤ 48`
+(`IotaRate.v`, restated at its line 378: 20 from
+`Intersecting.lower_bound_3_3_20`, 48 from Erdős–Rado) — **not** the 26
+this session's brief quotes. 26 would follow from `f(3,3) ≤ 27`, and that
+bound is conditional on `Sharp.AHSOptimal`; the brief's `f(3,3) ∈ [21,27]`
+is right at the bottom and unproved at the top. At `g(3) = 48`:
+
+```
+  b = 4     n = 10      n = 11         b = 5, n = 12
+  level b-2      45          55                  132
+  level b-3     120         132                  316
+```
+
+The deeper level loses because `C(n, b-3)` shrinks by a factor
+`~(b-2)/(n-b+3)` while the degree bound grows by `~g(3)/6`, and the
+second beats the first at every `n` where a record could live. Even the
+most optimistic conceivable value of `g(3)` — its own lower bound, 20 —
+gives 50 and 55 at `b = 4` against 45 and 55, so it does not win at ten
+points and only ties at eleven. **The counting ceiling is best at level
+`b-2`, and there is nothing below it.**
+
+### 24.5 The search: `r*(3,3) ≥ 4`, and what it would take
+
+[TO FILL: search results]
+
+### 24.6 The root split, and the checkpoint that comes with it
+
+`rust/src/orbit.rs`, `search_orbits_parallel`. §23.3's fifth item is a
+2h28m run at `iota(4,10) >= 28` killed twice by a container restart with
+no verdict, and its own diagnosis: what the repository needs is a search
+that checkpoints, or one fast enough not to need to.
+
+Both come from the same change, and the reason it is forty lines rather
+than a research project is a property of the existing code:
+
+> Every pruning test in `search_orbits` is against the **fixed**
+> `target`. `s.best` is written and never read by any prune. So sibling
+> subtrees at the root share no incumbent — there is nothing for one
+> worker to learn from another, no speedup anomaly, and no risk of
+> exploring a node the sequential run would have pruned.
+
+So root subproblem `i` ("the families whose lowest-indexed taken orbit is
+`ord[i]`") is independent of every other, the subproblems partition the
+space, and **the list of finished ones is a complete resume point**.
+`std::thread::scope`, one `Incremental` per worker, two atomics and a
+mutex; no new dependency. `examples/record_hunt_par.rs` drives it.
+
+Three things this cost, all worth recording.
+
+* **The recursion has to report whether it finished.** A root subproblem
+  abandoned when the budget ran out looks exactly like one that
+  completed, and recording it would let a restart skip work that was
+  never done — a wrong answer rather than a slow one. `rec` now returns
+  `true` only if its subtree was exhausted, and only a `true` is written
+  to the checkpoint. The bound firing counts as exhausted; the budget
+  running out does not.
+* **`push_orbit` already unwinds itself on failure.** The first version
+  popped the orbit unconditionally after the subproblem, which on the
+  failure path popped entries belonging to nothing and corrupted the
+  worker for every later subproblem it took. Caught by the node-count
+  differential test, not by any assertion.
+* **Root splitting gives coarse checkpoints at the top.** With singleton
+  orbits the root subproblems are wildly uneven — the first few carry
+  almost all the work — so a budget of a tenth of the total completes
+  *nothing* and records *nothing*. The parallelism is real; the
+  restart-resilience only starts to bite once a substantial fraction of
+  the space is done. Splitting two levels deep would fix it and is not
+  done here.
+
+`rust/tests/orbit_parallel.rs` is the differential check: the decision
+agrees with `search_orbits` at every parameter small enough to exhaust
+twice, any family found verifies, a checkpointed run resumes in strictly
+fewer nodes than a fresh one and reaches the same verdict, and — for an
+**exhaustive negative** — the node count is identical at 1, 2, 3, 4 and 8
+threads. That last qualifier is the content: when the target is
+reachable the search stops at the first success, so how much was explored
+first depends on how many workers were racing, and a thread-dependent
+node count there is correct rather than a bug. Asserting otherwise is
+asserting that a parallel search is not parallel, and that is exactly the
+assertion the first version of the test made.
+
+### 24.6 Fixed: the mutation harness could pass with its own check off
+
+`tools/mutate.py` warned when the manifest contained no control mutation
+and then exited 0 anyway. That is the one failure this file cannot report
+softly: the control exists precisely so that a harness which silently
+failed to apply its edits — reporting every mutation `killed` — is
+caught, and a warning nobody reads does not catch it. A missing control
+is now a failure. The control itself (`canary-alpha-rename`) was already
+present; what was missing was the guarantee that it stays.
+
+### 24.7 Costs
+
+[TO FILL]
+
+### 24.8 The one-line verdict
+
+**A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
+than the development's previous best at every uniformity from 5 up and
+at 3, moving the first open term of the sequence that is the conjecture
+from `[3,6]` to `[3,5]`.** No new record object, and two named lines
+(Gallai–Edmonds on links, the deeper counting ceiling) are now closed.

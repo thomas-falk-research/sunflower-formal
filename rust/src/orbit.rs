@@ -585,3 +585,229 @@ pub fn standard_groups(n: u32) -> Vec<(String, Vec<Perm>)> {
     }
     out
 }
+
+/* ------------------------------------------------------------------ */
+/* Root-split parallel search, with a resumable frontier.              */
+/* ------------------------------------------------------------------ */
+
+/// The parallel form of [`search_orbits`], and the reason it is sound
+/// with no communication between workers.
+///
+/// Every pruning test in [`search_orbits`] is against the **fixed**
+/// `target`: the bound is `fam.len() + rest < target`, and `best` is
+/// written but never read by any prune. So sibling subtrees at the root
+/// share no incumbent — there is nothing for one worker to learn from
+/// another, no speedup anomaly, and no risk of exploring a node the
+/// sequential run would have pruned. That is the ideal case for parallel
+/// branch and bound, and it is why this is forty lines rather than a
+/// research project.
+///
+/// **The split is also the checkpoint.** The root subproblems *are* the
+/// frontier: subproblem `i` is "the families whose first taken orbit is
+/// `ord[i]`", and the subproblems partition the search space. Recording
+/// which have finished is therefore a complete resume point, and
+/// `checkpoint` writes one index per line as each completes. A restarted
+/// run reads the file and does only what is left. `docs/roadmap.md` §23.3
+/// records these as two separate future tasks; they are one change.
+///
+/// Note what this does **not** buy: four workers die together, so
+/// parallelism alone would not have survived the restart that killed the
+/// `iota(4,10)` attempt. It shrinks the window you must fit inside;
+/// the checkpoint is what survives.
+///
+/// `exhaustive` means every root subproblem ran to completion inside the
+/// budget — including ones completed by an earlier run and read back
+/// from the checkpoint.
+pub fn search_orbits_parallel(
+    orbits: &[Vec<u64>],
+    target: usize,
+    intersecting: bool,
+    budget: u64,
+    threads: usize,
+    checkpoint: Option<&std::path::Path>,
+) -> OrbitResult {
+    use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
+    use std::sync::Mutex;
+
+    let mut ord: Vec<usize> = (0..orbits.len()).collect();
+    ord.sort_by_key(|&i| std::cmp::Reverse(orbits[i].len()));
+
+    // `suffix[i]` = how many members orbits `ord[i..]` could still add.
+    // The sequential root loop stops as soon as this drops below the
+    // target, so root indices past that point are not subproblems at all.
+    let n = ord.len();
+    let mut suffix = vec![0usize; n + 1];
+    for i in (0..n).rev() {
+        suffix[i] = suffix[i + 1] + orbits[ord[i]].len();
+    }
+    let roots = (0..n).filter(|&i| suffix[i] >= target).count();
+
+    // Root subproblems already finished by a previous run.
+    let done_before: std::collections::HashSet<usize> = match checkpoint {
+        Some(p) => std::fs::read_to_string(p)
+            .unwrap_or_default()
+            .lines()
+            .filter_map(|l| l.trim().parse::<usize>().ok())
+            .collect(),
+        None => std::collections::HashSet::new(),
+    };
+
+    let next = AtomicUsize::new(0);
+    let nodes = AtomicU64::new(0);
+    let found = AtomicBool::new(false);
+    let best = Mutex::new((0usize, Vec::<u64>::new()));
+    let log = Mutex::new(());
+
+    // Same recursion as `search_orbits`, with the two pieces of state a
+    // worker cannot keep to itself: the node budget and the found flag.
+    //
+    // The return value is what makes the checkpoint sound: `true` means
+    // this subtree was explored to completion, `false` means it was
+    // abandoned (budget spent, or another worker already succeeded). Only
+    // a completed root subproblem may be recorded — writing one that was
+    // abandoned would let a restart skip work that was never done, which
+    // is a wrong answer rather than a slow one.
+    #[allow(clippy::too_many_arguments)]
+    fn rec(
+        orbits: &[Vec<u64>],
+        target: usize,
+        fam: &mut Incremental,
+        cands: &[usize],
+        nodes: &AtomicU64,
+        budget: u64,
+        found: &AtomicBool,
+        local_best: &mut (usize, Vec<u64>),
+    ) -> bool {
+        if found.load(Ordering::Relaxed) || nodes.fetch_add(1, Ordering::Relaxed) >= budget {
+            return false;
+        }
+        if fam.len() > local_best.0 {
+            local_best.0 = fam.len();
+            local_best.1 = fam.members.clone();
+        }
+        if fam.len() >= target {
+            found.store(true, Ordering::Relaxed);
+            return false;
+        }
+        let mut rest: usize = cands.iter().map(|&i| orbits[i].len()).sum();
+        for idx in 0..cands.len() {
+            // The bound fired: nothing left in this subtree can reach the
+            // target, so the subtree *is* accounted for.
+            if fam.len() + rest < target {
+                return true;
+            }
+            let o = cands[idx];
+            rest -= orbits[o].len();
+            if !fam.push_orbit(&orbits[o]) {
+                continue;
+            }
+            let nx: Vec<usize> = cands[idx + 1..]
+                .iter()
+                .copied()
+                .filter(|&j| orbits[j].iter().all(|&x| fam.can_add(x)))
+                .collect();
+            let complete = rec(orbits, target, fam, &nx, nodes, budget, found, local_best);
+            fam.pop_orbit(&orbits[o]);
+            if !complete {
+                return false;
+            }
+        }
+        true
+    }
+
+    let truncated = AtomicBool::new(false);
+    std::thread::scope(|scope| {
+        for _ in 0..threads.max(1) {
+            scope.spawn(|| {
+                // One `Incremental` per worker: the buckets are the whole
+                // cost of the incremental sunflower test and must not be
+                // shared.
+                let mut fam = Incremental::new(intersecting);
+                let mut local_best = (0usize, Vec::<u64>::new());
+                loop {
+                    let i = next.fetch_add(1, Ordering::Relaxed);
+                    if i >= roots || found.load(Ordering::Relaxed) {
+                        break;
+                    }
+                    if nodes.load(Ordering::Relaxed) >= budget {
+                        truncated.store(true, Ordering::Relaxed);
+                        break;
+                    }
+                    if done_before.contains(&i) {
+                        continue;
+                    }
+                    // Subproblem i: take orbit ord[i], then recurse on the
+                    // orbits after it that are still compatible.
+                    //
+                    // The pop belongs *inside* the success branch:
+                    // `push_orbit` already unwinds everything it added
+                    // when it fails, so popping again on the failure path
+                    // would pop entries belonging to nothing and corrupt
+                    // the worker for every later subproblem.
+                    let complete = if fam.push_orbit(&orbits[ord[i]]) {
+                        if fam.len() > local_best.0 {
+                            local_best = (fam.len(), fam.members.clone());
+                        }
+                        let c = if fam.len() >= target {
+                            found.store(true, Ordering::Relaxed);
+                            false
+                        } else {
+                            let cands: Vec<usize> = ord[i + 1..]
+                                .iter()
+                                .copied()
+                                .filter(|&j| orbits[j].iter().all(|&x| fam.can_add(x)))
+                                .collect();
+                            rec(
+                                orbits,
+                                target,
+                                &mut fam,
+                                &cands,
+                                &nodes,
+                                budget,
+                                &found,
+                                &mut local_best,
+                            )
+                        };
+                        fam.pop_orbit(&orbits[ord[i]]);
+                        c
+                    } else {
+                        // The orbit is inconsistent with itself, so the
+                        // subproblem is empty and trivially complete.
+                        true
+                    };
+                    debug_assert_eq!(fam.len(), 0);
+
+                    if !complete {
+                        if !found.load(Ordering::Relaxed) {
+                            truncated.store(true, Ordering::Relaxed);
+                        }
+                        break;
+                    }
+                    if let Some(p) = checkpoint {
+                        let _g = log.lock().unwrap();
+                        use std::io::Write;
+                        if let Ok(mut f) =
+                            std::fs::OpenOptions::new().create(true).append(true).open(p)
+                        {
+                            let _ = writeln!(f, "{i}");
+                            let _ = f.flush();
+                        }
+                    }
+                }
+                let mut g = best.lock().unwrap();
+                if local_best.0 > g.0 {
+                    *g = local_best;
+                }
+            });
+        }
+    });
+
+    let (b, bf) = best.into_inner().unwrap();
+    OrbitResult {
+        best: b,
+        best_family: bf,
+        nodes: nodes.load(Ordering::Relaxed),
+        exhaustive: !truncated.load(Ordering::Relaxed)
+            && nodes.load(Ordering::Relaxed) < budget,
+    }
+}

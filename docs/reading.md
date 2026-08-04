@@ -1183,3 +1183,74 @@ about a theorem in this development: **quote the statement, and check
 which side of the arrow the claim is on.** Both §18.2 and §20.5 state
 the implication correctly; only the summary table inverted it, and a
 summary table is exactly where nobody looks for the arrow.
+
+---
+
+## What re-reading the development changed, session N+7
+
+Two entries, both about statements *in this repository* rather than in
+the literature — which is where the last three sessions' corrections have
+also come from.
+
+### The first open term of `r*(m,3)` is m = 3, and the brief pointed at 4
+
+The session brief aimed its top priority at `r*(4,3)` and described the
+lower half of that interval as "the highest-information experiment
+available". §22.2's table, written by the previous session, says
+otherwise: `r*(1,3) = 2` and `r*(2,3) = 3` are exact, and **`r*(3,3)` is
+the first term that is not**. The question the brief wants asked at
+`m = 4` — is the sequence bounded, or still growing? — is available one
+uniformity down, where the object sought has 28 members rather than 82
+and the ground set starts at 10 points rather than 13.
+
+Nothing in the brief is wrong about *why* the question matters. What was
+wrong was where to ask it, and the table that says so was already in the
+repository. **Read the development's own status table before accepting a
+brief's choice of target.**
+
+### `iota(4,8) = 24`, and a test written against 23
+
+The differential test for the parallel search was first written with
+target 24 at `(b, g) = (4, 8)` in the belief that this was above the
+maximum, so that both routines would return an exhaustive negative and
+their node counts would have to agree exactly. They did not agree, and
+the first two hypotheses — a double-pop bug, then a race — were wrong
+about the cause even though the first was a real bug found on the way.
+
+The actual cause: §23.3's own table records the *control* (unrestricted
+pool) at `b = 4`, `g = 8` as **24**, so 24 is reached, the search stops
+at the first success, and how much of the space was explored before that
+depends on how many workers were racing. A thread-dependent node count
+there is correct behaviour.
+
+The lesson is about what a differential test may assert. Node-count
+determinism is a property of **exhaustive negatives** only; asserting it
+for a reachable target asserts that a parallel search is not parallel.
+The test now says so in its own name.
+
+**The rule this adds.** Before pinning a search's node count, establish
+which side of the threshold the target is on — and take the value from
+the repository's measured table, not from a guess about what the maximum
+"should" be.
+
+### `g(3) ≤ 26` is not proved, and the brief quoted it as a fact
+
+The session brief tabulates `f(3,3) ∈ [21,27]`, which reads as
+`20 ≤ g(3) ≤ 26`. The lower half is right — `Intersecting.lower_bound_3_3_20`
+is a 20-member family. The upper half is not proved. What `IotaRate.v`
+says in its own text (line 378, and again at 436) is
+
+> "The development only knows `20 <= g(3) <= 48`."
+
+48 is Erdős–Rado. The 27 in the brief traces to
+`Sharp.AHSOptimal implies f(3,3) <= 32` and to
+`IotaRate.flat_threshold_at_three_forces_g_three_at_most_27`, whose
+hypothesis is `r*(3,3) = 3` — the very thing this session was trying to
+decide. Quoting it as an unconditional bound assumes the answer.
+
+This is the third consecutive session in which a number carried forward
+in a brief did not survive being checked against the module that proves
+it, and the pattern is the same each time: the number is real, but it
+sits on the far side of an implication whose hypothesis is open. **When
+a brief quotes a bound, find the theorem and read what is to the left of
+the arrow.**
