@@ -1206,3 +1206,64 @@ because = """Load-bearing through link_uniform: the link at T has uniformity \
 b - |T| only when T has no repeats, and a repeating T makes b - length T \
 smaller than the members of the link actually are. This is the same defect \
 w_spread_legacy_degenerate records for the spread condition, one level down."""
+
+# ----------------------------------------------------------------
+# The spread-threshold bounds (SpreadThreshold.v).
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "spreadthreshold-piece-drop-r-bound"
+file = "coq/SpreadThreshold.v"
+question = """intersecting_piece_bound assumes m - 1 <= r. The two branches \
+of its proof give r^(m-1) + (m-1)^2 r^(m-2) and m(m-1) r^(m-2); the stated \
+bound is the first. Is the hypothesis that makes the second smaller than the \
+first actually load-bearing, or is the second branch always weaker anyway?"""
+find = """    2 <= m -> m - 1 <= r ->
+    Uniform m G ->"""
+replace = """    2 <= m ->
+    Uniform m G ->"""
+expect = "killed"
+because = """Load-bearing. m(m-1) <= r + (m-1)^2 is exactly m - 1 <= r, so \
+without it the all-members-meet-A-twice branch is not covered by the stated \
+bound. This is the hypothesis that keeps the threshold bound linear in m."""
+
+[[mutation]]
+id = "spreadthreshold-quadratic-drop-slack"
+file = "coq/SpreadThreshold.v"
+question = """quadratic_spread_disjoint asks 2r + 3n^2 + 2 <= r^2 + 4n. The \
++2 is the constant term of 3m^2 - 4m + 2, which is 2(m-1)^2 + m^2 for the \
+three pieces. Is it real arithmetic or slack?"""
+find = "    2 * r + 3 * n * n + 2 <= r * r + 4 * n ->"
+replace = "    2 * r + 3 * n * n <= r * r + 4 * n ->"
+expect = "killed"
+because = """Real. The three pieces total r^(m-2) * (2r + 2(m-1)^2 + m^2) and \
+2(m-1)^2 + m^2 = 3m^2 - 4m + 2 exactly; dropping the 2 makes the final \
+comparison with r^m false by that much."""
+
+[[mutation]]
+id = "spreadthreshold-cover-off-by-one"
+file = "coq/SpreadThreshold.v"
+question = """cover_spread_disjoint claims r*(n,3) <= 2n, one better than \
+elementary_spread_disjoint's 2n + 1. Is 2n the sharp value of this argument, \
+or is there another one hidden in it?"""
+find = "  forall n, 1 <= n -> SpreadYieldsDisjoint n 3 (2 * n)."
+replace = "  forall n, 1 <= n -> SpreadYieldsDisjoint n 3 (2 * n - 1)."
+expect = "killed"
+because = """Sharp. The cover has at most 2m points and each carries at most \
+r^(m-1) members, so the argument closes exactly when 2m <= r; at m = n and \
+r = 2n - 1 it does not."""
+
+[[mutation]]
+id = "linkceiling-degree-off-by-one"
+file = "coq/LinkCeiling.v"
+question = """top_link_degree_at_most_two says a (b-1)-set lies in at most \
+two members of a sunflower-free family. Is 2 the constant the link \
+argument gives, or is it slack?"""
+find = "    deg Y F <= 2.\nProof.\n  intros b F Y Hb HU HD HndY HlenY Hfree."
+replace = "    deg Y F <= 1.\nProof.\n  intros b F Y Hb HU HD HndY HlenY Hfree."
+expect = "killed"
+because = """Sharp. The link over a (b-1)-set is 1-uniform, and it takes \
+*three* pairwise disjoint members to make a 3-sunflower, so two members \
+through the set are permitted and the bound cannot be improved. The \
+2-(6,3,2) design attains it at every pair, which is why iota(3) = 10 is \
+exactly the counting ceiling at six points."""

@@ -177,6 +177,24 @@ Highlights of the less-routine parts:
   quality, slightly weaker than the 1960 bound by a factor $e^n$, but
   proved along the modern route rather than the classical one.
 
+- **The sharp threshold $r^{*}(m,3)$.** Write $r^{*}(n,k)$ for the least
+  $r$ making `SpreadYieldsDisjoint n k r` true. Since the reduction
+  turns it into $f(m,k) \le r^m + 1$, **whether $r^{*}(m,3)$ is bounded
+  in $m$ is the sunflower conjecture at $k = 3$** — the sequence is not
+  evidence about the problem, it *is* the problem. `coq/SpreadThreshold.v`
+  proves two upper bounds on it, both better than the $2n+1$ above:
+  $r^{*}(n,3) \le 2n$ from the two-member cover, and
+  $r^{*}(n,3) \le 1 + \sqrt{3n^2 - 4n + 3}$ from a decomposition against
+  a matching. The second turns on the fact that for $B$ *any* member of a
+  family with no three pairwise disjoint members, $\{C : C \cap B =
+  \emptyset\}$ is intersecting; the resulting pieces are covered by
+  *pairs*, whose degree is $r^{m-2}$ rather than $r^{m-1}$. At $n = 4$
+  that is $r^{*}(4,3) \le 7$, down from 9. `rust/src/rstar.rs` searches
+  for the matching lower bounds — two independent searches, a SAT
+  encoding with lex-leader symmetry breaking and a depth-first
+  enumeration with counting bounds — and pins the counterexample families
+  it finds.
+
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$
   members") together with his size hypothesis — checked against the
@@ -205,7 +223,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 75 mutations, 72 are killed outright, two
+  that something breaks. Of 79 mutations, 76 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -271,10 +289,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 35 Coq files, then runs the axiom audit
+make verify        # builds all 37 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (386 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (400 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

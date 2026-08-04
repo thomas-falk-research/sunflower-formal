@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-75 mutations, all with the outcome the manifest declares: 72 killed
+79 mutations, all with the outcome the manifest declares: 76 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -662,6 +662,9 @@ matter most:
 | `cone-freshness-not-required` | Does `cone_Uniform` actually need `Fresh`, or does the uniformity come from elsewhere? | `Product.v` |
 | `iotaatleast-drop-intersecting` | Is the intersecting clause in `IotaAtLeast` load-bearing, or decoration? | `Product.v` |
 | `stepbounded-additive` | Is `iota(b+1) <= D * iota(b)` load-bearing, or would an additive step do? | `Product.v` |
+| `spreadthreshold-piece-drop-r-bound` | Is `m - 1 <= r` what makes the meets-A-twice branch fit under the stated bound on an intersecting piece? | `SpreadThreshold.v` |
+| `spreadthreshold-quadratic-drop-slack` | Is the `+2` in `2r + 3n² + 2 <= r² + 4n` real arithmetic or slack? | `SpreadThreshold.v` |
+| `spreadthreshold-cover-off-by-one` | Is `2n` the sharp value of the cover argument for `r*(n,3)`, or is there another one in it? | `SpreadThreshold.v` |
 
 Run it with:
 

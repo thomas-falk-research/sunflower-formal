@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 75 anecdotes into a coverage metric over the
+  mutation testing from 79 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -3435,6 +3435,11 @@ what the reading actually supports.
 9. **A scripted edit that cannot find its target must fail, not no-op.**
    Added by §20.9, which is a commit message that said a slow test row was
    removed when it was not.
+10. **Before calling a bound an advance, evaluate it against the best
+    published bound for the same quantity — including the one the
+    repository has already assumed as an axiom.** Added by §22.7, which
+    is a session that improved `r*(m,3)` from `2m+1` to `1.74m` without
+    noticing that `ALWZ.v`'s axiom already gives `O(log m)`.
 
 ---
 
@@ -4248,3 +4253,551 @@ the `n!` is the barrier and that no sharpening of the counting recursion
 removes it. This session is three more instruments arriving at the same
 wall from three directions, which is stronger evidence for §1's claim
 than §1 had.
+
+---
+
+## 22. The sequence that is the conjecture: two bounds on `r*(m,3)`, and
+##     what the search could and could not reach
+
+`SpreadReduction.SpreadYieldsDisjoint n 3 r` is true above `r*(n,3)` and
+false below it, `spread_reduction` turns a bound on `r*` into a bound on
+`f(m,3)`, and §18.5 is the observation that **whether the sequence is
+bounded in `m` is the sunflower conjecture at `k = 3`**. This session
+attacked the sequence directly. The output is one new theorem, one new
+instrument, and one correction to the table.
+
+### 22.1 The theorem: `r*(m,3) <= 1 + sqrt(3m^2 - 4m + 3)`
+
+`coq/SpreadThreshold.v`, axiom-free. Two bounds, both better than the
+`2n + 1` of `SpreadReduction.elementary_spread_disjoint`, which was the
+only general upper bound the development had.
+
+* **`cover_spread_disjoint`: `r*(n,3) <= 2n`.** A family with no three
+  pairwise disjoint members has a maximal matching of at most two
+  members, its union is at most `2m` points, and every member meets it.
+  Rao's *absolute* spread condition caps each point at `r^(m-1)`, so
+  `|F| <= 2m·r^(m-1)`, which is at most `r^m` as soon as `r >= 2m`. The
+  elementary bound does not use spreadness at all beyond counting cover
+  points; this uses it once.
+
+* **`quadratic_spread_disjoint`: `r*(n,3) <= 1 + sqrt(3n^2 - 4n + 3)`**,
+  about `1.74 n`. Stated in Coq without roots, as
+  `2r + 3n^2 + 2 <= r^2 + 4n`.
+
+The second is the one worth the space, because of *why* it works.
+
+> **For `B` any member of a family with no three pairwise disjoint
+> members, `{C in F : C ∩ B = ∅}` is intersecting.**
+
+Two disjoint members that both miss `B` would be three pairwise disjoint
+sets together with `B`. So against a matching `{A, B}` the family splits
+into **two intersecting pieces and a cross piece**, and each is bounded
+separately:
+
+```
+  piece                          covered by            bound
+  {C : C ∩ B = ∅}   (meets A)    a point, or pairs     r^(m-1) + (m-1)^2 r^(m-2)
+  {C : C ∩ A = ∅}   (meets B)    a point, or pairs     r^(m-1) + (m-1)^2 r^(m-2)
+  meets both                     one A-point x one     m^2 r^(m-2)
+                                 B-point
+```
+
+The saving is that **a pair has degree `r^(m-2)` where a point has
+`r^(m-1)`**, so any piece that can be covered by pairs is smaller by a
+factor of `r`. Summing gives `r^(m-2)·(2r + 3m^2 - 4m + 2)`, and `r^m`
+is `r^(m-2)·r^2`.
+
+`intersecting_piece_bound` is where the case analysis lives, and it is a
+two-way split, not a minimisation: either some member meets `A` in
+exactly one point `a1` — and then the piece is the star at `a1`, at most
+`r^(m-1)` sets, plus the members meeting both `A \ {a1}` and `C0 \ {a1}`,
+covered by `(m-1)^2` pairs — or every member meets `A` twice and the
+whole piece is covered by the `m(m-1)` ordered distinct pairs inside `A`.
+The hypothesis `m - 1 <= r` is what makes the second at most the first;
+`spreadthreshold-piece-drop-r-bound` in the mutation manifest checks it
+is load-bearing.
+
+**This is the first bound on `r*` that uses `k = 3` as structure rather
+than as the arithmetic constant `k - 1`** — `elementary_spread_disjoint`
+and `cover_spread_disjoint` are both the general-`k` cover argument with
+`k = 3` substituted — and it is worth naming why it can. §21.7 closed
+three routes because each pays `b` per level to re-intersect, and
+`IntersectingSpread.link_of_intersecting_not_intersecting` says why: the
+link of an intersecting family is not intersecting. Here nothing is
+re-intersected. The intersecting-ness is *produced* by the
+hypothesis on the family, once, at the top — which is exactly §1's
+observation that a hypothesis about **general** families does not pay the
+toll, applied to the smallest available such hypothesis.
+
+Evaluated:
+
+```
+  m      elementary 2m+1     cover 2m      quadratic     Coq name
+  1                    3            2              3     cover_spread_disjoint
+  2                    5            4              4
+  3                    7            6              6     r_star_three_at_most_six
+  4                    9            8              7     r_star_four_at_most_seven
+  5                   11           10              9     r_star_five_at_most_nine
+  6                   13           12             11     r_star_six_at_most_eleven
+  10                  21           20             18
+```
+
+`rust/tests/spread_threshold.rs` pins every row, and pins that the Coq
+condition holds at `(4,7)` and fails at `(4,6)` — the bound is sharp for
+*this argument* at the headline point, not merely sufficient.
+
+### 22.2 The correction: `r*(3,3) = 3` was never established
+
+§2 of this session's brief tabulates the sequence as `3, 3, ?` with the
+second entry attributed to "§3.6 + §20.5 (`g(3) <= 26` forces it)". Both
+halves of that attribution fail, and §3.6 and §20.5 each say so in their
+own text.
+
+* **§20.5 runs the other way.** `IotaRate.flat_threshold_at_three_forces_g_three_at_most_27`
+  is `r*(3,3) = 3 -> g(3) <= 27`. §20.5's whole point is that proving
+  `g(3) <= 27` **removed** the decision rather than making it: "the
+  experiment cannot refute `r*(3,3) = 3` however it comes out". A bound
+  on `g(3)` is a consequence, not a cause.
+
+* **§3.6's rows at grounds 8 and 9 are arithmetic, not search.** This is
+  now exact. `rstar::min_ground` computes the counting floor
+  `ceil(m(r^m + 1) / r^(m-1))`, which at `(m,r) = (3,3)` is **10**:
+  `m·|F| = Σ_x deg(x) <= ground·r^(m-1)` gives `|F| <= 3·ground/1`, i.e.
+  at most 27 members on 9 points, one short of the 28 a counterexample
+  needs. §3.6 already said "ground sets that provably cannot contain a
+  counterexample plus nothing beyond"; the new content is that
+  `counting_settles_the_small_ground_sets` decides grounds 6 through 9
+  **with zero search nodes**, so the cost of §3.6's grid at uniformity 3
+  was zero and its information content is zero too.
+
+So the honest state of the sequence is:
+
+```
+  m     r*(m,3)          lower bound from            upper bound from
+  1     = 2   exact      r = 1 refuted               cover_spread_disjoint
+  2     = 3   exact      r = 2 refuted (C5)          exhaustive, see §22.3
+  3     in [3, 6]        r = 2 refuted               r_star_three_at_most_six
+  4     in [3, 7]        r = 2 refuted               r_star_four_at_most_seven
+  5     in [3, 9]        r = 2 refuted               r_star_five_at_most_nine
+  6     in [3, 11]       r = 2 refuted               r_star_six_at_most_eleven
+  9     >= 4             §18.2, via g(9) >= 3^9      -
+```
+
+Two exact terms, not two-and-a-conjecture. The interval at `m = 4` is
+`[3, 7]`, down from `[3, 9]`, and it is the first time the top of that
+interval has moved.
+
+### 22.3 `r*(2,3) = 3`, certified rather than cited
+
+§3.6 records `r*(2,k) = k` as "known conditionally on [ChHa76]". At
+`k = 3` it is now a finite check this repository owns outright, and the
+support bound is what makes it finite:
+
+* no intersecting counterexample, since `|F| <= m·r^(m-1) = 6 <= 9 = r^m`;
+* so there is a matching `{A, B}`, `|A ∪ B| = 4`, and every member meets
+  it, giving `|F| <= 2m·r^(m-1) = 12` by `no_three_disjoint_cover_bound`;
+* a 2-set meeting a 4-set has at most one point outside it, and distinct
+  outside points lie in distinct members, so at most `|F| <= 12` of them:
+  **the support of a counterexample is at most 16 points.**
+
+`r_star_two_three_is_three` runs the exhaustive search on every ground
+set from the counting floor 7 up to 16, in both the intersecting and the
+matching case, and at uniformity 1 as well since `SpreadYieldsDisjoint 2
+3 3` quantifies over it. Nothing. **This is a Rust certificate, not a
+Coq theorem** — the support bound is proved by hand above and the search
+is the finite check it licenses. The same argument does not close
+`m = 3`: there the support bound is `6 + 2·54`, which is 114 points, and
+nothing in this session brought it down.
+
+### 22.4 The instrument: `rust/src/rstar.rs`
+
+Two independent searches for a counterexample at fixed `(m, r, ground)`,
+agreeing wherever both finish (`sat_and_dfs_agree`).
+
+* **A SAT encoding.** One variable per `m`-subset meeting the cover;
+  Sinz sequential counters for the degree caps (`O(n·k)`, where the
+  crate's existing `at_most` is `O(n·(n-k))` — the wrong way round when
+  `k` is a degree cap); the two anchors forced; and **lex-leader symmetry
+  breaking for the generators of the residual group**
+  `(Sym(A) × Sym(B)) ⋊ swap × Sym(U)`. The lex-greatest member of an
+  orbit satisfies `X >=_lex g(X)` for every `g`, so imposing it for a
+  generating set keeps a representative of every orbit. Note this is
+  **not** the degree-sequence constraint §4 and §5 name: that one needs
+  counters with exact semantics in both directions, or the ordering it
+  imposes can delete satisfying assignments, and the totaliser that gives
+  them is `O(n²)` clauses per point — too much at the sizes here. The
+  lex-leader form is `O(#variables)` per generator and needs no counters
+  at all. The intersecting-piece theorem of §22.1 enters as **binary
+  clauses** — two disjoint members that both miss an anchor — which is
+  the form CDCL propagates.
+* **A depth-first enumeration** with a filtered candidate list and three
+  counting bounds: total point-slack over `m`; a *least-point* group
+  bound; a *least-pair* group bound. The group bounds are what SAT cannot
+  do — see §22.5.
+
+Every SAT model is decoded and re-verified by `rstar::verify`, which
+shares no code with the encoder, and UNSAT is only reported when cadical
+and cryptominisat agree, the discipline `sat.rs` already applies.
+
+### 22.5 What ran for hours and decided nothing
+
+Recorded with its cost, because the negative is the useful part.
+
+* **cadical on `(m,r,ground) = (3,3,9)` did not terminate in 6m21s of
+  CPU** on a 12 051-clause instance that is *infeasible by counting*:
+  28 members × 3 points = 84 incidences against 9 points × 9 = 81. This
+  is the pigeonhole principle, which has no polynomial resolution proof,
+  and it is exactly the shape every instance here has. **The counting
+  precheck was added because of this**: `degree_ceiling` now answers such
+  grounds without a solver, in no nodes at all.
+* **cadical on `(3,3,10)` did not terminate in about half an hour**,
+  across two runs, the longer about 25 minutes. Ground 10 is the first
+  ground set that can hold a counterexample and the counting there is
+  nearly tight — 84 incidences against a capacity of 90 — which is the
+  regime CDCL is worst at.
+* **The depth-first search on `(3,3,10)` did not terminate.** Measured
+  exactly: 400 000 001 nodes in 251.8 s — 1.6 M nodes per second — with
+  the largest `r`-spread family of matching number 2 found being **23
+  members against a target of 28**, up from 22 at the 20 M-node mark. The
+  three counting bounds cut the tree but not enough; what is missing is
+  isomorph rejection, and the residual group at ground 10 has order
+  `3!·3!·4!·2 = 1728`.
+
+  The 23 is worth keeping even though it decides nothing. It is a lower
+  bound on the maximum, and the maximum is what has to reach 28 for
+  `r*(3,3) > 3`. Five short, after 4·10^8 nodes, is weak evidence that
+  the term really is 3 — and weak evidence is what the sequence has never
+  had at any `m > 2`.
+* **The depth-first search on `(4,3,13)` did not terminate**, in either
+  the intersecting or the matching case. 710 candidate sets, target 82.
+* **Which way each instrument fails is itself the measurement.** The SAT
+  encoding finds counterexamples in *milliseconds* when one exists —
+  `(4,2,11)`, 29 885 variables and 65 504 clauses, 0.1 s — and cannot
+  close the negative side at all. The depth-first search closes small
+  negatives instantly and is the only one of the two that can see a
+  counting argument. They fail on opposite sides, which is why both are
+  kept and why `sat_and_dfs_agree` is a test.
+
+So `r*(3,3)` and `r*(4,3)` are still open at their lower ends, and this
+session did not move them. What it moved is the top of the interval and
+the honesty of the bottom.
+
+### 22.6 What this changes about the plan
+
+**Up.**
+
+1. **Isomorph rejection in the depth-first search.** This is now the
+   single bottleneck on every open term of the sequence, and the size of
+   the prize is measurable: 1728 at `(3,3,10)`, and larger at every
+   parameter beyond it. `nauty` is installed and canonical augmentation
+   is what it is for. The lex-leader constraint in the SAT encoding is
+   the same idea, and the SAT side is *also* stuck, so the search side is
+   where it has to be done properly.
+2. **A support bound at uniformity 3.** `r*(2,3) = 3` became certified
+   the moment the support was bounded by 16. At `(3,3)` the same argument
+   gives 114 and the search cannot reach it. Any argument that brings it
+   to, say, 14 turns an open term into a finite check. The place to look
+   is the rainbow-matching structure of the link graphs `L_x` for `x` in
+   the cover: no three of them admit a rainbow matching, and each has at
+   most `r^(m-1)` edges.
+3. **Sharpening `intersecting_piece_bound`.** The star branch is bounded
+   by `r^(m-1)`; if the piece has any member avoiding `a1` it is bounded
+   by `m·r^(m-2)` instead, which replaces `r + (m-1)^2` by `m^2 - m + 1`
+   and would give `r*(6,3) <= 10` rather than 11. It does not move `m = 4`
+   — 7 either way — which is why it was not done here.
+
+**Down.**
+
+4. **SAT as the instrument for the *negative* side of this question.**
+   §9 measured SAT as transformative on the `iota`/`g` row, where the
+   constraints are ternary and structural. Here the binding constraints
+   are *cardinality*: cadical spent 6m21s failing to close `(3,3,9)`,
+   which the depth-first search dispatches in **zero nodes** because one
+   division settles it, and about half an hour on `(3,3,10)` without a
+   verdict. On the positive side it is the better instrument by a wide
+   margin — every counterexample here was found by SAT, `(4,2,11)` in
+   0.1 s over 29 885 variables. So: keep the encoding for finding
+   witnesses and as an independent check, and do not expect it to close a
+   negative.
+5. **`g(3)` exactly as a route to `r*(3,3)`.** Already closed by §20.5;
+   §22.2 records that the brief's table had it backwards, so it is worth
+   restating: the implication runs `r*(3,3) = 3 -> g(3) <= 27` and not
+   the other way.
+
+### 22.7 What §22 is worth, stated plainly
+
+§22.1 is written as though the bound were the session's advance. It is
+not, and the correction belongs next to it rather than in a later
+session's discovery.
+
+**The growth rate of `r*(m,3)` is already a theorem, and it is better
+than anything here.** `coq/SpreadReduction.v`'s own comment on
+`spread_disjoint_above_elementary` says so:
+
+> The 2020 papers prove `[SpreadYieldsDisjoint]` for `r = Θ(k log n)`.
+
+So `r*(m,3) = O(log m)` is published. §22.1 proves `Θ(m)`. On the axis
+that matters — growth — the new bound is **strictly behind the state of
+the art**, and what it improves is one column of one table:
+
+```
+  bound on r*(m,3)                          value
+  literature (ALWZ 2020 / Rao 2020)         O(log m)
+  this repository, conditional on its axiom O(log m)
+  this repository, unconditional, before    2m + 1
+  this repository, unconditional, now       ~1.74 m
+```
+
+That is a *formalisation* improvement: `2m + 1 -> 1.74m` in the
+unconditional column of one Coq development. The arguments themselves —
+a maximal matching gives a `2m`-point cover; cover by pairs instead of
+points — are elementary and would not be new to anyone working in the
+area. Machine-checking them has value. Discovering them does not.
+
+**And the sequence is not a route to the conjecture.** §18.5 and this
+session's brief both say computing terms of `r*(m,3)` would give "the
+first evidence anyone has ever had about the growth rate" and would
+"distinguish bounded from `log m` empirically". Neither is true.
+Finitely many terms cannot distinguish a bounded sequence from `log m` —
+that is a fact about limits, not about compute — and the growth rate is
+already proved. `r*(m,3)` is an elegant way to *state* the conjecture at
+`k = 3`. It is not a way to attack it, and a session spent inside that
+frame is a session spent improving a superseded bound.
+
+**What the frame was worth.** Two things survive and both are small:
+`r*(1,3) = 2` and `r*(2,3) = 3` are now exact and certified rather than
+cited, and §22.2's correction is real. Neither is mathematics.
+
+**The standing rule this adds.** Rules 1–9 all guard against
+mis-describing a *source*. This one guards against mis-describing a
+*result*:
+
+> **10. Before calling a bound an advance, evaluate it against the best
+> published bound for the same quantity — including the one the
+> repository has already assumed as an axiom.** The axiom in this
+> development *is* the state of the art for `r*`. A new unconditional
+> bound that is asymptotically worse than the assumption sitting in
+> `ALWZ.v` is a formalisation result, and saying so is the difference
+> between a contribution and a press release.
+
+### 22.8 Where the effort should go instead, and why
+
+The evidence that AI systems can produce genuinely new mathematics on
+problems of this shape is now concrete and public, and it points away
+from what §22 did. The pattern in every case that has worked is the
+same: **a new mathematical argument or construction on a named open
+problem, with formalisation as the certificate afterwards.** The
+formalisation is how the result is made trustworthy; it is not the
+result. §22 inverts that — it is a certificate with napkin-level content
+inside it.
+
+Two targets in this repository have the right shape. Neither was touched
+this session.
+
+1. **Beat the 1972 lower bound, by searching over *generator programs*
+   rather than over families.** §5's rate to beat is `10^(1/2) = 3.162`
+   per point; the live rows are `iota(5) >= 101` (record 78, and the only
+   row local search has ever moved) and `g(4) >= 101` (record 54).
+   §20.6 measured *why* five sessions of local search failed: four of
+   five parameter rows never left their seed, so the 1972 families are
+   not merely maximal but **isolated**. Isolated optima are exactly where
+   move-based search on the object fails and where changing the *program
+   that emits the object* is the right move. The pieces are already here:
+   `intersecting::verify` is the scoring function, `construction.rs` has
+   `cone`/`double`/`substitute` as the seed program, and the missing
+   ingredient is a search whose mutation operator proposes structurally
+   different generators — group actions, cocycles, twisted products,
+   designs under the derived link conditions — rather than perturbing a
+   family. That has never been run here, and it is the method with the
+   track record on exactly this shape of problem.
+
+2. **`f(3,3)` exactly.** Bracketed `[21, 27]`, seven values wide, with
+   the structure theory already proved (§4 of the brief:
+   `trace_class_intersecting`, the straddling-class hypothesis, the
+   cross-intersecting pure links, the degree cap). A new sunflower number
+   would be the first since 1960 and is a genuinely new mathematical
+   fact rather than a re-proof. It is a finite search, and §21.4 already
+   established that the LP route stops at 25, so what is needed is
+   canonical augmentation over families — the same isomorph rejection
+   §22.6 identifies as the bottleneck everywhere else.
+
+**Down, and this is the reordering.** Discharging `Rao20_lemma2` (§3)
+stays valuable — no proof assistant has the modern bound unconditionally,
+and that is a real artifact — but it is *re-formalising a 2020 proof*.
+It is the certificate half of the recipe with the discovery half absent.
+It should be done, and it should not be done first.
+
+---
+
+## 23. Searching over generator programs: the instrument, the bound that
+##     aims it, and four negatives
+
+§22.8 named the target: beat the 1972 lower bound by searching over the
+*programs that emit families* rather than over families, because §20.6
+measured the extremal objects as **isolated** — four of five parameter
+rows never left their seed under local search — and an isolated optimum
+is where moving the object fails and changing the generator can work.
+
+This section is that search, run. It did not move a record. What it
+produced is one bound that aims every future search on this row, one
+filled gap in §13.3, and three measured negatives.
+
+### 23.1 The counting ceiling, and where it says a record can live
+
+`LinkCharacterisation` says a family is sunflower-free exactly when every
+link has matching number at most 2. Two consequences were in the
+development as facts about *links*; neither had been turned into a bound
+on `|F|`.
+
+* A `(b-1)`-set's link is 1-uniform, so `ν <= 2` reads `deg <= 2`. Each
+  member contains `b` of them: **`|F| <= (2/b)·C(n, b-1)`**.
+* A `(b-2)`-set's link is a graph with `Δ <= 2` (from the line above) and
+  `ν <= 2`, so it is a union of paths and cycles with no 3-matching —
+  at most **two disjoint triangles**, six edges. Each member contains
+  `C(b,2)` of them: **`|F| <= (6/C(b,2))·C(n, b-2)`**.
+
+`genprog::size_ceiling` is the smaller of the two. Evaluated:
+
+```
+  b = 4    n     8    9   10   11   12   13   14   15
+  ceiling       28   36   45   55   66   78   91  105
+
+  b = 5    n    10   11   12   13   14   15
+  ceiling       72   99  132  171  218  273
+```
+
+Three readings, and the first two are the useful ones.
+
+1. **`iota(5) >= 101` is impossible below twelve points**, and
+   `iota(4) >= 51` — which reaches the same threshold through `double`
+   and `cone` — is impossible below eleven. That is the first statement
+   in this repository about *where* a record could be, as opposed to how
+   big it would have to be.
+2. **§9's `b = 5` SAT row was asked at a ground that could not answer
+   it.** It ran at ground 10, whose ceiling is 72 against a threshold of
+   101. `iota(5,10) >= 42` is a true measurement and it was never on
+   course, which §9 suspected on rate grounds and can now be said
+   exactly.
+3. **At `b = 3` the ceiling is 10 at six points, and `iota(3) = 10`.**
+   The extremal object of the whole 1972 tower saturates the counting
+   bound at its own ground set. At `b = 4` it does not: the ceiling at
+   eight points is 28 and the exhaustive search finds no 28-member family
+   there (`the_ceiling_is_not_attained_at_uniformity_four`). Whatever
+   makes `b = 3` special, it is not visible to this count.
+
+### 23.2 The instrument
+
+`rust/src/genprog.rs`. A **generator** is a parameterised program
+emitting a *pool* of candidate blocks; its score is the largest verified
+intersecting sunflower-free subfamily inside that pool. The pool is the
+hypothesis — "a record looks like this kind of object" — and the
+subfamily search is the evaluation, so structurally unrelated
+constructions land on one scale.
+
+Evaluation reuses `orbit::search_orbits` with singleton orbits. One thing
+had to be got right and was got wrong first: that routine is a
+**decision** procedure, and its bound ("what is in hand plus everything
+still to come") prunes at the root whenever the pool cannot reach the
+target, so its `best` is not a maximum. Reading it as one gives silent
+zeros on nonempty pools. `genprog::evaluate` therefore asks one decidable
+question at a time — succeed at `t`, ask `t+1`; fail exhaustively at `t`
+and the maximum is `t-1` — which keeps the bound sharp at every step.
+
+Differentially checked: the unrestricted pool at `b = 3` on six points
+returns 10, exhaustively, and every family that comes out is re-verified
+by `orbit::verify`, which shares no code with the search.
+
+### 23.3 Four negatives, with their cost
+
+**One: prescribed symmetry at `b = 5` intersecting is dead too.** §13.3
+ran `b = 4` intersecting, `b = 3` general and `b = 5` *general*, and
+found nothing. It never ran `b = 5` **intersecting**, and its own
+diagnosis said why grounds at or below `3b = 15` are the ones where
+orbits survive. §23.1 says the record needs only twelve points, so
+grounds 12–14 are both viable and below `3b` — the region where §13.3's
+reason for failure does not apply. Run (`examples/km_five.rs`): grounds
+12–16, every standard group, **every instance exhausted, best 75**
+against a record of 78 and a threshold of 101. The gap is filled and the
+answer is the same as §13.3's.
+
+**Two: SAT does not reach this row.** `iota(5)` at ground 12, asked for
+60 members — well below the 78 already in hand — was **undecided in
+241 s**. Consistent with §9's finding that the intersecting instances are
+the ones CDCL cannot do, and it rules out the obvious idea of walking the
+target up with a solver.
+
+**Three: every structured generator scores below no hypothesis at all.**
+The pools were chosen to be structurally different from `cone`, `double`
+and `substitute`, which is what §5 asks for:
+
+```
+  generator                              b   ground   best   control
+  transversals of a 4x3 grid             4       12     12        24  (g = 8)
+  the same, twisted by a weighted cocycle 4      12   <= 11        24
+  complementary selection, b = 3          3        6      8        10
+  star (= cone)                          4        8   <= 23        24
+```
+
+The transversal shape is where every product construction in the
+catalogue lives, and the cocycle twist is the algebraic move behind the
+modern cap-set constructions — §5 names it as the thing not in the
+catalogue. Both cap out far below the unrestricted search on the same
+ground set. Twisting never beat the untwisted grid at any modulus tried.
+
+**Four, and this one refutes a hypothesis of its own:** `iota(3) = 10` is
+"one triple from each complementary pair of `[6]`" — the 2-(6,3,2) design
+really does have that shape, which is what suggested the
+`complementary_half` generator. But **no weight rule finds it**: over
+every residue modulo 2, 3, 4 and 5, the best complementary selection
+contains only 8 of the 10, and `the_structured_pools_all_lose_to_no_hypothesis`
+pins that. The selection that makes the design is not a linear
+functional, so the generator built on that idea was built on a false
+reading of the object.
+
+**Five: `iota(4) >= 28` at ground 10 was attempted and is *still open*,
+and the reason is worth recording.** §23.1 says a record needs eleven
+points at `b = 4`, but ground 10 is the rung §9 left undecided after an
+hour of SAT and it is the value `IotaGroundBounded` turns on, so it is
+the cheapest live question on the row. The unrestricted pool there is 210
+blocks and the question is a decision — "is there a 28-member
+intersecting sunflower-free family" — with a sharp branch-and-bound
+bound. It ran **2h28m of CPU, roughly 60% of a 4·10^9-node budget, and
+was killed by a container restart without a verdict**; a second attempt
+at a smaller budget was killed the same way inside a few minutes.
+
+That is an environment result, not a search result, and it changes what
+the next attempt should look like. A multi-hour single-threaded run is
+not a shape this repository can rely on. What it needs is a search that
+**checkpoints** — writes its frontier so a restart resumes rather than
+restarts — or one fast enough not to need to. `search_orbits` has neither
+property, and adding the first is a smaller job than adding isomorph
+rejection while being worth roughly as much on every open question here.
+
+### 23.4 What this says about the approach
+
+The generator-program idea is the right shape for an isolated optimum and
+it is *not* refuted by this — what is refuted is the specific family of
+generators a first pass produces. But the measurement to take seriously
+is §23.3's third row: on this problem the structured pools are
+**strictly worse** than the unrestricted pool at the same ground set,
+every time. That is the opposite of the cap-set situation, where the
+structure is what makes the search tractable at all, and it is a
+consequence of §13.3's observation one level up — sunflower-freeness is
+ternary and *negative*, so imposing structure removes blocks without ever
+buying a guarantee, and every block removed is a block a record might
+have needed.
+
+The honest next move is therefore not more generators of the same kind.
+It is either
+
+* **a generator whose pool is provably closed under the constraint** —
+  something whose blocks cannot form a sunflower by construction, so that
+  the pool *is* the family and there is no search inside it. Nothing in
+  the catalogue has this shape except `cone`, and that is why `cone` is
+  the only construction that has ever set a record here; or
+* **the exhaustive question at the grounds §23.1 opens**, which is
+  `iota(4) >= 28` at ten and eleven points. The ceiling permits 45 and
+  55, the record is 27 on nine points, and §9 left it undecided after an
+  hour of SAT. It is the smallest object whose existence would move
+  anything: `iota(4) >= 51` gives `g(4) >= 102` by `double` and
+  `iota(5) >= 102` by `cone`, and that beats 1972.
