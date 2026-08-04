@@ -5193,6 +5193,27 @@ not comparable with §23.3's.** Node counts are exact regardless.
                                                                     declared        146 s
 ```
 
+**The gates.**
+
+```
+  make -j4 verify        green  (408 audited theorems, 408 "Closed under
+                                the global context", none carrying an axiom)
+  make coqchk            green  (one axiom: Sunflower.ALWZ.Rao20_lemma2;
+                                type-in-type, unsafe (co)fixpoints and
+                                assumed positivity all <none>)
+  cargo test --release   green  (25 suites, 0 failures)
+  python3 tools/mutate.py       green  (82 mutations: 79 killed, 2 survived
+                                as declared, 1 control passing, 0 unexpected;
+                                ~47 min on 4 cores)
+  tools/statements.py    green  (492 statements match the baseline)
+  tools/docnumbers.py    green  (12 quoted numbers match)
+```
+
+`make verify` failed once first, on exactly the check it exists for: a
+theorem was added to `tools/audited.txt` without its statement baseline,
+and the gate said so and named the fix. Recorded because a gate that has
+never failed in a session is a gate nobody has tested.
+
 **Two scheduling mistakes worth recording, both mine.**
 
 * **I over-subscribed the machine.** Four searches on four cores plus a
