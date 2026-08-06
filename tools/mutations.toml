@@ -1254,6 +1254,38 @@ r^(m-1) members, so the argument closes exactly when 2m <= r; at m = n and \
 r = 2n - 1 it does not."""
 
 [[mutation]]
+id = "twocover-two-uniform-drop-triangle"
+file = "coq/TwoCover.v"
+question = """two_uniform_intersecting_bound concludes max(r,3). The 3 is the \
+triangle. Is it needed, or does the star bound r cover every intersecting \
+graph under the caps?"""
+find = """    (forall C D, In C G -> In D G -> exists x, In x C /\\ In x D) ->
+    length G <= Nat.max r 3.
+Proof.
+  intros r G HU HR Hint."""
+replace = """    (forall C D, In C G -> In D G -> exists x, In x C /\\ In x D) ->
+    length G <= r.
+Proof.
+  intros r G HU HR Hint."""
+expect = "killed"
+because = """Needed, and it is exactly why the crossover sits at r = 3. A \
+triangle is intersecting with degree 2 and pair-degree 1, so it survives \
+every cap from r = 2 on and has three members against a star's r. At r = 2 \
+the triangle beats the star; from r = 3 it does not, which is m + 1."""
+
+[[mutation]]
+id = "twocover-star-extremal-at-two"
+file = "coq/TwoCover.v"
+question = """two_uniform_star_extremal assumes 3 <= r. The crossover is \
+claimed to be exactly m + 1 = 3. Is r = 2 really excluded?"""
+find = "Theorem two_uniform_star_extremal : forall r, 3 <= r -> StarExtremalAt 2 r."
+replace = "Theorem two_uniform_star_extremal : forall r, 2 <= r -> StarExtremalAt 2 r."
+expect = "killed"
+because = """Excluded. StarExtremalAt 2 r asks for |G| <= r^(2-1) = r, and \
+at r = 2 the triangle is a 3-member intersecting family under both caps. \
+The measured I(2,2) = 3 > 2 says the same thing."""
+
+[[mutation]]
 id = "twocover-tau-three-seventeen"
 file = "coq/TwoCover.v"
 question = """r_star_three_three_at_most_four assumes TauThreeAtMost 16 -- that \

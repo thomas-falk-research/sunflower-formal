@@ -626,6 +626,15 @@ thm TwoCover.split_with_piece
 thm TwoCover.r_star_three_three_at_most_four
 thm TwoCover.r_star_three_three_at_most_four_from_frankl
 thm TwoCover.f_three_three_from_frankl
+thm TwoCover.split_cannot_reach_r_equals_m
+thm TwoCover.split_with_piece_general
+thm TwoCover.star_extremal_gives_m_plus_one
+thm TwoCover.two_uniform_pair
+thm TwoCover.two_uniform_split
+thm TwoCover.two_uniform_intersecting_bound
+thm TwoCover.one_uniform_star_extremal
+thm TwoCover.two_uniform_star_extremal
+thm TwoCover.r_star_two_three_at_most_three
 thm LinkCeiling.one_uniform_pairwise_disjoint
 thm LinkCeiling.top_link_degree_at_most_two
 thm LinkCeiling.top_link_degree_three_uniform

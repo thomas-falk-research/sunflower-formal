@@ -615,3 +615,77 @@ fn the_conditional_r_star_three_three_bound_has_no_slack() {
     // asserts about its τ = 3 part.
     assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
 }
+
+/// `I(m,r)` as an extremal problem, and the crossover at `r = m+1`.
+///
+/// `I(m,r)` is the largest `m`-uniform **intersecting** family satisfying
+/// Rao's condition. §24.2's split gives
+/// `SpreadYieldsDisjoint m 3 r` as soon as `I(m,r) <= r^(m-1)·(r-m)`, so:
+///
+/// * **`r = m` is a hard floor** — the requirement is `I <= 0` and `I >= 1`
+///   always, so no bound on the piece can push this method below `m+1`.
+/// * **at `r = m+1` the requirement is exactly `I <= r^(m-1)`**, the size
+///   of a star.
+///
+/// Measured, the star becomes extremal at exactly `r = m+1` at both
+/// uniformities where `I` is computable. The `m = 2` row is also proved
+/// outright in `TwoCover.two_uniform_intersecting_bound`
+/// (`I(2,r) = max(r,3)`).
+#[test]
+fn the_star_becomes_extremal_at_exactly_r_equals_m_plus_one() {
+    // m = 2, exhaustive at ground 9 (the star needs only r+1 points).
+    for (r, expect) in [(2u64, 3usize), (3, 3), (4, 4), (5, 5)] {
+        let (max, _fam, _n, exhaustive) = max_intersecting_piece(2, r, 9, u64::MAX);
+        assert!(exhaustive, "(2,{r}) should exhaust");
+        assert_eq!(max, expect, "I(2,{r})");
+        let star = r as usize; // r^(m-1) = r
+        assert_eq!(max >= star, true);
+        assert_eq!(max == star, r >= 3, "star extremal at m=2 exactly from r = 3 = m+1");
+        // and the proved closed form
+        assert_eq!(max, (r as usize).max(3), "I(2,r) = max(r,3)");
+    }
+
+    // m = 3: 10 > 9 at r = 3, 16 = 16 at r = 4 = m+1.
+    assert_eq!(max_intersecting_piece(3, 3, 8, u64::MAX).0, 10);
+    assert!(10 > 3usize.pow(2), "the star loses at (3,3)");
+    assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
+    assert_eq!(16, 4usize.pow(2), "the star ties at (3,4) = (m, m+1)");
+
+    // The hard floor: at r = m the cover term alone is already r^m, so
+    // the requirement on I is 0 and no piece bound can help.
+    for m in 1u64..=12 {
+        assert_eq!(m * m.pow(m as u32 - 1), m.pow(m as u32));
+        // and at r = m+1 the requirement is exactly the star
+        let r = m + 1;
+        assert_eq!(r.pow(m as u32) - m * r.pow(m as u32 - 1), r.pow(m as u32 - 1));
+    }
+}
+
+/// `r*(2,3) = 3`, now a Coq theorem on both sides — and the general
+/// bounds all miss it by one.
+///
+/// `Audit.no_spread_yields_disjoint_2_3_2` refutes `r = 2`;
+/// `TwoCover.r_star_two_three_at_most_three` proves `r = 3` works, via
+/// the star-extremal route. Every general bound the development has gives
+/// **4** at `m = 2`: the cover bound `2n`, `quadratic_spread_disjoint`,
+/// and §24.2's split. So on the one row where `I` is known in closed
+/// form, the new route is sharp where the general ones are not.
+#[test]
+fn the_star_route_is_sharp_at_uniformity_two() {
+    assert_eq!(cover_bound(2), 4);
+    assert_eq!(quadratic_bound(2), 4);
+    assert_eq!(split_bound(2), 4);
+    assert_eq!(best_bound(2), 4);
+    // the star-extremal route gives 3, and 3 is the truth
+    let star_route = 2u64 + 1;
+    assert_eq!(star_route, 3);
+    assert!(star_route < best_bound(2), "sharp where the general bounds are not");
+
+    // The witness refuting r = 2 is already pinned above: a 5-cycle.
+    // Five edges, max degree 2, matching number 2, and 5 > 2^2.
+    const C5: [Mask; 5] = [3, 5, 12, 18, 24];
+    let q = Question::new(2, 2, 6);
+    verify(&C5, &q).expect("the 5-cycle refutes r = 2 at m = 2");
+    assert_eq!(C5.len(), 5);
+    assert!(5 > 2u64.pow(2));
+}

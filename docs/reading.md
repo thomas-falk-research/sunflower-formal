@@ -1254,3 +1254,39 @@ it, and the pattern is the same each time: the number is real, but it
 sits on the far side of an implication whose hypothesis is open. **When
 a brief quotes a bound, find the theorem and read what is to the left of
 the arrow.**
+
+### An extremal question that appears not to have been asked
+
+`I(m,r)` — the largest `m`-uniform intersecting family satisfying Rao's
+condition `deg T ≤ r^(m-|T|)` at every level — is what the spread
+threshold turns on, and §24.13 is the first time this repository has
+treated it as a question in its own right rather than as a term to be
+bounded.
+
+What is in the literature is the neighbouring problem: intersecting
+families under a bound on the **maximum degree**. Frankl's 1987 "Erdős–Ko–Rado
+theorem with conditions on the maximal degree" is the origin; Huang–Zhao,
+Frankl–Han–Huang–Zhao and Kupavskii continue it. Those all cap one
+statistic. Rao's condition caps every level at once, and the caps are
+geometric in `|T|` — which is a different object, and the one that
+actually appears when the spread reduction is unwound.
+
+Two things suggest it is worth posing rather than merely bounding.
+
+* The extremal family **changes** with `r`, and the crossover is at
+  exactly `r = m+1` in both cases where it can be computed: below it a
+  small design wins (the triangle at `m = 2`, `C([5],3)` at `m = 3`),
+  from it on the star does. A degree-capped EKR problem whose answer
+  switches families at a specific parameter is the kind of question that
+  usually has a clean answer.
+* `r = m+1` is not an arbitrary place to look: it is where the two-way
+  split of §24.2 stops being able to close at all, since at `r = m` the
+  cover term alone already equals `r^m`.
+
+**No claim of novelty is being made beyond "I did not find it".** The
+search here was over what this repository has read (`docs/references.md`)
+plus the degree-condition line above; it was not a systematic literature
+search, and the neighbouring results are close enough that a specialist
+may well recognise this. What is recorded is the question, its exact
+consequence (`I(m,m+1) ≤ (m+1)^(m-1)` implies `r*(m,3) ≤ m+1`), and the
+two data points.

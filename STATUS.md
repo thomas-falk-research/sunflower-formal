@@ -268,7 +268,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (424 of them). The current
+for every theorem in the "Closed" table (433 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -323,8 +323,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 87 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 84 killed outright, two genuine
+Current mutation results: 89 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 86 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of

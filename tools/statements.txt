@@ -1522,6 +1522,33 @@ d7e37946a1926a75  thm TwoCover.r_star_three_three_at_most_four_from_frankl
 46df788cd440c7b6  thm TwoCover.f_three_three_from_frankl
     f_three_three_from_frankl : TauThreeAtMost 16 -> UpperBound 3 3 65
 
+b12542034494f129  thm TwoCover.split_cannot_reach_r_equals_m
+    split_cannot_reach_r_equals_m : forall m : nat, 1 <= m -> m * PeanoNat.Nat.pow m (m - 1) = PeanoNat.Nat.pow m m
+
+e9e23cf70a7e1717  thm TwoCover.split_with_piece_general
+    split_with_piece_general : forall (m r : nat) (F : Family) (K : nat), 1 <= m -> Uniform m F -> RaoSpread m F r -> NoKDisjoint 3 F -> (forall H : Family, Uniform m H -> RaoSpread m H r -> (forall C D : list nat, List.In C H -> List.In D H -> exists x : nat, List.In x C /\ List.In x D) -> length H <= K) -> length F <= m * PeanoNat.Nat.pow r (m - 1) + K
+
+f94a8cb71c1d948c  thm TwoCover.star_extremal_gives_m_plus_one
+    star_extremal_gives_m_plus_one : forall n : nat, 1 <= n -> (forall m : nat, 1 <= m -> m <= n -> StarExtremalAt m (n + 1)) -> SpreadYieldsDisjoint n 3 (n + 1)
+
+53623ea672b47226  thm TwoCover.two_uniform_pair
+    two_uniform_pair : forall (C : list nat) (a c : nat), length C = 2 -> List.NoDup C -> List.In a C -> List.In c C -> a <> c -> forall y : nat, List.In y C -> y = a \/ y = c
+
+3d91ddfe333cec1c  thm TwoCover.two_uniform_split
+    two_uniform_split : forall C : list nat, length C = 2 -> List.NoDup C -> exists a b : nat, a <> b /\ List.In a C /\ List.In b C /\ (forall y : nat, List.In y C -> y = a \/ y = b)
+
+8eb3e8a8716fb8d4  thm TwoCover.two_uniform_intersecting_bound
+    two_uniform_intersecting_bound : forall (r : nat) (G : Family), Uniform 2 G -> RaoSpread 2 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> length G <= PeanoNat.Nat.max r 3
+
+3cb4bb59de395120  thm TwoCover.one_uniform_star_extremal
+    one_uniform_star_extremal : forall r : nat, StarExtremalAt 1 r
+
+2f47979cff9167b5  thm TwoCover.two_uniform_star_extremal
+    two_uniform_star_extremal : forall r : nat, 3 <= r -> StarExtremalAt 2 r
+
+eb60a7c0a661158b  thm TwoCover.r_star_two_three_at_most_three
+    r_star_two_three_at_most_three : SpreadYieldsDisjoint 2 3 3
+
 773a21da388a7b71  thm LinkCeiling.one_uniform_pairwise_disjoint
     one_uniform_pairwise_disjoint : forall G : Family, Uniform 1 G -> Distinct G -> PairwiseDisjoint G
 

@@ -858,3 +858,372 @@ Qed.
       has to beat is [[16, 27]] — 27 being the elementary greedy bound
       that this development could prove but which is not enough. *)
 
+
+
+(** * [I(m,r)] as an extremal problem in its own right
+
+    Everything above is about [m = 3]. The quantity behind it is not:
+
+<<
+      I(m,r)  =  max |G|  over G m-uniform, distinct, *intersecting*,
+                 with deg T <= r^(m - |T|) for every nonempty T.
+>>
+
+    §24.2's split reads [|F| <= m*r^(m-1) + I(m,r)], so
+    [SpreadYieldsDisjoint m 3 r] follows as soon as
+
+<<
+      [dagger]     I(m,r)  <=  r^m - m*r^(m-1)  =  r^(m-1) * (r - m).
+>>
+
+    Two readings, and the first is a limitation of the method rather than
+    of any bound on [I].
+
+    - **[r = m] is a hard floor.** There the right side of [dagger] is
+      zero while [I >= 1] always, since a one-member family is
+      intersecting. So this split can never give [r*(m,3) <= m], whatever
+      is proved about the piece. That is [split_cannot_reach_r_equals_m].
+    - **At [r = m+1] the requirement is exactly "the star is
+      extremal"**: the right side is [(m+1)^(m-1)], the size of a star
+      under the point cap. Hence [star_extremal_gives_m_plus_one].
+
+    That is an **implication, not an equivalence** — [r*(m,3) <= m+1]
+    might hold for reasons this split cannot see. [m+1] is linear with
+    constant 1, against the [phi*m = 1.618 m] of §24.2.
+
+    ** The measured crossover
+
+<<
+      m = 2   r        2   3   4   5        star = r
+              I(2,r)   3   3   4   5
+      m = 3   r        3   4               star = r^2
+              I(3,r)  10  16
+>>
+
+    Both crossovers land at exactly [r = m+1]: below it the star loses to
+    a small design (the triangle at [m = 2], [C([5],3)] at [m = 3]), and
+    from it on the star is extremal. The [m = 2] row is proved outright
+    below; the [m = 3] row is exhaustive search
+    (`the_intersecting_piece_bound_has_a_factor_of_two_of_slack`). *)
+
+Theorem split_cannot_reach_r_equals_m :
+  forall m, 1 <= m -> m * m ^ (m - 1) = m ^ m.
+Proof.
+  intros m Hm; destruct m as [|m']; [lia|].
+  replace (S m' - 1) with m' by lia.
+  reflexivity.
+Qed.
+
+(** The split at any uniformity, with the piece bound supplied.
+    [split_with_piece] is the [m = 3] instance and is kept because that
+    is what §24.12 uses. *)
+
+Theorem split_with_piece_general :
+  forall m r (F : Family) (K : nat),
+    1 <= m ->
+    Uniform m F -> RaoSpread m F r ->
+    NoKDisjoint 3 F ->
+    (forall H, Uniform m H -> RaoSpread m H r ->
+       (forall C D, In C H -> In D H -> exists x, In x C /\ In x D) ->
+       length H <= K) ->
+    length F <= m * r ^ (m - 1) + K.
+Proof.
+  intros m r F K Hm HU HR Hno Hpiece.
+  assert (Hne : forall A, In A F -> A <> []).
+  { intros A HA; destruct (@uniform_mem m F A HU HA) as [Hlen _].
+    destruct A as [|a A']; [simpl in Hlen; lia | discriminate]. }
+  destruct (existsb (fun A => existsb (fun B => disjointb A B) F) F) eqn:Hex.
+  - apply existsb_exists in Hex as [A [HA HB']].
+    apply existsb_exists in HB' as [B [HB HABb]].
+    apply disjointb_correct in HABb.
+    destruct (@uniform_mem m F A HU HA) as [HAlen HAnd].
+    set (f := fun C : list nat => disjointb C A).
+    assert (Hsplit : length F = length (filter f F)
+                                + length (filter (fun C => negb (f C)) F))
+      by apply length_filter_partition.
+    assert (HM : length (filter (fun C => negb (f C)) F) <= m * r ^ (m - 1)).
+    { assert (HMA : length (filter (fun C => negb (f C)) F)
+                    <= length A * (r ^ (m - 1))).
+      { apply cover_by_points.
+        - intros C HC; apply filter_In in HC as [_ HCf].
+          apply Bool.negb_true_iff in HCf; unfold f in HCf.
+          apply meets_of_not_disjointb; exact HCf.
+        - intros x _.
+          eapply Nat.le_trans; [apply deg_filter_le | eapply rao_point; exact HR]. }
+      rewrite HAlen in HMA; exact HMA. }
+    assert (HP : length (filter f F) <= K).
+    { apply Hpiece.
+      - apply uniform_filter; exact HU.
+      - intros T HT HTn.
+        eapply Nat.le_trans; [apply deg_filter_le | apply HR; assumption].
+      - intros C D HC HD.
+        apply filter_In in HC as [HCF HCf]; apply filter_In in HD as [HDF HDf].
+        unfold f in HCf, HDf.
+        apply disjointb_correct in HCf; apply disjointb_correct in HDf.
+        destruct (disjointb C D) eqn:ECD.
+        + exfalso; apply disjointb_correct in ECD.
+          exact (@miss_member_intersecting m F A C D Hm HU Hno
+                   HA HCF HDF HCf HDf ECD).
+        + apply disjointb_false_iff in ECD as [x [HxC HxD]].
+          exists x; split; assumption. }
+    lia.
+  - assert (Hint : forall C D, In C F -> In D F -> exists x, In x C /\ In x D).
+    { intros C D HC HD.
+      destruct (disjointb C D) eqn:ECD.
+      - exfalso.
+        assert (Hcontra : existsb
+                  (fun A => existsb (fun B => disjointb A B) F) F = true).
+        { apply existsb_exists; exists C; split; [exact HC|].
+          apply existsb_exists; exists D; split; [exact HD | exact ECD]. }
+        congruence.
+      - apply disjointb_false_iff in ECD as [x [HxC HxD]].
+        exists x; split; assumption. }
+    pose proof (Hpiece F HU HR Hint); lia.
+Qed.
+
+(** ** "The star is extremal" gives [r*(m,3) <= m+1]
+
+    [StarExtremalAt m r] is [I(m,r) <= r^(m-1)]: no intersecting
+    [m]-uniform Rao-spread family beats a star. Assuming it at every
+    uniformity up to [n], with [r = n+1], closes the whole row. *)
+
+Definition StarExtremalAt (m r : nat) : Prop :=
+  forall (H : Family),
+    Uniform m H -> RaoSpread m H r ->
+    (forall C D, In C H -> In D H -> exists x, In x C /\ In x D) ->
+    length H <= r ^ (m - 1).
+
+Theorem star_extremal_gives_m_plus_one :
+  forall n, 1 <= n ->
+    (forall m, 1 <= m -> m <= n -> StarExtremalAt m (n + 1)) ->
+    SpreadYieldsDisjoint n 3 (n + 1).
+Proof.
+  intros n Hn HS m F Hm Hmn HU HD Hsize HR.
+  destruct (@decide_three_disjoint m F ltac:(lia) HU) as [Hyes|Hno];
+    [exact Hyes | exfalso].
+  pose proof (@split_with_piece_general m (n + 1) F ((n + 1) ^ (m - 1))
+                Hm HU HR Hno (HS m Hm Hmn)) as Hb.
+  (* |F| <= (m+1) * (n+1)^(m-1) <= (n+1) * (n+1)^(m-1) = (n+1)^m *)
+  assert (Hpow : (n + 1) ^ m = (n + 1) * (n + 1) ^ (m - 1)).
+  { replace m with (S (m - 1)) at 1 by lia; reflexivity. }
+  assert (Hmono : (m + 1) * (n + 1) ^ (m - 1)
+                  <= (n + 1) * (n + 1) ^ (m - 1))
+    by (apply Nat.mul_le_mono_r; lia).
+  lia.
+Qed.
+
+(** At [n = 2] the hypothesis is a theorem — [two_uniform_star_extremal]
+    below — and the conclusion is the known exact value [r*(2,3) = 3].
+    So the route is verified and tight at the largest uniformity where
+    [I] is known in closed form. *)
+
+(** ** [I(2,r) <= max(r,3)], and the star is extremal from [r = 3]
+
+    An intersecting 2-uniform family is a graph in which every two edges
+    meet. The textbook fact is that such a graph is a star or a triangle;
+    as in §24.10 that classification is not needed. Take [e1 = {a,b}]; if
+    no vertex is in every edge, **name an edge [e3] that misses [a]**.
+    Then [e3] meets [e1] at [b], and it meets any [e2 = {a,c}] at [c], so
+    [e3 = {b,c}] — and every further edge must meet all three, which
+    confines it to [{ab, ac, bc}].
+
+    Four lines, and it gives [I(2,r) = max(r,3)] on the nose: the star
+    at a point has [deg <= r] members, the triangle has 3, and nothing
+    else occurs. So the crossover is at [r = 3 = m + 1]. *)
+
+Lemma two_uniform_split :
+  forall (C : list nat),
+    length C = 2 -> NoDup C ->
+    exists a b, a <> b /\ In a C /\ In b C /\
+                (forall y, In y C -> y = a \/ y = b).
+Proof.
+  intros C Hlen Hnd.
+  destruct C as [|c1 [|c2 [|c3 C']]]; simpl in Hlen; try discriminate.
+  inversion Hnd as [|z1 l1 H1 _]; subst.
+  exists c1, c2; repeat split.
+  - intros <-; apply H1; left; reflexivity.
+  - left; reflexivity.
+  - right; left; reflexivity.
+  - intros y [<-|[<-|[]]]; tauto.
+Qed.
+
+Lemma two_uniform_pair :
+  forall (C : list nat) a c,
+    length C = 2 -> NoDup C -> In a C -> In c C -> a <> c ->
+    forall y, In y C -> y = a \/ y = c.
+Proof.
+  intros C a c Hlen Hnd Ha Hc Hac y Hy.
+  destruct C as [|c1 [|c2 [|c3 C']]]; simpl in Hlen; try discriminate.
+  simpl in Ha, Hc, Hy.
+  destruct Ha as [<-|[<-|[]]]; destruct Hc as [<-|[<-|[]]];
+    try contradiction; destruct Hy as [<-|[<-|[]]]; tauto.
+Qed.
+
+Theorem two_uniform_intersecting_bound :
+  forall r (G : Family),
+    Uniform 2 G -> RaoSpread 2 G r ->
+    (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+    length G <= Nat.max r 3.
+Proof.
+  intros r G HU HR Hint.
+  (* the pair degree is 1: a 2-set has degree at most r^0 in a distinct
+     2-uniform family *)
+  assert (Hpairdeg : forall T, NoDup T -> length T = 2 -> deg T G <= 1).
+  { intros T Hnd Hlen.
+    specialize (HR T Hnd ltac:(destruct T; [simpl in Hlen; lia | discriminate])).
+    rewrite Hlen in HR; simpl in HR; exact HR. }
+  (* a star at a point is capped by the point degree *)
+  assert (Hstar : forall w, (forall C, In C G -> In w C) -> length G <= r).
+  { intros w Hw.
+    assert (H : length G <= length [[w]] * (r ^ (2 - 1))).
+    { apply cover_by_sets.
+      - intros C HC; exists [w]; split;
+          [left; reflexivity | intros z [<-|[]]; apply Hw; exact HC].
+      - intros T [<-|[]]; eapply rao_point; exact HR. }
+    simpl in H; lia. }
+  destruct G as [|e1 G0] eqn:EG; [simpl; lia | rewrite <- EG in *].
+  assert (He1 : In e1 G) by (rewrite EG; left; reflexivity).
+  destruct (@uniform_mem 2 G e1 HU He1) as [Hlen1 Hnd1].
+  destruct (@two_uniform_split e1 Hlen1 Hnd1) as [a [b [Hab [HaE [HbE Hall1]]]]].
+  destruct (existsb (fun C => negb (memb a C)) G) eqn:Ea; cycle 1.
+  { (* a lies in every edge: a star at a *)
+    assert (Halla : forall C, In C G -> In a C).
+    { intros C HC.
+      pose proof (existsb_false_forall _ _ _ Ea C HC) as E.
+      apply Bool.negb_false_iff in E; apply memb_true_iff; exact E. }
+    pose proof (Hstar a Halla); lia. }
+  destruct (existsb (fun C => negb (memb b C)) G) eqn:Eb; cycle 1.
+  { (* b lies in every edge: a star at b *)
+    assert (Hallb : forall C, In C G -> In b C).
+    { intros C HC.
+      pose proof (existsb_false_forall _ _ _ Eb C HC) as E.
+      apply Bool.negb_false_iff in E; apply memb_true_iff; exact E. }
+    pose proof (Hstar b Hallb); lia. }
+  (* neither point of e1 is universal: name an edge missing each *)
+  apply existsb_exists in Ea as [e3 [He3 Hna]].
+  apply existsb_exists in Eb as [e4 [He4 Hnb]].
+  apply Bool.negb_true_iff in Hna; apply Bool.negb_true_iff in Hnb.
+  assert (Ha3 : ~ In a e3)
+    by (intros Hin; apply memb_true_iff in Hin; congruence).
+  assert (Hb4 : ~ In b e4)
+    by (intros Hin; apply memb_true_iff in Hin; congruence).
+  destruct (@uniform_mem 2 G e3 HU He3) as [Hlen3 Hnd3].
+  destruct (@uniform_mem 2 G e4 HU He4) as [Hlen4 Hnd4].
+  (* e3 misses a, so it meets e1 at b *)
+  assert (Hb3 : In b e3).
+  { destruct (Hint e3 e1 He3 He1) as [x [Hx3 Hx1]].
+    destruct (Hall1 x Hx1) as [<-|<-]; [contradiction | exact Hx3]. }
+  (* call the other point of e3 c *)
+  destruct (@two_uniform_split e3 Hlen3 Hnd3) as [u [v [Huv [HuE [HvE Hall3]]]]].
+  assert (Hc : exists c, c <> b /\ c <> a /\ In c e3 /\
+                         (forall y, In y e3 -> y = b \/ y = c)).
+  { destruct (Hall3 b Hb3) as [<-|<-].
+    - exists v; repeat split;
+        [ intros <-; contradiction
+        | intros <-; contradiction
+        | exact HvE | exact Hall3 ].
+    - exists u; repeat split;
+        [ intros <-; contradiction
+        | intros <-; contradiction
+        | exact HuE
+        | intros y Hy; destruct (Hall3 y Hy) as [<-|<-]; tauto ]. }
+  destruct Hc as [c [Hcb [Hca [Hc3 Hall3']]]].
+  (* e4 misses b, so it meets e1 at a and e3 at c *)
+  assert (Ha4 : In a e4).
+  { destruct (Hint e4 e1 He4 He1) as [x [Hx4 Hx1]].
+    destruct (Hall1 x Hx1) as [<-|<-]; [exact Hx4 | contradiction]. }
+  assert (Hc4 : In c e4).
+  { destruct (Hint e4 e3 He4 He3) as [x [Hx4 Hx3]].
+    destruct (Hall3' x Hx3) as [<-|<-]; [contradiction | exact Hx4]. }
+  assert (Hall4 : forall y, In y e4 -> y = a \/ y = c)
+    by (apply (@two_uniform_pair e4 a c Hlen4 Hnd4 Ha4 Hc4);
+        intros <-; contradiction).
+  (* every edge is one of the three sides of the triangle abc *)
+  assert (H : length G <= length [[a; b]; [a; c]; [b; c]] * 1).
+  { apply cover_by_sets.
+    - intros C HC.
+      destruct (Hint C e1 HC He1) as [x [HxC Hx1]].
+      destruct (Hint C e3 HC He3) as [y [HyC Hy3]].
+      destruct (Hall1 x Hx1) as [Ex|Ex]; subst x;
+        destruct (Hall3' y Hy3) as [Ey|Ey]; subst y.
+      + exists [a; b]; split;
+          [left; reflexivity | intros w [<-|[<-|[]]]; assumption].
+      + exists [a; c]; split;
+          [right; left; reflexivity | intros w [<-|[<-|[]]]; assumption].
+      + destruct (Hint C e4 HC He4) as [z [HzC Hz4]].
+        destruct (Hall4 z Hz4) as [Ez|Ez]; subst z.
+        * exists [a; b]; split;
+            [left; reflexivity | intros w [<-|[<-|[]]]; assumption].
+        * exists [b; c]; split;
+            [right; right; left; reflexivity
+             | intros w [<-|[<-|[]]]; assumption].
+      + exists [b; c]; split;
+          [right; right; left; reflexivity | intros w [<-|[<-|[]]]; assumption].
+    - assert (Hnd2 : forall x y : nat, x <> y -> NoDup [x; y]).
+      { intros x y Hxy; constructor;
+          [ simpl; intros [E|[]]; apply Hxy; symmetry; exact E
+          | constructor; [intros []|constructor]]. }
+      intros T HT; destruct HT as [<-|[<-|[<-|[]]]];
+        apply Hpairdeg; solve [apply Hnd2; congruence | reflexivity]. }
+  simpl in H; lia.
+Qed.
+
+(** ** The conjecture, verified at [m = 1] and [m = 2]
+
+    [StarExtremalAt 1 r] is immediate and [StarExtremalAt 2 r] holds for
+    [r >= 3], which is [r >= m + 1]. Feeding both into
+    [star_extremal_gives_m_plus_one] gives [r*(2,3) <= 3] — the **exact**
+    value, where every general bound the development has gives 4:
+    [cover_spread_disjoint] gives [2n = 4], [quadratic_spread_disjoint]
+    gives 4, and §24.2's split gives 4. So on the one row where [I] is
+    known in closed form, the star-extremal route is not merely better,
+    it is sharp. *)
+
+Lemma one_uniform_star_extremal : forall r, StarExtremalAt 1 r.
+Proof.
+  intros r F HU HR Hint.
+  destruct F as [|A F0] eqn:EF; [simpl; lia | rewrite <- EF in *].
+  assert (HA : In A F) by (rewrite EF; left; reflexivity).
+  destruct (@uniform_mem 1 F A HU HA) as [Hlen _].
+  destruct A as [|x [|? ?]]; simpl in Hlen; try discriminate.
+  (* every member meets [x], so every member contains it *)
+  assert (Hall : forall C, In C F -> In x C).
+  { intros C HC.
+    destruct (Hint C [x] HC HA) as [z [HzC HzA]].
+    destruct HzA as [<-|[]]; exact HzC. }
+  assert (Hb : length F <= length [[x]] * (r ^ (1 - 1))).
+  { apply cover_by_sets.
+    - intros C HC; exists [x]; split;
+        [left; reflexivity | intros z [<-|[]]; apply Hall; exact HC].
+    - intros T [<-|[]]; eapply rao_point; exact HR. }
+  simpl in Hb |- *; lia.
+Qed.
+
+Theorem two_uniform_star_extremal : forall r, 3 <= r -> StarExtremalAt 2 r.
+Proof.
+  intros r Hr H HU HR Hint.
+  pose proof (@two_uniform_intersecting_bound r H HU HR Hint) as Hb.
+  simpl; lia.
+Qed.
+
+Theorem r_star_two_three_at_most_three : SpreadYieldsDisjoint 2 3 3.
+Proof.
+  replace 3 with (2 + 1) at 2 by reflexivity.
+  apply star_extremal_gives_m_plus_one; [lia|].
+  intros m Hm Hmn.
+  destruct m as [|[|m']]; try lia.
+  - apply one_uniform_star_extremal.
+  - assert (m' = 0) by lia; subst m'.
+    apply two_uniform_star_extremal; lia.
+Qed.
+
+(** Combined with [Audit.no_spread_yields_disjoint_2_3_2], which refutes
+    [r = 2], this pins the second term of the sequence in Coq:
+
+<<
+      r*(2,3) = 3 = m + 1.
+>>
+
+    §22.3 records that value as certified by exhaustive search; it is now
+    a theorem of the development as well, and it comes out of the same
+    machine that gives [r*(3,3) <= 4] on Frankl. *)

@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 87 anecdotes into a coverage metric over the
+  mutation testing from 89 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -5198,7 +5198,7 @@ not comparable with §23.3's.** Node counts are exact regardless.
 **The gates.**
 
 ```
-  make -j4 verify        green  (424 audited theorems, 424 "Closed under
+  make -j4 verify        green  (433 audited theorems, 433 "Closed under
                                 the global context", none carrying an axiom
                                 -- including everything in TwoCover.v, whose
                                 dependence on Frankl is a hypothesis rather
@@ -5503,7 +5503,106 @@ cover point lying in no member is useless — which is what lets the
 where this session found it three values wide and pointed at the wrong
 uniformity.
 
-### 24.13 The one-line verdict
+### 24.13 `I(m,r)` as an extremal problem, and the crossover at `r = m+1`
+
+Everything from §24.9 on is really about one quantity, and it deserves
+its own name:
+
+> `I(m,r)` = the largest `m`-uniform **intersecting** family satisfying
+> Rao's condition `deg T ≤ r^(m-|T|)` for every nonempty `T`.
+
+Extremal problems for intersecting families under a bound on the
+*maximum degree* are studied (Frankl 1987; Huang–Zhao;
+Frankl–Han–Huang–Zhao; Kupavskii). The constraint here is different: a
+cap **at every level at once**, which is Rao's spread condition rather
+than a degree condition. I have not found this posed before.
+
+**What it decides.** §24.2's split reads `|F| ≤ m·r^(m-1) + I(m,r)`, so
+`SpreadYieldsDisjoint m 3 r` follows as soon as
+
+```
+  I(m,r)  ≤  r^m − m·r^(m-1)  =  r^(m-1)·(r − m).
+```
+
+Two readings, and the first is a limit of the method rather than of any
+bound on `I`:
+
+* **`r = m` is a hard floor.** There the right-hand side is zero while
+  `I ≥ 1` always (one member is an intersecting family). So this split
+  can never give `r*(m,3) ≤ m`, whatever is proved about the piece.
+  `split_cannot_reach_r_equals_m` is the identity `m·m^(m-1) = m^m`.
+* **At `r = m+1` the requirement is exactly "the star is extremal"** —
+  the right-hand side is `(m+1)^(m-1)`, the size of a star under the
+  point cap. `star_extremal_gives_m_plus_one`:
+
+  > if `I(m, n+1) ≤ (n+1)^(m-1)` for every `m ≤ n`, then
+  > `r*(n,3) ≤ n+1`.
+
+  **This is an implication, not an equivalence** — `r*(m,3) ≤ m+1` could
+  hold for reasons this split cannot see. `m+1` is linear with constant
+  1, against §24.2's `φ·m = 1.618 m`, and it is the best the two-way
+  split can ever give.
+
+**The measured crossover.** Both uniformities where `I` is computable put
+it at exactly `r = m+1`:
+
+```
+  m = 2    r        2   3   4   5      star = r
+           I(2,r)   3   3   4   5
+  m = 3    r        3   4              star = r²
+           I(3,r)  10  16
+```
+
+Below the crossover the star loses to a small design — the triangle at
+`m = 2`, `C([5],3)` at `m = 3`. From it on the star wins. That is not an
+accident of small cases: the star's size under the caps is `r^(m-1)`,
+**exponential in `m`**, while every classical intersecting family is
+polynomial or `~4^m`:
+
+```
+  m               2    3     4      5      6
+  C([2m-1],m)     3   10    35    126    462
+  PG(2,q), m=q+1  3    7    13     21     31
+  star at m+1     3   16   125   1296  16807
+```
+
+**The `m = 2` row, proved.** `two_uniform_intersecting_bound`:
+`I(2,r) ≤ max(r,3)`, by the same device as §24.10 — instead of "an
+intersecting graph is a star or a triangle", name an edge missing `a`
+*and* an edge missing `b`, which confines everything to the triangle
+`{ab, ac, bc}`. Hence `StarExtremalAt 2 r` for `r ≥ 3 = m+1`, and with
+the trivial `m = 1` case:
+
+> **`r_star_two_three_at_most_three : SpreadYieldsDisjoint 2 3 3`.**
+
+That is new to the development. Every general bound it has gives **4** at
+`m = 2` — `cover_spread_disjoint` (`2n`), `quadratic_spread_disjoint`,
+and §24.2's split all do. With `Audit.no_spread_yields_disjoint_2_3_2`
+refuting `r = 2`, the second term is now pinned in Coq at exactly
+`r*(2,3) = 3 = m+1`, where §22.3 had it certified only by exhaustive
+search. **On the one row where `I` is known in closed form, the
+star-extremal route is sharp and the general bounds are not.**
+
+**What is at stake.** `r*(1,3) = 2` and `r*(2,3) = 3` are exact and both
+equal `m+1`. If `r*(m,3) = m+1` in general the sequence is **unbounded**,
+and by §18.5 that means the spread reduction as formulated by ALWZ / Rao
+/ Bell–Chueluecha–Warnke cannot prove the sunflower conjecture at
+`k = 3`. It would not refute the conjecture; it would close the route.
+
+The pattern is decided at the third term by one finite object — the
+28-member family of §24.5, which this session searched for and did not
+find. And the two halves are not symmetric:
+
+* the **upper** half is within one classical theorem (§24.12), while
+* the **lower** half cannot be settled by this split at all, because
+  `r = m` is the floor above. Proving `r*(3,3) = 3` needs an argument the
+  development does not have.
+
+So the honest state of the third term is: nearly closed from above,
+untouched from below, and it is the lower half that decides whether the
+whole approach survives.
+
+### 24.14 The one-line verdict
 
 **A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
 than the development's previous best at every uniformity from 5 up and
@@ -5538,7 +5637,16 @@ that a 3-uniform intersecting family of covering number 3 has at most 16
 members, which Frankl's theorem gives with room to spare (it gives 10)
 and which the elementary greedy bound (27) does not.
 
+§24.13 then names the quantity all of that turns on — `I(m,r)`, the
+largest intersecting family under Rao's condition — measures its
+crossover at exactly `r = m+1` at both uniformities where it is
+computable, proves the `m = 2` row in closed form, and gets
+`r*(2,3) ≤ 3` out of it: the **exact** second term, where every general
+bound in the development gives 4.
+
 That is the session's real output: not the search, which decided nothing
-at either question it was asked, but an unconditional theorem, a
-conditional one that closes the first open term to a single value, and a
-target that is now one classical result wide.
+at either question it was asked, but an unconditional threshold theorem,
+a conditional one closing the third term to a single value, an exact
+second term, and a well-posed extremal question — `is the star extremal
+for intersecting families under Rao's condition once r ≥ m+1?` — whose
+answer decides whether the spread route to `k = 3` survives at all.
