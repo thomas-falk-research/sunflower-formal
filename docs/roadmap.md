@@ -4802,14 +4802,29 @@ It is either
   anything: `iota(4) >= 51` gives `g(4) >= 102` by `double` and
   `iota(5) >= 102` by `cone`, and that beats 1972.
 
-## 24. The degree sum nobody took: a sharper threshold, and the first
-##     open term of the sequence
+## 24. The degree sum nobody took, and the extremal problem underneath
+##     it: `r*(m,3)` from `[3,6]` to a single value
 
-**Verdict: this session produced a new theorem.** `r*(m,3)` is bounded by
-`φ·m + O(1)` where `φ` is the golden ratio, against the `√3·m` that was
-the development's best, and the first *open* term of the sequence — which
-is `m = 3`, not `m = 4` — narrows from `[3,6]` to `[3,5]`. It did not
-produce a new record object; §24.5 says what it cost to find that out.
+**Verdict: this session produced new theorems, no new record object, and
+two decisive negatives.** In order:
+
+* **`r*(m,3) ≤ φ·m + O(1)`**, unconditional and axiom-free, against the
+  `√3·m` that was the development's best (§24.2). The first *open* term
+  of the sequence — which is `m = 3`, not the `m = 4` the brief aimed at
+  — narrows from `[3,6]` to `[3,5]`.
+* **`r*(3,3) ≤ 4`**, conditional on one classical theorem and **no new
+  axiom** (§24.10, §24.12): the `τ ≤ 2` case proved outright, the
+  `τ = 3` case assumed as a hypothesis to the left of the arrow.
+* **`r*(2,3) = 3` exactly, in Coq** (§24.13) — where every general bound
+  the development has gives 4.
+* **The extremal problem underneath all of it**, `I(m,r)`, named and
+  measured, with its crossover at exactly `r = m+1` at both uniformities
+  where it is computable, and the consequence that if the star is
+  extremal there then `r*(m,3) ≤ m+1` — which would make the sequence
+  unbounded and close the spread route to `k = 3`.
+
+It did not produce a new record object; §24.5 and §24.11 say what that
+cost. The two closed lines are §24.3 and §24.4.
 
 ### 24.1 The correction: the first open term is m = 3
 
@@ -5604,10 +5619,10 @@ whole approach survives.
 
 ### 24.14 The one-line verdict
 
-**A new theorem: `r*(m,3) ≤ φ·m + O(1)`, axiom-free, strictly sharper
-than the development's previous best at every uniformity from 5 up and
-at 3, moving the first open term of the sequence that is the conjecture
-from `[3,6]` to `[3,5]`.**
+**The sequence that is the conjecture moved at three of its terms: an
+unconditional `r*(m,3) ≤ φ·m + O(1)`, a conditional `r*(3,3) ≤ 4` resting
+on one classical theorem and no new axiom, and an exact `r*(2,3) = 3` in
+Coq for the first time.**
 
 No new record object: the `iota(4,10) >= 28` attempt spent 7.3
 CPU-hours and was stopped without a verdict (§24.11), and what it
