@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 79 anecdotes into a coverage metric over the
+  mutation testing from 89 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -4801,3 +4801,867 @@ It is either
   hour of SAT. It is the smallest object whose existence would move
   anything: `iota(4) >= 51` gives `g(4) >= 102` by `double` and
   `iota(5) >= 102` by `cone`, and that beats 1972.
+
+## 24. The degree sum nobody took, and the extremal problem underneath
+##     it: `r*(m,3)` from `[3,6]` to a single value
+
+**Verdict: this session produced new theorems, no new record object, and
+two decisive negatives.** In order:
+
+* **`r*(m,3) ≤ φ·m + O(1)`**, unconditional and axiom-free, against the
+  `√3·m` that was the development's best (§24.2). The first *open* term
+  of the sequence — which is `m = 3`, not the `m = 4` the brief aimed at
+  — narrows from `[3,6]` to `[3,5]`.
+* **`r*(3,3) ≤ 4`**, conditional on one classical theorem and **no new
+  axiom** (§24.10, §24.12): the `τ ≤ 2` case proved outright, the
+  `τ = 3` case assumed as a hypothesis to the left of the arrow.
+* **`r*(2,3) = 3` exactly, in Coq** (§24.13) — where every general bound
+  the development has gives 4.
+* **The extremal problem underneath all of it**, `I(m,r)`, named and
+  measured, with its crossover at exactly `r = m+1` at both uniformities
+  where it is computable, and the consequence that if the star is
+  extremal there then `r*(m,3) ≤ m+1` — which would make the sequence
+  unbounded and close the spread route to `k = 3`.
+
+It did not produce a new record object; §24.5 and §24.11 say what that
+cost. The two closed lines are §24.3 and §24.4.
+
+### 24.1 The correction: the first open term is m = 3
+
+The brief for this session aims §4 at `r*(4,3)` and calls its lower half
+"the highest-information experiment available". §22.2's own table says
+otherwise:
+
+```
+  m     r*(m,3)     status
+  1     = 2         exact
+  2     = 3         exact
+  3     in [3, 6]   OPEN  <- first open term
+  4     in [3, 7]   open
+```
+
+`r*(3,3)` is the first term of the sequence that is not pinned, and the
+question at `m = 3` is exactly the question the brief wants asked at
+`m = 4` — is the sequence `2, 3, 3, ...` (bounded, evidence for the
+conjecture) or `2, 3, 4, ...` (still growing, and the spread method as
+formulated cannot prove the conjecture)? — at a fraction of the size.
+Everything below is asked at `m = 3` for that reason.
+
+### 24.2 The theorem: `r*(m,3) ≤ φ·m + O(1)`
+
+`coq/SpreadThreshold.v`, axiom-free, eight new audited names.
+
+`quadratic_no_three_disjoint_bound` splits a family with no three
+pairwise disjoint members **three** ways against a matching `{A, B}` —
+the two intersecting pieces and a cross piece — and bounds each. The
+new observation is that the split throws away the one quantity Rao's
+condition makes free:
+
+> The `m` point degrees **inside a single member** have never been
+> summed. `Σ_{a ∈ A} deg({a}) ≤ m·r^(m-1)`, and every member meeting `A`
+> is counted at least once on the left.
+
+That gives a **two**-way split against a single member `A`, and it is
+both simpler and sharper than the three-way one:
+
+```
+  {C : C ∩ A ≠ ∅}   covered by the m points of A        ≤ m·r^(m-1)
+  {C : C ∩ A = ∅}   meets B, and is intersecting        ≤ r^(m-1) + (m-1)²·r^(m-2)
+```
+
+The second piece is `intersecting_piece_bound` with `B` as its anchor;
+`miss_member_intersecting` is what makes it intersecting. The cross
+piece — the one the quadratic bound pays `m²·r^(m-2)` for — is absorbed
+into the cover count at no cost. So
+
+> **`split_no_three_disjoint_bound`:**
+> `|F| ≤ (m+1)·r^(m-1) + (m-1)²·r^(m-2)`,
+>
+> **`split_spread_disjoint`:** `(m+1)·r + (m-1)² ≤ r²` implies
+> `SpreadYieldsDisjoint m 3 r`.
+
+The condition solves to `r ≥ [(m+1) + √((m+1)² + 4(m-1)²)]/2`, which is
+`m·(1+√5)/2 + O(1)`. The table, with `rust/tests/spread_threshold.rs`
+pinning every row:
+
+```
+  m        1   2   3   4   5   6   7   8  10  15  20  ...  1000
+  2m+1     3   5   7   9  11  13  15  17  21  31  41
+  cover    2   4   6   8  10  12  14  16  20  30  40
+  quadratic 3  4   6   7   9  11  13  14  18  26  35  ...  1732
+  NEW      2   4   5   7   8  10  12  13  17  25  33  ...  1618
+```
+
+`split_bound_is_never_worse` pins that the new bound dominates the
+quadratic one pointwise for every `m ≤ 400`, strictly from `m = 5` on
+and at `m = 3`. The two agree at `m = 2` and at `m = 4`, which is why
+the headline `r*(4,3) ≤ 7` does not move. At `m = 1` the new bound is 2,
+which is the **exact** value of `r*(1,3)`.
+
+Four rows move, each a Coq corollary: `r_star_three_at_most_five`,
+`r_star_five_at_most_eight`, `r_star_six_at_most_ten`,
+`r_star_ten_at_most_seventeen`.
+
+**Where this sits relative to the published literature.** Through
+`spread_reduction`, `r*(m,3) ≤ r` gives `f(m,3) ≤ r^m + 1`, so the new
+threshold gives `f(m,3) ≤ (φm)^m + 1`. That is **worse** than
+Erdős–Rado 1960's `m!·2^m + 1 ≈ (2m/e)^m` — at `m = 3` it is 126 against
+49 — and exponentially worse than the `(O(log m))^m` of ALWZ / Rao /
+Bell–Chueluecha–Warnke. `the_split_threshold_is_behind_erdos_rado_as_a_bound_on_f`
+pins that comparison as a test rather than leaving it as a remark. The
+bound is not a competitive bound on `f` and must not be quoted as one.
+Its content is about the sequence `r*(m,3)` itself, whose boundedness in
+`m` is the conjecture at `k = 3`.
+
+### 24.3 Closed: Gallai–Edmonds adds nothing to the link structure
+
+Brief §7(a) proposes pushing the Gallai–Edmonds structure theorem for
+graphs with `ν ≤ 2` through `sunflower_iff_link_matching`, and calls it
+"the best ratio of new mathematics to work on the entire list".
+
+**It is vacuous, and the argument is one line.** At a `(b-2)`-set `Y` the
+link `G_Y` is a graph with `ν(G_Y) ≤ 2` — that is the input
+Gallai–Edmonds wants. But `LinkCeiling.top_link_degree_at_most_two`
+applied at `Y ∪ {v}`, which is a `(b-1)`-set, says `deg_{G_Y}(v) ≤ 2`.
+So
+
+    Δ(G_Y) ≤ 2   **and**   ν(G_Y) ≤ 2,
+
+and a graph with `Δ ≤ 2` is already a disjoint union of paths and
+cycles. The content of Gallai–Edmonds is the structure of the
+factor-critical components of `G[D]`; `Δ ≤ 2` has made every one of them
+an odd cycle before the theorem is invoked. The classification collapses
+to the elementary statement §23.1 already used —
+
+> `G_Y` is a disjoint union of paths and cycles with `Σ⌊|C_i|/2⌋ ≤ 2`,
+
+whose edge-maximal case is two disjoint triangles, six edges. There is
+no sharper counting ceiling hiding here and no new template for the
+search: the repository had already extracted everything this link level
+contains.
+
+### 24.4 Closed: the counting ceiling is best at level b-2, not deeper
+
+The obvious follow-on — run the ceiling one level further down — is
+worse at every parameter of interest, and it is worth recording so it is
+not tried again. A `(b-3)`-set's link is 3-uniform and sunflower-free,
+hence has at most `g(3)` members, giving
+`|F| ≤ (g(3)/C(b,3))·C(n, b-3)`.
+
+What the development knows unconditionally is `20 ≤ g(3) ≤ 48`
+(`IotaRate.v`, restated at its line 378: 20 from
+`Intersecting.lower_bound_3_3_20`, 48 from Erdős–Rado) — **not** the 26
+this session's brief quotes. 26 would follow from `f(3,3) ≤ 27`, and that
+bound is conditional on `Sharp.AHSOptimal`; the brief's `f(3,3) ∈ [21,27]`
+is right at the bottom and unproved at the top. At `g(3) = 48`:
+
+```
+  b = 4     n = 10      n = 11         b = 5, n = 12
+  level b-2      45          55                  132
+  level b-3     120         132                  316
+```
+
+The deeper level loses because `C(n, b-3)` shrinks by a factor
+`~(b-2)/(n-b+3)` while the degree bound grows by `~g(3)/6`, and the
+second beats the first at every `n` where a record could live. Even the
+most optimistic conceivable value of `g(3)` — its own lower bound, 20 —
+gives 50 and 55 at `b = 4` against 45 and 55, so it does not win at ten
+points and only ties at eleven. **The counting ceiling is best at level
+`b-2`, and there is nothing below it.**
+
+### 24.5 The search: `r*(3,3) ≥ 4`, and what it would take
+
+Unwinding `SpreadYieldsDisjoint 3 3 3`, the sequence grows at its third
+term exactly when there is a family `F` with
+
+```
+  (a) 3-uniform, distinct, on any ground set
+  (b) |F| >= 28                          (= 3^3 + 1)
+  (c) deg(x)   <= 9   for every point    (RaoSpread at |T| = 1)
+  (d) deg({x,y}) <= 3 for every pair     (RaoSpread at |T| = 2)
+  (e) no three pairwise disjoint members
+```
+
+`|T| = 3` gives `deg <= 1`, automatic for a distinct family. This is
+`rstar::Question::new(3, 3, ground)` exactly, so the instrument already
+existed; what had not been done was to run it above the counting floor.
+
+**The question is finite, and the bound is 114 points.** `(e)` gives a
+maximum matching `{A, B}` whose union covers `F`, so by
+`no_three_disjoint_cover_bound` at `(m,r) = (3,3)`,
+`|F| <= 2·3·3² = 54`. Every member has at least one of its three points
+in that 6-point cover, hence at most two outside it, so at most
+`2·54 = 108` points outside carry any member at all: **any witness lives
+on at most 114 points.** The counting floor is `min_ground(3,3) = 10`
+(`ceil(3·28/9)`), so the witness, if it exists, lives on between 10 and
+114 points. That is a decidable question. It is not a small one.
+
+**Two constructions reaching 20, by hand.** Both were checked by code
+sharing nothing with the search.
+
+* Two disjoint copies of `C([5],3)` on disjoint 5-point grounds. Each
+  copy is intersecting with `deg = 6` and `deg_pair = 3` exactly; the
+  union has `ν = 2` because a member of either copy uses three of that
+  copy's five points, leaving no room for a second disjoint member
+  inside the same copy. **No cross set can be added** — all 75 of them
+  were tried and every one completes a 3-matching, e.g. `{1,4,u}` with
+  `{2,3,z}` from the first copy and `{5,6,w}` from the second.
+* `link_p = link_q = K_{3,3}` on the same six points `X ∪ Y`, plus the
+  two sets `X` and `Y`. Also 20, on eight points rather than ten, with
+  `deg = 9` and `deg_pair = 3`.
+
+Two structurally unrelated constructions stopping at the same number
+looked like weak evidence that 20 was a plateau. It was not — the search
+below reaches 24 — and the episode is worth keeping as written: two
+constructions agreeing is evidence that two attempts had the same idea,
+not that a bound exists.
+
+**One bound that was free, and what it does not do.** A witness must
+have covering number at least 4: a 3-point cover gives
+`|F| ≤ 3·9 = 27 < 28`, and a 2-point cover gives 18. Since `ν ≤ 2`
+forces `τ ≤ 6`, the object sought has `ν(F) = 2` and `τ(F) ∈ {4,5,6}`.
+
+That is a real necessary condition and it is **not** a discriminator
+here: the two hand constructions have `τ = 6` and `τ = 4`, and the
+23-member search object has `τ = 4`. All three already satisfy it. It
+rules out the star-like shapes — which is why no amount of pushing on a
+single cover point gets anywhere — and says nothing about why these
+particular families stop.
+
+**The runs.** Grounds 10, 11 and 12 were run as separate background
+shells — §6(c)'s free-axis parallelism, which needs no code — with a
+`4·10⁹`-node budget each, alongside a SAT attempt at ground 10 capped at
+2400 s. `docs/reading.md` records that ground 10 was already attempted
+in an earlier session and left undecided by both instruments; these are
+larger budgets on the same question, not new questions.
+
+```
+  ground   ceiling   budget      nodes        largest   verdict
+  10          30     4e9 nodes   4,000,000,001    23     undecided (truncated)
+  11          33     4e9 nodes   4,000,000,001    23     undecided (truncated)
+  12          36     4e9 nodes   4,000,000,001    24     undecided (truncated)
+  10 (SAT)    30     2400 s CPU  --               --     undecided
+```
+
+The SAT row is cadical only: it spent its whole 2400 s CPU limit without
+a verdict, and the confirming solver `decide` runs afterwards was stopped
+by hand to free a core rather than allowed to finish. So that row is
+"cadical did not decide it in 2400 s", which is all it was ever going to
+be worth — §23.3's second item already found CDCL does not reach this
+kind of instance.
+
+**All three are undecided, and that is the honest report.** 4·10⁹ nodes
+is above the ~2.4·10⁹ the killed `iota(4,10)` attempt reached in §23.3
+and it did not exhaust any of these three grounds. `r*(3,3)` is
+unchanged at `[3,5]` from below.
+
+What the runs did produce is a number worth having. `largest` is the
+biggest family the search met that satisfies **every** hypothesis except
+the size one, so it is a genuine lower bound on what is feasible:
+
+> **A family satisfying (a), (c), (d), (e) with 24 members exists on 12
+> points.** Against the 28 needed, the gap is four, not the eight the
+> hand constructions suggested.
+
+That also kills the "20 is a plateau" reading above, and it is worth
+saying so plainly: two constructions agreeing is not evidence of a
+ceiling, only evidence that two people had the same idea.
+
+**The object, and the honest limit of it.** `examples/rstar_dfs.rs` now
+carries the best family out of a *truncated* run as well as a successful
+one — a size with no object behind it is not something anyone else can
+check. Re-run at ground 12 with 4·10⁸ nodes it produces a **23**-member
+family, pinned as
+`the_r_star_three_three_witness_problem_reaches_twenty_three` and
+re-verified against `Spread.RaoSpread`, the matching number and the
+uniformity by code sharing nothing with the search:
+
+```
+  [0,1,2] [3,4,5] [0,1,3] [0,2,3] [1,2,3] [0,1,4] [0,2,4] [1,2,4]
+  [0,3,4] [1,3,5] [2,3,5] [3,4,6] [0,5,7] [1,6,7] [2,6,7] [5,6,7]
+  [0,5,8] [1,6,8] [2,6,8] [5,6,8] [0,5,9] [1,6,9] [2,6,9]
+```
+
+It uses ten points although it was found at ground 12, and it
+**saturates both degree caps at once** — some point lies in 9 members
+and some pair in 3. So the object that gets closest is already against
+both walls Rao's condition puts up, which is a more specific piece of
+information about where the remaining five members would have to come
+from than anything the hand constructions gave.
+
+The 24 reported by the deeper `4·10⁹`-node runs has **no object behind
+it in this repository** — that run predates the change that dumps the
+family — and it is therefore quoted as a measurement, not pinned as a
+certificate.
+
+**What this does and does not settle.** Nothing about `r*(3,3)`: the
+witness may live on any of the grounds from 10 to 114, and three
+truncated runs at the bottom of that range rule out nothing at all. The
+node budgets are the result, and they are reported so the next attempt
+knows what it has to beat.
+
+**What it would take to finish this from the other side.** The upper
+bound could plausibly be driven to 4 without any search, and the missing
+step is small and identified. At `(m,r) = (3,4)` the two-way split gives
+
+```
+  members meeting A   <= 3·4² = 48, less 2 for A's own multiplicity   = 46
+  members missing A   <= I, the max intersecting piece
+  need                   46 + I <= 4³ = 64,   i.e.  I <= 18
+```
+
+and the intersecting piece here is a 3-uniform intersecting family with
+`deg <= 16`, `deg_pair <= 4`. A star attains exactly 16. The covering
+number cases give `τ = 2 ⟹ |G| <= 12` by an elementary cross-intersecting
+argument, and `τ = 3 ⟹ |G| <= 10` is **Frankl's theorem**, which this
+repository does not have. So
+
+> `r*(3,3) ≤ 4` follows from: *no 3-uniform intersecting family with
+> `deg ≤ 16` and `deg_pair ≤ 4` has more than 18 members.*
+
+The margin is 2 above the star, and the only missing ingredient is the
+`τ = 3` case. That is a far smaller target than anything else on this
+row, and unlike the search it does not depend on a 114-point ground set.
+
+### 24.6 The root split, and the checkpoint that comes with it
+
+`rust/src/orbit.rs`, `search_orbits_parallel`. §23.3's fifth item is a
+2h28m run at `iota(4,10) >= 28` killed twice by a container restart with
+no verdict, and its own diagnosis: what the repository needs is a search
+that checkpoints, or one fast enough not to need to.
+
+Both come from the same change, and the reason it is forty lines rather
+than a research project is a property of the existing code:
+
+> Every pruning test in `search_orbits` is against the **fixed**
+> `target`. `s.best` is written and never read by any prune. So sibling
+> subtrees at the root share no incumbent — there is nothing for one
+> worker to learn from another, no speedup anomaly, and no risk of
+> exploring a node the sequential run would have pruned.
+
+So root subproblem `i` ("the families whose lowest-indexed taken orbit is
+`ord[i]`") is independent of every other, the subproblems partition the
+space, and **the list of finished ones is a complete resume point**.
+`std::thread::scope`, one `Incremental` per worker, two atomics and a
+mutex; no new dependency. `examples/record_hunt_par.rs` drives it.
+
+Three things this cost, all worth recording.
+
+* **The recursion has to report whether it finished.** A root subproblem
+  abandoned when the budget ran out looks exactly like one that
+  completed, and recording it would let a restart skip work that was
+  never done — a wrong answer rather than a slow one. `rec` now returns
+  `true` only if its subtree was exhausted, and only a `true` is written
+  to the checkpoint. The bound firing counts as exhausted; the budget
+  running out does not.
+* **`push_orbit` already unwinds itself on failure.** The first version
+  popped the orbit unconditionally after the subproblem, which on the
+  failure path popped entries belonging to nothing and corrupted the
+  worker for every later subproblem it took. Caught by the node-count
+  differential test, not by any assertion.
+* **Root splitting gives coarse checkpoints at the top.** With singleton
+  orbits the root subproblems are wildly uneven — the first few carry
+  almost all the work — so a budget of a tenth of the total completes
+  *nothing* and records *nothing*. The parallelism is real; the
+  restart-resilience only starts to bite once a substantial fraction of
+  the space is done. Splitting two levels deep would fix it and is not
+  done here.
+
+`rust/tests/orbit_parallel.rs` is the differential check: the decision
+agrees with `search_orbits` at every parameter small enough to exhaust
+twice, any family found verifies, a checkpointed run resumes in strictly
+fewer nodes than a fresh one and reaches the same verdict, and — for an
+**exhaustive negative** — the node count is identical at 1, 2, 3, 4 and 8
+threads. That last qualifier is the content: when the target is
+reachable the search stops at the first success, so how much was explored
+first depends on how many workers were racing, and a thread-dependent
+node count there is correct rather than a bug. Asserting otherwise is
+asserting that a parallel search is not parallel, and that is exactly the
+assertion the first version of the test made.
+
+### 24.7 Fixed: the mutation harness could pass with its own check off
+
+`tools/mutate.py` warned when the manifest contained no control mutation
+and then exited 0 anyway. That is the one failure this file cannot report
+softly: the control exists precisely so that a harness which silently
+failed to apply its edits — reporting every mutation `killed` — is
+caught, and a warning nobody reads does not catch it. A missing control
+is now a failure. The control itself (`canary-alpha-rename`) was already
+present; what was missing was the guarantee that it stays.
+
+### 24.8 Costs
+
+Every computation that ran over ten minutes. **All four searches ran
+concurrently on four cores, alongside a `make -j4 verify` and the Rust
+test suite, so the wall times below are for a contended machine and are
+not comparable with §23.3's.** Node counts are exact regardless.
+
+```
+  what                                   budget        spent        finished?
+  r*(3,3) DFS, ground 10                 4e9 nodes     4e9          no, truncated   2746 s
+  r*(3,3) DFS, ground 11                 4e9 nodes     4e9          no, truncated   2655 s
+  r*(3,3) DFS, ground 12                 4e9 nodes     4e9          no, truncated   2334 s
+  r*(3,3) SAT, ground 10 (cadical+cms)   2400 s CPU    2400 s       no verdict
+  make -j4 verify (clean + 416 audits)   --            --           yes, after one
+                                                                    baseline fix
+  iota(4,10) >= 28, 4 threads            1e10 nodes    7.3 CPU-h    no, stopped
+                                                       (0/210 roots) 7066 s
+  mutation suite, 3 new + control        4 mutants     4            yes, all as
+                                                                    declared        146 s
+```
+
+**The gates.**
+
+```
+  make -j4 verify        green  (433 audited theorems, 433 "Closed under
+                                the global context", none carrying an axiom
+                                -- including everything in TwoCover.v, whose
+                                dependence on Frankl is a hypothesis rather
+                                than an assumption)
+  make coqchk            green  (38 modules; one axiom:
+                                Sunflower.ALWZ.Rao20_lemma2; type-in-type,
+                                unsafe (co)fixpoints and assumed positivity
+                                all <none>)
+  cargo test --release   green  (25 suites, 0 failures)
+  python3 tools/mutate.py       green  (82 of the 85 run in full: 79 killed,
+                                2 survived as declared, 1 control passing,
+                                0 unexpected, ~47 min on 4 cores; the three
+                                twocover-* mutations were added afterwards
+                                and run separately, all killed as declared,
+                                with the control)
+  tools/statements.py    green  (500 statements match the baseline)
+  tools/docnumbers.py    green  (12 quoted numbers match)
+```
+
+`make verify` failed once first, on exactly the check it exists for: a
+theorem was added to `tools/audited.txt` without its statement baseline,
+and the gate said so and named the fix. Recorded because a gate that has
+never failed in a session is a gate nobody has tested.
+
+**Two scheduling mistakes worth recording, both mine.**
+
+* **I over-subscribed the machine.** Four searches on four cores plus a
+  Coq rebuild plus a Rust test suite meant everything ran at roughly a
+  third of its uncontended rate, and the one test that needed 25 seconds
+  took 263. The searches were node-budgeted so the *results* are
+  unaffected, but the wall times are worthless as a baseline for anyone
+  else, which is the whole reason to record them.
+* **I did not checkpoint the runs I was most worried about losing.**
+  This session added checkpointing to `search_orbits` — and then ran the
+  `r*(3,3)` searches through `rstar::dfs`, which has none, in exactly the
+  fragile shape §23.3 warns about. Three 45-minute single-threaded runs
+  with no resume point is the thing the engineering was supposed to stop.
+  They survived; that was luck, not design.
+
+[TO FILL]
+
+### 24.9 Measured: the intersecting piece bound has a factor of two of
+###      slack, and closing it would give `r*(m,3) ≤ m+1`
+
+`rstar::max_intersecting_piece` computes the quantity the threshold
+actually turns on: the largest `m`-uniform **intersecting** family
+satisfying Rao's condition. Write it `I(m,r)`. The split bound is
+
+```
+  |F|  ≤  m·r^(m-1)  +  I(m,r),
+```
+
+and `intersecting_piece_bound` supplies `r^(m-1) + (m-1)²·r^(m-2)` for
+the second term. Nobody had asked what `I` actually is.
+
+```
+  m   r   ground   5    6    7    8    9        piece bound   star
+  3   3            10   10   10   10   10            21         9
+  3   4            10   10   12   14   16            32        16
+```
+
+Every row exhausted (`the_intersecting_piece_bound_has_a_factor_of_two_of_slack`
+pins grounds 5–8; ground 9 costs 56M and 306M nodes respectively).
+
+Two things fall out.
+
+**One: the bound is off by a factor of two at `(3,3)`.** The truth is 10
+against a bound of 21. The extremal object is `C([5],3)` — every 3-subset
+of a 5-set — which is intersecting with `deg = 6` and `deg_pair = 3`, so
+it sits under both caps, and it **beats every star** (9). That is worth
+noticing on its own: the natural guess for the extremal intersecting
+family under a degree cap is a star, and at `(3,3)` it is not.
+
+**Two, and this is the one that matters: if `I(m,r)` were the star
+`r^(m-1)`, the split condition would read**
+
+```
+  m·r^(m-1) + r^(m-1) ≤ r^m     ⟺     r ≥ m + 1.
+```
+
+**`r*(m,3) ≤ m+1`** — linear with constant 1, against the `φ·m = 1.618 m`
+proved in §24.2. At `m = 10` that is 11 against 17. And `r = m` is a hard
+floor for this method whatever `I` is, since `m·r^(m-1)` alone already
+equals `r^m` there, so `m+1` is the best the two-way split can ever give.
+`the_star_would_give_r_star_at_most_m_plus_one` pins both halves.
+
+At `(3,4)` the measurement says `I = 16`, which **is** the star, exactly
+the value needed: `3·16 + 16 = 64 = 4³`. So
+
+> **`r*(3,3) ≤ 4` follows from `I(3,4) ≤ 16` alone**, and `I(3,4) = 16`
+> is exhausted for every ground set up to nine points.
+
+That would put the first open term of the sequence at `{3,4}`, one value
+from decided.
+
+**What is not proved, stated plainly.** `I(3,4) ≤ 16` is measured to
+ground 9, not proved for all grounds, and the search cannot reach ground
+10 (the ground-9 row already costs 306M nodes and each further point
+multiplies by roughly twenty). A proof would go by covering number, since
+an intersecting 3-uniform family has `τ ≤ 3`:
+
+* `τ = 1` — a star, so `|G| ≤ deg cap = 16`. Immediate.
+* `τ = 2` — cover `{p,q}`. If both sides are nonempty, an edge of one
+  side's tail forces the other side's tail into two stars, giving
+  `|G_p|, |G_q| ≤ 2·deg_pair = 8` and `|G| ≤ 8+8+4 = 20`; pushing either
+  side to 8 collapses the other to 1. Elementary, and it is a real case
+  analysis rather than a line.
+* `τ = 3` — **Frankl's theorem**, `|G| ≤ 10`, which this repository does
+  not have. The elementary greedy bound is `3³ = 27`, well short of 16.
+
+So the honest shape of the next step is: one elementary case analysis,
+and one classical theorem to formalise. That is a much more specific
+target than "sharpen `intersecting_piece_bound`", and it is worth
+strictly more — the whole table of §24.2 moves if it lands.
+
+### 24.10 Proved: the two-point cover case, and the star is extremal
+###       from `r = 4` on
+
+`coq/TwoCover.v`, axiom-free, eight new audited names. This is the
+elementary half of §24.9's target, done.
+
+An intersecting 3-uniform family has covering number at most 3, so
+`I(m,r)` splits into `τ = 1, 2, 3`. The first is a star and immediate
+from the point-degree cap (`one_cover_bound`: `|G| ≤ r²`). The third is
+Frankl's theorem and is **not** here. The second is now a theorem:
+
+> **`two_cover_bound`:** if `{p,q}` covers `G` and neither point covers
+> alone, then `|G| ≤ max(4r, 3r+4)`.
+>
+> **`two_cover_star_extremal`:** hence `|G| ≤ r²` — the size of a star —
+> for every `r ≥ 4`.
+>
+> **`covered_by_two_at_most_star`:** and dropping the "neither alone"
+> hypothesis, `τ(G) ≤ 2` and `r ≥ 4` give `|G| ≤ r²` outright.
+
+`r = 4` is the exact crossover, and it is sharp on both sides:
+
+```
+  r          2    3    4    5    6   10
+  max(4r,3r+4) 10  13   16   20   24   40
+  r² (star)   4    9   16   25   36  100
+  star extremal?  no   no  yes  yes  yes  yes
+```
+
+At `r = 3` the bound is 13 against a star of 9 — and the star really is
+not extremal there. §24.9's measurement gives 10, attained by `C([5],3)`,
+which has covering number **3**. So the one case this file does not cover
+is exactly the case that breaks the pattern, which is not a coincidence.
+
+**The argument, and why it needs no graph classification.** Write `G_p`
+for the members through `p` but not `q`, `G_q` for the mirror, `G_pq` for
+both. `G_pq` is capped by the pair degree at once. Then:
+
+* **Any member of `G_q` caps `G_p` at `2r`.** A member `C'` of `G_q`
+  misses `p`, so a member of `G_p` can only meet it at one of `C'`'s two
+  points other than `q` — and it contains `p`, so it contains one of two
+  *pairs*. Two pairs, each capped at `r`.
+* **Either `G_p` has a common point besides `p`, or `G_q` has at most
+  four members.** If some `w ≠ p` lies in every member of `G_p`, the
+  single pair `{p,w}` caps `G_p` at `r`. Otherwise take `C1 = {p,u,v}` in
+  `G_p`; some `C2` misses `u` and some `C3` misses `v`. A member of `G_q`
+  meets `C1` away from `p`, so it holds `u` or `v`; if it holds `u` it
+  must still meet `C2`, which has neither `p` nor `u`, so it holds one of
+  `C2`'s two other points. That pins it to a **triple**, and a triple has
+  degree at most one under Rao's condition. Four triples, four members.
+
+The textbook route here is through the classification of graphs with
+matching number one — "a star or a triangle" — applied to the tails.
+Naming `C2` and `C3` replaces it. That matters for a formalisation:
+the classification is a real piece of graph theory and this is four
+lines of case analysis.
+
+**What is still missing, and it is one theorem.** `I(3,4) ≤ 16` needs the
+`τ = 3` case at `≤ 16`. The elementary greedy bound is `3³ = 27`;
+Frankl's theorem gives 10. So:
+
+> `r*(3,3) ≤ 4` now rests on **exactly one** unformalised classical
+> result — Frankl's bound for 3-uniform intersecting families with
+> covering number 3 — and on nothing else.
+
+Three mutations check the load-bearing parts: the `4 ≤ r` hypothesis (it
+fails at 3, by 13 against 9), the maximum (neither branch dominates, and
+they cross at exactly 4), and the four triples.
+
+### 24.11 The record attempt, and the limit of root splitting
+
+`iota(4,10) >= 28` is the question §23.3 calls the cheapest live one on
+the row: `iota(4,9) = 27` is exhausted-exact, ground 10 is undecided, and
+a hit gives `g(4) >= 56` against a record of 54. §23.3's attempt was
+killed twice by container restarts after 2h28m of single-threaded search
+with no verdict, and the diagnosis was that the repository needed a
+search that parallelises and checkpoints. This session built one
+(§24.6). This is it, pointed at that question.
+
+```
+  record_hunt_par 4 28 10 10, budget 1e10 nodes, 4 threads, checkpointed
+    elapsed          7066 s wall (1 h 58 m)
+    CPU              26250 s = 7.3 CPU-hours, 4 workers at 93% each
+    verdict          none -- stopped by hand, budget not spent
+    root subproblems completed   0 of 210
+```
+
+It was **stopped**, not finished: the 10^10-node budget was still
+running when the session ended it, so this is not even "undecided at
+10^10 nodes" — it is "no verdict after 7.3 CPU-hours", which is a weaker
+statement and the only one the run supports.
+
+Two things it establishes, and only one of them is about the record.
+
+**The parallelism is real.** 372% CPU sustained across four workers with
+no lock contention visible — the "every prune is against the fixed
+target, so root subtrees share nothing" argument holds up in practice,
+not only on the small instances the differential test can exhaust twice.
+
+**The checkpointing, on this instance, is worth nothing.** Zero of the
+210 root subproblems finished in seven CPU-hours, so the frontier file
+stayed empty and a restart would have resumed from nothing. §24.6 already
+flagged root splitting as coarse at the top of the tree; the honest
+statement after running it is stronger than "coarse":
+
+> With singleton orbits, the first root subproblems are not merely larger
+> than the rest — at `(b, g) = (4, 10)` they are larger than any budget
+> this repository can afford. Root splitting buys the 4×. It does **not**
+> buy restart-resilience at this size, and treating it as though it does
+> is the same mistake §23.3 made in a new place.
+
+What would: splitting two levels deep (the pairs `(i, j)` of first and
+second taken orbit), which turns 210 subproblems into ~20000 and would
+have recorded thousands of them in the same seven hours. That is a small
+change and it is the first thing the next attempt should do.
+
+Also fixed, because it was the reason none of this was visible while it
+ran: `search_orbits_parallel` now spawns a monitor thread that reports
+nodes and completed roots every thirty seconds whenever a checkpoint is
+requested. A run that reports nothing until it returns cannot be
+distinguished from a hung one, and this run spent two hours in that
+state.
+
+### 24.12 The third case, as a hypothesis: `r*(3,3) ≤ 4` conditionally
+
+`coq/TwoCover.v`, eight more audited names, **and still no new axiom**.
+
+§24.10 proved `τ ≤ 2`. The remaining case is `τ = 3`, which is Frankl's
+theorem and which this development does not have. It enters as an
+explicit hypothesis, to the left of every arrow, so `make axiom-audit` is
+unchanged and `Print Assumptions` on every name in the file still reports
+"closed under the global context". The repository still has exactly one
+axiom.
+
+```coq
+  Definition TauThreeAtMost (K : nat) : Prop :=
+    forall G, Uniform 3 G -> (G intersecting) ->
+      (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->   (* τ ≥ 3 *)
+      length G <= K.
+
+  Theorem r_star_three_three_at_most_four :
+    TauThreeAtMost 16 -> SpreadYieldsDisjoint 3 3 4.
+```
+
+Three things about that statement are the point.
+
+**One: 16, not 10.** Frankl's theorem gives `|G| ≤ 10`; the split needs
+only 16, so the theorem is stated on the weaker hypothesis and Frankl is
+a corollary (`frankl_is_stronger_than_needed`,
+`r_star_three_three_at_most_four_from_frankl`). The gap the missing
+theorem has to fill is the interval `[16, 27]` — 27 being the elementary
+greedy bound for `τ = 3` that this development *could* prove and which is
+not enough.
+
+**Two: the arithmetic has no slack at all.** The split reads
+`|F| ≤ 3·r² + I(3,r)`, which at `r = 4` is `48 + I`, against `4³ = 64`.
+`48 + 16 = 64` exactly. The mutation `twocover-tau-three-seventeen`
+weakens the hypothesis to `TauThreeAtMost 17` and is killed: one more
+member and the theorem is false. The `m = 2` row of
+`SpreadYieldsDisjoint 3 3 4` is an equality too — the cover bound gives
+`2·2·4 = 16` against `4² = 16` — so nothing anywhere in this is loose.
+
+**Three: what had to be built to say it.** `split_with_piece`
+parameterises §24.2's split by the intersecting-piece bound instead of
+hard-wiring `intersecting_piece_bound`. That is the difference between 32
+and 16 at `(3,4)`, which is the difference between not closing and
+closing. And `covers_dec_search` makes "some two points cover `G`" a
+finite decision — the candidates can be taken from `concat G`, because a
+cover point lying in no member is useless — which is what lets the
+`τ ≤ 2` and `τ = 3` branches be separated constructively.
+
+**Where the sequence now stands.**
+
+```
+  m     r*(m,3)        by
+  1     = 2   exact
+  2     = 3   exact
+  3     in [3,4]       upper: TauThreeAtMost 16 (Frankl); lower: r = 2 refuted
+  4     in [3,7]       upper: quadratic / split threshold
+  5     in [3,8]
+  10    in [3,17]
+```
+
+`r*(3,3) ∈ [3,4]` is conditional and says so. Unconditionally it remains
+`[3,5]` from §24.2. Either way the first open term of the sequence that
+*is* the conjecture is now one value wide given one classical theorem,
+where this session found it three values wide and pointed at the wrong
+uniformity.
+
+### 24.13 `I(m,r)` as an extremal problem, and the crossover at `r = m+1`
+
+Everything from §24.9 on is really about one quantity, and it deserves
+its own name:
+
+> `I(m,r)` = the largest `m`-uniform **intersecting** family satisfying
+> Rao's condition `deg T ≤ r^(m-|T|)` for every nonempty `T`.
+
+Extremal problems for intersecting families under a bound on the
+*maximum degree* are studied (Frankl 1987; Huang–Zhao;
+Frankl–Han–Huang–Zhao; Kupavskii). The constraint here is different: a
+cap **at every level at once**, which is Rao's spread condition rather
+than a degree condition. I have not found this posed before.
+
+**What it decides.** §24.2's split reads `|F| ≤ m·r^(m-1) + I(m,r)`, so
+`SpreadYieldsDisjoint m 3 r` follows as soon as
+
+```
+  I(m,r)  ≤  r^m − m·r^(m-1)  =  r^(m-1)·(r − m).
+```
+
+Two readings, and the first is a limit of the method rather than of any
+bound on `I`:
+
+* **`r = m` is a hard floor.** There the right-hand side is zero while
+  `I ≥ 1` always (one member is an intersecting family). So this split
+  can never give `r*(m,3) ≤ m`, whatever is proved about the piece.
+  `split_cannot_reach_r_equals_m` is the identity `m·m^(m-1) = m^m`.
+* **At `r = m+1` the requirement is exactly "the star is extremal"** —
+  the right-hand side is `(m+1)^(m-1)`, the size of a star under the
+  point cap. `star_extremal_gives_m_plus_one`:
+
+  > if `I(m, n+1) ≤ (n+1)^(m-1)` for every `m ≤ n`, then
+  > `r*(n,3) ≤ n+1`.
+
+  **This is an implication, not an equivalence** — `r*(m,3) ≤ m+1` could
+  hold for reasons this split cannot see. `m+1` is linear with constant
+  1, against §24.2's `φ·m = 1.618 m`, and it is the best the two-way
+  split can ever give.
+
+**The measured crossover.** Both uniformities where `I` is computable put
+it at exactly `r = m+1`:
+
+```
+  m = 2    r        2   3   4   5      star = r
+           I(2,r)   3   3   4   5
+  m = 3    r        3   4              star = r²
+           I(3,r)  10  16
+```
+
+Below the crossover the star loses to a small design — the triangle at
+`m = 2`, `C([5],3)` at `m = 3`. From it on the star wins. That is not an
+accident of small cases: the star's size under the caps is `r^(m-1)`,
+**exponential in `m`**, while every classical intersecting family is
+polynomial or `~4^m`:
+
+```
+  m               2    3     4      5      6
+  C([2m-1],m)     3   10    35    126    462
+  PG(2,q), m=q+1  3    7    13     21     31
+  star at m+1     3   16   125   1296  16807
+```
+
+**The `m = 2` row, proved.** `two_uniform_intersecting_bound`:
+`I(2,r) ≤ max(r,3)`, by the same device as §24.10 — instead of "an
+intersecting graph is a star or a triangle", name an edge missing `a`
+*and* an edge missing `b`, which confines everything to the triangle
+`{ab, ac, bc}`. Hence `StarExtremalAt 2 r` for `r ≥ 3 = m+1`, and with
+the trivial `m = 1` case:
+
+> **`r_star_two_three_at_most_three : SpreadYieldsDisjoint 2 3 3`.**
+
+That is new to the development. Every general bound it has gives **4** at
+`m = 2` — `cover_spread_disjoint` (`2n`), `quadratic_spread_disjoint`,
+and §24.2's split all do. With `Audit.no_spread_yields_disjoint_2_3_2`
+refuting `r = 2`, the second term is now pinned in Coq at exactly
+`r*(2,3) = 3 = m+1`, where §22.3 had it certified only by exhaustive
+search. **On the one row where `I` is known in closed form, the
+star-extremal route is sharp and the general bounds are not.**
+
+**What is at stake.** `r*(1,3) = 2` and `r*(2,3) = 3` are exact and both
+equal `m+1`. If `r*(m,3) = m+1` in general the sequence is **unbounded**,
+and by §18.5 that means the spread reduction as formulated by ALWZ / Rao
+/ Bell–Chueluecha–Warnke cannot prove the sunflower conjecture at
+`k = 3`. It would not refute the conjecture; it would close the route.
+
+The pattern is decided at the third term by one finite object — the
+28-member family of §24.5, which this session searched for and did not
+find. And the two halves are not symmetric:
+
+* the **upper** half is within one classical theorem (§24.12), while
+* the **lower** half cannot be settled by this split at all, because
+  `r = m` is the floor above. Proving `r*(3,3) = 3` needs an argument the
+  development does not have.
+
+So the honest state of the third term is: nearly closed from above,
+untouched from below, and it is the lower half that decides whether the
+whole approach survives.
+
+### 24.14 The one-line verdict
+
+**The sequence that is the conjecture moved at three of its terms: an
+unconditional `r*(m,3) ≤ φ·m + O(1)`, a conditional `r*(3,3) ≤ 4` resting
+on one classical theorem and no new axiom, and an exact `r*(2,3) = 3` in
+Coq for the first time.**
+
+No new record object: the `iota(4,10) >= 28` attempt spent 7.3
+CPU-hours and was stopped without a verdict (§24.11), and what it
+established is about the instrument rather than the record — root splitting delivers its 4×
+and delivers **no** restart-resilience at this size.
+
+Two named lines are closed by argument rather than
+by budget — Gallai–Edmonds on links (§24.3, vacuous because `Δ ≤ 2` gets
+there first) and the counting ceiling below level `b-2` (§24.4, worse at
+every parameter where a record could live). The `r*(3,3) ≥ 4` search is
+**undecided** at `4·10⁹` nodes on each of grounds 10, 11 and 12, which
+is a cost, not a result; what it leaves behind is a verified 23-member
+object five short of a refutation, and the observation that the witness
+problem is finite with a 114-point ground bound.
+
+The lead worth taking next is not the search. §24.9 measured `I(m,r)`,
+the true maximum of the intersecting piece, at 10 against a bound of 21
+at `(3,3)` and at exactly the star at `(3,4)`; if the star is extremal in
+general, the split condition collapses from `r ≥ φ·m` to **`r ≥ m+1`**,
+the best this method can ever give. §24.10 then proved the `τ ≤ 2` half
+of that at `m = 3`: the star is extremal among two-covered families for
+every `r ≥ 4`, and `r = 4` is the exact crossover.
+
+§24.12 then discharged everything else: `r*(3,3) ≤ 4` is a theorem of
+this development **conditional on one hypothesis and no new axiom** —
+that a 3-uniform intersecting family of covering number 3 has at most 16
+members, which Frankl's theorem gives with room to spare (it gives 10)
+and which the elementary greedy bound (27) does not.
+
+§24.13 then names the quantity all of that turns on — `I(m,r)`, the
+largest intersecting family under Rao's condition — measures its
+crossover at exactly `r = m+1` at both uniformities where it is
+computable, proves the `m = 2` row in closed form, and gets
+`r*(2,3) ≤ 3` out of it: the **exact** second term, where every general
+bound in the development gives 4.
+
+That is the session's real output: not the search, which decided nothing
+at either question it was asked, but an unconditional threshold theorem,
+a conditional one closing the third term to a single value, an exact
+second term, and a well-posed extremal question — `is the star extremal
+for intersecting families under Rao's condition once r ≥ m+1?` — whose
+answer decides whether the spread route to `k = 3` survives at all.

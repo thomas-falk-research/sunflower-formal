@@ -888,3 +888,210 @@ Proof.
   replace 2402 with (S (7 ^ 4)) by reflexivity.
   apply (@spread_reduction 4 3 7); [lia | lia | apply r_star_four_at_most_seven | lia].
 Qed.
+
+(** * The degree-sum split: [r*(m,3) ≤ φ·m + O(1)]
+
+    [quadratic_no_three_disjoint_bound] splits the family three ways
+    against a matching [{A, B}] and bounds each piece separately. That
+    split throws away the one quantity Rao's condition makes cheap: the
+    [m] point degrees *inside a single member* have never been summed.
+    Doing so gives a **two-way** split that is both simpler and sharper.
+
+    Against a single member [A] the family divides into
+
+    - [{C : C ∩ A ≠ ∅}] — covered by the [m] points of [A], so at most
+      [m·r^(m-1)] by [cover_by_points] and [rao_point];
+    - [{C : C ∩ A = ∅}] — which must meet [B] (else [A], [B], [C] are
+      three pairwise disjoint) and is intersecting by
+      [miss_member_intersecting], so [intersecting_piece_bound] applies
+      with [B] as its anchor.
+
+    No third piece, and the cross piece — the one the quadratic bound
+    charges [m²·r^(m-2)] for — is absorbed into the cover count at no
+    cost. The result is
+
+<<
+      |F| ≤ m·r^(m-1) + (r^(m-1) + (m-1)²·r^(m-2))
+          = (m+1)·r^(m-1) + (m-1)²·r^(m-2),
+>>
+
+    so [r^m] dominates as soon as [(m+1)·r + (m-1)² ≤ r²], i.e.
+
+<<
+      r ≥ ((m+1) + √((m+1)² + 4(m-1)²)) / 2  →  m·(1+√5)/2 = φ·m,
+>>
+
+    against the [√3·m = 1.732 m] of [quadratic_spread_disjoint]. The new
+    condition is implied by the old one at every [(m, r)]
+    (`rust/tests/spread_threshold.rs` pins that over a grid), so this is
+    a strict improvement, and it moves four rows of the table:
+    [r*(3,3) ≤ 5], [r*(5,3) ≤ 8], [r*(6,3) ≤ 10], [r*(10,3) ≤ 17].
+
+    **Where this sits relative to the literature.** Through
+    [spread_reduction] the bound gives [f(m,3) ≤ (φm)^m + 1], which is
+    *worse* than the [m!·2^m + 1 ≈ (0.74m)^m] of Erdős–Rado 1960 and far
+    worse than the [(O(log m))^m] of ALWZ / Rao /
+    Bell–Chueluecha–Warnke. It is not a competitive bound on [f] and must
+    not be quoted as one. Its content is about the sequence [r*(m,3)]
+    itself, whose boundedness in [m] is the conjecture at [k = 3]: the
+    first *open* term of that sequence is [m = 3], and this narrows it
+    from [[3,6]] to [[3,5]]. *)
+
+Theorem split_no_three_disjoint_bound :
+  forall m r (F : Family),
+    2 <= m -> m - 1 <= r ->
+    Uniform m F -> RaoSpread m F r ->
+    NoKDisjoint 3 F ->
+    length F <= m * r ^ (m - 1)
+                + (r ^ (m - 1) + (m - 1) * (m - 1) * r ^ (m - 2)).
+Proof.
+  intros m r F Hm Hr HU HR Hno.
+  assert (Hne : forall A, In A F -> A <> []).
+  { intros A HA; destruct (@uniform_mem m F A HU HA) as [Hlen _].
+    destruct A as [|a A']; [simpl in Hlen; lia | discriminate]. }
+  destruct (existsb (fun A => existsb (fun B => disjointb A B) F) F) eqn:Hex.
+  - (* the family has a matching of size two *)
+    apply existsb_exists in Hex as [A [HA HB']].
+    apply existsb_exists in HB' as [B [HB HABb]].
+    apply disjointb_correct in HABb.
+    destruct (@uniform_mem m F A HU HA) as [HAlen HAnd].
+    destruct (@uniform_mem m F B HU HB) as [HBlen HBnd].
+    set (f := fun C : list nat => disjointb C A).
+    assert (Hsplit : length F = length (filter f F)
+                                + length (filter (fun C => negb (f C)) F))
+      by apply length_filter_partition.
+    (* the piece meeting A is covered by the m points of A *)
+    assert (HM : length (filter (fun C => negb (f C)) F) <= m * r ^ (m - 1)).
+    { assert (HMA : length (filter (fun C => negb (f C)) F)
+                    <= length A * r ^ (m - 1)).
+      { apply cover_by_points.
+        - intros C HC; apply filter_In in HC as [_ HCf].
+          apply Bool.negb_true_iff in HCf; unfold f in HCf.
+          apply meets_of_not_disjointb; exact HCf.
+        - intros x _.
+          eapply Nat.le_trans; [apply deg_filter_le | eapply rao_point; exact HR]. }
+      rewrite HAlen in HMA; exact HMA. }
+    (* the piece missing A meets B, and is intersecting *)
+    assert (HP : length (filter f F)
+                 <= r ^ (m - 1) + (m - 1) * (m - 1) * r ^ (m - 2)).
+    { apply (@intersecting_piece_bound m r (filter f F) B); try assumption.
+      - apply uniform_filter; exact HU.
+      - intros T HT HTn.
+        eapply Nat.le_trans; [apply deg_filter_le | apply HR; assumption].
+      - intros C HC; apply filter_In in HC as [HCF HCf].
+        unfold f in HCf; apply disjointb_correct in HCf.
+        destruct (disjointb C B) eqn:ECB.
+        + exfalso; apply disjointb_correct in ECB.
+          apply Hno; exact (@three_disjoint_witness F C A B HCF HA HB
+                              (Hne C HCF) (Hne A HA) (Hne B HB) HCf ECB HABb).
+        + apply meets_of_not_disjointb; exact ECB.
+      - intros C D HC HD.
+        apply filter_In in HC as [HCF HCf]; apply filter_In in HD as [HDF HDf].
+        unfold f in HCf, HDf.
+        apply disjointb_correct in HCf; apply disjointb_correct in HDf.
+        destruct (disjointb C D) eqn:ECD.
+        + exfalso; apply disjointb_correct in ECD.
+          exact (@miss_member_intersecting m F A C D ltac:(lia) HU Hno
+                   HA HCF HDF HCf HDf ECD).
+        + apply disjointb_false_iff in ECD as [x [HxC HxD]].
+          exists x; split; assumption. }
+    lia.
+  - (* the family is intersecting: the second piece is the whole family *)
+    destruct F as [|A0 F0]; [simpl length; apply Nat.le_0_l|].
+    assert (HA0 : In A0 (A0 :: F0)) by (left; reflexivity).
+    destruct (@uniform_mem m (A0 :: F0) A0 HU HA0) as [HA0len HA0nd].
+    assert (Hint : forall C D, In C (A0 :: F0) -> In D (A0 :: F0) ->
+                     exists x, In x C /\ In x D).
+    { intros C D HC HD.
+      destruct (disjointb C D) eqn:ECD.
+      - exfalso.
+        assert (Hcontra : existsb
+                  (fun A => existsb (fun B => disjointb A B) (A0 :: F0)) (A0 :: F0)
+                = true).
+        { apply existsb_exists; exists C; split; [exact HC|].
+          apply existsb_exists; exists D; split; [exact HD | exact ECD]. }
+        congruence.
+      - apply disjointb_false_iff in ECD as [x [HxC HxD]].
+        exists x; split; assumption. }
+    assert (HB : length (A0 :: F0)
+                 <= r ^ (m - 1) + (m - 1) * (m - 1) * r ^ (m - 2)).
+    { apply (@intersecting_piece_bound m r (A0 :: F0) A0); try assumption.
+      intros C HC; destruct (Hint C A0 HC HA0) as [x [HxC HxA0]].
+      exists x; split; assumption. }
+    lia.
+Qed.
+
+(** ** The threshold
+
+    [(m+1)·r + (m-1)² ≤ r²] is monotone in [m], so asking it at [n]
+    covers every [m ≤ n]. *)
+
+Theorem split_spread_disjoint :
+  forall n r,
+    1 <= n -> 1 <= r ->
+    (n + 1) * r + (n - 1) * (n - 1) <= r * r ->
+    SpreadYieldsDisjoint n 3 r.
+Proof.
+  intros n r Hn Hr1 Hcond m F Hm Hmn HU HD Hsize HR.
+  destruct (@decide_three_disjoint m F ltac:(lia) HU) as [Hyes|Hno];
+    [exact Hyes | exfalso].
+  (* the condition at n implies the condition at every m <= n *)
+  assert (Hsub : m - 1 <= n - 1) by lia.
+  assert (Hcm : (m + 1) * r + (m - 1) * (m - 1) <= r * r) by nia.
+  destruct (Nat.eq_dec m 1) as [Hm1|Hm2].
+  - subst m.
+    assert (Hb : length F <= 2 * 1 * r ^ (1 - 1))
+      by (eapply no_three_disjoint_cover_bound; eauto).
+    simpl in Hb, Hsize.
+    (* at m = 1 the condition reads 2r <= r², so r >= 2, but |F| <= 2 *)
+    assert (2 <= r) by nia.
+    lia.
+  - assert (Hm2' : 2 <= m) by lia.
+    assert (Hr1' : m - 1 <= r).
+    { destruct (le_lt_dec (m - 1) r) as [H|H]; [exact H | exfalso; nia]. }
+    pose proof (@split_no_three_disjoint_bound m r F Hm2' Hr1' HU HR Hno) as Hb.
+    assert (E1 : r ^ (m - 1) = r * r ^ (m - 2))
+      by (replace (m - 1) with (S (m - 2)) by lia; reflexivity).
+    assert (E2 : r ^ m = r * (r * r ^ (m - 2))).
+    { replace m with (S (S (m - 2))) at 1 by lia; reflexivity. }
+    rewrite E1 in Hb.
+    set (p := r ^ (m - 2)) in *.
+    (* |F| <= ((m+1)r + (m-1)²)·p <= r²·p = r^m *)
+    assert (Hle : m * (r * p) + (r * p + (m - 1) * (m - 1) * p)
+                  <= r * (r * p)) by nia.
+    lia.
+Qed.
+
+(** The four rows that move. Each is strictly below what
+    [quadratic_spread_disjoint] gives at the same [n]: 6, 9, 11, 18. *)
+
+Corollary r_star_three_at_most_five : SpreadYieldsDisjoint 3 3 5.
+Proof. apply split_spread_disjoint; lia. Qed.
+
+Corollary r_star_five_at_most_eight : SpreadYieldsDisjoint 5 3 8.
+Proof. apply split_spread_disjoint; lia. Qed.
+
+Corollary r_star_six_at_most_ten : SpreadYieldsDisjoint 6 3 10.
+Proof. apply split_spread_disjoint; lia. Qed.
+
+Corollary r_star_ten_at_most_seventeen : SpreadYieldsDisjoint 10 3 17.
+Proof. apply split_spread_disjoint; lia. Qed.
+
+(** [r*(4,3) ≤ 7] again, by the new route: [5·7 + 9 = 44 ≤ 49]. The
+    quadratic bound also gives 7 here; [m = 2] and [m = 4] are the two
+    rows where the bounds agree, and from [m = 5] on the new one is
+    strictly better at every uniformity. *)
+
+Corollary r_star_four_at_most_seven_by_split : SpreadYieldsDisjoint 4 3 7.
+Proof. apply split_spread_disjoint; lia. Qed.
+
+(** The sunflower number the sharpened threshold yields at [m = 3].
+    [spread_reduction] turns [r*(3,3) ≤ 5] into [f(3,3) ≤ 5^3 + 1 = 126].
+    That is far behind [Sharp]'s exact small-case work — the point is the
+    threshold, not the number. *)
+
+Corollary f_three_three_from_split_threshold : UpperBound 3 3 126.
+Proof.
+  replace 126 with (S (5 ^ 3)) by reflexivity.
+  apply (@spread_reduction 3 3 5); [lia | lia | apply r_star_three_at_most_five | lia].
+Qed.

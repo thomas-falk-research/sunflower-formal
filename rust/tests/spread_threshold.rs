@@ -19,8 +19,8 @@
 //!   solved values are what `docs/roadmap.md` §22 tabulates.
 
 use sunflower_formal::rstar::{
-    cover_bound, decide, degree_ceiling, dfs, min_ground, quadratic_bound, verify, Outcome,
-    Question, Ternary,
+    best_bound, cover_bound, decide, degree_ceiling, dfs, max_intersecting_piece, min_ground,
+    quadratic_bound, split_bound, verify, Outcome, Question, Ternary,
 };
 use sunflower_formal::spread::{has_k_disjoint, is_rao_spread, matching_number, Mask};
 
@@ -265,4 +265,427 @@ fn counterexamples_satisfy_the_quantifier_over_all_subsets() {
         let cap = 2u64.pow(3u32.saturating_sub(t.count_ones()));
         assert!(d <= cap, "subset {t:b} has degree {d} > {cap}");
     }
+}
+
+
+/// The degree-sum split bound, and the four rows of §22.1's table it
+/// moves.
+///
+/// `split_bound` solves the condition of
+/// `SpreadThreshold.split_spread_disjoint`, `(m+1)r + (m-1)² ≤ r²`. The
+/// Coq corollaries are `r_star_three_at_most_five`,
+/// `r_star_five_at_most_eight`, `r_star_six_at_most_ten` and
+/// `r_star_ten_at_most_seventeen`; each is strictly below what
+/// `quadratic_spread_disjoint` gives at the same `n`.
+#[test]
+fn the_split_bound_moves_four_rows_of_the_threshold_table() {
+    // (m, quadratic, split)
+    let table = [
+        (1u64, 3u64, 2u64),
+        (2, 4, 4),
+        (3, 6, 5),
+        (4, 7, 7),
+        (5, 9, 8),
+        (6, 11, 10),
+        (7, 13, 12),
+        (8, 14, 13),
+        (10, 18, 17),
+        (15, 26, 25),
+        (20, 35, 33),
+    ];
+    for (m, quadratic, split) in table {
+        assert_eq!(quadratic_bound(m), quadratic, "quadratic bound at m = {m}");
+        assert_eq!(split_bound(m), split, "split bound at m = {m}");
+        assert_eq!(best_bound(m), quadratic.min(split), "best bound at m = {m}");
+    }
+
+    // The Coq condition holds at exactly the quoted r and fails one below,
+    // so each corollary is the threshold of the argument, not merely
+    // sufficient.
+    for (m, r) in [(3u64, 5u64), (5, 8), (6, 10), (10, 17)] {
+        assert!(
+            (m + 1) * r + (m - 1) * (m - 1) <= r * r,
+            "split condition should hold at (m, r) = ({m}, {r})"
+        );
+        let below = r - 1;
+        assert!(
+            (m + 1) * below + (m - 1) * (m - 1) > below * below,
+            "split condition should fail at (m, r) = ({m}, {below})"
+        );
+    }
+
+    // At m = 1 the split bound is 2, which is the exact value of r*(1,3):
+    // `one_is_refuted_at_every_uniformity` refutes r = 1.
+    assert_eq!(split_bound(1), 2);
+}
+
+/// The split bound is never worse than the quadratic one, at any `m`.
+///
+/// This is the claim that makes it a strict improvement rather than a
+/// second incomparable bound: the LP over the three pieces has its
+/// optimum at `2P + min(Q, S - P)`, and `quadratic_no_three_disjoint_bound`
+/// is the `Q` branch while `split_no_three_disjoint_bound` is the `S - P`
+/// branch, so whichever is smaller is the one that binds.
+#[test]
+fn split_bound_is_never_worse() {
+    for m in 1u64..=400 {
+        assert!(
+            split_bound(m) <= quadratic_bound(m),
+            "split bound {} should not exceed quadratic bound {} at m = {m}",
+            split_bound(m),
+            quadratic_bound(m)
+        );
+    }
+    // Strictly better at every m from 5 on, and at m = 3.
+    assert!(split_bound(3) < quadratic_bound(3));
+    for m in 5u64..=400 {
+        assert!(
+            split_bound(m) < quadratic_bound(m),
+            "split bound should be strictly better at m = {m}"
+        );
+    }
+    // The asymptotic constants: φ = 1.618... against √3 = 1.732...
+    assert_eq!(split_bound(1000), 1618);
+    assert_eq!(quadratic_bound(1000), 1732);
+}
+
+/// The bound the split threshold yields on the sunflower number itself,
+/// and where it stands.
+///
+/// `spread_reduction` turns `r*(3,3) <= 5` into `f(3,3) <= 5^3 + 1 = 126`
+/// (`SpreadThreshold.f_three_three_from_split_threshold`). That is a
+/// **worse** bound than Erdős–Rado 1960's `m!·2^m + 1`, which at `m = 3`
+/// is `6·8 + 1 = 49`, and both are far behind `Sharp`'s exact small-case
+/// work. The threshold is the result; the sunflower number is not.
+#[test]
+fn the_split_threshold_is_behind_erdos_rado_as_a_bound_on_f() {
+    let split_f = split_bound(3).pow(3) + 1;
+    assert_eq!(split_f, 126);
+    let erdos_rado = (1..=3u64).product::<u64>() * 2u64.pow(3) + 1;
+    assert_eq!(erdos_rado, 49);
+    assert!(
+        erdos_rado < split_f,
+        "Erdős–Rado 1960 is the better bound on f(3,3), and must be quoted as such"
+    );
+    // The same at every uniformity that fits in u64: the threshold route
+    // gives (φm)^m, Erdős–Rado gives (2m/e)^m, and φ > 2/e.
+    for m in 3u32..=12 {
+        let split_f = (split_bound(m as u64) as u128).pow(m);
+        let er = (1..=m as u128).product::<u128>() * 2u128.pow(m);
+        assert!(er < split_f, "Erdős–Rado should win at m = {m}");
+    }
+}
+
+/// How close the `r*(3,3) >= 4` witness problem gets, as an object
+/// rather than a number.
+///
+/// `SpreadYieldsDisjoint 3 3 3` fails exactly when there is a 3-uniform
+/// family with at least 28 members, `deg <= 9`, `deg_pair <= 3`, and no
+/// three pairwise disjoint members. This is the largest such family the
+/// depth-first search met at ground 12 within 4·10^8 nodes: **23
+/// members, five short**, and it saturates *both* degree caps at once.
+///
+/// It is pinned rather than re-searched, and re-checked here against
+/// `Spread.RaoSpread`, the matching number and the uniformity by code
+/// that shares nothing with the search that found it. The deeper
+/// 4·10^9-node runs reported a largest of 24 at ground 12 — that number
+/// has no object behind it in this repository and is not pinned.
+#[test]
+fn the_r_star_three_three_witness_problem_reaches_twenty_three() {
+    const F: [Mask; 23] = [
+        7, 56, 11, 13, 14, 19, 21, 22, 25, 42, 44, 88, 161, 194, 196, 224, 289, 322, 324, 352, 545,
+        578, 580,
+    ];
+    let q = Question::new(3, 3, 10);
+    assert_eq!(q.target(), 28, "a witness needs 3^3 + 1 members");
+
+    assert!(F.iter().all(|a| a.count_ones() == 3), "3-uniform");
+    let mut seen = F.to_vec();
+    seen.sort_unstable();
+    seen.dedup();
+    assert_eq!(seen.len(), F.len(), "distinct");
+
+    // The two RaoSpread caps, and both are tight.
+    assert!(is_rao_spread(3, &F, 3, 10), "3-spread at uniformity 3");
+    let deg = |t: Mask| F.iter().filter(|&&a| a & t == t).count();
+    assert_eq!((0..10).map(|i| deg(1 << i)).max().unwrap(), 9, "point cap 9 is attained");
+    let pairs = (0..10).flat_map(|i| (i + 1..10).map(move |j| (1 << i) | (1 << j)));
+    assert_eq!(pairs.map(deg).max().unwrap(), 3, "pair cap 3 is attained");
+
+    // No three pairwise disjoint members, and two disjoint ones do exist.
+    assert!(!has_k_disjoint(&F, 3));
+    assert_eq!(matching_number(&F), 2);
+
+    // Covering number 4. `nu <= 2` forces `tau <= 6`, and a 3-point cover
+    // would cap the family at 3*9 = 27 < 28, so any witness needs
+    // `tau >= 4`. This object already satisfies that -- the condition is
+    // necessary but does not discriminate, which is the point of
+    // recording it.
+    let covers = |t: Mask| F.iter().all(|&a| a & t != 0);
+    let tau = (1u32..=6)
+        .find(|&k| {
+            (0u32..(1 << 10)).any(|t| (t as u32).count_ones() == k && covers(t as Mask))
+        })
+        .expect("nu <= 2 forces a cover of at most six points");
+    assert_eq!(tau, 4, "covering number of the 23-member object");
+
+    // Five short of a refutation, which is the whole point of pinning it.
+    assert_eq!(F.len(), 23);
+    assert!((F.len() as u64) < q.target(), "not a counterexample, and not claimed as one");
+}
+
+/// How much slack is in `intersecting_piece_bound`, measured.
+///
+/// `SpreadThreshold.split_no_three_disjoint_bound` reads
+/// `|F| <= m·r^(m-1) + I(m,r)`, where `I(m,r)` is the largest
+/// `m`-uniform **intersecting** family satisfying Rao's condition, and
+/// `intersecting_piece_bound` supplies `r^(m-1) + (m-1)²·r^(m-2)` for
+/// it. Every unit between the true `I` and that bound is a unit the
+/// threshold could come down by, so the gap is worth knowing before
+/// anyone tries to prove a sharper bound.
+///
+/// It is a factor of two.
+#[test]
+fn the_intersecting_piece_bound_has_a_factor_of_two_of_slack() {
+    // (m, r, ground, exact maximum) -- every row exhausted.
+    let rows = [
+        (3u32, 3u64, 5u32, 10usize),
+        (3, 3, 6, 10),
+        (3, 3, 7, 10),
+        (3, 3, 8, 10),
+        (3, 4, 5, 10),
+        (3, 4, 6, 10),
+        (3, 4, 7, 12),
+        (3, 4, 8, 14),
+    ];
+    for (m, r, g, expect) in rows {
+        let (max, fam, _nodes, exhaustive) = max_intersecting_piece(m, r, g, u64::MAX);
+        assert!(exhaustive, "({m},{r},{g}) should exhaust");
+        assert_eq!(max, expect, "max intersecting piece at (m,r,ground)=({m},{r},{g})");
+        assert_eq!(fam.len(), max);
+        // The witness really is intersecting and really is Rao-spread.
+        for (i, &a) in fam.iter().enumerate() {
+            assert_eq!(a.count_ones(), m);
+            for &b in fam.iter().skip(i + 1) {
+                assert_ne!(a & b, 0, "the witness must be intersecting");
+            }
+        }
+        assert!(is_rao_spread(m, &fam, r, g));
+    }
+
+    // The bound the development proves, against the truth.
+    let piece_bound = |m: u64, r: u64| r.pow(m as u32 - 1) + (m - 1) * (m - 1) * r.pow(m as u32 - 2);
+    assert_eq!(piece_bound(3, 3), 21);
+    assert_eq!(piece_bound(3, 4), 32);
+    // At (3,3) the truth is 10 against 21, and it *exceeds* the star (9):
+    // C([5],3) is intersecting with deg 6 and pair-degree 3, so it fits
+    // under both caps and beats every star.
+    assert_eq!(max_intersecting_piece(3, 3, 8, u64::MAX).0, 10);
+    assert!(10 > 3u64.pow(2), "C([5],3) beats the star at (3,3)");
+}
+
+/// What closing that gap would buy, as arithmetic rather than as hope.
+///
+/// If `I(m,r)` were the star `r^(m-1)`, the split condition
+/// `m·r^(m-1) + I <= r^m` would read `(m+1)·r^(m-1) <= r^m`, i.e.
+/// **`r >= m+1`** — linear with constant 1, against the `φ·m` proved
+/// this session. And `r = m` is a hard floor for the method whatever `I`
+/// is, because `m·r^(m-1)` alone already equals `r^m` there.
+#[test]
+fn the_star_would_give_r_star_at_most_m_plus_one() {
+    for m in 2u64..=40 {
+        let r = m + 1;
+        // With I = star, the split closes at r = m+1 ...
+        assert!(
+            m * r.pow(m as u32 - 1) + r.pow(m as u32 - 1) <= r.pow(m as u32),
+            "star-sized piece should close the split at (m, m+1) = ({m}, {r})"
+        );
+        // ... and never at r = m, whatever I is, since I >= 1.
+        let r = m;
+        assert_eq!(
+            m * r.pow(m as u32 - 1),
+            r.pow(m as u32),
+            "at r = m the cover term alone is r^m, so no I can help"
+        );
+        // m+1 is below the golden-ratio bound from m = 3 on.
+        if m >= 3 {
+            assert!(m + 1 < split_bound(m), "m+1 beats the proved bound at m = {m}");
+        }
+    }
+    assert_eq!(split_bound(3), 5);
+    assert_eq!(split_bound(10), 17); // against 11
+}
+
+/// The two-point-cover case, proved: `TwoCover.two_cover_star_extremal`.
+///
+/// An intersecting 3-uniform Rao-spread family covered by two points has
+/// at most `max(4r, 3r+4)` members — the first branch when some point
+/// other than the cover point is common to the whole `p`-side, the
+/// second when none is. That is at most `r²` — the size of a star —
+/// exactly when `r >= 4`, which is what
+/// `TwoCover.covered_by_two_at_most_star` states.
+///
+/// `r = 4` is the crossover and it is sharp on both sides: at `r = 3`
+/// the bound is 13 against `r² = 9`, and the star really is not extremal
+/// there — §24.9 measures the true maximum as 10, attained by `C([5],3)`,
+/// which has covering number **3** and so is exactly the case the Coq
+/// file does not cover.
+#[test]
+fn the_two_cover_bound_makes_the_star_extremal_from_four_on() {
+    let bound = |r: u64| (4 * r).max(3 * r + 4);
+    // (r, max(4r, 3r+4), r^2)
+    let table = [
+        (2u64, 10u64, 4u64),
+        (3, 13, 9),
+        (4, 16, 16),
+        (5, 20, 25),
+        (6, 24, 36),
+        (10, 40, 100),
+    ];
+    for (r, b, sq) in table {
+        assert_eq!(bound(r), b, "two-cover bound at r = {r}");
+        assert_eq!(r * r, sq);
+        assert_eq!(b <= sq, r >= 4, "the star is extremal exactly from r = 4 on");
+    }
+    for r in 4u64..=200 {
+        assert!(bound(r) <= r * r, "star extremal at r = {r}");
+    }
+    for r in 1u64..=3 {
+        assert!(bound(r) > r * r, "star not extremal at r = {r}");
+    }
+
+    // At r = 4 the bound is exactly the star, and exactly the measured
+    // maximum of the whole intersecting piece.
+    assert_eq!(bound(4), 16);
+    assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
+
+    // At r = 3 the measured maximum is 10, which exceeds the star (9) and
+    // sits below the two-cover bound (13) — consistent, because the
+    // object that attains it has covering number 3.
+    assert_eq!(max_intersecting_piece(3, 3, 8, u64::MAX).0, 10);
+    assert!(10 > 3 * 3 && 10 <= bound(3));
+
+    // What is still missing, as arithmetic: to conclude I(3,4) <= 16 and
+    // hence r*(3,3) <= 4, the tau = 3 case needs <= 16. The elementary
+    // greedy bound for tau = 3 is 3^3 = 27; Frankl's theorem gives 10.
+    assert!(27 > 16, "the elementary tau=3 bound is not enough");
+    assert!(10 <= 16, "Frankl's bound would be enough");
+    assert_eq!(3 * 16 + 16, 64, "3*r^(m-1) + I = r^m at (m,r) = (3,4)");
+}
+
+/// The arithmetic behind `TwoCover.r_star_three_three_at_most_four`, and
+/// how much of Frankl's theorem it actually uses.
+///
+/// The split reads `|F| <= 3·r² + I(3,r)`. At `r = 4` that is `48 + I`,
+/// and `SpreadYieldsDisjoint 3 3 4` needs `4³ = 64` to be an upper bound.
+/// So `I(3,4) <= 16` is exactly enough and `17` is exactly one too many —
+/// the arithmetic has **no slack at all**, which is why the theorem is
+/// stated on `TauThreeAtMost 16` rather than on Frankl's 10.
+///
+/// The room between 10 and 16 is room in the hypothesis, not in the
+/// bound: any τ=3 bound of 16 or better closes it, and the elementary
+/// greedy bound of `3³ = 27` does not.
+#[test]
+fn the_conditional_r_star_three_three_bound_has_no_slack() {
+    let split = |r: u64, i: u64| 3 * r * r + i;
+    assert_eq!(split(4, 16), 64);
+    assert_eq!(4u64.pow(3), 64);
+    assert!(split(4, 16) <= 4u64.pow(3), "16 closes it");
+    assert!(split(4, 17) > 4u64.pow(3), "17 does not");
+
+    // The three uniformities `SpreadYieldsDisjoint 3 3 4` quantifies over.
+    // m = 1 and m = 2 come from the cover bound 2m·r^(m-1); m = 2 is also
+    // an equality, so that row is as tight as the m = 3 one.
+    for (m, cover) in [(1u32, 2 * 1 * 4u64.pow(0)), (2, 2 * 2 * 4u64.pow(1))] {
+        assert!(cover <= 4u64.pow(m), "cover bound closes m = {m}");
+    }
+    assert_eq!(2 * 2 * 4u64.pow(1), 4u64.pow(2), "m = 2 is an equality");
+
+    // Where the assumed constant sits between what is provable and what
+    // is needed.
+    let frankl = 10u64;
+    let needed = 16u64;
+    let greedy = 3u64.pow(3);
+    assert!(frankl <= needed, "Frankl's bound is stronger than needed");
+    assert!(greedy > needed, "the elementary greedy bound is not enough");
+    assert_eq!((frankl, needed, greedy), (10, 16, 27));
+
+    // And the measured maximum of the whole intersecting piece at (3,4)
+    // is 16 — consistent with, and no better than, what the hypothesis
+    // asserts about its τ = 3 part.
+    assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
+}
+
+/// `I(m,r)` as an extremal problem, and the crossover at `r = m+1`.
+///
+/// `I(m,r)` is the largest `m`-uniform **intersecting** family satisfying
+/// Rao's condition. §24.2's split gives
+/// `SpreadYieldsDisjoint m 3 r` as soon as `I(m,r) <= r^(m-1)·(r-m)`, so:
+///
+/// * **`r = m` is a hard floor** — the requirement is `I <= 0` and `I >= 1`
+///   always, so no bound on the piece can push this method below `m+1`.
+/// * **at `r = m+1` the requirement is exactly `I <= r^(m-1)`**, the size
+///   of a star.
+///
+/// Measured, the star becomes extremal at exactly `r = m+1` at both
+/// uniformities where `I` is computable. The `m = 2` row is also proved
+/// outright in `TwoCover.two_uniform_intersecting_bound`
+/// (`I(2,r) = max(r,3)`).
+#[test]
+fn the_star_becomes_extremal_at_exactly_r_equals_m_plus_one() {
+    // m = 2, exhaustive at ground 9 (the star needs only r+1 points).
+    for (r, expect) in [(2u64, 3usize), (3, 3), (4, 4), (5, 5)] {
+        let (max, _fam, _n, exhaustive) = max_intersecting_piece(2, r, 9, u64::MAX);
+        assert!(exhaustive, "(2,{r}) should exhaust");
+        assert_eq!(max, expect, "I(2,{r})");
+        let star = r as usize; // r^(m-1) = r
+        assert_eq!(max >= star, true);
+        assert_eq!(max == star, r >= 3, "star extremal at m=2 exactly from r = 3 = m+1");
+        // and the proved closed form
+        assert_eq!(max, (r as usize).max(3), "I(2,r) = max(r,3)");
+    }
+
+    // m = 3: 10 > 9 at r = 3, 16 = 16 at r = 4 = m+1.
+    assert_eq!(max_intersecting_piece(3, 3, 8, u64::MAX).0, 10);
+    assert!(10 > 3usize.pow(2), "the star loses at (3,3)");
+    assert_eq!(max_intersecting_piece(3, 4, 9, u64::MAX).0, 16);
+    assert_eq!(16, 4usize.pow(2), "the star ties at (3,4) = (m, m+1)");
+
+    // The hard floor: at r = m the cover term alone is already r^m, so
+    // the requirement on I is 0 and no piece bound can help.
+    for m in 1u64..=12 {
+        assert_eq!(m * m.pow(m as u32 - 1), m.pow(m as u32));
+        // and at r = m+1 the requirement is exactly the star
+        let r = m + 1;
+        assert_eq!(r.pow(m as u32) - m * r.pow(m as u32 - 1), r.pow(m as u32 - 1));
+    }
+}
+
+/// `r*(2,3) = 3`, now a Coq theorem on both sides — and the general
+/// bounds all miss it by one.
+///
+/// `Audit.no_spread_yields_disjoint_2_3_2` refutes `r = 2`;
+/// `TwoCover.r_star_two_three_at_most_three` proves `r = 3` works, via
+/// the star-extremal route. Every general bound the development has gives
+/// **4** at `m = 2`: the cover bound `2n`, `quadratic_spread_disjoint`,
+/// and §24.2's split. So on the one row where `I` is known in closed
+/// form, the new route is sharp where the general ones are not.
+#[test]
+fn the_star_route_is_sharp_at_uniformity_two() {
+    assert_eq!(cover_bound(2), 4);
+    assert_eq!(quadratic_bound(2), 4);
+    assert_eq!(split_bound(2), 4);
+    assert_eq!(best_bound(2), 4);
+    // the star-extremal route gives 3, and 3 is the truth
+    let star_route = 2u64 + 1;
+    assert_eq!(star_route, 3);
+    assert!(star_route < best_bound(2), "sharp where the general bounds are not");
+
+    // The witness refuting r = 2 is already pinned above: a 5-cycle.
+    // Five edges, max degree 2, matching number 2, and 5 > 2^2.
+    const C5: [Mask; 5] = [3, 5, 12, 18, 24];
+    let q = Question::new(2, 2, 6);
+    verify(&C5, &q).expect("the 5-cycle refutes r = 2 at m = 2");
+    assert_eq!(C5.len(), 5);
+    assert!(5 > 2u64.pow(2));
 }

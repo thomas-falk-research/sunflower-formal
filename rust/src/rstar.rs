@@ -540,6 +540,31 @@ pub fn cover_bound(m: u64) -> u64 {
     2 * m
 }
 
+/// The degree-sum split bound of `SpreadThreshold.split_spread_disjoint`:
+/// splitting on a single member `A` gives `|F| <= m·r^(m-1)` for the part
+/// meeting `A` (the `m` points of `A` cover it, and each carries at most
+/// `r^(m-1)` members) plus `intersecting_piece_bound` for the part missing
+/// it, so a counterexample needs `r^2 < (m+1)r + (m-1)^2`.
+///
+/// Asymptotically this is `m·(1+√5)/2 = φ·m` against the `√3·m` of
+/// `quadratic_bound`; `split_bound_is_never_worse` pins that it dominates
+/// pointwise as well.
+pub fn split_bound(m: u64) -> u64 {
+    let rhs = (m - 1) * (m - 1);
+    let mut r = 1u64;
+    while r * r < (m + 1) * r + rhs {
+        r += 1;
+    }
+    r
+}
+
+/// The best upper bound on `r*(m,3)` the development proves: both
+/// `quadratic_spread_disjoint` and `split_spread_disjoint` are theorems, so
+/// the smaller of the two is available at every `m`.
+pub fn best_bound(m: u64) -> u64 {
+    quadratic_bound(m).min(split_bound(m))
+}
+
 /* ------------------------------------------------------------------ */
 /* An exhaustive depth-first search, for the instances whose crux is
    counting rather than structure.                                      */
@@ -716,6 +741,11 @@ pub struct DfsReport {
     pub outcome: Outcome,
     /// Largest family found satisfying every hypothesis but the size one.
     pub largest: usize,
+    /// That family itself. A size with no object behind it is not a
+    /// measurement anyone can check, and a truncated run reports nothing
+    /// else -- so the object is carried out even when it is below the
+    /// target and the outcome is `Unknown`.
+    pub largest_family: Vec<Mask>,
     pub nodes: u64,
     pub seconds: f64,
     /// True when the node limit stopped the search: `largest` is then a
@@ -761,7 +791,10 @@ pub fn dfs(q: &Question, node_limit: u64) -> DfsReport {
         return DfsReport {
             q: q.clone(),
             outcome: Outcome::None,
+            // The counting precheck reports the ceiling, not a family it
+            // found -- there is no object here, and none is claimed.
             largest: degree_ceiling(q.m, q.r, q.ground) as usize,
+            largest_family: Vec::new(),
             nodes: 0,
             seconds: 0.0,
             truncated: false,
@@ -823,8 +856,144 @@ pub fn dfs(q: &Question, node_limit: u64) -> DfsReport {
         q: q.clone(),
         outcome,
         largest,
+        largest_family: s.best.clone(),
         nodes: s.nodes,
         seconds: started.elapsed().as_secs_f64(),
         truncated,
     }
+}
+
+/* ------------------------------------------------------------------ */
+/* The intersecting piece, measured rather than bounded.               */
+/* ------------------------------------------------------------------ */
+
+/// The exact maximum of the quantity `intersecting_piece_bound` bounds:
+/// the largest `m`-uniform **intersecting** family on `ground` points
+/// satisfying Rao's condition `deg T <= r^(m - |T|)` for every nonempty
+/// `T`.
+///
+/// This is the one quantity that gates further progress on the
+/// threshold. `SpreadThreshold.split_no_three_disjoint_bound` reads
+///
+/// ```text
+///   |F|  <=  (members meeting A)  +  (members missing A)
+///        <=   m * r^(m-1)         +   I(m, r)
+/// ```
+///
+/// where `I(m,r)` is exactly what this computes, and
+/// `intersecting_piece_bound` supplies `r^(m-1) + (m-1)^2 * r^(m-2)` for
+/// it. Every unit of slack between the two is a unit the threshold could
+/// come down by, so measuring `I` says how much is left on the table
+/// before anyone tries to prove a sharper bound.
+///
+/// Returns `(max, witness, nodes, exhaustive)`. `ground` must be at most
+/// 20 — the degree table is indexed by subset mask.
+pub fn max_intersecting_piece(
+    m: u32,
+    r: u64,
+    ground: u32,
+    budget: u64,
+) -> (usize, Vec<Mask>, u64, bool) {
+    assert!(ground <= 20, "the degree table is indexed by subset mask");
+    let caps: Vec<u64> = (0..=m).map(|t| pow_sat(r, m - t)).collect();
+
+    let blocks: Vec<Mask> = (0u32..(1u32 << ground))
+        .filter(|b| b.count_ones() == m)
+        .map(|b| b as Mask)
+        .collect();
+
+    struct S {
+        blocks: Vec<Mask>,
+        caps: Vec<u64>,
+        m: u32,
+        deg: Vec<u32>,
+        cur: Vec<Mask>,
+        best: Vec<Mask>,
+        nodes: u64,
+        budget: u64,
+        hit: bool,
+    }
+
+    // Adding `x` is legal when it meets every member already chosen and
+    // no subset of it is already at its cap.
+    fn fits(s: &S, x: Mask) -> bool {
+        if s.cur.iter().any(|&a| a & x == 0) {
+            return false;
+        }
+        let mut sub = x;
+        loop {
+            if sub != 0 {
+                let t = (sub as u32).count_ones();
+                if u64::from(s.deg[sub as usize]) + 1 > s.caps[t as usize] {
+                    return false;
+                }
+            }
+            if sub == 0 {
+                break;
+            }
+            sub = (sub - 1) & x;
+        }
+        true
+    }
+
+    fn bump(s: &mut S, x: Mask, d: i32) {
+        let mut sub = x;
+        loop {
+            if sub != 0 {
+                let e = &mut s.deg[sub as usize];
+                *e = (*e as i32 + d) as u32;
+            }
+            if sub == 0 {
+                break;
+            }
+            sub = (sub - 1) & x;
+        }
+    }
+
+    fn rec(s: &mut S, from: usize) {
+        s.nodes += 1;
+        if s.nodes > s.budget {
+            s.hit = true;
+            return;
+        }
+        if s.cur.len() > s.best.len() {
+            s.best = s.cur.clone();
+        }
+        // Bound: what is in hand plus every block still to come.
+        if s.cur.len() + (s.blocks.len() - from) <= s.best.len() {
+            return;
+        }
+        for i in from..s.blocks.len() {
+            if s.cur.len() + (s.blocks.len() - i) <= s.best.len() {
+                return;
+            }
+            let x = s.blocks[i];
+            if !fits(s, x) {
+                continue;
+            }
+            bump(s, x, 1);
+            s.cur.push(x);
+            rec(s, i + 1);
+            s.cur.pop();
+            bump(s, x, -1);
+            if s.hit {
+                return;
+            }
+        }
+    }
+
+    let mut s = S {
+        blocks,
+        caps,
+        m,
+        deg: vec![0u32; 1usize << ground],
+        cur: Vec::new(),
+        best: Vec::new(),
+        nodes: 0,
+        budget,
+        hit: false,
+    };
+    let _ = s.m;
+    rec(&mut s, 0);
+    (s.best.len(), s.best.clone(), s.nodes, !s.hit)
 }

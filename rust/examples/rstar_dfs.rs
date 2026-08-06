@@ -36,6 +36,16 @@ fn main() {
             println!("masks: {:?}", f);
             return;
         }
+        // Below the target the run still found *something*, and a
+        // truncated run reports no other object at all. Dump it: a size
+        // with nothing behind it cannot be checked by anyone.
+        if !rep.largest_family.is_empty() {
+            println!("  largest family found ({} members):", rep.largest);
+            for &c in &rep.largest_family {
+                println!("    {:?}", mask_to_set(c));
+            }
+            println!("  masks: {:?}", rep.largest_family);
+        }
         use std::io::Write;
         std::io::stdout().flush().ok();
     }
