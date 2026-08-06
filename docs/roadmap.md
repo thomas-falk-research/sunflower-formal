@@ -6106,10 +6106,10 @@ exploration.
 ```
   what                                        budget      spent       finished?
   make -j4 verify (clean + 447 audits)        --          476 s       yes
-  make coqchk (39 modules)                    --          420 s       yes
-  cargo test --release (27 suites, 253 tests) --          1360 s      yes
+  make coqchk (39 modules)                    --          370 s       yes
+  cargo test --release (27 suites, 253 tests) --          1370 s      yes
   mutation subset (5 new + control, 3 jobs)   6 mutants   458 s       yes
-  full mutation suite (95, 3 jobs)            95 mutants  ~50 min     yes
+  full mutation suite (95, 3 jobs)            95 mutants  1996 s      yes
   max |G| with tau >= 3, ground 8 (Python)    --          ~10 min     NO --
                                                                       stopped
                                                                       by hand,
