@@ -38,4 +38,5 @@ coq/PureLink.v
 coq/SpreadThreshold.v
 coq/LinkCeiling.v
 coq/TwoCover.v
+coq/TauThree.v
 coq/Audit.v

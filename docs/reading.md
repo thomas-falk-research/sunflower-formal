@@ -1290,3 +1290,91 @@ search, and the neighbouring results are close enough that a specialist
 may well recognise this. What is recorded is the question, its exact
 consequence (`I(m,m+1) ≤ (m+1)^(m-1)` implies `r*(m,3) ≤ m+1`), and the
 two data points.
+
+---
+
+## What re-reading the development changed, session N+8
+
+Nothing new was read from outside. What changed is a *use* of what was
+already read, and one claim about the development itself that did not
+survive being checked.
+
+### The `tau = 3` hypothesis was false, and no reading was needed to see it
+
+`TwoCover.TauThreeAtMost K` — §24.12's stand-in for Frankl's theorem —
+quantified over families with `Uniform 3 G` and no distinctness
+condition. `Uniform` constrains the points inside each member, not the
+members; `length G` counts members with multiplicity; every other
+hypothesis in the statement is preserved by repeating a family. The Fano
+plane, taken three times, is a counterexample at `K = 16` and the same
+construction refutes every `K`.
+
+This is not a reading error. Every source involved states the theorem for
+*families of distinct sets*, and [Ra20]'s entry above already records
+`Distinct F` as an added hypothesis in `ALWZ.Rao20_lemma2` — noticed
+there, and not carried across to the file that restated a classical
+theorem by hand a session later. **The rule this adds is about
+transcription, not about sources:**
+
+> **11. When a classical theorem is entered as a hypothesis rather than
+> proved, check that the hypothesis is *true*, not only that it is
+> faithful to the source's words.** A conditional theorem with a false
+> antecedent passes `Print Assumptions`, passes the statement baseline,
+> and passes its own mutations. Nothing in the gate stack asks the
+> question.
+
+### Priority 0, answered from the entries already here
+
+The brief asks what the published spread lemmas give for `r*(m,3)` under
+this repository's `RaoSpread`, and says nobody has done it cleanly. Two
+entries above answer it and neither needed re-reading.
+
+* **Upper.** `ALWZ.Rao20_lemma2` is Rao's Lemma 2 in exactly the
+  `SpreadYieldsDisjoint` shape, checked symbol by symbol in the [Ra20]
+  entry, and `Spread.RaoSpread_Spread` shows the repository's absolute
+  condition is the stronger one — so the published lemma applies
+  verbatim and `r*(m,3) = O(log m)` is published. §22.7 had this. The
+  consequence for §24.13 is new and is recorded in `docs/roadmap.md`
+  §25.5: **`r*(m,3) <= m+1` is asymptotically weaker than what is
+  known**, and the split's value is exact small values, not growth.
+* **Lower.** Entry A2 above: [Ra20, p. 2] says it is open whether Lemma 2
+  holds with `r(p,k) = O(p)` — which in this repository's notation is
+  precisely "`r*(m,3)` is bounded in `m`" — and that such a strengthening
+  would imply the sunflower conjecture. The same entry records that the
+  tightness examples that exist ([ALWZ20] Lemma 3.1, [BCW21] Lemma 4) are
+  for the **robust/covering** form, not the disjointness form. So there
+  is **no published lower bound on `r*(m,3)` at all**.
+
+That last point is the one worth carrying forward, and it corrects the
+tone of §22.7 without contradicting its arithmetic. Finitely many terms
+cannot separate bounded from `log m` — true. But on the lower side the
+literature is empty, so `r*(2,3) = 3` and `r*(9,3) >= 4` are, as far as
+this corpus goes, the only concrete values written down anywhere, and the
+first term that moved past 4 would be the first evidence of unboundedness
+in the form Rao asks about.
+
+### What did not survive from the incoming brief
+
+* *"§22.7 says the repo's `Θ(m)` bound is asymptotically behind the
+  published `O(k log m)` ... nobody has done this cleanly."* — the check
+  had been done: it is `docs/reading.md`'s [Ra20] entry plus
+  `Spread.RaoSpread_Spread`, and §22.7 states the conclusion. What was
+  genuinely missing is the *consequence* for the `m+1` framing, now §25.5.
+* *"`r*(3,3) ≤ 4` conditional on `TauThreeAtMost 16`, a hypothesis, not
+  an axiom"* — true as stated and useless in fact, because the hypothesis
+  is false. See above.
+* *"`I(3,3) = 10` is now measured, so the decomposition against a maximum
+  matching gives `|F_A|, |F_B| <= 10` and `|F_AB| >= 8`"* — the
+  arithmetic is right but it does not constrain the search as much as the
+  brief suggests: the split bound `|F| <= 3·3² + I(3,3)` gives `|F| <= 37`
+  against the 28 a witness needs, so nothing is excluded. The
+  decomposition is a better *search order*, not a decision procedure.
+* *"`9 >= 4` §18.2, via `g(9) >= 3^9`"*, quoted in the brief's sequence
+  table alongside the proved rows — **conditional**.
+  `IotaRate.substitution_would_refute_the_flat_threshold_at_nine` takes
+  `LowerBound 9 3 (3^9 + 317)` as a hypothesis and its own header says
+  the Abbott–Hanson–Sauer substitution it rests on *"is not formalised
+  here"*. `docs/roadmap.md` §22.2's table lists the row flat, with no
+  caveat, next to rows that are theorems; both that table and `STATUS.md`
+  are corrected in this session's commit. It is the one number in the
+  brief that failed rule 9.

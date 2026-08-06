@@ -268,7 +268,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (433 of them). The current
+for every theorem in the "Closed" table (447 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -315,7 +315,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 38 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 39 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -323,8 +323,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 89 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 86 killed outright, two genuine
+Current mutation results: 95 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 92 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -333,7 +333,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 38 modules with Coq's separate kernel
+`make coqchk` re-verifies all 39 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```
@@ -427,12 +427,27 @@ pay the per-level toll §21.7 closed three other routes for.
 ```
   m     r*(m,3)          how the ends are known
   1     = 2   exact      r = 1 refuted / cover_spread_disjoint
-  2     = 3   exact      r = 2 refuted (C5) / exhaustive to support 16
-  3     in [3, 6]        r = 2 refuted / r_star_three_at_most_six
+  2     = 3   exact      r = 2 refuted (C5) / TwoCover.r_star_two_three_at_most_three
+  3     in [3, 4]        r = 2 refuted / TauThree.r_star_three_three_at_most_four_unconditional
   4     in [3, 7]        r = 2 refuted / r_star_four_at_most_seven
-  5     in [3, 9]        r = 2 refuted / r_star_five_at_most_nine
-  6     in [3, 11]       r = 2 refuted / r_star_six_at_most_eleven
+  5     in [3, 8]        r = 2 refuted / r_star_five_at_most_eight
+  6     in [3, 10]       r = 2 refuted / r_star_six_at_most_ten
+  9     >= 4  COND.     substitution_would_refute_the_flat_threshold_at_nine,
+                         conditional on LowerBound 9 3 (3^9+317) -- the
+                         Abbott-Hanson-Sauer substitution, not formalised
+  10    in [3, 17]       r = 2 refuted / r_star_ten_at_most_seventeen
 ```
+
+Every row is unconditional except `m = 9`, which is conditional on an
+unformalised construction and is now marked so. The `m = 3` upper bound
+is the only one that
+does not come from a general threshold: it is `I(3,r) = r^2` for `r >= 4`
+(`TauThree.three_uniform_star_extremal`, with `TauThree.star34` attaining
+it), which is the `m = 3` row of the extremal problem `docs/roadmap.md`
+§24.13 names and §25.3 closes. Whether the sequence is bounded is the
+sunflower conjecture at `k = 3`, and — per §25.5 — is the open question
+Rao states in [Ra20, p. 2]; the literature contains no lower bound on it
+at all.
 
 `rust/tests/spread_threshold.rs` pins every entry, including the
 counterexample families themselves.

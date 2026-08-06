@@ -1430,3 +1430,120 @@ because = """Sharp. The link over a (b-1)-set is 1-uniform, and it takes \
 through the set are permitted and the bound cannot be improved. The \
 2-(6,3,2) design attains it at every pair, which is why iota(3) = 10 is \
 exactly the counting ceiling at six points."""
+
+[[mutation]]
+id = "tauthree-lemma-l-eight"
+file = "coq/TauThree.v"
+question = """lemma_L bounds three pairwise cross-intersecting graphs of \
+maximum degree 3 by nine edges in total, and the whole tau = 3 case is \
+1 + 6 + 9 = 16. Is nine the truth, or is the argument leaving something?"""
+find = """    A <> [] -> B <> [] -> C <> [] ->
+    length A + length B + length C <= 9.
+Proof.
+  intros A B C HA HB HC HAB HAC HBC HAne HBne HCne."""
+replace = """    A <> [] -> B <> [] -> C <> [] ->
+    length A + length B + length C <= 8.
+Proof.
+  intros A B C HA HB HC HAB HAC HBC HAne HBne HCne."""
+expect = "killed"
+because = """Nine is attained, twice over: three copies of a single 3-star \
+(every edge holds the centre, so all three cross-intersect) and three \
+copies of one triangle. `rust/tests/tau_three.rs` exhausts the confined \
+search space and finds the maximum is exactly 9 for every vertex count \
+from four up. Eight is false, and the sum 1 + 6 + 9 = 16 has no slack \
+anywhere -- 16 is precisely what split_with_piece can afford at r = 4."""
+
+[[mutation]]
+id = "tauthree-cap-graph-four"
+file = "coq/TauThree.v"
+question = """CapGraph caps the maximum degree of each tail graph at 3, and \
+that 3 is the pair degree deg({x,v}) that covering number 3 hands over. \
+Would a cap of 4 still give nine?"""
+find = """Definition CapGraph (A : Family) : Prop :=
+  Uniform 2 A
+  /\\ (forall v, deg [v] A <= 3)"""
+replace = """Definition CapGraph (A : Family) : Prop :=
+  Uniform 2 A
+  /\\ (forall v, deg [v] A <= 4)"""
+expect = "killed"
+because = """No. Three copies of a single 4-star satisfy every other \
+hypothesis and give 4 + 4 + 4 = 12 > 9, so the conclusion is false at cap \
+4. The 3 is not an artefact of the write-up: it is deg({x,v}) <= 3, which \
+is exactly what tau >= 3 buys, and the bound 9 = 3 + 3 + 3 tracks it."""
+
+[[mutation]]
+id = "tauthree-drop-distinct"
+file = "coq/TauThree.v"
+question = """tau_three_bound carries Distinct G, which is the hypothesis \
+the repository's earlier statement of Frankl's theorem omitted. Is it \
+load-bearing, or bookkeeping?"""
+find = """Theorem tau_three_bound :
+  forall (G : Family),
+    Uniform 3 G -> Distinct G ->"""
+replace = """Theorem tau_three_bound :
+  forall (G : Family),
+    Uniform 3 G -> Uniform 3 G ->"""
+expect = "killed"
+because = """Load-bearing, and this is the whole point of the file. Without \
+it the statement is false for every constant: the Fano plane is 3-uniform, \
+intersecting and of covering number 3, and concatenating it with itself \
+preserves all three while doubling the length. \
+tau_three_at_most_unguarded_is_false is that argument, and \
+`rust/tests/tau_three.rs` verifies the object. Distinctness is what turns \
+deg({a,b}) <= 3 from a statement about which sets occur into a count."""
+
+[[mutation]]
+id = "tauthree-star-extremal-at-three"
+file = "coq/TauThree.v"
+question = """three_uniform_star_extremal needs r >= 4 = m + 1. Is the \
+crossover really there, or would r >= 3 do?"""
+find = """Theorem three_uniform_star_extremal : forall r, 4 <= r -> StarExtremalAt 3 r."""
+replace = """Theorem three_uniform_star_extremal : forall r, 3 <= r -> StarExtremalAt 3 r."""
+expect = "killed"
+because = """The crossover is exactly at r = m + 1 = 4. At r = 3 the star \
+has 3^2 = 9 members and I(3,3) = 10, attained by every 3-subset of a 5-set \
+-- which sits under both Rao caps (deg 6 <= 9, deg_pair 3 <= 3) and beats \
+the star. This is §24.9's measurement, and it is why the m = 3 row of the \
+StarExtremalAt conjecture starts at 4 and not earlier."""
+
+[[mutation]]
+id = "tauthree-unguarded-add-distinct"
+file = "coq/TauThree.v"
+question = """tau_three_at_most_unguarded_is_false refutes the hypothesis \
+§24.12 used. Is distinctness the *only* thing wrong with it, or is the \
+refutation exploiting something else as well?"""
+find = """Definition TauThreeAtMostUnguarded (K : nat) : Prop :=
+  forall (G : Family),
+    Uniform 3 G ->"""
+replace = """Definition TauThreeAtMostUnguarded (K : nat) : Prop :=
+  forall (G : Family),
+    Uniform 3 G -> Distinct G ->"""
+expect = "killed"
+because = """Distinctness is the only thing wrong with it. Put it back and the \
+statement becomes tau_three_bound, which is a theorem, so its negation is \
+unprovable and the refutation collapses at exactly the step where it \
+applies the hypothesis to a repeated family. This is the mirror of \
+tauthree-drop-distinct: one shows the hypothesis is needed for the \
+theorem, this shows it is what the counterexample eats."""
+
+[[mutation]]
+id = "tauthree-tau-two-not-three"
+file = "coq/TauThree.v"
+question = """tau_three_bound assumes covering number at least 3 -- for \
+every *pair* of points there is a member missing both. Would covering \
+number at least 2, one point at a time, do?"""
+find = """    (forall p q, exists C, In C G /\\ ~ In p C /\\ ~ In q C) ->
+    length G <= 16.
+Proof.
+  intros G HU HD Hint Htau."""
+replace = """    (forall p, exists C, In C G /\\ ~ In p C) ->
+    length G <= 16.
+Proof.
+  intros G HU HD Hint Htau."""
+expect = "killed"
+because = """No, and not by a little. The whole proof is (P) -- covering \
+number 3 caps every *pair* degree at 3, because a member containing a \
+pair meets the witness missing that pair in one of three points. Covering \
+number 2 gives nothing at pairs, and the statement is false: a family \
+with a 2-point cover and no degree condition is unbounded. This is the \
+one hypothesis the file cannot weaken anywhere."""

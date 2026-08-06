@@ -638,3 +638,17 @@ thm TwoCover.r_star_two_three_at_most_three
 thm LinkCeiling.one_uniform_pairwise_disjoint
 thm LinkCeiling.top_link_degree_at_most_two
 thm LinkCeiling.top_link_degree_three_uniform
+thm TwoCover.rao_uniform_distinct
+thm TauThree.cover_by_sets_sum
+thm TauThree.deg_full_le_one
+thm TauThree.internally_intersecting_bound
+thm TauThree.disjoint_pair_bounds
+thm TauThree.lemma_L
+thm TauThree.tau_three_bound
+thm TauThree.tau_three_at_most_sixteen
+thm TauThree.r_star_three_three_at_most_four_unconditional
+thm TauThree.f_three_three_unconditional
+thm TauThree.intersecting_at_most_star_unconditional
+thm TauThree.three_uniform_star_extremal
+thm TauThree.star34_attains_sixteen
+thm TauThree.tau_three_at_most_unguarded_is_false

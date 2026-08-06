@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 89 anecdotes into a coverage metric over the
+  mutation testing from 95 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -4383,6 +4383,13 @@ So the honest state of the sequence is:
   9     >= 4             §18.2, via g(9) >= 3^9      -
 ```
 
+> **Correction, §25.3:** the `m = 9` row is **conditional**, and this
+> table lists it as though it were not.
+> `IotaRate.substitution_would_refute_the_flat_threshold_at_nine` assumes
+> `LowerBound 9 3 (3^9 + 317)`, which rests on the Abbott–Hanson–Sauer
+> substitution — not formalised here. Every other row is a theorem.
+
+
 Two exact terms, not two-and-a-conjecture. The interval at `m = 4` is
 `[3, 7]`, down from `[3, 9]`, and it is the first time the top of that
 interval has moved.
@@ -4815,6 +4822,9 @@ two decisive negatives.** In order:
 * **`r*(3,3) ≤ 4`**, conditional on one classical theorem and **no new
   axiom** (§24.10, §24.12): the `τ ≤ 2` case proved outright, the
   `τ = 3` case assumed as a hypothesis to the left of the arrow.
+  (**Superseded, §25.1**: that hypothesis is false as stated, so this
+  line established nothing; §25.2 proves the repaired form and §25.3
+  makes the conclusion unconditional.)
 * **`r*(2,3) = 3` exactly, in Coq** (§24.13) — where every general bound
   the development has gives 4.
 * **The extremal problem underneath all of it**, `I(m,r)`, named and
@@ -5454,6 +5464,15 @@ state.
 
 ### 24.12 The third case, as a hypothesis: `r*(3,3) ≤ 4` conditionally
 
+> **Correction, §25.1: the hypothesis this section introduces is false
+> for every constant**, because it omits distinctness of the family and
+> `length G` counts members with multiplicity. Everything below is a
+> true implication with a false antecedent and establishes nothing. The
+> hypothesis is repaired (`Distinct G` added) and *proved* in
+> `coq/TauThree.v`, so the conclusion `SpreadYieldsDisjoint 3 3 4` now
+> holds unconditionally — see §25.2 and §25.3. The text is left as
+> written; the mistake is more useful than a silent edit.
+
 `coq/TwoCover.v`, eight more audited names, **and still no new axiom**.
 
 §24.10 proved `τ ≤ 2`. The remaining case is `τ = 3`, which is Frankl's
@@ -5665,3 +5684,474 @@ a conditional one closing the third term to a single value, an exact
 second term, and a well-posed extremal question — `is the star extremal
 for intersecting families under Rao's condition once r ≥ m+1?` — whose
 answer decides whether the spread route to `k = 3` survives at all.
+
+---
+
+## 25. The hypothesis that was false, the theorem that replaces it, and
+##     `r*(3,3) ≤ 4` with nothing assumed
+
+**Verdict: one new theorem — the `m = 3` row of the extremal problem
+§24.13 names, closed exactly — which makes `r*(3,3) ≤ 4` unconditional;
+one decisive negative, that the hypothesis §24.12 rested on is false for
+every constant; and no new record object.** In order:
+
+* **`TwoCover.TauThreeAtMost K` is false for every `K`** (§25.1), so
+  §24.12's `r*(3,3) ≤ 4` was an implication with a false antecedent and
+  established nothing. `TauThree.tau_three_at_most_unguarded_is_false`
+  is that refutation in Coq, with the Fano plane as the object.
+* **A 3-uniform intersecting family of *distinct* sets with covering
+  number at least 3 has at most 16 members** (§25.2), proved here
+  without Rao's condition, without Frankl's theorem, and axiom-free.
+  Frankl gives 10; the elementary greedy bound gives 27; 16 is the
+  first value in the interval `[16,27]` this development can prove, and
+  it is exactly what the split needs.
+* **`r*(3,3) ≤ 4` unconditionally**, so the third term of the sequence
+  is `[3,4]` with nothing assumed (§25.3), where §24.2 left it at
+  `[3,5]` and §24.12 left it at `[3,4]`-on-a-false-hypothesis. And
+  **`I(3,r) = r²` for every `r ≥ 4`** — the `m = 3` row of §24.13's
+  extremal conjecture, closed, with the attaining object in the file.
+* **The same statement at every uniformity** (§25.4), at the same
+  threshold `r ≥ m+1`, with a complete proof — **in prose, not in Coq**.
+  §25.4 names the two Coq pieces that are missing.
+
+### 25.1 Closed: the `tau = 3` hypothesis was false as stated
+
+§24.12's headline is `r_star_three_three_at_most_four : TauThreeAtMost 16
+-> SpreadYieldsDisjoint 3 3 4`, and the hypothesis was
+
+```coq
+  Definition TauThreeAtMost (K : nat) : Prop :=
+    forall G, Uniform 3 G ->
+      (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+      (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->
+      length G <= K.
+```
+
+`Uniform 3 G` is `Forall (fun A => length A = 3 /\ NoDup A) G`. The
+`NoDup` is on the *points inside each member*. Nothing anywhere in the
+statement says the **members** are distinct — and `length G` counts
+members with multiplicity.
+
+So take the Fano plane: seven 3-sets on seven points, pairwise
+intersecting, and of covering number 3 because each point lies on
+exactly three of the seven lines, so two points meet at most six of
+them. Concatenate it with itself three times. Every hypothesis survives
+verbatim — they are conditions on *pairs* of members and on *which* sets
+occur, never on how often — and `length` becomes 21.
+
+> **`TauThree.tau_three_at_most_unguarded_is_false : forall K,
+> ~ TauThreeAtMostUnguarded K`.** Not "false for 16": false for every
+> constant.
+
+`rust/tests/tau_three.rs::fano_satisfies_the_unguarded_hypotheses` checks
+the object and the repetition independently of the Coq.
+
+**Why the outer family did not have this problem.** `split_with_piece`
+takes `RaoSpread 3 F r`, and Rao's condition at a triple reads
+`deg T F <= r^(3-3) = 1`, so a 3-uniform Rao-spread family is
+automatically distinct. That is now
+`TwoCover.rao_uniform_distinct`, and it is what lets the repair be local:
+`Distinct G` is added to `FranklTauThree` and `TauThreeAtMost`, and the
+single consumer, `intersecting_at_most_star`, derives it from the Rao
+condition it already carries. No other statement changes.
+
+**What this is worth recording as.** The gates did not catch it and could
+not have: the file compiles, `Print Assumptions` says "closed under the
+global context", the mutation `twocover-tau-three-seventeen` is killed as
+declared, and every one of those remains true of a theorem with a false
+antecedent. What catches it is asking whether the hypothesis is *true* —
+which is the same question as asking whether it is provable, and is where
+this session started.
+
+### 25.2 The theorem: 16, elementary, and no Frankl
+
+`coq/TauThree.v`, axiom-free, thirteen new audited names, plus
+`TwoCover.rao_uniform_distinct`.
+
+> **`tau_three_bound`:** `G` 3-uniform, `Distinct`, intersecting, with
+> `tau(G) >= 3`, has `length G <= 16`.
+
+No Rao condition anywhere in it. The argument is a decomposition against
+one member and one graph lemma.
+
+**The pair cap is free.** `tau(G) >= 3` says: for every two points there
+is a member missing both. So for any pair `{a,b}`, take the witness `D`
+missing them; a member containing `{a,b}` meets `D` in a third point, and
+`D` has three, so — using distinctness —
+
+```
+    deg({a,b}) <= 3      for every pair                             (P)
+```
+
+`tt_pair`. This is the only place `tau >= 3` is used, and it is used
+three times over.
+
+**The decomposition.** Fix `M = {x,y,z} in G`. Every member meets `M`.
+Peel:
+
+```
+   members containing {x,y}                       <= 3      by (P)
+   members containing {x,z} but not {x,y}         <= 2      (P), less M
+   members containing {y,z} but neither of those  <= 2      (P), less M
+   what survives meets M in exactly one point:  T_x, T_y, T_z
+```
+
+The two 2's are the content of `minus_one_bound`: `M` itself occupies one
+of the three slots (P) allows at each pair, and the peel has already
+removed it. So the layers meeting `M` twice or more contribute at most
+**7**, and `1 + 6 = 7` is the same number counted the other way.
+
+**The tails.** For `C in T_x`, `C = {x} u e` with `e` a 2-set disjoint
+from `M`. The three tail graphs `A`, `B`, `C~`
+
+  * have **maximum degree at most 3** — an edge of `A` at `v` is a member
+    containing `{x,v}`, and (P) caps those at 3;
+  * are **pairwise cross-intersecting** — a member of `T_x` and one of
+    `T_y` meet, and not at `x`, `y` or `z`;
+  * are **all nonempty** — `T_z` empty makes `{x,y}` a cover.
+
+> **`lemma_L`:** three nonempty pairwise cross-intersecting graphs, each
+> of maximum degree at most 3, have at most **9** edges between them.
+
+`7 + 9 = 16`. Nothing in that sum has slack: the mutation
+`tauthree-lemma-l-eight` weakens 9 to 8 and is killed, and
+`twocover-tau-three-seventeen` (already in the manifest) shows 17 fails
+on the other side.
+
+**Proof of the graph lemma, in three moves.** Order so `|A| >= |B| >= |C|`.
+
+  * **L1.** *An intersecting graph of maximum degree 3 has at most 3
+    edges.* Take `e = {a,b}`. If every edge holds `a`, the degree cap
+    ends it. Otherwise name an edge missing `a`, then an edge holding `a`
+    but not `b`; between them every edge is forced into the triangle
+    `{ab, bc, ac}`. This is §24.10's device — name the members that miss
+    the points, rather than invoke the classification of graphs with
+    matching number one — and it is why the whole file needs no graph
+    theory.
+  * **L2.** *Six edges force the other two graphs to one each.* If every
+    edge of `A` meets a fixed pair `{u,v}` and `|A| = 6`, then `u` and
+    `v` each carry three `A`-edges and `uv` is not one of them. An edge
+    meeting all of `A` and missing `u` would have to contain all three
+    `A`-neighbours of `u` — three distinct points in a 2-set. So every
+    edge of `B` and of `C` contains both `u` and `v`, hence *is* `{u,v}`.
+  * **L3.** *Two disjoint edges cap the other two together at four.* If
+    `e1 = {a,b}` and `e2 = {c,d}` are disjoint edges of `A`, then `B` and
+    `C` live inside `K = {ac, ad, bc, bd}`. Split `K` into its two
+    disjoint pairs; on each pair, `B` and `C` cannot both be occupied on
+    opposite sides, so each pair contributes at most 2, and `|B| + |C| <= 4`.
+
+  Then: `|A| <= 3` for all three gives 9 (L1). Otherwise `|A| >= 4`, so
+  `A` is not intersecting (L1), so it has two disjoint edges, so
+  `|B| + |C| <= 4` (L3), and `|A| <= 6` always. `|A| in {4,5}` gives at
+  most 9; `|A| = 6` gives at most 8 by L2. Nine is attained twice —
+  three copies of one 3-star, and three copies of one triangle.
+
+**Where this sits relative to the literature.** Frankl's theorem for
+3-uniform intersecting families of covering number 3 gives `|G| <= 10`,
+which is the truth (`rust/tests/tau_three.rs` exhausts it on grounds 5–7
+and finds 10, attained by every 3-subset of a 5-set). The bound proved
+here is 16, so it is **six worse than the classical result and is not a
+contribution to that question**. What it is, is the first bound in the
+interval `[16, 27]` this development can prove — 27 being the elementary
+greedy bound, which is not enough — and 16 is exactly the constant the
+split can afford. The value is that the constant is now a theorem of
+this development rather than a citation.
+
+### 25.3 What it discharges
+
+Three results lose their hypothesis, none of their statements changes:
+
+```
+  TauThree.tau_three_at_most_sixteen                 : TauThreeAtMost 16
+  TauThree.r_star_three_three_at_most_four_uncond... : SpreadYieldsDisjoint 3 3 4
+  TauThree.f_three_three_unconditional               : UpperBound 3 3 65
+  TauThree.intersecting_at_most_star_unconditional   : I(3,r) <= r^2 for r >= 4
+  TauThree.three_uniform_star_extremal               : StarExtremalAt 3 r for r >= 4
+```
+
+`UpperBound 3 3 65` is worth stating only as a discharge, not as a
+result: Erdős–Rado 1960 gives `3!·2^3 + 1 = 49` unconditionally and this
+development has had it since `ErdosRado.v`. §24.2 already records that
+the whole `r*` route is behind Erdős–Rado as a bound on `f`; what moves
+here is the threshold, not the sunflower number.
+
+**The sequence, unconditionally.**
+
+```
+  m     r*(m,3)      by
+  1     = 2   exact
+  2     = 3   exact  (§24.13)
+  3     in [3,4]     upper: this section;  lower: r = 2 fails already at m = 2
+  4     in [3,7]     upper: §24.2's split threshold
+  5     in [3,8]
+  9     >= 4         §18.2, via g(9) >= 20000 > 3^9
+  10    in [3,17]
+```
+
+Every row is now unconditional. Note the `m = 9` row against the `m = 2`
+row: the sequence is **not constant** — it has grown at least twice
+already — which is a fact the repository has had since §18.2 and which
+§25.5 says is more than the literature has.
+
+**`I(3,r) = r²` for every `r >= 4`, exactly.** The upper bound is the
+`tau <= 2` case (§24.10) plus the `tau = 3` case (here). The lower bound
+is an object: `TauThree.star34`, the grid star — a common point `0`
+together with one point from each of two blocks of size four —
+
+```
+  [0,1,5] [0,1,6] [0,1,7] [0,1,8]   [0,2,5] [0,2,6] [0,2,7] [0,2,8]
+  [0,3,5] [0,3,6] [0,3,7] [0,3,8]   [0,4,5] [0,4,6] [0,4,7] [0,4,8]
+```
+
+sixteen members, `Uniform 3`, `Distinct`, intersecting, and
+`RaoSpread 3 F 4` with equality at `{0}` and at every pair through `0`.
+`star34_attains_sixteen` in Coq; `rust/tests/tau_three.rs` re-verifies it
+by code sharing nothing with it.
+
+So the `m = 3` row of §24.13's conjecture — *is the star extremal for
+intersecting families under Rao's condition once `r >= m+1`?* — is
+**closed, affirmatively, and sharply**, and the crossover really is at
+`r = m+1`: at `r = 3` the truth is 10 against a star of 9, so the
+statement is false one step below. The mutation
+`tauthree-star-extremal-at-three` is that fact.
+
+**What it does not give.** `star_extremal_gives_m_plus_one` needs
+`StarExtremalAt m (n+1)` for *every* `m <= n`. Closing `m = 3` closes one
+row; `m = 4` and up are untouched, and `r*(4,3)` does not move.
+
+### 25.4 The two-point-cover case at every uniformity — prose, not Coq
+
+§24.10 proves the star extremal among 3-uniform intersecting Rao-spread
+families of covering number at most 2, for `r >= 4 = m+1`. The same holds
+at every uniformity at the same threshold, and here is the proof. **It is
+not formalised**, and the end of this section says exactly what is
+missing.
+
+> **Claim.** `G` `m`-uniform, intersecting, `RaoSpread(r)`, `tau(G) <= 2`,
+> `r >= m+1`. Then `|G| <= r^(m-1)`.
+
+**Reduction.** Cover `{p,q}`; write `G_p`, `G_q`, `G_pq` as in §24.10.
+`|G_pq| <= deg({p,q}) <= r^(m-2)`. Put `u = m-1` and let `A`, `B` be the
+tails of `G_p`, `G_q`. Then `deg_A(T) = deg_G({p} u T) <= r^(u-|T|)`, so
+**`A` and `B` satisfy Rao's condition at uniformity `u` with the same
+`r`**, and they are cross-intersecting (a member of `G_p` and one of
+`G_q` meet, and not at `p` or `q`). It is enough that
+
+```
+  |A| + |B| <= (r-1)·r^(u-1)       whenever r >= u+2,
+```
+
+since `(r-1)r^(u-1) + r^(u-1) = r^u = r^(m-1)`.
+
+**Two bounds, and a covering number.** Let `a = tau(A)`, `b = tau(B)`;
+both are at most `u`, because any member of `B` meets every member of `A`
+and so *is* a cover of `A`. Then
+
+  * `|A| <= a·r^(u-1)` — sum the point degrees over a minimum cover;
+  * `|B| <= u^a·r^(u-a)` — greedy. Pick `C1` in `A`; every member of `B`
+    holds one of its `u` points. A set of size `j < a` is not a cover of
+    `A`, so there is a member of `A` disjoint from it and the tree
+    extends. After `a` steps every member of `B` contains one of at most
+    `u^a` specific `a`-sets, each of degree at most `r^(u-a)`;
+
+and the same with the roles swapped. Take `a <= b`. Since `u < r`,
+`u^b r^(u-b) <= u^a r^(u-a)`, so the swapped greedy bound also gives
+`|A| <= u^a r^(u-a)`. Writing `s = a-1`, either
+
+```
+  (O1)  |A| + |B| <= a·r^(u-1) + u^a·r^(u-a)   suffices iff  u^(s+1) <= (r-2-s)·r^s
+  (O2)  |A| + |B| <= 2·u^a·r^(u-a)             suffices iff  2·u^(s+1) <= (r-1)·r^s
+```
+
+**The numeric half, from Bernoulli alone.** Both are monotone in `r`, so
+it is enough at `r = u+2`. At `s = 0` (O1) is `u <= r-2` and holds by the
+hypothesis; for `s >= 1`, with `(u+2)^s >= u^s + 2s·u^(s-1) =
+u^(s-1)(u+2s)`:
+
+  * **`2s <= u` gives (O1):** `(u-s)(u+2)^s >= u^(s-1)(u² + su - 2s²) >=
+    u^(s+1)`, the last step being `s(u - 2s) >= 0`.
+  * **`2s >= u` gives (O2):** `(u+2)^s >= u^(s-1)(u+2s) >= 2u^s`, so
+    `(u+1)(u+2)^s >= 2u^s(u+1) >= 2u^(s+1)`.
+
+Every `s` falls in one of the two. `rust/tests/cross_intersecting.rs`
+checks the disjunction, and that the *declared* split is the one that
+works, for every `u <= 60` and every `r` in `[u+2, u+12]`, in exact
+arithmetic (the products pass `u128` before `u = 30`).
+
+**The threshold is not an artefact.** At `s = 0` — `A` a star — (O1)
+reads `u <= r-2`, which is `r >= m+1` on the nose, and at `r = m` both
+options fail. So `m+1` is where this argument turns over, and it is the
+same `m+1` that §24.13's `split_cannot_reach_r_equals_m` shows is the
+floor of the whole method.
+
+**How much is left on the table.** At `u = 2` the bound is `(r-1)r` and
+the truth is `2r+1` — one edge against the two full stars at its
+endpoints — so it is loose by about a factor of `r/2` and still closes.
+`rust/tests/cross_intersecting.rs` exhausts that row.
+
+**What is missing in Coq, precisely.** Two pieces, and neither is deep:
+
+1. **the greedy decision tree** — an induction producing a list of at
+   most `u^j` keys of size `j` such that every member of `B` contains
+   one. The extension step is fifty lines (`extend_keys`: for each key
+   `S`, name a member of `A` disjoint from `S`, and branch on its `u`
+   points), and `cover_by_sets_sum` — already in `coq/TauThree.v` for
+   this session's other purpose — turns the key list into the bound;
+2. **the covering-number dichotomy** — "either some `j`-set covers `A`,
+   or every set of size at most `j` misses some member". Constructively
+   this is a finite search, because a cover point outside `concat A` is
+   useless, which is exactly the argument `TwoCover.covers_dec_search`
+   already makes for `j = 2`.
+
+Estimated at 600 lines and not attempted this session. It should be the
+first thing the next one does, because it settles the `tau <= 2` case of
+§24.13's conjecture at every uniformity in one theorem.
+
+### 25.5 Priority 0: what the published lemmas give, checked
+
+The brief asks what ALWZ / Rao / Bell–Chueluecha–Warnke give for
+`r*(m,3)` *as this repository defines it*, and calls it undone. It is
+done, in two places, and both were verified rather than re-derived.
+
+**Upper side: `O(log m)`, and it is the repository's own axiom.**
+`ALWZ.Rao20_lemma2` is stated in exactly the `SpreadYieldsDisjoint` shape,
+
+```coq
+  exists alpha, 1 <= alpha /\ forall n k r, 1 <= n -> 2 <= k ->
+    alpha * k * Nat.log2_up (S (k * n)) <= r -> SpreadYieldsDisjoint n k r
+```
+
+and `docs/reading.md`'s [Ra20] entry records it checked symbol by symbol
+against Rao's Lemma 2, including that the repository's absolute
+`RaoSpread` is *stronger* than the fractional condition Rao uses
+(`Spread.RaoSpread_Spread`), so the published lemma applies verbatim. So
+`r*(m,3) = O(log m)` is published, §22.7 already says so, and the
+consequence for §24.13 is worth stating plainly:
+
+> **`r*(m,3) <= m+1` is asymptotically weaker than what is known.** It is
+> a statement about the reach of the two-way split, not a bound anyone
+> would quote. What the split gives that the literature does not is
+> *exact small values*: at `m = 3` the published constant is unusable
+> (BCW's `C >= 4` gives a threshold near 13 and `f(3,3) <= 2300`, against
+> Erdős–Rado's 49 and this development's 65), while `r*(3,3) in [3,4]` is
+> a two-value interval.
+
+**Lower side: nothing is published, and Rao says so.** `docs/reading.md`
+entry A2 records [Ra20, p. 2]:
+
+> *"As far as we know, it is possible that Lemma 2 holds even when
+> `r(p,k) = O(p)`. Such a strengthening of Lemma 2 would imply the
+> sunflower conjecture of Erdős and Rado."*
+
+In this repository's notation `p` is the number of petals and `k` the
+uniformity, so `r(p,k) = O(p)` is exactly "`r*(m,3)` is bounded in `m`".
+And the same entry records that the tightness examples that do exist —
+[ALWZ20] Lemma 3.1, [BCW21] Lemma 4 — are for the **robust/covering**
+form of the spread lemma, not the disjointness form. So:
+
+> **Whether `r*(m,3)` is bounded is Rao's stated open question, and the
+> literature contains no lower bound on it at all.**
+
+That re-prices §3 of the brief and part of §22.7. §22.7 is right that
+finitely many terms cannot distinguish bounded from `log m`; it is too
+strong in implying the terms are worthless, because on the lower side the
+repository's `r*(2,3) = 3` and `r*(9,3) >= 4` are, as far as this reading
+goes, the only concrete values anyone has written down. They do not show
+growth — `>= 4` is consistent with bounded — but they are data where
+there was none, and the next term that moved would be the first evidence
+of unboundedness in the disjointness form.
+
+### 25.6 Measured
+
+All exhaustive, all in `rust/tests/tau_three.rs` and
+`rust/tests/cross_intersecting.rs`, all under a minute.
+
+```
+  quantity                                                value   bound proved
+  max |A|+|B|+|C|, cross-intersecting, Delta <= 3           9        9   (lemma_L)
+    -- stable on 4,5,6,7,8 vertices; extremal: three copies of one 3-star
+  max |G|, 3-uniform distinct intersecting, tau >= 3       10       16   (tau_three_bound)
+    -- grounds 5,6,7; extremal: every 3-subset of a 5-set
+  I(3,3)                                                   10       16
+  I(3,4), ground 7 / ground 9                          12 / 16       16
+  max |A|+|B|, cross-intersecting Rao(r), u = 2        2r + 1   (r-1)r
+    -- r = 4,5,6 on r+2 points; needs the ground to hold two full stars
+```
+
+The `tau >= 3` row is the one worth reading twice: the proved bound is
+16, the truth is 10, and the six of slack is **not needed** — the split
+at `r = 4` can afford exactly 16.
+
+### 25.7 Costs and gates
+
+Nothing in this session was a search for an object, so there is no node
+budget to report. The measurable costs are the gates and one abandoned
+exploration.
+
+```
+  what                                        budget      spent       finished?
+  make -j4 verify (clean + 447 audits)        --          476 s       yes
+  make coqchk (39 modules)                    --          420 s       yes
+  cargo test --release (27 suites, 253 tests) --          1360 s      yes
+  mutation subset (5 new + control, 3 jobs)   6 mutants   458 s       yes
+  full mutation suite (95, 3 jobs)            95 mutants  ~50 min     yes
+  max |G| with tau >= 3, ground 8 (Python)    --          ~10 min     NO --
+                                                                      stopped
+                                                                      by hand,
+                                                                      budget
+                                                                      unspent
+```
+
+The last row is the only thing in this session that was stopped rather
+than finished, and it is worth naming as such: the naive branch-and-bound
+in the scratchpad decides grounds 5, 6 and 7 in about four minutes
+together and had not decided ground 8 after ten more, at which point it
+was killed to free a core. Three grounds agreeing at 10 is what the
+committed test pins (`rust/tests/tau_three.rs`, seconds, exhaustive on
+each of those three); ground 8 is **undecided**, and since the bound in
+question is Frankl's 10 rather than anything this session proves, nothing
+depends on it.
+
+**The gates.**
+
+```
+  make -j4 verify        green  (447 audited theorems, 447 "Closed under
+                                the global context", none carrying an
+                                axiom -- including everything in
+                                TauThree.v)
+  make coqchk            green  (39 modules; one axiom:
+                                Sunflower.ALWZ.Rao20_lemma2)
+  cargo test --release   green  (27 suites, 253 tests, 0 failures)
+  python3 tools/mutate.py green (95 mutations, every one with the outcome
+                                the manifest declares: 92 killed, 2
+                                survived as declared, 1 control passing,
+                                0 unexpected)
+  tools/statements.py    green  (531 statements match the baseline)
+  tools/docnumbers.py    green  (12 quoted numbers match)
+```
+
+The statement baseline moved for a reason worth recording: adding
+`Distinct G` to `TauThreeAtMost` and `FranklTauThree` changes what two
+existing theorems *say*, and `make statements` is the gate whose whole
+job is to make that visible rather than silent. It fired, as designed.
+
+### 25.8 The one-line verdict
+
+**`I(3,r) = r²` for every `r ≥ 4`: the star is extremal among 3-uniform
+intersecting Rao-spread families exactly from `r = m+1` on, upper bound
+and attaining object both, which is the `m = 3` row of §24.13's conjecture
+closed — and it makes `r*(3,3) ≤ 4` unconditional, where §24.12 had it
+resting on a hypothesis that is false for every constant.**
+
+The vehicle is an elementary, axiom-free bound of 16 on 3-uniform
+intersecting *distinct* families of covering number 3. As a statement
+about that classical question it is six worse than Frankl's 10 and is not
+a contribution to it; as a constant for `split_with_piece` at `r = 4` it
+is exactly what is needed, and it is now a theorem of this development
+rather than a citation.
+
+No new record object; §25.7 says which searches were not run rather than
+run and lost. The closed line is §25.1, closed by an object rather than a
+budget. The general-uniformity statement of §25.4 is prose with its
+arithmetic checked and its two missing Coq pieces named, and it is the
+next thing to do.

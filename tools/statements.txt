@@ -589,14 +589,14 @@ f3ba43b1d5eb9791  thm SliceRank.ground9_max_is_grounded
 2a79cf20e47d9ac0  thm SliceRank.ns_bound_to_exponential
     ns_bound_to_exponential : NaslundSawinBound -> forall (c m : nat) (F : Family) (U : list nat), 1 <= c -> 1 <= m -> Distinct F -> ~ ContainsKSunflower 3 F -> List.NoDup U -> Grounded F U -> length U <= c * m -> length F <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m
 
-d36f6f63a8c0e320  thm IotaGround.degsum_eq_sizesum
-    degsum_eq_sizesum : forall (U : list nat) (F : Family), degsum U F = sizesum U F
+4b017fd46c5e914a  thm IotaGround.degsum_eq_sizesum
+    degsum_eq_sizesum : forall (U : list nat) (F : Family), IotaGround.degsum U F = sizesum U F
 
 28819bccf13c9abc  thm IotaGround.sizesum_uniform
     sizesum_uniform : forall (b : nat) (U : list nat) (F : Family), List.NoDup U -> Uniform b F -> Grounded F U -> sizesum U F = b * length F
 
-54ad2d6b4c725bc2  thm IotaGround.degsum_le
-    degsum_le : forall (U : list nat) (F : Family) (N : nat), (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) <= N) -> degsum U F <= length U * N
+f83917e8ddfdbc19  thm IotaGround.degsum_le
+    degsum_le : forall (U : list nat) (F : Family) (N : nat), (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) <= N) -> IotaGround.degsum U F <= length U * N
 
 02af4e4d9216021c  thm IotaGround.link_grounded
     link_grounded : forall (x : nat) (U : list nat) (F : Family), Grounded F U -> Grounded (link (x :: nil) F) (rem_elt x U)
@@ -673,8 +673,8 @@ ddda7e420d0f7267  thm IotaGround.iota_ground_bounded_gives_exponential
 a10bdf285aaf3125  thm IotaGround.both_ground_hypotheses_settle_k3
     both_ground_hypotheses_settle_k3 : NaslundSawinBound -> forall c : nat, 1 <= c -> (GroundBounded c -> forall m j : nat, 1 <= m -> LowerBound m 3 j -> j <= PeanoNat.Nat.pow (PeanoNat.Nat.pow 27 (c + 1)) m) /\ (IotaGroundBounded c -> sunflower_conjecture_k_3)
 
-b83c06a1dc67a049  thm Audit.the_double_count_is_the_incidence_count
-    the_double_count_is_the_incidence_count : degsum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 12 /\ sizesum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 12 /\ degsum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 2 * length two_triangles
+3abe85cd143f166e  thm Audit.the_double_count_is_the_incidence_count
+    the_double_count_is_the_incidence_count : IotaGround.degsum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 12 /\ sizesum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 12 /\ IotaGround.degsum (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) two_triangles = 2 * length two_triangles
 
 5406d11a3829de75  thm Audit.the_ground_bound_is_attained
     the_ground_bound_is_attained : 2 * length two_triangles <= length (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) * 2 /\ 2 * length two_triangles = length (0 :: 1 :: 2 :: 3 :: 4 :: 5 :: nil) * 2
@@ -847,8 +847,8 @@ e70110d144cccd76  def SliceRank.GroundBounded
 748b5c178e38978f  def SliceRank.ground9_max
     ground9_max = ((0 :: 1 :: 2 :: nil) :: (0 :: 1 :: 3 :: nil) :: (0 :: 2 :: 3 :: nil) :: (1 :: 2 :: 3 :: nil) :: (0 :: 4 :: 5 :: nil) :: (1 :: 4 :: 5 :: nil) :: (0 :: 4 :: 6 :: nil) :: (1 :: 4 :: 6 :: nil) :: (2 :: 5 :: 7 :: nil) :: (3 :: 6 :: 7 :: nil) :: (2 :: 5 :: 8 :: nil) :: (3 :: 6 :: 8 :: nil) :: (2 :: 7 :: 8 :: nil) :: (3 :: 7 :: 8 :: nil) :: nil)%list : Family
 
-a125fe605f96f89b  def IotaGround.degsum
-    degsum = fix degsum (U : list nat) (F : Family) {struct U} : nat := match U with | nil => 0 | (x :: U')%list => length (List.filter (fun A : list nat => memb x A) F) + degsum U' F end : list nat -> Family -> nat Arguments degsum U%list_scope F
+a024f221b974369e  def IotaGround.degsum
+    IotaGround.degsum = fix degsum (U : list nat) (F : Family) {struct U} : nat := match U with | nil => 0 | (x :: U')%list => length (List.filter (fun A : list nat => memb x A) F) + degsum U' F end : list nat -> Family -> nat Arguments IotaGround.degsum U%list_scope F
 
 e9220f67e7f96cb6  def IotaGround.sizesum
     sizesum = fix sizesum (U : list nat) (F : Family) {struct F} : nat := match F with | nil => 0 | (A :: F')%list => length (List.filter (fun x : nat => memb x A) U) + sizesum U F' end : list nat -> Family -> nat Arguments sizesum U%list_scope F
@@ -1198,11 +1198,11 @@ b77fa6e6c41de05e  thm Sharp.the_sharp_bound_is_attained_at_three
 a755d241f1bf9e7a  thm Maximal.iota4_covering_number_is_four
     iota4_covering_number_is_four : (forall T : list nat, List.In T (sublists (List.seq 0 9)) -> blocksb T iota4 = true -> 4 <= length T) /\ blocksb (0 :: 1 :: 2 :: 3 :: nil) iota4 = true
 
-a7d5baa1bbc23684  thm Maximal.fano_is_maximal_intersecting
-    fano_is_maximal_intersecting : MaximalIntersecting 3 fano
+c3015e6640a16f6b  thm Maximal.fano_is_maximal_intersecting
+    fano_is_maximal_intersecting : MaximalIntersecting 3 Maximal.fano
 
-6767cfaa777787c4  thm Maximal.maximality_is_not_a_size_bound
-    maximality_is_not_a_size_bound : MaximalIntersecting 3 fano /\ length fano = 7 /\ Uniform 3 iota3 /\ Distinct iota3 /\ Intersecting iota3 /\ length iota3 = 10 /\ 7 < 10
+09506a925dd616f1  thm Maximal.maximality_is_not_a_size_bound
+    maximality_is_not_a_size_bound : MaximalIntersecting 3 Maximal.fano /\ length Maximal.fano = 7 /\ Uniform 3 iota3 /\ Distinct iota3 /\ Intersecting iota3 /\ length iota3 = 10 /\ 7 < 10
 
 c883e7b818708eaf  thm Maximal.regular_intersecting_ground_bound
     regular_intersecting_ground_bound : forall (b : nat) (F : Family) (U : list nat) (d : nat), 1 <= b -> F <> nil -> List.NoDup U -> Uniform b F -> Intersecting F -> Grounded F U -> (forall x : nat, List.In x U -> length (List.filter (fun A : list nat => memb x A) F) = d) -> length U <= b * b
@@ -1557,3 +1557,45 @@ eb60a7c0a661158b  thm TwoCover.r_star_two_three_at_most_three
 
 f71760fb06ca9d63  thm LinkCeiling.top_link_degree_three_uniform
     top_link_degree_three_uniform : forall (F : Family) (Y : list nat), Uniform 3 F -> Distinct F -> List.NoDup Y -> length Y = 2 -> ~ ContainsKSunflower 3 F -> deg Y F <= 2
+
+da643890e6b80f6c  thm TwoCover.rao_uniform_distinct
+    rao_uniform_distinct : forall (m r : nat) (F : Family), 1 <= m -> Uniform m F -> RaoSpread m F r -> Distinct F
+
+bf28c4271677a17a  thm TauThree.cover_by_sets_sum
+    cover_by_sets_sum : forall (Ts : list (list nat)) (F : Family), (forall A : list nat, List.In A F -> exists T : list nat, List.In T Ts /\ Subset T A) -> length F <= degsum Ts F
+
+b372cc32f9822127  thm TauThree.deg_full_le_one
+    deg_full_le_one : forall (k : nat) (F : Family) (T : list nat), Uniform k F -> Distinct F -> List.NoDup T -> length T = k -> deg T F <= 1
+
+52786fada73de13f  thm TauThree.internally_intersecting_bound
+    internally_intersecting_bound : forall A : Family, CapGraph A -> (forall e f : list nat, List.In e A -> List.In f A -> exists w : nat, List.In w e /\ List.In w f) -> length A <= 3
+
+a2b9e63f40dbcc33  thm TauThree.disjoint_pair_bounds
+    disjoint_pair_bounds : forall (A B C : Family) (e1 e2 : list nat), Uniform 2 A -> Uniform 2 B -> Uniform 2 C -> (forall T : list nat, List.NoDup T -> length T = 2 -> deg T B <= 1) -> (forall T : list nat, List.NoDup T -> length T = 2 -> deg T C <= 1) -> CrossInt A B -> CrossInt A C -> CrossInt B C -> List.In e1 A -> List.In e2 A -> (forall w : nat, List.In w e1 -> ~ List.In w e2) -> length B + length C <= 4
+
+9e2cd41ad47998e2  thm TauThree.lemma_L
+    lemma_L : forall A B C : Family, CapGraph A -> CapGraph B -> CapGraph C -> CrossInt A B -> CrossInt A C -> CrossInt B C -> A <> nil -> B <> nil -> C <> nil -> length A + length B + length C <= 9
+
+713a35a289b3cdc5  thm TauThree.tau_three_bound
+    tau_three_bound : forall G : Family, Uniform 3 G -> Distinct G -> (forall C D : list nat, List.In C G -> List.In D G -> exists w : nat, List.In w C /\ List.In w D) -> (forall p q : nat, exists C : list nat, List.In C G /\ ~ List.In p C /\ ~ List.In q C) -> length G <= 16
+
+1dd14cb60732bbb1  thm TauThree.tau_three_at_most_sixteen
+    tau_three_at_most_sixteen : TauThreeAtMost 16
+
+5543730a586b9eca  thm TauThree.r_star_three_three_at_most_four_unconditional
+    r_star_three_three_at_most_four_unconditional : SpreadYieldsDisjoint 3 3 4
+
+fc053908d4dc892d  thm TauThree.f_three_three_unconditional
+    f_three_three_unconditional : UpperBound 3 3 65
+
+71dcdba1fec66dc4  thm TauThree.intersecting_at_most_star_unconditional
+    intersecting_at_most_star_unconditional : forall (r : nat) (G : Family), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> length G <= r * r
+
+a5848ea9ada3cde1  thm TauThree.three_uniform_star_extremal
+    three_uniform_star_extremal : forall r : nat, 4 <= r -> StarExtremalAt 3 r
+
+4ede1c8035d1c130  thm TauThree.star34_attains_sixteen
+    star34_attains_sixteen : Uniform 3 star34 /\ Distinct star34 /\ RaoSpread 3 star34 4 /\ (forall C D : list nat, List.In C star34 -> List.In D star34 -> exists x : nat, List.In x C /\ List.In x D) /\ length star34 = 16
+
+02a58d7b04022ff7  thm TauThree.tau_three_at_most_unguarded_is_false
+    tau_three_at_most_unguarded_is_false : forall K : nat, ~ TauThreeAtMostUnguarded K

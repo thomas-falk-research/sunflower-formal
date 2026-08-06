@@ -586,6 +586,7 @@ Qed.
 Definition FranklTauThree : Prop :=
   forall (G : Family),
     Uniform 3 G ->
+    Distinct G ->
     (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
     (* covering number at least 3: no two points meet every member *)
     (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->
@@ -598,12 +599,47 @@ Definition FranklTauThree : Prop :=
 Definition TauThreeAtMost (K : nat) : Prop :=
   forall (G : Family),
     Uniform 3 G ->
+    Distinct G ->
     (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
     (forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C) ->
     length G <= K.
 
 Lemma frankl_is_stronger_than_needed : FranklTauThree -> TauThreeAtMost 16.
-Proof. intros HF G HU Hint Htau; pose proof (HF G HU Hint Htau); lia. Qed.
+Proof. intros HF G HU HD Hint Htau; pose proof (HF G HU HD Hint Htau); lia. Qed.
+
+(** ** Rao's condition already forces distinctness
+
+    A [m]-uniform family with [deg T F <= r ^ (m - |T|)] has [deg A F <= 1]
+    at each of its own members, so no set occurs twice. This is why the
+    outer family in [split_with_piece] needed no distinctness hypothesis --
+    and why the [tau = 3] hypothesis above, which carries no Rao condition,
+    does. *)
+
+Lemma rao_uniform_distinct :
+  forall m r (F : Family),
+    1 <= m -> Uniform m F -> RaoSpread m F r -> Distinct F.
+Proof.
+  intros m r F Hm; induction F as [|A F' IH]; intros HU HR; [constructor|].
+  assert (HAin : In A (A :: F')) by (left; reflexivity).
+  destruct (@uniform_mem m (A :: F') A HU HAin) as [HlA HndA].
+  assert (HUF' : Uniform m F')
+    by (inversion HU as [|? ? _ HF']; subst; exact HF').
+  assert (HRF' : RaoSpread m F' r).
+  { intros T Hnd Hne; specialize (HR T Hnd Hne); unfold deg in *; simpl in HR.
+    destruct (containsb T A); simpl in HR; lia. }
+  constructor; [| apply IH; assumption].
+  intros B HB Hseq.
+  specialize (HR A HndA ltac:(destruct A as [|a A']; [simpl in HlA; lia | discriminate])).
+  rewrite HlA, Nat.sub_diag in HR; simpl in HR.
+  assert (HcA : containsb A A = true)
+    by (apply containsb_true_iff; intros y Hy; exact Hy).
+  assert (HcB : containsb A B = true)
+    by (apply containsb_true_iff; destruct Hseq as [Hs _]; exact Hs).
+  assert (Hin : In B (filter (containsb A) F'))
+    by (apply filter_In; split; assumption).
+  unfold deg in HR; simpl in HR; rewrite HcA in HR; simpl in HR.
+  destruct (filter (containsb A) F'); [contradiction | simpl in HR; lia].
+Qed.
 
 (** ** The covering-number case split
 
@@ -691,7 +727,8 @@ Proof.
     assert (HGne : G <> []) by (rewrite EG; discriminate).
     assert (Htau : forall p q, exists C, In C G /\ ~ In p C /\ ~ In q C)
       by (intros p q; exact (@covers_dec_search G p q Esearch HGne)).
-    eapply Nat.le_trans; [exact (HF G HU Hint Htau) | exact HKr].
+    assert (HDist : Distinct G) by (apply (@rao_uniform_distinct 3 r G); [lia | exact HU | exact HR]).
+    eapply Nat.le_trans; [exact (HF G HU HDist Hint Htau) | exact HKr].
 Qed.
 
 (** ** The split, with the piece bound supplied
@@ -795,7 +832,7 @@ Corollary intersecting_at_most_star_from_frankl :
     length G <= r * r.
 Proof.
   intros HF r G Hr HU HR Hint.
-  apply (@intersecting_at_most_star 10 (fun G' a b c => HF G' a b c) r G);
+  apply (@intersecting_at_most_star 10 (fun G' a b c d => HF G' a b c d) r G);
     [nia | exact Hr | exact HU | exact HR | exact Hint].
 Qed.
 
