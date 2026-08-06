@@ -5783,8 +5783,8 @@ missing them; a member containing `{a,b}` meets `D` in a third point, and
     deg({a,b}) <= 3      for every pair                             (P)
 ```
 
-`tt_pair`. This is the only place `tau >= 3` is used, and it is used
-three times over.
+`tt_pair`. Covering number 3 is used in exactly two ways in the whole
+file: here, and to make the three tails nonempty.
 
 **The decomposition.** Fix `M = {x,y,z} in G`. Every member meets `M`.
 Peel:
@@ -5875,7 +5875,7 @@ development has had it since `ErdosRado.v`. §24.2 already records that
 the whole `r*` route is behind Erdős–Rado as a bound on `f`; what moves
 here is the threshold, not the sunflower number.
 
-**The sequence, unconditionally.**
+**The sequence.**
 
 ```
   m     r*(m,3)      by
@@ -5884,14 +5884,26 @@ here is the threshold, not the sunflower number.
   3     in [3,4]     upper: this section;  lower: r = 2 fails already at m = 2
   4     in [3,7]     upper: §24.2's split threshold
   5     in [3,8]
-  9     >= 4         §18.2, via g(9) >= 20000 > 3^9
+  9     >= 4         CONDITIONAL -- see below
   10    in [3,17]
 ```
 
-Every row is now unconditional. Note the `m = 9` row against the `m = 2`
-row: the sequence is **not constant** — it has grown at least twice
-already — which is a fact the repository has had since §18.2 and which
-§25.5 says is more than the literature has.
+Every row is a theorem of this development **except `m = 9`**, and that
+exception is a number from this session's brief that did not survive
+being checked. `IotaRate.substitution_would_refute_the_flat_threshold_at_nine`
+is stated as `LowerBound 9 3 (3^9 + 317) -> ~ SpreadYieldsDisjoint 9 3 3`,
+and its own header says the hypothesis is open here: it rests on the
+Abbott–Hanson–Sauer substitution, *"which is not formalised here"*. So
+`r*(9,3) >= 4` is conditional on an unformalised construction, and
+§22.2's table — which lists it flat, in the same column as the proved
+rows — overstates it. Corrected there and in `STATUS.md` in the same
+commit.
+
+The consequence matters for §25.5: it is **not** a theorem of this
+development that the sequence is non-constant. What is a theorem is
+`r*(1,3) = 2` and `r*(2,3) = 3`, so it has grown once. Whether it grows
+again is exactly the open question, and `m = 9` is a conjectured second
+step, not a certified one.
 
 **`I(3,r) = r²` for every `r >= 4`, exactly.** The upper bound is the
 `tau <= 2` case (§24.10) plus the `tau = 3` case (here). The lower bound
@@ -6032,7 +6044,8 @@ consequence for §24.13 is worth stating plainly:
 > a statement about the reach of the two-way split, not a bound anyone
 > would quote. What the split gives that the literature does not is
 > *exact small values*: at `m = 3` the published constant is unusable
-> (BCW's `C >= 4` gives a threshold near 13 and `f(3,3) <= 2300`, against
+> (BCW state the constant only as `C >= 4`, and even at that floor the
+> threshold exceeds 13 and the bound on `f(3,3)` exceeds 2000, against
 > Erdős–Rado's 49 and this development's 65), while `r*(3,3) in [3,4]` is
 > a two-value interval.
 
@@ -6055,11 +6068,13 @@ form of the spread lemma, not the disjointness form. So:
 That re-prices §3 of the brief and part of §22.7. §22.7 is right that
 finitely many terms cannot distinguish bounded from `log m`; it is too
 strong in implying the terms are worthless, because on the lower side the
-repository's `r*(2,3) = 3` and `r*(9,3) >= 4` are, as far as this reading
-goes, the only concrete values anyone has written down. They do not show
-growth — `>= 4` is consistent with bounded — but they are data where
-there was none, and the next term that moved would be the first evidence
-of unboundedness in the disjointness form.
+repository's exact terms are, as far as this reading goes, the only
+concrete values anyone has written down. They do not show unboundedness —
+`r*(2,3) = 3` and `r*(3,3) in [3,4]` are consistent with a bounded
+sequence — but they are data where there was none, and the first term
+proved to exceed 4 would be the first evidence of growth in the
+disjointness form. (`r*(9,3) >= 4` would be such a term; it is
+conditional on an unformalised construction, see §25.3.)
 
 ### 25.6 Measured
 
