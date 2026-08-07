@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 106 anecdotes into a coverage metric over the
+  mutation testing from 109 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -6572,7 +6572,8 @@ for this development's `I(m,r)` coincide (§26.5).
 §26.4 left `r*(4,3) ≤ 5` hanging on one constant and named a route to it.
 This section walks the route, finds it blocked, and says by how much —
 then extracts from the obstruction two general lemmas that sharpen
-`cross_pair_bound` itself.
+`cross_pair_bound` itself, and spends the sharper bound on a second
+extremal question the sharpening makes answerable (§27.6).
 
 ### 27.1 Closed: `Σ_x |A_x| ≤ 48` is false, by more than a factor of two
 
@@ -6798,7 +6799,16 @@ scan reached the ground where its own witness lives.
                                                                      budget
                                                                      unspent
   g65 maximality, grounds 13,14,15              exhaustive  <1 s     yes
-  coqc coq/CrossRefined.v (g65 by vm_compute)   --          52 s     yes
+  coqc coq/CrossIntersecting.v, after the
+    two_cover_split refactor                    --          3 s      yes
+  coqc coq/CrossRefined.v (g65 and hm16 by
+    vm_compute)                                 --          72 s     yes
+  tau_piece_scan m=3 r=5 tau>=2, ground 9,
+    re-run for I2(3,5) on the spare core        3e10 nodes  100 min  NO --
+                                                                     STOPPED by
+                                                                     hand,
+                                                                     budget
+                                                                     unspent
 ```
 
 Both stopped rows are **stopped by hand with the node budget unspent**,
@@ -6810,52 +6820,83 @@ section does not use.
 **The gates.**
 
 ```
-  make -j4 verify        green  (481 audited theorems, all "Closed under
+  make -j4 verify        green  (487 audited theorems, all "Closed under
                                 the global context")
   make coqchk            green  (41 modules; one axiom:
                                 Sunflower.ALWZ.Rao20_lemma2)
-  cargo test --release   green  (28 suites, 262 tests, 0 failures)
-  python3 tools/mutate.py green (106 mutations: 103 killed, 2 survived as
+  cargo test --release   green  (28 suites, 263 tests, 0 failures)
+  python3 tools/mutate.py green (109 mutations: 106 killed, 2 survived as
                                 declared, 1 control passing, 0 unexpected --
-                                all six added here killed)
-  tools/statements.py    green  (568 statements)
+                                all nine added here killed)
+  tools/statements.py    green  (575 statements)
   tools/docnumbers.py    green  (12 quoted numbers match)
 ```
 
-### 27.6 One object named for next time, and what is *not* proved about it
+### 27.6 `I₂(m,r)` named, and bounded
 
 Rule 2 of the brief — name the object. The construction of §27.2 turns on
-a quantity that has no name in this development:
+a quantity that had no name here:
 
 > **`I₂(m,r)`** — the largest `m`-uniform intersecting Rao(r)-spread
 > family that is **not a star**. (`I(m,r)` drops the last clause.)
 
-`g65` is `1 + 4·I₂(3,5)` when the four link families coincide, so the
-whole question of whether 65 is the best that shape can do is the value of
-`I₂(3,5)`.
+`g65` is `1 + 4·I₂(3,5)` when its four link families coincide, so whether
+65 is the best that shape can do *is* the value of `I₂(3,5)`.
 
-**Measured.** `I₂(3,5) ≥ 16`, by `hm16`, on 9 points. The scan is
-exhaustive at 15 on ground 8 and was stopped by hand on ground 9 (§27.5),
-so the sequence is still climbing where it was left.
+**The two-cover split, factored out.** `two_cover_star_extremal`'s proof
+had the whole two-point-cover argument inlined and then applied
+`cross_pair_bound` at the end. That argument is now a lemma in its own
+right:
 
-**Not proved, and deliberately left unproved rather than asserted.** The
-two-cover split gives an upper bound in a few lines of arithmetic: a
-non-star family with `τ ≤ 2` splits against its cover `{p,q}` into two
-cross-intersecting `(m-1)`-uniform Rao(r) tail families plus the
-both-points piece, so `cross_pair_refined` at `u = 2` gives
-`2·max(4,r+1) + r = 3r + 2` for `r ≥ 3`, and `τ ≥ 3` gives 16 from
-`TauThree.tau_three_bound`; at `r = 5` that is `max(17,16) = 17`, one
-above the witness. **This paragraph is arithmetic, not Coq, and §27.1 is
-the reason it is labelled as such rather than called a theorem.**
-Formalising it needs the two-cover split factored out of
-`two_cover_star_extremal`'s proof, where it is currently inlined — that
-refactor, and then `I₂(3,5) ∈ {16,17}`, is the next concrete step.
+> **`CrossIntersecting.two_cover_split`:** for `m ≥ 2`, `p ≠ q`, an
+> `m`-uniform intersecting Rao(r)-spread `G` covered by `{p,q}` is either
+> a star, or splits into two **nonempty** cross-intersecting
+> `(m-1)`-uniform Rao(r) tail families `A`, `B` with
+> `|G| ≤ |A| + |B| + r^(m-2)`.
 
-Note what this would and would not buy. It would show `hm16` is optimal or
-one off optimal, hence that 65 is essentially the best the `g65` shape can
-do. It would **not** bound `TauThreePieceAtMost 4 5 K`, because a maximum
-`G` need not have four coinciding link families, or any members in the
-one-point layer at all.
+`two_cover_star_extremal` is re-proved from it, statement unchanged, by
+feeding the split to `cross_pair_bound`; the point of the refactor is that
+a second consumer can now feed it something else.
+
+**The bound.** Feeding it `cross_pair_refined` instead, and taking the
+covering-number-3 branch from `TauThree.tau_three_bound`:
+
+> **`nonstar_three_bound`:** for `r ≥ 3`, a 3-uniform distinct
+> intersecting Rao(r)-spread family that is not a star has at most
+> `max(3r+2, 16)` members.
+>
+> **`nonstar_three_five_at_most_seventeen`:** `I₂(3,5) ≤ 17`.
+>
+> **`i2_three_five_window`:** `16 ≤ I₂(3,5) ≤ 17`, witness and bound in
+> one statement.
+
+The two branches are `2·max(4,r+1) + r` from the split (the tails, plus
+the both-points piece the pair degree caps at `r^(m-2) = r`) and 16 from
+`tau_three_bound`, which carries no Rao condition at all. The first
+overtakes the second at `r = 5`, which is exactly the row that matters.
+
+**This is where `cross_pair_refined` earns its keep.** `cross_pair_bound`
+at `u = 2`, `r = 5` gives 20, so the two-cover branch would come out at
+`20 + 5 = 25 = r^(m-1)` — the star bound, i.e. no information about
+non-stars whatever. The refined bound gives 12, hence 17. The theorem
+does not exist without it.
+
+**The remaining gap is one, and it is a gap in a measurement, not in the
+argument.** `hm16` realises the split exactly: at the cover `{4,12}` it
+has 1 member through 4 only, 10 through 12 only and 5 through both — so
+`11 + 5 = 16`, where 11 is the *exhaustively measured* maximum of
+`|A| + |B|` for cross-intersecting Rao(5) graphs and 12 is what
+`cross_pair_refined` proves. Closing `I₂(3,5) = 16` therefore needs the
+pair bound at `u = 2` to come down from `2r+2` to the measured `2r+1`, and
+that measurement is exhaustive only on 8 points, where the extremal
+configuration needs up to `2r+2 = 12`. That is the next thing to settle,
+and it is a self-contained question about graphs.
+
+**What this does and does not buy.** It shows `hm16` is optimal or one off
+optimal, hence that 65 is essentially the best the `g65` shape can do. It
+does **not** bound `TauThreePieceAtMost 4 5 K`, because a maximum `G` need
+not have four coinciding link families, or any members in the one-point
+layer at all.
 
 ### 27.7 The one-line verdict
 
@@ -6872,6 +6913,12 @@ bound with no threshold on `r`, off by one from the exhaustive truth at
 `u = 2` where the existing `cross_pair_bound` is off by a factor of `r/2`,
 and strictly sharper at the `(u,r) = (3,5)` row that the `m = 4` case runs
 through.
+
+And the sharper bound immediately buys a theorem the old one could not
+state: with the two-point-cover argument factored out of
+`two_cover_star_extremal` into `two_cover_split`, feeding it
+`cross_pair_refined` gives `16 ≤ I₂(3,5) ≤ 17` — where feeding it
+`cross_pair_bound` gives 25, which is the star bound and says nothing.
 
 
 No new record object, and no search in this section decided anything —

@@ -1743,3 +1743,48 @@ statement, and its hypothesis is that A is, which is what lets the pair \
 degrees be summed over one member of the partner. An existential Pointed \
 would be satisfied by every family with a member through w and would say \
 nothing."""
+
+[[mutation]]
+id = "crossint-split-drop-pair-term"
+file = "coq/CrossIntersecting.v"
+question = """two_cover_split hands back the two tail families plus a \
+both-points term r^(m-2). Is that term real, or an artefact of how the \
+partition is written?"""
+find = "          length G <= length A + length B + r ^ (m - 2))."
+replace = "          length G <= length A + length B)."
+expect = "killed"
+because = """Real, and it is exactly the pair degree. The members \
+containing both cover points appear in neither tail family: the tails are \
+built from the members containing p and not q, and q and not p. hm16 has \
+five of them at (p,q) = (4,12) -- the full r^(m-2) = 5 -- which is why \
+its 16 members are 11 + 5 and not 11."""
+
+[[mutation]]
+id = "crossrefined-nonstar-off-by-one"
+file = "coq/CrossRefined.v"
+question = """The non-star bound is max(3r+2, 16). Is 3r+2 what the two \
+pieces actually add up to, or is there slack in the quotation?"""
+find = "    length A <= Nat.max (3 * r + 2) 16."
+replace = "    length A <= Nat.max (3 * r + 1) 16."
+expect = "killed"
+because = """No slack. The two-cover branch is cross_pair_refined at \
+u = 2, which is 2*max(4, r+1) = 2r+2 for r >= 3, plus the both-points \
+piece r^(m-2) = r: exactly 3r+2. One less and the branch does not close. \
+At r = 5 this is the difference between 17 and 16, and 16 is what hm16 \
+attains -- so the mutated statement is the claim that hm16 is extremal, \
+which is true but not proved here."""
+
+[[mutation]]
+id = "crossrefined-nonstar-existential"
+file = "coq/CrossRefined.v"
+question = """NonStar says that for *every* point some member misses it. \
+Would "some point is missed by some member" do?"""
+find = """Definition NonStar (A : Family) : Prop :=
+  forall w, exists C, In C A /\\ ~ In w C."""
+replace = """Definition NonStar (A : Family) : Prop :=
+  exists w C, In C A /\\ ~ In w C."""
+expect = "killed"
+because = """No: the proof instantiates NonStar at the two points of the \
+cover the search hands back, and at whatever point two_cover_split \
+returns in its star branch, none of which are known in advance. The \
+existential form is satisfied by every star with two or more members."""

@@ -1654,6 +1654,9 @@ a435827c4efffef2  thm CrossIntersecting.pow_cube_step
 5191243e60946dc4  thm CrossIntersecting.star_extremal_for_large_r
     star_extremal_for_large_r : forall m r : nat, 1 <= m -> m + 1 <= r -> PeanoNat.Nat.pow m 3 <= PeanoNat.Nat.pow r 2 -> StarExtremalAt m r
 
+94ace7b948f6c959  thm CrossIntersecting.two_cover_split
+    two_cover_split : forall (m r : nat) (G : Family) (p q : nat), 2 <= m -> p <> q -> Uniform m G -> RaoSpread m G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> (exists w : nat, forall C : list nat, List.In C G -> List.In w C) \/ (exists A B : Family, Uniform (m - 1) A /\ Uniform (m - 1) B /\ RaoSpread (m - 1) A r /\ RaoSpread (m - 1) B r /\ (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) /\ A <> nil /\ B <> nil /\ length G <= length A + length B + PeanoNat.Nat.pow r (m - 2))
+
 3333f7e8a3f3ffca  thm CrossRefined.star_saturation
     star_saturation : forall (u r : nat) (A B : Family) (w : nat), Uniform u B -> RaoSpread u A r -> Pointed A w -> (forall e f : list nat, List.In e A -> List.In f B -> exists x : nat, List.In x e /\ List.In x f) -> u * PeanoNat.Nat.pow r (u - 2) < length A -> Pointed B w
 
@@ -1702,8 +1705,26 @@ dc1dc3850c718f40  thm CrossRefined.g65_tau
 4f00bb3fff22ebf9  thm CrossRefined.four_unpointed_cross_families_exceed_forty_eight
     four_unpointed_cross_families_exceed_forty_eight : exists A0 A1 A2 A3 : Family, (forall X : Family, List.In X (A0 :: A1 :: A2 :: A3 :: nil) -> Uniform 3 X /\ Distinct X /\ RaoSpread 3 X 5 /\ (forall w : nat, exists C : list nat, List.In C X /\ ~ List.In w C)) /\ (forall X Y : Family, List.In X (A0 :: A1 :: A2 :: A3 :: nil) -> List.In Y (A0 :: A1 :: A2 :: A3 :: nil) -> forall C D : list nat, List.In C X -> List.In D Y -> exists x : nat, List.In x C /\ List.In x D) /\ 48 < length A0 + length A1 + length A2 + length A3
 
+bf04dd5b5d8b9ce7  thm CrossRefined.nonstar_not_pointed
+    nonstar_not_pointed : forall (A : Family) (w : nat), NonStar A -> ~ Pointed A w
+
+b32c49bf0172796c  thm CrossRefined.nonstar_three_bound
+    nonstar_three_bound : forall (r : nat) (A : Family), 3 <= r -> Uniform 3 A -> Distinct A -> RaoSpread 3 A r -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= PeanoNat.Nat.max (3 * r + 2) 16
+
+4011d84b554626df  thm CrossRefined.nonstar_three_five_at_most_seventeen
+    nonstar_three_five_at_most_seventeen : forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 17
+
+f2f040fce1b73643  thm CrossRefined.hm16_nonstar
+    hm16_nonstar : NonStar hm16
+
+f3abcec359730470  thm CrossRefined.i2_three_five_window
+    i2_three_five_window : (Uniform 3 hm16 /\ Distinct hm16 /\ RaoSpread 3 hm16 5 /\ (forall C D : list nat, List.In C hm16 -> List.In D hm16 -> exists x : nat, List.In x C /\ List.In x D) /\ NonStar hm16 /\ length hm16 = 16) /\ (forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 17)
+
 7945cd77605a190f  def CrossRefined.Pointed
     Pointed = fun (A : Family) (w : nat) => forall C : list nat, List.In C A -> List.In w C : Family -> nat -> Prop Arguments Pointed A w%nat_scope
+
+e1d6d9b21a1f254c  def CrossRefined.NonStar
+    NonStar = fun A : Family => forall w : nat, exists C : list nat, List.In C A /\ ~ List.In w C : Family -> Prop Arguments NonStar A
 
 13b9466c400071de  def CrossRefined.hm16
     hm16 = ((4 :: 5 :: 6 :: nil) :: List.flat_map (fun i : nat => List.map (fun y : nat => 12 :: i :: y :: nil) (7 :: 8 :: 9 :: 10 :: 11 :: nil)) (4 :: 5 :: 6 :: nil))%list : Family

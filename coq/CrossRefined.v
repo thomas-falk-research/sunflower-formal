@@ -13,7 +13,7 @@
                              3-uniform Rao(5)-spread families,
 >>
 
-    calling this "the gap, stated exactly". This file does two things.
+    calling this "the gap, stated exactly". This file does three things.
 
     ** 1. That route is dead, and the write-up gets corrected
 
@@ -71,7 +71,19 @@
     The [u = 2] extremal configuration — one edge against the two full
     stars at its endpoints — is exactly the fourth case below, and the
     reason the refined bound is tight there is that [star_saturation]
-    forbids the *large* pointed side. *)
+    forbids the *large* pointed side.
+
+    ** 3. What the sharper bound buys: [I2(3,5) <= 17]
+
+    [CrossIntersecting.two_cover_split] now factors the two-point-cover
+    argument out of [two_cover_star_extremal], so a second consumer can
+    feed it a different pair bound. Feeding it [cross_pair_refined] gives
+    [nonstar_three_bound]: a 3-uniform intersecting Rao(r)-spread family
+    that is *not* a star has at most [max(3r+2, 16)] members, hence
+    [I2(3,5) <= 17] against [hm16]'s 16. [cross_pair_bound] gives 20 on
+    the same row, so that branch would come out at [20 + 5 = 25], which is
+    the star bound [r^(m-1)] and says nothing about non-stars. This
+    theorem does not exist without the refined bound. *)
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
@@ -321,6 +333,100 @@ Proof.
   vm_compute in H; exact H.
 Qed.
 
+(** ** [I2(m,r)]: the largest non-star intersecting Rao-spread family
+
+    [I(m,r)] is the largest [m]-uniform intersecting Rao(r)-spread family
+    and [StarExtremalAt] is the claim that a star attains it. Take the
+    stars away and a different quantity appears, which §27.2's
+    construction is built out of:
+
+    > [I2(m,r)] — the largest such family that is **not** a star.
+
+    At [m = 3] it is bounded by two disjoint arguments meeting at the
+    covering number. If [tau <= 2], [CrossIntersecting.two_cover_split]
+    splits the family against its cover into two cross-intersecting
+    2-uniform tail families plus a both-points piece of at most
+    [r^(m-2) = r], and [cross_pair_refined] at [u = 2] caps the tails at
+    [2·max(4, r+1)] — which for [r >= 3] is [2r+2], so the whole family is
+    at most [3r+2]. If [tau >= 3], [TauThree.tau_three_bound] gives 16
+    with no Rao condition at all.
+
+    [cross_pair_bound] cannot do this: at [u = 2], [r = 5] it gives 20,
+    so the [tau <= 2] branch would come out at 25 — exactly the star
+    bound [r^(m-1)], i.e. no information. The whole content of the
+    theorem below is the refined pair bound. *)
+
+Definition NonStar (A : Family) : Prop :=
+  forall w, exists C, In C A /\ ~ In w C.
+
+Lemma nonstar_not_pointed :
+  forall A w, NonStar A -> ~ Pointed A w.
+Proof.
+  intros A w Hns Hpt; destruct (Hns w) as [C [HC HwC]]; apply HwC, Hpt, HC.
+Qed.
+
+Theorem nonstar_three_bound :
+  forall r (A : Family),
+    3 <= r ->
+    Uniform 3 A -> Distinct A -> RaoSpread 3 A r ->
+    (forall C D, In C A -> In D A -> exists x, In x C /\ In x D) ->
+    NonStar A ->
+    length A <= Nat.max (3 * r + 2) 16.
+Proof.
+  intros r A Hr HU HD HR Hint Hns.
+  destruct (covers_at_most A 2) eqn:E.
+  - (* covering number at most two: split against the cover *)
+    destruct (small_cover_of _ _ E) as [S [Hlen Hcov]].
+    destruct S as [|p [|q S']]; simpl in Hlen.
+    + exfalso; destruct (Hns 0) as [C [HC _]].
+      destruct (Hcov C HC) as [x [[] _]].
+    + exfalso; destruct (Hns p) as [C [HC HpC]].
+      destruct (Hcov C HC) as [x [[Ex|[]] HxC]]; subst x; contradiction.
+    + assert (ES : S' = [])
+        by (destruct S'; [reflexivity | simpl in Hlen; lia]).
+      subst S'.
+      assert (Hcov2 : forall C, In C A -> In p C \/ In q C).
+      { intros C HC; destruct (Hcov C HC) as [x [[Ex|[Ex|[]]] HxC]];
+          subst x; [left | right]; exact HxC. }
+      destruct (Nat.eq_dec p q) as [Epq|Hpq].
+      { exfalso; subst q; destruct (Hns p) as [C [HC HpC]].
+        destruct (Hcov2 C HC); contradiction. }
+      destruct (@two_cover_split 3 r A p q ltac:(lia) Hpq HU HR Hint Hcov2)
+        as [[w Hw] | [X [Y [HUX [HUY [HRX [HRY [Hcross [HXne [HYne Hle]]]]]]]]]].
+      { exfalso; exact (@nonstar_not_pointed A w Hns Hw). }
+      pose proof (@cross_pair_refined 2 r X Y ltac:(lia) HUX HUY HRX HRY
+                    Hcross HXne HYne) as Hsum.
+      replace (2 - 2) with 0 in Hsum by reflexivity.
+      rewrite Nat.pow_0_r, Nat.mul_1_r in Hsum.
+      replace (3 - 2) with 1 in Hle by reflexivity.
+      rewrite Nat.pow_1_r in Hle.
+      assert (Hmax : Nat.max (2 * 2) (r + 1) = r + 1) by lia.
+      rewrite Hmax in Hsum.
+      lia.
+  - (* covering number at least three: Frankl's range, without Rao *)
+    assert (Htau : forall p q, exists C, In C A /\ ~ In p C /\ ~ In q C).
+    { intros p q.
+      destruct (@no_small_cover A 2 E [p; q] ltac:(simpl; lia)) as [C [HC Hmiss]].
+      exists C; repeat split;
+        [exact HC | apply Hmiss; left; reflexivity
+         | apply Hmiss; right; left; reflexivity]. }
+    pose proof (tau_three_bound HU HD Hint Htau); lia.
+Qed.
+
+(** > **[I2(3,5) <= 17]**, the row the `m = 4` construction runs on. *)
+
+Corollary nonstar_three_five_at_most_seventeen :
+  forall (A : Family),
+    Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 ->
+    (forall C D, In C A -> In D A -> exists x, In x C /\ In x D) ->
+    NonStar A ->
+    length A <= 17.
+Proof.
+  intros A HU HD HR Hint Hns.
+  pose proof (@nonstar_three_bound 5 A ltac:(lia) HU HD HR Hint Hns) as H.
+  vm_compute in H; exact H.
+Qed.
+
 (** ** A one-point analogue of [TwoCover.covers_dec_search]
 
     Deciding "some single point covers [G]" is the same finite search one
@@ -404,6 +510,32 @@ Lemma hm16_unpointed : forall w, exists C, In C hm16 /\ ~ In w C.
 Proof.
   intros w; apply (@unpointed_dec_search hm16 w);
     [vm_compute; reflexivity | discriminate].
+Qed.
+
+Lemma hm16_nonstar : NonStar hm16.
+Proof. exact hm16_unpointed. Qed.
+
+(** > **[16 <= I2(3,5) <= 17]** — the witness and the bound, in one
+    > statement. The gap is exactly one, and it is exactly the gap between
+    > the proved cross-pair bound [2r+2] at [u = 2] and the exhaustively
+    > measured [2r+1]: [11 + 5 = 16] is what the measurement would give,
+    > and [12 + 5 = 17] is what is proved. *)
+
+Theorem i2_three_five_window :
+  (Uniform 3 hm16 /\ Distinct hm16 /\ RaoSpread 3 hm16 5 /\
+   (forall C D, In C hm16 -> In D hm16 -> exists x, In x C /\ In x D) /\
+   NonStar hm16 /\ length hm16 = 16)
+  /\ (forall A : Family,
+         Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 ->
+         (forall C D, In C A -> In D A -> exists x, In x C /\ In x D) ->
+         NonStar A -> length A <= 17).
+Proof.
+  split.
+  - exact (conj hm16_uniform
+             (conj hm16_distinct
+                (conj hm16_rao
+                   (conj (@hm16_int) (conj hm16_nonstar hm16_length))))).
+  - exact (@nonstar_three_five_at_most_seventeen).
 Qed.
 
 Lemma g65_uniform : Uniform 4 g65.

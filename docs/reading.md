@@ -1406,3 +1406,10 @@ for, and the one thing the derivation had not done.
 what the measurement bought instead: a 65-member witness that pins the
 open constant into `[65, 125]`, and two general transfer lemmas the
 counterexample turned out to be an instance of.
+
+The rule then had to be applied to this session's own work within the
+hour. §27.6's upper bound on `I₂(3,5)` was first written down as a few
+lines of arithmetic and labelled, in bold, *not Coq*. It is now
+`CrossRefined.nonstar_three_bound`, the label is gone, and the difference
+between the two states is the only thing that decides whether the sketch
+was right — which is the whole content of rule 12.

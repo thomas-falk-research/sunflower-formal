@@ -558,39 +558,34 @@ Proof.
         exact HR.
 Qed.
 
-(** ** The theorem
+(** ** The two-cover split, factored out
 
-    §24.10 at [m = 3] is the [m = 3] instance of this. *)
+    Everything a two-point cover gives, before any pair bound is applied.
+    Either the family is a star, or it splits into two *nonempty*
+    cross-intersecting Rao-spread tail families one uniformity down, plus
+    a both-points piece the pair degree caps at [r^(m-2)].
 
-Theorem two_cover_star_extremal :
+    Two theorems consume it with two different pair bounds:
+    [two_cover_star_extremal] immediately below, with [cross_pair_bound],
+    and [CrossRefined.nonstar_three_bound], with the sharper
+    [CrossRefined.cross_pair_refined]. Keeping the split separate is what
+    lets the second one exist without a second copy of this argument. *)
+
+Lemma two_cover_split :
   forall m r (G : Family) p q,
-    1 <= m -> m + 1 <= r ->
+    2 <= m -> p <> q ->
     Uniform m G -> RaoSpread m G r ->
     (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
     (forall C, In C G -> In p C \/ In q C) ->
-    length G <= r ^ (m - 1).
+    (exists w, forall C, In C G -> In w C)
+    \/ (exists A B : Family,
+          Uniform (m - 1) A /\ Uniform (m - 1) B /\
+          RaoSpread (m - 1) A r /\ RaoSpread (m - 1) B r /\
+          (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) /\
+          A <> [] /\ B <> [] /\
+          length G <= length A + length B + r ^ (m - 2)).
 Proof.
-  intros m r G p q Hm Hr HU HR Hint Hcov.
-  (* a single point covering the family is immediate from the point cap *)
-  assert (Hstar : forall w, (forall C, In C G -> In w C) -> length G <= r ^ (m - 1)).
-  { intros w Hw.
-    assert (Hb : length G <= length [w] * r ^ (m - 1)).
-    { apply cover_by_points;
-        [intros C HC; exists w; split; [left; reflexivity | apply Hw; exact HC]
-        | intros y _; eapply rao_point; exact HR]. }
-    simpl in Hb; lia. }
-  destruct (Nat.eq_dec m 1) as [E1|Hm2].
-  { subst m; simpl.
-    destruct G as [|C G0] eqn:EG; [simpl; lia | rewrite <- EG in *].
-    assert (HC : In C G) by (rewrite EG; left; reflexivity).
-    destruct (@uniform_mem 1 G C HU HC) as [Hl _].
-    destruct C as [|x [|? ?]]; simpl in Hl; try discriminate.
-    apply Hstar with (w := x); intros D HD.
-    destruct (Hint D [x] HD HC) as [z [HzD [Ez|[]]]]; subst z; exact HzD. }
-  assert (Hm2' : 2 <= m) by lia.
-  destruct (Nat.eq_dec p q) as [Epq|Hpq].
-  { subst q; apply Hstar with (w := p); intros C HC;
-      destruct (Hcov C HC); assumption. }
+  intros m r G p q Hm2' Hpq HU HR Hint Hcov.
   pose (Gq' := filter (fun C => memb q C) G).
   pose (Gp := filter (fun C => negb (memb q C)) G).
   pose (Gpq := filter (fun C => memb p C) Gq').
@@ -631,7 +626,7 @@ Proof.
       exact HR. }
   (* if either side is empty the family is a star *)
   destruct (list_eq_dec (list_eq_dec Nat.eq_dec) Gp []) as [HpE|HpNE].
-  { apply Hstar with (w := q); intros C HC.
+  { left; exists q; intros C HC.
     destruct (in_dec Nat.eq_dec q C) as [Hq|Hq]; [exact Hq | exfalso].
     assert (HCp : In C Gp)
       by (rewrite EGp; apply filter_In; split;
@@ -640,7 +635,7 @@ Proof.
                       [exfalso; apply Hq, memb_true_iff; exact Em | reflexivity]]).
     rewrite HpE in HCp; exact HCp. }
   destruct (list_eq_dec (list_eq_dec Nat.eq_dec) Gq []) as [HqE|HqNE].
-  { apply Hstar with (w := p); intros C HC.
+  { left; exists p; intros C HC.
     destruct (in_dec Nat.eq_dec p C) as [Hp|Hp]; [exact Hp | exfalso].
     assert (Hq : In q C) by (destruct (Hcov C HC); [contradiction | assumption]).
     assert (HCq' : In C Gq')
@@ -678,10 +673,55 @@ Proof.
     - intros Ew; subst w; contradiction. }
   assert (Hne : forall (x : nat) (H : Family), H <> [] -> map (rem x) H <> [])
     by (intros x H HH; destruct H; [contradiction | simpl; discriminate]).
-  pose proof (@cross_pair_bound (m - 1) r (map (rem p) Gp) (map (rem q) Gq)
-                ltac:(lia) ltac:(lia) HUA HUB HRA HRB Hcross
-                (Hne p Gp HpNE) (Hne q Gq HqNE)) as Hsum.
-  rewrite !map_length in Hsum.
+  right; exists (map (rem p) Gp), (map (rem q) Gq); repeat apply conj.
+  - exact HUA.
+  - exact HUB.
+  - exact HRA.
+  - exact HRB.
+  - exact Hcross.
+  - exact (Hne p Gp HpNE).
+  - exact (Hne q Gq HqNE).
+  - rewrite !map_length; lia.
+Qed.
+
+(** ** The theorem
+
+    §24.10 at [m = 3] is the [m = 3] instance of this. *)
+
+Theorem two_cover_star_extremal :
+  forall m r (G : Family) p q,
+    1 <= m -> m + 1 <= r ->
+    Uniform m G -> RaoSpread m G r ->
+    (forall C D, In C G -> In D G -> exists x, In x C /\ In x D) ->
+    (forall C, In C G -> In p C \/ In q C) ->
+    length G <= r ^ (m - 1).
+Proof.
+  intros m r G p q Hm Hr HU HR Hint Hcov.
+  (* a single point covering the family is immediate from the point cap *)
+  assert (Hstar : forall w, (forall C, In C G -> In w C) -> length G <= r ^ (m - 1)).
+  { intros w Hw.
+    assert (Hb : length G <= length [w] * r ^ (m - 1)).
+    { apply cover_by_points;
+        [intros C HC; exists w; split; [left; reflexivity | apply Hw; exact HC]
+        | intros y _; eapply rao_point; exact HR]. }
+    simpl in Hb; lia. }
+  destruct (Nat.eq_dec m 1) as [E1|Hm2].
+  { subst m; simpl.
+    destruct G as [|C G0] eqn:EG; [simpl; lia | rewrite <- EG in *].
+    assert (HC : In C G) by (rewrite EG; left; reflexivity).
+    destruct (@uniform_mem 1 G C HU HC) as [Hl _].
+    destruct C as [|x [|? ?]]; simpl in Hl; try discriminate.
+    apply Hstar with (w := x); intros D HD.
+    destruct (Hint D [x] HD HC) as [z [HzD [Ez|[]]]]; subst z; exact HzD. }
+  assert (Hm2' : 2 <= m) by lia.
+  destruct (Nat.eq_dec p q) as [Epq|Hpq].
+  { subst q; apply Hstar with (w := p); intros C HC;
+      destruct (Hcov C HC); assumption. }
+  destruct (@two_cover_split m r G p q Hm2' Hpq HU HR Hint Hcov)
+    as [[w Hw] | [A [B [HUA [HUB [HRA [HRB [Hcross [HAne [HBne Hle]]]]]]]]]].
+  { exact (Hstar w Hw). }
+  pose proof (@cross_pair_bound (m - 1) r A B
+                ltac:(lia) ltac:(lia) HUA HUB HRA HRB Hcross HAne HBne) as Hsum.
   assert (Esplit : r ^ (m - 1) = (r - 1) * r ^ (m - 1 - 1) + r ^ (m - 2)).
   { replace (m - 1 - 1) with (m - 2) by lia.
     assert (Hp1 : r ^ (m - 1) = r * r ^ (m - 2)).

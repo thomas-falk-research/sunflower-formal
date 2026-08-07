@@ -1,6 +1,6 @@
 //! The objects and the numbers behind `coq/CrossRefined.v`.
 //!
-//! Three claims are checked here, all of them by construction and
+//! Four claims are checked here, all of them by construction and
 //! exhaustive verification rather than by trusting the Coq side:
 //!
 //! 1. `g65` really is a 4-uniform intersecting Rao(5)-spread family of
@@ -13,6 +13,10 @@
 //! 3. `cross_pair_refined`'s number, `u·max(2u,r+1)·r^(u-2)`, against
 //!    `cross_pair_bound`'s `(r-1)·r^(u-1)` and against the exhaustive
 //!    truth at `u = 2`.
+//! 4. `nonstar_three_bound`'s `max(3r+2,16)`, which branch binds where,
+//!    and the decomposition of `hm16` that shows the remaining gap of one
+//!    is the gap between the proved pair bound `2r+2` and the measured
+//!    `2r+1`.
 
 use sunflower_formal::spread::{is_rao_spread, Mask};
 
@@ -227,6 +231,69 @@ fn the_refined_bound_against_the_old_one_and_against_the_truth() {
             assert_eq!(better, refined(u, r) < old_bound(u, r), "u={u} r={r}");
         }
     }
+}
+
+/// `CrossRefined.nonstar_three_bound`: the two-cover branch gives
+/// `2*max(4,r+1) + r`, the covering-number-3 branch gives 16.
+fn i2_three_bound(r: u64) -> u64 {
+    std::cmp::max(2 * std::cmp::max(4, r + 1) + r, 16)
+}
+
+#[test]
+fn the_non_star_bound_at_uniformity_three() {
+    // the closed form the theorem states, against the two branches it is
+    // assembled from
+    for r in 3..=20u64 {
+        assert_eq!(i2_three_bound(r), std::cmp::max(3 * r + 2, 16));
+    }
+    // which branch binds where: the covering-number-3 branch until r = 4,
+    // the two-cover branch from r = 5 on
+    for r in 3..=4u64 {
+        assert_eq!(i2_three_bound(r), 16);
+    }
+    for r in 5..=20u64 {
+        assert_eq!(i2_three_bound(r), 3 * r + 2);
+    }
+
+    // the row that matters
+    assert_eq!(i2_three_bound(5), 17);
+
+    // `hm16` is a witness one below it, so I2(3,5) is 16 or 17
+    let a = hm16();
+    assert_eq!(a.len(), 16);
+    assert!(uniform(&a, 3));
+    assert!(distinct(&a));
+    assert!(intersecting(&a));
+    assert!(is_rao_spread(3, &a, 5, 13));
+    assert!(unpointed(&a, 13));
+    assert!(a.len() as u64 <= i2_three_bound(5));
+    assert_eq!(i2_three_bound(5), a.len() as u64 + 1);
+
+    // and the gap of one is exactly the gap in the pair bound: the
+    // two-cover branch is (pair bound at u = 2) + deg{p,q}, and at r = 5
+    // that is 12 + 5 = 17 proved against 11 + 5 = 16 measured.
+    assert_eq!(refined(2, 5) + 5, 17);
+    assert_eq!((2 * 5 + 1) + 5, 16);
+
+    // `cross_pair_bound` cannot prove anything here: 20 + 5 = 25 is the
+    // star bound r^(m-1), i.e. no information about non-stars at all.
+    assert_eq!(old_bound(2, 5) + 5, 25);
+    assert_eq!(5u64.pow(2), 25);
+
+    // hm16 realises the split the proof uses: cover {4,12}, tails of
+    // sizes 5 and 5 with 5 members through both -- 5 + 5 + ... let the
+    // decomposition speak for itself.
+    let p = 4u32;
+    let q = 12u32;
+    assert!(a.iter().all(|&c| c & ((1 << p) | (1 << q)) != 0));
+    let both = a.iter().filter(|&&c| c & (1 << p) != 0 && c & (1 << q) != 0).count();
+    let only_p = a.iter().filter(|&&c| c & (1 << p) != 0 && c & (1 << q) == 0).count();
+    let only_q = a.iter().filter(|&&c| c & (1 << p) == 0 && c & (1 << q) != 0).count();
+    assert_eq!(both + only_p + only_q, 16);
+    assert_eq!(both, 5); // = deg{4,12}, exactly r^(m-2)
+    assert_eq!(only_p, 1); // the triple {4,5,6}
+    assert_eq!(only_q, 10); // the star members through 5 or 6
+    assert!(only_p + only_q <= refined(2, 5) as usize);
 }
 
 #[test]
