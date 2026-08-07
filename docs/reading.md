@@ -1422,3 +1422,15 @@ against a proved `2r+2` for two sessions. Proving that one
 had been sitting in `rust/tests/cross_intersecting.rs` the whole time,
 correctly labelled as a measurement; what was missing was anyone asking
 it to become a theorem.
+
+The same thing happened once more, one level down. The first proof of
+`cross_pair_two_exact` carried `r ≥ 4`, and §27.6 recorded — correctly —
+that the threshold was an artefact of the case analysis and that the
+measured maximum at `r = 3` was still `2r+1`. Asked to close `r = 3`, the
+first thing to do was measure the case the analysis was losing on: the
+neither-pointed configurations, where the greedy tree gives `4 + 4 = 8`.
+The exhaustive maximum there is **6**, not 8, and seeing that is what
+named the two missing lemmas (`triangle_bound`, `disjoint_squeeze`). The
+same measurement then showed `r = 2` is not an artefact at all — the
+statement is false there — so the new threshold is sharp and says so with
+a witness rather than a caveat.

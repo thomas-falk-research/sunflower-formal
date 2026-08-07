@@ -1684,11 +1684,35 @@ dfca202e6e4d8d44  thm CrossRefined.cross_pair_refined
 4f5ea1a1875e1f6b  thm CrossRefined.member_outside
     member_outside : forall e1 e2 : list nat, length e1 = 2 -> List.NoDup e1 -> length e2 = 2 -> ~ SetEq e1 e2 -> exists b : nat, List.In b e1 /\ ~ List.In b e2
 
-8fba14e6a1b4211f  thm CrossRefined.pair_partner_bound
-    pair_partner_bound : forall (r : nat) (A B : Family) (e1 e2 : list nat), Uniform 2 A -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> ~ SetEq e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length B <= r + 3
+d038043d1fd255df  thm CrossRefined.two_elem_only
+    two_elem_only : forall (e : list nat) (a d z : nat), length e = 2 -> List.NoDup e -> List.In a e -> List.In d e -> a <> d -> List.In z e -> z = a \/ z = d
 
-2fbce20df07eecf8  thm CrossRefined.cross_pair_two_exact
-    cross_pair_two_exact : forall (r : nat) (A B : Family), 4 <= r -> Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= 2 * r + 1
+672b58b8cd5476b8  thm CrossRefined.pair_key_deg
+    pair_key_deg : forall (r : nat) (B : Family) (k : list nat), RaoSpread 2 B r -> List.NoDup k -> length k = 2 -> deg k B <= 1
+
+43d777c0b41ccba8  thm CrossRefined.two_keys_bound
+    two_keys_bound : forall (r : nat) (B : Family) (k1 k2 : list nat), RaoSpread 2 B r -> List.NoDup k1 -> length k1 = 2 -> List.NoDup k2 -> length k2 = 2 -> (forall C : list nat, List.In C B -> Subset k1 C \/ Subset k2 C) -> length B <= 2
+
+f1ae0f8259cbf2fc  thm CrossRefined.three_keys_bound
+    three_keys_bound : forall (r : nat) (B : Family) (k1 k2 k3 : list nat), RaoSpread 2 B r -> List.NoDup k1 -> length k1 = 2 -> List.NoDup k2 -> length k2 = 2 -> List.NoDup k3 -> length k3 = 2 -> (forall C : list nat, List.In C B -> Subset k1 C \/ Subset k2 C \/ Subset k3 C) -> length B <= 3
+
+0f729b19dac4399e  thm CrossRefined.pair_partner_bound
+    pair_partner_bound : forall (r : nat) (A B : Family) (e1 e2 : list nat), 3 <= r -> Uniform 2 A -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> ~ SetEq e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length B <= r + 1
+
+4f89a41d67b03006  thm CrossRefined.triangle_bound
+    triangle_bound : forall (r : nat) (A : Family), Uniform 2 A -> RaoSpread 2 A r -> (forall e f : list nat, List.In e A -> List.In f A -> exists w : nat, List.In w e /\ List.In w f) -> (forall w : nat, exists e : list nat, List.In e A /\ ~ List.In w e) -> length A <= 3
+
+761e3febf4273235  thm CrossRefined.disjoint_squeeze
+    disjoint_squeeze : forall (r : nat) (A B : Family) (e1 e2 : list nat), Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> Disjoint e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length A <= 2 \/ length B <= 3
+
+255c5a25f2215d79  thm CrossRefined.cross_pair_two_exact
+    cross_pair_two_exact : forall (r : nat) (A B : Family), 3 <= r -> Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= 2 * r + 1
+
+8d18b93bb0337850  thm CrossRefined.cross_b_correct
+    cross_b_correct : forall A B : Family, cross_b A B = true -> forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f
+
+9399a0c054aa4427  thm CrossRefined.cross_pair_two_exact_needs_three
+    cross_pair_two_exact_needs_three : Uniform 2 c2a /\ Uniform 2 c2b /\ RaoSpread 2 c2a 2 /\ RaoSpread 2 c2b 2 /\ (forall e f : list nat, List.In e c2a -> List.In f c2b -> exists w : nat, List.In w e /\ List.In w f) /\ c2a <> nil /\ c2b <> nil /\ 2 * 2 + 1 < length c2a + length c2b
 
 263f9907be8c910c  thm CrossRefined.unpointed_dec_search
     unpointed_dec_search : forall (G : Family) (w : nat), List.existsb (fun a : nat => List.forallb (fun C : list nat => memb a C) G) (List.concat G) = false -> G <> nil -> exists C : list nat, List.In C G /\ ~ List.In w C
@@ -1720,8 +1744,8 @@ dc1dc3850c718f40  thm CrossRefined.g65_tau
 bf04dd5b5d8b9ce7  thm CrossRefined.nonstar_not_pointed
     nonstar_not_pointed : forall (A : Family) (w : nat), NonStar A -> ~ Pointed A w
 
-e76549fba067032d  thm CrossRefined.nonstar_three_bound
-    nonstar_three_bound : forall (r : nat) (A : Family), 4 <= r -> Uniform 3 A -> Distinct A -> RaoSpread 3 A r -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= PeanoNat.Nat.max (3 * r + 1) 16
+b6947ff31ad10406  thm CrossRefined.nonstar_three_bound
+    nonstar_three_bound : forall (r : nat) (A : Family), 3 <= r -> Uniform 3 A -> Distinct A -> RaoSpread 3 A r -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= PeanoNat.Nat.max (3 * r + 1) 16
 
 56333c1214e36dc3  thm CrossRefined.nonstar_three_five_at_most_sixteen
     nonstar_three_five_at_most_sixteen : forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 16
@@ -1737,6 +1761,12 @@ f2f040fce1b73643  thm CrossRefined.hm16_nonstar
 
 e1d6d9b21a1f254c  def CrossRefined.NonStar
     NonStar = fun A : Family => forall w : nat, exists C : list nat, List.In C A /\ ~ List.In w C : Family -> Prop Arguments NonStar A
+
+001d669b401896f7  def CrossRefined.c2a
+    c2a = ((0 :: 2 :: nil) :: (1 :: 3 :: nil) :: nil)%list : Family
+
+0357034d3cb502b9  def CrossRefined.c2b
+    c2b = ((0 :: 1 :: nil) :: (0 :: 3 :: nil) :: (1 :: 2 :: nil) :: (2 :: 3 :: nil) :: nil)%list : Family
 
 13b9466c400071de  def CrossRefined.hm16
     hm16 = ((4 :: 5 :: 6 :: nil) :: List.flat_map (fun i : nat => List.map (fun y : nat => 12 :: i :: y :: nil) (7 :: 8 :: 9 :: 10 :: 11 :: nil)) (4 :: 5 :: 6 :: nil))%list : Family

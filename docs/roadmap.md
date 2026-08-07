@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 110 anecdotes into a coverage metric over the
+  mutation testing from 113 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -6803,9 +6803,9 @@ scan reached the ground where its own witness lives.
     two_cover_split refactor                    --          3 s      yes
   coqc coq/CrossRefined.v (g65 and hm16 by
     vm_compute)                                 --          72 s     yes
-  exhaustive cross-pair maximum at r = 3,
-    grounds 5,6,7 (to check whether the r >= 4
-    threshold is real)                          exhaustive  <1 s     yes
+  exhaustive cross-pair maximum at r = 2 and
+    r = 3, grounds 5,6,7, and the neither-
+    pointed maximum on grounds 5,6              exhaustive  ~2 s     yes
   tau_piece_scan m=3 r=5 tau>=2, ground 9,
     re-run for I2(3,5) on the spare core        3e10 nodes  100 min  NO --
                                                                      STOPPED by
@@ -6823,15 +6823,15 @@ section does not use.
 **The gates.**
 
 ```
-  make -j4 verify        green  (491 audited theorems, all "Closed under
+  make -j4 verify        green  (499 audited theorems, all "Closed under
                                 the global context")
   make coqchk            green  (41 modules; one axiom:
                                 Sunflower.ALWZ.Rao20_lemma2)
   cargo test --release   green  (28 suites, 264 tests, 0 failures)
-  python3 tools/mutate.py green (110 mutations: 107 killed, 2 survived as
+  python3 tools/mutate.py green (113 mutations: 110 killed, 2 survived as
                                 declared, 1 control passing, 0 unexpected --
-                                all ten added here killed)
-  tools/statements.py    green  (579 statements)
+                                all thirteen added here killed)
+  tools/statements.py    green  (589 statements)
   tools/docnumbers.py    green  (12 quoted numbers match)
 ```
 
@@ -6862,58 +6862,73 @@ feeding the split to `cross_pair_bound`; the point of the refactor is that
 a second consumer can now feed it something else.
 
 **The pair bound at `u = 2`, exactly.** `cross_pair_refined` gives `2r+2`
-there and the exhaustive search says `2r+1`. That one closes. The new
-ingredient is one lemma:
+there and the exhaustive search says `2r+1`. That one closes, for every
+`r ≥ 3`, and `r = 3` is where it takes real work. Three lemmas, none of
+which mentions `r` except through the degree caps:
 
 > **`pair_partner_bound`:** two members of `A` that differ as sets cap
-> `|B|` at `r+3`.
+> `|B|` at `r+1`.
 
 Pick `b ∈ e₁ \ e₂` and `d ∈ e₂ \ e₁` (neither 2-set contains the other),
-and let `x`, `y` be the remaining elements. Every `f ∈ B` contains `b` or
-`x`, and `d` or `y`, so the key sets
+and let `x`, `y` be the remaining elements. If `x = y` the two members
+share that vertex and `B ⊆ star(x) ∪ {[b;d]}`, so `|B| ≤ r+1`. If not,
+the four crossing pairs `[b;d]`, `[b;y]`, `[x;d]`, `[x;y]` each have
+degree at most `r^0 = 1`, so `|B| ≤ 4 ≤ r+1`.
 
-```
-      [b;d]      [b;y]      [x;d]      [x]
-```
+> **`triangle_bound`:** a graph that pairwise intersects and is pointed at
+> nothing *is* a triangle — three edges, not the four the greedy tree
+> allows.
 
-cover `B` — the fourth combination is `x ∈ f and y ∈ f`, and the
-**singleton** `[x]` already catches it. That choice is the whole trick: it
-is correct whether or not `e₁` and `e₂` share a vertex, so there is no
-case split, and it costs nothing because the sharing case is exactly where
-`x = y`. The three genuine pairs have degree at most `r^0 = 1` and the
-singleton at most `r`, so `|B| ≤ r+3`.
+Take `e₁ = {x,y}`; a member missing `x` must contain `y`, a member missing
+`y` must contain `x`, and those two meet at a third vertex `z`. Then
+`[x;y]`, `[x;z]`, `[y;z]` cover the family.
 
-With that, `star_saturation`, `partner_bound_one` and `greedy_bound` at
-`j = 2`:
+> **`disjoint_squeeze`:** if `A` has two disjoint members then either `B`
+> misses one of the four crossing pairs — three keys cover it, `|B| ≤ 3` —
+> or it has all four, and then only `[a;b]` and `[c;d]` meet every one of
+> them, so `|A| ≤ 2`.
 
-> **`cross_pair_two_exact`:** for `r ≥ 4`, two nonempty cross-intersecting
+With `star_saturation`, `partner_bound_one` and `greedy_bound` at `j = 2`:
+
+> **`cross_pair_two_exact`:** for `r ≥ 3`, two nonempty cross-intersecting
 > Rao(r)-spread graphs have at most `2r+1` edges between them.
 
 ```
-  |B| <= 1                       |A| <= 2r          partner_bound_one
-  |A| <= 1                       symmetric
-  A pointed, |A| >= 3            B pointed too      star_saturation
-                                 both <= r
-  neither pointed                4 and 4            greedy at j = 2
-  |A| = 2 (or |B| = 2)           the other <= r+3   pair_partner_bound
+  |B| <= 1                      |A| <= 2r           partner_bound_one
+  |A| <= 1                      symmetric
+  A pointed, |A| >= 3           B pointed too,      star_saturation
+                                both <= r
+  A pointed, |A| = 2            |B| <= r+1          pair_partner_bound
+  B pointed, symmetric
+  neither pointed,              |A| <= 2 or         disjoint_squeeze
+    A has two disjoint members    |B| <= 3
+  neither pointed,              |A| <= 3            triangle_bound
+    A pairwise intersects
 ```
 
-`max(2r, 8, r+5) ≤ 2r+1` for `r ≥ 4`, and the first row is where the
+`max(2r, r+3, 6, 7) ≤ 2r+1` for `r ≥ 3`, and the first row is where the
 truth is: one edge against the two full stars at its endpoints. **This is
 the first cross-intersecting bound in the development that is exactly
 tight** — `cross_pair_bound` is off by about `r/2` at `u = 2`,
 `cross_pair_refined` by one.
 
-The threshold `r ≥ 4` is an artefact of the case analysis: the
-neither-pointed row gives 8, and `8 ≤ 2r+1` only from `r = 4`. The
-exhaustive maximum at `r = 3` is still `2r+1 = 7`, measured on 5, 6 and 7
-points in `rust/tests/cross_refined.rs`, so `r = 3` is very likely fine
-and is **not** claimed.
+**And `r ≥ 3` is sharp.** At `r = 2` the statement is *false*, with the
+disjoint-pair configuration at full stretch:
+
+> **`cross_pair_two_exact_needs_three`:** `c2a = {02, 13}` and
+> `c2b = {01, 03, 12, 23}` are 2-uniform, Rao(2)-spread and
+> cross-intersecting, with `2 + 4 = 6 > 5 = 2r+1`.
+
+Degree two is exactly where all four crossing edges fit; from `r = 3` on,
+`disjoint_squeeze` says that having all four costs the other side down to
+two. `rust/tests/cross_refined.rs` checks that 6 is the exhaustive
+maximum at `r = 2` and 7 at `r = 3`, and that the neither-pointed
+configurations cap at 6 — the fact the two new lemmas encode.
 
 **The value.** Feeding the exact pair bound to the split, and taking the
 covering-number-3 branch from `TauThree.tau_three_bound`:
 
-> **`nonstar_three_bound`:** for `r ≥ 4`, a 3-uniform distinct
+> **`nonstar_three_bound`:** for `r ≥ 3`, a 3-uniform distinct
 > intersecting Rao(r)-spread family that is not a star has at most
 > `max(3r+1, 16)` members.
 >

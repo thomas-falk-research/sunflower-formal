@@ -1801,3 +1801,50 @@ its endpoints is 2r + 1, which is the |B| = 1 case of the proof and the \
 configuration rust/tests/cross_intersecting.rs finds by exhaustion at \
 r = 4, 5, 6. Every other case gives at most 2r, so the whole bound is one \
 above the rest of the analysis and that one is where the truth is."""
+
+[[mutation]]
+id = "crossrefined-two-exact-threshold"
+file = "coq/CrossRefined.v"
+question = """cross_pair_two_exact carries r >= 3. Is that threshold \
+real, or left over from an earlier version of the case analysis?"""
+find = """Theorem cross_pair_two_exact :
+  forall r (A B : Family),
+    3 <= r ->"""
+replace = """Theorem cross_pair_two_exact :
+  forall r (A B : Family),
+    2 <= r ->"""
+expect = "killed"
+because = """Real: the statement is *false* at r = 2, and the same file \
+carries the counterexample. cross_pair_two_exact_needs_three exhibits two \
+disjoint edges against the four crossing edges -- both Rao(2)-spread, \
+cross-intersecting -- with 2 + 4 = 6 against 2r+1 = 5. Degree two is \
+exactly where all four crossing edges fit."""
+
+[[mutation]]
+id = "crossrefined-triangle-four"
+file = "coq/CrossRefined.v"
+question = """triangle_bound gives 3. The greedy tree at depth two \
+already gives 4 for the same family. Is the 3 doing any work?"""
+find = """    (forall w, exists e, In e A /\\ ~ In w e) ->
+    length A <= 3."""
+replace = """    (forall w, exists e, In e A /\\ ~ In w e) ->
+    length A <= 4."""
+expect = "killed"
+because = """All of it, and only at r = 3. In the branch where neither \
+side is a star and A has no two disjoint members, the sum is bounded by \
+|A| + 4; with |A| <= 4 that is 8, and 8 > 2r+1 = 7. The whole reason the \
+r = 3 row closes is that an intersecting graph pointed at nothing is a \
+triangle, so |A| = 3."""
+
+[[mutation]]
+id = "crossrefined-squeeze-drop-disjunct"
+file = "coq/CrossRefined.v"
+question = """disjoint_squeeze concludes a disjunction. Is the |A| <= 2 \
+branch reachable, or does the partner always come down to three?"""
+find = "    length A <= 2 \\/ length B <= 3."
+replace = "    length B <= 3."
+expect = "killed"
+because = """Reachable, and the file carries the witness: c2a is two \
+disjoint edges and c2b is all four crossing edges, so |c2b| = 4 and the \
+right disjunct fails. What holds there is the left one -- only two edges \
+can meet all four crossing pairs."""

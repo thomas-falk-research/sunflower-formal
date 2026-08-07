@@ -292,7 +292,7 @@ fn the_non_star_bound_at_uniformity_three() {
 
 #[test]
 fn the_exact_pair_bound_at_uniformity_two() {
-    // `cross_pair_two_exact`: 2r+1, proved for r >= 4. It matches the
+    // `cross_pair_two_exact`: 2r+1, proved for r >= 3. It matches the
     // exhaustive truth measured in `cross_intersecting.rs` at r = 4,5,6,
     // where `cross_pair_refined` is one above and `cross_pair_bound` is a
     // factor of about r/2 above.
@@ -302,28 +302,52 @@ fn the_exact_pair_bound_at_uniformity_two() {
         assert!(refined(2, r) < old_bound(2, r));
     }
 
-    // The proof needs r >= 4 because its worst case -- neither side
-    // pointed, four edges each from the greedy tree at depth two -- gives
-    // 8, and 8 <= 2r+1 only from r = 4. At r = 3 the exhaustive maximum
-    // is still 2r+1 = 7 (measured here on 5, 6 and 7 points), so the
-    // threshold is an artefact of this case analysis rather than a claim
-    // that r = 3 behaves differently. This is a measurement, not a proof.
+    // r = 3 is the last row it covers, and it is attained: 7 on 5, 6 and
+    // 7 points, exhaustively.
     assert_eq!(2 * 3 + 1, 7);
     for n in 5..=7u32 {
-        assert_eq!(max_cross_pair_r3(n), 7, "ground {n}");
+        assert_eq!(max_cross_pair_r(n, 3), 7, "ground {n}");
     }
+
+    // and r = 2 is the first row it does not, because there the statement
+    // is false: `CrossRefined.cross_pair_two_exact_needs_three` exhibits
+    // two disjoint edges against the four crossing edges, 2 + 4 = 6
+    // against 2r+1 = 5. Here is the same pair, checked independently.
+    let c2a: Vec<Mask> = vec![mask(&[0, 2]), mask(&[1, 3])];
+    let c2b: Vec<Mask> = vec![mask(&[0, 1]), mask(&[0, 3]), mask(&[1, 2]), mask(&[2, 3])];
+    assert!(uniform(&c2a, 2) && uniform(&c2b, 2));
+    assert!(distinct(&c2a) && distinct(&c2b));
+    assert!(is_rao_spread(2, &c2a, 2, 4));
+    assert!(is_rao_spread(2, &c2b, 2, 4));
+    assert!(cross_intersecting(&c2a, &c2b));
+    assert_eq!(c2a.len() + c2b.len(), 6);
+    assert!(c2a.len() + c2b.len() > 2 * 2 + 1);
+    // and 6 is the exhaustive maximum at r = 2, so nothing weaker than
+    // 2r+2 holds there
+    for n in 5..=7u32 {
+        assert_eq!(max_cross_pair_r(n, 2), 6, "ground {n}");
+    }
+
+    // The neither-pointed case is where the threshold lives: the greedy
+    // tree at depth two gives four edges each, and 8 exceeds 2r+1 until
+    // r = 4. `triangle_bound` and `disjoint_squeeze` are what bring it
+    // down to 7 at r = 3.
     assert!(8 > 2 * 3 + 1);
     assert!(8 <= 2 * 4 + 1);
+    // and the neither-pointed configurations really do cap at 6
+    for n in 5..=6u32 {
+        assert_eq!(max_cross_pair_unpointed(n, 6), 6, "ground {n}");
+    }
 }
 
 /// Exhaustive maximum of `|A| + |B|` over nonempty cross-intersecting
-/// Rao(3) graphs on `n` points, confined as the proof confines it: an
+/// Rao(`r`) graphs on `n` points, confined as the proof confines it: an
 /// edge of `B` is relabelled `{0,1}` and every edge of `A` meets it.
-fn max_cross_pair_r3(n: u32) -> usize {
+fn max_cross_pair_r(n: u32, r: usize) -> usize {
     let edges: Vec<(u32, u32)> = (0..n).flat_map(|a| (a + 1..n).map(move |b| (a, b))).collect();
     let meets = |e: (u32, u32), f: (u32, u32)| e.0 == f.0 || e.0 == f.1 || e.1 == f.0 || e.1 == f.1;
     let rao = |g: &[(u32, u32)]| {
-        (0..n).all(|v| g.iter().filter(|e| e.0 == v || e.1 == v).count() <= 3)
+        (0..n).all(|v| g.iter().filter(|e| e.0 == v || e.1 == v).count() <= r)
     };
     let anchor: Vec<(u32, u32)> = edges
         .iter()
@@ -403,4 +427,42 @@ fn star_saturation_is_sharp_at_its_threshold() {
         .filter(|&e| s.iter().all(|&c| c & e != 0))
         .count();
     assert_eq!(escapes, 0);
+}
+
+/// Exhaustive maximum of `|A| + |B|` over cross-intersecting Rao(`r`)
+/// graphs on `n` points with **neither side pointed** -- the case the
+/// `r = 3` row turns on. No anchoring: both sides are enumerated.
+fn max_cross_pair_unpointed(n: u32, r: usize) -> usize {
+    let edges: Vec<(u32, u32)> = (0..n).flat_map(|a| (a + 1..n).map(move |b| (a, b))).collect();
+    let meets = |e: (u32, u32), f: (u32, u32)| e.0 == f.0 || e.0 == f.1 || e.1 == f.0 || e.1 == f.1;
+    let rao = |g: &[(u32, u32)]| {
+        (0..n).all(|v| g.iter().filter(|e| e.0 == v || e.1 == v).count() <= r)
+    };
+    let pointed = |g: &[(u32, u32)]| (0..n).any(|v| g.iter().all(|e| e.0 == v || e.1 == v));
+    let mut best = 0usize;
+    for ma in 1u32..(1u32 << edges.len()) {
+        let a: Vec<(u32, u32)> = (0..edges.len())
+            .filter(|i| ma >> i & 1 == 1)
+            .map(|i| edges[i])
+            .collect();
+        if pointed(&a) || !rao(&a) || a.len() + edges.len() <= best {
+            continue;
+        }
+        let pool: Vec<(u32, u32)> = edges
+            .iter()
+            .copied()
+            .filter(|&f| a.iter().all(|&e| meets(e, f)))
+            .collect();
+        for mb in 1u32..(1u32 << pool.len()) {
+            let b: Vec<(u32, u32)> = (0..pool.len())
+                .filter(|i| mb >> i & 1 == 1)
+                .map(|i| pool[i])
+                .collect();
+            if pointed(&b) || !rao(&b) {
+                continue;
+            }
+            best = best.max(a.len() + b.len());
+        }
+    }
+    best
 }
