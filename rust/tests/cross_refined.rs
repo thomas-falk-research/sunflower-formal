@@ -160,10 +160,12 @@ fn the_four_family_route_of_section_twenty_six_four_is_dead() {
 fn the_same_construction_is_exactly_extremal_at_uniformity_three() {
     // The `m = 3` analogue of `g65`: three copies of the triangle -- the
     // only intersecting graph that is not a star -- hung on the points of
-    // one member. `rust/tests/tau_three.rs` measures the maximum of the
-    // tau >= 3 piece at `m = 3`, `r = 4` exhaustively as 10 on grounds 5
-    // to 7, and this construction attains it, so the shape `g65` uses is
-    // not merely a lower bound one uniformity down: it is the truth there.
+    // one member. `rust/tests/tau_three.rs::max_tau_three` measures the
+    // largest 3-uniform intersecting family of covering number >= 3
+    // exhaustively as 10 on grounds 5 to 7, *without* imposing the Rao
+    // condition; this construction attains 10 *with* it, so 10 is the
+    // truth on both sides and the shape `g65` uses is exactly extremal one
+    // uniformity down rather than merely a lower bound.
     let triangle = [(3u32, 4u32), (3, 5), (4, 5)];
     let mut g: Vec<Mask> = vec![mask(&[0, 1, 2])];
     for x in 0..3u32 {

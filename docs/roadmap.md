@@ -6665,7 +6665,10 @@ Two structural facts fall out of the construction and are worth keeping.
 First, the same shape at `m = 3` is exactly extremal: three copies of the
 triangle (the only non-star intersecting graph) give `1 + 3·3 = 10`, and
 10 is the exhaustively measured maximum of the τ ≥ 3 piece at `m = 3`
-(§25.2, and the `tau_piece_scan` rows). Second, at `m = 4` the layers
+*without* the Rao condition at all — Frankl's value, measured on grounds
+5 to 7 by `rust/tests/tau_three.rs`. So the construction attains, with
+Rao(4), a bound that holds without it: at `m = 3` the shape is not a
+lower bound, it is the answer. Second, at `m = 4` the layers
 above the one-point layer are empty in `g65` — it spends its whole budget
 on the bottom layer, and the Rao inequality `deg{x,12,i} = 5` is the only
 tight one.
@@ -6812,13 +6815,49 @@ section does not use.
   make coqchk            green  (41 modules; one axiom:
                                 Sunflower.ALWZ.Rao20_lemma2)
   cargo test --release   green  (28 suites, 262 tests, 0 failures)
-  python3 tools/mutate.py green (106 mutations: MUTKILLED killed, 2 survived as
-                                declared, 1 control passing, 0 unexpected)
+  python3 tools/mutate.py green (106 mutations: 103 killed, 2 survived as
+                                declared, 1 control passing, 0 unexpected --
+                                all six added here killed)
   tools/statements.py    green  (568 statements)
   tools/docnumbers.py    green  (12 quoted numbers match)
 ```
 
-### 27.6 The one-line verdict
+### 27.6 One object named for next time, and what is *not* proved about it
+
+Rule 2 of the brief — name the object. The construction of §27.2 turns on
+a quantity that has no name in this development:
+
+> **`I₂(m,r)`** — the largest `m`-uniform intersecting Rao(r)-spread
+> family that is **not a star**. (`I(m,r)` drops the last clause.)
+
+`g65` is `1 + 4·I₂(3,5)` when the four link families coincide, so the
+whole question of whether 65 is the best that shape can do is the value of
+`I₂(3,5)`.
+
+**Measured.** `I₂(3,5) ≥ 16`, by `hm16`, on 9 points. The scan is
+exhaustive at 15 on ground 8 and was stopped by hand on ground 9 (§27.5),
+so the sequence is still climbing where it was left.
+
+**Not proved, and deliberately left unproved rather than asserted.** The
+two-cover split gives an upper bound in a few lines of arithmetic: a
+non-star family with `τ ≤ 2` splits against its cover `{p,q}` into two
+cross-intersecting `(m-1)`-uniform Rao(r) tail families plus the
+both-points piece, so `cross_pair_refined` at `u = 2` gives
+`2·max(4,r+1) + r = 3r + 2` for `r ≥ 3`, and `τ ≥ 3` gives 16 from
+`TauThree.tau_three_bound`; at `r = 5` that is `max(17,16) = 17`, one
+above the witness. **This paragraph is arithmetic, not Coq, and §27.1 is
+the reason it is labelled as such rather than called a theorem.**
+Formalising it needs the two-cover split factored out of
+`two_cover_star_extremal`'s proof, where it is currently inlined — that
+refactor, and then `I₂(3,5) ∈ {16,17}`, is the next concrete step.
+
+Note what this would and would not buy. It would show `hm16` is optimal or
+one off optimal, hence that 65 is essentially the best the `g65` shape can
+do. It would **not** bound `TauThreePieceAtMost 4 5 K`, because a maximum
+`G` need not have four coinciding link families, or any members in the
+one-point layer at all.
+
+### 27.7 The one-line verdict
 
 **The route §26.4 named to `r*(4,3) ≤ 5` is closed by an explicit
 counterexample — the four-family inequality it asked for is false by more
