@@ -1,6 +1,12 @@
 //! How large can the covering-number-3 piece be?
 //!
-//!     tau_piece_scan <m> <r> <g_lo> <g_hi> [budget]
+//!     tau_piece_scan <m> <r> <g_lo> <g_hi> [budget] [tau]
+//!
+//! `tau` defaults to 3. `tau = 2` asks the neighbouring question — the
+//! largest intersecting Rao(`r`)-spread family that is *not* a star —
+//! which is what §27's construction feeds on: an `m`-uniform family with
+//! covering number at least 3 is built out of `m` copies of an
+//! `(m-1)`-uniform intersecting family with covering number at least 2.
 //!
 //! `CrossIntersecting.star_extremal_from_tau_three` leaves one constant
 //! open at each uniformity: the largest `m`-uniform intersecting
@@ -18,9 +24,21 @@
 
 use sunflower_formal::spread::{is_rao_spread, mask_to_set, Mask};
 
-/// Covering number at least 3: no two points meet every member.
-fn tau_at_least_three(fam: &[Mask], ground: u32) -> bool {
+/// Covering number at least `t`: no `t-1` points meet every member.
+/// Only `t = 2` (no point covers, i.e. not a star) and `t = 3` (no pair
+/// covers) are used, so the enumeration is written out rather than
+/// recursive.
+fn tau_at_least(fam: &[Mask], ground: u32, t: u32) -> bool {
+    if t <= 1 {
+        return true;
+    }
     for p in 0..ground {
+        if t == 2 {
+            if fam.iter().all(|&c| c as u32 & (1u32 << p) != 0) {
+                return false;
+            }
+            continue;
+        }
         for q in p..ground {
             let cover = (1u32 << p) | (1u32 << q);
             if fam.iter().all(|&c| c as u32 & cover != 0) {
@@ -38,7 +56,8 @@ fn main() {
     let lo: u32 = a[2].parse().unwrap();
     let hi: u32 = a[3].parse().unwrap();
     let budget: u64 = a.get(4).and_then(|s| s.parse().ok()).unwrap_or(u64::MAX);
-    println!("# m={m} r={r}: the constant star_extremal_from_tau_three leaves open");
+    let tau: u32 = a.get(5).and_then(|s| s.parse().ok()).unwrap_or(3);
+    println!("# m={m} r={r} tau>={tau}: the constant star_extremal_from_tau_three leaves open");
     println!("# star = r^(m-1) = {}", r.pow(m - 1));
     for g in lo..=hi {
         let blocks: Vec<Mask> = (0u32..(1u32 << g))
@@ -65,13 +84,14 @@ fn main() {
             nodes: &mut u64,
             budget: u64,
             hit: &mut bool,
+            tau: u32,
         ) {
             *nodes += 1;
             if *nodes > budget {
                 *hit = true;
                 return;
             }
-            if cur.len() > best.len() && tau_at_least_three(cur, g) {
+            if cur.len() > best.len() && tau_at_least(cur, g, tau) {
                 *best = cur.clone();
             }
             if cur.len() + (blocks.len() - from) <= best.len() {
@@ -87,13 +107,13 @@ fn main() {
                 }
                 cur.push(x);
                 if is_rao_spread(m, cur, r, g) {
-                    rec(blocks, i + 1, m, r, g, cur, best, nodes, budget, hit);
+                    rec(blocks, i + 1, m, r, g, cur, best, nodes, budget, hit, tau);
                 }
                 cur.pop();
             }
         }
         rec(
-            &blocks, 0, m, r, g, &mut cur, &mut best, &mut nodes, budget, &mut hit,
+            &blocks, 0, m, r, g, &mut cur, &mut best, &mut nodes, budget, &mut hit, tau,
         );
 
         println!(

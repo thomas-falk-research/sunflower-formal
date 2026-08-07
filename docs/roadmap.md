@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 100 anecdotes into a coverage metric over the
+  mutation testing from 106 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -6348,9 +6348,16 @@ so the one-point layer has to obey `Σ_x |A_x| ≤ 48`, where the `A_x` are
 the four-family analogue of `TauThree.lemma_L`, which does the same job
 for three graphs at `m = 3`. `cross_pair_bound` gives only
 `|A_x| + |A_y| ≤ (r-1)r² = 100` per pair, hence `Σ ≤ 200`: four times
-what is needed. **That is the gap, stated exactly**, and it is a
-self-contained extremal question about four families rather than anything
-about sunflowers. This paragraph is arithmetic, not Coq.
+what is needed. This paragraph is arithmetic, not Coq.
+
+> **Correction (§27.1).** The sentence that stood here — "That is the
+> gap, stated exactly" — was wrong, and §27 retracts it. `Σ ≤ 48` is
+> **false**: four copies of one 25-member star give `Σ = 100`, and four
+> copies of the 16-member non-star `CrossRefined.hm16` give `Σ = 64` with
+> no common point, which is what the covering-number hypothesis on `G`
+> actually forces. The decomposition above is a *sufficient* route and it
+> is closed; the true statement is a joint one, because the layers cannot
+> all be full at once. `CrossRefined.g65` realises 65 of the 125.
 
 **Where this sits.** `r*(4,3) ≤ 5` would still be behind the published
 `O(log m)` asymptotically (§26.5), and it does not touch `f(4,3)` in a
@@ -6557,6 +6564,276 @@ about. And the two published tightness objects — [ALWZ20] Lemma 3.1 and
 [BCW21] Lemma 4 — are the *same grid* that `TauThree.star34` instantiates
 at `(m,r) = (3,4)`, so the extremal family for the published results and
 for this development's `I(m,r)` coincide (§26.5).
+
+## 27. The four-family route, closed by a witness; and a sharper cross-pair bound
+
+`coq/CrossRefined.v`, `rust/tests/cross_refined.rs`.
+
+§26.4 left `r*(4,3) ≤ 5` hanging on one constant and named a route to it.
+This section walks the route, finds it blocked, and says by how much —
+then extracts from the obstruction two general lemmas that sharpen
+`cross_pair_bound` itself.
+
+### 27.1 Closed: `Σ_x |A_x| ≤ 48` is false, by more than a factor of two
+
+The route asked for a bound on four pairwise cross-intersecting 3-uniform
+Rao(5)-spread families. Measure the quantity rather than bounding it.
+
+**Without any side condition, `Σ = 100`.** Let `w` be a point and let the
+link of `w` be `K_{5,5}` on ten further points: 25 triples `{w,a,b}`,
+5-regular, so `deg{w} = 25 = 5²`, `deg{w,z} = 5 = 5¹` and every triple
+degree is 1. That family is intersecting, hence four copies of it are
+pairwise cross-intersecting, and `Σ = 4·25 = 100 > 48`.
+
+**With the side condition the τ ≥ 3 hypothesis really imposes, `Σ = 64`.**
+The four-family phrasing dropped something. Writing `M = {a,b,c,d}` for
+the member decomposed against and `A_x` for the tails of the members
+meeting `M` exactly at `x`, the family
+
+```
+  G  =  {M}  u  { {x} u T : x in M, T in A_x }
+```
+
+is 4-uniform, distinct, intersecting and Rao(5)-spread exactly when each
+`A_x` is 3-uniform, distinct and Rao(5)-spread, the `A_x` are pairwise
+cross-intersecting, and `Σ_x deg_{A_x}(w) ≤ 125`, `Σ_x deg_{A_x}({w,w'}) ≤ 25`.
+And `τ(G) ≥ 3` holds **iff** two conditions hold: for every pair
+`x,y ∈ M` some third `A_z` is nonempty, and — the one that bites — for
+every `x ∈ M` and every `w ∉ M` some `z ≠ x` has a member of `A_z`
+avoiding `w`. Writing `S_w` for the set of indices whose family lies
+inside the star at `w` (empty families included), the second says exactly
+`|S_w| ≤ 2`: **at most two of the four families are stars at any one
+point.** The 100-family dies there — all four are the star at `w`, so
+`{x,w}` covers `G`. But 48 does not come back:
+
+```
+  hm16  =  {4,5,6}  u  { {12, i, y} : i in {4,5,6}, y in {7,...,11} }
+```
+
+is intersecting (every star member meets `{4,5,6}`), Rao(5)-spread
+(`deg{12,i} = 5`, `deg{12,y} = 3`, `deg{12} = 15`, `deg{i} = 6`), has 16
+members, and is **not** a star — `{4,5,6}` misses 12 and `{12,4,7}` misses
+5. Four copies have no common point and `Σ = 64 > 48`.
+
+> **`four_unpointed_cross_families_exceed_forty_eight`:** there exist four
+> pairwise cross-intersecting 3-uniform Rao(5)-spread families, none of
+> them a star, with more than 48 members between them.
+
+So the route is dead in both its forms, and §26.4's "that is the gap,
+stated exactly" is retracted there. What is true is that the bound has to
+be *joint*: the layers and `Σ` cannot all be full at once, and any proof
+of `TauThreePieceAtMost 4 5 125` has to use that. `g65` is the case in
+point — it puts **nothing** in the two- and three-point layers and spends
+its entire budget on the one-point layer.
+
+Two smaller things about §26.4's arithmetic, recorded because they do not
+affect the retraction but would affect anyone re-deriving it. The
+two-point layer was bounded there by 60, from "each complementary couple
+is ≤ 20"; 20 is right when both sides of a couple are nonempty (an edge
+of one caps the other at `2·deg(triple) = 10`), but when one side is
+empty the surviving side is capped only by the pair degree `r^(m-2) = 25`,
+so the layer bound is 75 and the subtotal 92, not 77. And the interval
+`[125, 320]` quoted there had the wrong upper end for the purpose: 320 is
+the greedy bound on the piece, but anything above 125 fails the hypothesis
+of `star_extremal_from_tau_three`, so the target was always `[?, 125]`.
+
+### 27.2 A new object: `g65`, and the constant is in `[65, 125]`
+
+The same construction run forward is a witness rather than an obstacle.
+Hanging one copy of `hm16` on each point of `M = {0,1,2,3}` gives
+
+> **`g65`** — 65 members, 4-uniform, distinct, intersecting,
+> Rao(5)-spread, covering number at least 3, on 13 points.
+
+Every Rao inequality is verified by the kernel over all 8191 nonempty
+subsets of the ground set, the intersecting condition over all 65² pairs,
+and covering number ≥ 3 by `TwoCover.covers_dec_search`. It is also
+**maximal**: `rust/tests/cross_refined.rs` checks that no 4-set whatever
+can be added, on grounds 13, 14 and 15. Hence
+
+> **`tau_three_piece_at_least_sixty_five`:**
+> `∀K, TauThreePieceAtMost 4 5 K → 65 ≤ K`.
+
+Combined with `r_star_four_at_most_five_from_tau_three`, which needs
+`K = 125`, the open constant lies in `[65, 125]`. That is a much narrower
+target than §26.4's `[125, 320]` framing suggested — the greedy bound 320
+was never the relevant upper end; 125 is, because anything above it does
+not give the theorem. What the witness settles is the *lower* end: no
+argument that would prove a bound below 65 can be correct.
+
+Two structural facts fall out of the construction and are worth keeping.
+First, the same shape at `m = 3` is exactly extremal: three copies of the
+triangle (the only non-star intersecting graph) give `1 + 3·3 = 10`, and
+10 is the exhaustively measured maximum of the τ ≥ 3 piece at `m = 3`
+(§25.2, and the `tau_piece_scan` rows). Second, at `m = 4` the layers
+above the one-point layer are empty in `g65` — it spends its whole budget
+on the bottom layer, and the Rao inequality `deg{x,12,i} = 5` is the only
+tight one.
+
+### 27.3 New mathematics: star saturation, and a sharper cross-pair bound
+
+The mechanism behind both examples is general and did not exist in the
+development.
+
+> **`star_saturation`.** Let `A` and `B` be cross-intersecting and
+> `u`-uniform with `A` Rao(r)-spread and *pointed at* `w` (every member
+> contains `w`). If `|A| > u·r^(u-2)` then `B` is pointed at `w` too.
+
+The proof is three lines: a member `f` of `B` with `w ∉ f` forces every
+`C ∈ A` to contain `{w,v}` for one of `f`'s `u` points `v`, and the pair
+degree caps each of those at `r^(u-2)`. It is what kills the `Σ = 100`
+example under τ ≥ 3, and it is *sharp at its threshold* — at `u = 2`,
+`r = 5` the threshold is 2 and a pointed family of exactly 2 edges does
+have a partner outside its star.
+
+Its partner is already in the development: `greedy_bound` at `j = 2` says
+that if `A` is **not** pointed then `|B| ≤ u²·r^(u-2)`. Between them the
+cross-intersecting pair splits four ways, and the four cases give a bound
+that carries **no lower bound on `r` at all**, unlike `cross_pair_bound`'s
+`r ≥ u+2`:
+
+> **`cross_pair_refined`:** for nonempty cross-intersecting `u`-uniform
+> Rao(r)-spread `A`, `B` with `u ≥ 2`,
+> `|A| + |B| ≤ u·max(2u, r+1)·r^(u-2)`.
+
+```
+  both pointed              2·r^(u-1)              star bound twice
+  A pointed, B not          u·r^(u-2)·(r+1)        star_saturation caps
+                                                   the pointed side at
+                                                   u·r^(u-2), greedy at
+                                                   j=1 caps the other
+  B pointed, A not          u·r^(u-2)·(r+1)        mirror
+  neither pointed           2u²·r^(u-2)            greedy at j=2, twice
+```
+
+Both bounds are a coefficient times `r^(u-2)`, so the comparison is
+`u·max(2u,r+1)` against `r(r-1)`:
+
+| `u` | `r` | refined | `cross_pair_bound` | exhaustive truth |
+|-----|-----|---------|--------------------|------------------|
+| 2   | 4   | 10      | 12                 | 9                |
+| 2   | 5   | 12      | 20                 | 11               |
+| 2   | 6   | 14      | 30                 | 13               |
+| 3   | 5   | 90      | 100                | not exhausted    |
+| 4   | 6   | 1152    | 1080               | not exhausted    |
+
+At `u = 2` the refined bound is `2r+2` against an exhaustive truth of
+`2r+1` — off by one, where `cross_pair_bound` is off by a factor of about
+`r/2`. And it *explains* the `u = 2` extremal configuration rather than
+merely bounding it: one edge against the two full stars at its endpoints
+is precisely the "B pointed, A not" case, and the reason nothing bigger
+exists is that `star_saturation` forbids the large pointed side. The two
+bounds are incomparable — at `u = 4, r = 6` the refined coefficient is 32
+against 30 — so `cross_pair_bound` stays.
+
+`cross_pair_refined_strict` states the improvement as a theorem
+(`u·max(2u,r+1) < r(r-1)` implies a strictly better conclusion than
+`cross_pair_bound`'s), and `cross_pair_refined_at_three_five` evaluates it
+at the `m = 4` row: 90, by kernel computation, not by quotation.
+
+**What this does *not* do.** Two honest negatives.
+
+It does not rescue the route. 90 per pair gives `Σ ≤ 180` over the four
+families, against the 64 that is realised and the 48 that was wanted;
+§27.1 stands.
+
+It does not lower the `r ≥ m+1` threshold of `two_cover_star_extremal`
+either, and the reason is worth recording. That theorem needs the pair
+bound `X` at `u = m-1` to satisfy `X + r^(m-2) ≤ r^(m-1)`, and
+`cross_pair_bound`'s `(r-1)·r^(m-2)` meets it with **equality** — it is
+exactly tight for that consumer. `cross_pair_refined` beats it only when
+`u·max(2u,r+1) < r(r-1)`, and at `r = m` (one below the threshold, with
+`u = m-1`) the binding case is "neither side pointed", where
+`2(m-1)² ≤ m(m-1)` fails for every `m ≥ 3`. So the threshold survives; it
+is not an artefact of which pair bound is used.
+
+### 27.4 Measured
+
+`tau_piece_scan` now takes a covering-number threshold, so it answers two
+questions with one search: the τ ≥ 3 piece (the constant in
+`star_extremal_from_tau_three`) and the τ ≥ 2 piece (the largest
+intersecting Rao-spread family that is not a star), which is what the
+construction of §27.2 feeds on.
+
+```
+  m=3 r=5, tau>=2   ground 5   10   exhausted on that ground
+                    ground 6   10   exhausted
+                    ground 7   13   exhausted
+                    ground 8   15   exhausted (20 555 449 nodes, 34 s)
+  m=4 r=5, tau>=3   ground 6   15   exhausted  ( = C(6,4), the whole family)
+                    ground 7   35   exhausted  ( = C(7,4) = the complete
+                                                4-uniform family on 2m-1
+                                                points, the m=4 analogue of
+                                                the C(5,3)=10 the m=3 row
+                                                measured)
+```
+
+A ground set is a restriction, so every row is a lower bound on the true
+maximum. `hm16` lives on 9 points and has 16 members, above the ground-8
+row of 15, so the τ ≥ 2 sequence is still climbing at ground 8; `g65`
+lives on 13 points and has 65, far above the ground-7 row of 35. Neither
+scan reached the ground where its own witness lives.
+
+### 27.5 Costs and gates
+
+```
+  what                                          budget      spent    finished?
+  tau_piece_scan m=3 r=5 tau>=2, grounds 5-8    8e9 nodes   35 s     yes,
+                                                                     exhausted
+                                                                     on each
+  tau_piece_scan m=3 r=5 tau>=2, ground 9       8e9 nodes   41 min   NO --
+                                                                     STOPPED by
+                                                                     hand,
+                                                                     budget
+                                                                     unspent
+  tau_piece_scan m=4 r=5 tau>=3, grounds 6-7    4e9 nodes   <1 s     yes,
+                                                                     exhausted
+                                                                     on each
+  tau_piece_scan m=4 r=5 tau>=3, ground 8       4e9 nodes   48 min   NO --
+                                                                     STOPPED by
+                                                                     hand,
+                                                                     budget
+                                                                     unspent
+  g65 maximality, grounds 13,14,15              exhaustive  <1 s     yes
+  coqc coq/CrossRefined.v (g65 by vm_compute)   --          52 s     yes
+```
+
+Both stopped rows are **stopped by hand with the node budget unspent**,
+not exhausted and not truncated at a budget: the cores were needed for
+the gates. Neither is load-bearing — the witnesses live on grounds those
+searches had not reached, so a larger row could only raise a number this
+section does not use.
+
+**The gates.**
+
+```
+  make -j4 verify        green  (481 audited theorems, all "Closed under
+                                the global context")
+  make coqchk            green  (41 modules; one axiom:
+                                Sunflower.ALWZ.Rao20_lemma2)
+  cargo test --release   green  (28 suites, 262 tests, 0 failures)
+  python3 tools/mutate.py green (106 mutations: MUTKILLED killed, 2 survived as
+                                declared, 1 control passing, 0 unexpected)
+  tools/statements.py    green  (568 statements)
+  tools/docnumbers.py    green  (12 quoted numbers match)
+```
+
+### 27.6 The one-line verdict
+
+**The route §26.4 named to `r*(4,3) ≤ 5` is closed by an explicit
+counterexample — the four-family inequality it asked for is false by more
+than a factor of two, with or without the covering-number side condition —
+and the same construction, run forward, produces a maximal 65-member
+witness that pins the still-open constant into `[65, 125]`.**
+
+The obstruction was worth more than the route. `star_saturation` — a large
+star drags its cross-intersecting partners into itself — together with the
+greedy tree already present gives `cross_pair_refined`, a cross-intersecting
+bound with no threshold on `r`, off by one from the exhaustive truth at
+`u = 2` where the existing `cross_pair_bound` is off by a factor of `r/2`,
+and strictly sharper at the `(u,r) = (3,5)` row that the `m = 4` case runs
+through.
+
 
 No new record object, and no search in this section decided anything —
 §26.7 says which two were truncated and which one was stopped by hand.

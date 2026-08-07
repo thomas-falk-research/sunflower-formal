@@ -1378,3 +1378,31 @@ in the form Rao asks about.
   caveat, next to rows that are theorems; both that table and `STATUS.md`
   are corrected in this session's commit. It is the one number in the
   brief that failed rule 9.
+
+### A derived route, stated as "the gap", that had never been measured
+
+§26.4 reduced `r*(4,3) ≤ 5` to one four-family inequality —
+`Σ_x |A_x| ≤ 48` for four pairwise cross-intersecting 3-uniform
+Rao(5)-spread families — and called it "the gap, stated exactly". Nothing
+in the gate stack objects: it is prose, it names no theorem, and the
+arithmetic that produced it (`125 − (1 + 16 + 60) = 48`) is correct.
+
+It is also false. Four copies of one 25-member star give `Σ = 100`; four
+copies of a 16-member non-star give `Σ = 64` with no common point, which
+is what the covering-number hypothesis actually forces. Both were found by
+writing the families down and evaluating them, which is what rule 1 of
+this session's brief — measure the quantity, do not just bound it — asks
+for, and the one thing the derivation had not done.
+
+> **Rule 12. A reduction is a claim, and a claim about a quantity gets
+> measured before it gets called a gap.** The arithmetic of a
+> decomposition can be right while the inequality it produces is false,
+> because a decomposition bounds each layer *separately* and the layers
+> need not be simultaneously full. "Necessary if the other layers are
+> full" is a different statement from "necessary", and only the second
+> one earns the word *exactly*.
+
+`docs/roadmap.md` §26.4 now carries the retraction inline, and §27 records
+what the measurement bought instead: a 65-member witness that pins the
+open constant into `[65, 125]`, and two general transfer lemmas the
+counterexample turned out to be an instance of.

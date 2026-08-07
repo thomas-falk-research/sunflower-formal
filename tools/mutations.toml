@@ -1638,3 +1638,108 @@ r >= m+1 already gives, so the mutated statement is exactly §24.13's open \
 conjecture -- the star extremal for every intersecting Rao-spread family \
 from r = m+1 on. The greedy cannot prove it: at covering number 3 it \
 gives m^3 * r^(m-3) against r^(m-1), and m^3 > (m+1)^2 for every m >= 3."""
+
+# ----------------------------------------------------------------
+# CrossRefined: the two transfer lemmas, the refined bound, and the
+# 65-member witness.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "crossrefined-saturation-threshold"
+file = "coq/CrossRefined.v"
+question = """star_saturation drags a partner into the star once the \
+pointed family passes u*r^(u-2). Is that exponent right, or would the \
+cruder point-degree cap u*r^(u-1) do?"""
+find = """    u * r ^ (u - 2) < length A ->
+    Pointed B w."""
+replace = """    u * r ^ (u - 1) < length A ->
+    Pointed B w."""
+expect = "killed"
+because = """The bound comes from the *pair* degree: a partner member f \
+avoiding w forces every member of A to contain one of the u pairs {w,v}, \
+v in f, and each of those has degree at most r^(u-2). Raising the \
+threshold to r^(u-1) weakens the lemma past the point where \
+cross_pair_refined can use it -- its case split is exactly at u*r^(u-2), \
+which is what turns the pointed case into u*r^(u-2)*(r+1) instead of \
+(u+1)*r^(u-1)."""
+
+[[mutation]]
+id = "crossrefined-saturation-drop-uniform"
+file = "coq/CrossRefined.v"
+question = """star_saturation uses Rao's condition on A only. Is B's \
+uniformity doing anything?"""
+find = """Lemma star_saturation :
+  forall u r (A B : Family) w,
+    Uniform u B ->"""
+replace = """Lemma star_saturation :
+  forall u r (A B : Family) w,
+    True ->"""
+expect = "killed"
+because = """Yes: the count is over the points of a partner member, so \
+|f| = u is what makes it u pairs rather than arbitrarily many. Without \
+it a partner member could be as large as it likes and cover A with room \
+to spare."""
+
+[[mutation]]
+id = "crossrefined-drop-two-u"
+file = "coq/CrossRefined.v"
+question = """The refined bound carries max(2u, r+1). The r+1 branch is \
+the pointed case; is the 2u branch ever binding?"""
+find = """    length A + length B <= u * Nat.max (2 * u) (r + 1) * r ^ (u - 2).
+Proof.
+  intros u r A B Hu HUA HUB HRA HRB Hcross HAne HBne."""
+replace = """    length A + length B <= u * (r + 1) * r ^ (u - 2).
+Proof.
+  intros u r A B Hu HUA HUB HRA HRB Hcross HAne HBne."""
+expect = "killed"
+because = """It is binding whenever r + 1 < 2u, which the theorem allows \
+because it carries no lower bound on r at all. The case where neither \
+side is pointed gives 2u^2 * r^(u-2) from the greedy tree at depth two, \
+and 2u^2 <= u(r+1) is exactly 2u <= r+1. At u = 4, r = 6 -- the row where \
+the refined bound is worse than cross_pair_bound -- the max is 8, not 7."""
+
+[[mutation]]
+id = "crossrefined-hm16-shrink-y"
+file = "coq/CrossRefined.v"
+question = """hm16 spends the whole pair-degree allowance: deg{12,i} = 5 \
+for each of the three points of its extra triple. Is the fifth tail point \
+actually used?"""
+find = "  [4;5;6] :: flat_map (fun i => map (fun y => [12; i; y]) [7;8;9;10;11]) [4;5;6]."
+replace = "  [4;5;6] :: flat_map (fun i => map (fun y => [12; i; y]) [7;8;9;10]) [4;5;6]."
+expect = "killed"
+because = """Yes. With four tail points the family has 13 members, g65 \
+has 53, and the lower bound on the open constant drops from 65 to 53. The \
+Rao condition permits five and the witness takes all five; nothing here is \
+slack."""
+
+[[mutation]]
+id = "crossrefined-three-five-off-by-one"
+file = "coq/CrossRefined.v"
+question = """Is 90 what the refined bound actually evaluates to at the \
+m = 4 row, or is it a rounded quotation?"""
+find = """    length A + length B <= 90.
+Proof."""
+replace = """    length A + length B <= 89.
+Proof."""
+expect = "killed"
+because = """It is exact: 3 * max(6,6) * 5^1 = 90, computed by the kernel \
+rather than quoted. cross_pair_bound gives 100 on the same row."""
+
+[[mutation]]
+id = "crossrefined-pointed-exists"
+file = "coq/CrossRefined.v"
+question = """Pointed A w says *every* member of A contains w. Both \
+transfer lemmas and the whole case split are phrased with it; is the \
+universal quantifier load-bearing, or would "some member contains w" \
+give the same theorems?"""
+find = """Definition Pointed (A : Family) (w : nat) : Prop :=
+  forall C, In C A -> In w C."""
+replace = """Definition Pointed (A : Family) (w : nat) : Prop :=
+  exists C, In C A /\\ In w C."""
+expect = "killed"
+because = """Load-bearing at both ends. star_saturation's conclusion is \
+that the *partner* is contained in a star, which is a universal \
+statement, and its hypothesis is that A is, which is what lets the pair \
+degrees be summed over one member of the partner. An existential Pointed \
+would be satisfied by every family with a member through w and would say \
+nothing."""

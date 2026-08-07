@@ -223,6 +223,11 @@ fn the_cross_intersecting_bound_holds_and_has_slack_at_u_equals_two() {
         let bound = (r - 1) * r;
         assert!(truth <= bound, "r={r}: truth {truth} exceeds bound {bound}");
         assert_eq!(truth, 2 * r + 1, "r={r} on {n} points");
+        // `CrossRefined.cross_pair_refined` gives u*max(2u,r+1)*r^(u-2),
+        // which at u = 2 is 2(r+1): one above the truth, against this
+        // bound's factor of r/2.
+        assert!(truth <= 2 * (r + 1), "r={r}");
+        assert_eq!(2 * (r + 1), truth + 1, "r={r}");
     }
     // too few points and the maximum is smaller -- the search is
     // exhaustive on the ground it is given, not on all grounds
