@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 95 anecdotes into a coverage metric over the
+  mutation testing from 100 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -6034,9 +6034,11 @@ done, in two places, and both were verified rather than re-derived.
 ```
 
 and `docs/reading.md`'s [Ra20] entry records it checked symbol by symbol
-against Rao's Lemma 2, including that the repository's absolute
-`RaoSpread` is *stronger* than the fractional condition Rao uses
-(`Spread.RaoSpread_Spread`), so the published lemma applies verbatim. So
+against Rao's Lemma 2. **Correction, §26.5:** this section first said the
+repository's absolute `RaoSpread` is *stronger* than "the fractional
+condition Rao uses". Read first-hand off the page, Rao's own definition
+([Ra20] p. 2) is the absolute one and is `RaoSpread` verbatim, and so is
+Bell–Chueluecha–Warnke's ([BCW21] p. 1); no comparison is needed. So
 `r*(m,3) = O(log m)` is published, §22.7 already says so, and the
 consequence for §24.13 is worth stating plainly:
 
@@ -6170,3 +6172,373 @@ run and lost. The closed line is §25.1, closed by an object rather than a
 budget. The general-uniformity statement of §25.4 is prose with its
 arithmetic checked and its two missing Coq pieces named, and it is the
 next thing to do.
+
+---
+
+## 26. §25.4 in Coq, and the reason it stops at uniformity three
+
+**Verdict: the general-uniformity theorem §25.4 gave in prose is proved,
+axiom-free; the reason its companion case does not lift past `m = 3` is a
+new decisive negative with an explicit witness; and the whole gap between
+`r*(4,3) ≤ 7` and `r*(4,3) ≤ 5` is now one constant, stated as a Coq
+implication.** In order:
+
+* **`two_cover_star_extremal`** (§26.1): for every `m` and every
+  `r ≥ m+1`, an `m`-uniform intersecting Rao-spread family with a
+  two-point cover has at most `r^(m-1)` members — the size of a star.
+  §24.10 had the `m = 3` row; this is all of them, at the same threshold.
+  Both Coq pieces §25.4 named as missing are supplied.
+* **`tau_three_piece_unbounded_at_four`** (§26.3): at `m = 4` the
+  covering-number-3 piece is **unbounded** without a degree cap, where at
+  `m = 3` the same quantity is 10. So the `m = 3` argument does not lift,
+  and the Rao condition in the remaining hypothesis is load-bearing rather
+  than bookkeeping. The witness is `C([5],3)` with one free coordinate.
+* **`r_star_four_at_most_five_from_tau_three`** (§26.4): one constant —
+  *a 4-uniform intersecting Rao(5)-spread family of covering number at
+  least 3 has at most 125 members* — turns `r*(4,3) ≤ 7` into `≤ 5`.
+* **`star_extremal_for_large_r`** (§26.4a): the star is extremal at
+  *every* uniformity once `m³ ≤ r²` — the first general answer to the
+  extremal question §24.13 named, though at a threshold strictly above
+  the `m+1` the conjecture asks for.
+* **The reading, done first-hand off the page images** (§26.5), which
+  confirms three claims §25.5 makes and **corrects a fourth of its own**.
+
+### 26.1 The theorem
+
+`coq/CrossIntersecting.v`, axiom-free, fifteen new audited names.
+
+> **`two_cover_star_extremal`:** `G` `m`-uniform, intersecting,
+> `RaoSpread r`, every member containing `p` or `q`, and `r ≥ m+1`. Then
+> `length G ≤ r^(m-1)`.
+
+The reduction is §25.4's. Against the cover `{p,q}`, the members through
+both are capped by the pair degree at `r^(m-2)`; the tails of the other
+two pieces are families `A`, `B` at uniformity `u = m-1` that satisfy
+Rao's condition *with the same `r`* (`tail_uniform_rao`) and are
+cross-intersecting. So everything reduces to
+
+> **`cross_pair_bound`:** two nonempty cross-intersecting families at
+> uniformity `u`, each Rao-spread with the same `r ≥ u+2`, have at most
+> `(r-1)·r^(u-1)` members between them,
+
+and `(r-1)r^(u-1) + r^(u-1) = r^u = r^(m-1)` closes it.
+
+**The first missing piece: the greedy decision tree.** `extend_keys` is
+the step — for each key `S`, name a member of `A` missing it and branch on
+that member's `u` points; a member of `B` containing `S` meets that member
+of `A`, and the meeting point is outside `S`, so it contains one of the
+extensions. `greedy_keys` iterates it: at most `u^j` keys of size `j`,
+each `NoDup`, and every member of `B` contains one. `cover_by_sets` then
+turns the key list into `|B| ≤ u^a·r^(u-a)`.
+
+**The second: the covering-number decision.** `covers_at_most A j` is a
+finite search over `subsets (nodup (concat A))` — a cover point lying in
+no member is useless, which is `TwoCover.covers_dec_search`'s device at
+`j = 2`, here at every `j`. `no_small_cover` is the half that matters:
+the search failing at `j` means *no* set of size at most `j` covers `A`,
+not merely no candidate. `least_true` then picks the least `j` that works,
+and `covers_at_most_top` supplies the top of the range — a member of the
+cross-intersecting partner *is* a cover, which is the only reason the
+covering number is finite at all.
+
+### 26.2 The numeric core, and why the threshold is exactly `m+1`
+
+`budget_split`: with `a` the covering number of the smaller side and
+`s = a-1`, either
+
+```
+  (O1)   a·r^(u-1) + u^a·r^(u-a)  <= (r-1)·r^(u-1)
+  (O2)          2·u^a·r^(u-a)     <= (r-1)·r^(u-1)
+```
+
+and one of them always holds. Both come from a single integer Bernoulli
+inequality, `bernoulli_shift : u^t·(u + 2(t+1)) ≤ (u+2)^(t+1)`, read
+twice: `2s ≤ u` gives (O1), `u ≤ 2s` gives (O2), and every `s` is in one.
+
+At `s = 0` — `A` a star — (O1) reads `u ≤ r-2`, which is `r ≥ m+1` on the
+nose. One below it **both** options fail, for every `u` up to 60
+(`rust/tests/cross_intersecting.rs`, exact arithmetic; the products pass
+`u128` before `u = 30`). So `m+1` is not an artefact of the write-up: it
+is where the star case turns over, and it is the same `m+1` that §24.13's
+`split_cannot_reach_r_equals_m` shows is the floor of the whole method.
+The mutations `crossint-threshold-m` and `crossint-budget-threshold` are
+those two facts.
+
+**How much is left on the table.** At `u = 2` the bound is `(r-1)r` and
+the truth is `2r+1`, so it is loose by about a factor of `r/2` and still
+closes — because what closes it is the `s = 0` row, not the size of the
+slack.
+
+### 26.3 Closed: the covering-number-3 piece is unbounded at `m = 4`
+
+`TauThree.tau_three_bound` bounds the `τ ≥ 3` piece at `m = 3` by 16 with
+**no degree cap at all**, and the truth there is Frankl's 10. The obvious
+next move is to redo that argument at `m = 4`. It cannot be done, and not
+because the argument is hard:
+
+> **`tau_three_piece_unbounded_at_four`:** for every `K` there is a
+> 4-uniform, distinct, intersecting family of covering number at least 3
+> with more than `K` members.
+
+The witness is `C([5],3)` with one free coordinate attached:
+
+```
+  G_n = { C u {w} : C a 3-subset of {0,...,4},  w in {5, ..., 7+n} }
+```
+
+`10(n+3)` members. 4-uniform and distinct because `w ≥ 5` and `C ⊆ {0..4}`;
+intersecting because two 3-subsets of a 5-set meet; and of covering number
+at least 3 because two points can exhaust neither the 5-set nor three or
+more values of `w`. Three values of `w` is the least that works —
+`crossint-lift-two-copies` weakens it to two and is killed, because
+`{5,6}` then covers.
+
+**What it costs and what it buys.** It costs the hope that §25.3's route
+generalises as it stands. It buys the knowledge that the `RaoSpread`
+hypothesis in `TauThreePieceAtMost` is the difference between a finite
+quantity and an infinite one — Rao's condition caps `deg` of the triple
+`C`, which is exactly the number of values of `w`, at `r^(4-3) = r`. That
+is why the definition carries it, and why the `m = 3` row is special
+rather than the first of a pattern.
+
+### 26.4 What one constant at `m = 4` would buy
+
+`StarExtremalAt m r` splits by covering number: `τ = 1` is a star, `τ = 2`
+is §26.1 for every `m`, and what is left is `τ ≥ 3`.
+`star_extremal_from_tau_three` is that statement with the constant open,
+and at `m = 3` with `K = 16` it reproduces §25.3's row
+(`three_uniform_star_extremal_again`), so the general form subsumes it.
+
+At `m = 4` the arithmetic is exact:
+
+```
+  r*(4,3) <= 5   <=   StarExtremalAt m 5 for m = 1,2,3,4
+                       m = 1  one_uniform_star_extremal            proved
+                       m = 2  two_uniform_star_extremal   (r >= 3) proved
+                       m = 3  three_uniform_star_extremal (r >= 4) proved
+                       m = 4  ????                                 open
+```
+
+> **`r_star_four_at_most_five_from_tau_three`:**
+> `TauThreePieceAtMost 4 5 125 -> SpreadYieldsDisjoint 4 3 5`.
+
+So the gap between the unconditional `r*(4,3) ≤ 7` of §24.2 and `≤ 5` is
+**one constant**: a 4-uniform intersecting Rao(5)-spread family of
+covering number at least 3 has at most 125 members. The elementary greedy
+bound there is `4^4 = 256`, so the interval to close is `[125, 256]` —
+the same shape as the `[16, 27]` that §25.2 closed at `m = 3`, and by
+§26.3 it cannot be closed the same way.
+
+**Where the 125 would have to come from, derived rather than guessed.**
+Decomposing against one member `M`, as §25.2 does at `m = 3`:
+
+```
+  |C n M| = 4    M itself                                          1
+  |C n M| = 3    4 triples of M, deg(triple) <= 5, less M         16
+  |C n M| = 2    3 complementary couples; the tails of a couple
+                 cross-intersect and have Delta <= deg(triple) = 5,
+                 so each couple is <= 20  (and <= deg(pair) <= 20
+                 from tau >= 3 when one side is empty)             60
+                                                        subtotal  77
+```
+
+so the one-point layer has to obey `Σ_x |A_x| ≤ 48`, where the `A_x` are
+**four pairwise cross-intersecting 3-uniform Rao(5)-spread families** —
+the four-family analogue of `TauThree.lemma_L`, which does the same job
+for three graphs at `m = 3`. `cross_pair_bound` gives only
+`|A_x| + |A_y| ≤ (r-1)r² = 100` per pair, hence `Σ ≤ 200`: four times
+what is needed. **That is the gap, stated exactly**, and it is a
+self-contained extremal question about four families rather than anything
+about sunflowers. This paragraph is arithmetic, not Coq.
+
+**Where this sits.** `r*(4,3) ≤ 5` would still be behind the published
+`O(log m)` asymptotically (§26.5), and it does not touch `f(4,3)` in a
+competitive way. Its content is the sequence: the fourth term would go
+from `[3,7]` to `[3,5]`, and `m+1 = 5` is the best the two-way split can
+ever give at that uniformity.
+
+### 26.4a The first general answer to §24.13
+
+The same machinery settles §24.13's question outright in a range. For
+covering number `t` the greedy tree gives `|G| ≤ m^t·r^(m-t)`, which beats
+the star `r^(m-1)` exactly when `m^t ≤ r^(t-1)`. Over `t` in `3..m` the
+binding case is `t = 3` — the exponent ratio `t/(t-1)` is largest there —
+so a single condition closes every covering number at once:
+
+> **`star_extremal_for_large_r`:** `1 ≤ m`, `r ≥ m+1` and `m³ ≤ r²` imply
+> `StarExtremalAt m r`, i.e. `I(m,r) ≤ r^(m-1)`.
+
+`rust/tests/cross_intersecting.rs` checks that `t = 3` really is binding
+and that the threshold fails one below, for every `m` up to 40.
+
+**What it is and is not.** It is the first statement of the form
+"the star is extremal" that holds at *every* uniformity — §24.13 named the
+problem and §25.3 closed one row of it. It is **not** the conjecture:
+`m³ > (m+1)²` for every `m ≥ 3`, so the threshold `max(m+1, ⌈m^(3/2)⌉)` is
+strictly above `m+1` from `m = 3` on (6 against 4 at `m = 3`, 9 against 5
+at `m = 4`). The mutation `crossint-large-r-cube` weakens `m³ ≤ r²` to
+`m³ ≤ r³` — which `r ≥ m+1` already gives — and is killed, because the
+mutated statement *is* the conjecture.
+
+And it moves no bound on `r*`: `star_extremal_gives_m_plus_one` wants the
+rows at `r = n+1`, and `(n+1)² ≥ n³` fails from `n = 3`. The conjecture's
+value is that it lives exactly at `r = m+1`, which is where the greedy
+stops working and where §26.1's two-point-cover argument is sharp.
+
+### 26.5 The reading, first-hand, and one correction to §25.5
+
+Every quotation below was read off a page image of the arXiv PDF rather
+than extracted as text, because the statements turn on exponents.
+
+**Rao [Ra20], p. 2 — the definition is the repository's, verbatim:**
+
+> *"Let `r(p,k)` denote the quantity `αp log(pk)`. We say that a sequence
+> of sets `S₁,…,S_ℓ ⊂ [n]` of size `k` is `r`-spread if for every
+> non-empty set `Z ⊂ [n]`, the number of elements of the sequence that
+> contain `Z` is at most `r^(k−|Z|)`."*
+
+That is `Spread.RaoSpread` on the nose. **This corrects §25.5**, which
+said the repository's absolute condition is "stronger than the fractional
+condition Rao uses". Rao's own condition is the absolute one; no
+comparison is needed, and `Spread.RaoSpread_Spread` is not what makes the
+published lemma apply. `docs/reading.md`'s [Ra20] entry had this right
+("matches"); §25.5 introduced the error.
+
+**Rao [Ra20], p. 2 — Lemma 2 is `SpreadYieldsDisjoint`:**
+
+> *"**Lemma 2.** If a sequence of more than `r(p,k)^k` sets of size `k` is
+> `r(p,k)`-spread, then the sequence must contain `p` disjoint sets."*
+
+and immediately after it, the sentence §25.5 turns on:
+
+> *"As far as we know, it is possible that Lemma 2 holds even when
+> `r(p,k) = O(p)`. Such a strengthening of Lemma 2 would imply the
+> sunflower conjecture of Erdős and Rado."*
+
+**Bell–Chueluecha–Warnke [BCW21], p. 1 — the sharpest published form:**
+
+> *"**Theorem 1.** There is a constant `C ≥ 4` such that
+> `Sun(p,k) ≤ (Cp log k)^k` for all integers `p,k ≥ 2`."*
+>
+> *"**Lemma 2.** There is a constant `C ≥ 4` such that, setting
+> `r(p,k) = Cp log k`, the following holds for all integers `p,k ≥ 2`. If
+> a family `S` with `|S| ≥ r(p,k)^k` sets of size `k` is `r(p,k)`-spread,
+> then `S` contains `p` disjoint sets."*
+
+with the same absolute spread condition on the same page. At `p = 3`
+petals and `k = m` uniformity this is `r*(m,3) ≤ 3C log m`, and even at
+the stated floor `C = 4` it is above 13 at `m = 3` — against this
+development's 4. So §25.5's reading stands: **`O(log m)` published,
+useless at the small `m` where the exact values live.**
+
+**The tightness examples are for the other form, checked.** §25.5 says
+the literature contains no lower bound on the disjointness threshold, on
+the strength of `docs/reading.md`'s A2. Both citations were read:
+
+* [ALWZ20] §3 is titled *"A Lower Bound for Robust Sunflowers"*, and
+  Lemma 3.1 exhibits a system *"which does not contain a
+  `(1/2,1/2)`-robust sunflower"*, showing *"Theorem 1.9 is tight"* —
+  the **robust** statement, not Lemma 2.
+* [BCW21] p. 2 introduces Lemma 4 with *"We close by recording that
+  **Theorem 3** is essentially best possible with respect to the
+  `r`-spread assumption"* — Theorem 3 being the "a random subset contains
+  a member" estimate, not the disjointness lemma.
+
+So neither bounds `r*(m,3)` from below, and Rao's own sentence says no one
+knows one. §25.5 stands as written.
+
+**One thing worth carrying forward.** Both tightness objects are the same
+family: [BCW21] Lemma 4 fixes a partition `V₁ ∪ ⋯ ∪ V_k` with `|V_i| = r`
+and takes *"all `k`-element sets containing exactly one element from each
+`V_i`"*; [ALWZ20] Lemma 3.1's `F̂ = X₁ × ⋯ × X_w` is the same. That is the
+grid, and `TauThree.star34` is its `(m,r) = (3,4)` instance with one
+coordinate pinned — the object that attains `I(3,4) = 16`. The extremal
+family for the published tightness results and the extremal family for
+this development's `I(m,r)` are the same shape, which is not something
+either §24.13 or §25 noticed.
+
+### 26.6 Measured
+
+```
+  quantity                                             value      status
+  max |A|+|B|, cross-intersecting Rao(r), u = 2       2r + 1    exhaustive,
+                                                                r+2 points
+  the (O1)/(O2) disjunction, u <= 60, r in [u+2,u+12]   holds   exact
+                                                                arithmetic
+  |lift n| with all four hypotheses                  10(n+3)    verified to
+                                                                n = 100
+  deg of a triple in lift n                                n    exactly |W|
+  I(4,5), ground 6 / ground 7                          15 / 35  exhaustive
+  I(4,5), grounds 8 and 9                               >= 35   TRUNCATED
+                                                                at 3e9 nodes
+                                                                each
+  the tau >= 3 piece at m=3, r=4, grounds 5..8             10   exhaustive
+                                                                on each
+  the tau >= 3 piece at m=4, r=5, ground 7                 35   exhaustive
+                                                                on that
+                                                                ground
+  the tau >= 3 piece at m=4, r=5, ground 8              >= 35   STOPPED by
+                                                                hand at
+                                                                ~7 min,
+                                                                budget
+                                                                unspent
+  m^3 <= r^2 closes every t >= 3, m <= 40               holds   exact
+                                                                arithmetic
+```
+
+The `m = 3` row of the scanner is the check that it is measuring the right
+thing: 10, on the nose, on every ground from 5 to 8, which is Frankl's
+value and `rust/tests/tau_three.rs`'s.
+
+The `I(4,5)` row is the one to read carefully. Ground 7's value of 35 is
+`C(7,4)` — *every* 4-subset of a 7-set, which is intersecting and
+Rao(5)-spread — and the star needs `1 + 3·5 = 16` points to fit, so
+exhaustive search cannot reach the question at all. `I(4,5) ≤ 125` will
+not be settled by search; §26.4 is the route.
+
+### 26.7 Costs and gates
+
+```
+  what                                          budget      spent   finished?
+  I(4,5), grounds 6 and 7                       3e9 nodes   <1 s    yes
+  I(4,5), ground 8                              3e9 nodes   363 s   NO --
+                                                                    truncated
+  I(4,5), ground 9                              3e9 nodes   801 s   NO --
+                                                                    truncated
+  tau>=3 piece scan, m=4 r=5, grounds 7,8       2e9 nodes   ~8 min  ground 7
+                                                                    yes;
+                                                                    ground 8
+                                                                    STOPPED
+                                                                    by hand,
+                                                                    budget
+                                                                    unspent
+  make -j4 verify                               --          --      yes
+  make coqchk                                   --          --      yes
+  cargo test --release                          --          --      yes
+  python3 tools/mutate.py (100)                 --          --      yes
+```
+
+Nothing else ran over ten minutes. The ground-8 row is **undecided**, and
+nothing in this section depends on it.
+
+### 26.8 The one-line verdict
+
+**The two-point-cover case is now a theorem at every uniformity, at the
+threshold `r ≥ m+1` that the `s = 0` row of the arithmetic pins exactly;
+the companion case provably does *not* lift past `m = 3` without a degree
+cap, with an explicit unbounded witness; and what separates `r*(4,3) ≤ 7`
+from `r*(4,3) ≤ 5` is one constant, now a Coq implication.**
+
+Two things fall out that were not the target. **`I(m,r) = r^(m-1)` holds
+at every uniformity once `m³ ≤ r²`** (§26.4a) — the first general answer
+to the extremal question §24.13 named, at a threshold strictly above the
+`m+1` the conjecture asks for, which is exactly the gap the conjecture is
+about. And the two published tightness objects — [ALWZ20] Lemma 3.1 and
+[BCW21] Lemma 4 — are the *same grid* that `TauThree.star34` instantiates
+at `(m,r) = (3,4)`, so the extremal family for the published results and
+for this development's `I(m,r)` coincide (§26.5).
+
+No new record object, and no search in this section decided anything —
+§26.7 says which two were truncated and which one was stopped by hand.
+The reading confirmed three of §25.5's claims off the page and corrected
+a fourth of its own.

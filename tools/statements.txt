@@ -355,8 +355,8 @@ b3d15fba701de0bd  thm Audit.uniformity_is_needed_in_the_direct_sum
 648bbd45eaeb5ee2  thm Intersecting.no_sunflower_across
     no_sunflower_across : forall A B C core : list nat, ~ Disjoint A B -> Disjoint A C -> SetEq (inter A B) core -> SetEq (inter A C) core -> False
 
-a1b3c32f137ce800  thm Intersecting.SetNoDup_app
-    SetNoDup_app : forall P Q : Family, SetNoDup P -> SetNoDup Q -> (forall A B : list nat, List.In A P -> List.In B Q -> ~ SetEq A B) -> SetNoDup (P ++ Q)
+e3639b76baa7d68e  thm Intersecting.SetNoDup_app
+    Intersecting.SetNoDup_app : forall P Q : Family, SetNoDup P -> SetNoDup Q -> (forall A B : list nat, List.In A P -> List.In B Q -> ~ SetEq A B) -> SetNoDup (P ++ Q)
 
 45b1fbcd2adfa795  thm Intersecting.double_Uniform
     double_Uniform : forall (b : nat) (H : Family), Uniform b H -> Uniform b (double H)
@@ -1486,8 +1486,8 @@ fb6e2c6a6cb4d5ab  thm TwoCover.two_cover_bound
 fa10eba1d647bc0f  thm TwoCover.two_cover_bound_members
     two_cover_bound_members : forall (r : nat) (G : Family) (p q : nat), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists C : list nat, List.In C G /\ ~ List.In p C) -> length G <= PeanoNat.Nat.max (4 * r) (3 * r + 4)
 
-47bc1e0b32b32af6  thm TwoCover.two_cover_star_extremal
-    two_cover_star_extremal : forall (r : nat) (G : Family) (p q : nat), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists C : list nat, List.In C G /\ ~ List.In p C) -> length G <= r * r
+20984732b85ee2c4  thm TwoCover.two_cover_star_extremal
+    TwoCover.two_cover_star_extremal : forall (r : nat) (G : Family) (p q : nat), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists C : list nat, List.In C G /\ ~ List.In p C) -> length G <= r * r
 
 f54c3b26aff09062  thm TwoCover.covered_by_two_at_most_star
     covered_by_two_at_most_star : forall (r : nat) (G : Family) (p q : nat), 4 <= r -> Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> length G <= r * r
@@ -1599,3 +1599,57 @@ a5848ea9ada3cde1  thm TauThree.three_uniform_star_extremal
 
 02a58d7b04022ff7  thm TauThree.tau_three_at_most_unguarded_is_false
     tau_three_at_most_unguarded_is_false : forall K : nat, ~ TauThreeAtMostUnguarded K
+
+d293a4e99ce78259  thm CrossIntersecting.bernoulli_shift
+    bernoulli_shift : forall u t : nat, PeanoNat.Nat.pow u t * (u + 2 * S t) <= PeanoNat.Nat.pow (u + 2) (S t)
+
+78c4f02a9630e67e  thm CrossIntersecting.budget_split
+    budget_split : forall u r a : nat, 1 <= a -> a <= u -> u + 2 <= r -> a * PeanoNat.Nat.pow r (u - 1) + PeanoNat.Nat.pow u a * PeanoNat.Nat.pow r (u - a) <= (r - 1) * PeanoNat.Nat.pow r (u - 1) \/ 2 * (PeanoNat.Nat.pow u a * PeanoNat.Nat.pow r (u - a)) <= (r - 1) * PeanoNat.Nat.pow r (u - 1)
+
+e6817c5def46b538  thm CrossIntersecting.no_small_cover
+    no_small_cover : forall (A : Family) (j : nat), covers_at_most A j = false -> forall S : list nat, length S <= j -> exists C : list nat, List.In C A /\ (forall w : nat, List.In w S -> ~ List.In w C)
+
+437cb628ed403765  thm CrossIntersecting.least_true
+    least_true : forall (f : nat -> bool) (n : nat), f n = true -> f 0 = false -> exists a : nat, 1 <= a /\ a <= n /\ f a = true /\ f (a - 1) = false
+
+fbbba3948f07c837  thm CrossIntersecting.extend_keys
+    extend_keys : forall (A B : Family) (u : nat) (Ks : list (list nat)), Uniform u A -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> (forall S : list nat, List.In S Ks -> exists C : list nat, List.In C A /\ (forall w : nat, List.In w S -> ~ List.In w C)) -> exists Ks' : list (list nat), length Ks' <= u * length Ks /\ (forall S' : list nat, List.In S' Ks' -> exists (w : nat) (S : list nat), List.In S Ks /\ ~ List.In w S /\ S' = (w :: S)%list) /\ (forall f : list nat, List.In f B -> forall S : list nat, List.In S Ks -> Subset S f -> exists S' : list nat, List.In S' Ks' /\ Subset S' f)
+
+d27bb8a261bee2ee  thm CrossIntersecting.greedy_keys
+    greedy_keys : forall (j : nat) (A B : Family) (u : nat), Uniform u A -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> (forall S : list nat, length S < j -> exists C : list nat, List.In C A /\ (forall w : nat, List.In w S -> ~ List.In w C)) -> exists Ks : list (list nat), length Ks <= PeanoNat.Nat.pow u j /\ (forall S : list nat, List.In S Ks -> length S = j /\ List.NoDup S) /\ (forall f : list nat, List.In f B -> exists S : list nat, List.In S Ks /\ Subset S f)
+
+ac336e3f4680d31b  thm CrossIntersecting.greedy_bound
+    greedy_bound : forall (j : nat) (A B : Family) (u r : nat), 1 <= j -> Uniform u A -> RaoSpread u B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> (forall S : list nat, length S < j -> exists C : list nat, List.In C A /\ (forall w : nat, List.In w S -> ~ List.In w C)) -> length B <= PeanoNat.Nat.pow u j * PeanoNat.Nat.pow r (u - j)
+
+d26adaa9908b2465  thm CrossIntersecting.cross_pair_bound
+    cross_pair_bound : forall (u r : nat) (A B : Family), 1 <= u -> u + 2 <= r -> Uniform u A -> Uniform u B -> RaoSpread u A r -> RaoSpread u B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= (r - 1) * PeanoNat.Nat.pow r (u - 1)
+
+b379b7566df7663a  thm CrossIntersecting.tail_uniform_rao
+    tail_uniform_rao : forall (m r : nat) (G H : Family) (x : nat), 1 <= m -> Uniform m G -> RaoSpread m G r -> (forall T : list nat, deg T H <= deg T G) -> (forall C : list nat, List.In C H -> List.In C G /\ List.In x C) -> Uniform (m - 1) (List.map (rem x) H) /\ RaoSpread (m - 1) (List.map (rem x) H) r
+
+65219dbc11047c52  thm CrossIntersecting.two_cover_star_extremal
+    two_cover_star_extremal : forall (m r : nat) (G : Family) (p q : nat), 1 <= m -> m + 1 <= r -> Uniform m G -> RaoSpread m G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> length G <= PeanoNat.Nat.pow r (m - 1)
+
+7ee457103bc01696  thm CrossIntersecting.star_extremal_from_tau_three
+    star_extremal_from_tau_three : forall m r K : nat, 1 <= m -> m + 1 <= r -> K <= PeanoNat.Nat.pow r (m - 1) -> TauThreePieceAtMost m r K -> StarExtremalAt m r
+
+72fa458085061b65  thm CrossIntersecting.three_uniform_star_extremal_again
+    three_uniform_star_extremal_again : forall r : nat, 4 <= r -> StarExtremalAt 3 r
+
+0d36f7e1aa4d8411  thm CrossIntersecting.four_uniform_star_extremal_from_tau_three
+    four_uniform_star_extremal_from_tau_three : forall r : nat, 5 <= r -> TauThreePieceAtMost 4 r (PeanoNat.Nat.pow r 3) -> StarExtremalAt 4 r
+
+63f237815d780c0e  thm CrossIntersecting.tau_three_piece_unbounded_at_four
+    tau_three_piece_unbounded_at_four : forall K : nat, exists G : Family, Uniform 4 G /\ Distinct G /\ (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) /\ (forall p q : nat, exists C : list nat, List.In C G /\ ~ List.In p C /\ ~ List.In q C) /\ K < length G
+
+0f6c5838be93e29a  thm CrossIntersecting.r_star_four_at_most_five_from_tau_three
+    r_star_four_at_most_five_from_tau_three : TauThreePieceAtMost 4 5 125 -> SpreadYieldsDisjoint 4 3 5
+
+48c4a7db9f357f9e  thm CrossIntersecting.covers_at_most_of_cover
+    covers_at_most_of_cover : forall (A : Family) (j : nat) (S : list nat), length S <= j -> (forall C : list nat, List.In C A -> exists w : nat, List.In w S /\ List.In w C) -> covers_at_most A j = true
+
+a435827c4efffef2  thm CrossIntersecting.pow_cube_step
+    pow_cube_step : forall m r t : nat, 1 <= m -> 3 <= t -> PeanoNat.Nat.pow m 3 <= PeanoNat.Nat.pow r 2 -> PeanoNat.Nat.pow m t <= PeanoNat.Nat.pow r (t - 1)
+
+5191243e60946dc4  thm CrossIntersecting.star_extremal_for_large_r
+    star_extremal_for_large_r : forall m r : nat, 1 <= m -> m + 1 <= r -> PeanoNat.Nat.pow m 3 <= PeanoNat.Nat.pow r 2 -> StarExtremalAt m r

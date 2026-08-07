@@ -1547,3 +1547,94 @@ pair meets the witness missing that pair in one of three points. Covering \
 number 2 gives nothing at pairs, and the statement is false: a family \
 with a 2-point cover and no degree condition is unbounded. This is the \
 one hypothesis the file cannot weaken anywhere."""
+
+[[mutation]]
+id = "crossint-threshold-m"
+file = "coq/CrossIntersecting.v"
+question = """two_cover_star_extremal needs r >= m + 1. §24.13's \
+split_cannot_reach_r_equals_m says r = m is a hard floor for the whole \
+method. Is the two-point-cover case any different?"""
+find = """Theorem two_cover_star_extremal :
+  forall m r (G : Family) p q,
+    1 <= m -> m + 1 <= r ->"""
+replace = """Theorem two_cover_star_extremal :
+  forall m r (G : Family) p q,
+    1 <= m -> m <= r ->"""
+expect = "killed"
+because = """No. The threshold is where the s = 0 row of budget_split turns \
+over -- A a star, (O1) reading u <= r - 2, i.e. r >= u + 2 = m + 1 -- and \
+`rust/tests/cross_intersecting.rs` checks that both options fail one below \
+it for every u up to 60. m+1 is not slack in the statement; it is the \
+content."""
+
+[[mutation]]
+id = "crossint-budget-threshold"
+file = "coq/CrossIntersecting.v"
+question = """budget_split is the whole numeric content, and it assumes \
+u + 2 <= r. Bernoulli is generous elsewhere -- is there room here?"""
+find = """Theorem budget_split :
+  forall u r a,
+    1 <= a -> a <= u -> u + 2 <= r ->"""
+replace = """Theorem budget_split :
+  forall u r a,
+    1 <= a -> a <= u -> u + 1 <= r ->"""
+expect = "killed"
+because = """None at all. At a = 1 the first option is u^1 <= (r-2)*r^0, \
+i.e. u <= r - 2, and the second is 2u <= r - 1, which is worse. At \
+r = u + 1 both fail, so the disjunction is false at its very first row."""
+
+[[mutation]]
+id = "crossint-drop-nonempty"
+file = "coq/CrossIntersecting.v"
+question = """cross_pair_bound asks both families to be nonempty. The \
+covering numbers are what the proof turns on -- is nonemptiness doing any \
+work, or is it a convenience?"""
+find = """    (forall e f, In e A -> In f B -> exists w, In w e /\\ In w f) ->
+    A <> [] -> B <> [] ->
+    length A + length B <= (r - 1) * r ^ (u - 1).
+Proof.
+  intros u r A B Hu Hr HUA HUB HRA HRB Hcross HAne HBne."""
+replace = """    (forall e f, In e A -> In f B -> exists w, In w e /\\ In w f) ->
+    A <> [] -> True ->
+    length A + length B <= (r - 1) * r ^ (u - 1).
+Proof.
+  intros u r A B Hu Hr HUA HUB HRA HRB Hcross HAne HBne."""
+expect = "killed"
+because = """Work, and it is what makes the covering number finite. A \
+member of B is a cover of A -- that is the only reason tau(A) <= u -- so \
+with B empty the cross-intersecting condition is vacuous, A is any \
+Rao-spread family at all, and its size is unbounded because the number of \
+points is."""
+
+[[mutation]]
+id = "crossint-lift-two-copies"
+file = "coq/CrossIntersecting.v"
+question = """The unboundedness witness attaches a free coordinate ranging \
+over 3 + n values. Would two values do?"""
+find = """Definition lift (n : nat) : Family :=
+  flat_map (fun w => map (fun C => w :: C) c53) (seq 5 (3 + n))."""
+replace = """Definition lift (n : nat) : Family :=
+  flat_map (fun w => map (fun C => w :: C) c53) (seq 5 (2 + n))."""
+expect = "killed"
+because = """No: with only two values of w, the two points {5,6} meet every \
+member, so the covering number drops to 2 and the witness no longer \
+witnesses anything. Three is the least number that survives, and it is \
+where `rust/tests/cross_intersecting.rs` starts the check."""
+
+[[mutation]]
+id = "crossint-large-r-cube"
+file = "coq/CrossIntersecting.v"
+question = """star_extremal_for_large_r closes every covering number from \
+m^3 <= r^2. §24.13 conjectures the same conclusion from r >= m+1 alone. \
+Is the cube condition doing work, or is the theorem already the \
+conjecture?"""
+find = """Theorem star_extremal_for_large_r :
+  forall m r, 1 <= m -> m + 1 <= r -> m ^ 3 <= r ^ 2 -> StarExtremalAt m r."""
+replace = """Theorem star_extremal_for_large_r :
+  forall m r, 1 <= m -> m + 1 <= r -> m ^ 3 <= r ^ 3 -> StarExtremalAt m r."""
+expect = "killed"
+because = """It is doing all the work. m^3 <= r^3 is just m <= r, which \
+r >= m+1 already gives, so the mutated statement is exactly §24.13's open \
+conjecture -- the star extremal for every intersecting Rao-spread family \
+from r = m+1 on. The greedy cannot prove it: at covering number 3 it \
+gives m^3 * r^(m-3) against r^(m-1), and m^3 > (m+1)^2 for every m >= 3."""

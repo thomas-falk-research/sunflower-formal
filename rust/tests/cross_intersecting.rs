@@ -1,19 +1,20 @@
 //! The two-point-cover case at every uniformity: the arithmetic, checked.
 //!
-//! `TwoCover.covered_by_two_at_most_star` proves the star extremal among
-//! 3-uniform intersecting Rao-spread families of covering number at most
-//! 2, once `r >= 4 = m + 1`. docs/roadmap.md §25.4 gives the same
-//! statement for every `m` at the same threshold `r >= m + 1`, by reducing
-//! it to a pair of cross-intersecting families at uniformity `u = m - 1`:
+//! `CrossIntersecting.two_cover_star_extremal` proves the star extremal
+//! among `m`-uniform intersecting Rao-spread families of covering number
+//! at most 2, for every `m`, once `r >= m + 1`. §24.10 had the `m = 3`
+//! row; §25.4 gave the general argument in prose and named two Coq pieces
+//! as missing; §26 supplies both and proves it. The reduction is to a pair
+//! of cross-intersecting families at uniformity `u = m - 1`:
 //!
 //! ```text
 //!   |A| + |B| <= (r - 1) * r^(u-1)     for r >= u + 2,
 //! ```
 //!
-//! where `A` and `B` are the tails of the two pieces. That argument is
-//! **prose, not Coq** (§25.4 says exactly what is missing). What is
-//! checked here is its arithmetic core, which is where the threshold
-//! `m + 1` comes from, and the one row small enough to exhaust.
+//! which is `CrossIntersecting.cross_pair_bound`. What is checked here is
+//! the arithmetic core -- where the threshold `m + 1` comes from -- and
+//! the one row small enough to exhaust, both by code sharing nothing with
+//! the Coq.
 //!
 //! Writing `a` for the covering number of `A` and `s = a - 1`, the two
 //! bounds available are `|A| <= a*r^(u-1)` with `|B| <= u^a*r^(u-a)`, and
@@ -23,7 +24,8 @@
 //!   (O1)   u^a <= (r - 2 - s) * r^s        or       (O2)   2*u^a <= (r - 1) * r^s
 //! ```
 //! suffices, and the claim is that every `s` in `0..u-1` satisfies one of
-//! them — (O1) when `2s <= u`, (O2) when `2s >= u`, both by Bernoulli.
+//! them -- (O1) when `2s <= u`, (O2) when `2s >= u`, both by Bernoulli.
+//! `CrossIntersecting.budget_split` is that disjunction in Coq.
 
 /// Minimal big natural: base `10^9` limbs, little-endian. The products
 /// compared below run past `u128` well before `u = 30`, and the crate has
@@ -234,4 +236,138 @@ fn the_cross_intersecting_bound_holds_and_has_slack_at_u_equals_two() {
     }
     assert_eq!(3 * 4 + 1, 13);
     assert_eq!(4 * 4, 16);
+}
+
+// ---------------------------------------------------------------------
+// why the covering-number-3 piece must carry the Rao condition
+
+/// The witness of `CrossIntersecting.tau_three_piece_unbounded_at_four`:
+/// every 3-subset of `{0..4}` with one free coordinate attached.
+fn lift(nw: u32) -> Vec<Vec<u32>> {
+    let base: Vec<Vec<u32>> = (0..5u32)
+        .flat_map(|a| ((a + 1)..5).flat_map(move |b| ((b + 1)..5).map(move |c| vec![a, b, c])))
+        .collect();
+    let mut out = Vec::new();
+    for w in 5..(5 + nw) {
+        for c in &base {
+            let mut s = c.clone();
+            s.push(w);
+            out.push(s);
+        }
+    }
+    out
+}
+
+fn meets_set(a: &[u32], b: &[u32]) -> bool {
+    a.iter().any(|x| b.contains(x))
+}
+
+#[test]
+fn the_tau_three_piece_is_unbounded_at_uniformity_four() {
+    // At m = 3 the same quantity is 10 (Frankl; `rust/tests/tau_three.rs`
+    // exhausts it). At m = 4 there is no bound at all without a degree
+    // cap, which is why `TauThreePieceAtMost` carries `RaoSpread`.
+    for nw in [3u32, 4, 6, 10, 25] {
+        let g = lift(nw);
+        assert_eq!(g.len() as u32, 10 * nw, "size is 10|W|");
+        // 4-uniform, distinct
+        assert!(g.iter().all(|c| c.len() == 4));
+        let mut sorted: Vec<Vec<u32>> = g.clone();
+        for c in sorted.iter_mut() {
+            c.sort_unstable();
+        }
+        sorted.sort();
+        sorted.dedup();
+        assert_eq!(sorted.len(), g.len(), "distinct");
+        // intersecting
+        for a in &g {
+            for b in &g {
+                assert!(meets_set(a, b));
+            }
+        }
+        // covering number at least 3
+        let pts: Vec<u32> = (0..(5 + nw)).collect();
+        for &p in &pts {
+            for &q in &pts {
+                assert!(
+                    g.iter().any(|c| !c.contains(&p) && !c.contains(&q)),
+                    "no member misses {p} and {q}"
+                );
+            }
+        }
+        // the degree Rao would cap: a triple of {0..4} sits in |W| members
+        let d3 = (0..5u32)
+            .flat_map(|a| ((a + 1)..5).flat_map(move |b| ((b + 1)..5).map(move |c| [a, b, c])))
+            .map(|t| g.iter().filter(|s| t.iter().all(|x| s.contains(x))).count())
+            .max()
+            .unwrap();
+        assert_eq!(d3 as u32, nw, "deg of a triple is exactly |W|");
+    }
+    // and 10|W| beats any fixed constant
+    assert!(lift(100).len() > 999);
+}
+
+#[test]
+fn the_general_bound_reproduces_the_three_uniform_row() {
+    // two_cover_star_extremal at m = 3 is TwoCover.covered_by_two_at_most_star:
+    // (r-1)*r^(u-1) for the two tails, plus r^(m-2) for the pair layer,
+    // is exactly the star r^(m-1).
+    for m in 2..=12u32 {
+        for r in (m + 1)..=(m + 6) {
+            let u = m - 1;
+            let tails = (r - 1) * r.pow(u - 1);
+            let pairs = r.pow(m - 2);
+            assert_eq!(tails + pairs, r.pow(m - 1), "m={m} r={r}");
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// the large-r threshold: m^3 <= r^2
+
+/// `CrossIntersecting.star_extremal_for_large_r` closes every covering
+/// number at once from `m^3 <= r^2`. The greedy gives `m^t * r^(m-t)` at
+/// covering number `t`, which beats the star `r^(m-1)` iff `m^t <= r^(t-1)`.
+#[test]
+fn the_binding_covering_number_is_three() {
+    for m in 3u64..=40 {
+        // least r with m+1 <= r and m^3 <= r^2
+        let mut r = m + 1;
+        while r * r < m * m * m {
+            r += 1;
+        }
+        // every covering number from 3 up is then covered
+        for t in 3..=m {
+            let lhs = Big::pow(m, t);
+            let rhs = Big::pow(r, t - 1);
+            assert!(lhs.le(&rhs), "m={m} r={r} t={t}");
+        }
+        // and t = 3 is the binding one: one below the threshold it fails
+        if r > m + 1 {
+            let below = r - 1;
+            assert!(
+                below * below < m * m * m,
+                "m={m}: r-1 should miss the t=3 condition"
+            );
+            assert!(
+                !Big::pow(m, 3).le(&Big::pow(below, 2)),
+                "m={m}: t=3 must fail one below"
+            );
+        }
+    }
+}
+
+#[test]
+fn the_large_r_threshold_is_strictly_above_m_plus_one() {
+    // so star_extremal_for_large_r is not §24.13's conjecture: the
+    // conjecture is at r = m+1, and m^3 > (m+1)^2 for every m >= 3.
+    for m in 3u64..=40 {
+        assert!(m * m * m > (m + 1) * (m + 1), "m={m}");
+    }
+    // at m = 3 the threshold is 6, where TauThree proves the row at 4
+    let mut r = 4u64;
+    while r * r < 27 {
+        r += 1;
+    }
+    assert_eq!(r, 6);
 }
