@@ -1407,9 +1407,18 @@ what the measurement bought instead: a 65-member witness that pins the
 open constant into `[65, 125]`, and two general transfer lemmas the
 counterexample turned out to be an instance of.
 
-The rule then had to be applied to this session's own work within the
-hour. §27.6's upper bound on `I₂(3,5)` was first written down as a few
-lines of arithmetic and labelled, in bold, *not Coq*. It is now
+The rule then had to be applied to this session's own work, twice.
+§27.6's upper bound on `I₂(3,5)` was first written down as a few lines of
+arithmetic and labelled, in bold, *not Coq*. It is now
 `CrossRefined.nonstar_three_bound`, the label is gone, and the difference
 between the two states is the only thing that decides whether the sketch
 was right — which is the whole content of rule 12.
+
+And the sketch was *not quite* right: it gave 17 where the truth is 16.
+Formalising it exposed that the loss was entirely in the pair bound at
+uniformity two, which the exhaustive search had been saying was `2r+1`
+against a proved `2r+2` for two sessions. Proving that one
+(`cross_pair_two_exact`) closed `I₂(3,5) = 16` exactly. The measurement
+had been sitting in `rust/tests/cross_intersecting.rs` the whole time,
+correctly labelled as a measurement; what was missing was anyone asking
+it to become a theorem.

@@ -13,10 +13,10 @@
 //! 3. `cross_pair_refined`'s number, `u·max(2u,r+1)·r^(u-2)`, against
 //!    `cross_pair_bound`'s `(r-1)·r^(u-1)` and against the exhaustive
 //!    truth at `u = 2`.
-//! 4. `nonstar_three_bound`'s `max(3r+2,16)`, which branch binds where,
-//!    and the decomposition of `hm16` that shows the remaining gap of one
-//!    is the gap between the proved pair bound `2r+2` and the measured
-//!    `2r+1`.
+//! 4. `nonstar_three_bound`'s `max(3r+1,16)`, which branch binds where,
+//!    the decomposition of `hm16` that meets it exactly, and the `r = 3`
+//!    row that shows `cross_pair_two_exact`'s `r >= 4` threshold is an
+//!    artefact of its case analysis.
 
 use sunflower_formal::spread::{is_rao_spread, Mask};
 
@@ -234,31 +234,30 @@ fn the_refined_bound_against_the_old_one_and_against_the_truth() {
 }
 
 /// `CrossRefined.nonstar_three_bound`: the two-cover branch gives
-/// `2*max(4,r+1) + r`, the covering-number-3 branch gives 16.
+/// `cross_pair_two_exact`'s `2r+1` plus the pair degree `r`, the
+/// covering-number-3 branch gives 16.
 fn i2_three_bound(r: u64) -> u64 {
-    std::cmp::max(2 * std::cmp::max(4, r + 1) + r, 16)
+    std::cmp::max((2 * r + 1) + r, 16)
 }
 
 #[test]
 fn the_non_star_bound_at_uniformity_three() {
     // the closed form the theorem states, against the two branches it is
     // assembled from
-    for r in 3..=20u64 {
-        assert_eq!(i2_three_bound(r), std::cmp::max(3 * r + 2, 16));
+    for r in 4..=20u64 {
+        assert_eq!(i2_three_bound(r), std::cmp::max(3 * r + 1, 16));
     }
-    // which branch binds where: the covering-number-3 branch until r = 4,
-    // the two-cover branch from r = 5 on
-    for r in 3..=4u64 {
-        assert_eq!(i2_three_bound(r), 16);
-    }
-    for r in 5..=20u64 {
-        assert_eq!(i2_three_bound(r), 3 * r + 2);
+    // which branch binds where: the covering-number-3 branch at r = 4,
+    // the two-cover branch from r = 5 on, and they are equal at r = 5
+    assert_eq!(i2_three_bound(4), 16);
+    assert_eq!(3 * 4 + 1, 13);
+    assert_eq!(i2_three_bound(5), 16);
+    assert_eq!(3 * 5 + 1, 16);
+    for r in 6..=20u64 {
+        assert_eq!(i2_three_bound(r), 3 * r + 1);
     }
 
-    // the row that matters
-    assert_eq!(i2_three_bound(5), 17);
-
-    // `hm16` is a witness one below it, so I2(3,5) is 16 or 17
+    // and `hm16` attains it, so I2(3,5) = 16 exactly
     let a = hm16();
     assert_eq!(a.len(), 16);
     assert!(uniform(&a, 3));
@@ -266,23 +265,18 @@ fn the_non_star_bound_at_uniformity_three() {
     assert!(intersecting(&a));
     assert!(is_rao_spread(3, &a, 5, 13));
     assert!(unpointed(&a, 13));
-    assert!(a.len() as u64 <= i2_three_bound(5));
-    assert_eq!(i2_three_bound(5), a.len() as u64 + 1);
-
-    // and the gap of one is exactly the gap in the pair bound: the
-    // two-cover branch is (pair bound at u = 2) + deg{p,q}, and at r = 5
-    // that is 12 + 5 = 17 proved against 11 + 5 = 16 measured.
-    assert_eq!(refined(2, 5) + 5, 17);
-    assert_eq!((2 * 5 + 1) + 5, 16);
+    assert_eq!(a.len() as u64, i2_three_bound(5));
 
     // `cross_pair_bound` cannot prove anything here: 20 + 5 = 25 is the
-    // star bound r^(m-1), i.e. no information about non-stars at all.
+    // star bound r^(m-1), i.e. no information about non-stars at all;
+    // `cross_pair_refined` gives 12 + 5 = 17, one too many.
     assert_eq!(old_bound(2, 5) + 5, 25);
     assert_eq!(5u64.pow(2), 25);
+    assert_eq!(refined(2, 5) + 5, 17);
 
-    // hm16 realises the split the proof uses: cover {4,12}, tails of
-    // sizes 5 and 5 with 5 members through both -- 5 + 5 + ... let the
-    // decomposition speak for itself.
+    // hm16 realises the split exactly: cover {4,12}, one member through 4
+    // only, ten through 12 only, five through both -- 11 + 5, where 11 is
+    // `cross_pair_two_exact`'s 2r+1 and 5 is the pair degree r^(m-2).
     let p = 4u32;
     let q = 12u32;
     assert!(a.iter().all(|&c| c & ((1 << p) | (1 << q)) != 0));
@@ -293,7 +287,81 @@ fn the_non_star_bound_at_uniformity_three() {
     assert_eq!(both, 5); // = deg{4,12}, exactly r^(m-2)
     assert_eq!(only_p, 1); // the triple {4,5,6}
     assert_eq!(only_q, 10); // the star members through 5 or 6
-    assert!(only_p + only_q <= refined(2, 5) as usize);
+    assert_eq!(only_p + only_q, 2 * 5 + 1); // the tails, at the exact bound
+}
+
+#[test]
+fn the_exact_pair_bound_at_uniformity_two() {
+    // `cross_pair_two_exact`: 2r+1, proved for r >= 4. It matches the
+    // exhaustive truth measured in `cross_intersecting.rs` at r = 4,5,6,
+    // where `cross_pair_refined` is one above and `cross_pair_bound` is a
+    // factor of about r/2 above.
+    for r in 4..=6u64 {
+        assert_eq!(refined(2, r), 2 * r + 2);
+        assert!(2 * r + 1 < refined(2, r));
+        assert!(refined(2, r) < old_bound(2, r));
+    }
+
+    // The proof needs r >= 4 because its worst case -- neither side
+    // pointed, four edges each from the greedy tree at depth two -- gives
+    // 8, and 8 <= 2r+1 only from r = 4. At r = 3 the exhaustive maximum
+    // is still 2r+1 = 7 (measured here on 5, 6 and 7 points), so the
+    // threshold is an artefact of this case analysis rather than a claim
+    // that r = 3 behaves differently. This is a measurement, not a proof.
+    assert_eq!(2 * 3 + 1, 7);
+    for n in 5..=7u32 {
+        assert_eq!(max_cross_pair_r3(n), 7, "ground {n}");
+    }
+    assert!(8 > 2 * 3 + 1);
+    assert!(8 <= 2 * 4 + 1);
+}
+
+/// Exhaustive maximum of `|A| + |B|` over nonempty cross-intersecting
+/// Rao(3) graphs on `n` points, confined as the proof confines it: an
+/// edge of `B` is relabelled `{0,1}` and every edge of `A` meets it.
+fn max_cross_pair_r3(n: u32) -> usize {
+    let edges: Vec<(u32, u32)> = (0..n).flat_map(|a| (a + 1..n).map(move |b| (a, b))).collect();
+    let meets = |e: (u32, u32), f: (u32, u32)| e.0 == f.0 || e.0 == f.1 || e.1 == f.0 || e.1 == f.1;
+    let rao = |g: &[(u32, u32)]| {
+        (0..n).all(|v| g.iter().filter(|e| e.0 == v || e.1 == v).count() <= 3)
+    };
+    let anchor: Vec<(u32, u32)> = edges
+        .iter()
+        .copied()
+        .filter(|&(a, b)| a == 0 || a == 1 || b == 0 || b == 1)
+        .collect();
+    let mut best = 0usize;
+    for mask in 0u32..(1u32 << anchor.len()) {
+        let a: Vec<(u32, u32)> = (0..anchor.len())
+            .filter(|i| mask >> i & 1 == 1)
+            .map(|i| anchor[i])
+            .collect();
+        if a.is_empty() || !rao(&a) {
+            continue;
+        }
+        let pool: Vec<(u32, u32)> = edges
+            .iter()
+            .copied()
+            .filter(|&e| a.iter().all(|&f| meets(e, f)))
+            .collect();
+        if !pool.contains(&(0, 1)) {
+            continue;
+        }
+        let rest: Vec<(u32, u32)> = pool.iter().copied().filter(|&e| e != (0, 1)).collect();
+        let mut bb = 1usize;
+        for m2 in 0u32..(1u32 << rest.len()) {
+            if 1 + m2.count_ones() as usize <= bb {
+                continue;
+            }
+            let mut b = vec![(0u32, 1u32)];
+            b.extend((0..rest.len()).filter(|i| m2 >> i & 1 == 1).map(|i| rest[i]));
+            if rao(&b) {
+                bb = b.len();
+            }
+        }
+        best = best.max(a.len() + bb);
+    }
+    best
 }
 
 #[test]

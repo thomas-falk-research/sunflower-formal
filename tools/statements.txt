@@ -1678,6 +1678,18 @@ dfca202e6e4d8d44  thm CrossRefined.cross_pair_refined
 017f1bcd997d7911  thm CrossRefined.cross_pair_refined_at_three_five
     cross_pair_refined_at_three_five : forall A B : Family, Uniform 3 A -> Uniform 3 B -> RaoSpread 3 A 5 -> RaoSpread 3 B 5 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= 90
 
+5cc0d3dffbfb8826  thm CrossRefined.two_sets_subset_eq
+    two_sets_subset_eq : forall e1 e2 : list nat, length e1 = 2 -> List.NoDup e1 -> length e2 = 2 -> Subset e1 e2 -> SetEq e1 e2
+
+4f5ea1a1875e1f6b  thm CrossRefined.member_outside
+    member_outside : forall e1 e2 : list nat, length e1 = 2 -> List.NoDup e1 -> length e2 = 2 -> ~ SetEq e1 e2 -> exists b : nat, List.In b e1 /\ ~ List.In b e2
+
+8fba14e6a1b4211f  thm CrossRefined.pair_partner_bound
+    pair_partner_bound : forall (r : nat) (A B : Family) (e1 e2 : list nat), Uniform 2 A -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> ~ SetEq e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length B <= r + 3
+
+2fbce20df07eecf8  thm CrossRefined.cross_pair_two_exact
+    cross_pair_two_exact : forall (r : nat) (A B : Family), 4 <= r -> Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= 2 * r + 1
+
 263f9907be8c910c  thm CrossRefined.unpointed_dec_search
     unpointed_dec_search : forall (G : Family) (w : nat), List.existsb (fun a : nat => List.forallb (fun C : list nat => memb a C) G) (List.concat G) = false -> G <> nil -> exists C : list nat, List.In C G /\ ~ List.In w C
 
@@ -1708,17 +1720,17 @@ dc1dc3850c718f40  thm CrossRefined.g65_tau
 bf04dd5b5d8b9ce7  thm CrossRefined.nonstar_not_pointed
     nonstar_not_pointed : forall (A : Family) (w : nat), NonStar A -> ~ Pointed A w
 
-b32c49bf0172796c  thm CrossRefined.nonstar_three_bound
-    nonstar_three_bound : forall (r : nat) (A : Family), 3 <= r -> Uniform 3 A -> Distinct A -> RaoSpread 3 A r -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= PeanoNat.Nat.max (3 * r + 2) 16
+e76549fba067032d  thm CrossRefined.nonstar_three_bound
+    nonstar_three_bound : forall (r : nat) (A : Family), 4 <= r -> Uniform 3 A -> Distinct A -> RaoSpread 3 A r -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= PeanoNat.Nat.max (3 * r + 1) 16
 
-4011d84b554626df  thm CrossRefined.nonstar_three_five_at_most_seventeen
-    nonstar_three_five_at_most_seventeen : forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 17
+56333c1214e36dc3  thm CrossRefined.nonstar_three_five_at_most_sixteen
+    nonstar_three_five_at_most_sixteen : forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 16
 
 f2f040fce1b73643  thm CrossRefined.hm16_nonstar
     hm16_nonstar : NonStar hm16
 
-f3abcec359730470  thm CrossRefined.i2_three_five_window
-    i2_three_five_window : (Uniform 3 hm16 /\ Distinct hm16 /\ RaoSpread 3 hm16 5 /\ (forall C D : list nat, List.In C hm16 -> List.In D hm16 -> exists x : nat, List.In x C /\ List.In x D) /\ NonStar hm16 /\ length hm16 = 16) /\ (forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 17)
+493fceaba7b0dae7  thm CrossRefined.i2_three_five_is_sixteen
+    i2_three_five_is_sixteen : (Uniform 3 hm16 /\ Distinct hm16 /\ RaoSpread 3 hm16 5 /\ (forall C D : list nat, List.In C hm16 -> List.In D hm16 -> exists x : nat, List.In x C /\ List.In x D) /\ NonStar hm16 /\ length hm16 = 16) /\ (forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 16)
 
 7945cd77605a190f  def CrossRefined.Pointed
     Pointed = fun (A : Family) (w : nat) => forall C : list nat, List.In C A -> List.In w C : Family -> nat -> Prop Arguments Pointed A w%nat_scope

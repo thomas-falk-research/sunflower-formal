@@ -73,17 +73,32 @@
     reason the refined bound is tight there is that [star_saturation]
     forbids the *large* pointed side.
 
-    ** 3. What the sharper bound buys: [I2(3,5) <= 17]
+    ** 3. What the sharper bound buys: [I2(3,5) = 16], exactly
 
     [CrossIntersecting.two_cover_split] now factors the two-point-cover
     argument out of [two_cover_star_extremal], so a second consumer can
-    feed it a different pair bound. Feeding it [cross_pair_refined] gives
-    [nonstar_three_bound]: a 3-uniform intersecting Rao(r)-spread family
-    that is *not* a star has at most [max(3r+2, 16)] members, hence
-    [I2(3,5) <= 17] against [hm16]'s 16. [cross_pair_bound] gives 20 on
-    the same row, so that branch would come out at [20 + 5 = 25], which is
-    the star bound [r^(m-1)] and says nothing about non-stars. This
-    theorem does not exist without the refined bound. *)
+    feed it a different pair bound.
+
+    At [u = 2] the pair bound can be made exact. [pair_partner_bound] --
+    two members of one side that differ as sets cap the other at [r+3], by
+    four key sets of which the last is a *singleton*, which is what
+    removes the case split on whether the two members share a vertex --
+    together with [star_saturation], [partner_bound_one] and
+    [greedy_bound] at [j = 2] give [cross_pair_two_exact]: for [r >= 4],
+    [|A| + |B| <= 2r+1], which is the value the exhaustive search measures
+    and is attained by one edge against the two full stars at its
+    endpoints.
+
+    Feeding *that* to the split gives [nonstar_three_bound]: a 3-uniform
+    intersecting Rao(r)-spread family that is not a star has at most
+    [max(3r+1, 16)] members. At [r = 5] both branches read 16, and [hm16]
+    attains it, so [I2(3,5) = 16] exactly.
+
+    Neither of the earlier pair bounds reaches this. [cross_pair_bound]
+    gives 20 at [u = 2, r = 5], so the branch would come out at
+    [20 + 5 = 25] -- the star bound [r^(m-1)], no information about
+    non-stars at all. [cross_pair_refined] gives 12, hence 17, one too
+    many. Only the exact bound closes it. *)
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
@@ -293,6 +308,207 @@ Proof.
       [exact (HnB eq_refl) | exact (HnA eq_refl) | nia].
 Qed.
 
+(** ** The pair bound at uniformity two, exactly
+
+    [cross_pair_refined] gives [2r+2] at [u = 2] and the exhaustive search
+    in [rust/tests/cross_intersecting.rs] says the truth is [2r+1]. That
+    one closes, and closing it closes [I2(3,5)] below.
+
+    The new ingredient is [pair_partner_bound]: *two* members of one side,
+    not equal as sets, pin the other side at [r+3]. Everything else is
+    [star_saturation], [partner_bound_one] and [greedy_bound] at [j = 2],
+    already here. *)
+
+Lemma two_sets_subset_eq :
+  forall e1 e2,
+    length e1 = 2 -> NoDup e1 -> length e2 = 2 ->
+    Subset e1 e2 -> SetEq e1 e2.
+Proof.
+  intros e1 e2 Hl1 Hnd1 Hl2 Hsub.
+  destruct e1 as [|p1 [|p2 [|? ?]]]; simpl in Hl1; try discriminate.
+  destruct e2 as [|q1 [|q2 [|? ?]]]; simpl in Hl2; try discriminate.
+  assert (Hp : p1 <> p2)
+    by (inversion Hnd1 as [|? ? Hni ?]; subst; intro E; apply Hni;
+        left; symmetry; exact E).
+  assert (H1 : In p1 [q1; q2]) by (apply Hsub; left; reflexivity).
+  assert (H2 : In p2 [q1; q2]) by (apply Hsub; right; left; reflexivity).
+  split; [exact Hsub|].
+  destruct H1 as [E1|[E1|[]]]; destruct H2 as [E2|[E2|[]]]; subst;
+    try (exfalso; apply Hp; reflexivity);
+    intros x [<-|[<-|[]]]; simpl; tauto.
+Qed.
+
+Lemma member_outside :
+  forall e1 e2,
+    length e1 = 2 -> NoDup e1 -> length e2 = 2 ->
+    ~ SetEq e1 e2 -> exists b, In b e1 /\ ~ In b e2.
+Proof.
+  intros e1 e2 Hl1 Hnd1 Hl2 Hne.
+  destruct e1 as [|p1 [|p2 [|? ?]]]; simpl in Hl1; try discriminate.
+  destruct (in_dec Nat.eq_dec p1 e2) as [H1|H1];
+    [| exists p1; split; [left; reflexivity | exact H1]].
+  destruct (in_dec Nat.eq_dec p2 e2) as [H2|H2];
+    [| exists p2; split; [right; left; reflexivity | exact H2]].
+  exfalso; apply Hne.
+  apply (@two_sets_subset_eq [p1; p2] e2 ltac:(reflexivity) Hnd1 Hl2).
+  intros x [<-|[<-|[]]]; assumption.
+Qed.
+
+(** > **Lemma P.** Two members of [A] that differ as sets cap [B] at
+    > [r+3]. *)
+
+Lemma pair_partner_bound :
+  forall r (A B : Family) e1 e2,
+    Uniform 2 A -> RaoSpread 2 B r ->
+    In e1 A -> In e2 A -> ~ SetEq e1 e2 ->
+    (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
+    length B <= r + 3.
+Proof.
+  intros r A B e1 e2 HUA HRB H1 H2 Hne Hcross.
+  destruct (@uniform_mem 2 A e1 HUA H1) as [Hl1 Hnd1].
+  destruct (@uniform_mem 2 A e2 HUA H2) as [Hl2 Hnd2].
+  (* b in e1 outside e2, and d in e2 outside e1 *)
+  destruct (member_outside Hl1 Hnd1 Hl2 Hne) as [b [Hbe1 Hbe2]].
+  destruct (member_outside Hl2 Hnd2 Hl1 ltac:(intro E; apply Hne, SetEq_sym; exact E))
+    as [d [Hde2 Hde1]].
+  (* name the other element of each *)
+  assert (Hx : exists x, In x e1 /\ forall f, In f B -> In b f \/ In x f).
+  { destruct e1 as [|p1 [|p2 [|? ?]]]; simpl in Hl1; try discriminate.
+    destruct Hbe1 as [Eb|[Eb|[]]]; subst.
+    - exists p2; split; [right; left; reflexivity|].
+      intros f Hf; destruct (Hcross _ f H1 Hf) as [w [[<-|[<-|[]]] Hwf]]; tauto.
+    - exists p1; split; [left; reflexivity|].
+      intros f Hf; destruct (Hcross _ f H1 Hf) as [w [[<-|[<-|[]]] Hwf]]; tauto. }
+  assert (Hy : exists y, In y e2 /\ forall f, In f B -> In d f \/ In y f).
+  { destruct e2 as [|q1 [|q2 [|? ?]]]; simpl in Hl2; try discriminate.
+    destruct Hde2 as [Ed|[Ed|[]]]; subst.
+    - exists q2; split; [right; left; reflexivity|].
+      intros f Hf; destruct (Hcross _ f H2 Hf) as [w [[<-|[<-|[]]] Hwf]]; tauto.
+    - exists q1; split; [left; reflexivity|].
+      intros f Hf; destruct (Hcross _ f H2 Hf) as [w [[<-|[<-|[]]] Hwf]]; tauto. }
+  destruct Hx as [x [Hxe1 Hbx]].
+  destruct Hy as [y [Hye2 Hdy]].
+  assert (Hbd : b <> d) by (intro E; subst; contradiction).
+  assert (Hby : b <> y) by (intro E; subst; contradiction).
+  assert (Hxd : x <> d) by (intro E; subst; contradiction).
+  (* four key sets, the last a singleton so no case split is needed *)
+  pose proof (@cover_by_sets_sum [[b;d];[b;y];[x;d];[x]] B) as Hb.
+  simpl in Hb.
+  assert (Hcov : forall C, In C B ->
+                   exists T, In T [[b;d];[b;y];[x;d];[x]] /\ Subset T C).
+  { intros C HC.
+    destruct (Hbx C HC) as [Hb'|Hx']; destruct (Hdy C HC) as [Hd'|Hy'].
+    - exists [b;d]; split; [left; reflexivity | intros z [<-|[<-|[]]]; assumption].
+    - exists [b;y]; split;
+        [right; left; reflexivity | intros z [<-|[<-|[]]]; assumption].
+    - exists [x;d]; split;
+        [right; right; left; reflexivity | intros z [<-|[<-|[]]]; assumption].
+    - exists [x]; split;
+        [right; right; right; left; reflexivity | intros z [<-|[]]; assumption]. }
+  specialize (Hb Hcov).
+  assert (Hd1 : deg [b;d] B <= 1)
+    by (specialize (HRB [b;d] (pair_nodup Hbd) ltac:(discriminate)); simpl in HRB;
+        exact HRB).
+  assert (Hd2 : deg [b;y] B <= 1)
+    by (specialize (HRB [b;y] (pair_nodup Hby) ltac:(discriminate)); simpl in HRB;
+        exact HRB).
+  assert (Hd3 : deg [x;d] B <= 1)
+    by (specialize (HRB [x;d] (pair_nodup Hxd) ltac:(discriminate)); simpl in HRB;
+        exact HRB).
+  assert (Hd4 : deg [x] B <= r)
+    by (pose proof (@rao_point 2 r B x HRB) as H; simpl in H; lia).
+  lia.
+Qed.
+
+(** > **The exact bound at [u = 2].** For [r >= 4], two nonempty
+    > cross-intersecting Rao(r)-spread graphs have at most [2r+1] edges
+    > between them — the value the exhaustive search measures, attained by
+    > one edge against the two full stars at its endpoints. *)
+
+Theorem cross_pair_two_exact :
+  forall r (A B : Family),
+    4 <= r ->
+    Uniform 2 A -> Uniform 2 B ->
+    RaoSpread 2 A r -> RaoSpread 2 B r ->
+    (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
+    A <> [] -> B <> [] ->
+    length A + length B <= 2 * r + 1.
+Proof.
+  intros r A B Hr HUA HUB HRA HRB Hcross HAne HBne.
+  assert (Hflip : forall e f, In e B -> In f A -> exists w, In w e /\ In w f).
+  { intros e f He Hf; destruct (Hcross f e Hf He) as [w [Ha Hb]];
+      exists w; split; assumption. }
+  assert (HDA : Distinct A) by (apply (@rao_uniform_distinct 2 r A ltac:(lia) HUA HRA)).
+  assert (HDB : Distinct B) by (apply (@rao_uniform_distinct 2 r B ltac:(lia) HUB HRB)).
+  (* two members of a Distinct family are not set-equal *)
+  assert (Htwo : forall (F : Family), Distinct F -> 2 <= length F ->
+                   exists e1 e2, In e1 F /\ In e2 F /\ ~ SetEq e1 e2).
+  { intros F HDF Hlen.
+    destruct F as [|f1 [|f2 F0]]; simpl in Hlen; try lia.
+    exists f1, f2; repeat split;
+      [left; reflexivity | right; left; reflexivity |].
+    inversion HDF as [|? ? Hdist ?]; subst.
+    apply Hdist; left; reflexivity. }
+  (* the two one-sided bounds *)
+  assert (HpA : length A <= 2 * r).
+  { pose proof (@partner_bound_one 2 r B A ltac:(lia) HBne HUB HRA Hflip) as H.
+    replace (2 - 2) with 0 in H by reflexivity.
+    rewrite Nat.pow_0_r, Nat.mul_1_r in H; exact H. }
+  assert (HpB : length B <= 2 * r).
+  { pose proof (@partner_bound_one 2 r A B ltac:(lia) HAne HUA HRB Hcross) as H.
+    replace (2 - 2) with 0 in H by reflexivity.
+    rewrite Nat.pow_0_r, Nat.mul_1_r in H; exact H. }
+  destruct (le_lt_dec (length A) 1) as [HA1|HA2]; [lia|].
+  destruct (le_lt_dec (length B) 1) as [HB1|HB2]; [lia|].
+  (* both sides have at least two members: Lemma P applies both ways *)
+  destruct (Htwo A HDA ltac:(lia)) as [a1 [a2 [Ha1 [Ha2 Hane]]]].
+  destruct (Htwo B HDB ltac:(lia)) as [b1 [b2 [Hb1 [Hb2 Hbne]]]].
+  assert (HqB : length B <= r + 3)
+    by (apply (@pair_partner_bound r A B a1 a2 HUA HRB Ha1 Ha2 Hane Hcross)).
+  assert (HqA : length A <= r + 3)
+    by (apply (@pair_partner_bound r B A b1 b2 HUB HRA Hb1 Hb2 Hbne Hflip)).
+  (* the star bound, when a side is pointed *)
+  assert (Hstar : forall (F : Family) w, Pointed F w -> RaoSpread 2 F r ->
+                    length F <= r).
+  { intros F w Hpt HRF.
+    assert (H : length F <= 1 * r ^ (2 - 1)).
+    { apply (@cover_size_bound F 2 r 1 [w] HRF).
+      - intros C HC; exists w; split; [left; reflexivity | apply Hpt; exact HC].
+      - simpl; lia. }
+    simpl in H; lia. }
+  (* the greedy bound at depth two, when a side is not pointed *)
+  assert (Hgr : forall (F H0 : Family),
+                  Uniform 2 F -> RaoSpread 2 H0 r ->
+                  (forall e f, In e F -> In f H0 -> exists w, In w e /\ In w f) ->
+                  covers_at_most F 1 = false -> length H0 <= 4).
+  { intros F H0 HUF HRH Hc E.
+    assert (H : length H0 <= 2 ^ 2 * r ^ (2 - 2)).
+    { apply (@greedy_bound 2 F H0 2 r ltac:(lia) HUF HRH Hc).
+      intros S HS; apply (@no_small_cover F 1 E); lia. }
+    assert (E4 : 2 ^ 2 * r ^ (2 - 2) = 4)
+      by (rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r; reflexivity).
+    rewrite E4 in H; exact H. }
+  destruct (covers_at_most A 1) eqn:EA.
+  - (* A pointed *)
+    destruct (@pointed_of_cover A HAne EA) as [wA HA].
+    destruct (le_lt_dec (length A) 2) as [HAle|HAgt]; [lia|].
+    assert (HBpt : Pointed B wA).
+    { apply (@star_saturation 2 r A B wA HUB HRA HA Hcross).
+      replace (2 - 2) with 0 by reflexivity; rewrite Nat.pow_0_r; lia. }
+    pose proof (Hstar A wA HA HRA); pose proof (Hstar B wA HBpt HRB); lia.
+  - (* A not pointed *)
+    assert (HB4 : length B <= 4) by (exact (Hgr A B HUA HRB Hcross EA)).
+    destruct (covers_at_most B 1) eqn:EB.
+    + destruct (@pointed_of_cover B HBne EB) as [wB HB].
+      destruct (le_lt_dec (length B) 2) as [HBle|HBgt]; [lia|].
+      assert (HApt : Pointed A wB).
+      { apply (@star_saturation 2 r B A wB HUA HRB HB Hflip).
+        replace (2 - 2) with 0 by reflexivity; rewrite Nat.pow_0_r; lia. }
+      pose proof (Hstar A wB HApt HRA); pose proof (Hstar B wB HB HRB); lia.
+    + assert (HA4 : length A <= 4) by (exact (Hgr B A HUB HRA Hflip EB)).
+      lia.
+Qed.
+
 (** > **Where it is strictly sharper than [cross_pair_bound].** *)
 
 Corollary cross_pair_refined_strict :
@@ -367,11 +583,11 @@ Qed.
 
 Theorem nonstar_three_bound :
   forall r (A : Family),
-    3 <= r ->
+    4 <= r ->
     Uniform 3 A -> Distinct A -> RaoSpread 3 A r ->
     (forall C D, In C A -> In D A -> exists x, In x C /\ In x D) ->
     NonStar A ->
-    length A <= Nat.max (3 * r + 2) 16.
+    length A <= Nat.max (3 * r + 1) 16.
 Proof.
   intros r A Hr HU HD HR Hint Hns.
   destruct (covers_at_most A 2) eqn:E.
@@ -394,14 +610,10 @@ Proof.
       destruct (@two_cover_split 3 r A p q ltac:(lia) Hpq HU HR Hint Hcov2)
         as [[w Hw] | [X [Y [HUX [HUY [HRX [HRY [Hcross [HXne [HYne Hle]]]]]]]]]].
       { exfalso; exact (@nonstar_not_pointed A w Hns Hw). }
-      pose proof (@cross_pair_refined 2 r X Y ltac:(lia) HUX HUY HRX HRY
+      pose proof (@cross_pair_two_exact r X Y ltac:(lia) HUX HUY HRX HRY
                     Hcross HXne HYne) as Hsum.
-      replace (2 - 2) with 0 in Hsum by reflexivity.
-      rewrite Nat.pow_0_r, Nat.mul_1_r in Hsum.
       replace (3 - 2) with 1 in Hle by reflexivity.
       rewrite Nat.pow_1_r in Hle.
-      assert (Hmax : Nat.max (2 * 2) (r + 1) = r + 1) by lia.
-      rewrite Hmax in Hsum.
       lia.
   - (* covering number at least three: Frankl's range, without Rao *)
     assert (Htau : forall p q, exists C, In C A /\ ~ In p C /\ ~ In q C).
@@ -413,14 +625,15 @@ Proof.
     pose proof (tau_three_bound HU HD Hint Htau); lia.
 Qed.
 
-(** > **[I2(3,5) <= 17]**, the row the `m = 4` construction runs on. *)
+(** > **[I2(3,5) <= 16]**, the row the `m = 4` construction runs on — and
+    > [hm16] attains it, so the value is exact. *)
 
-Corollary nonstar_three_five_at_most_seventeen :
+Corollary nonstar_three_five_at_most_sixteen :
   forall (A : Family),
     Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 ->
     (forall C D, In C A -> In D A -> exists x, In x C /\ In x D) ->
     NonStar A ->
-    length A <= 17.
+    length A <= 16.
 Proof.
   intros A HU HD HR Hint Hns.
   pose proof (@nonstar_three_bound 5 A ltac:(lia) HU HD HR Hint Hns) as H.
@@ -515,27 +728,27 @@ Qed.
 Lemma hm16_nonstar : NonStar hm16.
 Proof. exact hm16_unpointed. Qed.
 
-(** > **[16 <= I2(3,5) <= 17]** — the witness and the bound, in one
-    > statement. The gap is exactly one, and it is exactly the gap between
-    > the proved cross-pair bound [2r+2] at [u = 2] and the exhaustively
-    > measured [2r+1]: [11 + 5 = 16] is what the measurement would give,
-    > and [12 + 5 = 17] is what is proved. *)
+(** > **[I2(3,5) = 16]** — an exact value. [hm16] attains it and nothing
+    > beats it. The two halves meet because [hm16] realises the two-cover
+    > split exactly: at the cover [{4,12}] it has one member through 4
+    > only, ten through 12 only and five through both, so [11 + 5], where
+    > 11 is [cross_pair_two_exact]'s [2r+1] and 5 is the pair degree. *)
 
-Theorem i2_three_five_window :
+Theorem i2_three_five_is_sixteen :
   (Uniform 3 hm16 /\ Distinct hm16 /\ RaoSpread 3 hm16 5 /\
    (forall C D, In C hm16 -> In D hm16 -> exists x, In x C /\ In x D) /\
    NonStar hm16 /\ length hm16 = 16)
   /\ (forall A : Family,
          Uniform 3 A -> Distinct A -> RaoSpread 3 A 5 ->
          (forall C D, In C A -> In D A -> exists x, In x C /\ In x D) ->
-         NonStar A -> length A <= 17).
+         NonStar A -> length A <= 16).
 Proof.
   split.
   - exact (conj hm16_uniform
              (conj hm16_distinct
                 (conj hm16_rao
                    (conj (@hm16_int) (conj hm16_nonstar hm16_length))))).
-  - exact (@nonstar_three_five_at_most_seventeen).
+  - exact (@nonstar_three_five_at_most_sixteen).
 Qed.
 
 Lemma g65_uniform : Uniform 4 g65.

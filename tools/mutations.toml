@@ -1762,17 +1762,16 @@ its 16 members are 11 + 5 and not 11."""
 [[mutation]]
 id = "crossrefined-nonstar-off-by-one"
 file = "coq/CrossRefined.v"
-question = """The non-star bound is max(3r+2, 16). Is 3r+2 what the two \
+question = """The non-star bound is max(3r+1, 16). Is 3r+1 what the two \
 pieces actually add up to, or is there slack in the quotation?"""
-find = "    length A <= Nat.max (3 * r + 2) 16."
-replace = "    length A <= Nat.max (3 * r + 1) 16."
+find = "    length A <= Nat.max (3 * r + 1) 16."
+replace = "    length A <= Nat.max (3 * r) 16."
 expect = "killed"
-because = """No slack. The two-cover branch is cross_pair_refined at \
-u = 2, which is 2*max(4, r+1) = 2r+2 for r >= 3, plus the both-points \
-piece r^(m-2) = r: exactly 3r+2. One less and the branch does not close. \
-At r = 5 this is the difference between 17 and 16, and 16 is what hm16 \
-attains -- so the mutated statement is the claim that hm16 is extremal, \
-which is true but not proved here."""
+because = """No slack. The two-cover branch is cross_pair_two_exact, \
+which is 2r+1, plus the both-points piece r^(m-2) = r: exactly 3r+1. One \
+less and the branch does not close. At r = 5 this is the difference \
+between 16 and 15, and 16 is what hm16 attains -- so the mutated \
+statement is false, with an explicit counterexample in the same file."""
 
 [[mutation]]
 id = "crossrefined-nonstar-existential"
@@ -1788,3 +1787,17 @@ because = """No: the proof instantiates NonStar at the two points of the \
 cover the search hands back, and at whatever point two_cover_split \
 returns in its star branch, none of which are known in advance. The \
 existential form is satisfied by every star with two or more members."""
+
+[[mutation]]
+id = "crossrefined-two-exact-off-by-one"
+file = "coq/CrossRefined.v"
+question = """cross_pair_two_exact says 2r+1 at uniformity two. Is the \
++1 real, or slack left over from the case analysis?"""
+find = "    length A + length B <= 2 * r + 1."
+replace = "    length A + length B <= 2 * r."
+expect = "killed"
+because = """Real, and attained: one edge against the two full stars at \
+its endpoints is 2r + 1, which is the |B| = 1 case of the proof and the \
+configuration rust/tests/cross_intersecting.rs finds by exhaustion at \
+r = 4, 5, 6. Every other case gives at most 2r, so the whole bound is one \
+above the rest of the analysis and that one is where the truth is."""

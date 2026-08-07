@@ -678,6 +678,10 @@ thm CrossRefined.partner_bound_one
 thm CrossRefined.cross_pair_refined
 thm CrossRefined.cross_pair_refined_strict
 thm CrossRefined.cross_pair_refined_at_three_five
+thm CrossRefined.two_sets_subset_eq
+thm CrossRefined.member_outside
+thm CrossRefined.pair_partner_bound
+thm CrossRefined.cross_pair_two_exact
 thm CrossRefined.unpointed_dec_search
 thm CrossRefined.hm16_rao
 thm CrossRefined.hm16_int
@@ -689,9 +693,9 @@ thm CrossRefined.tau_three_piece_at_least_sixty_five
 thm CrossRefined.four_unpointed_cross_families_exceed_forty_eight
 thm CrossRefined.nonstar_not_pointed
 thm CrossRefined.nonstar_three_bound
-thm CrossRefined.nonstar_three_five_at_most_seventeen
+thm CrossRefined.nonstar_three_five_at_most_sixteen
 thm CrossRefined.hm16_nonstar
-thm CrossRefined.i2_three_five_window
+thm CrossRefined.i2_three_five_is_sixteen
 def CrossRefined.Pointed
 def CrossRefined.NonStar
 def CrossRefined.hm16
