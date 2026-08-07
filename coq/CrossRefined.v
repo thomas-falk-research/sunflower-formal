@@ -79,31 +79,39 @@
     argument out of [two_cover_star_extremal], so a second consumer can
     feed it a different pair bound.
 
-    At [u = 2] the pair bound can be made exact. Three ingredients:
+    At [u = 2] the pair bound can be made exact, at every [r >= 2].
+    Three ingredients:
 
     - [pair_partner_bound]: two members of one side that differ as sets
-      cap the other at [r+1] -- a star at their shared point plus the one
-      edge joining the other two, or four crossing pairs if they are
-      disjoint;
+      cap the other at [max(r+1, 4)] -- a star at their shared point plus
+      the one edge joining the other two, or the four crossing pairs if
+      they are disjoint;
     - [triangle_bound]: a graph that pairwise intersects and is pointed at
       nothing *is* a triangle, so it has three edges, not the four the
-      greedy tree allows;
+      greedy tree allows -- and so does anything cross-intersecting it,
+      because meeting all three edges of a triangle means being one of
+      them;
     - [disjoint_squeeze]: a graph with two disjoint edges forces its
       partner into the four crossing pairs, and if all four occur then
       only two edges can meet every one of them.
 
-    With [star_saturation], [partner_bound_one] and [greedy_bound] at
-    [j = 2] these give [cross_pair_two_exact]: for [r >= 3],
-    [|A| + |B| <= 2r+1], the value the exhaustive search measures,
-    attained by one edge against the two full stars at its endpoints. The
-    last two ingredients are what the [r = 3] row needs and nothing else
-    uses: without them the neither-pointed case is [4 + 4 = 8], which
-    exceeds [2r+1 = 7].
+    The last two combine into [unpointed_pair_bound]: if *neither* side is
+    a star the two have at most six edges between them, with no reference
+    to [r] at all -- the keys are pairs, and a pair has degree at most
+    [r^0 = 1] whatever [r] is.
 
-    The threshold is sharp. [cross_pair_two_exact_needs_three] exhibits
-    the failure at [r = 2]: two disjoint edges against the four crossing
-    edges, both Rao(2)-spread and cross-intersecting, [2 + 4 = 6] against
-    [2r+1 = 5].
+    With [star_saturation] and [partner_bound_one] that gives
+    [cross_pair_two_exact]: for [r >= 2],
+
+<<
+      |A| + |B|  <=  max(2r+1, 6),
+>>
+
+    which is the exhaustive truth at every [r >= 2]. Both branches are
+    attained and neither is slack: [2r+1] by one edge against the two full
+    stars at its endpoints, from [r = 3] on; 6 by two disjoint edges
+    against the four crossing edges, which is what [r = 2] gives, and
+    [cross_pair_two_six_is_attained] exhibits it.
 
     Feeding *that* to the split gives [nonstar_three_bound]: for
     [r >= 3], a 3-uniform intersecting Rao(r)-spread family that is not a
@@ -371,17 +379,19 @@ Proof.
 Qed.
 
 (** > **Lemma P.** Two members of [A] that differ as sets cap [B] at
-    > [r+1]. *)
+    > [max(r+1, 4)]: a star at their shared point plus the one edge
+    > joining the other two, or the four crossing pairs if they are
+    > disjoint. At [r >= 3] the first dominates; at [r = 2] the second
+    > does. *)
 
 Lemma pair_partner_bound :
   forall r (A B : Family) e1 e2,
-    3 <= r ->
     Uniform 2 A -> RaoSpread 2 B r ->
     In e1 A -> In e2 A -> ~ SetEq e1 e2 ->
     (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
-    length B <= r + 1.
+    length B <= Nat.max (r + 1) 4.
 Proof.
-  intros r A B e1 e2 Hr HUA HRB H1 H2 Hne Hcross.
+  intros r A B e1 e2 HUA HRB H1 H2 Hne Hcross.
   destruct (@uniform_mem 2 A e1 HUA H1) as [Hl1 Hnd1].
   destruct (@uniform_mem 2 A e2 HUA H2) as [Hl2 Hnd2].
   (* b in e1 outside e2, and d in e2 outside e1 *)
@@ -534,27 +544,30 @@ Proof.
 Qed.
 
 (** > **The triangle lemma.** A graph that pairwise intersects and is
-    > pointed at nothing has at most three edges — it *is* a triangle. *)
+    > pointed at nothing has at most three edges — it *is* a triangle —
+    > and so does every graph cross-intersecting it, because anything
+    > meeting all three edges of a triangle is one of them. *)
 
 Lemma triangle_bound :
-  forall r (A : Family),
-    Uniform 2 A -> RaoSpread 2 A r ->
+  forall r (A B : Family),
+    Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r ->
     (forall e f, In e A -> In f A -> exists w, In w e /\ In w f) ->
     (forall w, exists e, In e A /\ ~ In w e) ->
-    length A <= 3.
+    (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
+    length A <= 3 /\ length B <= 3.
 Proof.
-  intros r A HU HR Hint Hns.
-  destruct A as [|e1 A0] eqn:EA; [simpl; lia | rewrite <- EA in *].
-  assert (H1 : In e1 A) by (rewrite EA; left; reflexivity).
-  destruct (@uniform_mem 2 A e1 HU H1) as [Hl1 Hnd1].
-  destruct e1 as [|x [|y [|? ?]]]; simpl in Hl1; try discriminate.
+  intros r A B HUA HUB HRA HRB Hint Hns Hcross.
+  destruct (Hns 0) as [e0 [He0 _]].
+  destruct (@uniform_mem 2 A e0 HUA He0) as [Hl0 Hnd0].
+  destruct e0 as [|x [|y [|? ?]]]; simpl in Hl0; try discriminate.
+  rename He0 into H1.
   assert (Hxy : x <> y)
-    by (inversion Hnd1 as [|? ? Hni ?]; subst; intro E; apply Hni;
+    by (inversion Hnd0 as [|? ? Hni ?]; subst; intro E; apply Hni;
         left; symmetry; exact E).
   destruct (Hns x) as [e2 [H2 Hx2]].
   destruct (Hns y) as [e3 [H3 Hy3]].
-  destruct (@uniform_mem 2 A e2 HU H2) as [Hl2 Hnd2].
-  destruct (@uniform_mem 2 A e3 HU H3) as [Hl3 Hnd3].
+  destruct (@uniform_mem 2 A e2 HUA H2) as [Hl2 Hnd2].
+  destruct (@uniform_mem 2 A e3 HUA H3) as [Hl3 Hnd3].
   assert (Hy2 : In y e2).
   { destruct (Hint _ e2 H1 H2) as [w [[<-|[<-|[]]] Hw2]];
       [contradiction | exact Hw2]. }
@@ -564,22 +577,37 @@ Proof.
   destruct (Hint e2 e3 H2 H3) as [z [Hz2 Hz3]].
   assert (Hzx : z <> x) by (intro E; subst z; contradiction).
   assert (Hzy : z <> y) by (intro E; subst z; contradiction).
-  apply (@three_keys_bound r A [x;y] [x;z] [y;z] HR
-           (pair_nodup Hxy) eq_refl
-           (pair_nodup ltac:(intro E; apply Hzx; symmetry; exact E)) eq_refl
-           (pair_nodup ltac:(intro E; apply Hzy; symmetry; exact E)) eq_refl).
-  intros C HC.
-  destruct (Hint _ C H1 HC) as [w [[<-|[<-|[]]] HwC]].
-  - destruct (Hint e2 C H2 HC) as [v [Hv2 HvC]].
-    destruct (@two_elem_only e2 y z v Hl2 Hnd2 Hy2 Hz2
-                ltac:(intro E; apply Hzy; symmetry; exact E) Hv2) as [<-|<-].
-    + left; intros t [<-|[<-|[]]]; assumption.
-    + right; left; intros t [<-|[<-|[]]]; assumption.
-  - destruct (Hint e3 C H3 HC) as [v [Hv3 HvC]].
-    destruct (@two_elem_only e3 x z v Hl3 Hnd3 Hx3 Hz3
-                ltac:(intro E; apply Hzx; symmetry; exact E) Hv3) as [<-|<-].
-    + left; intros t [<-|[<-|[]]]; assumption.
-    + right; right; intros t [<-|[<-|[]]]; assumption.
+  assert (Hxz : x <> z) by congruence.
+  assert (Hyz : y <> z) by congruence.
+  (* the covering only uses "meets [x;y], meets e2, meets e3" *)
+  assert (Hkeys : forall C,
+            (exists w, In w [x;y] /\ In w C) ->
+            (exists w, In w e2 /\ In w C) ->
+            (exists w, In w e3 /\ In w C) ->
+            Subset [x;y] C \/ Subset [x;z] C \/ Subset [y;z] C).
+  { intros C [w [[<-|[<-|[]]] HwC]] [v [Hv2 HvC]] [t [Ht3 HtC]].
+    - destruct (@two_elem_only e2 y z v Hl2 Hnd2 Hy2 Hz2
+                  ltac:(congruence) Hv2) as [<-|<-].
+      + left; intros q [<-|[<-|[]]]; assumption.
+      + right; left; intros q [<-|[<-|[]]]; assumption.
+    - destruct (@two_elem_only e3 x z t Hl3 Hnd3 Hx3 Hz3
+                  ltac:(congruence) Ht3) as [<-|<-].
+      + left; intros q [<-|[<-|[]]]; assumption.
+      + right; right; intros q [<-|[<-|[]]]; assumption. }
+  split.
+  - apply (@three_keys_bound r A [x;y] [x;z] [y;z] HRA
+             (pair_nodup Hxy) eq_refl
+             (pair_nodup Hxz) eq_refl
+             (pair_nodup Hyz) eq_refl).
+    intros C HC; apply Hkeys;
+      [exact (Hint _ C H1 HC) | exact (Hint e2 C H2 HC) | exact (Hint e3 C H3 HC)].
+  - apply (@three_keys_bound r B [x;y] [x;z] [y;z] HRB
+             (pair_nodup Hxy) eq_refl
+             (pair_nodup Hxz) eq_refl
+             (pair_nodup Hyz) eq_refl).
+    intros C HC; apply Hkeys;
+      [exact (Hcross _ C H1 HC) | exact (Hcross e2 C H2 HC)
+       | exact (Hcross e3 C H3 HC)].
 Qed.
 
 (** > **The disjoint-pair squeeze.** If [A] has two disjoint members then
@@ -714,19 +742,85 @@ Proof.
   - right; intros t [<-|[<-|[]]]; assumption.
 Qed.
 
-(** > **The exact bound at [u = 2].** For [r >= 4], two nonempty
-    > cross-intersecting Rao(r)-spread graphs have at most [2r+1] edges
-    > between them — the value the exhaustive search measures, attained by
-    > one edge against the two full stars at its endpoints. *)
+(** > **Neither side a star gives six, at every [r].** No degree cap
+    > appears: the keys are pairs, and a pair has degree at most
+    > [r^0 = 1] whatever [r] is. *)
+
+Lemma greedy_four :
+  forall r (F H0 : Family),
+    Uniform 2 F -> RaoSpread 2 H0 r ->
+    (forall e f, In e F -> In f H0 -> exists w, In w e /\ In w f) ->
+    (forall w, exists e, In e F /\ ~ In w e) ->
+    length H0 <= 4.
+Proof.
+  intros r F H0 HUF HRH Hcross Hns.
+  assert (H : length H0 <= 2 ^ 2 * r ^ (2 - 2)).
+  { apply (@greedy_bound 2 F H0 2 r ltac:(lia) HUF HRH Hcross).
+    intros S HS; destruct S as [|w S0].
+    - destruct (Hns 0) as [e [He _]]; exists e; split; [exact He | intros y []].
+    - assert (ES : S0 = []) by (destruct S0; [reflexivity | simpl in HS; lia]).
+      subst S0.
+      destruct (Hns w) as [e [He Hwe]]; exists e; split;
+        [exact He | intros y [<-|[]]; subst; exact Hwe]. }
+  assert (E4 : 2 ^ 2 * r ^ (2 - 2) = 4)
+    by (rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r; reflexivity).
+  rewrite E4 in H; exact H.
+Qed.
+
+Lemma unpointed_pair_bound :
+  forall r (A B : Family),
+    Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r ->
+    (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
+    (forall w, exists e, In e A /\ ~ In w e) ->
+    (forall w, exists f, In f B /\ ~ In w f) ->
+    length A + length B <= 6.
+Proof.
+  intros r A B HUA HUB HRA HRB Hcross HnsA HnsB.
+  assert (Hflip : forall e f, In e B -> In f A -> exists w, In w e /\ In w f).
+  { intros e f He Hf; destruct (Hcross f e Hf He) as [w [Ha Hb]];
+      exists w; split; assumption. }
+  assert (H4A : length A <= 4) by (apply (@greedy_four r B A HUB HRA Hflip HnsB)).
+  assert (H4B : length B <= 4) by (apply (@greedy_four r A B HUA HRB Hcross HnsA)).
+  assert (Hint_of : forall (F : Family),
+            existsb (fun e => existsb (fun f => disjointb e f) F) F = false ->
+            forall e f, In e F -> In f F -> exists w, In w e /\ In w f).
+  { intros F E e f He Hf.
+    pose proof (existsb_false_forall _ _ _ E e He) as E1.
+    pose proof (existsb_false_forall _ _ _ E1 f Hf) as E2.
+    apply disjointb_false_iff in E2; exact E2. }
+  destruct (existsb (fun e => existsb (fun f => disjointb e f) A) A) eqn:EDA.
+  - apply existsb_exists in EDA as [e1 [He1 E1]].
+    apply existsb_exists in E1 as [e2 [He2 E2]].
+    apply disjointb_correct in E2.
+    destruct (@disjoint_squeeze r A B e1 e2 HUA HUB HRA HRB He1 He2 E2 Hcross)
+      as [HA2|HB3]; [lia|].
+    destruct (existsb (fun e => existsb (fun f => disjointb e f) B) B) eqn:EDB.
+    + apply existsb_exists in EDB as [f1 [Hf1 F1]].
+      apply existsb_exists in F1 as [f2 [Hf2 F2]].
+      apply disjointb_correct in F2.
+      destruct (@disjoint_squeeze r B A f1 f2 HUB HUA HRB HRA Hf1 Hf2 F2 Hflip);
+        lia.
+    + destruct (@triangle_bound r B A HUB HUA HRB HRA
+                  (Hint_of B EDB) HnsB Hflip); lia.
+  - destruct (@triangle_bound r A B HUA HUB HRA HRB
+                (Hint_of A EDA) HnsA Hcross); lia.
+Qed.
+
+(** > **The exact bound at [u = 2].** For every [r >= 2], two nonempty
+    > cross-intersecting Rao(r)-spread graphs have at most
+    > [max(2r+1, 6)] edges between them — and that is the truth at every
+    > [r >= 2]. From [r = 3] on the extremal configuration is one edge
+    > against the two full stars at its endpoints, [2r+1]; at [r = 2] it
+    > is two disjoint edges against the four crossing edges, 6. *)
 
 Theorem cross_pair_two_exact :
   forall r (A B : Family),
-    3 <= r ->
+    2 <= r ->
     Uniform 2 A -> Uniform 2 B ->
     RaoSpread 2 A r -> RaoSpread 2 B r ->
     (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
     A <> [] -> B <> [] ->
-    length A + length B <= 2 * r + 1.
+    length A + length B <= Nat.max (2 * r + 1) 6.
 Proof.
   intros r A B Hr HUA HUB HRA HRB Hcross HAne HBne.
   assert (Hflip : forall e f, In e B -> In f A -> exists w, In w e /\ In w f).
@@ -742,7 +836,7 @@ Proof.
       [left; reflexivity | right; left; reflexivity |].
     inversion HDF as [|? ? Hdist ?]; subst.
     apply Hdist; left; reflexivity. }
-  (* the two one-sided bounds *)
+  (* the one-sided bounds *)
   assert (HpA : length A <= 2 * r).
   { pose proof (@partner_bound_one 2 r B A ltac:(lia) HBne HUB HRA Hflip) as H.
     replace (2 - 2) with 0 in H by reflexivity.
@@ -756,10 +850,10 @@ Proof.
   (* both sides have at least two members, so Lemma P applies both ways *)
   destruct (Htwo A HDA ltac:(lia)) as [a1 [a2 [Ha1 [Ha2 Hane]]]].
   destruct (Htwo B HDB ltac:(lia)) as [b1 [b2 [Hb1 [Hb2 Hbne]]]].
-  assert (HqB : length B <= r + 1)
-    by (apply (@pair_partner_bound r A B a1 a2 Hr HUA HRB Ha1 Ha2 Hane Hcross)).
-  assert (HqA : length A <= r + 1)
-    by (apply (@pair_partner_bound r B A b1 b2 Hr HUB HRA Hb1 Hb2 Hbne Hflip)).
+  assert (HqB : length B <= Nat.max (r + 1) 4)
+    by (apply (@pair_partner_bound r A B a1 a2 HUA HRB Ha1 Ha2 Hane Hcross)).
+  assert (HqA : length A <= Nat.max (r + 1) 4)
+    by (apply (@pair_partner_bound r B A b1 b2 HUB HRA Hb1 Hb2 Hbne Hflip)).
   (* the star bound, when a side is pointed *)
   assert (Hstar : forall (F : Family) w, Pointed F w -> RaoSpread 2 F r ->
                     length F <= r).
@@ -769,18 +863,6 @@ Proof.
       - intros C HC; exists w; split; [left; reflexivity | apply Hpt; exact HC].
       - simpl; lia. }
     simpl in H; lia. }
-  (* the greedy bound at depth two, when a side is not pointed *)
-  assert (Hgr : forall (F H0 : Family),
-                  Uniform 2 F -> RaoSpread 2 H0 r ->
-                  (forall e f, In e F -> In f H0 -> exists w, In w e /\ In w f) ->
-                  covers_at_most F 1 = false -> length H0 <= 4).
-  { intros F H0 HUF HRH Hc E.
-    assert (H : length H0 <= 2 ^ 2 * r ^ (2 - 2)).
-    { apply (@greedy_bound 2 F H0 2 r ltac:(lia) HUF HRH Hc).
-      intros S HS; apply (@no_small_cover F 1 E); lia. }
-    assert (E4 : 2 ^ 2 * r ^ (2 - 2) = 4)
-      by (rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r; reflexivity).
-    rewrite E4 in H; exact H. }
   destruct (covers_at_most A 1) eqn:EA.
   - (* A is a star *)
     destruct (@pointed_of_cover A HAne EA) as [wA HA].
@@ -789,43 +871,62 @@ Proof.
     { apply (@star_saturation 2 r A B wA HUB HRA HA Hcross).
       replace (2 - 2) with 0 by reflexivity; rewrite Nat.pow_0_r; lia. }
     pose proof (Hstar A wA HA HRA); pose proof (Hstar B wA HBpt HRB); lia.
-  - destruct (covers_at_most B 1) eqn:EB.
-    + (* B is a star, A is not *)
+  - assert (HnsA : forall w, exists e, In e A /\ ~ In w e)
+      by (intros w; apply (@not_pointed_of_search A w EA)).
+    destruct (covers_at_most B 1) eqn:EB.
+    + (* B is a star, A is not: a large B would drag A into it *)
       destruct (@pointed_of_cover B HBne EB) as [wB HB].
       destruct (le_lt_dec (length B) 2) as [HBle|HBgt]; [lia|].
       assert (HApt : Pointed A wB).
       { apply (@star_saturation 2 r B A wB HUA HRB HB Hflip).
         replace (2 - 2) with 0 by reflexivity; rewrite Nat.pow_0_r; lia. }
-      pose proof (Hstar A wB HApt HRA); pose proof (Hstar B wB HB HRB); lia.
-    + (* neither is a star: four each from the greedy tree, and then the
-         two structural facts bring 8 down to 7 *)
-      assert (HA4 : length A <= 4) by (exact (Hgr B A HUB HRA Hflip EB)).
-      assert (HB4 : length B <= 4) by (exact (Hgr A B HUA HRB Hcross EA)).
-      destruct (existsb (fun e => existsb (fun f => disjointb e f) A) A) eqn:ED.
-      * (* A has two disjoint members *)
-        apply existsb_exists in ED as [e1 [He1 ED1]].
-        apply existsb_exists in ED1 as [e2 [He2 ED2]].
-        apply disjointb_correct in ED2.
-        destruct (@disjoint_squeeze r A B e1 e2 HUA HUB HRA HRB He1 He2 ED2 Hcross);
-          lia.
-      * (* A pairwise intersects, and is pointed at nothing: a triangle *)
-        assert (Hint : forall e f, In e A -> In f A -> exists w, In w e /\ In w f).
-        { intros e f He Hf.
-          pose proof (existsb_false_forall _ _ _ ED e He) as E1.
-          pose proof (existsb_false_forall _ _ _ E1 f Hf) as E2.
-          apply disjointb_false_iff in E2; exact E2. }
-        assert (Hns : forall w, exists e, In e A /\ ~ In w e)
-          by (intros w; apply (@not_pointed_of_search A w EA)).
-        pose proof (@triangle_bound r A HUA HRA Hint Hns); lia.
+      destruct (HnsA wB) as [C [HC HwC]]; exfalso; apply HwC, HApt, HC.
+    + (* neither is a star *)
+      assert (HnsB : forall w, exists f, In f B /\ ~ In w f)
+        by (intros w; apply (@not_pointed_of_search B w EB)).
+      pose proof (@unpointed_pair_bound r A B HUA HUB HRA HRB Hcross HnsA HnsB); lia.
 Qed.
 
-(** ** The threshold [r >= 3] is sharp
+(** ** A one-point analogue of [TwoCover.covers_dec_search]
 
-    At [r = 2] the bound is false, and the counterexample is the
+    Deciding "some single point covers [G]" is the same finite search one
+    level down: a point in no member covers nothing. *)
+
+Lemma unpointed_dec_search :
+  forall (G : Family) w,
+    existsb (fun a => forallb (fun C => memb a C) G) (concat G) = false ->
+    G <> [] ->
+    exists C, In C G /\ ~ In w C.
+Proof.
+  intros G w Hsearch HGne.
+  destruct (in_dec Nat.eq_dec w (concat G)) as [Hw|Hw].
+  - pose proof (existsb_false_forall _ _ _ Hsearch w Hw) as E.
+    destruct (existsb (fun C => negb (memb w C)) G) eqn:Ex.
+    + apply existsb_exists in Ex as [C [HC Hneg]].
+      apply Bool.negb_true_iff in Hneg.
+      exists C; split;
+        [exact HC | intros Hin; apply memb_true_iff in Hin; congruence].
+    + exfalso.
+      assert (Hall : forallb (fun C => memb w C) G = true).
+      { apply forallb_forall; intros C HC.
+        pose proof (existsb_false_forall _ _ _ Ex C HC) as E2.
+        apply Bool.negb_false_iff in E2; exact E2. }
+      congruence.
+  - destruct G as [|M G0]; [contradiction|].
+    exists M; split; [left; reflexivity|].
+    intros Hin; apply Hw, (proj2 (in_concat (M :: G0) w));
+      exists M; split; [left; reflexivity | exact Hin].
+Qed.
+
+(** ** Both branches of the maximum are attained
+
+    The [2r+1] branch is one edge against the two full stars at its
+    endpoints, which needs [r >= 3] to beat 6. The 6 branch is the
     disjoint-pair configuration of [disjoint_squeeze] with both sides
-    full: two disjoint edges against the four crossing edges, 2 + 4 = 6
-    against [2r+1 = 5]. Degree two is exactly where the four crossing
-    edges fit. *)
+    full — two disjoint edges against the four crossing edges — and at
+    [r = 2] it is 6 against [2r+1 = 5], so dropping the 6 would make the
+    theorem false. Degree two is exactly where all four crossing edges
+    fit. *)
 
 Definition cross_b (A B : Family) : bool :=
   forallb (fun e => forallb (fun f => negb (disjointb e f)) B) A.
@@ -843,11 +944,14 @@ Qed.
 Definition c2a : Family := [[0;2];[1;3]].
 Definition c2b : Family := [[0;1];[0;3];[1;2];[2;3]].
 
-Theorem cross_pair_two_exact_needs_three :
+Theorem cross_pair_two_six_is_attained :
   Uniform 2 c2a /\ Uniform 2 c2b /\
   RaoSpread 2 c2a 2 /\ RaoSpread 2 c2b 2 /\
   (forall e f, In e c2a -> In f c2b -> exists w, In w e /\ In w f) /\
   c2a <> [] /\ c2b <> [] /\
+  (forall w, exists e, In e c2a /\ ~ In w e) /\
+  (forall w, exists f, In f c2b /\ ~ In w f) /\
+  length c2a + length c2b = 6 /\
   2 * 2 + 1 < length c2a + length c2b.
 Proof.
   assert (HUa : Uniform 2 c2a)
@@ -872,6 +976,11 @@ Proof.
   - apply cross_b_correct; vm_compute; reflexivity.
   - discriminate.
   - discriminate.
+  - intros w; apply (@unpointed_dec_search c2a w);
+      [vm_compute; reflexivity | discriminate].
+  - intros w; apply (@unpointed_dec_search c2b w);
+      [vm_compute; reflexivity | discriminate].
+  - vm_compute; reflexivity.
   - vm_compute; lia.
 Qed.
 
@@ -1004,37 +1113,6 @@ Proof.
   intros A HU HD HR Hint Hns.
   pose proof (@nonstar_three_bound 5 A ltac:(lia) HU HD HR Hint Hns) as H.
   vm_compute in H; exact H.
-Qed.
-
-(** ** A one-point analogue of [TwoCover.covers_dec_search]
-
-    Deciding "some single point covers [G]" is the same finite search one
-    level down: a point in no member covers nothing. *)
-
-Lemma unpointed_dec_search :
-  forall (G : Family) w,
-    existsb (fun a => forallb (fun C => memb a C) G) (concat G) = false ->
-    G <> [] ->
-    exists C, In C G /\ ~ In w C.
-Proof.
-  intros G w Hsearch HGne.
-  destruct (in_dec Nat.eq_dec w (concat G)) as [Hw|Hw].
-  - pose proof (existsb_false_forall _ _ _ Hsearch w Hw) as E.
-    destruct (existsb (fun C => negb (memb w C)) G) eqn:Ex.
-    + apply existsb_exists in Ex as [C [HC Hneg]].
-      apply Bool.negb_true_iff in Hneg.
-      exists C; split;
-        [exact HC | intros Hin; apply memb_true_iff in Hin; congruence].
-    + exfalso.
-      assert (Hall : forallb (fun C => memb w C) G = true).
-      { apply forallb_forall; intros C HC.
-        pose proof (existsb_false_forall _ _ _ Ex C HC) as E2.
-        apply Bool.negb_false_iff in E2; exact E2. }
-      congruence.
-  - destruct G as [|M G0]; [contradiction|].
-    exists M; split; [left; reflexivity|].
-    intros Hin; apply Hw, (proj2 (in_concat (M :: G0) w));
-      exists M; split; [left; reflexivity | exact Hin].
 Qed.
 
 (** ** The two objects

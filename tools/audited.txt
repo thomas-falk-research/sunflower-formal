@@ -687,9 +687,11 @@ thm CrossRefined.three_keys_bound
 thm CrossRefined.pair_partner_bound
 thm CrossRefined.triangle_bound
 thm CrossRefined.disjoint_squeeze
+thm CrossRefined.greedy_four
+thm CrossRefined.unpointed_pair_bound
 thm CrossRefined.cross_pair_two_exact
 thm CrossRefined.cross_b_correct
-thm CrossRefined.cross_pair_two_exact_needs_three
+thm CrossRefined.cross_pair_two_six_is_attained
 thm CrossRefined.unpointed_dec_search
 thm CrossRefined.hm16_rao
 thm CrossRefined.hm16_int

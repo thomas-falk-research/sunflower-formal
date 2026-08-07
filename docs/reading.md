@@ -1423,14 +1423,22 @@ had been sitting in `rust/tests/cross_intersecting.rs` the whole time,
 correctly labelled as a measurement; what was missing was anyone asking
 it to become a theorem.
 
-The same thing happened once more, one level down. The first proof of
-`cross_pair_two_exact` carried `r ≥ 4`, and §27.6 recorded — correctly —
-that the threshold was an artefact of the case analysis and that the
-measured maximum at `r = 3` was still `2r+1`. Asked to close `r = 3`, the
-first thing to do was measure the case the analysis was losing on: the
-neither-pointed configurations, where the greedy tree gives `4 + 4 = 8`.
-The exhaustive maximum there is **6**, not 8, and seeing that is what
-named the two missing lemmas (`triangle_bound`, `disjoint_squeeze`). The
-same measurement then showed `r = 2` is not an artefact at all — the
-statement is false there — so the new threshold is sharp and says so with
-a witness rather than a caveat.
+The same thing happened twice more, one level down each time. The first
+proof of `cross_pair_two_exact` carried `r ≥ 4`, and §27.6 recorded —
+correctly — that the threshold was an artefact of the case analysis and
+that the measured maximum at `r = 3` was still `2r+1`. Asked to close
+`r = 3`, the first thing to do was measure the case the analysis was
+losing on: the neither-pointed configurations, where the greedy tree gives
+`4 + 4 = 8`. The exhaustive maximum there is **6**, not 8, and seeing that
+is what named the two missing lemmas (`triangle_bound`,
+`disjoint_squeeze`).
+
+That measurement also said `r = 2` is different in kind: the statement
+`2r+1` is *false* there, with 6 against 5. That was recorded as a
+sharpness witness — and then, asked for the `r = 2` bound too, the same 6
+turned out to be a theorem with no `r` in it at all
+(`unpointed_pair_bound`), so the two rows are one statement:
+`max(2r+1, 6)`, tight at every `r ≥ 2`. Twice in a row the honest
+"measured, not proved" note was the thing that named the next theorem —
+which is the only reason to write such notes down precisely rather than
+as hedges.

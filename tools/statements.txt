@@ -1696,23 +1696,29 @@ d038043d1fd255df  thm CrossRefined.two_elem_only
 f1ae0f8259cbf2fc  thm CrossRefined.three_keys_bound
     three_keys_bound : forall (r : nat) (B : Family) (k1 k2 k3 : list nat), RaoSpread 2 B r -> List.NoDup k1 -> length k1 = 2 -> List.NoDup k2 -> length k2 = 2 -> List.NoDup k3 -> length k3 = 2 -> (forall C : list nat, List.In C B -> Subset k1 C \/ Subset k2 C \/ Subset k3 C) -> length B <= 3
 
-0f729b19dac4399e  thm CrossRefined.pair_partner_bound
-    pair_partner_bound : forall (r : nat) (A B : Family) (e1 e2 : list nat), 3 <= r -> Uniform 2 A -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> ~ SetEq e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length B <= r + 1
+082a049c15a1d18d  thm CrossRefined.pair_partner_bound
+    pair_partner_bound : forall (r : nat) (A B : Family) (e1 e2 : list nat), Uniform 2 A -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> ~ SetEq e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length B <= PeanoNat.Nat.max (r + 1) 4
 
-4f89a41d67b03006  thm CrossRefined.triangle_bound
-    triangle_bound : forall (r : nat) (A : Family), Uniform 2 A -> RaoSpread 2 A r -> (forall e f : list nat, List.In e A -> List.In f A -> exists w : nat, List.In w e /\ List.In w f) -> (forall w : nat, exists e : list nat, List.In e A /\ ~ List.In w e) -> length A <= 3
+442814fecd9ef994  thm CrossRefined.triangle_bound
+    triangle_bound : forall (r : nat) (A B : Family), Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f A -> exists w : nat, List.In w e /\ List.In w f) -> (forall w : nat, exists e : list nat, List.In e A /\ ~ List.In w e) -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length A <= 3 /\ length B <= 3
 
 761e3febf4273235  thm CrossRefined.disjoint_squeeze
     disjoint_squeeze : forall (r : nat) (A B : Family) (e1 e2 : list nat), Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> List.In e1 A -> List.In e2 A -> Disjoint e1 e2 -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> length A <= 2 \/ length B <= 3
 
-255c5a25f2215d79  thm CrossRefined.cross_pair_two_exact
-    cross_pair_two_exact : forall (r : nat) (A B : Family), 3 <= r -> Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= 2 * r + 1
+4e97f3a4ae77c697  thm CrossRefined.greedy_four
+    greedy_four : forall (r : nat) (F H0 : Family), Uniform 2 F -> RaoSpread 2 H0 r -> (forall e f : list nat, List.In e F -> List.In f H0 -> exists w : nat, List.In w e /\ List.In w f) -> (forall w : nat, exists e : list nat, List.In e F /\ ~ List.In w e) -> length H0 <= 4
+
+d27d851294770d77  thm CrossRefined.unpointed_pair_bound
+    unpointed_pair_bound : forall (r : nat) (A B : Family), Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> (forall w : nat, exists e : list nat, List.In e A /\ ~ List.In w e) -> (forall w : nat, exists f : list nat, List.In f B /\ ~ List.In w f) -> length A + length B <= 6
+
+a2eb5b7cf15d8a33  thm CrossRefined.cross_pair_two_exact
+    cross_pair_two_exact : forall (r : nat) (A B : Family), 2 <= r -> Uniform 2 A -> Uniform 2 B -> RaoSpread 2 A r -> RaoSpread 2 B r -> (forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f) -> A <> nil -> B <> nil -> length A + length B <= PeanoNat.Nat.max (2 * r + 1) 6
 
 8d18b93bb0337850  thm CrossRefined.cross_b_correct
     cross_b_correct : forall A B : Family, cross_b A B = true -> forall e f : list nat, List.In e A -> List.In f B -> exists w : nat, List.In w e /\ List.In w f
 
-9399a0c054aa4427  thm CrossRefined.cross_pair_two_exact_needs_three
-    cross_pair_two_exact_needs_three : Uniform 2 c2a /\ Uniform 2 c2b /\ RaoSpread 2 c2a 2 /\ RaoSpread 2 c2b 2 /\ (forall e f : list nat, List.In e c2a -> List.In f c2b -> exists w : nat, List.In w e /\ List.In w f) /\ c2a <> nil /\ c2b <> nil /\ 2 * 2 + 1 < length c2a + length c2b
+caa154c415a8ce81  thm CrossRefined.cross_pair_two_six_is_attained
+    cross_pair_two_six_is_attained : Uniform 2 c2a /\ Uniform 2 c2b /\ RaoSpread 2 c2a 2 /\ RaoSpread 2 c2b 2 /\ (forall e f : list nat, List.In e c2a -> List.In f c2b -> exists w : nat, List.In w e /\ List.In w f) /\ c2a <> nil /\ c2b <> nil /\ (forall w : nat, exists e : list nat, List.In e c2a /\ ~ List.In w e) /\ (forall w : nat, exists f : list nat, List.In f c2b /\ ~ List.In w f) /\ length c2a + length c2b = 6 /\ 2 * 2 + 1 < length c2a + length c2b
 
 263f9907be8c910c  thm CrossRefined.unpointed_dec_search
     unpointed_dec_search : forall (G : Family) (w : nat), List.existsb (fun a : nat => List.forallb (fun C : list nat => memb a C) G) (List.concat G) = false -> G <> nil -> exists C : list nat, List.In C G /\ ~ List.In w C

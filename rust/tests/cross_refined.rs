@@ -14,9 +14,10 @@
 //!    `cross_pair_bound`'s `(r-1)·r^(u-1)` and against the exhaustive
 //!    truth at `u = 2`.
 //! 4. `nonstar_three_bound`'s `max(3r+1,16)`, which branch binds where,
-//!    the decomposition of `hm16` that meets it exactly, and the `r = 3`
-//!    row that shows `cross_pair_two_exact`'s `r >= 4` threshold is an
-//!    artefact of its case analysis.
+//!    the decomposition of `hm16` that meets it exactly, and the two
+//!    branches of `cross_pair_two_exact`'s `max(2r+1,6)` -- each attained,
+//!    with the 6 coming from the configuration in which neither side is a
+//!    star.
 
 use sunflower_formal::spread::{is_rao_spread, Mask};
 
@@ -309,10 +310,10 @@ fn the_exact_pair_bound_at_uniformity_two() {
         assert_eq!(max_cross_pair_r(n, 3), 7, "ground {n}");
     }
 
-    // and r = 2 is the first row it does not, because there the statement
-    // is false: `CrossRefined.cross_pair_two_exact_needs_three` exhibits
-    // two disjoint edges against the four crossing edges, 2 + 4 = 6
-    // against 2r+1 = 5. Here is the same pair, checked independently.
+    // and r = 2 is the row where the other branch of the maximum takes
+    // over: `CrossRefined.cross_pair_two_six_is_attained` exhibits two
+    // disjoint edges against the four crossing edges, 2 + 4 = 6 against
+    // 2r+1 = 5. Here is the same pair, checked independently.
     let c2a: Vec<Mask> = vec![mask(&[0, 2]), mask(&[1, 3])];
     let c2b: Vec<Mask> = vec![mask(&[0, 1]), mask(&[0, 3]), mask(&[1, 2]), mask(&[2, 3])];
     assert!(uniform(&c2a, 2) && uniform(&c2b, 2));
@@ -320,24 +321,43 @@ fn the_exact_pair_bound_at_uniformity_two() {
     assert!(is_rao_spread(2, &c2a, 2, 4));
     assert!(is_rao_spread(2, &c2b, 2, 4));
     assert!(cross_intersecting(&c2a, &c2b));
+    assert!(unpointed(&c2a, 4) && unpointed(&c2b, 4));
     assert_eq!(c2a.len() + c2b.len(), 6);
     assert!(c2a.len() + c2b.len() > 2 * 2 + 1);
-    // and 6 is the exhaustive maximum at r = 2, so nothing weaker than
-    // 2r+2 holds there
+    // and 6 is the exhaustive maximum at r = 2
     for n in 5..=7u32 {
         assert_eq!(max_cross_pair_r(n, 2), 6, "ground {n}");
     }
 
-    // The neither-pointed case is where the threshold lives: the greedy
-    // tree at depth two gives four edges each, and 8 exceeds 2r+1 until
-    // r = 4. `triangle_bound` and `disjoint_squeeze` are what bring it
-    // down to 7 at r = 3.
-    assert!(8 > 2 * 3 + 1);
-    assert!(8 <= 2 * 4 + 1);
-    // and the neither-pointed configurations really do cap at 6
-    for n in 5..=6u32 {
-        assert_eq!(max_cross_pair_unpointed(n, 6), 6, "ground {n}");
+    // the closed form covers both rows, and is tight at every one of them
+    for (r, truth) in [(2u64, 6u64), (3, 7), (4, 9), (5, 11), (6, 13)] {
+        assert_eq!(std::cmp::max(2 * r + 1, 6), truth, "r={r}");
     }
+    // the ground has to be big enough to hold the extremal configuration:
+    // two stars of degree r at the ends of one edge need r + 2 points
+    for r in 2..=4usize {
+        for n in (r as u32 + 2)..=7u32 {
+            assert_eq!(
+                max_cross_pair_r(n, r),
+                std::cmp::max(2 * r + 1, 6),
+                "ground {n}, r={r}"
+            );
+        }
+    }
+
+    // The neither-pointed case is the whole content of the 6: the greedy
+    // tree at depth two gives four edges each, and `triangle_bound` plus
+    // `disjoint_squeeze` bring 8 down to exactly 6 -- for every r, which
+    // is why `unpointed_pair_bound` mentions none.
+    assert!(8 > 6);
+    for n in 5..=6u32 {
+        for r in 2..=6usize {
+            assert_eq!(max_cross_pair_unpointed(n, r), 6, "ground {n}, r={r}");
+        }
+    }
+    // and c2a / c2b is that extremal configuration
+    assert!(unpointed(&c2a, 4) && unpointed(&c2b, 4));
+    assert_eq!(c2a.len() + c2b.len(), 6);
 }
 
 /// Exhaustive maximum of `|A| + |B|` over nonempty cross-intersecting

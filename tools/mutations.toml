@@ -1793,8 +1793,8 @@ id = "crossrefined-two-exact-off-by-one"
 file = "coq/CrossRefined.v"
 question = """cross_pair_two_exact says 2r+1 at uniformity two. Is the \
 +1 real, or slack left over from the case analysis?"""
-find = "    length A + length B <= 2 * r + 1."
-replace = "    length A + length B <= 2 * r."
+find = "    length A + length B <= Nat.max (2 * r + 1) 6."
+replace = "    length A + length B <= Nat.max (2 * r) 6."
 expect = "killed"
 because = """Real, and attained: one edge against the two full stars at \
 its endpoints is 2r + 1, which is the |B| = 1 case of the proof and the \
@@ -1803,38 +1803,37 @@ r = 4, 5, 6. Every other case gives at most 2r, so the whole bound is one \
 above the rest of the analysis and that one is where the truth is."""
 
 [[mutation]]
-id = "crossrefined-two-exact-threshold"
+id = "crossrefined-two-exact-drop-six"
 file = "coq/CrossRefined.v"
-question = """cross_pair_two_exact carries r >= 3. Is that threshold \
-real, or left over from an earlier version of the case analysis?"""
-find = """Theorem cross_pair_two_exact :
-  forall r (A B : Family),
-    3 <= r ->"""
-replace = """Theorem cross_pair_two_exact :
-  forall r (A B : Family),
-    2 <= r ->"""
+question = """cross_pair_two_exact concludes max(2r+1, 6). The 2r+1 \
+branch is the one the extremal configuration realises from r = 3 on. Is \
+the 6 branch ever binding?"""
+find = """    A <> [] -> B <> [] ->
+    length A + length B <= Nat.max (2 * r + 1) 6."""
+replace = """    A <> [] -> B <> [] ->
+    length A + length B <= 2 * r + 1."""
 expect = "killed"
-because = """Real: the statement is *false* at r = 2, and the same file \
-carries the counterexample. cross_pair_two_exact_needs_three exhibits two \
-disjoint edges against the four crossing edges -- both Rao(2)-spread, \
-cross-intersecting -- with 2 + 4 = 6 against 2r+1 = 5. Degree two is \
-exactly where all four crossing edges fit."""
+because = """Binding at r = 2, where the mutated statement is *false* and \
+the same file carries the counterexample: cross_pair_two_six_is_attained \
+exhibits two disjoint edges against the four crossing edges -- both \
+Rao(2)-spread, cross-intersecting, neither a star -- with 2 + 4 = 6 \
+against 2r+1 = 5. Degree two is exactly where all four crossing edges \
+fit, and from r = 3 on the one-edge-against-two-stars configuration \
+overtakes it."""
 
 [[mutation]]
 id = "crossrefined-triangle-four"
 file = "coq/CrossRefined.v"
 question = """triangle_bound gives 3. The greedy tree at depth two \
 already gives 4 for the same family. Is the 3 doing any work?"""
-find = """    (forall w, exists e, In e A /\\ ~ In w e) ->
-    length A <= 3."""
-replace = """    (forall w, exists e, In e A /\\ ~ In w e) ->
-    length A <= 4."""
+find = """    length A <= 3 /\\ length B <= 3."""
+replace = """    length A <= 4 /\\ length B <= 3."""
 expect = "killed"
-because = """All of it, and only at r = 3. In the branch where neither \
-side is a star and A has no two disjoint members, the sum is bounded by \
-|A| + 4; with |A| <= 4 that is 8, and 8 > 2r+1 = 7. The whole reason the \
-r = 3 row closes is that an intersecting graph pointed at nothing is a \
-triangle, so |A| = 3."""
+because = """All of it. unpointed_pair_bound needs 3 + 3 = 6 in the \
+branch where A has no two disjoint members; 4 + 3 = 7 does not close, and \
+6 is attained. The whole reason that branch works is that an intersecting \
+graph pointed at nothing *is* a triangle -- three edges, not the four the \
+greedy tree allows -- and that the same three keys cap the partner."""
 
 [[mutation]]
 id = "crossrefined-squeeze-drop-disjunct"
@@ -1848,3 +1847,20 @@ because = """Reachable, and the file carries the witness: c2a is two \
 disjoint edges and c2b is all four crossing edges, so |c2b| = 4 and the \
 right disjunct fails. What holds there is the left one -- only two edges \
 can meet all four crossing pairs."""
+
+[[mutation]]
+id = "crossrefined-unpointed-five"
+file = "coq/CrossRefined.v"
+question = """unpointed_pair_bound gives 6 with no reference to r at all. \
+Is 6 the truth, or is it one of the three branches being generous?"""
+find = """    (forall w, exists f, In f B /\\ ~ In w f) ->
+    length A + length B <= 6."""
+replace = """    (forall w, exists f, In f B /\\ ~ In w f) ->
+    length A + length B <= 5."""
+expect = "killed"
+because = """6 is the truth and the file proves it attained: \
+cross_pair_two_six_is_attained shows c2a and c2b are cross-intersecting, \
+Rao(2)-spread, *neither a star*, with 2 + 4 = 6. All three branches of \
+the bound -- triangle against triangle, squeeze on either side -- come \
+out at exactly 6, which is why the r = 2 row of cross_pair_two_exact is 6 \
+and not 5."""
