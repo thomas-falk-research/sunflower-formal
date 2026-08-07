@@ -6205,7 +6205,7 @@ implication.** In order:
 
 ### 26.1 The theorem
 
-`coq/CrossIntersecting.v`, axiom-free, fifteen new audited names.
+`coq/CrossIntersecting.v`, axiom-free, eighteen new audited names.
 
 > **`two_cover_star_extremal`:** `G` `m`-uniform, intersecting,
 > `RaoSpread r`, every member containing `p` or `q`, and `r ≥ m+1`. Then
@@ -6325,9 +6325,10 @@ At `m = 4` the arithmetic is exact:
 So the gap between the unconditional `r*(4,3) ≤ 7` of §24.2 and `≤ 5` is
 **one constant**: a 4-uniform intersecting Rao(5)-spread family of
 covering number at least 3 has at most 125 members. The elementary greedy
-bound there is `4^4 = 256`, so the interval to close is `[125, 256]` —
-the same shape as the `[16, 27]` that §25.2 closed at `m = 3`, and by
-§26.3 it cannot be closed the same way.
+bound there is `m^t·r^(m-t)`, which is `4³·5 = 320` at covering number 3
+and `4⁴ = 256` at covering number 4, so the interval to close is
+`[125, 320]` — the same shape as the `[16, 27]` that §25.2 closed at
+`m = 3`, and by §26.3 it cannot be closed the same way.
 
 **Where the 125 would have to come from, derived rather than guessed.**
 Decomposing against one member `M`, as §25.2 does at `m = 3`:
@@ -6512,10 +6513,29 @@ not be settled by search; §26.4 is the route.
                                                                     by hand,
                                                                     budget
                                                                     unspent
-  make -j4 verify                               --          --      yes
-  make coqchk                                   --          --      yes
-  cargo test --release                          --          --      yes
-  python3 tools/mutate.py (100)                 --          --      yes
+  make -j4 verify (465 audited)                  --          --      yes
+  make coqchk (40 modules)                      --          --      yes
+  cargo test --release (27 suites, 257 tests)   --          --      yes
+  python3 tools/mutate.py (100, 3 jobs)         --          ~65 min yes
+```
+
+**The gates.**
+
+```
+  make -j4 verify        green  (465 audited theorems, 465 "Closed under
+                                the global context", none carrying an
+                                axiom -- including everything in
+                                CrossIntersecting.v)
+  make coqchk            green  (40 modules; one axiom:
+                                Sunflower.ALWZ.Rao20_lemma2; type-in-type,
+                                unsafe (co)fixpoints and assumed
+                                positivity all <none>)
+  cargo test --release   green  (27 suites, 257 tests, 0 failures)
+  python3 tools/mutate.py green (100 mutations: 97 killed, 2 survived as
+                                declared, 1 control passing, 0 unexpected
+                                -- including all five added here)
+  tools/statements.py    green
+  tools/docnumbers.py    green  (12 quoted numbers match)
 ```
 
 Nothing else ran over ten minutes. The ground-8 row is **undecided**, and

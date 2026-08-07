@@ -752,7 +752,8 @@ Qed.
 (** And the next open row, stated so the remaining gap is one number:
     at [m = 4] the star is extremal from [r = 5] on as soon as a 4-uniform
     intersecting family of covering number at least 3 has at most 125
-    members. The elementary greedy bound there is [4^4 = 256]. *)
+    members. The elementary greedy bound [m^t * r^(m-t)] is [4^3 * 5 = 320]
+    at covering number 3, so the interval to close is [[125, 320]]. *)
 
 Corollary four_uniform_star_extremal_from_tau_three :
   forall r, 5 <= r -> TauThreePieceAtMost 4 r (r ^ 3) -> StarExtremalAt 4 r.
@@ -858,7 +859,9 @@ Qed.
     is the corollary above, so the whole gap between 7 and 5 is one
     constant: *a 4-uniform intersecting Rao(5)-spread family of covering
     number at least 3 has at most 125 members*. The elementary greedy
-    bound there is [4^4 = 256]. *)
+    bound [m^t * r^(m-t)] is [4^3 * 5 = 320] at covering number 3 and
+    [4^4 = 256] at covering number 4, so the interval to close is
+    [[125, 320]]. *)
 
 Theorem r_star_four_at_most_five_from_tau_three :
   TauThreePieceAtMost 4 5 125 -> SpreadYieldsDisjoint 4 3 5.
