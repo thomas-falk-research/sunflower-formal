@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 117 anecdotes into a coverage metric over the
+  mutation testing from 125 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -7190,3 +7190,406 @@ claim; measure the quantity before calling it the gap) and rule 13 (a
 lower bound from a stochastic search bounds that search's effort, not the
 quantity — re-measure before a measurement carries an argument about
 difficulty).
+
+
+## 28. The spread Hilton–Milner family: `r = m` is exactly the boundary,
+##     and the star-extremality route has a ceiling below Erdős–Rado
+
+Every Rao-spread family in this development up to §27 is a *finite
+witness* — `c5`, `two_triangles`, `C37`, `hm16`, `g65` — written out by
+hand and certified by `vm_compute` through `Reflect.rao_spreadb`. That is
+why every extremal statement here has been about one `(m,r)` at a time.
+
+`coq/HiltonMilner.v` builds the first **parametric** one, and with it the
+first statement about `I(m,r)` that holds at every uniformity at once.
+
+### 28.1 The object
+
+Partition an initial segment of `N` into consecutive blocks
+
+```
+  E   = seq 0 m          the special set, m points
+  W   = {m}              the apex, w := m
+  Y_j = r points each    j = 0 .. m-3
+```
+
+and let
+
+```
+  HM(m,r) = E  ::  { {i, w} ∪ {y_0, ..., y_{m-3}} : i ∈ E, y_j ∈ Y_j }
+```
+
+— the Hilton–Milner shape: one set off to the side, and the star at an
+apex outside it, thinned to a grid so that it is spread. It has
+`m·r^(m-2) + 1` members, all of them `m`-sets, and it is intersecting for
+a one-line reason (two star members share the apex; `E` meets each star
+member in that member's point of `E`).
+
+`CrossRefined.hm16` is `HM(3,5)` up to relabelling, and §27 identified it
+as "a Hilton–Milner shape" in so many words — what it did not do was
+parameterise it, which is the only reason the two inequalities below were
+not visible then. At `m = 2` the construction degenerates to the triangle
+`{{w,a},{w,b},{a,b}}`, which is already in the development as the
+configuration behind `CrossRefined.unpointed_pair_bound`'s constant 6. Two
+objects the repository already had turn out to be the two smallest
+instances of one family.
+
+The supporting machinery is worth as much as the family. `tstep`,
+`blocks` and `grid` in the same file are a general *transversal family*
+constructor, and
+
+```
+  grid_deg_mul :  NoDup T  ->  deg T (grid base k r) * r^|T|  <=  r^k
+```
+
+is a general degree bound for it, proved by one induction on the number
+of blocks. Anything of grid shape is now a spread family for free.
+
+### 28.2 The theorem
+
+Two inequalities, pointing opposite ways.
+
+**Spread.** The apex has `deg {w} = m·r^(m-2)` and the spread condition
+caps it at `r^(m-1) = r·r^(m-2)`. No other test set imposes a condition on
+`r` that this one does not already imply — the case table is in the file
+header, indexed by whether `T` meets `E` and whether it contains the apex.
+Plenty of other sets are *tight*: `{i,w}` has degree `r^(m-2)` against a
+ceiling of `r^(m-2)`. But they are tight at every `r`, so they ask for
+nothing; the only other place `m` is weighed against a power of `r` is the
+sets avoiding both the apex and `E`, and they ask only for `m ≤ r²`. The
+binding row is the apex, and it reads `m ≤ r`. So
+
+> `HM(m,r)` is Rao(`r`)-spread **iff `r ≥ m`**.
+
+**Size.** `m·r^(m-2) + 1 > r^(m-1)` iff `m ≥ r`.
+
+Both hold at exactly one value of `r`, namely `r = m`, where the apex
+degree is `m^(m-1) = r^(m-1)` — sitting precisely on the ceiling — and the
+family has one member more than the star. Hence
+
+> **`HiltonMilner.not_star_extremal_at_m_m`:** for every `m ≥ 2`,
+> `¬ StarExtremalAt m m`.
+
+This is the first *construction* in the development that is general in `m`
+— `CrossIntersecting.star_extremal_for_large_r` is the general upper bound
+(`m³ ≤ r²`), and this is the matching lower boundary. It is checked
+twice: by the induction, and — at `(3,3)`
+and `(4,4)`, where the ground sets have 7 and 13 points — by
+`Reflect.rao_spreadb` enumerating the whole power set of the ground, which
+shares no code with the induction (`HM_three_three_second_opinion`,
+`HM_four_four_second_opinion`). `rust/tests/hilton_milner.rs` checks the
+same claims a third time, independently, for every `(m,r)` with `2 ≤ m ≤ 6`,
+`2 ≤ r ≤ 7` whose ground set fits in 32 points — 29 pairs, one short of the
+full box because `HM(6,7)` needs 35.
+
+### 28.3 What it sharpens
+
+**`two_cover_star_extremal`'s threshold is exact.**
+`CrossIntersecting.two_cover_star_extremal` carries the hypothesis
+`m+1 ≤ r` and §26.2 argued the threshold was "exactly `m+1`" from the
+arithmetic of its own proof. `HM(m,m)` is covered by the two points
+`{0, m}`, so it is a counterexample to the same statement with `m ≤ r`:
+the threshold is not an artefact of the case analysis.
+(`two_cover_threshold_is_sharp`.)
+
+**`I₂(3,r) = 3r+1` for every `r ≥ 5`.** `CrossRefined.nonstar_three_bound`
+gives `I₂(3,r) ≤ max(3r+1, 16)`, and `3r+1 ≥ 16` exactly from `r = 5`.
+`HM(3,r)` attains `3r+1`, and `rao_uniform_distinct` supplies the
+`Distinct` hypothesis for free from the Rao condition. So the row
+§27.6 closed at `r = 5` closes at every `r ≥ 5`, and
+`CrossRefined.i2_three_five_is_sixteen` is its first instance.
+(`i2_three_exact`.)
+
+**The `m = 3` row of Conjecture T is complete.** `HM(m,m)` says nothing
+about `r < m`, where it is not spread; there the obstruction is a
+different object. A projective plane of order `q` is `(q+1)`-uniform with
+`q²+q+1` lines, any two meeting in one point, degree `q+1` at a point and
+`1` at a pair — so it is Rao(2)-spread for every `q ≥ 1`, and it beats the
+star bound `2^q` exactly when `q²+q+1 > 2^q`, which is `q = 2, 3, 4` and no
+further. The Fano plane (`fano`, 7 lines against a star bound of 4) gives
+`¬ StarExtremalAt 3 2`; `PG(2,3)` (`pg23`, 13 lines of 4 points against 8)
+gives `¬ StarExtremalAt 4 2`. Combined with `HM(3,3)` at `r = 3` and
+`TauThree.three_uniform_star_extremal` at `r ≥ 4`:
+
+```
+  StarExtremalAt 3 r     r = 0, 1   true, degenerately (see below)
+                         r = 2      FALSE   fano, 7 > 4
+                         r = 3      FALSE   HM(3,3), 10 > 9
+                         r >= 4     true    three_uniform_star_extremal
+```
+
+`star_threshold_three_is_four` states it as a threshold: it holds for every
+`r ≥ 4`, and any `s` for which it holds at every `r ≥ s` has `s ≥ 4`. So
+`s*(3) = 4 = m+1` — **Conjecture T settled at its first nontrivial
+uniformity**. The `m = 2` row closes in the same stroke and had been one
+theorem short of closing for three sessions: `TwoCover.two_uniform_star_extremal`
+gives `r ≥ 3`, and `HM(2,2)` — the triangle — gives `¬ StarExtremalAt 2 2`,
+so `s*(2) = 3 = m+1` too. Two complete rows, both at `m+1`.
+
+The degenerate rows are a correction to how Conjecture T must be stated,
+not a curiosity. `StarExtremalAt 3 0` and `StarExtremalAt 3 1` are *true*:
+Rao(0) forces every point to have degree 0 and Rao(1) forces the members
+pairwise disjoint, so in both cases an intersecting family has at most one
+member. "Least `r` such that `StarExtremalAt m r`" is therefore 0. The
+quantity the conjecture is about is the least `s` such that it holds for
+*every* `r ≥ s`, and that is how `s*` is defined below.
+
+**Two numbers stop being coincidences.** §27's brief observed that the
+two-cover split at `(m,r) = (4,5)` gives `C(3,5) + r^(m-2) = 76 + 25 = 101`
+if `C(3,5) = 76`. That is `|HM(4,5)|` exactly, and the reason is that the
+split applied to `HM(4,5)` at its own cover recovers the decomposition with
+nothing lost. Conjecture X (`C(u,r) = u·r^(u-1)+1`) and Conjecture HM
+(`I₂(m,r) = m·r^(m-2)+1`) are the same conjecture read at two
+uniformities, and `HM` is the common witness.
+
+`|HM(4,4)| = 65 = |g65|` is **not** the same phenomenon and should not be
+read as one. `g65` lives at `(4,5)` with covering number ≥ 3; `HM(4,4)`
+lives at `(4,4)` with covering number 2. Both are `1 + 4·16`, but the 16 is
+`|hm16|` in one case and `r² = 16` in the other. Equal counts, different
+objects.
+
+### 28.4 The barrier, with the arithmetic exposed
+
+This is the part worth reading twice, because it redirects the programme.
+
+`TwoCover.star_extremal_gives_m_plus_one` is the route this development
+built from star extremality to a sunflower bound:
+
+```
+  (∀ m ≤ n, StarExtremalAt m r)
+      →  SpreadYieldsDisjoint n 3 r          star_extremal_gives_m_plus_one
+      →  f(n,3) ≤ r^n + 1                    SpreadReduction.spread_reduction
+```
+
+and it is instantiated there at `r = n+1`. The obvious hope is that a
+smaller `r` would do; a *constant* `r` would give `f(n,3) ≤ C^n` and settle
+the conjecture at `k = 3`. It would not, and the reason is one line: the
+hypothesis quantifies over **every** `m ≤ n`, so if `r ≤ n` it includes
+`StarExtremalAt r r`, which `HM(r,r)` refutes.
+
+> **`star_extremal_route_needs_r_above_n`:** for `2 ≤ r ≤ n`, the
+> hypothesis `∀ m ≤ n, StarExtremalAt m r` is *false*. The route's
+> parameter is pinned at `r ≥ n+1`.
+
+So the route's best possible output is `f(n,3) ≤ (n+1)^n + 1`. Now compare:
+
+```
+  route ceiling      (n+1)^n + 1     ~  e·n^n
+  Erdős–Rado (1960)  2^n·n! + 1      ~  sqrt(2πn)·(2n/e)^n,   2/e = 0.7358
+```
+
+The ratio is `(e/√(2πn))·(e/2)^n`, and `e/2 = 1.3591`, so it grows without
+bound. Concretely, in exact arithmetic
+(`the_route_ceiling_is_worse_than_erdos_rado`): the two agree at `n = 1`;
+Erdős–Rado is strictly smaller for every `n` from 2 to 200 checked; and the
+gap in decimal digits is 5 at `n = 50`, 12 at `n = 100`, 25 at `n = 200`.
+
+> **The absolute-spread star-extremality route cannot produce a record at
+> `k = 3`. Even if Conjecture T were proved in full, and every open
+> constant in §§25–27 closed, the bound it yields is worse than the 1960
+> one by an exponential factor.**
+
+**And §21.5 got here first, for a different route.** The line
+`b^b > (2b/e)^b = Erdos-Rado, by a factor (e/2)^b = 1.359^b` is already in
+this file, written about the `τ`-indexed bound of §8, with the conclusion
+"not merely on the wrong side of the barrier — it is worse than 1960
+outright". It is the *same constant*, because both routes bottom out at
+`n^n` and Erdős–Rado is `(2n/e)^n`. What §28 adds is that the
+star-extremality route is now known to be one of them, and known by a
+theorem rather than by an estimate: `HM(r,r)` makes the hypothesis false
+below `r = n+1`, so `(n+1)^n` is not "the best we currently know how to
+do" but the best the route can do.
+
+That the arithmetic was already in the repository, done for a neighbouring
+route, and was not applied to this one for four sections, is the content of
+rule 14 in `docs/reading.md`.
+
+A second, independent reason for the same `r ≥ m+1` was already visible and
+is worth stating alongside, because it means the barrier survives even if
+the star-extremality hypothesis were somehow repaired:
+`TwoCover.split_with_piece_general` gives `|F| ≤ m·r^(m-1) + K` for a family
+with no three pairwise disjoint members, `K` any bound on the intersecting
+piece. To reach `r^m` one needs `m + K/r^(m-1) ≤ r`, so `r ≥ m+1` follows
+from the *split* whatever `K` is — even `K = 1`. The greedy factor `m` from
+covering by one member's points is the cost, and star extremality does not
+touch it.
+
+**What this does not say.** It does not say the destination is out of
+reach. `SpreadYieldsDisjoint n 3 r` holds for `r = Θ(log n)` by the modern
+spread lemma, which is exactly what `ALWZ.sunflower_bound_from_spread_lemma`
+uses and where the `(log n)^n` bounds come from. The barrier is about the
+*hypothesis*, not the conclusion: star extremality under Rao's **absolute**
+spread condition cannot be the thing that supplies it, because the absolute
+condition forces `r` to grow with `m` and the bound is `r^n`.
+
+The reading that follows: work on `I(m,r)` is worth doing as extremal
+combinatorics — it produces exact values like `I₂(3,r) = 3r+1` — and is
+worth nothing as a route to a record. A route to a record has to keep `r`
+small, which means the **fractional** spread condition, where `r` does not
+have to grow with `m`. §26.4a's "first general answer" (`r ≥ m^{3/2}`) and
+the whole of §§25–27 sit under this ceiling and always did; what changed is
+that the ceiling is now a theorem instead of an unexamined hope.
+
+### 28.5 The conjecture ledger
+
+Every named conjecture in this development, its exact statement, what is
+verified, and the budget behind each row. Rows marked **theorem** have
+graduated.
+
+| name | statement | status |
+|---|---|---|
+| **HM** | `I₂(m,r) = m·r^(m-2) + 1` for `r ≥ m` | lower bound is a **theorem** at every `m` (`HM_nonstar`); upper bound proved at `m = 3, r ≥ 5` (`i2_three_exact`); `m = 3, r = 3` measured 10 = `3·3+1` and `m = 3, r = 4` measured 13 = `3·4+1`, each exhausted on the grounds in §28.7; open at `m ≥ 4` |
+| **X** | `C(u,r) = u·r^(u-1) + 1` for `r` large, exceptions 6 at `u=2`, 17 at `u=3` | `u = 2` **theorem** (`cross_pair_two_exact`, exact at every `r ≥ 2`); `u = 3` upper bound `3r²+1` proved for `r ≥ 6`, `r = 2` refuted by a 17-witness, `r = 3,4,5` open |
+| **T** | `s*(m) := least s with StarExtremalAt m r for every r ≥ s` equals `m+1` | **theorem at `m = 2, 3`** (`star_threshold_three_is_four` at `m = 3`; at `m = 2` it is `TwoCover.two_uniform_star_extremal` for `r ≥ 3` against `not_star_extremal_at_m_m` at `r = 2`, the triangle). Lower half a **theorem at every `m`**: `¬ StarExtremalAt m m` (`star_extremal_needs_r_above_m`), plus `¬ StarExtremalAt 4 2` from `PG(2,3)`. Upper half open at every `m ≥ 4`: needs the `τ ≥ 3` piece |
+| **F** | `I(m,r) ≤ max_t c_t·m^(t-1)·r^(m-t)`, `c_t` absolute | `t = 1` trivial, `t = 2` is HM, `t = 3` has one measured point (65 at `(4,5)`, `g65`) and no bound. Wide open, and §28.4 says it is not on a route to a record |
+| **B** (new) | the barrier: no `r ≤ n` satisfies `∀ m ≤ n, StarExtremalAt m r` | **theorem** (`star_extremal_route_needs_r_above_n`) |
+
+**`s*` is not `r*`.** The development already writes `r*(m,3)` for the
+least `r` with `SpreadYieldsDisjoint m 3 r` (STATUS.md's table). `s*(m)`
+above is a different quantity — the least `r` with `StarExtremalAt m r` —
+and `HM` says nothing about the first. It cannot: `HM(m,m)` is
+intersecting, so it has no three pairwise disjoint members, but its
+`m^(m-1) + 1` members do not exceed the `r^m = m^m` that
+`SpreadYieldsDisjoint` needs to be handed before it promises anything.
+**No row of the `r*(m,3)` table moves.** What moves is the *route* from
+`s*` to `r*`, which §28.4 shows is capped.
+
+A note on **T**'s statement. `StarExtremalAt m ·` is *not* known to be
+monotone in `r`: `RaoSpread` weakens as `r` grows, which enlarges the class
+of families, while the bound `r^(m-1)` grows too, and neither dominates. So
+"`s*(m) = m+1`" presupposes something unproved. Everything formalised is
+stated at one specific `r`, and the honest form of the lower half is
+`¬ StarExtremalAt m m`. Settling monotonicity — either way — is a small,
+self-contained open problem this session did not attempt.
+
+### 28.6 The barrier ledger
+
+What has been shown *not* to work, with budgets, so that no later session
+re-runs a dead search. §26.4's inline retraction is the template.
+
+| what | why it is dead | budget/evidence |
+|---|---|---|
+| §26.4's four-family inequality `Σ_x \|A_x\| ≤ 48` | false, by more than 2× | `four_unpointed_cross_families_exceed_forty_eight`, §27.1 |
+| `3r²+1` at `u = 3`, `r = 2` | false, 17-member witness | `cross_pair_three_needs_six`, §27.7 |
+| **star extremality as a route to a record at `k = 3`** | ceiling `(n+1)^n`, worse than Erdős–Rado by `≈1.359^n` | §28.4; exact-arithmetic check to `n = 200` |
+| **`StarExtremalAt m r` for any `r ≤ m`** | refuted at `r = m` by `HM(m,m)` at every `m`, and at `r = 2` for `m = 3` (Fano) and `m = 4` (`PG(2,3)`). `PG(2,4)` would give `m = 5` by the same arithmetic and was not built — 4 is not prime and the generator here only does prime orders. At `m = 3` the row is *complete*: false exactly at `r = 2, 3`. The first untouched cell is `(m,r) = (4,3)` | §28.2, §28.3 |
+| a *constant* `r` in `SpreadYieldsDisjoint n 3 r` via star extremality | impossible: needs `r ≥ n+1` | `star_extremal_route_needs_r_above_n` |
+
+### 28.7 Measured
+
+```
+  I2(3,3) in [10,16]  10 on grounds 6, 7, 8, 9 -- exhaustive on each (21650 /
+                      536289 / 6482109 / 69481033 nodes, 230s at ground
+                      9), so 10 on <= 9 points and >= 10 in general;
+                      the proved upper bound is max(3r+1,16) = 16. Attained
+                      by HM(3,3) and, separately, by the complete 3-graph
+                      on 5 points, which the search returns first
+  HM(m,r) spread      iff r >= m, for every (m,r) with 2<=m<=6, 2<=r<=7
+                      and ground <= 32 points (29 pairs, exhaustive over
+                      all subsets of members)
+  HM(m,r) > star      iff r <= m, exhaustive over 2<=m<=12, 2<=r<=20 in
+                      exact arithmetic (no family construction needed)
+  violators of        exactly m^(m-2) of them, every one containing the
+  HM(m, m-1)          apex, the smallest being {w} alone; checked for
+                      m in 3..6. First written down as "the apex is the
+                      unique violator", which the measurement refuted:
+                      at (3,2) the violators are {w}, {w,y0}, {w,y1}.
+                      They all impose the same condition, m <= r, which
+                      is why the obstruction is still one obstruction
+  I2(3,4) in [13,16]  13 = 3r+1, exhaustive on grounds 6, 7, 8 (26561 /
+                      699463 / 15000076 nodes) -- so 13 on <= 8 points,
+                      which is a lower bound on the unrestricted value.
+                      Ground 9 was stopped by hand with its 4e9-node
+                      budget unspent. The proved upper bound is
+                      max(3r+1,16) = 16. The extremal witness the search
+                      returns *is* HM(3,4) relabelled, so Conjecture HM
+                      is right on every ground searched and the proved
+                      bound is loose by 3 there. r = 5 was queued and
+                      never started
+  PG(2,q) at r=2      Rao(2)-spread and intersecting for q = 2, 3, 5;
+                      beats the star bound 2^q iff q^2+q+1 > 2^q, i.e.
+                      q <= 4 (checked to q = 12 in arithmetic). q = 7
+                      needs 57 points, past the 32-bit mask, and was not
+                      built
+  route vs Erdos-Rado gap in decimal digits 5 / 12 / 25 at n = 50 / 100 / 200;
+                      Erdos-Rado strictly smaller for every n in 2..200
+```
+
+Two extremal families tie at `(m,r) = (3,3)`, and the coincidence does not
+continue: the complete `m`-graph on `2m-1` points is Rao(`m`)-spread (its
+worst degree is `deg` of an `(m-1)`-set, which is `m`) and has `C(2m-1,m)`
+members, which beats `m^(m-1)` at `m = 2` (3 > 2) and `m = 3` (10 > 9) and
+loses from `m = 4` on (35 < 64). `HM` is the one that generalises.
+
+### 28.8 Costs and gates
+
+New: `coq/HiltonMilner.v` (one module, no axiom), `rust/tests/hilton_milner.rs`
+(14 tests), 37 audited theorems and 11 audited definitions, 8 mutations.
+Coq 8.18 was not present in the session container and was installed from
+Ubuntu's package (`coq 8.18.0+dfsg-1build2`) before anything ran.
+
+### 28.9 The one-line verdict
+
+**The spread Hilton–Milner family `HM(m,r)` is Rao(`r`)-spread exactly
+when `r ≥ m` and beats the star exactly when `r ≤ m`, so at `r = m` it does
+both — `¬ StarExtremalAt m m` at every uniformity, the first general
+statement about `I(m,r)` here, and the exact lower boundary of star
+extremality.**
+
+Three things follow. `two_cover_star_extremal`'s threshold `r ≥ m+1` is
+sharp rather than an artefact. `I₂(3,r) = 3r+1` for every `r ≥ 5`, which
+turns §27.6's single exact value into a family of them. And with the Fano
+plane covering `r = 2`, the whole `m = 3` row closes: **`StarExtremalAt 3 r`
+holds exactly for `r ≥ 4`**, so `s*(3) = m+1`; the `m = 2` row closes with
+it, since `HM(2,2)` is the triangle. Conjecture T has two confirmed rows,
+both at `m+1`. And — the reason
+this section is worth more than the theorem — the route from star
+extremality to a sunflower bound is now known to have a **ceiling of
+`(n+1)^n`, which is worse than Erdős–Rado's `2^n·n!` by a factor growing
+like `1.359^n`**. That is not a reason to stop doing this extremal
+combinatorics; `I₂(3,r) = 3r+1` is a real result and the `τ ≥ 3` questions
+are real questions. It is a reason to stop expecting a record from it, and
+to say so in the one place a later session will look.
+
+### 28.10 Picking this up cold
+
+**Settled in §28, all axiom-free.**
+
+```
+  HiltonMilner.grid_deg_mul            a general transversal family and
+                                       its degree bound -- the first
+                                       parametric spread construction here
+  HiltonMilner.HM_rao                  HM(m,r) is Rao(r)-spread for r >= m
+  HiltonMilner.not_star_extremal_at_m_m   ~ StarExtremalAt m m, every m >= 2
+  HiltonMilner.two_cover_threshold_is_sharp  section 26.1's r >= m+1 is exact
+  HiltonMilner.i2_three_exact          I2(3,r) = 3r+1 for every r >= 5
+  HiltonMilner.star_extremal_route_needs_r_above_n   the barrier
+  HiltonMilner.not_star_extremal_three_two   the Fano plane, r = 2
+  HiltonMilner.not_star_extremal_four_two    PG(2,3), r = 2
+  HiltonMilner.star_threshold_three_is_four  s*(3) = 4 = m+1, exactly
+```
+
+**Worth attacking next, in order.**
+
+1. **Is `StarExtremalAt m ·` monotone in `r` above the degenerate range?**
+   At `m = 3` the answer is yes and the row is now complete: false at
+   `r = 2, 3`, true at `r >= 4`. At `m = 4` only `r = 2` (PG(2,3)) and
+   `r = 4` (`HM(4,4)`) are known false, and `r = 3` is untouched — the
+   cheapest open question in this section, and a counterexample would be
+   as interesting as a proof. `PG(2,3)` at `r = 3`: 13 members against a
+   star bound of 27, so it does not settle it.
+2. **`C(3,5) = 76`, then `StarExtremalAt 4 5`.** Unchanged from §27.9 —
+   §27.7 names the two missing ingredients exactly. It is still the
+   flagship *as mathematics*; §28.4 says it is not a route to a record,
+   which is a different claim.
+3. **The `τ ≥ 3` piece at `(4,5)`, still in `[65, 125]`.** The spread
+   analogue of Frankl's `τ = 3` theorem is the piece everything waits on.
+4. **`I₂(m,r)` at `m ≥ 4`.** Conjecture HM's upper half. The lower half is
+   now a theorem at every `m`, so this is a clean target with a known
+   answer to aim at.
+5. **A second technique.** §28.4 is the argument for it: the spreadness
+   layer has a measured ceiling, so the next real gain has to come from
+   somewhere else. `coq/SliceRank.v` exists and is the obvious start.
+
+**Do not re-run**: everything in the §28.6 barrier ledger, plus the items
+§27.9 lists.

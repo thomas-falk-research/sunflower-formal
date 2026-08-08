@@ -1467,3 +1467,81 @@ refuted, `r = 3,4,5` open).
 > without an exactly tight argument. Nothing was *false*; the inference
 > drawn from the numbers was worth less than it looked. Re-measure before
 > a measurement is asked to carry an argument about difficulty.
+
+## What re-reading the development changed, session N+9
+
+Nothing in the corpus was re-read this session; the two rules below were
+earned inside the development, which is where rules 12 and 13 came from
+too.
+
+### Six sessions inside a route whose ceiling nobody had multiplied out
+
+`TwoCover.star_extremal_gives_m_plus_one` has been in the development
+since §24, and §§24–27 are largely work inside it: prove
+`StarExtremalAt m r`, feed it to that theorem, get
+`SpreadYieldsDisjoint n 3 r`, get `f(n,3) ≤ r^n + 1`. The route was
+instantiated at `r = n+1` from the day it was written, and the question
+"what does `(n+1)^n` come to, against the 1960 bound?" was never asked.
+
+It comes to a loss. Erdős–Rado is `2^n·n! + 1 ≈ √(2πn)·(2n/e)^n` with
+`2/e = 0.7358`; the route's ceiling is `(n+1)^n + 1 ≈ e·n^n`. The ratio
+is `(e/√(2πn))·(e/2)^n` with `e/2 = 1.3591`, and the gap in decimal digits
+is 12 at `n = 100`
+and 25 at `n = 200`. **The route cannot produce a record at `k = 3` even
+if every conjecture in §§24–28 were proved.**
+
+The arithmetic is one line and it is not new mathematics. Worse: **it was
+already in the repository.** `docs/roadmap.md` §21.5, written four
+sections earlier about the `τ`-indexed bound of §8, contains
+
+>     b^b  >  (2b/e)^b  =  Erdos-Rado,     by a factor (e/2)^b = 1.359^b.
+
+and concludes "not merely on the wrong side of the barrier — it is worse
+than 1960 outright". The same constant, for the same reason: both routes
+bottom out at `n^n`. Nobody carried it across to the neighbouring route,
+because a route that is *making progress* — and §§25–27 did make progress,
+three exact values of it — never asks to be costed.
+
+> **Rule 14. A route has a ceiling, and you compute it in the first
+> hour, not the sixth session.** Before proving anything *inside* a
+> reduction, instantiate its best case and compare it with the bound you
+> are trying to beat. If the best case loses, the reduction is a source
+> of mathematics but not of records, and saying so is worth more than
+> another constant inside it. The cost of not doing this is not a wrong
+> theorem — everything §§25–27 proved is true and stands — it is
+> direction.
+
+Three things make this rule cheap to follow and there is no excuse for
+skipping it. First, the comparison is arithmetic, not analysis. Second,
+the same comparison had already been done in this repository for a
+neighbouring route, so it did not even have to be derived — only looked
+up. Third, the *statement* of the reduction already contains its
+parameter: the
+hypothesis of `star_extremal_gives_m_plus_one` quantifies over every
+uniformity `m ≤ n` at one `r`, and the moment `¬ StarExtremalAt m m` is
+known the parameter is pinned at `r ≥ n+1` with no further work.
+
+That last step is why the barrier became a theorem this session rather
+than a remark: `HiltonMilner.not_star_extremal_at_m_m` makes the
+hypothesis *unsatisfiable* below `r = n+1`, so the ceiling is not "the
+best we currently know how to do" but "the best the route can do".
+
+### An algebraic restatement, checked one case too late
+
+`RaoSpread` is `deg T F ≤ r^(m-|T|)`, and truncated subtraction makes
+that painful to induct on, so the whole of `HiltonMilner.v` is written in
+the multiplicative form. The first draft of that form was
+`deg T F · r^|T| ≤ r^(m-1)`, which is wrong by a factor of `r`: it should
+be `r^m`. The draft survived several hundred lines of proof outline
+before evaluation at `T = {w}` — the one set the whole construction is
+about, whose degree is `m·r^(m-2)` — showed it demanded `m ≤ 1`.
+
+The error cost only a rewrite because the proof had not been attempted
+yet. It would have cost a session if the restatement had been buried in
+a lemma and the tight case never tried.
+
+> **Rule 15. An algebraic restatement gets evaluated at the tight case
+> before anything is built on it.** A reformulation is a claim of
+> equivalence, and the cheapest possible refutation is the instance where
+> the original is known to hold with equality. One substitution, before
+> the first `Proof.`
