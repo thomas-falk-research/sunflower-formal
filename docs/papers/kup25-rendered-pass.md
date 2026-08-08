@@ -7,7 +7,7 @@ of that pass over `kupavskii_survey.pdf` (66 pages), so that a later
 session resumes rather than restarts, and so that "read" means a page
 listed here.
 
-**Status: incomplete — 19 of 66 pages read.** The unread pages are listed
+**Status: incomplete — 32 of 66 pages read.** The unread pages are listed
 at the bottom. Any negative drawn from this survey is provisional until
 they are done.
 
@@ -50,3 +50,51 @@ p14  DEF proof; note "we only leave vertices of high degree ... remove elements 
 p15  Lemma 13/14, greedy base construction B by layers. -
 # --- checkpoint 2: 19 of 66 read (1,3-15,17,21,22,42,52,53,59) ---
 # remaining: 16, 18, 19, 20, 23-41, 43-51, 54-58, 60-66  (47 pages)
+p16  end of Lemma 14 proof / DEF theorem. -
+p18  Frankl's second base construction; Props 16-19. -
+p19  Frankl machinery. NEAR-MISS worth noting: Prop 20 is a MINIMUM-degree cleaning at a fixed
+     level q ("any family has a subfamily in which every q-set that is contained in a member is
+     contained in >= m members"), explicitly likened to "a graph with many edges contains a
+     subgraph with high minimum degree". Lower bound at ONE level, not an upper bound at EVERY
+     level -- still not Rao's shape. Also the "covering number argument which we avoid" quote
+     that the rule-2 box already cites lives here.
+p20  FIND. Frankl [44] stability for intersecting/t-intersecting EKR: "he studies the families in
+     which NO ELEMENT IS CONTAINED IN MORE THAN A c-FRACTION OF SETS". So Frankl's degree
+     condition is deg(x) <= c|F| -- RELATIVE (to |F|), at LEVEL 1 only.
+     This completes a 2x2 that names the gap exactly:
+                          one level              every level
+        relative   Frankl [44] deg <= c|F|   tau-homogeneous (p53, Kup-Zakharov)
+                                             = fractional spread when A = binom([n],k)
+        absolute   (max-degree EKR line)     RAO's condition  <-- the repo's RaoSpread
+     The missing corner under an INTERSECTING hypothesis, with the HM-shaped extremal question,
+     is the one this repo works in. Sharpens B19a: sec 24.13's "caps one statistic" is right
+     about Frankl but the axis it misses is relative-vs-absolute, not one-level-vs-all.
+     Also p20: Furedi's NUCLEUS, and Ahlswede-Khachatrian generating sets (cf p52).
+p43  stability Thm 51, Kruskal-Katona. -
+p49  sec 1.7 bases; peeling-simplification (Zakharov-Kupavskii [98]); r-spread defined AGAIN,
+     fractional: "|F(X)| < r^(-|X|)|F| for any set X"; and the B13 line "r-spread families in
+     many ways behave like sunflowers with r petals, albeit much easier to find".
+p50  FIND worth cross-referencing. Observation 58: "If G subset binom([n],l) is such that there
+     is no X such that G(X) is r-spread, then |G| <= r^l." Proof = take inclusion-maximal X
+     violating spreadness, pass to G(X), which is then spread. That is the SAME argument shape as
+     SpreadReduction.spread_reduction's recursion (find a violating T, pass to the link, recurse,
+     conclude |F| <= r^m) -- in the FRACTIONAL setting. The repo's version is the absolute-form
+     one. No novelty was claimed for spread_reduction, but this is its published counterpart and
+     the register should say so.
+p51  peeling for t-intersecting; Lemma 60. Spread parameter VARIES with uniformity ((i-t+1)-spread
+     at level i) -- level-dependent, but a procedure, not an extremal hypothesis.
+p46  FIND, the closest yet. Jiang-Longbrake quantitative Furedi (Thm 52) produces a k-partite
+     subfamily F* with, third bullet:
+        for every J = A cap B with A,B in F*, and every x not in J,
+            |F*(J union {x})| <= (1/s) |F*(J)|
+     i.e. the degree decays by a factor 1/s per ADDED POINT, AT EVERY LEVEL. Iterated that is
+     |F*(J)| <= s^(-|J|)|F*| -- spread in recursive one-step form. Fourth bullet gives a matching
+     lower bound |F*(J)| >= max{s, (1/2k)|F*|/n^|J|}, so it is TWO-SIDED per level.
+     This is the same KIND of object as Rao's deg T <= r^(m-|T|), which is exactly "degree decays
+     by a factor r per added point". Difference: it is a CONCLUSION of a structural theorem about
+     an arbitrary family, not a HYPOTHESIS defining an extremal problem, and it is relative to
+     |F*| rather than absolute. Strongest near-neighbour found so far.
+p47  Thm 54 dichotomy; Janzer-Jin-Sudakov-Wu better constants. -
+# --- checkpoint 3: 32 of 66 read ---
+# read: 1-22 (p2 blank), 42, 43, 46, 47, 49, 50, 51, 52, 53, 59
+# remaining: 23-41, 44, 45, 48, 54-58, 60-66  (34 pages)
