@@ -55,6 +55,7 @@ get "Schrijver05" "https://ir.cwi.nl/pub/14098/14098B.pdf" "schrijver_terwillige
 get "Smooth21" "https://arxiv.org/pdf/2106.11882v2" "smoother_spread.pdf" "47245216582e72b4e2574dbe20a03a72a0de4450af0b08912cef753c39f56711"
 get "Thi21" "https://www.isa-afp.org/browser_info/current/AFP/Sunflowers/document.pdf" "afp_sunflowers.pdf" "0efa86fe09274690724aeb19156c260d0e2325e44fcdcf97897477a7e661cac3"
 get "VS25" "https://arxiv.org/pdf/2505.03671v2" "vecspaces.pdf" "891b6405125e885287d57f3771c918edff0a625314fb4d3bb5ef6ddfa77f880b"
+get "FHHZ17" "https://arxiv.org/abs/1703.03896" "fhhz_degree_hm.pdf" "bc05a37a43d3a617fe8087029ec367c725f8639fc5f28fa43e0ed2c2ffe823f6"
 if [ -n "$RENDER" ]; then
   for f in pdf/*.pdf; do d="render/$(basename "$f" .pdf)"; mkdir -p "$d"; pdftoppm -png -r 150 "$f" "$d/p"; done
   echo "rendered to render/"

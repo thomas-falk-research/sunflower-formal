@@ -7677,11 +7677,21 @@ claim.
                         loses below r = m+1 at m = 2, 3 (section 24.13).
 ```
 
-**What a later session should do about it.** `HM` is the natural object to
-write down once one asks for a spread intersecting family beating the
-star, and the degree-condition literature named in §24.13 (Frankl 1987;
-Huang–Zhao; Frankl–Han–Huang–Zhao; Kupavskii) is close enough that a
-specialist may recognise it immediately. Adding a Tier B row to
-`docs/reading.md` for "spread Hilton–Milner", searched against the
-synonyms that file's rule 2 box demands, is a half-hour job and is owed
+**The register row now exists.** `docs/reading.md` **B19** records the
+claim, **B19a** verifies §24.13's "the neighbouring literature caps one
+statistic" from a rendered page of Frankl–Han–Huang–Zhao rather than from
+assertion, and **B19b** records a trap: the literature's *`r`-spread* is
+the **fractional** condition (`max s-degree ≤ r^(−s)·|F|`), which is
+`Spread.Spread` here and not `Spread.RaoSpread`, so a search on the word
+returns the wrong object.
+
+The verdict is *not found*, and the section "The B19 search, described"
+says exactly how weak that negative is: the 16-PDF corpus grepped page by
+page and three files' hits rendered and read, two web queries, one primary
+page. **No MathSciNet, no zbMATH, no journal-side search, and none of the
+synonyms — nucleus, base, crosscut, generating set, minimal cover — that
+this repository's own rule 2 box demands.** The classical Hilton–Milner
+family is confirmed as the underlying object, verbatim from [FHHZ17] p. 1;
+what was not found is the thinning. A specialist in the degree-condition
+line may recognise it on sight, and the remaining search is still owed
 before any of this is described as new outside the repository.

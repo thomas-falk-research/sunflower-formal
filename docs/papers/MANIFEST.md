@@ -79,8 +79,9 @@ more; it is not a claim about the contents.
 | `Smooth21` | Sam Spiro | A Smoother Notion of Spread Hypergraphs | arXiv:2106.11882v2 | 12 | arXiv non-exclusive | not stored | not read (12 pages rendered) |
 | `Thi21` | R. Thiemann | The Sunflower Lemma of Erdős and Rado | — | 14 | BSD License (AFP entry licence) | `pdf/afp_sunflowers.pdf` | read pp. 1-4 and 13-14 of 14 |
 | `VS25` | Ferdinand Ihringer, Andrey Kupavskii | The Erdős-Rado Sunflower Problem for Vector Spaces | arXiv:2505.03671v2 | 9 | arXiv non-exclusive | not stored | not read (9 pages rendered) |
+| `FHHZ17` | Peter Frankl et al. | A degree version of the Hilton-Milner theorem | arXiv:1703.03896v2 | 7 | unstated | not stored | read p. 1 (of 7) |
 
-35 records, 16 PDFs stored,
+36 records, 16 PDFs stored,
 11 read in full.
 
 ## What bears on what
@@ -122,6 +123,7 @@ more; it is not a claim about the contents.
 | `Smooth21` | A smoother notion of spread. |
 | `Thi21` | Refutes the 'only machine-checked formalisation' claim. |
 | `VS25` | Erdos-Rado sunflower problem for vector spaces. |
+| `FHHZ17` | B19: the classical Hilton-Milner family, and the degree-condition line that is the nearest neighbour of I(m,r). Located by the B19 search; p. 1 rendered and read. |
 
 ## Provenance rules
 

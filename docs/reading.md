@@ -99,6 +99,9 @@ literature, resolved.
 | B14 | Zach Hunter's ground-set equivalence, credited to MathOverflow | **FOUND AND READ IN FULL** | `mathoverflow.net/a/463150`, 30 Jan 2024, answering domotorp's question 462924. Retrieved verbatim through the StackExchange API after `WebFetch` was blocked for the site. Quoted in full below; it confirms the equivalence *and* contains two further things this repository has. |
 | B15 | Prescribed-symmetry / Kramer–Mesner applied to sunflower-free families | **Not found** | Nothing in the 2024–2026 arXiv sweep, nothing in [Kup25] pp. 5–6. Not exhaustive over design-theory venues. |
 | B16 | `ι(3)=10` is the unique simple 2-(6,3,2) design | **VERIFIED — by exhaustion, not by citation** | The Handbook of Combinatorial Designs is not open access, so the uniqueness claim could not be read. It does not need to be: there are only `C(20,10) = 184756` ways to choose ten triples from the twenty on six points. Enumerated — exactly **12** are simple 2-(6,3,2) designs, and all 12 form a **single** isomorphism class under `Sym(6)`. `720/12 = 60` re-derives `\|Aut\|` independently of `structure::automorphisms`, and agrees with it. `rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`. |
+| B19 | `HM(m,r)` — the Hilton–Milner family thinned to a grid so that it is Rao(`r`)-spread — and `¬ StarExtremalAt m m` at every `m` | **Not found. The search was narrow and is described below; this is "new to this development", not a priority claim.** | The *underlying object is classical, and that is now verified rather than assumed*. [FHHZ17] (Frankl–Han–Huang–Zhao, *A degree version of the Hilton–Milner theorem*, arXiv:1703.03896v2), **p. 1 rendered and read**, defines it verbatim: `HM_{n,k}` *"consists of a `k`-set `S` and all `k`-subsets of `[n]` containing a fixed element `x ∉ S` and at least one element of `S`."* `HM(m,r)` is exactly that family with the star part thinned to a transversal grid. What is not found is the thinning, or any extremal problem posed under a **level-wise** cap. See the search description below. |
+| B19a | §24.13's claim that the neighbouring literature caps *one* degree statistic rather than every level | **Confirmed — from a rendered page rather than from assertion** | Same page. [FHHZ17] p. 1: *"Let `Δ(F) := max_x d_F(x)` and `δ(F) := min_x d_F(x)` denote the maximum and minimum degree of `F`, respectively. There were extremal problems in set theory that considered the maximum or minimum degree of families satisfying certain properties. For example, Frankl [7] extended the Hilton–Milner theorem by giving sharp upper bounds on the size of intersecting families with certain maximum degree."* One statistic, capped once. Rao's condition caps `deg T ≤ r^(m−|T|)` at every `|T|` simultaneously and geometrically, which is a different hypothesis — as §24.13 said and could not then cite. |
+| B19b | The word "spread" in this literature means what it means here | **REFUTED, and the trap is worth recording** | A web search for spread intersecting families returns the **fractional** notion — a family is `r`-spread when the maximum `s`-degree is at most `r^(−s)·|F|` — which is `Spread.Spread` in this development, *not* `Spread.RaoSpread`. `Spread.RaoSpread_Spread` relates them in one direction only, and the absolute form is the stronger hypothesis once a family exceeds `r^m`. A literature search on "spread" that does not disambiguate returns the wrong object; every negative in B19 was run against the absolute form. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -106,6 +109,60 @@ literature, resolved.
 |---|---|---|
 | C17 | Which of the four spread-lemma proofs is most formalisable in `nat`-only Coq? | **The counting proof — [ALWZ20] §2 as streamlined by Park–Pham, written out in Lovett PCMI §3.** Not Rao. See the analysis below. |
 | C18 | Does `r*(m,3)` track `⌈g(m)^{1/m}⌉`? | **Tight at both known points; recorded as a hint, not a result** | `spread_reduction` gives `g(m) ≤ r^m`, so `r*(m,3) ≥ ⌈g(m)^{1/m}⌉` is a theorem (`IotaRate.spread_threshold_bounds_g`). At `m=2`: `g(2)=6`, `⌈2.449⌉=3`, measured `r*=3`. At `m=3`: `g(3)≥20`, `⌈2.714⌉=3`, measured `r*=3`. Falsifiable now — `r*(3,3)=3` forces `g(3) ≤ 27`, against the known `20 ≤ g(3) ≤ 48`. See `docs/roadmap.md` §18.2. |
+
+---
+
+## The B19 search, described
+
+Rule 5 asks that a source which could not be reached gets an entry saying
+so; the same is owed to a *negative*, since a "not found" is worth only
+what the search behind it was worth. This one was small.
+
+**Corpus, exhaustively.** All 16 PDFs in `docs/papers/pdf`, page by page,
+located with `pdftotext` on the vocabulary `hilton`, `milner`, `diversity`,
+`maximal degree`, `maximum degree`, `non-trivial intersecting` — each word
+searched **separately**, because the rule 2 box records that this corpus
+breaks hyphenated phrases across lines and a two-word search misses them.
+Three files hit:
+
+```
+  vcdim2025.pdf          pp. 3, 4, 23, 25
+  kupavskii_survey.pdf   pp. 18, 52, 53, 59, 64, 65
+  odd_sunflowers.pdf     pp. 1, 6, 8
+```
+
+`vcdim2025.pdf` p. 3 and `kupavskii_survey.pdf` p. 59 were **rendered and
+read**. The first invokes Hilton–Milner only by analogy, for a
+VC-dimension conjecture. The second is the `d`-simplex / `d`-cluster line —
+*"a `d`-simplex are the simplest examples of non-trivial intersecting
+families, that is, intersecting families with covering number 2"* — the
+classical EKR-stability literature, with no degree cap of any kind.
+Neither is the question.
+
+**Outside the corpus.** Two web searches: one on the spread-plus-Hilton–Milner
+framing, one on the level-wise cap `deg T ≤ r^(m−|T|)` directly. What they
+surface is three neighbouring lines and not this one — degree versions of
+Hilton–Milner (Frankl 1987; Huang–Zhao; [FHHZ17]); spreadness used as a
+*tool* (Kupavskii–Zakharov spread approximation, already in this file); and
+Hilton–Milner analogues transplanted to other host structures, vector
+spaces and the partition lattice and multisets and direct products. One
+result, [FHHZ17], was downloaded, rendered and read at p. 1; it is the
+evidence in B19 and B19a.
+
+**What was not done, and it is the larger part.** No MathSciNet or zbMATH
+search, and no journal-side search at all. No search under the synonyms
+this file's own rule 2 box says a negative needs — *nucleus*, *base*,
+*crosscut*, *generating set*, *minimal cover* for the covering structure,
+and *`s`-star* / *Δ-system* for the sunflower. Nothing outside English.
+Rule 4 forbids concluding anything from a search snippet, so the two web
+searches establish only that a first-page look did not surface the
+question, which is close to the weakest negative there is.
+
+**So B19's verdict is the honest one:** the object is a thinning of a 1967
+family, the thinning was not found, and the search that failed to find it
+was a corpus grep, two web queries and one primary page. A specialist in
+the degree-condition line named on [FHHZ17] p. 1 may well recognise it on
+sight.
 
 ---
 
@@ -1110,7 +1167,7 @@ correct citations, from Crossref, are in `docs/roadmap.md` §19.7.
 
 The papers vanish with the container, and this session lost time
 re-fetching what the previous one had already found. `docs/papers/` is
-the fix: 35 records, each with the SHA-256 of the exact bytes that were
+the fix: 36 records, each with the SHA-256 of the exact bytes that were
 rendered and read, the page count verified with `pdfinfo`, the source
 URL, and the retrieval date. `docs/papers/fetch.sh` rebuilds the corpus
 and **fails on a hash mismatch**, so a paper revised upstream cannot be
