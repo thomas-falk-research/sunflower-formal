@@ -1864,3 +1864,52 @@ Rao(2)-spread, *neither a star*, with 2 + 4 = 6. All three branches of \
 the bound -- triangle against triangle, squeeze on either side -- come \
 out at exactly 6, which is why the r = 2 row of cross_pair_two_exact is 6 \
 and not 5."""
+
+[[mutation]]
+id = "crossrefined-three-exact-off-by-one"
+file = "coq/CrossRefined.v"
+question = """cross_pair_three_exact concludes 3r^2 + 1. Is the +1 the \
+extremal member, or slack?"""
+find = """    A <> [] -> B <> [] ->
+    length A + length B <= 3 * (r * r) + 1."""
+replace = """    A <> [] -> B <> [] ->
+    length A + length B <= 3 * (r * r)."""
+expect = "killed"
+because = """The extremal member. One triple of B against the three full \
+stars at its points is |A| = 3r^2 and |B| = 1, and \
+rust/tests/cross_refined.rs builds it and checks it Rao(r)-spread for \
+r = 2,3,4. The maximiser finds exactly 3r^2+1 at every r from 3 to 6."""
+
+[[mutation]]
+id = "crossrefined-three-threshold"
+file = "coq/CrossRefined.v"
+question = """cross_pair_three_exact carries r >= 6. Would the formula \
+hold at every r >= 2, as the u = 2 one does?"""
+find = """Theorem cross_pair_three_exact :
+  forall r (A B : Family),
+    6 <= r ->"""
+replace = """Theorem cross_pair_three_exact :
+  forall r (A B : Family),
+    2 <= r ->"""
+expect = "killed"
+because = """No, and the same file carries the counterexample: at r = 2, \
+cross_pair_three_needs_six exhibits a 17-member cross-intersecting \
+Rao(2)-spread pair -- neither side a star -- against 3r^2+1 = 13. This is \
+where uniformity three differs from uniformity two: there the second \
+branch of the maximum is the constant 6, here the neither-pointed \
+maximum grows (17, 24, 33, 36 measured at r = 2..5), so no constant \
+second branch exists to state."""
+
+[[mutation]]
+id = "crossrefined-pointed-branch-three"
+file = "coq/CrossRefined.v"
+question = """The pointed branch at uniformity three gives 2r^2 + 4r. Is \
+the 4r real, or an artefact of the five-key cover?"""
+find = "    length A + length B <= 2 * (r * r) + 4 * r."
+replace = "    length A + length B <= 2 * (r * r) + 3 * r."
+expect = "killed"
+because = """Real. When two members meet only at the point, the partner \
+is covered by the point itself and the four crossing pairs of the two \
+links -- r^2 + 4r -- and the pointed family itself is at most r^2 by the \
+star bound. That is 2r^2 + 4r exactly, with nothing to spare; the 3r \
+version does not close."""

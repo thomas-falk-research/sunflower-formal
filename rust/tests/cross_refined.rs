@@ -486,3 +486,103 @@ fn max_cross_pair_unpointed(n: u32, r: usize) -> usize {
     }
     best
 }
+
+// ---------------------------------------------------------------------
+// uniformity three
+
+/// `CrossRefined.c3a` / `c3b`: the 17-member configuration the maximiser
+/// finds at `u = 3`, `r = 2`, against `3r^2 + 1 = 13`.
+fn c3() -> (Vec<Mask>, Vec<Mask>) {
+    let a = vec![
+        mask(&[1, 2, 7]), mask(&[0, 5, 9]), mask(&[1, 6, 7]), mask(&[0, 6, 8]),
+        mask(&[0, 6, 9]), mask(&[5, 8, 9]), mask(&[5, 6, 8]),
+    ];
+    let b = vec![
+        mask(&[1, 8, 9]), mask(&[0, 5, 7]), mask(&[0, 1, 8]), mask(&[7, 8, 9]),
+        mask(&[0, 1, 5]), mask(&[0, 7, 8]), mask(&[2, 5, 6]), mask(&[6, 7, 9]),
+        mask(&[1, 5, 6]), mask(&[2, 6, 9]),
+    ];
+    (a, b)
+}
+
+/// One member of `B` against `u` full stars: `|A| = u·r^(u-1)`, `|B| = 1`.
+/// At `u = 3` the link of each of the three points is `K_{r,r}` on its own
+/// `2r` fresh points, which is `r`-regular with `r²` edges.
+fn star_extremal_three(r: u32) -> (Vec<Mask>, Vec<Mask>) {
+    let mut a = Vec::new();
+    for i in 0..3u32 {
+        let base = 3 + i * 2 * r;
+        for p in 0..r {
+            for q in 0..r {
+                a.push(mask(&[i, base + p, base + r + q]));
+            }
+        }
+    }
+    (a, vec![mask(&[0, 1, 2])])
+}
+
+#[test]
+fn the_uniformity_three_bound_and_where_it_closes() {
+    use sunflower_formal::spread::rao_witness_cands;
+
+    // the extremal shape, realised: |A| + |B| = 3r^2 + 1
+    for r in 2..=4u32 {
+        let (a, b) = star_extremal_three(r);
+        assert_eq!(a.len(), 3 * (r * r) as usize);
+        assert!(uniform(&a, 3) && uniform(&b, 3));
+        assert!(distinct(&a));
+        assert!(rao_witness_cands(3, &a, r as u64).is_none(), "r={r}");
+        assert!(rao_witness_cands(3, &b, r as u64).is_none(), "r={r}");
+        assert!(cross_intersecting(&a, &b));
+        assert_eq!(a.len() + b.len(), 3 * (r * r) as usize + 1);
+    }
+
+    // and at r = 2 it is beaten, by four, with neither side a star
+    let (a, b) = c3();
+    assert_eq!(a.len() + b.len(), 17);
+    assert!(uniform(&a, 3) && uniform(&b, 3));
+    assert!(distinct(&a) && distinct(&b));
+    assert!(is_rao_spread(3, &a, 2, 10));
+    assert!(is_rao_spread(3, &b, 2, 10));
+    assert!(cross_intersecting(&a, &b));
+    assert!(unpointed(&a, 10) && unpointed(&b, 10));
+    assert!(17 > 3 * (2 * 2) + 1);
+
+    // the three branches, and where each is dominated by 3r^2+1
+    let star = |r: u64| 3 * r * r + 1;
+    let pointed = |r: u64| 2 * r * r + 4 * r;
+    let neither = |r: u64| 18 * r;
+    for r in 4..=40u64 {
+        assert!(pointed(r) <= star(r), "pointed branch at r={r}");
+    }
+    assert!(pointed(3) > star(3)); // 30 > 28
+    for r in 6..=40u64 {
+        assert!(neither(r) <= star(r), "neither-pointed branch at r={r}");
+    }
+    assert!(neither(5) > star(5)); // 90 > 76
+    // so `cross_pair_three_exact` carries r >= 6 and not less
+    for r in 6..=40u64 {
+        assert_eq!(
+            std::cmp::max(star(r), std::cmp::max(pointed(r), neither(r))),
+            star(r),
+            "r={r}"
+        );
+    }
+
+    // what `rust/examples/cross_pair_scan.rs` finds -- a stochastic
+    // maximiser, so these are LOWER bounds on the true maximum. They
+    // agree with 3r^2+1 from r = 3 on, and exceed it at r = 2.
+    for (r, found) in [(2u64, 17u64), (3, 28), (4, 49), (5, 76), (6, 109)] {
+        if r == 2 {
+            assert!(found > star(r));
+        } else {
+            assert_eq!(found, star(r), "r={r}");
+        }
+    }
+    // the neither-pointed maximum grows, unlike the constant 6 at u = 2
+    for (r, found) in [(2u64, 17u64), (3, 24), (4, 33), (5, 36)] {
+        assert!(found <= neither(r), "r={r}");
+        assert!(found >= 6);
+    }
+    assert!(17 < 24 && 24 < 33 && 33 < 36);
+}

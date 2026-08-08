@@ -343,23 +343,19 @@ Qed.
     [star_saturation], [partner_bound_one] and [greedy_bound] at [j = 2],
     already here. *)
 
-Lemma two_sets_subset_eq :
-  forall e1 e2,
-    length e1 = 2 -> NoDup e1 -> length e2 = 2 ->
+Lemma same_length_subset_eq :
+  forall (e1 e2 : list nat) n,
+    length e1 = n -> NoDup e1 -> length e2 = n ->
     Subset e1 e2 -> SetEq e1 e2.
 Proof.
-  intros e1 e2 Hl1 Hnd1 Hl2 Hsub.
-  destruct e1 as [|p1 [|p2 [|? ?]]]; simpl in Hl1; try discriminate.
-  destruct e2 as [|q1 [|q2 [|? ?]]]; simpl in Hl2; try discriminate.
-  assert (Hp : p1 <> p2)
-    by (inversion Hnd1 as [|? ? Hni ?]; subst; intro E; apply Hni;
-        left; symmetry; exact E).
-  assert (H1 : In p1 [q1; q2]) by (apply Hsub; left; reflexivity).
-  assert (H2 : In p2 [q1; q2]) by (apply Hsub; right; left; reflexivity).
-  split; [exact Hsub|].
-  destruct H1 as [E1|[E1|[]]]; destruct H2 as [E2|[E2|[]]]; subst;
-    try (exfalso; apply Hp; reflexivity);
-    intros x [<-|[<-|[]]]; simpl; tauto.
+  intros e1 e2 n Hl1 Hnd1 Hl2 Hsub; split; [exact Hsub|].
+  intros x Hx.
+  destruct (in_dec Nat.eq_dec x e1) as [Hin|Hout]; [exact Hin | exfalso].
+  assert (Hnd' : NoDup (x :: e1)) by (constructor; assumption).
+  assert (Hsub' : incl (x :: e1) e2)
+    by (intros y [<-|Hy]; [exact Hx | apply Hsub; exact Hy]).
+  pose proof (NoDup_incl_length Hnd' Hsub') as Hlen.
+  simpl in Hlen; lia.
 Qed.
 
 Lemma member_outside :
@@ -374,7 +370,7 @@ Proof.
   destruct (in_dec Nat.eq_dec p2 e2) as [H2|H2];
     [| exists p2; split; [right; left; reflexivity | exact H2]].
   exfalso; apply Hne.
-  apply (@two_sets_subset_eq [p1; p2] e2 ltac:(reflexivity) Hnd1 Hl2).
+  apply (@same_length_subset_eq [p1; p2] e2 2 ltac:(reflexivity) Hnd1 Hl2).
   intros x [<-|[<-|[]]]; assumption.
 Qed.
 
@@ -979,6 +975,424 @@ Proof.
   - intros w; apply (@unpointed_dec_search c2a w);
       [vm_compute; reflexivity | discriminate].
   - intros w; apply (@unpointed_dec_search c2b w);
+      [vm_compute; reflexivity | discriminate].
+  - vm_compute; reflexivity.
+  - vm_compute; lia.
+Qed.
+
+(** ** Uniformity three: the same shape, and where it closes
+
+    The stochastic maximiser in [rust/examples/cross_pair_scan.rs] finds
+
+<<
+      r                 2    3    4    5    6
+      best found       17   28   49   76  109
+      3r^2 + 1         13   28   49   76  109
+>>
+
+    so the shape is the one [u = 2] has — the star branch
+    [u·r^(u-1) + 1], one member of [B] against [u] full stars, plus one
+    small-[r] exception where neither side is a star (6 at [u = 2],
+    17 at [u = 3]).
+
+    The [u = 2] proof does not transfer: there the neither-pointed
+    maximum is the *constant* 6, which is why [unpointed_pair_bound]
+    mentions no [r]. At [u = 3] it grows (17, 24, 33, 36 measured), so
+    there is no constant to prove. What closes the large rows instead is
+    that [3r^2+1] outgrows the greedy tree's [9r] per side.
+
+    Three branches:
+
+<<
+      |B| = 1 or |A| = 1     sum <= 3r^2 + 1     partner_bound_one
+      A or B pointed         sum <= 2r^2 + 4r    below; <= 3r^2+1 iff r>=4
+      neither pointed        sum <= 18r          greedy at j=2; iff r>=6
+>>
+
+    hence [cross_pair_three_exact] for [r >= 6], which is exactly the
+    measured value there. The rows [r = 2,3,4,5] are open, and
+    [cross_pair_three_needs_six] records that [r = 2] is genuinely
+    different rather than merely unproved. *)
+
+(** The link of a pointed family is a graph, so the [u = 2] lemmas apply
+    to it. *)
+
+Lemma pointed_link :
+  forall r (A : Family) w,
+    Uniform 3 A -> RaoSpread 3 A r -> Pointed A w ->
+    Uniform 2 (map (rem w) A) /\ RaoSpread 2 (map (rem w) A) r.
+Proof.
+  intros r A w HU HR Hpt.
+  destruct (@tail_uniform_rao 3 r A A w ltac:(lia) HU HR
+              (fun T => Nat.le_refl (deg T A))
+              (fun C HC => conj HC (Hpt C HC))) as [H1 H2].
+  replace (3 - 1) with 2 in H1, H2 by reflexivity; split; assumption.
+Qed.
+
+(** Naming the points of a triple. *)
+
+Lemma triple_third :
+  forall (e : list nat) w p,
+    length e = 3 -> NoDup e -> In w e -> In p e -> p <> w ->
+    exists q, In q e /\ q <> w /\ q <> p.
+Proof.
+  intros e w p Hl Hnd Hw Hp Hpw.
+  destruct e as [|x [|y [|z [|? ?]]]]; simpl in Hl; try discriminate.
+  inversion Hnd as [|? ? Hnx Hd2]; subst.
+  inversion Hd2 as [|? ? Hny ?]; subst.
+  simpl in Hnx, Hny.
+  assert (Exy : x <> y) by (intro E; apply Hnx; left; symmetry; exact E).
+  assert (Exz : x <> z) by (intro E; apply Hnx; right; left; symmetry; exact E).
+  assert (Eyz : y <> z) by (intro E; apply Hny; left; symmetry; exact E).
+  destruct Hw as [Ew|[Ew|[Ew|[]]]]; destruct Hp as [Ep|[Ep|[Ep|[]]]];
+    try (exfalso; apply Hpw; congruence).
+  - exists z; repeat split; [simpl; tauto | congruence | congruence].
+  - exists y; repeat split; [simpl; tauto | congruence | congruence].
+  - exists z; repeat split; [simpl; tauto | congruence | congruence].
+  - exists x; repeat split; [simpl; tauto | congruence | congruence].
+  - exists y; repeat split; [simpl; tauto | congruence | congruence].
+  - exists x; repeat split; [simpl; tauto | congruence | congruence].
+Qed.
+
+Lemma triple_others :
+  forall (e : list nat) w,
+    length e = 3 -> NoDup e -> In w e ->
+    exists s t, In s e /\ In t e /\ s <> w /\ t <> w /\
+      (forall z, In z e -> z = w \/ z = s \/ z = t).
+Proof.
+  intros e w Hl Hnd Hw.
+  destruct e as [|x [|y [|z [|? ?]]]]; simpl in Hl; try discriminate.
+  inversion Hnd as [|? ? Hnx Hd2]; subst.
+  inversion Hd2 as [|? ? Hny ?]; subst.
+  simpl in Hnx, Hny.
+  assert (Exy : x <> y) by (intro E; apply Hnx; left; symmetry; exact E).
+  assert (Exz : x <> z) by (intro E; apply Hnx; right; left; symmetry; exact E).
+  assert (Eyz : y <> z) by (intro E; apply Hny; left; symmetry; exact E).
+  destruct Hw as [Ew|[Ew|[Ew|[]]]].
+  - exists y, z; repeat split; try (simpl; tauto); try congruence.
+    intros q [<-|[<-|[<-|[]]]]; tauto.
+  - exists x, z; repeat split; try (simpl; tauto); try congruence.
+    intros q [<-|[<-|[<-|[]]]]; tauto.
+  - exists x, y; repeat split; try (simpl; tauto); try congruence.
+    intros q [<-|[<-|[<-|[]]]]; tauto.
+Qed.
+
+Lemma triple_named :
+  forall (e : list nat) w p q,
+    length e = 3 -> NoDup e ->
+    In w e -> In p e -> In q e -> p <> w -> q <> w -> q <> p ->
+    forall z, In z e -> z = w \/ z = p \/ z = q.
+Proof.
+  intros e w p q Hl Hnd Hw Hp Hq Hpw Hqw Hqp z Hz.
+  assert (Hnd3 : NoDup [w;p;q]).
+  { constructor.
+    - simpl; intros [E|[E|[]]]; congruence.
+    - constructor; [simpl; intros [E|[]]; congruence |].
+      constructor; [intros [] | constructor]. }
+  assert (Hsub : Subset [w;p;q] e)
+    by (intros y [<-|[<-|[<-|[]]]]; assumption).
+  destruct (@same_length_subset_eq [w;p;q] e 3 eq_refl Hnd3 Hl Hsub) as [_ Hback].
+  destruct (Hback z Hz) as [E|[E|[E|[]]]];
+    [left | right; left | right; right]; symmetry; exact E.
+Qed.
+
+(** Four keys, one of them a singleton, cap the partner of any pointed
+    family with two members: [2r^2 + 2r]. The singleton is the same trick
+    that removed the case split at [u = 2]. *)
+
+Lemma pointed_keys_general :
+  forall r (A B : Family) w e1 e2,
+    Uniform 3 A -> RaoSpread 3 B r -> Pointed A w ->
+    In e1 A -> In e2 A -> ~ SetEq e1 e2 ->
+    (forall e f, In e A -> In f B -> exists x, In x e /\ In x f) ->
+    length B <= 2 * (r * r) + 2 * r.
+Proof.
+  intros r A B w e1 e2 HUA HRB Hpt H1 H2 Hne Hcross.
+  destruct (@uniform_mem 3 A e1 HUA H1) as [Hl1 Hnd1].
+  destruct (@uniform_mem 3 A e2 HUA H2) as [Hl2 Hnd2].
+  assert (Hw1 : In w e1) by (apply Hpt; exact H1).
+  assert (Hw2 : In w e2) by (apply Hpt; exact H2).
+  assert (Hp0 : exists p0, In p0 e1 /\ ~ In p0 e2).
+  { destruct (Forall_Exists_dec (fun x => In x e2)
+                (fun x => in_dec Nat.eq_dec x e2) e1) as [Hall|Hex].
+    - exfalso; apply Hne.
+      apply (@same_length_subset_eq e1 e2 3 Hl1 Hnd1 Hl2).
+      rewrite Forall_forall in Hall; exact Hall.
+    - apply Exists_exists in Hex as [p0 [Hp0 Hnp0]]; exists p0; split; assumption. }
+  destruct Hp0 as [p0 [Hp0e1 Hp0e2]].
+  assert (Hp0w : p0 <> w) by (intro E; subst p0; contradiction).
+  destruct (@triple_third e1 w p0 Hl1 Hnd1 Hw1 Hp0e1 Hp0w)
+    as [p1 [Hp1e1 [Hp1w Hp1p0]]].
+  destruct (@triple_others e2 w Hl2 Hnd2 Hw2)
+    as [s [t [Hse2 [Hte2 [Hsw [Htw Hall2]]]]]].
+  assert (Hp0s : p0 <> s) by (intro E; subst; contradiction).
+  assert (Hp0t : p0 <> t) by (intro E; subst; contradiction).
+  (* every point of e1 is w, p0 or p1 *)
+  assert (He1 : forall z, In z e1 -> z = w \/ z = p0 \/ z = p1)
+    by (apply (@triple_named e1 w p0 p1 Hl1 Hnd1 Hw1 Hp0e1 Hp1e1
+                 Hp0w Hp1w Hp1p0)).
+  pose proof (@cover_by_sets_sum [[w];[p0;s];[p0;t];[p1]] B) as Hb.
+  simpl in Hb.
+  assert (Hcov : forall C, In C B ->
+                   exists T, In T [[w];[p0;s];[p0;t];[p1]] /\ Subset T C).
+  { intros C HC.
+    destruct (in_dec Nat.eq_dec w C) as [Hw|Hw].
+    - exists [w]; split; [left; reflexivity | intros z [<-|[]]; exact Hw].
+    - destruct (in_dec Nat.eq_dec p1 C) as [Hq|Hq].
+      + exists [p1]; split;
+          [right; right; right; left; reflexivity | intros z [<-|[]]; exact Hq].
+      + assert (Hp0C : In p0 C).
+        { destruct (Hcross e1 C H1 HC) as [z [Hze1 HzC]].
+          destruct (He1 z Hze1) as [E|[E|E]]; subst z;
+            [contradiction | exact HzC | contradiction]. }
+        destruct (Hcross e2 C H2 HC) as [z [Hze2 HzC]].
+        destruct (Hall2 z Hze2) as [E|[E|E]]; subst z; [contradiction| |].
+        * exists [p0;s]; split;
+            [right; left; reflexivity | intros y [<-|[<-|[]]]; assumption].
+        * exists [p0;t]; split;
+            [right; right; left; reflexivity | intros y [<-|[<-|[]]]; assumption]. }
+  specialize (Hb Hcov).
+  assert (Kw : deg [w] B <= r * r)
+    by (pose proof (@rao_point 3 r B w HRB) as H; simpl in H; lia).
+  assert (Kq : deg [p1] B <= r * r)
+    by (pose proof (@rao_point 3 r B p1 HRB) as H; simpl in H; lia).
+  assert (K1 : deg [p0;s] B <= r)
+    by (specialize (HRB [p0;s] (pair_nodup Hp0s) ltac:(discriminate));
+        simpl in HRB; lia).
+  assert (K2 : deg [p0;t] B <= r)
+    by (specialize (HRB [p0;t] (pair_nodup Hp0t) ltac:(discriminate));
+        simpl in HRB; lia).
+  lia.
+Qed.
+
+(** Five keys when two members meet only at the point: [r^2 + 4r]. *)
+
+Lemma pointed_keys_disjoint :
+  forall r (A B : Family) w e1 e2,
+    Uniform 3 A -> RaoSpread 3 B r -> Pointed A w ->
+    In e1 A -> In e2 A -> Disjoint (rem w e1) (rem w e2) ->
+    (forall e f, In e A -> In f B -> exists x, In x e /\ In x f) ->
+    length B <= r * r + 4 * r.
+Proof.
+  intros r A B w e1 e2 HUA HRB Hpt H1 H2 Hdis Hcross.
+  destruct (@uniform_mem 3 A e1 HUA H1) as [Hl1 Hnd1].
+  destruct (@uniform_mem 3 A e2 HUA H2) as [Hl2 Hnd2].
+  assert (Hw1 : In w e1) by (apply Hpt; exact H1).
+  assert (Hw2 : In w e2) by (apply Hpt; exact H2).
+  destruct (@triple_others e1 w Hl1 Hnd1 Hw1) as [a [b [Hae [Hbe [Haw [Hbw Hall1]]]]]].
+  destruct (@triple_others e2 w Hl2 Hnd2 Hw2) as [c [d [Hce [Hde [Hcw [Hdw Hall2]]]]]].
+  (* the four points are distinct, because the links are disjoint *)
+  assert (Hsep : forall p q, In p e1 -> p <> w -> In q e2 -> q <> w -> p <> q).
+  { intros p q Hp Hpw Hq Hqw E; subst q.
+    apply (Hdis p); apply in_rem; split; assumption. }
+  assert (Hac : a <> c) by (apply Hsep; assumption).
+  assert (Had : a <> d) by (apply Hsep; assumption).
+  assert (Hbc : b <> c) by (apply Hsep; assumption).
+  assert (Hbd : b <> d) by (apply Hsep; assumption).
+  pose proof (@cover_by_sets_sum [[w];[a;c];[a;d];[b;c];[b;d]] B) as Hb.
+  simpl in Hb.
+  assert (Hcov : forall C, In C B ->
+                   exists T, In T [[w];[a;c];[a;d];[b;c];[b;d]] /\ Subset T C).
+  { intros C HC.
+    destruct (in_dec Nat.eq_dec w C) as [Hw|Hw].
+    - exists [w]; split; [left; reflexivity | intros z [<-|[]]; exact Hw].
+    - destruct (Hcross e1 C H1 HC) as [z [Hz1 HzC]].
+      destruct (Hcross e2 C H2 HC) as [y [Hy2 HyC]].
+      destruct (Hall1 z Hz1) as [E|[E|E]]; subst z; [contradiction| |];
+        destruct (Hall2 y Hy2) as [F|[F|F]]; subst y; try contradiction.
+      + exists [a;c]; split;
+          [right; left; reflexivity | intros q [<-|[<-|[]]]; assumption].
+      + exists [a;d]; split;
+          [right; right; left; reflexivity | intros q [<-|[<-|[]]]; assumption].
+      + exists [b;c]; split;
+          [right; right; right; left; reflexivity
+           | intros q [<-|[<-|[]]]; assumption].
+      + exists [b;d]; split;
+          [right; right; right; right; left; reflexivity
+           | intros q [<-|[<-|[]]]; assumption]. }
+  specialize (Hb Hcov).
+  assert (Kw : deg [w] B <= r * r)
+    by (pose proof (@rao_point 3 r B w HRB) as H; simpl in H; lia).
+  assert (K1 : deg [a;c] B <= r)
+    by (specialize (HRB [a;c] (pair_nodup Hac) ltac:(discriminate)); simpl in HRB; lia).
+  assert (K2 : deg [a;d] B <= r)
+    by (specialize (HRB [a;d] (pair_nodup Had) ltac:(discriminate)); simpl in HRB; lia).
+  assert (K3 : deg [b;c] B <= r)
+    by (specialize (HRB [b;c] (pair_nodup Hbc) ltac:(discriminate)); simpl in HRB; lia).
+  assert (K4 : deg [b;d] B <= r)
+    by (specialize (HRB [b;d] (pair_nodup Hbd) ltac:(discriminate)); simpl in HRB; lia).
+  lia.
+Qed.
+
+(** > **The pointed branch at uniformity three.** *)
+
+Lemma pointed_branch_three :
+  forall r (A B : Family) w,
+    3 <= r ->
+    Uniform 3 A -> Uniform 3 B -> RaoSpread 3 A r -> RaoSpread 3 B r ->
+    Distinct A -> Pointed A w -> 2 <= length A ->
+    (forall e f, In e A -> In f B -> exists x, In x e /\ In x f) ->
+    length A + length B <= 2 * (r * r) + 4 * r.
+Proof.
+  intros r A B w Hr HUA HUB HRA HRB HDA Hpt Hlen Hcross.
+  (* two members, distinct as sets *)
+  assert (Htwo : exists e1 e2, In e1 A /\ In e2 A /\ ~ SetEq e1 e2).
+  { destruct A as [|f1 [|f2 A0]]; simpl in Hlen; try lia.
+    exists f1, f2; repeat split;
+      [left; reflexivity | right; left; reflexivity |].
+    inversion HDA as [|? ? Hdist ?]; subst; apply Hdist; left; reflexivity. }
+  destruct Htwo as [g1 [g2 [Hg1 [Hg2 Hgne]]]].
+  (* the star bound on A *)
+  assert (HAstar : length A <= r * r).
+  { assert (H : length A <= 1 * r ^ (3 - 1)).
+    { apply (@cover_size_bound A 3 r 1 [w] HRA).
+      - intros C HC; exists w; split; [left; reflexivity | apply Hpt; exact HC].
+      - simpl; lia. }
+    simpl in H; lia. }
+  (* the link is a graph *)
+  destruct (@pointed_link r A w HUA HRA Hpt) as [HUL HRL].
+  set (L := map (rem w) A) in *.
+  assert (HlenL : length L = length A) by (unfold L; apply map_length).
+  destruct (existsb (fun e => existsb (fun f => disjointb e f) L) L) eqn:ED.
+  - (* two members meet only at w *)
+    apply existsb_exists in ED as [k1 [Hk1 E1]].
+    apply existsb_exists in E1 as [k2 [Hk2 E2]].
+    apply disjointb_correct in E2.
+    unfold L in Hk1, Hk2.
+    apply in_map_iff in Hk1 as [e1 [Ek1 He1]].
+    apply in_map_iff in Hk2 as [e2 [Ek2 He2]].
+    subst k1 k2.
+    pose proof (@pointed_keys_disjoint r A B w e1 e2 HUA HRB Hpt He1 He2 E2 Hcross).
+    lia.
+  - (* the link pairwise intersects: it is a star or a triangle *)
+    assert (HintL : forall e f, In e L -> In f L -> exists x, In x e /\ In x f).
+    { intros e f He Hf.
+      pose proof (existsb_false_forall _ _ _ ED e He) as F1.
+      pose proof (existsb_false_forall _ _ _ F1 f Hf) as F2.
+      apply disjointb_false_iff in F2; exact F2. }
+    assert (HAsmall : length A <= Nat.max r 3).
+    { rewrite <- HlenL.
+      destruct (covers_at_most L 1) eqn:EL.
+      - assert (HLne : L <> [])
+          by (unfold L; destruct A; [simpl in Hlen; lia | simpl; discriminate]).
+        destruct (@pointed_of_cover L HLne EL) as [c Hc].
+        assert (H : length L <= 1 * r ^ (2 - 1)).
+        { apply (@cover_size_bound L 2 r 1 [c] HRL).
+          - intros C HC; exists c; split; [left; reflexivity | apply Hc; exact HC].
+          - simpl; lia. }
+        simpl in H; lia.
+      - assert (HnsL : forall v, exists e, In e L /\ ~ In v e)
+          by (intros v; apply (@not_pointed_of_search L v EL)).
+        destruct (@triangle_bound r L L HUL HUL HRL HRL HintL HnsL HintL); lia. }
+    pose proof (@pointed_keys_general r A B w g1 g2 HUA HRB Hpt Hg1 Hg2 Hgne Hcross).
+    lia.
+Qed.
+
+(** > **The bound at uniformity three, exact for [r >= 6].** One member
+    > of [B] against three full stars gives [3r^2 + 1], and that is the
+    > maximum the search finds at every [r >= 3]. *)
+
+Theorem cross_pair_three_exact :
+  forall r (A B : Family),
+    6 <= r ->
+    Uniform 3 A -> Uniform 3 B ->
+    RaoSpread 3 A r -> RaoSpread 3 B r ->
+    (forall e f, In e A -> In f B -> exists w, In w e /\ In w f) ->
+    A <> [] -> B <> [] ->
+    length A + length B <= 3 * (r * r) + 1.
+Proof.
+  intros r A B Hr HUA HUB HRA HRB Hcross HAne HBne.
+  assert (Hflip : forall e f, In e B -> In f A -> exists w, In w e /\ In w f).
+  { intros e f He Hf; destruct (Hcross f e Hf He) as [w [Ha Hb]];
+      exists w; split; assumption. }
+  assert (HDA : Distinct A) by (apply (@rao_uniform_distinct 3 r A ltac:(lia) HUA HRA)).
+  assert (HDB : Distinct B) by (apply (@rao_uniform_distinct 3 r B ltac:(lia) HUB HRB)).
+  assert (HpA : length A <= 3 * (r * r)).
+  { pose proof (@partner_bound_one 3 r B A ltac:(lia) HBne HUB HRA Hflip) as H.
+    replace (3 - 2) with 1 in H by reflexivity.
+    rewrite Nat.pow_1_r in H; lia. }
+  assert (HpB : length B <= 3 * (r * r)).
+  { pose proof (@partner_bound_one 3 r A B ltac:(lia) HAne HUA HRB Hcross) as H.
+    replace (3 - 2) with 1 in H by reflexivity.
+    rewrite Nat.pow_1_r in H; lia. }
+  destruct (le_lt_dec (length A) 1) as [HA1|HA2]; [lia|].
+  destruct (le_lt_dec (length B) 1) as [HB1|HB2]; [lia|].
+  destruct (covers_at_most A 1) eqn:EA.
+  - destruct (@pointed_of_cover A HAne EA) as [wA HA].
+    pose proof (@pointed_branch_three r A B wA ltac:(lia) HUA HUB HRA HRB
+                  HDA HA ltac:(lia) Hcross); nia.
+  - destruct (covers_at_most B 1) eqn:EB.
+    + destruct (@pointed_of_cover B HBne EB) as [wB HB].
+      pose proof (@pointed_branch_three r B A wB ltac:(lia) HUB HUA HRB HRA
+                    HDB HB ltac:(lia) Hflip); nia.
+    + (* neither is a star: the greedy tree at depth two, both ways *)
+      assert (Hgr : forall (F H0 : Family),
+                Uniform 3 F -> RaoSpread 3 H0 r ->
+                (forall e f, In e F -> In f H0 -> exists w, In w e /\ In w f) ->
+                covers_at_most F 1 = false -> length H0 <= 9 * r).
+      { intros F H0 HUF HRH Hc E.
+        assert (H : length H0 <= 3 ^ 2 * r ^ (3 - 2)).
+        { apply (@greedy_bound 2 F H0 3 r ltac:(lia) HUF HRH Hc).
+          intros S HS; apply (@no_small_cover F 1 E); lia. }
+        replace (3 - 2) with 1 in H by reflexivity.
+        rewrite Nat.pow_1_r in H; simpl in H; lia. }
+      pose proof (Hgr A B HUA HRB Hcross EA).
+      pose proof (Hgr B A HUB HRA Hflip EB).
+      nia.
+Qed.
+
+(** ** The [r >= 6] of the uniformity-three bound is not caution
+
+    At [r = 2] the formula is false, and by four: the maximiser finds a
+    17-member configuration against [3r^2 + 1 = 13], with *neither* side a
+    star. This is the [u = 3] counterpart of
+    [cross_pair_two_six_is_attained], and the reason the second branch of
+    the [u = 2] maximum has no [u = 3] analogue with a constant in it: the
+    neither-pointed maximum here is 17, 24, 33, 36 at [r = 2,3,4,5],
+    growing, where at [u = 2] it is 6 for every [r]. *)
+
+Definition c3a : Family :=
+  [[1;2;7];[0;5;9];[1;6;7];[0;6;8];[0;6;9];[5;8;9];[5;6;8]].
+
+Definition c3b : Family :=
+  [[1;8;9];[0;5;7];[0;1;8];[7;8;9];[0;1;5];[0;7;8];[2;5;6];[6;7;9];
+   [1;5;6];[2;6;9]].
+
+Theorem cross_pair_three_needs_six :
+  Uniform 3 c3a /\ Uniform 3 c3b /\
+  RaoSpread 3 c3a 2 /\ RaoSpread 3 c3b 2 /\
+  (forall e f, In e c3a -> In f c3b -> exists w, In w e /\ In w f) /\
+  c3a <> [] /\ c3b <> [] /\
+  (forall w, exists e, In e c3a /\ ~ In w e) /\
+  (forall w, exists f, In f c3b /\ ~ In w f) /\
+  length c3a + length c3b = 17 /\
+  3 * (2 * 2) + 1 < length c3a + length c3b.
+Proof.
+  assert (HUa : Uniform 3 c3a)
+    by (apply uniformb_correct; vm_compute; reflexivity).
+  assert (HUb : Uniform 3 c3b)
+    by (apply uniformb_correct; vm_compute; reflexivity).
+  assert (HRa : RaoSpread 3 c3a 2).
+  { apply (@rao_spreadb_correct 3 c3a 2 [0;1;2;3;4;5;6;7;8;9]).
+    - apply nodupb_correct; vm_compute; reflexivity.
+    - apply Forall_forall; intros X HX.
+      destruct (@uniform_mem 3 c3a X HUa HX) as [_ Hnd]; exact Hnd.
+    - apply groundedb_correct; vm_compute; reflexivity.
+    - vm_compute; reflexivity. }
+  assert (HRb : RaoSpread 3 c3b 2).
+  { apply (@rao_spreadb_correct 3 c3b 2 [0;1;2;3;4;5;6;7;8;9]).
+    - apply nodupb_correct; vm_compute; reflexivity.
+    - apply Forall_forall; intros X HX.
+      destruct (@uniform_mem 3 c3b X HUb HX) as [_ Hnd]; exact Hnd.
+    - apply groundedb_correct; vm_compute; reflexivity.
+    - vm_compute; reflexivity. }
+  repeat apply conj; try assumption.
+  - apply cross_b_correct; vm_compute; reflexivity.
+  - discriminate.
+  - discriminate.
+  - intros w; apply (@unpointed_dec_search c3a w);
+      [vm_compute; reflexivity | discriminate].
+  - intros w; apply (@unpointed_dec_search c3b w);
       [vm_compute; reflexivity | discriminate].
   - vm_compute; reflexivity.
   - vm_compute; lia.

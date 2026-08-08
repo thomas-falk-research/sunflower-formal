@@ -678,7 +678,7 @@ thm CrossRefined.partner_bound_one
 thm CrossRefined.cross_pair_refined
 thm CrossRefined.cross_pair_refined_strict
 thm CrossRefined.cross_pair_refined_at_three_five
-thm CrossRefined.two_sets_subset_eq
+thm CrossRefined.same_length_subset_eq
 thm CrossRefined.member_outside
 thm CrossRefined.two_elem_only
 thm CrossRefined.pair_key_deg
@@ -692,6 +692,15 @@ thm CrossRefined.unpointed_pair_bound
 thm CrossRefined.cross_pair_two_exact
 thm CrossRefined.cross_b_correct
 thm CrossRefined.cross_pair_two_six_is_attained
+thm CrossRefined.triple_third
+thm CrossRefined.triple_others
+thm CrossRefined.triple_named
+thm CrossRefined.pointed_link
+thm CrossRefined.pointed_keys_general
+thm CrossRefined.pointed_keys_disjoint
+thm CrossRefined.pointed_branch_three
+thm CrossRefined.cross_pair_three_exact
+thm CrossRefined.cross_pair_three_needs_six
 thm CrossRefined.unpointed_dec_search
 thm CrossRefined.hm16_rao
 thm CrossRefined.hm16_int
@@ -710,5 +719,7 @@ def CrossRefined.Pointed
 def CrossRefined.NonStar
 def CrossRefined.c2a
 def CrossRefined.c2b
+def CrossRefined.c3a
+def CrossRefined.c3b
 def CrossRefined.hm16
 def CrossRefined.g65

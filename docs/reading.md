@@ -1442,3 +1442,17 @@ turned out to be a theorem with no `r` in it at all
 "measured, not proved" note was the thing that named the next theorem —
 which is the only reason to write such notes down precisely rather than
 as hedges.
+
+Asked for the same at uniformity three, measuring first paid again, and
+this time by *stopping* a wrong plan. Two shapes worked out by hand gave
+13 and 15 at `r = 2`; the maximiser found 17 within a minute. Had those
+hand shapes been written up as "the extremal configurations" — the tone
+§26.4 used — the section would have been wrong before it began.
+
+The measurement also decided the architecture. At `u = 2` the second
+branch of the maximum is the constant 6, so `unpointed_pair_bound` needs
+no `r`; at `u = 3` the neither-pointed maximum is 17, 24, 33, 36 and
+*grows*, so there is no constant to prove and no analogue of that lemma
+to write. Knowing that before starting is what turned a search for a
+non-existent theorem into a correct statement of what does close
+(`r ≥ 6`) and what does not (`r = 2` refuted, `r = 3,4,5` open).

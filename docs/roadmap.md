@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 114 anecdotes into a coverage metric over the
+  mutation testing from 117 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -6807,6 +6807,13 @@ scan reached the ground where its own witness lives.
     every ground from r+2 to 7, and the
     neither-pointed maximum for r = 2..6 on
     grounds 5,6                                 exhaustive  ~3 s     yes
+  cross_pair_scan u=3, r=2..6, grounds 9..17,
+    up to 1500 restarts                         stochastic  ~2 min   n/a --
+                                                                     LOWER
+                                                                     BOUNDS,
+                                                                     not an
+                                                                     exhaustive
+                                                                     search
   tau_piece_scan m=3 r=5 tau>=2, ground 9,
     re-run for I2(3,5) on the spare core        3e10 nodes  100 min  NO --
                                                                      STOPPED by
@@ -6824,15 +6831,15 @@ section does not use.
 **The gates.**
 
 ```
-  make -j4 verify        green  (501 audited theorems, all "Closed under
+  make -j4 verify        green  (510 audited theorems, all "Closed under
                                 the global context")
   make coqchk            green  (41 modules; one axiom:
                                 Sunflower.ALWZ.Rao20_lemma2)
-  cargo test --release   green  (28 suites, 264 tests, 0 failures)
-  python3 tools/mutate.py green (114 mutations: 111 killed, 2 survived as
+  cargo test --release   green  (28 suites, 265 tests, 0 failures)
+  python3 tools/mutate.py green (117 mutations: 114 killed, 2 survived as
                                 declared, 1 control passing, 0 unexpected --
-                                all fourteen added here killed)
-  tools/statements.py    green  (591 statements)
+                                all seventeen added here killed)
+  tools/statements.py    green  (602 statements)
   tools/docnumbers.py    green  (12 quoted numbers match)
 ```
 
@@ -6974,7 +6981,87 @@ that 65 is exactly the best the `g65` shape can do. It does **not** bound
 `TauThreePieceAtMost 4 5 K`, because a maximum `G` need not have four
 coinciding link families, or any members in the one-point layer at all.
 
-### 27.7 The one-line verdict
+### 27.7 Uniformity three: the same shape, and where it closes
+
+`rust/examples/cross_pair_scan.rs` is a stochastic maximiser for
+`|A| + |B|` over cross-intersecting Rao(r)-spread families at a given
+uniformity. Every number it reports is a **lower** bound — it is not
+exhaustive, and the section says so wherever the numbers are used.
+
+```
+  r                    2    3    4    5    6
+  best found          17   28   49   76  109
+  3r² + 1             13   28   49   76  109
+  neither pointed     17   24   33   36    -
+```
+
+So `u = 3` has the *shape* `u = 2` has: the star branch
+`u·r^(u-1) + 1` — one member of `B` against `u` full stars — plus a
+small-`r` exception in which neither side is a star (6 at `u = 2`,
+17 at `u = 3`). The extremal object is realised in
+`rust/tests/cross_refined.rs`: for each of the three points of the single
+member of `B`, a `K_{r,r}` link on its own `2r` fresh points, which is
+`r`-regular with `r²` edges.
+
+**The `u = 2` proof does not transfer, and the table says why.** There the
+neither-pointed maximum is the constant 6 for every `r`, which is why
+`unpointed_pair_bound` mentions no `r` at all. At `u = 3` it *grows* —
+17, 24, 33, 36 — so there is no constant to prove and no analogue of that
+lemma. What closes the large rows instead is that `3r²+1` outgrows the
+greedy tree's `9r` per side.
+
+**Three branches.**
+
+```
+  |B| = 1 or |A| = 1     sum <= 3r² + 1     partner_bound_one -- extremal
+  A or B pointed         sum <= 2r² + 4r    new; <= 3r²+1 iff r >= 4
+  neither pointed        sum <= 18r         greedy at j = 2; iff r >= 6
+```
+
+> **`cross_pair_three_exact`:** for `r ≥ 6`, two nonempty
+> cross-intersecting 3-uniform Rao(r)-spread families have at most
+> `3r² + 1` members between them.
+
+which is exactly the measured value at `r = 6`. **The rows `r = 2,3,4,5`
+are open.**
+
+**The pointed branch.** `A` pointed at `w`, `|A| ≥ 2`. Its *link*
+`L = {C \ {w} : C ∈ A}` is a 2-uniform Rao(r)-spread family
+(`pointed_link`, from `tail_uniform_rao`), so the `u = 2` lemmas apply to
+it — which is the payoff for having done `u = 2` properly.
+
+* *Two members meet only at `w`* — the link has two disjoint edges. Then
+  five keys cover `B`: `[w]`, and the four crossing pairs `[a;c]`,
+  `[a;d]`, `[b;c]`, `[b;d]` of the two links. Degrees `r²` and `r`, so
+  `|B| ≤ r² + 4r`; with `|A| ≤ r²` from the star bound, `2r² + 4r`.
+* *Otherwise the link pairwise intersects*, hence is a star or a triangle:
+  pointed at `c` gives `|A| = |L| ≤ deg_L(c) ≤ r`, and not pointed gives
+  `|L| ≤ 3` by `triangle_bound`. So `|A| ≤ max(r,3)`. For `B`, four keys
+  suffice with **no case split** — `[w]`, `[p₀;s]`, `[p₀;t]` and the
+  *singleton* `[p₁]`, the same trick that removed the case split at
+  `u = 2` — giving `|B| ≤ 2r² + 2r` and a sum of `2r² + 3r` for `r ≥ 3`.
+
+**`r ≥ 6` is not caution.** At `r = 2` the formula is *false*, by four:
+
+> **`cross_pair_three_needs_six`:** `c3a` (7 members) and `c3b` (10) are
+> 3-uniform, Rao(2)-spread, cross-intersecting, **neither a star**, with
+> `7 + 10 = 17 > 13 = 3r²+1`.
+
+`r = 3,4,5` are neither proved nor refuted: the measured values agree with
+`3r²+1` there, and the branch that fails to close is the neither-pointed
+one (measured 24, 33, 36 against the greedy's 54, 72, 90).
+
+**What closing them would need, stated exactly.** A structure theory for
+3-uniform families with no common point. The `u = 2` proof used "an
+intersecting graph pointed at nothing *is* a triangle"; the 3-uniform
+analogue is Frankl's classification of intersecting families by covering
+number, which this development does not have —
+`TauThree.tau_three_bound` supplies only the covering-number-3 piece, and
+`CrossIntersecting.two_cover_split` only the covering-number-2 split. That
+is the next concrete step, and it is the same object §26 has been circling
+from the other side.
+
+### 27.8 The one-line verdict
 
 **The route §26.4 named to `r*(4,3) ≤ 5` is closed by an explicit
 counterexample — the four-family inequality it asked for is false by more
@@ -6997,6 +7084,12 @@ the exhaustively measured `2r+1` by `cross_pair_two_exact`, the split
 gives **`I₂(3,5) = 16` exactly** — an exact extremal value, witness and
 bound meeting on `hm16`. `cross_pair_bound` gives 25 there, which is the
 star bound and says nothing; `cross_pair_refined` gives 17, one too many.
+
+At uniformity three the same question is **not** settled: the answer has
+the same shape (`3r²+1`, one member against three full stars, plus a
+small-`r` exception of 17), the `u = 2` machinery closes it for `r ≥ 6`,
+and `r = 2` is refuted by an explicit 17-member witness. `r = 3,4,5` are
+open, and §27.7 says exactly which branch fails and what it would take.
 
 
 No new record object, and no search in this section decided anything —
