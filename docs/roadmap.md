@@ -7245,6 +7245,44 @@ constructor, and
 is a general degree bound for it, proved by one induction on the number
 of blocks. Anything of grid shape is now a spread family for free.
 
+### 28.1a What §24.13 already had, and what was actually missing
+
+Before any claim below is read as new, the honest ledger of what session
+N+7 had already put in §24.13:
+
+* the quantity `I(m,r)` posed as an extremal problem in its own right,
+  with the note "I have not found this posed before";
+* the **crossover at `r = m+1`** as a measured phenomenon, in both
+  uniformities where `I` could be computed: `I(2,r) = 3,3,4,5` and
+  `I(3,r) = 10,16`. `I(3,3) = 10 > 9` **is** `¬ StarExtremalAt 3 3`,
+  recorded as a measurement two sessions before this one;
+* both witnesses below the crossover, by name — the triangle at `m = 2`
+  and `C([5],3)` at `m = 3`. §28.7's remark that the search "returns
+  `C([5],3)` first" is a rediscovery, not a discovery;
+* **`PG(2,q)` already on the table**, with its sizes `3, 7, 13, 21, 31`
+  tabulated against the star.
+
+So the phenomenon, the two data points, and even the projective planes
+were all in the repository. What was missing was one thing, and it is
+the thing §24.13 got wrong by omission. Its argument for why the
+crossover is not an accident of small cases runs: the star has size
+`r^(m-1)`, *exponential in `m`*, while "every classical intersecting
+family is polynomial or `~4^m`" — and the table bears that out,
+`C([2m-1],m)` and `PG(2,q)` both losing to the star from `m = 4` on. The
+unstated inference is that below the crossover there is nothing to find
+at larger `m`.
+
+That inference is false, and `HM` is why. `HM(m,r)` is **not** a classical
+design: its size `m·r^(m-2) + 1` is itself exponential in `m`, tracking
+the star's `r^(m-1)` rather than trailing it, and crossing it at exactly
+`r = m`. The right family below the crossover was never going to be found
+in a table of designs, because it is not one — it is the star itself,
+thinned by one level and given one extra member.
+
+**That is the new mathematics in this section, and it is elementary.** The
+rest is formalisation (two prose data points become theorems general in
+`m`), two new exact values, and the barrier arithmetic of §28.4.
+
 ### 28.2 The theorem
 
 Two inequalities, pointing opposite ways.
@@ -7302,7 +7340,8 @@ gives `I₂(3,r) ≤ max(3r+1, 16)`, and `3r+1 ≥ 16` exactly from `r = 5`.
 
 **The `m = 3` row of Conjecture T is complete.** `HM(m,m)` says nothing
 about `r < m`, where it is not spread; there the obstruction is a
-different object. A projective plane of order `q` is `(q+1)`-uniform with
+different object — and one §24.13 had already tabulated without noticing
+it refutes anything. A projective plane of order `q` is `(q+1)`-uniform with
 `q²+q+1` lines, any two meeting in one point, degree `q+1` at a point and
 `1` at a pair — so it is Rao(2)-spread for every `q ≥ 1`, and it beats the
 star bound `2^q` exactly when `q²+q+1 > 2^q`, which is `q = 2, 3, 4` and no
@@ -7481,9 +7520,12 @@ re-runs a dead search. §26.4's inline retraction is the template.
   I2(3,3) in [10,16]  10 on grounds 6, 7, 8, 9 -- exhaustive on each (21650 /
                       536289 / 6482109 / 69481033 nodes, 230s at ground
                       9), so 10 on <= 9 points and >= 10 in general;
-                      the proved upper bound is max(3r+1,16) = 16. Attained
-                      by HM(3,3) and, separately, by the complete 3-graph
-                      on 5 points, which the search returns first
+                      the proved upper bound is max(3r+1,16) = 16.
+                      Attained by HM(3,3) and, separately, by the complete
+                      3-graph on 5 points -- which is C([5],3), already
+                      named as the m = 3 witness in section 24.13. The
+                      search rediscovered it; this row confirms an
+                      existing measurement rather than making a new one
   HM(m,r) spread      iff r >= m, for every (m,r) with 2<=m<=6, 2<=r<=7
                       and ground <= 32 points (29 pairs, exhaustive over
                       all subsets of members)
@@ -7535,6 +7577,15 @@ when `r ≥ m` and beats the star exactly when `r ≤ m`, so at `r = m` it does
 both — `¬ StarExtremalAt m m` at every uniformity, the first general
 statement about `I(m,r)` here, and the exact lower boundary of star
 extremality.**
+
+The mathematics is elementary and §28.1a says exactly how much of it §24.13
+already had: the crossover, both small witnesses, and the projective
+planes. What was missing was a family that beats the star below the
+crossover *at every `m`*, and §24.13's table of classical designs implies
+there is none. There is: it is not a design but the star thinned by a
+level, and its size is exponential in `m` for the same reason the star's
+is. No literature search was run this session, so nothing here carries a
+priority claim — see §28.11.
 
 Three things follow. `two_cover_star_extremal`'s threshold `r ≥ m+1` is
 sharp rather than an artefact. `I₂(3,r) = 3r+1` for every `r ≥ 5`, which
@@ -7593,3 +7644,44 @@ to say so in the one place a later session will look.
 
 **Do not re-run**: everything in the §28.6 barrier ledger, plus the items
 §27.9 lists.
+
+### 28.11 What is claimed as new, and what was not checked
+
+The register in `docs/reading.md` exists so that novelty claims are
+separated from work. This session **ran no literature search at all**, so
+every row below is "new to this development", and none of it is a priority
+claim.
+
+```
+  new mathematics       HM(m,r): a spread-thinned Hilton-Milner family
+                        that beats the star at r = m for every m, where
+                        section 24.13's table of classical designs
+                        (C([2m-1],m), PG(2,q)) suggested nothing does past
+                        m = 3. Elementary -- a construction and a degree
+                        count -- but it is the piece that was absent.
+  new exact values      I2(3,r) = 3r+1 for every r >= 5;  s*(3) = 4,
+                        the first complete row of the star-extremality
+                        question at any uniformity above 2.
+  new to Coq            the transversal machinery (tstep/blocks/grid,
+                        grid_deg_mul) -- the first parametric spread
+                        construction here; and two of section 24.13's
+                        prose data points as theorems general in m.
+  new as a theorem,     the barrier of section 28.4. The comparison
+  not as arithmetic     (n+1)^n against 2^n n! is one line, and section
+                        21.5 had already done the identical comparison for
+                        the tau-indexed route. What is new is that the
+                        r >= n+1 pin is now forced by a witness rather
+                        than estimated.
+  not new               the Hilton-Milner shape (1967); the Fano plane;
+                        C([5],3); PG(2,3); the observation that the star
+                        loses below r = m+1 at m = 2, 3 (section 24.13).
+```
+
+**What a later session should do about it.** `HM` is the natural object to
+write down once one asks for a spread intersecting family beating the
+star, and the degree-condition literature named in §24.13 (Frankl 1987;
+Huang–Zhao; Frankl–Han–Huang–Zhao; Kupavskii) is close enough that a
+specialist may recognise it immediately. Adding a Tier B row to
+`docs/reading.md` for "spread Hilton–Milner", searched against the
+synonyms that file's rule 2 box demands, is a half-hour job and is owed
+before any of this is described as new outside the repository.

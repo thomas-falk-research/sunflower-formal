@@ -1545,3 +1545,43 @@ a lemma and the tight case never tried.
 > equivalence, and the cheapest possible refutation is the instance where
 > the original is known to hold with equality. One substitution, before
 > the first `Proof.`
+
+### The novelty question, asked after the fact instead of during
+
+Session N+9 built `HM(m,r)`, proved `¬ StarExtremalAt m m` at every
+uniformity, and wrote it up — and only then, asked directly whether any
+of it was new, went back and read §24.13 properly. §24.13 already had the
+crossover at `r = m+1` as a measured phenomenon, both witnesses below it
+by name (the triangle, `C([5],3)`), and `PG(2,q)` tabulated. The
+measurement `I(3,3) = 10 > 9` in that section *is* `¬ StarExtremalAt 3 3`,
+recorded two sessions earlier.
+
+Nothing written was false, and the general construction is genuinely the
+missing piece — §24.13's table of classical designs implies there is no
+family beating the star below the crossover past `m = 3`, and `HM` is one,
+at every `m`, because it is not a design. But §28 was drafted as though
+the phenomenon were being discovered rather than generalised, and the
+remark that the search "returns `C([5],3)` first" read as a find when the
+object was already named upstream. §28.1a and §28.11 now carry the
+correction and the ledger.
+
+The mechanical fault is smaller than it looks and worth naming exactly:
+the session read §27 and the handoff in §27.9 closely, because those were
+the sections the brief pointed at, and skimmed §24. The prior work most
+likely to have anticipated a result is not the work immediately before it;
+it is the section where the question was first posed.
+
+> **Rule 16. Before writing up a result, read the section that first
+> posed the question — not the section you inherited.** A handoff tells
+> you where the previous session stopped, which is not where the question
+> started. Everything a result might duplicate is upstream of the handoff
+> by construction, because a handoff only forwards what is still open.
+
+And a second, blunter one, since this session also ran no literature
+search:
+
+> **Rule 17. "New" without a search is "new to this repository", and it
+> gets written that way.** The register in this file exists to hold
+> novelty claims to evidence. A result that never acquired a register row
+> has not earned the unqualified word, however elementary the search would
+> have been.
