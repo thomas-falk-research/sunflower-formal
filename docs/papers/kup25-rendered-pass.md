@@ -7,7 +7,7 @@ of that pass over `kupavskii_survey.pdf` (66 pages), so that a later
 session resumes rather than restarts, and so that "read" means a page
 listed here.
 
-**Status: incomplete — 16 of 66 pages read.** The unread pages are listed
+**Status: incomplete — 19 of 66 pages read.** The unread pages are listed
 at the bottom. Any negative drawn from this survey is provisional until
 they are done.
 
@@ -42,3 +42,11 @@ p10  EKR proof sketch; Deza one-intersection-size conjecture; NOTE projective pl
 p17  Frankl, forbidden intersection, base construction. No degree cap. -
 # --- checkpoint: 16 of 66 read (1,3,4,5,6,7,8,9,10,17,21,22,42,52,53,59) ---
 # remaining: 11-16, 18-20, 23-41, 43-51, 54-58, 60-66  (50 pages)
+p11  Deza one-distance-code corollary; cross-variance lemma. -
+p12  proof of Deza's Thm 5. -
+p13  end of Deza proof; Deza-Erdos-Frankl Thm 10 on (n,k,L)-systems. -
+p14  DEF proof; note "we only leave vertices of high degree ... remove elements x with |F(x)| small"
+     -- a degree-based CLEANING step, not a level-wise cap hypothesis. -
+p15  Lemma 13/14, greedy base construction B by layers. -
+# --- checkpoint 2: 19 of 66 read (1,3-15,17,21,22,42,52,53,59) ---
+# remaining: 16, 18, 19, 20, 23-41, 43-51, 54-58, 60-66  (47 pages)
