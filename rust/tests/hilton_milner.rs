@@ -7,7 +7,7 @@
 //! over `E`, and `y_j` ranges over the `j`-th block of `r` fresh points.
 //! It has `m·r^(m-2) + 1` members.
 //!
-//! Five claims are checked here, all by construction and exhaustive
+//! Eight claims are checked here, all by construction and exhaustive
 //! verification, sharing no code with the Coq side:
 //!
 //! 1. `|HM(m,r)| = m·r^(m-2) + 1`, and the family is `m`-uniform,
@@ -23,6 +23,13 @@
 //!    65 against 64 at `(4,4)`, 626 against 625 at `(5,5)`, 7777 against
 //!    7776 at `(6,6)`, and `|HM(4,5)| = 101 = 76 + 25`, the two-cover
 //!    split of §28 read at `(4,5)`.
+//! 6. The barrier arithmetic of §28.4, in exact big integers: the route
+//!    ceiling `(n+1)^n` against Erdős–Rado's `2^n·n!`, to `n = 200`.
+//! 7. The complete `m`-graph on `2m-1` points, which ties `HM` at
+//!    `(3,3)` and loses from `m = 4` on — so `HM` is the one that
+//!    generalises.
+//! 8. Projective planes at `r = 2`, the other end of the uniformity-three
+//!    row: `HiltonMilner.fano` and `HiltonMilner.pg23`.
 
 use std::collections::HashSet;
 
