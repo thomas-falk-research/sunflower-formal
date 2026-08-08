@@ -7122,3 +7122,71 @@ No new record object, and no search in this section decided anything —
 §26.7 says which two were truncated and which one was stopped by hand.
 The reading confirmed three of §25.5's claims off the page and corrected
 a fourth of its own.
+
+### 27.9 Picking this up cold
+
+**Settled in §§25–27, all axiom-free.**
+
+```
+  TauThree.tau_three_bound                the tau >= 3 piece at m = 3 is
+                                          <= 16, elementarily
+  CrossIntersecting.two_cover_split       the two-point-cover argument,
+                                          factored out and reusable
+  CrossIntersecting.two_cover_star_extremal   tau <= 2 at every uniformity,
+                                          r >= m+1
+  CrossRefined.star_saturation            a large star drags its partners
+                                          into itself
+  CrossRefined.cross_pair_refined         |A|+|B| <= u*max(2u,r+1)*r^(u-2),
+                                          no threshold on r
+  CrossRefined.cross_pair_two_exact       u = 2: max(2r+1, 6), r >= 2,
+                                          tight at every r
+  CrossRefined.cross_pair_three_exact     u = 3: 3r^2+1, r >= 6
+  CrossRefined.nonstar_three_bound        I2(3,r) <= max(3r+1, 16)
+  CrossRefined.i2_three_five_is_sixteen   I2(3,5) = 16, exactly
+  CrossRefined.tau_three_piece_at_least_sixty_five
+                                          the m = 4 constant is >= 65
+```
+
+**Three open constants, in the order they are worth attacking.**
+
+1. **`TauThreePieceAtMost 4 5 125`** — the only thing between the
+   unconditional `r*(4,3) ≤ 7` and `r*(4,3) ≤ 5`. Known to lie in
+   `[65, 125]` (§27.2); `g65` is the lower witness and is maximal.
+   §26.4's four-family route is **closed** (§27.1) — do not re-open it.
+   What is missing is a *joint* bound over the layers of a decomposition
+   against one member, and `g65` shows the extremal puts everything in
+   the one-point layer.
+2. **`cross_pair_three_exact` at `r = 4, 5`.** §27.7 names the two
+   missing ingredients exactly: a bound for "both sides contain two
+   disjoint members" (measured ≈ `9r+2`, greedy gives `18r`), and
+   Frankl's 10 in place of `tau_three_bound`'s 16. `r = 3` is a
+   different matter — the neither-pointed branch *attains* `3r²+1` there,
+   so no argument with slack can close it.
+3. **`I₂(3,r)` at general `r`.** `max(3r+1,16)` is proved and 16 is
+   `tau_three_bound`'s number, not the truth (10). Sharpening that one
+   lemma tightens this and unblocks (2).
+
+**Tools that exist.**
+
+```
+  rust/examples/cross_pair_scan.rs   stochastic maximiser for |A|+|B| at a
+                                     given uniformity; modes 0/1/2 select
+                                     unconstrained / neither pointed /
+                                     neither pointed with two disjoint
+                                     members on both sides. LOWER BOUNDS.
+  rust/examples/tau_piece_scan.rs    exhaustive max of the tau >= t piece
+                                     on a fixed ground; t = 2 gives I2.
+  rust/tests/cross_refined.rs        every object above, verified
+                                     independently of the Coq side.
+```
+
+**Do not re-run** (recorded negatives): §26.4's four-family inequality
+(false, §27.1); the `Σ ≤ 48` derivation in any form; `3r²+1` at `u = 3`,
+`r = 2` (false, 17-member witness); the eight items §25 lists from
+earlier sessions.
+
+**Rules earned here**, in `docs/reading.md`: rule 12 (a reduction is a
+claim; measure the quantity before calling it the gap) and rule 13 (a
+lower bound from a stochastic search bounds that search's effort, not the
+quantity — re-measure before a measurement carries an argument about
+difficulty).
