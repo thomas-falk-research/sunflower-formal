@@ -1430,3 +1430,486 @@ because = """Sharp. The link over a (b-1)-set is 1-uniform, and it takes \
 through the set are permitted and the bound cannot be improved. The \
 2-(6,3,2) design attains it at every pair, which is why iota(3) = 10 is \
 exactly the counting ceiling at six points."""
+
+[[mutation]]
+id = "tauthree-lemma-l-eight"
+file = "coq/TauThree.v"
+question = """lemma_L bounds three pairwise cross-intersecting graphs of \
+maximum degree 3 by nine edges in total, and the whole tau = 3 case is \
+1 + 6 + 9 = 16. Is nine the truth, or is the argument leaving something?"""
+find = """    A <> [] -> B <> [] -> C <> [] ->
+    length A + length B + length C <= 9.
+Proof.
+  intros A B C HA HB HC HAB HAC HBC HAne HBne HCne."""
+replace = """    A <> [] -> B <> [] -> C <> [] ->
+    length A + length B + length C <= 8.
+Proof.
+  intros A B C HA HB HC HAB HAC HBC HAne HBne HCne."""
+expect = "killed"
+because = """Nine is attained, twice over: three copies of a single 3-star \
+(every edge holds the centre, so all three cross-intersect) and three \
+copies of one triangle. `rust/tests/tau_three.rs` exhausts the confined \
+search space and finds the maximum is exactly 9 for every vertex count \
+from four up. Eight is false, and the sum 1 + 6 + 9 = 16 has no slack \
+anywhere -- 16 is precisely what split_with_piece can afford at r = 4."""
+
+[[mutation]]
+id = "tauthree-cap-graph-four"
+file = "coq/TauThree.v"
+question = """CapGraph caps the maximum degree of each tail graph at 3, and \
+that 3 is the pair degree deg({x,v}) that covering number 3 hands over. \
+Would a cap of 4 still give nine?"""
+find = """Definition CapGraph (A : Family) : Prop :=
+  Uniform 2 A
+  /\\ (forall v, deg [v] A <= 3)"""
+replace = """Definition CapGraph (A : Family) : Prop :=
+  Uniform 2 A
+  /\\ (forall v, deg [v] A <= 4)"""
+expect = "killed"
+because = """No. Three copies of a single 4-star satisfy every other \
+hypothesis and give 4 + 4 + 4 = 12 > 9, so the conclusion is false at cap \
+4. The 3 is not an artefact of the write-up: it is deg({x,v}) <= 3, which \
+is exactly what tau >= 3 buys, and the bound 9 = 3 + 3 + 3 tracks it."""
+
+[[mutation]]
+id = "tauthree-drop-distinct"
+file = "coq/TauThree.v"
+question = """tau_three_bound carries Distinct G, which is the hypothesis \
+the repository's earlier statement of Frankl's theorem omitted. Is it \
+load-bearing, or bookkeeping?"""
+find = """Theorem tau_three_bound :
+  forall (G : Family),
+    Uniform 3 G -> Distinct G ->"""
+replace = """Theorem tau_three_bound :
+  forall (G : Family),
+    Uniform 3 G -> Uniform 3 G ->"""
+expect = "killed"
+because = """Load-bearing, and this is the whole point of the file. Without \
+it the statement is false for every constant: the Fano plane is 3-uniform, \
+intersecting and of covering number 3, and concatenating it with itself \
+preserves all three while doubling the length. \
+tau_three_at_most_unguarded_is_false is that argument, and \
+`rust/tests/tau_three.rs` verifies the object. Distinctness is what turns \
+deg({a,b}) <= 3 from a statement about which sets occur into a count."""
+
+[[mutation]]
+id = "tauthree-star-extremal-at-three"
+file = "coq/TauThree.v"
+question = """three_uniform_star_extremal needs r >= 4 = m + 1. Is the \
+crossover really there, or would r >= 3 do?"""
+find = """Theorem three_uniform_star_extremal : forall r, 4 <= r -> StarExtremalAt 3 r."""
+replace = """Theorem three_uniform_star_extremal : forall r, 3 <= r -> StarExtremalAt 3 r."""
+expect = "killed"
+because = """The crossover is exactly at r = m + 1 = 4. At r = 3 the star \
+has 3^2 = 9 members and I(3,3) = 10, attained by every 3-subset of a 5-set \
+-- which sits under both Rao caps (deg 6 <= 9, deg_pair 3 <= 3) and beats \
+the star. This is §24.9's measurement, and it is why the m = 3 row of the \
+StarExtremalAt conjecture starts at 4 and not earlier."""
+
+[[mutation]]
+id = "tauthree-unguarded-add-distinct"
+file = "coq/TauThree.v"
+question = """tau_three_at_most_unguarded_is_false refutes the hypothesis \
+§24.12 used. Is distinctness the *only* thing wrong with it, or is the \
+refutation exploiting something else as well?"""
+find = """Definition TauThreeAtMostUnguarded (K : nat) : Prop :=
+  forall (G : Family),
+    Uniform 3 G ->"""
+replace = """Definition TauThreeAtMostUnguarded (K : nat) : Prop :=
+  forall (G : Family),
+    Uniform 3 G -> Distinct G ->"""
+expect = "killed"
+because = """Distinctness is the only thing wrong with it. Put it back and the \
+statement becomes tau_three_bound, which is a theorem, so its negation is \
+unprovable and the refutation collapses at exactly the step where it \
+applies the hypothesis to a repeated family. This is the mirror of \
+tauthree-drop-distinct: one shows the hypothesis is needed for the \
+theorem, this shows it is what the counterexample eats."""
+
+[[mutation]]
+id = "tauthree-tau-two-not-three"
+file = "coq/TauThree.v"
+question = """tau_three_bound assumes covering number at least 3 -- for \
+every *pair* of points there is a member missing both. Would covering \
+number at least 2, one point at a time, do?"""
+find = """    (forall p q, exists C, In C G /\\ ~ In p C /\\ ~ In q C) ->
+    length G <= 16.
+Proof.
+  intros G HU HD Hint Htau."""
+replace = """    (forall p, exists C, In C G /\\ ~ In p C) ->
+    length G <= 16.
+Proof.
+  intros G HU HD Hint Htau."""
+expect = "killed"
+because = """No, and not by a little. The whole proof is (P) -- covering \
+number 3 caps every *pair* degree at 3, because a member containing a \
+pair meets the witness missing that pair in one of three points. Covering \
+number 2 gives nothing at pairs, and the statement is false: a family \
+with a 2-point cover and no degree condition is unbounded. This is the \
+one hypothesis the file cannot weaken anywhere."""
+
+[[mutation]]
+id = "crossint-threshold-m"
+file = "coq/CrossIntersecting.v"
+question = """two_cover_star_extremal needs r >= m + 1. §24.13's \
+split_cannot_reach_r_equals_m says r = m is a hard floor for the whole \
+method. Is the two-point-cover case any different?"""
+find = """Theorem two_cover_star_extremal :
+  forall m r (G : Family) p q,
+    1 <= m -> m + 1 <= r ->"""
+replace = """Theorem two_cover_star_extremal :
+  forall m r (G : Family) p q,
+    1 <= m -> m <= r ->"""
+expect = "killed"
+because = """No. The threshold is where the s = 0 row of budget_split turns \
+over -- A a star, (O1) reading u <= r - 2, i.e. r >= u + 2 = m + 1 -- and \
+`rust/tests/cross_intersecting.rs` checks that both options fail one below \
+it for every u up to 60. m+1 is not slack in the statement; it is the \
+content."""
+
+[[mutation]]
+id = "crossint-budget-threshold"
+file = "coq/CrossIntersecting.v"
+question = """budget_split is the whole numeric content, and it assumes \
+u + 2 <= r. Bernoulli is generous elsewhere -- is there room here?"""
+find = """Theorem budget_split :
+  forall u r a,
+    1 <= a -> a <= u -> u + 2 <= r ->"""
+replace = """Theorem budget_split :
+  forall u r a,
+    1 <= a -> a <= u -> u + 1 <= r ->"""
+expect = "killed"
+because = """None at all. At a = 1 the first option is u^1 <= (r-2)*r^0, \
+i.e. u <= r - 2, and the second is 2u <= r - 1, which is worse. At \
+r = u + 1 both fail, so the disjunction is false at its very first row."""
+
+[[mutation]]
+id = "crossint-drop-nonempty"
+file = "coq/CrossIntersecting.v"
+question = """cross_pair_bound asks both families to be nonempty. The \
+covering numbers are what the proof turns on -- is nonemptiness doing any \
+work, or is it a convenience?"""
+find = """    (forall e f, In e A -> In f B -> exists w, In w e /\\ In w f) ->
+    A <> [] -> B <> [] ->
+    length A + length B <= (r - 1) * r ^ (u - 1).
+Proof.
+  intros u r A B Hu Hr HUA HUB HRA HRB Hcross HAne HBne."""
+replace = """    (forall e f, In e A -> In f B -> exists w, In w e /\\ In w f) ->
+    A <> [] -> True ->
+    length A + length B <= (r - 1) * r ^ (u - 1).
+Proof.
+  intros u r A B Hu Hr HUA HUB HRA HRB Hcross HAne HBne."""
+expect = "killed"
+because = """Work, and it is what makes the covering number finite. A \
+member of B is a cover of A -- that is the only reason tau(A) <= u -- so \
+with B empty the cross-intersecting condition is vacuous, A is any \
+Rao-spread family at all, and its size is unbounded because the number of \
+points is."""
+
+[[mutation]]
+id = "crossint-lift-two-copies"
+file = "coq/CrossIntersecting.v"
+question = """The unboundedness witness attaches a free coordinate ranging \
+over 3 + n values. Would two values do?"""
+find = """Definition lift (n : nat) : Family :=
+  flat_map (fun w => map (fun C => w :: C) c53) (seq 5 (3 + n))."""
+replace = """Definition lift (n : nat) : Family :=
+  flat_map (fun w => map (fun C => w :: C) c53) (seq 5 (2 + n))."""
+expect = "killed"
+because = """No: with only two values of w, the two points {5,6} meet every \
+member, so the covering number drops to 2 and the witness no longer \
+witnesses anything. Three is the least number that survives, and it is \
+where `rust/tests/cross_intersecting.rs` starts the check."""
+
+[[mutation]]
+id = "crossint-large-r-cube"
+file = "coq/CrossIntersecting.v"
+question = """star_extremal_for_large_r closes every covering number from \
+m^3 <= r^2. §24.13 conjectures the same conclusion from r >= m+1 alone. \
+Is the cube condition doing work, or is the theorem already the \
+conjecture?"""
+find = """Theorem star_extremal_for_large_r :
+  forall m r, 1 <= m -> m + 1 <= r -> m ^ 3 <= r ^ 2 -> StarExtremalAt m r."""
+replace = """Theorem star_extremal_for_large_r :
+  forall m r, 1 <= m -> m + 1 <= r -> m ^ 3 <= r ^ 3 -> StarExtremalAt m r."""
+expect = "killed"
+because = """It is doing all the work. m^3 <= r^3 is just m <= r, which \
+r >= m+1 already gives, so the mutated statement is exactly §24.13's open \
+conjecture -- the star extremal for every intersecting Rao-spread family \
+from r = m+1 on. The greedy cannot prove it: at covering number 3 it \
+gives m^3 * r^(m-3) against r^(m-1), and m^3 > (m+1)^2 for every m >= 3."""
+
+# ----------------------------------------------------------------
+# CrossRefined: the two transfer lemmas, the refined bound, and the
+# 65-member witness.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "crossrefined-saturation-threshold"
+file = "coq/CrossRefined.v"
+question = """star_saturation drags a partner into the star once the \
+pointed family passes u*r^(u-2). Is that exponent right, or would the \
+cruder point-degree cap u*r^(u-1) do?"""
+find = """    u * r ^ (u - 2) < length A ->
+    Pointed B w."""
+replace = """    u * r ^ (u - 1) < length A ->
+    Pointed B w."""
+expect = "killed"
+because = """The bound comes from the *pair* degree: a partner member f \
+avoiding w forces every member of A to contain one of the u pairs {w,v}, \
+v in f, and each of those has degree at most r^(u-2). Raising the \
+threshold to r^(u-1) weakens the lemma past the point where \
+cross_pair_refined can use it -- its case split is exactly at u*r^(u-2), \
+which is what turns the pointed case into u*r^(u-2)*(r+1) instead of \
+(u+1)*r^(u-1)."""
+
+[[mutation]]
+id = "crossrefined-saturation-drop-uniform"
+file = "coq/CrossRefined.v"
+question = """star_saturation uses Rao's condition on A only. Is B's \
+uniformity doing anything?"""
+find = """Lemma star_saturation :
+  forall u r (A B : Family) w,
+    Uniform u B ->"""
+replace = """Lemma star_saturation :
+  forall u r (A B : Family) w,
+    True ->"""
+expect = "killed"
+because = """Yes: the count is over the points of a partner member, so \
+|f| = u is what makes it u pairs rather than arbitrarily many. Without \
+it a partner member could be as large as it likes and cover A with room \
+to spare."""
+
+[[mutation]]
+id = "crossrefined-drop-two-u"
+file = "coq/CrossRefined.v"
+question = """The refined bound carries max(2u, r+1). The r+1 branch is \
+the pointed case; is the 2u branch ever binding?"""
+find = """    length A + length B <= u * Nat.max (2 * u) (r + 1) * r ^ (u - 2).
+Proof.
+  intros u r A B Hu HUA HUB HRA HRB Hcross HAne HBne."""
+replace = """    length A + length B <= u * (r + 1) * r ^ (u - 2).
+Proof.
+  intros u r A B Hu HUA HUB HRA HRB Hcross HAne HBne."""
+expect = "killed"
+because = """It is binding whenever r + 1 < 2u, which the theorem allows \
+because it carries no lower bound on r at all. The case where neither \
+side is pointed gives 2u^2 * r^(u-2) from the greedy tree at depth two, \
+and 2u^2 <= u(r+1) is exactly 2u <= r+1. At u = 4, r = 6 -- the row where \
+the refined bound is worse than cross_pair_bound -- the max is 8, not 7."""
+
+[[mutation]]
+id = "crossrefined-hm16-shrink-y"
+file = "coq/CrossRefined.v"
+question = """hm16 spends the whole pair-degree allowance: deg{12,i} = 5 \
+for each of the three points of its extra triple. Is the fifth tail point \
+actually used?"""
+find = "  [4;5;6] :: flat_map (fun i => map (fun y => [12; i; y]) [7;8;9;10;11]) [4;5;6]."
+replace = "  [4;5;6] :: flat_map (fun i => map (fun y => [12; i; y]) [7;8;9;10]) [4;5;6]."
+expect = "killed"
+because = """Yes. With four tail points the family has 13 members, g65 \
+has 53, and the lower bound on the open constant drops from 65 to 53. The \
+Rao condition permits five and the witness takes all five; nothing here is \
+slack."""
+
+[[mutation]]
+id = "crossrefined-three-five-off-by-one"
+file = "coq/CrossRefined.v"
+question = """Is 90 what the refined bound actually evaluates to at the \
+m = 4 row, or is it a rounded quotation?"""
+find = """    length A + length B <= 90.
+Proof."""
+replace = """    length A + length B <= 89.
+Proof."""
+expect = "killed"
+because = """It is exact: 3 * max(6,6) * 5^1 = 90, computed by the kernel \
+rather than quoted. cross_pair_bound gives 100 on the same row."""
+
+[[mutation]]
+id = "crossrefined-pointed-exists"
+file = "coq/CrossRefined.v"
+question = """Pointed A w says *every* member of A contains w. Both \
+transfer lemmas and the whole case split are phrased with it; is the \
+universal quantifier load-bearing, or would "some member contains w" \
+give the same theorems?"""
+find = """Definition Pointed (A : Family) (w : nat) : Prop :=
+  forall C, In C A -> In w C."""
+replace = """Definition Pointed (A : Family) (w : nat) : Prop :=
+  exists C, In C A /\\ In w C."""
+expect = "killed"
+because = """Load-bearing at both ends. star_saturation's conclusion is \
+that the *partner* is contained in a star, which is a universal \
+statement, and its hypothesis is that A is, which is what lets the pair \
+degrees be summed over one member of the partner. An existential Pointed \
+would be satisfied by every family with a member through w and would say \
+nothing."""
+
+[[mutation]]
+id = "crossint-split-drop-pair-term"
+file = "coq/CrossIntersecting.v"
+question = """two_cover_split hands back the two tail families plus a \
+both-points term r^(m-2). Is that term real, or an artefact of how the \
+partition is written?"""
+find = "          length G <= length A + length B + r ^ (m - 2))."
+replace = "          length G <= length A + length B)."
+expect = "killed"
+because = """Real, and it is exactly the pair degree. The members \
+containing both cover points appear in neither tail family: the tails are \
+built from the members containing p and not q, and q and not p. hm16 has \
+five of them at (p,q) = (4,12) -- the full r^(m-2) = 5 -- which is why \
+its 16 members are 11 + 5 and not 11."""
+
+[[mutation]]
+id = "crossrefined-nonstar-off-by-one"
+file = "coq/CrossRefined.v"
+question = """The non-star bound is max(3r+1, 16). Is 3r+1 what the two \
+pieces actually add up to, or is there slack in the quotation?"""
+find = "    length A <= Nat.max (3 * r + 1) 16."
+replace = "    length A <= Nat.max (3 * r) 16."
+expect = "killed"
+because = """No slack. The two-cover branch is cross_pair_two_exact, \
+which is 2r+1, plus the both-points piece r^(m-2) = r: exactly 3r+1. One \
+less and the branch does not close. At r = 5 this is the difference \
+between 16 and 15, and 16 is what hm16 attains -- so the mutated \
+statement is false, with an explicit counterexample in the same file."""
+
+[[mutation]]
+id = "crossrefined-nonstar-existential"
+file = "coq/CrossRefined.v"
+question = """NonStar says that for *every* point some member misses it. \
+Would "some point is missed by some member" do?"""
+find = """Definition NonStar (A : Family) : Prop :=
+  forall w, exists C, In C A /\\ ~ In w C."""
+replace = """Definition NonStar (A : Family) : Prop :=
+  exists w C, In C A /\\ ~ In w C."""
+expect = "killed"
+because = """No: the proof instantiates NonStar at the two points of the \
+cover the search hands back, and at whatever point two_cover_split \
+returns in its star branch, none of which are known in advance. The \
+existential form is satisfied by every star with two or more members."""
+
+[[mutation]]
+id = "crossrefined-two-exact-off-by-one"
+file = "coq/CrossRefined.v"
+question = """cross_pair_two_exact says 2r+1 at uniformity two. Is the \
++1 real, or slack left over from the case analysis?"""
+find = "    length A + length B <= Nat.max (2 * r + 1) 6."
+replace = "    length A + length B <= Nat.max (2 * r) 6."
+expect = "killed"
+because = """Real, and attained: one edge against the two full stars at \
+its endpoints is 2r + 1, which is the |B| = 1 case of the proof and the \
+configuration rust/tests/cross_intersecting.rs finds by exhaustion at \
+r = 4, 5, 6. Every other case gives at most 2r, so the whole bound is one \
+above the rest of the analysis and that one is where the truth is."""
+
+[[mutation]]
+id = "crossrefined-two-exact-drop-six"
+file = "coq/CrossRefined.v"
+question = """cross_pair_two_exact concludes max(2r+1, 6). The 2r+1 \
+branch is the one the extremal configuration realises from r = 3 on. Is \
+the 6 branch ever binding?"""
+find = """    A <> [] -> B <> [] ->
+    length A + length B <= Nat.max (2 * r + 1) 6."""
+replace = """    A <> [] -> B <> [] ->
+    length A + length B <= 2 * r + 1."""
+expect = "killed"
+because = """Binding at r = 2, where the mutated statement is *false* and \
+the same file carries the counterexample: cross_pair_two_six_is_attained \
+exhibits two disjoint edges against the four crossing edges -- both \
+Rao(2)-spread, cross-intersecting, neither a star -- with 2 + 4 = 6 \
+against 2r+1 = 5. Degree two is exactly where all four crossing edges \
+fit, and from r = 3 on the one-edge-against-two-stars configuration \
+overtakes it."""
+
+[[mutation]]
+id = "crossrefined-triangle-four"
+file = "coq/CrossRefined.v"
+question = """triangle_bound gives 3. The greedy tree at depth two \
+already gives 4 for the same family. Is the 3 doing any work?"""
+find = """    length A <= 3 /\\ length B <= 3."""
+replace = """    length A <= 4 /\\ length B <= 3."""
+expect = "killed"
+because = """All of it. unpointed_pair_bound needs 3 + 3 = 6 in the \
+branch where A has no two disjoint members; 4 + 3 = 7 does not close, and \
+6 is attained. The whole reason that branch works is that an intersecting \
+graph pointed at nothing *is* a triangle -- three edges, not the four the \
+greedy tree allows -- and that the same three keys cap the partner."""
+
+[[mutation]]
+id = "crossrefined-squeeze-drop-disjunct"
+file = "coq/CrossRefined.v"
+question = """disjoint_squeeze concludes a disjunction. Is the |A| <= 2 \
+branch reachable, or does the partner always come down to three?"""
+find = "    length A <= 2 \\/ length B <= 3."
+replace = "    length B <= 3."
+expect = "killed"
+because = """Reachable, and the file carries the witness: c2a is two \
+disjoint edges and c2b is all four crossing edges, so |c2b| = 4 and the \
+right disjunct fails. What holds there is the left one -- only two edges \
+can meet all four crossing pairs."""
+
+[[mutation]]
+id = "crossrefined-unpointed-five"
+file = "coq/CrossRefined.v"
+question = """unpointed_pair_bound gives 6 with no reference to r at all. \
+Is 6 the truth, or is it one of the three branches being generous?"""
+find = """    (forall w, exists f, In f B /\\ ~ In w f) ->
+    length A + length B <= 6."""
+replace = """    (forall w, exists f, In f B /\\ ~ In w f) ->
+    length A + length B <= 5."""
+expect = "killed"
+because = """6 is the truth and the file proves it attained: \
+cross_pair_two_six_is_attained shows c2a and c2b are cross-intersecting, \
+Rao(2)-spread, *neither a star*, with 2 + 4 = 6. All three branches of \
+the bound -- triangle against triangle, squeeze on either side -- come \
+out at exactly 6, which is why the r = 2 row of cross_pair_two_exact is 6 \
+and not 5."""
+
+[[mutation]]
+id = "crossrefined-three-exact-off-by-one"
+file = "coq/CrossRefined.v"
+question = """cross_pair_three_exact concludes 3r^2 + 1. Is the +1 the \
+extremal member, or slack?"""
+find = """    A <> [] -> B <> [] ->
+    length A + length B <= 3 * (r * r) + 1."""
+replace = """    A <> [] -> B <> [] ->
+    length A + length B <= 3 * (r * r)."""
+expect = "killed"
+because = """The extremal member. One triple of B against the three full \
+stars at its points is |A| = 3r^2 and |B| = 1, and \
+rust/tests/cross_refined.rs builds it and checks it Rao(r)-spread for \
+r = 2,3,4. The maximiser finds exactly 3r^2+1 at every r from 3 to 6."""
+
+[[mutation]]
+id = "crossrefined-three-threshold"
+file = "coq/CrossRefined.v"
+question = """cross_pair_three_exact carries r >= 6. Would the formula \
+hold at every r >= 2, as the u = 2 one does?"""
+find = """Theorem cross_pair_three_exact :
+  forall r (A B : Family),
+    6 <= r ->"""
+replace = """Theorem cross_pair_three_exact :
+  forall r (A B : Family),
+    2 <= r ->"""
+expect = "killed"
+because = """No, and the same file carries the counterexample: at r = 2, \
+cross_pair_three_needs_six exhibits a 17-member cross-intersecting \
+Rao(2)-spread pair -- neither side a star -- against 3r^2+1 = 13. This is \
+where uniformity three differs from uniformity two: there the second \
+branch of the maximum is the constant 6, here the neither-pointed \
+maximum grows (17, 24, 33, 36 measured at r = 2..5), so no constant \
+second branch exists to state."""
+
+[[mutation]]
+id = "crossrefined-pointed-branch-three"
+file = "coq/CrossRefined.v"
+question = """The pointed branch at uniformity three gives 2r^2 + 4r. Is \
+the 4r real, or an artefact of the five-key cover?"""
+find = "    length A + length B <= 2 * (r * r) + 4 * r."
+replace = "    length A + length B <= 2 * (r * r) + 3 * r."
+expect = "killed"
+because = """Real. When two members meet only at the point, the partner \
+is covered by the point itself and the four crossing pairs of the two \
+links -- r^2 + 4r -- and the pointed family itself is at most r^2 by the \
+star bound. That is 2r^2 + 4r exactly, with nothing to spare; the 3r \
+version does not close."""

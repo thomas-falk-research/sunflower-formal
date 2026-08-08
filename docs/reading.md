@@ -1290,3 +1290,180 @@ search, and the neighbouring results are close enough that a specialist
 may well recognise this. What is recorded is the question, its exact
 consequence (`I(m,m+1) ≤ (m+1)^(m-1)` implies `r*(m,3) ≤ m+1`), and the
 two data points.
+
+---
+
+## What re-reading the development changed, session N+8
+
+Nothing new was read from outside. What changed is a *use* of what was
+already read, and one claim about the development itself that did not
+survive being checked.
+
+### The `tau = 3` hypothesis was false, and no reading was needed to see it
+
+`TwoCover.TauThreeAtMost K` — §24.12's stand-in for Frankl's theorem —
+quantified over families with `Uniform 3 G` and no distinctness
+condition. `Uniform` constrains the points inside each member, not the
+members; `length G` counts members with multiplicity; every other
+hypothesis in the statement is preserved by repeating a family. The Fano
+plane, taken three times, is a counterexample at `K = 16` and the same
+construction refutes every `K`.
+
+This is not a reading error. Every source involved states the theorem for
+*families of distinct sets*, and [Ra20]'s entry above already records
+`Distinct F` as an added hypothesis in `ALWZ.Rao20_lemma2` — noticed
+there, and not carried across to the file that restated a classical
+theorem by hand a session later. **The rule this adds is about
+transcription, not about sources:**
+
+> **11. When a classical theorem is entered as a hypothesis rather than
+> proved, check that the hypothesis is *true*, not only that it is
+> faithful to the source's words.** A conditional theorem with a false
+> antecedent passes `Print Assumptions`, passes the statement baseline,
+> and passes its own mutations. Nothing in the gate stack asks the
+> question.
+
+### Priority 0, answered from the entries already here
+
+The brief asks what the published spread lemmas give for `r*(m,3)` under
+this repository's `RaoSpread`, and says nobody has done it cleanly. Two
+entries above answer it and neither needed re-reading.
+
+* **Upper.** `ALWZ.Rao20_lemma2` is Rao's Lemma 2 in exactly the
+  `SpreadYieldsDisjoint` shape, checked symbol by symbol in the [Ra20]
+  entry, and `Spread.RaoSpread_Spread` shows the repository's absolute
+  condition is the stronger one — so the published lemma applies
+  verbatim and `r*(m,3) = O(log m)` is published. §22.7 had this. The
+  consequence for §24.13 is new and is recorded in `docs/roadmap.md`
+  §25.5: **`r*(m,3) <= m+1` is asymptotically weaker than what is
+  known**, and the split's value is exact small values, not growth.
+* **Lower.** Entry A2 above: [Ra20, p. 2] says it is open whether Lemma 2
+  holds with `r(p,k) = O(p)` — which in this repository's notation is
+  precisely "`r*(m,3)` is bounded in `m`" — and that such a strengthening
+  would imply the sunflower conjecture. The same entry records that the
+  tightness examples that exist ([ALWZ20] Lemma 3.1, [BCW21] Lemma 4) are
+  for the **robust/covering** form, not the disjointness form. So there
+  is **no published lower bound on `r*(m,3)` at all**.
+
+That last point is the one worth carrying forward, and it corrects the
+tone of §22.7 without contradicting its arithmetic. Finitely many terms
+cannot separate bounded from `log m` — true. But on the lower side the
+literature is empty, so `r*(2,3) = 3` and `r*(9,3) >= 4` are, as far as
+this corpus goes, the only concrete values written down anywhere, and the
+first term that moved past 4 would be the first evidence of unboundedness
+in the form Rao asks about.
+
+### What did not survive from the incoming brief
+
+* *"§22.7 says the repo's `Θ(m)` bound is asymptotically behind the
+  published `O(k log m)` ... nobody has done this cleanly."* — the check
+  had been done: it is `docs/reading.md`'s [Ra20] entry plus
+  `Spread.RaoSpread_Spread`, and §22.7 states the conclusion. What was
+  genuinely missing is the *consequence* for the `m+1` framing, now §25.5.
+* *"`r*(3,3) ≤ 4` conditional on `TauThreeAtMost 16`, a hypothesis, not
+  an axiom"* — true as stated and useless in fact, because the hypothesis
+  is false. See above.
+* *"`I(3,3) = 10` is now measured, so the decomposition against a maximum
+  matching gives `|F_A|, |F_B| <= 10` and `|F_AB| >= 8`"* — the
+  arithmetic is right but it does not constrain the search as much as the
+  brief suggests: the split bound `|F| <= 3·3² + I(3,3)` gives `|F| <= 37`
+  against the 28 a witness needs, so nothing is excluded. The
+  decomposition is a better *search order*, not a decision procedure.
+* *"`9 >= 4` §18.2, via `g(9) >= 3^9`"*, quoted in the brief's sequence
+  table alongside the proved rows — **conditional**.
+  `IotaRate.substitution_would_refute_the_flat_threshold_at_nine` takes
+  `LowerBound 9 3 (3^9 + 317)` as a hypothesis and its own header says
+  the Abbott–Hanson–Sauer substitution it rests on *"is not formalised
+  here"*. `docs/roadmap.md` §22.2's table lists the row flat, with no
+  caveat, next to rows that are theorems; both that table and `STATUS.md`
+  are corrected in this session's commit. It is the one number in the
+  brief that failed rule 9.
+
+### A derived route, stated as "the gap", that had never been measured
+
+§26.4 reduced `r*(4,3) ≤ 5` to one four-family inequality —
+`Σ_x |A_x| ≤ 48` for four pairwise cross-intersecting 3-uniform
+Rao(5)-spread families — and called it "the gap, stated exactly". Nothing
+in the gate stack objects: it is prose, it names no theorem, and the
+arithmetic that produced it (`125 − (1 + 16 + 60) = 48`) is correct.
+
+It is also false. Four copies of one 25-member star give `Σ = 100`; four
+copies of a 16-member non-star give `Σ = 64` with no common point, which
+is what the covering-number hypothesis actually forces. Both were found by
+writing the families down and evaluating them, which is what rule 1 of
+this session's brief — measure the quantity, do not just bound it — asks
+for, and the one thing the derivation had not done.
+
+> **Rule 12. A reduction is a claim, and a claim about a quantity gets
+> measured before it gets called a gap.** The arithmetic of a
+> decomposition can be right while the inequality it produces is false,
+> because a decomposition bounds each layer *separately* and the layers
+> need not be simultaneously full. "Necessary if the other layers are
+> full" is a different statement from "necessary", and only the second
+> one earns the word *exactly*.
+
+`docs/roadmap.md` §26.4 now carries the retraction inline, and §27 records
+what the measurement bought instead: a 65-member witness that pins the
+open constant into `[65, 125]`, and two general transfer lemmas the
+counterexample turned out to be an instance of.
+
+The rule then had to be applied to this session's own work, twice.
+§27.6's upper bound on `I₂(3,5)` was first written down as a few lines of
+arithmetic and labelled, in bold, *not Coq*. It is now
+`CrossRefined.nonstar_three_bound`, the label is gone, and the difference
+between the two states is the only thing that decides whether the sketch
+was right — which is the whole content of rule 12.
+
+And the sketch was *not quite* right: it gave 17 where the truth is 16.
+Formalising it exposed that the loss was entirely in the pair bound at
+uniformity two, which the exhaustive search had been saying was `2r+1`
+against a proved `2r+2` for two sessions. Proving that one
+(`cross_pair_two_exact`) closed `I₂(3,5) = 16` exactly. The measurement
+had been sitting in `rust/tests/cross_intersecting.rs` the whole time,
+correctly labelled as a measurement; what was missing was anyone asking
+it to become a theorem.
+
+The same thing happened twice more, one level down each time. The first
+proof of `cross_pair_two_exact` carried `r ≥ 4`, and §27.6 recorded —
+correctly — that the threshold was an artefact of the case analysis and
+that the measured maximum at `r = 3` was still `2r+1`. Asked to close
+`r = 3`, the first thing to do was measure the case the analysis was
+losing on: the neither-pointed configurations, where the greedy tree gives
+`4 + 4 = 8`. The exhaustive maximum there is **6**, not 8, and seeing that
+is what named the two missing lemmas (`triangle_bound`,
+`disjoint_squeeze`).
+
+That measurement also said `r = 2` is different in kind: the statement
+`2r+1` is *false* there, with 6 against 5. That was recorded as a
+sharpness witness — and then, asked for the `r = 2` bound too, the same 6
+turned out to be a theorem with no `r` in it at all
+(`unpointed_pair_bound`), so the two rows are one statement:
+`max(2r+1, 6)`, tight at every `r ≥ 2`. Twice in a row the honest
+"measured, not proved" note was the thing that named the next theorem —
+which is the only reason to write such notes down precisely rather than
+as hedges.
+
+Asked for the same at uniformity three, measuring first paid again, and
+this time by *stopping* a wrong plan. Two shapes worked out by hand gave
+13 and 15 at `r = 2`; the maximiser found 17 within a minute. Had those
+hand shapes been written up as "the extremal configurations" — the tone
+§26.4 used — the section would have been wrong before it began.
+
+The measurement also decided the architecture. At `u = 2` the second
+branch of the maximum is the constant 6, so `unpointed_pair_bound` needs
+no `r`; at `u = 3` the neither-pointed maximum *grows*, so there is no
+constant to prove and no analogue of that lemma to write. Knowing that
+before starting is what turned a search for a non-existent theorem into a
+correct statement of what does close (`r ≥ 6`) and what does not (`r = 2`
+refuted, `r = 3,4,5` open).
+
+> **Rule 13. A lower bound from a stochastic search is a lower bound on
+> that search's effort, not on the quantity.** The neither-pointed row was
+> first recorded as `17 24 33 36` and the numbers were used to argue how
+> hard the open rows were. Re-running the same search for three times as
+> long gave `17 28 36 41`, and the `r = 3` entry moved from "24, with 4 to
+> spare against 28" to "28, with nothing to spare" — which is the
+> difference between a row that might close and one that cannot close
+> without an exactly tight argument. Nothing was *false*; the inference
+> drawn from the numbers was worth less than it looked. Re-measure before
+> a measurement is asked to carry an argument about difficulty.
