@@ -7677,7 +7677,18 @@ claim.
                         loses below r = m+1 at m = 2, 3 (section 24.13).
 ```
 
-**The register row now exists.** `docs/reading.md` **B19** records the
+**The register row exists, and the first honest pass at it partly
+refuted §24.13.** Rendering [Kup25] p. 53 — a page an earlier word-grep
+had flagged and nobody had opened — turned up `τ`-**homogeneous
+families** (Kupavskii–Zakharov): `|F(X)|/|F| ≤ τ^|X|·|A(X)|/|A|`, a cap at
+every level, geometric in `|X|`. That is the *shape* of Rao's condition
+generalised to an arbitrary ambient family, so §24.13's "the neighbouring
+literature caps one statistic" is too strong. With `A = binom([n],k)` it
+is the fractional condition, not the absolute one, so it is not the same
+hypothesis — but the family of ideas is named and studied, and this
+repository did not know it. `docs/reading.md` B19c.
+
+ `docs/reading.md` **B19** records the
 claim, **B19a** verifies §24.13's "the neighbouring literature caps one
 statistic" from a rendered page of Frankl–Han–Huang–Zhao rather than from
 assertion, and **B19b** records a trap: the literature's *`r`-spread* is

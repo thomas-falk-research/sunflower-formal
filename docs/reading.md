@@ -49,6 +49,27 @@ Hunter's answer in full and seven more in part.
 > cover — *cover*, *base*, *nucleus*, *generating set*, *crosscut*,
 > *minimal cover*. Every "not found" here has been run against one or two
 > of each. They are recorded as searches that happened, not as absences.
+>
+> **And rule 2 is weaker still than that, because extracted text is not
+> in the same alphabet as the mathematics.** Rendering
+> `kupavskii_survey.pdf` p. 49 and extracting it give different documents.
+> `pdftotext` returns `Δ(𝑘 𝑟 )-system` where the page reads `Δ(k^r)-system`,
+> and the codepoints are
+>
+> ```
+>   Δ  U+0394   GREEK CAPITAL LETTER DELTA
+>   𝑘  U+1D458  MATHEMATICAL ITALIC SMALL K      <- not ASCII 'k'
+>   𝑟  U+1D45F  MATHEMATICAL ITALIC SMALL R      <- not ASCII 'r'
+> ```
+>
+> so `grep "Delta(k^r)"` returns 0 and `grep "B(k)"` returns 0 on a page
+> that contains both. The superscript has become a space; every italic
+> variable has become a *different character*. **A search for a formula,
+> a condition, a variable name or an inequality cannot be run on extracted
+> text at all** — not unreliably, but structurally: the characters are not
+> there to be matched. `pdftotext` locates **prose words in ASCII** and
+> nothing else. For anything with mathematics in it, the only search is
+> `pdftoppm` and reading every page.
 
 Evidence classes used throughout, here and in `docs/references.md`:
 
@@ -90,18 +111,19 @@ literature, resolved.
 | # | Claim | Verdict | Evidence |
 |---|---|---|---|
 | B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **Not found** — but the search vocabulary was too narrow | Not in [Kup25] (now read in full, 66pp), [Ra20] (8pp), [ALWZ20] (19pp), [Lovett] (28pp), [Rao25] (12pp). **Caveat found this session:** [Kup25] fn. 6, p. 21, records that *"it is in this paper that `Δ(s)`-systems are called **`s`-stars**, a name that appears in the follow-up papers of Frankl and Füredi."* A third name for a sunflower, which every search here has missed. Empty is not absence, and this corpus is not vocabulary-complete. |
-| B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **Not found** | Same corpus. But see B10a — the *ingredients* are all published. |
+| B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **Not found — and the negative is now suspect for a second reason; see rule 18.** The claim is an inequality, and no text-extraction search can locate one. | Same corpus. But see B10a — the *ingredients* are all published. |
 | B10a | "the intersecting side has never been pointed at" | **REFUTED** | [ALWZ20] §4.2, titled *Intersecting set systems*, Theorem 4.2 p. 13: *"If F is an intersecting w-uniform set system, and for all T, \|F_T\| ≤ κ^{−\|T\|}\|F\|, then κ = O(log w)."* Different hypothesis from `ι` (spread, not sunflower-free), but the claim as written is false. Withdrawn in `coq/IotaRate.v`; the elementary version is now `IotaRate.intersecting_not_spread_above_uniformity`. |
 | B10b | Theorem 4.2 is independent of the spread lemma, so it could give the modern bound at `k=3` without the axiom | **REFUTED, and the target it supported is closed** | The *proof* is on the same page as the statement, four lines below, and had never been read. [ALWZ20] p. 13 introduces it with *"We note the following corollary of Theorem 2.5:"* and proves it in full by *"If `F` is intersecting then it is not `(1/2, 1/2)`-satisfying (apply Lemma 1.6 for `r = 2`). Thus by the improvement of Theorem 2.5 from [19], it cannot be `(C log w)`-spread for a large enough constant `C`."* Theorem 2.5 **is** the spread lemma and [19] is Rao, i.e. `ALWZ.Rao20_lemma2`. Formalising 4.2 would consume the axiom, not demote it. Independently, the chain it was to feed is arithmetically worse than Erdős–Rado — see `docs/roadmap.md` §21.2 and `coq/IntersectingSpread.v`. Rule 6: page 1 is not the paper, and neither is the statement of a theorem on it.|
 | B11 | The cone `g(b−1) ≤ ι(b)` is folklore | **Technique found; exact statement still not found** | Hunter's answer uses the same move — *"start with a maximal `t`-sunflower-free collection in uniformity `k−1`, and then add a unique 'dummy element' to each edge"* — in exactly this context. His dummies are *distinct per edge* (which grows the ground set); the repository adds *one shared* fresh point to every member (which makes the family intersecting). Same idea, different construction, different conclusion. No novelty was claimed and none is now. |
-| B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **The earlier "not found" is WITHDRAWN. The surrounding literature is central to the survey; the specific identity is still not found.** | [Kup25] read in full. Its §1.7 *Approaches to constructing bases* is about exactly this material, under names this repository did not search for: **base**, **nucleus**, **generating set**, **crosscut**, **minimal cover**. p. 52: *"the produced sets ... give exactly the family of **minimal covers** for the sets in `F`. These are the bases of the type used by Frankl in [44]. In a recent paper of Frankl [52], the family of minimal covers is efficiently analyzed in order to bound the maximal diversity of an intersecting family."* — and the construction is *"essentially due to Erdős and Lovász [39]"*. p. 59: *"a `d`-simplex are the simplest examples of non-trivial intersecting families, that is, **intersecting families with covering number 2**."* So `τ` of intersecting families is a studied quantity with a named literature. The multiplicativity identity itself is still not found, but the search that said the area was untouched was wrong twice over — wrong vocabulary, and a broken extractor. |
-| B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found** | Not in [ALWZ20] §3 (read), not in [Kup25] (now read in full). But note [Kup25] §1.7, p. 49: spreadness is now a *tool* in this literature — *"r-spread families in many ways behave like sunflowers with r petals, albeit they are much easier to find"* — via the Kupavskii–Zakharov **peeling-simplification** and **spread approximation** methods, neither of which this repository knew about. Not exhaustive. |
+| B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **The earlier "not found" is WITHDRAWN. The surrounding literature is central to the survey; the specific identity is "still not found" — but see rule 18: it is an *identity*, so no extraction-based search could have found it, and that half of the verdict is unsupported.** | [Kup25] read in full. Its §1.7 *Approaches to constructing bases* is about exactly this material, under names this repository did not search for: **base**, **nucleus**, **generating set**, **crosscut**, **minimal cover**. p. 52: *"the produced sets ... give exactly the family of **minimal covers** for the sets in `F`. These are the bases of the type used by Frankl in [44]. In a recent paper of Frankl [52], the family of minimal covers is efficiently analyzed in order to bound the maximal diversity of an intersecting family."* — and the construction is *"essentially due to Erdős and Lovász [39]"*. p. 59: *"a `d`-simplex are the simplest examples of non-trivial intersecting families, that is, **intersecting families with covering number 2**."* So `τ` of intersecting families is a studied quantity with a named literature. The multiplicativity identity itself is still not found, but the search that said the area was untouched was wrong twice over — wrong vocabulary, and a broken extractor. |
+| B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found — unsupported for the same reason as B10; see rule 18.** Both claims are formulas. | Not in [ALWZ20] §3 (read), not in [Kup25] (now read in full). But note [Kup25] §1.7, p. 49: spreadness is now a *tool* in this literature — *"r-spread families in many ways behave like sunflowers with r petals, albeit they are much easier to find"* — via the Kupavskii–Zakharov **peeling-simplification** and **spread approximation** methods, neither of which this repository knew about. Not exhaustive. |
 | B14 | Zach Hunter's ground-set equivalence, credited to MathOverflow | **FOUND AND READ IN FULL** | `mathoverflow.net/a/463150`, 30 Jan 2024, answering domotorp's question 462924. Retrieved verbatim through the StackExchange API after `WebFetch` was blocked for the site. Quoted in full below; it confirms the equivalence *and* contains two further things this repository has. |
 | B15 | Prescribed-symmetry / Kramer–Mesner applied to sunflower-free families | **Not found** | Nothing in the 2024–2026 arXiv sweep, nothing in [Kup25] pp. 5–6. Not exhaustive over design-theory venues. |
 | B16 | `ι(3)=10` is the unique simple 2-(6,3,2) design | **VERIFIED — by exhaustion, not by citation** | The Handbook of Combinatorial Designs is not open access, so the uniqueness claim could not be read. It does not need to be: there are only `C(20,10) = 184756` ways to choose ten triples from the twenty on six points. Enumerated — exactly **12** are simple 2-(6,3,2) designs, and all 12 form a **single** isomorphism class under `Sym(6)`. `720/12 = 60` re-derives `\|Aut\|` independently of `structure::automorphisms`, and agrees with it. `rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`. |
-| B19 | `HM(m,r)` — the Hilton–Milner family thinned to a grid so that it is Rao(`r`)-spread — and `¬ StarExtremalAt m m` at every `m` | **Not found. The search was narrow and is described below; this is "new to this development", not a priority claim.** | The *underlying object is classical, and that is now verified rather than assumed*. [FHHZ17] (Frankl–Han–Huang–Zhao, *A degree version of the Hilton–Milner theorem*, arXiv:1703.03896v2), **p. 1 rendered and read**, defines it verbatim: `HM_{n,k}` *"consists of a `k`-set `S` and all `k`-subsets of `[n]` containing a fixed element `x ∉ S` and at least one element of `S`."* `HM(m,r)` is exactly that family with the star part thinned to a transversal grid. What is not found is the thinning, or any extremal problem posed under a **level-wise** cap. See the search description below. |
+| B19 | `HM(m,r)` — the Hilton–Milner family thinned to a grid so that it is Rao(`r`)-spread — and `¬ StarExtremalAt m m` at every `m` | **WITHDRAWN as a negative. The search could not have found what it was looking for** — see the rule 2 box and rule 18. The claim is a *condition*, `deg T ≤ r^(m−|T|)`, and conditions do not survive text extraction. What survives is the positive half. | The *underlying object is classical, and that is now verified rather than assumed*. [FHHZ17] (Frankl–Han–Huang–Zhao, *A degree version of the Hilton–Milner theorem*, arXiv:1703.03896v2), **p. 1 rendered and read**, defines it verbatim: `HM_{n,k}` *"consists of a `k`-set `S` and all `k`-subsets of `[n]` containing a fixed element `x ∉ S` and at least one element of `S`."* `HM(m,r)` is exactly that family with the star part thinned to a transversal grid. What is not found is the thinning, or any extremal problem posed under a **level-wise** cap. See the search description below. |
 | B19a | §24.13's claim that the neighbouring literature caps *one* degree statistic rather than every level | **Confirmed — from a rendered page rather than from assertion** | Same page. [FHHZ17] p. 1: *"Let `Δ(F) := max_x d_F(x)` and `δ(F) := min_x d_F(x)` denote the maximum and minimum degree of `F`, respectively. There were extremal problems in set theory that considered the maximum or minimum degree of families satisfying certain properties. For example, Frankl [7] extended the Hilton–Milner theorem by giving sharp upper bounds on the size of intersecting families with certain maximum degree."* One statistic, capped once. Rao's condition caps `deg T ≤ r^(m−|T|)` at every `|T|` simultaneously and geometrically, which is a different hypothesis — as §24.13 said and could not then cite. |
-| B19b | The word "spread" in this literature means what it means here | **REFUTED, and the trap is worth recording** | A web search for spread intersecting families returns the **fractional** notion — a family is `r`-spread when the maximum `s`-degree is at most `r^(−s)·|F|` — which is `Spread.Spread` in this development, *not* `Spread.RaoSpread`. `Spread.RaoSpread_Spread` relates them in one direction only, and the absolute form is the stronger hypothesis once a family exceeds `r^m`. A literature search on "spread" that does not disambiguate returns the wrong object; every negative in B19 was run against the absolute form. |
+| B19b | The word "spread" in this literature means what it means here | **REFUTED twice over** | A web search for spread intersecting families returns the **fractional** notion — a family is `r`-spread when the maximum `s`-degree is at most `r^(−s)·|F|` — which is `Spread.Spread` in this development, *not* `Spread.RaoSpread`. `Spread.RaoSpread_Spread` relates them in one direction only, and the absolute form is the stronger hypothesis once a family exceeds `r^m`. A literature search on "spread" that does not disambiguate returns the wrong object. And the notion is *also* studied under a name containing neither word — see B19c. |
+| B19c | A **level-wise, geometric** cap on the degrees of a family is not a studied notion | **REFUTED. It is studied, it is named, and the name contains neither "spread" nor "degree".** | [Kup25] p. 53, **rendered and read**: *"We say that a family `F ⊂ A` is `τ`-homogeneous with respect to `A`, if for any set `X` we have `|F(X)|/|F| ≤ τ^|X| · |A(X)|/|A|`. ... then it transforms into `μ(F(X)) ≤ τ^|X| μ(F)`."* Attributed to Zakharov and the author [98], alongside the *spread approximation* method, with a footnote recording a notation clash with Füredi's `τ`-homogeneous. This is a cap at **every** level, **geometric in `|X|`** — the shape of Rao's condition, generalised to an arbitrary ambient family `A`. With `A = binom([n],k)` it is the fractional condition (`Spread.Spread`) rather than the absolute one (`Spread.RaoSpread`), so it is not the same hypothesis; but §24.13's framing — that the neighbouring literature caps *one* statistic and a level-wise cap is a different kind of object — is **too strong as written**. What remains not found is the *absolute* form and the Hilton–Milner-shaped extremal question under it. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -112,57 +134,103 @@ literature, resolved.
 
 ---
 
-## The B19 search, described
+## The B19 search, and why it was not a search
 
-Rule 5 asks that a source which could not be reached gets an entry saying
-so; the same is owed to a *negative*, since a "not found" is worth only
-what the search behind it was worth. This one was small.
+The first version of this section reported a negative. It was withdrawn
+within the hour, and the reason is worth more than the row.
 
-**Corpus, exhaustively.** All 16 PDFs in `docs/papers/pdf`, page by page,
-located with `pdftotext` on the vocabulary `hilton`, `milner`, `diversity`,
+**What was done.** All 16 PDFs in `docs/papers/pdf`, page by page,
+located with `pdftotext` on `hilton`, `milner`, `diversity`,
 `maximal degree`, `maximum degree`, `non-trivial intersecting` — each word
-searched **separately**, because the rule 2 box records that this corpus
-breaks hyphenated phrases across lines and a two-word search misses them.
-Three files hit:
+separately, because the rule 2 box records that this corpus breaks
+hyphenated phrases across lines. Three files hit; two of the hit pages
+(`vcdim2025.pdf` p. 3, `kupavskii_survey.pdf` p. 59) were rendered and
+read. Two web queries. One primary paper, [FHHZ17], downloaded, rendered
+and read at p. 1.
+
+**Why that is not a search for this claim.** Every term in the list above
+is an English word. The claim is not: it is the *condition*
+`deg T ≤ r^(m−|T|)`. A paper that poses exactly this extremal problem
+would state it as displayed mathematics, and displayed mathematics does
+not survive extraction — `pdftotext` returns `Δ(𝑘 𝑟 )-system` for
+`Δ(k^r)-system`, with the superscript flattened to a space and every
+italic variable replaced by a *different Unicode character* (`𝑘` is
+U+1D458, not `k`). `grep "B(k)"` returns 0 on a page containing `B^(k)`.
+So the locator was blind to precisely the thing being looked for, and a
+paper could state the condition on every page and still register zero
+hits.
+
+The word list would find a paper that *talks about* Hilton–Milner or
+degree conditions in prose. It cannot find a paper that *writes down* a
+level-wise cap. Those are different searches and only the first was run.
+
+> **Rule 18. `pdftotext` locates prose words in ASCII, and nothing else.
+> A claim about a formula, a condition, an inequality or a variable can
+> only be searched by rendering every page and reading it.** Rule 2 said
+> extraction cannot establish absence because it breaks lines. The deeper
+> reason is that it does not preserve the alphabet: mathematical italics
+> are a different Unicode block from Latin letters, and superscripts are
+> whitespace. A grep over extracted text is not a weak search for
+> mathematics — it is not a search for mathematics.
+
+**What this costs elsewhere.** B10, B12 and B13 are negatives about a
+sandwich inequality, a multiplicativity identity and a spreadness
+exponent. All three are formulas, all three were searched the same way,
+and all three are now flagged in the register as unsupported on the same
+grounds. None is *refuted*; each is simply not evidenced.
+
+**What was actually established, and it survives.** The positive half of
+B19 needs no search: [FHHZ17] p. 1 was **rendered and read**, and defines
+`HM_{n,k}` verbatim, so the classical object underlying `HM(m,r)` is
+confirmed rather than assumed. B19a and B19b likewise rest on rendered
+pages. Only the *absence* claim is withdrawn.
+
+### The rendered pass, and what it immediately found
+
+Redone the only way that counts: `pdftoppm` at 140–150 dpi, pages looked
+at one at a time, asking whether the page poses or uses a **level-wise**
+cap on the degrees of a family.
 
 ```
-  vcdim2025.pdf          pp. 3, 4, 23, 25
-  kupavskii_survey.pdf   pp. 18, 52, 53, 59, 64, 65
-  odd_sunflowers.pdf     pp. 1, 6, 8
+  FHHZ17                p. 1                    read
+  vcdim2025.pdf         p. 3                    read
+  kupavskii_survey.pdf  pp. 42, 52, 53, 59      read
 ```
 
-`vcdim2025.pdf` p. 3 and `kupavskii_survey.pdf` p. 59 were **rendered and
-read**. The first invokes Hilton–Milner only by analogy, for a
-VC-dimension conjecture. The second is the `d`-simplex / `d`-cluster line —
-*"a `d`-simplex are the simplest examples of non-trivial intersecting
-families, that is, intersecting families with covering number 2"* — the
-classical EKR-stability literature, with no degree cap of any kind.
-Neither is the question.
+**Six pages in, the negative collapsed.** [Kup25] p. 53 — a page the
+*earlier* grep had already listed as a hit and which was then never
+rendered — defines exactly the missing notion:
 
-**Outside the corpus.** Two web searches: one on the spread-plus-Hilton–Milner
-framing, one on the level-wise cap `deg T ≤ r^(m−|T|)` directly. What they
-surface is three neighbouring lines and not this one — degree versions of
-Hilton–Milner (Frankl 1987; Huang–Zhao; [FHHZ17]); spreadness used as a
-*tool* (Kupavskii–Zakharov spread approximation, already in this file); and
-Hilton–Milner analogues transplanted to other host structures, vector
-spaces and the partition lattice and multisets and direct products. One
-result, [FHHZ17], was downloaded, rendered and read at p. 1; it is the
-evidence in B19 and B19a.
+> *"We say that a family `F ⊂ A` is `τ`-homogeneous with respect to `A`,
+> if for any set `X` we have `|F(X)|/|F| ≤ τ^|X| · |A(X)|/|A|`."*
 
-**What was not done, and it is the larger part.** No MathSciNet or zbMATH
-search, and no journal-side search at all. No search under the synonyms
-this file's own rule 2 box says a negative needs — *nucleus*, *base*,
-*crosscut*, *generating set*, *minimal cover* for the covering structure,
-and *`s`-star* / *Δ-system* for the sunflower. Nothing outside English.
-Rule 4 forbids concluding anything from a search snippet, so the two web
-searches establish only that a first-page look did not surface the
-question, which is close to the weakest negative there is.
+A cap at every level, geometric in `|X|`. That is the shape of Rao's
+condition, generalised to an arbitrary ambient family, introduced by
+Zakharov and Kupavskii alongside spread approximation. It is B19c, and it
+means §24.13's "the neighbouring literature caps one statistic" is too
+strong as written — B19a's quotation is accurate about *Frankl's* line but
+was never the whole picture.
 
-**So B19's verdict is the honest one:** the object is a thinning of a 1967
-family, the thinning was not found, and the search that failed to find it
-was a corpus grep, two web queries and one primary page. A specialist in
-the degree-condition line named on [FHHZ17] p. 1 may well recognise it on
-sight.
+The same page is worth reading twice for a second reason. It appears in a
+run of neighbouring notions this repository has been circling without
+names: **diversity** of an intersecting family (p. 52, Frankl [52],
+bounded via minimal covers) is the closest published relative of `I₂`, the
+largest *non-star* intersecting family.
+
+**Two failures produced this, and they compound.** The word-grep could not
+see a formula (rule 18). And of the pages it *did* flag, only some were
+rendered — pp. 18, 52, 53, 64, 65 of the survey were located and skipped,
+and p. 53 is the one that mattered. Locating and not reading is the same
+error as not locating, with the excuse removed.
+
+**What is still not read.** 60 of the survey's 66 pages, all 15 other
+corpus PDFs in full, and everything outside the corpus except [FHHZ17]
+p. 1. On the evidence so far the honest position is: a level-wise
+geometric cap **is** a studied notion; Rao's *absolute* form under an
+*intersecting* hypothesis, with the Hilton–Milner-shaped extremal
+question, has not been found — and that remaining negative is worth very
+little until the pass above is finished.
+
 
 ---
 
@@ -1642,3 +1710,45 @@ search:
 > novelty claims to evidence. A result that never acquired a register row
 > has not earned the unqualified word, however elementary the search would
 > have been.
+
+### Rule 18, and the pass that proved it in six pages
+
+Session N+9 recorded a Tier B negative built on a `pdftotext` word-grep.
+Asked to render the pages instead, it took **six pages** to refute its own
+row: [Kup25] p. 53 defines `τ`-homogeneous families, a cap at every level
+that is geometric in `|X|`, which is the shape the search was looking for
+and the shape extraction cannot represent.
+
+The mechanism is worth stating precisely, because "pdftotext is
+unreliable" understates it. Extraction does not degrade mathematics; it
+**re-encodes it into a different alphabet**. On p. 49 of the same survey,
+`Δ(k^r)-system` comes out as `Δ(𝑘 𝑟 )-system`, where
+
+```
+  𝑘  is U+1D458  MATHEMATICAL ITALIC SMALL K   -- not U+006B 'k'
+  𝑟  is U+1D45F  MATHEMATICAL ITALIC SMALL R   -- not U+0072 'r'
+```
+
+and the superscript is a space. `grep "B(k)"` returns 0 on a page
+containing `B^(k)`. So a grep for a variable, a condition or an
+inequality is not a weak search — the characters are not present to be
+matched.
+
+> **Rule 18. `pdftotext` locates prose words in ASCII and nothing else. A
+> claim about a formula, a condition, an inequality or a variable can only
+> be searched by rendering every page and looking at it.**
+
+There is a second, less excusable half. The grep had flagged pp. 18, 52,
+53, 64, 65 of the survey; four of the five were never rendered, and p. 53
+was the one that mattered. **Locating a page and not opening it is the
+same failure as not locating it, with the excuse removed.**
+
+> **Rule 19. Render every page the locator flags, before reporting
+> anything about the ones you did render.** A hit list is a work item, not
+> a result. Reporting a negative while part of the list is unopened
+> misrepresents the search as finished.
+
+Three earlier rows — B10, B12, B13 — are negatives about an inequality, an
+identity and an exponent. All three were searched the same way and are now
+flagged in the register as unsupported. None is refuted; each is simply
+not evidenced, and re-running them is a rendered-pass job.
