@@ -3,15 +3,16 @@
 //!
 //!     cross_pair_scan <u> <r> <ground> <restarts> [seed] [mode]
 //!
-//! `mode` is 0 (default, unconstrained) or 1 (only score configurations
-//! in which *neither* side is a star -- the case that decided `u = 2`).
+//! `mode` is 0 (default, unconstrained), 1 (only score configurations in
+//! which *neither* side is a star -- the case that decided `u = 2`), or 2
+//! (neither a star **and** both sides containing two disjoint members --
+//! the sub-case no argument here reaches at `u = 3`).
 //!
 //! `CrossRefined.cross_pair_two_exact` settles `u = 2` exactly:
-//! `max(2r+1, 6)`. At `u = 3` the same question is open, and the
-//! candidate shapes disagree about which is extremal — one member of `B`
-//! against three full stars gives `3r² + 1`, three pairwise disjoint
-//! members of `B` against the triples meeting all of them gives
-//! `3·min(r², 3r) + 3`, and the second is bigger at small `r`.
+//! `max(2r+1, 6)`. `CrossRefined.cross_pair_three_exact` settles `u = 3`
+//! for `r >= 6` as `3r² + 1`; `r = 2` is refuted and `r = 3,4,5` are
+//! open. Two shapes worked out by hand gave 13 and 15 at `u = 3, r = 2`
+//! and this search found 17, which is why it exists.
 //!
 //! This is a stochastic maximiser, not an exhaustive search: every row it
 //! prints is a **lower** bound on the true maximum on that ground, and a
@@ -107,7 +108,15 @@ fn main() {
                     }
                 }
             }
-            let ok = mode == 0 || (!pointed(&fa) && !pointed(&fb));
+            let has_disjoint = |f: &[Mask]| {
+                f.iter().any(|&x| f.iter().any(|&y| x & y == 0))
+            };
+            let ok = match mode {
+                0 => true,
+                1 => !pointed(&fa) && !pointed(&fb),
+                _ => !pointed(&fa) && !pointed(&fb)
+                    && has_disjoint(&fa) && has_disjoint(&fb),
+            };
             if ok && fa.len() + fb.len() > best {
                 best = fa.len() + fb.len();
                 best_pair = (fa.clone(), fb.clone());

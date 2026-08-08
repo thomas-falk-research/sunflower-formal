@@ -6992,8 +6992,14 @@ exhaustive, and the section says so wherever the numbers are used.
   r                    2    3    4    5    6
   best found          17   28   49   76  109
   3r² + 1             13   28   49   76  109
-  neither pointed     17   24   33   36    -
+  neither pointed     17   28   36   41   47
 ```
+
+> **Correction.** The neither-pointed row was first recorded here as
+> `17 24 33 36`, from a shorter run. Those were valid lower bounds and
+> the inference drawn from them — that the row grows, unlike `u = 2`'s
+> constant 6 — survives; but they were under-searched, and the `r = 3`
+> entry matters. It is **28**, which is `3r²+1` exactly.
 
 So `u = 3` has the *shape* `u = 2` has: the star branch
 `u·r^(u-1) + 1` — one member of `B` against `u` full stars — plus a
@@ -7049,17 +7055,37 @@ it — which is the payoff for having done `u = 2` properly.
 
 `r = 3,4,5` are neither proved nor refuted: the measured values agree with
 `3r²+1` there, and the branch that fails to close is the neither-pointed
-one (measured 24, 33, 36 against the greedy's 54, 72, 90).
+one (measured 28, 36, 41 against the greedy's 54, 72, 90).
 
-**What closing them would need, stated exactly.** A structure theory for
-3-uniform families with no common point. The `u = 2` proof used "an
-intersecting graph pointed at nothing *is* a triangle"; the 3-uniform
-analogue is Frankl's classification of intersecting families by covering
-number, which this development does not have —
-`TauThree.tau_three_bound` supplies only the covering-number-3 piece, and
-`CrossIntersecting.two_cover_split` only the covering-number-2 split. That
-is the next concrete step, and it is the same object §26 has been circling
-from the other side.
+**Why `r = 3` in particular is out of reach, measured rather than
+guessed.** At `r = 3` the neither-pointed branch *attains* the whole
+bound: `rust/tests/cross_refined.rs` carries a cross-intersecting
+Rao(3)-spread pair with 26 and 2 members, **neither a star**, both sides
+containing two disjoint members, totalling `28 = 3r²+1`. So any proof of
+the `r = 3` row has to be exactly tight on the hardest case — there is no
+slack anywhere to spend. The three-branch argument above has 26 of slack
+there (54 against 28).
+
+**What closing `r = 4,5` would need, stated exactly.** Two things, and
+both are missing:
+
+1. *A bound for the case where both sides contain two disjoint members.*
+   The measured maximum is `9r + 2`-ish (36, 41, 47 at `r = 4,5,6`) and
+   the greedy tree gives `18r`. The mechanism is visible: if all nine
+   crossing pairs of two disjoint members of `A` have degree at least 4,
+   then a partner member cannot avoid both ends of any of them, so it
+   contains one of the two members outright and the other side collapses
+   to 2. But **that mechanism is vacuous at `r = 3`**, because a pair has
+   degree at most `r^(m-2) = r = 3` there — which is the same fact as the
+   paragraph above, from the other side.
+2. *A sharper covering-number-3 bound.* `TauThree.tau_three_bound` proves
+   16 where the exhaustive truth is Frankl's 10, and the branch where one
+   side is intersecting needs the 10: at `r = 4` it is `36 + 16 = 52`
+   against 49 with the 16, and `36 + 13 = 49` with the 10.
+
+Neither is a small step. The second is Frankl's classification of
+intersecting families by covering number, which this development does not
+have — it is the same object §26 has been circling from the other side.
 
 ### 27.8 The one-line verdict
 

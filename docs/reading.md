@@ -1451,8 +1451,19 @@ hand shapes been written up as "the extremal configurations" — the tone
 
 The measurement also decided the architecture. At `u = 2` the second
 branch of the maximum is the constant 6, so `unpointed_pair_bound` needs
-no `r`; at `u = 3` the neither-pointed maximum is 17, 24, 33, 36 and
-*grows*, so there is no constant to prove and no analogue of that lemma
-to write. Knowing that before starting is what turned a search for a
-non-existent theorem into a correct statement of what does close
-(`r ≥ 6`) and what does not (`r = 2` refuted, `r = 3,4,5` open).
+no `r`; at `u = 3` the neither-pointed maximum *grows*, so there is no
+constant to prove and no analogue of that lemma to write. Knowing that
+before starting is what turned a search for a non-existent theorem into a
+correct statement of what does close (`r ≥ 6`) and what does not (`r = 2`
+refuted, `r = 3,4,5` open).
+
+> **Rule 13. A lower bound from a stochastic search is a lower bound on
+> that search's effort, not on the quantity.** The neither-pointed row was
+> first recorded as `17 24 33 36` and the numbers were used to argue how
+> hard the open rows were. Re-running the same search for three times as
+> long gave `17 28 36 41`, and the `r = 3` entry moved from "24, with 4 to
+> spare against 28" to "28, with nothing to spare" — which is the
+> difference between a row that might close and one that cannot close
+> without an exactly tight argument. Nothing was *false*; the inference
+> drawn from the numbers was worth less than it looked. Re-measure before
+> a measurement is asked to carry an argument about difficulty.

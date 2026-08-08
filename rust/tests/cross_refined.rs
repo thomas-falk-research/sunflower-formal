@@ -580,9 +580,44 @@ fn the_uniformity_three_bound_and_where_it_closes() {
         }
     }
     // the neither-pointed maximum grows, unlike the constant 6 at u = 2
-    for (r, found) in [(2u64, 17u64), (3, 24), (4, 33), (5, 36)] {
+    for (r, found) in [(2u64, 17u64), (3, 28), (4, 36), (5, 41), (6, 47)] {
         assert!(found <= neither(r), "r={r}");
         assert!(found >= 6);
     }
-    assert!(17 < 24 && 24 < 33 && 33 < 36);
+    assert!(17 < 28 && 28 < 36 && 36 < 41 && 41 < 47);
+
+    // and at r = 3 it *reaches* 3r^2+1, so the neither-pointed branch has
+    // no slack at all there -- which is why no argument with slack can
+    // close the r = 3 row. The witness, checked here independently.
+    let (na, nb) = neither_pointed_three();
+    assert_eq!(na.len() + nb.len(), 28);
+    assert_eq!(na.len() + nb.len(), star(3) as usize);
+    assert!(uniform(&na, 3) && uniform(&nb, 3));
+    assert!(distinct(&na) && distinct(&nb));
+    assert!(is_rao_spread(3, &na, 3, 13));
+    assert!(is_rao_spread(3, &nb, 3, 13));
+    assert!(cross_intersecting(&na, &nb));
+    assert!(unpointed(&na, 13) && unpointed(&nb, 13));
+    // both sides contain two disjoint members, the sub-case no argument
+    // in `CrossRefined` reaches
+    assert!(na.iter().any(|&x| na.iter().any(|&y| x & y == 0)));
+    assert!(nb.iter().any(|&x| nb.iter().any(|&y| x & y == 0)));
+}
+
+/// A neither-pointed cross-intersecting Rao(3)-spread pair at `u = 3`
+/// with `26 + 2 = 28 = 3r^2 + 1` members: the branch that blocks the
+/// `r = 3` row, at the value the whole bound would have to be.
+fn neither_pointed_three() -> (Vec<Mask>, Vec<Mask>) {
+    let a: Vec<Mask> = [
+        [5, 10, 11], [0, 10, 11], [0, 11, 12], [0, 9, 10], [1, 10, 11],
+        [1, 6, 10], [2, 6, 10], [2, 11, 12], [0, 5, 9], [1, 5, 9],
+        [1, 9, 10], [1, 6, 12], [0, 9, 12], [1, 9, 12], [2, 9, 12],
+        [1, 11, 12], [2, 9, 10], [2, 6, 12], [0, 5, 11], [1, 5, 11],
+        [0, 6, 12], [0, 5, 6], [1, 5, 6], [2, 5, 6], [2, 5, 9], [0, 6, 10],
+    ]
+    .iter()
+    .map(|t| mask(t))
+    .collect();
+    let b: Vec<Mask> = [[5u32, 10, 12], [6, 9, 11]].iter().map(|t| mask(t)).collect();
+    (a, b)
 }
