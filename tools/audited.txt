@@ -820,8 +820,11 @@ thm Counting.count_disjoint_add
 thm Counting.count_mono
 thm Counting.NoDup_map_inj
 thm Counting.count_inj_le
+thm Counting.pairs_length
+thm Counting.count_pairs_le
 thm Counting.layer_count_le_two_pow
 thm Counting.layer_ratio
 def Counting.binom
 def Counting.subsets_of_size
 def Counting.count
+def Counting.pairs

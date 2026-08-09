@@ -7,7 +7,10 @@
 
     - fixed-size subset enumeration, with its count;
     - a counting operator with "an injection implies an inequality" and
-      additivity over disjoint predicates;
+      additivity over disjoint predicates — stated at an *arbitrary*
+      type, not at [list nat] as §1's sketch has it, because Claim 3.4
+      counts **pairs** [(S,V)]; see [pairs] and [pairs_length] below,
+      which are the whole of the Stage A / Stage B interface;
     - [C(n,j) <= 2^n];
     - **one binomial estimate**, and it is the only place in the whole
       proof where a rational would otherwise appear.
@@ -48,7 +51,7 @@
 
 From Coq Require Import List Arith Lia.
 From Coq Require Import PeanoNat.
-From Sunflower Require Import Sets Pigeonhole Spread.
+From Sunflower Require Import Sets Sunflower Pigeonhole Spread.
 Import ListNotations.
 
 Set Implicit Arguments.
@@ -331,38 +334,41 @@ Qed.
     Stage B needs are that an injection between the counted parts gives
     an inequality, and that disjoint predicates add. *)
 
-Definition count (p : list nat -> bool) (L : list (list nat)) : nat :=
+Definition count {A : Type} (p : A -> bool) (L : list A) : nat :=
   length (filter p L).
 
-Lemma count_le_length : forall p L, count p L <= length L.
-Proof. intros p L; apply length_filter_le. Qed.
+Lemma count_le_length : forall {A : Type} (p : A -> bool) (L : list A),
+    count p L <= length L.
+Proof. intros A p L; apply length_filter_le. Qed.
 
 Lemma count_partition :
-  forall p L, count p L + count (fun A => negb (p A)) L = length L.
+  forall {A : Type} (p : A -> bool) (L : list A),
+    count p L + count (fun x => negb (p x)) L = length L.
 Proof.
-  intros p L; unfold count; symmetry; apply length_filter_partition.
+  intros A p L; unfold count; symmetry; apply length_filter_partition.
 Qed.
 
 Lemma count_disjoint_add :
-  forall p q L,
-    (forall A, p A = true -> q A = false) ->
-    count p L + count q L = count (fun A => orb (p A) (q A)) L.
+  forall {A : Type} (p q : A -> bool) (L : list A),
+    (forall x, p x = true -> q x = false) ->
+    count p L + count q L = count (fun x => orb (p x) (q x)) L.
 Proof.
-  intros p q L Hdisj; unfold count.
-  induction L as [|A L IH]; simpl; [reflexivity|].
-  destruct (p A) eqn:Ep.
-  - rewrite (Hdisj A Ep); simpl; lia.
-  - destruct (q A); simpl; lia.
+  intros A p q L Hdisj; unfold count.
+  induction L as [|x L IH]; simpl; [reflexivity|].
+  destruct (p x) eqn:Ep.
+  - rewrite (Hdisj x Ep); simpl; lia.
+  - destruct (q x); simpl; lia.
 Qed.
 
 Lemma count_mono :
-  forall p q L, (forall A, p A = true -> q A = true) -> count p L <= count q L.
+  forall {A : Type} (p q : A -> bool) (L : list A),
+    (forall x, p x = true -> q x = true) -> count p L <= count q L.
 Proof.
-  intros p q L Himp; unfold count.
-  induction L as [|A L IH]; simpl; [lia|].
-  destruct (p A) eqn:Ep.
-  - rewrite (Himp A Ep); simpl; lia.
-  - destruct (q A); simpl; lia.
+  intros A p q L Himp; unfold count.
+  induction L as [|x L IH]; simpl; [lia|].
+  destruct (p x) eqn:Ep.
+  - rewrite (Himp x Ep); simpl; lia.
+  - destruct (q x); simpl; lia.
 Qed.
 
 (** *** An injection implies an inequality
@@ -376,42 +382,77 @@ Qed.
     [NoDup_map_inv] is. Injectivity is needed only on the list itself. *)
 
 Lemma NoDup_map_inj :
-  forall (f : list nat -> list nat) (l : list (list nat)),
-    (forall A B, In A l -> In B l -> f A = f B -> A = B) ->
+  forall {A B : Type} (f : A -> B) (l : list A),
+    (forall x y, In x l -> In y l -> f x = f y -> x = y) ->
     NoDup l -> NoDup (map f l).
 Proof.
-  induction l as [|a l IH]; intros Hinj Hnd; simpl; [constructor|].
+  intros A B f l; induction l as [|a l IH]; intros Hinj Hnd; simpl; [constructor|].
   inversion Hnd as [|? ? Hna Hnd']; subst.
   constructor.
   - intro Hin; apply in_map_iff in Hin as [b [E Hb]].
     apply Hna.
     rewrite (Hinj a b (or_introl eq_refl) (or_intror Hb) (eq_sym E)); exact Hb.
-  - apply IH; [intros A B HA HB; apply Hinj; right; assumption | exact Hnd'].
+  - apply IH; [intros x y Hx Hy; apply Hinj; right; assumption | exact Hnd'].
 Qed.
 
 Theorem count_inj_le :
-  forall (p q : list nat -> bool) (f : list nat -> list nat)
-         (L M : list (list nat)),
+  forall {A B : Type} (p : A -> bool) (q : B -> bool) (f : A -> B)
+         (L : list A) (M : list B),
     NoDup L ->
-    (forall A, In A L -> p A = true -> In (f A) M /\ q (f A) = true) ->
-    (forall A B, In A L -> In B L -> p A = true -> p B = true ->
-                 f A = f B -> A = B) ->
+    (forall x, In x L -> p x = true -> In (f x) M /\ q (f x) = true) ->
+    (forall x y, In x L -> In y L -> p x = true -> p y = true ->
+                 f x = f y -> x = y) ->
     count p L <= count q M.
 Proof.
-  intros p q f L M HL Hmap Hinj; unfold count.
+  intros A B p q f L M HL Hmap Hinj; unfold count.
   assert (HLp : NoDup (filter p L)) by (apply NoDup_filter; exact HL).
   assert (Hincl : incl (map f (filter p L)) (filter q M)).
-  { intros B HB; apply in_map_iff in HB as [A [E HA]]; subst B.
-    apply filter_In in HA as [HAL HAp].
-    destruct (Hmap A HAL HAp) as [HfM Hfq].
+  { intros y Hy; apply in_map_iff in Hy as [x [E Hx]]; subst y.
+    apply filter_In in Hx as [HxL Hxp].
+    destruct (Hmap x HxL Hxp) as [HfM Hfq].
     apply filter_In; split; assumption. }
   assert (Hnd : NoDup (map f (filter p L))).
-  { apply (@NoDup_map_inj f (filter p L)); [| exact HLp].
-    intros A B HA HB E.
-    apply filter_In in HA as [HAL HAp]; apply filter_In in HB as [HBL HBp].
-    apply (Hinj A B HAL HBL HAp HBp E). }
+  { apply (@NoDup_map_inj A B f (filter p L)); [| exact HLp].
+    intros x y Hx Hy E.
+    apply filter_In in Hx as [HxL Hxp]; apply filter_In in Hy as [HyL Hyp].
+    apply (Hinj x y HxL HyL Hxp Hyp E). }
   pose proof (NoDup_incl_length Hnd Hincl) as Hlen.
   rewrite map_length in Hlen; exact Hlen.
+Qed.
+
+(** *** The sample space Claim 3.4 divides by
+
+    The counting layer is polymorphic, and that is not decoration: Lovett's
+    Claim 3.4 counts **pairs** [(S, V)] — a member of the family and a
+    sampled subset of fixed size — so a [count] typed at [list nat] would
+    not have served Stage B at all. The displayed ratio there is
+
+    <<
+      Pr[ |M(S,V)| >= n/2 ]  =  |B| / ( |F| * C(N, qN) )
+    >>
+
+    and the denominator is exactly the size of the pair enumeration
+    below. This is the Stage A / Stage B interface. *)
+
+Definition pairs (F : Family) (j : nat) (l : list nat)
+  : list (list nat * list nat) := list_prod F (subsets_of_size j l).
+
+Theorem pairs_length :
+  forall F j l, length (pairs F j l) = length F * binom (length l) j.
+Proof.
+  intros F j l; unfold pairs.
+  rewrite prod_length, length_subsets_of_size; reflexivity.
+Qed.
+
+(** And the shape a bound on [|B|] takes: any predicate on pairs counts
+    at most the whole sample space. *)
+
+Corollary count_pairs_le :
+  forall (p : list nat * list nat -> bool) F j l,
+    count p (pairs F j l) <= length F * binom (length l) j.
+Proof.
+  intros p F j l.
+  eapply Nat.le_trans; [apply count_le_length | rewrite pairs_length; lia].
 Qed.
 
 (** ** The layer count, as Stage B will call it

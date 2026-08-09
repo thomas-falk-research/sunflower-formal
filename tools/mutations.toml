@@ -2188,11 +2188,11 @@ id = "count-inj-drops-nodup"
 file = "coq/Counting.v"
 question = """count_inj_le requires NoDup on the domain only. Is that \
 hypothesis doing work, or does an injection bound the count regardless?"""
-find = """         (L M : list (list nat)),
+find = """         (L : list A) (M : list B),
     NoDup L ->
-    (forall A, In A L -> p A = true -> In (f A) M /\\ q (f A) = true) ->"""
-replace = """         (L M : list (list nat)),
-    (forall A, In A L -> p A = true -> In (f A) M /\\ q (f A) = true) ->"""
+    (forall x, In x L -> p x = true -> In (f x) M /\\ q (f x) = true) ->"""
+replace = """         (L : list A) (M : list B),
+    (forall x, In x L -> p x = true -> In (f x) M /\\ q (f x) = true) ->"""
 expect = "killed"
 because = """Doing work. Without NoDup the domain may repeat, so the \
 count on the left over-counts what the injection maps into: L = [A; A] \

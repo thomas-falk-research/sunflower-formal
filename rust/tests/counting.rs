@@ -325,3 +325,32 @@ fn the_estimate_at_a_quarter_matches_the_coq_example() {
     // and `Counting.absorb_above_the_diagonal`
     assert_eq!(binom_pascal(4, 6) * 6, binom_pascal(4, 5) * msub(4, 5));
 }
+
+// ---------------------------------------------------------------------------
+// The Stage A / Stage B interface: the sample space of pairs
+// ---------------------------------------------------------------------------
+
+#[test]
+fn the_pair_sample_space_has_the_size_claim_three_four_divides_by() {
+    // `Counting.pairs_length`: |pairs F j l| = |F| * C(|l|, j), which is
+    // the denominator of Lovett Claim 3.4's ratio.
+    for family_size in 0..=6usize {
+        for n in 0..=8usize {
+            for j in 0..=5usize {
+                let layer_size = binom_pascal(n, j) as usize;
+                let expected = family_size * layer_size;
+                // the enumeration itself, built the way list_prod does
+                let count = (0..family_size)
+                    .flat_map(|s| (0..layer_size).map(move |v| (s, v)))
+                    .count();
+                assert_eq!(
+                    count, expected,
+                    "pairs_length fails at |F|={family_size} n={n} j={j}"
+                );
+            }
+        }
+    }
+    // and the concrete shape Stage B will hand in: N = 8, q = 1/4 so
+    // j = 2, a family of 5 members -- 5 * C(8,2) = 5 * 28 = 140 pairs.
+    assert_eq!(5 * binom_pascal(8, 2), 140);
+}

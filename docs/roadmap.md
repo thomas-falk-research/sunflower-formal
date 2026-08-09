@@ -8168,8 +8168,8 @@ reading session — the counting proof ([ALWZ20] §2 as streamlined by
 Park–Pham, written out in [Lovett] §3, pp. 11–15), in three stages, with
 C17 recording *why* that proof and not Rao's. Nobody had started it.
 
-**Stage A is done.** `coq/Counting.v`, one module, no axiom, 24 audited
-theorems and 3 audited definitions, every one `Closed under the global
+**Stage A is done.** `coq/Counting.v`, one module, no axiom, 26 audited
+theorems and 4 audited definitions, every one `Closed under the global
 context`.
 
 ### 30.1 What is in it
@@ -8259,6 +8259,39 @@ statement to fit. Both are wasted, and neither is visible from §1's text.
 > record the witness that shows the weakening stops there.** The
 > application's hypothesis is a *use*, not a specification.
 
+### 30.2a The counting layer is polymorphic, and it had to be
+
+§1's sketch types the counting operator as
+`count : (list nat -> bool) -> list (list nat) -> nat`, and the first
+draft of `Counting.v` followed it. That would not have served Stage B.
+
+**Claim 3.4 counts pairs.** Its displayed ratio is
+
+```
+  Pr[ |M(S,V)| >= n/2 ]  =  |B| / ( |F| * C(N, qN) )
+```
+
+with `B = {(S,V) : S ∈ F, V ⊆ U, |V| = qN, |M(S,V)| ≥ n/2}` — the domain
+is `list (list nat * list nat)`, not `list (list nat)`. A counting layer
+typed at `list nat` would have had to be redone, or worked around by
+encoding a pair as one list with a separator, which is exactly the kind of
+thing that makes a formalisation unreadable.
+
+`count`, `count_le_length`, `count_partition`, `count_disjoint_add`,
+`count_mono`, `NoDup_map_inj` and `count_inj_le` are therefore stated at
+an arbitrary type. Nothing is lost — `NoDup_incl_length`, which
+`count_inj_le` goes through, is polymorphic in Coq's standard library and
+needs no decidable equality — and the interface to Stage B can be named:
+
+```
+  pairs F j l      := list_prod F (subsets_of_size j l)
+  pairs_length     : |pairs F j l| = |F| * binom |l| j     <- the denominator
+  count_pairs_le   : count p (pairs F j l) <= |F| * binom |l| j
+```
+
+`pairs_length` **is** Claim 3.4's denominator. That is the whole of the
+Stage A / Stage B interface, and it is one line.
+
 ### 30.3 Measured
 
 ```
@@ -8282,6 +8315,9 @@ statement to fit. Both are wasted, and neither is visible from §1's text.
                           n <= 14; and the layers of [n] exhaust 2^n
   binom_le_two_pow        C(n,j) <= 2^n for n <= 30, and the row sums to
                           2^n exactly -- which is length_subsets
+  pairs                   |F| * C(|l|,j) as an enumeration, checked
+                          against list_prod's length for |F| <= 6,
+                          |l| <= 8, j <= 5
   count                   partition, monotonicity, disjoint additivity,
                           and complementation as an injection from the
                           size-4 layer of a 10-set into the size-6 layer,
@@ -8290,8 +8326,8 @@ statement to fit. Both are wasted, and neither is visible from §1's text.
 
 ### 30.4 Costs and gates
 
-New: `coq/Counting.v` (24 audited theorems, 3 audited definitions, no
-axiom), `rust/tests/counting.rs` (9 tests, independent implementations),
+New: `coq/Counting.v` (26 audited theorems, 4 audited definitions, no
+axiom), `rust/tests/counting.rs` (10 tests, independent implementations),
 6 mutations. The manifest is now 137 mutations.
 
 ### 30.5 What Stage A does *not* do, and what is next

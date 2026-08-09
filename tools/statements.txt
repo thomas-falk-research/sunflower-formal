@@ -2086,23 +2086,29 @@ faa25cf84a443daa  thm Counting.NoDup_app_disjoint
 c305c0ede58d644f  thm Counting.subsets_of_size_NoDup_enum
     subsets_of_size_NoDup_enum : forall (j : nat) (l : list nat), List.NoDup l -> List.NoDup (subsets_of_size j l)
 
-97ec6050830a9985  thm Counting.count_le_length
-    count_le_length : forall (p : list nat -> bool) (L : list (list nat)), count p L <= length L
+40ee6b50320222a8  thm Counting.count_le_length
+    count_le_length : forall (p : ?A -> bool) (L : list ?A), count p L <= length L where ?A : [ |- Type]
 
-3374f401e9497d8e  thm Counting.count_partition
-    count_partition : forall (p : list nat -> bool) (L : list (list nat)), count p L + count (fun A : list nat => negb (p A)) L = length L
+d9895ca8a2b19591  thm Counting.count_partition
+    count_partition : forall (p : ?A -> bool) (L : list ?A), count p L + count (fun x : ?A => negb (p x)) L = length L where ?A : [ |- Type]
 
-e2482162ddbbb99c  thm Counting.count_disjoint_add
-    count_disjoint_add : forall (p q : list nat -> bool) (L : list (list nat)), (forall A : list nat, p A = true -> q A = false) -> count p L + count q L = count (fun A : list nat => (p A || q A)%bool) L
+31f4c2013f17bd2a  thm Counting.count_disjoint_add
+    count_disjoint_add : forall (p q : ?A -> bool) (L : list ?A), (forall x : ?A, p x = true -> q x = false) -> count p L + count q L = count (fun x : ?A => (p x || q x)%bool) L where ?A : [ |- Type]
 
-a87531876689a2e0  thm Counting.count_mono
-    count_mono : forall (p q : list nat -> bool) (L : list (list nat)), (forall A : list nat, p A = true -> q A = true) -> count p L <= count q L
+e04deb60ea8039c6  thm Counting.count_mono
+    count_mono : forall (p q : ?A -> bool) (L : list ?A), (forall x : ?A, p x = true -> q x = true) -> count p L <= count q L where ?A : [ |- Type]
 
-8b46d9b9894a3a0a  thm Counting.NoDup_map_inj
-    NoDup_map_inj : forall (f : list nat -> list nat) (l : list (list nat)), (forall A B : list nat, List.In A l -> List.In B l -> f A = f B -> A = B) -> List.NoDup l -> List.NoDup (List.map f l)
+0cff9aa31bd2f939  thm Counting.NoDup_map_inj
+    NoDup_map_inj : forall (f : ?A -> ?B) (l : list ?A), (forall x y : ?A, List.In x l -> List.In y l -> f x = f y -> x = y) -> List.NoDup l -> List.NoDup (List.map f l) where ?A : [ |- Type] ?B : [ |- Type]
 
-13793afa3f8dd8b9  thm Counting.count_inj_le
-    count_inj_le : forall (p q : list nat -> bool) (f : list nat -> list nat) (L M : list (list nat)), List.NoDup L -> (forall A : list nat, List.In A L -> p A = true -> List.In (f A) M /\ q (f A) = true) -> (forall A B : list nat, List.In A L -> List.In B L -> p A = true -> p B = true -> f A = f B -> A = B) -> count p L <= count q M
+1b4e4482547d5d28  thm Counting.count_inj_le
+    count_inj_le : forall (p : ?A -> bool) (q : ?B -> bool) (f : ?A -> ?B) (L : list ?A) (M : list ?B), List.NoDup L -> (forall x : ?A, List.In x L -> p x = true -> List.In (f x) M /\ q (f x) = true) -> (forall x y : ?A, List.In x L -> List.In y L -> p x = true -> p y = true -> f x = f y -> x = y) -> count p L <= count q M where ?A : [ |- Type] ?B : [ |- Type]
+
+f65196d964dc3548  thm Counting.pairs_length
+    pairs_length : forall (F : Family) (j : nat) (l : list nat), length (pairs F j l) = length F * binom (length l) j
+
+03226c4525006a83  thm Counting.count_pairs_le
+    count_pairs_le : forall (p : list nat * list nat -> bool) (F : Family) (j : nat) (l : list nat), count p (pairs F j l) <= length F * binom (length l) j
 
 a3f33f3bdaa1020b  thm Counting.layer_count_le_two_pow
     layer_count_le_two_pow : forall (j : nat) (l : list nat), length (subsets_of_size j l) <= PeanoNat.Nat.pow 2 (length l)
@@ -2116,5 +2122,8 @@ a3f33f3bdaa1020b  thm Counting.layer_count_le_two_pow
 8622eaa2ec24e689  def Counting.subsets_of_size
     subsets_of_size = fun (j : nat) (l : list nat) => List.filter (fun A : list nat => PeanoNat.Nat.eqb (length A) j) (subsets l) : nat -> list nat -> list (list nat) Arguments subsets_of_size j%nat_scope l%list_scope
 
-7fa5194f5331a8c1  def Counting.count
-    count = fun (p : list nat -> bool) (L : list (list nat)) => length (List.filter p L) : (list nat -> bool) -> list (list nat) -> nat Arguments count p%function_scope L%list_scope
+0fe9a38d38c8171e  def Counting.count
+    count = fun (A : Type) (p : A -> bool) (L : list A) => length (List.filter p L) : forall A : Type, (A -> bool) -> list A -> nat Arguments count {A}%type_scope p%function_scope L%list_scope
+
+e10b4a182185868b  def Counting.pairs
+    pairs = fun (F : Family) (j : nat) (l : list nat) => List.list_prod F (subsets_of_size j l) : Family -> nat -> list nat -> list (list nat * list nat) Arguments pairs F j%nat_scope l%list_scope
