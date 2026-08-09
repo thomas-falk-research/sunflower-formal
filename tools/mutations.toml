@@ -1913,3 +1913,117 @@ is covered by the point itself and the four crossing pairs of the two \
 links -- r^2 + 4r -- and the pointed family itself is at most r^2 by the \
 star bound. That is 2r^2 + 4r exactly, with nothing to spare; the 3r \
 version does not close."""
+
+# ----------------------------------------------------------------
+# The spread Hilton-Milner family: is r = m really the boundary?
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "grid-deg-drop-nodup"
+file = "coq/HiltonMilner.v"
+question = """The transversal-degree bound quantifies over NoDup test sets. \
+Is that guard load-bearing, or is the bound true for lists with repeats?"""
+find = """    NoDup T -> deg T (grid base k r) * r ^ (length T) <= r ^ k."""
+replace = """    deg T (grid base k r) * r ^ (length T) <= r ^ k."""
+expect = "killed"
+because = """Load-bearing, and for the same reason as raospread-drop-nodup: \
+[x;x] has length 2 and the degree of {x}, so a one-block grid would need \
+deg{x} * r^2 <= r, which fails. The guard is what makes |T| a count of \
+points rather than of list positions."""
+
+[[mutation]]
+id = "tstep-hit-drop-fresh"
+file = "coq/HiltonMilner.v"
+question = """A block that the test set meets selects one term of the sum. \
+Does that need the block to be fresh for the family below it?"""
+find = """    NoDup B -> In x0 B -> In x0 T -> BlockFresh B F ->
+    deg T (tstep B F) = deg (rem_elt x0 T) F."""
+replace = """    NoDup B -> In x0 B -> In x0 T ->
+    deg T (tstep B F) = deg (rem_elt x0 T) F."""
+expect = "killed"
+because = """It does. Without freshness the other terms of the sum need \
+not vanish: if some member of F already carries x0, then prefixing a \
+different point of B still yields a set containing x0, and the identity \
+becomes an inequality in the wrong direction."""
+
+[[mutation]]
+id = "hm-uniform-drop-m-guard"
+file = "coq/HiltonMilner.v"
+question = """The family is stated from uniformity two on. Is m = 1 \
+genuinely excluded, or is the guard decorative?"""
+find = """Theorem HM_uniform : forall m r, 2 <= m -> Uniform m (HM m r)."""
+replace = """Theorem HM_uniform : forall m r, 1 <= m -> Uniform m (HM m r)."""
+expect = "killed"
+because = """Excluded. A star member is [i; w; g] with g a transversal of \
+m-2 blocks, so it has 2 + (m-2) points -- which is m only when m >= 2. At \
+m = 1 the special set has one point and every star member has two, so the \
+family is not uniform at all."""
+
+[[mutation]]
+id = "hm-rao-threshold"
+file = "coq/HiltonMilner.v"
+question = """HM(m,r) is claimed spread from r = m on. Is the threshold \
+exact, or would r = m-1 do?"""
+find = """  forall m r, 2 <= m -> m <= r -> RaoSpread m (HM m r) r."""
+replace = """  forall m r, 2 <= m -> m <= r + 1 -> RaoSpread m (HM m r) r."""
+expect = "killed"
+because = """Exact, and the apex is why. deg{w} = m*r^(m-2) against a \
+ceiling of r^(m-1) = r*r^(m-2), so the condition is m <= r with nothing to \
+spare. rust/tests/hilton_milner.rs confirms independently that the first \
+violator of HM(m, m-1) is the single point {w}, for every m in 3..6."""
+
+[[mutation]]
+id = "hm-not-star-extremal-at-successor"
+file = "coq/HiltonMilner.v"
+question = """The witness refutes star extremality at r = m. Does the same \
+argument reach r = m+1 -- which is where Conjecture T says the star does \
+become extremal?"""
+find = """  forall m, 2 <= m -> ~ StarExtremalAt m m."""
+replace = """  forall m, 2 <= m -> ~ StarExtremalAt m (S m)."""
+expect = "killed"
+because = """It does not, and it must not. |HM(m,m+1)| = m*(m+1)^(m-2) + 1 \
+is smaller than (m+1)^(m-1) for every m >= 2, so the witness says nothing \
+at r = m+1. Conjecture T (roadmap section 28) asserts the mutated \
+statement is false; this mutation is the check that the file does not \
+accidentally claim it."""
+
+[[mutation]]
+id = "hm-apex-inside-the-special-set"
+file = "coq/HiltonMilner.v"
+question = """The apex is the one point outside the special set. What \
+breaks if it is moved inside?"""
+find = """Definition hmw (m : nat) : nat := m."""
+replace = """Definition hmw (m : nat) : nat := 0."""
+expect = "killed"
+because = """Everything, starting with uniformity: the star member built \
+on i = 0 becomes [0; 0; g], which is not a NoDup list of m points. The \
+apex being outside the special set is what makes the family Hilton-Milner \
+rather than a degenerate cone."""
+
+[[mutation]]
+id = "fano-reaches-r-four"
+file = "coq/HiltonMilner.v"
+question = """The Fano plane refutes star extremality at r = 2. Does the \
+same witness reach r = 4, where TauThree proves the star *is* extremal?"""
+find = """Theorem not_star_extremal_three_two : ~ StarExtremalAt 3 2."""
+replace = """Theorem not_star_extremal_three_two : ~ StarExtremalAt 3 4."""
+expect = "killed"
+because = """It does not, and it cannot: the Fano plane has 7 lines and \
+the star bound at r = 4 is 16. TauThree.three_uniform_star_extremal \
+proves the mutated statement false, so this is a check that the file's \
+r = 2 row does not silently overreach into the range where the \
+development already knows the answer."""
+
+[[mutation]]
+id = "pg23-drop-a-line"
+file = "coq/HiltonMilner.v"
+question = """PG(2,3) has 13 lines against a star bound of 8. Is the \
+whole plane needed, or does the refutation survive a mutilated one?"""
+find = """   [3;4;5;12]; [6;7;8;12]; [9;10;11;12]]."""
+replace = """   [3;4;5;12]; [6;7;8;12]; [9;10;11;9]]."""
+expect = "killed"
+because = """Killed, and by uniformity rather than by the count: \
+[9;10;11;9] is not a NoDup 4-set, so pg23_uniform fails before anything \
+about spreadness or intersection is asked. The count would in fact \
+survive losing four lines (9 > 8); what does not survive is the object \
+ceasing to be a design."""

@@ -1812,3 +1812,147 @@ e1d6d9b21a1f254c  def CrossRefined.NonStar
 
 d2ddac0dd2e73562  def CrossRefined.g65
     g65 = ((0 :: 1 :: 2 :: 3 :: nil) :: List.flat_map (fun x : nat => List.map (fun T : list nat => x :: T) hm16) (0 :: 1 :: 2 :: 3 :: nil))%list : Family
+
+fcd79cf7a625c344  thm HiltonMilner.tstep_length
+    tstep_length : forall (B : list nat) (F : Family), length (tstep B F) = length B * length F
+
+3c3cb32cc6341413  thm HiltonMilner.deg_cone
+    deg_cone : forall (T : list nat) (x : nat) (F : list (list nat)), deg T (List.map (cons x) F) = deg (rem_elt x T) F
+
+29740e6c05b32b0d  thm HiltonMilner.deg_zero_of_fresh
+    deg_zero_of_fresh : forall (y : nat) (T : list nat) (F : list (list nat)), List.In y T -> (forall A : list nat, List.In A F -> ~ List.In y A) -> deg T F = 0
+
+b01186b07c2dee6f  thm HiltonMilner.tstep_deg_miss
+    tstep_deg_miss : forall (T B : list nat) (F : Family), (forall x : nat, List.In x B -> ~ List.In x T) -> deg T (tstep B F) = length B * deg T F
+
+b40ba8489c69d671  thm HiltonMilner.tstep_deg_hit
+    tstep_deg_hit : forall (T B : list nat) (F : Family) (x0 : nat), List.NoDup B -> List.In x0 B -> List.In x0 T -> BlockFresh B F -> deg T (tstep B F) = deg (rem_elt x0 T) F
+
+441a6af45a17d036  thm HiltonMilner.grid_length
+    grid_length : forall base k r : nat, length (grid base k r) = PeanoNat.Nat.pow r k
+
+13feef30e4b006c0  thm HiltonMilner.grid_bounds
+    grid_bounds : forall (base k r : nat) (A : list nat), List.In A (grid base k r) -> forall y : nat, List.In y A -> base <= y < base + k * r
+
+c09458128d985850  thm HiltonMilner.grid_member_nodup
+    grid_member_nodup : forall (base k r : nat) (A : list nat), List.In A (grid base k r) -> List.NoDup A
+
+88f067e7366e4616  thm HiltonMilner.grid_uniform
+    grid_uniform : forall base k r : nat, Uniform k (grid base k r)
+
+d1324bb9b0704a92  thm HiltonMilner.grid_deg_mul
+    grid_deg_mul : forall (base k r : nat) (T : list nat), List.NoDup T -> deg T (grid base k r) * PeanoNat.Nat.pow r (length T) <= PeanoNat.Nat.pow r k
+
+e1973ec214dff335  thm HiltonMilner.HM_length
+    HM_length : forall m r : nat, length (HM m r) = m * PeanoNat.Nat.pow r (m - 2) + 1
+
+de5fe54f9798582f  thm HiltonMilner.HM_uniform
+    HM_uniform : forall m r : nat, 2 <= m -> Uniform m (HM m r)
+
+c202c267de1d95d8  thm HiltonMilner.HM_intersecting
+    HM_intersecting : forall m r : nat, 1 <= m -> forall C D : list nat, List.In C (HM m r) -> List.In D (HM m r) -> exists x : nat, List.In x C /\ List.In x D
+
+1147699576caf6ca  thm HiltonMilner.hmstar_deg_mul
+    hmstar_deg_mul : forall (m r : nat) (T : list nat), 2 <= m -> m <= r -> List.NoDup T -> deg T (hmstar m r) * PeanoNat.Nat.pow r (length T) <= PeanoNat.Nat.pow r m
+
+ea404262e460f7d3  thm HiltonMilner.hmstar_deg_inside
+    hmstar_deg_inside : forall (m r : nat) (T : list nat), 2 <= m -> m <= r -> List.NoDup T -> T <> nil -> Subset T (hme m) -> (deg T (hmstar m r) + 1) * PeanoNat.Nat.pow r (length T) <= PeanoNat.Nat.pow r m
+
+35e5f46bb3c91e82  thm HiltonMilner.HM_rao
+    HM_rao : forall m r : nat, 2 <= m -> m <= r -> RaoSpread m (HM m r) r
+
+6aaa34cb8ec26801  thm HiltonMilner.HM_beats_star
+    HM_beats_star : forall m : nat, 2 <= m -> PeanoNat.Nat.pow m (m - 1) < length (HM m m)
+
+6fc6812e9bd3c3ef  thm HiltonMilner.not_star_extremal_at_m_m
+    not_star_extremal_at_m_m : forall m : nat, 2 <= m -> ~ StarExtremalAt m m
+
+8bdc44b9733cf6af  thm HiltonMilner.HM_nonstar
+    HM_nonstar : forall m r : nat, 2 <= m -> 1 <= r -> NonStar (HM m r)
+
+092cdce8aba4ab8b  thm HiltonMilner.HM_distinct
+    HM_distinct : forall m r : nat, 2 <= m -> m <= r -> Distinct (HM m r)
+
+18cef132ff82d167  thm HiltonMilner.i2_three_exact
+    i2_three_exact : forall r : nat, 5 <= r -> (Uniform 3 (HM 3 r) /\ Distinct (HM 3 r) /\ RaoSpread 3 (HM 3 r) r /\ (forall C D : list nat, List.In C (HM 3 r) -> List.In D (HM 3 r) -> exists x : nat, List.In x C /\ List.In x D) /\ NonStar (HM 3 r) /\ length (HM 3 r) = 3 * r + 1) /\ (forall A : Family, Uniform 3 A -> Distinct A -> RaoSpread 3 A r -> (forall C D : list nat, List.In C A -> List.In D A -> exists x : nat, List.In x C /\ List.In x D) -> NonStar A -> length A <= 3 * r + 1)
+
+279019b21efb2837  thm HiltonMilner.HM_two_cover
+    HM_two_cover : forall m r : nat, 1 <= m -> forall C : list nat, List.In C (HM m r) -> List.In 0 C \/ List.In (hmw m) C
+
+897635db88f21bfb  thm HiltonMilner.two_cover_threshold_is_sharp
+    two_cover_threshold_is_sharp : forall m : nat, 2 <= m -> ~ (forall (G : Family) (p q : nat), Uniform m G -> RaoSpread m G m -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> length G <= PeanoNat.Nat.pow m (m - 1))
+
+d0e0d97f0dd1eb38  thm HiltonMilner.star_extremal_needs_r_above_m
+    star_extremal_needs_r_above_m : forall m s : nat, 2 <= m -> s <= m -> ~ (forall r : nat, s <= r -> StarExtremalAt m r)
+
+d32b232b8240676a  thm HiltonMilner.star_extremal_route_needs_r_above_n
+    star_extremal_route_needs_r_above_n : forall n r : nat, 2 <= r -> r <= n -> ~ (forall m : nat, 1 <= m -> m <= n -> StarExtremalAt m r)
+
+1af8c045356df072  thm HiltonMilner.not_star_extremal_three_three
+    not_star_extremal_three_three : ~ StarExtremalAt 3 3
+
+3b27c083707de42f  thm HiltonMilner.not_star_extremal_four_four
+    not_star_extremal_four_four : ~ StarExtremalAt 4 4
+
+4956f52c05b3f643  thm HiltonMilner.HM_three_three_second_opinion
+    HM_three_three_second_opinion : uniformb 3 (HM 3 3) = true /\ rao_spreadb 3 (HM 3 3) 3 (List.seq 0 7) = true /\ int_b (HM 3 3) = true /\ length (HM 3 3) = 10
+
+e05193e767d6c170  thm HiltonMilner.HM_four_four_second_opinion
+    HM_four_four_second_opinion : uniformb 4 (HM 4 4) = true /\ rao_spreadb 4 (HM 4 4) 4 (List.seq 0 13) = true /\ int_b (HM 4 4) = true /\ length (HM 4 4) = 65
+
+6a4fc0fb4b5bb7f6  thm HiltonMilner.fano_rao
+    fano_rao : RaoSpread 3 fano 2
+
+07e5b5a61989080d  thm HiltonMilner.fano_int
+    fano_int : forall C D : list nat, List.In C fano -> List.In D fano -> exists x : nat, List.In x C /\ List.In x D
+
+d58076f5172b5437  thm HiltonMilner.not_star_extremal_three_two
+    not_star_extremal_three_two : ~ StarExtremalAt 3 2
+
+38cffed5cb6fcc1d  thm HiltonMilner.pg23_rao
+    pg23_rao : RaoSpread 4 pg23 2
+
+27000eb8fa9626bf  thm HiltonMilner.pg23_int
+    pg23_int : forall C D : list nat, List.In C pg23 -> List.In D pg23 -> exists x : nat, List.In x C /\ List.In x D
+
+35dae3134c27db29  thm HiltonMilner.not_star_extremal_four_two
+    not_star_extremal_four_two : ~ StarExtremalAt 4 2
+
+2864515168938a87  thm HiltonMilner.star_extremal_three_row
+    star_extremal_three_row : ~ StarExtremalAt 3 2 /\ ~ StarExtremalAt 3 3 /\ (forall r : nat, 4 <= r -> StarExtremalAt 3 r)
+
+c310851ae2ef8453  thm HiltonMilner.star_threshold_three_is_four
+    star_threshold_three_is_four : (forall r : nat, 4 <= r -> StarExtremalAt 3 r) /\ (forall s : nat, (forall r : nat, s <= r -> StarExtremalAt 3 r) -> 4 <= s)
+
+54d8180deff08668  def HiltonMilner.tstep
+    tstep = fun (B : list nat) (F : Family) => List.flat_map (fun x : nat => List.map (cons x) F) B : list nat -> Family -> Family Arguments tstep B%list_scope F
+
+338339ed6cfac0db  def HiltonMilner.blocks
+    blocks = fix blocks (bs : list (list nat)) : Family := match bs with | nil => (nil :: nil)%list | (B :: bs')%list => tstep B (blocks bs') end : list (list nat) -> Family Arguments blocks bs%list_scope
+
+f07b3ff9e41be895  def HiltonMilner.BlockFresh
+    BlockFresh = fun (B : list nat) (F : Family) => forall A : list nat, List.In A F -> forall y : nat, List.In y B -> ~ List.In y A : list nat -> Family -> Prop Arguments BlockFresh B%list_scope F
+
+be8c9c9c45bdb562  def HiltonMilner.gridblocks
+    gridblocks = fix gridblocks (base k r : nat) {struct k} : list (list nat) := match k with | 0 => nil | S k' => (List.seq base r :: gridblocks (base + r) k' r)%list end : nat -> nat -> nat -> list (list nat) Arguments gridblocks (base k r)%nat_scope
+
+ad3446717ac447b0  def HiltonMilner.grid
+    grid = fun base k r : nat => blocks (gridblocks base k r) : nat -> nat -> nat -> Family Arguments grid (base k r)%nat_scope
+
+3f27719ae19b41a1  def HiltonMilner.hmw
+    hmw = fun m : nat => m : nat -> nat Arguments hmw m%nat_scope
+
+566c7fec8fd4f1e9  def HiltonMilner.hme
+    hme = fun m : nat => List.seq 0 m : nat -> list nat Arguments hme m%nat_scope
+
+fe9ae6199e2ff2bf  def HiltonMilner.hmstar
+    hmstar = fun m r : nat => tstep (hme m) (tstep (hmw m :: nil) (grid (S m) (m - 2) r)) : nat -> nat -> Family Arguments hmstar (m r)%nat_scope
+
+865991133b9d8f01  def HiltonMilner.HM
+    HM = fun m r : nat => (hme m :: hmstar m r)%list : nat -> nat -> Family Arguments HM (m r)%nat_scope
+
+613e36a00d6f1746  def HiltonMilner.fano
+    fano = ((0 :: 1 :: 6 :: nil) :: (0 :: 2 :: 4 :: nil) :: (0 :: 3 :: 5 :: nil) :: (1 :: 2 :: 5 :: nil) :: (1 :: 3 :: 4 :: nil) :: (2 :: 3 :: 6 :: nil) :: (4 :: 5 :: 6 :: nil) :: nil)%list : Family
+
+265981df30d4b2f3  def HiltonMilner.pg23
+    pg23 = ((0 :: 1 :: 2 :: 12 :: nil) :: (0 :: 3 :: 6 :: 9 :: nil) :: (0 :: 4 :: 8 :: 10 :: nil) :: (0 :: 5 :: 7 :: 11 :: nil) :: (1 :: 3 :: 8 :: 11 :: nil) :: (1 :: 4 :: 7 :: 9 :: nil) :: (1 :: 5 :: 6 :: 10 :: nil) :: (2 :: 3 :: 7 :: 10 :: nil) :: (2 :: 4 :: 6 :: 11 :: nil) :: (2 :: 5 :: 8 :: 9 :: nil) :: (3 :: 4 :: 5 :: 12 :: nil) :: (6 :: 7 :: 8 :: 12 :: nil) :: (9 :: 10 :: 11 :: 12 :: nil) :: nil)%list : Family

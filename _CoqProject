@@ -41,4 +41,5 @@ coq/TwoCover.v
 coq/TauThree.v
 coq/CrossIntersecting.v
 coq/CrossRefined.v
+coq/HiltonMilner.v
 coq/Audit.v

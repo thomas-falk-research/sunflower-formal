@@ -839,5 +839,31 @@
   "redistributable": false,
   "read": "not read (9 pages rendered)",
   "bears_on": "Erdos-Rado sunflower problem for vector spaces."
+ },
+ {
+  "key": "FHHZ17",
+  "file": "fhhz_degree_hm.pdf",
+  "kind": "arxiv",
+  "arxiv": "1703.03896v2",
+  "title": "A degree version of the Hilton-Milner theorem",
+  "authors": [
+   "Peter Frankl",
+   "Jie Han",
+   "Hao Huang",
+   "Yi Zhao"
+  ],
+  "published": "2017-03-11",
+  "updated": "2017-05-29",
+  "journal_ref": null,
+  "doi": null,
+  "license": null,
+  "url": "https://arxiv.org/abs/1703.03896",
+  "retrieved": "2026-08-08",
+  "sha256": "bc05a37a43d3a617fe8087029ec367c725f8639fc5f28fa43e0ed2c2ffe823f6",
+  "bytes": 168511,
+  "pages": 7,
+  "redistributable": false,
+  "read": "read p. 1 (of 7)",
+  "bears_on": "B19: the classical Hilton-Milner family, and the degree-condition line that is the nearest neighbour of I(m,r). Located by the B19 search; p. 1 rendered and read."
  }
 ]
