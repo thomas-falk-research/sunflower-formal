@@ -2037,3 +2037,84 @@ e21594f7c89fcbb8  thm Profile.erdos_rado_below_the_n_to_the_n_ceiling
 
 b814d91cb965b6a6  def Profile.profile_witness
     profile_witness = fun (B : nat -> nat) (m : nat) (F : Family) => List.find (profile_violatesb B m F) (cands F) : (nat -> nat) -> nat -> Family -> option (list nat) Arguments profile_witness B%function_scope m%nat_scope F
+
+0efd89be18e4b087  thm Counting.binom_zero_above
+    binom_zero_above : forall n j : nat, n < j -> binom n j = 0
+
+dad99bac89349675  thm Counting.binom_diag
+    binom_diag : forall n : nat, binom n n = 1
+
+a74edbbc8e1790af  thm Counting.binom_one
+    binom_one : forall n : nat, binom n 1 = n
+
+94e99ccf6515cff2  thm Counting.binom_absorb
+    binom_absorb : forall N j : nat, binom N (S j) * S j = binom N j * (N - j)
+
+5eb338e782af1328  thm Counting.one_le_two_pow
+    one_le_two_pow : forall n : nat, 1 <= PeanoNat.Nat.pow 2 n
+
+3318774fea9c1618  thm Counting.binom_le_two_pow
+    binom_le_two_pow : forall n j : nat, binom n j <= PeanoNat.Nat.pow 2 n
+
+9eb298861f1c9495  thm Counting.binom_step
+    binom_step : forall N j c d : nat, c * N <= d * S j -> c * binom N (S j) <= d * binom N j
+
+bd9ee2d6f271bf6d  thm Counting.binom_ratio
+    binom_ratio : forall N j c d m : nat, c * N <= d * S j -> PeanoNat.Nat.pow c m * binom N (j + m) <= PeanoNat.Nat.pow d m * binom N j
+
+6fe1a897a0c8ea7b  thm Counting.binom_ratio_at_threshold
+    binom_ratio_at_threshold : forall N j c d m : nat, c * N <= d * j -> PeanoNat.Nat.pow c m * binom N (j + m) <= PeanoNat.Nat.pow d m * binom N j
+
+bf02412c9cf3d97e  thm Counting.in_subsets_of_size
+    in_subsets_of_size : forall (j : nat) (l A : list nat), List.In A (subsets_of_size j l) <-> List.In A (subsets l) /\ length A = j
+
+80dfff6ff9f2ad93  thm Counting.subsets_of_size_incl
+    subsets_of_size_incl : forall (j : nat) (l A : list nat), List.In A (subsets_of_size j l) -> Subset A l /\ length A = j
+
+46b755e769386025  thm Counting.length_subsets
+    length_subsets : forall l : list nat, length (subsets l) = PeanoNat.Nat.pow 2 (length l)
+
+4bcd709946832c04  thm Counting.length_subsets_of_size
+    length_subsets_of_size : forall (l : list nat) (j : nat), length (subsets_of_size j l) = binom (length l) j
+
+faa25cf84a443daa  thm Counting.NoDup_app_disjoint
+    NoDup_app_disjoint : forall A B : list (list nat), List.NoDup A -> List.NoDup B -> (forall x : list nat, List.In x A -> ~ List.In x B) -> List.NoDup (A ++ B)
+
+3135c8d12ed410fd  thm Counting.subsets_NoDup_enum
+    subsets_NoDup_enum : forall l : list nat, List.NoDup l -> List.NoDup (subsets l)
+
+c305c0ede58d644f  thm Counting.subsets_of_size_NoDup_enum
+    subsets_of_size_NoDup_enum : forall (j : nat) (l : list nat), List.NoDup l -> List.NoDup (subsets_of_size j l)
+
+97ec6050830a9985  thm Counting.count_le_length
+    count_le_length : forall (p : list nat -> bool) (L : list (list nat)), count p L <= length L
+
+3374f401e9497d8e  thm Counting.count_partition
+    count_partition : forall (p : list nat -> bool) (L : list (list nat)), count p L + count (fun A : list nat => negb (p A)) L = length L
+
+e2482162ddbbb99c  thm Counting.count_disjoint_add
+    count_disjoint_add : forall (p q : list nat -> bool) (L : list (list nat)), (forall A : list nat, p A = true -> q A = false) -> count p L + count q L = count (fun A : list nat => (p A || q A)%bool) L
+
+a87531876689a2e0  thm Counting.count_mono
+    count_mono : forall (p q : list nat -> bool) (L : list (list nat)), (forall A : list nat, p A = true -> q A = true) -> count p L <= count q L
+
+8b46d9b9894a3a0a  thm Counting.NoDup_map_inj
+    NoDup_map_inj : forall (f : list nat -> list nat) (l : list (list nat)), (forall A B : list nat, List.In A l -> List.In B l -> f A = f B -> A = B) -> List.NoDup l -> List.NoDup (List.map f l)
+
+13793afa3f8dd8b9  thm Counting.count_inj_le
+    count_inj_le : forall (p q : list nat -> bool) (f : list nat -> list nat) (L M : list (list nat)), List.NoDup L -> (forall A : list nat, List.In A L -> p A = true -> List.In (f A) M /\ q (f A) = true) -> (forall A B : list nat, List.In A L -> List.In B L -> p A = true -> p B = true -> f A = f B -> A = B) -> count p L <= count q M
+
+a3f33f3bdaa1020b  thm Counting.layer_count_le_two_pow
+    layer_count_le_two_pow : forall (j : nat) (l : list nat), length (subsets_of_size j l) <= PeanoNat.Nat.pow 2 (length l)
+
+84617e8ae7edc0e3  thm Counting.layer_ratio
+    layer_ratio : forall (l : list nat) (j c d m : nat), c * length l <= d * j -> PeanoNat.Nat.pow c m * length (subsets_of_size (j + m) l) <= PeanoNat.Nat.pow d m * length (subsets_of_size j l)
+
+6cae196015e0234a  def Counting.binom
+    binom = fix binom (n j : nat) {struct n} : nat := match n with | 0 => match j with | 0 => 1 | S _ => 0 end | S n' => match j with | 0 => 1 | S j' => binom n' j' + binom n' (S j') end end : nat -> nat -> nat Arguments binom (n j)%nat_scope
+
+8622eaa2ec24e689  def Counting.subsets_of_size
+    subsets_of_size = fun (j : nat) (l : list nat) => List.filter (fun A : list nat => PeanoNat.Nat.eqb (length A) j) (subsets l) : nat -> list nat -> list (list nat) Arguments subsets_of_size j%nat_scope l%list_scope
+
+7fa5194f5331a8c1  def Counting.count
+    count = fun (p : list nat -> bool) (L : list (list nat)) => length (List.filter p L) : (list nat -> bool) -> list (list nat) -> nat Arguments count p%function_scope L%list_scope

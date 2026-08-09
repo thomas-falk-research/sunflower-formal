@@ -177,6 +177,25 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `star_bounded_needs_c_at_least_five`, `the_ratio_at_four_is_between_the_witness_and_the_ceiling` | `coq/StarDefect.v` | **And it is not a constant.** `ρ` is exactly multiplicative under the Abbott–Hanson–Sauer substitution — the `\|H\|^(a−1)` in `maxdeg` cancels — so iterating on `ι(3)` gives `ρ = 2^k` at `b = 3^k`, i.e. `ρ = b^{log₃2} = b^{0.63}`, verified directly at `b = 9` where 10,000 members have maximum degree 2500. The measured row 2, 3, 2.75 looked flat only because it stopped at `b = 3`. Formalising the refutation needs `substitute` in Coq; what is proved is that the doubling of `ι(4,9)` forces `c ≥ 5` against the proved ceiling `2b = 8`. What survives is the *geometric mean*, which tends to `√10` while the maximum diverges — so no proof of the conjecture can be a per-level estimate |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
 
+### Discharging that axiom: Stage A is done
+
+`docs/roadmap.md` §1 stages the discharge through the *counting* proof
+([ALWZ20] §2 as streamlined by Park–Pham, written out in Lovett's PCMI
+notes §3) in three stages. **Stage A — the counting layer — is
+formalised**, axiom-free, in `coq/Counting.v`: the size-`j` layer of the
+powerset with `|subsets_of_size j l| = C(|l|, j)`, a counting operator
+with "an injection implies an inequality" and additivity over disjoint
+predicates, `C(n,j) <= 2^n`, and the single binomial estimate the proof
+needs. `rust/tests/counting.rs` checks every claim against an independent
+implementation (the multiplicative formula against Pascal's recursion,
+bitmask enumeration against the filtered powerset).
+
+One correction came out of it: the estimate holds under `c*N <= d*(j+1)`,
+one notch weaker than the `c*N <= d*j` that Lovett's `j = qN` supplies,
+and `c*N <= d*(j+2)` is **false** — witness `N=1, j=0, c=2, d=1, m=1`.
+See §30.2. Stages B (the encoding) and C (the iteration) are untouched;
+§1 names Stage B as the stall risk and Stage A did not change that.
+
 ## Stated as a named axiom with literature citation (not used by any closed theorem)
 
 | Statement | File | Citation |
@@ -268,7 +287,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (568 of them). The current
+for every theorem in the "Closed" table (592 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -315,7 +334,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 43 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 44 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -323,8 +342,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 131 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 128 killed outright, two genuine
+Current mutation results: 137 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 134 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -333,7 +352,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 43 modules with Coq's separate kernel
+`make coqchk` re-verifies all 44 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

@@ -2120,3 +2120,94 @@ because = """Needed. At m = 0 the reduction has no oracle to call: it \
 argues that B 0 < |F| forces two members into a 0-uniform distinct \
 family, which has at most one. With B 0 = 0 the hypothesis is only \
 |F| >= 1 and the contradiction disappears."""
+
+# ----------------------------------------------------------------
+# Counting.v -- Stage A of the spread lemma.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "binom-pascal-wrong-branch"
+file = "coq/Counting.v"
+question = """Pascal's recursion adds the two entries above. Does the \
+development notice if it adds the same one twice?"""
+find = "  | S n', S j' => binom n' j' + binom n' (S j')"
+replace = "  | S n', S j' => binom n' j' + binom n' j'"
+expect = "killed"
+because = """Killed. The mutated recursion is 2^j, not C(n,j): it loses \
+binom_diag, binom_one, the absorption identity, and the agreement with \
+the layer enumeration all at once. length_subsets_of_size is the \
+statement that pins it -- the layer is defined by filtering, so only the \
+true recursion can equal it."""
+
+[[mutation]]
+id = "binom-ratio-drop-the-successor"
+file = "coq/Counting.v"
+question = """The estimate assumes c*N <= d*(S j). Section 1's use gives \
+c*N <= d*j, one notch stronger. Is the successor the real boundary, or \
+would c*N <= d*(j+2) do?"""
+find = """    c * N <= d * S j ->
+    c ^ m * binom N (j + m) <= d ^ m * binom N j."""
+replace = """    c * N <= d * (j + 2) ->
+    c ^ m * binom N (j + m) <= d ^ m * binom N j."""
+expect = "killed"
+because = """Killed, and it must be: binom_ratio_needs_the_successor is a \
+witness in the same file. N = 1, j = 0, c = 2, d = 1, m = 1 satisfies \
+2*1 <= 1*2 and refutes 2*C(1,1) <= 1*C(1,0). rust/tests/counting.rs \
+finds 102 such points in a small box."""
+
+[[mutation]]
+id = "binom-absorb-untruncated"
+file = "coq/Counting.v"
+question = """The absorption identity uses nat's truncated subtraction, \
+so above the diagonal both sides are zero. Is that the identity, or is \
+the (N - j) an off-by-one for (S N - j)?"""
+find = "Lemma binom_absorb : forall N j, binom N (S j) * S j = binom N j * (N - j)."
+replace = "Lemma binom_absorb : forall N j, binom N (S j) * S j = binom N j * (S N - j)."
+expect = "killed"
+because = """Killed at N = 1, j = 0: the true identity reads \
+C(1,1)*1 = C(1,0)*1, and the mutation demands C(1,1)*1 = C(1,0)*2, i.e. \
+1 = 2. Absorption is the single arithmetic fact the estimate rests on \
+and a one-step shift in it breaks binom_step immediately."""
+
+[[mutation]]
+id = "layer-filters-the-wrong-length"
+file = "coq/Counting.v"
+question = """The size-j layer filters subsets by length = j. Would \
+length <= j do -- i.e. is the layer a layer, or a prefix of the \
+powerset?"""
+find = """  filter (fun A => Nat.eqb (length A) j) (subsets l)."""
+replace = """  filter (fun A => Nat.leb (length A) j) (subsets l)."""
+expect = "killed"
+because = """Killed by length_subsets_of_size: the cumulative count is \
+the partial row sum, not the binomial coefficient. At l of length 2 and \
+j = 1 the mutation counts 3 subsets ([], [x], [y]) against C(2,1) = 2. \
+The layer being a single layer is what makes binom the right count."""
+
+[[mutation]]
+id = "count-inj-drops-nodup"
+file = "coq/Counting.v"
+question = """count_inj_le requires NoDup on the domain only. Is that \
+hypothesis doing work, or does an injection bound the count regardless?"""
+find = """         (L M : list (list nat)),
+    NoDup L ->
+    (forall A, In A L -> p A = true -> In (f A) M /\\ q (f A) = true) ->"""
+replace = """         (L M : list (list nat)),
+    (forall A, In A L -> p A = true -> In (f A) M /\\ q (f A) = true) ->"""
+expect = "killed"
+because = """Doing work. Without NoDup the domain may repeat, so the \
+count on the left over-counts what the injection maps into: L = [A; A] \
+with f the identity and M = [A] gives 2 <= 1. The proof goes through \
+NoDup_incl_length, which needs it on the first list."""
+
+[[mutation]]
+id = "binom-two-pow-off-by-one"
+file = "coq/Counting.v"
+question = """Is C(n,j) <= 2^n the true bound, or is it loose enough to \
+survive halving?"""
+find = "Lemma binom_le_two_pow : forall n j, binom n j <= 2 ^ n."
+replace = "Lemma binom_le_two_pow : forall n j, binom n j <= 2 ^ n - 1."
+expect = "killed"
+because = """Killed at n = 0: C(0,0) = 1 and 2^0 - 1 = 0. The bound is \
+attained at the ends of every row, so it cannot be weakened by any \
+additive amount at all -- which is also why it is the right bound to \
+carry into Stage B."""

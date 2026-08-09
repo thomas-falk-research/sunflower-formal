@@ -1845,3 +1845,44 @@ arithmetic in the falsifier.
 > power is `checked_pow`, so the failure is an error rather than a
 > number.
 
+
+---
+
+## What the development taught, session N+10 (second half)
+
+No literature was read for Stage A either: §1's proof-level read of
+[Lovett] §3 was done in the July 2026 session and this one worked from
+its notes. The rule below was earned by formalising them.
+
+### The hypothesis the application supplies is not the hypothesis the proof needs
+
+`docs/roadmap.md` §1 records Lovett's Claim 3.4 as needing
+`C(N, qN+m) ≤ q^(−m)·C(N, qN)` — the sample `V` has fixed size `qN`, so
+with `q = c/d` the hypothesis is `c·N ≤ d·j` at `j = qN`. That is what
+the *application* hands in, and it is what §1 wrote down.
+
+The argument needs less. The step reduces by absorption to
+`c·(N−j) ≤ d·(j+1)`, and `c·(N−j) ≤ c·N` makes `c·N ≤ d·(j+1)` enough.
+One notch weaker, and **exactly** one: at `c·N ≤ d·(j+2)` the estimate is
+false, the smallest witness being `N=1, j=0, c=2, d=1, m=1` — hypothesis
+`2 ≤ 2`, conclusion `2 ≤ 1`.
+
+Stating it at `c·N ≤ d·j` would not have been wrong. It would have been a
+gap of the kind that costs a later session: reaching for the estimate one
+index over and finding it unavailable, that session either re-proves it
+or weakens its own statement to fit, and neither shows up as an error.
+
+> **Rule 23. Prove a lemma at the weakest hypothesis its own argument
+> needs, not at the one the application supplies — and record the witness
+> that shows the weakening stops there.** Rule 15 says to evaluate a
+> restatement at the tight case. The tight case is where the *argument*
+> stops working, which is not in general where the *application* sits;
+> when they differ, both belong in the file — the sharp lemma, and a
+> corollary in the shape the caller wants.
+
+`Counting.binom_ratio` carries the sharp hypothesis,
+`Counting.binom_ratio_at_threshold` carries §1's, and
+`Counting.binom_ratio_needs_the_successor` carries the witness.
+`rust/tests/counting.rs` finds 102 counterexamples to the `j+2`
+relaxation in a small box, so the boundary is measured and not merely
+asserted.

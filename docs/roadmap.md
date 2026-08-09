@@ -136,7 +136,16 @@ from the section's summary.**
    and a geometric sum. The earlier plan budgeted for "binomial estimates"
    in the plural; there is one.
 
-### Stage A — the counting layer
+### Stage A — the counting layer — **DONE, `coq/Counting.v`, §30**
+
+Every item on the list below is proved, axiom-free, and cross-checked by
+`rust/tests/counting.rs` against an independent implementation. The one
+correction Stage A produced is that **the binomial estimate's hypothesis
+is not the one this section assumed**: §1 wrote it at `j = qN`, i.e.
+`c*N ≤ d*j`, and the argument in fact runs at `c*N ≤ d*(j+1)`, which is
+strictly weaker and is *exactly* the boundary — `c*N ≤ d*(j+2)` is false.
+See §30.2. `Counting.binom_ratio_at_threshold` is the shape this section
+asks for, derived from the sharp one.
 
 **The technical choice from an earlier version of this section was
 backwards.** §1 used to say: state the covering step for the *product
@@ -487,7 +496,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 131 anecdotes into a coverage metric over the
+  mutation testing from 137 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -8150,3 +8159,181 @@ improved is already beaten by a theorem three files away (§29.6.3). The
 hundred lines not written are the point of rule 16, and the tool is the
 point of rule 14 — the two rules the previous session earned, applied to
 the session that inherited them.
+
+## 30. Stage A of the spread lemma: the counting layer, and the
+##     hypothesis that was one notch too strong
+
+§1 has staged the discharge of `ALWZ.Rao20_lemma2` since the July 2026
+reading session — the counting proof ([ALWZ20] §2 as streamlined by
+Park–Pham, written out in [Lovett] §3, pp. 11–15), in three stages, with
+C17 recording *why* that proof and not Rao's. Nobody had started it.
+
+**Stage A is done.** `coq/Counting.v`, one module, no axiom, 24 audited
+theorems and 3 audited definitions, every one `Closed under the global
+context`.
+
+### 30.1 What is in it
+
+§1's Stage A list, item by item, with the name that discharges it.
+
+```
+  fixed-size subset enumeration    subsets_of_size j l
+                                   := filter (length = j) (Spread.subsets l)
+  its count                        length_subsets_of_size :
+                                     |subsets_of_size j l| = binom |l| j
+  the counting operator            count p L := |filter p L|
+  injection implies <=             count_inj_le
+  additivity over disjoint preds   count_disjoint_add
+  C(n,j) <= 2^n                    binom_le_two_pow
+  the one binomial estimate        binom_ratio
+```
+
+Plus what those needed: `binom` (Pascal's recursion), `binom_zero_above`,
+`binom_diag`, `binom_one`, **`binom_absorb`** — the absorption identity
+`C(N,j+1)·(j+1) = C(N,j)·(N−j)`, which is the only fiddly induction in
+the file and the single arithmetic fact the estimate rests on —
+`length_subsets` (`|subsets l| = 2^|l|`), `subsets_NoDup_enum` (the
+enumeration has no repeats, needed wherever the layer is an injection's
+*domain*), and `NoDup_map_inj`, which Coq 8.18's `List` does not have
+(only the converse `NoDup_map_inv`).
+
+Two decisions worth recording because §1 got to argue for them and this
+section can now confirm them.
+
+* **Fixed-size, not the product measure.** §1's earlier version wanted
+  the product measure at `p = 1/2` so that "probability" would be
+  cardinality over the powerset; it was corrected, on a proof-level read,
+  to the fixed-size statement, because the proof needs `V` *small*
+  (`q = p/log n`) and because Lovett p. 11 derives the product-measure
+  form from the fixed-size one by a limit. Stage A confirms the
+  correction was right: the whole layer is `binom`, no limit appears, and
+  the file is 40-odd lemmas of `nat`.
+
+* **Truncated subtraction is harmless here.** `binom_absorb` is stated
+  with `N - j` in `nat`. Above the diagonal both sides are zero rather
+  than the identity failing, which is checked in Coq
+  (`absorb_above_the_diagonal`) and over a range in Rust.
+
+### 30.2 The correction: the hypothesis was one notch too strong
+
+§1 states the estimate as Lovett's Claim 3.4 uses it — a random subset of
+fixed size `qN`, so `j = qN`, so with `q = c/d` the hypothesis is
+`c·N ≤ d·j`. That is what the application supplies. It is **not** what
+the argument needs.
+
+The single step is `c·C(N,j+1) ≤ d·C(N,j)`, which by absorption reduces
+to `c·(N−j) ≤ d·(j+1)`; and for that, `c·N ≤ d·(j+1)` is enough, since
+`c·(N−j) ≤ c·N`. The iterated form needs the hypothesis only at `j+i` for
+`i ≥ 0`, so it inherits it. So:
+
+> **`Counting.binom_step`:  `c·N ≤ d·(j+1)` → `c·C(N,j+1) ≤ d·C(N,j)`.**
+>
+> **`Counting.binom_ratio`:  `c·N ≤ d·(j+1)` → `c^m·C(N,j+m) ≤ d^m·C(N,j)`.**
+
+And the successor is **exactly** the boundary. `c·N ≤ d·(j+2)` makes the
+statement false, and the smallest witness is tiny:
+
+```
+  N = 1, j = 0, c = 2, d = 1, m = 1
+      hypothesis   2·1 <= 1·(0+2)     holds
+      conclusion   2^1·C(1,1) <= 1^1·C(1,0)   i.e.  2 <= 1     FALSE
+```
+
+`Counting.binom_ratio_needs_the_successor` carries it in the kernel;
+`rust/tests/counting.rs` finds **102** such points in a `N ≤ 15`,
+`j ≤ 17`, `c,d ≤ 6`, `m ≤ 6` box. `Counting.binom_ratio_at_threshold` is
+§1's shape (`c·N ≤ d·j`), derived in one line from the sharp one, and it
+is what Stage B should call.
+
+**Why this is worth a subsection rather than a footnote.** Rule 15 says
+an algebraic restatement is evaluated at the tight case before anything
+is built on it. The tight case here is not where the *application* sits
+(`j = qN`) but where the *argument* stops working, and those differ by
+one. A statement carrying a non-minimal hypothesis is not wrong, but it
+is a gap: a later session, reaching for the estimate at `j+1` and finding
+the lemma stated at `j`, would either re-prove it or weaken its own
+statement to fit. Both are wasted, and neither is visible from §1's text.
+
+> **Rule 23 (`docs/reading.md`). Prove a lemma at the weakest hypothesis
+> its own argument needs, not at the one the application supplies — and
+> record the witness that shows the weakening stops there.** The
+> application's hypothesis is a *use*, not a specification.
+
+### 30.3 Measured
+
+```
+  binom, two ways         Pascal's recursion (Coq) against the
+                          multiplicative formula prod (n-i)/(i+1) (Rust):
+                          agree at all 41 x 46 = 1886 points with n <= 40,
+                          j <= 45, exact u128. The off-triangle
+                          convention C(n,j) = 0 for j > n is checked, not
+                          assumed
+  absorption              C(N,j+1)(j+1) = C(N,j)(N-j) with truncated
+                          subtraction, N <= 30, j <= 35; the j >= N range
+                          is exercised and both sides are 0 there
+  the estimate            holds at every point of N <= 16, j <= 18,
+                          c,d <= 5, m <= 6 satisfying c*N <= d*(j+1)
+                          (>10000 instances)
+  the boundary            c*N <= d*(j+2) fails at exactly 102 points of
+                          N <= 15, j <= 17, c,d <= 6, m <= 6
+  no hypothesis at all    C(10,5) = 252 against C(10,0) = 1
+  the layer               enumerating size-j subsets of [n] by bitmask
+                          gives C(n,j) of them, distinct, each of size j,
+                          n <= 14; and the layers of [n] exhaust 2^n
+  binom_le_two_pow        C(n,j) <= 2^n for n <= 30, and the row sums to
+                          2^n exactly -- which is length_subsets
+  count                   partition, monotonicity, disjoint additivity,
+                          and complementation as an injection from the
+                          size-4 layer of a 10-set into the size-6 layer,
+                          the equality case C(10,4) = C(10,6) = 210
+```
+
+### 30.4 Costs and gates
+
+New: `coq/Counting.v` (24 audited theorems, 3 audited definitions, no
+axiom), `rust/tests/counting.rs` (9 tests, independent implementations),
+6 mutations. The manifest is now 137 mutations.
+
+### 30.5 What Stage A does *not* do, and what is next
+
+It does not touch spreadness, families, or sunflowers — deliberately.
+Stage A is the layer Stage B's encoding is *counted with*, and keeping it
+free of the problem is what makes it independently falsifiable: every
+claim above is checked against an implementation that shares no code with
+the Coq side.
+
+**Stage B**, unchanged from §1 and still the stall risk:
+
+```
+  minimal_fragment : Family -> list nat -> list nat -> list nat
+        Lovett Def 3.2, "breaking ties arbitrarily" becoming "first in
+        the enumeration", which is what makes it a function
+  Obs 1-3 and Claim 3.3      set algebra, no arithmetic
+  phi and an explicit psi, with psi (phi (S,V)) = (S,V)
+        section 1's most useful proof-level find: the obligation is an
+        equation, not a case analysis
+  Claim 3.4's count          assembles Stage A's four pieces
+```
+
+The one thing Stage A changes about Stage B's plan: **call
+`binom_ratio_at_threshold`, not `binom_ratio`**, unless Stage B's `V` is
+genuinely at `qN+1` — and if it is, the sharp form is already there.
+
+Stage C (Markov, Claim 3.6's arithmetic-free induction, and the `log n`
+iteration) is untouched.
+
+### 30.6 The one-line verdict
+
+**Stage A of the counting proof is formalised, axiom-free, and
+independently falsified: the size-`j` layer of the powerset with its
+count `C(n,j)`, a counting operator with the injection and additivity
+laws Claim 3.4 uses, `C(n,j) ≤ 2^n`, and the one binomial estimate —
+which turns out to hold under a hypothesis one notch weaker than §1
+assumed, with `c·N ≤ d·(j+1)` exactly the boundary and a two-line witness
+that `j+2` fails.**
+
+The axiom is not discharged and this section does not claim otherwise.
+What it claims is that the first of §1's three stages is done, that it
+needed no arithmetic §1 had not anticipated except one estimate stated
+too strongly, and that the remaining stall risk is exactly where §1 said
+it was — Stage B's encoding.
