@@ -8580,8 +8580,35 @@ steps, and this file supplies the junction for three of them:
 
 and then the assembly — a product over the four ranges, a sum over
 `n/2 ≤ m ≤ n`, and the geometric series `Σ (4/kq)^m`. The assembly is
-**not** done, and this section does not claim it. Two things stand in
-the way, and naming them is the handoff:
+**not** done in Coq, and this section does not claim it.
+
+**It is, however, already falsified.** `rust/tests/fragment_count.rs`
+states the assembly without `q` — write `j` for `|V|` and let `B(j,m)`
+be the pairs with `|V| = j` and `|M(S,V)| = m` — and checks
+
+```
+  |B(j,m)|  <=  C(N, j+m) * C(n, m) * max_{|M| = m} deg M F
+```
+
+over every family of at most three subsets of a four-element universe
+and at most four subsets of a three-element one. Four things came out of
+it, and they are what the Coq assembly will need:
+
+* **the fibred bound holds**: every fibre of `(S,V) ↦ (Z,M)` has at most
+  `deg M F` elements, because `V = Z \ M` is determined and `S \ M` lives
+  in the link. This is the lemma `Counting.v` is missing, now measured
+  before it is written;
+* **the assembled bound holds** at every instance;
+* **none of the three factors is slack** — dropping any one of them makes
+  the bound false somewhere, with a witness, so the Coq statement will
+  not be carrying a redundant term;
+* **the spread step works in the cleared-denominator form**
+  `k^m · |B(j,m)| ≤ C(N,j+m) · C(n,m) · |F|` whenever `F` is
+  `Spread.Spread`-spread with parameter `k`. No `q^{-m}`, no `k^{-m}`,
+  nothing leaves `nat`.
+
+Two things still stand in the way of the Coq proof, and naming them is
+the handoff:
 
 * **The product is nested, not flat.** `S'` depends on `Z` and `F_M`
   depends on `M`, so the bound is `Σ_Z Σ_{M ⊂ S'(Z)} |F_M|` rather than
@@ -8600,7 +8627,8 @@ the way, and naming them is the handoff:
 
 New: `coq/Fragment.v` (24 audited theorems, 8 audited definitions, no
 axiom), `rust/tests/fragment.rs` (7 tests, 32968 exhaustive triples),
-6 mutations. The manifest is now 143.
+`rust/tests/fragment_count.rs` (4 tests, the assembly of Claim 3.4
+falsified ahead of its proof), 6 mutations. The manifest is now 143.
 
 ### 31.7 The one-line verdict
 
