@@ -2027,3 +2027,96 @@ because = """Killed, and by uniformity rather than by the count: \
 about spreadness or intersection is asked. The count would in fact \
 survive losing four lines (9 > 8); what does not survive is the object \
 ceasing to be a design."""
+
+# ----------------------------------------------------------------
+# Profile.v -- the reduction at an arbitrary profile, and the barrier.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "profilespread-drop-nonempty"
+file = "coq/Profile.v"
+question = """The profile condition excludes T = []. Is that guard \
+load-bearing, or is it inherited decoration from RaoSpread?"""
+find = """    NoDup T -> T <> [] -> deg T F <= B (m - length T)."""
+replace = """    NoDup T -> deg T F <= B (m - length T)."""
+expect = "killed"
+because = """Load-bearing, and for the reason the decision procedure \
+exists: at T = [] the condition reads |F| <= B m, which contradicts the \
+size hypothesis B m < |F| outright. profile_witness_none cannot produce \
+it -- profile_violatesb returns false on [] by construction -- so the \
+reduction loses its "no violation" branch."""
+
+[[mutation]]
+id = "greedyclosed-drop-the-level-factor"
+file = "coq/Profile.v"
+question = """GreedyClosed carries the factor m -- one point per member \
+of the cover, m of them. Drop it and the recurrence becomes geometric. \
+Is the factorial in Erdos-Rado exactly that m?"""
+find = """  forall m, 1 <= m -> m <= n -> (k - 1) * m * B (m - 1) <= B m."""
+replace = """  forall m, 1 <= m -> m <= n -> (k - 1) * B (m - 1) <= B m."""
+expect = "killed"
+because = """It is exactly that m. Without it the unrolled bound is \
+(k-1)^m, not (k-1)^m * m!, so greedy_forces_erdos_rado no longer holds; \
+and greedy_closes_profile loses the cover arithmetic, since the cover \
+has (k-1)*m points and not (k-1). The factorial in the 1960 bound is \
+the factor m paid once per level, and this mutation is the check."""
+
+[[mutation]]
+id = "greedy-matching-off-by-one"
+file = "coq/Profile.v"
+question = """A family with no k pairwise disjoint members has a maximal \
+matching of at most k-1. Does the development notice if that is stated \
+as k?"""
+find = """    NoKDisjoint k F -> incl S F -> NoDup S -> PairwiseDisjoint S ->
+    length S <= k - 1."""
+replace = """    NoKDisjoint k F -> incl S F -> NoDup S -> PairwiseDisjoint S ->
+    length S <= k."""
+expect = "killed"
+because = """Killed at the proof of the mutated lemma itself: with the \
+bound at k the contradiction branch never fires, and firstn k S is no \
+longer available as the witness. The off-by-one is the whole content of \
+the step -- at k the cover would have (k-1+1)*m points and the barrier \
+constant would move."""
+
+[[mutation]]
+id = "er-profile-drop-the-factorial"
+file = "coq/Profile.v"
+question = """Is Erdos-Rado's profile greedy-closed because of the \
+factorial, or would the bare power do?"""
+find = """Definition er_profile (k : nat) (j : nat) : nat := (k - 1) ^ j * fact j."""
+replace = """Definition er_profile (k : nat) (j : nat) : nat := (k - 1) ^ j."""
+expect = "killed"
+because = """The factorial is the whole of it. (k-1)^j is greedy-closed \
+only when (k-1)*m <= k-1, i.e. m <= 1, so er_profile_greedy_closed fails \
+at the second level and erdos_rado_via_profile stops deriving the 1960 \
+bound."""
+
+[[mutation]]
+id = "profile-witness-forgets-the-level"
+file = "coq/Profile.v"
+question = """The decision procedure tests deg T F against B (m - |T|). \
+Does testing it against B m -- the top of the profile -- still work?"""
+find = """  | _ :: _ => Nat.ltb (B (m - length T)) (deg T F)"""
+replace = """  | _ :: _ => Nat.ltb (B m) (deg T F)"""
+expect = "killed"
+because = """Killed: profile_witness_none would then establish only \
+deg T F <= B m, which is not ProfileSpread, and profile_witness_some \
+would report a violation too weak for the link to exceed B (m - |T|). \
+The level-indexing is what makes the recursion profile-preserving."""
+
+[[mutation]]
+id = "profile-reduction-drops-the-base-hypothesis"
+file = "coq/Profile.v"
+question = """profile_reduction assumes 1 <= B 0. Is that needed, or is \
+it inherited from 1 <= r in spread_reduction?"""
+find = """    2 <= k -> 1 <= B 0 ->
+    ProfileYieldsDisjoint n k B ->
+    forall m, m <= n -> UpperBound m k (S (B m))."""
+replace = """    2 <= k ->
+    ProfileYieldsDisjoint n k B ->
+    forall m, m <= n -> UpperBound m k (S (B m))."""
+expect = "killed"
+because = """Needed. At m = 0 the reduction has no oracle to call: it \
+argues that B 0 < |F| forces two members into a 0-uniform distinct \
+family, which has at most one. With B 0 = 0 the hypothesis is only \
+|F| >= 1 and the contradiction disappears."""

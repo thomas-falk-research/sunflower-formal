@@ -487,7 +487,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 125 anecdotes into a coverage metric over the
+  mutation testing from 131 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -7706,3 +7706,380 @@ family is confirmed as the underlying object, verbatim from [FHHZ17] p. 1;
 what was not found is the thinning. A specialist in the degree-condition
 line may recognise it on sight, and the remaining search is still owed
 before any of this is described as new outside the repository.
+
+## 29. The reduction at an arbitrary profile: the greedy cover step
+##     cannot beat 1960, and that is now a theorem
+
+§28.4 costed one route and found it capped below Erdős–Rado. §21.5 had
+costed another, four sections earlier, and found the same constant. This
+section asks what the two have in common, gets an exact answer, and turns
+the answer into a gate that costs every future route automatically.
+
+**Nothing in this section is new mathematics.** It is a reorganisation,
+one range check upgraded to a theorem, and a tool. §29.6 says exactly
+which parts were already in the repository — three of them were, and one
+of those was the thing the incoming brief listed as the session's first
+task. The value is in §29.5 and in the fact that the barrier is now
+machine-checked rather than asserted.
+
+### 29.1 The observation
+
+`SpreadReduction.spread_reduction` takes an `m`-uniform family with
+`deg T F ≤ r^(m-|T|)` and more than `r^m` members, and returns a
+`k`-sunflower. Its induction never uses that `r^·` is a power. Replace
+`r^j` by an arbitrary `B : nat -> nat` and every step goes through
+verbatim, because the recursion is **profile-preserving**: if `T`
+violates the condition then the link has uniformity `j = m - |T|`, more
+than `B j` members, and
+
+```
+  deg S (link T F)  =  deg (S ++ T) F  ≤  B (m - |S| - |T|)  =  B (j - |S|)
+```
+
+which is the same condition one level down. `coq/Profile.v` states that:
+
+```
+  ProfileSpread B m F        deg T F <= B (m - |T|),  T nonempty
+  ProfileYieldsDisjoint n k B    the oracle, at profile B
+  profile_reduction          ProfileYieldsDisjoint n k B  ->  f(m,k) <= B m + 1
+```
+
+`spread_reduction` is the instance at `B j = r^j`
+(`spread_reduction_is_a_profile_instance`), and the correspondence is
+definitional (`RaoSpread_ProfileSpread`, `ProfileYieldsDisjoint_pow`).
+
+The generalisation costs nothing because the reduction never *propagates*
+spreadness into the link — it re-decides it at each level with
+`profile_witness`, exactly as `Spread.rao_witness` does.
+
+### 29.2 The theorem
+
+The **greedy cover step** is the argument every elementary bound in this
+development bottoms out at: no `k` pairwise disjoint members, so a maximal
+matching has at most `k-1` of them, so the family is covered by `(k-1)m`
+points, so
+
+```
+  |F|  <=  (k-1) · m · B(m-1).                       greedy_profile_bound
+```
+
+It closes the reduction at a profile `B` exactly when that lands inside
+`B`:
+
+```
+  GreedyClosed n k B  :=  (k-1) · m · B(m-1) <= B m,   1 <= m <= n
+  greedy_closes_profile :  GreedyClosed n k B -> ProfileYieldsDisjoint n k B
+```
+
+and unrolling the recurrence from `B 0 = 1` gives, in one induction:
+
+> **`greedy_forces_erdos_rado`: every greedy-closed profile satisfies
+> `B m ≥ (k-1)^m · m!`.**
+>
+> **`greedy_cannot_beat_erdos_rado`: so the bound it yields through
+> `profile_reduction` is at least `ErdosRado_Greedy.er_upper_bound`. The
+> greedy cover step cannot beat 1960, at any `k`, by any amount.**
+
+This is **exact**. There is no Stirling, no `e`, no range check: the
+conclusion is the 1960 constant itself. It is the formal content of the
+sentence that the `m!` in Erdős–Rado *is* the factor `m` paid once per
+level by covering with one member's points.
+
+Two instances make the statement concrete.
+
+* **Erdős–Rado's own profile is the least greedy-closed one.**
+  `er_profile k j = (k-1)^j · j!` is greedy-closed **with equality at
+  every level** (`er_profile_greedy_closed`), so `profile_reduction`
+  returns `(k-1)^n · n! + 1`. That is `erdos_rado_via_profile` — a
+  second, independent derivation of `ErdosRado.erdos_rado_upper_bound`
+  inside this development, through the spread reduction rather than
+  through `ErdosRado.v`'s own induction on the uniformity.
+
+* **`SpreadThreshold.cover_spread_disjoint` is the power profile.**
+  `r^j` is greedy-closed iff `(k-1)m ≤ r`, so `r = (k-1)n` works
+  throughout, which at `k = 3` is exactly §22.1's `r*(n,3) ≤ 2n`. It
+  generalises to every `k` for free (`cover_spread_disjoint_general`),
+  and `cover_bound_cannot_beat_erdos_rado` applies the barrier to it.
+
+### 29.3 The step is lossy, and no refinement of it helps
+
+The barrier is a statement about the *method*, not about the truth, and
+the two are measurably different already at uniformity two.
+
+Define the **least profile** `B_k`: `B_k(0) = 1` and `B_k(m)` the largest
+`m`-uniform distinct family with no `k` pairwise disjoint members
+satisfying `deg T F ≤ B_k(m - |T|)`. By construction
+`ProfileYieldsDisjoint n k B_k` holds and `f(m,k) ≤ B_k(m) + 1`. At
+`k = 3`:
+
+```
+  B(0) = 1     B(1) = 2     B(2) = 6
+  Erdos-Rado           8              <- the greedy step's value
+```
+
+`B(2) = 6` is exhaustive (`rust/tests/profile.rs`, backtracking over all
+simple graphs on 6 to 9 points with max degree ≤ 2 and no three pairwise
+disjoint edges), and the witness is **two disjoint triangles** — which is
+`F23.two_triangles`, already in this development as the family attaining
+`g(2) = 6`. So the greedy step over-counts by 2 at the second level.
+
+> The gap is real; the step cannot close it; and
+> `greedy_forces_erdos_rado` says no sharpening of *the step* ever will.
+> Something else has to. §22.1's pair-covering is one such something —
+> it beats `2n` precisely because a pair has degree `r^(m-2)` where a
+> point has `r^(m-1)` — and the spread lemma is the other.
+
+**A refinement was derived, tested, and dropped.** Counting the cover
+degrees more carefully (the `k-1` matching members are each counted `m`
+times, not once) gives `|F| ≤ (k-1)(m·B(m-1) - (m-1))`, hence the profile
+`1, 2, 6, 32, 250` against Erdős–Rado's `1, 2, 8, 48, 384`, hence
+`f(3,3) ≤ 33` unconditionally. It was not built, because
+**`PureLink.f_3_3_at_most_27` is already in the development,
+unconditional and axiom-free**, and 27 < 33. See §29.6.
+
+### 29.4 The linear comparison, exactly
+
+The greedy barrier is exact. The other routes this development has costed
+are not greedy-only, so they need the comparison done directly, and §28.4
+did it by evaluating both sides for `n ≤ 200`. It is a theorem, and the
+whole proof is one Bernoulli inequality in `nat`:
+
+```
+  pow_bernoulli                n^k · (n+k)  <=  n · (n+1)^k
+  two_pow_le_succ_pow          2·n^n  <=  (n+1)^n            (k = n)
+  erdos_rado_below_the_n_to_the_n_ceiling
+                               2^n · n!  <=  (n+1)^n,  every n
+```
+
+`pow_bernoulli`'s induction step reduces to `0 ≤ k`, which is why it is
+eight lines rather than a binomial expansion. The consequence:
+
+> **`star_extremal_ceiling_is_worse_than_erdos_rado`: the ceiling
+> `(n+1)^n + 1` that `HiltonMilner.star_extremal_route_needs_r_above_n`
+> pins the star-extremality route to is at least Erdős–Rado's
+> `2^n·n! + 1`, at every `n`.**
+
+§28.4's "checked for every `n` from 2 to 200" is subsumed, and the
+statement no longer carries a range.
+
+### 29.5 The gate: rule 14 as machinery
+
+`tools/ceiling.py`, wired into `make verify`. Every reduction in the
+development declares the best `f(n,3)` bound it can *possibly* produce —
+not what it currently produces — and the tool instantiates it in exact
+integer arithmetic against three bars. Because every bound has the shape
+`base(n)^n`, the routes are compared by their **base**:
+
+```
+  route                                     base(50) base(200)    g  verdict
+  elementary cover, r = 2n+1                     101       401 0.99  linear: loses
+  greedy cover, r = 2n                           100       400 1.00  linear: loses
+  quadratic split, r = 1+sqrt(3n^2-4n+3)          87       347 0.99  linear: loses
+  matching split, method ceiling r = n+1          51       201 0.99  linear: loses
+  star extremality, pinned at r = n+1             51       201 0.99  linear: loses
+  tau-indexed bound, r = n                        50       200 1.00  linear: loses
+  Erdos-Rado profile via the reduction            38       149 0.98  linear: equals
+  spread lemma, r ~ 3 log2(3n)                    24        30 0.22  sublinear
+  constant threshold (the conjecture)              8         8 0.00  constant
+  ---
+  Erdos-Rado 1960 (the bar)                       38       149 1.00
+  BCW 2021 (the record)                           60        84 0.24
+```
+
+`g` is the measured exponent in `base(n) ~ n^g`. Classification is by
+**shape**, deliberately: the constants in the two sublinear rows (Rao's
+`alpha`, BCW's `C`) are not pinned by this development, so a verdict that
+depended on them would be an artefact of the guess.
+
+Each route also declares the verdict it expects, and **a mismatch fails
+the build**. A route cannot be described as a path to a record once its
+own ceiling says otherwise, and a route written tomorrow gets costed the
+day it is written rather than six sessions later.
+
+Two things the table makes visible that no prose in this file did.
+
+* **Erdős–Rado is not the bar.** §28.4 compares against `2^n·n!`, which is
+  the weakest possible criticism: the record is Bell–Chueluecha–Warnke's
+  `(C·3·log n)^n`, and *every linear route loses to that too*, by a wider
+  margin and for a structural reason. A route needs a **sublinear** base
+  to be in the running at all.
+* **The sharp constant for a linear route is `2/e`.** `r*(n,3) ≤ c·n`
+  gives `f(n,3) ≤ (cn)^n + 1`, which beats `2^n·n!` exactly when
+  `c < 2/e = 0.7357588…` (`tools/ceiling.py --linear`, with the finite-`n`
+  crossovers shown, since Stirling's `sqrt(2πn)` keeps `c` slightly above
+  `2/e` winning until `n ≈ 2000`). **Every linear route in this
+  development has `c ≥ 1`**, the smallest being the matching split's
+  method ceiling at exactly `1`. The best axiom-free bound, §22.1's
+  `1.74n`, is 2.4 times the threshold.
+
+### 29.6 What was already here: three finds, one of them the brief's
+
+Rule 16 says to read the section that first posed the question rather than
+the handoff. Three times this session that changed what got built.
+
+1. **The incoming brief's Track 1, step one — "state
+   `∃C, ∀ n k, SpreadYieldsDisjoint n k (C·k)` as a named `Prop` in Coq
+   and derive `f(n,3) ≤ C^n` through `spread_reduction`. **Do this
+   first**" — has been in the development since `coq/Conjecture.v` was
+   written.** `Conjecture.spread_conjecture` is that `Prop`, in the more
+   general form `∃ c : nat -> nat` rather than `C·k`;
+   `Conjecture.spread_conjecture_suffices` derives the full sunflower
+   conjecture from it and `k3_corollary` specialises to `k = 3`. §2 of
+   this file points at it. **Rao's question, in the absolute form, is
+   already a formal object here.** Nothing was owed and nothing was
+   written.
+
+2. **`r*(m,3)` is not untouched either.** §22's opening sentence is
+   *"§18.5 is the observation that whether the sequence is bounded in `m`
+   is the sunflower conjecture at `k = 3`"*, and the whole section attacks
+   it. The brief's "nobody in this programme has ever pointed the
+   machinery at it" is wrong about this repository.
+
+3. **The refined-profile bound of §29.3 was derived and dropped.** It
+   gives `f(3,3) ≤ 33` unconditionally, which would have been an
+   improvement on the `f(3,3) ≤ 49` that §22.2's table and §18.2's text
+   still quote — except that `PureLink.f_3_3_at_most_27` proves
+   `UpperBound 3 3 27`, unconditionally, `Closed under the global
+   context`. Roughly a hundred lines of double-counting were not written.
+
+   **Consequence: this file has a stale number.** §18.2 says *"this
+   development only knows `20 ≤ g(3) ≤ 48`"*. It knows `g(3) ≤ 26`
+   (`PureLink.f_3_3_at_most_27`), and `Sharp.sharp_beats_erdos_rado_at_three`'s
+   32 is *conditional* on `AHSOptimal` and therefore weaker than what is
+   proved outright. Corrected here rather than in place, because §18.2's
+   surrounding argument is about what a *measurement* would decide and
+   that argument is unaffected.
+
+### 29.7 Measured
+
+```
+  B(2) = 6 at k = 3     exhaustive over all simple graphs on 6, 7, 8, 9
+                        points with max degree <= 2 and no three pairwise
+                        disjoint edges; maximum 6 at every ground set,
+                        witness two disjoint triangles (= F23.two_triangles).
+                        Erdos-Rado / the greedy step give 8 there
+  greedy barrier        checked over 112 systematically inflated profiles
+                        at k = 2..5 and m <= 12, exact u128
+  power profile         greedy-closed iff (k-1)m <= r, checked for
+                        k = 2..6, n = 1..8, and refuted at r-1 exactly
+                        when (k-1)n > r-1
+  2^n n! <= (n+1)^n     n = 0..26, the exact u128 range, tight at n = 0,1
+                        and strict from n = 2. rust/tests/hilton_milner.rs
+                        pins the same comparison to n = 200 in its own
+                        big-integer arithmetic
+  linear routes         (2n)^n, (2n+1)^n, (1.74n)^n and (n+1)^n all at
+                        least 2^n n!, n = 1..23 (the u128 range)
+  the 2/e threshold     c = 0.7357 beats Erdos-Rado at n = 200, 2000 and
+                        20000; c = 0.7400 beats at 200 and loses from
+                        2000 on. tools/ceiling.py --linear
+```
+
+A note on the first draft of `rust/tests/profile.rs`, because it is the
+kind of error this repository exists to catch. It used `u128::pow`, which
+**wraps silently in release mode**, and reported
+`erdos_rado_below_the_n_to_the_n_ceiling` as failing at `n = 28` — for a
+theorem the kernel had already accepted at every `n`. `(n+1)^n` leaves
+`u128` at `n = 27`. Every power in that file is now `checked_pow` with
+the range asserted, and the first overflowing `n` is pinned as a test.
+
+### 29.8 The ledgers
+
+**Conjecture ledger** — unchanged this session. No row of HM, X, T, F or
+B moved; nothing here is about `I(m,r)`.
+
+**Barrier ledger**, three new rows:
+
+| what | why it is dead | budget/evidence |
+|---|---|---|
+| **the greedy cover step, as a route to any record** | any profile it closes is `≥ (k-1)^m·m!`, which *is* Erdős–Rado | `greedy_forces_erdos_rado`, exact, every `k`, no range |
+| **any linear bound on `r*(n,3)` with `c ≥ 2/e`** | `(cn)^n ≥ 2^n·n!` asymptotically; every route here has `c ≥ 1` | `tools/ceiling.py --linear`; `star_extremal_ceiling_is_worse_than_erdos_rado` proves the `c = 1` case at every `n` |
+| **comparing routes against Erdős–Rado at all** | the record is `(C log n)^n`; a linear route loses to it by a wider margin than to 1960 | §29.5's table, `g` column |
+
+**Novelty ledger** (§28.11's format). **No literature search was run this
+session**, so rule 17 applies to every row: these are claims about this
+development, not priority claims.
+
+```
+  new mathematics       none. The greedy-cover-forces-factorial
+                        observation is the 1960 proof read backwards;
+                        2^n n! <= (n+1)^n is AM-GM; the profile
+                        generalisation is the same recursion [Rao25] p. 8
+                        presents in the same shape (quoted in section 1).
+  new to Coq            profile_reduction and the profile condition;
+                        greedy_closes_profile / greedy_forces_erdos_rado
+                        as a barrier theorem rather than a remark;
+                        erdos_rado_via_profile, a second derivation of
+                        the 1960 bound through the spread reduction;
+                        cover_spread_disjoint_general, section 22.1's
+                        k = 3 cover bound at every k.
+  new as a theorem,     2^n n! <= (n+1)^n at every n, replacing section
+  not as arithmetic     28.4's check to n = 200.
+  new as machinery      tools/ceiling.py: rule 14 enforced by the build
+                        rather than by prose, and the observation that the
+                        bar is (C log n)^n and not 2^n n!.
+  not new               two disjoint triangles (F23.two_triangles, and
+                        g(2) = 6 throughout this file); Erdos-Rado 1960;
+                        Bernoulli; the constant 2/e, which is section
+                        21.5's 1.359 = e/2 read the other way up.
+```
+
+### 29.9 Picking this up cold
+
+**Settled in §29, all axiom-free.**
+
+```
+  Profile.profile_reduction              the reduction at any profile B
+  Profile.greedy_closes_profile          the cover step, at any profile
+  Profile.greedy_forces_erdos_rado       greedy-closed => B m >= (k-1)^m m!
+  Profile.greedy_cannot_beat_erdos_rado  the barrier, in er_upper_bound form
+  Profile.erdos_rado_via_profile         1960, through the spread reduction
+  Profile.cover_spread_disjoint_general  section 22.1's cover bound, every k
+  Profile.pow_bernoulli                  n^k(n+k) <= n(n+1)^k
+  Profile.erdos_rado_below_the_n_to_the_n_ceiling   2^n n! <= (n+1)^n
+```
+
+**Worth attacking next, in order.**
+
+1. **The two live tracks are unchanged and neither was started.**
+   Discharging `Rao20_lemma2` (§1: the counting proof, Lovett §3, staged
+   in three stages with the encoding's injectivity identified as an
+   *equation*), and Rao's `r(p,k) = O(p)` question (`docs/reading.md` A2).
+   §29 says nothing about either; it says that everything *else* in the
+   development is capped, which is an argument for going there.
+2. **`B_k`, the least profile, is a well-defined sequence and only two
+   terms are known.** `B_3 = 1, 2, 6, ?`. `B_3(3) ∈ [g(3), 32]`, so
+   `[20, 32]` with what is proved here. It is a finite search at each
+   term, it is bounded above by the refined count of §29.3, and
+   `f(m,3) ≤ B_3(m) + 1` — so **is the reduction lossless, i.e. is
+   `B_k = g`?** `B_3(2) = 6 = g(2)` is the only data point. This is a
+   clean, cheap, unasked question.
+3. **Nothing else in §29.** The gate is the deliverable; do not add
+   routes to `tools/ceiling.py` for their own sake, add them when a route
+   is written.
+
+**Do not re-run**: the refined profile of §29.3 (dominated by
+`PureLink.f_3_3_at_most_27`), and everything in the §28.6 and §29.8
+barrier ledgers.
+
+### 29.10 The one-line verdict
+
+**The reduction this development is built on works at an arbitrary
+profile, and the greedy cover step closes a profile exactly when that
+profile dominates `(k-1)^m·m!` — so the step that every elementary bound
+here bottoms out at cannot beat Erdős–Rado, at any `k`, by any amount,
+and that is now an exact theorem rather than an estimate.**
+
+Around it: `2^n·n! ≤ (n+1)^n` at every `n`, which retires §28.4's range
+check; Erdős–Rado 1960 re-derived through the spread reduction; §22.1's
+cover bound generalised from `k = 3` to every `k`; and `tools/ceiling.py`,
+which costs every route in the development against 1960, against the
+record, and against the target, and **fails the build when a route's
+description disagrees with its own arithmetic**.
+
+No number moved. The session's other three outputs are refusals: Track 1's
+first task was already done (§29.6.1), the quantity it was aimed at was
+already posed (§29.6.2), and the one bound this section could have
+improved is already beaten by a theorem three files away (§29.6.3). The
+hundred lines not written are the point of rule 16, and the tool is the
+point of rule 14 — the two rules the previous session earned, applied to
+the session that inherited them.

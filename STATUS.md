@@ -268,7 +268,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (547 of them). The current
+for every theorem in the "Closed" table (568 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -315,7 +315,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 42 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 43 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -323,8 +323,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 125 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 122 killed outright, two genuine
+Current mutation results: 131 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 128 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -333,7 +333,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 42 modules with Coq's separate kernel
+`make coqchk` re-verifies all 43 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```
@@ -473,3 +473,40 @@ counterexample families themselves.
        7  3   3              3                   7   1,2
        8  3   3              3                   7   1,2
 ```
+
+### What each route can reach: the ceiling table
+
+Whether `r*(m,3)` is bounded is the conjecture; what a *bound* on it is
+worth is arithmetic, and `tools/ceiling.py` does it for every reduction in
+the development at once. `spread_reduction` turns `r*(n,3) ≤ h(n)` into
+`f(n,3) ≤ h(n)^n + 1`, so every bound here has the shape `base(n)^n` and
+the routes compare by their base.
+
+```
+  route                                     base(50) base(200)    g  verdict
+  elementary cover, r = 2n+1                     101       401 0.99  linear: loses
+  greedy cover, r = 2n                           100       400 1.00  linear: loses
+  quadratic split, r = 1+sqrt(3n^2-4n+3)          87       347 0.99  linear: loses
+  star extremality, pinned at r = n+1             51       201 0.99  linear: loses
+  Erdos-Rado profile via the reduction            38       149 0.98  linear: equals
+  spread lemma, r ~ 3 log2(3n)                    24        30 0.22  sublinear
+  constant threshold (the conjecture)              8         8 0.00  constant
+  ---
+  Erdos-Rado 1960 (the bar)                       38       149 1.00
+  BCW 2021 (the record)                           60        84 0.24
+```
+
+`g` is the measured exponent in `base(n) ~ n^g`. **A route needs a
+sublinear base to be in the running at all**: `r*(n,3) ≤ c·n` beats
+Erdős–Rado exactly when `c < 2/e = 0.7357…`, and every linear route above
+has `c ≥ 1`. Each route declares the verdict it expects and a mismatch
+fails `make verify`, so a reduction cannot be described as a path to a
+record once its own ceiling says otherwise.
+
+Two of those rows are theorems rather than arithmetic.
+`Profile.greedy_forces_erdos_rado` proves that **any** profile the greedy
+cover step closes satisfies `B m ≥ (k-1)^m·m!` — exactly Erdős–Rado's
+bound, at every `k`, with no asymptotics — and
+`Profile.erdos_rado_below_the_n_to_the_n_ceiling` proves
+`2^n·n! ≤ (n+1)^n` at every `n`, which is the star-extremality route's
+ceiling. See [`docs/roadmap.md`](docs/roadmap.md) §29.

@@ -42,4 +42,5 @@ coq/TauThree.v
 coq/CrossIntersecting.v
 coq/CrossRefined.v
 coq/HiltonMilner.v
+coq/Profile.v
 coq/Audit.v

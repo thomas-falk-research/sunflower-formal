@@ -1760,3 +1760,88 @@ Three earlier rows — B10, B12, B13 — are negatives about an inequality, an
 identity and an exponent. All three were searched the same way and are now
 flagged in the register as unsupported. None is refuted; each is simply
 not evidenced, and re-running them is a rendered-pass job.
+
+---
+
+## What re-reading the development changed, session N+10
+
+**No literature was read this session and no register row was opened or
+closed.** Nothing below is a novelty claim; rule 17 governs
+`docs/roadmap.md` §29.8's ledger, which says in full that this session
+produced no new mathematics. The three rules here were earned inside the
+development, as rules 12–17 were.
+
+### The bar was the wrong bound, in the section that set it
+
+§28.4 costed the star-extremality route against **Erdős–Rado 1960** and
+concluded — correctly — that `(n+1)^n` loses to `2^n·n!` by a factor
+growing like `1.359^n`. That is true, it is machine-checked, and it is
+the weakest available criticism of the route.
+
+The record is not `2^n·n!`. It is Bell–Chueluecha–Warnke's
+`(C·p·log k)^k` — register row **A6**, read in full, quoted verbatim in
+this file — which at `p = 3` is `(C' log n)^n`. Against *that* bar, every
+linear route in the development loses by far more and for a structural
+reason: the base of a linear route grows like `n`, the record's like
+`log n`, and the target's not at all. `tools/ceiling.py` puts the three
+side by side and shows that the star-extremality route, the `τ`-indexed
+route, the cover bound and §22.1's quadratic bound are *the same shape*,
+which no pairwise comparison against 1960 makes visible.
+
+> **Rule 20. Cost a route against the record, not against the last bound
+> you can name.** Beating a superseded bound is not progress toward the
+> problem, and the comparison that decides whether a route is in the
+> running is one of *shape* — constant, logarithmic, linear — not of
+> value at any particular `n`. A route that loses to 1960 is dead; a
+> route that beats 1960 and is linear is also dead, and saying only the
+> first understates it.
+
+### The brief's first task had been done for several sessions
+
+Session N+10's incoming brief opened its highest-ranked track with:
+*"State it: `∃ C, ∀ n k, SpreadYieldsDisjoint n k (C·k)` … as a named
+`Prop` in Coq, next to `Rao20_lemma2`, and derive `f(n,3) ≤ C^n` from it
+through the existing `spread_reduction`. **Do this first**."*
+
+`coq/Conjecture.v` has carried exactly that since it was written:
+`spread_conjecture` is the `Prop` (in the more general shape
+`∃ c : nat → nat`), `spread_conjecture_suffices` derives the whole
+conjecture from it, `k3_corollary` specialises. `docs/roadmap.md` §2
+points at it by name. The check cost one `grep` and it was run after
+forty minutes of reading rather than in the first two.
+
+The same brief asserted that "nobody in this programme has ever pointed
+the machinery at" whether the spread threshold is bounded. §22's opening
+paragraph is that observation, attributed to §18.5, and §22 is a whole
+session's attack on it.
+
+> **Rule 21. A handoff's "do this first" is a hypothesis about the
+> repository, and it is checked against the repository before it is
+> acted on.** Rule 16 says the prior work most likely to have anticipated
+> a *result* is upstream of the handoff. This is its converse for
+> incoming work: the prior work most likely to have already done a
+> *task* is also upstream of the handoff, for the same reason — a
+> handoff forwards what its author believed was open, and belief is not
+> the index.
+
+### A test that disagreed with the kernel, and was wrong
+
+The first draft of `rust/tests/profile.rs` reported
+`2^n·n! ≤ (n+1)^n` **failing at `n = 28`** — a statement `coqc` had
+already accepted, as `Profile.erdos_rado_below_the_n_to_the_n_ceiling`,
+at every `n` with no range. The test was wrong: `u128::pow` wraps
+silently in release mode and `(n+1)^n` leaves `u128` at `n = 27`.
+
+The trap is specific to this repository's arrangement. The testbed exists
+to *falsify* the Coq layer — `rust/src/testbed.rs` is described in
+`lib.rs` as exactly that — so a disagreement is the interesting outcome,
+and the instinct is to believe it. Here the disagreement was silent
+arithmetic in the falsifier.
+
+> **Rule 22. When the testbed contradicts a machine-checked theorem, the
+> testbed is wrong until its arithmetic has been re-derived.** The kernel
+> does not have an overflow mode. Any exhaustive claim in `u128` states
+> the range it is valid on and pins the first input outside it; every
+> power is `checked_pow`, so the failure is an error rather than a
+> number.
+

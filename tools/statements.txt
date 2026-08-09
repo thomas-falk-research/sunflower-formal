@@ -1956,3 +1956,84 @@ fe9ae6199e2ff2bf  def HiltonMilner.hmstar
 
 265981df30d4b2f3  def HiltonMilner.pg23
     pg23 = ((0 :: 1 :: 2 :: 12 :: nil) :: (0 :: 3 :: 6 :: 9 :: nil) :: (0 :: 4 :: 8 :: 10 :: nil) :: (0 :: 5 :: 7 :: 11 :: nil) :: (1 :: 3 :: 8 :: 11 :: nil) :: (1 :: 4 :: 7 :: 9 :: nil) :: (1 :: 5 :: 6 :: 10 :: nil) :: (2 :: 3 :: 7 :: 10 :: nil) :: (2 :: 4 :: 6 :: 11 :: nil) :: (2 :: 5 :: 8 :: 9 :: nil) :: (3 :: 4 :: 5 :: 12 :: nil) :: (6 :: 7 :: 8 :: 12 :: nil) :: (9 :: 10 :: 11 :: 12 :: nil) :: nil)%list : Family
+
+504ff87a92aca14a  thm Profile.profile_reduction
+    profile_reduction : forall (n k : nat) (B : nat -> nat), 2 <= k -> 1 <= B 0 -> ProfileYieldsDisjoint n k B -> forall m : nat, m <= n -> UpperBound m k (S (B m))
+
+b502dd6c73e392e5  thm Profile.spread_reduction_is_a_profile_instance
+    spread_reduction_is_a_profile_instance : forall n k r : nat, 2 <= k -> 1 <= r -> SpreadYieldsDisjoint n k r -> forall m : nat, m <= n -> UpperBound m k (S (PeanoNat.Nat.pow r m))
+
+f2793b6ee783c1a9  thm Profile.RaoSpread_ProfileSpread
+    RaoSpread_ProfileSpread : forall (m : nat) (F : Family) (r : nat), RaoSpread m F r <-> ProfileSpread (fun j : nat => PeanoNat.Nat.pow r j) m F
+
+90d8688b3e75800e  thm Profile.ProfileSpread_mono
+    ProfileSpread_mono : forall (B B' : nat -> nat) (m : nat) (F : Family), ProfileSpread B m F -> (forall j : nat, B j <= B' j) -> ProfileSpread B' m F
+
+648e44dfab80dcc6  thm Profile.ProfileYieldsDisjoint_pow
+    ProfileYieldsDisjoint_pow : forall n k r : nat, ProfileYieldsDisjoint n k (fun j : nat => PeanoNat.Nat.pow r j) <-> SpreadYieldsDisjoint n k r
+
+98d6285fe7464b36  thm Profile.profile_witness_some
+    profile_witness_some : forall (B : nat -> nat) (m : nat) (F : Family) (T : list nat), profile_witness B m F = Some T -> List.In T (cands F) /\ T <> nil /\ B (m - length T) < deg T F
+
+bc2d2fdc5be8dfec  thm Profile.profile_witness_none
+    profile_witness_none : forall (B : nat -> nat) (m : nat) (F : list (list nat)), List.Forall (fun A : list nat => List.NoDup A) F -> profile_witness B m F = None -> ProfileSpread B m F
+
+2ae36e9f2eb78b17  thm Profile.matching_at_most_k_minus_one
+    matching_at_most_k_minus_one : forall (k : nat) (F : Family) (S0 : list (list nat)), NoKDisjoint k F -> List.incl S0 F -> List.NoDup S0 -> PairwiseDisjoint S0 -> length S0 <= k - 1
+
+e503b8120c6bc214  thm Profile.greedy_profile_bound
+    greedy_profile_bound : forall (k m : nat) (B : nat -> nat) (F : Family), 1 <= m -> Uniform m F -> ProfileSpread B m F -> NoKDisjoint k F -> length F <= (k - 1) * m * B (m - 1)
+
+6683347862d8c95f  thm Profile.greedy_closes_profile
+    greedy_closes_profile : forall (n k : nat) (B : nat -> nat), 2 <= k -> GreedyClosed n k B -> ProfileYieldsDisjoint n k B
+
+016d3cddca58937c  thm Profile.greedy_forces_erdos_rado
+    greedy_forces_erdos_rado : forall (n k : nat) (B : nat -> nat), 1 <= B 0 -> GreedyClosed n k B -> forall m : nat, m <= n -> PeanoNat.Nat.pow (k - 1) m * Factorial.fact m <= B m
+
+63ab5f7697a4295d  thm Profile.greedy_cannot_beat_erdos_rado
+    greedy_cannot_beat_erdos_rado : forall (n k : nat) (B : nat -> nat), 1 <= B 0 -> GreedyClosed n k B -> forall m : nat, m <= n -> er_upper_bound m k <= S (B m)
+
+6242fb80d8e900cf  thm Profile.er_profile_greedy_closed
+    er_profile_greedy_closed : forall n k : nat, GreedyClosed n k (er_profile k)
+
+ada6393f6b5e2794  thm Profile.erdos_rado_via_profile
+    erdos_rado_via_profile : forall n k : nat, 2 <= k -> UpperBound n k (S (PeanoNat.Nat.pow (k - 1) n * Factorial.fact n))
+
+6f02dae2e8bf21f1  thm Profile.pow_profile_greedy_closed
+    pow_profile_greedy_closed : forall n k : nat, GreedyClosed n k (fun j : nat => PeanoNat.Nat.pow ((k - 1) * n) j)
+
+0a42b111fc2755c0  thm Profile.cover_spread_disjoint_general
+    cover_spread_disjoint_general : forall n k : nat, 2 <= k -> SpreadYieldsDisjoint n k ((k - 1) * n)
+
+48ea0896017b6145  thm Profile.cover_bound_cannot_beat_erdos_rado
+    cover_bound_cannot_beat_erdos_rado : forall n k : nat, PeanoNat.Nat.pow (k - 1) n * Factorial.fact n <= PeanoNat.Nat.pow ((k - 1) * n) n
+
+87f3b245f45e6e21  thm Profile.pow_bernoulli
+    pow_bernoulli : forall k n : nat, PeanoNat.Nat.pow n k * (n + k) <= n * PeanoNat.Nat.pow (n + 1) k
+
+eeb050f0855fe4dd  thm Profile.two_pow_le_succ_pow
+    two_pow_le_succ_pow : forall n : nat, 1 <= n -> 2 * PeanoNat.Nat.pow n n <= PeanoNat.Nat.pow (n + 1) n
+
+e21594f7c89fcbb8  thm Profile.erdos_rado_below_the_n_to_the_n_ceiling
+    erdos_rado_below_the_n_to_the_n_ceiling : forall n : nat, PeanoNat.Nat.pow 2 n * Factorial.fact n <= PeanoNat.Nat.pow (n + 1) n
+
+1c3564e0c26b1f36  thm Profile.star_extremal_ceiling_is_worse_than_erdos_rado
+    star_extremal_ceiling_is_worse_than_erdos_rado : forall n : nat, er_upper_bound n 3 <= S (PeanoNat.Nat.pow (n + 1) n)
+
+8158cea3f17f6a97  def Profile.ProfileSpread
+    ProfileSpread = fun (B : nat -> nat) (m : nat) (F : Family) => forall T : list nat, List.NoDup T -> T <> nil -> deg T F <= B (m - length T) : (nat -> nat) -> nat -> Family -> Prop Arguments ProfileSpread B%function_scope m%nat_scope F
+
+6c40e347e52441ac  def Profile.ProfileYieldsDisjoint
+    ProfileYieldsDisjoint = fun (n k : nat) (B : nat -> nat) => forall (m : nat) (F : Family), 1 <= m -> m <= n -> Uniform m F -> Distinct F -> B m < length F -> ProfileSpread B m F -> exists S : list (list nat), List.incl S F /\ List.NoDup S /\ length S = k /\ PairwiseDisjoint S : nat -> nat -> (nat -> nat) -> Prop Arguments ProfileYieldsDisjoint (n k)%nat_scope B%function_scope
+
+784ab023cbebfc92  def Profile.GreedyClosed
+    GreedyClosed = fun (n k : nat) (B : nat -> nat) => forall m : nat, 1 <= m -> m <= n -> (k - 1) * m * B (m - 1) <= B m : nat -> nat -> (nat -> nat) -> Prop Arguments GreedyClosed (n k)%nat_scope B%function_scope
+
+4dcdf6807b850459  def Profile.er_profile
+    er_profile = fun k j : nat => PeanoNat.Nat.pow (k - 1) j * Factorial.fact j : nat -> nat -> nat Arguments er_profile (k j)%nat_scope
+
+113a042e2e26d746  def Profile.profile_violatesb
+    profile_violatesb = fun (B : nat -> nat) (m : nat) (F : Family) (T : list nat) => match T with | nil => false | (_ :: _)%list => PeanoNat.Nat.ltb (B (m - length T)) (deg T F) end : (nat -> nat) -> nat -> Family -> list nat -> bool Arguments profile_violatesb B%function_scope m%nat_scope F T%list_scope
+
+b814d91cb965b6a6  def Profile.profile_witness
+    profile_witness = fun (B : nat -> nat) (m : nat) (F : Family) => List.find (profile_violatesb B m F) (cands F) : (nat -> nat) -> nat -> Family -> option (list nat) Arguments profile_witness B%function_scope m%nat_scope F
