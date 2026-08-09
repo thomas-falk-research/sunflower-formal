@@ -8713,6 +8713,31 @@ The proof is one induction that peels the *first* term and cancels a
 factor of `b`; peeling the last term does not work, and that is the only
 subtlety in it.
 
+All gates green on the final tree, with §31.8's additions in:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  Print Assumptions        all 59 audited theorems of Counting.v and
+                           Fragment.v "Closed under the global context",
+                           0 reporting axioms
+  make coqchk              pass; whole-library census still exactly
+                           `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  147 mutations: 144 killed, 2 genuine
+                           survivors (unchanged), 1 control,
+                           **0 unexpected**
+  cargo test --release     33 suites, 313 tests, 0 failures
+  tools/statements.py      753 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The four new mutations are the ones that pin the two constants:
+`geom-halve-the-constant` (is the 2 real? — yes, at `a=1, b=2, i=1` the
+sum is 3 against `b^1 = 2`), `geom-weaken-the-ratio` (would `a ≤ b` do? —
+no, at `a=b=1` the sum is `i+1`), `fibred-drop-injectivity`, and
+`geom-assemble-halve-the-constant` (does integrality rescue the factor 2?
+— no: `a=1, b=2, C=8` gives `8+4+2+1 = 15` against `8`).
+
 **And the per-`m` bound is assembled.** `coq/Fragment.v`:
 
 ```
