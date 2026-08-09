@@ -665,6 +665,10 @@ matter most:
 | `spreadthreshold-piece-drop-r-bound` | Is `m - 1 <= r` what makes the meets-A-twice branch fit under the stated bound on an intersecting piece? | `SpreadThreshold.v` |
 | `spreadthreshold-quadratic-drop-slack` | Is the `+2` in `2r + 3n² + 2 <= r² + 4n` real arithmetic or slack? | `SpreadThreshold.v` |
 | `spreadthreshold-cover-off-by-one` | Is `2n` the sharp value of the cover argument for `r*(n,3)`, or is there another one in it? | `SpreadThreshold.v` |
+| `greedyclosed-drop-the-level-factor` | Is the `m!` in Erdős–Rado exactly the factor `m` the greedy cover pays once per level? | `Profile.v` |
+| `er-profile-drop-the-factorial` | Is Erdős–Rado's profile greedy-closed because of the factorial, or would the bare power do? | `Profile.v` |
+| `profile-witness-forgets-the-level` | Is the level-indexing `B (m - \|T\|)` what makes the recursion profile-preserving? | `Profile.v` |
+| `greedy-matching-off-by-one` | Does the development notice if "at most `k-1` disjoint members" is stated as `k`? | `Profile.v` |
 
 Run it with:
 

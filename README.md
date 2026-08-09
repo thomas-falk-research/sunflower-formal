@@ -234,7 +234,14 @@ Highlights of the less-routine parts:
   change what we claim?" from a rereading exercise into a one-line diff.
   Sixth, one level up again, `make docnumbers` checks every count this
   prose quotes about itself against the list it is a count of — three
-  were already wrong when that gate was written. Underneath them, `coqchk`
+  were already wrong when that gate was written. Seventh, `make ceilings`
+  costs every *route*: each reduction declares the best `f(n,3)` bound it
+  could ever produce, and `tools/ceiling.py` compares it in exact integer
+  arithmetic against Erdős–Rado 1960, against the record, and against the
+  target, failing the build when a route's declared verdict disagrees with
+  its own arithmetic. That gate exists because five sessions of correct
+  work were done inside a reduction whose best case was worse than the
+  1960 bound and nobody had multiplied it out. Underneath them, `coqchk`
   re-verifies every module with Coq's separate kernel checker and
   gates on a whole-library assumption census, which is what makes
   "zero admits" a claim about the development rather than about a list

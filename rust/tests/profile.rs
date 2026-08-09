@@ -14,7 +14,7 @@
 //! ```
 //!
 //! and unrolling that from `B(0) = 1` gives `B(m) >= (k-1)^m · m!`, which
-//! is Erdős–Rado 1960. Six claims are checked here, sharing no code with
+//! is Erdős–Rado 1960. Eight claims are checked here, sharing no code with
 //! the Coq side:
 //!
 //! 1. **The barrier.** Every greedy-closed profile dominates
@@ -38,6 +38,14 @@
 //!    two disjoint triangles are 2-uniform, have max degree `2 = B(1)`,
 //!    simple, and no three pairwise disjoint edges. Exhaustive. So the
 //!    barrier is a statement about the method, not about the truth.
+//! 7. **Every linear route loses to 1960, exactly.** `(2n)^n`, `(2n+1)^n`,
+//!    `(1.74n)^n` and `(n+1)^n` are all at least `2^n·n!` over the whole
+//!    `u128` range — the arithmetic `tools/ceiling.py` prints, checked
+//!    here independently.
+//! 8. **Conjecture P's first open term is out of reach.** Refuting
+//!    `B_3 = g_3` at uniformity three needs a family on at least 14
+//!    points, and `B_3(3) = 32` at least 16 — which is exactly the SAT
+//!    instance `docs/roadmap.md` §13.4 records as undecided at 601s.
 
 /// `(k-1)^m * m!` — Erdős–Rado's profile, `ErdosRado_Greedy.er_upper_bound`
 /// minus its `+1`.
@@ -326,4 +334,53 @@ fn every_linear_route_ceiling_is_at_least_erdos_rado() {
     }
     assert_eq!(covered, 23, "n = 1..=23 is the exact u128 range for (2n+1)^n");
     assert!((2u128 * 24 + 1).checked_pow(24).is_none());
+}
+
+// ---------------------------------------------------------------------------
+// Conjecture P: where a refutation at uniformity three would have to live
+// ---------------------------------------------------------------------------
+
+/// The counting floor on the ground set for a profile-spread family.
+///
+/// At `k = 3, m = 3` the profile condition gives `deg{x} <= B(2) = 6`, and
+/// `3|F| = sum_x deg{x} <= ground * 6`, so `ground >= ceil(|F| / 2)`. The
+/// pair condition `deg{x,y} <= B(1) = 2` gives `3|F| <= 2*C(ground,2)`,
+/// which is weaker.
+fn min_ground_uniformity_three(size: u64) -> u64 {
+    let by_points = (3 * size).div_ceil(6);
+    let mut by_pairs = 2u64;
+    while by_pairs * (by_pairs - 1) < 3 * size {
+        by_pairs += 1;
+    }
+    by_points.max(by_pairs)
+}
+
+#[test]
+fn conjecture_p_at_uniformity_three_needs_a_large_ground_set() {
+    // B_3(3) lies in [20, 32]: 20 from g(3) >= 20, 32 from the refined
+    // count of roadmap section 29.3. Refuting P there means exhibiting a
+    // profile-spread family with no three pairwise disjoint members and
+    // more members than g(3) <= 26 allows -- so at least 27.
+    assert_eq!(min_ground_uniformity_three(27), 14);
+    assert_eq!(min_ground_uniformity_three(32), 16);
+    // and the points floor is the binding one at both, the pairs floor
+    // being 11 at |F| = 27 and 11 at |F| = 32
+    assert!((3 * 27) <= 14 * 6);
+    assert!(11 * 10 >= 3 * 27);
+
+    // The floors are monotone and agree with the trivial cases.
+    let mut last = 0;
+    for size in 1..=40u64 {
+        let g = min_ground_uniformity_three(size);
+        assert!(g >= last, "floor should be monotone at |F| = {size}");
+        assert!(3 * size <= g * 6, "the points count must admit |F| = {size}");
+        last = g;
+    }
+
+    // Recorded with its budget: roadmap section 13.4 reports a SAT run at
+    // exactly sixteen points (C(16,3) = 560 variables) returning
+    // *undecided* after 601s of cadical. So the ground set a maximal
+    // refutation needs is the one the instruments already failed to
+    // decide, and Conjecture P at m = 3 is not a cheap search.
+    assert_eq!(560, (16 * 15 * 14) / 6);
 }

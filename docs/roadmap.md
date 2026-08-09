@@ -7801,6 +7801,15 @@ Two instances make the statement concrete.
   generalises to every `k` for free (`cover_spread_disjoint_general`),
   and `cover_bound_cannot_beat_erdos_rado` applies the barrier to it.
 
+  **How much that generalisation is worth, exactly: one.**
+  `SpreadReduction.elementary_spread_disjoint` was already general in `k`,
+  at `r = n(k-1) + 1`; the profile version is `r = (k-1)n`, and drops the
+  `1 ≤ n` hypothesis. So what §22.1 gained at `k = 3` — one — is now
+  gained at every `k`, and nothing more. The row is worth stating because
+  the *reason* changes: `cover_spread_disjoint`'s proof is a bespoke
+  `k = 3` case analysis, and this one is `GreedyClosed` plus arithmetic,
+  which is also what makes the barrier below apply to it.
+
 ### 29.3 The step is lossy, and no refinement of it helps
 
 The barrier is a statement about the *method*, not about the truth, and
@@ -7817,11 +7826,26 @@ satisfying `deg T F ≤ B_k(m - |T|)`. By construction
   Erdos-Rado           8              <- the greedy step's value
 ```
 
-`B(2) = 6` is exhaustive (`rust/tests/profile.rs`, backtracking over all
-simple graphs on 6 to 9 points with max degree ≤ 2 and no three pairwise
-disjoint edges), and the witness is **two disjoint triangles** — which is
-`F23.two_triangles`, already in this development as the family attaining
-`g(2) = 6`. So the greedy step over-counts by 2 at the second level.
+`B(2) = 6` is a two-line argument, and the search is a confirmation of it
+rather than its proof — the search is over bounded ground sets and `B_k`
+is not.
+
+> A graph with max degree ≤ 2 and no three pairwise disjoint edges has at
+> most 6 edges. Take a maximal matching; it has at most two edges, so its
+> at most four endpoints cover every edge. Summing degrees over those
+> endpoints counts every edge at least once **and the two matching edges
+> twice**, so `|E| ≤ 4·2 − 2 = 6`.
+
+Attained by **two disjoint triangles** — which is `F23.two_triangles`,
+already in this development as the family attaining `g(2) = 6`. The
+search (`rust/tests/profile.rs`, backtracking over all simple graphs on
+6, 7, 8 and 9 points with max degree ≤ 2 and no three pairwise disjoint
+edges) returns 6 and that witness at every ground set. So the greedy step
+over-counts by 2 at the second level.
+
+Neither the argument nor the search is in Coq: `B_k` is a *measured*
+object here, not a formal one, and `greedy_forces_erdos_rado` does not
+depend on it. What it depends on is nothing but the recurrence.
 
 > The gap is real; the step cannot close it; and
 > `greedy_forces_erdos_rado` says no sharpening of *the step* ever will.
@@ -7982,10 +8006,53 @@ theorem the kernel had already accepted at every `n`. `(n+1)^n` leaves
 `u128` at `n = 27`. Every power in that file is now `checked_pow` with
 the range asserted, and the first overflowing `n` is pinned as a test.
 
+### 29.7a Costs and gates
+
+New: `coq/Profile.v` (one module, no axiom, 21 audited theorems and 6
+audited definitions), `rust/tests/profile.rs` (8 tests), `tools/ceiling.py`
+and the `make ceilings` target, 6 mutations. Coq 8.18 was not present in
+the session container and was installed from Ubuntu's package before
+anything ran, as in §28.8.
+
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (43 modules, clean rebuild)
+  Print Assumptions        all 21 new audited theorems "Closed under the
+                           global context"; no existing .v file was
+                           touched, so the other 547 are unaffected --
+                           `git diff --stat origin/main -- coq/` is one
+                           file added and nothing else
+  make coqchk              pass; the whole-library axiom census is still
+                           exactly `Sunflower.ALWZ.Rao20_lemma2` and
+                           nothing else; no type-in-type, no unsafe
+                           (co)fixpoints, no assumed positivity
+  python3 tools/mutate.py  131 mutations: 128 killed, 2 genuine survivors
+                           (unchanged), 1 control surviving as it must,
+                           **0 unexpected**. All 6 new mutations killed as
+                           declared, each in coq/Profile.v, ~210s apiece
+  cargo test --release     30 suites, 287 tests, 0 failures
+  tools/statements.py      677 baseline entries, accepted in this commit
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, every declared verdict matches
+```
+
 ### 29.8 The ledgers
 
-**Conjecture ledger** — unchanged this session. No row of HM, X, T, F or
-B moved; nothing here is about `I(m,r)`.
+**Conjecture ledger.** No row of HM, X, T, F or B moved — nothing here is
+about `I(m,r)`. One row is added, because §29.3 names an object that did
+not have a name.
+
+| name | statement | status |
+|---|---|---|
+| **P** (new) | **the profile reduction is lossless**: `B_k = g_k`, where `B_k` is the least profile (§29.3) and `g_k(m)` is the largest sunflower-free `m`-uniform family | `g_k(m) ≤ B_k(m)` is a **theorem** and elementary — a sunflower-free family has no `k` pairwise disjoint members, and its link at `T` is sunflower-free at uniformity `m-\|T\|`, so `deg T F ≤ g_k(m-\|T\|)`. Verified equal at `k = 3` for `m = 0, 1, 2`: both are `1, 2, 6`. Open from `m = 3`, where `B_3(3) ∈ [20, 32]` — 20 from `g(3) ≥ 20`, 32 from §29.3's refined count — against `g(3) ≤ 26` (`PureLink.f_3_3_at_most_27`). So **`B_3(3) > 26` would refute P outright**, and it is a finite search |
+
+P matters because `f(m,k) ≤ B_k(m) + 1` is exactly what `profile_reduction`
+delivers, so P is the statement that the reduction this whole development
+is built on loses nothing. It is *not* a route to a record — `B_k ≥ g_k`
+means P at best re-derives the truth — but it is the first question here
+about how much the reduction costs, and the answer is unknown past
+uniformity two.
 
 **Barrier ledger**, three new rows:
 
