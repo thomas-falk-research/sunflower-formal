@@ -8630,6 +8630,31 @@ axiom), `rust/tests/fragment.rs` (7 tests, 32968 exhaustive triples),
 `rust/tests/fragment_count.rs` (4 tests, the assembly of Claim 3.4
 falsified ahead of its proof), 6 mutations. The manifest is now 143.
 
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  Print Assumptions        all 24 new audited theorems "Closed under the
+                           global context", 0 reporting axioms
+  make coqchk              pass; whole-library axiom census still exactly
+                           `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  143 mutations: 140 killed, 2 genuine survivors
+                           (unchanged), 1 control, **0 unexpected**. All
+                           6 new ones killed as declared
+  cargo test --release     33 suites, 308 tests, 0 failures
+  tools/statements.py      739 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The six mutations are where a reader should attack the file:
+`frag-cands-forget-the-union` (is `S' ⊂ S ∪ V` load-bearing, or would
+`S' ⊂ S` do?), `frag-cands-keep-v`, `minimal-fragment-empty-seed` (would
+seeding the minimiser with `∅` — always of minimum length — do as well?
+no: it makes Observation 3 false), `argmin-picks-the-largest` (is
+*minimality* load-bearing, or would any canonical choice do?),
+`frag-z-is-the-wrong-union`, and `psi-forgets-the-fragment`.
+
 ### 31.7 The one-line verdict
 
 **Stage B's set-theoretic half is formalised and axiom-free: Definition
