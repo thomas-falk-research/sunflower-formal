@@ -1886,3 +1886,54 @@ or weakens its own statement to fit, and neither shows up as an error.
 `rust/tests/counting.rs` finds 102 counterexamples to the `j+2`
 relaxation in a small box, so the boundary is measured and not merely
 asserted.
+
+### A set-level identity is two obligations in a list formalisation
+
+Stage B of the spread lemma (`docs/roadmap.md` §31) turned on one
+sentence of [Lovett] p. 13, quoted in §1 as the stage's easiest step:
+
+> *"Note that we can decode `(S,V)` given `φ(S,V)` since
+> `S = M ∪ (S \ M)` and `V = Z \ M`."*
+
+§1 reads that as *"the formal obligation is not '`φ` is injective' — it
+is `ψ (φ (S,V)) = (S,V)` for an explicit `ψ`, which is a rewrite, not a
+case analysis."* Half of it is.
+
+`V = Z \ M` **is** literal in lists: `Z` is built as `V ++ M` and `M` is
+disjoint from `V`, so filtering `M` out returns `V` itself, no `NoDup`
+required. `S = M ∪ (S \ M)` **cannot** be literal: as lists that is
+`M ++ (S \ M)`, a permutation of `S`, not `S`. So the stated equation is
+false in the encoding, and the thing the count actually needs —
+injectivity — has to be reached through `SetEq` and closed with
+`Sets.SetNoDup_setEq_eq`, which requires `Distinct F`.
+
+That hypothesis is invisible at the level of sets, where the identity
+really is an identity. It is now on every downstream statement.
+
+> **Rule 24. A set-level identity in a source becomes two obligations in
+> a list formalisation: the half that is literal, and the half that is
+> only up to permutation — and the second half needs a hypothesis the
+> source never states.** Decide which half is which before planning the
+> stage. The cost of not doing so is not a wrong proof; it is a plan
+> whose "one rewrite" step turns out to propagate a hypothesis through
+> everything after it.
+
+### And a limit on what a falsifier in the wrong representation can see
+
+`rust/tests/fragment.rs` ran the fragment, Claim 3.3, the encoding and
+the decoder over 32968 exhaustive `(F,S,V)` triples **before** any of it
+was proved, exactly as §1 instructs, and every claim passed — including
+`ψ(φ(S,V)) = (S,V)`.
+
+It passed because the Rust implementation represents sets as **bitmasks**,
+which are canonical: `M ∪ (S \ M)` and `S` are the same `u32`. The
+permutation problem of rule 24 is an artefact of the *list* encoding and
+is invisible to a set implementation. It was found by the kernel
+rejecting the proof, not by the testbed.
+
+> **Rule 25. A falsifier in a canonical representation cannot falsify a
+> representation defect.** An exhaustive sweep bounds the mathematics,
+> not the encoding. When the testbed and the formalisation differ in how
+> they represent the objects — bitmask against list, set against
+> sequence — say so where the sweep is reported, because the two are
+> checking different statements.

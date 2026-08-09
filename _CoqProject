@@ -43,5 +43,6 @@ coq/CrossIntersecting.v
 coq/CrossRefined.v
 coq/HiltonMilner.v
 coq/Counting.v
+coq/Fragment.v
 coq/Profile.v
 coq/Audit.v

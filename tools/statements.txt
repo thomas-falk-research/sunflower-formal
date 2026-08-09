@@ -2127,3 +2127,99 @@ a3f33f3bdaa1020b  thm Counting.layer_count_le_two_pow
 
 e10b4a182185868b  def Counting.pairs
     pairs = fun (F : Family) (j : nat) (l : list nat) => List.list_prod F (subsets_of_size j l) : Family -> nat -> list nat -> list (list nat * list nat) Arguments pairs F j%nat_scope l%list_scope
+
+89457a29b8c4124c  thm Fragment.in_frag_cands
+    in_frag_cands : forall (F : Family) (S V C : list nat), List.In C (frag_cands F S V) <-> (exists A : list nat, List.In A F /\ Subset A (add_set S V) /\ C = setminus A V)
+
+61649997590ae022  thm Fragment.self_in_frag_cands
+    self_in_frag_cands : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.In (setminus S V) (frag_cands F S V)
+
+4c2694918fdc3eaa  thm Fragment.argmin_len_spec
+    argmin_len_spec : forall (l : list (list nat)) (b : list nat), (argmin_len b l = b \/ List.In (argmin_len b l) l) /\ length (argmin_len b l) <= length b /\ (forall A : list nat, List.In A l -> length (argmin_len b l) <= length A)
+
+82eb995a2fa5a803  thm Fragment.minimal_fragment_in_cands
+    minimal_fragment_in_cands : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.In (minimal_fragment F S V) (frag_cands F S V)
+
+bfa03953e534820d  thm Fragment.minimal_fragment_le
+    minimal_fragment_le : forall (F : Family) (S V C : list nat), List.In C (frag_cands F S V) -> length (minimal_fragment F S V) <= length C
+
+009ff0f560005437  thm Fragment.fragment_subset_S
+    fragment_subset_S : forall (F : list (list nat)) (S V : list nat), List.In S F -> Subset (minimal_fragment F S V) S
+
+2cdbf3e4143882ce  thm Fragment.fragment_disjoint_V
+    fragment_disjoint_V : forall (F : list (list nat)) (S V : list nat), List.In S F -> Disjoint (minimal_fragment F S V) V
+
+81de6f6f9c7845f5  thm Fragment.fragment_nil_iff
+    fragment_nil_iff : forall (F : list (list nat)) (S V : list nat), List.In S F -> minimal_fragment F S V = nil <-> (exists A : list nat, List.In A F /\ Subset A V)
+
+351d9ebc60b0a2ec  thm Fragment.in_frag_F'
+    in_frag_F' : forall (F : Family) (Z A : list nat), List.In A (frag_F' F Z) <-> List.In A F /\ Subset A Z
+
+4f9dfdb16a640deb  thm Fragment.frag_Z_subset
+    frag_Z_subset : forall (F : list (list nat)) (S V : list nat), List.In S F -> Subset (frag_Z F S V) (add_set S V)
+
+a304295caafa9af8  thm Fragment.frag_F'_nonempty
+    frag_F'_nonempty : forall (F : list (list nat)) (S V : list nat), List.In S F -> exists A : list nat, List.In A (frag_F' F (frag_Z F S V))
+
+8e0fe8d87fe8c2c4  thm Fragment.frag_F'_fragment
+    frag_F'_fragment : forall (F : list (list nat)) (S V A : list nat), List.In S F -> List.Forall (fun B : list nat => List.NoDup B) F -> List.In A (frag_F' F (frag_Z F S V)) -> SetEq (setminus A V) (minimal_fragment F S V)
+
+f15acacf578af075  thm Fragment.setminus_of_disjoint
+    setminus_of_disjoint : forall A T : list nat, Disjoint A T -> setminus A T = A
+
+35fcf6badaf9b1b3  thm Fragment.setminus_app
+    setminus_app : forall A B T : list nat, setminus (A ++ B) T = (setminus A T ++ setminus B T)%list
+
+a7d8b5bb06bf6101  thm Fragment.setminus_self
+    setminus_self : forall A : list nat, setminus A A = nil
+
+b1d162a7f8ae1836  thm Fragment.frag_Z_minus_fragment
+    frag_Z_minus_fragment : forall (F : list (list nat)) (S V : list nat), List.In S F -> setminus (frag_Z F S V) (minimal_fragment F S V) = V
+
+61c14b9bd6593bcd  thm Fragment.add_set_setminus_SetEq
+    add_set_setminus_SetEq : forall M S : list nat, Subset M S -> SetEq (add_set M (setminus S M)) S
+
+84ed9c68ebb8ae91  thm Fragment.psi_phi_V
+    psi_phi_V : forall (F : list (list nat)) (S V : list nat), List.In S F -> snd (psi (phi F S V)) = V
+
+6b767ee606d4eb0c  thm Fragment.psi_phi_SetEq
+    psi_phi_SetEq : forall (F : list (list nat)) (S V : list nat), List.In S F -> SetEq (fst (psi (phi F S V))) S
+
+f8aaa50bcd598d30  thm Fragment.phi_injective
+    phi_injective : forall (F : Family) (S1 V1 S2 V2 : list nat), Distinct F -> List.In S1 F -> List.In S2 F -> phi F S1 V1 = phi F S2 V2 -> S1 = S2 /\ V1 = V2
+
+17118afbc41237c1  thm Fragment.phi_injective_on_pairs
+    phi_injective_on_pairs : forall (F : Family) (L : list (list nat * list nat)), Distinct F -> (forall p : list nat * list nat, List.In p L -> List.In (fst p) F) -> forall p1 p2 : list nat * list nat, List.In p1 L -> List.In p2 L -> phi F (fst p1) (snd p1) = phi F (fst p2) (snd p2) -> p1 = p2
+
+82315fe48cc261c5  thm Fragment.frag_Z_length
+    frag_Z_length : forall (F : list (list nat)) (S V : list nat), List.In S F -> length (frag_Z F S V) = length V + length (minimal_fragment F S V)
+
+5f346151930c0780  thm Fragment.fragment_removed_in_link
+    fragment_removed_in_link : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.In (setminus S (minimal_fragment F S V)) (link (minimal_fragment F S V) F)
+
+7b72e8b7f1867ac1  thm Fragment.bad_pairs_le_codes
+    bad_pairs_le_codes : forall (F : Family) (L : list (list nat * list nat)) (p : list nat * list nat -> bool) (q : list nat * list nat * list nat * list nat -> bool) (Codes : list (list nat * list nat * list nat * list nat)), Distinct F -> List.NoDup L -> (forall x : list nat * list nat, List.In x L -> List.In (fst x) F) -> (forall x : list nat * list nat, List.In x L -> p x = true -> List.In (phi F (fst x) (snd x)) Codes /\ q (phi F (fst x) (snd x)) = true) -> count p L <= count q Codes
+
+3d11a3ab5dfb414b  def Fragment.frag_cands
+    frag_cands = fun (F : Family) (S V : list nat) => List.map (fun A : list nat => setminus A V) (List.filter (fun A : list nat => containsb A (add_set S V)) F) : Family -> list nat -> list nat -> list (list nat) Arguments frag_cands F (S V)%list_scope
+
+0c2812d47e085e3b  def Fragment.argmin_len
+    argmin_len = fix argmin_len (best : list nat) (l : list (list nat)) {struct l} : list nat := match l with | nil => best | (A :: l')%list => if PeanoNat.Nat.ltb (length A) (length best) then argmin_len A l' else argmin_len best l' end : list nat -> list (list nat) -> list nat Arguments argmin_len (best l)%list_scope
+
+cedfa25f9c8f4f36  def Fragment.minimal_fragment
+    minimal_fragment = fun (F : Family) (S V : list nat) => argmin_len (setminus S V) (frag_cands F S V) : Family -> list nat -> list nat -> list nat Arguments minimal_fragment F (S V)%list_scope
+
+b5dbf0440183c883  def Fragment.frag_Z
+    frag_Z = fun (F : Family) (S V : list nat) => add_set V (minimal_fragment F S V) : Family -> list nat -> list nat -> list nat Arguments frag_Z F (S V)%list_scope
+
+b8e00da89ac1f943  def Fragment.frag_F'
+    frag_F' = fun (F : Family) (Z : list nat) => List.filter (fun A : list nat => containsb A Z) F : Family -> list nat -> Family Arguments frag_F' F Z%list_scope
+
+f66951fe5471ec39  def Fragment.first_in
+    first_in = fun (F : Family) (Z : list nat) => List.hd nil (frag_F' F Z) : Family -> list nat -> list nat Arguments first_in F Z%list_scope
+
+ae1d6cead03ffdde  def Fragment.phi
+    phi = fun (F : Family) (S V : list nat) => let M := minimal_fragment F S V in (frag_Z F S V, first_in F (frag_Z F S V), M, setminus S M) : Family -> list nat -> list nat -> list nat * list nat * list nat * list nat Arguments phi F (S V)%list_scope
+
+a23619e1b9d0a179  def Fragment.psi
+    psi = fun '(Z, _, M, R) => (add_set M R, setminus Z M) : list nat * list nat * list nat * list nat -> list nat * list nat Arguments psi t

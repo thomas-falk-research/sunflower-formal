@@ -2211,3 +2211,92 @@ because = """Killed at n = 0: C(0,0) = 1 and 2^0 - 1 = 0. The bound is \
 attained at the ends of every row, so it cannot be weakened by any \
 additive amount at all -- which is also why it is the right bound to \
 carry into Stage B."""
+
+# ----------------------------------------------------------------
+# Fragment.v -- Stage B of the spread lemma.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "frag-cands-forget-the-union"
+file = "coq/Fragment.v"
+question = """The candidates are the S' in F with S' subset S union V. \
+Is the union load-bearing, or would S' subset S do?"""
+find = """      (filter (fun A => containsb A (add_set S V)) F)."""
+replace = """      (filter (fun A => containsb A S) F)."""
+expect = "killed"
+because = """Killed at Claim 3.3(2). Its proof needs every member of \
+F' -- the members inside Z = V union M -- to have been a candidate, and \
+Z is inside S union V but not inside S. Lovett's proof says exactly \
+this: "S' subset Z subset S union V, so S' was a candidate when \
+defining the minimal fragment M(S,V)"."""
+
+[[mutation]]
+id = "frag-cands-keep-v"
+file = "coq/Fragment.v"
+question = """A candidate is S' minus V, not S'. Does anything notice \
+if the fragment keeps V?"""
+find = """  map (fun A => setminus A V)
+      (filter (fun A => containsb A (add_set S V)) F)."""
+replace = """  map (fun A => A)
+      (filter (fun A => containsb A (add_set S V)) F)."""
+expect = "killed"
+because = """Killed at Observation 2: the whole point of the fragment is \
+that it is disjoint from V, and V is what the sampling removes. Without \
+the subtraction the encoding also stops decoding, since V = Z minus M \
+relies on M avoiding V."""
+
+[[mutation]]
+id = "minimal-fragment-empty-seed"
+file = "coq/Fragment.v"
+question = """The minimiser is seeded with S minus V, which is a real \
+candidate when S is in F. Would seeding with the empty set -- always of \
+minimum possible length -- do just as well?"""
+find = """  argmin_len (setminus S V) (frag_cands F S V)."""
+replace = """  argmin_len [] (frag_cands F S V)."""
+expect = "killed"
+because = """Killed at Observation 3. An empty seed has length 0, so the \
+minimiser returns it always, and M(S,V) = [] regardless of whether any \
+member of F sits inside V -- which is exactly what Observation 3 \
+forbids. The seed has to be a genuine candidate, and S is one because \
+S is a subset of S union V."""
+
+[[mutation]]
+id = "argmin-picks-the-largest"
+file = "coq/Fragment.v"
+question = """Is minimality of the fragment load-bearing, or would any \
+canonical choice among the candidates do?"""
+find = """      if length A <? length best then argmin_len A l' else argmin_len best l'"""
+replace = """      if length best <? length A then argmin_len A l' else argmin_len best l'"""
+expect = "killed"
+because = """Killed at minimal_fragment_le, and through it at Claim \
+3.3(2), whose second inclusion is precisely the minimality count \
+|M| <= |S' minus V|. Minimality is not bookkeeping: it is what forces \
+every member of F' to have the same fragment."""
+
+[[mutation]]
+id = "frag-z-is-the-wrong-union"
+file = "coq/Fragment.v"
+question = """Z is V union M(S,V). Is the fragment what joins V, or \
+would S do -- both contain M?"""
+find = """Definition frag_Z (F : Family) (S V : list nat) : list nat :=
+  add_set V (minimal_fragment F S V)."""
+replace = """Definition frag_Z (F : Family) (S V : list nat) : list nat :=
+  add_set V S."""
+expect = "killed"
+because = """Killed at frag_Z_minus_fragment: decoding V as Z minus M \
+needs Z to be exactly V together with M, and V union S leaves the part \
+of S outside M behind. The encoding would stop being injective in its \
+second coordinate, which is the half that decodes on the nose."""
+
+[[mutation]]
+id = "psi-forgets-the-fragment"
+file = "coq/Fragment.v"
+question = """The decoder rebuilds S as M union (S minus M). Is the M \
+needed, or is S minus M already S?"""
+find = """  let '(Z, _, M, R) := t in (add_set M R, setminus Z M)."""
+replace = """  let '(Z, _, M, R) := t in (R, setminus Z M)."""
+expect = "killed"
+because = """Killed at psi_phi_SetEq. S minus M is S only when M is \
+empty, and M is empty exactly when some member of F sits inside V \
+(Observation 3) -- the case the whole argument is trying to reach, not \
+the case it starts in."""

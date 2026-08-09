@@ -184,6 +184,17 @@ but the *counting* is over the size-`j` layer.
 
 Independently testable, and the Rust testbed can falsify every line of it.
 
+### Stage B — the encoding — **set-theoretic half DONE, `coq/Fragment.v`, §31**
+
+Definition 3.2, all three observations, both parts of Claim 3.3, the
+encoding, its decoder and the injectivity the count consumes are proved,
+axiom-free, and were falsified over 32968 exhaustive triples first. The
+count itself is **not** done; §31.5 names the two things in the way (a
+fibred counting lemma, and the geometric sum). And Stage B produced the
+same kind of correction Stage A did: **the decode is not an equation**,
+only its `V` half is, and closing the `S` half needs `Distinct F` — see
+§31.3 and rule 24.
+
 ### Stage B — the encoding, and it is smaller than it looked
 
 * `minimal_fragment : Family -> list nat -> list nat -> list nat`,
@@ -496,7 +507,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 137 anecdotes into a coverage metric over the
+  mutation testing from 143 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -8399,3 +8410,210 @@ What it claims is that the first of §1's three stages is done, that it
 needed no arithmetic §1 had not anticipated except one estimate stated
 too strongly, and that the remaining stall risk is exactly where §1 said
 it was — Stage B's encoding.
+
+## 31. Stage B of the spread lemma: the fragment, Claim 3.3, and the
+##     encoding — with the hypothesis §1 could not see
+
+§30 did Stage A. This is Stage B, and it is the stage §1 named as the
+stall risk. It did not stall, for one reason that is worth more than the
+theorems: **the encoding was run before it was proved.**
+
+**`coq/Fragment.v`**, one module, no axiom, 24 audited theorems and 8
+audited definitions, every one `Closed under the global context`.
+
+### 31.1 The source was read, not remembered
+
+The July 2026 session read [Lovett] §3 at proof level and left §1's
+six-line skeleton. That skeleton is a summary, and Stage B is the part
+where the details are the content, so `lovett_pcmi.pdf` was re-fetched
+(sha256 matching `docs/papers/manifest.json` byte for byte), pp. 11–15
+re-rendered at 150 dpi and read. Two things came out of the pages that
+the skeleton does not carry, and both changed the file.
+
+* **The candidate set is never empty when `S ∈ F`,** because `S ⊂ S ∪ V`
+  makes `S` its own candidate. So `minimal_fragment` needs no junk
+  default and every lemma about it has exactly one side condition,
+  `In S F`. §1's `minimal_fragment : Family -> list nat -> list nat ->
+  list nat` gave no hint either way, and the natural defensive design —
+  an `option`, or a default — would have contaminated every downstream
+  statement.
+
+* **`|Z| = qN + m`**, because `Z = V ∪ M` and `M` is disjoint from `V`
+  (Observation 2). That is why Claim 3.4's step 1 reads
+  `C(N, qN+m) ≤ C(N,qN)·q^{-m}` — and it is **exactly** Stage A's
+  `Counting.binom_ratio` with `q = c/d`. §1 lists the binomial estimate
+  and the encoding as separate bullets; the rendered page shows they are
+  the same bullet, joined by one length computation
+  (`Fragment.frag_Z_length`).
+
+### 31.2 What is proved
+
+```
+  minimal_fragment F S V     Def 3.2: a minimum-length element of
+                             {S' \ V : S' in F, S' subset S u V},
+                             ties broken by position -- which is what
+                             turns Lovett's "breaking ties arbitrarily"
+                             into a function
+  fragment_subset_S          Observation 1:  M(S,V) subset S
+  fragment_disjoint_V        Observation 2:  M(S,V) disjoint from V
+  fragment_nil_iff           Observation 3:  M(S,V) = [] iff some
+                             member of F sits inside V
+  frag_F'_nonempty           Claim 3.3 (1)
+  frag_F'_fragment           Claim 3.3 (2):  every S' in F' has
+                             S' \ V = M(S,V)
+  phi, psi                   the encoding of Claim 3.4 and its decoder
+  frag_Z_minus_fragment      V = Z \ M, on the nose
+  psi_phi_SetEq              S = M u (S \ M), as sets
+  phi_injective              the encoding is injective
+  frag_Z_length              |Z| = |V| + |M|   -- the junction with
+                             Counting.binom_ratio
+  fragment_removed_in_link   S \ M lies in the link of M -- the junction
+                             with the spread hypothesis, and the only
+                             place spreadness is used at all
+  bad_pairs_le_codes         Counting.count_inj_le applied to phi: the
+                             bad pairs inject into the code space
+```
+
+### 31.3 The correction: the decode is not an equation, and it needs a
+###      hypothesis §1 does not record
+
+§1's most useful proof-level find was stated like this:
+
+> *"The encoding's injectivity is an equation, not an argument. Claim
+> 3.4 defines `phi(S,V) = (Z, S', M, S \ M)` and justifies it in one
+> sentence: 'we can decode `(S,V)` given `phi(S,V)` since
+> `S = M ∪ (S \ M)` and `V = Z \ M`'. So the formal obligation is not
+> '`phi` is injective' — it is `psi (phi (S,V)) = (S,V)` for an explicit
+> `psi`, which is a rewrite, not a case analysis."*
+
+**Half of that is right, and the half that is wrong costs a hypothesis.**
+
+The `V` half *is* literal. `Z` is built as `add_set V M`, which is
+`V ++ setminus M V`, which is `V ++ M` because `M` is disjoint from `V`;
+filtering `M` back out returns `V` itself. `frag_Z_minus_fragment` is
+that, and it needs no `NoDup` anywhere.
+
+The `S` half cannot be literal. `S = M ∪ (S \ M)` is an identity of
+**sets**; as lists, `add_set M (setminus S M)` is `M ++ (S \ M)`, a
+*permutation* of `S`. `S = [1;2;3]`, `M = [2]` gives `[2;1;3]`. So
+`psi (phi F S V) = (S, V)` is **false as stated** in any list encoding,
+and no rewrite will produce it.
+
+What is true, and what the count actually needs, is **injectivity**:
+two pairs with the same code have the same `M` and the same `S \ M`,
+hence first components that are `SetEq` to the same list, hence `SetEq`
+to each other — and `Sets.SetNoDup_setEq_eq` upgrades that to equality
+*inside a `Distinct` family*. So:
+
+> **`Fragment.phi_injective` carries the hypothesis `Distinct F`, and
+> §1's formulation does not mention it.** At the level of sets it is
+> invisible, because there `S = M ∪ (S \ M)` really is an equation. It
+> becomes visible exactly when the sets become lists.
+
+This is not a defect in Lovett — the paper is written about sets. It is
+a defect in the *staging note*, and it is the second time in two stages
+that §1's summary of a step was one hypothesis away from what the step
+needs (Stage A: `c·N ≤ d·j` where `c·N ≤ d·(j+1)` is what runs).
+
+> **Rule 24 (`docs/reading.md`). A set-level identity in a paper becomes
+> two obligations in a list formalisation: the half that is literal, and
+> the half that is only up to permutation — and the second half needs a
+> hypothesis the paper never states.** Find out which half is which
+> before planning the stage, because the extra hypothesis propagates:
+> `Distinct F` is now on every downstream statement.
+
+### 31.4 It was falsified before it was proved
+
+§1's *"What the testbed buys here"* says, in full: *"an encoding is a
+map to run over the exhaustive enumeration in `rust/src/testbed.rs` and
+check injective. Use it — the cost of finding out a lemma is false after
+half a session of proof is the main way this campaign goes wrong."*
+
+`rust/tests/fragment.rs` is that, written and run **before**
+`coq/Fragment.v` existed. It implements the fragment, the encoding and
+the decoder over bitmasks — sharing no code with the Coq side — and
+sweeps **every** family of at most three subsets of a three- or
+four-element universe, and at most four subsets of a two-element one:
+
+```
+  32968 triples (F, S, V), exhaustive, pinned as SWEEP_SIZE
+
+  Observations 1, 2, 3                          hold at every triple
+  Claim 3.3 (1) and (2)                         hold at every triple
+  psi(phi(S,V)) = (S,V)                         holds at every triple
+  phi injective                                 no collisions
+  S' is a function of Z alone                   Claim 3.4 step 2
+  |Z| = |V| + |M|                               Claim 3.4 step 1's layer
+  S \ M in the link of M                        Claim 3.4 step 5
+```
+
+Every one passed first time. The proofs then went in without a false
+start — the only Coq-side corrections were tactical (`repeat split`
+auto-introducing, and implicit arguments), not mathematical. That is
+what the discipline is for, and it is the difference between this stage
+and the way §26.4's four-family inequality was found to be false.
+
+**One caveat, stated because the sweep is what the claim rests on.** The
+Rust `psi(phi(S,V)) = (S,V)` compares *bitmasks*, which are canonical:
+`M ∪ (S \ M)` and `S` are the same `u32`. So the testbed could not have
+seen the permutation problem of §31.3 — it is an artefact of the list
+encoding, invisible to a set implementation, and it was found by the
+kernel rejecting the proof. **A falsifier in a canonical representation
+cannot falsify a representation defect.** That is the honest limit of
+what the 32968 triples establish.
+
+### 31.5 What is left of Claim 3.4
+
+The count itself. With `|M| = m` fixed, the rendered page gives four
+steps, and this file supplies the junction for three of them:
+
+```
+  1. #choices for Z  = C(N, qN+m) <= C(N,qN) q^{-m}
+        frag_Z_length  +  Counting.binom_ratio          JUNCTION DONE
+  2. S' is determined by Z                              measured in Rust,
+                                                        not yet in Coq
+  3. #choices for M subset S'  <= C(n,m) <= 2^n
+        Counting.binom_le_two_pow                       STAGE A, DONE
+  4. #choices for S \ M  <= |F_M| <= |F| k^{-m}
+        fragment_removed_in_link  +  Spread.Spread      JUNCTION DONE
+```
+
+and then the assembly — a product over the four ranges, a sum over
+`n/2 ≤ m ≤ n`, and the geometric series `Σ (4/kq)^m`. The assembly is
+**not** done, and this section does not claim it. Two things stand in
+the way, and naming them is the handoff:
+
+* **The product is nested, not flat.** `S'` depends on `Z` and `F_M`
+  depends on `M`, so the bound is `Σ_Z Σ_{M ⊂ S'(Z)} |F_M|` rather than
+  a product of four independent ranges. It becomes a product only
+  because `deg M F ≤ |F| k^{-m}` holds *uniformly in `M`* — which is
+  exactly what `Spread.Spread` gives. The missing tool is a **fibred
+  counting lemma** for `Counting.v`: if every fibre of `f` has at most
+  `K` elements and the image has at most `J`, then the domain has at
+  most `J·K`. That is the next thing to write, and it is small.
+* **The geometric sum.** `Σ_{m=n/2}^{n} 2^n (kq)^{-m} ≤ Σ (4/kq)^m`
+  uses `2^n ≤ 4^m` for `m ≥ n/2`, which is one line in `nat`; the sum
+  itself needs the cleared-denominator form. §1's scoping decision — *do
+  not chase the constant* — applies: any explicit `c` closes it.
+
+### 31.6 Costs and gates
+
+New: `coq/Fragment.v` (24 audited theorems, 8 audited definitions, no
+axiom), `rust/tests/fragment.rs` (7 tests, 32968 exhaustive triples),
+6 mutations. The manifest is now 143.
+
+### 31.7 The one-line verdict
+
+**Stage B's set-theoretic half is formalised and axiom-free: Definition
+3.2 with ties broken by position, all three observations, both parts of
+Claim 3.3, the encoding of Claim 3.4 with its decoder, and the
+injectivity the count consumes — plus the two junctions that make Stage
+A usable, `|Z| = |V| + |M|` and `S \ M ∈ F_M`.**
+
+The axiom is not discharged. What is new beyond the formalisation is a
+correction: **the decode `ψ(φ(S,V)) = (S,V)` is not an equation**, only
+its `V` half is, and closing the `S` half needs `Distinct F` — a
+hypothesis §1's staging note does not record because at the level of
+sets it does not exist. Two stages, two hypotheses that the plan had one
+notch wrong, both found by writing the statement rather than by reading
+the plan again.
