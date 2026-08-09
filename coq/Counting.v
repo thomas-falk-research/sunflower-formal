@@ -508,3 +508,156 @@ Proof. apply binom_ratio; lia. Qed.
 
 Example absorb_above_the_diagonal : binom 4 6 * 6 = binom 4 5 * (4 - 5).
 Proof. reflexivity. Qed.
+
+(** ** Fibred counting
+
+    [count_inj_le] bounds a set by an injection into a *flat* list. Claim
+    3.4's count is not flat: the encoding sends `(S,V)` to `(Z, M)`
+    together with `S \ M`, and the range of that last component is the
+    link of `M` — it *depends on the first component*. So the bound is
+
+    <<
+      |B|  <=  #{(Z,M)}  *  max_M |link M F|
+    >>
+
+    and the max is uniform only because the spread hypothesis is uniform.
+    That shape is what this section provides. It was measured before it
+    was written: [rust/tests/fragment_count.rs] checks that every fibre
+    of `(S,V) |-> (Z,M)` has at most `deg M F` elements, over every
+    family of at most three subsets of a four-element universe. *)
+
+Definition dep_pairs {B C : Type} (Base : list B) (fib : B -> list C)
+  : list (B * C) :=
+  flat_map (fun b => map (fun c => (b, c)) (fib b)) Base.
+
+Lemma in_dep_pairs :
+  forall {B C : Type} (Base : list B) (fib : B -> list C) (b : B) (c : C),
+    In (b, c) (dep_pairs Base fib) <-> In b Base /\ In c (fib b).
+Proof.
+  intros B C Base fib b c; unfold dep_pairs; split.
+  - intros H; apply in_flat_map in H as [b' [Hb' Hin]].
+    apply in_map_iff in Hin as [c' [E Hc']].
+    inversion E; subst; split; assumption.
+  - intros [Hb Hc]; apply in_flat_map; exists b; split; [exact Hb|].
+    apply in_map_iff; exists c; split; [reflexivity | exact Hc].
+Qed.
+
+Lemma dep_pairs_length_le :
+  forall {B C : Type} (Base : list B) (fib : B -> list C) (K : nat),
+    (forall b, In b Base -> length (fib b) <= K) ->
+    length (dep_pairs Base fib) <= length Base * K.
+Proof.
+  intros B C Base fib K; unfold dep_pairs.
+  induction Base as [|b Base IH]; intros Hle; simpl; [lia|].
+  rewrite app_length, map_length.
+  assert (H1 : length (fib b) <= K) by (apply Hle; left; reflexivity).
+  assert (H2 : length (flat_map (fun b0 => map (fun c => (b0, c)) (fib b0)) Base)
+               <= length Base * K)
+    by (apply IH; intros b0 Hb0; apply Hle; right; exact Hb0).
+  lia.
+Qed.
+
+(** **The fibred bound.** [g] is the first coordinate, [h] the second;
+    the pair is injective, [h x] lands in the fibre over [g x], and every
+    fibre is capped by [K]. Only the domain needs [NoDup]. *)
+
+Theorem count_fibred_le :
+  forall {A B C : Type} (g : A -> B) (h : A -> C)
+         (L : list A) (Base : list B) (fib : B -> list C) (K : nat),
+    NoDup L ->
+    (forall x, In x L -> In (g x) Base) ->
+    (forall x, In x L -> In (h x) (fib (g x))) ->
+    (forall x y, In x L -> In y L -> g x = g y -> h x = h y -> x = y) ->
+    (forall b, In b Base -> length (fib b) <= K) ->
+    length L <= length Base * K.
+Proof.
+  intros A B C g h L Base fib K HL Hg Hh Hinj Hfib.
+  set (e := fun x : A => (g x, h x)).
+  assert (Hincl : incl (map e L) (dep_pairs Base fib)).
+  { intros p Hp; apply in_map_iff in Hp as [x [E Hx]]; subst p; unfold e.
+    apply in_dep_pairs; split; [apply Hg; exact Hx | apply Hh; exact Hx]. }
+  assert (Hnd : NoDup (map e L)).
+  { apply (@NoDup_map_inj A (B * C) e L); [| exact HL].
+    intros x y Hx Hy E; unfold e in E.
+    inversion E as [[E1 E2]]; apply (Hinj x y Hx Hy E1 E2). }
+  pose proof (NoDup_incl_length Hnd Hincl) as Hlen.
+  rewrite map_length in Hlen.
+  eapply Nat.le_trans; [exact Hlen | apply dep_pairs_length_le; exact Hfib].
+Qed.
+
+(** ** The geometric sum
+
+    Claim 3.4 ends by summing the per-[m] bound over [n/2 <= m <= n]:
+
+    >  `Pr[...] <= sum_{m=n/2}^{n} 2^n (kq)^{-m} <= sum_{m=n/2}^{n}
+    >  (4/kq)^m`, *"Taking `k = cq^{-1}` for large enough `c`, this is at
+    >  most `100^{-n}`."*
+
+    A decreasing geometric series is dominated by its first term, and in
+    [nat] the clean statement of that is: if `2a <= b` then
+    `sum_{s=0}^{i} a^s b^{i-s} <= 2 b^i`. The hypothesis is **minimal for
+    the constant 2** — at `a = b = 1` the sum is `i+1`, unbounded — and
+    `2a <= b+1` already fails there, which
+    [rust/tests/counting.rs] pins. *)
+
+Fixpoint geom (a b i : nat) : nat :=
+  match i with
+  | 0 => 1
+  | S i' => b ^ (S i') + a * geom a b i'
+  end.
+
+Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= 2 * b ^ i.
+Proof.
+  intros a b i Hab; induction i as [|i IH]; simpl; [lia|].
+  assert (Hstep : a * geom a b i <= a * (2 * b ^ i))
+    by (apply Nat.mul_le_mono_l; exact IH).
+  assert (Hpow : b * b ^ i = b ^ i * b) by ring.
+  nia.
+Qed.
+
+(** [sum_from x t i] is `x t + x (t+1) + ... + x (t+i)`, peeling from the
+    front, which is the direction the induction below needs. *)
+
+Fixpoint sum_from (x : nat -> nat) (t i : nat) : nat :=
+  match i with
+  | 0 => x t
+  | S i' => x t + sum_from x (S t) i'
+  end.
+
+(** **The assembly.** Per-term bounds `b^m * x m <= a^m * C` on a range,
+    with `2a <= b`, give a bound on the whole sum that is only twice the
+    first term's. This is Claim 3.4's last step, with no denominators. *)
+
+Theorem geom_assemble :
+  forall (x : nat -> nat) (a b C : nat),
+    2 * a <= b -> 1 <= b ->
+    forall i t,
+      (forall m, t <= m -> m <= t + i -> b ^ m * x m <= a ^ m * C) ->
+      b ^ t * sum_from x t i <= 2 * a ^ t * C.
+Proof.
+  intros x a b C Hab Hb1 i.
+  induction i as [|i IH]; intros t Hterm; simpl sum_from.
+  - assert (H := Hterm t (Nat.le_refl t) ltac:(lia)); lia.
+  - (* multiply the goal by [b], then cancel it *)
+    apply (proj2 (Nat.mul_le_mono_pos_l
+                    (b ^ t * sum_from x t (S i)) (2 * a ^ t * C) b ltac:(lia))).
+    simpl sum_from.
+    assert (Hhead : b ^ t * x t <= a ^ t * C)
+      by (apply Hterm; lia).
+    assert (Htail : b ^ (S t) * sum_from x (S t) i <= 2 * a ^ (S t) * C).
+    { apply IH; intros m Hm1 Hm2; apply Hterm; lia. }
+    assert (Ep : b ^ S t = b * b ^ t) by reflexivity.
+    assert (Ea : a ^ S t = a * a ^ t) by reflexivity.
+    rewrite Ep, Ea in Htail.
+    (* b*(b^t*(x t + Sum)) = b*(b^t*x t) + (b*b^t)*Sum
+                          <= b*(a^t*C)  + 2*a*a^t*C
+                          <= b*a^t*C    + b*a^t*C    = b*(2*a^t*C) *)
+    assert (Hexp : b * (b ^ t * (x t + sum_from x (S t) i))
+                   = b * (b ^ t * x t) + b * b ^ t * sum_from x (S t) i)
+      by ring.
+    rewrite Hexp.
+    assert (H1 : b * (b ^ t * x t) <= b * (a ^ t * C))
+      by (apply Nat.mul_le_mono_l; exact Hhead).
+    assert (H2 : 2 * (a * a ^ t) * C <= b * a ^ t * C) by nia.
+    nia.
+Qed.

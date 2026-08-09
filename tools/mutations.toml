@@ -2300,3 +2300,65 @@ because = """Killed at psi_phi_SetEq. S minus M is S only when M is \
 empty, and M is empty exactly when some member of F sits inside V \
 (Observation 3) -- the case the whole argument is trying to reach, not \
 the case it starts in."""
+
+# ----------------------------------------------------------------
+# The fibred counting lemma and the geometric sum.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "geom-halve-the-constant"
+file = "coq/Counting.v"
+question = """A decreasing geometric series is at most twice its first \
+term. Is the 2 real, or is the series already bounded by its first \
+term?"""
+find = "Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= 2 * b ^ i."
+replace = "Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= b ^ i."
+expect = "killed"
+because = """Killed at a = 1, b = 2, i = 1: the sum is b + a = 3 against \
+b^1 = 2. The 2 is the value of 1/(1 - a/b) at the boundary a/b = 1/2, so \
+it is exactly the right constant for this hypothesis and cannot be \
+dropped."""
+
+[[mutation]]
+id = "geom-weaken-the-ratio"
+file = "coq/Counting.v"
+question = """The geometric bound assumes 2a <= b. Would a <= b do -- \
+i.e. is a merely decreasing series enough, or does it have to decrease \
+geometrically?"""
+find = "Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= 2 * b ^ i."
+replace = "Lemma geom_le : forall a b i, a <= b -> geom a b i <= 2 * b ^ i."
+expect = "killed"
+because = """Killed at a = b = 1, where the sum is i+1 and the claimed \
+bound is 2 -- unbounded against a constant. rust/tests/counting.rs pins \
+that 2a <= b+1 already fails there, so the hypothesis is minimal for the \
+constant 2, not merely convenient."""
+
+[[mutation]]
+id = "fibred-drop-injectivity"
+file = "coq/Counting.v"
+question = """The fibred bound requires the pair (g,h) to be injective. \
+Is that load-bearing, or do the fibre caps alone bound the domain?"""
+find = """    (forall x y, In x L -> In y L -> g x = g y -> h x = h y -> x = y) ->
+    (forall b, In b Base -> length (fib b) <= K) ->
+    length L <= length Base * K."""
+replace = """    (forall b, In b Base -> length (fib b) <= K) ->
+    length L <= length Base * K."""
+expect = "killed"
+because = """Load-bearing, and the counterexample is one line: take L \
+with two distinct elements mapping to the same (g,h) pair, Base a \
+singleton and K = 1. Then 2 <= 1. Without injectivity the map from L \
+into the dependent product is not NoDup and NoDup_incl_length does not \
+apply."""
+
+[[mutation]]
+id = "geom-assemble-halve-the-constant"
+file = "coq/Counting.v"
+question = """Claim 3.4's last step bounds the whole tail sum by twice \
+its first term. Is the factor 2 needed once the terms are integers?"""
+find = """      b ^ t * sum_from x t i <= 2 * a ^ t * C."""
+replace = """      b ^ t * sum_from x t i <= a ^ t * C."""
+expect = "killed"
+because = """Killed. With a = 1, b = 2, C = 8, t = 0 and the largest x \
+the hypothesis allows -- 8, 4, 2, 1 -- the sum is 15 against a^t*C = 8. \
+Integrality does not rescue it: the doubling is the value of the \
+geometric series, not slack in the estimate."""

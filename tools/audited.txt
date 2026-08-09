@@ -860,3 +860,17 @@ def Fragment.frag_F'
 def Fragment.first_in
 def Fragment.phi
 def Fragment.psi
+thm Counting.in_dep_pairs
+thm Counting.dep_pairs_length_le
+thm Counting.count_fibred_le
+thm Counting.geom_le
+thm Counting.geom_assemble
+def Counting.dep_pairs
+def Counting.geom
+def Counting.sum_from
+thm Fragment.frag_key_rest_injective
+thm Fragment.bad_pairs_fibred_bound
+thm Fragment.spread_caps_the_link
+thm Fragment.bad_pairs_spread_bound
+def Fragment.frag_key
+def Fragment.frag_rest

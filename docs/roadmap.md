@@ -507,7 +507,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 143 anecdotes into a coverage metric over the
+  mutation testing from 147 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -8607,28 +8607,19 @@ it, and they are what the Coq assembly will need:
   `Spread.Spread`-spread with parameter `k`. No `q^{-m}`, no `k^{-m}`,
   nothing leaves `nat`.
 
-Two things still stand in the way of the Coq proof, and naming them is
-the handoff:
-
-* **The product is nested, not flat.** `S'` depends on `Z` and `F_M`
-  depends on `M`, so the bound is `Σ_Z Σ_{M ⊂ S'(Z)} |F_M|` rather than
-  a product of four independent ranges. It becomes a product only
-  because `deg M F ≤ |F| k^{-m}` holds *uniformly in `M`* — which is
-  exactly what `Spread.Spread` gives. The missing tool is a **fibred
-  counting lemma** for `Counting.v`: if every fibre of `f` has at most
-  `K` elements and the image has at most `J`, then the domain has at
-  most `J·K`. That is the next thing to write, and it is small.
-* **The geometric sum.** `Σ_{m=n/2}^{n} 2^n (kq)^{-m} ≤ Σ (4/kq)^m`
-  uses `2^n ≤ 4^m` for `m ≥ n/2`, which is one line in `nat`; the sum
-  itself needs the cleared-denominator form. §1's scoping decision — *do
-  not chase the constant* — applies: any explicit `c` closes it.
+Both of the tools that step needed are now **proved** — see §31.8 —
+and the per-`m` bound is assembled. What is left is one obstacle of a
+kind this session has now met three times; §31.9 states it.
 
 ### 31.6 Costs and gates
 
 New: `coq/Fragment.v` (24 audited theorems, 8 audited definitions, no
 axiom), `rust/tests/fragment.rs` (7 tests, 32968 exhaustive triples),
 `rust/tests/fragment_count.rs` (4 tests, the assembly of Claim 3.4
-falsified ahead of its proof), 6 mutations. The manifest is now 143.
+falsified ahead of its proof), 6 mutations. **Then §31.8's two tools**:
+5 more audited theorems and 3 definitions in `Counting.v`, 4 more
+theorems and 2 definitions in `Fragment.v`, 5 more Rust tests, 4 more
+mutations. The manifest is now 147.
 
 All gates green on the final tree:
 
@@ -8670,3 +8661,120 @@ hypothesis §1's staging note does not record because at the level of
 sets it does not exist. Two stages, two hypotheses that the plan had one
 notch wrong, both found by writing the statement rather than by reading
 the plan again.
+
+### 31.8 The fibred counting lemma and the geometric sum
+
+Both tools §31.5 named are proved, axiom-free, in `coq/Counting.v`, and
+both were falsified numerically before being written.
+
+**The fibred counting lemma.** `Counting.count_inj_le` bounds a set by an
+injection into a *flat* list. Claim 3.4's count is not flat: the encoding
+sends `(S,V)` to a key `(Z,M)` together with `S \ M`, and the range of
+that last component is *the link of `M`* — it depends on the first
+component. So:
+
+```
+  dep_pairs Base fib        the dependent product, flat_map over Base
+  dep_pairs_length_le       |dep_pairs Base fib| <= |Base| * K
+  count_fibred_le           g injective-with-h, h x in fib (g x),
+                            every fibre <= K   =>   |L| <= |Base| * K
+```
+
+`count_fibred_le` is polymorphic in all three types and needs `NoDup` on
+the domain only. `rust/tests/counting.rs` checks that the bound is
+**attained** when `L` is the dependent product itself, so it is the right
+statement rather than a lossy one.
+
+**The geometric sum.** A decreasing geometric series is dominated by its
+first term, and in `nat` the clean form is
+
+```
+  geom a b i  =  sum_{s=0}^{i} a^s b^(i-s)      (stated as a recursion)
+  geom_le     :  2*a <= b  ->  geom a b i <= 2 * b^i
+```
+
+and the hypothesis `2a ≤ b` is **minimal for the constant 2**: at
+`a = b = 1` the sum is `i+1`, unbounded, and `2a ≤ b+1` already admits
+that case. Rule 23 again, and again the boundary is one notch away from
+the obvious statement.
+
+The usable form is the assembly itself, which is Claim 3.4's last step
+with no denominators anywhere:
+
+> **`Counting.geom_assemble`:** if `2a ≤ b`, `1 ≤ b`, and
+> `b^m · x_m ≤ a^m · C` for every `m` in `[t, t+i]`, then
+> `b^t · Σ_{m=t}^{t+i} x_m ≤ 2 · a^t · C`.
+
+With `a = 4d`, `b = ck` and `C = C(N,j)·|F|` that is exactly
+`Pr ≤ Σ_{m≥n/2} (4/kq)^m ≤ 2 (4/kq)^{n/2}` — Lovett's `100^{-n}` once `c`
+is large enough, and §1's *do not chase the constant* applies.
+
+The proof is one induction that peels the *first* term and cancels a
+factor of `b`; peeling the last term does not work, and that is the only
+subtlety in it.
+
+**And the per-`m` bound is assembled.** `coq/Fragment.v`:
+
+```
+  frag_key F p              (Z, M) -- the encoding without S', because
+                            the decode never reads S'
+  frag_rest F p             S \ M
+  frag_key_rest_injective   the pair is injective (Distinct F)
+  bad_pairs_fibred_bound    |L| <= |Base| * K        via count_fibred_le
+  spread_caps_the_link      k^|M| * |link M F| <= |F|  -- the only place
+                            spreadness is used
+  bad_pairs_spread_bound    k^m * |L| <= |Base| * |F|
+```
+
+`S'` dropping out of the *decode* is worth a sentence: Lovett needs it
+for the **count** (step 3 bounds the number of `M ⊂ S'` by `C(n,m)`), not
+for the decode, and the formalisation makes that visible because
+`psi` never reads it.
+
+### 31.9 What is left, precisely: the third instance of rule 24
+
+`bad_pairs_spread_bound` leaves `Base` abstract. Making it concrete —
+`|Base| ≤ C(N, j+m) · C(n, m)`, which is steps 1–3 of the count — needs
+`Base` to be `dep_pairs (subsets_of_size (j+m) U) (fun Z => subsets_of_size m (first_in F Z))`,
+and there the list-versus-set problem of rule 24 appears a **third** time.
+
+`Spread.subsets U` enumerates the *ordered sublists* of `U`. The key's
+first component is `Z = V ++ M`, which is not an ordered sublist of `U` —
+so it is not in `subsets_of_size (j+m) U` on the nose, and keying on it
+directly gives no binomial count.
+
+The fix is canonicalisation, and it is mechanical but not free:
+
+```
+  norm U A  :=  filter (fun x => memb x A) U
+```
+
+is an ordered sublist of `U` (`Spread.filter_in_subsets` already proves
+membership), depends only on the *element set* of `A`, and satisfies
+`norm U V = V` when `V` is itself an ordered sublist of `U` and `U` is
+`NoDup`. Keying on `(norm U Z, M)` then recovers `V` literally, because
+
+```
+  setminus (norm U Z) M = filter (fun x => memb x Z && negb (memb x M)) U
+                        = filter (fun x => memb x V) U = norm U V = V
+```
+
+using `Z = V ⊎ M`. So the four lemmas needed are: `norm` lands in
+`subsets`, `norm` preserves length on subsets of a `NoDup` `U`, `norm` is
+idempotent on ordered sublists, and the `setminus`/`norm` computation
+above. **That is the whole of the remaining gap**, and none of it is
+about sunflowers.
+
+Two things follow that a later session should not have to rediscover.
+
+* The obstacle is the *same* one twice already recorded — rule 24 — and
+  it has now cost a hypothesis (`Distinct F`), an encoding change
+  (`SetEq` instead of equality), and a canonicalisation layer. **In a
+  list formalisation of a set-theoretic proof, canonicalisation is not a
+  detail of the last mile; it is a layer, and it should be built once,
+  early, rather than three times.** If Stage C needs a fourth, build
+  `norm` and its four lemmas as a section of `Sets.v` first.
+* Nothing about the count is in doubt. `rust/tests/fragment_count.rs`
+  checks the assembled bound, the fibred bound and the spread form
+  exhaustively over small families, and each of the three factors is
+  shown necessary. The gap is representational, not mathematical.

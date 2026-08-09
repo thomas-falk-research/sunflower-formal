@@ -354,3 +354,133 @@ fn the_pair_sample_space_has_the_size_claim_three_four_divides_by() {
     // j = 2, a family of 5 members -- 5 * C(8,2) = 5 * 28 = 140 pairs.
     assert_eq!(5 * binom_pascal(8, 2), 140);
 }
+
+// ---------------------------------------------------------------------------
+// The fibred counting lemma, and the geometric sum
+// ---------------------------------------------------------------------------
+
+/// `dep_pairs Base fib` — the dependent product, whose length is
+/// `sum_b |fib b|`.
+fn dep_pairs_len(base: &[usize], fib: impl Fn(usize) -> usize) -> usize {
+    base.iter().map(|&b| fib(b)).sum()
+}
+
+#[test]
+fn the_dependent_product_is_bounded_by_base_times_the_cap() {
+    // `Counting.dep_pairs_length_le`
+    for k in 0..=6usize {
+        for nbase in 0..=8usize {
+            let base: Vec<usize> = (0..nbase).collect();
+            // a fibre map that never exceeds k, and one that touches it
+            let f1 = |b: usize| b % (k + 1);
+            assert!(dep_pairs_len(&base, f1) <= nbase * k);
+            let f2 = |_b: usize| k;
+            assert_eq!(dep_pairs_len(&base, f2), nbase * k);
+        }
+    }
+}
+
+#[test]
+fn the_fibred_bound_holds_and_is_attained() {
+    // `Counting.count_fibred_le`: an injective (g,h) with every fibre
+    // capped by K gives |L| <= |Base| * K. Here L is literally the
+    // dependent product, so the bound is attained -- which is what makes
+    // it the right statement rather than a lossy one.
+    for nbase in 0..=6usize {
+        for k in 0..=5usize {
+            let l: Vec<(usize, usize)> =
+                (0..nbase).flat_map(|b| (0..k).map(move |c| (b, c))).collect();
+            assert_eq!(l.len(), nbase * k, "the bound is attained");
+            // and any sublist obeys it
+            for take in 0..=l.len() {
+                assert!(l[..take].len() <= nbase * k);
+            }
+        }
+    }
+}
+
+/// `geom a b i` — Coq's recursion, not the sum.
+fn geom(a: u128, b: u128, i: u32) -> u128 {
+    if i == 0 {
+        1
+    } else {
+        b.pow(i) + a * geom(a, b, i - 1)
+    }
+}
+
+#[test]
+fn the_geometric_recursion_is_the_sum_it_claims_to_be() {
+    // geom a b i = sum_{s=0}^{i} a^s * b^(i-s)
+    for a in 0..=7u128 {
+        for b in 0..=7u128 {
+            for i in 0..=7u32 {
+                let direct: u128 = (0..=i).map(|s| a.pow(s) * b.pow(i - s)).sum();
+                assert_eq!(geom(a, b, i), direct, "a={a} b={b} i={i}");
+            }
+        }
+    }
+}
+
+#[test]
+fn the_geometric_bound_and_its_minimal_hypothesis() {
+    // `Counting.geom_le`: 2a <= b implies geom a b i <= 2 b^i.
+    let mut under = 0usize;
+    for a in 0..=10u128 {
+        for b in 0..=20u128 {
+            for i in 0..=10u32 {
+                if 2 * a <= b {
+                    assert!(geom(a, b, i) <= 2 * b.pow(i), "a={a} b={b} i={i}");
+                    under += 1;
+                }
+            }
+        }
+    }
+    assert!(under > 800, "only {under} instances under the hypothesis");
+
+    // and `2a <= b` is minimal for the constant 2: at a = b = 1 the sum
+    // is i+1, unbounded, and it already satisfies 2a <= b+1.
+    assert!(2 * 1 <= 1 + 1);
+    assert_eq!(geom(1, 1, 5), 6);
+    assert!(geom(1, 1, 5) > 2 * 1u128.pow(5));
+    // the whole family of failures of the relaxed hypothesis
+    let mut fails = 0usize;
+    for a in 0..=6u128 {
+        for b in 0..=12u128 {
+            for i in 0..=8u32 {
+                if 2 * a <= b + 1 && geom(a, b, i) > 2 * b.pow(i) {
+                    fails += 1;
+                }
+            }
+        }
+    }
+    assert!(fails > 0, "the j+1 relaxation must fail somewhere");
+}
+
+#[test]
+fn the_assembly_of_the_geometric_sum() {
+    // `Counting.geom_assemble`: per-term bounds b^m x_m <= a^m C on
+    // [t, t+i], with 2a <= b, give b^t * sum x_m <= 2 a^t C.
+    let mut checked = 0usize;
+    for a in 1..=4u128 {
+        for b in (2 * a)..=(2 * a + 4) {
+            for cc in 1..=4u128 {
+                for t in 0..=3u32 {
+                    for i in 0..=5u32 {
+                        // the extremal x: x_m as large as the hypothesis allows
+                        let x = |m: u32| (a.pow(m) * cc) / b.pow(m);
+                        for m in t..=(t + i) {
+                            assert!(b.pow(m) * x(m) <= a.pow(m) * cc, "hypothesis");
+                        }
+                        let total: u128 = (t..=(t + i)).map(x).sum();
+                        assert!(
+                            b.pow(t) * total <= 2 * a.pow(t) * cc,
+                            "geom_assemble fails: a={a} b={b} C={cc} t={t} i={i}"
+                        );
+                        checked += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert!(checked > 500, "only {checked} assemblies checked");
+}

@@ -1937,3 +1937,34 @@ rejecting the proof, not by the testbed.
 > they represent the objects — bitmask against list, set against
 > sequence — say so where the sweep is reported, because the two are
 > checking different statements.
+
+### The same representational obstacle, three times, and what it cost
+
+Rule 24 was earned on the decode of Claim 3.4: a set-level identity
+becomes two obligations in a list formalisation. Finishing the *count*
+met the same obstacle twice more, and the pattern is worth naming.
+
+1. **The decode** (`S = M ∪ (S \ M)`): literal for `V`, only `SetEq` for
+   `S`. Cost: the hypothesis `Distinct F`, now on every downstream
+   statement.
+2. **The injectivity**: had to be routed through `SetEq` and
+   `Sets.SetNoDup_setEq_eq` rather than proved by rewriting.
+3. **The count of the key space**: `Z = V ++ M` is not an *ordered
+   sublist* of the universe, so it is not in `Counting.subsets_of_size`
+   and carries no binomial count until it is canonicalised
+   (`docs/roadmap.md` §31.9).
+
+Each is the same fact — lists carry order that sets do not — and each was
+paid for separately, at the point of use, after the plan had been made.
+
+> **Rule 26. In a list formalisation of a set-theoretic argument, build
+> the canonicalisation layer once and early, not at each point of use.**
+> A `norm U A := filter (fun x => memb x A) U` with its four lemmas
+> (lands in `subsets`, preserves length, idempotent on sublists, commutes
+> with `setminus`) is perhaps forty lines. Paying it three times in
+> fragments, each with its own workaround, cost more than that and left
+> the third instance unfinished.
+
+None of this is a defect in the source. Lovett's §3 is about sets and is
+correct about sets. It is a defect in *staging a list formalisation from
+a set-theoretic plan*, and it is the thing to budget for next time.

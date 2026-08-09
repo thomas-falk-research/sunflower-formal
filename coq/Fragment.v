@@ -526,3 +526,117 @@ Proof.
   - intros x y Hx Hy _ _ E.
     apply (@phi_injective_on_pairs F L HD Hfst x y Hx Hy E).
 Qed.
+
+(** ** Claim 3.4's count, through the fibred lemma
+
+    The encoding of Claim 3.4 has four components, but the *decode* uses
+    only three of them — `ψ` never reads `S'`. That is not an oversight
+    in Lovett: `S'` is there for the **count**, not for the decode. It is
+    what bounds the number of `M`s — step 3 reads "given `S'`, there
+    are at most `C(n,m)` options for `M ⊂ S'`" — and it costs nothing,
+    because it is determined by `Z`.
+
+    So for injectivity the encoding is a *pair*: a key `(Z, M)` and a
+    remainder `S \ M`, with the remainder ranging over the link of `M`.
+    That is exactly the shape [Counting.count_fibred_le] wants. *)
+
+Definition frag_key (F : Family) (p : list nat * list nat)
+  : list nat * list nat :=
+  (frag_Z F (fst p) (snd p), minimal_fragment F (fst p) (snd p)).
+
+Definition frag_rest (F : Family) (p : list nat * list nat) : list nat :=
+  setminus (fst p) (minimal_fragment F (fst p) (snd p)).
+
+(** The pair `(key, rest)` is injective — the same argument as
+    [phi_injective], with `S'` dropped because it was never used. *)
+
+Lemma frag_key_rest_injective :
+  forall F p1 p2,
+    Distinct F -> In (fst p1) F -> In (fst p2) F ->
+    frag_key F p1 = frag_key F p2 ->
+    frag_rest F p1 = frag_rest F p2 ->
+    p1 = p2.
+Proof.
+  intros F [S1 V1] [S2 V2] HD H1 H2 Hkey Hrest.
+  unfold frag_key, frag_rest in *; simpl in *.
+  inversion Hkey as [[HZ HM]].
+  (* V is recovered literally from (Z, M) *)
+  assert (HV : V1 = V2).
+  { rewrite <- (@frag_Z_minus_fragment F S1 V1 H1),
+            <- (@frag_Z_minus_fragment F S2 V2 H2), HZ, HM; reflexivity. }
+  (* S is recovered up to SetEq, and Distinct closes the gap *)
+  assert (HS : S1 = S2).
+  { apply (@SetNoDup_setEq_eq F); [exact HD | exact H1 | exact H2 |].
+    apply (SetEq_trans
+             (SetEq_sym (add_set_setminus_SetEq (@fragment_subset_S F S1 V1 H1)))).
+    rewrite Hrest, HM.
+    apply (add_set_setminus_SetEq (@fragment_subset_S F S2 V2 H2)). }
+  rewrite HS, HV; reflexivity.
+Qed.
+
+(** **The fibred bound.** Any list of pairs whose keys land in [Base]
+    and whose first components lie in a [Distinct] family is bounded by
+    `|Base| * K`, where `K` caps the link of every key's fragment.
+
+    [Base] is left abstract on purpose: bounding *it* by
+    `C(N, j+m) * C(n, m)` is the remaining step, and §31.5a says exactly
+    what stands in the way. *)
+
+Theorem bad_pairs_fibred_bound :
+  forall (F : Family) (L : list (list nat * list nat))
+         (Base : list (list nat * list nat)) (K : nat),
+    Distinct F -> NoDup L ->
+    (forall p, In p L -> In (fst p) F) ->
+    (forall p, In p L -> In (frag_key F p) Base) ->
+    (forall q, In q Base -> length (link (snd q) F) <= K) ->
+    length L <= length Base * K.
+Proof.
+  intros F L Base K HD HL Hfst Hkey Hfib.
+  apply (@count_fibred_le _ _ _ (frag_key F) (frag_rest F) L Base
+                          (fun q => link (snd q) F) K).
+  - exact HL.
+  - exact Hkey.
+  - intros p Hp; unfold frag_key, frag_rest; simpl.
+    apply (@fragment_removed_in_link F (fst p) (snd p) (Hfst p Hp)).
+  - intros p1 p2 Hp1 Hp2 Ek Er.
+    apply (@frag_key_rest_injective F p1 p2 HD (Hfst p1 Hp1) (Hfst p2 Hp2) Ek Er).
+  - exact Hfib.
+Qed.
+
+(** *** Where spreadness enters, and it is the only place
+
+    [Spread.Spread F k] is `k^|T| * deg T F <= |F|`, and
+    [Spread.length_link] is `|link T F| = deg T F`. So a fragment of size
+    [m] has its link capped by `|F| / k^m` — step 4 of Claim 3.4, which
+    Lovett annotates "here is where we are using the assumption that `F`
+    is `k`-spread!". *)
+
+Lemma spread_caps_the_link :
+  forall F k M,
+    Spread F k -> NoDup M ->
+    k ^ (length M) * length (link M F) <= length F.
+Proof.
+  intros F k M Hsp HM; rewrite length_link; apply Hsp; exact HM.
+Qed.
+
+(** **The per-`m` bound, cleared of denominators.** *)
+
+Theorem bad_pairs_spread_bound :
+  forall (F : Family) (L : list (list nat * list nat))
+         (Base : list (list nat * list nat)) (K m k : nat),
+    Distinct F -> NoDup L ->
+    (forall p, In p L -> In (fst p) F) ->
+    (forall p, In p L -> In (frag_key F p) Base) ->
+    (forall q, In q Base -> length (link (snd q) F) <= K) ->
+    k ^ m * K <= length F ->
+    k ^ m * length L <= length Base * length F.
+Proof.
+  intros F L Base K m k HD HL Hfst Hkey Hfib Hspread.
+  pose proof (@bad_pairs_fibred_bound F L Base K HD HL Hfst Hkey Hfib) as Hb.
+  assert (H1 : k ^ m * length L <= k ^ m * (length Base * K))
+    by (apply Nat.mul_le_mono_l; exact Hb).
+  assert (H2 : k ^ m * (length Base * K) = length Base * (k ^ m * K)) by ring.
+  assert (H3 : length Base * (k ^ m * K) <= length Base * length F)
+    by (apply Nat.mul_le_mono_l; exact Hspread).
+  lia.
+Qed.

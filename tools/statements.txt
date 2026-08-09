@@ -2223,3 +2223,45 @@ ae1d6cead03ffdde  def Fragment.phi
 
 a23619e1b9d0a179  def Fragment.psi
     psi = fun '(Z, _, M, R) => (add_set M R, setminus Z M) : list nat * list nat * list nat * list nat -> list nat * list nat Arguments psi t
+
+223d2af9605646f1  thm Counting.in_dep_pairs
+    in_dep_pairs : forall (Base : list ?B) (fib : ?B -> list ?C) (b : ?B) (c : ?C), List.In (b, c) (dep_pairs Base fib) <-> List.In b Base /\ List.In c (fib b) where ?B : [ |- Type] ?C : [ |- Type]
+
+dee2ea8cb92e5908  thm Counting.dep_pairs_length_le
+    dep_pairs_length_le : forall (Base : list ?B) (fib : ?B -> list ?C) (K : nat), (forall b : ?B, List.In b Base -> length (fib b) <= K) -> length (dep_pairs Base fib) <= length Base * K where ?B : [ |- Type] ?C : [ |- Type]
+
+0353886f1583dbb7  thm Counting.count_fibred_le
+    count_fibred_le : forall (g : ?A -> ?B) (h : ?A -> ?C) (L : list ?A) (Base : list ?B) (fib : ?B -> list ?C) (K : nat), List.NoDup L -> (forall x : ?A, List.In x L -> List.In (g x) Base) -> (forall x : ?A, List.In x L -> List.In (h x) (fib (g x))) -> (forall x y : ?A, List.In x L -> List.In y L -> g x = g y -> h x = h y -> x = y) -> (forall b : ?B, List.In b Base -> length (fib b) <= K) -> length L <= length Base * K where ?A : [ |- Type] ?B : [ |- Type] ?C : [ |- Type]
+
+5be9c53581ccc6dc  thm Counting.geom_le
+    geom_le : forall a b i : nat, 2 * a <= b -> geom a b i <= 2 * PeanoNat.Nat.pow b i
+
+290c8090662b0a5d  thm Counting.geom_assemble
+    geom_assemble : forall (x : nat -> nat) (a b C : nat), 2 * a <= b -> 1 <= b -> forall i t : nat, (forall m : nat, t <= m -> m <= t + i -> PeanoNat.Nat.pow b m * x m <= PeanoNat.Nat.pow a m * C) -> PeanoNat.Nat.pow b t * sum_from x t i <= 2 * PeanoNat.Nat.pow a t * C
+
+f665547fb3216f79  def Counting.dep_pairs
+    dep_pairs = fun (B C : Type) (Base : list B) (fib : B -> list C) => List.flat_map (fun b : B => List.map (fun c : C => (b, c)) (fib b)) Base : forall B C : Type, list B -> (B -> list C) -> list (B * C) Arguments dep_pairs {B C}%type_scope Base%list_scope fib%function_scope
+
+ad3d076529ec8d0e  def Counting.geom
+    geom = fix geom (a b i : nat) {struct i} : nat := match i with | 0 => 1 | S i' => PeanoNat.Nat.pow b (S i') + a * geom a b i' end : nat -> nat -> nat -> nat Arguments geom (a b i)%nat_scope
+
+2ad2a873605e4d0b  def Counting.sum_from
+    sum_from = fix sum_from (x : nat -> nat) (t i : nat) {struct i} : nat := match i with | 0 => x t | S i' => x t + sum_from x (S t) i' end : (nat -> nat) -> nat -> nat -> nat Arguments sum_from x%function_scope (t i)%nat_scope
+
+af37a8f004f38bc6  thm Fragment.frag_key_rest_injective
+    frag_key_rest_injective : forall (F : Family) (p1 p2 : list nat * list nat), Distinct F -> List.In (fst p1) F -> List.In (fst p2) F -> frag_key F p1 = frag_key F p2 -> frag_rest F p1 = frag_rest F p2 -> p1 = p2
+
+2481ab703bf183cf  thm Fragment.bad_pairs_fibred_bound
+    bad_pairs_fibred_bound : forall (F : Family) (L Base : list (list nat * list nat)) (K : nat), Distinct F -> List.NoDup L -> (forall p : list nat * list nat, List.In p L -> List.In (fst p) F) -> (forall p : list nat * list nat, List.In p L -> List.In (frag_key F p) Base) -> (forall q : list nat * list nat, List.In q Base -> length (link (snd q) F) <= K) -> length L <= length Base * K
+
+196a52c6bac178c8  thm Fragment.spread_caps_the_link
+    spread_caps_the_link : forall (F : Family) (k : nat) (M : list nat), Spread F k -> List.NoDup M -> PeanoNat.Nat.pow k (length M) * length (link M F) <= length F
+
+ca07a2f9d44b3bd8  thm Fragment.bad_pairs_spread_bound
+    bad_pairs_spread_bound : forall (F : Family) (L Base : list (list nat * list nat)) (K m k : nat), Distinct F -> List.NoDup L -> (forall p : list nat * list nat, List.In p L -> List.In (fst p) F) -> (forall p : list nat * list nat, List.In p L -> List.In (frag_key F p) Base) -> (forall q : list nat * list nat, List.In q Base -> length (link (snd q) F) <= K) -> PeanoNat.Nat.pow k m * K <= length F -> PeanoNat.Nat.pow k m * length L <= length Base * length F
+
+a01191c979a8ca37  def Fragment.frag_key
+    frag_key = fun (F : Family) (p : list nat * list nat) => (frag_Z F (fst p) (snd p), minimal_fragment F (fst p) (snd p)) : Family -> list nat * list nat -> list nat * list nat Arguments frag_key F p
+
+b690e86f734950cf  def Fragment.frag_rest
+    frag_rest = fun (F : Family) (p : list nat * list nat) => setminus (fst p) (minimal_fragment F (fst p) (snd p)) : Family -> list nat * list nat -> list nat Arguments frag_rest F p
