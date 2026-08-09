@@ -200,6 +200,19 @@ place spreadness enters). `rust/tests/fragment.rs` checked all of it
 over 32968 exhaustive `(F,S,V)` triples *before* it was proved. The
 count itself is not done — §31.5 names what is missing.
 
+**Claim 3.4 is closed.** `Fragment.claim_3_4_per_m` is the count at a
+fixed fragment size — `k^m · |L| ≤ C(N,j+m) · C(n,m) · |F|`, the rendered
+page's four steps — and `Fragment.claim_3_4_summed` is the whole of it,
+`(ck)^t · Σ|L_m| ≤ 2 · (4d)^t · C(N,j) · |F|`, which read back is
+Lovett's `Pr ≤ 100^{-n}` with `q = c/d` and `t = ⌈n/2⌉`. Nothing leaves
+`nat`. Getting there needed the canonicalisation layer `Counting.norm`
+(§31.9) — built once, as rule 26 asks, after the same obstacle had been
+paid for twice at the point of use.
+
+**What remains is Stage C**, untouched: Claim 3.5 (Markov plus the two
+spreadness-preservation lemmas), Claim 3.6, and Lemma 3.1's `log n`
+iteration. The axiom is still an axiom.
+
 Stage B produced its own correction: **the decode `ψ(φ(S,V)) = (S,V)` is
 not an equation.** Its `V` half is literal; its `S` half is only up to
 permutation, and closing it needs `Distinct F`, a hypothesis §1's
@@ -303,7 +316,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (627 of them). The current
+for every theorem in the "Closed" table (665 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -358,8 +371,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
 
-Current mutation results: 147 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 144 killed outright, two genuine
+Current mutation results: 150 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 147 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of

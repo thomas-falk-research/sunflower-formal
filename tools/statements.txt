@@ -2077,8 +2077,8 @@ bf02412c9cf3d97e  thm Counting.in_subsets_of_size
 4bcd709946832c04  thm Counting.length_subsets_of_size
     length_subsets_of_size : forall (l : list nat) (j : nat), length (subsets_of_size j l) = binom (length l) j
 
-faa25cf84a443daa  thm Counting.NoDup_app_disjoint
-    NoDup_app_disjoint : forall A B : list (list nat), List.NoDup A -> List.NoDup B -> (forall x : list nat, List.In x A -> ~ List.In x B) -> List.NoDup (A ++ B)
+f3267e1557b17f44  thm Counting.NoDup_app_disjoint
+    NoDup_app_disjoint : forall A B : list ?T, List.NoDup A -> List.NoDup B -> (forall x : ?T, List.In x A -> ~ List.In x B) -> List.NoDup (A ++ B) where ?T : [ |- Type]
 
 3135c8d12ed410fd  thm Counting.subsets_NoDup_enum
     subsets_NoDup_enum : forall l : list nat, List.NoDup l -> List.NoDup (subsets l)
@@ -2265,3 +2265,126 @@ a01191c979a8ca37  def Fragment.frag_key
 
 b690e86f734950cf  def Fragment.frag_rest
     frag_rest = fun (F : Family) (p : list nat * list nat) => setminus (fst p) (minimal_fragment F (fst p) (snd p)) : Family -> list nat * list nat -> list nat Arguments frag_rest F p
+
+5182a5c53ad84903  thm Counting.memb_iff_eq
+    memb_iff_eq : forall (x : nat) (A B : list nat), List.In x A <-> List.In x B -> memb x A = memb x B
+
+ce676dd709704704  thm Counting.in_norm_iff
+    in_norm_iff : forall (U A : list nat) (x : nat), List.In x (norm U A) <-> List.In x U /\ List.In x A
+
+51c6eae88b5bc97c  thm Counting.norm_in_subsets
+    norm_in_subsets : forall U A : list nat, List.In (norm U A) (subsets U)
+
+182898336305cbf2  thm Counting.norm_NoDup
+    norm_NoDup : forall U A : list nat, List.NoDup U -> List.NoDup (norm U A)
+
+c1f0b24ec2b3ab6a  thm Counting.norm_SetEq
+    norm_SetEq : forall U A : list nat, Subset A U -> SetEq (norm U A) A
+
+575858aa11882044  thm Counting.memb_norm
+    memb_norm : forall (U A : list nat) (x : nat), Subset A U -> memb x (norm U A) = memb x A
+
+6d1f45a9ef54a600  thm Counting.norm_length
+    norm_length : forall U A : list nat, List.NoDup U -> List.NoDup A -> Subset A U -> length (norm U A) = length A
+
+aff7cde65efeb31b  thm Counting.setminus_norm_r
+    setminus_norm_r : forall X U A : list nat, Subset A U -> setminus X (norm U A) = setminus X A
+
+fdd822f909ff0b87  thm Counting.norm_idem
+    norm_idem : forall U V : list nat, List.NoDup U -> List.In V (subsets U) -> norm U V = V
+
+f31c3d781f63dd18  thm Counting.norm_in_layer
+    norm_in_layer : forall (U A : list nat) (j : nat), List.NoDup U -> List.NoDup A -> Subset A U -> length A = j -> List.In (norm U A) (subsets_of_size j U)
+
+97135fe0da49e452  thm Counting.binom_succ_l
+    binom_succ_l : forall n j : nat, binom n j <= binom (S n) j
+
+f9be4d93a2ea27e3  thm Counting.binom_mono_l
+    binom_mono_l : forall n n' j : nat, n <= n' -> binom n j <= binom n' j
+
+020bd26e2851451a  thm Counting.dep_pairs_weighted_le
+    dep_pairs_weighted_le : forall (Base : list ?B) (fib : ?B -> list ?C) (w W : nat), (forall b : ?B, List.In b Base -> w * length (fib b) <= W) -> w * length (dep_pairs Base fib) <= length Base * W where ?B : [ |- Type] ?C : [ |- Type]
+
+5b50770ef6fbe02f  thm Counting.count_fibred_weighted_le
+    count_fibred_weighted_le : forall (g : ?A -> ?B) (h : ?A -> ?C) (L : list ?A) (Base : list ?B) (fib : ?B -> list ?C) (w W : nat), List.NoDup L -> (forall x : ?A, List.In x L -> List.In (g x) Base) -> (forall x : ?A, List.In x L -> List.In (h x) (fib (g x))) -> (forall x y : ?A, List.In x L -> List.In y L -> g x = g y -> h x = h y -> x = y) -> (forall b : ?B, List.In b Base -> w * length (fib b) <= W) -> w * length L <= length Base * W where ?A : [ |- Type] ?B : [ |- Type] ?C : [ |- Type]
+
+a8722702ab4c72fc  thm Counting.memb_setminus
+    memb_setminus : forall (x : nat) (A T : list nat), memb x (setminus A T) = (memb x A && negb (memb x T))%bool
+
+503a7de86cb8eca5  thm Counting.setminus_SetEq_r
+    setminus_SetEq_r : forall A T1 T2 : list nat, SetEq T1 T2 -> setminus A T1 = setminus A T2
+
+e2c08659ab0ef51f  thm Counting.filter_filter
+    filter_filter : forall (p q : ?T -> bool) (l : list ?T), List.filter p (List.filter q l) = List.filter (fun x : ?T => (q x && p x)%bool) l where ?T : [ |- Type]
+
+0a9f0bb3a08ab536  thm Counting.setminus_norm_l
+    setminus_norm_l : forall U Z M : list nat, setminus (norm U Z) M = norm U (setminus Z M)
+
+1972c89d1179ba4d  def Counting.norm
+    norm = fun U A : list nat => List.filter (fun x : nat => memb x A) U : list nat -> list nat -> list nat Arguments norm (U A)%list_scope
+
+2712351ce8db7d4e  thm Fragment.forallb_ext_pointwise
+    forallb_ext_pointwise : forall (f g : nat -> bool) (l : list nat), (forall x : nat, f x = g x) -> List.forallb f l = List.forallb g l
+
+f7c294c277cfd505  thm Fragment.frag_F'_norm
+    frag_F'_norm : forall (F : Family) (U Z : list nat), Subset Z U -> frag_F' F (norm U Z) = frag_F' F Z
+
+e607f2b3dc0b184c  thm Fragment.first_in_norm
+    first_in_norm : forall (F : Family) (U Z : list nat), Subset Z U -> first_in F (norm U Z) = first_in F Z
+
+426ba16e6a70bf3d  thm Fragment.first_in_in_F
+    first_in_in_F : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.In (first_in F (frag_Z F S V)) F
+
+f51a5e58e21f732a  thm Fragment.fragment_subset_first_in
+    fragment_subset_first_in : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.Forall (fun B : list nat => List.NoDup B) F -> Subset (minimal_fragment F S V) (first_in F (frag_Z F S V))
+
+e9ce9a4b85724eab  thm Fragment.fragment_NoDup
+    fragment_NoDup : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.Forall (fun B : list nat => List.NoDup B) F -> List.NoDup (minimal_fragment F S V)
+
+269b9652be5589ba  thm Fragment.frag_Z_subset_U
+    frag_Z_subset_U : forall (F : list (list nat)) (S V U : list nat), List.In S F -> Subset S U -> Subset V U -> Subset (frag_Z F S V) U
+
+67e92310a3101477  thm Fragment.frag_Z_NoDup
+    frag_Z_NoDup : forall (F : list (list nat)) (S V : list nat), List.In S F -> List.Forall (fun B : list nat => List.NoDup B) F -> List.NoDup V -> List.NoDup (frag_Z F S V)
+
+d523f0d09ab76dd6  thm Fragment.containsb_SetEq
+    containsb_SetEq : forall T1 T2 A : list nat, SetEq T1 T2 -> containsb T1 A = containsb T2 A
+
+1507efee077c4b7f  thm Fragment.link_SetEq
+    link_SetEq : forall (F : Family) (T1 T2 : list nat), SetEq T1 T2 -> link T1 F = link T2 F
+
+5001f178a4a30cf4  thm Fragment.add_set_SetEq_l
+    add_set_SetEq_l : forall M1 M2 R : list nat, SetEq M1 M2 -> SetEq (add_set M1 R) (add_set M2 R)
+
+50f21d2d79aa5cd8  thm Fragment.first_in_length
+    first_in_length : forall (F : list (list nat)) (Z : list nat) (n : nat), (forall A : list nat, List.In A F -> length A <= n) -> length (first_in F Z) <= n
+
+5d221673bf994ebd  thm Fragment.first_in_NoDup
+    first_in_NoDup : forall (F : list (list nat)) (Z : list nat), List.Forall (fun B : list nat => List.NoDup B) F -> List.NoDup (first_in F Z)
+
+8da492a80ceb5f99  thm Fragment.frag_base_length
+    frag_base_length : forall (F : list (list nat)) (U : list nat) (j m n : nat), (forall A : list nat, List.In A F -> length A <= n) -> length (frag_base F U j m) <= binom (length U) (j + m) * binom n m
+
+b1d1b0e42e6b990b  thm Fragment.fragment_subset_first_in_norm
+    fragment_subset_first_in_norm : forall (F : list (list nat)) (S V U : list nat), List.In S F -> List.Forall (fun B : list nat => List.NoDup B) F -> Subset (frag_Z F S V) U -> Subset (minimal_fragment F S V) (first_in F (norm U (frag_Z F S V)))
+
+b94894ae648522c0  thm Fragment.frag_V_recovered
+    frag_V_recovered : forall (F : list (list nat)) (S V U : list nat), List.In S F -> List.NoDup U -> List.In V (subsets U) -> setminus (norm U (frag_Z F S V)) (minimal_fragment F S V) = V
+
+919ba8d58be5c39a  thm Fragment.frag_ckey_rest_injective
+    frag_ckey_rest_injective : forall (F : Family) (U : list nat) (p1 p2 : list nat * list nat), Distinct F -> List.NoDup U -> List.Forall (fun B : list nat => List.NoDup B) F -> (forall A : list nat, List.In A F -> Subset A U) -> List.In (fst p1) F -> List.In (fst p2) F -> List.In (snd p1) (subsets U) -> List.In (snd p2) (subsets U) -> frag_ckey F U p1 = frag_ckey F U p2 -> frag_rest F p1 = frag_rest F p2 -> p1 = p2
+
+899ebd1fdda0eeb8  thm Fragment.two_pow_le_four_pow
+    two_pow_le_four_pow : forall n m : nat, n <= 2 * m -> PeanoNat.Nat.pow 2 n <= PeanoNat.Nat.pow 4 m
+
+3af5e5176a26c9f6  thm Fragment.claim_3_4_per_m
+    claim_3_4_per_m : forall (F : Family) (U : list nat) (L : list (list nat * list nat)) (j m k n : nat), Distinct F -> List.NoDup U -> List.NoDup L -> (forall A : list nat, List.In A F -> Subset A U /\ List.NoDup A /\ length A <= n) -> Spread F k -> (forall p : list nat * list nat, List.In p L -> List.In (fst p) F) -> (forall p : list nat * list nat, List.In p L -> List.In (snd p) (subsets_of_size j U)) -> (forall p : list nat * list nat, List.In p L -> length (minimal_fragment F (fst p) (snd p)) = m) -> PeanoNat.Nat.pow k m * length L <= binom (length U) (j + m) * binom n m * length F
+
+c1ffafe8e57ca92b  thm Fragment.claim_3_4_summed
+    claim_3_4_summed : forall (F : Family) (U : list nat) (Lm : nat -> list (list nat * list nat)) (j k n c d t i : nat), Distinct F -> List.NoDup U -> (forall A : list nat, List.In A F -> Subset A U /\ List.NoDup A /\ length A <= n) -> Spread F k -> (forall m : nat, List.NoDup (Lm m)) -> (forall (m : nat) (p : list nat * list nat), List.In p (Lm m) -> List.In (fst p) F) -> (forall (m : nat) (p : list nat * list nat), List.In p (Lm m) -> List.In (snd p) (subsets_of_size j U)) -> (forall (m : nat) (p : list nat * list nat), List.In p (Lm m) -> length (minimal_fragment F (fst p) (snd p)) = m) -> c * length U <= d * S j -> 2 * (4 * d) <= c * k -> 1 <= c * k -> (forall m : nat, t <= m -> m <= t + i -> n <= 2 * m) -> PeanoNat.Nat.pow (c * k) t * sum_from (fun m : nat => length (Lm m)) t i <= 2 * PeanoNat.Nat.pow (4 * d) t * (binom (length U) j * length F)
+
+8b178f46f6b4bbe9  def Fragment.frag_ckey
+    frag_ckey = fun (F : Family) (U : list nat) (p : list nat * list nat) => let Z := norm U (frag_Z F (fst p) (snd p)) in (Z, norm (first_in F Z) (minimal_fragment F (fst p) (snd p))) : Family -> list nat -> list nat * list nat -> list nat * list nat Arguments frag_ckey F U%list_scope p
+
+2cc107dc4eac4772  def Fragment.frag_base
+    frag_base = fun (F : Family) (U : list nat) (j m : nat) => dep_pairs (subsets_of_size (j + m) U) (fun Z : list nat => subsets_of_size m (first_in F Z)) : Family -> list nat -> nat -> nat -> list (list nat * list nat) Arguments frag_base F U%list_scope (j m)%nat_scope

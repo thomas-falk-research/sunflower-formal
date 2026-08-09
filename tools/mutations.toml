@@ -2362,3 +2362,53 @@ because = """Killed. With a = 1, b = 2, C = 8, t = 0 and the largest x \
 the hypothesis allows -- 8, 4, 2, 1 -- the sum is 15 against a^t*C = 8. \
 Integrality does not rescue it: the doubling is the value of the \
 geometric series, not slack in the estimate."""
+
+# ----------------------------------------------------------------
+# Canonicalisation, and Claim 3.4 closed.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "norm-idem-drop-nodup"
+file = "coq/Counting.v"
+question = """norm is the identity on ordered sublists of U. Does that \
+need U to have no repeats?"""
+find = "Lemma norm_idem : forall U V, NoDup U -> In V (subsets U) -> norm U V = V."
+replace = "Lemma norm_idem : forall U V, In V (subsets U) -> norm U V = V."
+expect = "killed"
+because = """It does. With U = [1;1] and V = [1] -- an ordered sublist -- \
+filter (memb . V) U is [1;1], not [1]. Canonicalisation only round-trips \
+when the universe is itself canonical, and that is why NoDup U is a \
+hypothesis of every theorem downstream of it."""
+
+[[mutation]]
+id = "frag-base-forgets-the-chosen-member"
+file = "coq/Fragment.v"
+question = """The key space indexes M by subsets of S' = first_in F Z. \
+Would subsets of Z do -- both contain M?"""
+find = """  dep_pairs (subsets_of_size (j + m) U)
+            (fun Z => subsets_of_size m (first_in F Z))."""
+replace = """  dep_pairs (subsets_of_size (j + m) U)
+            (fun Z => subsets_of_size m Z)."""
+expect = "killed"
+because = """Killed at frag_base_length. Indexing by subsets of Z gives \
+C(j+m, m) choices, which depends on the sample size; indexing by subsets \
+of S' gives C(n, m), which does not. That is the whole content of step 3 \
+of Claim 3.4 -- and the reason S' is in the encoding at all, since the \
+decode never reads it."""
+
+[[mutation]]
+id = "claim-three-four-weaken-the-ratio"
+file = "coq/Fragment.v"
+question = """Claim 3.4's sum needs kq >= 8, i.e. 2*(4d) <= ck. Would \
+4d <= ck do -- i.e. does the series only have to decrease?"""
+find = """    c * length U <= d * S j ->
+    2 * (4 * d) <= c * k ->
+    1 <= c * k ->"""
+replace = """    c * length U <= d * S j ->
+    4 * d <= c * k ->
+    1 <= c * k ->"""
+expect = "killed"
+because = """Killed at geom_assemble, whose hypothesis is 2a <= b with \
+a = 4d and b = ck. At a = b the series is (i+1) copies of its first term \
+and no constant bounds it; Counting.geom_le's own mutation \
+geom-weaken-the-ratio pins the same boundary one level down."""

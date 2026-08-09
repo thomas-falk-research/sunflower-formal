@@ -135,6 +135,22 @@ Proof.
       simpl (2 ^ S n); lia.
 Qed.
 
+(** [binom] is monotone in its first argument — Pascal's recursion adds
+    a nonnegative term. Needed to bound `C(|S'|, m)` by `C(n, m)` when
+    `|S'| <= n`, which is step 3 of Claim 3.4. *)
+
+Lemma binom_succ_l : forall n j, binom n j <= binom (S n) j.
+Proof.
+  intros n j; destruct j as [|j'];
+    [rewrite !binom_zero; lia | rewrite binom_succ; lia].
+Qed.
+
+Lemma binom_mono_l : forall n n' j, n <= n' -> binom n j <= binom n' j.
+Proof.
+  intros n n' j H; induction H as [|n'' Hle IH]; [lia|].
+  eapply Nat.le_trans; [exact IH | apply binom_succ_l].
+Qed.
+
 (** ** The estimate
 
     One step first. Lovett's use has [j = qN] with [q = c/d], i.e.
@@ -292,10 +308,10 @@ Qed.
     each enumerated sublist is [NoDup]; this says the enumeration is. *)
 
 Lemma NoDup_app_disjoint :
-  forall (A B : list (list nat)),
+  forall {T : Type} (A B : list T),
     NoDup A -> NoDup B -> (forall x, In x A -> ~ In x B) -> NoDup (A ++ B).
 Proof.
-  induction A as [|a A IH]; intros B HA HB Hdisj; simpl; [exact HB|].
+  intros T A; induction A as [|a A IH]; intros B HA HB Hdisj; simpl; [exact HB|].
   inversion HA as [|? ? Hna HA']; subst.
   constructor.
   - intro Hin; apply in_app_or in Hin as [Hin | Hin].
@@ -660,4 +676,218 @@ Proof.
       by (apply Nat.mul_le_mono_l; exact Hhead).
     assert (H2 : 2 * (a * a ^ t) * C <= b * a ^ t * C) by nia.
     nia.
+Qed.
+
+(** ** Canonicalisation
+
+    `docs/reading.md` rule 26, and `docs/roadmap.md` §31.9. A list carries
+    order that a set does not, and [Spread.subsets] enumerates *ordered
+    sublists*: so a set built by concatenation — `V ++ M`, say — is not in
+    [subsets U] however small its elements, and carries no binomial count.
+
+    One function fixes it, and it belongs here rather than at each point
+    of use, because the alternative is paying for it three times:
+
+    <<
+      norm U A  =  filter (fun x => memb x A) U
+    >>
+
+    the sublist of [U] with the elements of [A]. It lands in [subsets U]
+    by [Spread.filter_in_subsets], depends only on the *membership* of
+    [A], has the same length as [A] when [A ⊆ U] and both are [NoDup],
+    and is the identity on lists that are already ordered sublists. *)
+
+Lemma memb_iff_eq : forall x A B, (In x A <-> In x B) -> memb x A = memb x B.
+Proof.
+  intros x A B H; destruct (memb x A) eqn:EA.
+  - symmetry; apply memb_true_iff, H, memb_true_iff; exact EA.
+  - symmetry; apply memb_false_iff; intro Hc.
+    apply (proj1 (memb_false_iff x A) EA), H; exact Hc.
+Qed.
+
+Definition norm (U A : list nat) : list nat := filter (fun x => memb x A) U.
+
+Lemma in_norm_iff : forall U A x, In x (norm U A) <-> In x U /\ In x A.
+Proof.
+  intros U A x; unfold norm; rewrite filter_In; split.
+  - intros [H1 H2]; split; [exact H1 | apply memb_true_iff; exact H2].
+  - intros [H1 H2]; split; [exact H1 | apply memb_true_iff; exact H2].
+Qed.
+
+Lemma norm_in_subsets : forall U A, In (norm U A) (subsets U).
+Proof. intros U A; unfold norm; apply filter_in_subsets. Qed.
+
+Lemma norm_NoDup : forall U A, NoDup U -> NoDup (norm U A).
+Proof. intros U A H; unfold norm; apply NoDup_filter; exact H. Qed.
+
+Lemma norm_SetEq : forall U A, Subset A U -> SetEq (norm U A) A.
+Proof.
+  intros U A Hsub; split; intros x Hx.
+  - apply in_norm_iff in Hx as [_ H]; exact H.
+  - apply in_norm_iff; split; [apply Hsub; exact Hx | exact Hx].
+Qed.
+
+Lemma memb_norm : forall U A x, Subset A U -> memb x (norm U A) = memb x A.
+Proof.
+  intros U A x Hsub; apply memb_iff_eq; split.
+  - intros H; apply in_norm_iff in H as [_ H]; exact H.
+  - intros H; apply in_norm_iff; split; [apply Hsub; exact H | exact H].
+Qed.
+
+Lemma norm_length :
+  forall U A, NoDup U -> NoDup A -> Subset A U -> length (norm U A) = length A.
+Proof.
+  intros U A HU HA Hsub.
+  destruct (@norm_SetEq U A Hsub) as [H1 H2].
+  assert (L1 : length (norm U A) <= length A)
+    by (apply NoDup_incl_length; [apply (@norm_NoDup U A HU) | exact H1]).
+  assert (L2 : length A <= length (norm U A))
+    by (apply NoDup_incl_length; [exact HA | exact H2]).
+  lia.
+Qed.
+
+(** [setminus] reads its second argument only through membership, so
+    normalising it changes nothing. *)
+
+Lemma setminus_norm_r :
+  forall X U A, Subset A U -> setminus X (norm U A) = setminus X A.
+Proof.
+  intros X U A Hsub; unfold setminus.
+  apply filter_ext_eq; intros x; f_equal; apply memb_norm; exact Hsub.
+Qed.
+
+(** [norm] is the identity on lists that are already ordered sublists —
+    which is what makes the decode of Claim 3.4 survive canonicalisation. *)
+
+Lemma norm_idem : forall U V, NoDup U -> In V (subsets U) -> norm U V = V.
+Proof.
+  unfold norm; induction U as [|u U IH]; intros V Hnd HV; simpl in HV.
+  - destruct HV as [E | []]; subst V; reflexivity.
+  - inversion Hnd as [|? ? Hu Hnd']; subst.
+    apply in_app_or in HV as [HV | HV].
+    + apply in_map_iff in HV as [V' [E HV']]; subst V; simpl.
+      assert (Eu : memb u (u :: V') = true)
+        by (apply memb_true_iff; left; reflexivity).
+      rewrite Eu; f_equal.
+      rewrite (filter_ext_in (fun x => memb x (u :: V'))
+                             (fun x => memb x V') U).
+      * apply IH; assumption.
+      * intros a Ha; apply memb_iff_eq; simpl; split.
+        -- intros [E | H]; [subst a; contradiction | exact H].
+        -- intros H; right; exact H.
+    + simpl.
+      assert (Eu : memb u V = false).
+      { apply memb_false_iff; intro Hc.
+        apply Hu; apply (@subsets_incl U V HV); exact Hc. }
+      rewrite Eu; apply IH; assumption.
+Qed.
+
+(** And the payoff: a set living inside [U] has a canonical representative
+    in the size-[j] layer, so it is counted by [binom]. *)
+
+Theorem norm_in_layer :
+  forall U A j,
+    NoDup U -> NoDup A -> Subset A U -> length A = j ->
+    In (norm U A) (subsets_of_size j U).
+Proof.
+  intros U A j HU HA Hsub Hlen.
+  apply in_subsets_of_size; split.
+  - apply norm_in_subsets.
+  - rewrite (@norm_length U A HU HA Hsub); exact Hlen.
+Qed.
+
+(** *** The weighted form
+
+    [count_fibred_le] needs one number [K] capping every fibre. Claim
+    3.4's fibres are capped by the *spread* hypothesis, which caps
+    `k^m · |F_M|` rather than `|F_M|` — so the usable form multiplies the
+    cap through. This is what carries the `k^{-m}` saving of step 4. *)
+
+Lemma dep_pairs_weighted_le :
+  forall {B C : Type} (Base : list B) (fib : B -> list C) (w W : nat),
+    (forall b, In b Base -> w * length (fib b) <= W) ->
+    w * length (dep_pairs Base fib) <= length Base * W.
+Proof.
+  intros B C Base fib w W; unfold dep_pairs.
+  induction Base as [|b Base IH]; intros Hle; simpl; [lia|].
+  rewrite app_length, map_length.
+  assert (H1 : w * length (fib b) <= W) by (apply Hle; left; reflexivity).
+  assert (H2 : w * length (flat_map (fun b0 => map (fun c => (b0, c)) (fib b0)) Base)
+               <= length Base * W)
+    by (apply IH; intros b0 Hb0; apply Hle; right; exact Hb0).
+  nia.
+Qed.
+
+Theorem count_fibred_weighted_le :
+  forall {A B C : Type} (g : A -> B) (h : A -> C)
+         (L : list A) (Base : list B) (fib : B -> list C) (w W : nat),
+    NoDup L ->
+    (forall x, In x L -> In (g x) Base) ->
+    (forall x, In x L -> In (h x) (fib (g x))) ->
+    (forall x y, In x L -> In y L -> g x = g y -> h x = h y -> x = y) ->
+    (forall b, In b Base -> w * length (fib b) <= W) ->
+    w * length L <= length Base * W.
+Proof.
+  intros A B C g h L Base fib w W HL Hg Hh Hinj Hfib.
+  set (e := fun x : A => (g x, h x)).
+  assert (Hincl : incl (map e L) (dep_pairs Base fib)).
+  { intros p Hp; apply in_map_iff in Hp as [x [E Hx]]; subst p; unfold e.
+    apply in_dep_pairs; split; [apply Hg; exact Hx | apply Hh; exact Hx]. }
+  assert (Hnd : NoDup (map e L)).
+  { apply (@NoDup_map_inj A (B * C) e L); [| exact HL].
+    intros x y Hx Hy E; unfold e in E.
+    inversion E as [[E1 E2]]; apply (Hinj x y Hx Hy E1 E2). }
+  pose proof (NoDup_incl_length Hnd Hincl) as Hlen.
+  rewrite map_length in Hlen.
+  assert (H1 : w * length L <= w * length (dep_pairs Base fib))
+    by (apply Nat.mul_le_mono_l; exact Hlen).
+  eapply Nat.le_trans; [exact H1 | apply dep_pairs_weighted_le; exact Hfib].
+Qed.
+
+(** *** Membership-only rewriting
+
+    Three operations of [Spread] read a set argument only through
+    membership, so a [SetEq] argument may be swapped inside them. That is
+    what lets the canonical key be used where the original set was. *)
+
+Lemma memb_setminus :
+  forall x A T, memb x (setminus A T) = andb (memb x A) (negb (memb x T)).
+Proof.
+  intros x A T; destruct (memb x (setminus A T)) eqn:E.
+  - apply memb_true_iff, in_setminus_iff in E as [H1 H2].
+    rewrite (proj2 (memb_true_iff x A) H1), (proj2 (memb_false_iff x T) H2).
+    reflexivity.
+  - apply memb_false_iff in E.
+    destruct (memb x A) eqn:EA; destruct (memb x T) eqn:ET; simpl; try reflexivity.
+    exfalso; apply E, in_setminus_iff; split;
+      [apply memb_true_iff; exact EA | apply memb_false_iff; exact ET].
+Qed.
+
+Lemma setminus_SetEq_r :
+  forall A T1 T2, SetEq T1 T2 -> setminus A T1 = setminus A T2.
+Proof.
+  intros A T1 T2 [H1 H2]; unfold setminus; apply filter_ext_eq; intros x.
+  f_equal; apply memb_iff_eq; split; [apply H1 | apply H2].
+Qed.
+
+Lemma filter_filter :
+  forall {T : Type} (p q : T -> bool) (l : list T),
+    filter p (filter q l) = filter (fun x => andb (q x) (p x)) l.
+Proof.
+  intros T p q l; induction l as [|a l IH]; simpl; [reflexivity|].
+  destruct (q a) eqn:Eq; simpl.
+  - destruct (p a); simpl; [f_equal|]; exact IH.
+  - exact IH.
+Qed.
+
+(** [setminus] commutes with [norm]: both are filters over [U]. *)
+
+Lemma setminus_norm_l :
+  forall U Z M, setminus (norm U Z) M = norm U (setminus Z M).
+Proof.
+  intros U Z M.
+  transitivity (filter (fun x => andb (memb x Z) (negb (memb x M))) U).
+  - unfold norm, setminus; apply filter_filter.
+  - unfold norm; apply filter_ext_eq; intros x.
+    rewrite memb_setminus; reflexivity.
 Qed.

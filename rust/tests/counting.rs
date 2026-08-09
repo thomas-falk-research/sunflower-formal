@@ -484,3 +484,79 @@ fn the_assembly_of_the_geometric_sum() {
     }
     assert!(checked > 500, "only {checked} assemblies checked");
 }
+
+// ---------------------------------------------------------------------------
+// Canonicalisation: `norm`
+// ---------------------------------------------------------------------------
+
+/// `norm U A = filter (fun x => memb x A) U` — the sublist of `U` with
+/// the elements of `A`.
+fn norm(u: &[u32], a: &[u32]) -> Vec<u32> {
+    u.iter().copied().filter(|x| a.contains(x)).collect()
+}
+
+/// Every ordered sublist of `u`.
+fn sublists(u: &[u32]) -> Vec<Vec<u32>> {
+    let mut out = vec![Vec::new()];
+    for &x in u {
+        let mut next: Vec<Vec<u32>> = out.iter().map(|s| {
+            let mut t = s.clone();
+            t.push(x);
+            t
+        }).collect();
+        next.extend(out.iter().cloned());
+        out = next;
+    }
+    out
+}
+
+#[test]
+fn norm_is_a_canonical_representative() {
+    // `Counting.norm_in_subsets`, `norm_length`, `norm_idem` — and the
+    // NoDup hypothesis on U, which `norm-idem-drop-nodup` pins.
+    for n in 0..=5usize {
+        let u: Vec<u32> = (0..n as u32).collect(); // NoDup
+        let subs = sublists(&u);
+        for a in &subs {
+            let na = norm(&u, a);
+            // lands in the sublists of U
+            assert!(subs.contains(&na), "norm U A must be an ordered sublist");
+            // same length as A (A subset U, both NoDup)
+            assert_eq!(na.len(), a.len(), "norm_length at A={a:?}");
+            // idempotent on ordered sublists
+            assert_eq!(norm(&u, &na), na, "norm is idempotent");
+            assert_eq!(na, *a, "norm_idem: A is already canonical");
+        }
+    }
+    // and it fails without NoDup U, which is why the hypothesis is there
+    let u_dup = vec![1u32, 1];
+    assert_eq!(norm(&u_dup, &[1]), vec![1, 1]);
+    assert_ne!(norm(&u_dup, &[1]), vec![1]);
+}
+
+#[test]
+fn norm_depends_only_on_membership_and_commutes_with_setminus() {
+    // `Counting.memb_norm`, `setminus_norm_r`, `setminus_norm_l`.
+    let u: Vec<u32> = (0..6).collect();
+    for zmask in 0..64u32 {
+        let z: Vec<u32> = (0..6).filter(|i| zmask >> i & 1 == 1).collect();
+        for mmask in 0..64u32 {
+            let m: Vec<u32> = (0..6).filter(|i| mmask >> i & 1 == 1).collect();
+            let setminus = |a: &[u32], t: &[u32]| -> Vec<u32> {
+                a.iter().copied().filter(|x| !t.contains(x)).collect()
+            };
+            // setminus (norm U Z) M = norm U (setminus Z M)
+            assert_eq!(
+                setminus(&norm(&u, &z), &m),
+                norm(&u, &setminus(&z, &m)),
+                "setminus_norm_l at Z={z:?} M={m:?}"
+            );
+            // setminus X (norm U M) = setminus X M   (M subset U)
+            assert_eq!(
+                setminus(&z, &norm(&u, &m)),
+                setminus(&z, &m),
+                "setminus_norm_r at Z={z:?} M={m:?}"
+            );
+        }
+    }
+}

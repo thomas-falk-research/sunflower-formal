@@ -507,7 +507,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 147 anecdotes into a coverage metric over the
+  mutation testing from 150 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -8756,50 +8756,102 @@ for the **count** (step 3 bounds the number of `M ⊂ S'` by `C(n,m)`), not
 for the decode, and the formalisation makes that visible because
 `psi` never reads it.
 
-### 31.9 What is left, precisely: the third instance of rule 24
+### 31.9 The canonicalisation layer, and Claim 3.4 closed
 
-`bad_pairs_spread_bound` leaves `Base` abstract. Making it concrete —
-`|Base| ≤ C(N, j+m) · C(n, m)`, which is steps 1–3 of the count — needs
-`Base` to be `dep_pairs (subsets_of_size (j+m) U) (fun Z => subsets_of_size m (first_in F Z))`,
-and there the list-versus-set problem of rule 24 appears a **third** time.
+§31.5 left `Base` abstract, and named the obstacle: `Z = V ++ M` is not
+an *ordered sublist* of the universe, so it is not in
+[Counting.subsets_of_size] and carries no binomial count. Rule 26 said
+to build the canonicalisation layer once, early, rather than three times
+at the point of use. That is now done, and **Claim 3.4 is closed.**
 
-`Spread.subsets U` enumerates the *ordered sublists* of `U`. The key's
-first component is `Z = V ++ M`, which is not an ordered sublist of `U` —
-so it is not in `subsets_of_size (j+m) U` on the nose, and keying on it
-directly gives no binomial count.
+#### The layer
 
-The fix is canonicalisation, and it is mechanical but not free:
+`coq/Counting.v`, one function and eight lemmas:
 
 ```
-  norm U A  :=  filter (fun x => memb x A) U
+  norm U A  =  filter (fun x => memb x A) U
 ```
 
-is an ordered sublist of `U` (`Spread.filter_in_subsets` already proves
-membership), depends only on the *element set* of `A`, and satisfies
-`norm U V = V` when `V` is itself an ordered sublist of `U` and `U` is
-`NoDup`. Keying on `(norm U Z, M)` then recovers `V` literally, because
+the sublist of `U` carrying the elements of `A`.
 
 ```
-  setminus (norm U Z) M = filter (fun x => memb x Z && negb (memb x M)) U
-                        = filter (fun x => memb x V) U = norm U V = V
+  norm_in_subsets    lands in `subsets U`  (Spread.filter_in_subsets)
+  norm_SetEq         SetEq (norm U A) A          when A subset U
+  memb_norm          membership is unchanged
+  norm_length        same length as A           U, A NoDup, A subset U
+  norm_idem          norm U V = V               V an ordered sublist,
+                                                U NoDup  <- the round trip
+  norm_in_layer      norm U A in subsets_of_size |A| U   <- the payoff
+  setminus_norm_r    setminus X (norm U A) = setminus X A
+  setminus_norm_l    setminus (norm U Z) M = norm U (setminus Z M)
 ```
 
-using `Z = V ⊎ M`. So the four lemmas needed are: `norm` lands in
-`subsets`, `norm` preserves length on subsets of a `NoDup` `U`, `norm` is
-idempotent on ordered sublists, and the `setminus`/`norm` computation
-above. **That is the whole of the remaining gap**, and none of it is
-about sunflowers.
+`norm_idem` is where the `NoDup U` hypothesis comes from and it is not
+decoration: at `U = [1;1]`, `V = [1]` the round trip returns `[1;1]`.
+The mutation `norm-idem-drop-nodup` pins it.
 
-Two things follow that a later session should not have to rediscover.
+Three companions were needed because the argument moves a canonical set
+into positions that previously held the original: `containsb_SetEq`,
+`link_SetEq` and `add_set_SetEq_l` say that `Spread`'s three operations
+read a set only through membership, so the swap is sound.
 
-* The obstacle is the *same* one twice already recorded — rule 24 — and
-  it has now cost a hypothesis (`Distinct F`), an encoding change
-  (`SetEq` instead of equality), and a canonicalisation layer. **In a
-  list formalisation of a set-theoretic proof, canonicalisation is not a
-  detail of the last mile; it is a layer, and it should be built once,
-  early, rather than three times.** If Stage C needs a fourth, build
-  `norm` and its four lemmas as a section of `Sets.v` first.
-* Nothing about the count is in doubt. `rust/tests/fragment_count.rs`
-  checks the assembled bound, the fibred bound and the spread form
-  exhaustively over small families, and each of the three factors is
-  shown necessary. The gap is representational, not mathematical.
+#### Claim 3.4
+
+```
+  frag_ckey F U p   = (norm U Z, norm (first_in F (norm U Z)) M)
+  frag_base F U j m = dep_pairs (subsets_of_size (j+m) U)
+                                (fun Z => subsets_of_size m (first_in F Z))
+```
+
+and then, with `N = |U|` and `n` the uniformity:
+
+> **`Fragment.claim_3_4_per_m`:**
+> `k^m · |L| ≤ C(N, j+m) · C(n, m) · |F|`
+> for any `NoDup` list `L` of pairs `(S,V)` with `S ∈ F`,
+> `V ∈ subsets_of_size j U` and `|M(S,V)| = m`, given `Distinct F`,
+> `NoDup U`, every member of `F` inside `U` with at most `n` points, and
+> `Spread F k`.
+
+That is the rendered page's four steps: step 1 is `frag_Z_length` plus
+`norm_in_layer`, step 2 is why the key is a *pair*, step 3 is
+`binom_mono_l` at `|S'| ≤ n`, step 4 is `fragment_removed_in_link` plus
+`spread_caps_the_link`. Nothing leaves `nat` — the `k^{-m}` is cleared to
+the left.
+
+And summed, which is the whole of Claim 3.4:
+
+> **`Fragment.claim_3_4_summed`:** with `c·N ≤ d·(j+1)`, `2·(4d) ≤ ck`,
+> `1 ≤ ck` and `n ≤ 2m` across the range,
+>
+> `(ck)^t · Σ_{m=t}^{t+i} |L_m|  ≤  2 · (4d)^t · (C(N,j) · |F|)`.
+
+Read it back by dividing: the bad pairs are at most `2·(4d/ck)^{n/2}` of
+the sample space `|F|·C(N,qN)` — Lovett's `Pr ≤ 100^{-n}` once `c` is
+large, with `q = c/d` and `t = ⌈n/2⌉`. §1's *do not chase the constant*
+applies: any explicit `c` closes it.
+
+**Every hypothesis is one the source has**, with two exceptions that the
+list encoding forced and that §31.3 and rule 24 explain: `Distinct F`,
+and `NoDup U`.
+
+#### What this leaves
+
+Stage B is complete. What remains of §1's plan is **Stage C**, untouched:
+
+```
+  Claim 3.5   Markov in the fixed-size setting, plus Exercise 3.1's two
+              spreadness-preservation lemmas
+  Claim 3.6   the induction that produces the conclusion -- section 1
+              records it as arithmetic-free
+  Lemma 3.1   the log n iteration, and prod (1 - 10^{-n/2^i}) >= 0.8
+```
+
+and then `ALWZ.FractionalSpreadDisjoint` at an explicit threshold, which
+`ALWZ.fractional_form_gives_the_axiom_shape` already carries the rest of
+the way to `SpreadYieldsDisjoint`. The axiom is still an axiom, and the
+whole-library census is still exactly `Rao20_lemma2`.
+
+#### Costs and gates for §31.9
+
+38 more audited theorems and 3 more definitions, 2 more Rust tests, 3
+more mutations. The manifest is now 150.
