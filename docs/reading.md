@@ -120,14 +120,14 @@ literature, resolved.
 | B14 | Zach Hunter's ground-set equivalence, credited to MathOverflow | **FOUND AND READ IN FULL** | `mathoverflow.net/a/463150`, 30 Jan 2024, answering domotorp's question 462924. Retrieved verbatim through the StackExchange API after `WebFetch` was blocked for the site. Quoted in full below; it confirms the equivalence *and* contains two further things this repository has. |
 | B15 | Prescribed-symmetry / Kramer–Mesner applied to sunflower-free families | **Not found** | Nothing in the 2024–2026 arXiv sweep, nothing in [Kup25] pp. 5–6. Not exhaustive over design-theory venues. |
 | B16 | `ι(3)=10` is the unique simple 2-(6,3,2) design | **VERIFIED — by exhaustion, not by citation** | The Handbook of Combinatorial Designs is not open access, so the uniqueness claim could not be read. It does not need to be: there are only `C(20,10) = 184756` ways to choose ten triples from the twenty on six points. Enumerated — exactly **12** are simple 2-(6,3,2) designs, and all 12 form a **single** isomorphism class under `Sym(6)`. `720/12 = 60` re-derives `\|Aut\|` independently of `structure::automorphisms`, and agrees with it. `rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`. |
-| B19 | `HM(m,r)` — the Hilton–Milner family thinned to a grid so that it is Rao(`r`)-spread — and `¬ StarExtremalAt m m` at every `m` | **WITHDRAWN as a negative. The search could not have found what it was looking for** — see the rule 2 box and rule 18. The claim is a *condition*, `deg T ≤ r^(m−|T|)`, and conditions do not survive text extraction. What survives is the positive half. | The *underlying object is classical, and that is now verified rather than assumed*. [FHHZ17] (Frankl–Han–Huang–Zhao, *A degree version of the Hilton–Milner theorem*, arXiv:1703.03896v2), **p. 1 rendered and read**, defines it verbatim: `HM_{n,k}` *"consists of a `k`-set `S` and all `k`-subsets of `[n]` containing a fixed element `x ∉ S` and at least one element of `S`."* `HM(m,r)` is exactly that family with the star part thinned to a transversal grid. What is not found is the thinning, or any extremal problem posed under a **level-wise** cap. See the search description below. |
+| B19 | `HM(m,r)` — the Hilton–Milner family thinned to a grid so that it is Rao(`r`)-spread — and `¬ StarExtremalAt m m` at every `m` | **Not found in [Kup25], now on a COMPLETE rendered pass — 66 of 66 pages. Not found anywhere else either, but nowhere else has been searched properly.** The first version of this row was a `pdftotext` word-grep and was withdrawn within the hour (rule 18): the claim is a *condition*, `deg T ≤ r^(m−|T|)`, and conditions do not survive text extraction. Redone by rendering every page of the survey — log in `docs/papers/kup25-rendered-pass.md` — no page poses or uses an extremal problem for *intersecting* families under an *absolute, level-wise* cap. The three neighbouring corners are occupied; see B19d and B19g. | The *underlying object is classical, and that is now verified rather than assumed*. [FHHZ17] (Frankl–Han–Huang–Zhao, *A degree version of the Hilton–Milner theorem*, arXiv:1703.03896v2), **p. 1 rendered and read**, defines it verbatim: `HM_{n,k}` *"consists of a `k`-set `S` and all `k`-subsets of `[n]` containing a fixed element `x ∉ S` and at least one element of `S`."* `HM(m,r)` is exactly that family with the star part thinned to a transversal grid. What is not found is the thinning, or any extremal problem posed under a **level-wise** cap. See the search description below. |
 | B19a | §24.13's claim that the neighbouring literature caps *one* degree statistic rather than every level | **Confirmed — from a rendered page rather than from assertion** | Same page. [FHHZ17] p. 1: *"Let `Δ(F) := max_x d_F(x)` and `δ(F) := min_x d_F(x)` denote the maximum and minimum degree of `F`, respectively. There were extremal problems in set theory that considered the maximum or minimum degree of families satisfying certain properties. For example, Frankl [7] extended the Hilton–Milner theorem by giving sharp upper bounds on the size of intersecting families with certain maximum degree."* One statistic, capped once. Rao's condition caps `deg T ≤ r^(m−|T|)` at every `|T|` simultaneously and geometrically, which is a different hypothesis — as §24.13 said and could not then cite. |
 | B19b | The word "spread" in this literature means what it means here | **REFUTED twice over** | A web search for spread intersecting families returns the **fractional** notion — a family is `r`-spread when the maximum `s`-degree is at most `r^(−s)·|F|` — which is `Spread.Spread` in this development, *not* `Spread.RaoSpread`. `Spread.RaoSpread_Spread` relates them in one direction only, and the absolute form is the stronger hypothesis once a family exceeds `r^m`. A literature search on "spread" that does not disambiguate returns the wrong object. And the notion is *also* studied under a name containing neither word — see B19c. |
 | B19c | A **level-wise, geometric** cap on the degrees of a family is not a studied notion | **REFUTED. It is studied, it is named, and the name contains neither "spread" nor "degree".** | [Kup25] p. 53, **rendered and read**: *"We say that a family `F ⊂ A` is `τ`-homogeneous with respect to `A`, if for any set `X` we have `|F(X)|/|F| ≤ τ^|X| · |A(X)|/|A|`. ... then it transforms into `μ(F(X)) ≤ τ^|X| μ(F)`."* Attributed to Zakharov and the author [98], alongside the *spread approximation* method, with a footnote recording a notation clash with Füredi's `τ`-homogeneous. This is a cap at **every** level, **geometric in `|X|`** — the shape of Rao's condition, generalised to an arbitrary ambient family `A`. With `A = binom([n],k)` it is the fractional condition (`Spread.Spread`) rather than the absolute one (`Spread.RaoSpread`), so it is not the same hypothesis; but §24.13's framing — that the neighbouring literature caps *one* statistic and a level-wise cap is a different kind of object — is **too strong as written**. What remains not found is the *absolute* form and the Hilton–Milner-shaped extremal question under it. |
 | B19d | Where this development's hypothesis sits, now that the rendered pass has read the neighbours | **A 2×2, and only one corner is unoccupied** | Two axes: **relative** (`deg ≤ c·|F|`) vs **absolute** (`deg ≤ r^(m−|T|)`), and **one level** vs **every level**. [Kup25] p. 20, rendered: Frankl [44] *"studies the families in which no element is contained in more than a `c`-fraction of sets"* — relative, level 1. p. 53: `τ`-homogeneous — relative, every level. p. 46, Jiang–Longbrake's quantitative Füredi (Thm 52), rendered: the subfamily it produces satisfies *"for every `J = A ∩ B` ... and every `x ∈ [n] \ J` we have `|F*(J ∪ {x})| ≤ (1/s)|F*(J)|`"*, with a matching lower bound — relative, every level, **two-sided**, and phrased exactly as Rao's is, as a decay by a factor per added point. The unoccupied corner is **absolute at every level under an intersecting hypothesis**, which is `Spread.RaoSpread` and the setting of `I(m,r)`. §24.13's "the neighbouring literature caps one statistic" is right about Frankl and wrong as a general characterisation: the axis separating this work from the literature is relative-vs-absolute, not one-level-vs-all-levels. |
 | B19e | `SpreadReduction.spread_reduction`'s recursion is peculiar to this development | **It has a published counterpart, one setting over** | [Kup25] p. 50, rendered, Observation 58: *"If `G ⊂ binom([n],ℓ)` is such that there is no `X` such that `G(X)` is `r`-spread, then `|G| ≤ r^ℓ`"* — proved by taking an inclusion-maximal `X` violating spreadness, so that `G(X)` is spread by maximality. That is the same argument as this repository's reduction (find a violating `T`, pass to the link, recurse, conclude `|F| ≤ r^m`), in the fractional setting rather than the absolute one. No novelty was ever claimed for `spread_reduction`; this records where its counterpart is. |
 | B19f | §24.13 dates the degree-condition line to "Frankl 1987" | **Two earlier sources, both 1978, and one of them is titled the question** | [Kup25] reference list, rendered. p. 63, [44]: *P. Frankl, "On intersecting families of finite sets", J. Combin. Theory Ser. A 24 (1978), 146–161* — the paper p. 20 attributes the `c`-fraction max-degree condition to, so that condition is Frankl **1978**. p. 64, [62]: *Z. Füredi, "**Erdős–Ko–Rado type theorems with upper bounds on the maximum degree**", Colloquia Math. Soc. J. Bolyai 25, Szeged, 1978, pp. 177–207* — the closest-titled paper found anywhere, and nine years earlier than the attribution §24.13 carries. Neither is in this corpus. Both are the first targets of any continuation of the B19 search, together with p. 65's [89] *Kostochka–Mubayi, "The structure of large intersecting families", PAMS 145 (2016)* and [96] *Kupavskii–Noskov (2025), arXiv:2410.06156*, on the Duke–Erdős corner. |
-| B19g | The absolute-one-level corner of B19d's 2×2 is empty | **REFUTED — it is the Duke–Erdős function, and the corpus already holds the paper** | [Kup25] p. 57, rendered, §1.9.3: `f(n,k,ℓ,s)` is the largest `k`-uniform family with no `Δ(s)`-system of kernel size `ℓ`, which the survey states for `k=3, ℓ=2` as *"no pair of elements is contained in `s` triples"* — that is `deg T < s` for every `\|T\| = ℓ`, an **absolute cap at one level**. Quoted values: `f(n,3,2,s) ~ (1/6)sn²`; `f(n,k,ℓ,s) = Θ_k(s^(ℓ+1)n^(k−ℓ−1))` for `k ≥ 2ℓ+2` (Bradač–Bucić–Sudakov). So Rao's condition is the **simultaneous, geometric** version of Duke–Erdős's single-level cap. `dukeerdos.pdf` has been in the corpus throughout and was never connected to `I(m,r)`. |
+| B19g | The absolute-one-level corner of B19d's 2×2 is empty | **REFUTED — it is the Duke–Erdős function, and the corpus already holds the paper** | [Kup25] p. 57, rendered, §1.9.3: `f(n,k,ℓ,s)` is the largest `k`-uniform family with no `Δ(s)`-system of kernel size `ℓ`, which the survey states for `k=3, ℓ=2` as *"no pair of elements is contained in `s` triples"* — that is `deg T < s` for every `\|T\| = ℓ`, an **absolute cap at one level**. Quoted values: `f(n,3,2,s) ~ (1/6)sn²`; `f(n,k,ℓ,s) = Θ_k(s^(ℓ+1)n^(k−ℓ−1))` for `k ≥ 2ℓ+2` (Bradač–Bucić–Sudakov). So Rao's condition is the **simultaneous, geometric** version of Duke–Erdős's single-level cap. **With one precision, found on p. 34 and worth the correction:** `f(n,k,ℓ,s)` forbids a `Δ(s)`-*system* with kernel of size `ℓ`, and a sunflower needs **pairwise disjoint petals**, so that condition is strictly *weaker* than `deg T < s` for `|T| = ℓ` — except at `ℓ = k−1`, where the petals are singletons and disjointness is automatic. p. 57's phrasing is exactly that case (`k=3, ℓ=2`). So Duke–Erdős occupies the corner **exactly at `ℓ = k−1`** and only approximately below it. `dukeerdos.pdf` has been in the corpus throughout and was never connected to `I(m,r)`. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -189,17 +189,13 @@ B19 needs no search: [FHHZ17] p. 1 was **rendered and read**, and defines
 confirmed rather than assumed. B19a and B19b likewise rest on rendered
 pages. Only the *absence* claim is withdrawn.
 
-### The rendered pass, and what it immediately found
+### The rendered pass, completed
 
-Redone the only way that counts: `pdftoppm` at 140–150 dpi, pages looked
+Redone the only way that counts: `pdftoppm` at 130–150 dpi, pages looked
 at one at a time, asking whether the page poses or uses a **level-wise**
-cap on the degrees of a family.
-
-```
-  FHHZ17                p. 1                    read
-  vcdim2025.pdf         p. 3                    read
-  kupavskii_survey.pdf  pp. 42, 52, 53, 59      read
-```
+cap on the degrees of a family. **[Kup25] is now complete — all 66 pages
+— logged in `docs/papers/kup25-rendered-pass.md`.** Also read: [FHHZ17]
+p. 1, `vcdim2025.pdf` p. 3.
 
 **Six pages in, the negative collapsed.** [Kup25] p. 53 — a page the
 *earlier* grep had already listed as a hit and which was then never
@@ -227,13 +223,21 @@ rendered — pp. 18, 52, 53, 64, 65 of the survey were located and skipped,
 and p. 53 is the one that mattered. Locating and not reading is the same
 error as not locating, with the excuse removed.
 
-**What is still not read.** 60 of the survey's 66 pages, all 15 other
-corpus PDFs in full, and everything outside the corpus except [FHHZ17]
-p. 1. On the evidence so far the honest position is: a level-wise
-geometric cap **is** a studied notion; Rao's *absolute* form under an
-*intersecting* hypothesis, with the Hilton–Milner-shaped extremal
-question, has not been found — and that remaining negative is worth very
-little until the pass above is finished.
+**Finished, and what it came to.** All 66 pages. No page poses or uses an
+extremal problem for *intersecting* families under an *absolute,
+level-wise* cap. What the pass did produce is the map in B19d and B19g:
+the three neighbouring corners are occupied, each now cited from a
+rendered page — Frankl 1978 (relative, level 1, p. 20), `τ`-homogeneous
+and Jiang–Longbrake (relative, every level, pp. 53 and 46), Duke–Erdős
+(absolute, one level, exactly at `ℓ = k−1`, pp. 57 and 34). And the
+closest-titled paper anywhere, Füredi 1978, is named in the reference
+list and is **not in this corpus** (B19f).
+
+**What is still not read.** All 15 other corpus PDFs in full, and
+everything outside the corpus except [FHHZ17] p. 1. No MathSciNet, no
+zbMATH. Füredi 1978 and Frankl 1978 not obtained. So the negative is now
+a complete pass over *one* survey — a far better negative than the grep
+it replaced, and still a negative about one paper.
 
 
 ---

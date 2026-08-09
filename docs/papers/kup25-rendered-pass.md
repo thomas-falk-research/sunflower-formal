@@ -2,14 +2,16 @@
 # [Kup25] rendered pass — page-by-page log
 
 `pdftotext` cannot see mathematics (rule 18), so the only search for a
-*condition* is to render every page and look at it. This file is the log
-of that pass over `kupavskii_survey.pdf` (66 pages), so that a later
-session resumes rather than restarts, and so that "read" means a page
-listed here.
+*condition* is to render every page and look at it. This file is that
+pass over `kupavskii_survey.pdf`, logged per page so that "read" means a
+page named here and a later session resumes rather than restarts.
 
-**Status: incomplete — 43 of 66 pages read.** The unread pages are listed
-at the bottom. Any negative drawn from this survey is provisional until
-they are done.
+**Status: COMPLETE — 66 of 66 pages rendered at 130–150 dpi and read.**
+
+The pass began as a spot check, was extended after rule 18 was earned,
+and was then finished. Three intermediate checkpoints reported 19, 28 and
+32 pages; the middle figure was a miscount, which is why the log now
+names pages individually instead of counting them.
 
 # Rendered pass: kupavskii_survey.pdf (66pp), session N+9
 # Question: does any page pose or use a LEVEL-WISE cap on the degrees of a
@@ -138,3 +140,54 @@ p66  refs 102-120. Nothing further. -
 # --- checkpoint 4: 43 of 66 read ---
 # read: 1-22, 42, 43, 46, 47, 49-66
 # remaining: 23-41, 44, 45, 48  (22 pages)
+p44  Kruskal-Katona computation inside Thm 51's proof. -
+p45  end of Thm 51; Furedi-Jiang quasi-dense regime; Johnson graph argument. -
+p48  Janzer-Jin-Sudakov-Wu Thm 55: weaker Furedi with single-exponential constant, via random
+     colouring/palettes. No degree cap. -
+p23  Furedi Thm 21 proof, Lemma 24 refinement. -
+p24  end of Lemma 24; sec 1.3.2 first applications, Thms 25/26. -
+p25  atoms of the intersection structure; sec 1.3.3 families with 3 intersection sizes. -
+p26  Furedi's n^(4/3) construction. NB "he 'cleans' the set system so that each set is contained
+     in at least n^(1/3) sets ... (again the argument as in proving that a graph with many edges
+     has a subgraph with high minimum degree)" -- the same MINIMUM-degree cleaning as p19. -
+p27  sec 1.4.1 examples; Steiner systems / partial designs as the k <= 2l+1 extremal shape. -
+p34  sec 1.5.1 Delta-systems with a fixed kernel: f(n,k,l,s) = largest family with no Delta(s+1)-
+     system with kernel of size l. l=0 is the Erdos Matching Conjecture; s=1 is forbidden one
+     intersection. f(n,k,l,s) = O_k(max{n^(k-l-1), n^l}).
+     CORRECTION TO B19g: forbidding a Delta(s)-system with kernel size l is NOT the same as
+     capping deg at level l. A sunflower needs PAIRWISE DISJOINT petals, so the condition is
+     WEAKER than deg(T) < s for |T| = l -- except at l = k-1, where the petals are singletons
+     and disjointness is automatic. p57's phrasing "no pair of elements is contained in s
+     triples" is the l = k-1 = 2, k = 3 case, where the two coincide. So Duke-Erdos occupies the
+     absolute/one-level corner EXACTLY at l = k-1 and only approximately below it. B19g must say
+     so.
+p28  Conjecture 1 (Erdos/Frankl) for l-avoiding families; Lemma 28 on the rank of M. -
+p29  Frankl-Katona Thm 29 via Hall's condition (cf. the repo's HallCore/KoenigHall). No cap. -
+p30  Corollary 30; proof of Lemma 28; sec 1.4.3 Thm 31 exact result k > 2l+1. -
+p31  Lemma 32; iterative decomposition into homogeneous structures. -
+p32  Props 34/35, shadows, Kruskal-Katona (Thm 36). -
+p33  the three-part partition A/B/K and the shadow argument. -
+p35  Frankl-Furedi Thm 37: f(n,k,l,s) = (phi(l+1,s) + o(1)) C(n-l-1,k-l-1). NOTE the Duke-Erdos
+     function's asymptotics are governed by phi, the SUNFLOWER-FREE function -- a direct bridge
+     between the repo's g/phi and the Duke-Erdos line. Conjecture 2 (Frankl-Furedi). -
+p36  proof of Thm 37; sec 1.5.2 expanded hypergraphs, kernel/centre/trace. -
+p37  Def 38 expansions; Def 39 t-crosscut; sigma_{p+1}. -
+p38  Thm 40 for k >= 2p+q+2; sec 1.5.3 Def 41 d-simplex. -
+p39  Chvatal's Conjecture 3; sim(n,k,d) <= C(n-1,k-1) with equality only for STARS (Thm 42);
+     special simplices; (d,l)-simplices. Star-extremality again, under forbidden configurations. -
+p40  Thm 46; packing examples; proofs. -
+p41  sec 1.5.4 trees; Kalai's conjecture; Frankl-Furedi Thm 49 for star-shaped trees. -
+# ============ PASS COMPLETE: 66 of 66 pages rendered and read ============
+# VERDICT over this survey, now from a complete rendered pass:
+#   No page poses or uses an extremal problem for INTERSECTING families under an ABSOLUTE,
+#   LEVEL-WISE degree cap (Rao's deg T <= r^(m-|T|)). The three neighbouring corners are all
+#   occupied and all now cited from rendered pages:
+#     relative / level 1     Frankl [44] 1978, deg <= c|F|                        (p20)
+#     relative / every level tau-homogeneous, Kupavskii-Zakharov                  (p53)
+#                            Jiang-Longbrake Thm 52, two-sided per-level          (p46)
+#     absolute / one level   Duke-Erdos f(n,k,l,s), exactly at l = k-1            (p57, p34)
+#   Closest-titled paper anywhere: Furedi 1978, "EKR type theorems with upper bounds on the
+#   maximum degree", Bolyai 25 -- NOT in the corpus, and nine years earlier than the "Frankl
+#   1987" attribution in section 24.13.
+#   Still outstanding: 15 other corpus PDFs unread in full; no MathSciNet/zbMATH; Furedi 1978
+#   and Frankl 1978 not obtained.
