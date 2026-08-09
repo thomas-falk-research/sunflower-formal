@@ -7,7 +7,7 @@ of that pass over `kupavskii_survey.pdf` (66 pages), so that a later
 session resumes rather than restarts, and so that "read" means a page
 listed here.
 
-**Status: incomplete — 32 of 66 pages read.** The unread pages are listed
+**Status: incomplete — 43 of 66 pages read.** The unread pages are listed
 at the bottom. Any negative drawn from this survey is provisional until
 they are done.
 
@@ -98,3 +98,43 @@ p47  Thm 54 dichotomy; Janzer-Jin-Sudakov-Wu better constants. -
 # --- checkpoint 3: 32 of 66 read ---
 # read: 1-22 (p2 blank), 42, 43, 46, 47, 49, 50, 51, 52, 53, 59
 # remaining: 23-41, 44, 45, 48, 54-58, 60-66  (34 pages)
+p54  sec 1.9.1 forbidden one intersection; Frankl configurations, Ahlswede-Khachatrian. -
+p56  Thm 62/63 linear-algebra vs Delta-system; Furedi's rank conjecture. -
+p57  FIND, completes the 2x2. sec 1.9.3: Duke-Erdos f(n,k,l,s) = largest k-uniform family with no
+     Delta(s)-system of kernel size l. For l=2, k=3 the survey states it as "no pair of elements
+     is contained in s triples" -- i.e. deg(T) < s for every |T| = l. That is an ABSOLUTE degree
+     cap at ONE level. Values quoted: f(n,3,2,s) ~ (1/6)sn^2; Bucic-Draganic-Sudakov-Tran
+     f(n,4,2,s)=Theta(s^2 n^2), f(n,4,3,s)=Theta(s n^3); Bradac-Bucic-Sudakov
+     f(n,k,l,s)=Theta_k(s^(l+1) n^(k-l-1)) for k >= 2l+2.
+     So the 2x2's fourth corner IS occupied: absolute/one-level = Duke-Erdos. Rao's condition is
+     the SIMULTANEOUS, GEOMETRIC version of it -- deg T <= r^(m-|T|) at EVERY l at once.
+     NB the corpus already holds dukeerdos.pdf; this is directly connected literature that the
+     repo has never linked to I(m,r).
+p58  sec 1.9.4 simplices/clusters. Chvatal's conj, Katona's 3-cluster conj. Erdos: "the largest
+     family without a triangle has size C(n-1,k-1) and IS A STAR" -- star-extremality under a
+     FORBIDDEN CONFIGURATION, the classical analogue of StarExtremalAt but with "no triangle"
+     in place of "spread". No degree cap.
+p55  sec 1.9.2 (n,k,L)-systems; Ray-Chaudhuri-Wilson, Frankl-Wilson. Linear algebra. -
+p60  sec 1.9.5 hypertrees, expanded hypergraphs, crosscuts. -
+p61  sec 1.9.6 other surveys. -
+p62  refs 1-20. [1] Abbott-Hanson-Sauer, JCT 12 (1972) 381-389 -- the A3 paper's exact citation. -
+p63  refs 21-44. FIND: [44] = P. Frankl, "On intersecting families of finite sets", JCTA 24
+     (1978), 146-161 -- that is the paper p20 attributes the c-fraction max-degree condition to.
+     So it is Frankl 1978, not 1987. Also [30] Duke-Erdos (1977), the dukeerdos.pdf in the corpus.
+p64  refs 45-73. FIND, the closest-titled paper anywhere: [62] = Z. Furedi, "ERDOS-KO-RADO TYPE
+     THEOREMS WITH UPPER BOUNDS ON THE MAXIMUM DEGREE", Colloquia Math. Soc. J. Bolyai 25,
+     Szeged, 1978, pp. 177-207.
+     => sec 24.13 names "Frankl 1987" as the origin of the degree-condition line. There are two
+     earlier sources, both 1978: Frankl [44] and Furedi [62], and Furedi's TITLE is the question
+     modulo max-degree-vs-level-wise. Neither is in this corpus; both are targets for the next
+     session. Also [63] Furedi, "On finite set-systems whose every intersection is a kernel of a
+     star" (1983) -- the homogeneous-structure paper behind p22.
+p65  refs 74-101. Worth chasing: [89] Kostochka-Mubayi "The structure of large intersecting
+     families" PAMS 145 (2016) -- structure theorem for large intersecting families, the closest
+     relative of I2's question after Furedi [62]. [96] Kupavskii-Noskov, "Linear dependencies,
+     polynomial factors in the Duke-Erdos forbidden sunflower problem" (2025) arXiv:2410.06156 --
+     current work on the absolute/one-level corner. [95] = Ku23, [98] = KuZa22, both in corpus.
+p66  refs 102-120. Nothing further. -
+# --- checkpoint 4: 43 of 66 read ---
+# read: 1-22, 42, 43, 46, 47, 49-66
+# remaining: 23-41, 44, 45, 48  (22 pages)
