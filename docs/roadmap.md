@@ -8330,6 +8330,32 @@ New: `coq/Counting.v` (26 audited theorems, 4 audited definitions, no
 axiom), `rust/tests/counting.rs` (10 tests, independent implementations),
 6 mutations. The manifest is now 137 mutations.
 
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (44 modules, clean rebuild)
+  Print Assumptions        all 26 new audited theorems "Closed under the
+                           global context"
+  make coqchk              pass; the whole-library axiom census is still
+                           exactly `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  137 mutations: 134 killed, 2 genuine survivors
+                           (unchanged), 1 control, **0 unexpected**. All
+                           6 new ones killed as declared
+  cargo test --release     31 suites, 297 tests, 0 failures
+  tools/statements.py      707 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The six mutations are the ones a reader should check the file against:
+`binom-pascal-wrong-branch` (does Pascal's recursion add the two entries
+above, or the same one twice?), `binom-ratio-drop-the-successor` (is
+`S j` the boundary, or would `j+2` do?), `binom-absorb-untruncated`,
+`layer-filters-the-wrong-length` (is the layer a layer, or a prefix of
+the powerset?), `count-inj-drops-nodup`, and
+`binom-two-pow-off-by-one` (the bound is attained at both ends of every
+row, so it cannot be weakened by any additive amount at all).
+
 ### 30.5 What Stage A does *not* do, and what is next
 
 It does not touch spreadness, families, or sunflowers — deliberately.
