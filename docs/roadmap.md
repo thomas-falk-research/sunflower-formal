@@ -9384,8 +9384,10 @@ definitions, 151 mutations, and 32 Rust integration suites.
                                             683/683 audited theorems closed)
   make coqchk              pass     2m53s   census exactly Rao20_lemma2,
                                             all three escape hatches empty
-  python3 tools/mutate.py  MUTLINE
-  cargo test --release     RUSTLINE
+  python3 tools/mutate.py  pass    77m03s   151 mutations, 148 killed,
+                                            2 declared survivors, 0 unexpected
+  cargo test --release     pass    26m31s   32 integration suites, 324 tests,
+                                            0 failures
   tools/statements.py      813 baselined entries
   tools/docnumbers.py      17 quoted numbers match
   tools/ceiling.py         9 routes costed, every verdict matches
