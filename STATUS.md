@@ -162,6 +162,9 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `the_split_fibres_are_not_intersecting`, `the_fibre_bound_is_g_not_iota` | `coq/Product.v` | **Why a splitting argument cannot use the intersecting hypothesis.** The route to submultiplicativity buckets members by their trace on a ground-set part and bounds each fibre. The fibre of a cone over its own trace is the original family: a *general* sunflower-free family of the largest possible size. The smallest instance has fibre `F23.two_triangles`, attaining `g(2) = 6` against `ι(2) = 3`. So the fibres are bounded by `g`, the best a split gives is `ι(b) ≤ (#traces)·g(b−1)`, and that is Erdős–Rado's rate |
 | `iota_four_at_least_27`, `lower_bound_4_3_54`, `f_4_3_at_least_55_beats_37` | `coq/Product.v` | **`f(4,3) ≥ 55`**, where `Audit.f_4_3_at_least_37` reached 37. The exhaustive `ι(4,9) = 27` witness transcribed and re-derived by the reflective detector, then doubled. It does **not** improve the rate — `the_rate_at_four_does_not_beat_the_rate_at_three` proves `54^(1/4) < 20^(1/3)` — and `IotaRate.every_construction_is_within_2b_of_iota` is why nothing at a fixed uniformity can. Structurally the witness **is** the Abbott–Hanson–Sauer substitution of the triangle into itself: `\|Aut\| = 1296 = 6·6³` is exactly `Sym(3)` on three triples times `Sym(3)` inside each, cross-checked against `nauty` |
 | `not_iota_four_at_most_26`, `iota_four_between_27_and_192` | `coq/Product.v`, `coq/Audit.v` | The truth boundary for `ι(4)` trapped in the kernel, one uniformity above `Audit.iota_three_between_ten_and_eighteen`. The lower end is the witness; the upper end is `intersecting_link_bound` fed Erdős–Rado's `g(3) ≤ 48`. The gap is 27 to 192, and that is the honest state of knowledge |
+| `twenty_seven_four_sets_have_no_common_point` | `coq/Support.v` | **The covering number of an extremal `ι(4)` family is at least two, unconditionally.** A family every member of which contains a fixed point *is* its own link at that point, so `PureLink.g_three_at_most_26` caps it at 26 — and 27 is exactly the known lower bound for `ι(4)`, so the statement bites on the extremal object itself. No appeal to the 1969 value; with that value the threshold drops to 21. `rust/tests/support.rs` checks the 27-member witness directly |
+| `link_at_pair_bounded`, `pair_counting_ceiling`, `thirty_two_four_sets_need_nine_points` | `coq/Support.v` | **The ground set of a 32-member counterexample has at least nine points, proved rather than searched.** The pair link is `(b−2)`-uniform and sunflower-free, so `deg [x;y] F ≤ g(b−2) = 6`; counting incidences `(A,Q)` with `\|Q\| = 2` in both orders gives `\|F\|·C(b,2) ≤ C(g,2)·g(b−2)`, and at `b = 4` the two sixes cancel. `C(8,2) = 28 < 32 ≤ 36 = C(9,2)`. Two rungs behind the ladder, which refuted `g ≤ 10` — and that gap is asserted in the file. `genprog::least_ground(4,32)` computes the same 9 |
+| `anchored_support_bound`, `thirty_two_four_sets_need_at_most_77_points` | `coq/Support.v` | **The standing support bound improved by a fifth: 97 → 77 at `(b,n) = (4,32)`, and 23 → 20 at `(3,11)`.** Two anchors meeting in one point charge each member `b−2` new points instead of `b−1`; the members through the shared point are covered by two members of its link, because three pairwise disjoint ones would be a sunflower. **Not uniformly better** — the difference is `n − (4b−4)`, so below the crossover the single-anchor bound wins, and `below_the_crossover_the_single_anchor_is_better` records a case. `rust/tests/support.rs` rebuilds the core over an exhaustive sweep of 127 466 families and asserts both branches of the case split are exercised. `docs/roadmap.md` §34.4, and §34.5 for what it does **not** buy |
 | `cone_needs_freshness`, `bounds_coherent_cone`, `the_cone_route_beats_the_direct_sum_at_four`, `the_ground_hypotheses_are_not_independent_after_all` | `coq/Audit.v` | The coherence theorems for the new definitions: freshness is load-bearing (the triangle coned at one of its own points is not 3-uniform), the new lower bound sits under Erdős–Rado at uniformity 4 so a contradictory pair would be a proof of `False`, 54 beats the direct sum's 36, and the retraction above is recorded against a named specification rather than as an edited comment |
 | `iota_exponential_shifted_iff`, `conjecture_k_3_iff_iota_shifted` | `coq/Sharp.v` | **The sunflower conjecture at `k = 3` is exactly `ι(b) ≤ C^(b-1)`.** The exponent `1/(b-1)`, not `1/b`, is the one the Abbott–Hanson–Sauer substitution extracts — the 1972 constant `10^(1/2)` *is* `ι(3)^(1/(3-1))` — so this is the normalisation in which `L = sup_b ι(b)^(1/(b-1))` is the constant of the problem. Both directions are arithmetic on `IotaRate.conjecture_k_3_iff_iota_exponential`, moving the constant by a square one way and by one the other; the only non-arithmetic ingredient is `Product.iota_one_at_most_one`, which is what makes the `b = 1` instance `ι(1) ≤ C⁰ = 1` true. The substitution is **not** needed for the equivalence |
 | `AHSOptimal`, `sharp_bounds_iota`, `sharp_gives_base_four` | `coq/Sharp.v` | **The sharp conjecture, named**: `ι(b)² ≤ 10^(b-1)` for every `b ≥ 1` — squared so nothing leaves `nat`. Equivalently `ι(b) ≤ 10^((b-1)/2)`; equivalently Abbott–Hanson–Sauer is optimal and `L = √10`. It gives `ι(b) ≤ 4^(b-1)`, and base 4 rather than 3 is forced: `√10 = 3.162... > 3`, checked in `rust/tests/sharp_conjecture.rs` |
@@ -321,7 +324,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (683 of them). The current
+for every theorem in the "Closed" table (703 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -368,7 +371,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 
 | Check | Command | What it would catch |
 |---|---|---|
-| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 46 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
+| Independent re-check | `make coqchk` | An `Admitted` or a second `Axiom` **anywhere** in the 47 modules, not just among the audited names; reliance on type-in-type, unsafe fixpoints, or assumed positivity |
 | Coherence theorems | part of `make verify` | Two definitions that contradict each other; a bound predicate that is not what its name says; an axiom shape that is vacuously true |
 | Structure of the extremal families | part of `make testbed` | An automorphism group order, design parameter, per-core link matching number or degree sequence that drifted; a closed form for `ι` that the data already refutes being re-proposed; a construction in the extended `ι` table that stopped verifying |
 | Exhaustive falsification | `make testbed` | A spread hypothesis that is false at small parameters — i.e. stated weaker than the source states it; a link characterisation that disagrees with a brute-force sunflower detector; a step of the `ι`/`g` sandwich that fails on some family the argument did not have in mind; a ground-set row that moves where the hypothesis needs it flat |
@@ -378,8 +381,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Route ceilings | `make ceilings` | A reduction whose declared best case disagrees with its own arithmetic; a route being worked on whose best possible bound loses to Erdős–Rado 1960. Six of the nine routes here do |
 | The pull request | `make prcheck` | A write-up whose counts have gone stale, whose cited theorem no longer exists under that name, or that calls a result new without a literature search. It found six unaudited theorems on its first run |
 
-Current mutation results: 151 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 148 killed outright, two genuine
+Current mutation results: 154 mutations, all matching the outcome
+declared in `tools/mutations.toml` — 151 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of
@@ -388,7 +391,7 @@ proves as a theorem; and `iotaatleast-at-least`, the same question asked of
 an alpha-rename that must survive, so the `survived` path is exercised
 on every run whatever the development does).
 
-`make coqchk` re-verifies all 46 modules with Coq's separate kernel
+`make coqchk` re-verifies all 47 modules with Coq's separate kernel
 checker and reports the assumptions of the whole library:
 
 ```

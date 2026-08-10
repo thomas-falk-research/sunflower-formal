@@ -183,6 +183,29 @@ pub fn support_bound(b: u32, n: u32) -> u32 {
     }
 }
 
+/// The two-anchor bound: `(4b-3) + (b-2)n`. Mirrors
+/// `Support.anchored_support_bound`, which spends a second anchor meeting
+/// the first in one point, plus a two-member cover of the link at the
+/// shared point, to charge each member `b-2` new points instead of `b-1`.
+///
+/// It is **not** uniformly better than [`support_bound`]: the difference
+/// is `n - (4b - 4)`, so the second anchor pays only once the family is
+/// bigger than `4b-4` members. [`least_support_bound`] takes the smaller.
+pub fn anchored_support_bound(b: u32, n: u32) -> u32 {
+    if n == 0 {
+        0
+    } else if b < 2 {
+        support_bound(b, n)
+    } else {
+        (4 * b - 3) + (b - 2) * n
+    }
+}
+
+/// The better of the two proved support bounds.
+pub fn least_support_bound(b: u32, n: u32) -> u32 {
+    support_bound(b, n).min(anchored_support_bound(b, n))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

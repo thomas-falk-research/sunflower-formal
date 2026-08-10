@@ -2427,3 +2427,46 @@ consequence that genuinely uses the 1969 value must stop compiling."""
 find = "Definition AbbottGardner1969 : Prop := GAtMost 3 20."
 replace = "Definition AbbottGardner1969 : Prop := GAtMost 3 26."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# Support: the two-anchor bound and the pair link.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "support-drop-intersecting"
+file = "coq/Support.v"
+question = """Is `Intersecting` load-bearing in the two-anchor support bound, \
+or does sunflower-freeness alone give it? It is load-bearing and the \
+bound is false without it: a sunflower-free family has matching number \
+at most two, so it lives on `2b + (b-1)(n-2)` points, which exceeds \
+`(4b-3) + (b-2)n` for every `n > 11` at `b = 4`."""
+find = """    2 <= b -> Uniform b F -> Distinct F -> Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    NoDup P ->"""
+replace = """    2 <= b -> Uniform b F -> Distinct F ->
+    ~ ContainsKSunflower 3 F ->
+    NoDup P ->"""
+expect = "killed"
+
+[[mutation]]
+id = "support-core-drop-second-anchor"
+file = "coq/Support.v"
+question = """Is the *second* anchor doing the work, or would the anchor plus \
+the link cover suffice? Dropping `A1` from the core leaves the members \
+that avoid the shared point meeting it only once, which is exactly the \
+`b-1` charge the single-anchor bound already pays."""
+find = "    set (Score := A0 ++ rem_elt z A1 ++ concat M)."
+replace = "    set (Score := A0 ++ concat M)."
+expect = "killed"
+
+[[mutation]]
+id = "support-pair-link-off-by-one"
+file = "coq/Support.v"
+question = """Does the pair link know it is `(b-2)`-uniform? Charging it \
+`g(b-1)` instead would replace the six of `g(2)` by the twenty-six of \
+`g(3)` and make the counting ceiling four times weaker."""
+find = """    ~ ContainsKSunflower 3 F -> GAtMost (b - 2) Ng2 ->
+    deg Q F <= Ng2."""
+replace = """    ~ ContainsKSunflower 3 F -> GAtMost (b - 1) Ng2 ->
+    deg Q F <= Ng2."""
+expect = "killed"

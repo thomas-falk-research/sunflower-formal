@@ -46,4 +46,5 @@ coq/Counting.v
 coq/Fragment.v
 coq/Profile.v
 coq/AbbottGardner.v
+coq/Support.v
 coq/Audit.v

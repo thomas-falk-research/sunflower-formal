@@ -2126,7 +2126,50 @@ the local convention.
 | A11 | The 1972 seed family | **Printed in full, and it matches** | [Kos00] p. 2: *"`F_1 = {{1,2,3},{1,2,4},{1,3,5},{1,4,6},{1,5,6},{2,3,6},{2,4,5},{2,5,6},{3,4,5},{3,4,6}}` with the ground set `{1,…,6}`"*. Ten triples on six points: `Intersecting.iota3` up to relabelling, and `rust/tests/iota_structure.rs` proves there is only one isomorphism class, so "up to relabelling" is the whole of it. |
 | A12 | `Sharp.AHSOptimal` — *"the sharp conjecture"*, that `ι(b)² ≤ 10^(b−1)` | **The question is published; the formal statement is this repository's** | [Kos00] p. 3, immediately after the construction: *"It would be very interesting to improve the construction even just a bit. But maybe it is optimal."* That is the same uncertainty `Sharp.AHSOptimal` names, in prose, from the survey of the area. It is **not** stated as a conjecture and carries no `ι`; what this development adds is the reduction to a single uniformity and the integer threshold at each one (`Sharp.refutation_threshold`). Novelty is claimed for the *formalisation and the thresholds*, not for the question. |
 | A13 | Abbott–Exoo 1992, *"the closest prior computational work"* to the `ι(4)` search | **Unreachable (primary); its `r = 3` content is recorded second-hand and is empty** | H. L. Abbott and G. Exoo, *On set systems not containing delta systems*, **Graphs and Combinatorics 8 (1992), 1–9**. Springer, paywalled, no preprint; `link.springer.com/article/10.1007/BF01271703` returns a 303 to an authorisation endpoint. Two rendered secondary sources say what it contains. [Kos00] p. 4: *"Abbott and G. Exoo [1] obtained the lower bounds `f(k,4) ≥ C·38^{k/3}` and `f(k,6) ≥ C·146^{k/3}`"*, and p. 5: *"Abbott and Exoo [1] gave the lower bounds `g(k,4) ≥ C·10^{k/2}` and `g(k,5) ≥ C·20^{k/2}`"* — **every one of them is `r ≥ 4`**. Bennett–Priestley p. 25, rendered, describes its method: *"the algorithm described in [AE92] includes an additional backtracking step. The authors use a basic learning algorithm to help determine which edges should be removed in the backtracking step, and also use it to bias the algorithm towards choosing specific sets."* So it **is** a computational attack, as the brief said, and its published results are for `r = 4, 5, 6`; nothing in either secondary source attributes an `r = 3` construction to it. That is a second-hand negative and is recorded as one. |
-| A14 | The greedy/covering barrier (`Profile.greedy_forces_erdos_rado`) is unpublished | **Still "not found, not exhaustive" — and the search is NOT complete** | [Kos00] read in full: no barrier remark of that shape anywhere in it. Its §6, *Concluding remark*, is the whole of what it says about limits: *"One of the aims of the present article was to show that there was some progress lately in studying every of the functions `f(k,r)`, `g(k,r)`, `F(n,r)` and `G(n,r)`, but none of the main problems is solved."* **Füredi's 1978 Bolyai paper was not obtained** — *Erdős–Ko–Rado type theorems with upper bounds on the maximum degree*, Colloq. Math. Soc. J. Bolyai **25**, pp. 177–207, published 1981 by North-Holland; no digitisation found, not on arXiv, not on the author's page. Rule 19 therefore applies unchanged: **a located source is unopened, so the negative is not upgraded.** No novelty claim on the barrier moves this session. |
+| A14 | The greedy/covering barrier (`Profile.greedy_forces_erdos_rado`) is unpublished | **Still "not found, not exhaustive" — but both named blockers are now cleared** | [Kos00] read in full: no barrier remark of that shape anywhere in it. Its §6, *Concluding remark*, is the whole of what it says about limits: *"One of the aims of the present article was to show that there was some progress lately in studying every of the functions `f(k,r)`, `g(k,r)`, `F(n,r)` and `G(n,r)`, but none of the main problems is solved."* Füredi 1978 was **not obtained in session N+11** and rule 19 blocked the negative there. It was obtained and read in full in session N+12 — see A15 — and contains no Δ-system material at all. So the two papers the brief named are both read and neither carries the remark. That is what changed; what did **not** change is the novelty verdict: two papers is not a literature search, rule 17 is not satisfied by clearing a two-item list, and the barrier's status stays *not found, not exhaustive*. |
+
+### Session N+12: [Fur78] — read in full, 31 of 31 pages rendered
+
+Z. Füredi, *Erdős–Ko–Rado type theorems with upper bounds on the maximum
+degree*, Colloq. Math. Soc. J. Bolyai **25** (Szeged 1978), North-Holland
+1981, 177–207. Page-by-page log in `docs/papers/furedi78-rendered-pass.md`.
+
+| # | Claim | Verdict | Evidence |
+|---|---|---|---|
+| A15 | Füredi 1978 might carry a published barrier remark about the greedy/covering method (the brief's second target for A14) | **REFUTED — the paper has no Δ-system content whatsoever, so it cannot carry such a remark** | All 31 pages rendered at 140 dpi and read. The words *Δ-system* and *sunflower* occur nowhere; Erdős–Rado 1960 is not among the nine references (p. 207) and neither is Abbott. The paper is about the Erdős–Rothschild–Szemerédi problem — the largest **intersecting** `r`-uniform family whose maximum degree is at most `c\|F\|` (p. 178) — and its machinery is fractional matchings and covers, `ν`-critical nuclei, Baranyai's factorisation theorem and Pelikán's theorem on projective planes. The brief's premise about this paper was wrong, and recording *why* it was wrong is the point of this row: no future session should spend budget on it again. |
+| A15a | It was said to have no digitisation (session N+11, four routes tried) | **Wrong; it is on the author's own page, at a host nobody tried** | `www.renyi.hu/~furedi/PUBS3/furedi_005_ekr_with_upper_bound.pdf`, 723 721 bytes, 31 pp, image scan, retrieved 2026-08-10. The Illinois host session N+11 tried (`faculty.math.illinois.edu/~z-furedi/`) resets the connection; the Rényi host serves the whole publication list with scans. **Look there first for any Füredi paper.** The four routes that failed were not exhaustive and were reported as exhausted; that is the failure mode, not the missing scan. |
+| A15b | Notation hazard | **A third `f`, and it collides with both the others** | [Fur78] p. 178 writes `f(n,r,c)` for the largest intersecting `r`-uniform family on `n` points with maximum degree `≤ c\|F\|`. This development's `f(n,k)` is a threshold with the uniformity first; [Kos00]'s `f(k,r)` is a largest family with the uniformity first. Three functions, one letter. Re-derive any `f`; never copy the symbol. Also present and unique to this paper: `ν*(R,ν)`, `Cap_B(c)`, `C(c)`, `L(R,ν)`, `K(r,c)`, `T(B)`. |
+| A16 | Füredi's `H_1` — *"a 3-uniform, intersecting set system with 10 members on a 6-element set… There exists exactly one such `H_1`"* (p. 186) — is the `ι(3) = 10` witness | **Parameters coincide exactly; the identification is NOT made** | Figure 1 (p. 187) is a dot diagram this pass did not decode, and Füredi's uniqueness is inside his own hypotheses, so this row claims only the coincidence. What *is* checked, and is the substantive half: `10 = ½C(6,3)`, so any 10-member intersecting family of 3-sets on six points is **EKR-extremal at `n = 2r`**, taking exactly one set from each of the ten complementary pairs. `Intersecting.iota3` does that, and its covering number is 3 — the maximum possible at `b = 3`. So **at `b = 3` the sunflower-free constraint costs nothing**: the largest intersecting sunflower-free family of 3-sets is exactly as large as the largest intersecting family of 3-sets on six points. Checked in `rust/tests/support.rs::the_iota_three_witness_is_also_ekr_extremal`. |
+
+### An acquisition reported as impossible, found on the fifth try
+
+Session N+11 wrote that Füredi's 1978 Bolyai paper *"was not obtained…
+no digitisation found, not on arXiv, not on the author's page"* and
+listed four routes: title search, author page, the Bolyai series, and
+the citing papers' bibliographies. The sentence is doing two jobs and
+only one of them is honest. *"Four routes were tried and failed"* is a
+budget. *"The volume appears to have no digitisation"* is a claim about
+the world, and it was false: the paper is a scan on the author's own
+publication list at `www.renyi.hu/~furedi/`, and one request fetched it.
+
+The mistake was in the phrase *"the author's page"*. Session N+11 tried
+`faculty.math.illinois.edu/~z-furedi/`, which resets the connection from
+this environment, concluded "the author's page has nothing", and wrote
+down a fact about the paper rather than a fact about that host. A dead
+host is not an absent document.
+
+This is rule 13's shape — a search reported as an answer — in the one
+place rule 13 was not being applied, because acquisition did not feel
+like search. It is the fourth instrument-caused bite in this programme
+(rules 13, 22, 28).
+
+> **Rule 29. A failed acquisition is a statement about the routes tried,
+> never about the document.** Report it as *"not obtained; routes tried:
+> …"* and stop there. In particular a host that times out, resets or
+> 403s has told you nothing about whether the file exists — name the host
+> and the failure mode, not the document. Authors commonly have more than
+> one institutional page and the live one is often not the current
+> affiliation.
 
 ### Rows added at abstract level, and labelled as such
 
@@ -2150,8 +2193,10 @@ load-bearing for anything in `coq/`.
   that was not done this session. **Do not import any `φ` from [Kup25]
   without re-deriving it** is the operative instruction either way, and
   it is now written down; the row itself is owed.
-* **Füredi 1978.** See A14. Four routes tried: title search, author page,
+* ~~**Füredi 1978.** See A14. Four routes tried: title search, author page,
   the Bolyai series, and the citing papers' own bibliographies. The
-  volume appears to have no digitisation.
+  volume appears to have no digitisation.~~ **Done in session N+12** —
+  the fifth route found it in one request. See A15, A15a; the lesson is
+  in A15a and it is about the report, not the paper.
 * **Kostochka–Mubayi PAMS 2016 and Kupavskii–Noskov arXiv:2410.06156**
   (row B19f's other two targets). Not attempted.

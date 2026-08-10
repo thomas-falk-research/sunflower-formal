@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-151 mutations, all with the outcome the manifest declares: 148 killed
+154 mutations, all with the outcome the manifest declares: 151 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -1188,3 +1188,42 @@ and the repository's standing rule for that verdict — `sat::solve_agreed`,
 two independent solvers required to agree — is affordable per instance
 and was not run across the whole ladder. `docs/roadmap.md` §33.5 says so
 where the result is reported.
+
+### An eleventh: a proof whose case split is the thing that can be wrong
+
+`rust/tests/support.rs` guards `coq/Support.v`, and the interesting part
+of it is not the theorem.
+
+The theorem — support `≤ (4b−3) + (b−2)n` — is a bound, and a bound is
+easy to falsify: enumerate families, compute supports, compare. That is
+done, exhaustively, on 127 466 families. It would also have passed if the
+proof were wrong, because the bound is not tight and a weaker argument
+would still have produced a true inequality on every small case.
+
+What the proof actually turns on is a *construction*: a core of at most
+`4b−3` points that **every member meets twice**. That is the step a
+falsifier has to attack, so the test rebuilds the core from the family
+alone — no shared code with the Coq development — and asserts the
+property directly. Three things it pins that the bound alone would not:
+
+* **The link cover never exceeds two members.** The proof needs it,
+  because three pairwise disjoint members of a link lift to a sunflower
+  with empty core. If it could be three the core would be too wide and
+  the bound would be false at some `n` beyond the sweep.
+* **The core width `4b−3` is attained.** At `b = 2` it is exactly five.
+  A constant that is never reached is a constant nobody has checked, and
+  the next session would not know whether it could be lowered.
+* **Both branches of the case split are exercised, with their counts.**
+  The proof splits on whether some member meets the anchor in exactly one
+  point; only one branch builds a link cover at all. 7 293 families take
+  the first branch and 120 168 take the second, and both numbers are
+  asserted. A sweep that happened to hit only one branch would leave half
+  the proof unfalsified while reporting a clean pass — and that is
+  exactly the failure mode a case analysis has.
+
+The sweep stops where it stops for a measured reason, and the reason is
+in the file: `(7,4)` has 35 333 735 families and `(8,4)` has more than
+forty million. Beyond that the families are **sampled**, deterministically,
+and the assertions say sampling rather than exhaustion. Fourteen thousand
+samples at four larger parameters is not a proof of anything and is not
+written as though it were.

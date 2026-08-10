@@ -934,3 +934,28 @@ thm AbbottGardner.iota_four_between_27_and_59
 thm AbbottGardner.no_three_uniform_sunflower_free_family_has_thirty_two_members
 thm AbbottGardner.the_cone_route_to_iota_four_thirty_two_is_closed
 thm AbbottGardner.the_cone_route_is_twelve_short
+
+# ---- Support: where a sunflower-free intersecting family can live ----
+thm Support.two_points_shrink
+thm Support.support_from_two_points
+def Support.cap
+thm Support.anchored_support_bound
+thm Support.thirty_two_four_sets_need_at_most_77_points
+thm Support.iota_three_eleven_needs_only_20_points
+thm Support.the_second_anchor_is_worth_twenty_points
+thm Support.the_second_anchor_is_worth_three_points_at_three
+thm Support.below_the_crossover_the_single_anchor_is_better
+thm Support.common_point_bounds_the_family
+thm Support.twenty_seven_four_sets_have_no_common_point
+thm Support.twenty_one_four_sets_have_no_common_point
+thm Support.link_at_pair_bounded
+def Support.degsum_pairs
+def Support.meetsum_pairs
+thm Support.pair_incidence_swap
+thm Support.degsum_pairs_le
+thm Support.meetsum_pairs_ge
+thm Support.pairs_inside_member
+thm Support.pair_counting_ceiling
+thm Support.four_uniform_size_ceiling
+thm Support.thirty_two_four_sets_need_nine_points
+thm Support.the_proof_is_two_rungs_behind_the_search

@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 151 anecdotes into a coverage metric over the
+  mutation testing from 154 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9015,7 +9015,7 @@ development was 45 modules, 671 audited theorems, 129 audited
 definitions, 150 mutations, and 31 Rust integration suites (the gate
 line below reports 33 `test result` lines, which is those 31 plus the
 library's own unit tests and its doctests). The current counts are in
-§33.6; this paragraph is a record of what N+10 left behind and is not
+§34.8; this paragraph is a record of what N+10 left behind and is not
 updated.
 
 Final gate run, all green:
@@ -9376,8 +9376,10 @@ What it would take, in order of expected value:
 New this session: `coq/AbbottGardner.v` (one module, no axiom);
 `rust/src/symbreak.rs`, `rust/examples/iota_sym.rs`,
 `rust/tests/symbreak.rs`.
-The development is now 46 modules, 683 audited theorems, 130 audited
-definitions, 151 mutations, and 32 Rust integration suites.
+At the end of that session the
+development was 46 modules, 683 audited theorems, 130 audited
+definitions, 151 mutations, and 32 Rust integration suites. The current counts
+are in §34.8; this paragraph records what N+11 left behind.
 
 ```
   make -j2 verify          pass    11m27s   (46 modules, clean rebuild,
@@ -9415,9 +9417,12 @@ open; `Product.the_universal_iota_ground_reading_is_false` shows the
 naive reading of it is false, by a coned tree-path family that genuinely
 needs `2^b − 1` points. The elementary bound that *is* available,
 `PureLink.intersecting_support_bound`, gives support `≤ b + (b−1)(n−1)`,
-which at `(b,n) = (4,32)` is **97 points**. So the ladder as it stands
-cannot close, and a session that means to decide `AHSOptimal` at `b = 4`
-needs a structural bound on the support, not a bigger budget.
+which at `(b,n) = (4,32)` is **97 points** — improved to **77** in §34 by
+`Support.anchored_support_bound`, which changes nothing about
+reachability and says so. So the ladder as it stands cannot close, and a
+session that means to decide `AHSOptimal` at `b = 4` needs a structural
+bound on the support, not a bigger budget — **and §34.5 argues that no
+bound of that kind gets there either.**
 
 Two things narrow it, and they are worth having in front of you:
 `τ(F) = 1` forces `|F| ≤ g(3) = 20`, so a 32-member family has covering
@@ -9459,11 +9464,230 @@ else, so the retraction is one file.
 Two of those are corrections to this repository rather than results about
 sunflowers. What is new about sunflowers is thin and is stated as such:
 `ι(5,g) ≤ 42` for `g ≤ 9`, and a ten-point rung re-decided by a second
-instrument and a second solver. `Sharp.AHSOptimal` is not decided, and
-§33.5a says what the eleven-point rung would cost.
+*instrument* — **not** by a second solver; §33.5's table is the one that
+governs, and `cryptominisat5` was stopped inside the ten-point rung, so
+that rung rests on `cadical` alone. `Sharp.AHSOptimal` is not decided,
+and §33.5a says what the eleven-point rung would cost.
 
 Judged against §32.7's bar — *"a sentence of the form `X` is now known,
 and it was not before, where `X` is a statement about sunflowers"* — this
 session clears it, barely, at `b = 5` and not at `b = 4`. The instrument
 is the real output, and the honest reading of it is that it is one
 uncontended background run away from the answer that matters.
+
+---
+
+## 34. Session N+12 — the two levers, and a paper that was said not to exist
+
+### 34.1 The verdict, before the details
+
+> **The ground set of a hypothetical 32-member counterexample is now
+> pinned from both sides in Coq — at least nine points, at most 77 — and
+> neither end brings the ladder within reach. The one paper session N+11
+> reported as having no digitisation was on the author's own website and
+> took one request; it contains no Δ-system material at all.**
+
+Nothing here decides `Sharp.AHSOptimal`, moves `f(n,k)`, or moves the
+`10^(n/2)` record. What it does is replace two prose claims by theorems,
+improve the standing support bound by a fifth, and close — the right
+word is *close*, not *confirm* — the one acquisition the previous
+session recorded as impossible.
+
+### 34.2 Lever one: the covering number, unconditionally
+
+`Support.common_point_bounds_the_family` is
+`PureLink.link_at_point_bounded` read backwards. A family every member of
+which contains a fixed point `x` **is** its own link at `x`, so `g(b−1)`
+caps it. At `b = 4` the cap is `PureLink.g_three_at_most_26`, which is
+proved rather than cited, so:
+
+> `Support.twenty_seven_four_sets_have_no_common_point` — an intersecting
+> 3-sunflower-free family of 4-sets with **27 or more** members has no
+> common point. Its covering number is at least two.
+
+Twenty-seven is exactly the known lower bound for `ι(4)`, so the
+statement bites on the extremal object itself, and it needs no appeal to
+the 1969 value. With that value the threshold drops to 21, and that form
+is stated too, with the value as a hypothesis in `AbbottGardner`'s
+discipline.
+
+The 27-member witness is checked against it directly:
+`rust/tests/support.rs` computes the intersection of all 27 members and
+asserts it is empty.
+
+### 34.3 Lever two: the counting ceiling, and the pair link
+
+Two points determine a *pair link*, which is `(b−2)`-uniform, distinct
+and sunflower-free by the same three lemmas that give the point link. So
+`Support.link_at_pair_bounded`: `deg [x;y] F ≤ g(b−2)`. At `b = 4` that
+is `g(2) ≤ 6`, and six is the truth — two disjoint triangles are
+2-uniform and sunflower-free, which `rust/tests/support.rs` exhibits and
+cones so the six is attained at `b = 4` as well.
+
+Counting the incidences `(A, Q)` with `Q` a two-element subset of the
+member `A` in both orders — the list-level Fubini that
+`PureLink.degsum_eq_sizesum` performs for single points, done here for
+pairs by `Support.pair_incidence_swap` — gives
+
+```
+  |F| * C(b,2)  <=  C(g,2) * g(b-2)
+```
+
+and at `b = 4` the two sixes cancel, leaving `|F| ≤ C(g,2)`
+(`Support.four_uniform_size_ceiling`). Hence
+`Support.thirty_two_four_sets_need_nine_points`: **a 32-member family
+needs at least nine points**, because `C(8,2) = 28 < 32 ≤ 36 = C(9,2)`.
+
+**This is weaker than what the ladder already knows.** §33.5 records
+`ι(4,10) ≥ 32` refuted, so the true answer is at least eleven. The value
+of the theorem is that it is a proof rather than a solver verdict, and
+that it is quantified over every `b` and every family size, which a rung
+is not. `Support.the_proof_is_two_rungs_behind_the_search` says so in
+the file, as arithmetic the kernel checks.
+
+`genprog::link_bound(4, n)` computes the same `C(n,2)` and
+`genprog::least_ground(4, 32)` computes the same 9, from an
+implementation that shares no code with the Coq proof. That agreement is
+asserted.
+
+### 34.4 The new part: a support bound that beats the standing one
+
+One anchor charges each member `b−1` new points, because every member
+meets it. *Two* anchors that meet in exactly one point charge `b−2`,
+because a member avoiding the shared point has to meet the two anchors at
+two **different** points. The members that do contain the shared point
+are handled by the link there, which is sunflower-free and therefore has
+no three pairwise disjoint members — so two of its members already cover
+it, and every such member meets `{z} ∪ T_z` twice as well.
+
+> `Support.anchored_support_bound`: an intersecting, `b`-uniform,
+> distinct, 3-sunflower-free family of `n` members has support at most
+> `(4b − 3) + (b − 2)·n`.
+
+| `(b,n)` | standing bound | new bound | |
+|---|---|---|---|
+| `(4,32)` — the refutation size | 97 | **77** | `thirty_two_four_sets_need_at_most_77_points` |
+| `(3,11)` — the `ι(3)=10` exhaustion | 23 | **20** | `iota_three_eleven_needs_only_20_points` |
+| `(4,8)` | **25** | 29 | the new bound is *worse* here |
+
+**It is not uniformly better and the file says so.** The difference is
+`n − (4b − 4)`, so the second anchor pays only once the family is bigger
+than `4b − 4` members; `Support.below_the_crossover_the_single_anchor_is_better`
+records a case where quoting the new number would be quoting the worse
+one, and `wide::least_support_bound` takes the smaller of the two.
+
+**Why the coefficient is `b − 2` and not less.** A member can have two
+*private* points — points of degree one. It cannot have three: if `A` had
+three, every other member would meet `A` in the single remaining point,
+that point would lie in every member, and §34.2 would cap the family at
+26. So "each member contributes at most two new points" is the real
+obstruction, not slack in the core. Pushing the coefficient to `b − 3`
+means every member must meet the core in **three** points, which needs the
+pair links of every core point as well — about 124 points at `b = 4`.
+Against `13 + 2n` that loses for every `n` below 111, and
+`PureLink.iota_four_at_most_77` caps `ι(4)` at 77 unconditionally (59 with
+the 1969 value and the exhaustive `ι(3) = 10`), so it loses always.
+
+**What was checked before it was trusted.** `rust/tests/support.rs`
+rebuilds the core from the family alone, sharing no code with the Coq
+development, and over an exhaustive sweep of **127 466 families** —
+`(6,2)`, `(5,3)`, `(6,3)`, `(7,3)`, `(6,4)`, every intersecting
+sunflower-free family on those ground sets — asserts that the link cover
+never exceeds two members, that the core is never wider than `4b − 3`
+(and that `4b − 3` is *attained*, at `b = 2`), and that every member
+meets the core twice. Both branches of the case split are exercised —
+7 293 families take the "every member meets the anchor twice" branch and
+120 168 take the two-anchor branch — and that split is asserted, because
+a sweep that hit only one branch would leave half the proof unfalsified.
+14 000 sampled families at `(8,4)`, `(9,4)`, `(10,4)` and `(9,3)` extend
+the check past where exhaustion is affordable, and are labelled as
+sampling, not exhaustion. The exhaustive sweep stops where it does for a
+measured reason: `(7,4)` has 35 333 735 families and `(8,4)` has more
+than forty million.
+
+### 34.5 What none of this does, stated plainly
+
+**It does not bring the ladder within reach, and no bound of this kind
+would.** §33.5a measures the rungs growing by roughly two orders of
+magnitude per ground point: nine points in 5.8 s, ten in 866 s, eleven
+estimated at 3–15 core-hours. Twelve is out of reach on this machine and
+thirteen is out of reach on any. So the reachable ceiling is about twelve
+points, and the *proved floor* is now nine — with the ladder itself
+having pushed the real floor to eleven. A support bound would have to
+come in at eleven or twelve to close the gap, and the method here tops
+out at `2n + O(1)`, four times that.
+
+The honest sentence is: **the ladder cannot be closed by a support
+bound.** It could only be closed by a structure theorem strong enough to
+pin the support of a hypothetical 32-member family to within one or two
+points of its proved floor, and nothing in this development suggests such
+a theorem is available. A session that wants to decide `AHSOptimal` at
+`b = 4` should be looking for an upper-bound argument on `ι(4)` itself —
+the gap there is `[27, 59]` against the needed 31 — not for a bigger
+ground-set search.
+
+### 34.6 Füredi 1978, and what session N+11 got wrong about it
+
+Session N+11 recorded: *"no digitisation found, not on arXiv, not on the
+author's page"*, after four routes. The paper is a 31-page scan on the
+author's own publication list at `www.renyi.hu/~furedi/`, and one request
+fetched it. The Illinois host that session tried resets the connection
+from this environment; a dead host is not an absent document, and
+`docs/reading.md` rule 29 now says so.
+
+All 31 pages (177–207) are rendered and logged in
+`docs/papers/furedi78-rendered-pass.md`. **The paper contains no
+Δ-system material whatsoever** — the words *Δ-system* and *sunflower*
+occur nowhere, Erdős–Rado 1960 is not among its nine references and
+neither is Abbott. It is about the Erdős–Rothschild–Szemerédi problem:
+the largest **intersecting** `r`-uniform family whose maximum degree is
+at most `c|F|`, attacked with fractional matchings and covers,
+`ν`-critical nuclei, Baranyai's theorem and Pelikán's theorem. So it
+cannot carry the barrier remark it was fetched for, and the brief's
+premise about it was wrong.
+
+**§29's greedy-cover barrier is still not upgraded.** Both papers the
+brief named are now read and neither carries the remark, but two papers
+is not a literature search and rule 17 is not satisfied by clearing a
+two-item list. The novelty status of `Profile.greedy_forces_erdos_rado`
+is unchanged.
+
+One thing in the paper does touch this development. p. 186 builds an
+extremal family from *"a 3-uniform, intersecting set system `H_1` with 10
+members on a 6-element set"* — exactly the parameters of
+`Intersecting.iota3`. The identification is **not** made (Figure 1 is a
+dot diagram this pass did not decode), but the parameter coincidence is
+not a coincidence: `10 = ½C(6,3)`, so any such family is EKR-extremal at
+`n = 2r`, taking one set from each of the ten complementary pairs. The
+`ι(3)` witness does exactly that, with covering number 3. **At `b = 3`
+the sunflower-free constraint costs nothing.** Checked in
+`rust/tests/support.rs::the_iota_three_witness_is_also_ekr_extremal`.
+
+### 34.7 A correction inside §33
+
+§33.8's summary said the ten-point rung was *"re-decided by a second
+instrument and a second solver"*. §33.5 says, correctly and at length,
+that `cryptominisat5` agreed only up to **nine** points and was stopped
+inside the ten-point rung, so that rung rests on `cadical` alone. The
+correction landed in §33.5 and in the pull-request body and did not reach
+the one-line verdict eight paragraphs later. It has now. Rule 21, in the
+direction it was written for, inside a single session's own text.
+
+### 34.8 Costs and gates
+
+New this session: `coq/Support.v` (one module, no axiom);
+`rust/tests/support.rs`; `wide::anchored_support_bound` and
+`wide::least_support_bound`; `docs/papers/furedi78-rendered-pass.md`.
+The development is now 47 modules, 703 audited theorems, 133 audited
+definitions, 154 mutations, and 33 Rust integration suites.
+
+### 34.9 Picking this up cold
+
+Read §34.5 first. It is the part that says what not to do next, and the
+argument in it is the session's most useful output: the `ι(4)` ladder
+has a reachable ceiling around twelve ground points and a proved floor
+of nine, and closing that gap is not a search problem.
+
+The two levers are in `coq/Support.v` and both generalise in `b`, so the
+`b = 5` row (`ι(5)`, where §33.4a's ladder ran) can be given the same
+treatment for the cost of instantiating two corollaries.

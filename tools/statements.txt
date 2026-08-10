@@ -2445,3 +2445,72 @@ bba18aec6eadf7ac  thm AbbottGardner.no_three_uniform_sunflower_free_family_has_t
 
 5df3d5897ce805e5  thm AbbottGardner.the_cone_route_is_twelve_short
     the_cone_route_is_twelve_short : AbbottGardner1969 -> forall F : Family, Uniform 3 F -> Distinct F -> ~ ContainsKSunflower 3 F -> length F + 12 <= 32
+
+ec0a9d87164ea389  thm Support.two_points_shrink
+    two_points_shrink : forall (A S0 : list nat) (x y : nat), List.NoDup A -> x <> y -> List.In x A -> List.In y A -> List.In x S0 -> List.In y S0 -> length (setminus A S0) + 2 <= length A
+
+28b87c43f0bd837a  thm Support.support_from_two_points
+    support_from_two_points : forall (b : nat) (F : Family) (S0 P : list nat), Uniform b F -> (forall A : list nat, List.In A F -> exists x y : nat, x <> y /\ List.In x A /\ List.In y A /\ List.In x S0 /\ List.In y S0) -> List.NoDup P -> (forall p : nat, List.In p P -> exists A : list nat, List.In A F /\ List.In p A) -> length P <= length S0 + (b - 2) * length F
+
+5633efdfa29942c9  def Support.cap
+    cap = fun A0 A : list nat => List.filter (fun w : nat => memb w A) A0 : list nat -> list nat -> list nat Arguments cap (A0 A)%list_scope
+
+c0faec5da243971a  thm Support.anchored_support_bound
+    anchored_support_bound : forall (b : nat) (F : Family) (P : list nat), 2 <= b -> Uniform b F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> List.NoDup P -> (forall p : nat, List.In p P -> exists A : list nat, List.In A F /\ List.In p A) -> length P <= 4 * b - 3 + (b - 2) * length F
+
+7bc2acfc7537ba98  thm Support.thirty_two_four_sets_need_at_most_77_points
+    thirty_two_four_sets_need_at_most_77_points : forall (F : Family) (P : list nat), Uniform 4 F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> length F = 32 -> List.NoDup P -> (forall p : nat, List.In p P -> exists A : list nat, List.In A F /\ List.In p A) -> length P <= 77
+
+8f903a624da822ee  thm Support.iota_three_eleven_needs_only_20_points
+    iota_three_eleven_needs_only_20_points : forall (F : Family) (P : list nat), Uniform 3 F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> length F = 11 -> List.NoDup P -> (forall p : nat, List.In p P -> exists A : list nat, List.In A F /\ List.In p A) -> length P <= 20
+
+7274f5d5a7f6d476  thm Support.the_second_anchor_is_worth_twenty_points
+    the_second_anchor_is_worth_twenty_points : 4 + (4 - 1) * (32 - 1) = 97 /\ 4 * 4 - 3 + (4 - 2) * 32 = 77
+
+e69bb1922893eb7c  thm Support.the_second_anchor_is_worth_three_points_at_three
+    the_second_anchor_is_worth_three_points_at_three : 3 + (3 - 1) * (11 - 1) = 23 /\ 4 * 3 - 3 + (3 - 2) * 11 = 20
+
+471bcbd8170469f8  thm Support.below_the_crossover_the_single_anchor_is_better
+    below_the_crossover_the_single_anchor_is_better : 4 + (4 - 1) * (8 - 1) = 25 /\ 4 * 4 - 3 + (4 - 2) * 8 = 29
+
+3064d241cb309997  thm Support.common_point_bounds_the_family
+    common_point_bounds_the_family : forall (b Ng : nat) (F : Family) (x : nat), 1 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> GAtMost (b - 1) Ng -> (forall A : list nat, List.In A F -> List.In x A) -> length F <= Ng
+
+1296cf737d774f38  thm Support.twenty_seven_four_sets_have_no_common_point
+    twenty_seven_four_sets_have_no_common_point : forall (F : Family) (x : nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> 27 <= length F -> ~ (forall A : list nat, List.In A F -> List.In x A)
+
+3885a258db7d8c51  thm Support.twenty_one_four_sets_have_no_common_point
+    twenty_one_four_sets_have_no_common_point : GAtMost 3 20 -> forall (F : Family) (x : nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> 21 <= length F -> ~ (forall A : list nat, List.In A F -> List.In x A)
+
+4116847f28c1261a  thm Support.link_at_pair_bounded
+    link_at_pair_bounded : forall (b Ng2 : nat) (F : Family) (Q : list nat), List.NoDup Q -> length Q = 2 -> 2 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> GAtMost (b - 2) Ng2 -> deg Q F <= Ng2
+
+676c817ca84adbce  def Support.degsum_pairs
+    degsum_pairs = fix degsum_pairs (Qs : list (list nat)) (F : Family) {struct Qs} : nat := match Qs with | nil => 0 | (Q :: Qs')%list => deg Q F + degsum_pairs Qs' F end : list (list nat) -> Family -> nat Arguments degsum_pairs Qs%list_scope F
+
+4a70f2ea1030b503  def Support.meetsum_pairs
+    meetsum_pairs = fix meetsum_pairs (Qs : list (list nat)) (F : Family) {struct F} : nat := match F with | nil => 0 | (A :: F')%list => length (List.filter (fun Q : list nat => containsb Q A) Qs) + meetsum_pairs Qs F' end : list (list nat) -> Family -> nat Arguments meetsum_pairs Qs%list_scope F
+
+03d0cfb3a96c8cad  thm Support.pair_incidence_swap
+    pair_incidence_swap : forall (Qs : list (list nat)) (F : Family), degsum_pairs Qs F = meetsum_pairs Qs F
+
+a885a2f79006e173  thm Support.degsum_pairs_le
+    degsum_pairs_le : forall (Qs : list (list nat)) (F : Family) (K : nat), (forall Q : list nat, List.In Q Qs -> deg Q F <= K) -> degsum_pairs Qs F <= length Qs * K
+
+d2201f3dd19df8ec  thm Support.meetsum_pairs_ge
+    meetsum_pairs_ge : forall (Qs F : list (list nat)) (c : nat), (forall A : list nat, List.In A F -> c <= length (List.filter (fun Q : list nat => containsb Q A) Qs)) -> length F * c <= meetsum_pairs Qs F
+
+557b618634a5cc79  thm Support.pairs_inside_member
+    pairs_inside_member : forall (P A : list nat) (b : nat), List.NoDup P -> List.NoDup A -> Subset A P -> length A = b -> binom b 2 <= length (List.filter (fun Q : list nat => containsb Q A) (subsets_of_size 2 P))
+
+acb2eb0171442ab4  thm Support.pair_counting_ceiling
+    pair_counting_ceiling : forall (b Ng2 : nat) (F : Family) (P : list nat), 2 <= b -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> GAtMost (b - 2) Ng2 -> List.NoDup P -> (forall A : list nat, List.In A F -> Subset A P) -> length F * binom b 2 <= binom (length P) 2 * Ng2
+
+d1d40355508a3a68  thm Support.four_uniform_size_ceiling
+    four_uniform_size_ceiling : forall (F : Family) (P : list nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.NoDup P -> (forall A : list nat, List.In A F -> Subset A P) -> length F <= binom (length P) 2
+
+164b041e65b410a6  thm Support.thirty_two_four_sets_need_nine_points
+    thirty_two_four_sets_need_nine_points : forall (F : Family) (P : list nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.NoDup P -> (forall A : list nat, List.In A F -> Subset A P) -> 32 <= length F -> 9 <= length P
+
+cfb7add8dbbb8a74  thm Support.the_proof_is_two_rungs_behind_the_search
+    the_proof_is_two_rungs_behind_the_search : binom 8 2 = 28 /\ binom 9 2 = 36 /\ 28 < 32 <= 36
