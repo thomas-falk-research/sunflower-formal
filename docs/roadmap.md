@@ -8855,3 +8855,30 @@ whole-library census is still exactly `Rao20_lemma2`.
 
 38 more audited theorems and 3 more definitions, 2 more Rust tests, 3
 more mutations. The manifest is now 150.
+
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  Print Assumptions        all 97 audited theorems of Counting.v and
+                           Fragment.v "Closed under the global context",
+                           0 reporting axioms
+  make coqchk              pass; whole-library census still exactly
+                           `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  150 mutations: 147 killed, 2 genuine
+                           survivors (unchanged), 1 control,
+                           **0 unexpected**
+  cargo test --release     33 suites, 315 tests, 0 failures
+  tools/statements.py      794 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The three new mutations are where a reader should attack §31.9:
+`norm-idem-drop-nodup` (does canonicalisation round-trip without
+`NoDup U`? — no, `U = [1;1]`, `V = [1]`),
+`frag-base-forgets-the-chosen-member` (would subsets of `Z` do instead of
+subsets of `S'`? — no: `C(j+m,m)` depends on the sample size, `C(n,m)`
+does not, and that is the whole content of step 3), and
+`claim-three-four-weaken-the-ratio` (is `kq ≥ 8` needed, or does the
+series only have to decrease?).
