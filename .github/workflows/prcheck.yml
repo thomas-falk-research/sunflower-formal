@@ -9,6 +9,15 @@ name: pull request
 #
 # `types:` replaces the defaults rather than adding to them, so the
 # three defaults are listed explicitly alongside `edited`.
+#
+# Note the deliberate asymmetry with `verify.yml`, which drops
+# `synchronize` to stop a push to a pull request branch running that
+# workflow twice. This one *keeps* `synchronize`, and must: pushing a
+# commit changes the very counts the body asserts -- add a theorem and
+# `audited_theorems` in the body is wrong that instant -- so the gate
+# has to re-read the body against the new tree. The duplication it pays
+# for that is about eight seconds of a runner, against the two hours
+# `verify.yml` was paying. Do not "make them consistent".
 on:
   push:
   pull_request:

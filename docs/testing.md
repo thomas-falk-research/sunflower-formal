@@ -913,7 +913,22 @@ cargo run --release --example iota_extend      # the iota table past the search
 ```
 
 CI runs these as separate jobs on every push, with `RUSTFLAGS=-D
-warnings` on the Rust side.
+warnings` on the Rust side, plus once more against the *merge commit*
+when a pull request is opened — the one tree no push ever builds, and
+the only place a conflict with `main` that is invisible on either side
+alone can show up.
+
+Once per push, not twice. A push to a branch with an open pull request
+fires both `push` and `pull_request:synchronize`, and the two carry
+different `github.ref` because they check out different trees, so no
+concurrency key can merge them. On commit `d524766` that duplication
+cost 1h28m *and* 1h32m of runner time for the same 150 mutations, where
+one run of that job takes about 1h20m — the contention is why both were
+slower than a solo run. `verify.yml` therefore does not subscribe to
+`synchronize`. `prcheck.yml` does, and must: pushing a commit changes
+the counts the pull request body asserts, so the gate has to re-read
+the body against the new tree, and eight seconds of a runner is not the
+same kind of cost.
 
 ## Known gaps in the checking itself
 

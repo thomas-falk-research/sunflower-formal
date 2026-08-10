@@ -1,0 +1,24 @@
+name: Set up Coq
+description: >
+  Install the Coq every job in this repository builds against.
+
+  Defined once because three jobs need it -- the build, the independent
+  re-check, and the mutation runner -- and a version skew between them
+  would quietly cost the re-check its independence: coqchk is only a
+  second opinion if it is the same kernel version disagreeing about the
+  same terms, and a build against one Coq re-checked by another is a
+  different claim than the one docs/testing.md makes.
+
+runs:
+  using: composite
+  steps:
+    - name: Install Coq 8.18
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y coq
+        # Printed in every job rather than only the first, so the log of
+        # each one records which Coq actually ran it. The version this
+        # repository targets is 8.18, the one Ubuntu 24.04 ships; see
+        # docs/testing.md, "Known gaps in the checking itself".
+        coqc --version
