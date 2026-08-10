@@ -12,7 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        axiom-audit statements statements-accept docnumbers
+        axiom-audit statements statements-accept docnumbers ceilings prcheck
 
 all: coq rust
 
@@ -41,6 +41,7 @@ verify:
 	$(MAKE) axiom-audit
 	$(MAKE) statements
 	$(MAKE) docnumbers
+	$(MAKE) ceilings
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."
@@ -128,6 +129,32 @@ docnumbers:
 	@echo "===================================================="
 	@python3 tools/docnumbers.py
 	@echo "===================================================="
+
+# Rule 14, as machinery rather than as prose: every reduction declares
+# the best f(n,3) bound it can possibly produce, and the tool compares it
+# with Erdos-Rado 1960, with the record, and with the target -- in exact
+# integer arithmetic. A route whose declared verdict disagrees with its
+# own arithmetic fails the build. Needs no Coq. See tools/ceiling.py.
+ceilings:
+	@echo "===================================================="
+	@echo "  Route ceilings (rule 14): what each route can reach"
+	@echo "===================================================="
+	@python3 tools/ceiling.py
+	@echo "===================================================="
+
+# The pull request body against the repository it describes. One level
+# up again from `docnumbers`: that stops the prose in the tree from
+# drifting, this stops the prose *about* the tree -- the one document a
+# reviewer forms an opinion from, and the only one nothing checked.
+# Needs no build.
+#
+#   make prcheck                 -- the template still parses
+#   make prcheck PR_BODY=b.md    -- a real body: counts, evidence, rule 17
+#
+# CI runs the first on every push and the second on every pull request.
+# See tools/prcheck.py.
+prcheck:
+	@python3 tools/prcheck.py $(if $(PR_BODY),--body $(PR_BODY),--template)
 
 rust:
 	cd rust && cargo build --release

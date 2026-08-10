@@ -2027,3 +2027,388 @@ because = """Killed, and by uniformity rather than by the count: \
 about spreadness or intersection is asked. The count would in fact \
 survive losing four lines (9 > 8); what does not survive is the object \
 ceasing to be a design."""
+
+# ----------------------------------------------------------------
+# Profile.v -- the reduction at an arbitrary profile, and the barrier.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "profilespread-drop-nonempty"
+file = "coq/Profile.v"
+question = """The profile condition excludes T = []. Is that guard \
+load-bearing, or is it inherited decoration from RaoSpread?"""
+find = """    NoDup T -> T <> [] -> deg T F <= B (m - length T)."""
+replace = """    NoDup T -> deg T F <= B (m - length T)."""
+expect = "killed"
+because = """Load-bearing, and for the reason the decision procedure \
+exists: at T = [] the condition reads |F| <= B m, which contradicts the \
+size hypothesis B m < |F| outright. profile_witness_none cannot produce \
+it -- profile_violatesb returns false on [] by construction -- so the \
+reduction loses its "no violation" branch."""
+
+[[mutation]]
+id = "greedyclosed-drop-the-level-factor"
+file = "coq/Profile.v"
+question = """GreedyClosed carries the factor m -- one point per member \
+of the cover, m of them. Drop it and the recurrence becomes geometric. \
+Is the factorial in Erdos-Rado exactly that m?"""
+find = """  forall m, 1 <= m -> m <= n -> (k - 1) * m * B (m - 1) <= B m."""
+replace = """  forall m, 1 <= m -> m <= n -> (k - 1) * B (m - 1) <= B m."""
+expect = "killed"
+because = """It is exactly that m. Without it the unrolled bound is \
+(k-1)^m, not (k-1)^m * m!, so greedy_forces_erdos_rado no longer holds; \
+and greedy_closes_profile loses the cover arithmetic, since the cover \
+has (k-1)*m points and not (k-1). The factorial in the 1960 bound is \
+the factor m paid once per level, and this mutation is the check."""
+
+[[mutation]]
+id = "greedy-matching-off-by-one"
+file = "coq/Profile.v"
+question = """A family with no k pairwise disjoint members has a maximal \
+matching of at most k-1. Does the development notice if that is stated \
+as k?"""
+find = """    NoKDisjoint k F -> incl S F -> NoDup S -> PairwiseDisjoint S ->
+    length S <= k - 1."""
+replace = """    NoKDisjoint k F -> incl S F -> NoDup S -> PairwiseDisjoint S ->
+    length S <= k."""
+expect = "killed"
+because = """Killed at the proof of the mutated lemma itself: with the \
+bound at k the contradiction branch never fires, and firstn k S is no \
+longer available as the witness. The off-by-one is the whole content of \
+the step -- at k the cover would have (k-1+1)*m points and the barrier \
+constant would move."""
+
+[[mutation]]
+id = "er-profile-drop-the-factorial"
+file = "coq/Profile.v"
+question = """Is Erdos-Rado's profile greedy-closed because of the \
+factorial, or would the bare power do?"""
+find = """Definition er_profile (k : nat) (j : nat) : nat := (k - 1) ^ j * fact j."""
+replace = """Definition er_profile (k : nat) (j : nat) : nat := (k - 1) ^ j."""
+expect = "killed"
+because = """The factorial is the whole of it. (k-1)^j is greedy-closed \
+only when (k-1)*m <= k-1, i.e. m <= 1, so er_profile_greedy_closed fails \
+at the second level and erdos_rado_via_profile stops deriving the 1960 \
+bound."""
+
+[[mutation]]
+id = "profile-witness-forgets-the-level"
+file = "coq/Profile.v"
+question = """The decision procedure tests deg T F against B (m - |T|). \
+Does testing it against B m -- the top of the profile -- still work?"""
+find = """  | _ :: _ => Nat.ltb (B (m - length T)) (deg T F)"""
+replace = """  | _ :: _ => Nat.ltb (B m) (deg T F)"""
+expect = "killed"
+because = """Killed: profile_witness_none would then establish only \
+deg T F <= B m, which is not ProfileSpread, and profile_witness_some \
+would report a violation too weak for the link to exceed B (m - |T|). \
+The level-indexing is what makes the recursion profile-preserving."""
+
+[[mutation]]
+id = "profile-reduction-drops-the-base-hypothesis"
+file = "coq/Profile.v"
+question = """profile_reduction assumes 1 <= B 0. Is that needed, or is \
+it inherited from 1 <= r in spread_reduction?"""
+find = """    2 <= k -> 1 <= B 0 ->
+    ProfileYieldsDisjoint n k B ->
+    forall m, m <= n -> UpperBound m k (S (B m))."""
+replace = """    2 <= k ->
+    ProfileYieldsDisjoint n k B ->
+    forall m, m <= n -> UpperBound m k (S (B m))."""
+expect = "killed"
+because = """Needed. At m = 0 the reduction has no oracle to call: it \
+argues that B 0 < |F| forces two members into a 0-uniform distinct \
+family, which has at most one. With B 0 = 0 the hypothesis is only \
+|F| >= 1 and the contradiction disappears."""
+
+# ----------------------------------------------------------------
+# Counting.v -- Stage A of the spread lemma.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "binom-pascal-wrong-branch"
+file = "coq/Counting.v"
+question = """Pascal's recursion adds the two entries above. Does the \
+development notice if it adds the same one twice?"""
+find = "  | S n', S j' => binom n' j' + binom n' (S j')"
+replace = "  | S n', S j' => binom n' j' + binom n' j'"
+expect = "killed"
+because = """Killed. The mutated recursion is 2^j, not C(n,j): it loses \
+binom_diag, binom_one, the absorption identity, and the agreement with \
+the layer enumeration all at once. length_subsets_of_size is the \
+statement that pins it -- the layer is defined by filtering, so only the \
+true recursion can equal it."""
+
+[[mutation]]
+id = "binom-ratio-drop-the-successor"
+file = "coq/Counting.v"
+question = """The estimate assumes c*N <= d*(S j). Section 1's use gives \
+c*N <= d*j, one notch stronger. Is the successor the real boundary, or \
+would c*N <= d*(j+2) do?"""
+find = """    c * N <= d * S j ->
+    c ^ m * binom N (j + m) <= d ^ m * binom N j."""
+replace = """    c * N <= d * (j + 2) ->
+    c ^ m * binom N (j + m) <= d ^ m * binom N j."""
+expect = "killed"
+because = """Killed, and it must be: binom_ratio_needs_the_successor is a \
+witness in the same file. N = 1, j = 0, c = 2, d = 1, m = 1 satisfies \
+2*1 <= 1*2 and refutes 2*C(1,1) <= 1*C(1,0). rust/tests/counting.rs \
+finds 102 such points in a small box."""
+
+[[mutation]]
+id = "binom-absorb-untruncated"
+file = "coq/Counting.v"
+question = """The absorption identity uses nat's truncated subtraction, \
+so above the diagonal both sides are zero. Is that the identity, or is \
+the (N - j) an off-by-one for (S N - j)?"""
+find = "Lemma binom_absorb : forall N j, binom N (S j) * S j = binom N j * (N - j)."
+replace = "Lemma binom_absorb : forall N j, binom N (S j) * S j = binom N j * (S N - j)."
+expect = "killed"
+because = """Killed at N = 1, j = 0: the true identity reads \
+C(1,1)*1 = C(1,0)*1, and the mutation demands C(1,1)*1 = C(1,0)*2, i.e. \
+1 = 2. Absorption is the single arithmetic fact the estimate rests on \
+and a one-step shift in it breaks binom_step immediately."""
+
+[[mutation]]
+id = "layer-filters-the-wrong-length"
+file = "coq/Counting.v"
+question = """The size-j layer filters subsets by length = j. Would \
+length <= j do -- i.e. is the layer a layer, or a prefix of the \
+powerset?"""
+find = """  filter (fun A => Nat.eqb (length A) j) (subsets l)."""
+replace = """  filter (fun A => Nat.leb (length A) j) (subsets l)."""
+expect = "killed"
+because = """Killed by length_subsets_of_size: the cumulative count is \
+the partial row sum, not the binomial coefficient. At l of length 2 and \
+j = 1 the mutation counts 3 subsets ([], [x], [y]) against C(2,1) = 2. \
+The layer being a single layer is what makes binom the right count."""
+
+[[mutation]]
+id = "count-inj-drops-nodup"
+file = "coq/Counting.v"
+question = """count_inj_le requires NoDup on the domain only. Is that \
+hypothesis doing work, or does an injection bound the count regardless?"""
+find = """         (L : list A) (M : list B),
+    NoDup L ->
+    (forall x, In x L -> p x = true -> In (f x) M /\\ q (f x) = true) ->"""
+replace = """         (L : list A) (M : list B),
+    (forall x, In x L -> p x = true -> In (f x) M /\\ q (f x) = true) ->"""
+expect = "killed"
+because = """Doing work. Without NoDup the domain may repeat, so the \
+count on the left over-counts what the injection maps into: L = [A; A] \
+with f the identity and M = [A] gives 2 <= 1. The proof goes through \
+NoDup_incl_length, which needs it on the first list."""
+
+[[mutation]]
+id = "binom-two-pow-off-by-one"
+file = "coq/Counting.v"
+question = """Is C(n,j) <= 2^n the true bound, or is it loose enough to \
+survive halving?"""
+find = "Lemma binom_le_two_pow : forall n j, binom n j <= 2 ^ n."
+replace = "Lemma binom_le_two_pow : forall n j, binom n j <= 2 ^ n - 1."
+expect = "killed"
+because = """Killed at n = 0: C(0,0) = 1 and 2^0 - 1 = 0. The bound is \
+attained at the ends of every row, so it cannot be weakened by any \
+additive amount at all -- which is also why it is the right bound to \
+carry into Stage B."""
+
+# ----------------------------------------------------------------
+# Fragment.v -- Stage B of the spread lemma.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "frag-cands-forget-the-union"
+file = "coq/Fragment.v"
+question = """The candidates are the S' in F with S' subset S union V. \
+Is the union load-bearing, or would S' subset S do?"""
+find = """      (filter (fun A => containsb A (add_set S V)) F)."""
+replace = """      (filter (fun A => containsb A S) F)."""
+expect = "killed"
+because = """Killed at Claim 3.3(2). Its proof needs every member of \
+F' -- the members inside Z = V union M -- to have been a candidate, and \
+Z is inside S union V but not inside S. Lovett's proof says exactly \
+this: "S' subset Z subset S union V, so S' was a candidate when \
+defining the minimal fragment M(S,V)"."""
+
+[[mutation]]
+id = "frag-cands-keep-v"
+file = "coq/Fragment.v"
+question = """A candidate is S' minus V, not S'. Does anything notice \
+if the fragment keeps V?"""
+find = """  map (fun A => setminus A V)
+      (filter (fun A => containsb A (add_set S V)) F)."""
+replace = """  map (fun A => A)
+      (filter (fun A => containsb A (add_set S V)) F)."""
+expect = "killed"
+because = """Killed at Observation 2: the whole point of the fragment is \
+that it is disjoint from V, and V is what the sampling removes. Without \
+the subtraction the encoding also stops decoding, since V = Z minus M \
+relies on M avoiding V."""
+
+[[mutation]]
+id = "minimal-fragment-empty-seed"
+file = "coq/Fragment.v"
+question = """The minimiser is seeded with S minus V, which is a real \
+candidate when S is in F. Would seeding with the empty set -- always of \
+minimum possible length -- do just as well?"""
+find = """  argmin_len (setminus S V) (frag_cands F S V)."""
+replace = """  argmin_len [] (frag_cands F S V)."""
+expect = "killed"
+because = """Killed at Observation 3. An empty seed has length 0, so the \
+minimiser returns it always, and M(S,V) = [] regardless of whether any \
+member of F sits inside V -- which is exactly what Observation 3 \
+forbids. The seed has to be a genuine candidate, and S is one because \
+S is a subset of S union V."""
+
+[[mutation]]
+id = "argmin-picks-the-largest"
+file = "coq/Fragment.v"
+question = """Is minimality of the fragment load-bearing, or would any \
+canonical choice among the candidates do?"""
+find = """      if length A <? length best then argmin_len A l' else argmin_len best l'"""
+replace = """      if length best <? length A then argmin_len A l' else argmin_len best l'"""
+expect = "killed"
+because = """Killed at minimal_fragment_le, and through it at Claim \
+3.3(2), whose second inclusion is precisely the minimality count \
+|M| <= |S' minus V|. Minimality is not bookkeeping: it is what forces \
+every member of F' to have the same fragment."""
+
+[[mutation]]
+id = "frag-z-is-the-wrong-union"
+file = "coq/Fragment.v"
+question = """Z is V union M(S,V). Is the fragment what joins V, or \
+would S do -- both contain M?"""
+find = """Definition frag_Z (F : Family) (S V : list nat) : list nat :=
+  add_set V (minimal_fragment F S V)."""
+replace = """Definition frag_Z (F : Family) (S V : list nat) : list nat :=
+  add_set V S."""
+expect = "killed"
+because = """Killed at frag_Z_minus_fragment: decoding V as Z minus M \
+needs Z to be exactly V together with M, and V union S leaves the part \
+of S outside M behind. The encoding would stop being injective in its \
+second coordinate, which is the half that decodes on the nose."""
+
+[[mutation]]
+id = "psi-forgets-the-fragment"
+file = "coq/Fragment.v"
+question = """The decoder rebuilds S as M union (S minus M). Is the M \
+needed, or is S minus M already S?"""
+find = """  let '(Z, _, M, R) := t in (add_set M R, setminus Z M)."""
+replace = """  let '(Z, _, M, R) := t in (R, setminus Z M)."""
+expect = "killed"
+because = """Killed at psi_phi_SetEq. S minus M is S only when M is \
+empty, and M is empty exactly when some member of F sits inside V \
+(Observation 3) -- the case the whole argument is trying to reach, not \
+the case it starts in."""
+
+# ----------------------------------------------------------------
+# The fibred counting lemma and the geometric sum.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "geom-halve-the-constant"
+file = "coq/Counting.v"
+question = """A decreasing geometric series is at most twice its first \
+term. Is the 2 real, or is the series already bounded by its first \
+term?"""
+find = "Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= 2 * b ^ i."
+replace = "Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= b ^ i."
+expect = "killed"
+because = """Killed at a = 1, b = 2, i = 1: the sum is b + a = 3 against \
+b^1 = 2. The 2 is the value of 1/(1 - a/b) at the boundary a/b = 1/2, so \
+it is exactly the right constant for this hypothesis and cannot be \
+dropped."""
+
+[[mutation]]
+id = "geom-weaken-the-ratio"
+file = "coq/Counting.v"
+question = """The geometric bound assumes 2a <= b. Would a <= b do -- \
+i.e. is a merely decreasing series enough, or does it have to decrease \
+geometrically?"""
+find = "Lemma geom_le : forall a b i, 2 * a <= b -> geom a b i <= 2 * b ^ i."
+replace = "Lemma geom_le : forall a b i, a <= b -> geom a b i <= 2 * b ^ i."
+expect = "killed"
+because = """Killed at a = b = 1, where the sum is i+1 and the claimed \
+bound is 2 -- unbounded against a constant. rust/tests/counting.rs pins \
+that 2a <= b+1 already fails there, so the hypothesis is minimal for the \
+constant 2, not merely convenient."""
+
+[[mutation]]
+id = "fibred-drop-injectivity"
+file = "coq/Counting.v"
+question = """The fibred bound requires the pair (g,h) to be injective. \
+Is that load-bearing, or do the fibre caps alone bound the domain?"""
+find = """    (forall x y, In x L -> In y L -> g x = g y -> h x = h y -> x = y) ->
+    (forall b, In b Base -> length (fib b) <= K) ->
+    length L <= length Base * K."""
+replace = """    (forall b, In b Base -> length (fib b) <= K) ->
+    length L <= length Base * K."""
+expect = "killed"
+because = """Load-bearing, and the counterexample is one line: take L \
+with two distinct elements mapping to the same (g,h) pair, Base a \
+singleton and K = 1. Then 2 <= 1. Without injectivity the map from L \
+into the dependent product is not NoDup and NoDup_incl_length does not \
+apply."""
+
+[[mutation]]
+id = "geom-assemble-halve-the-constant"
+file = "coq/Counting.v"
+question = """Claim 3.4's last step bounds the whole tail sum by twice \
+its first term. Is the factor 2 needed once the terms are integers?"""
+find = """      b ^ t * sum_from x t i <= 2 * a ^ t * C."""
+replace = """      b ^ t * sum_from x t i <= a ^ t * C."""
+expect = "killed"
+because = """Killed. With a = 1, b = 2, C = 8, t = 0 and the largest x \
+the hypothesis allows -- 8, 4, 2, 1 -- the sum is 15 against a^t*C = 8. \
+Integrality does not rescue it: the doubling is the value of the \
+geometric series, not slack in the estimate."""
+
+# ----------------------------------------------------------------
+# Canonicalisation, and Claim 3.4 closed.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "norm-idem-drop-nodup"
+file = "coq/Counting.v"
+question = """norm is the identity on ordered sublists of U. Does that \
+need U to have no repeats?"""
+find = "Lemma norm_idem : forall U V, NoDup U -> In V (subsets U) -> norm U V = V."
+replace = "Lemma norm_idem : forall U V, In V (subsets U) -> norm U V = V."
+expect = "killed"
+because = """It does. With U = [1;1] and V = [1] -- an ordered sublist -- \
+filter (memb . V) U is [1;1], not [1]. Canonicalisation only round-trips \
+when the universe is itself canonical, and that is why NoDup U is a \
+hypothesis of every theorem downstream of it."""
+
+[[mutation]]
+id = "frag-base-forgets-the-chosen-member"
+file = "coq/Fragment.v"
+question = """The key space indexes M by subsets of S' = first_in F Z. \
+Would subsets of Z do -- both contain M?"""
+find = """  dep_pairs (subsets_of_size (j + m) U)
+            (fun Z => subsets_of_size m (first_in F Z))."""
+replace = """  dep_pairs (subsets_of_size (j + m) U)
+            (fun Z => subsets_of_size m Z)."""
+expect = "killed"
+because = """Killed at frag_base_length. Indexing by subsets of Z gives \
+C(j+m, m) choices, which depends on the sample size; indexing by subsets \
+of S' gives C(n, m), which does not. That is the whole content of step 3 \
+of Claim 3.4 -- and the reason S' is in the encoding at all, since the \
+decode never reads it."""
+
+[[mutation]]
+id = "claim-three-four-weaken-the-ratio"
+file = "coq/Fragment.v"
+question = """Claim 3.4's sum needs kq >= 8, i.e. 2*(4d) <= ck. Would \
+4d <= ck do -- i.e. does the series only have to decrease?"""
+find = """    c * length U <= d * S j ->
+    2 * (4 * d) <= c * k ->
+    1 <= c * k ->"""
+replace = """    c * length U <= d * S j ->
+    4 * d <= c * k ->
+    1 <= c * k ->"""
+expect = "killed"
+because = """Killed at geom_assemble, whose hypothesis is 2a <= b with \
+a = 4d and b = ck. At a = b the series is (i+1) copies of its first term \
+and no constant bounds it; Counting.geom_le's own mutation \
+geom-weaken-the-ratio pins the same boundary one level down."""

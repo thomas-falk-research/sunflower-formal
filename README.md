@@ -223,7 +223,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 125 mutations, 122 are killed outright, two
+  that something breaks. Of 150 mutations, 147 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -234,7 +234,19 @@ Highlights of the less-routine parts:
   change what we claim?" from a rereading exercise into a one-line diff.
   Sixth, one level up again, `make docnumbers` checks every count this
   prose quotes about itself against the list it is a count of — three
-  were already wrong when that gate was written. Underneath them, `coqchk`
+  were already wrong when that gate was written. Seventh, `make ceilings`
+  costs every *route*: each reduction declares the best `f(n,3)` bound it
+  could ever produce, and `tools/ceiling.py` compares it in exact integer
+  arithmetic against Erdős–Rado 1960, against the record, and against the
+  target, failing the build when a route's declared verdict disagrees with
+  its own arithmetic. That gate exists because five sessions of correct
+  work were done inside a reduction whose best case was worse than the
+  1960 bound and nobody had multiplied it out. Eighth, `make prcheck`
+  gates the *write-up*: a pull request's counts against the lists they
+  count, every claim's cited evidence against something that exists, and
+  an unqualified claim of novelty against whether a literature search was
+  actually run. It found six unaudited theorems the first time it ran.
+  Underneath them, `coqchk`
   re-verifies every module with Coq's separate kernel checker and
   gates on a whole-library assumption census, which is what makes
   "zero admits" a claim about the development rather than about a list
@@ -289,10 +301,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 42 Coq files, then runs the axiom audit
+make verify        # builds all 45 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (547 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (671 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

@@ -7,6 +7,16 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
+> **Starting cold? Read §32 first.** It is the most recent session's
+> handover: what moved, what did not, the five open questions that would
+> count as new mathematics, and the failure modes to skip. Then §1 (the
+> axiom, and how far its discharge has got), and `docs/reading.md`'s
+> rules — there are **26**, each earned by an error made here.
+>
+> The one sentence a cold reader most needs: **discharging the single
+> axiom will not improve any bound** — it makes a Rao-2020-shaped bound
+> unconditional, and the literature record is already better. §32.2.
+
 ---
 
 ## Done: the testing layer
@@ -136,7 +146,16 @@ from the section's summary.**
    and a geometric sum. The earlier plan budgeted for "binomial estimates"
    in the plural; there is one.
 
-### Stage A — the counting layer
+### Stage A — the counting layer — **DONE, `coq/Counting.v`, §30**
+
+Every item on the list below is proved, axiom-free, and cross-checked by
+`rust/tests/counting.rs` against an independent implementation. The one
+correction Stage A produced is that **the binomial estimate's hypothesis
+is not the one this section assumed**: §1 wrote it at `j = qN`, i.e.
+`c*N ≤ d*j`, and the argument in fact runs at `c*N ≤ d*(j+1)`, which is
+strictly weaker and is *exactly* the boundary — `c*N ≤ d*(j+2)` is false.
+See §30.2. `Counting.binom_ratio_at_threshold` is the shape this section
+asks for, derived from the sharp one.
 
 **The technical choice from an earlier version of this section was
 backwards.** §1 used to say: state the covering step for the *product
@@ -174,6 +193,17 @@ ratio**, not powerset enumeration:
 but the *counting* is over the size-`j` layer.
 
 Independently testable, and the Rust testbed can falsify every line of it.
+
+### Stage B — the encoding — **set-theoretic half DONE, `coq/Fragment.v`, §31**
+
+Definition 3.2, all three observations, both parts of Claim 3.3, the
+encoding, its decoder and the injectivity the count consumes are proved,
+axiom-free, and were falsified over 32968 exhaustive triples first. The
+count itself is **not** done; §31.5 names the two things in the way (a
+fibred counting lemma, and the geometric sum). And Stage B produced the
+same kind of correction Stage A did: **the decode is not an equation**,
+only its `V` half is, and closing the `S` half needs `Distinct F` — see
+§31.3 and rule 24.
 
 ### Stage B — the encoding, and it is smaller than it looked
 
@@ -487,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 125 anecdotes into a coverage metric over the
+  mutation testing from 150 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -7706,3 +7736,1352 @@ family is confirmed as the underlying object, verbatim from [FHHZ17] p. 1;
 what was not found is the thinning. A specialist in the degree-condition
 line may recognise it on sight, and the remaining search is still owed
 before any of this is described as new outside the repository.
+
+## 29. The reduction at an arbitrary profile: the greedy cover step
+##     cannot beat 1960, and that is now a theorem
+
+§28.4 costed one route and found it capped below Erdős–Rado. §21.5 had
+costed another, four sections earlier, and found the same constant. This
+section asks what the two have in common, gets an exact answer, and turns
+the answer into a gate that costs every future route automatically.
+
+**Nothing in this section is new mathematics.** It is a reorganisation,
+one range check upgraded to a theorem, and a tool. §29.6 says exactly
+which parts were already in the repository — three of them were, and one
+of those was the thing the incoming brief listed as the session's first
+task. The value is in §29.5 and in the fact that the barrier is now
+machine-checked rather than asserted.
+
+### 29.1 The observation
+
+`SpreadReduction.spread_reduction` takes an `m`-uniform family with
+`deg T F ≤ r^(m-|T|)` and more than `r^m` members, and returns a
+`k`-sunflower. Its induction never uses that `r^·` is a power. Replace
+`r^j` by an arbitrary `B : nat -> nat` and every step goes through
+verbatim, because the recursion is **profile-preserving**: if `T`
+violates the condition then the link has uniformity `j = m - |T|`, more
+than `B j` members, and
+
+```
+  deg S (link T F)  =  deg (S ++ T) F  ≤  B (m - |S| - |T|)  =  B (j - |S|)
+```
+
+which is the same condition one level down. `coq/Profile.v` states that:
+
+```
+  ProfileSpread B m F        deg T F <= B (m - |T|),  T nonempty
+  ProfileYieldsDisjoint n k B    the oracle, at profile B
+  profile_reduction          ProfileYieldsDisjoint n k B  ->  f(m,k) <= B m + 1
+```
+
+`spread_reduction` is the instance at `B j = r^j`
+(`spread_reduction_is_a_profile_instance`), and the correspondence is
+definitional (`RaoSpread_ProfileSpread`, `ProfileYieldsDisjoint_pow`).
+
+The generalisation costs nothing because the reduction never *propagates*
+spreadness into the link — it re-decides it at each level with
+`profile_witness`, exactly as `Spread.rao_witness` does.
+
+### 29.2 The theorem
+
+The **greedy cover step** is the argument every elementary bound in this
+development bottoms out at: no `k` pairwise disjoint members, so a maximal
+matching has at most `k-1` of them, so the family is covered by `(k-1)m`
+points, so
+
+```
+  |F|  <=  (k-1) · m · B(m-1).                       greedy_profile_bound
+```
+
+It closes the reduction at a profile `B` exactly when that lands inside
+`B`:
+
+```
+  GreedyClosed n k B  :=  (k-1) · m · B(m-1) <= B m,   1 <= m <= n
+  greedy_closes_profile :  GreedyClosed n k B -> ProfileYieldsDisjoint n k B
+```
+
+and unrolling the recurrence from `B 0 = 1` gives, in one induction:
+
+> **`greedy_forces_erdos_rado`: every greedy-closed profile satisfies
+> `B m ≥ (k-1)^m · m!`.**
+>
+> **`greedy_cannot_beat_erdos_rado`: so the bound it yields through
+> `profile_reduction` is at least `ErdosRado_Greedy.er_upper_bound`. The
+> greedy cover step cannot beat 1960, at any `k`, by any amount.**
+
+This is **exact**. There is no Stirling, no `e`, no range check: the
+conclusion is the 1960 constant itself. It is the formal content of the
+sentence that the `m!` in Erdős–Rado *is* the factor `m` paid once per
+level by covering with one member's points.
+
+Two instances make the statement concrete.
+
+* **Erdős–Rado's own profile is the least greedy-closed one.**
+  `er_profile k j = (k-1)^j · j!` is greedy-closed **with equality at
+  every level** (`er_profile_greedy_closed`), so `profile_reduction`
+  returns `(k-1)^n · n! + 1`. That is `erdos_rado_via_profile` — a
+  second, independent derivation of `ErdosRado.erdos_rado_upper_bound`
+  inside this development, through the spread reduction rather than
+  through `ErdosRado.v`'s own induction on the uniformity.
+
+* **`SpreadThreshold.cover_spread_disjoint` is the power profile.**
+  `r^j` is greedy-closed iff `(k-1)m ≤ r`, so `r = (k-1)n` works
+  throughout, which at `k = 3` is exactly §22.1's `r*(n,3) ≤ 2n`. It
+  generalises to every `k` for free (`cover_spread_disjoint_general`),
+  and `cover_bound_cannot_beat_erdos_rado` applies the barrier to it.
+
+  **How much that generalisation is worth, exactly: one.**
+  `SpreadReduction.elementary_spread_disjoint` was already general in `k`,
+  at `r = n(k-1) + 1`; the profile version is `r = (k-1)n`, and drops the
+  `1 ≤ n` hypothesis. So what §22.1 gained at `k = 3` — one — is now
+  gained at every `k`, and nothing more. The row is worth stating because
+  the *reason* changes: `cover_spread_disjoint`'s proof is a bespoke
+  `k = 3` case analysis, and this one is `GreedyClosed` plus arithmetic,
+  which is also what makes the barrier below apply to it.
+
+### 29.3 The step is lossy, and no refinement of it helps
+
+The barrier is a statement about the *method*, not about the truth, and
+the two are measurably different already at uniformity two.
+
+Define the **least profile** `B_k`: `B_k(0) = 1` and `B_k(m)` the largest
+`m`-uniform distinct family with no `k` pairwise disjoint members
+satisfying `deg T F ≤ B_k(m - |T|)`. By construction
+`ProfileYieldsDisjoint n k B_k` holds and `f(m,k) ≤ B_k(m) + 1`. At
+`k = 3`:
+
+```
+  B(0) = 1     B(1) = 2     B(2) = 6
+  Erdos-Rado           8              <- the greedy step's value
+```
+
+`B(2) = 6` is a two-line argument, and the search is a confirmation of it
+rather than its proof — the search is over bounded ground sets and `B_k`
+is not.
+
+> A graph with max degree ≤ 2 and no three pairwise disjoint edges has at
+> most 6 edges. Take a maximal matching; it has at most two edges, so its
+> at most four endpoints cover every edge. Summing degrees over those
+> endpoints counts every edge at least once **and the two matching edges
+> twice**, so `|E| ≤ 4·2 − 2 = 6`.
+
+Attained by **two disjoint triangles** — which is `F23.two_triangles`,
+already in this development as the family attaining `g(2) = 6`. The
+search (`rust/tests/profile.rs`, backtracking over all simple graphs on
+6, 7, 8 and 9 points with max degree ≤ 2 and no three pairwise disjoint
+edges) returns 6 and that witness at every ground set. So the greedy step
+over-counts by 2 at the second level.
+
+Neither the argument nor the search is in Coq: `B_k` is a *measured*
+object here, not a formal one, and `greedy_forces_erdos_rado` does not
+depend on it. What it depends on is nothing but the recurrence.
+
+> The gap is real; the step cannot close it; and
+> `greedy_forces_erdos_rado` says no sharpening of *the step* ever will.
+> Something else has to. §22.1's pair-covering is one such something —
+> it beats `2n` precisely because a pair has degree `r^(m-2)` where a
+> point has `r^(m-1)` — and the spread lemma is the other.
+
+**A refinement was derived, tested, and dropped.** Counting the cover
+degrees more carefully (the `k-1` matching members are each counted `m`
+times, not once) gives `|F| ≤ (k-1)(m·B(m-1) - (m-1))`, hence the profile
+`1, 2, 6, 32, 250` against Erdős–Rado's `1, 2, 8, 48, 384`, hence
+`f(3,3) ≤ 33` unconditionally. It was not built, because
+**`PureLink.f_3_3_at_most_27` is already in the development,
+unconditional and axiom-free**, and 27 < 33. See §29.6.
+
+### 29.4 The linear comparison, exactly
+
+The greedy barrier is exact. The other routes this development has costed
+are not greedy-only, so they need the comparison done directly, and §28.4
+did it by evaluating both sides for `n ≤ 200`. It is a theorem, and the
+whole proof is one Bernoulli inequality in `nat`:
+
+```
+  pow_bernoulli                n^k · (n+k)  <=  n · (n+1)^k
+  two_pow_le_succ_pow          2·n^n  <=  (n+1)^n            (k = n)
+  erdos_rado_below_the_n_to_the_n_ceiling
+                               2^n · n!  <=  (n+1)^n,  every n
+```
+
+`pow_bernoulli`'s induction step reduces to `0 ≤ k`, which is why it is
+eight lines rather than a binomial expansion. The consequence:
+
+> **`star_extremal_ceiling_is_worse_than_erdos_rado`: the ceiling
+> `(n+1)^n + 1` that `HiltonMilner.star_extremal_route_needs_r_above_n`
+> pins the star-extremality route to is at least Erdős–Rado's
+> `2^n·n! + 1`, at every `n`.**
+
+§28.4's "checked for every `n` from 2 to 200" is subsumed, and the
+statement no longer carries a range.
+
+### 29.5 The gate: rule 14 as machinery
+
+`tools/ceiling.py`, wired into `make verify`. Every reduction in the
+development declares the best `f(n,3)` bound it can *possibly* produce —
+not what it currently produces — and the tool instantiates it in exact
+integer arithmetic against three bars. Because every bound has the shape
+`base(n)^n`, the routes are compared by their **base**:
+
+```
+  route                                     base(50) base(200)    g  verdict
+  elementary cover, r = 2n+1                     101       401 0.99  linear: loses
+  greedy cover, r = 2n                           100       400 1.00  linear: loses
+  quadratic split, r = 1+sqrt(3n^2-4n+3)          87       347 0.99  linear: loses
+  matching split, method ceiling r = n+1          51       201 0.99  linear: loses
+  star extremality, pinned at r = n+1             51       201 0.99  linear: loses
+  tau-indexed bound, r = n                        50       200 1.00  linear: loses
+  Erdos-Rado profile via the reduction            38       149 0.98  linear: equals
+  spread lemma, r ~ 3 log2(3n)                    24        30 0.22  sublinear
+  constant threshold (the conjecture)              8         8 0.00  constant
+  ---
+  Erdos-Rado 1960 (the bar)                       38       149 1.00
+  BCW 2021 (the record)                           60        84 0.24
+```
+
+`g` is the measured exponent in `base(n) ~ n^g`. Classification is by
+**shape**, deliberately: the constants in the two sublinear rows (Rao's
+`alpha`, BCW's `C`) are not pinned by this development, so a verdict that
+depended on them would be an artefact of the guess.
+
+Each route also declares the verdict it expects, and **a mismatch fails
+the build**. A route cannot be described as a path to a record once its
+own ceiling says otherwise, and a route written tomorrow gets costed the
+day it is written rather than six sessions later.
+
+Two things the table makes visible that no prose in this file did.
+
+* **Erdős–Rado is not the bar.** §28.4 compares against `2^n·n!`, which is
+  the weakest possible criticism: the record is Bell–Chueluecha–Warnke's
+  `(C·3·log n)^n`, and *every linear route loses to that too*, by a wider
+  margin and for a structural reason. A route needs a **sublinear** base
+  to be in the running at all.
+* **The sharp constant for a linear route is `2/e`.** `r*(n,3) ≤ c·n`
+  gives `f(n,3) ≤ (cn)^n + 1`, which beats `2^n·n!` exactly when
+  `c < 2/e = 0.7357588…` (`tools/ceiling.py --linear`, with the finite-`n`
+  crossovers shown, since Stirling's `sqrt(2πn)` keeps `c` slightly above
+  `2/e` winning until `n ≈ 2000`). **Every linear route in this
+  development has `c ≥ 1`**, the smallest being the matching split's
+  method ceiling at exactly `1`. The best axiom-free bound, §22.1's
+  `1.74n`, is 2.4 times the threshold.
+
+### 29.6 What was already here: three finds, one of them the brief's
+
+Rule 16 says to read the section that first posed the question rather than
+the handoff. Three times this session that changed what got built.
+
+1. **The incoming brief's Track 1, step one — "state
+   `∃C, ∀ n k, SpreadYieldsDisjoint n k (C·k)` as a named `Prop` in Coq
+   and derive `f(n,3) ≤ C^n` through `spread_reduction`. **Do this
+   first**" — has been in the development since `coq/Conjecture.v` was
+   written.** `Conjecture.spread_conjecture` is that `Prop`, in the more
+   general form `∃ c : nat -> nat` rather than `C·k`;
+   `Conjecture.spread_conjecture_suffices` derives the full sunflower
+   conjecture from it and `k3_corollary` specialises to `k = 3`. §2 of
+   this file points at it. **Rao's question, in the absolute form, is
+   already a formal object here.** Nothing was owed and nothing was
+   written.
+
+2. **`r*(m,3)` is not untouched either.** §22's opening sentence is
+   *"§18.5 is the observation that whether the sequence is bounded in `m`
+   is the sunflower conjecture at `k = 3`"*, and the whole section attacks
+   it. The brief's "nobody in this programme has ever pointed the
+   machinery at it" is wrong about this repository.
+
+3. **The refined-profile bound of §29.3 was derived and dropped.** It
+   gives `f(3,3) ≤ 33` unconditionally, which would have been an
+   improvement on the `f(3,3) ≤ 49` that §22.2's table and §18.2's text
+   still quote — except that `PureLink.f_3_3_at_most_27` proves
+   `UpperBound 3 3 27`, unconditionally, `Closed under the global
+   context`. Roughly a hundred lines of double-counting were not written.
+
+   **Consequence: this file has a stale number.** §18.2 says *"this
+   development only knows `20 ≤ g(3) ≤ 48`"*. It knows `g(3) ≤ 26`
+   (`PureLink.f_3_3_at_most_27`), and `Sharp.sharp_beats_erdos_rado_at_three`'s
+   32 is *conditional* on `AHSOptimal` and therefore weaker than what is
+   proved outright. Corrected here rather than in place, because §18.2's
+   surrounding argument is about what a *measurement* would decide and
+   that argument is unaffected.
+
+### 29.7 Measured
+
+```
+  B(2) = 6 at k = 3     exhaustive over all simple graphs on 6, 7, 8, 9
+                        points with max degree <= 2 and no three pairwise
+                        disjoint edges; maximum 6 at every ground set,
+                        witness two disjoint triangles (= F23.two_triangles).
+                        Erdos-Rado / the greedy step give 8 there
+  greedy barrier        checked over 112 systematically inflated profiles
+                        at k = 2..5 and m <= 12, exact u128
+  power profile         greedy-closed iff (k-1)m <= r, checked for
+                        k = 2..6, n = 1..8, and refuted at r-1 exactly
+                        when (k-1)n > r-1
+  2^n n! <= (n+1)^n     n = 0..26, the exact u128 range, tight at n = 0,1
+                        and strict from n = 2. rust/tests/hilton_milner.rs
+                        pins the same comparison to n = 200 in its own
+                        big-integer arithmetic
+  linear routes         (2n)^n, (2n+1)^n, (1.74n)^n and (n+1)^n all at
+                        least 2^n n!, n = 1..23 (the u128 range)
+  the 2/e threshold     c = 0.7357 beats Erdos-Rado at n = 200, 2000 and
+                        20000; c = 0.7400 beats at 200 and loses from
+                        2000 on. tools/ceiling.py --linear
+```
+
+A note on the first draft of `rust/tests/profile.rs`, because it is the
+kind of error this repository exists to catch. It used `u128::pow`, which
+**wraps silently in release mode**, and reported
+`erdos_rado_below_the_n_to_the_n_ceiling` as failing at `n = 28` — for a
+theorem the kernel had already accepted at every `n`. `(n+1)^n` leaves
+`u128` at `n = 27`. Every power in that file is now `checked_pow` with
+the range asserted, and the first overflowing `n` is pinned as a test.
+
+### 29.7a Costs and gates
+
+New: `coq/Profile.v` (one module, no axiom, 21 audited theorems and 6
+audited definitions), `rust/tests/profile.rs` (8 tests), `tools/ceiling.py`
+and the `make ceilings` target, 6 mutations. Coq 8.18 was not present in
+the session container and was installed from Ubuntu's package before
+anything ran, as in §28.8.
+
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (43 modules, clean rebuild)
+  Print Assumptions        all 21 new audited theorems "Closed under the
+                           global context"; no existing .v file was
+                           touched, so the other 547 are unaffected --
+                           `git diff --stat origin/main -- coq/` is one
+                           file added and nothing else
+  make coqchk              pass; the whole-library axiom census is still
+                           exactly `Sunflower.ALWZ.Rao20_lemma2` and
+                           nothing else; no type-in-type, no unsafe
+                           (co)fixpoints, no assumed positivity
+  python3 tools/mutate.py  131 mutations: 128 killed, 2 genuine survivors
+                           (unchanged), 1 control surviving as it must,
+                           **0 unexpected**. All 6 new mutations killed as
+                           declared, each in coq/Profile.v, ~210s apiece
+  cargo test --release     30 suites, 287 tests, 0 failures
+  tools/statements.py      677 baseline entries, accepted in this commit
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, every declared verdict matches
+```
+
+### 29.8 The ledgers
+
+**Conjecture ledger.** No row of HM, X, T, F or B moved — nothing here is
+about `I(m,r)`. One row is added, because §29.3 names an object that did
+not have a name.
+
+| name | statement | status |
+|---|---|---|
+| **P** (new) | **the profile reduction is lossless**: `B_k = g_k`, where `B_k` is the least profile (§29.3) and `g_k(m)` is the largest sunflower-free `m`-uniform family | `g_k(m) ≤ B_k(m)` is a **theorem** and elementary — a sunflower-free family has no `k` pairwise disjoint members, and its link at `T` is sunflower-free at uniformity `m-\|T\|`, so `deg T F ≤ g_k(m-\|T\|)`. Verified equal at `k = 3` for `m = 0, 1, 2`: both are `1, 2, 6`. Open from `m = 3`, where `B_3(3) ∈ [20, 32]` — 20 from `g(3) ≥ 20`, 32 from §29.3's refined count — against `g(3) ≤ 26` (`PureLink.f_3_3_at_most_27`). So **`B_3(3) > 26` would refute P outright**, and it is a finite search |
+
+P matters because `f(m,k) ≤ B_k(m) + 1` is exactly what `profile_reduction`
+delivers, so P is the statement that the reduction this whole development
+is built on loses nothing. It is *not* a route to a record — `B_k ≥ g_k`
+means P at best re-derives the truth — but it is the first question here
+about how much the reduction costs, and the answer is unknown past
+uniformity two.
+
+**Barrier ledger**, three new rows:
+
+| what | why it is dead | budget/evidence |
+|---|---|---|
+| **the greedy cover step, as a route to any record** | any profile it closes is `≥ (k-1)^m·m!`, which *is* Erdős–Rado | `greedy_forces_erdos_rado`, exact, every `k`, no range |
+| **any linear bound on `r*(n,3)` with `c ≥ 2/e`** | `(cn)^n ≥ 2^n·n!` asymptotically; every route here has `c ≥ 1` | `tools/ceiling.py --linear`; `star_extremal_ceiling_is_worse_than_erdos_rado` proves the `c = 1` case at every `n` |
+| **comparing routes against Erdős–Rado at all** | the record is `(C log n)^n`; a linear route loses to it by a wider margin than to 1960 | §29.5's table, `g` column |
+
+**Novelty ledger** (§28.11's format). **No literature search was run this
+session**, so rule 17 applies to every row: these are claims about this
+development, not priority claims.
+
+```
+  new mathematics       none. The greedy-cover-forces-factorial
+                        observation is the 1960 proof read backwards;
+                        2^n n! <= (n+1)^n is AM-GM; the profile
+                        generalisation is the same recursion [Rao25] p. 8
+                        presents in the same shape (quoted in section 1).
+  new to Coq            profile_reduction and the profile condition;
+                        greedy_closes_profile / greedy_forces_erdos_rado
+                        as a barrier theorem rather than a remark;
+                        erdos_rado_via_profile, a second derivation of
+                        the 1960 bound through the spread reduction;
+                        cover_spread_disjoint_general, section 22.1's
+                        k = 3 cover bound at every k.
+  new as a theorem,     2^n n! <= (n+1)^n at every n, replacing section
+  not as arithmetic     28.4's check to n = 200.
+  new as machinery      tools/ceiling.py: rule 14 enforced by the build
+                        rather than by prose, and the observation that the
+                        bar is (C log n)^n and not 2^n n!.
+  not new               two disjoint triangles (F23.two_triangles, and
+                        g(2) = 6 throughout this file); Erdos-Rado 1960;
+                        Bernoulli; the constant 2/e, which is section
+                        21.5's 1.359 = e/2 read the other way up.
+```
+
+### 29.9 Picking this up cold
+
+**Settled in §29, all axiom-free.**
+
+```
+  Profile.profile_reduction              the reduction at any profile B
+  Profile.greedy_closes_profile          the cover step, at any profile
+  Profile.greedy_forces_erdos_rado       greedy-closed => B m >= (k-1)^m m!
+  Profile.greedy_cannot_beat_erdos_rado  the barrier, in er_upper_bound form
+  Profile.erdos_rado_via_profile         1960, through the spread reduction
+  Profile.cover_spread_disjoint_general  section 22.1's cover bound, every k
+  Profile.pow_bernoulli                  n^k(n+k) <= n(n+1)^k
+  Profile.erdos_rado_below_the_n_to_the_n_ceiling   2^n n! <= (n+1)^n
+```
+
+**Worth attacking next, in order.**
+
+1. **The two live tracks are unchanged and neither was started.**
+   Discharging `Rao20_lemma2` (§1: the counting proof, Lovett §3, staged
+   in three stages with the encoding's injectivity identified as an
+   *equation*), and Rao's `r(p,k) = O(p)` question (`docs/reading.md` A2).
+   §29 says nothing about either; it says that everything *else* in the
+   development is capped, which is an argument for going there.
+2. **`B_k`, the least profile, is a well-defined sequence and only two
+   terms are known.** `B_3 = 1, 2, 6, ?`. `B_3(3) ∈ [g(3), 32]`, so
+   `[20, 32]` with what is proved here. It is a finite search at each
+   term, it is bounded above by the refined count of §29.3, and
+   `f(m,3) ≤ B_3(m) + 1` — so **is the reduction lossless, i.e. is
+   `B_k = g`?** `B_3(2) = 6 = g(2)` is the only data point. This is a
+   clean, cheap, unasked question.
+3. **Nothing else in §29.** The gate is the deliverable; do not add
+   routes to `tools/ceiling.py` for their own sake, add them when a route
+   is written.
+
+**Do not re-run**: the refined profile of §29.3 (dominated by
+`PureLink.f_3_3_at_most_27`), and everything in the §28.6 and §29.8
+barrier ledgers.
+
+### 29.10 The one-line verdict
+
+**The reduction this development is built on works at an arbitrary
+profile, and the greedy cover step closes a profile exactly when that
+profile dominates `(k-1)^m·m!` — so the step that every elementary bound
+here bottoms out at cannot beat Erdős–Rado, at any `k`, by any amount,
+and that is now an exact theorem rather than an estimate.**
+
+Around it: `2^n·n! ≤ (n+1)^n` at every `n`, which retires §28.4's range
+check; Erdős–Rado 1960 re-derived through the spread reduction; §22.1's
+cover bound generalised from `k = 3` to every `k`; and `tools/ceiling.py`,
+which costs every route in the development against 1960, against the
+record, and against the target, and **fails the build when a route's
+description disagrees with its own arithmetic**.
+
+No number moved. The session's other three outputs are refusals: Track 1's
+first task was already done (§29.6.1), the quantity it was aimed at was
+already posed (§29.6.2), and the one bound this section could have
+improved is already beaten by a theorem three files away (§29.6.3). The
+hundred lines not written are the point of rule 16, and the tool is the
+point of rule 14 — the two rules the previous session earned, applied to
+the session that inherited them.
+
+## 30. Stage A of the spread lemma: the counting layer, and the
+##     hypothesis that was one notch too strong
+
+§1 has staged the discharge of `ALWZ.Rao20_lemma2` since the July 2026
+reading session — the counting proof ([ALWZ20] §2 as streamlined by
+Park–Pham, written out in [Lovett] §3, pp. 11–15), in three stages, with
+C17 recording *why* that proof and not Rao's. Nobody had started it.
+
+**Stage A is done.** `coq/Counting.v`, one module, no axiom, 26 audited
+theorems and 4 audited definitions, every one `Closed under the global
+context`.
+
+### 30.1 What is in it
+
+§1's Stage A list, item by item, with the name that discharges it.
+
+```
+  fixed-size subset enumeration    subsets_of_size j l
+                                   := filter (length = j) (Spread.subsets l)
+  its count                        length_subsets_of_size :
+                                     |subsets_of_size j l| = binom |l| j
+  the counting operator            count p L := |filter p L|
+  injection implies <=             count_inj_le
+  additivity over disjoint preds   count_disjoint_add
+  C(n,j) <= 2^n                    binom_le_two_pow
+  the one binomial estimate        binom_ratio
+```
+
+Plus what those needed: `binom` (Pascal's recursion), `binom_zero_above`,
+`binom_diag`, `binom_one`, **`binom_absorb`** — the absorption identity
+`C(N,j+1)·(j+1) = C(N,j)·(N−j)`, which is the only fiddly induction in
+the file and the single arithmetic fact the estimate rests on —
+`length_subsets` (`|subsets l| = 2^|l|`), `subsets_NoDup_enum` (the
+enumeration has no repeats, needed wherever the layer is an injection's
+*domain*), and `NoDup_map_inj`, which Coq 8.18's `List` does not have
+(only the converse `NoDup_map_inv`).
+
+Two decisions worth recording because §1 got to argue for them and this
+section can now confirm them.
+
+* **Fixed-size, not the product measure.** §1's earlier version wanted
+  the product measure at `p = 1/2` so that "probability" would be
+  cardinality over the powerset; it was corrected, on a proof-level read,
+  to the fixed-size statement, because the proof needs `V` *small*
+  (`q = p/log n`) and because Lovett p. 11 derives the product-measure
+  form from the fixed-size one by a limit. Stage A confirms the
+  correction was right: the whole layer is `binom`, no limit appears, and
+  the file is 40-odd lemmas of `nat`.
+
+* **Truncated subtraction is harmless here.** `binom_absorb` is stated
+  with `N - j` in `nat`. Above the diagonal both sides are zero rather
+  than the identity failing, which is checked in Coq
+  (`absorb_above_the_diagonal`) and over a range in Rust.
+
+### 30.2 The correction: the hypothesis was one notch too strong
+
+§1 states the estimate as Lovett's Claim 3.4 uses it — a random subset of
+fixed size `qN`, so `j = qN`, so with `q = c/d` the hypothesis is
+`c·N ≤ d·j`. That is what the application supplies. It is **not** what
+the argument needs.
+
+The single step is `c·C(N,j+1) ≤ d·C(N,j)`, which by absorption reduces
+to `c·(N−j) ≤ d·(j+1)`; and for that, `c·N ≤ d·(j+1)` is enough, since
+`c·(N−j) ≤ c·N`. The iterated form needs the hypothesis only at `j+i` for
+`i ≥ 0`, so it inherits it. So:
+
+> **`Counting.binom_step`:  `c·N ≤ d·(j+1)` → `c·C(N,j+1) ≤ d·C(N,j)`.**
+>
+> **`Counting.binom_ratio`:  `c·N ≤ d·(j+1)` → `c^m·C(N,j+m) ≤ d^m·C(N,j)`.**
+
+And the successor is **exactly** the boundary. `c·N ≤ d·(j+2)` makes the
+statement false, and the smallest witness is tiny:
+
+```
+  N = 1, j = 0, c = 2, d = 1, m = 1
+      hypothesis   2·1 <= 1·(0+2)     holds
+      conclusion   2^1·C(1,1) <= 1^1·C(1,0)   i.e.  2 <= 1     FALSE
+```
+
+`Counting.binom_ratio_needs_the_successor` carries it in the kernel;
+`rust/tests/counting.rs` finds **102** such points in a `N ≤ 15`,
+`j ≤ 17`, `c,d ≤ 6`, `m ≤ 6` box. `Counting.binom_ratio_at_threshold` is
+§1's shape (`c·N ≤ d·j`), derived in one line from the sharp one, and it
+is what Stage B should call.
+
+**Why this is worth a subsection rather than a footnote.** Rule 15 says
+an algebraic restatement is evaluated at the tight case before anything
+is built on it. The tight case here is not where the *application* sits
+(`j = qN`) but where the *argument* stops working, and those differ by
+one. A statement carrying a non-minimal hypothesis is not wrong, but it
+is a gap: a later session, reaching for the estimate at `j+1` and finding
+the lemma stated at `j`, would either re-prove it or weaken its own
+statement to fit. Both are wasted, and neither is visible from §1's text.
+
+> **Rule 23 (`docs/reading.md`). Prove a lemma at the weakest hypothesis
+> its own argument needs, not at the one the application supplies — and
+> record the witness that shows the weakening stops there.** The
+> application's hypothesis is a *use*, not a specification.
+
+### 30.2a The counting layer is polymorphic, and it had to be
+
+§1's sketch types the counting operator as
+`count : (list nat -> bool) -> list (list nat) -> nat`, and the first
+draft of `Counting.v` followed it. That would not have served Stage B.
+
+**Claim 3.4 counts pairs.** Its displayed ratio is
+
+```
+  Pr[ |M(S,V)| >= n/2 ]  =  |B| / ( |F| * C(N, qN) )
+```
+
+with `B = {(S,V) : S ∈ F, V ⊆ U, |V| = qN, |M(S,V)| ≥ n/2}` — the domain
+is `list (list nat * list nat)`, not `list (list nat)`. A counting layer
+typed at `list nat` would have had to be redone, or worked around by
+encoding a pair as one list with a separator, which is exactly the kind of
+thing that makes a formalisation unreadable.
+
+`count`, `count_le_length`, `count_partition`, `count_disjoint_add`,
+`count_mono`, `NoDup_map_inj` and `count_inj_le` are therefore stated at
+an arbitrary type. Nothing is lost — `NoDup_incl_length`, which
+`count_inj_le` goes through, is polymorphic in Coq's standard library and
+needs no decidable equality — and the interface to Stage B can be named:
+
+```
+  pairs F j l      := list_prod F (subsets_of_size j l)
+  pairs_length     : |pairs F j l| = |F| * binom |l| j     <- the denominator
+  count_pairs_le   : count p (pairs F j l) <= |F| * binom |l| j
+```
+
+`pairs_length` **is** Claim 3.4's denominator. That is the whole of the
+Stage A / Stage B interface, and it is one line.
+
+### 30.3 Measured
+
+```
+  binom, two ways         Pascal's recursion (Coq) against the
+                          multiplicative formula prod (n-i)/(i+1) (Rust):
+                          agree at all 41 x 46 = 1886 points with n <= 40,
+                          j <= 45, exact u128. The off-triangle
+                          convention C(n,j) = 0 for j > n is checked, not
+                          assumed
+  absorption              C(N,j+1)(j+1) = C(N,j)(N-j) with truncated
+                          subtraction, N <= 30, j <= 35; the j >= N range
+                          is exercised and both sides are 0 there
+  the estimate            holds at every point of N <= 16, j <= 18,
+                          c,d <= 5, m <= 6 satisfying c*N <= d*(j+1)
+                          (>10000 instances)
+  the boundary            c*N <= d*(j+2) fails at exactly 102 points of
+                          N <= 15, j <= 17, c,d <= 6, m <= 6
+  no hypothesis at all    C(10,5) = 252 against C(10,0) = 1
+  the layer               enumerating size-j subsets of [n] by bitmask
+                          gives C(n,j) of them, distinct, each of size j,
+                          n <= 14; and the layers of [n] exhaust 2^n
+  binom_le_two_pow        C(n,j) <= 2^n for n <= 30, and the row sums to
+                          2^n exactly -- which is length_subsets
+  pairs                   |F| * C(|l|,j) as an enumeration, checked
+                          against list_prod's length for |F| <= 6,
+                          |l| <= 8, j <= 5
+  count                   partition, monotonicity, disjoint additivity,
+                          and complementation as an injection from the
+                          size-4 layer of a 10-set into the size-6 layer,
+                          the equality case C(10,4) = C(10,6) = 210
+```
+
+### 30.4 Costs and gates
+
+New: `coq/Counting.v` (26 audited theorems, 4 audited definitions, no
+axiom), `rust/tests/counting.rs` (10 tests, independent implementations),
+6 mutations. The manifest is now 137 mutations.
+
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (44 modules, clean rebuild)
+  Print Assumptions        all 26 new audited theorems "Closed under the
+                           global context"
+  make coqchk              pass; the whole-library axiom census is still
+                           exactly `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  137 mutations: 134 killed, 2 genuine survivors
+                           (unchanged), 1 control, **0 unexpected**. All
+                           6 new ones killed as declared
+  cargo test --release     31 suites, 297 tests, 0 failures
+  tools/statements.py      707 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The six mutations are the ones a reader should check the file against:
+`binom-pascal-wrong-branch` (does Pascal's recursion add the two entries
+above, or the same one twice?), `binom-ratio-drop-the-successor` (is
+`S j` the boundary, or would `j+2` do?), `binom-absorb-untruncated`,
+`layer-filters-the-wrong-length` (is the layer a layer, or a prefix of
+the powerset?), `count-inj-drops-nodup`, and
+`binom-two-pow-off-by-one` (the bound is attained at both ends of every
+row, so it cannot be weakened by any additive amount at all).
+
+### 30.5 What Stage A does *not* do, and what is next
+
+It does not touch spreadness, families, or sunflowers — deliberately.
+Stage A is the layer Stage B's encoding is *counted with*, and keeping it
+free of the problem is what makes it independently falsifiable: every
+claim above is checked against an implementation that shares no code with
+the Coq side.
+
+**Stage B**, unchanged from §1 and still the stall risk:
+
+```
+  minimal_fragment : Family -> list nat -> list nat -> list nat
+        Lovett Def 3.2, "breaking ties arbitrarily" becoming "first in
+        the enumeration", which is what makes it a function
+  Obs 1-3 and Claim 3.3      set algebra, no arithmetic
+  phi and an explicit psi, with psi (phi (S,V)) = (S,V)
+        section 1's most useful proof-level find: the obligation is an
+        equation, not a case analysis
+  Claim 3.4's count          assembles Stage A's four pieces
+```
+
+The one thing Stage A changes about Stage B's plan: **call
+`binom_ratio_at_threshold`, not `binom_ratio`**, unless Stage B's `V` is
+genuinely at `qN+1` — and if it is, the sharp form is already there.
+
+Stage C (Markov, Claim 3.6's arithmetic-free induction, and the `log n`
+iteration) is untouched.
+
+### 30.6 The one-line verdict
+
+**Stage A of the counting proof is formalised, axiom-free, and
+independently falsified: the size-`j` layer of the powerset with its
+count `C(n,j)`, a counting operator with the injection and additivity
+laws Claim 3.4 uses, `C(n,j) ≤ 2^n`, and the one binomial estimate —
+which turns out to hold under a hypothesis one notch weaker than §1
+assumed, with `c·N ≤ d·(j+1)` exactly the boundary and a two-line witness
+that `j+2` fails.**
+
+The axiom is not discharged and this section does not claim otherwise.
+What it claims is that the first of §1's three stages is done, that it
+needed no arithmetic §1 had not anticipated except one estimate stated
+too strongly, and that the remaining stall risk is exactly where §1 said
+it was — Stage B's encoding.
+
+## 31. Stage B of the spread lemma: the fragment, Claim 3.3, and the
+##     encoding — with the hypothesis §1 could not see
+
+§30 did Stage A. This is Stage B, and it is the stage §1 named as the
+stall risk. It did not stall, for one reason that is worth more than the
+theorems: **the encoding was run before it was proved.**
+
+**`coq/Fragment.v`**, one module, no axiom, 24 audited theorems and 8
+audited definitions, every one `Closed under the global context`.
+
+### 31.1 The source was read, not remembered
+
+The July 2026 session read [Lovett] §3 at proof level and left §1's
+six-line skeleton. That skeleton is a summary, and Stage B is the part
+where the details are the content, so `lovett_pcmi.pdf` was re-fetched
+(sha256 matching `docs/papers/manifest.json` byte for byte), pp. 11–15
+re-rendered at 150 dpi and read. Two things came out of the pages that
+the skeleton does not carry, and both changed the file.
+
+* **The candidate set is never empty when `S ∈ F`,** because `S ⊂ S ∪ V`
+  makes `S` its own candidate. So `minimal_fragment` needs no junk
+  default and every lemma about it has exactly one side condition,
+  `In S F`. §1's `minimal_fragment : Family -> list nat -> list nat ->
+  list nat` gave no hint either way, and the natural defensive design —
+  an `option`, or a default — would have contaminated every downstream
+  statement.
+
+* **`|Z| = qN + m`**, because `Z = V ∪ M` and `M` is disjoint from `V`
+  (Observation 2). That is why Claim 3.4's step 1 reads
+  `C(N, qN+m) ≤ C(N,qN)·q^{-m}` — and it is **exactly** Stage A's
+  `Counting.binom_ratio` with `q = c/d`. §1 lists the binomial estimate
+  and the encoding as separate bullets; the rendered page shows they are
+  the same bullet, joined by one length computation
+  (`Fragment.frag_Z_length`).
+
+### 31.2 What is proved
+
+```
+  minimal_fragment F S V     Def 3.2: a minimum-length element of
+                             {S' \ V : S' in F, S' subset S u V},
+                             ties broken by position -- which is what
+                             turns Lovett's "breaking ties arbitrarily"
+                             into a function
+  fragment_subset_S          Observation 1:  M(S,V) subset S
+  fragment_disjoint_V        Observation 2:  M(S,V) disjoint from V
+  fragment_nil_iff           Observation 3:  M(S,V) = [] iff some
+                             member of F sits inside V
+  frag_F'_nonempty           Claim 3.3 (1)
+  frag_F'_fragment           Claim 3.3 (2):  every S' in F' has
+                             S' \ V = M(S,V)
+  phi, psi                   the encoding of Claim 3.4 and its decoder
+  frag_Z_minus_fragment      V = Z \ M, on the nose
+  psi_phi_SetEq              S = M u (S \ M), as sets
+  phi_injective              the encoding is injective
+  frag_Z_length              |Z| = |V| + |M|   -- the junction with
+                             Counting.binom_ratio
+  fragment_removed_in_link   S \ M lies in the link of M -- the junction
+                             with the spread hypothesis, and the only
+                             place spreadness is used at all
+  bad_pairs_le_codes         Counting.count_inj_le applied to phi: the
+                             bad pairs inject into the code space
+```
+
+### 31.3 The correction: the decode is not an equation, and it needs a
+###      hypothesis §1 does not record
+
+§1's most useful proof-level find was stated like this:
+
+> *"The encoding's injectivity is an equation, not an argument. Claim
+> 3.4 defines `phi(S,V) = (Z, S', M, S \ M)` and justifies it in one
+> sentence: 'we can decode `(S,V)` given `phi(S,V)` since
+> `S = M ∪ (S \ M)` and `V = Z \ M`'. So the formal obligation is not
+> '`phi` is injective' — it is `psi (phi (S,V)) = (S,V)` for an explicit
+> `psi`, which is a rewrite, not a case analysis."*
+
+**Half of that is right, and the half that is wrong costs a hypothesis.**
+
+The `V` half *is* literal. `Z` is built as `add_set V M`, which is
+`V ++ setminus M V`, which is `V ++ M` because `M` is disjoint from `V`;
+filtering `M` back out returns `V` itself. `frag_Z_minus_fragment` is
+that, and it needs no `NoDup` anywhere.
+
+The `S` half cannot be literal. `S = M ∪ (S \ M)` is an identity of
+**sets**; as lists, `add_set M (setminus S M)` is `M ++ (S \ M)`, a
+*permutation* of `S`. `S = [1;2;3]`, `M = [2]` gives `[2;1;3]`. So
+`psi (phi F S V) = (S, V)` is **false as stated** in any list encoding,
+and no rewrite will produce it.
+
+What is true, and what the count actually needs, is **injectivity**:
+two pairs with the same code have the same `M` and the same `S \ M`,
+hence first components that are `SetEq` to the same list, hence `SetEq`
+to each other — and `Sets.SetNoDup_setEq_eq` upgrades that to equality
+*inside a `Distinct` family*. So:
+
+> **`Fragment.phi_injective` carries the hypothesis `Distinct F`, and
+> §1's formulation does not mention it.** At the level of sets it is
+> invisible, because there `S = M ∪ (S \ M)` really is an equation. It
+> becomes visible exactly when the sets become lists.
+
+This is not a defect in Lovett — the paper is written about sets. It is
+a defect in the *staging note*, and it is the second time in two stages
+that §1's summary of a step was one hypothesis away from what the step
+needs (Stage A: `c·N ≤ d·j` where `c·N ≤ d·(j+1)` is what runs).
+
+> **Rule 24 (`docs/reading.md`). A set-level identity in a paper becomes
+> two obligations in a list formalisation: the half that is literal, and
+> the half that is only up to permutation — and the second half needs a
+> hypothesis the paper never states.** Find out which half is which
+> before planning the stage, because the extra hypothesis propagates:
+> `Distinct F` is now on every downstream statement.
+
+### 31.4 It was falsified before it was proved
+
+§1's *"What the testbed buys here"* says, in full: *"an encoding is a
+map to run over the exhaustive enumeration in `rust/src/testbed.rs` and
+check injective. Use it — the cost of finding out a lemma is false after
+half a session of proof is the main way this campaign goes wrong."*
+
+`rust/tests/fragment.rs` is that, written and run **before**
+`coq/Fragment.v` existed. It implements the fragment, the encoding and
+the decoder over bitmasks — sharing no code with the Coq side — and
+sweeps **every** family of at most three subsets of a three- or
+four-element universe, and at most four subsets of a two-element one:
+
+```
+  32968 triples (F, S, V), exhaustive, pinned as SWEEP_SIZE
+
+  Observations 1, 2, 3                          hold at every triple
+  Claim 3.3 (1) and (2)                         hold at every triple
+  psi(phi(S,V)) = (S,V)                         holds at every triple
+  phi injective                                 no collisions
+  S' is a function of Z alone                   Claim 3.4 step 2
+  |Z| = |V| + |M|                               Claim 3.4 step 1's layer
+  S \ M in the link of M                        Claim 3.4 step 5
+```
+
+Every one passed first time. The proofs then went in without a false
+start — the only Coq-side corrections were tactical (`repeat split`
+auto-introducing, and implicit arguments), not mathematical. That is
+what the discipline is for, and it is the difference between this stage
+and the way §26.4's four-family inequality was found to be false.
+
+**One caveat, stated because the sweep is what the claim rests on.** The
+Rust `psi(phi(S,V)) = (S,V)` compares *bitmasks*, which are canonical:
+`M ∪ (S \ M)` and `S` are the same `u32`. So the testbed could not have
+seen the permutation problem of §31.3 — it is an artefact of the list
+encoding, invisible to a set implementation, and it was found by the
+kernel rejecting the proof. **A falsifier in a canonical representation
+cannot falsify a representation defect.** That is the honest limit of
+what the 32968 triples establish.
+
+### 31.5 What is left of Claim 3.4
+
+The count itself. With `|M| = m` fixed, the rendered page gives four
+steps, and this file supplies the junction for three of them:
+
+```
+  1. #choices for Z  = C(N, qN+m) <= C(N,qN) q^{-m}
+        frag_Z_length  +  Counting.binom_ratio          JUNCTION DONE
+  2. S' is determined by Z                              measured in Rust,
+                                                        not yet in Coq
+  3. #choices for M subset S'  <= C(n,m) <= 2^n
+        Counting.binom_le_two_pow                       STAGE A, DONE
+  4. #choices for S \ M  <= |F_M| <= |F| k^{-m}
+        fragment_removed_in_link  +  Spread.Spread      JUNCTION DONE
+```
+
+and then the assembly — a product over the four ranges, a sum over
+`n/2 ≤ m ≤ n`, and the geometric series `Σ (4/kq)^m`. The assembly is
+**not** done in Coq, and this section does not claim it.
+
+**It is, however, already falsified.** `rust/tests/fragment_count.rs`
+states the assembly without `q` — write `j` for `|V|` and let `B(j,m)`
+be the pairs with `|V| = j` and `|M(S,V)| = m` — and checks
+
+```
+  |B(j,m)|  <=  C(N, j+m) * C(n, m) * max_{|M| = m} deg M F
+```
+
+over every family of at most three subsets of a four-element universe
+and at most four subsets of a three-element one. Four things came out of
+it, and they are what the Coq assembly will need:
+
+* **the fibred bound holds**: every fibre of `(S,V) ↦ (Z,M)` has at most
+  `deg M F` elements, because `V = Z \ M` is determined and `S \ M` lives
+  in the link. This is the lemma `Counting.v` is missing, now measured
+  before it is written;
+* **the assembled bound holds** at every instance;
+* **none of the three factors is slack** — dropping any one of them makes
+  the bound false somewhere, with a witness, so the Coq statement will
+  not be carrying a redundant term;
+* **the spread step works in the cleared-denominator form**
+  `k^m · |B(j,m)| ≤ C(N,j+m) · C(n,m) · |F|` whenever `F` is
+  `Spread.Spread`-spread with parameter `k`. No `q^{-m}`, no `k^{-m}`,
+  nothing leaves `nat`.
+
+Both of the tools that step needed are now **proved** — see §31.8 —
+and the per-`m` bound is assembled. What is left is one obstacle of a
+kind this session has now met three times; §31.9 states it.
+
+### 31.6 Costs and gates
+
+New: `coq/Fragment.v` (24 audited theorems, 8 audited definitions, no
+axiom), `rust/tests/fragment.rs` (7 tests, 32968 exhaustive triples),
+`rust/tests/fragment_count.rs` (4 tests, the assembly of Claim 3.4
+falsified ahead of its proof), 6 mutations. **Then §31.8's two tools**:
+5 more audited theorems and 3 definitions in `Counting.v`, 4 more
+theorems and 2 definitions in `Fragment.v`, 5 more Rust tests, 4 more
+mutations. The manifest is now 147.
+
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  Print Assumptions        all 24 new audited theorems "Closed under the
+                           global context", 0 reporting axioms
+  make coqchk              pass; whole-library axiom census still exactly
+                           `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  143 mutations: 140 killed, 2 genuine survivors
+                           (unchanged), 1 control, **0 unexpected**. All
+                           6 new ones killed as declared
+  cargo test --release     33 suites, 308 tests, 0 failures
+  tools/statements.py      739 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The six mutations are where a reader should attack the file:
+`frag-cands-forget-the-union` (is `S' ⊂ S ∪ V` load-bearing, or would
+`S' ⊂ S` do?), `frag-cands-keep-v`, `minimal-fragment-empty-seed` (would
+seeding the minimiser with `∅` — always of minimum length — do as well?
+no: it makes Observation 3 false), `argmin-picks-the-largest` (is
+*minimality* load-bearing, or would any canonical choice do?),
+`frag-z-is-the-wrong-union`, and `psi-forgets-the-fragment`.
+
+### 31.7 The one-line verdict
+
+**Stage B's set-theoretic half is formalised and axiom-free: Definition
+3.2 with ties broken by position, all three observations, both parts of
+Claim 3.3, the encoding of Claim 3.4 with its decoder, and the
+injectivity the count consumes — plus the two junctions that make Stage
+A usable, `|Z| = |V| + |M|` and `S \ M ∈ F_M`.**
+
+The axiom is not discharged. What is new beyond the formalisation is a
+correction: **the decode `ψ(φ(S,V)) = (S,V)` is not an equation**, only
+its `V` half is, and closing the `S` half needs `Distinct F` — a
+hypothesis §1's staging note does not record because at the level of
+sets it does not exist. Two stages, two hypotheses that the plan had one
+notch wrong, both found by writing the statement rather than by reading
+the plan again.
+
+### 31.8 The fibred counting lemma and the geometric sum
+
+Both tools §31.5 named are proved, axiom-free, in `coq/Counting.v`, and
+both were falsified numerically before being written.
+
+**The fibred counting lemma.** `Counting.count_inj_le` bounds a set by an
+injection into a *flat* list. Claim 3.4's count is not flat: the encoding
+sends `(S,V)` to a key `(Z,M)` together with `S \ M`, and the range of
+that last component is *the link of `M`* — it depends on the first
+component. So:
+
+```
+  dep_pairs Base fib        the dependent product, flat_map over Base
+  dep_pairs_length_le       |dep_pairs Base fib| <= |Base| * K
+  count_fibred_le           g injective-with-h, h x in fib (g x),
+                            every fibre <= K   =>   |L| <= |Base| * K
+```
+
+`count_fibred_le` is polymorphic in all three types and needs `NoDup` on
+the domain only. `rust/tests/counting.rs` checks that the bound is
+**attained** when `L` is the dependent product itself, so it is the right
+statement rather than a lossy one.
+
+**The geometric sum.** A decreasing geometric series is dominated by its
+first term, and in `nat` the clean form is
+
+```
+  geom a b i  =  sum_{s=0}^{i} a^s b^(i-s)      (stated as a recursion)
+  geom_le     :  2*a <= b  ->  geom a b i <= 2 * b^i
+```
+
+and the hypothesis `2a ≤ b` is **minimal for the constant 2**: at
+`a = b = 1` the sum is `i+1`, unbounded, and `2a ≤ b+1` already admits
+that case. Rule 23 again, and again the boundary is one notch away from
+the obvious statement.
+
+The usable form is the assembly itself, which is Claim 3.4's last step
+with no denominators anywhere:
+
+> **`Counting.geom_assemble`:** if `2a ≤ b`, `1 ≤ b`, and
+> `b^m · x_m ≤ a^m · C` for every `m` in `[t, t+i]`, then
+> `b^t · Σ_{m=t}^{t+i} x_m ≤ 2 · a^t · C`.
+
+With `a = 4d`, `b = ck` and `C = C(N,j)·|F|` that is exactly
+`Pr ≤ Σ_{m≥n/2} (4/kq)^m ≤ 2 (4/kq)^{n/2}` — Lovett's `100^{-n}` once `c`
+is large enough, and §1's *do not chase the constant* applies.
+
+The proof is one induction that peels the *first* term and cancels a
+factor of `b`; peeling the last term does not work, and that is the only
+subtlety in it.
+
+All gates green on the final tree, with §31.8's additions in:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  Print Assumptions        all 59 audited theorems of Counting.v and
+                           Fragment.v "Closed under the global context",
+                           0 reporting axioms
+  make coqchk              pass; whole-library census still exactly
+                           `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  147 mutations: 144 killed, 2 genuine
+                           survivors (unchanged), 1 control,
+                           **0 unexpected**
+  cargo test --release     33 suites, 313 tests, 0 failures
+  tools/statements.py      753 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The four new mutations are the ones that pin the two constants:
+`geom-halve-the-constant` (is the 2 real? — yes, at `a=1, b=2, i=1` the
+sum is 3 against `b^1 = 2`), `geom-weaken-the-ratio` (would `a ≤ b` do? —
+no, at `a=b=1` the sum is `i+1`), `fibred-drop-injectivity`, and
+`geom-assemble-halve-the-constant` (does integrality rescue the factor 2?
+— no: `a=1, b=2, C=8` gives `8+4+2+1 = 15` against `8`).
+
+**And the per-`m` bound is assembled.** `coq/Fragment.v`:
+
+```
+  frag_key F p              (Z, M) -- the encoding without S', because
+                            the decode never reads S'
+  frag_rest F p             S \ M
+  frag_key_rest_injective   the pair is injective (Distinct F)
+  bad_pairs_fibred_bound    |L| <= |Base| * K        via count_fibred_le
+  spread_caps_the_link      k^|M| * |link M F| <= |F|  -- the only place
+                            spreadness is used
+  bad_pairs_spread_bound    k^m * |L| <= |Base| * |F|
+```
+
+`S'` dropping out of the *decode* is worth a sentence: Lovett needs it
+for the **count** (step 3 bounds the number of `M ⊂ S'` by `C(n,m)`), not
+for the decode, and the formalisation makes that visible because
+`psi` never reads it.
+
+### 31.9 The canonicalisation layer, and Claim 3.4 closed
+
+§31.5 left `Base` abstract, and named the obstacle: `Z = V ++ M` is not
+an *ordered sublist* of the universe, so it is not in
+[Counting.subsets_of_size] and carries no binomial count. Rule 26 said
+to build the canonicalisation layer once, early, rather than three times
+at the point of use. That is now done, and **Claim 3.4 is closed.**
+
+#### The layer
+
+`coq/Counting.v`, one function and eight lemmas:
+
+```
+  norm U A  =  filter (fun x => memb x A) U
+```
+
+the sublist of `U` carrying the elements of `A`.
+
+```
+  norm_in_subsets    lands in `subsets U`  (Spread.filter_in_subsets)
+  norm_SetEq         SetEq (norm U A) A          when A subset U
+  memb_norm          membership is unchanged
+  norm_length        same length as A           U, A NoDup, A subset U
+  norm_idem          norm U V = V               V an ordered sublist,
+                                                U NoDup  <- the round trip
+  norm_in_layer      norm U A in subsets_of_size |A| U   <- the payoff
+  setminus_norm_r    setminus X (norm U A) = setminus X A
+  setminus_norm_l    setminus (norm U Z) M = norm U (setminus Z M)
+```
+
+`norm_idem` is where the `NoDup U` hypothesis comes from and it is not
+decoration: at `U = [1;1]`, `V = [1]` the round trip returns `[1;1]`.
+The mutation `norm-idem-drop-nodup` pins it.
+
+Three companions were needed because the argument moves a canonical set
+into positions that previously held the original: `containsb_SetEq`,
+`link_SetEq` and `add_set_SetEq_l` say that `Spread`'s three operations
+read a set only through membership, so the swap is sound.
+
+#### Claim 3.4
+
+```
+  frag_ckey F U p   = (norm U Z, norm (first_in F (norm U Z)) M)
+  frag_base F U j m = dep_pairs (subsets_of_size (j+m) U)
+                                (fun Z => subsets_of_size m (first_in F Z))
+```
+
+and then, with `N = |U|` and `n` the uniformity:
+
+> **`Fragment.claim_3_4_per_m`:**
+> `k^m · |L| ≤ C(N, j+m) · C(n, m) · |F|`
+> for any `NoDup` list `L` of pairs `(S,V)` with `S ∈ F`,
+> `V ∈ subsets_of_size j U` and `|M(S,V)| = m`, given `Distinct F`,
+> `NoDup U`, every member of `F` inside `U` with at most `n` points, and
+> `Spread F k`.
+
+That is the rendered page's four steps: step 1 is `frag_Z_length` plus
+`norm_in_layer`, step 2 is why the key is a *pair*, step 3 is
+`binom_mono_l` at `|S'| ≤ n`, step 4 is `fragment_removed_in_link` plus
+`spread_caps_the_link`. Nothing leaves `nat` — the `k^{-m}` is cleared to
+the left.
+
+And summed, which is the whole of Claim 3.4:
+
+> **`Fragment.claim_3_4_summed`:** with `c·N ≤ d·(j+1)`, `2·(4d) ≤ ck`,
+> `1 ≤ ck` and `n ≤ 2m` across the range,
+>
+> `(ck)^t · Σ_{m=t}^{t+i} |L_m|  ≤  2 · (4d)^t · (C(N,j) · |F|)`.
+
+Read it back by dividing: the bad pairs are at most `2·(4d/ck)^{n/2}` of
+the sample space `|F|·C(N,qN)` — Lovett's `Pr ≤ 100^{-n}` once `c` is
+large, with `q = c/d` and `t = ⌈n/2⌉`. §1's *do not chase the constant*
+applies: any explicit `c` closes it.
+
+**Every hypothesis is one the source has**, with two exceptions that the
+list encoding forced and that §31.3 and rule 24 explain: `Distinct F`,
+and `NoDup U`.
+
+#### What this leaves
+
+Stage B is complete. What remains of §1's plan is **Stage C**, untouched:
+
+```
+  Claim 3.5   Markov in the fixed-size setting, plus Exercise 3.1's two
+              spreadness-preservation lemmas
+  Claim 3.6   the induction that produces the conclusion -- section 1
+              records it as arithmetic-free
+  Lemma 3.1   the log n iteration, and prod (1 - 10^{-n/2^i}) >= 0.8
+```
+
+and then `ALWZ.FractionalSpreadDisjoint` at an explicit threshold, which
+`ALWZ.fractional_form_gives_the_axiom_shape` already carries the rest of
+the way to `SpreadYieldsDisjoint`. The axiom is still an axiom, and the
+whole-library census is still exactly `Rao20_lemma2`.
+
+#### Costs and gates for §31.9
+
+38 more audited theorems and 3 more definitions, 2 more Rust tests, 3
+more mutations. The manifest is now 150.
+
+All gates green on the final tree:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  Print Assumptions        all 97 audited theorems of Counting.v and
+                           Fragment.v "Closed under the global context",
+                           0 reporting axioms
+  make coqchk              pass; whole-library census still exactly
+                           `Sunflower.ALWZ.Rao20_lemma2`
+  python3 tools/mutate.py  150 mutations: 147 killed, 2 genuine
+                           survivors (unchanged), 1 control,
+                           **0 unexpected**
+  cargo test --release     33 suites, 315 tests, 0 failures
+  tools/statements.py      794 baseline entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, verdicts match
+```
+
+The three new mutations are where a reader should attack §31.9:
+`norm-idem-drop-nodup` (does canonicalisation round-trip without
+`NoDup U`? — no, `U = [1;1]`, `V = [1]`),
+`frag-base-forgets-the-chosen-member` (would subsets of `Z` do instead of
+subsets of `S'`? — no: `C(j+m,m)` depends on the sample size, `C(n,m)`
+does not, and that is the whole content of step 3), and
+`claim-three-four-weaken-the-ratio` (is `kq ≥ 8` needed, or does the
+series only have to decrease?).
+
+## 32. Session N+10, closed: what moved, what did not, and what the next
+##     session should do instead of repeating this one
+
+This section is the handover. It is written to be read cold, and it is
+written to be *disbelieved* — every number in it is checked by a gate,
+and every claim that is not is marked as unchecked.
+
+### 32.1 The verdict, without inflation
+
+**No bound moved. The conjecture is exactly as open as it was.** No new
+upper bound on `f(n,k)`, no new lower bound, no new exact value, no row
+of the `r*(m,3)` table changed, no conjecture in the §28.5 ledger
+graduated. **Nothing in this session is new mathematics** — §29.8's
+novelty ledger says so in those words, and it is not modesty.
+
+**The axiom is still an axiom.** `make coqchk`'s whole-library census is
+still exactly `Sunflower.ALWZ.Rao20_lemma2` and nothing else.
+
+What did move, precisely:
+
+* **Stages A and B of discharging that axiom are complete**, including
+  Claim 3.4 in full (§30, §31). §1 has named this the highest-value
+  target since July 2026 and nobody had begun it.
+* **A barrier**: `Profile.greedy_forces_erdos_rado` — every profile the
+  greedy cover step closes is at least `(k-1)^m·m!`, which *is*
+  Erdős–Rado. Exact, every `k`, no asymptotics (§29).
+* **A gate**: `tools/ceiling.py`, wired into `make verify`, which costs
+  every route against 1960, against the record, and against the target,
+  and fails the build when a route's declared verdict disagrees with its
+  own arithmetic (§29.5).
+* **Seven rules** (20–26) in `docs/reading.md`, each earned by an error
+  this session actually made.
+
+### 32.2 The thing the next session most needs to know
+
+> **Discharging `Rao20_lemma2` will not improve any bound.**
+
+The axiom yields `ALWZ.sunflower_bound_from_spread_lemma`, which is
+**Rao 2020**'s `f(n,k) ≤ (C·k·log(nk))^n + 1`. The literature record is
+**Bell–Chueluecha–Warnke 2021**, `(C·p·log k)^k` (`docs/reading.md` A6,
+read in full), which is better and is *not* formalised here. So finishing
+Stage C turns a conditional formalisation into an unconditional one —
+a real and checkable achievement, and the thing a sceptical reader looks
+at first — but it moves no number and beats nothing.
+
+Choose it deliberately, on that basis, or choose something else. What it
+is *not* is progress on the conjecture.
+
+### 32.3 Stage C, if that is the choice
+
+Everything below Stage C is done and axiom-free. §1's remaining list, and
+it is short:
+
+```
+  Claim 3.5   Markov in the fixed-size setting -- "if the average over V
+              is at least (1-eps)|F| then most V are good" -- plus
+              Exercise 3.1's two spreadness-preservation lemmas
+  Claim 3.6   induction on t. Section 1: "arithmetic-free, and it is the
+              step that yields the conclusion"
+  Lemma 3.1   the log n iteration, and prod (1 - 10^{-n/2^i}) >= 0.8
+```
+
+then instantiate `ALWZ.FractionalSpreadDisjoint` at whatever threshold
+falls out; `ALWZ.fractional_form_gives_the_axiom_shape` carries it the
+rest of the way. §1's scoping decision stands: **do not chase the
+constant.**
+
+Three things this session learned that apply directly:
+
+1. **Read the rendered pages, not §1's summary.** §1's staging note was
+   one hypothesis wrong three times — the binomial estimate's
+   (`c·N ≤ d·j` where `c·N ≤ d·(j+1)` is what runs), the type of `count`
+   (pairs, not sets), and the decode (*not* an equation). Each was found
+   by writing the statement. `lovett_pcmi.pdf` re-fetches with a matching
+   sha256; pp. 11–15 are §3.
+2. **Falsify before proving.** `rust/tests/fragment.rs` swept 32968
+   exhaustive triples before `coq/Fragment.v` existed, and the proofs
+   then went in with no mathematical false start. But see rule 25: a
+   bitmask falsifier cannot see a list-representation defect.
+3. **The canonicalisation layer already exists** (`Counting.norm` and its
+   eight lemmas, §31.9). Rule 26 exists because it was paid for three
+   times before being built once. If Stage C needs a fourth
+   representational bridge, add it *there*.
+
+### 32.4 What would actually be new mathematics
+
+Named, with honest status. None of these is started.
+
+| target | status | why it is real |
+|---|---|---|
+| **Rao's question** (`docs/reading.md` A2): does the *disjointness* form of the spread lemma run at `r = O(k)`? | open; A2 established from a rendered page that the known tightness examples ([ALWZ20] Lem 3.1, [BCW21] Lem 4) are for the **robust/covering** form, **not** disjointness — so nothing known rules it out | a positive answer **is** the sunflower conjecture, at every `k`. `Conjecture.spread_conjecture` is already the formal statement and `spread_conjecture_suffices` already derives the conjecture from it |
+| **`r*(3,3)`: is it 3 or 4?** | `[3,4]` (STATUS.md; upper from `TauThree.r_star_three_three_at_most_four_unconditional`) | one integer. `r*(3,3) = 3` forces `g(3) ≤ 27`; the development knows `g(3) ≤ 26` (`PureLink.f_3_3_at_most_27`), so **the two are consistent and the question is live** |
+| **Conjecture P** (§29.8): is the profile reduction lossless, `B_k = g_k`? | `g_k ≤ B_k` is a theorem; equal at `k=3` for `m ≤ 2`; `B_3(3) ∈ [20,32]` against `g(3) ≤ 26` | `B_3(3) > 26` refutes it outright. §29.7's floor says a witness needs ≥14 points and the maximum ≥16 — the ground set §13.4 records cadical failing to decide at 601s |
+| **A better base object than `ι(3) = 10`** (Track 4) | `ι(3) = 10` is proved unique by exhaustion (B16); `ι(4) ≥ 32` would refute `Sharp.AHSOptimal` and give `f(3,3) ≥ 33` | the 1972 lower bound `10^{n/2}` is the whole record. §13.4 calls this "a rigid target, not a wide search" |
+| **A second technique** (Track 3) | `coq/SliceRank.v` is scaffolded and unused; §7 names exactly what the polynomial method is missing | every bound in this repository comes from spreadness plus covering. [Kup25] p. 53 lists three incomparable methods; this repo has one |
+
+### 32.5 The failure modes this session hit, so the next one can skip them
+
+Recorded because all three are cheap to avoid and expensive to repeat.
+
+* **The incoming brief was wrong about the repository three times** —
+  Track 1's "do this first" already existed as
+  `Conjecture.spread_conjecture`; `r*` was already posed as the
+  conjecture in §22; and a refined bound was already beaten by
+  `PureLink.f_3_3_at_most_27`. Rule 21: a handoff's task list is a
+  *hypothesis about the repository*, and `grep` refutes it in a minute.
+  **This section is a handoff too. Check it.**
+* **A plan's hypotheses are not the proof's hypotheses.** Rules 23 and 24.
+* **A falsifier in the wrong representation proves nothing about the
+  representation.** Rule 25.
+
+### 32.6 Costs and gates, whole session
+
+New: `coq/Profile.v`, `coq/Counting.v`, `coq/Fragment.v` (three modules,
+no axiom); `tools/ceiling.py` and the `make ceilings` gate;
+`tools/prcheck.py`, `.github/pull_request_template.md` and the
+`make prcheck` gate; `rust/tests/profile.rs`, `counting.rs`,
+`fragment.rs`, `fragment_count.rs`. The development is now 45 modules,
+671 audited theorems, 129 audited definitions, 150 mutations, and 31
+Rust integration suites (the gate line below reports 33 `test result`
+lines, which is those 31 plus the library's own unit tests and its
+doctests).
+
+Final gate run, all green:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  make coqchk              pass; census exactly Rao20_lemma2
+  python3 tools/mutate.py  150 mutations, 147 killed, 2 genuine
+                           survivors, 1 control, 0 unexpected
+  cargo test --release     33 suites, 315 tests, 0 failures
+  tools/statements.py      800 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+Zero admits; every audited theorem reports `Closed under the global
+context`.
+
+### 32.6a The write-up, gated
+
+Added after §32.6's gate run, and worth its own subsection because it
+changes what every future session has to do rather than what this one
+found.
+
+Every artefact in this repository that makes a claim is gated: the
+kernel and `coqchk` for a theorem, `tools/statements.txt` for its
+statement, mutation testing for a definition, `tools/docnumbers.py` for
+a number in the prose, `tools/ceiling.py` for a route's worth. The pull
+request was gated by nothing — and it is the one document a reader forms
+an opinion from, written once at the end of a session and never
+regenerated.
+
+`.github/pull_request_template.md` now carries a required `toml` block
+and `tools/prcheck.py` checks four things against the tree: that every
+count matches the list it counts; that every claim's `evidence` resolves
+to an audited Coq name, a Rust `#[test]`, a mutation id or a path; that
+`novelty = "new-mathematics"` carries a real search, which is rule 17 as
+a gate rather than as an intention; and that the mandatory
+**What did not move** section is present. `make prcheck` runs it, and CI
+runs it on every pull request, reading the body through the environment
+rather than interpolating it into the shell.
+
+It earned its place on first run: six `Example`s in `coq/Counting.v` had
+never reached `tools/audited.txt`, so a claim citing one of them
+resolved to nothing. They were unaudited, not wrong — the audit list is
+the artefact that says which, and it did not. Fixed in the same commit;
+`tools/audited.txt` now carries 671 theorems and the baselines 800
+entries.
+
+What it cannot check is whether any of the prose is true. `docs/
+testing.md` §8 and `docs/reading.md` rule 27 both say so in those terms,
+so a green gate is not mistaken for a reviewed claim.
+
+**For the next session:** fill the template. The `toml` block is
+required even on a one-line change, and `make prcheck PR_BODY=body.md`
+before submitting will tell you which name you got wrong.
+
+### 32.7 The bar, stated plainly
+
+This session produced infrastructure, a barrier, and two thirds of an
+axiom discharge. It produced **no new mathematics**, and it says so.
+
+The next session should be able to write a sentence of the form *"`X` is
+now known, and it was not before"*, where `X` is a statement about
+sunflowers rather than about this repository. §32.4 lists five candidates
+and none of them is started. The instruments are built: exhaustive
+search, two cross-checked SAT solvers, prescribed-symmetry search, the
+spread decision procedures, a costing gate that refuses uncosted routes,
+and now a complete counting layer. **What is missing is a session that
+points them at an open question and reports the answer with its budget.**

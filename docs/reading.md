@@ -1760,3 +1760,254 @@ Three earlier rows — B10, B12, B13 — are negatives about an inequality, an
 identity and an exponent. All three were searched the same way and are now
 flagged in the register as unsupported. None is refuted; each is simply
 not evidenced, and re-running them is a rendered-pass job.
+
+---
+
+## What re-reading the development changed, session N+10
+
+**No literature was read this session and no register row was opened or
+closed.** Nothing below is a novelty claim; rule 17 governs
+`docs/roadmap.md` §29.8's ledger, which says in full that this session
+produced no new mathematics. The three rules here were earned inside the
+development, as rules 12–17 were.
+
+### The bar was the wrong bound, in the section that set it
+
+§28.4 costed the star-extremality route against **Erdős–Rado 1960** and
+concluded — correctly — that `(n+1)^n` loses to `2^n·n!` by a factor
+growing like `1.359^n`. That is true, it is machine-checked, and it is
+the weakest available criticism of the route.
+
+The record is not `2^n·n!`. It is Bell–Chueluecha–Warnke's
+`(C·p·log k)^k` — register row **A6**, read in full, quoted verbatim in
+this file — which at `p = 3` is `(C' log n)^n`. Against *that* bar, every
+linear route in the development loses by far more and for a structural
+reason: the base of a linear route grows like `n`, the record's like
+`log n`, and the target's not at all. `tools/ceiling.py` puts the three
+side by side and shows that the star-extremality route, the `τ`-indexed
+route, the cover bound and §22.1's quadratic bound are *the same shape*,
+which no pairwise comparison against 1960 makes visible.
+
+> **Rule 20. Cost a route against the record, not against the last bound
+> you can name.** Beating a superseded bound is not progress toward the
+> problem, and the comparison that decides whether a route is in the
+> running is one of *shape* — constant, logarithmic, linear — not of
+> value at any particular `n`. A route that loses to 1960 is dead; a
+> route that beats 1960 and is linear is also dead, and saying only the
+> first understates it.
+
+### The brief's first task had been done for several sessions
+
+Session N+10's incoming brief opened its highest-ranked track with:
+*"State it: `∃ C, ∀ n k, SpreadYieldsDisjoint n k (C·k)` … as a named
+`Prop` in Coq, next to `Rao20_lemma2`, and derive `f(n,3) ≤ C^n` from it
+through the existing `spread_reduction`. **Do this first**."*
+
+`coq/Conjecture.v` has carried exactly that since it was written:
+`spread_conjecture` is the `Prop` (in the more general shape
+`∃ c : nat → nat`), `spread_conjecture_suffices` derives the whole
+conjecture from it, `k3_corollary` specialises. `docs/roadmap.md` §2
+points at it by name. The check cost one `grep` and it was run after
+forty minutes of reading rather than in the first two.
+
+The same brief asserted that "nobody in this programme has ever pointed
+the machinery at" whether the spread threshold is bounded. §22's opening
+paragraph is that observation, attributed to §18.5, and §22 is a whole
+session's attack on it.
+
+> **Rule 21. A handoff's "do this first" is a hypothesis about the
+> repository, and it is checked against the repository before it is
+> acted on.** Rule 16 says the prior work most likely to have anticipated
+> a *result* is upstream of the handoff. This is its converse for
+> incoming work: the prior work most likely to have already done a
+> *task* is also upstream of the handoff, for the same reason — a
+> handoff forwards what its author believed was open, and belief is not
+> the index.
+
+### A test that disagreed with the kernel, and was wrong
+
+The first draft of `rust/tests/profile.rs` reported
+`2^n·n! ≤ (n+1)^n` **failing at `n = 28`** — a statement `coqc` had
+already accepted, as `Profile.erdos_rado_below_the_n_to_the_n_ceiling`,
+at every `n` with no range. The test was wrong: `u128::pow` wraps
+silently in release mode and `(n+1)^n` leaves `u128` at `n = 27`.
+
+The trap is specific to this repository's arrangement. The testbed exists
+to *falsify* the Coq layer — `rust/src/testbed.rs` is described in
+`lib.rs` as exactly that — so a disagreement is the interesting outcome,
+and the instinct is to believe it. Here the disagreement was silent
+arithmetic in the falsifier.
+
+> **Rule 22. When the testbed contradicts a machine-checked theorem, the
+> testbed is wrong until its arithmetic has been re-derived.** The kernel
+> does not have an overflow mode. Any exhaustive claim in `u128` states
+> the range it is valid on and pins the first input outside it; every
+> power is `checked_pow`, so the failure is an error rather than a
+> number.
+
+
+---
+
+## What the development taught, session N+10 (second half)
+
+No literature was read for Stage A either: §1's proof-level read of
+[Lovett] §3 was done in the July 2026 session and this one worked from
+its notes. The rule below was earned by formalising them.
+
+### The hypothesis the application supplies is not the hypothesis the proof needs
+
+`docs/roadmap.md` §1 records Lovett's Claim 3.4 as needing
+`C(N, qN+m) ≤ q^(−m)·C(N, qN)` — the sample `V` has fixed size `qN`, so
+with `q = c/d` the hypothesis is `c·N ≤ d·j` at `j = qN`. That is what
+the *application* hands in, and it is what §1 wrote down.
+
+The argument needs less. The step reduces by absorption to
+`c·(N−j) ≤ d·(j+1)`, and `c·(N−j) ≤ c·N` makes `c·N ≤ d·(j+1)` enough.
+One notch weaker, and **exactly** one: at `c·N ≤ d·(j+2)` the estimate is
+false, the smallest witness being `N=1, j=0, c=2, d=1, m=1` — hypothesis
+`2 ≤ 2`, conclusion `2 ≤ 1`.
+
+Stating it at `c·N ≤ d·j` would not have been wrong. It would have been a
+gap of the kind that costs a later session: reaching for the estimate one
+index over and finding it unavailable, that session either re-proves it
+or weakens its own statement to fit, and neither shows up as an error.
+
+> **Rule 23. Prove a lemma at the weakest hypothesis its own argument
+> needs, not at the one the application supplies — and record the witness
+> that shows the weakening stops there.** Rule 15 says to evaluate a
+> restatement at the tight case. The tight case is where the *argument*
+> stops working, which is not in general where the *application* sits;
+> when they differ, both belong in the file — the sharp lemma, and a
+> corollary in the shape the caller wants.
+
+`Counting.binom_ratio` carries the sharp hypothesis,
+`Counting.binom_ratio_at_threshold` carries §1's, and
+`Counting.binom_ratio_needs_the_successor` carries the witness.
+`rust/tests/counting.rs` finds 102 counterexamples to the `j+2`
+relaxation in a small box, so the boundary is measured and not merely
+asserted.
+
+### A set-level identity is two obligations in a list formalisation
+
+Stage B of the spread lemma (`docs/roadmap.md` §31) turned on one
+sentence of [Lovett] p. 13, quoted in §1 as the stage's easiest step:
+
+> *"Note that we can decode `(S,V)` given `φ(S,V)` since
+> `S = M ∪ (S \ M)` and `V = Z \ M`."*
+
+§1 reads that as *"the formal obligation is not '`φ` is injective' — it
+is `ψ (φ (S,V)) = (S,V)` for an explicit `ψ`, which is a rewrite, not a
+case analysis."* Half of it is.
+
+`V = Z \ M` **is** literal in lists: `Z` is built as `V ++ M` and `M` is
+disjoint from `V`, so filtering `M` out returns `V` itself, no `NoDup`
+required. `S = M ∪ (S \ M)` **cannot** be literal: as lists that is
+`M ++ (S \ M)`, a permutation of `S`, not `S`. So the stated equation is
+false in the encoding, and the thing the count actually needs —
+injectivity — has to be reached through `SetEq` and closed with
+`Sets.SetNoDup_setEq_eq`, which requires `Distinct F`.
+
+That hypothesis is invisible at the level of sets, where the identity
+really is an identity. It is now on every downstream statement.
+
+> **Rule 24. A set-level identity in a source becomes two obligations in
+> a list formalisation: the half that is literal, and the half that is
+> only up to permutation — and the second half needs a hypothesis the
+> source never states.** Decide which half is which before planning the
+> stage. The cost of not doing so is not a wrong proof; it is a plan
+> whose "one rewrite" step turns out to propagate a hypothesis through
+> everything after it.
+
+### And a limit on what a falsifier in the wrong representation can see
+
+`rust/tests/fragment.rs` ran the fragment, Claim 3.3, the encoding and
+the decoder over 32968 exhaustive `(F,S,V)` triples **before** any of it
+was proved, exactly as §1 instructs, and every claim passed — including
+`ψ(φ(S,V)) = (S,V)`.
+
+It passed because the Rust implementation represents sets as **bitmasks**,
+which are canonical: `M ∪ (S \ M)` and `S` are the same `u32`. The
+permutation problem of rule 24 is an artefact of the *list* encoding and
+is invisible to a set implementation. It was found by the kernel
+rejecting the proof, not by the testbed.
+
+> **Rule 25. A falsifier in a canonical representation cannot falsify a
+> representation defect.** An exhaustive sweep bounds the mathematics,
+> not the encoding. When the testbed and the formalisation differ in how
+> they represent the objects — bitmask against list, set against
+> sequence — say so where the sweep is reported, because the two are
+> checking different statements.
+
+### The same representational obstacle, three times, and what it cost
+
+Rule 24 was earned on the decode of Claim 3.4: a set-level identity
+becomes two obligations in a list formalisation. Finishing the *count*
+met the same obstacle twice more, and the pattern is worth naming.
+
+1. **The decode** (`S = M ∪ (S \ M)`): literal for `V`, only `SetEq` for
+   `S`. Cost: the hypothesis `Distinct F`, now on every downstream
+   statement.
+2. **The injectivity**: had to be routed through `SetEq` and
+   `Sets.SetNoDup_setEq_eq` rather than proved by rewriting.
+3. **The count of the key space**: `Z = V ++ M` is not an *ordered
+   sublist* of the universe, so it is not in `Counting.subsets_of_size`
+   and carries no binomial count until it is canonicalised
+   (`docs/roadmap.md` §31.9).
+
+Each is the same fact — lists carry order that sets do not — and each was
+paid for separately, at the point of use, after the plan had been made.
+
+> **Rule 26. In a list formalisation of a set-theoretic argument, build
+> the canonicalisation layer once and early, not at each point of use.**
+> A `norm U A := filter (fun x => memb x A) U` with its four lemmas
+> (lands in `subsets`, preserves length, idempotent on sublists, commutes
+> with `setminus`) is perhaps forty lines. Paying it three times in
+> fragments, each with its own workaround, cost more than that and left
+> the third instance unfinished.
+
+None of this is a defect in the source. Lovett's §3 is about sets and is
+correct about sets. It is a defect in *staging a list formalisation from
+a set-theoretic plan*, and it is the thing to budget for next time.
+
+### The one document nothing checked
+
+Everything in this repository that makes a claim is gated. A theorem is
+gated by the kernel, then by `coqchk`, then by `tools/statements.txt`
+against the statement it had when it was reviewed. A definition is gated
+by mutation testing, which asks whether it is load-bearing. A number in
+the prose is gated by `tools/docnumbers.py` against the list it counts.
+A route's worth is gated by `tools/ceiling.py` against the record.
+
+The pull request was gated by nothing at all — and it is the only one of
+those documents a reader forms their opinion from. Worse, it has every
+property that makes drift likely: written once at the end of a session,
+never regenerated, and quoting counts, theorem names and novelty
+judgements from memory of work done days earlier. Every failure this
+repository has already had in prose is available there in a form nobody
+would notice: a count copied from the previous session, a theorem cited
+by a name a rebase renamed, an unqualified "new" with no search behind
+it.
+
+`tools/prcheck.py` closes it, and it earned its place on first run by
+finding that six `Example`s in `coq/Counting.v` had never reached
+`tools/audited.txt` — so a claim citing one of them resolved to nothing.
+They were unaudited, not wrong; but the audit list is the artefact that
+says which is which, and it did not.
+
+> **Rule 27. The write-up is an artefact of the work and is gated like
+> one.** If a claim in a pull request cannot be resolved mechanically to
+> a theorem, a test, a mutation or a path, it is a sentence rather than
+> a result. The gate cannot check whether the prose is true — no gate
+> here can — but it can check that everything the prose names exists,
+> that every count matches the list it counts, and that rule 17 was
+> obeyed rather than intended.
+
+The template carries one section that is mandatory and cannot be
+mechanised: **What did not move.** A branch that cannot name the bounds,
+exact values and ledger rows it failed to move has not been read
+carefully by its author, and no tool can tell the difference between an
+honest answer there and a hollow one. Presence is checked; honesty is
+the author's. That asymmetry is the same one `tools/statements.py` has —
+it checks that a statement did not move, never that it is the right
+statement — and it is stated here so nobody mistakes a green gate for a
+reviewed claim.

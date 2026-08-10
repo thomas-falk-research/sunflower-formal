@@ -1,8 +1,32 @@
 name: verify
 
+# A push to a branch that has an open pull request fires *two* events:
+# `push`, and `pull_request` with action `synchronize`. Both ran this
+# whole workflow. The concurrency group below cannot merge them, and
+# that is not a misconfiguration of the group -- the two events carry
+# different `github.ref` (`refs/heads/<branch>` against
+# `refs/pull/<n>/merge`) because they check out different trees, so no
+# key computed from the event can put them in one group.
+#
+# Measured on commit d524766: the duplicate cost 1h28m and 1h32m of
+# runner time for the same 150 mutations, where one run of that job
+# needs about 1h20m. Two hours of it was pure duplication, and the
+# contention is why both were slower than a solo run.
+#
+# Dropping `synchronize` removes exactly the duplicate and nothing else.
+# Every push is still built, audited, re-checked and mutated -- once,
+# through `push`, on every branch, which is the discipline this
+# repository states in docs/testing.md.
+#
+# `opened` and `reopened` are kept deliberately: they are the one thing
+# `push` can never do, because they build the *merge commit* -- this
+# branch merged into its base -- and so catch a conflict with `main`
+# that is invisible on either side alone. That is one extra run per pull
+# request, not one per push.
 on:
   push:
   pull_request:
+    types: [opened, reopened]
 
 # A superseded run tells you nothing; cancel it rather than pay for it.
 concurrency:
@@ -15,11 +39,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install Coq 8.18
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y coq
-          coqc --version
+      - uses: ./.github/actions/setup-coq
       - name: Build all proofs and run the Print Assumptions audit
         run: |
           # Without pipefail the exit status of this step is tee's, so a
@@ -73,10 +93,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install Coq 8.18
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y coq
+      - uses: ./.github/actions/setup-coq
       # coqchk re-typechecks the compiled proof terms with its own kernel
       # implementation -- no elaborator, no tactics, no unification. Unlike
       # the Print Assumptions audit above, which reports on a list of
@@ -104,10 +121,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install Coq 8.18
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y coq
+      - uses: ./.github/actions/setup-coq
       # Each mutation weakens one definition and rebuilds. The manifest
       # in tools/mutations.toml declares the outcome expected for each;
       # the runner exits nonzero if any differs, so a hypothesis that
