@@ -3,7 +3,7 @@
 `f(3,3)` is not an open sunflower number — Abbott and Gardner settled it in
 1969, and this repository's own lower bound is the exact value — and the
 `ι(4)` frontier that cost the branch-and-bound 4437 seconds now costs 866 on a
-new instrument, confirmed by a second solver. What is new *about sunflowers*
+new instrument. What is new *about sunflowers*
 is one row: **no intersecting 3-sunflower-free family of 5-sets has 43 members
 on nine points or fewer.** `ι(4,11)` was not decided and the run was stopped by
 hand; §33.5a records where.
@@ -165,8 +165,10 @@ Full table in `docs/roadmap.md` §33.5. The three statements this repository
 distinguishes, each used exactly once:
 
 * **Exhausted.** `iota(4,g) >= 32` for every `g <= 10`: UNSAT, no limit hit,
-  866 s at `g = 10` — and re-run end to end under `cryptominisat5`, which
-  agrees. `iota(5,g) >= 43` for every `g <= 9`: UNSAT, 70.2 s for the whole ladder.
+  866 s at `g = 10`. `iota(5,g) >= 43` for every `g <= 9`: UNSAT, 70.2 s for
+  the whole ladder. A `cryptominisat5` re-run agreed on every rung up to nine
+  points and was stopped inside the ten-point rung, so **the ten-point verdict
+  rests on one solver** — §33.5 says so where the number is.
 * **Undecided at the limit.** Sixteen of the twenty-one `deg(0)` cubes at
   `g = 11` were still running when the sixty-second slice expired. That is a
   measurement of the slice, not of the question.
@@ -230,8 +232,9 @@ Needs `cadical` on `PATH` (`apt-get install -y cadical cryptominisat`).
 
 **The UNSAT verdicts.** They are cadical's word. This repository's standing
 rule for UNSAT — `sat::solve_agreed`, two independent solvers required to agree
-— was applied to the frontier rung and not to every cube of every rung, and
-`docs/roadmap.md` §33.5 says exactly which. An UNSAT nobody can produce a
+— was **not** met at ten points: the `cryptominisat5` pass agreed up to nine
+points and was stopped inside the ten-point rung to free the machine for the
+mutation suite. `docs/roadmap.md` §33.5 carries the table. An UNSAT nobody can produce a
 witness against is the verdict most worth doubting.
 
 **The `all_points_used` restriction.** It is the one option in

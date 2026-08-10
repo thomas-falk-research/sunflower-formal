@@ -9273,6 +9273,8 @@ exhaustion and not a failure to find.
   ---------------------- --------------------------------- ----------- ------------ --------
   iota(4,g) >= 32, g<=9   ladder, deg(0) cubes             none            UNSAT       2.8 s
   iota(4,10) >= 32        ladder + 1 refined cube          none            UNSAT     866.3 s
+  iota(4,9)  >= 32        the same, under cryptominisat5   none            UNSAT       5.8 s
+  iota(4,10) >= 32        the same, under cryptominisat5   stopped     undecided  --
   iota(4,10) >= 32        [previous] branch-and-bound      none            UNSAT    4437   s
   iota(4,10) >= 32        [previous] SAT, orbit split      1800 s/orbit    undecided  --
   iota(4,11) >= 32        ladder                           stopped     undecided  --
@@ -9287,7 +9289,10 @@ re-run at the start of this session as a control and did not decide
 `iota(4,10) >= 32` either: cadical, anchor plus orbit split, 1800 s per
 orbit, **orbit 1 timed out at 1800 s** and the run was stopped by hand
 during orbit 2. So the ten-point rung is a re-derivation by a second
-instrument, at a small fraction of the cost, and everything above it is new.
+instrument at a fifth of the cost — **and the frontier did not move.**
+Eleven points remains where §9 left it, undecided; what changed is the
+price of ten, and what that buys is stated in §33.5a rather than
+inflated here.
 
 **What each verdict means.** `UNSAT` is *exhausted* — every family the rung
 covers was ruled out. `UNKNOWN` is *undecided at the limit*, and the limit
@@ -9297,11 +9302,27 @@ and its budget is the result, which is what rule 13 exists for.
 **The second opinion.** `sat::solve_agreed` is this repository's standing
 rule for UNSAT — two independent solvers required to agree before the
 verdict is believed — and it was **not** run across every cube of every
-rung; the cost is a second full pass. **The ten-point rung was re-run
-under `cryptominisat5`** — the whole ladder, same encoding, same cubes —
-and is reported beside the cadical run above; the eleven-point rung got
-one solver only, and did not decide. That is the weakest
-link in this section and it is named here rather than in a footnote.
+rung; the cost is a second full pass.
+
+**What was actually done, and it is less than the rule asks for.** The
+ladder was re-run end to end under `cryptominisat5`, same encoding, same
+cubes. It reproduced every rung up to and including **nine points** —
+`iota(4,9) >= 32` UNSAT in 5.8 s, eighteen cubes, agreeing with cadical
+cube for cube — and was **stopped by hand inside the ten-point rung**,
+after about fifty minutes, to give the mutation suite the machine. So:
+
+```
+  rung          cadical              cryptominisat5
+  g <= 9        UNSAT                UNSAT   -- agree
+  g = 10        UNSAT, 866.3 s       stopped by hand, no verdict
+  g = 11        stopped by hand      not attempted
+```
+
+**The 866-second ten-point verdict therefore rests on one solver.** That
+is the weakest link in this section and it is stated here rather than in
+a footnote. It is not a bare assertion — the same value was reached in
+2025 by the branch-and-bound, which shares no code with any solver — but
+"two solvers agreed" is not what happened and is not claimed.
 
 **Rule 25 applies and is stated where the result is.** The search works
 over `u32` bitmasks; `coq/Sharp.v` and `coq/IotaRate.v` work over lists of
