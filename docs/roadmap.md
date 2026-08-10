@@ -9681,6 +9681,38 @@ New this session: `coq/Support.v` (one module, no axiom);
 The development is now 47 modules, 703 audited theorems, 133 audited
 definitions, 154 mutations, and 33 Rust integration suites.
 
+```
+  make -j4 verify          pass    11m37s   47 modules, clean rebuild,
+                                            703/703 audited theorems closed
+  make coqchk              pass     2m49s   census exactly Rao20_lemma2,
+                                            all three escape hatches empty
+  python3 tools/mutate.py  pass    77m59s   154 mutations, 151 killed,
+                                            2 declared survivors, 0 unexpected
+  cargo test --release     pass    26m54s   33 integration suites, 335 tests,
+                                            0 failures
+  tools/statements.py      836 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+The three mutations added this session are all **killed**, in about 225 s
+each: dropping `Intersecting` from the two-anchor bound (the bound is
+false without it — a sunflower-free family has matching number at most
+two, so it lives on `2b + (b−1)(n−2)` points, which beats `(4b−3) + (b−2)n`
+for every `n > 11` at `b = 4`); dropping the second anchor from the core
+(the members avoiding the shared point then meet it once, which is the
+charge the single-anchor bound already pays); and charging the pair link
+`g(b−1)` instead of `g(b−2)` (which would replace the six of `g(2)` by
+the twenty-six of `g(3)` and make the counting ceiling four times
+weaker). Zero admits; every audited theorem reports `Closed under the
+global context`.
+
+Wall times are on the same four-core machine as §33.6 but **uncontended**:
+the four long gates were run one after another, not concurrently, which
+is why `make verify` at 47 modules costs the same 11½ minutes §33.6
+reports for 46.
+
 ### 34.9 Picking this up cold
 
 Read §34.5 first. It is the part that says what not to do next, and the
