@@ -7,6 +7,16 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
+> **Starting cold? Read §32 first.** It is the most recent session's
+> handover: what moved, what did not, the five open questions that would
+> count as new mathematics, and the failure modes to skip. Then §1 (the
+> axiom, and how far its discharge has got), and `docs/reading.md`'s
+> rules — there are **26**, each earned by an error made here.
+>
+> The one sentence a cold reader most needs: **discharging the single
+> axiom will not improve any bound** — it makes a Rao-2020-shaped bound
+> unconditional, and the literature record is already better. §32.2.
+
 ---
 
 ## Done: the testing layer
@@ -8882,3 +8892,154 @@ subsets of `S'`? — no: `C(j+m,m)` depends on the sample size, `C(n,m)`
 does not, and that is the whole content of step 3), and
 `claim-three-four-weaken-the-ratio` (is `kq ≥ 8` needed, or does the
 series only have to decrease?).
+
+## 32. Session N+10, closed: what moved, what did not, and what the next
+##     session should do instead of repeating this one
+
+This section is the handover. It is written to be read cold, and it is
+written to be *disbelieved* — every number in it is checked by a gate,
+and every claim that is not is marked as unchecked.
+
+### 32.1 The verdict, without inflation
+
+**No bound moved. The conjecture is exactly as open as it was.** No new
+upper bound on `f(n,k)`, no new lower bound, no new exact value, no row
+of the `r*(m,3)` table changed, no conjecture in the §28.5 ledger
+graduated. **Nothing in this session is new mathematics** — §29.8's
+novelty ledger says so in those words, and it is not modesty.
+
+**The axiom is still an axiom.** `make coqchk`'s whole-library census is
+still exactly `Sunflower.ALWZ.Rao20_lemma2` and nothing else.
+
+What did move, precisely:
+
+* **Stages A and B of discharging that axiom are complete**, including
+  Claim 3.4 in full (§30, §31). §1 has named this the highest-value
+  target since July 2026 and nobody had begun it.
+* **A barrier**: `Profile.greedy_forces_erdos_rado` — every profile the
+  greedy cover step closes is at least `(k-1)^m·m!`, which *is*
+  Erdős–Rado. Exact, every `k`, no asymptotics (§29).
+* **A gate**: `tools/ceiling.py`, wired into `make verify`, which costs
+  every route against 1960, against the record, and against the target,
+  and fails the build when a route's declared verdict disagrees with its
+  own arithmetic (§29.5).
+* **Seven rules** (20–26) in `docs/reading.md`, each earned by an error
+  this session actually made.
+
+### 32.2 The thing the next session most needs to know
+
+> **Discharging `Rao20_lemma2` will not improve any bound.**
+
+The axiom yields `ALWZ.sunflower_bound_from_spread_lemma`, which is
+**Rao 2020**'s `f(n,k) ≤ (C·k·log(nk))^n + 1`. The literature record is
+**Bell–Chueluecha–Warnke 2021**, `(C·p·log k)^k` (`docs/reading.md` A6,
+read in full), which is better and is *not* formalised here. So finishing
+Stage C turns a conditional formalisation into an unconditional one —
+a real and checkable achievement, and the thing a sceptical reader looks
+at first — but it moves no number and beats nothing.
+
+Choose it deliberately, on that basis, or choose something else. What it
+is *not* is progress on the conjecture.
+
+### 32.3 Stage C, if that is the choice
+
+Everything below Stage C is done and axiom-free. §1's remaining list, and
+it is short:
+
+```
+  Claim 3.5   Markov in the fixed-size setting -- "if the average over V
+              is at least (1-eps)|F| then most V are good" -- plus
+              Exercise 3.1's two spreadness-preservation lemmas
+  Claim 3.6   induction on t. Section 1: "arithmetic-free, and it is the
+              step that yields the conclusion"
+  Lemma 3.1   the log n iteration, and prod (1 - 10^{-n/2^i}) >= 0.8
+```
+
+then instantiate `ALWZ.FractionalSpreadDisjoint` at whatever threshold
+falls out; `ALWZ.fractional_form_gives_the_axiom_shape` carries it the
+rest of the way. §1's scoping decision stands: **do not chase the
+constant.**
+
+Three things this session learned that apply directly:
+
+1. **Read the rendered pages, not §1's summary.** §1's staging note was
+   one hypothesis wrong three times — the binomial estimate's
+   (`c·N ≤ d·j` where `c·N ≤ d·(j+1)` is what runs), the type of `count`
+   (pairs, not sets), and the decode (*not* an equation). Each was found
+   by writing the statement. `lovett_pcmi.pdf` re-fetches with a matching
+   sha256; pp. 11–15 are §3.
+2. **Falsify before proving.** `rust/tests/fragment.rs` swept 32968
+   exhaustive triples before `coq/Fragment.v` existed, and the proofs
+   then went in with no mathematical false start. But see rule 25: a
+   bitmask falsifier cannot see a list-representation defect.
+3. **The canonicalisation layer already exists** (`Counting.norm` and its
+   eight lemmas, §31.9). Rule 26 exists because it was paid for three
+   times before being built once. If Stage C needs a fourth
+   representational bridge, add it *there*.
+
+### 32.4 What would actually be new mathematics
+
+Named, with honest status. None of these is started.
+
+| target | status | why it is real |
+|---|---|---|
+| **Rao's question** (`docs/reading.md` A2): does the *disjointness* form of the spread lemma run at `r = O(k)`? | open; A2 established from a rendered page that the known tightness examples ([ALWZ20] Lem 3.1, [BCW21] Lem 4) are for the **robust/covering** form, **not** disjointness — so nothing known rules it out | a positive answer **is** the sunflower conjecture, at every `k`. `Conjecture.spread_conjecture` is already the formal statement and `spread_conjecture_suffices` already derives the conjecture from it |
+| **`r*(3,3)`: is it 3 or 4?** | `[3,4]` (STATUS.md; upper from `TauThree.r_star_three_three_at_most_four_unconditional`) | one integer. `r*(3,3) = 3` forces `g(3) ≤ 27`; the development knows `g(3) ≤ 26` (`PureLink.f_3_3_at_most_27`), so **the two are consistent and the question is live** |
+| **Conjecture P** (§29.8): is the profile reduction lossless, `B_k = g_k`? | `g_k ≤ B_k` is a theorem; equal at `k=3` for `m ≤ 2`; `B_3(3) ∈ [20,32]` against `g(3) ≤ 26` | `B_3(3) > 26` refutes it outright. §29.7's floor says a witness needs ≥14 points and the maximum ≥16 — the ground set §13.4 records cadical failing to decide at 601s |
+| **A better base object than `ι(3) = 10`** (Track 4) | `ι(3) = 10` is proved unique by exhaustion (B16); `ι(4) ≥ 32` would refute `Sharp.AHSOptimal` and give `f(3,3) ≥ 33` | the 1972 lower bound `10^{n/2}` is the whole record. §13.4 calls this "a rigid target, not a wide search" |
+| **A second technique** (Track 3) | `coq/SliceRank.v` is scaffolded and unused; §7 names exactly what the polynomial method is missing | every bound in this repository comes from spreadness plus covering. [Kup25] p. 53 lists three incomparable methods; this repo has one |
+
+### 32.5 The failure modes this session hit, so the next one can skip them
+
+Recorded because all three are cheap to avoid and expensive to repeat.
+
+* **The incoming brief was wrong about the repository three times** —
+  Track 1's "do this first" already existed as
+  `Conjecture.spread_conjecture`; `r*` was already posed as the
+  conjecture in §22; and a refined bound was already beaten by
+  `PureLink.f_3_3_at_most_27`. Rule 21: a handoff's task list is a
+  *hypothesis about the repository*, and `grep` refutes it in a minute.
+  **This section is a handoff too. Check it.**
+* **A plan's hypotheses are not the proof's hypotheses.** Rules 23 and 24.
+* **A falsifier in the wrong representation proves nothing about the
+  representation.** Rule 25.
+
+### 32.6 Costs and gates, whole session
+
+New: `coq/Profile.v`, `coq/Counting.v`, `coq/Fragment.v` (three modules,
+no axiom); `tools/ceiling.py` and the `make ceilings` gate;
+`rust/tests/profile.rs`, `counting.rs`, `fragment.rs`, `fragment_count.rs`.
+The development is now 45 modules, 665 audited theorems, 129 audited
+definitions, 150 mutations, and 31 Rust integration suites (the gate
+line below reports 33 `test result` lines, which is those 31 plus the
+library's own unit tests and its doctests).
+
+Final gate run, all green:
+
+```
+  make -j4 verify          pass (45 modules, clean rebuild)
+  make coqchk              pass; census exactly Rao20_lemma2
+  python3 tools/mutate.py  150 mutations, 147 killed, 2 genuine
+                           survivors, 1 control, 0 unexpected
+  cargo test --release     33 suites, 315 tests, 0 failures
+  tools/statements.py      794 baselined entries
+  tools/docnumbers.py      12 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+```
+
+Zero admits; every audited theorem reports `Closed under the global
+context`.
+
+### 32.7 The bar, stated plainly
+
+This session produced infrastructure, a barrier, and two thirds of an
+axiom discharge. It produced **no new mathematics**, and it says so.
+
+The next session should be able to write a sentence of the form *"`X` is
+now known, and it was not before"*, where `X` is a statement about
+sunflowers rather than about this repository. §32.4 lists five candidates
+and none of them is started. The instruments are built: exhaustive
+search, two cross-checked SAT solvers, prescribed-symmetry search, the
+spread decision procedures, a costing gate that refuses uncosted routes,
+and now a complete counting layer. **What is missing is a session that
+points them at an open question and reports the answer with its budget.**
