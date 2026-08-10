@@ -123,7 +123,7 @@ literature, resolved.
 | B19 | `HM(m,r)` — the Hilton–Milner family thinned to a grid so that it is Rao(`r`)-spread — and `¬ StarExtremalAt m m` at every `m` | **Not found in [Kup25], now on a COMPLETE rendered pass — 66 of 66 pages. Not found anywhere else either, but nowhere else has been searched properly.** The first version of this row was a `pdftotext` word-grep and was withdrawn within the hour (rule 18): the claim is a *condition*, `deg T ≤ r^(m−|T|)`, and conditions do not survive text extraction. Redone by rendering every page of the survey — log in `docs/papers/kup25-rendered-pass.md` — no page poses or uses an extremal problem for *intersecting* families under an *absolute, level-wise* cap. The three neighbouring corners are occupied; see B19d and B19g. | The *underlying object is classical, and that is now verified rather than assumed*. [FHHZ17] (Frankl–Han–Huang–Zhao, *A degree version of the Hilton–Milner theorem*, arXiv:1703.03896v2), **p. 1 rendered and read**, defines it verbatim: `HM_{n,k}` *"consists of a `k`-set `S` and all `k`-subsets of `[n]` containing a fixed element `x ∉ S` and at least one element of `S`."* `HM(m,r)` is exactly that family with the star part thinned to a transversal grid. What is not found is the thinning, or any extremal problem posed under a **level-wise** cap. See the search description below. |
 | B19a | §24.13's claim that the neighbouring literature caps *one* degree statistic rather than every level | **Confirmed — from a rendered page rather than from assertion** | Same page. [FHHZ17] p. 1: *"Let `Δ(F) := max_x d_F(x)` and `δ(F) := min_x d_F(x)` denote the maximum and minimum degree of `F`, respectively. There were extremal problems in set theory that considered the maximum or minimum degree of families satisfying certain properties. For example, Frankl [7] extended the Hilton–Milner theorem by giving sharp upper bounds on the size of intersecting families with certain maximum degree."* One statistic, capped once. Rao's condition caps `deg T ≤ r^(m−|T|)` at every `|T|` simultaneously and geometrically, which is a different hypothesis — as §24.13 said and could not then cite. |
 | B19b | The word "spread" in this literature means what it means here | **REFUTED twice over** | A web search for spread intersecting families returns the **fractional** notion — a family is `r`-spread when the maximum `s`-degree is at most `r^(−s)·|F|` — which is `Spread.Spread` in this development, *not* `Spread.RaoSpread`. `Spread.RaoSpread_Spread` relates them in one direction only, and the absolute form is the stronger hypothesis once a family exceeds `r^m`. A literature search on "spread" that does not disambiguate returns the wrong object. And the notion is *also* studied under a name containing neither word — see B19c. |
-| B19c | A **level-wise, geometric** cap on the degrees of a family is not a studied notion | **REFUTED. It is studied, it is named, and the name contains neither "spread" nor "degree".** | [Kup25] p. 53, **rendered and read**: *"We say that a family `F ⊂ A` is `τ`-homogeneous with respect to `A`, if for any set `X` we have `|F(X)|/|F| ≤ τ^|X| · |A(X)|/|A|`. ... then it transforms into `μ(F(X)) ≤ τ^|X| μ(F)`."* Attributed to Zakharov and the author [98], alongside the *spread approximation* method, with a footnote recording a notation clash with Füredi's `τ`-homogeneous. This is a cap at **every** level, **geometric in `|X|`** — the shape of Rao's condition, generalised to an arbitrary ambient family `A`. With `A = binom([n],k)` it is the fractional condition (`Spread.Spread`) rather than the absolute one (`Spread.RaoSpread`), so it is not the same hypothesis; but §24.13's framing — that the neighbouring literature caps *one* statistic and a level-wise cap is a different kind of object — is **too strong as written**. What remains not found is the *absolute* form and the Hilton–Milner-shaped extremal question under it. |
+| B19c | A **level-wise, geometric** cap on the degrees of a family is not a studied notion | **REFUTED. It is studied, it is named, and the name contains neither "spread" nor "degree".** | [Kup25] p. 53, **rendered and read**: *"We say that a family `F ⊂ A` is `τ`-homogeneous with respect to `A`, if for any set `X` we have `|F(X)|/|F| ≤ τ^|X| · |A(X)|/|A|`. ... then it transforms into `μ(F(X)) ≤ τ^|X| μ(F)`."* Attributed to Zakharov and the author [98], alongside the *spread approximation* method, with a footnote recording a notation clash with Füredi's `τ`-homogeneous. This is a cap at **every** level, **geometric in `|X|`** — the shape of Rao's condition, generalised to an arbitrary ambient family `A`. With `A = binom([n],k)` it is the fractional condition (`Spread.Spread`) rather than the absolute one (`Spread.RaoSpread`), so it is not the same hypothesis; but §24.13's framing — that the neighbouring literature caps *one* statistic and a level-wise cap is a different kind of object — is **too strong as written**. What remains not found is what B19d says: the **extremal question** under the absolute condition together with an intersecting hypothesis. *The absolute condition itself is published and is in this corpus* — this row used to claim otherwise and was contradicted by the RaoSpread transcription check below and by [BCW21]'s own definition, *"a family `S` of `k`-element sets is called `r`-spread if there are at most `r^{k−\|T\|}` sets of `S` that contain any non-empty set `T`"*. Corrected session N+11; see the note at the end of this file. |
 | B19d | Where this development's hypothesis sits, now that the rendered pass has read the neighbours | **A 2×2, and only one corner is unoccupied** | Two axes: **relative** (`deg ≤ c·|F|`) vs **absolute** (`deg ≤ r^(m−|T|)`), and **one level** vs **every level**. [Kup25] p. 20, rendered: Frankl [44] *"studies the families in which no element is contained in more than a `c`-fraction of sets"* — relative, level 1. p. 53: `τ`-homogeneous — relative, every level. p. 46, Jiang–Longbrake's quantitative Füredi (Thm 52), rendered: the subfamily it produces satisfies *"for every `J = A ∩ B` ... and every `x ∈ [n] \ J` we have `|F*(J ∪ {x})| ≤ (1/s)|F*(J)|`"*, with a matching lower bound — relative, every level, **two-sided**, and phrased exactly as Rao's is, as a decay by a factor per added point. The unoccupied corner is **absolute at every level under an intersecting hypothesis**, which is `Spread.RaoSpread` and the setting of `I(m,r)`. §24.13's "the neighbouring literature caps one statistic" is right about Frankl and wrong as a general characterisation: the axis separating this work from the literature is relative-vs-absolute, not one-level-vs-all-levels. |
 | B19e | `SpreadReduction.spread_reduction`'s recursion is peculiar to this development | **It has a published counterpart, one setting over** | [Kup25] p. 50, rendered, Observation 58: *"If `G ⊂ binom([n],ℓ)` is such that there is no `X` such that `G(X)` is `r`-spread, then `|G| ≤ r^ℓ`"* — proved by taking an inclusion-maximal `X` violating spreadness, so that `G(X)` is spread by maximality. That is the same argument as this repository's reduction (find a violating `T`, pass to the link, recurse, conclude `|F| ≤ r^m`), in the fractional setting rather than the absolute one. No novelty was ever claimed for `spread_reduction`; this records where its counterpart is. |
 | B19f | §24.13 dates the degree-condition line to "Frankl 1987" | **Two earlier sources, both 1978, and one of them is titled the question** | [Kup25] reference list, rendered. p. 63, [44]: *P. Frankl, "On intersecting families of finite sets", J. Combin. Theory Ser. A 24 (1978), 146–161* — the paper p. 20 attributes the `c`-fraction max-degree condition to, so that condition is Frankl **1978**. p. 64, [62]: *Z. Füredi, "**Erdős–Ko–Rado type theorems with upper bounds on the maximum degree**", Colloquia Math. Soc. J. Bolyai 25, Szeged, 1978, pp. 177–207* — the closest-titled paper found anywhere, and nine years earlier than the attribution §24.13 carries. Neither is in this corpus. Both are the first targets of any continuation of the B19 search, together with p. 65's [89] *Kostochka–Mubayi, "The structure of large intersecting families", PAMS 145 (2016)* and [96] *Kupavskii–Noskov (2025), arXiv:2410.06156*, on the Duke–Erdős corner. |
@@ -2011,3 +2011,147 @@ the author's. That asymmetry is the same one `tools/statements.py` has —
 it checks that a statement did not move, never that it is the right
 statement — and it is stated here so nobody mistakes a green gate for a
 reviewed claim.
+
+---
+
+## What re-reading the development changed, session N+11
+
+### An instrument, for the third time
+
+`docs/roadmap.md` §32.6a's own summary of the mutation-job change
+carried a causal sentence that the *next* measurement refutes, and it
+was carried in three places at once — the workflow file, `docs/
+testing.md`, and the commit message of `b0f9d25`:
+
+> "the contention is why both were slower than a solo run"
+
+The three data points, in the order they were taken:
+
+```
+  2decd53   mutation job    1h20m34s    partly contended  <- the "reference"
+  d524766   mutation jobs   1h28m, 1h32m   fully contended
+  b0f9d25   mutation job    1h36m04s    SOLO              <- the slowest of all
+```
+
+The solo run is the slowest of the three. Contention cannot be what made
+the contended pair slow, and the 1h20m figure everything was measured
+against was **itself a contended run**, so it was never a clean baseline
+in the first place. What is actually true is that the job varies by
+roughly a quarter of an hour on GitHub runners for reasons none of these
+three measurements isolates.
+
+**The change itself is unaffected and stays.** One job instead of two is
+half the runner minutes whatever either takes, and the check-run count
+went 12 to 6. Only the explanation was wrong, and it has been deleted
+from both files.
+
+This is the third time in this programme that the thing that bit was an
+instrument rather than the mathematics — rule 13 (a search reported as
+an answer), rule 22 (a measurement compared against a differently-scoped
+one) — and it is the second time the specific defect was a *baseline
+that shared the property being measured*.
+
+> **Rule 28. A baseline must not carry the defect it is being used to
+> measure.** Before attributing a difference to a cause, check that the
+> number it is compared against was taken without that cause present. If
+> it was not, the comparison measures nothing, however large the
+> difference is. A saving established by *counting* — one job instead of
+> two — survives this; an explanation established by *comparing* does
+> not.
+
+### B19c contradicted B19d, and B19c was the one that was wrong
+
+B19c ended: *"What remains not found is the absolute form and the
+Hilton–Milner-shaped extremal question under it."* That is two claims,
+and the first of them is refuted by this file's own transcription check
+further down, which confirms `Spread.RaoSpread` matches [Ra20]'s Lemma 2
+verbatim — *"every non-empty `Z`"*, *"at most `r^{k−|Z|}`"* — and by the
+[BCW21] section, which records the same lemma being quoted there.
+Bell–Chueluecha–Warnke's own definition **is** the absolute form:
+
+> "a family `S` of `k`-element sets is called `r`-spread if there are at
+> most `r^{k−|T|}` sets of `S` that contain any non-empty set `T`"
+
+So the absolute condition is published, named and in this corpus. B19c
+now claims only what B19d already got right: the unoccupied corner of
+the 2×2 is the **extremal question** under the absolute condition with an
+intersecting hypothesis, not the condition itself. Two rows of the same
+register disagreeing is a defect the register is supposed to prevent, and
+the fix is to make the weaker row quote the stronger one rather than
+restate it.
+
+---
+
+## Session N+11: the corpus, and one exact value that was in it all along
+
+The brief for this session named two papers as the first targets of any
+continuation of the B19 search (row B19f) — Kostochka's Δ-system survey
+and Füredi's 1978 Bolyai paper — and one as the highest-priority
+acquisition for the `ι(4)` search: Abbott–Exoo 1992. One of the three was
+obtained and read in full. What it contains is not what it was fetched
+for.
+
+> **The commissioned deep-research report that the brief refers to was
+> not included in the brief.** The prompt ends with the literal
+> placeholder `[PASTE THE DEEP RESEARCH REPORT HERE]`. Every row below is
+> therefore evidenced by this session's own reading, at the evidence
+> class stated, and the report's findings are **not** transcribed. Rows
+> the brief asked for that could not be independently evidenced here are
+> recorded as not done rather than copied.
+
+### [Kos00] — read in full, 9 of 9 pages rendered
+
+A. V. Kostochka, *Extremal problems on Δ-systems*, in *Numbers,
+Information and Complexity* (Bielefeld, 1998), Kluwer, 2000, 143–150.
+Retrieved from the author's page,
+`kostochk.web.illinois.edu/docs/2000/survey3.pdf`, 9 pp,
+sha256 `ab75a3f3081b86f90b1880771d646036c23a996e28d6d2fce0d8916a9ad94d9d`.
+The PDF is a 25 October 2011 re-typeset; the text is the survey.
+
+**Notation.** Kostochka's `f(k,r)` is the *largest* family, not the
+threshold. p. 1: *"Define `f(k,r)` to be the least cardinal so that any
+`k`-uniform family of more than `f(k,r)` sets contains a Δ-system
+consisting of `r` sets."* So `f(k,3)` **is** this development's `g(k)`,
+and `Sunflower.UpperBound k 3 (f(k,3)+1)`. His `g(k,r)` is the *weak*
+Δ-system function and is a different object; the collision with this
+repository's `g` is total and is why every number below is restated in
+the local convention.
+
+| # | Claim | Verdict | Evidence |
+|---|---|---|---|
+| A9 | `f(3,3)` is *"the first unknown sunflower number"* (`STATUS.md`, `docs/roadmap.md` §20) | **REFUTED. It has been known since 1969, and this repository's own lower bound is the exact answer.** | [Kos00] p. 4, rendered: *"Abbott and B. Gardner [2] proved in 1969 that `f(3,3) = 20`, and since then no other exact value of `f(k,r)` for `k ≥ 3` and `r ≥ 3` became known."* In local convention: `g(3) = 20`, so `f(3,3) = 21`. `Intersecting.lower_bound_3_3_20` proves `f(3,3) ≥ 21` — **tight** — and `PureLink.f_3_3_at_most_27` was six too high. Now `coq/AbbottGardner.v`, as a carried `Prop`. |
+| A9a | The primary source for A9 | **Not read; paywalled** | [2] = H. L. Abbott and B. Gardner, *On a combinatorial theorem of Erdős and Rado*, in W. T. Tutte, ed., *Recent progress in Combinatorics*, Academic Press, 1969, 211–215. Not open access, no preprint, not on arXiv. What is read is Kostochka's sentence, verbatim, from a rendered page. |
+| A9b | A second, independent source for A9 | **Confirms the shape, not the number** | Bennett–Priestley, *The sunflower-free process*, arXiv:2509.16355 — **already in this corpus as `pdf/sfprocess.pdf`** — p. 7 rendered: *"in some of the best known constructions, the authors make use of the fact that the precise answer is known for very small cases of `r` and `w` (e.g., [AG69b])"*, and p. 25 rendered gives `[AG69b]` as the Tutte-volume paper. So a 2025 paper in the corpus cites Abbott–Gardner for exactly this and nobody here had opened p. 7. |
+| A10 | The Abbott–Hanson–Sauer substitution's **intersecting** side condition is *"not stated"* in the literature (`STATUS.md`, the `10^(n/2)` row) | **REFUTED. It is stated, twice, on the same page.** | [Kos00] p. 2: *"It is derived from their construction for every positive integer `t` of an **intersecting** `3^t`-uniform family `F_t` of cardinality `10^((3^t−1)/2)` not containing a Δ-system of size 3."* And p. 3, in the proof: *"Since `F_{t−1}` and `F_1` both are intersecting families, `F_t` also is an intersecting family."* This repository found the condition by computation and recorded it as a gap in the secondary literature; the gap was in the corpus, not in the literature. |
+| A11 | The 1972 seed family | **Printed in full, and it matches** | [Kos00] p. 2: *"`F_1 = {{1,2,3},{1,2,4},{1,3,5},{1,4,6},{1,5,6},{2,3,6},{2,4,5},{2,5,6},{3,4,5},{3,4,6}}` with the ground set `{1,…,6}`"*. Ten triples on six points: `Intersecting.iota3` up to relabelling, and `rust/tests/iota_structure.rs` proves there is only one isomorphism class, so "up to relabelling" is the whole of it. |
+| A12 | `Sharp.AHSOptimal` — *"the sharp conjecture"*, that `ι(b)² ≤ 10^(b−1)` | **The question is published; the formal statement is this repository's** | [Kos00] p. 3, immediately after the construction: *"It would be very interesting to improve the construction even just a bit. But maybe it is optimal."* That is the same uncertainty `Sharp.AHSOptimal` names, in prose, from the survey of the area. It is **not** stated as a conjecture and carries no `ι`; what this development adds is the reduction to a single uniformity and the integer threshold at each one (`Sharp.refutation_threshold`). Novelty is claimed for the *formalisation and the thresholds*, not for the question. |
+| A13 | Abbott–Exoo 1992, *"the closest prior computational work"* to the `ι(4)` search | **Unreachable (primary); its `r = 3` content is recorded second-hand and is empty** | H. L. Abbott and G. Exoo, *On set systems not containing delta systems*, **Graphs and Combinatorics 8 (1992), 1–9**. Springer, paywalled, no preprint; `link.springer.com/article/10.1007/BF01271703` returns a 303 to an authorisation endpoint. Two rendered secondary sources say what it contains. [Kos00] p. 4: *"Abbott and G. Exoo [1] obtained the lower bounds `f(k,4) ≥ C·38^{k/3}` and `f(k,6) ≥ C·146^{k/3}`"*, and p. 5: *"Abbott and Exoo [1] gave the lower bounds `g(k,4) ≥ C·10^{k/2}` and `g(k,5) ≥ C·20^{k/2}`"* — **every one of them is `r ≥ 4`**. Bennett–Priestley p. 25, rendered, describes its method: *"the algorithm described in [AE92] includes an additional backtracking step. The authors use a basic learning algorithm to help determine which edges should be removed in the backtracking step, and also use it to bias the algorithm towards choosing specific sets."* So it **is** a computational attack, as the brief said, and its published results are for `r = 4, 5, 6`; nothing in either secondary source attributes an `r = 3` construction to it. That is a second-hand negative and is recorded as one. |
+| A14 | The greedy/covering barrier (`Profile.greedy_forces_erdos_rado`) is unpublished | **Still "not found, not exhaustive" — and the search is NOT complete** | [Kos00] read in full: no barrier remark of that shape anywhere in it. Its §6, *Concluding remark*, is the whole of what it says about limits: *"One of the aims of the present article was to show that there was some progress lately in studying every of the functions `f(k,r)`, `g(k,r)`, `F(n,r)` and `G(n,r)`, but none of the main problems is solved."* **Füredi's 1978 Bolyai paper was not obtained** — *Erdős–Ko–Rado type theorems with upper bounds on the maximum degree*, Colloq. Math. Soc. J. Bolyai **25**, pp. 177–207, published 1981 by North-Holland; no digitisation found, not on arXiv, not on the author's page. Rule 19 therefore applies unchanged: **a located source is unopened, so the negative is not upgraded.** No novelty claim on the barrier moves this session. |
+
+### Rows added at abstract level, and labelled as such
+
+Rule 4 forbids *quoting* from an abstract. These rows exist so the next
+session does not re-find the papers; none of them is quoted, and none is
+load-bearing for anything in `coq/`.
+
+| # | Paper | What it is | Evidence |
+|---|---|---|---|
+| B20 | Ahmadi–Norouzi, arXiv:2606.30593 (29 Jun 2026), *A polynomial improvement of the Naslund–Sawin bound for sunflower-free families using triangular tensors* | `\|F\| = O(n^{1/6}(3/2^{2/3})^n)` for sunflower-free **subsets of `2^[n]`** — the ground-set object, not the uniform one. **The base is unchanged**: `3/2^{2/3}` is exactly `SliceRank.NaslundSawinBound`'s `C`, and the improvement is the polynomial factor `n^{1/6}` against `3(n+1)`. So `SliceRank.ns_bound_to_exponential` and everything downstream of it are unaffected, and `docs/roadmap.md` §7.5's verdict — that the polynomial method contributes a constant and `GroundBounded` is the load-bearing part — is unaffected too. | abstract only, arXiv listing page |
+| B21 | Ihringer–Kupavskii, arXiv:2505.03671 (6 May 2025, rev. 18 Sep 2025), *The Erdős–Rado sunflower problem for vector spaces* | The `q`-analogue: `k`-dimensional subspaces over a finite field, constructions from maximum rank-distance codes. **A different object from the set problem**; nothing here transfers. | abstract only |
+| B22 | Rao, *The Story of Sunflowers*, arXiv:2509.14790 — **already in this corpus as `pdf/story.pdf`, read in full, 12 pp** ([Rao25] in the register above) | Expository. **Citation warning, and it is the one that matters:** `docs/roadmap.md` attributes the `r = O(k)` question to `[Ra20, p. 2]`, and that attribution is correct and must not be moved here — row A2's quotation is from Rao's 2020 paper. This 2025 exposition is not where the question is posed. | read in full, session N+9 |
+
+### Not done, and why
+
+* **The `φ(k,s)` notation hazard in [Kup25].** The brief describes a
+  specific defect — that the Abbott–Hanson–Sauer sentence writes
+  `φ(k,3)` while describing a family with no `Δ(3)`-system, so the
+  second argument changes meaning in that one sentence. Checking it
+  needs pp. 5–6 re-rendered and compared against the definition, and
+  that was not done this session. **Do not import any `φ` from [Kup25]
+  without re-deriving it** is the operative instruction either way, and
+  it is now written down; the row itself is owed.
+* **Füredi 1978.** See A14. Four routes tried: title search, author page,
+  the Bolyai series, and the citing papers' own bibliographies. The
+  volume appears to have no digitisation.
+* **Kostochka–Mubayi PAMS 2016 and Kupavskii–Noskov arXiv:2410.06156**
+  (row B19f's other two targets). Not attempted.

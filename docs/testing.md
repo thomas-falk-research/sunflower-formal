@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-150 mutations, all with the outcome the manifest declares: 147 killed
+151 mutations, all with the outcome the manifest declares: 148 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -922,10 +922,22 @@ Once per push, not twice. A push to a branch with an open pull request
 fires both `push` and `pull_request:synchronize`, and the two carry
 different `github.ref` because they check out different trees, so no
 concurrency key can merge them. On commit `d524766` that duplication
-cost 1h28m *and* 1h32m of runner time for the same 150 mutations, where
-one run of that job takes about 1h20m — the contention is why both were
-slower than a solo run. `verify.yml` therefore does not subscribe to
-`synchronize`. `prcheck.yml` does, and must: pushing a commit changes
+cost 1h28m *and* 1h32m of runner time for the same 150 mutations.
+`verify.yml` therefore does not subscribe to `synchronize`.
+
+**The saving is one job instead of two — half the runner minutes, and
+the check-run count went 12 to 6. That is the whole of it, and the
+explanation that used to be attached here was wrong.** This paragraph
+said the two jobs were slow because they contended with each other. The
+very next measurement refutes that: on `b0f9d25` the mutation job ran
+*solo* and took **1h36m04s**, slower than either contended run and
+slower than the 1h20m "reference", which was itself a contended run on
+`2decd53`. The job varies by about a quarter of an hour on GitHub
+runners for reasons none of these measurements isolate. The duplication
+was real and removing it saved real money; the causal story about
+*why the numbers looked the way they did* was a comparison against a
+baseline carrying the same defect it was being used to measure. See
+`docs/reading.md` rule 28. `prcheck.yml` does, and must: pushing a commit changes
 the counts the pull request body asserts, so the gate has to re-read
 the body against the new tree, and eight seconds of a runner is not the
 same kind of cost.
@@ -1124,3 +1136,55 @@ rather than plausible:
 The suite ran before any of `coq/StarDefect.v` was written, which is the
 order the rest of this document asks for and the order the previous
 entry did not manage.
+
+### A tenth: a symmetry-breaking encoding, and why every restriction in
+###           it needs its own falsifier
+
+`rust/tests/symbreak.rs` guards `rust/src/symbreak.rs`, and it is the
+suite whose subject can be wrong in the one direction nothing else here
+catches.
+
+Everything else in this file falsifies a *statement*: a bound that is
+too strong, a hypothesis that is not load-bearing, a count that has
+drifted. A symmetry-breaking encoding is different. It is a claim that
+a family may be *assumed* to look a certain way, and if that claim is
+wrong the solver returns **UNSAT** — the verdict no witness can
+contradict, on an instance that was never searched. A wrong restriction
+does not produce a wrong object anyone can inspect; it produces a
+correct-looking negative.
+
+Four restrictions and one split, each with its own failure mode:
+
+* **The order counters.** A degree comparison is encoded as an
+  implication between "at least `k`" literals, and a sequential counter
+  usually encodes only one direction — enough to *assert* a threshold,
+  useless to *compare*. With the wrong direction every comparison is a
+  no-op: the run is sound and slow, and reports nothing. So both
+  directions are checked against a brute-force count, for every `k` and
+  every prefix length, by asking the solver for the two configurations
+  that must be impossible.
+* **The restrictions themselves** — maximum degree at point 0, sorted
+  blocks, exactly `t` members, the intersecting degree floor, the
+  lexicographic tie-break. Every one is run on and off at every
+  parameter small enough to decide twice, and the verdicts are required
+  to match. This is the control §9 of `docs/roadmap.md` asked for on the
+  degree cap and did not get.
+* **The cube splits.** Two of them: on `deg(0)`, and on the exact degree
+  *sequence*. A split is a cover or it is nothing, and a missing cube
+  also reads as UNSAT. The `deg(0)` cubes are checked to abut and to
+  start at the floor the encoding asserts, without the solver. The
+  degree-sequence cubes are checked against a brute-force sweep over
+  every vector in range, by code sharing nothing with the recursion that
+  generates them.
+* **The ladder.** Asking the question one support size at a time is only
+  a cover because a family on at most `g` points has a support of some
+  size `s <= g` and relabels onto `[s]`. The rungs below the frontier are
+  re-decided against `intersecting::iota`, the exhaustive
+  branch-and-bound, which shares no code with the encoder, the solver or
+  the driver.
+
+What none of it checks is the *solver*. An UNSAT here is cadical's word,
+and the repository's standing rule for that verdict — `sat::solve_agreed`,
+two independent solvers required to agree — is affordable per instance
+and was not run across the whole ladder. `docs/roadmap.md` §33.5 says so
+where the result is reported.

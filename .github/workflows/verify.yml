@@ -9,9 +9,17 @@ name: verify
 # key computed from the event can put them in one group.
 #
 # Measured on commit d524766: the duplicate cost 1h28m and 1h32m of
-# runner time for the same 150 mutations, where one run of that job
-# needs about 1h20m. Two hours of it was pure duplication, and the
-# contention is why both were slower than a solo run.
+# runner time for the same 150 mutations. Two of those three hours were
+# pure duplication, and that is the whole of the saving: one job instead
+# of two, and six check runs instead of twelve.
+#
+# An earlier version of this comment added "and the contention is why
+# both were slower than a solo run". That was wrong and is withdrawn.
+# The next measurement refutes it: on b0f9d25 the mutation job ran solo
+# and took 1h36m04s -- slower than either contended run, and slower than
+# the 1h20m figure it was being compared against, which was itself a
+# contended run on 2decd53. The job simply varies by about a quarter of
+# an hour on GitHub runners. See docs/reading.md rule 28.
 #
 # Dropping `synchronize` removes exactly the duplicate and nothing else.
 # Every push is still built, audited, re-checked and mutated -- once,

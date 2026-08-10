@@ -2412,3 +2412,18 @@ because = """Killed at geom_assemble, whose hypothesis is 2a <= b with \
 a = 4d and b = ck. At a = b the series is (i+1) copies of its first term \
 and no constant bounds it; Counting.geom_le's own mutation \
 geom-weaken-the-ratio pins the same boundary one level down."""
+
+# ----------------------------------------------------------------
+# The 1969 literature value, carried as a hypothesis.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "abbottgardner-loosen"
+file = "coq/AbbottGardner.v"
+question = """Is the *number* in the 1969 value load-bearing, or would any \
+bound on g(3) do? Loosening 20 to 26 makes the hypothesis exactly \
+PureLink.g_three_at_most_26, which is already a theorem -- so every \
+consequence that genuinely uses the 1969 value must stop compiling."""
+find = "Definition AbbottGardner1969 : Prop := GAtMost 3 20."
+replace = "Definition AbbottGardner1969 : Prop := GAtMost 3 26."
+expect = "killed"

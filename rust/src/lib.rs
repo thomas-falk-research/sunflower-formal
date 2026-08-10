@@ -34,6 +34,7 @@ pub mod sat;
 pub mod shift;
 pub mod spread;
 pub mod structure;
+pub mod symbreak;
 pub mod testbed;
 pub mod wide;
 

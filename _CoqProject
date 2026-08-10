@@ -45,4 +45,5 @@ coq/HiltonMilner.v
 coq/Counting.v
 coq/Fragment.v
 coq/Profile.v
+coq/AbbottGardner.v
 coq/Audit.v
