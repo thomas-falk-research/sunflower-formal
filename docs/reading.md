@@ -1968,3 +1968,46 @@ paid for separately, at the point of use, after the plan had been made.
 None of this is a defect in the source. Lovett's §3 is about sets and is
 correct about sets. It is a defect in *staging a list formalisation from
 a set-theoretic plan*, and it is the thing to budget for next time.
+
+### The one document nothing checked
+
+Everything in this repository that makes a claim is gated. A theorem is
+gated by the kernel, then by `coqchk`, then by `tools/statements.txt`
+against the statement it had when it was reviewed. A definition is gated
+by mutation testing, which asks whether it is load-bearing. A number in
+the prose is gated by `tools/docnumbers.py` against the list it counts.
+A route's worth is gated by `tools/ceiling.py` against the record.
+
+The pull request was gated by nothing at all — and it is the only one of
+those documents a reader forms their opinion from. Worse, it has every
+property that makes drift likely: written once at the end of a session,
+never regenerated, and quoting counts, theorem names and novelty
+judgements from memory of work done days earlier. Every failure this
+repository has already had in prose is available there in a form nobody
+would notice: a count copied from the previous session, a theorem cited
+by a name a rebase renamed, an unqualified "new" with no search behind
+it.
+
+`tools/prcheck.py` closes it, and it earned its place on first run by
+finding that six `Example`s in `coq/Counting.v` had never reached
+`tools/audited.txt` — so a claim citing one of them resolved to nothing.
+They were unaudited, not wrong; but the audit list is the artefact that
+says which is which, and it did not.
+
+> **Rule 27. The write-up is an artefact of the work and is gated like
+> one.** If a claim in a pull request cannot be resolved mechanically to
+> a theorem, a test, a mutation or a path, it is a sentence rather than
+> a result. The gate cannot check whether the prose is true — no gate
+> here can — but it can check that everything the prose names exists,
+> that every count matches the list it counts, and that rule 17 was
+> obeyed rather than intended.
+
+The template carries one section that is mandatory and cannot be
+mechanised: **What did not move.** A branch that cannot name the bounds,
+exact values and ledger rows it failed to move has not been read
+carefully by its author, and no tool can tell the difference between an
+honest answer there and a hollow one. Presence is checked; honesty is
+the author's. That asymmetry is the same one `tools/statements.py` has —
+it checks that a statement did not move, never that it is the right
+statement — and it is stated here so nobody mistakes a green gate for a
+reviewed claim.

@@ -915,3 +915,9 @@ thm Fragment.claim_3_4_per_m
 thm Fragment.claim_3_4_summed
 def Fragment.frag_ckey
 def Fragment.frag_base
+thm Counting.binom_row_six
+thm Counting.layer_agrees_with_binom
+thm Counting.powerset_is_two_pow
+thm Counting.ratio_at_a_quarter
+thm Counting.absorb_above_the_diagonal
+thm Counting.binom_ratio_needs_the_successor

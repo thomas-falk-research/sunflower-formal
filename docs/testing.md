@@ -773,6 +773,108 @@ This is the same fix, one level down, that the workflow already got: the
 audited-theorem count used to be hardcoded in the CI file and is now
 reported by `make print-assumptions` from its own list.
 
+## 7. What each route can possibly reach — `tools/ceiling.py`
+
+The checks above all ask whether something is true. This asks whether
+something is *worth doing*, and it is the only gate here that can fail a
+build over a plan rather than over a proof.
+
+Rule 14 of `docs/reading.md` says a route's ceiling is computed in the
+first hour, not the sixth session; rule 20 says it is costed against the
+record rather than against the last bound the development can name, and
+that the comparison is one of *shape* — constant, logarithmic, linear.
+Both were prose, and prose does not fail a build. So each route now
+declares, in `tools/ceiling.py`, the best `f(n,3)` it could produce if
+every open step in it went perfectly, expressed as the base `b` in
+`bⁿ` — and the tool evaluates that declaration in exact integer
+arithmetic against Erdős–Rado 1960, against the record, and against the
+conjecture, at several `n`.
+
+The verdict is classified by the measured exponent `g` in
+`b(n) ≈ n^g`: `1` is linear, `0` is a constant threshold. A route that
+improves the constant and keeps the exponent has not moved the problem,
+and the classification says so rather than reporting a smaller number.
+A route whose declared verdict disagrees with its own arithmetic fails
+the build. `make ceilings` runs it, `make verify` includes it, and CI
+gates on it.
+
+What it made checkable that was previously a judgement call: of the 9
+routes this development has built or considered, **6 lose to 1960 in
+their own best case**, one equals it, and the remaining two reach the
+record shape or better. That ratio was not knowable from any single
+session's notes, and it is now a line the tool prints — `9 routes
+costed; 2 can reach the record or better` — rather than an impression.
+(Both counts in that sentence are themselves gated, by §6's
+`tools/docnumbers.py`, against `tools/ceiling.py`'s own route list.)
+
+`--linear` adds the number underneath the classification. A route with
+`r*(n,3) ≤ c·n` gives `f(n,3) ≤ (cn)ⁿ + 1`, and Erdős–Rado is
+`2ⁿn! + 1 ~ √(2πn)·(2n/e)ⁿ`, so a linear route beats 1960 exactly when
+`c < 2/e = 0.7357588823…`. Each of the six losing routes above is of
+that form, with `c` in `{2, 2, √3, 1, 1, 1}`. The best of them, `c = 1`,
+would have to fall by a factor of `1.36` to reach the threshold. That is
+a number, not an opinion, and it is why "linear" is a verdict here
+rather than a description.
+
+What it cannot check: whether a declared ceiling is *achievable*. It
+takes each route's own best case at face value and computes what that
+best case is worth. A route that declares an optimistic ceiling and
+fails to reach it passes this gate and fails in the mathematics.
+
+## 8. The pull request itself — `tools/prcheck.py`
+
+One more level up. `tools/statements.txt` stops a theorem's statement
+from drifting; `tools/docnumbers.py` stops the prose in the tree from
+drifting away from the lists it counts; this stops the *pull request*
+from drifting away from the branch it is about.
+
+That is the one document a reviewer forms an opinion from, and until
+this was written it was the only one nothing checked. Every failure
+mode the repository has already had in prose is available there in a
+harder-to-notice form, because a pull request body is written once,
+read once, and never regenerated: a count copied from a previous
+session, a theorem cited by a name a rebase renamed, a claim of novelty
+with no search behind it.
+
+So `.github/pull_request_template.md` carries a required TOML block, and
+`tools/prcheck.py` enforces four things against it:
+
+| check | against |
+|---|---|
+| counts — modules, audited theorems and definitions, mutations, killed mutations, Rust suites, declared axioms | `_CoqProject`, `tools/audited.txt`, `tools/mutations.toml`, `rust/tests/`, and `^Axiom` in `coq/*.v` |
+| every claim's `evidence` resolves | an audited Coq name, a Rust `#[test]` function, a mutation id, or a path that exists |
+| `novelty = "new-mathematics"` carries a real `search` | rule 17 of `docs/reading.md`, as a gate rather than as an intention |
+| `## What did not move` is present and non-empty | the section itself |
+
+`make prcheck` checks the template still parses; `make prcheck
+PR_BODY=body.md` checks a real body. CI runs the first on every push —
+a template that stops parsing would otherwise fail every later pull
+request for a reason having nothing to do with its own branch — and the
+second on every pull request, reading the body through the environment
+rather than interpolating it into the script, since a pull request body
+is text anyone who can open one controls.
+
+It lives in `.github/workflows/prcheck.yml` rather than as a job in
+`verify.yml`, for one reason worth recording: a gate on the body has to
+re-run when the body is *edited*, and a workflow has a single `on:`.
+Adding `edited` to `verify.yml` would rebuild everything — including the
+hour-long mutation suite — every time someone fixed a typo in a
+description, which is the kind of cost that gets a gate switched off.
+
+It found something the first time it was run, which is the only reason
+to believe it does anything: six `Example`s in `coq/Counting.v` were
+never added to `tools/audited.txt`, so a claim citing one of them
+resolved to nothing. They were unaudited, not wrong — but the audit
+list is the thing that says so, and it did not.
+
+**What it cannot check**, stated in the same spirit as the sections
+above: whether the prose is true, whether a claim's sentence matches
+the theorem it cites, or whether the verdict is honest. A body can
+satisfy every mechanical check and still overstate what the branch did.
+The sections are ordered to make that awkward — `What did not move`
+comes second, before the results — but ordering is a nudge, not a
+check, and this document should not pretend otherwise.
+
 ## What this does not cover
 
 Worth being explicit, since the point of the exercise is honesty about
@@ -803,6 +905,8 @@ make mutants    # perturb each definition, check what breaks
 make testbed    # exhaustive falsification + differential checks
 make statements # every audited statement against tools/statements.txt
 make docnumbers # every number the prose quotes against the lists it counts
+make ceilings   # every route's best possible bound, against the record
+make prcheck    # the pull request template; PR_BODY=body.md for a real one
 cd rust && cargo test --release   # everything on the Rust side
 cargo run --release --example iota_structure   # the extremal families, dumped
 cargo run --release --example iota_extend      # the iota table past the search

@@ -50,6 +50,7 @@ def truths() -> dict[str, tuple[int, str]]:
     project = read("_CoqProject")
     audited = read("tools/audited.txt")
     manifest = read("tools/mutations.toml")
+    ceilings = read("tools/ceiling.py")
 
     modules = len(re.findall(r"^coq/\S+\.v\s*$", project, re.M))
     thms = len(re.findall(r"^thm \S+", audited, re.M))
@@ -58,10 +59,19 @@ def truths() -> dict[str, tuple[int, str]]:
     survived = len(re.findall(r'^expect = "survived"', manifest, re.M))
     killed = len(re.findall(r'^expect = "killed"', manifest, re.M))
     controls = len(re.findall(r"^id = \"canary-", manifest, re.M))
+    # The route ledger. `routes_losing` is the number of reductions whose
+    # own best case is worse than a 1960 bound -- the single most
+    # quotable, and most easily stale, fact about where this development
+    # has spent its time.
+    routes = len(re.findall(r'^        name="', ceilings, re.M))
+    routes_losing = len(re.findall(r"^        verdict=LOSES,", ceilings, re.M))
 
     return {
+        "routes": (routes, "tools/ceiling.py (ROUTES entries)"),
+        "routes_losing": (routes_losing, "tools/ceiling.py (verdict=LOSES)"),
         "modules": (modules, "_CoqProject"),
         "audited_thms": (thms, "tools/audited.txt (thm lines)"),
+        "audited_defs": (defs, "tools/audited.txt (def lines)"),
         "audited_total": (thms + defs, "tools/audited.txt (thm + def lines)"),
         "mutations": (mutations, "tools/mutations.toml"),
         "mutations_killed": (killed, "tools/mutations.toml (expect = killed)"),
@@ -79,6 +89,11 @@ def truths() -> dict[str, tuple[int, str]]:
 # ---------------------------------------------------------------------
 
 CLAIMS: list[tuple[str, str, str]] = [
+    # `\s+` rather than a literal space: markdown is hard-wrapped, so a
+    # reflow moves the line break and would otherwise read as a deleted
+    # sentence.
+    ("routes", "docs/testing.md", r"of\s+the\s+(\d+)\s+routes\s+this\s+development"),
+    ("routes_losing", "docs/testing.md", r"\*\*(\d+)\s+lose\s+to\s+1960"),
     ("modules", "README.md", r"builds all (\d+) Coq files"),
     ("modules", "STATUS.md", r"anywhere\*\* in the (\d+) modules"),
     ("modules", "STATUS.md", r"re-verifies all (\d+) modules"),
@@ -91,6 +106,17 @@ CLAIMS: list[tuple[str, str, str]] = [
     ("mutations", "docs/testing.md", r"^(\d+) mutations, all with the outcome"),
     ("mutations_killed", "docs/testing.md", r"the manifest declares: (\d+) killed"),
     ("mutations", "docs/roadmap.md", r"mutation testing from (\d+) anecdotes"),
+    # The session handover quotes the development's size. It was stale
+    # within the same session that wrote it, which is the whole argument
+    # for this tool: the count moved when six Examples were audited and
+    # the sentence did not.
+    ("modules", "docs/roadmap.md", r"development is now (\d+) modules"),
+    ("audited_thms", "docs/roadmap.md", r"development is now \d+ modules,\s+(\d+) audited theorems"),
+    # Anchored to the handover sentence: earlier sections quote how many
+    # definitions a *session* added, which is a different number and a
+    # historical record, so a loose pattern would fail on all of them.
+    ("audited_defs", "docs/roadmap.md",
+     r"development is now \d+ modules,\s+\d+ audited theorems, (\d+) audited"),
 ]
 
 

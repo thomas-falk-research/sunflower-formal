@@ -1,0 +1,48 @@
+name: pull request
+
+# Its own workflow rather than a job in `verify.yml`, for one reason:
+# this gate has to re-run when the *body* changes, and `verify.yml`
+# must not. A workflow has a single `on:`, so listing `edited` there
+# would re-run the whole build -- including the mutation suite, which
+# takes over an hour -- every time somebody fixes a typo in a pull
+# request description.
+#
+# `types:` replaces the defaults rather than adding to them, so the
+# three defaults are listed explicitly alongside `edited`.
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+concurrency:
+  group: prcheck-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prcheck:
+    name: The pull request describes this repository
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      # The template carries the machine-readable block every body is
+      # parsed out of. If it stops parsing, every later pull request
+      # fails for a reason that has nothing to do with its own branch,
+      # so it is checked on push too rather than only where it is used.
+      - name: Gate - the pull request template still parses
+        run: make prcheck
+      - name: Gate - the body's counts, evidence and novelty claims hold
+        if: github.event_name == 'pull_request'
+        env:
+          # Through the environment, never interpolated into the script.
+          # A pull request body is text anyone who can open a pull
+          # request controls, and `${{ }}` inside `run:` is substituted
+          # before bash ever sees the line -- a body containing a
+          # backtick would execute here.
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr-body.md"
+          # Counts against the lists they count, every claim's evidence
+          # against something that exists, and rule 17 of
+          # docs/reading.md -- "new" without a search is "new to this
+          # repository" -- as a gate rather than as an intention.
+          make prcheck PR_BODY="$RUNNER_TEMP/pr-body.md"

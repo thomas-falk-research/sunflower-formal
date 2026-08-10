@@ -9008,11 +9008,13 @@ Recorded because all three are cheap to avoid and expensive to repeat.
 
 New: `coq/Profile.v`, `coq/Counting.v`, `coq/Fragment.v` (three modules,
 no axiom); `tools/ceiling.py` and the `make ceilings` gate;
-`rust/tests/profile.rs`, `counting.rs`, `fragment.rs`, `fragment_count.rs`.
-The development is now 45 modules, 665 audited theorems, 129 audited
-definitions, 150 mutations, and 31 Rust integration suites (the gate
-line below reports 33 `test result` lines, which is those 31 plus the
-library's own unit tests and its doctests).
+`tools/prcheck.py`, `.github/pull_request_template.md` and the
+`make prcheck` gate; `rust/tests/profile.rs`, `counting.rs`,
+`fragment.rs`, `fragment_count.rs`. The development is now 45 modules,
+671 audited theorems, 129 audited definitions, 150 mutations, and 31
+Rust integration suites (the gate line below reports 33 `test result`
+lines, which is those 31 plus the library's own unit tests and its
+doctests).
 
 Final gate run, all green:
 
@@ -9022,13 +9024,53 @@ Final gate run, all green:
   python3 tools/mutate.py  150 mutations, 147 killed, 2 genuine
                            survivors, 1 control, 0 unexpected
   cargo test --release     33 suites, 315 tests, 0 failures
-  tools/statements.py      794 baselined entries
-  tools/docnumbers.py      12 quoted numbers match
+  tools/statements.py      800 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
   tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
 ```
 
 Zero admits; every audited theorem reports `Closed under the global
 context`.
+
+### 32.6a The write-up, gated
+
+Added after §32.6's gate run, and worth its own subsection because it
+changes what every future session has to do rather than what this one
+found.
+
+Every artefact in this repository that makes a claim is gated: the
+kernel and `coqchk` for a theorem, `tools/statements.txt` for its
+statement, mutation testing for a definition, `tools/docnumbers.py` for
+a number in the prose, `tools/ceiling.py` for a route's worth. The pull
+request was gated by nothing — and it is the one document a reader forms
+an opinion from, written once at the end of a session and never
+regenerated.
+
+`.github/pull_request_template.md` now carries a required `toml` block
+and `tools/prcheck.py` checks four things against the tree: that every
+count matches the list it counts; that every claim's `evidence` resolves
+to an audited Coq name, a Rust `#[test]`, a mutation id or a path; that
+`novelty = "new-mathematics"` carries a real search, which is rule 17 as
+a gate rather than as an intention; and that the mandatory
+**What did not move** section is present. `make prcheck` runs it, and CI
+runs it on every pull request, reading the body through the environment
+rather than interpolating it into the shell.
+
+It earned its place on first run: six `Example`s in `coq/Counting.v` had
+never reached `tools/audited.txt`, so a claim citing one of them
+resolved to nothing. They were unaudited, not wrong — the audit list is
+the artefact that says which, and it did not. Fixed in the same commit;
+`tools/audited.txt` now carries 671 theorems and the baselines 800
+entries.
+
+What it cannot check is whether any of the prose is true. `docs/
+testing.md` §8 and `docs/reading.md` rule 27 both say so in those terms,
+so a green gate is not mistaken for a reviewed claim.
+
+**For the next session:** fill the template. The `toml` block is
+required even on a one-line change, and `make prcheck PR_BODY=body.md`
+before submitting will tell you which name you got wrong.
 
 ### 32.7 The bar, stated plainly
 

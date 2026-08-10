@@ -241,7 +241,12 @@ Highlights of the less-routine parts:
   target, failing the build when a route's declared verdict disagrees with
   its own arithmetic. That gate exists because five sessions of correct
   work were done inside a reduction whose best case was worse than the
-  1960 bound and nobody had multiplied it out. Underneath them, `coqchk`
+  1960 bound and nobody had multiplied it out. Eighth, `make prcheck`
+  gates the *write-up*: a pull request's counts against the lists they
+  count, every claim's cited evidence against something that exists, and
+  an unqualified claim of novelty against whether a literature search was
+  actually run. It found six unaudited theorems the first time it ran.
+  Underneath them, `coqchk`
   re-verifies every module with Coq's separate kernel checker and
   gates on a whole-library assumption census, which is what makes
   "zero admits" a claim about the development rather than about a list
@@ -299,7 +304,7 @@ Highlights of the less-routine parts:
 make verify        # builds all 45 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (665 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (671 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

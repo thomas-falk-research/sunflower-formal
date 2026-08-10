@@ -12,7 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        axiom-audit statements statements-accept docnumbers ceilings
+        axiom-audit statements statements-accept docnumbers ceilings prcheck
 
 all: coq rust
 
@@ -141,6 +141,20 @@ ceilings:
 	@echo "===================================================="
 	@python3 tools/ceiling.py
 	@echo "===================================================="
+
+# The pull request body against the repository it describes. One level
+# up again from `docnumbers`: that stops the prose in the tree from
+# drifting, this stops the prose *about* the tree -- the one document a
+# reviewer forms an opinion from, and the only one nothing checked.
+# Needs no build.
+#
+#   make prcheck                 -- the template still parses
+#   make prcheck PR_BODY=b.md    -- a real body: counts, evidence, rule 17
+#
+# CI runs the first on every push and the second on every pull request.
+# See tools/prcheck.py.
+prcheck:
+	@python3 tools/prcheck.py $(if $(PR_BODY),--body $(PR_BODY),--template)
 
 rust:
 	cd rust && cargo build --release

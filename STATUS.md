@@ -317,7 +317,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (665 of them). The current
+for every theorem in the "Closed" table (671 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).
@@ -371,6 +371,8 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
+| Route ceilings | `make ceilings` | A reduction whose declared best case disagrees with its own arithmetic; a route being worked on whose best possible bound loses to Erdős–Rado 1960. Six of the nine routes here do |
+| The pull request | `make prcheck` | A write-up whose counts have gone stale, whose cited theorem no longer exists under that name, or that calls a result new without a literature search. It found six unaudited theorems on its first run |
 
 Current mutation results: 150 mutations, all matching the outcome
 declared in `tools/mutations.toml` — 147 killed outright, two genuine
