@@ -2514,3 +2514,90 @@ d1d40355508a3a68  thm Support.four_uniform_size_ceiling
 
 cfb7add8dbbb8a74  thm Support.the_proof_is_two_rungs_behind_the_search
     the_proof_is_two_rungs_behind_the_search : binom 8 2 = 28 /\ binom 9 2 = 36 /\ 28 < 32 <= 36
+
+4fcfc7cfb98d702c  def Substitution.place
+    place = fun (w v : nat) (M : list nat) => List.map (fun u : nat => v * w + u) M : nat -> nat -> list nat -> list nat Arguments place (w v)%nat_scope M%list_scope
+
+cb6be36ea0d529cc  def Substitution.assemble
+    assemble = fun (w : nat) (T : list nat) (f : nat -> list nat) => List.concat (List.map (fun v : nat => place w v (f v)) T) : nat -> list nat -> (nat -> list nat) -> list nat Arguments assemble w%nat_scope T%list_scope f%function_scope
+
+198cb1b50975ab73  def Substitution.slice
+    slice = fun (w v : nat) (A : list nat) => List.filter (fun x : nat => (PeanoNat.Nat.leb (v * w) x && PeanoNat.Nat.ltb x (v * w + w))%bool) A : nat -> nat -> list nat -> list nat Arguments slice (w v)%nat_scope A%list_scope
+
+632d6611fa85a163  def Substitution.trace
+    trace = fun (w v : nat) (A : list nat) => List.map (fun x : nat => x - v * w) (slice w v A) : nat -> nat -> list nat -> list nat Arguments trace (w v)%nat_scope A%list_scope
+
+aaa98576a15b9215  def Substitution.Covers
+    Covers = fun (T : list nat) (F : Family) => forall B : list nat, List.In B F -> exists x : nat, List.In x T /\ List.In x B : list nat -> Family -> Prop Arguments Covers T%list_scope F
+
+c437e3e6809f7008  def Substitution.assemble_all
+    assemble_all = fix assemble_all (w : nat) (I : Family) (T : list nat) {struct T} : Family := match T with | nil => (nil :: nil)%list | (v :: T')%list => List.flat_map (fun M : list nat => List.map (fun rest : list nat => (place w v M ++ rest)%list) (assemble_all w I T')) I end : nat -> Family -> list nat -> Family Arguments assemble_all w%nat_scope I T%list_scope
+
+45f1f0be07785ffe  def Substitution.substitute
+    substitute = fun (w : nat) (O I : Family) => List.flat_map (assemble_all w I) O : nat -> Family -> Family -> Family Arguments substitute w%nat_scope O I
+
+6d699077a2829d70  def Substitution.tau_certificate
+    tau_certificate = fun (b : nat) (F : Family) (U : list nat) => List.forallb (fun T : list nat => implb (blocksb T F) (PeanoNat.Nat.leb b (length T))) (sublists U) : nat -> Family -> list nat -> bool Arguments tau_certificate b%nat_scope F U%list_scope
+
+1e019d7129d97c26  def Substitution.tri
+    tri = ((0 :: 1 :: nil) :: (0 :: 2 :: nil) :: (1 :: 2 :: nil) :: nil)%list : Family
+
+3f75cfafffb6ec04  thm Substitution.slice_is_placed_trace
+    slice_is_placed_trace : forall (w v : nat) (A : list nat), slice w v A = place w v (trace w v A)
+
+cb9e309567420e46  thm Substitution.in_trace_iff
+    in_trace_iff : forall (w v : nat) (A : list nat) (u : nat), List.In u (trace w v A) <-> List.In (v * w + u) A /\ u < w
+
+9e9bae5ea4345d0b  thm Substitution.NoDup_concat_slices
+    NoDup_concat_slices : forall (w : nat) (A C : list nat), 1 <= w -> List.NoDup A -> List.NoDup C -> List.NoDup (List.concat (List.map (fun v : nat => slice w v A) C))
+
+5eb5956b32167c29  thm Substitution.blocksb_true_iff
+    blocksb_true_iff : forall (T : list nat) (F : Family), blocksb T F = true <-> Covers T F
+
+539917d8f45bdc4b  thm Substitution.blocksb_false_witness
+    blocksb_false_witness : forall (T : list nat) (F : Family), blocksb T F = false -> exists B : list nat, List.In B F /\ Disjoint T B
+
+51353cd53c948b1e  thm Substitution.substitution_is_maximal
+    substitution_is_maximal : forall (a c w : nat) (O0 I F : Family), 1 <= a -> 1 <= c -> 1 <= w -> Uniform a O0 -> Distinct O0 -> Intersecting O0 -> (forall T : list nat, List.NoDup T -> Covers T O0 -> a <= length T) -> MaximalIntersecting a O0 -> Uniform c I -> Distinct I -> Intersecting I -> (forall U : list nat, List.NoDup U -> Covers U I -> c <= length U) -> MaximalIntersecting c I -> Grounded I (List.seq 0 w) -> (forall (T : list nat) (f : nat -> list nat), List.In T O0 -> (forall v : nat, List.In v T -> List.In (f v) I) -> exists B : list nat, List.In B F /\ SetEq B (assemble w T f)) -> MaximalIntersecting (a * c) F
+
+5ef8fc701a0409cb  thm Substitution.in_assemble_all
+    in_assemble_all : forall (w : nat) (I : list (list nat)) (T : list nat) (f : nat -> list nat), (forall v : nat, List.In v T -> List.In (f v) I) -> List.In (assemble w T f) (assemble_all w I T)
+
+ebcc1090d156dff8  thm Substitution.in_substitute
+    in_substitute : forall (w : nat) (O I : list (list nat)) (T : list nat) (f : nat -> list nat), List.In T O -> (forall v : nat, List.In v T -> List.In (f v) I) -> List.In (assemble w T f) (substitute w O I)
+
+4256050d1e59e397  thm Substitution.substitute_is_rich
+    substitute_is_rich : forall (w : nat) (O I : list (list nat)) (T : list nat) (f : nat -> list nat), List.In T O -> (forall v : nat, List.In v T -> List.In (f v) I) -> exists B : list nat, List.In B (substitute w O I) /\ SetEq B (assemble w T f)
+
+d69b4441cdfa6ed2  thm Substitution.tau_of_certificate
+    tau_of_certificate : forall (b : nat) (F : Family) (U : list nat), List.NoDup U -> Grounded F U -> tau_certificate b F U = true -> forall T : list nat, List.NoDup T -> Covers T F -> b <= length T
+
+8578d201a687186b  thm Substitution.tri_is_maximal
+    tri_is_maximal : MaximalIntersecting 2 tri
+
+dbd9e7fb2f1bf80c  thm Substitution.tri_tau
+    tri_tau : forall T : list nat, List.NoDup T -> Covers T tri -> 2 <= length T
+
+7248e1660f7c23ec  thm Substitution.iota3_is_maximal
+    iota3_is_maximal : MaximalIntersecting 3 iota3
+
+05adbf36256c7d2c  thm Substitution.iota3_tau
+    iota3_tau : forall T : list nat, List.NoDup T -> Covers T iota3 -> 3 <= length T
+
+9812ff42b50810b0  thm Substitution.triangle_squared_is_maximal
+    triangle_squared_is_maximal : MaximalIntersecting 4 (substitute 3 tri tri)
+
+dcaf9553f847245c  thm Substitution.iota3_into_triangle_is_maximal
+    iota3_into_triangle_is_maximal : MaximalIntersecting 6 (substitute 6 tri iota3)
+
+976d9410226eec5e  thm Substitution.iota3_squared_is_maximal
+    iota3_squared_is_maximal : MaximalIntersecting 9 (substitute 6 iota3 iota3)
+
+524fc89db37cd159  thm Substitution.the_nine_uniform_boundary_is_closed_to_extension
+    the_nine_uniform_boundary_is_closed_to_extension : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ (IotaAtLeast 9 (Nat.of_num_uint (Number.UIntDecimal (Decimal.D1 (Decimal.D0 (Decimal.D0 (Decimal.D0 (Decimal.D1 Decimal.Nil))))))) -> ~ AHSOptimal)
+
+a38b91c6cd670abd  thm Substitution.the_margin_at_four_is_five
+    the_margin_at_four_is_five : 27 * 27 <= PeanoNat.Nat.pow 10 (4 - 1) /\ 31 * 31 <= PeanoNat.Nat.pow 10 (4 - 1) < 32 * 32
+
+5b4665c96e92f509  thm Substitution.maximality_is_not_an_upper_bound
+    maximality_is_not_an_upper_bound : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ MaximalIntersecting 3 Maximal.fano /\ ContainsKSunflower 3 Maximal.fano /\ length Maximal.fano = 7

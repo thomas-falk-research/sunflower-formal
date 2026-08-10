@@ -8,6 +8,13 @@ branch says so where the bounds are stated. Separately: the one paper
 session N+11 recorded as having no digitisation was on the author's own
 website, took one request, and contains no Δ-system material at all.
 
+And one queued item closed: `docs/roadmap.md` §13.1 measured that the
+Abbott–Hanson–Sauer substitution families admit no extension, gave the
+mechanism, and named the missing piece — *"the general statement needs
+`substitute` in Coq"*. `coq/Substitution.v` is that statement. It is a
+formalisation of something the repository already knew, and §35.1
+records that this session proposed it as a discovery before checking.
+
 ## What did not move
 
 * **No upper bound on `f(n,k)` moved and no lower bound moved.** Erdős–Rado,
@@ -37,6 +44,16 @@ website, took one request, and contains no Δ-system material at all.
   was run at all.
 * **The axiom is still an axiom.** `make coqchk`'s whole-library census is
   exactly `Sunflower.ALWZ.Rao20_lemma2`; Stage C was not begun.
+* **The substitution result is NOT new to this repository.** `docs/roadmap.md`
+  §13.1 already had the table, the mechanism and three independent
+  measurements; `rust/tests/extension.rs` already had the `b = 9` test.
+  What was missing is what §13.1 says was missing — the general statement
+  in Coq — and that is all this branch adds. A Rust file written before
+  that was noticed reimplemented existing code and was deleted rather
+  than committed. `docs/reading.md` rule 30.
+* **`Sharp.AHSOptimal` is not decided by the maximality result either.**
+  Maximal is not maximum; the Fano plane is maximal with seven members.
+  `iota(9) <= 10000` is exactly as open as it was.
 * **No new axiom, no `admit`.** Every audited name reports `Closed under
   the global context`.
 
@@ -44,11 +61,11 @@ website, took one request, and contains no Δ-system material at all.
 
 ```toml
 [state]
-modules             = 47
-audited_theorems    = 703
-audited_definitions = 133
-mutations           = 154
-mutations_killed    = 151
+modules             = 48
+audited_theorems    = 723
+audited_definitions = 142
+mutations           = 157
+mutations_killed    = 154
 rust_suites         = 33
 axioms              = ["Sunflower.ALWZ.Rao20_lemma2"]
 
@@ -132,6 +149,38 @@ kind      = "measurement"
 evidence  = "the_iota_three_witness_is_also_ekr_extremal"
 novelty   = "new-to-this-development"
 search    = "Furedi 1978 p. 186 builds his extremal family from a 3-uniform intersecting system with 10 members on a 6-element set and says there is exactly one such. The parameters coincide exactly; the identification with his H_1 is NOT made, because Figure 1 is a dot diagram this pass did not decode. docs/reading.md A16."
+
+[[claim]]
+id        = "substitution-preserves-maximality"
+statement = "If both seeds of an Abbott-Hanson-Sauer substitution are maximal intersecting families whose covering number equals their uniformity, the substituted family is maximal: no set of any kind can be added, on any ground set."
+kind      = "theorem"
+evidence  = "Substitution.substitution_is_maximal"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "the-tower-is-maximal-in-the-kernel"
+statement = "The three pure-substitution rows of roadmap section 13.1 are now theorems rather than measurements: b = 4 (27 members), b = 6 (300) and b = 9 (10000), the last being where AHSOptimal has no margin at all."
+kind      = "theorem"
+evidence  = "Substitution.iota3_squared_is_maximal"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "covering-number-from-a-seed-certificate"
+statement = "The covering-number hypothesis, quantified over all lists, follows from a 2^|U| check on the seed's ground set, because a cover intersected with the ground set still covers."
+kind      = "theorem"
+evidence  = "Substitution.tau_of_certificate"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "a-proposal-that-was-already-done"
+statement = "This session proposed the b = 9 extension question as an unchecked moonshot; roadmap section 13.1, STATUS.md and rust/tests/extension.rs had all already settled it, and the Rust file written before that was noticed was deleted rather than committed."
+kind      = "correction"
+evidence  = "docs/reading.md"
+novelty   = "not-new"
+search    = "none run"
 
 [[claim]]
 id        = "second-solver-claim-corrected-again"

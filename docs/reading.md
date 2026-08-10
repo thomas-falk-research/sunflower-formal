@@ -2128,6 +2128,47 @@ the local convention.
 | A13 | Abbott–Exoo 1992, *"the closest prior computational work"* to the `ι(4)` search | **Unreachable (primary); its `r = 3` content is recorded second-hand and is empty** | H. L. Abbott and G. Exoo, *On set systems not containing delta systems*, **Graphs and Combinatorics 8 (1992), 1–9**. Springer, paywalled, no preprint; `link.springer.com/article/10.1007/BF01271703` returns a 303 to an authorisation endpoint. Two rendered secondary sources say what it contains. [Kos00] p. 4: *"Abbott and G. Exoo [1] obtained the lower bounds `f(k,4) ≥ C·38^{k/3}` and `f(k,6) ≥ C·146^{k/3}`"*, and p. 5: *"Abbott and Exoo [1] gave the lower bounds `g(k,4) ≥ C·10^{k/2}` and `g(k,5) ≥ C·20^{k/2}`"* — **every one of them is `r ≥ 4`**. Bennett–Priestley p. 25, rendered, describes its method: *"the algorithm described in [AE92] includes an additional backtracking step. The authors use a basic learning algorithm to help determine which edges should be removed in the backtracking step, and also use it to bias the algorithm towards choosing specific sets."* So it **is** a computational attack, as the brief said, and its published results are for `r = 4, 5, 6`; nothing in either secondary source attributes an `r = 3` construction to it. That is a second-hand negative and is recorded as one. |
 | A14 | The greedy/covering barrier (`Profile.greedy_forces_erdos_rado`) is unpublished | **Still "not found, not exhaustive" — but both named blockers are now cleared** | [Kos00] read in full: no barrier remark of that shape anywhere in it. Its §6, *Concluding remark*, is the whole of what it says about limits: *"One of the aims of the present article was to show that there was some progress lately in studying every of the functions `f(k,r)`, `g(k,r)`, `F(n,r)` and `G(n,r)`, but none of the main problems is solved."* Füredi 1978 was **not obtained in session N+11** and rule 19 blocked the negative there. It was obtained and read in full in session N+12 — see A15 — and contains no Δ-system material at all. So the two papers the brief named are both read and neither carries the remark. That is what changed; what did **not** change is the novelty verdict: two papers is not a literature search, rule 17 is not satisfied by clearing a two-item list, and the barrier's status stays *not found, not exhaustive*. |
 
+### A moonshot proposed in conversation that the repository had already done
+
+Asked what the session's results opened up, this session proposed as its
+sharpest idea: `AHSOptimal` is exactly tight at `b = 9`, where the
+substitution family has 10 000 members against a threshold of 10 001, so
+one extra 9-set would refute it — and nobody has checked whether it
+extends. It then derived the reduction, computed that the 3-element
+covers of `ι(3)` are exactly its ten members, and reported the family
+maximal, describing the result as a find.
+
+`docs/roadmap.md` §13.1 already contained the table, including the
+`b = 9` row with `τ = 9` and *"none"* addable, measured three
+independent ways. It already stated the mechanism — the covering number
+is multiplicative under substitution — and drew the same conclusion for
+the whole 3-adic tower. `STATUS.md` already carried the `b = 9` margin.
+`rust/tests/extension.rs` already contained the identical test, using
+`extend::minimal_hitting_sets`, which already existed. The Rust file
+written before this was noticed reimplemented all of it and was deleted.
+
+What was genuinely missing is what §13.1 says is missing, in the
+sentence immediately after the table: *"The general statement needs
+`substitute` in Coq."* That is now `coq/Substitution.v`.
+
+The failure is not the proposal — the proposal was correct, and it was
+correct because the mechanism is real. The failure is the word
+*"nobody has checked"*, asserted about a repository that had checked,
+from a conversation in which nothing had been read. Rule 21 covers the
+incoming-handoff version of this. It does not cover the version that
+bit, where the claim about the repository is one the session invented
+itself, and the enthusiasm of having invented it is exactly what makes
+it feel unnecessary to check.
+
+> **Rule 30. An idea generated in conversation is a hypothesis about the
+> repository, and it is checked against the repository before it is
+> reported — especially when it feels like a discovery.** Rule 21 is the
+> same rule for incoming handoffs. A proposal arrives with no index
+> attached, and the confidence that comes from having derived something
+> is not evidence that it is absent from the tree. Grep first, and grep
+> for the *object* (`10000`, `iota(9)`, `maximal`), not for the phrasing
+> the idea happened to arrive in.
+
 ### Session N+12: [Fur78] — read in full, 31 of 31 pages rendered
 
 Z. Füredi, *Erdős–Ko–Rado type theorems with upper bounds on the maximum

@@ -959,3 +959,34 @@ thm Support.pair_counting_ceiling
 thm Support.four_uniform_size_ceiling
 thm Support.thirty_two_four_sets_need_nine_points
 thm Support.the_proof_is_two_rungs_behind_the_search
+
+# ---- Substitution: the tower cannot be extended ----
+def Substitution.place
+def Substitution.assemble
+def Substitution.slice
+def Substitution.trace
+def Substitution.Covers
+def Substitution.assemble_all
+def Substitution.substitute
+def Substitution.tau_certificate
+def Substitution.tri
+thm Substitution.slice_is_placed_trace
+thm Substitution.in_trace_iff
+thm Substitution.NoDup_concat_slices
+thm Substitution.blocksb_true_iff
+thm Substitution.blocksb_false_witness
+thm Substitution.substitution_is_maximal
+thm Substitution.in_assemble_all
+thm Substitution.in_substitute
+thm Substitution.substitute_is_rich
+thm Substitution.tau_of_certificate
+thm Substitution.tri_is_maximal
+thm Substitution.tri_tau
+thm Substitution.iota3_is_maximal
+thm Substitution.iota3_tau
+thm Substitution.triangle_squared_is_maximal
+thm Substitution.iota3_into_triangle_is_maximal
+thm Substitution.iota3_squared_is_maximal
+thm Substitution.the_nine_uniform_boundary_is_closed_to_extension
+thm Substitution.the_margin_at_four_is_five
+thm Substitution.maximality_is_not_an_upper_bound

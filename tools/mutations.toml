@@ -2470,3 +2470,41 @@ find = """    ~ ContainsKSunflower 3 F -> GAtMost (b - 2) Ng2 ->
 replace = """    ~ ContainsKSunflower 3 F -> GAtMost (b - 1) Ng2 ->
     deg Q F <= Ng2."""
 expect = "killed"
+
+# ----------------------------------------------------------------
+# Substitution: maximality is preserved, and why each hypothesis is
+# load-bearing.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "substitution-drop-outer-tau"
+file = "coq/Substitution.v"
+question = """Is the outer covering number load-bearing, or would maximality \
+of the seeds alone do? It is the quantity the argument *multiplies*: \
+without tau(O) = a the covering blocks need not number a, the product \
+a*c never closes, and the candidate set is not forced onto the blocks."""
+find = "    (forall T, NoDup T -> Covers T O -> a <= length T) ->"
+replace = ""
+expect = "killed"
+
+[[mutation]]
+id = "substitution-blocks-overlap-by-one"
+file = "coq/Substitution.v"
+question = """Do the blocks have to be disjoint? Widening a slice by one \
+point makes consecutive blocks overlap; the slices of a candidate set \
+then double-count, the concatenation is no longer NoDup, and the whole \
+counting step is unsound."""
+find = "  filter (fun x => andb (Nat.leb (v * w) x) (Nat.ltb x (v * w + w))) A."
+replace = "  filter (fun x => andb (Nat.leb (v * w) x) (Nat.ltb x (v * w + w + 1))) A."
+expect = "killed"
+
+[[mutation]]
+id = "substitution-drop-inner-grounded"
+file = "coq/Substitution.v"
+question = """Does the inner family have to fit inside its block? Without \
+Grounded an inner member could carry a point at or beyond w, the \
+assembled member would spill into the next block, and the trace at the \
+block it was placed in would not see it."""
+find = "    Grounded I (seq 0 w) ->"
+replace = ""
+expect = "killed"

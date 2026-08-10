@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 154 anecdotes into a coverage metric over the
+  mutation testing from 157 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -2322,7 +2322,12 @@ since `iota(2)` and `iota(3)` are both maximal the whole 3-adic tower is.
 
 Formalised: `Maximal.iota4_is_maximal_intersecting` at `b = 4`, through
 the general reduction, reflectively, with no ground set. The general
-statement needs `substitute` in Coq, which is §5 item 2's session.
+statement needed `substitute` in Coq — **done in session N+12**,
+`Substitution.substitution_is_maximal`, with the three pure-substitution
+rows now theorems rather than measurements:
+`triangle_squared_is_maximal` (`b = 4`),
+`iota3_into_triangle_is_maximal` (`b = 6`) and
+`iota3_squared_is_maximal` (`b = 9`). See §35.
 
 ### 13.2 What that does *not* say
 
@@ -9678,8 +9683,10 @@ direction it was written for, inside a single session's own text.
 New this session: `coq/Support.v` (one module, no axiom);
 `rust/tests/support.rs`; `wide::anchored_support_bound` and
 `wide::least_support_bound`; `docs/papers/furedi78-rendered-pass.md`.
-The development is now 47 modules, 703 audited theorems, 133 audited
-definitions, 154 mutations, and 33 Rust integration suites.
+At the end of that half the
+development was 47 modules, 703 audited theorems, 133 audited
+definitions, 154 mutations, and 33 Rust integration suites; the current
+counts are in §35.5.
 
 ```
   make -j4 verify          pass    11m37s   47 modules, clean rebuild,
@@ -9723,3 +9730,121 @@ of nine, and closing that gap is not a search problem.
 The two levers are in `coq/Support.v` and both generalise in `b`, so the
 `b = 5` row (`ι(5)`, where §33.4a's ladder ran) can be given the same
 treatment for the cost of instantiating two corollaries.
+
+---
+
+## 35. Session N+12, second half — a queued formalisation, and a proposal that was already done
+
+### 35.1 The correction first
+
+This section exists because of a mistake, and the mistake is more
+instructive than the section's content.
+
+Asked what the session's results unlocked, this session proposed as its
+sharpest moonshot: *`b = 9` is where `AHSOptimal` is exactly tight — the
+substitution family has 10 000 members against a threshold of 10 001, so
+one extra 9-set refutes the conjecture; nobody has checked whether it
+extends.* It then derived a reduction, computed that the 3-element covers
+of `ι(3)` are exactly its ten members, and reported the family maximal.
+
+**All of that was already in this repository.** §13.1 has the table —
+including the `b = 9` row, 10 000 members, `τ = 9`, *"none"* addable —
+measured three independent ways (`rust/examples/extend_ahs.rs`, brute
+force, and SAT with two solvers required to agree). It states the
+mechanism correctly: *"the covering number is multiplicative … so
+maximality is multiplicative under substitution, and since `ι(2)` and
+`ι(3)` are both maximal the whole 3-adic tower is."* `STATUS.md`'s
+`the_tower_misses_by_exactly_one` row already says `b = 9` needs 10 001
+against the 10 000 the substitution builds. `rust/tests/extension.rs`
+already contains `the_ten_thousand_member_family_at_b_nine_is_maximal`,
+by the same minimal-hitting-set method, using
+`extend::minimal_hitting_sets`, which already exists.
+
+The `rust/tests/substitution.rs` written before this was noticed was a
+reimplementation of code already in the tree and was deleted rather than
+committed. What survives is the Coq module, because §13.1 names it as
+the one missing piece.
+
+Rule 21 says a handoff's "do this first" is a hypothesis about the
+repository, checked before it is acted on. Rule 30 extends it to the
+case that actually bit: a proposal generated in conversation is a
+hypothesis about the repository too, and conversation supplies no index.
+
+### 35.2 What is actually new
+
+One thing: **the general statement is now a theorem.**
+
+> `Substitution.substitution_is_maximal` — if both seeds are maximal and
+> both have covering number equal to their uniformity, the substituted
+> family is maximal: on every ground set, for every list, using only the
+> intersecting condition.
+
+With `Substitution.tau_of_certificate` discharging the covering-number
+hypothesis from a `2^|U|` check on the seed — 64 sublists for `ι(3)`,
+8 for the triangle — the three pure-substitution rows of §13.1's table
+become kernel-checked:
+
+| row | `b` | members | theorem |
+|---|---|---|---|
+| `substitute(ι(2), ι(2))` | 4 | 27 | `triangle_squared_is_maximal` |
+| `substitute(ι(2), ι(3))` | 6 | 300 | `iota3_into_triangle_is_maximal` |
+| `substitute(ι(3), ι(3))` | 9 | 10 000 | `iota3_squared_is_maximal` |
+
+`b = 4` was already formalised, by `Maximal.maximal_of_trace_certificate`
+over `2^9` sublists. `b = 6` and `b = 9` were not and could not be: the
+same certificate is `2^18` and `2^36`. The theorem reaches all three in
+about a second, and reaches every higher level of the tower with it.
+
+### 35.3 The proof, and which hypothesis does what
+
+Fix a candidate `A` of size `a·c` meeting every member. Its **slice** in
+block `v` is what it has there; its **trace** is that read as an inner
+set. Then:
+
+1. For each outer member `T`, some `v ∈ T` has a trace covering the
+   inner family — otherwise pick an inner member missing each trace,
+   assemble, and get a member of the family disjoint from `A`.
+2. So the covering blocks `C` cover the outer family, hence `|C| ≥ τ(O) = a`.
+3. Each of those traces covers the inner family, hence has `≥ τ(I) = c`
+   points.
+4. The slices are disjoint subsets of `A`, so `a·c = |A| ≥ |C|·c ≥ a·c`.
+   Everything is tight: `|C| = a`, every trace has exactly `c` points,
+   and `A` is exactly the union of those slices — in particular `A` has
+   no points outside the blocks of `C`.
+5. `C` is an `a`-element cover of a maximal outer family, so it *is* an
+   outer member; each trace is a `c`-element cover of a maximal inner
+   family, so it *is* an inner member. So `A` was already assembled.
+
+Each hypothesis is load-bearing and each has a mutation:
+`substitution-drop-outer-tau` (step 2 is where `τ(O) = a` is multiplied),
+`substitution-blocks-overlap-by-one` (step 4 needs the slices disjoint;
+widening a block by one point makes the count unsound), and
+`substitution-drop-inner-grounded` (without it an inner member can spill
+past its block and the trace does not see it).
+
+### 35.4 What it does not buy
+
+Nothing about `AHSOptimal`. §13.2 already said so and it is worth
+repeating because the `b = 9` framing invites the opposite reading:
+**maximal is not maximum.** The Fano plane is maximal with seven
+members. `Substitution.maximality_is_not_an_upper_bound` carries that
+next to the result so the two cannot be read as one. `ι(9) ≤ 10000` is
+exactly as open as it was.
+
+What is closed is one route — *extend the canonical construction* — at
+the uniformity where extending it by a single set would have been
+enough. It was closed by measurement in an earlier session; it is now
+closed in the kernel.
+
+### 35.5 Costs and gates
+
+New this session's second half: `coq/Substitution.v` (one module, no
+axiom) and three mutations. **No new Rust**: the file written for this
+was a reimplementation of `rust/tests/extension.rs` and was deleted
+rather than committed — §35.1.
+The development is now 48 modules, 723 audited theorems, 142 audited
+definitions, 157 mutations, and 33 Rust integration suites.
+
+`coq/Substitution.v` compiles in about a second. Everything expensive in
+it is a `2^6` or `2^3` reflective check on a seed; the theorem does the
+rest, which is the whole reason it exists.
