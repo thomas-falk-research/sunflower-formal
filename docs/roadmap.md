@@ -9848,3 +9848,34 @@ definitions, 157 mutations, and 33 Rust integration suites.
 `coq/Substitution.v` compiles in about a second. Everything expensive in
 it is a `2^6` or `2^3` reflective check on a seed; the theorem does the
 rest, which is the whole reason it exists.
+
+```
+  make -j4 verify          pass    11m53s   48 modules, cold container,
+                                            723/723 audited theorems closed
+  make coqchk              pass     2m49s   census exactly Rao20_lemma2,
+                                            all three escape hatches empty
+  python3 tools/mutate.py  pass    80m10s   157 mutations, 154 killed,
+                                            2 declared survivors, 0 unexpected
+  cargo test --release     pass    26m26s   33 integration suites, 335 tests,
+                                            0 failures
+  tools/statements.py      865 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+All three mutations added here are **killed**, in about 228 s each. The
+figures are within noise of §34.8's — 11m53s against 11m37s, 2m49s
+against 2m49s — so the eleventh module and the three mutations cost
+essentially nothing, and the two blocks are comparable.
+
+**One gate failed first and the reason is worth recording.** The
+container this ran in was rebuilt mid-session; `coqc`, `cadical` and
+`cryptominisat5` all had to be reinstalled. Before `cadical` was,
+`cargo test --release` failed with **two** tests in
+`rust/tests/spread_threshold.rs` panicking on
+`Os { code: 2, kind: NotFound }` — `the_witnesses_are_reachable_by_search`
+and `sat_and_dfs_agree` shell out to a solver. A missing external
+binary is indistinguishable from a broken proof in the output, which is
+a gap in the checking rather than in the mathematics;
+`docs/testing.md` now says so.

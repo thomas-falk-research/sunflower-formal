@@ -1227,3 +1227,27 @@ forty million. Beyond that the families are **sampled**, deterministically,
 and the assertions say sampling rather than exhaustion. Fourteen thousand
 samples at four larger parameters is not a proof of anything and is not
 written as though it were.
+
+
+### A twelfth, and it is a gap rather than a check: an external binary
+
+`rust/tests/spread_threshold.rs` shells out to a SAT solver in
+`the_witnesses_are_reachable_by_search` and `sat_and_dfs_agree`. With
+`cadical` absent from `PATH` both panic on
+`Os { code: 2, kind: NotFound }` — not skipped, not reported as an
+unmet dependency, just *failed*, in the same shape a broken proof
+fails in.
+
+That happened for real: session N+12's container was rebuilt mid-run and
+the solver went with it, and the first reading of the failure had to be
+"is this a regression?" before it could be "is this the environment?".
+Nothing in the suite distinguishes the two, and the cost is a wrong
+first hypothesis at exactly the moment a gate result is being reported.
+
+The honest statement of the gap: **two of the 335 tests are not
+hermetic.** `make -j4 verify`, `make coqchk` and `python3 tools/mutate.py`
+need nothing but Coq; `cargo test --release` needs `cadical` on `PATH`,
+and `docs/roadmap.md`'s reproduction block says so. A future session
+that wants the suite to be self-describing should make those two skip
+with a named reason when the binary is missing, so that a failure in
+that file always means what it appears to mean.
