@@ -2,6 +2,21 @@
 # Written by tools/rung.sh; each line is one `iota_sym --only-deg` invocation.
 # The rung is UNSAT only when EVERY cube is UNSAT. A cube marked
 # `undecided` carries the budget it was stopped at, per docs/reading.md rule 13.
+#
+# SIX OF THESE CUBES ARE PROVABLY EMPTY AND DID NOT NEED SOLVING.
+# In a 4-uniform sunflower-free family every point has degree at most
+# g(3): the star at a point IS its link, which is 3-uniform, distinct and
+# sunflower-free (PureLink.link_at_point_bounded).  PureLink.g_three_at_most_26
+# gives g(3) <= 26 unconditionally, so deg(0) >= 27 is impossible and
+# cubes 27..32 contain nothing.  They were solved anyway, before this was
+# noticed, and cadical returned UNSAT for every one -- which is a cross
+# check of the encoding against the kernel rather than wasted work, but
+# it was not deliberate.
+#
+# With AbbottGardner1969 (g(3) = 20) the empty range widens to 21..32 and
+# only deg(0) = 12..20 can hold anything.  That value is a citation, so
+# the unconditional statement is the one this file is run against.
+#
 # deg0	verdict	seconds	budget
 32	UNSAT	23.9	120
 30	UNSAT	14.1	300
@@ -12,3 +27,5 @@
 25	UNSAT	106.0	800
 24	UNSAT	106.9	800
 26	UNSAT	107.0	800
+23	UNSAT	108.5	1800
+22	UNSAT	227.6	1800
