@@ -17,6 +17,13 @@
 # only deg(0) = 12..20 can hold anything.  That value is a citation, so
 # the unconditional statement is the one this file is run against.
 #
+# Cube 12 -- the floor, and the one 33.5a expected to be worst -- was
+# decided on an Apple M4 Air, not on the session container: RUNG_THREADS=8
+# RUNG_SLICE=900, so it stalled at 900 s, split into 19 degree-sequence
+# sub-cubes and finished UNSAT at 3236.4 s with none at the limit. That
+# is 33.5a's "nineteen sequences" for deficiency four, confirmed. Every
+# other row was measured on the container.
+#
 # deg0	verdict	seconds	budget
 32	UNSAT	23.9	120
 30	UNSAT	14.1	300
@@ -32,3 +39,6 @@
 21	UNSAT	527.2	1800
 20	UNSAT	667.8	1800
 19	UNSAT	933.3	1800
+18	UNSAT	2181.0	5400
+17	UNSAT	4171.5	5400
+12	UNSAT	3236.4	36000
