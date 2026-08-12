@@ -1,0 +1,10 @@
+# iota(4,11) >= 32 ?  one line per deg(0) cube of the symmetry-broken encoding.
+# Written by tools/rung.sh; each line is one `iota_sym --only-deg` invocation.
+# The rung is UNSAT only when EVERY cube is UNSAT. A cube marked
+# `undecided` carries the budget it was stopped at, per docs/reading.md rule 13.
+# deg0	verdict	seconds	budget
+32	UNSAT	23.9	120
+30	UNSAT	14.1	300
+31	UNSAT	29.4	300
+29	UNSAT	35.5	300
+28	UNSAT	38.1	300

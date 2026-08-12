@@ -124,13 +124,22 @@ fn run_one(
     slice: u64,
     seqsplit: bool,
     cubecap: usize,
+    only_deg: Option<usize>,
 ) -> Verdict {
     let t0 = Instant::now();
     let inst = encode(ground, b, target, opts);
     let coarse: Vec<(String, Vec<i32>)> = degree_cubes(&inst)
         .into_iter()
+        .filter(|(d, _)| only_deg.is_none_or(|k| *d == k))
         .map(|(d, l)| (format!("g={ground} deg(0)={d}"), l))
         .collect();
+    if let Some(k) = only_deg {
+        println!(
+            "# ONE CUBE ONLY: deg(0) = {k}. This decides that cube and \
+             nothing else; the rung is UNSAT only when every cube is."
+        );
+        assert_eq!(coarse.len(), 1, "deg(0) = {k} is not a cube of this instance");
+    }
     println!(
         "# g = {ground}: {} vars, {} clauses, {} deg(0) cubes ({}..={}), slice {}s",
         inst.cnf.nvars,
@@ -257,6 +266,7 @@ fn main() {
     let mut slice: u64 = 120;
     let mut cubecap: usize = 48;
     let mut from: Option<u32> = None;
+    let mut only_deg: Option<usize> = None;
     let mut opts = SymOptions::default();
     let mut i = 3;
     while i < args.len() {
@@ -309,6 +319,13 @@ fn main() {
                 ladder = true;
                 i += 1;
             }
+            // One deg(0) cube, by name, so a rung can be run across
+            // container restarts: each invocation decides one cube and
+            // the caller records the verdict. See `docs/roadmap.md` §36.
+            "--only-deg" => {
+                only_deg = Some(args[i + 1].parse().unwrap());
+                i += 2;
+            }
             other => panic!("unknown flag {other}"),
         }
     }
@@ -353,7 +370,9 @@ fn main() {
     for g in grounds {
         let mut o = opts;
         o.all_points_used = ladder;
-        let v = run_one(b, g, target, o, solver, seconds, threads, slice, seqsplit, cubecap);
+        let v = run_one(
+            b, g, target, o, solver, seconds, threads, slice, seqsplit, cubecap, only_deg,
+        );
         match v {
             Verdict::Sat(f) => {
                 witness = Some(f);
