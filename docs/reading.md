@@ -2212,6 +2212,29 @@ like search. It is the fourth instrument-caused bite in this programme
 > one institutional page and the live one is often not the current
 > affiliation.
 
+### Session N+12: a commissioned prior-art search on `ι`, and what it found
+
+The first real literature search this programme has run on its own
+central object. Commissioned as a separate session, delivered as a
+report, and **not** independently verifiable from this container for the
+one row that matters. Evidence classes below are exact about that.
+
+| # | Claim | Verdict | Evidence |
+|---|---|---|---|
+| A17 | `ι` is unnamed in the literature (asserted by this repository in every session since N+9) | **REFUTED — it was named in 2015, on a research blog** | The commissioned search reports, as a verbatim quotation from a Polymath10 comment by Dömötör Pálvölgyi (gilkalai.wordpress.com, *Polymath10 Post 3: How are we doing?*, 23 Dec 2015): *"If we denote the size of the largest k-uniform intersecting family without an r-sunflower by f^int(k,r), then we have (r−1)·f^int(k,r) ≤ f(k,r)."* In local notation `f^int(k,3) = ι(k)`. **SECOND-HAND AND UNVERIFIED HERE.** `gilkalai.wordpress.com` returns 403 to this container, from both WebFetch and headless Chromium; the Polymath wiki mirrors (`asone.ai`, `michaelnielsen.org`) are also unreachable. Rule 29: that is a statement about the routes, not about the comment. **Anyone acting on this row should open the thread first.** |
+| A18 | Nobody has proposed the `ι(4)` search this repository is running | **REFUTED, if A17's source is real** | Same thread, 14 Dec 2015, reported verbatim: *"for k=4, one could try to search for an intersecting sunflower-free family on 10 elements by enumerating all permutation groups of size at most 30 or so, and check whether they yield a solution."* That is the `ι(4)` ground-set search, proposed and — per the search — never executed or published. It is also, notably, the *orbit* method `rust/src/orbit.rs` implements and §13.3 reports as exhausted over 136 (ground, group) pairs. Same idea, arrived at independently, eleven years apart. |
+| A19 | `ι(4)` is known, or bounded better than `[27, 71]`, or has been searched exhaustively | **NOT FOUND, and this is now a real search rather than an assertion** | Routes: arXiv full-text, Google Scholar forward-citation chains from AHS 1972 and from Kostochka's survey, Springer, ScienceDirect, zbMATH, Semantic Scholar, the Polymath wiki and blog threads. No exact value, no improved bound, no executed intersecting search in any refereed source. The only executed computational work in the area, Abbott–Exoo 1992, is for `r = 4, 5, 6` and **non**-intersecting families — which confirms row A13's second-hand reading of it from a wider search. |
+| A20 | The AHS substitution and the value 10 are attributable to Abbott–Hanson–Sauer 1972 | **DISPUTED — do not "fix" it yet** | The search reports that `α(3,3) = 10` with `α(m+n,k) ≥ α(m,k)·α(n,k)` is Abbott–Hanson, *On finite Δ-systems*, Discrete Math. **8** (1974), 1–12, and that `g(a+b,r) ≥ g(a,r)·g(b,r)` is Abbott–Hanson, *On finite Δ-systems II*, Discrete Math. **17** (1977), 121–126 — neither of them AHS 1972, which uses a threshold `φ(n,k)` for arbitrary families. **But that rests on ResearchGate abstract snippets, and row A10 rests on a rendered page of Kostochka quoted verbatim**, in which the intersecting construction is *"their"* — Abbott, Hanson and Sauer's. Rule 4 forbids preferring an abstract to a rendered page. The two may both be right (three related papers by overlapping authors). **Owed: obtain one of the three primaries and settle it.** Until then the repository's attribution stands and this row records the doubt. |
+| A21 | Rows A14 (greedy-cover barrier), and the AHS-optimality conjecture, and the maximality of substitution families | **All three still NOT FOUND, now against a wider search** | No named conjecture for `ι(b)² ≤ 10^(b−1)` beyond Kostochka's prose; no published maximality statement for the AHS families; no barrier statement for the classical greedy/covering method. Consistent with A12, A14 and §13.1. Three independent negatives do not make an exhaustive search, and none of these is upgraded. |
+
+**What this changes for the `ι(4,11)` rung.** It stops being *"nobody has
+looked"* and becomes *"the refereed literature has no value for it, and
+one 2015 blog comment proposed exactly this search without running it"*.
+That is a stronger position and a more honest one, and it is the
+citation any write-up now owes. Rule 30 was minted this session for
+claiming a discovery without checking; this is the check, and it found
+something.
+
 ### Rows added at abstract level, and labelled as such
 
 Rule 4 forbids *quoting* from an abstract. These rows exist so the next

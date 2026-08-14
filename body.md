@@ -275,4 +275,209 @@ corollary would need re-deriving.
 
 `docs/roadmap.md` §34.9, and §34.5 first: the `ι(4)` ladder has a
 reachable ceiling around twelve ground points and a proved floor of nine,
+and closing that gap is not a search problem.search    = "A commissioned prior-art search (session N+12, docs/reading.md A17-A21) reports that the refereed literature contains no value for iota(4), no bound better than [27,71], and no executed search for intersecting sunflower-free families; routes: arXiv full text, Google Scholar citation chains from AHS 1972 and Kostochka, Springer, ScienceDirect, zbMATH, Semantic Scholar, Polymath wiki and blog. It also reports, SECOND-HAND AND UNVERIFIED FROM THIS CONTAINER (gilkalai.wordpress.com returns 403 here), that Domotor Palvolgyi named this quantity f^int(k,r) in a Polymath10 comment of 23 Dec 2015 and proposed exactly this k=4 search on 14 Dec 2015 without running it. That comment is the prior-art any write-up owes a citation to. Earlier passes: Kupavskii 2025 survey (66 pp rendered), Kostochka survey (9 pp, read in full), [Ra20], [ALWZ20], [Lovett], [Rao25], [BCW21] -- iota appears in none."
+coqchk      = "pass"
+mutants     = "pass"
+rust        = "pass"
+statements  = "pass"
+docnumbers  = "pass"
+ceilings    = "pass"
+
+[[claim]]
+id        = "covering-number-at-least-two"
+statement = "An intersecting 3-sunflower-free family of 4-sets with 27 or more members has no common point, unconditionally, from the proved g(3) <= 26 rather than the 1969 value."
+kind      = "theorem"
+evidence  = "Support.twenty_seven_four_sets_have_no_common_point"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "pair-link-bound"
+statement = "The link of a pair of points is (b-2)-uniform and sunflower-free, so at most g(b-2) members contain any given pair; at b = 4 that is six, and six is attained."
+kind      = "theorem"
+evidence  = "Support.link_at_pair_bounded"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "thirty-two-needs-nine-points"
+statement = "A 32-member intersecting 3-sunflower-free family of 4-sets needs at least nine ground points, by counting member-pair incidences in both orders."
+kind      = "theorem"
+evidence  = "Support.thirty_two_four_sets_need_nine_points"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "anchored-support-bound"
+statement = "An intersecting b-uniform 3-sunflower-free family of n members has support at most (4b-3) + (b-2)n, improving PureLink.intersecting_support_bound from 97 to 77 at (b,n) = (4,32) and from 23 to 20 at (3,11)."
+kind      = "theorem"
+evidence  = "Support.anchored_support_bound"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "the-core-is-met-twice"
+statement = "The core the support proof builds is met in at least two points by every member, and the link cover never exceeds two members, checked over an exhaustive sweep of 127466 families by a rebuild sharing no code with the Coq development."
+kind      = "measurement"
+evidence  = "every_member_meets_the_anchored_core_twice"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "crossover-is-real"
+statement = "The two-anchor bound beats the single-anchor bound exactly when n > 4b-4, so the new number is the worse one below the crossover."
+kind      = "measurement"
+evidence  = "the_second_anchor_pays_off_exactly_above_four_b_minus_four"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "furedi-has-no-delta-systems"
+statement = "Furedi 1978, named by the session brief as a possible source of a published barrier remark about the greedy/covering method, contains no Delta-system material of any kind and therefore cannot carry one."
+kind      = "refutation"
+evidence  = "docs/papers/furedi78-rendered-pass.md"
+novelty   = "not-new"
+search    = "All 31 pages (177-207) rendered at 140 dpi and read, logged per page in docs/papers/furedi78-rendered-pass.md. The words Delta-system and sunflower occur nowhere; Erdos-Rado 1960 is not among the nine references on p. 207 and neither is Abbott. The paper is about the Erdos-Rothschild-Szemeredi problem (p. 178): the largest intersecting r-uniform family with maximum degree at most c|F|, via fractional matchings and covers, nu-critical nuclei, Baranyai's theorem and Pelikan's theorem. docs/reading.md A15."
+
+[[claim]]
+id        = "the-acquisition-was-not-impossible"
+statement = "Session N+11 reported Furedi 1978 as having no digitisation after four routes; it is a 31-page scan on the author's own Renyi Institute publication list and one request fetched it."
+kind      = "correction"
+evidence  = "docs/reading.md"
+novelty   = "not-new"
+search    = "www.renyi.hu/~furedi/PUBS3/furedi_005_ekr_with_upper_bound.pdf, 723721 bytes, retrieved 2026-08-10. The Illinois host session N+11 tried resets the connection from this environment. Recorded as rule 29."
+
+[[claim]]
+id        = "iota-three-is-ekr-extremal"
+statement = "The iota(3) = 10 witness is an EKR-extremal intersecting family of 3-sets on six points, taking one set from each of the ten complementary pairs, so at b = 3 the sunflower-free constraint costs nothing."
+kind      = "measurement"
+evidence  = "the_iota_three_witness_is_also_ekr_extremal"
+novelty   = "new-to-this-development"
+search    = "Furedi 1978 p. 186 builds his extremal family from a 3-uniform intersecting system with 10 members on a 6-element set and says there is exactly one such. The parameters coincide exactly; the identification with his H_1 is NOT made, because Figure 1 is a dot diagram this pass did not decode. docs/reading.md A16."
+
+[[claim]]
+id        = "substitution-preserves-maximality"
+statement = "If both seeds of an Abbott-Hanson-Sauer substitution are maximal intersecting families whose covering number equals their uniformity, the substituted family is maximal: no set of any kind can be added, on any ground set."
+kind      = "theorem"
+evidence  = "Substitution.substitution_is_maximal"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "the-tower-is-maximal-in-the-kernel"
+statement = "The three pure-substitution rows of roadmap section 13.1 are now theorems rather than measurements: b = 4 (27 members), b = 6 (300) and b = 9 (10000), the last being where AHSOptimal has no margin at all."
+kind      = "theorem"
+evidence  = "Substitution.iota3_squared_is_maximal"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "covering-number-from-a-seed-certificate"
+statement = "The covering-number hypothesis, quantified over all lists, follows from a 2^|U| check on the seed's ground set, because a cover intersected with the ground set still covers."
+kind      = "theorem"
+evidence  = "Substitution.tau_of_certificate"
+novelty   = "new-to-this-development"
+search    = "none run"
+
+[[claim]]
+id        = "a-proposal-that-was-already-done"
+statement = "This session proposed the b = 9 extension question as an unchecked moonshot; roadmap section 13.1, STATUS.md and rust/tests/extension.rs had all already settled it, and the Rust file written before that was noticed was deleted rather than committed."
+kind      = "correction"
+evidence  = "docs/reading.md"
+novelty   = "not-new"
+search    = "none run"
+
+[[claim]]
+id        = "second-solver-claim-corrected-again"
+statement = "Section 33.8's one-line verdict still said the ten-point rung was re-decided by a second solver; section 33.5 says correctly that cryptominisat5 was stopped inside that rung, so it rests on cadical alone."
+kind      = "correction"
+evidence  = "docs/roadmap.md"
+novelty   = "not-new"
+search    = "none run"
+```
+
+## Results
+
+See `docs/roadmap.md` §34. In brief:
+
+**1. The covering number, unconditionally.** A family every member of
+which contains a fixed point *is* its own link at that point, so `g(b−1)`
+caps it. At `b = 4` the cap is `PureLink.g_three_at_most_26`, which is
+proved rather than cited, so a 27-member family has covering number at
+least two — and 27 is exactly the known lower bound for `ι(4)`, so the
+statement bites on the extremal object itself.
+
+**2. The counting ceiling.** The pair link is `(b−2)`-uniform and
+sunflower-free, so `deg [x;y] F ≤ g(b−2)`. Counting incidences `(A,Q)`
+with `Q` a two-element subset of `A` in both orders — the list-level
+Fubini `PureLink.degsum_eq_sizesum` does for single points, done here for
+pairs — gives `|F|·C(b,2) ≤ C(g,2)·g(b−2)`. At `b = 4` the two sixes
+cancel and `C(8,2) = 28 < 32 ≤ 36 = C(9,2)`.
+
+**3. Two anchors instead of one.** One anchor charges each member `b−1`
+new points. Two anchors meeting in exactly one point charge `b−2`,
+because a member avoiding the shared point meets them at two *different*
+points; the members through the shared point are covered by two members
+of its link, since three pairwise disjoint ones would be a sunflower.
+
+## Negative results, with budgets
+
+* **Exhausted.** Every intersecting 3-sunflower-free family on `(6,2)`,
+  `(5,3)`, `(6,3)`, `(7,3)`, `(6,4)` — 127 466 of them — satisfies the
+  support bound, the core-met-twice property, the pair-degree bound and
+  (at `b = 4`) the counting ceiling. No limit hit.
+* **Stopped for a measured reason.** The exhaustive sweep stops at
+  `(6,4)` because `(7,4)` has 35 333 735 families and `(8,4)` has more
+  than forty million. `(8,4)`, `(9,4)`, `(10,4)` and `(9,3)` are
+  **sampled** — 14 000 deterministic pseudo-random maximal families — and
+  that is labelled as sampling, not exhaustion.
+* **Not attempted.** No ladder was run. `ι(4,11)` is where §33.5a left
+  it, and nothing here claims otherwise.
+
+## Corrections
+
+* **An acquisition reported as impossible.** "No digitisation found, not
+  on arXiv, not on the author's page" was a claim about the world derived
+  from four dead routes, one of which was a host that resets the
+  connection. `docs/reading.md` rule 29: *a failed acquisition is a
+  statement about the routes tried, never about the document.*
+* **The brief's premise about Füredi 1978 was wrong.** It was named as a
+  place a Δ-system barrier remark might live. It is not a Δ-system paper.
+* **§33.8 still carried the over-claim §33.5 had already retracted** —
+  "a second instrument and a second solver" for the ten-point rung. Fixed
+  eight paragraphs after the correction that should have caught it.
+
+## Reproduction
+
+```
+make -j4 verify
+make coqchk
+python3 tools/mutate.py
+cd rust && cargo test --release
+make statements && make docnumbers && make ceilings
+```
+
+## What a reviewer should attack
+
+**The two-anchor case split.** The proof splits on whether some member
+meets the anchor in exactly one point, and only one branch builds a link
+cover. A sweep that exercised one branch would leave the other
+unfalsified, so the test asserts both counts (7 293 and 120 168). If that
+assertion were dropped the suite would still pass on a broken proof.
+
+**`all the numbers are `nat`.** `(4b − 3)` and `(b − 2)` are truncated
+subtractions. At `b = 1` the bound degenerates and the theorem is stated
+with `2 ≤ b`; the Rust mirror special-cases `b < 2` and that split is
+where a disagreement between the two would hide.
+
+**The nine-point floor cites `g(2) ≤ 6`,** which is
+`PureLink.g_two_at_most_six_sharp` — proved — but the *cancellation* that
+turns the ceiling into `|F| ≤ C(g,2)` is arithmetic that only works at
+`b = 4`. At any other uniformity the two sides do not cancel and the
+corollary would need re-deriving.
+
+## Handover
+
+`docs/roadmap.md` §34.9, and §34.5 first: the `ι(4)` ladder has a
+reachable ceiling around twelve ground points and a proved floor of nine,
 and closing that gap is not a search problem.
