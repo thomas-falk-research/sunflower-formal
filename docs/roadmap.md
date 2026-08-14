@@ -10117,3 +10117,66 @@ than implying more.
 * `PalvolgyiEquality` is a hypothesis. Nothing downstream of it is
   proved unconditionally, and `Print Assumptions` on all eight theorems
   reports **Closed under the global context**.
+
+### 36.6 Costs and gates
+
+```text
+  make -j4 verify          pass    12m12s   731 audited theorems, every one
+                                            "Closed under the global context"
+  make coqchk              pass     2m58s   49 modules; whole-library axiom
+                                            census exactly ALWZ.Rao20_lemma2;
+                                            type-in-type, unsafe fixpoints and
+                                            assumed positivity all <none>
+  python3 tools/mutate.py  pass    86m10s   160 mutations, 157 killed,
+                                            2 declared survivors, 1/1 controls,
+                                            0 unexpected
+  cargo test --release     pass    26m41s   36 suites, 339 tests, 0 failures
+  tools/statements.py      873 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+The three mutations added here are killed in `coq/Palvolgyi.v` in about
+236 s each. `verify` and `coqchk` are within noise of §35.5's 11m53s and
+2m49s; the mutation suite's 86m10s against 80m10s is the cost of three
+more mutations plus the new module in every sandbox build.
+
+**Two process failures this session, both worth writing down.**
+
+**One: a missing solver, again, and the twelfth lesson was right.**
+`cargo test --release` first came back with exit 101 and two failures in
+`rust/tests/spread_threshold.rs` — `sat_and_dfs_agree` and
+`the_witnesses_are_reachable_by_search`, both panicking on
+`Os { code: 2, kind: NotFound }`. The container had been rebuilt and
+`cryptominisat5` had gone with it; `src/rstar.rs` asks for
+`solve_cnf_agreed(Cadical, CryptoMiniSat)` and does not guard on
+availability the way `src/extend.rs` does. Installing the package and
+re-running gives 36 suites and 339 tests green. **Nothing mathematical
+was wrong, and the output could not say so** — which is exactly the gap
+`docs/testing.md`'s twelfth entry describes, now observed a second time.
+The cheap fix is still owed: those two tests should skip with a named
+reason when the binary is absent.
+
+**Two: a throughput estimate computed from time that never passed.**
+Partway through the mutation run this session projected twelve hours
+from an observed rate, and **stopped the suite on that basis** to run
+the three new mutations alone with `--only`. The projection was wrong.
+The waits it was measured against had been issued as background commands,
+which return immediately, so the samples that looked forty-five minutes
+apart were seconds apart. The suite had always been on its usual pace and
+finished in 86 minutes when re-run to completion.
+
+Two things saved this from becoming a false gate report. The harness
+refused to certify the `--only` run — *"FAIL: no control mutation in the
+manifest. Without one, a harness that failed to apply its edits would
+report every mutation killed and still pass"* — so the subset could not
+be mistaken for the gate. And the full suite was re-run rather than
+reported from the partial. The lesson is not about mutation testing:
+
+> **A rate is a measurement, and a measurement needs its clock checked
+> before its numerator.** Before reporting *n* per unit time, confirm the
+> unit of time actually elapsed. An asynchronous wait that returns
+> immediately turns every rate computed against it into a fabrication of
+> the same kind as a quoted timing that was never measured — and
+> `docs/reading.md` rule 13 already covers that shape.

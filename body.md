@@ -92,6 +92,13 @@ statements  = "pass"
 docnumbers  = "pass"
 ceilings    = "pass"
 
+# verify 12m12s, 731 audited theorems all Closed under the global context
+# coqchk 2m58s, whole-library census exactly Sunflower.ALWZ.Rao20_lemma2
+# mutate 86m10s, 160 mutations, 157 killed, 2 declared survivors,
+#        controls 1/1, 0 unexpected
+# rust   26m41s, 36 suites, 339 tests, 0 failures -- after installing
+#        cryptominisat5, absent from the rebuilt container; see roadmap 36.6
+
 [[claim]]
 id        = "covering-number-at-least-two"
 statement = "An intersecting 3-sunflower-free family of 4-sets with 27 or more members has no common point, unconditionally, from the proved g(3) <= 26 rather than the 1969 value."
