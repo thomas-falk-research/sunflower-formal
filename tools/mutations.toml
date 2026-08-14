@@ -2508,3 +2508,37 @@ block it was placed in would not see it."""
 find = "    Grounded I (seq 0 w) ->"
 replace = ""
 expect = "killed"
+
+[[mutation]]
+id = "palvolgyi-halve-the-multiplier"
+file = "coq/Palvolgyi.v"
+question = """Is the multiplier in Palvolgyi's remark load-bearing? At \
+r = 3 the inequality is g >= 2*iota and the equality is g = 2*iota, so \
+a conjecture stated with multiplier 1 would predict g(3) <= 10 against \
+the twenty-member family of Intersecting.lower_bound_3_3_20. \
+palvolgyi_pins_g_three_exactly exists precisely to make that fail."""
+find = "  forall b N, 1 <= b -> IotaAtMost b N -> GAtMost b (2 * N)."
+replace = "  forall b N, 1 <= b -> IotaAtMost b N -> GAtMost b N."
+expect = "killed"
+
+[[mutation]]
+id = "palvolgyi-refutation-off-by-one"
+file = "coq/Palvolgyi.v"
+question = """Does a refutation need 2N+1 members, or would 2N do? 2N is \
+exactly what the conjecture permits, so a refutation lemma stated at 2N \
+would fire on the conjecture's own equality case and prove it false from \
+nothing."""
+find = "    1 <= b -> IotaAtMost b N -> LowerBound b 3 (2 * N + 1) ->"
+replace = "    1 <= b -> IotaAtMost b N -> LowerBound b 3 (2 * N) ->"
+expect = "killed"
+
+[[mutation]]
+id = "palvolgyi-four-uses-the-wrong-iota-bound"
+file = "coq/Palvolgyi.v"
+question = """Is the b = 4 consequence tied to the iota(4) bound it \
+cites? 71 is PureLink.iota_four_at_most_71_if_iota_three_is_ten; \
+doubling anything else gives a number the conjecture does not \
+support."""
+find = "  replace 142 with (2 * 71) by reflexivity."
+replace = "  replace 142 with (2 * 70) by reflexivity."
+expect = "killed"

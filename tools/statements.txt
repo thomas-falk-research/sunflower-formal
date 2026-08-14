@@ -2601,3 +2601,27 @@ a38b91c6cd670abd  thm Substitution.the_margin_at_four_is_five
 
 5b4665c96e92f509  thm Substitution.maximality_is_not_an_upper_bound
     maximality_is_not_an_upper_bound : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ MaximalIntersecting 3 Maximal.fano /\ ContainsKSunflower 3 Maximal.fano /\ length Maximal.fano = 7
+
+10228918aa55e2b7  thm Palvolgyi.palvolgyi_implies_abbott_gardner
+    palvolgyi_implies_abbott_gardner : PalvolgyiEquality -> IotaAtMost 3 10 -> AbbottGardner1969
+
+5578e27ced7ee63b  thm Palvolgyi.palvolgyi_pins_g_three_exactly
+    palvolgyi_pins_g_three_exactly : PalvolgyiEquality -> IotaAtMost 3 10 -> GAtMost 3 20 /\ ~ GAtMost 3 19
+
+a10d5c56336acca9  thm Palvolgyi.palvolgyi_beats_the_proved_bound_at_three
+    palvolgyi_beats_the_proved_bound_at_three : PalvolgyiEquality -> IotaAtMost 3 10 -> GAtMost 3 20 /\ GAtMost 3 26 /\ 20 < 26
+
+3552377ffd664f59  thm Palvolgyi.palvolgyi_at_four_needs_iota_four
+    palvolgyi_at_four_needs_iota_four : PalvolgyiEquality -> IotaAtMost 3 10 -> GAtMost 4 142
+
+a6c8a7831c9e295b  thm Palvolgyi.palvolgyi_at_four_if_iota_four_is_27
+    palvolgyi_at_four_if_iota_four_is_27 : PalvolgyiEquality -> IotaAtMost 4 27 -> GAtMost 4 54 /\ LowerBound 4 3 54
+
+356a8af596b81914  thm Palvolgyi.palvolgyi_refuted_by_one_family
+    palvolgyi_refuted_by_one_family : forall b N : nat, 1 <= b -> IotaAtMost b N -> LowerBound b 3 (2 * N + 1) -> ~ PalvolgyiEquality
+
+83cc71af643fa643  thm Palvolgyi.no_refutation_at_three
+    no_refutation_at_three : AbbottGardner1969 -> ~ LowerBound 3 3 21
+
+cdd49bbc760157dd  thm Palvolgyi.no_refutation_at_four
+    no_refutation_at_four : IotaAtMost 3 10 -> ~ LowerBound 4 3 143

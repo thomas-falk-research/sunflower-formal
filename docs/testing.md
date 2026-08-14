@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-157 mutations, all with the outcome the manifest declares: 154 killed
+160 mutations, all with the outcome the manifest declares: 157 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -1251,3 +1251,44 @@ and `docs/roadmap.md`'s reproduction block says so. A future session
 that wants the suite to be self-describing should make those two skip
 with a named reason when the binary is missing, so that a failure in
 that file always means what it appears to mean.
+
+### A thirteenth: a sampled census is not a census, and the test has to
+### say which one it is
+
+`rust/tests/palvolgyi.rs` asserts that every 27-member intersecting
+sunflower-free 4-uniform family a random fill finds on nine points is a
+relabelling of `Product.iota4`. Six hundred thousand fills, every hit
+canonicalised under all `9! = 362 880` relabellings, one orbit.
+
+That is a strong test and it is **not** the statement it looks like.
+The statement it looks like is *"the 27-member family on nine points is
+unique up to relabelling"*, which would be a theorem. What the test
+actually checks is *"no counterexample is reachable by this process
+within this budget"* — and the process is a random fill, which visits
+only the maximal families its own basin structure lets it reach. The
+exhaustive census was attempted three times and did not finish
+(`docs/roadmap.md` §36.3), so the theorem is unproved and the test is
+evidence for it.
+
+The same file has a second instance of the same shape, and it is the
+sharper one. Over a million fills the size spectrum at `(4, 9)` shows
+579 hits at 24, **zero at 25 and 26**, and 19 at 27. Two exact zeros
+flanked by hundreds is not noise, and the natural reading — no maximal
+family on nine points has 25 or 26 members — is very likely true. It is
+still not proved, and
+`the_fill_reaches_twenty_seven_but_almost_never` asserts the zero with
+a message that names it as a measurement rather than a fact.
+
+The rule this suggests is about wording, not about coverage:
+
+> **A test whose assertion is stronger than its evidence must say so in
+> the assertion's failure message.** "No maximal family of size 25 or 26
+> was ever reached" and "no maximal family of size 25 or 26 exists" are
+> different claims, and the first is the one 10⁶ fills support. A
+> failure message that states the weaker claim tells the next reader
+> what a failure would mean; one that states the stronger claim invites
+> them to treat a sampling artefact as a refutation.
+
+This is the counting-argument counterpart of rule 13 — a search reported
+as an answer — applied to a passing test rather than to a failing
+acquisition.

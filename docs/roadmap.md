@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 157 anecdotes into a coverage metric over the
+  mutation testing from 160 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,8 +9842,10 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 48 modules, 723 audited theorems, 142 audited
-definitions, 157 mutations, and 33 Rust integration suites.
+The development is now 49 modules, 731 audited theorems, 142 audited
+definitions, 160 mutations, and 34 Rust integration suites. (That count
+is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
+arrived in §36.)
 
 `coq/Substitution.v` compiles in about a second. Everything expensive in
 it is a `2^6` or `2^3` reflective check on a seed; the theorem does the
@@ -9879,3 +9881,239 @@ and `sat_and_dfs_agree` shell out to a solver. A missing external
 binary is indistinguishable from a broken proof in the output, which is
 a gap in the checking rather than in the mathematics;
 `docs/testing.md` now says so.
+
+## 36. Session N+12, third act — the prior art existed, it was on a blog,
+##     and reproducing it explains its own ceiling
+
+The commissioned prior-art search (§35, `docs/reading.md` A17–A21) came
+back with three claims and one honest gap: the load-bearing row rested
+on a blog thread that returned 403 to this container, and the register
+said so in bold. This section is what happened when the thread was
+finally opened.
+
+It was not opened by fetching the page. Every earlier attempt used the
+slug `2015/12/11/polymath10-post-3-…`, which **does not exist** — the
+post is at `2015/12/08/polymath-10-post-3-…`. A wrong slug on WordPress
+returns an 80 KB 404 body that, rendered through a fetch tool, is
+indistinguishable from a block. Four sessions recorded a hostile host
+when the real problem was a wrong address.
+
+The route that works needs no address:
+
+```
+  https://public-api.wordpress.com/rest/v1.1/sites/gilkalai.wordpress.com/posts/?search=polymath10
+  https://public-api.wordpress.com/rest/v1.1/sites/gilkalai.wordpress.com/posts/13400/replies/?number=100&order=ASC
+  https://public-api.wordpress.com/rest/v1.1/sites/gilkalai.wordpress.com/comments/23193
+```
+
+All 434 comments across the seven Polymath10 threads were read this way,
+and the LaTeX comes back as the `alt` text of the formula images, which
+the rendered page throws away. `docs/reading.md` rule 31 states the
+general lesson.
+
+### 36.1 What was found, and what it costs this development
+
+Three things, in increasing order of how much they matter.
+
+**One — `ι` was named in 2015, and so was the doubling lemma.** Dömötör
+Pálvölgyi, comment 23193, 23 December 2015:
+
+> If we denote the size of the largest k-uniform intersecting family
+> without an r-sunflower by `f^{int}(k,r)`, then we have
+> `(r-1)·f^{int}(k,r) ≤ f(k,r)`.
+
+At `r = 3` that is `2·ι(k) ≤ g(k)`, which is
+`Intersecting.doubling_lower_bound` on the nose, proved here by the same
+two-disjoint-copies construction. **This is the citation the development
+owes, and it changes no proof.** The naming is the smaller half of the
+find; the inequality is load-bearing and five modules sit on it.
+
+**Two — the `ι(4)` search was proposed in 2015 and never run.** Same
+author, comment 23032, 14 December 2015, proposes searching for an
+intersecting sunflower-free family at `k = 4` on ten elements by
+enumerating permutation groups of order ≤ 30 — which is exactly
+`rust/src/orbit.rs`, and exactly what §13.3 reports as exhausted over
+136 (ground, group) pairs. Gil Kalai replied on 25 December that he
+would "try to get some experimentation going in a few weeks". Nothing in
+any of the seven threads reports that it happened.
+
+**Three — and this refutes something this repository has asserted since
+N+9 — an intersecting computation *was* run, in November 2015.** Philip
+Gibbs, comment 22690, 25 November 2015: *"I have implemented a small
+variation of the process, where I also require that the family is
+intersecting."* He reports means and maxima over 100 runs at fifteen
+`(k, n)` pairs. His maxima are 10 at `k = 3`, **24** at `k = 4`, **58**
+at `k = 5`.
+
+Against this development: `ι(3) = 10` exhaustively — his randomised
+search found the exact value, which is an independent 2015
+corroboration by a different method; `ι(4) ≥ 27`, three ahead of him;
+`ι(5) ≥ 78`, twenty ahead. His search was randomised, so none of his
+numbers is an upper bound and none is in tension with anything here.
+**The negative that was wrong was "no intersecting computation exists",
+not any mathematical claim.** No proof moves.
+
+### 36.2 Reproducing the 2015 process, and why it stopped where it did
+
+`plateau::search` with zero force moves is the random-fill process:
+add addable candidates at random until the family is maximal.
+`rust/examples/gibbs2015.rs` re-runs all fifteen rows.
+
+```text
+   k    n    mean 2015   max 2015     mean here   max here
+   3    4         4.00          4          4.00          4
+   3    7         8.61         10          8.49         10
+   3   10         7.24         10          7.55         10
+   3   13         6.97         10          6.83         10
+   4    5         5.00          5          5.00          5
+   4    9        18.06         21         17.93         21
+   4   13        17.56         22         17.47         24
+   4   17        17.67         24         17.32         21
+   4   21        17.45         21         17.30         21
+   5    6         6.00          6          6.00          6
+   5   11        38.46         42         38.74         42
+   5   16        37.43         46         37.76         43
+   5   21        38.43         58         38.00         51
+   5   26        38.86         49         38.89         50
+   5   31        40.23         52         not run — `plateau::candidates` stops at 28
+```
+
+Every mean within 0.5, eleven years and two languages apart. The maxima
+scatter because a maximum over 100 runs is an extreme-value statistic;
+the means are the stable one. Fourteen rows reproduce.
+
+**What the reproduction buys is the explanation of the ceiling.** Run the
+fill a million times at `(4, 9)` — the nine points
+`Product.iota_four_at_least_27`'s family actually lives on:
+
+```text
+   size   12   13    14     15     16      17      18      19     20     21   22   23   24   25   26   27
+  count   14  348  2512  12423  72693  245268  361910  224365  66427  11624  840  978  579    0    0   19
+```
+
+Nineteen hits in a million. **In 100 runs the expected number of hits is
+0.002**, so the 2015 report of 21 at `(4, 9)` was not a near miss — the
+experiment was about five hundred times too small to see the answer once.
+That is the quantified form of the claim `plateau.rs`'s header has made
+since it was written, that a fill "can never beat" the 1972
+constructions: it can *reach* them, at a rate of `2 × 10⁻⁵`.
+
+Two further readings, and the second is the one worth chasing:
+
+* At `(4, 10)` — one more point — 100 000 fills never reach 27 at all
+  (best 26). Adding a point dilutes rather than helps, which is the same
+  effect §13's ground-set ladder measures from the other side.
+* **The spectrum has a hole.** Over a million fills, 24 was reached 579
+  times and 27 nineteen times, and **25 and 26 were reached zero times**.
+  A fill only ever stops at a *maximal* family, so every size in that
+  table is the size of some maximal intersecting sunflower-free
+  4-uniform family on nine points. Two exact zeros flanked by 579 and 19
+  is not noise. It is evidence — not proof — that no maximal family on
+  nine points has 25 or 26 members.
+
+### 36.3 The 27-member family looks unique, and the census did not finish
+
+Five million fills produced 106 hits at 27, of which 50 are distinct as
+labelled families. Canonicalised under all `9! = 362 880` relabellings,
+**all 50 fall into a single orbit, and it is `Product.iota4`'s.**
+
+Nothing in this development says the AHS family is the only 27-member
+family on nine points — `Substitution.triangle_squared_is_maximal` says
+only that it is maximal — so this is the first evidence either way, and
+it points at uniqueness.
+
+**The exhaustive census was attempted and did not finish.**
+`rust/examples/nine_point_census.rs` enumerates every 27-member family
+containing the anchor, with two prunes: the anchor's stabiliser has one
+orbit per `|B ∩ anchor| ∈ {1, 2, 3}`, so three second members suffice to
+meet every orbit; and every pair of points lies in at most `g(2) = 6`
+members, which is `Support.link_at_pair_bounded` and is the only prune
+here that is not bookkeeping. **It did not finish. Budgets: 110 s
+unpruned, then 300 s pruned, then a third attempt stopped by hand at
+about 330 s to free the cores for the gate run** — so the third is a
+run I interrupted, not a run that exhausted its budget, and it is
+recorded that way. The sampled uniqueness is therefore a measurement and
+nothing stronger, and the census is owed. The obvious next attempt is
+SAT rather than DFS: `rust/src/symbreak.rs` already encodes exact-size
+intersecting sunflower-free families with symmetry breaking, and the
+question "is there a 27-member family on nine points outside `iota4`'s
+orbit" is closer to that shape than to a clique enumeration.
+
+### 36.4 `coq/Palvolgyi.v` — the equality remark, carried as a `Prop`
+
+The same comment 23193 continues:
+
+> In fact, if I understood well, it is even possible (though unlikely)
+> that equality holds for all values of k and r. This is the case for
+> all best constructions for r=3, but not for r=4, k=3.
+
+At `r = 3` that is `g(k) = 2·ι(k)` — a named external conjecture about
+this development's central object, unknown here until this session, and
+called unlikely by its own proposer. Note the second sentence: equality
+is *known to fail* at `r = 4`, so this is a statement about
+three-sunflowers and nothing wider.
+
+It is carried as a `Prop`, never an axiom, exactly as
+`AbbottGardner.AbbottGardner1969` is:
+
+```coq
+Definition PalvolgyiEquality : Prop :=
+  forall b N, 1 <= b -> IotaAtMost b N -> GAtMost b (2 * N).
+```
+
+The upper-bound direction is the usable one; `doubling_lower_bound`
+already supplies `g ≥ 2ι` unconditionally, so together they are the
+equality. What the kernel checks:
+
+```text
+  palvolgyi_implies_abbott_gardner        PE + iota(3)<=10  ->  g(3) <= 20
+  palvolgyi_pins_g_three_exactly          ... and ~ GAtMost 3 19
+  palvolgyi_beats_the_proved_bound_at_three   20 against the proved 26
+  palvolgyi_at_four_needs_iota_four       PE + iota(3)<=10  ->  g(4) <= 142
+  palvolgyi_at_four_if_iota_four_is_27    PE + iota(4)<=27  ->  g(4) <= 54, and 54 is attained
+  palvolgyi_refuted_by_one_family         the only shape a refutation can take
+  no_refutation_at_three / _at_four       both closed
+```
+
+Three of these are worth reading twice.
+
+**It implies a theorem.** Given the exhaustive `ι(3) = 10`, Pálvölgyi's
+remark *implies* Abbott–Gardner 1969. So a conjecture its proposer
+called unlikely is at least as strong as a published result, and any
+refutation must leave that result standing.
+
+**It is pinned from below by an object, not by a citation.**
+`Intersecting.lower_bound_3_3_20` builds twenty 3-sets with no
+3-sunflower, so `GAtMost 3 19` is false and the conjecture's prediction
+at `b = 3` lands on 20 exactly. A smaller multiplier would not compile.
+
+**It gives the `ι(4)` ladder a second payoff.** If the ladder closes at
+27, the conjecture says `g(4) = 54` — and `Product.lower_bound_4_3_54`,
+the doubled substitution family, has exactly 54 members. So the
+conjecture's content at `b = 4` is precisely *that the doubled
+substitution family is optimal*, and the two ends meet on the same
+number. Deciding `ι(4)` stops being only a value and becomes a test of
+a named conjecture.
+
+**How it dies.** `palvolgyi_refuted_by_one_family` says a refutation
+needs some `b` with `ι(b) ≤ N` proved and a `b`-uniform sunflower-free
+family of `2N + 1` members. Nothing weaker: an odd `g(b)` with `ι(b)`
+undetermined says nothing. Both decided rungs are closed against it —
+`b = 3` would need 21 members against `f_3_3_at_most_21`, `b = 4` would
+need 143 against a proved 142 — so the conjecture survives everything
+this development can currently throw at it, and the file says so rather
+than implying more.
+
+### 36.5 What this section does *not* claim
+
+* No proof changed. The prior art is a citation and a conjecture, not a
+  correction.
+* The uniqueness of the 27-member family is **sampled, not proved**; the
+  census is owed and its budget is recorded.
+* The hole at 25–26 is **evidence, not a theorem**; a fill visits only
+  the maximal families it can reach.
+* `ι(4)` is still undecided, and 36.4 does not move it. What changed is
+  that deciding it now settles more than one question.
+* `PalvolgyiEquality` is a hypothesis. Nothing downstream of it is
+  proved unconditionally, and `Print Assumptions` on all eight theorems
+  reports **Closed under the global context**.
