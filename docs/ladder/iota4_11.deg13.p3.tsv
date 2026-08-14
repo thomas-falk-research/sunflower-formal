@@ -1,0 +1,29 @@
+# iota(4,11) >= 32 ?  the deg(0) = 13 cube, split at --seqprefix 3.
+# 27 cubes instead of the full split's 1939: only d_1 and d_2 are fixed,
+# the rest of the sequence is left free and merely has to be fillable.
+#
+# Why the coarser split. The full split makes 1939 sub-cubes and a
+# measured sample of thirteen of them landed five UNSAT (136-491 s) with
+# eight still running at a 600 s cap -- about 23 sub-cubes an hour on four
+# cores, so 84 hours to attempt each once and most still undecided. The
+# cube whole is worse: two earlier sessions left it UNKNOWN at 36000 s
+# (cadical) and 40407 s (cryptominisat5). 27 is the granularity that
+# worked at deg(0) = 12, where 19 sub-cubes finished in 3236 s.
+#
+# sub-cube	verdict	seconds
+g=11 [13, 13, 13]	UNKNOWN	2400.1
+g=11 [13, 13, 12]	UNKNOWN	2400.1
+g=11 [13, 13, 11]	UNKNOWN	2400.1
+g=11 [13, 13, 10]	UNKNOWN	2400.1
+#
+# VERDICT ON THIS GRANULARITY: TOO COARSE, and the budget is the result.
+# All four cubes of the first batch burned the full 2400 s cap without
+# landing.  27 cubes at 2400 s is 18 core-hours for nothing, where the
+# full split spends the same time deciding real sub-cubes.  Not retried.
+#
+# The granularity ladder for deg(0) = 13, measured rather than guessed:
+#   whole cube (1)      UNKNOWN at 36000 s cadical, 40407 s cryptominisat5
+#   --seqprefix 3 (27)  4 of 4 UNKNOWN at 2400 s          <- this file
+#   full split (1939)   solved ones land in 136-491 s; about 45% pass 600 s
+# The full split is the working granularity.  The cost is not the split,
+# it is the total: see iota4_11.deg13.tsv.

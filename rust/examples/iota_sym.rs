@@ -8,6 +8,11 @@
 //!
 //! Arguments: `<b> <ground> <target>`, then optional `--seconds N` (per
 //! cube, 0 for none), `--threads T`, `--kmax K`, `--solver NAME`,
+//! `--seqprefix N` (fix only the first `N` degrees when re-splitting, so
+//! the granularity of the second phase is tunable: at `g = 11, b = 4,
+//! deg(0) = 13` the split is 6 cubes at `N = 2`, 27 at 3, 167 at 4 and
+//! 1939 at 11 — and 1939 sub-cubes each still costing minutes is a worse
+//! trade than a few dozen that are merely hard),
 //! `--checkpoint PATH` (append each degree-sequence sub-cube's verdict as
 //! it lands, and skip the ones already recorded there — what makes a cube
 //! with thousands of sub-cubes survivable across restarts, and what lets
@@ -188,6 +193,7 @@ fn run_one(
     cubecap: usize,
     only_deg: Option<usize>,
     checkpoint: Option<&Path>,
+    seqprefix: usize,
 ) -> Verdict {
     let t0 = Instant::now();
     let inst = encode(ground, b, target, opts);
@@ -263,7 +269,7 @@ fn run_one(
         // between them, and a cube past it keeps its coarse form and the
         // full budget.
         let best = if seqsplit {
-            sequence_cubes(&inst, opts, &[*d0], ground as usize, cubecap)
+            sequence_cubes(&inst, opts, &[*d0], seqprefix.min(ground as usize), cubecap)
         } else {
             None
         };
@@ -332,6 +338,7 @@ fn main() {
     let mut from: Option<u32> = None;
     let mut only_deg: Option<usize> = None;
     let mut checkpoint: Option<PathBuf> = None;
+    let mut seqprefix: Option<usize> = None;
     let mut opts = SymOptions::default();
     let mut i = 3;
     while i < args.len() {
@@ -387,6 +394,10 @@ fn main() {
             // One deg(0) cube, by name, so a rung can be run across
             // container restarts: each invocation decides one cube and
             // the caller records the verdict. See `docs/roadmap.md` §36.
+            "--seqprefix" => {
+                seqprefix = Some(args[i + 1].parse().unwrap());
+                i += 2;
+            }
             "--checkpoint" => {
                 checkpoint = Some(PathBuf::from(&args[i + 1]));
                 i += 2;
@@ -441,7 +452,7 @@ fn main() {
         o.all_points_used = ladder;
         let v = run_one(
             b, g, target, o, solver, seconds, threads, slice, seqsplit, cubecap, only_deg,
-            checkpoint.as_deref(),
+            checkpoint.as_deref(), seqprefix.unwrap_or(g as usize),
         );
         match v {
             Verdict::Sat(f) => {
