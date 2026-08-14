@@ -8,6 +8,11 @@
 //!
 //! Arguments: `<b> <ground> <target>`, then optional `--seconds N` (per
 //! cube, 0 for none), `--threads T`, `--kmax K`, `--solver NAME`,
+//! `--checkpoint PATH` (append each degree-sequence sub-cube's verdict as
+//! it lands, and skip the ones already recorded there — what makes a cube
+//! with thousands of sub-cubes survivable across restarts, and what lets
+//! a cheap pass harvest the easy ones before an expensive pass re-runs
+//! only the stragglers),
 //! `--plain` (drop the symmetry constraints, keeping the cube split — the
 //! control that says what the constraints are worth), and `--ladder`.
 //!
@@ -32,7 +37,9 @@
 //!   UNKNOWN at least one cube hit its limit -- the budget is the result
 //! ```
 
+use std::collections::HashMap;
 use std::io::Write;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Mutex;
 use std::time::Instant;
@@ -52,9 +59,48 @@ fn solver_by_name(name: &str) -> Solver {
     }
 }
 
+/// Verdicts already recorded for this question, by cube label.
+///
+/// A cube is skipped only when the checkpoint says `UNSAT` or `SAT`.
+/// `UNKNOWN` is a budget, not a verdict, so a stalled cube is re-run --
+/// the same rule `tools/rung.sh` learned the hard way when an `ERROR`
+/// row was mistaken for a decision.
+fn load_checkpoint(path: &Path) -> HashMap<String, String> {
+    let mut out = HashMap::new();
+    let Ok(text) = std::fs::read_to_string(path) else {
+        return out;
+    };
+    for line in text.lines() {
+        if line.starts_with('#') || line.trim().is_empty() {
+            continue;
+        }
+        let mut it = line.split('\t');
+        let (Some(label), Some(verdict)) = (it.next(), it.next()) else {
+            continue;
+        };
+        if verdict == "UNSAT" || verdict == "SAT" {
+            out.insert(label.to_string(), verdict.to_string());
+        }
+    }
+    out
+}
+
+fn append_checkpoint(path: &Path, label: &str, verdict: &str, secs: f64) {
+    use std::io::Write as _;
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(f, "{label}\t{verdict}\t{secs:.1}");
+        let _ = f.flush();
+    }
+}
+
 /// Solve a list of cubes across `threads` cores, printing each verdict as
 /// it lands. Returns the witness if one turned up, and the labels of the
 /// cubes that hit their limit.
+///
+/// With `checkpoint` set, every landed verdict is appended to that file
+/// as it happens and cubes already recorded there are skipped. A
+/// nineteen-hour cube on a container that is reclaimed without warning
+/// is otherwise all-or-nothing; this makes it resumable.
 fn solve_all(
     inst: &SymInstance,
     cubes: &[(String, Vec<i32>)],
@@ -62,7 +108,13 @@ fn solve_all(
     seconds: u64,
     threads: usize,
     tagbase: &str,
+    checkpoint: Option<&Path>,
 ) -> (Option<Vec<u32>>, Vec<String>) {
+    let done = checkpoint.map(load_checkpoint).unwrap_or_default();
+    if !done.is_empty() {
+        println!("# checkpoint: {} of {} cubes already decided", done.len(), cubes.len());
+        let _ = std::io::stdout().flush();
+    }
     let next = AtomicUsize::new(0);
     let found: Mutex<Option<Vec<u32>>> = Mutex::new(None);
     let stalled: Mutex<Vec<String>> = Mutex::new(Vec::new());
@@ -79,6 +131,12 @@ fn solve_all(
                     return;
                 }
                 let (ref label, ref cube) = cubes[idx];
+                if let Some(v) = done.get(label) {
+                    // Recorded SAT would mean a witness this process does
+                    // not hold; refuse to report UNSAT over it.
+                    assert_ne!(v, "SAT", "checkpoint records SAT for {label}; rerun without it");
+                    continue;
+                }
                 let start = Instant::now();
                 let tag = format!("{tagbase}-c{idx}");
                 let v = solve_cube(inst, cube, solver, seconds, &tag)
@@ -88,6 +146,10 @@ fn solve_all(
                     let _g = out.lock().unwrap();
                     println!("    {label:<34} {:<8} {secs:8.1}s", v.label());
                     let _ = std::io::stdout().flush();
+                }
+                if let Some(p) = checkpoint {
+                    let _g = out.lock().unwrap();
+                    append_checkpoint(p, label, v.label(), secs);
                 }
                 match v {
                     Verdict::Sat(f) => {
@@ -125,6 +187,7 @@ fn run_one(
     seqsplit: bool,
     cubecap: usize,
     only_deg: Option<usize>,
+    checkpoint: Option<&Path>,
 ) -> Verdict {
     let t0 = Instant::now();
     let inst = encode(ground, b, target, opts);
@@ -159,6 +222,7 @@ fn run_one(
         if slice == 0 { seconds } else { slice },
         threads,
         &tagbase,
+        None,
     );
     if let Some(f) = witness {
         return Verdict::Sat(f);
@@ -226,7 +290,7 @@ fn run_one(
     println!("# g = {ground}: {refined} of {} cubes refined", stalled_d0.len());
     println!("# g = {ground}: {} degree-sequence cubes", fine.len());
     let _ = std::io::stdout().flush();
-    let (witness, stalled) = solve_all(&inst, &fine, solver, seconds, threads, &format!("{tagbase}-seq"));
+    let (witness, stalled) = solve_all(&inst, &fine, solver, seconds, threads, &format!("{tagbase}-seq"), checkpoint);
     if let Some(f) = witness {
         return Verdict::Sat(f);
     }
@@ -267,6 +331,7 @@ fn main() {
     let mut cubecap: usize = 48;
     let mut from: Option<u32> = None;
     let mut only_deg: Option<usize> = None;
+    let mut checkpoint: Option<PathBuf> = None;
     let mut opts = SymOptions::default();
     let mut i = 3;
     while i < args.len() {
@@ -322,6 +387,10 @@ fn main() {
             // One deg(0) cube, by name, so a rung can be run across
             // container restarts: each invocation decides one cube and
             // the caller records the verdict. See `docs/roadmap.md` §36.
+            "--checkpoint" => {
+                checkpoint = Some(PathBuf::from(&args[i + 1]));
+                i += 2;
+            }
             "--only-deg" => {
                 only_deg = Some(args[i + 1].parse().unwrap());
                 i += 2;
@@ -372,6 +441,7 @@ fn main() {
         o.all_points_used = ladder;
         let v = run_one(
             b, g, target, o, solver, seconds, threads, slice, seqsplit, cubecap, only_deg,
+            checkpoint.as_deref(),
         );
         match v {
             Verdict::Sat(f) => {
