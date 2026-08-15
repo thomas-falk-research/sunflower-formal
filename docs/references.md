@@ -1069,3 +1069,76 @@ elementary route — its engine is Shannon's noiseless coding theorem. The
 elementary route is the counting proof of [ALWZ20] §2 as streamlined by
 Park–Pham, written out in [Lovett] §3. See `docs/roadmap.md` §1, rewritten
 against it.
+
+
+## Added for `docs/papers/nine-points.md`
+
+The nine-point classification cites four works and two tools that had no
+entry here. Bibliographic data for the first four was taken from Crossref
+rather than recalled; the evidence class of each is stated, as everywhere
+in this file.
+
+- **[AG69]** H. L. Abbott and B. Gardner, *On a combinatorial theorem of
+  Erdős and Rado*. In W. T. Tutte (ed.), **Recent Progress in
+  Combinatorics**, Academic Press, **1969**, pp. **211–215**.
+  **Not read; not in Crossref**, which is expected of a chapter in a
+  1969 Academic Press volume. The source of $g(3) = 20$ as used
+  throughout this development, via a rendered page of Kostochka's survey
+  quoted verbatim in `docs/reading.md` A9. **The title is disputed** —
+  `docs/reading.md` A20 records a commissioned search reporting it as
+  *"Remark on a Combinatorial Theorem of Erdös and Rado"*. That report
+  could not be corroborated and the form above is the one this
+  development has used since it was introduced, so it is kept and the
+  doubt is recorded rather than silently resolved.
+
+- **[AH77]** H. L. Abbott and D. Hanson, *On finite $\Delta$-systems II*.
+  **Discrete Mathematics**, vol. **17**, issue **2**, **1977**,
+  pp. **121–126**. **DOI `10.1016/0012-365X(77)90139-X`** — verified
+  against Crossref. **Not read.** Cited only in `docs/reading.md` A20's
+  account of which Abbott paper carries the substitution; that question
+  is open here and this entry exists so the next reader does not
+  re-derive the bibliographic half of it.
+
+- **[AE92]** H. L. Abbott and G. Exoo, *On set systems not containing
+  delta systems*. **Graphs and Combinatorics**, vol. **8**, issue **1**,
+  **1992**, pp. **1–9**. **DOI `10.1007/BF01271703`** — verified against
+  Crossref. **Not read; paywalled.** The closest prior computational work
+  on sunflower-free families; two rendered secondary sources agree its
+  published results are for $r \ge 4$, so it does not bear on the
+  $r = 3$ question of the nine-point note. `docs/reading.md` A13.
+
+- **[FW25]** P. Frankl and J. Wang, *Intersecting families with covering
+  number three*. **Journal of Combinatorial Theory, Series B**, vol.
+  **171**, **2025**, pp. **96–139**; arXiv:2207.05487v3. **Read in
+  part** — the arXiv PDF was fetched and Example 1.3, defining the family
+  $G(n,k)$, was extracted verbatim and the construction rebuilt and
+  checked (`rust/tests/frankl_wang.rs`). Establishes that the
+  covering-number literature cannot bound the nine- and eleven-point
+  questions below 32; `docs/roadmap.md` §37.6.
+
+### Tools
+
+Cited because the nine-point results depend on them, and a result that
+depends on a tool should name its version.
+
+- **[CaDiCaL]** A. Biere et al., *CaDiCaL* SAT solver, version **1.7.3**
+  as packaged for Ubuntu. Used for the independent check of
+  $g(3,8) = 12$ in `tools/gsat.py`, and throughout the ladder searches.
+
+- **[Sinz05]** C. Sinz, *Towards an optimal CNF encoding of Boolean
+  cardinality constraints*. In **Principles and Practice of Constraint
+  Programming – CP 2005**, LNCS **3709**, Springer, **2005**,
+  pp. **827–831**. **DOI `10.1007/11564751_73`** — verified against
+  Crossref. **Not read**; the sequential-counter encoding is standard and
+  was implemented from its textbook description, then validated
+  exhaustively on every $n \le 7$ before use. That validation exists
+  because the first attempt at it was wrong — `docs/papers/nine-points.md`
+  §11.
+
+- **[MP14]** B. D. McKay and A. Piperno, *Practical graph isomorphism,
+  II*. **Journal of Symbolic Computation**, vol. **60**, **2014**,
+  pp. **94–112**. **DOI `10.1016/j.jsc.2013.09.003`** — verified against
+  Crossref. The `nauty` package, used in earlier work in this repository
+  to compute $|\mathrm{Aut}|$ of the $\iota(4)$ witness; the value 1296
+  obtained there is the outside cross-check on the automorphism
+  computation of the nine-point note.

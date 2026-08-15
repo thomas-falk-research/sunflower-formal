@@ -54,9 +54,11 @@ more; it is not a claim about the contents.
 | `EKR61` | P. Erdős, C. Ko and R. Rado | Intersection theorems for systems of finite sets | doi:10.1093/qmath/12.1.313 | 8 | in copyright (OUP); Erdos memorial archive scan | not stored | not read (8 pages rendered) |
 | `ErRa60` | P. Erdős and R. Rado | Intersection theorems for systems of sets | doi:10.1112/jlms/s1-35.1.85 | 6 | in copyright (LMS/Wiley); Erdos memorial archive scan | not stored | read in full (6 of 6 pages) |
 | `ErRa69` | P. Erdős and R. Rado | Intersection theorems for systems of sets (II) | doi:10.1112/jlms/s1-44.1.467 | 13 | in copyright (LMS/Wiley); Erdos memorial archive scan | not stored | not read (13 pages rendered) |
+| `FHHZ17` | Peter Frankl et al. | A degree version of the Hilton-Milner theorem | arXiv:1703.03896v2 | 7 | unstated | not stored | read p. 1 (of 7) |
 | `FKNP21` | Keith Frankston et al. | Thresholds versus fractional expectation-thresholds | arXiv:1910.13433v2 | 16 | arXiv non-exclusive | not stored | read pp. 1-4 of 16 |
 | `FPPTZ24` | Peter Frankl, János Pach, Dömötör Pálvölgyi | Odd-Sunflowers | arXiv:2310.16701v2 | 10 | CC BY 4.0 | `pdf/odd_sunflowers.pdf` | read in an earlier session (10 pages) |
 | `FPS21` | Jacob Fox, Janos Pach, Andrew Suk | Sunflowers in set systems of bounded dimension | arXiv:2103.10497v2 | 14 | CC BY 4.0 | `pdf/fox_pach_suk.pdf` | not read (14 pages rendered) |
+| `FW25` | Peter Frankl, Jian Wang | Intersecting families with covering number three | arXiv:2207.05487v3 | 30 | arXiv non-exclusive | `pdf/frankl_wang_cover3.pdf` | Example 1.3 and eq. (1.4) read verbatim; G(11,4) rebuilt and checked |
 | `Fuk25` | Junichiro Fukuyama | Sunflower Bound with a Sub-Logarithmic Base | arXiv:2510.19037v2 | 8 | CC BY-SA 4.0 | `pdf/sublog.pdf` | read in full (8 of 8 pages) |
 | `GMR12` | Parikshit Gopalan, Raghu Meka, Omer Reingold | DNF Sparsification and a Faster Deterministic Counting Algorithm | arXiv:1205.3534v1 | 27 | arXiv non-exclusive | not stored | not read (27 pages rendered) |
 | `Gal26` | Cheng Liao | On the sunflower property and the galah property | arXiv:2606.13656v1 | 21 | arXiv non-exclusive | not stored | not read (21 pages rendered) |
@@ -79,9 +81,8 @@ more; it is not a claim about the contents.
 | `Smooth21` | Sam Spiro | A Smoother Notion of Spread Hypergraphs | arXiv:2106.11882v2 | 12 | arXiv non-exclusive | not stored | not read (12 pages rendered) |
 | `Thi21` | R. Thiemann | The Sunflower Lemma of Erdős and Rado | — | 14 | BSD License (AFP entry licence) | `pdf/afp_sunflowers.pdf` | read pp. 1-4 and 13-14 of 14 |
 | `VS25` | Ferdinand Ihringer, Andrey Kupavskii | The Erdős-Rado Sunflower Problem for Vector Spaces | arXiv:2505.03671v2 | 9 | arXiv non-exclusive | not stored | not read (9 pages rendered) |
-| `FHHZ17` | Peter Frankl et al. | A degree version of the Hilton-Milner theorem | arXiv:1703.03896v2 | 7 | unstated | not stored | read p. 1 (of 7) |
 
-36 records, 16 PDFs stored,
+37 records, 17 PDFs stored,
 11 read in full.
 
 ## What bears on what
@@ -98,9 +99,11 @@ more; it is not a claim about the contents.
 | `EKR61` | The intersecting side. |
 | `ErRa60` | The origin paper. Both branches of the dichotomy are on p. 90. |
 | `ErRa69` | Sequel to the origin paper. |
+| `FHHZ17` | B19: the classical Hilton-Milner family, and the degree-condition line that is the nearest neighbour of I(m,r). Located by the B19 search; p. 1 rendered and read. |
 | `FKNP21` | Spread def (4); Thm 1.6 fixed-size covering. |
 | `FPPTZ24` | Ground-set framing; credits Hunter's equivalence. |
 | `FPS21` | Sunflowers in set systems of bounded dimension. |
+| `FW25` | the covering-number route to iota(4,11); refuted in roadmap 37.6. |
 | `Fuk25` | Unrefereed claim of a sub-logarithmic base. |
 | `GMR12` | DNF sparsification; a named Tier 4 application. |
 | `Gal26` | The sunflower property and the galah property. |
@@ -123,7 +126,6 @@ more; it is not a claim about the contents.
 | `Smooth21` | A smoother notion of spread. |
 | `Thi21` | Refutes the 'only machine-checked formalisation' claim. |
 | `VS25` | Erdos-Rado sunflower problem for vector spaces. |
-| `FHHZ17` | B19: the classical Hilton-Milner family, and the degree-condition line that is the nearest neighbour of I(m,r). Located by the B19 search; p. 1 rendered and read. |
 
 ## Provenance rules
 
