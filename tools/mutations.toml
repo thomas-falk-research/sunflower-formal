@@ -2542,3 +2542,27 @@ support."""
 find = "  replace 142 with (2 * 71) by reflexivity."
 replace = "  replace 142 with (2 * 70) by reflexivity."
 expect = "killed"
+find = "    Grounded I (seq 0 w) ->"
+replace = ""
+expect = "killed"
+
+[[mutation]]
+id = "two-cover-drop-distinct"
+file = "coq/Support.v"
+question = """Is distinctness load-bearing in the two-cover degree sum? \
+The proof counts members by including F in the concatenation of the two \
+stars, which needs NoDup F -- a family with repeats would have length \
+exceeding the union and the pigeonhole would be false."""
+find = "    Distinct F ->\n    (forall A, In A F -> In p A \\/ In q A) ->\n    length F <= length (star p F) + length (star q F)."
+replace = "    (forall A, In A F -> In p A \\/ In q A) ->\n    length F <= length (star p F) + length (star q F)."
+expect = "killed"
+
+[[mutation]]
+id = "two-cover-sixteen-off-by-one"
+file = "coq/Support.v"
+question = """Is 16 the right threshold for a 32-member family under a \
+two-point cover? 17 does not follow -- the two stars can split 32 as \
+16 and 16 -- so a corollary claiming it must not compile."""
+find = "    16 <= length (star p F) \\/ 16 <= length (star q F)."
+replace = "    17 <= length (star p F) \\/ 17 <= length (star q F)."
+expect = "killed"

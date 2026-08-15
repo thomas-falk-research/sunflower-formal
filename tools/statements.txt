@@ -2625,3 +2625,9 @@ a6c8a7831c9e295b  thm Palvolgyi.palvolgyi_at_four_if_iota_four_is_27
 
 cdd49bbc760157dd  thm Palvolgyi.no_refutation_at_four
     no_refutation_at_four : IotaAtMost 3 10 -> ~ LowerBound 4 3 143
+
+3b4fac07fa24ea73  thm Support.two_cover_degree_sum
+    two_cover_degree_sum : forall (F : Family) (p q : nat), Distinct F -> (forall A : list nat, List.In A F -> List.In p A \/ List.In q A) -> length F <= length (star p F) + length (star q F)
+
+c475511b22526bb2  thm Support.two_cover_of_thirty_two_has_a_star_of_sixteen
+    two_cover_of_thirty_two_has_a_star_of_sixteen : forall (F : Family) (p q : nat), Distinct F -> length F = 32 -> (forall A : list nat, List.In A F -> List.In p A \/ List.In q A) -> 16 <= length (star p F) \/ 16 <= length (star q F)

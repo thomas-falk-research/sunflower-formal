@@ -998,3 +998,5 @@ thm Palvolgyi.palvolgyi_at_four_if_iota_four_is_27
 thm Palvolgyi.palvolgyi_refuted_by_one_family
 thm Palvolgyi.no_refutation_at_three
 thm Palvolgyi.no_refutation_at_four
+thm Support.two_cover_degree_sum
+thm Support.two_cover_of_thirty_two_has_a_star_of_sixteen

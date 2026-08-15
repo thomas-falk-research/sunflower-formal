@@ -683,3 +683,64 @@ Qed.
 Example the_proof_is_two_rungs_behind_the_search :
   binom 8 2 = 28 /\ binom 9 2 = 36 /\ 28 < 32 <= 36.
 Proof. repeat split; first [reflexivity | lia]. Qed.
+
+(** * A cover of size two forces a big star
+
+    The lever `docs/roadmap.md` §37.5 turns on, and the one that decides
+    what is left of the [iota(4,11)] ladder.
+
+    If two points meet every member then every member is in one of their
+    two stars, so the two degrees sum to at least the whole family. It is
+    pigeonhole and nothing more; what makes it worth stating is what it
+    rules out downstream.
+
+    At the ladder's parameters — [|F| = 32] — it says some point has
+    degree at least 16. The ladder has decided every [deg(0)] cube from
+    15 upward UNSAT, and [PureLink.link_at_point_bounded] with
+    [g_three_at_most_26] makes degree 27 and above impossible outright,
+    so **a covering number of two is refuted for that rung** and only
+    [tau >= 3] survives. That reduction is what leaves [deg(0) = 13] and
+    [deg(0) = 14] as the whole of the remaining question.
+
+    [TwoCover.v] proves much sharper things about [tau <= 2] families;
+    this is not a competitor to them. It is the one step in the chain
+    that was being made in prose. *)
+
+Theorem two_cover_degree_sum :
+  forall (F : Family) (p q : nat),
+    Distinct F ->
+    (forall A, In A F -> In p A \/ In q A) ->
+    length F <= length (star p F) + length (star q F).
+Proof.
+  intros F p q HD Hcov.
+  rewrite <- app_length.
+  apply NoDup_incl_length; [exact (SetNoDup_NoDup HD)|].
+  intros A HA.
+  apply in_or_app.
+  destruct (Hcov A HA) as [Hp | Hq]; [left | right];
+    unfold star; apply filter_In; split; try assumption;
+    unfold memb; destruct (in_dec_nat _ _); tauto.
+Qed.
+
+(** The instance the ladder needs, with the arithmetic done. *)
+
+Corollary two_cover_of_thirty_two_has_a_star_of_sixteen :
+  forall (F : Family) (p q : nat),
+    Distinct F -> length F = 32 ->
+    (forall A, In A F -> In p A \/ In q A) ->
+    16 <= length (star p F) \/ 16 <= length (star q F).
+Proof.
+  intros F p q HD Hlen Hcov.
+  pose proof (@two_cover_degree_sum F p q HD Hcov) as H.
+  lia.
+Qed.
+
+(** And the general form, which is the same pigeonhole and says what a
+    cover of any size buys: [tau = t] forces a star of [|F| / t]. Stated
+    for two because that is the case the ladder uses and because a list
+    of covering points would need its own induction; the two-point case
+    is what is load-bearing and it is honest to prove only that. *)
+
+Example the_two_cover_bound_is_what_kills_tau_two_at_the_ladder :
+  32 <= 16 + 16 /\ 15 < 16 /\ 26 < 27.
+Proof. repeat split; lia. Qed.

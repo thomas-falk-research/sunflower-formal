@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 160 anecdotes into a coverage metric over the
+  mutation testing from 162 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,8 +9842,8 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 49 modules, 731 audited theorems, 142 audited
-definitions, 160 mutations, and 34 Rust integration suites. (That count
+The development is now 49 modules, 733 audited theorems, 142 audited
+definitions, 162 mutations, and 34 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36.)
 
