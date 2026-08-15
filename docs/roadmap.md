@@ -10308,3 +10308,49 @@ So the open question with the best ratio of payoff to difficulty is
 **whether an intersecting 4-uniform 3-sunflower-free family of 32 sets
 on 11 points can have covering number 3 or 4**. If it cannot, the rung
 is closed by hand and 106 core-hours are not needed.
+
+### 37.6 §37.5's proposal is refuted, and the refutation is worth more
+###      than the proposal was
+
+§37.5 named the covering-number route as *"the open question with the
+best ratio of payoff to difficulty"*: `τ ∈ {3, 4}` is forced for the
+rung, so a literature maximum below 32 in both cases would close it with
+no further computation. A commissioned search answered it, and the
+answer is **no, in both cases, and not narrowly.**
+
+```text
+  k=4, tau=3   maximum grows like Theta(n^3); at n = 11 it is >= 74
+               (Frankl-Wang, arXiv:2207.05487v3, Example 1.3; JCTB 171
+               (2025) 96-139)
+  k=4, tau=4   this is Erdos-Lovasz r(k); best bracket 42 <= r(4) <= 64,
+               classical n-free bound k^k = 256
+```
+
+Every one of those is above 32, so **no citation from that literature can
+exclude a 32-member family**, and §37.5's proposal is dead as stated.
+
+**The construction was rebuilt here rather than taken on report.**
+Example 1.3 defines `B = {[2,k+1], {2}∪[k+2,2k], {3}∪[k+2,2k]}` and `A`
+as the `k`-sets containing 1 that meet every member of `B`, with
+`G(n,k) = A ∪ B`. At `n = 11, k = 4` that gives **74** members —
+matching the paper's own inclusion–exclusion — intersecting, with
+`τ = 3` and `{1,2,3}` a transversal exactly as the paper states.
+
+And it confirms a prediction this development makes about a family it did
+not build. `PureLink.iota_four_at_most_71_if_iota_three_is_ten` gives
+`ι(4) ≤ 71` on the exhaustive `ι(3) = 10`, and `74 > 71`, so `G(11,4)`
+**cannot** be sunflower-free. It is not: it contains **3481**
+three-sunflowers, and a randomised greedy keeps only **17 of its 74**
+members. `rust/tests/frankl_wang.rs` carries all of it.
+
+**What the refutation buys, which is the part worth keeping.** It
+locates the difficulty exactly. On eleven points an intersecting
+4-uniform family can have 120 members (the star, `τ = 1`), or 74 with
+`τ = 3`; the rung asserts that adding 3-sunflower-freeness brings the
+ceiling below 32. So sunflower-freeness is doing essentially all of the
+work, and the covering number almost none — which is why the
+covering-number literature cannot help and why no published theorem
+combines the two hypotheses (`docs/reading.md` A23). **The `ι(4,11)`
+computation is not replaceable by a citation.** That is a stronger and
+more useful statement than the one §37.5 hoped for, and it is the reason
+the two open cubes have to be paid for in core-hours.
