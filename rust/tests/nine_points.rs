@@ -261,3 +261,66 @@ fn the_twenty_seven_member_family_on_nine_points_is_unique() {
         "the unique orbit is not Product.iota4's"
     );
 }
+
+/// Claim 5: the general extremal family is **not** unique — dropping
+/// "intersecting" admits genuinely different 27-member families.
+///
+/// This matters because on nine points sunflower-freeness does not imply
+/// intersecting: three pairwise disjoint 4-sets need twelve points, so an
+/// empty-core sunflower cannot occur and a disjoint pair is allowed. The
+/// witness below contains six disjoint pairs, so no relabelling carries
+/// it onto `Product.iota4`, which is intersecting.
+///
+/// Found by seeding the search with the disjoint pair `{0,1,2,3}`,
+/// `{4,5,6,7}` — sound because a relabelling carries any disjoint pair
+/// there — and carried explicitly so the claim needs no search to check.
+#[test]
+fn the_general_extremal_family_on_nine_points_is_not_unique() {
+    const ROWS: [[u32; 4]; 27] = [
+        [0,1,2,3], [4,5,6,7], [0,1,2,4], [0,1,3,4], [0,2,3,4],
+        [1,2,3,4], [0,1,5,6], [0,2,5,6], [3,4,5,6], [0,1,5,7],
+        [0,2,5,7], [3,4,5,7], [1,2,6,7], [3,4,6,7], [3,5,6,7],
+        [1,3,5,8], [2,3,5,8], [1,4,5,8], [2,4,5,8], [1,2,6,8],
+        [0,3,6,8], [0,4,6,8], [1,2,7,8], [0,3,7,8], [0,4,7,8],
+        [1,6,7,8], [2,6,7,8],
+    ];
+    let f: Vec<u32> = ROWS.iter().map(|r| r.iter().fold(0u32, |m, &p| m | 1 << p)).collect();
+    let w: Vec<u64> = f.iter().map(|&x| u64::from(x)).collect();
+
+    // 4-uniform, distinct, sunflower-free -- but NOT required intersecting.
+    wide::verify(&w, 4, false).expect("the witness is not a valid family");
+    assert_eq!(f.len(), 27);
+    assert_eq!(f.iter().collect::<HashSet<_>>().len(), 27);
+
+    // It lives on exactly nine points and is 12-regular, as the counting
+    // bound forces every 27-member family here to be.
+    let mut deg = [0u32; 9];
+    for &m in &f {
+        assert_eq!(m >> 9, 0, "a member leaves the nine points");
+        for (p, d) in deg.iter_mut().enumerate() {
+            if m >> p & 1 == 1 {
+                *d += 1;
+            }
+        }
+    }
+    assert!(deg.iter().all(|&d| d == 12), "degrees {deg:?}");
+
+    // It is genuinely not intersecting.
+    let disjoint = (0..f.len())
+        .flat_map(|i| (i + 1..f.len()).map(move |j| (i, j)))
+        .filter(|&(i, j)| f[i] & f[j] == 0)
+        .count();
+    assert_eq!(disjoint, 6, "disjoint pairs");
+    assert!(
+        wide::verify(&w, 4, true).is_err(),
+        "it would have to be intersecting for iota4's uniqueness to cover it"
+    );
+
+    // So it is in a different orbit from Product.iota4.
+    let ps = perms(9);
+    assert_ne!(
+        canon(&f, &ps),
+        canon(&iota4(), &ps),
+        "the witness is a relabelling of iota4 after all"
+    );
+}

@@ -10396,17 +10396,54 @@ finishing** (§36.3). With it, the intersecting census finishes in **75 s**:
   orbits under S_9: 1     -- and it is Product.iota4's
 ```
 
-So **the 27-member intersecting 4-uniform sunflower-free family on nine
-points is unique up to relabelling, and it is the Abbott–Hanson–Sauer
-substitution of the triangle into itself.** §36.3's sampled uniqueness —
+So **the 27-member *intersecting* 4-uniform sunflower-free family on
+nine points is unique up to relabelling, and it is the
+Abbott–Hanson–Sauer substitution of the triangle into itself.** The word
+*intersecting* is load-bearing — see §38.2a. §36.3's sampled uniqueness —
 5 000 000 fills, 50 distinct families, one orbit — is now a census rather
 than evidence. `rust/tests/nine_points.rs`.
 
-The general (not-necessarily-intersecting) census is a *different*
-question here and is being run separately: three pairwise disjoint 4-sets
-need twelve points, so on nine an empty-core sunflower is impossible and
-a sunflower-free family need not be intersecting. Until that finishes the
-uniqueness claim is stated for intersecting families only.
+### 38.2a The general case is different, and the answer is the opposite
+
+The caution above was warranted. On nine points three pairwise disjoint
+4-sets need twelve, so an empty-core sunflower **cannot occur** and a
+sunflower-free family here need not be intersecting. The question is
+whether the degree budget survives a disjoint pair, and it does.
+
+Seeding the search with `{0,1,2,3}` and `{4,5,6,7}` — sound, because a
+relabelling carries any disjoint pair there — finds 27-member families
+immediately. One of them, verified independently and carried explicitly
+in `rust/tests/nine_points.rs`:
+
+```text
+  0123 4567 0124 0134 0234 1234 0156 0256 3456 0157 0257 3457 1267 3467
+  3567 1358 2358 1458 2458 1268 0368 0468 1278 0378 0478 1678 2678
+```
+
+4-uniform, distinct, **zero** 3-sunflowers, on exactly nine points,
+12-regular as the counting bound forces — and with **six disjoint
+pairs**, so no relabelling carries it onto the intersecting `iota4`.
+
+**So the two questions have different answers at nine points:**
+
+```text
+  intersecting        maximum 27, extremal family UNIQUE (= Product.iota4)
+  general             maximum 27, extremal family NOT unique
+```
+
+The maximum is the same number either way — the counting bound does not
+care about intersecting, and `iota4` attains it — but relaxing
+*intersecting* admits genuinely new extremal families without admitting
+any larger one. That is the interesting part, and it is the opposite of
+what a first reading of §38.2 would suggest.
+
+**Method note.** The full general census was run for **4.3 hours without
+finishing** and was abandoned in favour of the seeded search, which
+decides the same question in under two minutes because a family that is
+not intersecting *must* contain a disjoint pair and can be relabelled to
+contain that one. Splitting the question at the right place beat waiting
+— the same lesson as §37.3, where the wrong split cost more than no
+split at all.
 
 ### 38.3 Where the method stops, measured rather than assumed
 
