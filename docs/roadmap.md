@@ -10180,3 +10180,131 @@ reported from the partial. The lesson is not about mutation testing:
 > immediately turns every rate computed against it into a fabrication of
 > the same kind as a quoted timing that was never measured — and
 > `docs/reading.md` rule 13 already covers that shape.
+
+## 37. Session N+12, fourth act — the `ι(4,11)` rung reaches nineteen of
+##     twenty-one, and the split that was supposed to close it is the
+##     reason it did not
+
+### 37.1 Where the rung stands
+
+Nineteen of the twenty-one `deg(0)` cubes of `ι(4,11) ≥ 32` are UNSAT.
+Only `deg(0) = 13` and `deg(0) = 14` are open. `docs/ladder/iota4_11.tsv`
+is the record; the two new rows were measured on the user's VM:
+
+```text
+  deg0=16   UNSAT   11356.6 s
+  deg0=15   UNSAT   34788.1 s
+```
+
+Both were decided **whole** — `RUNG_SLICE` above the budget, so the
+degree-sequence split never fired, and each is one sequential `cadical`
+on one core.
+
+### 37.2 The whole-cube cost curve, and what it costs to finish
+
+Three measured points, and they are very regular:
+
+```text
+  deg0    17        16         15          14 (fit)    13 (fit)
+  secs    4171.5    11356.6    34788.1     ~98500      ~284000
+  ratio   -         2.72x      3.06x       ~2.9x       ~2.9x
+```
+
+A log-linear fit gives **2.89× per step down**, so `deg(0) = 14` is about
+**27 h** and `deg(0) = 13` about **79 h**, single-threaded. Those are
+extrapolations two steps past the data and are labelled as such wherever
+they appear. What they are consistent with: earlier sessions left both
+UNKNOWN at 36 000 s and 40 407 s, which the fit predicts.
+
+Note the direction. The cubes get *harder as `deg(0)` falls*, and
+`deg(0) = 12` — the floor, and the one §33.5a expected to be worst — is
+the exception, because its deficiency is 4 and its split is tiny.
+
+### 37.3 The correction: the degree-sequence split is the wrong tool here
+
+This session spent an afternoon forcing the split at `deg(0) = 13` with
+`--cubecap 4000`, and measured it properly:
+
+```text
+  whole cube (1)       UNKNOWN at 36000 s cadical, 40407 s cryptominisat5
+  --seqprefix 3 (27)   4 of 4 UNKNOWN at 2400 s -- 18 core-hours for nothing
+  full split (1939)    solved sub-cubes land in 136-491 s; ~45% pass 600 s
+```
+
+The full split's total is roughly **597 core-hours** against **79** for
+the cube whole. A factor of 7.6 the wrong way.
+
+The split wins only when it is *small*. At `deg(0) = 12` it is 19
+sub-cubes and it turned an undecided cube into 3236 s. At `deg(0) = 13`
+it is 1939, and `iota_sym`'s own header always said so: *"paying 684
+solver startups for an instance that solves whole in ten minutes is a
+clear loss."*
+
+**So `--cubecap 400` was right to refuse the split at 13 and 14, and
+session N+11's diagnosis was backwards.** That session recorded the cap,
+carried over from the `g = 10` rung, as *the reason cubes 13 and 14
+failed*. The cap was the protection. Raising it buys the more expensive
+route, and this session bought it before measuring.
+
+The two split checkpoints — `iota4_11.deg13.tsv` and
+`iota4_11.deg13.p3.tsv` — are kept, with their budgets, as the
+measurement that establishes this rather than being deleted.
+
+### 37.4 Two things the tooling gained, and one it did not
+
+`iota_sym --checkpoint PATH` appends each degree-sequence sub-cube's
+verdict as it lands and skips the recorded ones on resume; UNSAT and SAT
+are skipped, UNKNOWN is re-run, because UNKNOWN is a budget and not a
+verdict. `iota_sym --seqprefix N` fixes only the first `N` degrees when
+re-splitting, which is what made §37.3's granularity ladder measurable
+at all — the parameter already existed in `symbreak::sequence_cubes` and
+`run_one` had hard-coded it to the whole ground set.
+
+The split count is now cross-checked rather than asserted. An
+independent enumeration of the two-block model — positions `0..b-1`
+non-increasing from `deg(0)`, the ceiling resetting to `deg(0)` at
+position `b`, then non-increasing again — reproduces the tool's 1939 at
+`deg(0) = 13` and 27 at `--seqprefix 3`, and the 19 that
+`iota4_11.tsv` already recorded at `deg(0) = 12`. It also **corrects the
+sub-cube counts** an earlier session quoted from a globally-sorted model,
+which was the wrong model:
+
+```text
+  deg(0)   12    13      14      15       16
+  was      19    1949    32797   238850   1045128
+  is       19    1939    31624   220047   914505
+```
+
+What the tooling did **not** gain is a way to checkpoint a cube that is
+*not* split, and that is the binding constraint on this container rather
+than the compute: a whole cube is one `cadical` process with no resume
+point, the container is reclaimed on a roughly nightly cycle, and 27 h
+and 79 h are both longer than that. Three times this session the
+container was rebuilt from an older snapshot — twice mid-work, once
+overnight — and each time the recovery was `git fetch` plus a rebase or
+reset onto the remote, because everything of value had been pushed. **The
+remaining two cubes belong on a machine that stays up.**
+
+### 37.5 What would close the rung without the compute
+
+Nothing found, and the honest statement of the gap is short. Cubes
+`12` and `15..32` are UNSAT, so the rung closes if `deg(0) ∈ {13, 14}`
+can be excluded on paper. The available levers do not reach:
+
+* `Δ ≥ ⌈128/11⌉ = 12` is the floor the cube split already uses.
+* `Δ ≤ g(3) ≤ 26` (`PureLink.link_at_point_bounded` with
+  `g_three_at_most_26`) is what kills `27..32`, and `AbbottGardner1969`
+  widens that to `21..32`. Neither touches 13 or 14.
+* Covering number: `τ = 1` is excluded because it forces `Δ = 32 > 26`
+  (`Support.twenty_seven_four_sets_have_no_common_point`). **`τ = 2`
+  would force `Δ ≥ 16` and so would close the rung outright** — but
+  `τ ≥ 3` is not excluded, and at `τ = 3` the bound is only
+  `Δ ≥ ⌈32/3⌉ = 11`.
+* Hilton–Milner at `n = 11, k = 4` gives `|F| ≤ 101`, far above 32, so it
+  does not bite; nor does the pair bound, which gives `Δ ≤ 20` from
+  `3·Δ ≤ 10·g(2) = 60`.
+
+So the open question with the best ratio of payoff to difficulty is
+**whether an intersecting 4-uniform 3-sunflower-free family of 32 sets
+on 11 points can have covering number 3 or 4**. If it cannot, the rung
+is closed by hand and 106 core-hours are not needed.
