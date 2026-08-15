@@ -202,9 +202,15 @@ relabelling carries them onto `{0,1,2,3}` and `{4,5,6,7}`. Searching all
 families containing that pair:
 
 ```
-    144 families found,  15 640 126 124 nodes
+    144 families found,  15 640 126 124 nodes,  140 m 38 s
     orbits under Sym([9]): 1
 ```
+
+This search was run twice, the second time under timing. Both runs
+reported the same 144 families, the same 15 640 126 124 nodes and the
+same single orbit, so the figure above is a reproduction and not a single
+observation. It is also by some margin the most expensive step in this
+note; §9 says so before a reader starts it.
 
 This case is not vacuous, and it is worth saying why. Three pairwise
 disjoint 4-sets would need twelve points, so on nine points no three
@@ -326,6 +332,9 @@ Environment: Coq 8.18.0, rustc 1.94.1, CaDiCaL 1.7.3, Intel Xeon @
 percent or two between runs; the **node counts are deterministic** and are
 the figures to reproduce.
 
+Everything here is minutes except Case 2 of Theorem 5, which took
+**140 m 38 s** on the machine above. Budget for it accordingly.
+
 ```bash
 # Proposition 1, and the inputs for n = 9, 10
 cd rust && cargo build --release --examples
@@ -334,8 +343,9 @@ cd rust && cargo build --release --examples
 python3 ../tools/gsat.py                         # independent SAT check
 
 # Theorem 5
-./target/release/examples/nine_point_census 27   # Case 1: 40 families, 1 orbit
+./target/release/examples/nine_point_census 27   # Case 1: 40 families, 1 orbit, ~75 s
 ./target/release/examples/disjoint_seed 27       # Case 2: 144 families, 1 orbit
+                                                 #   15 640 126 124 nodes, 140 m 38 s
 
 # Coq
 cd .. && make -j4 verify                         # all audited theorems closed
