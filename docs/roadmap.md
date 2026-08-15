@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 162 anecdotes into a coverage metric over the
+  mutation testing from 164 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,8 +9842,8 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 49 modules, 733 audited theorems, 142 audited
-definitions, 162 mutations, and 34 Rust integration suites. (That count
+The development is now 49 modules, 735 audited theorems, 143 audited
+definitions, 164 mutations, and 36 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36.)
 
@@ -10354,3 +10354,100 @@ combines the two hypotheses (`docs/reading.md` A23). **The `ι(4,11)`
 computation is not replaceable by a citation.** That is a stronger and
 more useful statement than the one §37.5 hoped for, and it is the reason
 the two open cubes have to be paid for in core-hours.
+
+## 38. Nine points hold twenty-seven 4-sets, in essentially one way
+
+The moonshot that was ranked second turned out to be the one that
+finishes, and it finishes because of a computation nobody had run.
+
+### 38.1 The constant that unlocks it
+
+**`g(3,8) = 12`** — the largest distinct 3-uniform 3-sunflower-free
+family on eight points. Exhaustive: `rust/examples/g_small.rs`, 56
+candidates, 14 294 037 nodes, **2.9 s**, witness printed.
+
+Nothing about that is deep. What it unlocks is:
+
+* The link of a point in a 4-uniform family on nine points is 3-uniform,
+  distinct and sunflower-free **on the other eight**, so every degree is
+  at most 12.
+* `IotaGround.link_degree_ground_bound` — already in the development —
+  turns that into `4·|F| ≤ 9·12 = 108`, so **`|F| ≤ 27`**.
+* `Product.iota4` has 27 members on `seq 0 9`. So the bound is attained:
+  **`g(4,9) = 27`**, and since `iota4` is intersecting, `ι(4,9) = 27` is
+  the same number. At nine points the general and intersecting problems
+  coincide.
+* And 108 = 9·12 has **no slack**, so every 27-member family on nine
+  points is **exactly 12-regular**. A point that reaches degree 12 is
+  closed to every later member.
+
+`Support.GThreeOnEight` carries the computation as a hypothesis, never as
+an axiom, exactly as `AbbottGardner1969` is carried;
+`four_uniform_on_nine_at_most_27` and `four_uniform_on_nine_is_exactly_27`
+both report **Closed under the global context**.
+
+### 38.2 The census, which forced regularity makes possible
+
+The same search, without the degree constraint, ran **900 s without
+finishing** (§36.3). With it, the intersecting census finishes in **75 s**:
+
+```text
+  target 27, intersecting: 40 families containing the anchor
+  orbits under S_9: 1     -- and it is Product.iota4's
+```
+
+So **the 27-member intersecting 4-uniform sunflower-free family on nine
+points is unique up to relabelling, and it is the Abbott–Hanson–Sauer
+substitution of the triangle into itself.** §36.3's sampled uniqueness —
+5 000 000 fills, 50 distinct families, one orbit — is now a census rather
+than evidence. `rust/tests/nine_points.rs`.
+
+The general (not-necessarily-intersecting) census is a *different*
+question here and is being run separately: three pairwise disjoint 4-sets
+need twelve points, so on nine an empty-core sunflower is impossible and
+a sunflower-free family need not be intersecting. Until that finishes the
+uniqueness claim is stated for intersecting families only.
+
+### 38.3 Where the method stops, measured rather than assumed
+
+The counting bound is sharp at nine and reaches no further:
+
+```text
+  n     link bound        gives        vs the ladder's 32
+   9    g(3,8)  = 12      |F| <= 27    attained -- SHARP
+  10    g(3,9)  = 14      |F| <= 35    above 32, decides nothing
+  11    g(3,10) >= 16     |F| <= 44    above 32, decides nothing
+```
+
+`g(3,9) = 14` was computed here too (273 104 763 nodes, 75 s). At eleven
+points the bound would have to be `g(3,10) ≤ 12` to kill the open cubes
+`deg(0) = 13, 14`, and this development already witnesses
+`g(3,10) ≥ 16` (§9's `N(3,10) ≥ 16`). **So the elementary link count
+cannot close the `ι(4,11)` rung, and §37's two cubes stay paid for in
+core-hours.** That is the honest answer to moonshot #2 as posed: the
+combined argument works, it is sharp, and its reach ends two rungs below
+where it is needed.
+
+### 38.4 Novelty, and how far the search went
+
+The claim is `g(4,9) = ι(4,9) = 27` with a unique extremal family.
+Searched this session, first-hand: three web searches on sunflower-free
+uniqueness and exact small values, and the most recent survey in the area
+— *Delta-system method: a survey*, arXiv:2508.20132 (Aug 2025) — read for
+exact values and uniqueness statements. It has **neither**: only
+asymptotics and structural theorems.
+
+The structural argument is stronger than any single search. A uniqueness
+theorem about the extremal family at `(4,9)` presupposes the **value**
+`g(4,9) = 27`, and no exact value for `f(k,3)` beyond Abbott–Gardner's
+`g(3) = 20` appears anywhere — the commissioned search of session N+12
+covered arXiv full-text, Google Scholar citation chains from AHS 1972 and
+Kostochka, Springer, ScienceDirect, zbMATH, Semantic Scholar, and all 434
+comments of the seven Polymath10 threads read first-hand
+(`docs/reading.md` A17–A23). **Bounded-ground-set values for `k = 4` are
+exactly what nobody has published.** If the value is unpublished, a
+uniqueness statement about its extremal family is too.
+
+That is high confidence, not certainty, and it is recorded as such: no
+search proves a negative, and rule 13 applies to this paragraph as much
+as to any other.

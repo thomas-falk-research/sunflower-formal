@@ -1,18 +1,26 @@
-//! Every 27-member intersecting sunflower-free 4-uniform family on nine
+//! Every 27-member intersecting 3-sunflower-free 4-uniform family on nine
 //! points, exhaustively, and how many there are up to relabelling.
 //!
-//! `Product.iota_four_at_least_27` exhibits one such family and
+//! `Product.iota_four_at_least_27` exhibits one and
 //! `Substitution.triangle_squared_is_maximal` shows it is maximal.
-//! Neither says it is the only one. A random fill reaches 27 about
-//! nineteen times in a million and every hit so far has been a
-//! relabelling of `Product.iota4`, which is evidence and not a census.
-//! This is the census.
+//! Neither says it is the only one. Five million random fills found 50
+//! distinct 27-member families all lying in a single orbit, which is
+//! evidence and not a census. This is the census.
 //!
-//! The anchor `{0,1,2,3}` is fixed throughout, which is sound because a
-//! relabelling carries any member onto it and preserves uniformity,
-//! distinctness, intersecting-ness and sunflower-freeness. So every
-//! family on nine points of size `target` has a relabelling that this
-//! search visits.
+//! ## What makes it finish
+//!
+//! Regularity, forced. The link of a point is a 3-uniform sunflower-free
+//! family on the other eight points, so every degree is at most
+//! `g(3,8) = 12` — computed exhaustively by `examples/g_small.rs`. The
+//! degree sum is `4 * 27 = 108 = 9 * 12`, so **every such family is
+//! exactly 12-regular**, and a point that reaches degree 12 is closed to
+//! every later member. That single constraint is what turns a search
+//! that ran for 900 s without finishing into one that finishes.
+//!
+//! The anchor `{0,1,2,3}` is fixed throughout, sound because a
+//! relabelling carries any member onto it and preserves everything. The
+//! anchor's stabiliser has one orbit of second members per value of
+//! `|B ∩ anchor| = 1, 2, 3`, so three second members meet every orbit.
 
 use std::collections::HashSet;
 
@@ -23,50 +31,42 @@ fn is_sunflower(a: u32, b: u32, c: u32) -> bool {
     ab == (a & c) && ab == (b & c)
 }
 
-/// The pairs of a `b`-set, as indices into a `ground x ground` table.
-fn pairs_of(m: u32, ground: u32) -> Vec<usize> {
-    let pts: Vec<u32> = (0..ground).filter(|&i| m >> i & 1 == 1).collect();
-    let mut out = Vec::new();
-    for i in 0..pts.len() {
-        for j in i + 1..pts.len() {
-            out.push((pts[i] * ground + pts[j]) as usize);
-        }
-    }
-    out
-}
+const G: usize = 9;
+const CAP: u32 = 12;
 
 struct Census {
+    inter: bool,
     target: usize,
-    ground: u32,
-    /// `Support.link_at_pair_bounded` with `GAtMost 2 6`: the link of a
-    /// 2-set is a 2-uniform sunflower-free family, so a pair lies in at
-    /// most `g(2) = 6` members. Kernel-backed, and the only prune here
-    /// that is not pure bookkeeping.
-    pair_cap: u32,
-    pair_count: Vec<u32>,
-    slack: u32,
-    per_member: u32,
+    deg: [u32; G],
     found: Vec<Vec<u32>>,
     nodes: u64,
 }
 
 impl Census {
     fn place(&mut self, x: u32, add: bool) {
-        for p in pairs_of(x, self.ground) {
-            if add {
-                self.pair_count[p] += 1;
-                self.slack -= 1;
-            } else {
-                self.pair_count[p] -= 1;
-                self.slack += 1;
+        for (p, d) in self.deg.iter_mut().enumerate() {
+            if x >> p & 1 == 1 {
+                if add {
+                    *d += 1;
+                } else {
+                    *d -= 1;
+                }
             }
         }
     }
 
-    fn fits(&self, x: u32) -> bool {
-        pairs_of(x, self.ground)
-            .into_iter()
-            .all(|p| self.pair_count[p] < self.pair_cap)
+    /// Every point must still be able to reach degree 12 using the
+    /// candidates that remain.
+    fn reachable(&self, cands: &[u32]) -> bool {
+        let mut avail = [0u32; G];
+        for &c in cands {
+            for (p, a) in avail.iter_mut().enumerate() {
+                if c >> p & 1 == 1 {
+                    *a += 1;
+                }
+            }
+        }
+        (0..G).all(|p| self.deg[p] + avail[p] >= CAP)
     }
 
     fn rec(&mut self, cands: &[u32], cur: &mut Vec<u32>) {
@@ -75,8 +75,7 @@ impl Census {
             self.found.push(cur.clone());
             return;
         }
-        let need = (self.target - cur.len()) as u32;
-        if need * self.per_member > self.slack {
+        if cur.len() + cands.len() < self.target || !self.reachable(cands) {
             return;
         }
         for idx in 0..cands.len() {
@@ -84,13 +83,14 @@ impl Census {
                 return;
             }
             let x = cands[idx];
-            if !self.fits(x) {
+            // Degree cap: a point already at 12 admits nothing more.
+            if (0..G).any(|p| x >> p & 1 == 1 && self.deg[p] >= CAP) {
                 continue;
             }
             let next: Vec<u32> = cands[idx + 1..]
                 .iter()
                 .copied()
-                .filter(|&y| y & x != 0 && !cur.iter().any(|&a| is_sunflower(a, x, y)))
+                .filter(|&y| (!self.inter || y & x != 0) && !cur.iter().any(|&a| is_sunflower(a, x, y)))
                 .collect();
             cur.push(x);
             self.place(x, true);
@@ -128,7 +128,7 @@ fn canon(f: &[u32], ps: &[Vec<u8>]) -> Vec<u32> {
         }
         buf.sort_unstable();
         match &best {
-            Some(bst) if *bst <= buf => {}
+            Some(b) if *b <= buf => {}
             _ => best = Some(buf.clone()),
         }
     }
@@ -136,69 +136,52 @@ fn canon(f: &[u32], ps: &[Vec<u8>]) -> Vec<u32> {
 }
 
 fn main() {
-    let mut a = std::env::args().skip(1);
-    let ground: u32 = a.next().and_then(|s| s.parse().ok()).unwrap_or(9);
-    let b: u32 = a.next().and_then(|s| s.parse().ok()).unwrap_or(4);
-    let target: usize = a.next().and_then(|s| s.parse().ok()).unwrap_or(27);
-
+    let target: usize = std::env::args().nth(1).and_then(|s| s.parse().ok()).unwrap_or(27);
+    // Second argument: 1 = require intersecting, 0 = general families.
+    // On nine points three pairwise disjoint 4-sets do not fit, so an
+    // empty-core sunflower is impossible and a sunflower-free family here
+    // need NOT be intersecting. The general census is the stronger one.
+    let inter: bool = std::env::args().nth(2).map(|s| s != "0").unwrap_or(true);
+    let b = 4u32;
     let anchor: u32 = (1u32 << b) - 1;
-    let cands: Vec<u32> = (0u32..(1u32 << ground))
-        .filter(|x| x.count_ones() == b && *x != anchor && x & anchor != 0)
+    let all: Vec<u32> = (0u32..(1u32 << G as u32))
+        .filter(|x| x.count_ones() == b && *x != anchor && (!inter || x & anchor != 0))
         .collect();
-    let per_member = (b * (b - 1) / 2) as u32;
-    let pair_cap = 6u32; // g(2) = 6
-    let npairs = (ground * (ground - 1) / 2) as u32;
 
-    // The stabiliser of the anchor has one orbit on candidates per value
-    // of |B ∩ anchor| = 1, ..., b-1, so every family containing the
-    // anchor has a relabelling containing the anchor and one of these
-    // `b-1` representatives. That covers every orbit under S_ground,
-    // which is what the census is counting.
-    let mut c = Census {
-        target,
-        ground,
-        pair_cap,
-        pair_count: vec![0; (ground * ground) as usize],
-        slack: npairs * pair_cap,
-        per_member,
-        found: Vec::new(),
-        nodes: 0,
-    };
-    for j in 1..b {
-        if b + (b - j) > ground {
-            continue;
-        }
-        let mut rep: u32 = (1u32 << j) - 1;
+    let mut c = Census { inter, target, deg: [0; G], found: Vec::new(), nodes: 0 };
+    let jlo = if inter { 1 } else { 0 };
+    for j in jlo..b {
+        let mut rep: u32 = if j == 0 { 0 } else { (1u32 << j) - 1 };
         for t in 0..(b - j) {
             rep |= 1u32 << (b + t);
         }
-        let sub: Vec<u32> = cands
+        let sub: Vec<u32> = all
             .iter()
             .copied()
-            .filter(|&y| y != rep && y & rep != 0 && !is_sunflower(anchor, rep, y))
+            .filter(|&y| y != rep && (!inter || y & rep != 0) && !is_sunflower(anchor, rep, y))
             .collect();
         let mut cur = vec![anchor, rep];
-        c.pair_count.iter_mut().for_each(|v| *v = 0);
-        c.slack = npairs * pair_cap;
+        c.deg = [0; G];
         c.place(anchor, true);
         c.place(rep, true);
         c.rec(&sub, &mut cur);
     }
     println!(
-        "ground={ground} b={b} target={target}: {} families found, {} nodes",
+        "target {target}, {}: {} families found, {} nodes",
+        if inter { "intersecting" } else { "general" },
         c.found.len(),
         c.nodes
     );
     for f in &c.found {
         let w: Vec<u64> = f.iter().map(|&x| u64::from(x)).collect();
-        wide::verify(&w, b, true).expect("census produced an invalid family");
+        wide::verify(&w, b, inter).expect("census produced an invalid family");
     }
-    let ps = perms(ground as usize);
+    let ps = perms(G);
     let mut orbits: HashSet<Vec<u32>> = HashSet::new();
     for f in &c.found {
         orbits.insert(canon(f, &ps));
     }
-    println!("orbits under S_{ground}: {}", orbits.len());
+    println!("orbits under S_{G}: {}", orbits.len());
     for o in &orbits {
         println!("  {o:?}");
     }

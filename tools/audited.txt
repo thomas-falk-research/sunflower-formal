@@ -1000,3 +1000,6 @@ thm Palvolgyi.no_refutation_at_three
 thm Palvolgyi.no_refutation_at_four
 thm Support.two_cover_degree_sum
 thm Support.two_cover_of_thirty_two_has_a_star_of_sixteen
+thm Support.four_uniform_on_nine_at_most_27
+thm Support.four_uniform_on_nine_is_exactly_27
+def Support.GThreeOnEight

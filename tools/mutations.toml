@@ -2566,3 +2566,24 @@ two-point cover? 17 does not follow -- the two stars can split 32 as \
 find = "    16 <= length (star p F) \\/ 16 <= length (star q F)."
 replace = "    17 <= length (star p F) \\/ 17 <= length (star q F)."
 expect = "killed"
+
+[[mutation]]
+id = "nine-point-link-bound-thirteen"
+file = "coq/Support.v"
+question = """Is 12 the load-bearing constant in the nine-point count? \
+g(3,8) = 12 is exhaustive; weakening the carried hypothesis to 13 makes \
+the count give 4|F| <= 117 and so |F| <= 29, and the theorem's 27 no \
+longer follows."""
+find = "  ~ ContainsKSunflower 3 G -> length G <= 12."
+replace = "  ~ ContainsKSunflower 3 G -> length G <= 13."
+expect = "killed"
+
+[[mutation]]
+id = "nine-point-ceiling-twenty-six"
+file = "coq/Support.v"
+question = """Is 27 the right ceiling on nine points? 26 does not \
+follow -- 4*27 = 108 = 9*12 exactly, so the counting bound lands on 27 \
+and Product.iota4 attains it."""
+find = "    ~ ContainsKSunflower 3 F ->\n    length F <= 27.\nProof.\n  intros Hg U F HndU Hlen HU HD HG Hno."
+replace = "    ~ ContainsKSunflower 3 F ->\n    length F <= 26.\nProof.\n  intros Hg U F HndU Hlen HU HD HG Hno."
+expect = "killed"

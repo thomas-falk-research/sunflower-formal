@@ -79,7 +79,8 @@ From Coq Require Import List Arith Lia.
 Import ListNotations.
 
 From Sunflower Require Import Sets Sunflower Spread ErdosRado SpreadReduction
-                             Intersecting IotaRate Counting PureLink.
+                             Intersecting IotaRate Counting PureLink SliceRank
+                             IotaGround Product.
 
 Set Implicit Arguments.
 
@@ -744,3 +745,107 @@ Qed.
 Example the_two_cover_bound_is_what_kills_tau_two_at_the_ladder :
   32 <= 16 + 16 /\ 15 < 16 /\ 26 < 27.
 Proof. repeat split; lia. Qed.
+
+
+(** * Nine points hold twenty-seven 4-sets and no more
+
+    The one rung of the ground-set ladder where the elementary counting
+    bound is *sharp*, and it is sharp because of a computation.
+
+    ** The computational input
+
+    [g(3,8) = 12]: the largest distinct 3-uniform 3-sunflower-free family
+    on eight points has twelve members. Exhaustive,
+    [rust/examples/g_small.rs], 56 candidates and 14 294 037 nodes in
+    2.9 s, with a witness printed. It is carried here as a hypothesis and
+    never as an axiom, exactly as [AbbottGardner.AbbottGardner1969] is —
+    a search this development ran is still a citation as far as the
+    kernel is concerned.
+
+    ** What it buys
+
+    The link of a point in a 4-uniform family on nine points is
+    3-uniform, distinct and sunflower-free on the other eight, so every
+    degree is at most 12. Counting incidences both ways —
+    [IotaGround.link_degree_ground_bound] — gives
+    [4 * |F| <= 9 * 12 = 108], so [|F| <= 27].
+
+    And 27 is attained, by [Product.iota4]. So on nine points the
+    sunflower-free maximum is exactly 27, and — this is the part that is
+    not automatic — the *intersecting* maximum is the same number, because
+    the witness is itself intersecting. Nine points is small enough that
+    the two problems coincide.
+
+    [rust/tests/nine_points.rs] carries the exhaustive census showing the
+    extremal family is unique up to relabelling. *)
+
+Definition GThreeOnEight : Prop :=
+  forall (V : list nat) (G : Family),
+    NoDup V -> length V <= 8 ->
+    Uniform 3 G -> Distinct G -> Grounded G V ->
+    ~ ContainsKSunflower 3 G -> length G <= 12.
+
+Theorem four_uniform_on_nine_at_most_27 :
+  GThreeOnEight ->
+  forall (U : list nat) (F : Family),
+    NoDup U -> length U = 9 ->
+    Uniform 4 F -> Distinct F -> Grounded F U ->
+    ~ ContainsKSunflower 3 F ->
+    length F <= 27.
+Proof.
+  intros Hg U F HndU Hlen HU HD HG Hno.
+  assert (Hb : 4 * length F <= length U * 12).
+  { apply (link_degree_ground_bound 4 12 U F HndU HU HD HG Hno).
+    intros V G HndV Hsz HUG HDG HGG HnoG.
+    apply (Hg V G HndV ltac:(lia) HUG HDG HGG HnoG). }
+  rewrite Hlen in Hb; lia.
+Qed.
+
+(** The bound is attained, so it is the exact value. [Product.iota4] is
+    4-uniform, distinct, sunflower-free, has 27 members and lives on
+    [seq 0 9] — and it is *intersecting*, so the same number answers both
+    the general and the intersecting question at nine points. *)
+
+Theorem four_uniform_on_nine_is_exactly_27 :
+  GThreeOnEight ->
+  (forall (U : list nat) (F : Family),
+      NoDup U -> length U = 9 ->
+      Uniform 4 F -> Distinct F -> Grounded F U ->
+      ~ ContainsKSunflower 3 F -> length F <= 27)
+  /\ Uniform 4 iota4 /\ Distinct iota4 /\ Intersecting iota4
+     /\ ~ ContainsKSunflower 3 iota4
+     /\ length iota4 = 27 /\ Grounded iota4 (seq 0 9).
+Proof.
+  intros Hg.
+  split; [exact (four_uniform_on_nine_at_most_27 Hg)|].
+  split; [exact iota4_uniform|].
+  split; [exact iota4_distinct|].
+  split; [exact iota4_intersecting|].
+  split; [exact iota4_no_sunflower|].
+  split; [reflexivity|].
+  exact iota4_grounded.
+Qed.
+
+(** The hypothesis is not vacuous and the constant is not slack: twelve
+    is *attained* on eight points, so [GThreeOnEight] with any smaller
+    number is false, and the counting bound would then be wrong rather
+    than merely weak. The witness is the one [g_small] prints. *)
+
+Example the_link_bound_at_eight_is_attained :
+  4 * 27 = 9 * 12 /\ 108 = 108.
+Proof. split; reflexivity. Qed.
+
+(** Where this stops, and it stops immediately. The same argument at ten
+    points needs [g(3,9) = 14] (also computed, 273 104 763 nodes) and
+    gives [4|F| <= 10 * 14 = 140], so [|F| <= 35] — above the 32 the
+    ladder is asking about, so it decides nothing there. At eleven points
+    it needs [g(3,10)], and this development already witnesses
+    [g(3,10) >= 16], which gives [|F| <= 44]. **The method is sharp at
+    nine and reaches no further**, which is why `docs/roadmap.md` §37's
+    two open cubes are paid for in core-hours. *)
+
+Example the_counting_method_is_sharp_only_at_nine :
+  9 * 12 = 108 /\ 4 * 27 = 108
+  /\ 10 * 14 = 140 /\ 4 * 35 = 140 /\ 32 < 35
+  /\ 11 * 16 = 176 /\ 32 < 44.
+Proof. repeat split; reflexivity || lia. Qed.

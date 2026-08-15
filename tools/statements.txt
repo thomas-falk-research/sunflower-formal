@@ -2631,3 +2631,12 @@ cdd49bbc760157dd  thm Palvolgyi.no_refutation_at_four
 
 c475511b22526bb2  thm Support.two_cover_of_thirty_two_has_a_star_of_sixteen
     two_cover_of_thirty_two_has_a_star_of_sixteen : forall (F : Family) (p q : nat), Distinct F -> length F = 32 -> (forall A : list nat, List.In A F -> List.In p A \/ List.In q A) -> 16 <= length (star p F) \/ 16 <= length (star q F)
+
+1040cc817206cb01  thm Support.four_uniform_on_nine_at_most_27
+    four_uniform_on_nine_at_most_27 : GThreeOnEight -> forall (U : list nat) (F : Family), List.NoDup U -> length U = 9 -> Uniform 4 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 27
+
+e7974d40a4707f38  thm Support.four_uniform_on_nine_is_exactly_27
+    four_uniform_on_nine_is_exactly_27 : GThreeOnEight -> (forall (U : list nat) (F : Family), List.NoDup U -> length U = 9 -> Uniform 4 F -> Distinct F -> Grounded F U -> ~ ContainsKSunflower 3 F -> length F <= 27) /\ Uniform 4 iota4 /\ Distinct iota4 /\ Intersecting iota4 /\ ~ ContainsKSunflower 3 iota4 /\ length iota4 = 27 /\ Grounded iota4 (List.seq 0 9)
+
+8bba01e722683424  def Support.GThreeOnEight
+    GThreeOnEight = forall (V : list nat) (G : Family), List.NoDup V -> length V <= 8 -> Uniform 3 G -> Distinct G -> Grounded G V -> ~ ContainsKSunflower 3 G -> length G <= 12 : Prop
