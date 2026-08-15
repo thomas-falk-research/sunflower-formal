@@ -10424,18 +10424,34 @@ in `rust/tests/nine_points.rs`:
 12-regular as the counting bound forces — and with **six disjoint
 pairs**, so no relabelling carries it onto the intersecting `iota4`.
 
-**So the two questions have different answers at nine points:**
+The enumeration then finished, so the classification is complete rather
+than merely a counterexample. **There are exactly two orbits.**
 
 ```text
-  intersecting        maximum 27, extremal family UNIQUE (= Product.iota4)
-  general             maximum 27, extremal family NOT unique
+  intersecting      1 orbit    Product.iota4     |Aut| = 1296   0 disjoint pairs
+  not intersecting  1 orbit    the family above  |Aut| =   48   6 disjoint pairs
+  ----------------------------------------------------------------------------
+  TOTAL             exactly 2 orbits of 27-member 4-uniform sunflower-free
+                    families on nine points
 ```
+
+The cover is complete because the two cases are exhaustive and each was
+searched to the end: an intersecting family is caught by the anchored
+census (40 families containing the anchor, one orbit), and a
+non-intersecting one *must* contain a disjoint pair, so a relabelling
+puts it in the seeded search (144 families containing that pair,
+15 640 126 124 nodes, one orbit).
+
+The automorphism groups confirm the two are genuinely different without
+appealing to the canonical form: 1296 against 48. And `|Aut(iota4)| =
+1296` is the value §33 already recorded from `nauty`, which is an
+independent check on this computation rather than a restatement of it.
 
 The maximum is the same number either way — the counting bound does not
 care about intersecting, and `iota4` attains it — but relaxing
-*intersecting* admits genuinely new extremal families without admitting
-any larger one. That is the interesting part, and it is the opposite of
-what a first reading of §38.2 would suggest.
+*intersecting* admits exactly one further extremal family without
+admitting any larger one. That is the interesting part, and it is the
+opposite of what a first reading of §38.2 would suggest.
 
 **Method note.** The full general census was run for **4.3 hours without
 finishing** and was abandoned in favour of the seeded search, which

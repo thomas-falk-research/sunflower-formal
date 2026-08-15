@@ -323,4 +323,27 @@ fn the_general_extremal_family_on_nine_points_is_not_unique() {
         canon(&iota4(), &ps),
         "the witness is a relabelling of iota4 after all"
     );
+
+    // And the automorphism groups say so without appealing to the
+    // canonical form at all. 1296 is the value docs/roadmap.md 33
+    // recorded for iota4 from nauty, so this is a cross-check on an
+    // outside tool rather than a restatement of one of our own.
+    let aut = |g: &[u32]| -> usize {
+        let set: HashSet<u32> = g.iter().copied().collect();
+        ps.iter()
+            .filter(|p| {
+                g.iter().all(|&m| {
+                    let mut q = 0u32;
+                    let mut r = m;
+                    while r != 0 {
+                        q |= 1 << p[r.trailing_zeros() as usize];
+                        r &= r - 1;
+                    }
+                    set.contains(&q)
+                })
+            })
+            .count()
+    };
+    assert_eq!(aut(&iota4()), 1296, "|Aut(iota4)|, against nauty's value");
+    assert_eq!(aut(&f), 48, "|Aut| of the non-intersecting extremal family");
 }
