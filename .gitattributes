@@ -1,0 +1,10 @@
+# The ladder checkpoints are append-only logs, written on more than one
+# machine at once: tools/rung.sh appends a row as each cube lands, and a
+# session may be editing the header at the same time. Union merge keeps
+# both sides' rows instead of raising a conflict over a file where every
+# line is independent data.
+#
+# Union merge can leave a duplicate row if two machines decide the same
+# cube. That is harmless -- the rows agree, and rung.sh's skip test reads
+# the first match -- but `sort -u` on the data lines tidies it.
+docs/ladder/*.tsv merge=union

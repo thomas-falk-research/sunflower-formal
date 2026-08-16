@@ -16,6 +16,17 @@
 #                 (default: the whole budget, i.e. never split).
 #   RUNG_CUBECAP  most sequence cubes to accept (default 400).
 #
+# The checkpoint is a TRACKED file and this script appends to it, so a
+# run leaves the working tree dirty and `git pull` will refuse. The rows
+# are data worth keeping: commit them rather than stashing.
+#
+#   git add docs/ladder/iota${B}_${G}.tsv
+#   git commit -m 'iota(4,11): cube N from <machine>'
+#   git pull --rebase
+#
+# .gitattributes sets merge=union on these files, so rows appended on two
+# machines merge instead of conflicting.
+#
 # See docs/roadmap.md §36 for why the rung is run this way.
 set -e
 B=$1; G=$2; T=$3; BUDGET=$4; shift 4
