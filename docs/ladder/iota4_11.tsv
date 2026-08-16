@@ -28,17 +28,28 @@
 # RUNG_SLICE=90000 above the 86400 s budget, so the degree-sequence split
 # never fired and each is one sequential cadical on one core.
 #
-# THE WHOLE-CUBE COST CURVE, and it is the thing that decides strategy:
+# THE WHOLE-CUBE COST CURVE -- AND THE FIT THAT WAS WRONG.
 #
-#   deg0   17        16         15          14 (fit)     13 (fit)
-#   secs   4171.5    11356.6    34788.1     ~98500       ~284000
-#   ratio  -         2.72x      3.06x       ~2.9x        ~2.9x
+#   deg0   17        16         15          14           13
+#   secs   4171.5    11356.6    34788.1     51305.5      open
+#   ratio  -         2.72x      3.06x       1.47x        -
 #
-# A log-linear fit on the three measured points gives 2.89x per step
-# down, so deg(0)=14 is about 27 h and deg(0)=13 about 79 h, both
-# single-threaded. Those are extrapolations two steps past the data and
-# are labelled as such; what they are consistent with is that earlier
-# sessions left both UNKNOWN at 36000 s and 40407 s.
+# An earlier version of this header fitted a log-linear curve to the
+# three points 17/16/15, got 2.89x per step down, and predicted
+# deg(0)=14 at ~98500 s (27 h) and deg(0)=13 at ~284000 s (79 h).
+#
+# deg(0)=14 came in at 51305.5 s. The prediction was HIGH BY 1.92x, and
+# the ratio broke from ~2.9x to 1.47x, so the curve is not geometric and
+# the fit's form was wrong rather than merely imprecise. THE 79 h FIGURE
+# FOR deg(0)=13 IS WITHDRAWN; three measured ratios that do not agree
+# with each other cannot support a fourth.
+#
+# What can be said instead: 13 is the last open cube, its cost is
+# unknown, and the one structural fact nearby is that the number of
+# admissible degree sequences falls sharply as deg(0) does --
+# 914505 at 16, 220047 at 15, 31624 at 14, 1939 at 13, 19 at 12 -- while
+# the whole-cube time rose from 16 to 14. Whether that trend continues
+# to 13 is exactly what is not known.
 #
 # WHICH MEANS THE DEGREE-SEQUENCE SPLIT IS THE WRONG TOOL AT deg(0)=13.
 # Measured this session: the split makes 1939 sub-cubes, solved ones land
@@ -73,3 +84,4 @@
 12	UNSAT	3236.4	36000
 16	UNSAT	11356.6	86400
 15	UNSAT	34788.1	86400
+14	UNSAT	51305.5	400000

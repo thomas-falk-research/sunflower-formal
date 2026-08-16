@@ -10202,7 +10202,7 @@ on one core.
 
 ### 37.2 The whole-cube cost curve, and what it costs to finish
 
-Three measured points, and they are very regular:
+Three measured points, which looked very regular:
 
 ```text
   deg0    17        16         15          14 (fit)    13 (fit)
@@ -10210,11 +10210,15 @@ Three measured points, and they are very regular:
   ratio   -         2.72x      3.06x       ~2.9x       ~2.9x
 ```
 
-A log-linear fit gives **2.89× per step down**, so `deg(0) = 14` is about
-**27 h** and `deg(0) = 13` about **79 h**, single-threaded. Those are
-extrapolations two steps past the data and are labelled as such wherever
-they appear. What they are consistent with: earlier sessions left both
-UNKNOWN at 36 000 s and 40 407 s, which the fit predicts.
+A log-linear fit gave **2.89× per step down**, so `deg(0) = 14` was
+predicted at about **27 h** and `deg(0) = 13` at about **79 h**,
+single-threaded — labelled at the time as extrapolations two steps past
+the data.
+
+**`deg(0) = 14` then came in at 51 305.5 s, and the fit was wrong.**
+§38.5 records the correction; the short version is that the prediction
+was high by 1.92× and the ratio broke from ~2.9× to 1.47×, so the curve
+is not geometric and the 79 h figure for `deg(0) = 13` does not survive.
 
 Note the direction. The cubes get *harder as `deg(0)` falls*, and
 `deg(0) = 12` — the floor, and the one §33.5a expected to be worst — is
@@ -10504,3 +10508,73 @@ uniqueness statement about its extremal family is too.
 That is high confidence, not certainty, and it is recorded as such: no
 search proves a negative, and rule 13 applies to this paragraph as much
 as to any other.
+
+## 39. `deg(0) = 14` is UNSAT — twenty of twenty-one, and the cost curve
+##     that predicted it was wrong
+
+Measured on the user's VM, whole, one core, no split:
+
+```text
+  deg0=14   UNSAT   51305.5 s   (14 h 15 m)
+```
+
+Twenty of the twenty-one `deg(0)` cubes of `ι(4,11) ≥ 32` are now UNSAT.
+**Only `deg(0) = 13` is open.**
+
+### 39.1 The correction, which matters more than the row
+
+§37.2 fitted a log-linear curve to the three whole-cube measurements at
+`deg(0) = 17, 16, 15`, obtained 2.89× per step down, and predicted
+`deg(0) = 14` at ≈98 500 s and `deg(0) = 13` at ≈284 000 s. The first of
+those was a genuine forecast about an unrun computation, and it has now
+been tested:
+
+```text
+  deg0    17        16         15         14
+  secs    4171.5    11356.6    34788.1    51305.5
+  ratio   -         2.72x      3.06x      1.47x     <- predicted ~2.9x
+```
+
+**Predicted 98 500 s, measured 51 305.5 s: high by 1.92×.** The ratio did
+not merely drift, it halved, so the failure is in the *form* of the model
+and not in its precision. Three ratios that disagree with one another
+cannot support a fourth.
+
+**So the 79 h figure for `deg(0) = 13` is withdrawn.** It appeared in
+§37.2, in §37.4's framing of what the remaining cubes cost, and in the
+`iota4_11.tsv` header; all three now carry the correction. The honest
+statement is that the cost of the last cube is **unknown**.
+
+This is the second time this session that an extrapolation past the data
+has been wrong in the same direction — §36.3 projected the sub-cube
+harvest at ~597 core-hours from a partial sample, and §37's own opening
+correction was about a rate computed against time that had not elapsed.
+The pattern is worth naming rather than fixing case by case:
+
+> **An extrapolation is a claim about an unrun computation, and it should
+> be labelled, budgeted and checked like any other.** Two steps past
+> three points is not a measurement. Where this development would refuse
+> to state a proof from three instances, it should refuse to state a
+> timing curve from three too — and when the run lands, the prediction
+> should be scored against it in public.
+
+### 39.2 What is actually known about the last cube
+
+Nothing about its cost. The one structural fact nearby is that the number
+of admissible degree sequences collapses as `deg(0)` falls —
+
+```text
+  deg0        16       15       14      13     12
+  sequences   914505   220047   31624   1939   19
+```
+
+— while the measured whole-cube time *rose* from `deg(0) = 16` to
+`deg(0) = 14`. Whether that continues to 13, reverses, or does something
+else is exactly what is not known, and §37.3 already showed that the
+split which those sequence counts describe is the wrong tool at 13
+anyway: 1939 sub-cubes cost about 597 core-hours against 79 for the cube
+whole, and that 79 was itself the discredited fit. The comparison should
+be redone against measured numbers once 13 lands.
+
+The rung stands at twenty of twenty-one, every decided cube UNSAT, and no
+counterexample anywhere in it.
