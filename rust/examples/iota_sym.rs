@@ -8,6 +8,12 @@
 //!
 //! Arguments: `<b> <ground> <target>`, then optional `--seconds N` (per
 //! cube, 0 for none), `--threads T`, `--kmax K`, `--solver NAME`,
+//! `--seq-sample N [SEED]` (run a uniform random sample of `N`
+//! degree-sequence sub-cubes instead of all of them, and report the mean
+//! cost and the implied cost of the whole split — this **costs** the
+//! split, it does not decide the cube, and it shuffles first because the
+//! sub-cubes are enumerated most-extreme-first so a prefix is not a
+//! sample),
 //! `--seqprefix N` (fix only the first `N` degrees when re-splitting, so
 //! the granularity of the second phase is tunable: at `g = 11, b = 4,
 //! deg(0) = 13` the split is 6 cubes at `N = 2`, 27 at 3, 167 at 4 and
@@ -194,6 +200,7 @@ fn run_one(
     only_deg: Option<usize>,
     checkpoint: Option<&Path>,
     seqprefix: usize,
+    seqsample: Option<(usize, u64)>,
 ) -> Verdict {
     let t0 = Instant::now();
     let inst = encode(ground, b, target, opts);
@@ -295,8 +302,60 @@ fn run_one(
     }
     println!("# g = {ground}: {refined} of {} cubes refined", stalled_d0.len());
     println!("# g = {ground}: {} degree-sequence cubes", fine.len());
+    let population = fine.len();
+    // A uniform sample of the sub-cubes, for costing the split without
+    // paying for it. The sub-cubes are enumerated in a systematic order
+    // -- the most extreme degree sequences come first -- so a *prefix* is
+    // not a sample and would bias the estimate. This shuffles with a
+    // seeded splitmix64 and takes the first `n`.
+    if let Some((n, seed)) = seqsample {
+        if n < fine.len() {
+            let mut st = seed | 1;
+            let mut next = || {
+                st = st.wrapping_add(0x9E37_79B9_7F4A_7C15);
+                let mut z = st;
+                z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+                z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+                z ^ (z >> 31)
+            };
+            for i in (1..fine.len()).rev() {
+                let j = (next() % (i as u64 + 1)) as usize;
+                fine.swap(i, j);
+            }
+            fine.truncate(n);
+            println!(
+                "# g = {ground}: SAMPLING {n} of {population} sub-cubes, seed {seed} \
+-- this costs the split, it does not decide the cube"
+            );
+        }
+    }
     let _ = std::io::stdout().flush();
+    let t_seq = Instant::now();
     let (witness, stalled) = solve_all(&inst, &fine, solver, seconds, threads, &format!("{tagbase}-seq"), checkpoint);
+    if seqsample.is_some() {
+        let elapsed = t_seq.elapsed().as_secs_f64();
+        let core_seconds = elapsed * threads.max(1) as f64;
+        let mean = core_seconds / fine.len() as f64;
+        println!(
+            "# SAMPLE: {} sub-cubes, {} at the limit, {:.1} core-s total, {:.1} core-s mean",
+            fine.len(),
+            stalled.len(),
+            core_seconds,
+            mean
+        );
+        println!(
+            "# SAMPLE: estimated cost of the full split = {population} x {:.1} = {:.0} core-s = {:.1} core-hours",
+            mean,
+            mean * population as f64,
+            mean * population as f64 / 3600.0
+        );
+        if !stalled.is_empty() {
+            println!(
+                "# SAMPLE: {} sub-cube(s) hit the budget, so the estimate is a LOWER BOUND",
+                stalled.len()
+            );
+        }
+    }
     if let Some(f) = witness {
         return Verdict::Sat(f);
     }
@@ -339,6 +398,7 @@ fn main() {
     let mut only_deg: Option<usize> = None;
     let mut checkpoint: Option<PathBuf> = None;
     let mut seqprefix: Option<usize> = None;
+    let mut seqsample: Option<(usize, u64)> = None;
     let mut opts = SymOptions::default();
     let mut i = 3;
     while i < args.len() {
@@ -394,6 +454,12 @@ fn main() {
             // One deg(0) cube, by name, so a rung can be run across
             // container restarts: each invocation decides one cube and
             // the caller records the verdict. See `docs/roadmap.md` §36.
+            "--seq-sample" => {
+                let n: usize = args[i + 1].parse().unwrap();
+                let seed: u64 = args.get(i + 2).and_then(|s| s.parse().ok()).unwrap_or(20260815);
+                seqsample = Some((n, seed));
+                i += if args.get(i + 2).and_then(|s| s.parse::<u64>().ok()).is_some() { 3 } else { 2 };
+            }
             "--seqprefix" => {
                 seqprefix = Some(args[i + 1].parse().unwrap());
                 i += 2;
@@ -452,7 +518,7 @@ fn main() {
         o.all_points_used = ladder;
         let v = run_one(
             b, g, target, o, solver, seconds, threads, slice, seqsplit, cubecap, only_deg,
-            checkpoint.as_deref(), seqprefix.unwrap_or(g as usize),
+            checkpoint.as_deref(), seqprefix.unwrap_or(g as usize), seqsample,
         );
         match v {
             Verdict::Sat(f) => {
