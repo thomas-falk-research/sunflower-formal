@@ -112,6 +112,10 @@ fn append_checkpoint(path: &Path, label: &str, verdict: &str, secs: f64) {
 /// as it happens and cubes already recorded there are skipped. A
 /// nineteen-hour cube on a container that is reclaimed without warning
 /// is otherwise all-or-nothing; this makes it resumable.
+/// Core-seconds actually spent inside the last `solve_all`, as the sum of
+/// its per-cube durations.
+static SOLVE_ALL_CORE_SECS: Mutex<f64> = Mutex::new(0.0);
+
 fn solve_all(
     inst: &SymInstance,
     cubes: &[(String, Vec<i32>)],
@@ -129,6 +133,11 @@ fn solve_all(
     let next = AtomicUsize::new(0);
     let found: Mutex<Option<Vec<u32>>> = Mutex::new(None);
     let stalled: Mutex<Vec<String>> = Mutex::new(Vec::new());
+    // The sum of the per-cube durations, which is the real core-seconds
+    // figure. Wall time multiplied by the thread count is NOT: the last
+    // cubes of a batch run with the other cores idle, and that idleness
+    // would be charged to the cubes.
+    let core_secs = Mutex::new(0.0f64);
     let out = Mutex::new(());
 
     std::thread::scope(|scope| {
@@ -153,6 +162,7 @@ fn solve_all(
                 let v = solve_cube(inst, cube, solver, seconds, &tag)
                     .unwrap_or_else(|e| panic!("solver failed: {e}"));
                 let secs = start.elapsed().as_secs_f64();
+                *core_secs.lock().unwrap() += secs;
                 {
                     let _g = out.lock().unwrap();
                     println!("    {label:<34} {:<8} {secs:8.1}s", v.label());
@@ -174,6 +184,7 @@ fn solve_all(
     });
     let w = found.lock().unwrap().clone();
     let st = stalled.lock().unwrap().clone();
+    *SOLVE_ALL_CORE_SECS.lock().unwrap() = *core_secs.lock().unwrap();
     (w, st)
 }
 
@@ -334,8 +345,9 @@ fn run_one(
     let (witness, stalled) = solve_all(&inst, &fine, solver, seconds, threads, &format!("{tagbase}-seq"), checkpoint);
     if seqsample.is_some() {
         let elapsed = t_seq.elapsed().as_secs_f64();
-        let core_seconds = elapsed * threads.max(1) as f64;
+        let core_seconds = *SOLVE_ALL_CORE_SECS.lock().unwrap();
         let mean = core_seconds / fine.len() as f64;
+        println!("# SAMPLE: {elapsed:.1} s wall on {threads} threads");
         println!(
             "# SAMPLE: {} sub-cubes, {} at the limit, {:.1} core-s total, {:.1} core-s mean",
             fine.len(),
