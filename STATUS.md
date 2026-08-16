@@ -385,7 +385,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | The pull request | `make prcheck` | A write-up whose counts have gone stale, whose cited theorem no longer exists under that name, or that calls a result new without a literature search. It found six unaudited theorems on its first run |
 
 Current mutation results: 164 mutations, all matching the outcome
-declared in `tools/mutations.toml` — 162 killed outright, two genuine
+declared in `tools/mutations.toml` — 161 killed outright, two genuine
 survivors (`lowerbound-at-least`: `LowerBound`'s `length F = m` is
 documentation, not a constraint, which `Audit.LowerBound_ge_equiv`
 proves as a theorem; and `iotaatleast-at-least`, the same question asked of

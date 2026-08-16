@@ -223,7 +223,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 164 mutations, 162 are killed outright, two
+  that something breaks. Of 164 mutations, 161 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control

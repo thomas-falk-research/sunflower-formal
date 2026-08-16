@@ -12,7 +12,8 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        axiom-audit statements statements-accept docnumbers ceilings prcheck
+        axiom-audit statements statements-accept docnumbers ceilings prcheck \
+        manifest
 
 all: coq rust
 
@@ -228,7 +229,13 @@ testbed:
 # Mutation testing: weaken one definition at a time and see whether
 # anything in the development notices. See tools/mutations.toml.
 MUTANT_JOBS ?= 4
-mutants:
+# A malformed manifest is a syntax error that costs eighty minutes to
+# discover through `mutants` and was once discovered by CI instead. This
+# target is a second and is a prerequisite of the expensive one.
+manifest:
+	@python3 tools/mutate.py --validate
+
+mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)
 
 clean:
