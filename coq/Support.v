@@ -849,3 +849,272 @@ Example the_counting_method_is_sharp_only_at_nine :
   /\ 10 * 14 = 140 /\ 4 * 35 = 140 /\ 32 < 35
   /\ 11 * 16 = 176 /\ 32 < 44.
 Proof. repeat split; reflexivity || lia. Qed.
+
+
+(** * A two-point cover cannot hold thirty-two on eleven points
+
+    The last of the four covering-number cases at the [iota(4,11)] rung.
+    [tau = 3] and [tau = 4] were answered by citation and both came back
+    *above* 32, so they decided nothing (`docs/roadmap.md` §37.6 and
+    `docs/reading.md` A22, A24f). [tau = 1] is a star and
+    [two_cover_degree_sum] above already disposes of it. This is
+    [tau = 2], and it is the one that falls.
+
+    ** The reduction
+
+    Split [F] by which cover point a member holds:
+
+    >  Fp  = members with p and not q      Fq  = members with q and not p
+    >  Fpq = members with both             |F| = |Fp| + |Fq| + |Fpq|
+
+    and take links. Three facts do the work.
+
+    - The link of [p] over [Fp] is 3-uniform, sunflower-free, and lives
+      on [U] minus *both* cover points — nine of them — because members
+      of [Fp] avoid [q]. Same for [q] over [Fq].
+
+    - Those two links are **cross-intersecting**. A member of [Fp] has no
+      [q] and a member of [Fq] has no [p], so an intersection point of
+      the two can be neither, and [Intersecting F] says there is one.
+
+    - [Fpq] is bounded by [g(2) = 6]: all of it contains [{p, q}], so a
+      sunflower inside it is exactly a sunflower among the 2-element
+      links, and [PureLink.g_two_at_most_six] is already in the kernel.
+
+    What is *not* needed is any condition coupling the two sides. A
+    triple whose members neither all share [p] nor all share [q] can
+    never be a sunflower — two of them meet in a set containing a cover
+    point while a third pairwise intersection does not — so
+    sunflower-freeness of [F] is exactly sunflower-freeness of the two
+    links, and no cross condition beyond intersection survives. That is
+    what makes the residue a *pair* problem rather than a triple one, and
+    it is checked exhaustively in [rust/tests/tau_two.rs]: 67 375 mixed
+    triples, zero sunflowers.
+
+    ** The computational input
+
+    [CrossPairOnNine M] says a cross-intersecting pair of 3-uniform
+    sunflower-free families on nine points has at most [M] members
+    between them. [rust/examples/tau_two.rs] computes the truth: the
+    maximum is exactly [20], attained by taking both sides to be the
+    largest *intersecting* sunflower-free family, [iota(3) = 10], which
+    lives on six points — so the value stops growing while [g(3,n)] does
+    not. 41 119 676 nodes, and a control at a floor of 19 comes back
+    beaten, which is what makes the floor run it checks worth anything.
+
+    Carried as a hypothesis for the same reason [GThreeOnEight] is: the
+    kernel checks what the computation buys, and the computation is
+    falsifiable on its own terms. *)
+
+Definition CrossPairOnNine (M : nat) : Prop :=
+  forall (V : list nat) (X Y : Family),
+    NoDup V -> length V <= 9 ->
+    Uniform 3 X -> Distinct X -> Grounded X V -> ~ ContainsKSunflower 3 X ->
+    Uniform 3 Y -> Distinct Y -> Grounded Y V -> ~ ContainsKSunflower 3 Y ->
+    (forall A B, In A X -> In B Y -> exists z, In z A /\ In z B) ->
+    length X + length Y <= M.
+
+(** The three parts of the cover split. *)
+
+Definition part_p (p q : nat) (F : Family) : Family :=
+  filter (fun A => andb (memb p A) (negb (memb q A))) F.
+Definition part_q (p q : nat) (F : Family) : Family :=
+  filter (fun A => andb (negb (memb p A)) (memb q A)) F.
+Definition part_both (p q : nat) (F : Family) : Family :=
+  filter (fun A => andb (memb p A) (memb q A)) F.
+
+(** They partition, and this is the only place the cover hypothesis is
+    used: without it a member with neither point would be counted by
+    none of the three. *)
+
+Lemma cover_partition :
+  forall (F : Family) (p q : nat),
+    (forall A, In A F -> In p A \/ In q A) ->
+    length F
+    = length (part_p p q F) + length (part_q p q F) + length (part_both p q F).
+Proof.
+  induction F as [|a F IH]; intros p q Hcov; [reflexivity|].
+  unfold part_p, part_q, part_both in *; simpl.
+  assert (Hrest : forall A, In A F -> In p A \/ In q A)
+    by (intros A HA; apply Hcov; right; exact HA).
+  specialize (IH p q Hrest).
+  destruct (memb p a) eqn:Ep; destruct (memb q a) eqn:Eq; simpl; try lia.
+  (* neither cover point: excluded by the hypothesis *)
+  exfalso.
+  destruct (Hcov a (or_introl eq_refl)) as [Hp | Hq].
+  - apply memb_true_iff in Hp; rewrite Hp in Ep; discriminate.
+  - apply memb_true_iff in Hq; rewrite Hq in Eq; discriminate.
+Qed.
+
+(** A link is as long as the part it comes from, because every member of
+    the part contains the points being removed. *)
+
+Lemma length_link_of_all :
+  forall (T : list nat) (G : Family),
+    (forall A, In A G -> Subset T A) ->
+    length (link T G) = length G.
+Proof.
+  intros T G Hall; rewrite length_link; unfold deg.
+  replace (filter (containsb T) G) with G; [reflexivity|].
+  induction G as [|a G IH]; [reflexivity|]; simpl.
+  assert (Ha : containsb T a = true)
+    by (apply containsb_true_iff; apply Hall; left; reflexivity).
+  rewrite Ha; f_equal; apply IH.
+  intros A HA; apply Hall; right; exact HA.
+Qed.
+
+(** The link of one cover point over its own part misses the *other*
+    cover point too, so it lives on nine points rather than ten. This is
+    the step the whole bound turns on: at ten points the pair bound would
+    have to be [g(3,10)]-sized and would not close. *)
+
+Lemma link_grounded_off_two :
+  forall (U V : list nat) (G : Family) (x y : nat),
+    Grounded G U ->
+    (forall A, In A G -> ~ In y A) ->
+    (forall z, In z U -> z <> x -> z <> y -> In z V) ->
+    Grounded (link [x] G) V.
+Proof.
+  intros U V G x y HG Hy Hsub B HB z Hz.
+  apply in_link_inv in HB as [A [HAG [_ E]]]; subst B.
+  apply in_setminus_iff in Hz as [HzA HzT].
+  apply Hsub.
+  - exact (HG A HAG z HzA).
+  - intro E; subst z; apply HzT; left; reflexivity.
+  - intro E; subst z; exact (Hy A HAG HzA).
+Qed.
+
+(** The bound. *)
+
+Theorem tau_two_on_eleven_at_most_26 :
+  CrossPairOnNine 20 ->
+  forall (U : list nat) (F : Family) (p q : nat),
+    NoDup U -> length U = 11 -> In p U -> In q U -> p <> q ->
+    Uniform 4 F -> Distinct F -> Grounded F U ->
+    Intersecting F -> ~ ContainsKSunflower 3 F ->
+    (forall A, In A F -> In p A \/ In q A) ->
+    length F <= 26.
+Proof.
+  intros Hpair U F p q HndU HlenU HpU HqU Hpq HU HD HG Hint Hno Hcov.
+  set (Fp := part_p p q F). set (Fq := part_q p q F). set (Fb := part_both p q F).
+
+  (* the nine points the two links live on *)
+  set (V := rem_elt q (rem_elt p U)).
+  assert (HndV : NoDup V) by (apply rem_NoDup, rem_NoDup; exact HndU).
+  assert (HlenV : length V <= 9).
+  { unfold V.
+    rewrite (@length_rem_elt_in q (rem_elt p U)); [| apply rem_NoDup; exact HndU
+                                                  | apply in_rem_iff; split;
+                                                    [exact HqU | intro E; apply Hpq; symmetry; exact E]].
+    rewrite (@length_rem_elt_in p U HndU HpU); lia. }
+
+  (* membership facts for the three parts *)
+  assert (HFp : forall A, In A Fp -> In A F /\ In p A /\ ~ In q A).
+  { intros A HA; unfold Fp, part_p in HA; apply filter_In in HA as [HAF Hb].
+    apply Bool.andb_true_iff in Hb as [H1 H2].
+    split; [exact HAF|]; split; [apply memb_true_iff; exact H1|].
+    apply memb_false_iff; apply Bool.negb_true_iff in H2; exact H2. }
+  assert (HFq : forall A, In A Fq -> In A F /\ In q A /\ ~ In p A).
+  { intros A HA; unfold Fq, part_q in HA; apply filter_In in HA as [HAF Hb].
+    apply Bool.andb_true_iff in Hb as [H1 H2].
+    split; [exact HAF|]; split; [apply memb_true_iff; exact H2|].
+    apply memb_false_iff; apply Bool.negb_true_iff in H1; exact H1. }
+  assert (HFb : forall A, In A Fb -> In A F /\ In p A /\ In q A).
+  { intros A HA; unfold Fb, part_both in HA; apply filter_In in HA as [HAF Hb].
+    apply Bool.andb_true_iff in Hb as [H1 H2].
+    split; [exact HAF|]; split; apply memb_true_iff; assumption. }
+
+  (* the three parts inherit uniformity, distinctness, sunflower-freeness *)
+  assert (Hsub : forall (G : Family), incl G F ->
+                 Uniform 4 G /\ ~ ContainsKSunflower 3 G).
+  { intros G Hincl; split.
+    - unfold Uniform in *; rewrite Forall_forall in *; intros A HA;
+        apply HU, Hincl, HA.
+    - intro Hc; apply Hno; destruct Hc as [S [HS HK]]; exists S; split;
+        [intros A HA; destruct (HS A HA) as [B [HB HE]]; exists B;
+         split; [apply Hincl; exact HB | exact HE] | exact HK]. }
+  assert (HinclP : incl Fp F) by (intros A HA; apply (HFp A HA)).
+  assert (HinclQ : incl Fq F) by (intros A HA; apply (HFq A HA)).
+  assert (HinclB : incl Fb F) by (intros A HA; apply (HFb A HA)).
+  destruct (Hsub Fp HinclP) as [HUp Hnop].
+  destruct (Hsub Fq HinclQ) as [HUq Hnoq].
+  destruct (Hsub Fb HinclB) as [HUb Hnob].
+  (* distinctness is filter-hereditary, and each part is a filter *)
+  assert (HDp : Distinct Fp) by (unfold Fp, part_p; apply SetNoDup_filter; exact HD).
+  assert (HDq : Distinct Fq) by (unfold Fq, part_q; apply SetNoDup_filter; exact HD).
+  assert (HDb : Distinct Fb) by (unfold Fb, part_both; apply SetNoDup_filter; exact HD).
+
+  (* the two links *)
+  set (X := link [p] Fp). set (Y := link [q] Fq).
+  assert (HXlen : length X = length Fp).
+  { apply length_link_of_all; intros A HA z Hz; destruct Hz as [E|[]]; subst z;
+      apply (HFp A HA). }
+  assert (HYlen : length Y = length Fq).
+  { apply length_link_of_all; intros A HA z Hz; destruct Hz as [E|[]]; subst z;
+      apply (HFq A HA). }
+  assert (HXU : Uniform 3 X).
+  { replace 3 with (4 - length [p]) by (simpl; lia).
+    apply (@link_uniform 4 [p] Fp HUp); constructor; [intros []|constructor]. }
+  assert (HYU : Uniform 3 Y).
+  { replace 3 with (4 - length [q]) by (simpl; lia).
+    apply (@link_uniform 4 [q] Fq HUq); constructor; [intros []|constructor]. }
+  assert (HXD : Distinct X) by (exact (@link_distinct [p] Fp HDp)).
+  assert (HYD : Distinct Y) by (exact (@link_distinct [q] Fq HDq)).
+  assert (HXno : ~ ContainsKSunflower 3 X)
+    by (intro Hc; exact (Hnop (@link_sunflower_lift [p] Fp 3 Hc))).
+  assert (HYno : ~ ContainsKSunflower 3 Y)
+    by (intro Hc; exact (Hnoq (@link_sunflower_lift [q] Fq 3 Hc))).
+  (* V holds every point of U that is neither cover point; the two links
+     both land there, which is the nine-point step. *)
+  assert (HintoV : forall z, In z U -> z <> p -> z <> q -> In z V).
+  { intros z HzU Hzp Hzq; unfold V; apply in_rem_iff; split;
+      [apply in_rem_iff; split; assumption | assumption]. }
+  assert (HXG : Grounded X V).
+  { apply (@link_grounded_off_two U V Fp p q).
+    - intros A HA; destruct (HFp A HA) as [HAF _]; exact (HG A HAF).
+    - intros A HA; apply (HFp A HA).
+    - exact HintoV. }
+  assert (HYG : Grounded Y V).
+  { apply (@link_grounded_off_two U V Fq q p).
+    - intros A HA; destruct (HFq A HA) as [HAF _]; exact (HG A HAF).
+    - intros A HA; apply (HFq A HA).
+    - intros z HzU Hzq Hzp; exact (HintoV z HzU Hzp Hzq). }
+
+  (* cross-intersecting *)
+  assert (Hcross : forall A B, In A X -> In B Y -> exists z, In z A /\ In z B).
+  { intros A' B' HA' HB'.
+    apply in_link_inv in HA' as [A [HAp [_ EA]]].
+    apply in_link_inv in HB' as [B [HBq [_ EB]]]; subst A' B'.
+    destruct (HFp A HAp) as [HAF [HpA HqA]].
+    destruct (HFq B HBq) as [HBF [HqB HpB]].
+    assert (Hnd : ~ Disjoint A B) by (apply Hint; assumption).
+    assert (Hf : disjointb A B = false).
+    { destruct (disjointb A B) eqn:E; [|reflexivity].
+      exfalso; apply Hnd, disjointb_correct; exact E. }
+    apply disjointb_false_iff in Hf as [z [HzA HzB]].
+    exists z; split; apply in_setminus_iff; split; try assumption;
+      intros [E|[]]; subst z; [exact (HpB HzB) | exact (HqA HzA)]. }
+
+  (* the pair bound, and the both-points part *)
+  assert (Hxy : length X + length Y <= 20)
+    by (exact (Hpair V X Y HndV HlenV HXU HXD HXG HXno HYU HYD HYG HYno Hcross)).
+  assert (Hb : length Fb <= 6).
+  { rewrite <- (@length_link_of_all [p; q] Fb).
+    - apply g_two_at_most_six.
+      + replace 2 with (4 - length [p; q]) by (simpl; lia).
+        apply (@link_uniform 4 [p; q] Fb HUb).
+        constructor; [intros [E|[]]; exact (Hpq (eq_sym E)) | constructor; [intros []|constructor]].
+      + exact (@link_distinct [p; q] Fb HDb).
+      + intro Hc; exact (Hnob (@link_sunflower_lift [p; q] Fb 3 Hc)).
+    - intros A HA z Hz; destruct (HFb A HA) as [_ [HpA HqA]];
+        destruct Hz as [E|[E|[]]]; subst z; assumption. }
+
+  rewrite (cover_partition F p q Hcov); fold Fp Fq Fb; lia.
+Qed.
+
+(** The arithmetic, so a change to either input is visible. The rung
+    asks about 32; the two-cover case tops out at 26. *)
+
+Example the_two_cover_case_is_not_close :
+  20 + 6 = 26 /\ 26 < 32 /\ 32 - 26 = 6.
+Proof. repeat split; lia. Qed.

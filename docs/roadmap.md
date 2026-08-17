@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 164 anecdotes into a coverage metric over the
+  mutation testing from 167 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,8 +9842,8 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 49 modules, 735 audited theorems, 143 audited
-definitions, 164 mutations, and 36 Rust integration suites. (That count
+The development is now 49 modules, 740 audited theorems, 144 audited
+definitions, 167 mutations, and 38 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36.)
 
@@ -11119,14 +11119,10 @@ to be inferred from "two arguments, the second one large", which reads
 `9 19` as ground sets 9 **and 19** rather than as a floor. It is an
 explicit `--floor` now, and ground sets above 12 are rejected outright.
 
-### 42.5 What is not yet in the kernel
+### 42.5 In the kernel
 
-The reduction of §42.1 is **not formalised**. It is arithmetic plus two
-link constructions, and the pieces it needs already exist —
-`IotaGround.star_at_point_bounded` bounds a star by the link bound one
-ground point down, and `PureLink.g_two_at_most_six` gives fact (iii) —
-but the partition and the two link families have not been built in Coq.
-The statement it should carry, in the shape `Support.GThreeOnEight` set:
+The reduction of §42.1 is formalised in `coq/Support.v`, and every name
+in it is `Closed under the global context`.
 
 ```coq
 Definition CrossPairOnNine (M : nat) : Prop :=
@@ -11140,14 +11136,38 @@ Definition CrossPairOnNine (M : nat) : Prop :=
 Theorem tau_two_on_eleven_at_most_26 :
   CrossPairOnNine 20 ->
   forall (U : list nat) (F : Family) (p q : nat),
-    NoDup U -> length U = 11 ->
+    NoDup U -> length U = 11 -> In p U -> In q U -> p <> q ->
     Uniform 4 F -> Distinct F -> Grounded F U ->
     Intersecting F -> ~ ContainsKSunflower 3 F ->
     (forall A, In A F -> In p A \/ In q A) ->
     length F <= 26.
 ```
 
-**Owed.** Until it exists, `τ = 2` is decided by computation and by the
-argument above, and is not a kernel-checked claim — which is the same
-standing `g(3,8) = 12` had before `Support.GThreeOnEight` was written,
-and is recorded here rather than left for a reader to infer.
+`CrossPairOnNine 20` is the computed input, carried as a hypothesis for
+the same reason `GThreeOnEight` is: the kernel checks what the
+computation buys, and the computation is falsifiable on its own terms.
+The supporting lemmas are `cover_partition` (the three parts really do
+partition, and this is the only place the cover hypothesis is used),
+`length_link_of_all` (a link is as long as the part it comes from), and
+`link_grounded_off_two` (the link of one cover point over its own part
+misses the *other* cover point too — the nine-point step).
+
+Three hypotheses are new relative to §42.1's sketch, and each earns its
+place. `In p U` and `In q U` keep the cover inside the ground set; a
+cover point outside `U` is met by no member and the count would not be
+nine. `p <> q` separates this from `τ = 1`, where the "two"-point cover
+is one point, the family is a star, and `two_cover_degree_sum` above
+already handles it.
+
+What the kernel does **not** check is `CrossPairOnNine 20` itself. That
+is `rust/examples/tau_two.rs`, and it is exactly the same standing
+`g(3,8) = 12` has under `GThreeOnEight` — stated here rather than left
+for a reader to infer.
+
+Three mutations in `tools/mutations.toml` hold the constants down:
+weakening the carried 20 to 26 makes the sum `26 + 6 = 32` and the
+theorem's 26 stop following; tightening the conclusion to 25 fails
+because `20 + 6` is exactly 26; and restricting the carried hypothesis to
+ground sets of size 8 breaks the application, which is the
+machine-checked way of saying the reduction reaches exactly nine points
+and not fewer.
