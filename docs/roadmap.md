@@ -11029,36 +11029,42 @@ Hence
 ```
 
 the maximum being over cross-intersecting pairs of sunflower-free
-3-uniform families on nine points. **A maximum of 25 or less gives
-`|F| <= 31 < 32` and ends the case.**
+3-uniform families on nine points. **A maximum of 25 or less would give
+`|F| <= 31 < 32` and end the case. §42.2 computes it exactly: it is 20,
+so `|F| <= 26`.**
 
 ### 42.2 What the maximum actually is
 
 `rust/examples/tau_two.rs`, exhaustive:
 
 ```text
-  n     g(3,n)   2*g(3,n) would allow   max(|X|+|Y|)   nodes        time
-  5       6              12                   12            31      0.0 s
-  6      10              20                   20           603      0.0 s
-  7      12              24                   20        44 189      3.4 s
-  8      12              24                   20     1 924 790    115.9 s
-  9      14              28                 <= 25   10 674 170   1138.6 s
+  n     g(3,n)   2*g(3,n) would allow   max(|X|+|Y|)   nodes         time
+  5       6              12                   12             31      0.0 s
+  6      10              20                   20            603      0.0 s
+  7      12              24                   20         44 189      3.4 s
+  8      12              24                   20      1 924 790    115.9 s
+  9      14              28                   20     41 119 676   1499.4 s
 ```
 
 From `n = 7` on the cross-intersecting condition is strictly binding, and
-the value sits at **`2·ι(3) = 20`**. The extremal pair is the same at
-`n = 6, 7, 8`: `X = Y =` the maximum *intersecting* sunflower-free
-3-uniform family, which lives on six points, so extra points do not help
-it. At `n = 9` the search was run against a floor of 25 rather than for
-the exact value, because the rung's question is not what the maximum is
-but whether it can reach 26. It cannot.
+the value sits at **`2·ι(3) = 20`** and stays there. The extremal pair is
+the same at every one of `n = 6, 7, 8, 9`: `X = Y =` the maximum
+*intersecting* sunflower-free 3-uniform family, which lives on six
+points, so extra points do not help it — which is why the value stops
+growing while `g(3,n)` keeps going.
 
 ```text
-  tau = 2  =>  |F| <= 25 + 6 = 31 < 32
+  tau = 2  =>  |F| <= 20 + g(2) = 20 + 6 = 26 < 32
 ```
 
-**So `τ = 2` cannot host the 32-member family, and with margin: the true
-figure is almost certainly `20 + 6 = 26`, six under the target.**
+**So `τ = 2` cannot host the 32-member family, and it is not close: 26
+against 32, six under.**
+
+The `n = 9` row was reached twice. A floor run against 25 settled the
+rung's question — can it reach 26? — in 10 674 170 nodes and 1138.6 s,
+and the exact computation, which is the control of §42.4, cost only
+1.3 times that. Both are recorded because the floor run is the one the
+argument needs and the exact one is the one that checks it.
 
 ### 42.3 The estimate this corrects
 
@@ -11095,17 +11101,18 @@ disables it, so the two can be run against each other.
 nothing by itself — a search that pruned everything through a bug would
 report exactly the same thing, and would report it fast. So the `n = 9`
 floor of 25 is paired with a control at a floor the maximum is known to
-clear: `--floor 19`, which must come back *beaten*. **That control was
-still running when this was written** — once it beats 19 it has to go on
-and prove nothing beats 20, so it is the exact `n = 9` computation and
-costs more than the floor-25 run it is checking. Recorded as pending
-rather than assumed; §42.2's `<= 25` is the floor run alone.
+clear: `--floor 19`, which must come back *beaten*. **It does:**
 
-What is already a control, and did pass: the identical code path with no
-floor returned the exact maxima at `n = 5, 6, 7, 8` — 12, 20, 20, 20 —
-so the search demonstrably finds optima rather than pruning them away.
-The `n = 9` control tests that at the one size where it has not been
-watched doing so.
+```text
+  n = 9, --floor 19:  BEATEN, reached 20   41 119 676 nodes   1499.4 s
+```
+
+So the search finds optima at nine points rather than pruning them away,
+and because beating 19 obliges it to go on and prove nothing beats 20,
+the control *is* the exact computation. That is where §42.2's `20` comes
+from. The identical code path with no floor had already returned the
+exact maxima at `n = 5, 6, 7, 8`; the control extends that evidence to
+the one size the claim actually rests on.
 
 One CLI note, recorded because it nearly cost a wrong run: the floor used
 to be inferred from "two arguments, the second one large", which reads
@@ -11130,14 +11137,14 @@ Definition CrossPairOnNine (M : nat) : Prop :=
     (forall A B, In A X -> In B Y -> exists z, In z A /\ In z B) ->
     length X + length Y <= M.
 
-Theorem tau_two_on_eleven_at_most_31 :
-  CrossPairOnNine 25 ->
+Theorem tau_two_on_eleven_at_most_26 :
+  CrossPairOnNine 20 ->
   forall (U : list nat) (F : Family) (p q : nat),
     NoDup U -> length U = 11 ->
     Uniform 4 F -> Distinct F -> Grounded F U ->
     Intersecting F -> ~ ContainsKSunflower 3 F ->
     (forall A, In A F -> In p A \/ In q A) ->
-    length F <= 31.
+    length F <= 26.
 ```
 
 **Owed.** Until it exists, `τ = 2` is decided by computation and by the
