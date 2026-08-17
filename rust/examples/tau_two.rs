@@ -143,6 +143,16 @@ fn max_sunflower_free(cands: &[u32]) -> usize {
 struct Search {
     trip: Vec<u32>,
     cap: usize, // g(3,n): neither side can exceed it
+    /// Restrict the top-level branch to the lexicographically first triple.
+    ///
+    /// Sound because the problem has the full symmetric group on the `n`
+    /// points: if `(X, Y)` is optimal and `X` is non-empty, relabel so that
+    /// some member of `X` becomes `{0,1,2}`. Sizes, sunflower-freeness and
+    /// cross-intersection are all preserved, and `{0,1,2}` is the least
+    /// triple in the order used here, so an optimum with `trip[0] in X`
+    /// exists. The `X = []` case is scored at the root anyway, and gives
+    /// only `g(3,n)`, far under the threshold that matters.
+    sym: bool,
     best: usize,
     best_pair: (Vec<u32>, Vec<u32>),
     nodes: u64,
@@ -177,7 +187,9 @@ impl Search {
             return;
         }
 
-        for i in 0..avail.len() {
+        // Symmetry: at the root only the first triple need be tried.
+        let hi = if self.sym && x.is_empty() { 1 } else { avail.len() };
+        for i in 0..hi {
             if x.len() + (avail.len() - i) + y_cap <= self.best {
                 return;
             }
@@ -256,6 +268,7 @@ fn main() {
             best_pair: (vec![], vec![]),
             nodes: 0,
             maxsf_calls: 0,
+            sym: std::env::var("TAU2_NO_SYM").is_err(),
         };
         s.rec(&trip.clone(), &mut Vec::new());
         let (x, y) = &s.best_pair;
