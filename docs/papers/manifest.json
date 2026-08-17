@@ -316,8 +316,8 @@
     "bytes": 170919,
     "pages": 10,
     "redistributable": true,
-    "read": "read in an earlier session (10 pages)",
-    "bears_on": "Ground-set framing; credits Hunter's equivalence."
+    "read": "read in full, every page rendered to an image (10 of 10 pages), sessions N+9 and N+13",
+    "bears_on": "Ground-set framing; credits Hunter's equivalence. p.4 wreath product = Product.iota4 (C3 wr C3), Lemma 7 an independent proof it is sunflower-free; p.7 g_v(k) >= 2^k-1, vertex reading is intersecting."
   },
   {
     "key": "FPS21",
@@ -365,8 +365,8 @@
     "bytes": 333479,
     "pages": 30,
     "redistributable": true,
-    "read": "Example 1.3 and eq. (1.4) read verbatim; G(11,4) rebuilt and checked",
-    "bears_on": "the covering-number route to iota(4,11); refuted in roadmap 37.6."
+    "read": "read in full, every page rendered to an image (30 of 30 pages)",
+    "bears_on": "eq (1.3)/(1.4): |G(n,4)| = 13n-69, LINEAR not cubic; Thm 1.4 needs k>=7; eq (1.5) k>=4 large n; Thm 1.6 initial families all k, |K(n,4,4)| = 35; ref [1] Chiba et al. Tokyo J. Math 35(1) 2012 is the k=4 tau=3 case."
   },
   {
     "key": "Fuk25",
@@ -607,6 +607,29 @@
     "redistributable": false,
     "read": "read in full (8 of 8 pages)",
     "bears_on": "The four proofs; fn.2 p.6 records the gap in Tao's proof."
+  },
+  {
+    "key": "Maj14",
+    "file": "majumder.pdf",
+    "kind": "arxiv",
+    "arxiv": "1402.7158v1",
+    "title": "On the maximum number of points in a maximal intersecting family of finite sets",
+    "authors": [
+      "Kaushik Majumder"
+    ],
+    "published": "2014-02-28",
+    "updated": null,
+    "journal_ref": null,
+    "doi": null,
+    "license": "no licence stated (arXiv default; /pdf/1402.7158v2 is 404, v1 is the only version)",
+    "url": "https://arxiv.org/pdf/1402.7158v1",
+    "retrieved": "2026-08-17",
+    "sha256": "bf8f9c06eec9a229b9e0d7db41cc58bee70bdc375e1d0d3f33ec79964c733480",
+    "bytes": 146693,
+    "pages": 6,
+    "redistributable": false,
+    "read": "read in full, every page rendered to an image (6 of 6 pages)",
+    "bears_on": "Def 1.1 maximal intersecting = F = F-transpose; p.3 cites Hanson-Toft for N(k) exact at 2<=k<=4, so N(4)=16; eq (1) is the Erdos-Lovasz LOWER bound; Thm 2.7 upper. docs/reading.md A24c, roadmap 41.4."
   },
   {
     "key": "Mis26",

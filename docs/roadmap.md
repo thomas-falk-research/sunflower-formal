@@ -10323,9 +10323,15 @@ no further computation. A commissioned search answered it, and the
 answer is **no, in both cases, and not narrowly.**
 
 ```text
-  k=4, tau=3   maximum grows like Theta(n^3); at n = 11 it is >= 74
+  k=4, tau=3   maximum grows like Theta(n); at n = 11 it is >= 74
                (Frankl-Wang, arXiv:2207.05487v3, Example 1.3; JCTB 171
                (2025) 96-139)
+               CORRECTED in N+13: this line read "Theta(n^3)" until the
+               paper's p. 2 was rendered and read. Exactly 13n - 69 for
+               n >= 8; the four C(.,k-1) terms of eq. (1.4) cancel to
+               leading order. The conclusion is unaffected -- 35 > 32 at
+               n = 8 -- but the rate was wrong. See docs/reading.md A24a
+               and section 41.3 below.
   k=4, tau=4   this is Erdos-Lovasz r(k); best bracket 42 <= r(4) <= 64,
                classical n-free bound k^k = 256
 ```
@@ -10671,3 +10677,303 @@ population is shaped.** A prefix of a sorted list, a rate against time
 that did not elapse, and a fit two steps past three points all failed the
 same way — by measuring something adjacent to the quantity of interest
 and reporting it as the quantity.
+
+---
+
+## 41. The support question is the whole conjecture
+
+Session N+13 commissioned a search for a published bound on the
+**support** — the number of points — of an extremal intersecting
+sunflower-free 4-uniform family. A bound there would turn the `ι(4,n)`
+ladder from an open-ended climb into a finite search, which is why §37.6
+kept asking for one. The answer arrived, was audited page by page, and
+is better than a bound: it explains why no bound is citable.
+
+Every page of all three primary sources was rendered to an image at
+150 dpi and read — Majumder 6 pp, Frankl–Pach–Pálvölgyi 10 pp,
+Frankl–Wang 30 pp. `pdftotext` was deliberately not used, because the
+two errors this section corrects are both errors about what a formula
+says, and both survive text extraction.
+
+### 41.0 First, what was already known here
+
+Before any of the below is read as new: **the report's central section was
+not.** `docs/references.md`'s [FPPTZ24] entry already records, from an
+earlier session's rendered read of the same pages, all three of the
+things the report presented as findings — that Conjecture 14 is
+equivalent to Erdős–Rado (crediting Hunter), that `g_v(k) ≥ 2^k − 1`, and
+the sentence *"We could not find any papers studying the quantity
+`g_v(k)`"*. `docs/reading.md` B14 has Hunter's answer read **in full**
+(MathOverflow 463150, to Pálvölgyi's question 462924, retrieved through
+the StackExchange API). `rust/tests/ground_set.rs` has checked the tree
+construction to `k = 6` since that session.
+
+§41.1 below therefore restates prior art, not discovery. It is kept
+because the *instruction* it carries is the useful part and had not been
+written down as an instruction. What is actually new this session is
+§41.2 (the intersecting reading), §41.3 (two corrections), §41.4 (the
+maximal-intersecting identification), and §41.6 (the shifted bound).
+
+### 41.1 The quantity has a name, and its authors say the literature is empty
+
+Frankl–Pach–Pálvölgyi, *Odd-Sunflowers*, arXiv:2310.16701v2, p. 7:
+
+> another upper bound is `1 + (k−1)g_v(k)` where `g_v(k)` is the size of
+> the base set of the largest sunflower-free family. **We could not find
+> any papers studying the quantity `g_v(k)`**, and the base set of most
+> sunflower-free constructions grows only linearly in `k`.
+
+`g_v` is precisely the function §37.6 wanted bounded. Its own authors
+record the literature on it as empty, in print, in 2024.
+
+Their Conjecture 14 (p. 8) is that `g_v(k) ≤ c^k`, and the same page
+records the reason it is hard:
+
+> It was pointed out by Zach Hunter that a simple argument shows that the
+> maximum number of base elements grows roughly the same way as the
+> maximum number of sets … his argument shows that **Conjecture 14 is
+> equivalent to the Erdős-Rado conjecture**.
+
+So bounding the support is not a lemma on the way to the conjecture; it
+*is* the conjecture. **The standing instruction that follows: no ladder
+design may be predicated on obtaining a support bound**, from the
+literature or otherwise, because obtaining one would already be the
+result the ladder is climbing toward.
+
+### 41.2 The support at `k = 4` is at least fifteen — and now for an *intersecting* family
+
+The same page gives `g_v(k) ≥ 2^k − 1`, witnessed by the root-to-leaf
+paths of a rooted binary tree on `k` levels. The report's one new
+mathematical observation was that this family is **intersecting** — every
+root-to-leaf path contains the root — and that observation is correct,
+and it matters here for a reason the report did not know: **the family
+this repository already had is not intersecting.**
+
+There are two readings of "root-to-leaf path", and they are different
+families. `construction::tree_paths` takes them as **edge** sets, which
+is what `ground_set.rs` checks. Two paths through different children of
+the root share no edge, so that family is **not intersecting** — at
+`k = 4` it has 64 disjoint pairs out of 120. The **vertex** reading
+shares the root vertex, so it is intersecting.
+
+```text
+  reading   members    support        intersecting   is it FPP's 2^k − 1?
+  edges     2^k        2^(k+1) − 2    no             no, it overshoots
+  vertices  2^(k−1)    2^k − 1        yes            yes, exactly
+```
+
+Two consequences. The witness this repository has had since the
+`GroundBounded` work says nothing about `ι`, the intersecting object; the
+vertex one does. And the vertex reading is the paper's — it reproduces
+`2^k − 1` on the nose, where the edge reading gives `2^(k+1) − 2` and is
+a *stronger* support witness than the figure FPP print. Neither test may
+be cited for the other's claim.
+
+Rebuilt and checked here for `k = 2…6` in `rust/tests/support_bounds.rs`:
+
+```text
+  k     members    uniform  intersecting  sunflower-free  support
+  2        2          yes       yes            yes           3
+  3        4          yes       yes            yes           7
+  4        8          yes       yes            yes          15
+  5       16          yes       yes            yes          31
+  6       32          yes       yes            yes          63
+```
+
+At `k = 4`: **eight members, 4-uniform, intersecting, sunflower-free, on
+fifteen points.** `2^k − 1` counts the *support*, not the members;
+reading it as a member count is the natural misreading and it is wrong.
+FPP note the family is *"not optimal, in fact, not even maximal"*.
+
+The consequence for this repository is direct. `Product.iota4` lives on
+nine points, and nine was the largest support exhibited here **by an
+intersecting family**. Fifteen is larger, from a 2024 paper, by a family
+that satisfies every hypothesis `ι(4, ·)` imposes. Any hope that the
+ladder terminates because the support is small at `k = 4` is dead at
+`n = 15` at the latest, and §41.1 says the true stopping point is not
+obtainable by citation.
+
+### 41.3 Two corrections to §37.6, both found by rendering
+
+**The `τ=3` maximum is linear, not cubic.** §37.6 recorded that the
+`k=4, τ=3` maximum *"grows like `Θ(n³)`"*. Frankl–Wang eq. (1.3) is
+
+```text
+  |G(n,k)| = (k^2 - k + 1) C(n-3, k-3) + O(C(n-4, k-4))
+```
+
+and at `k = 4` the leading binomial is `C(n−3, 1) = n−3`, giving
+`13(n−3) + O(1)`. The cubic reading came from treating `C(n−1,k−1)`, the
+first term of the exact eq. (1.4), as the leading term; the four
+`C(·,k−1)` terms carry coefficients `+1 −1 −1 +1`, which sum to zero, so
+the `n³/6` cancels. Exactly, and checked for `n = 8…400`:
+
+```text
+  |G(n,4)| = 13n - 69     for n >= 8
+```
+
+`13·11 − 69 = 74` reproduces the value §37.6 already had from rebuilding
+the construction, so the arithmetic is anchored at both ends. **§37.6's
+conclusion is unaffected**: `13·8 − 69 = 35 > 32` at the smallest
+admissible `n`, so the refutation never depended on the rate.
+
+**The `τ=3` case at `k=4` is not merely a construction.** Frankl–Wang's
+Theorem 1.4 does require `k ≥ 7`, so it does not cover `k = 4`. But
+eq. (1.5) on the same page gives `f(n,k,3) = |G(n,k)|` for `k ≥ 4` and
+`n > n₀(k)`, from Frankl, *On intersecting families of finite sets*,
+Bull. Austral. Math. Soc. **21** (1980), 363–372. The `k=4` maximum is
+an equality for large `n`, not a lower bound. Their reference [1], read
+off the rendered bibliography on p. 30, is
+S. Chiba, M. Furuya, R. Matsubara, M. Takatou, *Covers in 4-uniform
+intersecting families with covering number three*, Tokyo J. Math.
+**35**(1) (2012), 241–251 — the exact `k=4` case, not retrieved, and
+owed only if the small-`n` values are ever wanted.
+
+### 41.4 `Product.iota4` is a maximal intersecting family
+
+Erdős–Lovász's `N(k)` is the largest number of points in a *maximal*
+intersecting family of `k`-sets. Majumder, arXiv:1402.7158v1, p. 3
+settles its value at `k = 4`, citing Hanson and Toft:
+
+> In [3], Hanson and Toft proved that, actually,
+> `N(k) = 2k − 2 + ½C(2k−2,k−1)` for `2 ≤ k ≤ 4`.
+
+So `N(4) = 16` and `N(3) = 7` are **equalities**, not the lower bounds
+eq. (1) states. The bracket on the way there, for the record: Erdős–Lovász
+lower 16, Tuza upper 42 (eq. (6)), Majumder upper 32 (eq. (9)),
+Hanson–Toft exact 16.
+
+Whether that bears on the ladder turns on Definition 1.1: a maximal
+intersecting family is one with `tr(F) < ∞` and `F = F^⊤` — it equals its
+own family of transversals. `rust/tests/support_bounds.rs` proves
+`Product.iota4` is one:
+
+```text
+  tau(iota4) = 4 = k                      (no 1-, 2- or 3-point cover)
+  blocking 4-sets outside iota4 = 0       (so F = F-transpose)
+  support = 9 <= N(4) = 16
+```
+
+The maximality check is over the whole universe of sets, not just `[9]`:
+a blocking 4-set using a point outside `[9]` would restrict to a blocking
+3-set inside `[9]`, and `τ = 4` says there is none, so ranging over the
+4-subsets of `[9]` is exhaustive.
+
+**What this does and does not buy.** It is a genuine bridge: the extremal
+family for `ι(4,9)` is an object the Erdős–Lovász literature has an exact
+theorem about, and that theorem is satisfied with room to spare. It does
+**not** close the ladder, because a maximum-*size* intersecting
+sunflower-free family need not be maximal *as an intersecting family* —
+the set one would add may complete a sunflower. The bound applies to the
+family we have; it is not known to apply to the family we are looking
+for. Recorded as a lead, not a result.
+
+One coincidence, recorded because it is checkable and not because it is
+understood: Frankl–Wang p. 2 quotes `(k/2 + 1)^(k−1)` as the even-`k`
+lower bound for `f(n,k,k)`, from Frankl–Ota–Tokushige, *JCTA* **74**
+(1996), 33–42. At `k = 4` that is `3³ = 27`, which is `ι(4,9)`, attained
+by a family §41.4 has just shown has `τ = 4`. The two problems agree on
+27 at `k = 4`. Whether that is structure or arithmetic is open.
+
+### 41.6 `Product.iota4` is a wreath product, and the shifted bound is 35
+
+Two further things came out of pages the report did not reach.
+
+**The construction has a name.** Odd-Sunflowers p. 4 defines the *wreath
+product* `F ≀ G` on `n` disjoint copies of `G`'s ground set, with
+`|F ≀ G| = |F|·|G|^k` for `k`-uniform `F`, and Lemma 7: if `F` and `G`
+are odd-sunflower-free and `G` is an antichain, so is `F ≀ G`. Take both
+factors to be `C₃`, the three 2-subsets of a 3-set:
+
+```text
+  |C3 wr C3| = 3 * 3^2 = 27      4-uniform      support 3*3 = 9
+```
+
+and `rust/tests/support_bounds.rs` exhibits an explicit relabelling
+showing **`C₃ ≀ C₃ ≅ Product.iota4`**. Since `C₃` is an antichain and
+odd-sunflower-free, and odd-sunflower-free implies sunflower-free (p. 1),
+**FPP Lemma 7 is an independent published proof that `Product.iota4` is
+sunflower-free** — a second route to what `Product.iota_four_at_least_27`
+establishes in the kernel.
+
+FPP attribute the wreath product to Frankl's 1977 thesis (their ref. [12],
+*Extremalis halmazrendszerek*, kandidátusi értekezés, MTA Budapest) and
+the *direct-sum* idea separately to Abbott–Hanson–Sauer 1972 (their [2],
+p. 2). These are two different operations, and the one behind
+`ι(4,9) = 27` is the wreath product. That bears on rows A10/A20, whose
+open question is what AHS 1972 actually contains — but it does not settle
+them: a 2024 paper's attribution is not a rendered page of AHS 1972, and
+rule 4 still applies.
+
+**Shifting does not rescue the covering-number route.** §37.5 hoped a
+literature maximum below 32 would close the rung; §37.6 recorded that it
+does not. One loophole remained — that *shifted* families might obey a
+smaller bound — and Frankl–Wang closes it, with the only theorem in the
+paper that reaches `k = 4`. Their Theorem 1.6 (p. 3) gives, for every `k`
+and `n > 2k`, the exact maximum over intersecting **initial** (shifted)
+families with `τ ≥ s`:
+
+```text
+  K(n,k,s) = { K : 1 in K, |K cap [2, k+s-1]| >= s-1 }  U  C([2, k+s-1], k)
+  g(n,k,s) = |K(n,k,s)|
+```
+
+At `k = 4` this is computed in `rust/tests/support_bounds.rs`:
+
+```text
+  tau >= 4 :  |K(n,4,4)| = C(6,3) + C(6,4) = 35    for every n > 8
+  tau >= 3 :  |K(n,4,3)| = 10n - 45               (65 at n = 11)
+```
+
+The `τ ≥ 4` figure does not depend on `n` at all, and **35 > 32**. So the
+rung survives shifting, by three — much the tightest any literature
+number has come, and far tighter than the `42 <= r(4) <= 64` bracket
+`docs/reading.md` A22 quotes. It is still not a bound on `ι(4,11)`:
+shifting does not preserve 3-sunflower-freeness, so an extremal
+sunflower-free family need not be initial.
+
+The `τ ≥ 3` count is verified twice. The paper's own Lemma 5.1 (p. 23)
+gives a closed form for the same quantity by a different route,
+
+```text
+  g(n,k,3) = C(n-1,k-1) - C(n-k-2,k-1) - (k+1) C(n-k-2,k-2) + k + 1
+```
+
+and it agrees with the enumeration of `K(n,4,3)` at every `n` from 9 to
+30 — the construction checked against the paper's arithmetic rather than
+against a restatement of it. Their eq. (5.1), `g(n,k,3) < |G(n,k)|`,
+also holds at `k = 4`, as it must, since `G(n,k)` is not initial.
+
+### 41.5 What the report got right, and what it did not
+
+The report is the third commissioned search this session and the pattern
+is now stable enough to state. It got right: the direction of Majumder's
+eq. (1); the value `16` at `k=4` and `7` at `k=3`; eq. (1.4) verbatim;
+the reproduction of 74 at `(11,4)`; the `Θ(n)` correction to §37.6 with
+a correct `n = 100` spot check; Theorem 1.4's `k ≥ 7`; the identity of
+the Chiba et al. paper; and — its one new piece of mathematics — that the
+FPP tree family is intersecting.
+
+It got wrong: that `16` is therefore not an upper bound (Hanson–Toft
+makes it an equality, three pages later in the paper it was reading);
+and it reported no page as visually rendered, because `arxiv.org` was
+not reachable from the container it ran in, so its verification was
+cross-pipeline agreement rather than sight. Both errors are the same
+error — a conclusion drawn from a source that was not looked at — and
+both were caught by looking. **Rule 32** was minted for the first.
+
+It also presented as new three things this repository already had in
+writing (§41.0), and the first draft of `docs/reading.md` A24 repeated
+that mistake back before the prior art was checked. That is the more
+useful lesson, and it is not about the report: **the novelty audit runs
+against this repository's own record first, and a commissioned search
+cannot perform it, because the search does not know what is here.**
+
+Method note, since it was the instruction that produced all of the above:
+every page of all three sources was rendered to a PNG at 150 dpi with
+PyMuPDF and read as an image — Majumder 6, Frankl–Pach–Pálvölgyi 10,
+Frankl–Wang 30, forty-six pages in total. `pdftotext` was not used. Four
+of the findings here are about what a formula *says* — a cancellation, a
+quantity's definition, an inequality's direction, a title in a
+bibliography — and each of them survives text extraction intact and
+wrong.

@@ -175,7 +175,12 @@ for r in R:
     fields=[f"  author       = {{{' and '.join(r['authors'])}}}",
             f"  title        = {{{r['title']}}}"]
     if r["journal_ref"]: fields.append(f"  note         = {{{r['journal_ref']}}}")
-    if r["arxiv"]: fields.append(f"  eprint       = {{{r['arxiv']}}}\n  archiveprefix= {{arXiv}}")
+    # Two separate fields, so the join below puts a comma between them. They
+    # used to be one string with a bare newline, which left every arXiv entry
+    # missing its comma and the whole .bib unparseable.
+    if r["arxiv"]:
+        fields.append(f"  eprint       = {{{r['arxiv']}}}")
+        fields.append(f"  archiveprefix= {{arXiv}}")
     if r["doi"]: fields.append(f"  doi          = {{{r['doi']}}}")
     fields.append(f"  urldate      = {{{r['retrieved']}}}")
     fields.append(f"  pagetotal    = {{{r['pages']}}}")

@@ -56,9 +56,9 @@ more; it is not a claim about the contents.
 | `ErRa69` | P. Erdős and R. Rado | Intersection theorems for systems of sets (II) | doi:10.1112/jlms/s1-44.1.467 | 13 | in copyright (LMS/Wiley); Erdos memorial archive scan | not stored | not read (13 pages rendered) |
 | `FHHZ17` | Peter Frankl et al. | A degree version of the Hilton-Milner theorem | arXiv:1703.03896v2 | 7 | unstated | not stored | read p. 1 (of 7) |
 | `FKNP21` | Keith Frankston et al. | Thresholds versus fractional expectation-thresholds | arXiv:1910.13433v2 | 16 | arXiv non-exclusive | not stored | read pp. 1-4 of 16 |
-| `FPPTZ24` | Peter Frankl, János Pach, Dömötör Pálvölgyi | Odd-Sunflowers | arXiv:2310.16701v2 | 10 | CC BY 4.0 | `pdf/odd_sunflowers.pdf` | read in an earlier session (10 pages) |
+| `FPPTZ24` | Peter Frankl, János Pach, Dömötör Pálvölgyi | Odd-Sunflowers | arXiv:2310.16701v2 | 10 | CC BY 4.0 | `pdf/odd_sunflowers.pdf` | read in full, every page rendered to an image (10 of 10 pages), sessions N+9 and N+13 |
 | `FPS21` | Jacob Fox, Janos Pach, Andrew Suk | Sunflowers in set systems of bounded dimension | arXiv:2103.10497v2 | 14 | CC BY 4.0 | `pdf/fox_pach_suk.pdf` | not read (14 pages rendered) |
-| `FW25` | Peter Frankl, Jian Wang | Intersecting families with covering number three | arXiv:2207.05487v3 | 30 | arXiv non-exclusive | `pdf/frankl_wang_cover3.pdf` | Example 1.3 and eq. (1.4) read verbatim; G(11,4) rebuilt and checked |
+| `FW25` | Peter Frankl, Jian Wang | Intersecting families with covering number three | arXiv:2207.05487v3 | 30 | arXiv non-exclusive | `pdf/frankl_wang_cover3.pdf` | read in full, every page rendered to an image (30 of 30 pages) |
 | `Fuk25` | Junichiro Fukuyama | Sunflower Bound with a Sub-Logarithmic Base | arXiv:2510.19037v2 | 8 | CC BY-SA 4.0 | `pdf/sublog.pdf` | read in full (8 of 8 pages) |
 | `GMR12` | Parikshit Gopalan, Raghu Meka, Omer Reingold | DNF Sparsification and a Faster Deterministic Counting Algorithm | arXiv:1205.3534v1 | 27 | arXiv non-exclusive | not stored | not read (27 pages rendered) |
 | `Gal26` | Cheng Liao | On the sunflower property and the galah property | arXiv:2606.13656v1 | 21 | arXiv non-exclusive | not stored | not read (21 pages rendered) |
@@ -69,6 +69,7 @@ more; it is not a claim about the contents.
 | `Kup25` | Andrey Kupavskii | Delta-system method: a survey | arXiv:2508.20132v1 | 66 | CC BY 4.0 | `pdf/kupavskii_survey.pdf` | read in full (66 of 66 pages) |
 | `Lovett25` | S. Lovett | From sunflowers to thresholds (PCMI lecture notes) | — | 28 | no licence stated on the source page; author's lecture notes | not stored | read in full (28 of 28 pages) |
 | `MNSZ22` | Elchanan Mossel et al. | A second moment proof of the spread lemma | arXiv:2209.11347v2 | 8 | arXiv non-exclusive | not stored | read in full (8 of 8 pages) |
+| `Maj14` | Kaushik Majumder | On the maximum number of points in a maximal intersecting family of finite sets | arXiv:1402.7158v1 | 6 | no licence stated (arXiv default; /pdf/1402.7158v2 is 404, v1 is the only version) | not stored | read in full, every page rendered to an image (6 of 6 pages) |
 | `Mis26` | Tapas Kumar Mishra | Erdős Rado Sunflower Theorem for Shifted Families | arXiv:2606.02667v2 | 12 | CC BY 4.0 | `pdf/mis26_shifted.pdf` | read in full (12 of 12 pages) |
 | `Moon26` | Shachar Lovett, Raghu Meka, Yimeng Wang | Moonflowers and efficient code sparsification | arXiv:2605.08676v2 | 26 | CC BY 4.0 | `pdf/moonflowers.pdf` | not read (26 pages rendered) |
 | `NaSa17` | Eric Naslund, William F. Sawin | Upper bounds for sunflower-free sets | arXiv:1606.09575v1 | 5 | arXiv non-exclusive | not stored | read p. 1 of 5 |
@@ -82,8 +83,8 @@ more; it is not a claim about the contents.
 | `Thi21` | R. Thiemann | The Sunflower Lemma of Erdős and Rado | — | 14 | BSD License (AFP entry licence) | `pdf/afp_sunflowers.pdf` | read pp. 1-4 and 13-14 of 14 |
 | `VS25` | Ferdinand Ihringer, Andrey Kupavskii | The Erdős-Rado Sunflower Problem for Vector Spaces | arXiv:2505.03671v2 | 9 | arXiv non-exclusive | not stored | not read (9 pages rendered) |
 
-37 records, 17 PDFs stored,
-11 read in full.
+38 records, 17 PDFs stored,
+14 read in full.
 
 ## What bears on what
 
@@ -101,9 +102,9 @@ more; it is not a claim about the contents.
 | `ErRa69` | Sequel to the origin paper. |
 | `FHHZ17` | B19: the classical Hilton-Milner family, and the degree-condition line that is the nearest neighbour of I(m,r). Located by the B19 search; p. 1 rendered and read. |
 | `FKNP21` | Spread def (4); Thm 1.6 fixed-size covering. |
-| `FPPTZ24` | Ground-set framing; credits Hunter's equivalence. |
+| `FPPTZ24` | Ground-set framing; credits Hunter's equivalence. p.4 wreath product = Product.iota4 (C3 wr C3), Lemma 7 an independent proof it is sunflower-free; p.7 g_v(k) >= 2^k-1, vertex reading is intersecting. |
 | `FPS21` | Sunflowers in set systems of bounded dimension. |
-| `FW25` | the covering-number route to iota(4,11); refuted in roadmap 37.6. |
+| `FW25` | eq (1.3)/(1.4): |G(n,4)| = 13n-69, LINEAR not cubic; Thm 1.4 needs k>=7; eq (1.5) k>=4 large n; Thm 1.6 initial families all k, |K(n,4,4)| = 35; ref [1] Chiba et al. Tokyo J. Math 35(1) 2012 is the k=4 tau=3 case. |
 | `Fuk25` | Unrefereed claim of a sub-logarithmic base. |
 | `GMR12` | DNF sparsification; a named Tier 4 application. |
 | `Gal26` | The sunflower property and the galah property. |
@@ -114,6 +115,7 @@ more; it is not a claim about the contents.
 | `Kup25` | AHS72 corroboration; base/nucleus/generating-set literature. |
 | `Lovett25` | Def 2.5 = Spread.Spread; Lemma 2.6 = spread_reduction; Sec 3 = the formalisation target. |
 | `MNSZ22` | The four proofs; fn.2 p.6 records the gap in Tao's proof. |
+| `Maj14` | Def 1.1 maximal intersecting = F = F-transpose; p.3 cites Hanson-Toft for N(k) exact at 2<=k<=4, so N(4)=16; eq (1) is the Erdos-Lovasz LOWER bound; Thm 2.7 upper. docs/reading.md A24c, roadmap 41.4. |
 | `Mis26` | coq/Compression.v f'(k,s)=C(k+s-2,k). |
 | `Moon26` | Moonflowers and efficient code sparsification. |
 | `NaSa17` | coq/SliceRank.v NaslundSawinBound. |

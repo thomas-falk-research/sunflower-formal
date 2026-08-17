@@ -45,6 +45,7 @@ get "KuZa22" "https://arxiv.org/pdf/2203.13379v3" "kuza_spreadapprox.pdf" "5afdc
 get "Kup25" "https://arxiv.org/pdf/2508.20132v1" "kupavskii_survey.pdf" "49b65debb37fc76c1c7d3424b867b0433d420e842780068dcf842abba8f85636"
 get "Lovett25" "https://www.ias.edu/sites/default/files/Shachar%20Lovett%20Lecture%20Notes%201.pdf" "lovett_pcmi.pdf" "c6ef7ed148a704a0d0e883574ede2c304f734f019aad84d055565886559ea08b"
 get "MNSZ22" "https://arxiv.org/pdf/2209.11347v2" "mnsz.pdf" "71064ec1380bfb962f11fa9e00a7d17fc360055b432360b3572280b0e4ca671b"
+get "Maj14" "https://arxiv.org/pdf/1402.7158v1" "majumder.pdf" "bf8f9c06eec9a229b9e0d7db41cc58bee70bdc375e1d0d3f33ec79964c733480"
 get "Mis26" "https://arxiv.org/pdf/2606.02667v2" "mis26_shifted.pdf" "9a337994c314416d1cb3530d856108f689d6324f7c1ab65ef1ee45175de77d1e"
 get "Moon26" "https://arxiv.org/pdf/2605.08676v2" "moonflowers.pdf" "3ed326d4c785eb9c3124d8317b5cdac3d67aec6a48fd2f4b2d45ae1866376849"
 get "NaSa17" "https://arxiv.org/pdf/1606.09575v1" "naslund_sawin.pdf" "3ff6de6019afcb9583d8328ec31ee2c8af32e8a39890aef84a0eb5f8c61fed59"
