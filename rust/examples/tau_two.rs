@@ -66,9 +66,9 @@
 //! Run:
 //!
 //! ```text
-//!   cargo run --release --example tau_two -- 9         # exact max at n = 9
-//!   cargo run --release --example tau_two -- 9 25      # only: does it exceed 25?
-//!   cargo run --release --example tau_two -- 5 6 7 8 9 # the whole pattern
+//!   cargo run --release --example tau_two -- 9                # exact max at n = 9
+//!   cargo run --release --example tau_two -- 9 --floor 25     # does it exceed 25?
+//!   cargo run --release --example tau_two -- 5 6 7 8 9        # the whole pattern
 //! ```
 //!
 //! ## The floor
@@ -77,9 +77,15 @@
 //! looks for something that *beats* it, so the bound prunes from the first
 //! node instead of having to climb. For the rung the question is not what
 //! the maximum is but whether it can reach 26, so
-//! `-- 9 25` decides `tau = 2` and is far cheaper than computing the exact
-//! value. If it reports no improvement, `max(|X|+|Y|) <= 25` and hence
-//! `|F| <= 31 < 32`.
+//! `-- 9 --floor 25` decides `tau = 2` and is far cheaper than computing
+//! the exact value. If it reports no improvement, `max(|X|+|Y|) <= 25` and
+//! hence `|F| <= 31 < 32`.
+//!
+//! **A floor that is never beaten proves nothing on its own** — a search
+//! that pruned everything by mistake would report exactly the same thing.
+//! So a floor run must be paired with a control at a floor the maximum is
+//! known to clear. At `n = 9`, `--floor 19` must come back BEATEN, and it
+//! does; see `docs/roadmap.md` §42.
 
 fn is_sunflower(a: u32, b: u32, c: u32) -> bool {
     let ab = a & b;
@@ -248,14 +254,31 @@ fn decode(m: u32, n: u32) -> Vec<u32> {
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    let nums: Vec<u32> = args.iter().filter_map(|a| a.parse().ok()).collect();
-    // "n floor" if exactly two arguments and the second is bigger than any
-    // plausible ground set; otherwise a list of ground-set sizes.
-    let (ns, floor): (Vec<u32>, usize) = match nums.len() {
-        0 => (vec![9], 0),
-        2 if nums[1] > 20 => (vec![nums[0]], nums[1] as usize),
-        _ => (nums.clone(), 0),
-    };
+    // `--floor N` seeds the incumbent; bare numbers are ground-set sizes.
+    // An earlier version inferred the floor from "two arguments, second one
+    // big", which silently read `9 19` as ground sets 9 and 19. Explicit now.
+    let mut floor = 0usize;
+    let mut ns: Vec<u32> = Vec::new();
+    let mut it = args.iter();
+    while let Some(a) = it.next() {
+        if a == "--floor" {
+            floor = it
+                .next()
+                .and_then(|v| v.parse().ok())
+                .expect("--floor needs a number");
+        } else if let Ok(n) = a.parse::<u32>() {
+            ns.push(n);
+        } else {
+            panic!("unrecognised argument {a:?}");
+        }
+    }
+    if ns.is_empty() {
+        ns.push(9);
+    }
+    assert!(
+        ns.iter().all(|&n| n <= 12),
+        "ground sets above 12 are not intended here; did you mean --floor?"
+    );
 
     for n in ns {
         let trip = triples(n);

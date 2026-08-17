@@ -10977,3 +10977,170 @@ of the findings here are about what a formula *says* — a cancellation, a
 quantity's definition, an inequality's direction, a title in a
 bibliography — and each of them survives text extraction intact and
 wrong.
+
+---
+
+## 42. `tau = 2` cannot host thirty-two
+
+The last of the four covering-number cases at the `ι(4,11)` rung. §37.6
+disposed of `τ = 3` and `τ = 4` by citation, and `docs/reading.md` A24f
+closed the shifted variant; all three ended above 32 and none of them
+decided anything. `τ = 1` was never in doubt — a star forces `Δ = 32 > 26`.
+This section closes `τ = 2`, and it does so **here**, not by citation:
+the reduction is elementary and what is left is a small exhaustive search.
+
+### 42.1 The reduction
+
+Let `F` be 4-uniform, intersecting, sunflower-free on `[11]`, with a
+2-cover `{p, q}`. Split by which cover point a member holds, and take
+links:
+
+```text
+  X = { A \ {p} : p in A, q not in A }     3-sets on the other nine points
+  Y = { B \ {q} : q in B, p not in B }     3-sets on the other nine points
+  C = { A       : p in A and q in A }
+  |F| = |X| + |Y| + |C|                    a partition, by the cover
+```
+
+Three facts.
+
+**(i) `F` is sunflower-free exactly when `L_p` and `L_q` are** — where
+`L_p` is the link at `p` of *every* member holding `p`, `C` included. A
+triple whose members neither all share `p` nor all share `q` can never be
+a sunflower: two of them meet in a set containing `p` (or `q`) while a
+third pairwise intersection does not, so the three cannot coincide.
+Checked exhaustively over the mixed shapes — **67 375 triples, zero
+sunflowers** — in `rust/tests/tau_two.rs`. The two sides therefore impose
+no joint condition, which is what makes the problem factor.
+
+**(ii) `X` and `Y` are cross-intersecting.** A member of `X`'s preimage
+has no `q`, one of `Y`'s has no `p`, so they can meet only outside
+`{p, q}` — and they must, since `F` is intersecting.
+
+**(iii) `|C| ≤ g(2) = 6`.** All of `C` contains `{p, q}`, so a sunflower
+inside `C` is exactly a sunflower among the 2-set co-links, and the
+largest sunflower-free graph is two disjoint triangles.
+`PureLink.g_two_at_most_six` already has the bound in the kernel.
+
+Hence
+
+```text
+  |F| <= max(|X| + |Y|)  +  6
+```
+
+the maximum being over cross-intersecting pairs of sunflower-free
+3-uniform families on nine points. **A maximum of 25 or less gives
+`|F| <= 31 < 32` and ends the case.**
+
+### 42.2 What the maximum actually is
+
+`rust/examples/tau_two.rs`, exhaustive:
+
+```text
+  n     g(3,n)   2*g(3,n) would allow   max(|X|+|Y|)   nodes        time
+  5       6              12                   12            31      0.0 s
+  6      10              20                   20           603      0.0 s
+  7      12              24                   20        44 189      3.4 s
+  8      12              24                   20     1 924 790    115.9 s
+  9      14              28                 <= 25   10 674 170   1138.6 s
+```
+
+From `n = 7` on the cross-intersecting condition is strictly binding, and
+the value sits at **`2·ι(3) = 20`**. The extremal pair is the same at
+`n = 6, 7, 8`: `X = Y =` the maximum *intersecting* sunflower-free
+3-uniform family, which lives on six points, so extra points do not help
+it. At `n = 9` the search was run against a floor of 25 rather than for
+the exact value, because the rung's question is not what the maximum is
+but whether it can reach 26. It cannot.
+
+```text
+  tau = 2  =>  |F| <= 25 + 6 = 31 < 32
+```
+
+**So `τ = 2` cannot host the 32-member family, and with margin: the true
+figure is almost certainly `20 + 6 = 26`, six under the target.**
+
+### 42.3 The estimate this corrects
+
+The commissioned report of §41 put `τ = 2` at *"8 sets from falling"*, on
+the ground that two stars are each at most `g(3) = 20`, giving 40 against
+a target of 32. That is loose by about a factor of two, and the reason is
+exactly fact (ii): it prices the two sides independently. They are not
+independent — they are cross-intersecting, and at `n = 7` the difference
+is 24 allowed against 20 attained. The right shape is `2·ι(3) + 6 = 26`,
+which is six *under* the target rather than eight over it. The case was
+not close.
+
+### 42.4 How the search was checked
+
+Three things, because a bound of this kind is only as good as its
+falsifiability.
+
+**Two algorithms agree on the small end.** The first assigns every
+candidate triple to one of four states — neither side, `X` only, `Y`
+only, both. The second branches over `X` alone and scores each `X` by
+`maxSF(N(X))`, the largest sunflower-free family among the triples still
+meeting all of `X`; this is exact because for a fixed `X` the best `Y`
+*is* that quantity. They agree at `n = 5, 6, 7` (12, 20, 20), and the
+second is 32 000 times cheaper at `n = 7` — 203 622 nodes against
+6 502 694 424.
+
+**The symmetry reduction reproduces what it must.** The problem carries
+the full symmetric group on the points, so an optimum with `{0,1,2} ∈ X`
+exists and the top-level branch need try only that triple. Turned on, it
+returns the same 12, 20, 20 at 31 / 603 / 44 189 nodes. `TAU2_NO_SYM=1`
+disables it, so the two can be run against each other.
+
+**A floor run has a control.** A floor that is never beaten proves
+nothing by itself — a search that pruned everything through a bug would
+report exactly the same thing, and would report it fast. So the `n = 9`
+floor of 25 is paired with a control at a floor the maximum is known to
+clear: `--floor 19`, which must come back *beaten*. **That control was
+still running when this was written** — once it beats 19 it has to go on
+and prove nothing beats 20, so it is the exact `n = 9` computation and
+costs more than the floor-25 run it is checking. Recorded as pending
+rather than assumed; §42.2's `<= 25` is the floor run alone.
+
+What is already a control, and did pass: the identical code path with no
+floor returned the exact maxima at `n = 5, 6, 7, 8` — 12, 20, 20, 20 —
+so the search demonstrably finds optima rather than pruning them away.
+The `n = 9` control tests that at the one size where it has not been
+watched doing so.
+
+One CLI note, recorded because it nearly cost a wrong run: the floor used
+to be inferred from "two arguments, the second one large", which reads
+`9 19` as ground sets 9 **and 19** rather than as a floor. It is an
+explicit `--floor` now, and ground sets above 12 are rejected outright.
+
+### 42.5 What is not yet in the kernel
+
+The reduction of §42.1 is **not formalised**. It is arithmetic plus two
+link constructions, and the pieces it needs already exist —
+`IotaGround.star_at_point_bounded` bounds a star by the link bound one
+ground point down, and `PureLink.g_two_at_most_six` gives fact (iii) —
+but the partition and the two link families have not been built in Coq.
+The statement it should carry, in the shape `Support.GThreeOnEight` set:
+
+```coq
+Definition CrossPairOnNine (M : nat) : Prop :=
+  forall (V : list nat) (X Y : Family),
+    NoDup V -> length V <= 9 ->
+    Uniform 3 X -> Distinct X -> Grounded X V -> ~ ContainsKSunflower 3 X ->
+    Uniform 3 Y -> Distinct Y -> Grounded Y V -> ~ ContainsKSunflower 3 Y ->
+    (forall A B, In A X -> In B Y -> exists z, In z A /\ In z B) ->
+    length X + length Y <= M.
+
+Theorem tau_two_on_eleven_at_most_31 :
+  CrossPairOnNine 25 ->
+  forall (U : list nat) (F : Family) (p q : nat),
+    NoDup U -> length U = 11 ->
+    Uniform 4 F -> Distinct F -> Grounded F U ->
+    Intersecting F -> ~ ContainsKSunflower 3 F ->
+    (forall A, In A F -> In p A \/ In q A) ->
+    length F <= 31.
+```
+
+**Owed.** Until it exists, `τ = 2` is decided by computation and by the
+argument above, and is not a kernel-checked claim — which is the same
+standing `g(3,8) = 12` had before `Support.GThreeOnEight` was written,
+and is recorded here rather than left for a reader to infer.
