@@ -320,42 +320,47 @@ fn iota4_is_the_wreath_product_of_two_triangles() {
     }
 
     // And it *is* Product.iota4, up to relabelling the nine points.
+    // Plain backtracking over the 9! relabellings: `perm[i]` is the image of
+    // point i, `used` tracks which images are taken. Nothing clever, so
+    // nothing to get subtly wrong.
     let target: HashSet<u32> = iota4().into_iter().collect();
-    let src: Vec<u32> = w.clone();
-    let mut perm: Vec<u32> = (0..9).collect();
-    let mut found = None;
-    // Heap's algorithm over the 9! relabellings.
-    fn heap(k: usize, p: &mut Vec<u32>, src: &[u32], target: &HashSet<u32>, found: &mut Option<Vec<u32>>) {
-        if found.is_some() {
-            return;
+    let relabel = |p: &[u32]| -> HashSet<u32> {
+        w.iter()
+            .map(|&s| (0..9).filter(|b| s >> b & 1 == 1).fold(0u32, |a, b| a | 1 << p[b as usize]))
+            .collect()
+    };
+    fn search(
+        i: usize,
+        perm: &mut Vec<u32>,
+        used: &mut [bool; 9],
+        relabel: &dyn Fn(&[u32]) -> HashSet<u32>,
+        target: &HashSet<u32>,
+    ) -> bool {
+        if i == 9 {
+            return relabel(perm) == *target;
         }
-        if k == 1 {
-            let mapped: HashSet<u32> = src
-                .iter()
-                .map(|&s| (0..9).filter(|b| s >> b & 1 == 1).fold(0u32, |a, b| a | 1 << p[b as usize]))
-                .collect();
-            if mapped == *target {
-                *found = Some(p.clone());
+        for img in 0..9u32 {
+            if used[img as usize] {
+                continue;
             }
-            return;
+            used[img as usize] = true;
+            perm[i] = img;
+            if search(i + 1, perm, used, relabel, target) {
+                return true;
+            }
+            used[img as usize] = false;
         }
-        for i in 0..k {
-            heap(k - 1, p, src, target, found);
-            if found.is_some() {
-                return;
-            }
-            if k % 2 == 0 {
-                p.swap(i, k - 1);
-            } else {
-                p.swap(0, k - 1);
-            }
-        }
+        false
     }
-    heap(9, &mut perm, &src, &target, &mut found);
+    let mut perm = vec![0u32; 9];
+    let mut used = [false; 9];
     assert!(
-        found.is_some(),
+        search(0, &mut perm, &mut used, &relabel, &target),
         "C3 wreath C3 is not isomorphic to Product.iota4"
     );
+    // Sanity: the witness really is a permutation of the nine points.
+    let img: HashSet<u32> = perm.iter().copied().collect();
+    assert_eq!(img.len(), 9);
 }
 
 /// `Product.iota4` satisfies `F = F^⊤`: it is a maximal intersecting
