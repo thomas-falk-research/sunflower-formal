@@ -10578,3 +10578,96 @@ be redone against measured numbers once 13 lands.
 
 The rung stands at twenty of twenty-one, every decided cube UNSAT, and no
 counterexample anywhere in it.
+
+## 40. Split versus whole at `deg(0) = 13`, measured at last
+
+§37.3 concluded that the degree-sequence split is the wrong tool at
+`deg(0) = 13` and put the split at ~597 core-hours against ~79 for the
+cube whole. **Both of those numbers were wrong**, in opposite directions,
+and §39 undertook to redo the comparison against measurement. This is
+that.
+
+### 40.1 What was measured
+
+A uniform random sample of the 1939 sub-cubes — `iota_sym --seq-sample 24
+20260815`, which shuffles before taking, because the sub-cubes are
+enumerated most-extreme-first and a prefix is not a sample. Run on the
+user's VM at 9 threads, with a 7200 s per-sub-cube cap, concurrently with
+`deg(0) = 13` whole on the tenth core. Stopped by hand at **19 of 24
+reported**; that is a budget and is recorded as one.
+
+```text
+  UNSAT     7    882.6  3125.9  3811.8  3825.5  5050.2  6910.0  7056.7
+  censored  12   at the 7200 s cap  -- 63% of the sample
+```
+
+Counting each censored sub-cube at the cap and no higher:
+
+```text
+  lower-bound mean          6161 core-s per sub-cube
+  lower-bound split total   1939 x 6161  =  11 946 924 core-s
+                                         =  3319 core-hours
+  cube 14 whole, same VM, one core            14.25 core-hours
+  ratio                                       >= 233x
+```
+
+### 40.2 Three caveats, none of which rescues the split
+
+**The mean is a floor, and a bad one.** Sixty-three per cent of the
+sample hit the cap, so the true mean is above 6161 core-s by an unknown
+margin. Every unknown here pushes the split further from viability.
+
+**The sample was measured under contention and the whole cube was not.**
+The same four sub-cubes, same seed, ran 2.7–4.0× slower on the VM's
+9-thread run than on the session container at 4 threads:
+
+```text
+   886.9 s -> 3125.9 s (3.5x)      2420.3 s -> 7200.3 s (3.0x, censored)
+  1718.1 s -> 6910.0 s (4.0x)      2703.5 s -> 7200.3 s (2.7x, censored)
+```
+
+Ten solver processes on ten vCPUs — likely five physical cores with
+hyperthreading — is not the single-core condition under which
+`deg(0) = 14` was timed. **The comparison is therefore unfair to the
+split**, and it should be said rather than banked. Dividing the sample
+through by 3.5 for contention, and still keeping the censoring floor,
+leaves the split at about **950 core-hours against 14.25** — a ratio of
+roughly 67×. The conclusion survives the correction with two orders of
+magnitude to spare.
+
+**`deg(0) = 13` whole is not yet measured.** The comparison is against
+`deg(0) = 14`, the nearest measured whole cube, and §39 is precisely the
+record of how badly extrapolation between cubes performs here. So the
+honest form of the claim is *"the split at 13 costs at least 233× the
+nearest measured whole cube"*, not *"233× cube 13 whole"*. The ratio to
+cube 13 itself will be a division, not a prediction, once it lands.
+
+### 40.3 What this supersedes
+
+```text
+  quantity                     was                    is
+  split at deg(0)=13           ~597 core-hours        >= 3319 core-hours
+                               (biased prefix)        (uniform sample, censored floor)
+  whole at deg(0)=13           ~79 core-hours         unknown; 14 measured at 14.25
+                               (log-linear fit)       (fit falsified, §39)
+```
+
+The 597 was an **under**estimate, not an over one, and the reason is now
+quantified: the prefix sub-cubes cost 136–491 s and the uniformly sampled
+ones cost 882 s to beyond 7200 s. Sampling the front of a systematically
+ordered list understated the mean by a factor of roughly five to fifteen.
+
+### 40.4 The standing conclusion
+
+`--cubecap 400` is right to refuse the split at `deg(0) = 13` and 14, and
+session N+11's diagnosis — that the cap was why those cubes failed —
+remains backwards. That was §37.3's conclusion and it survives; what
+changes is that it now rests on a measurement with its censoring and its
+contention stated, rather than on two estimates that were both wrong.
+
+The general lesson has been earned three times this session and is worth
+stating once more plainly: **the sample must be drawn the way the
+population is shaped.** A prefix of a sorted list, a rate against time
+that did not elapse, and a fit two steps past three points all failed the
+same way — by measuring something adjacent to the quantity of interest
+and reporting it as the quantity.
