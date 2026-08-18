@@ -11164,10 +11164,20 @@ is `rust/examples/tau_two.rs`, and it is exactly the same standing
 `g(3,8) = 12` has under `GThreeOnEight` — stated here rather than left
 for a reader to infer.
 
-Three mutations in `tools/mutations.toml` hold the constants down:
-weakening the carried 20 to 26 makes the sum `26 + 6 = 32` and the
-theorem's 26 stop following; tightening the conclusion to 25 fails
-because `20 + 6` is exactly 26; and restricting the carried hypothesis to
-ground sets of size 8 breaks the application, which is the
-machine-checked way of saying the reduction reaches exactly nine points
-and not fewer.
+Three mutations in `tools/mutations.toml` hold the constants down, and
+all three are **killed**:
+
+```text
+  tau-two-carried-constant-26      killed   220.5 s
+  tau-two-conclusion-twenty-five   killed   220.2 s
+  tau-two-links-live-on-ten        killed   220.1 s
+```
+
+Weakening the carried 20 to 26 makes the sum `26 + 6 = 32` and the
+theorem's 26 stop following. Tightening the conclusion to 25 fails
+because `20 + 6` is exactly 26 — the bound has no slack in it.
+Restricting the carried hypothesis to ground sets of size 8 breaks the
+application, which is the machine-checked way of saying the reduction
+reaches exactly nine points and not fewer. The whole suite ran at
+167 mutations: 164 killed, two declared survivors, one control passing,
+**unexpected: 0**.
