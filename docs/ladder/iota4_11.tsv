@@ -31,8 +31,8 @@
 # THE WHOLE-CUBE COST CURVE -- AND THE FIT THAT WAS WRONG.
 #
 #   deg0   17        16         15          14           13
-#   secs   4171.5    11356.6    34788.1     51305.5      open
-#   ratio  -         2.72x      3.06x       1.47x        -
+#   secs   4171.5    11356.6    34788.1     51305.5      85123.9
+#   ratio  -         2.72x      3.06x       1.47x        1.66x
 #
 # An earlier version of this header fitted a log-linear curve to the
 # three points 17/16/15, got 2.89x per step down, and predicted
@@ -44,25 +44,69 @@
 # FOR deg(0)=13 IS WITHDRAWN; three measured ratios that do not agree
 # with each other cannot support a fourth.
 #
-# What can be said instead: 13 is the last open cube, its cost is
-# unknown, and the one structural fact nearby is that the number of
-# admissible degree sequences falls sharply as deg(0) does --
-# 914505 at 16, 220047 at 15, 31624 at 14, 1939 at 13, 19 at 12 -- while
-# the whole-cube time rose from 16 to 14. Whether that trend continues
-# to 13 is exactly what is not known.
+# What was said instead, before 13 was run: its cost is unknown, and the
+# one structural fact nearby is that the number of admissible degree
+# sequences falls sharply as deg(0) does -- 914505 at 16, 220047 at 15,
+# 31624 at 14, 1939 at 13, 19 at 12 -- while the whole-cube time rose
+# from 16 to 14. Whether that trend continues to 13 is exactly what is
+# not known.
+#
+# IT DID CONTINUE, MILDLY. deg(0)=13 came in at 85123.9 s (23.65 h),
+# a ratio of 1.66x over 14 -- close to 14's 1.47x and nothing like the
+# 2.9x the withdrawn fit assumed. A range of 21-44 h was offered before
+# the run on the strength of the two shallow ratios rather than a fit;
+# it held, near its low end. The lesson stands either way: the four
+# measured ratios are 2.72, 3.06, 1.47, 1.66, and no curve through the
+# first three would have found the last two.
 #
 # WHICH MEANS THE DEGREE-SEQUENCE SPLIT IS THE WRONG TOOL AT deg(0)=13.
-# Measured this session: the split makes 1939 sub-cubes, solved ones land
-# in 136-491 s and about 45% pass 600 s, so the total is roughly 597
-# core-hours against 79 for the cube whole -- a factor of 7.6 the wrong
-# way. The split wins only when it is small: at deg(0)=12 it is 19
-# sub-cubes and it turned an undecided cube into 3236 s.
+# An earlier version of this paragraph put the split at "roughly 597
+# core-hours against 79 for the cube whole". Both numbers were wrong: 597
+# came from timing the FRONT of a most-extreme-first enumeration, which
+# is an ordered prefix and not a sample, and 79 was the very figure
+# withdrawn four paragraphs above. Superseded by roadmap 40, which
+# sampled uniformly, and now by the cube itself:
+#
+#   split, lower bound (1939 sub-cubes, uniform sample of 24, 19
+#     reported, 63% censored at the 7200 s cap, mean >= 6161 core-s)
+#                                            >= 3319 core-hours
+#   cube 13 whole, one core, measured             23.65 core-hours
+#   ratio                                              >= 140x
+#
+# 3319 is a floor: most of the sample hit the cap, and it was measured
+# under 10-way contention that ran the same sub-cubes 2.7-4.0x slower
+# than uncontended. The split wins only when it is small: at deg(0)=12 it
+# is 19 sub-cubes and it turned an undecided cube into 3236 s.
+#
+# AND A KILLED SPLIT LEAVES NOTHING. rung.sh captures the solver's whole
+# output in a shell variable, so no sub-cube verdict streams while it
+# runs, and it passes no --checkpoint, so none is written either. A split
+# run at deg(0)=13 was stopped after five days and yielded zero reusable
+# work; the row rung.sh then recorded was the 60.1 s slice stall, whose
+# budget column understated the real spend by five days of ten-core time.
+# Such a row must be deleted before re-running: the skip test matches the
+# deg column alone and ignores the verdict, so it would silently skip the
+# cube as already decided.
 #
 # So iota_sym's default --cubecap 400 was RIGHT to refuse the split at
 # deg(0) = 13 and 14, and session N+11's diagnosis -- that the cap
 # carried over from the g=10 rung was the reason those cubes failed --
 # was backwards. The cap was the protection, not the bug. Raising it to
-# 3000 or 4000 forces a split that costs 7.6x more than not splitting.
+# 3000 or 4000 forces a split that costs at least 140x more than not
+# splitting.
+#
+# ================================================================
+# THE RUNG IS CLOSED. All twenty-one cubes deg(0) = 12..32 are UNSAT,
+# 195146.4 s = 54.2 h of solver time in total. There is no 4-uniform
+# intersecting sunflower-free family of 32 members on eleven points:
+#
+#     iota(4,11) <= 31.
+#
+# What that does and does not settle is in roadmap 43. It closes the
+# ELEVEN-POINT ground set, not iota(4), which is a maximum over all
+# ground sets; Sharp.AHSOptimal at b = 4 needs 32 SOMEWHERE, and twelve
+# points and up are untouched.
+# ================================================================
 #
 # deg0	verdict	seconds	budget
 32	UNSAT	23.9	120
@@ -85,3 +129,4 @@
 16	UNSAT	11356.6	86400
 15	UNSAT	34788.1	86400
 14	UNSAT	51305.5	400000
+13	UNSAT	85123.9	400000
