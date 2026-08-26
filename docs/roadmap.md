@@ -11181,3 +11181,146 @@ application, which is the machine-checked way of saying the reduction
 reaches exactly nine points and not fewer. The whole suite ran at
 167 mutations: 164 killed, two declared survivors, one control passing,
 **unexpected: 0**.
+
+---
+
+## 43. The eleven-point rung closes — and what that is worth
+
+`deg(0) = 13` came back **UNSAT at 85 123.9 s** (23.65 h), one core,
+uncontended, on the user's VM. That is the last of twenty-one cubes, so
+every family the symmetry-broken encoding covers at eleven points has
+been ruled out:
+
+```text
+  iota(4,11) <= 31
+```
+
+54.2 h of solver time across the rung. The ladder now reads
+`iota(4,9) = 27` exactly (§38), `iota(4,10) <= 31` (§9, 4437 s), and
+`iota(4,11) <= 31`.
+
+### 43.1 What it settles
+
+`Sharp.iota_four_at_least_32_refutes` is the reason the number 32 is the
+target: a 4-uniform intersecting sunflower-free family of 32 members
+refutes `AHSOptimal` at `b = 4`. Eleven points do not hold one. So the
+**eleven-point ground set is closed**, and the conjecture survives it.
+
+That is a genuine negative and it is worth what a negative is worth: the
+search space it exhausts, and nothing beyond. It is not evidence that
+`AHSOptimal` is true.
+
+### 43.2 What it does not settle, and the reason is structural
+
+`Product.IotaAtLeast b N` carries **no ground set** — it is
+`exists H : Family` with `length H = N`, over families on any points at
+all. So `iota(4,11) <= 31` does not touch `IotaAtLeast 4 32`; it rules
+out one ground-set size out of infinitely many.
+
+The obvious hope is that some `n` suffices — that a support bound would
+make the ladder a finite search. **§41 established that this hope is
+exactly the whole conjecture.** Frankl–Pach–Pálvölgyi's `g_v(k)` is that
+support function, their Conjecture 14 is that it is at most `c^k`, and
+Zach Hunter's argument makes that conjecture *equivalent* to Erdős–Rado.
+There is no support bound to be had short of the result itself.
+
+Worse for the ladder specifically, §41.2 exhibits a 4-uniform
+**intersecting** sunflower-free family on **fifteen** points — the vertex
+reading of the FPP tree, checked in `rust/tests/support_bounds.rs`. So
+twelve, thirteen, fourteen and fifteen points are all live ground sets on
+which such families demonstrably exist, and the ladder cannot stop at
+eleven for any reason internal to it.
+
+**The honest position: the ladder is an infinite staircase with no known
+last step, and this session climbed one more of them.**
+
+### 43.3 The second opinion is incomplete, and that is the real caveat
+
+This repository's standing rule for `UNSAT` is `sat::solve_agreed` — two
+independent solvers must agree before the verdict is believed — and
+`tools/rung.sh` keeps the second pass in its own checkpoint, whose header
+says the rung is believed only where both agree. Measured against that
+rule the rung is **19 of 21, not 21 of 21**:
+
+```text
+  deg   cadical      cryptominisat5     agree?
+   15    34788 UNSAT      23478 UNSAT     yes
+   14    51306 UNSAT      40407 UNKNOWN   NO  -- cadical only
+   13    85124 UNSAT      40409 UNKNOWN   NO  -- cadical only
+```
+
+The two cubes lacking a second opinion are exactly the two that cost
+cadical the most. Their cryptominisat5 runs did not disagree — they ran
+out of budget, at 40 407 s and 40 409 s against a 36 000 s allowance.
+
+**This is affordable, and it should be paid.** The cost ratio moves
+steadily in cryptominisat5's favour as the cubes deepen — 11.6x slower at
+`deg(0) = 30`, 4-7x through the middle, 2.27x at 17, 1.34x at 16, and
+**0.67x at 15**, where it is the faster solver. Extrapolating that trend
+rather than a constant, a second opinion on 13 and 14 wants a budget
+around 150 000 s each:
+
+```text
+  RUNG_SOLVER=cryptominisat5 RUNG_THREADS=1 RUNG_SLICE=200000 \
+  RUNG_CUBECAP=400 tools/rung.sh 4 11 32 200000 14 13
+```
+
+Until that lands, the correct sentence is **"`iota(4,11) <= 31` under
+cadical, with two-solver agreement on nineteen of twenty-one cubes"**,
+and it should be written that way wherever it is written.
+
+### 43.4 The cost curve, complete, and a prediction that held
+
+```text
+  deg0   17        16         15          14           13
+  secs   4171.5    11356.6    34788.1     51305.5      85123.9
+  ratio  -         2.72x      3.06x       1.47x        1.66x
+```
+
+§39 withdrew a log-linear fit that predicted `deg(0) = 13` at ~284 000 s
+(79 h) after it missed `deg(0) = 14` by 1.92x. Before this run a range of
+**21–44 h** was offered instead, taken from the two shallow ratios rather
+than from a curve. It held, near its low end, at 23.65 h.
+
+The range being right is not the lesson and should not be recorded as
+one. Four measured ratios reading 2.72, 3.06, 1.47, 1.66 do not lie on
+any curve, and the reason the range worked is that it declined to fit
+them — it used the two most recent points and widened. §39's rule stands:
+three ratios that disagree cannot support a fourth.
+
+### 43.5 What the split cost, finally
+
+§40 measured the degree-sequence split at `deg(0) = 13` at a floor of
+3319 core-hours against a whole-cube estimate. The whole cube is now
+measured, so the comparison is between two measurements:
+
+```text
+  split, lower bound          >= 3319 core-hours
+  whole, measured                  23.65 core-hours
+  ratio                              >= 140x
+```
+
+And a run of that split was stopped after five days having produced
+nothing reusable, because `rung.sh` neither streams nor checkpoints
+sub-cube verdicts — it captures the solver's output in a shell variable
+and passes no `--checkpoint`. The row it then recorded was the 60.1 s
+slice stall, whose budget column understated the real spend by five days
+of ten-core time. That row had to be deleted before the cube could be
+re-run at all, because the skip test matches the deg column and ignores
+the verdict. All three of those are recorded in the ladder header now.
+
+### 43.6 What is next, in order of what it buys
+
+1. **The second opinion on cubes 13 and 14** (§43.3). Cheap, owed by the
+   repository's own rule, and the only thing standing between the current
+   claim and a clean one.
+2. **`iota(4,12)`**, if the ladder is to be climbed further. Nothing
+   about the cost curve predicts it; the eleven-point rung cost 54.2 h
+   and twelve will cost more, on a staircase §43.2 shows has no known
+   top. Worth doing only if the goal is another exhausted ground set
+   rather than progress on `AHSOptimal`.
+3. **Neither** — and this is the honest recommendation. The ladder's
+   ceiling is `iota(4) <= 71` from `PureLink`, its floor is 27 from
+   `Product.iota4`, and closing ground sets one at a time narrows
+   neither. §41.1's instruction stands: no design predicated on a support
+   bound, because obtaining one is the conjecture.
