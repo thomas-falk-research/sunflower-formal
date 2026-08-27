@@ -9843,9 +9843,12 @@ axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
 The development is now 49 modules, 740 audited theorems, 144 audited
-definitions, 167 mutations, and 38 Rust integration suites. (That count
+definitions, 167 mutations, and 39 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
-arrived in §36.)
+arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
+and §42, and `wreath_ceiling.rs` in §44. The two paragraphs above quoting
+31 and 32 suites are historical records of earlier sessions and are
+correct as written.)
 
 `coq/Substitution.v` compiles in about a second. Everything expensive in
 it is a `2^6` or `2^3` reflective check on a seed; the theorem does the
@@ -11324,3 +11327,238 @@ the verdict. All three of those are recorded in the ladder header now.
    `Product.iota4`, and closing ground sets one at a time narrows
    neither. §41.1's instruction stands: no design predicated on a support
    bound, because obtaining one is the conjecture.
+
+**A fourth option, found after this section was written: §44.** Asking
+what `iota(4,10)` *is* — rather than whether it reaches 32 — is a
+different and much cheaper question, because a witness makes it SAT
+rather than UNSAT. It cannot refute `AHSOptimal`, since 32 on ten points
+is already excluded; what it decides is whether the one construction we
+have is extremal or merely the only one. That is the question §44.2 makes
+worth asking, and it does not contradict the recommendation above: it is
+not a climb up the ladder, it is a probe across a rung already closed.
+
+---
+
+## 44. The wreath product is exhausted at four
+
+§41.4 identified `Product.iota4` — this repository's `ι(4,9) = 27`
+witness — as the wreath product `C₃ ≀ C₃`, an operation Frankl–Pach–
+Pálvölgyi (*Odd-Sunflowers*, p. 4) attribute to Frankl's 1977 thesis.
+That identification raises a question this repository had not asked: the
+construction is a *formula with free parameters*, so can it be pushed
+past 27?
+
+**It cannot.** `rust/tests/wreath_ceiling.rs`.
+
+### 44.1 Why the question is worth asking at all
+
+The prompt was an analogy, and it is recorded as an analogy rather than
+dressed up as mathematics. Records for the rank of elliptic curves over
+`Q` are not found by excluding low-rank curves; they are found by
+engineering a *parameterised family* in which many independent points are
+forced by construction, and then searching the parameter space. Refuting
+`Sharp.AHSOptimal` at `b = 4` has the same shape — it is an existence
+question, "find 32 sets", with a certificate that is trivial to verify
+and hard to find — and this repository has spent its compute on the
+opposite, excluding families on small ground sets, which §43.2 shows can
+never refute anything.
+
+So: what parameterised constructions do we have? Exactly one.
+
+### 44.2 The ceiling
+
+For `F` a `k`-uniform family and `G` an `m`-uniform family,
+
+```text
+  uniformity(F ≀ G) = k · m            |F ≀ G| = |F| · |G|^k
+```
+
+**The product is intersecting exactly when both factors are.** For `A`
+built over `F` and `B` over `F'`,
+
+```text
+  A ∩ B  =  ⋃_{j ∈ F ∩ F'} (G_j ∩ G'_j)
+```
+
+which is empty if `F ∩ F' = ∅`, and can be emptied whenever `G` has a
+disjoint pair `U, V` by choosing `G_j = U`, `G'_j = V` at every
+`j ∈ F ∩ F'`. Both directions are checked by construction in the test,
+not asserted.
+
+That is the whole ceiling, because it forces the factors to be `ι` and
+not `g`. At uniformity 2 the unconstrained maximum is `g(2) = 6` — two
+disjoint triangles — and the intersecting maximum is `ι(2) = 3`, one
+triangle. Halving each factor is what caps the product:
+
+```text
+  had the factors been free   g(2) · g(2)^2 = 6 · 36 = 216   unreachable
+  the factors are forced      ι(2) · ι(2)^2 = 3 ·  9 =  27   Product.iota4
+```
+
+At uniformity 4 the factorisations `4 = k · m` with both factors below 4
+— the only ones building something new rather than restating `ι(4)` —
+number exactly one:
+
+```text
+  k=1, m=4 :  ι(1) · ι(4)^1  =  ι(4)         degenerate
+  k=2, m=2 :  ι(2) · ι(2)^2  =  27           <- the whole non-degenerate case
+  k=4, m=1 :  ι(4) · ι(1)^4  =  ι(4)         degenerate
+```
+
+with `ι(1) = 1` because two distinct singletons are disjoint.
+
+### 44.3 What this does and does not say
+
+**Says:** `ι(4) > 27` requires a construction that is *not* a wreath
+product of smaller intersecting sunflower-free families. This repository
+has none, and the three commissioned literature searches of §36, §37 and
+§41 turned up none. That is a sharper account of where the lower bound is
+stuck than "27 is the best we know" — the best we know is the *only*
+thing we know how to build.
+
+**Does not say:** anything about `ι(4)` itself. The bracket is unchanged
+at `27 ≤ ι(4) ≤ 71`, from `Product.iota_four_at_least_27` and
+`PureLink.iota_four_at_most_71_if_iota_three_is_ten`. A ceiling on one
+construction is not an upper bound on the quantity, and must never be
+quoted as one.
+
+**Does not say** that 27 is extremal even at nine points for a *reason* —
+`ι(4,9) = 27` is proved (§38, `Support.four_uniform_on_nine_is_exactly_27`)
+and the wreath ceiling merely explains why no larger family was ever
+built by the one method available. The two facts are independent and
+happen to agree.
+
+### 44.4 The probe this suggested, and its partial result
+
+If the wreath product is exhausted, the natural question is whether 27 is
+extremal because the construction is optimal or merely because it is the
+only one. That is answerable by search, and cheaply, because the useful
+direction is now SAT rather than UNSAT: **ask what `ι(4,10)` is, rather
+than whether it reaches the refutation threshold of 32.**
+
+`iota_sym 4 10 28`, 3600 s per cube, on the user's VM:
+
+```text
+  deg(0) = 17 .. 28   UNSAT, all of them, none over 90 s
+  deg(0) = 16         UNSAT    153.9 s
+  deg(0) = 15         UNSAT    302.7 s
+  deg(0) = 14         UNSAT   1418.4 s
+  deg(0) = 13         UNSAT   1775.4 s
+  deg(0) = 12         UNKNOWN at the 3600 s limit
+```
+
+Sixteen of seventeen cubes are closed. What survives is the **floor**
+cube: a 28-member 4-uniform family on ten points has degree sum
+`4 · 28 = 112` over ten points, mean 11.2, so the maximum degree cannot
+be below 12. So the partial run already establishes
+
+> any 28-member 4-uniform intersecting sunflower-free family on ten
+> points has maximum degree **exactly 12**,
+
+with only 8 of slack to distribute over ten points. That is the same
+near-regularity that made nine points tractable (`4 · 27 = 108 = 9 · 12`
+exactly, §38) and it is why this cube is the hard one: a near-regular
+instance gives a solver nothing to exploit.
+
+`deg(0) = 12` is a *floor* cube with small slack, which is the regime
+where the degree-sequence split **wins** — at eleven points the floor
+cube split into 19 sub-cubes and turned an undecided cube into 3236 s,
+where `deg(0) = 13` split into 1939 and lost by ≥140× (§43.5). The
+distinction is the sequence count, not the split. That run is in flight;
+its result belongs in a later section, not this one.
+
+### 44.5 Standing instruction
+
+Recorded because it is the operative consequence and is easy to lose:
+**the lower bound `ι(4) ≥ 27` will not move by parameter search.** The
+one construction with free parameters is exhausted. Moving it needs a new
+idea, and §41.1 already rules out the shortcut — no design may be
+predicated on a support bound, because obtaining one is the conjecture.
+
+---
+
+## 45. Handover — session N+13
+
+Start here. §32 was the previous handover pointer and is four sessions
+stale; `STATUS.md` now points at this section.
+
+### 45.1 What moved
+
+**`τ = 2` is closed in the kernel.** `Support.tau_two_on_eleven_at_most_26`,
+`Closed under the global context`: a 4-uniform intersecting sunflower-free
+family on eleven points with a two-point cover has at most 26 members,
+against the 32 the rung asks about. The reduction is §42; the computed
+input it carries, `CrossPairOnNine 20`, is
+`rust/examples/tau_two.rs`. Three mutations hold its constants and all
+three are killed. With `τ = 1` already excluded by
+`two_cover_degree_sum`, only `τ ∈ {3, 4}` survives, and §37.6 and A24f
+show neither is excluded by anything citable.
+
+**The eleven-point rung closed.** `deg(0) = 13` UNSAT at 85 123.9 s, all
+21 cubes, so `ι(4,11) ≤ 31` — **under cadical**. See §45.3.
+
+**Forty-six pages of primary sources were rendered and read** (§41),
+correcting two of this repository's own claims: the `k=4, τ=3` maximum is
+`Θ(n)` and exactly `13n − 69`, not `Θ(n³)`; and `tools/papers.py` emitted
+every arXiv bib entry without a comma, so `sunflower.bib` did not parse.
+
+**The wreath product is exhausted at four** (§44). `Product.iota4` is
+`C₃ ≀ C₃`, the product is intersecting only when both factors are, and
+that forces `ι(2) = 3` rather than `g(2) = 6` in the formula. So
+`ι(4) > 27` needs a construction nobody has.
+
+### 45.2 What is owed, in order
+
+1. **The second opinion on cubes 13 and 14** (§43.3). The standing rule
+   for `UNSAT` is `sat::solve_agreed`; the rung has two-solver agreement
+   on 19 of 21 cubes. cryptominisat5 returned `UNKNOWN` on both at
+   ~40 400 s against a 36 000 s budget — it ran out of time, it did not
+   disagree. Command in §43.3. **Until this lands the claim is
+   "`ι(4,11) ≤ 31` under cadical, 19 of 21 agreeing" and must be written
+   that way.**
+2. **`ι(4,10)`: the `deg(0) = 12` floor cube** (§44.4). Sixteen of
+   seventeen cubes are UNSAT; the survivor is the floor. UNSAT gives
+   `ι(4,10) = 27`; SAT gives a 28-set witness that must be independently
+   re-verified before it is recorded.
+3. **`docs/reading.md` A20**, still open from three sessions back: which
+   of the three Abbott papers contains the substitution. §44 adds a data
+   point — FPP attribute the wreath product to Frankl's 1977 thesis and
+   the *direct sum* separately to AHS 1972 — but that is a 2024 paper's
+   attribution, not a rendered page of AHS 1972, and rule 4 stands.
+
+### 45.3 What must not be overstated
+
+`ι(4,11) ≤ 31` closes **one ground set**. `Product.IotaAtLeast` carries
+no ground set, so refuting `AHSOptimal` needs 32 *somewhere*, and §41.2
+exhibits a 4-uniform intersecting sunflower-free family on **fifteen**
+points — so twelve through fifteen are all live. §41.1 is the reason
+there is no shortcut: bounding the support is Frankl–Pach–Pálvölgyi's
+Conjecture 14, which Hunter's argument makes *equivalent* to Erdős–Rado.
+
+The standing bracket is unchanged: **`27 ≤ ι(4) ≤ 71`**. Nothing this
+session moved either end.
+
+### 45.4 Process failures worth not repeating
+
+Three, all recorded where they bite rather than only here.
+
+**A commissioned report re-derived what this repository already had, and
+the first draft of `docs/reading.md` A24 repeated the claim of novelty
+back before the prior art was checked.** `docs/references.md` had
+Hunter's equivalence, `g_v(k) ≥ 2^k − 1`, and the "no papers studying
+`g_v`" sentence already. The novelty audit runs against this
+repository's own record first, and a commissioned search cannot perform
+it, because it does not know what is here.
+
+**Rule 32 was minted** (`docs/reading.md`): a retraction is a claim and
+gets the same audit as the claim it retracts. The report withdrew
+`N(4) = 16` as an upper bound on a correct reading of Majumder's eq. (1)
+and a wrong conclusion — Hanson–Toft make it an equality three pages
+later.
+
+**A five-day run produced nothing**, because `RUNG_SLICE=60`
+`RUNG_CUBECAP=3000` forces the degree-sequence split, and `rung.sh`
+neither streams nor checkpoints sub-cube verdicts. The row it then
+recorded was a 60.1 s slice stall. The ladder header now says so, and
+says to delete such a row before re-running, because the skip test
+matches the deg column and ignores the verdict.
