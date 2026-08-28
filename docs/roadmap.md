@@ -9843,10 +9843,10 @@ axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
 The development is now 49 modules, 740 audited theorems, 144 audited
-definitions, 167 mutations, and 39 Rust integration suites. (That count
+definitions, 167 mutations, and 40 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
-and §42, and `wreath_ceiling.rs` in §44. The two paragraphs above quoting
+and §42, `wreath_ceiling.rs` in §44, and `ten_points.rs` in §46. The two paragraphs above quoting
 31 and 32 suites are historical records of earlier sessions and are
 correct as written.)
 
@@ -11562,3 +11562,85 @@ neither streams nor checkpoints sub-cube verdicts. The row it then
 recorded was a 60.1 s slice stall. The ladder header now says so, and
 says to delete such a row before re-running, because the skip test
 matches the deg column and ignores the verdict.
+
+---
+
+## 46. `ι(4,10) = 27`: a tenth point buys nothing
+
+The floor cube landed. **UNSAT**, 144 degree-sequence sub-cubes, none at
+the limit, 37 879.5 s wall and 41.5 core-hours of solver time. With the
+sixteen coarse cubes already closed (§44.4), every `deg(0)` at ten points
+is exhausted for a 28-member family:
+
+```text
+  iota(4,10) <= 27
+```
+
+and the `ι(4,9) = 27` family embeds in ten points by not using the tenth,
+so `ι(4,10) >= 27`. Therefore
+
+```text
+  iota(4,9) = iota(4,10) = 27.
+```
+
+`docs/ladder/iota4_10.t28.tsv` records all 144 sub-cubes with their
+times. **The target is in that filename deliberately**: `tools/rung.sh`
+derives its checkpoint name from `(b, ground)` alone and its skip test
+matches the deg column while ignoring both verdict and target, so a run
+at one target would silently skip cubes recorded at another. That is the
+same defect that made a five-day run write a false row (§43.5), in a
+third costume.
+
+### 46.1 Why this is the interesting outcome
+
+§44 showed the wreath product — the only construction this repository has
+for intersecting sunflower-free families — is exhausted at 27. The
+obvious worry was that 27 is merely *the best anyone has built*. Two
+exact values now say otherwise at the sizes we can reach: **27 is
+optimal at nine points and still optimal at ten.** A tenth point, which
+adds `C(9,3) = 84` new 4-sets to choose from, buys nothing at all.
+
+That is evidence — not proof — that `ι(4) = 27`. If true, `AHSOptimal`
+holds comfortably at `b = 4`: `27² = 729 ≤ 1000`, with the refutation
+threshold at 32 and `32² = 1024` clearing it. The standing bracket is
+unchanged and stays `27 ≤ ι(4) ≤ 71`; two ground sets are not a proof
+about a maximum taken over all of them (§43.2).
+
+### 46.2 The split's boundary, now with three points
+
+§43.5 said the degree-sequence split wins when it is small and loses
+badly when it is not. There are now three measurements, and the boundary
+is narrower than "small":
+
+```text
+  ground  deg(0)  sub-cubes   outcome
+    11      12          19    WON -- undecided cube -> 3 236 s
+    10      12         144    WON -- undecided cube -> 37 880 s, 41.5 core-h
+    11      13       1 939    LOST -- >= 3 319 core-h against 23.65 whole
+```
+
+So 144 is inside the winning regime and 1939 is far outside it. The
+operative rule for a future session: **read the `N degree-sequence
+cubes` line before letting a split run.** Under a few hundred, let it go;
+in the thousands, kill it and solve whole. `--cubecap 400` encodes
+exactly that judgement and was right in all three cases.
+
+### 46.3 What to run next, and what it costs
+
+The same probe one rung up: **is `ι(4,11) = 27` as well?** The rung at
+eleven points is closed only against the refutation threshold of 32
+(§43), so `ι(4,11)` is known merely to lie in `[27, 31]`. A third
+agreement would be the strongest evidence available that 27 is the true
+value; a 28-member family on eleven points would be the first sign the
+AHS construction is not optimal, and would be worth far more than another
+closed ground set.
+
+Cost, honestly: the ten-point probe took about 11.6 h wall in total. The
+eleven-point instance is larger in every dimension and its floor cube
+will admit more degree sequences than 144. No estimate is offered — §39
+and §43.4 are what happens when this ladder is extrapolated, and the two
+useful predictions it has produced both came from declining to fit.
+
+Priority order is unchanged from §45.2: the cryptominisat5 second opinion
+on cubes 13 and 14 comes first, because it is owed by the repository's
+own rule and converts a qualified claim into a clean one.
