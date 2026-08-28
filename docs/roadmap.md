@@ -12036,3 +12036,27 @@ contain all three cover points (three would have pairwise intersection
 exactly the cover, which is a sunflower), and the members containing a
 fixed pair have a link with no 3-matching, so Erdős–Gallai caps them.
 Neither is formalised here, and the mixed parts are the hard bit.
+
+### 49.5 Gates
+
+All four, on the change set of §49. Nothing in it touches a Coq source, so
+the two kernel gates are a control: they say the tree is where §48 left it.
+
+```text
+  make -j4 verify          pass    740 audited theorems, every one
+                                   "Closed under the global context";
+                                   statement baselines, docnumbers and
+                                   ceilings all matching
+  make coqchk              pass    axiom census exactly
+                                   Sunflower.ALWZ.Rao20_lemma2
+  cargo test --release     pass    30m43s, 43 result lines, 370 tests,
+                                   0 failures (41 integration suites)
+  python3 tools/mutate.py  pass    167 mutations, 164 killed, 2 survived,
+                                   controls 1/1, unexpected: 0
+```
+
+The two survivors are the declared ones — `lowerbound-at-least` and
+`iotaatleast-at-least`, both asking whether a family-size equality is a
+constraint or documentation. No new mutation was added because no new
+carried `Prop` was: `phase_two_adds_budget` and `plan_phase_two` are Rust,
+and `rust/tests/cube_budget.rs` is what holds them.
