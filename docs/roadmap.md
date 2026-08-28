@@ -11711,3 +11711,93 @@ Should that run return `SAT`, the two solvers would disagree and the
 cadical verdict for cube 13 would have to be withdrawn — which is the
 entire point of running it, and is why the sentence above is written with
 the qualifier rather than without.
+
+---
+
+## 48. Eleven points at target 28: partial, and much harder
+
+The same probe one rung up. §46 closed `ι(4,10) = 27` in about 11.6 h;
+eleven points is a different animal.
+
+```text
+  iota_sym 4 11 28 --seconds 3600 --threads 6
+  82 215 vars, 306 034 clauses, 18 cubes deg(0) = 11..28
+
+  deg(0) = 18 .. 28   UNSAT      (18 and 19 at ~1930 s, the rest faster)
+  deg(0) = 11 .. 17   UNKNOWN at the 3600 s limit -- seven cubes
+  VERDICT UNKNOWN after 7560.6 s
+```
+
+**What is already established.** Eleven of eighteen cubes are closed, so
+
+> any 28-member 4-uniform intersecting sunflower-free family on eleven
+> points has maximum degree at most 17,
+
+and the degree sum `4 · 28 = 112` over eleven points puts the mean at
+10.18, so the maximum is at least 11. The live band is `deg(0) ∈ [11,17]`.
+
+**Why it is harder than ten points, quantified.** The instance is about
+twice the size (1.91× the variables, 2.12× the clauses) and the coarse
+pass left *seven* survivors where ten points left one:
+
+```text
+              cubes   closed by coarse   survivors
+  10 points     17           16              1  (the floor)
+  11 points     18           11              7  (deg 11..17)
+```
+
+For scale, the single ten-point survivor cost 41.5 core-hours on its own.
+
+### 48.1 The survivors are not alike, and should not be run alike
+
+The number of admissible degree sequences for a cube grows with its
+slack, `11·deg(0) − 112`:
+
+```text
+  deg(0)   slack   sequences   solving whole
+    11        9      fewest     hardest  -- near-regular, no slack to exploit
+    12       20         |           |
+    ...      ...        |           |
+    17       75      most       easiest  -- its neighbours 18, 19 closed at ~1930 s
+```
+
+So the two ends want opposite tools, and §46.2's rule — read the sequence
+count before letting a split run — cuts both ways here:
+
+* **`deg(0) = 15, 16, 17`** are close to the boundary the coarse pass was
+  already crossing. Their slack is large, so the split would produce
+  thousands of sub-cubes and lose. **Run them whole with a bigger
+  budget.**
+* **`deg(0) = 11, 12, 13`** are the near-regular ones. Their slack is
+  small, so the split should produce a few hundred sub-cubes, which is
+  the regime where it won at both floor cubes so far. **Run them split,
+  after reading the count.**
+
+`deg(0) = 14` sits between and should be decided by whichever its
+sequence count indicates.
+
+### 48.2 The honest cost position
+
+No estimate is offered for the total, and this is the section where that
+restraint costs something rather than being free. What can be said: the
+ten-point probe was ~11.6 h for one survivor on a half-size instance, and
+this has seven survivors on a double-size one. A naive product is well
+into the hundreds of core-hours, and every extrapolation attempted on
+this ladder has been wrong — §39 by 1.92×, §43.4's four ratios lying on
+no curve at all.
+
+**What it buys, weighed honestly.** `ι(4,11) = 27` would be a *third*
+ground set agreeing, after nine and ten. That is real but diminishing:
+the case that `ι(4) = 27` is already made as well as two exact values and
+an exhausted construction (§44) can make it. `ι(4,11) ≥ 28` would be a
+genuine surprise and worth far more — the first evidence the
+Abbott–Hanson–Sauer family is not optimal.
+
+Weak evidence toward the former: a satisfiable instance usually yields a
+witness quickly, and seven cubes ran 3600 s each without producing one.
+That is 7 × 3600 s of not finding a 28-set family, which is suggestive
+and nothing more — the hard cubes are exactly where a witness would hide.
+
+**This is a judgement call for the user, not a technical one**, and it is
+recorded as such. The compute is theirs and the marginal value of a third
+agreement is lower than the marginal value of the first two.
