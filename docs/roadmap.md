@@ -11243,18 +11243,21 @@ This repository's standing rule for `UNSAT` is `sat::solve_agreed` — two
 independent solvers must agree before the verdict is believed — and
 `tools/rung.sh` keeps the second pass in its own checkpoint, whose header
 says the rung is believed only where both agree. Measured against that
-rule the rung is **19 of 21, not 21 of 21**:
+rule the rung was **19 of 21**, and is now **20 of 21**:
 
 ```text
   deg   cadical      cryptominisat5     agree?
    15    34788 UNSAT      23478 UNSAT     yes
-   14    51306 UNSAT      40407 UNKNOWN   NO  -- cadical only
-   13    85124 UNSAT      40409 UNKNOWN   NO  -- cadical only
+   14    51306 UNSAT      70311 UNSAT     yes  -- re-run at 200 000 s
+   13    85124 UNSAT          in flight   not yet
 ```
 
-The two cubes lacking a second opinion are exactly the two that cost
-cadical the most. Their cryptominisat5 runs did not disagree — they ran
-out of budget, at 40 407 s and 40 409 s against a 36 000 s allowance.
+The two cubes lacking a second opinion were exactly the two that cost
+cadical the most, and their original cryptominisat5 runs did not
+disagree — they ran out of budget, at 40 407 s and 40 409 s against a
+36 000 s allowance. **Cube 14 has since been re-run at a 200 000 s
+budget and came back UNSAT at 70 310.9 s**, agreeing with cadical.
+Cube 13 is running under the same settings. See §47.
 
 **This is affordable, and it should be paid.** The cost ratio moves
 steadily in cryptominisat5's favour as the cubes deepen — 11.6x slower at
@@ -11268,9 +11271,9 @@ around 150 000 s each:
   RUNG_CUBECAP=400 tools/rung.sh 4 11 32 200000 14 13
 ```
 
-Until that lands, the correct sentence is **"`iota(4,11) <= 31` under
-cadical, with two-solver agreement on nineteen of twenty-one cubes"**,
-and it should be written that way wherever it is written.
+Until cube 13 lands, the correct sentence is **"`iota(4,11) <= 31` under
+cadical, with two-solver agreement on twenty of twenty-one cubes"**, and
+it should be written that way wherever it is written.
 
 ### 43.4 The cost curve, complete, and a prediction that held
 
@@ -11509,12 +11512,11 @@ that forces `ι(2) = 3` rather than `g(2) = 6` in the formula. So
 
 ### 45.2 What is owed, in order
 
-1. **The second opinion on cubes 13 and 14** (§43.3). The standing rule
-   for `UNSAT` is `sat::solve_agreed`; the rung has two-solver agreement
-   on 19 of 21 cubes. cryptominisat5 returned `UNKNOWN` on both at
-   ~40 400 s against a 36 000 s budget — it ran out of time, it did not
-   disagree. Command in §43.3. **Until this lands the claim is
-   "`ι(4,11) ≤ 31` under cadical, 19 of 21 agreeing" and must be written
+1. **The second opinion on cube 13** (§43.3, §47). Cube 14 is done —
+   cryptominisat5 UNSAT at 70 310.9 s against cadical's 51 305.5 s — so
+   the rung has two-solver agreement on **20 of 21**. Cube 13 is in
+   flight at a 200 000 s budget. **Until it lands the claim is
+   "`ι(4,11) ≤ 31` under cadical, 20 of 21 agreeing" and must be written
    that way.**
 2. **`ι(4,10)`: the `deg(0) = 12` floor cube** (§44.4). Sixteen of
    seventeen cubes are UNSAT; the survivor is the floor. UNSAT gives
@@ -11644,3 +11646,68 @@ useful predictions it has produced both came from declining to fit.
 Priority order is unchanged from §45.2: the cryptominisat5 second opinion
 on cubes 13 and 14 comes first, because it is owed by the repository's
 own rule and converts a qualified claim into a clean one.
+
+---
+
+## 47. The second opinion: cube 14 agrees, cube 13 in flight
+
+`sat::solve_agreed` is this repository's standing rule for `UNSAT` — two
+independent solvers must agree before the verdict is believed — and §43.3
+recorded that the eleven-point rung met it on only 19 of 21 cubes. It now
+meets it on **20 of 21**.
+
+```text
+  deg(0) = 14   cadical         UNSAT   51 305.5 s
+                cryptominisat5  UNSAT   70 310.9 s   ratio 1.37x
+```
+
+Re-run on the user's VM at `RUNG_THREADS=1 RUNG_SLICE=200000` so the
+degree-sequence split never fires — one sequential solver, one core, the
+same shape as the cadical run it is checking. Cube 13 is running under
+the same settings and is the last outstanding verdict in the rung.
+
+### 47.1 Why the original runs failed, and it was not disagreement
+
+Both cubes came back `UNKNOWN` in the first cryptominisat5 pass, at
+40 407 s and 40 409 s against a **36 000 s** budget. They ran out of
+time; neither disagreed with cadical. The budget was simply too small for
+the two deepest cubes, and the fix was arithmetic rather than
+algorithmic.
+
+The old rows were replaced rather than kept, because the file holds one
+row per `deg(0)` and the new row carries its own larger budget. What they
+said is preserved in that file's header, so the record of an
+undecided-at-36 000 s run is not lost — rule 13 is about not *silently*
+converting a budget into a verdict, not about never superseding a row.
+
+### 47.2 The ratio is not monotone, and the budget was not a fit
+
+```text
+  deg0      cadical         cms      cms/cadical
+    17       4 171.5     9 455.7        2.27x
+    16      11 356.6    15 226.3        1.34x
+    15      34 788.1    23 478.0        0.67x   <- cryptominisat5 faster
+    14      51 305.5    70 310.9        1.37x
+```
+
+The disadvantage narrows as the cubes deepen but does not settle, and at
+`deg(0) = 15` cryptominisat5 wins outright. The 200 000 s budget for
+cube 13 was chosen from that *narrowing* — cadical needed 85 123.9 s
+there, and 1.37× of that is about 117 000 s, leaving most of a factor of
+two in hand — rather than from a curve through four points that plainly
+do not lie on one. §39 and §43.4 are the record of what fitting this
+ladder produces.
+
+### 47.3 What is still not settled
+
+Nothing about `ι(4)` moves here. The second opinion raises confidence in
+a verdict already recorded; it does not change it. The claim remains
+
+> `ι(4,11) ≤ 31`, under cadical, with two-solver agreement on twenty of
+> twenty-one cubes,
+
+and becomes unqualified only when cube 13's cryptominisat5 run lands.
+Should that run return `SAT`, the two solvers would disagree and the
+cadical verdict for cube 13 would have to be withdrawn — which is the
+entire point of running it, and is why the sentence above is written with
+the qualifier rather than without.

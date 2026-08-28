@@ -8,7 +8,33 @@
 # Only deg(0) = 12 refined, into 19 sequence cubes; every other cube was
 # decided whole, which is why its split line reads "0 of 1 cubes refined".
 #
-# WHY 13 AND 14 ARE UNDECIDED, AND WHAT WOULD DECIDE THEM.
+# 14 IS NOW DECIDED. It was re-run on the user's VM at a 200000 s budget,
+# RUNG_THREADS=1 RUNG_SLICE=200000 so the split never fires, and came
+# back UNSAT at 70310.9 s -- agreeing with cadical's 51305.5 s. The two
+# solvers now agree on TWENTY of the twenty-one cubes; only deg(0) = 13
+# is outstanding, and it is in flight under the same settings.
+#
+# The 36000 s rows below for 13 and 14 were replaced rather than kept:
+# both were `UNKNOWN` at that budget, which is a true record of a run
+# that did not finish, but the file holds one row per deg and the newer
+# row carries its own (larger) budget. What the old rows said, for the
+# record: 14 UNKNOWN at 40407.0 s, 13 UNKNOWN at 40409.0 s, both against
+# a 36000 s allowance on an M4 Air at RUNG_THREADS=8.
+#
+# THE COST RATIO, WHICH IS NOT MONOTONE.
+#
+#   deg0      cadical        cms      cms/cadical
+#     17       4171.5     9455.7          2.27x
+#     16      11356.6    15226.3          1.34x
+#     15      34788.1    23478.0          0.67x   <- cms faster
+#     14      51305.5    70310.9          1.37x
+#
+# The trend narrows as the cubes deepen but does not settle, and 15 is
+# the one place cryptominisat5 wins outright. A budget for cube 13 was
+# picked at 200000 s on the strength of that narrowing rather than a fit
+# -- cadical needed 85123.9 s there, and 1.37x of that is ~117000 s.
+#
+# WHY 13 AND 14 WERE UNDECIDED, AND WHAT DECIDED 14.
 # Both were run whole, because RUNG_CUBECAP=400 refused the
 # degree-sequence split. The number of sorted sequences per cube is
 # governed by the deficiency 10*deg(0) - (4*32 - deg(0)):
@@ -47,5 +73,4 @@
 17	UNSAT	9455.7	36000
 16	UNSAT	15226.3	36000
 15	UNSAT	23478.0	36000
-14	UNKNOWN	40407.0	36000
-13	UNKNOWN	40409.0	36000
+14	UNSAT	70310.9	200000
