@@ -57,7 +57,7 @@ use std::time::Instant;
 
 use sunflower_formal::sat::{Solver, Verdict};
 use sunflower_formal::symbreak::{
-    degree_cubes, encode, sequence_cubes, solve_cube, SymInstance, SymOptions,
+    degree_cubes, encode, plan_phase_two, solve_cube, PhaseTwo, SymInstance, SymOptions,
 };
 
 fn solver_by_name(name: &str) -> Solver {
@@ -270,42 +270,36 @@ fn run_one(
          re-splitting by degree sequence",
         stalled.len()
     );
-    // Per stalled cube, not all of them at once: the sequences for a
-    // large deg(0) are numerous and for the small ones -- which is where
-    // the solver actually stalls -- they are a handful. A cube whose
-    // enumeration is too large keeps its coarse form and the full budget.
-    let mut fine: Vec<(String, Vec<i32>)> = Vec::new();
-    let mut refined = 0usize;
-    for d0 in &stalled_d0 {
-        // Refine only when the *full* degree-sequence split is small.
-        // Measured at `g = 10`: `deg(0) = 13` has a deficiency of two and
-        // splits into five sequences, each of which lands in under two
-        // minutes against more than twenty for the cube whole -- a clear
-        // win. `deg(0) = 14` has a deficiency of twelve and splits into
-        // 684, and paying 684 solver startups for an instance that solves
-        // whole in ten minutes is a clear loss. The cap is the line
-        // between them, and a cube past it keeps its coarse form and the
-        // full budget.
-        let best = if seqsplit {
-            sequence_cubes(&inst, opts, &[*d0], seqprefix.min(ground as usize), cubecap)
-        } else {
-            None
-        };
-        match best {
-            Some(cs) if cs.len() > 1 => {
-                refined += 1;
-                for (seq, l) in cs {
-                    fine.push((format!("g={ground} {seq:?}"), l));
-                }
+    // Refine only when the *full* degree-sequence split is small.
+    // Measured at `g = 10`: `deg(0) = 13` has a deficiency of two and
+    // splits into five sequences, each of which lands in under two minutes
+    // against more than twenty for the cube whole -- a clear win.
+    // `deg(0) = 14` has a deficiency of twelve and splits into 684, and
+    // paying 684 solver startups for an instance that solves whole in ten
+    // minutes is a clear loss. `cubecap` is the line between them.
+    //
+    // A cube past the cap keeps its coarse form, and is then re-run only
+    // if phase two has a bigger budget than the slice it already burned --
+    // otherwise it is carried, undecided, into the verdict. All of that is
+    // `symbreak::plan_phase_two`, so `tests/cube_budget.rs` can reach it.
+    let phase_one_budget = if slice == 0 { seconds } else { slice };
+    let plan = plan_phase_two(
+        &inst, opts, &coarse, &stalled_d0, seqsplit, seqprefix, cubecap, slice, seconds,
+    );
+    let PhaseTwo { mut fine, carried, refined } = plan;
+    if !carried.is_empty() {
+        println!(
+            "# g = {ground}: {} cube(s) did not refine and phase two adds no budget \
+             ({}); not re-run, they stay UNKNOWN",
+            carried.len(),
+            if phase_one_budget == 0 {
+                // Reachable only when both flags are zero: phase one was
+                // already unlimited, so nothing can exceed it.
+                "phase one was already unlimited".to_string()
+            } else {
+                format!("--seconds {seconds} is not more than the {phase_one_budget}s slice")
             }
-            _ => {
-                if let Some((lab, lits)) =
-                    coarse.iter().find(|(lab, _)| lab.ends_with(&format!("={d0}")))
-                {
-                    fine.push((lab.clone(), lits.clone()));
-                }
-            }
-        }
+        );
     }
     if fine.is_empty() {
         println!("# g = {ground}: no finer split available -- UNKNOWN");
@@ -371,15 +365,18 @@ fn run_one(
     if let Some(f) = witness {
         return Verdict::Sat(f);
     }
+    // The cubes carried past phase two are undecided just as surely as the
+    // ones that hit the limit inside it, so they count here.
+    let at_limit = PhaseTwo { fine: Vec::new(), carried, refined }.at_limit(stalled.len());
     println!(
         "# g = {ground}: {} after {:.1}s ({} sequence cubes, {} at the limit)",
-        if stalled.is_empty() { "UNSAT" } else { "UNKNOWN" },
+        if at_limit == 0 { "UNSAT" } else { "UNKNOWN" },
         t0.elapsed().as_secs_f64(),
         fine.len(),
-        stalled.len()
+        at_limit
     );
     let _ = std::io::stdout().flush();
-    if stalled.is_empty() {
+    if at_limit == 0 {
         Verdict::Unsat
     } else {
         Verdict::Unknown

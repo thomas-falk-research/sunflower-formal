@@ -616,6 +616,122 @@ pub fn sequence_cubes(
     )
 }
 
+/// Whether the second phase of the two-phase cube driver gives an
+/// **unrefined** cube a strictly larger budget than the first phase has
+/// already spent on it.
+///
+/// The driver slices: every cube gets `slice` seconds, and the ones that
+/// stall are re-split by degree sequence and re-run with `seconds`. A cube
+/// whose split exceeds the cap does not re-split — it enters phase two in
+/// exactly the form it has already failed in. The solver is deterministic
+/// and the cube is unchanged, so unless phase two hands it strictly more
+/// time it re-derives the identical verdict and doubles the wall clock for
+/// nothing. Measured at `(b,g,t) = (4,11,28)`, `deg(0) = 17`, with
+/// `--slice 45 --seconds 45`: 45.1 s to UNKNOWN, then 45.1 s more to the
+/// same UNKNOWN. At the twelve-hour budgets a hard cube actually needs,
+/// that is twelve wasted hours per cube.
+///
+/// Zero means "no limit" for both flags, so the comparison is between the
+/// budget each phase really applies — `slice` when slicing is on, else
+/// `seconds` — and `seconds`. Nothing exceeds an unlimited phase one.
+///
+/// This decides only whether to *re-run* such a cube. It never decides a
+/// verdict: a cube skipped here is still undecided, and the caller must
+/// count it as such or a partial rung reads as a false UNSAT.
+pub fn phase_two_adds_budget(slice: u64, seconds: u64) -> bool {
+    let phase_one = if slice == 0 { seconds } else { slice };
+    phase_one != 0 && (seconds == 0 || seconds > phase_one)
+}
+
+/// What the second phase of the cube driver will run, and what it will
+/// not.
+///
+/// The `carried` field is the load-bearing one. It holds the cubes that
+/// stalled in phase one, did not refine, and are **not** being re-run
+/// because phase two would repeat phase one exactly. They are still
+/// undecided, and [`PhaseTwo::at_limit`] is what stops a rung that
+/// contains one from reporting UNSAT.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PhaseTwo {
+    /// The cubes to solve, labelled. Either degree-sequence sub-cubes of a
+    /// stalled cube, or a stalled cube kept whole because it did not
+    /// refine and phase two has a bigger budget for it.
+    pub fine: Vec<(String, Vec<i32>)>,
+    /// Stalled, unrefined, and not re-run. Undecided, and counted as such.
+    pub carried: Vec<String>,
+    /// How many stalled cubes were replaced by their sequence split.
+    pub refined: usize,
+}
+
+impl PhaseTwo {
+    /// How many cubes are left undecided, given how many of `fine` hit the
+    /// budget. A rung is UNSAT only when this is zero.
+    ///
+    /// The whole point of separating this from `stalled` is that the two
+    /// sources of "undecided" look nothing alike — one is a solver
+    /// timeout, the other is a scheduling decision made before any solver
+    /// ran — and only one of them was ever counted.
+    pub fn at_limit(&self, stalled_in_phase_two: usize) -> usize {
+        stalled_in_phase_two + self.carried.len()
+    }
+}
+
+/// Decide what phase two runs, for the cubes that stalled in phase one.
+///
+/// Per stalled cube, not all of them at once: the sequences for a large
+/// `deg(0)` are numerous, and for the small ones — which is where the
+/// solver actually stalls — they are a handful. A cube whose enumeration
+/// exceeds `cubecap` keeps its coarse form, and then
+/// [`phase_two_adds_budget`] decides whether running it again is worth
+/// anything at all.
+///
+/// `coarse` is the phase-one cube list, used to recover the literals of a
+/// cube that did not refine; `stalled_d0` names the cubes that stalled, by
+/// `deg(0)`.
+#[allow(clippy::too_many_arguments)]
+pub fn plan_phase_two(
+    inst: &SymInstance,
+    opts: SymOptions,
+    coarse: &[(String, Vec<i32>)],
+    stalled_d0: &[usize],
+    seqsplit: bool,
+    prefix: usize,
+    cubecap: usize,
+    slice: u64,
+    seconds: u64,
+) -> PhaseTwo {
+    let ground = inst.ground;
+    let bigger = phase_two_adds_budget(slice, seconds);
+    let mut out = PhaseTwo { fine: Vec::new(), carried: Vec::new(), refined: 0 };
+    for d0 in stalled_d0 {
+        let best = if seqsplit {
+            sequence_cubes(inst, opts, &[*d0], prefix.min(ground as usize), cubecap)
+        } else {
+            None
+        };
+        match best {
+            Some(cs) if cs.len() > 1 => {
+                out.refined += 1;
+                for (seq, l) in cs {
+                    out.fine.push((format!("g={ground} {seq:?}"), l));
+                }
+            }
+            _ => {
+                if let Some((lab, lits)) =
+                    coarse.iter().find(|(lab, _)| lab.ends_with(&format!("={d0}")))
+                {
+                    if bigger {
+                        out.fine.push((lab.clone(), lits.clone()));
+                    } else {
+                        out.carried.push(lab.clone());
+                    }
+                }
+            }
+        }
+    }
+    out
+}
+
 /// Decode a satisfying assignment into a family, anchor included.
 pub fn decode(inst: &SymInstance, assign: &[bool]) -> Vec<u32> {
     let anchor: u32 = (1u32 << inst.b) - 1;

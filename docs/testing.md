@@ -1252,6 +1252,21 @@ that wants the suite to be self-describing should make those two skip
 with a named reason when the binary is missing, so that a failure in
 that file always means what it appears to mean.
 
+`rust/tests/cube_budget.rs` (§49) is the first suite written that way. It
+needs `cadical` for one test and guards it:
+
+```rust
+    if !have_solver() {
+        eprintln!("cadical not installed; skipping");
+        return;
+    }
+```
+
+so a missing solver reads as a skip and a failure in that file always
+means the mathematics. `spread_threshold.rs` still does not, and the gap
+above stands until it does — one suite adopting the convention is not the
+convention being adopted.
+
 ### A thirteenth: a sampled census is not a census, and the test has to
 ### say which one it is
 
@@ -1292,3 +1307,42 @@ The rule this suggests is about wording, not about coverage:
 This is the counting-argument counterpart of rule 13 — a search reported
 as an answer — applied to a passing test rather than to a failing
 acquisition.
+
+### A fourteenth: an assertion the suite could not reach, and the move
+###                that let it
+
+`rust/tests/cube_budget.rs` (§49) checks a scheduling decision rather than
+a mathematical statement, and that is unusual enough to say why it is
+here. The decision is *skip the phase-two re-run of a cube that did not
+refine, when phase two adds no budget*. The saving is real — twelve hours
+per hard cube — but the risk is not the time. It is that a cube skipped
+for want of budget is still **undecided**, and a rung with an undecided
+cube that forgot it would report **UNSAT**. UNSAT is the verdict no
+witness contradicts, so nothing downstream would catch it.
+
+The first version of the suite could not check that. `phase_two_adds_budget`
+was a library function and the split counts came from `sequence_cubes`, so
+four of five tests reached their subject — but the fifth thing, that the
+skipped cubes are carried into the verdict, lived in
+`examples/iota_sym.rs`, and **an integration test cannot reach an example
+binary**. It was checked by running it and reading the output, which is an
+observation in a roadmap section, not an assertion in a suite: it would
+not have failed if a future edit dropped the `carried` term.
+
+The fix was not more tests, it was moving the code. The phase-two
+assembly is pure given the stalled set, so it is now
+`symbreak::plan_phase_two` returning a `PhaseTwo { fine, carried,
+refined }`, with `PhaseTwo::at_limit` as the one place the verdict rule
+lives. `a_carried_cube_cannot_become_an_unsat` then says it directly: at
+`(4,11,28)` with a cap of 300, equal budgets carry six cubes and
+`at_limit(0) == 6`, so an all-UNSAT phase two is still not UNSAT; a
+bigger phase-two budget re-runs the same six and `at_limit(0) == 0`. Both
+plans account for every stalled cube.
+
+**The general rule this suggests.** When a check cannot be written
+because the logic sits in a binary, that is a fact about where the logic
+sits, not about what can be checked. Two of the three defects §49 found
+were in code no suite could reach — the double-run in the driver, the
+checkpoint collision in `tools/rung.sh` — and the shell script is still
+unreached.
+

@@ -9843,10 +9843,11 @@ axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
 The development is now 49 modules, 740 audited theorems, 144 audited
-definitions, 167 mutations, and 40 Rust integration suites. (That count
+definitions, 167 mutations, and 41 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
-and §42, `wreath_ceiling.rs` in §44, and `ten_points.rs` in §46. The two paragraphs above quoting
+and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
+`cube_budget.rs` in §49. The two paragraphs above quoting
 31 and 32 suites are historical records of earlier sessions and are
 correct as written.)
 
@@ -11512,6 +11513,11 @@ that forces `ι(2) = 3` rather than `g(2) = 6` in the formula. So
 
 ### 45.2 What is owed, in order
 
+*Read with §46–§49, which are later than this list. Item 2 is settled:
+§46 closed `ι(4,10) = 27`. Items 1 and 3 are still open. The eleven-point
+probe at target 28 (§48) is now the live computation, and §49 replaces
+§48.1's plan for it.*
+
 1. **The second opinion on cube 13** (§43.3, §47). Cube 14 is done —
    cryptominisat5 UNSAT at 70 310.9 s against cadical's 51 305.5 s — so
    the rung has two-solver agreement on **20 of 21**. Cube 13 is in
@@ -11801,3 +11807,232 @@ and nothing more — the hard cubes are exactly where a witness would hide.
 **This is a judgement call for the user, not a technical one**, and it is
 recorded as such. The compute is theirs and the marginal value of a third
 agreement is lower than the marginal value of the first two.
+
+## 49. The split, measured rather than guessed — and a driver that was
+##     paying twice for one answer
+
+§48.1 reasoned about which of the seven open eleven-point cubes would
+split usefully. It reasoned correctly about the *direction* and was wrong
+about the *magnitude* by three orders of magnitude, and the recommendation
+it produced was wrong for two of the three cubes it named. This section
+replaces the reasoning with the measurement, which took four minutes.
+
+### 49.1 What the split actually costs
+
+`sequence_cubes` at `(b,g,t) = (4,11,28)`, full prefix, cap 10⁶ — the
+number of degree-sequence sub-cubes each open `deg(0)` cube refines into:
+
+```text
+  deg(0)      11      12      13       14         15      16      17
+  sub-cubes  224   7 857  80 062  417 711  1 420 570   >10^6   >10^6
+```
+
+§48.1 predicted "a few hundred" for `deg(0) = 11, 12, 13`. That is right
+for 11 (224) and wrong for 12 (7 857) and 13 (80 062) — factors of 26 and
+267 against the top of that range. The curve is steeper than
+slack-counting suggests: each step multiplies by 35, 10, 5.2, 3.4. Only
+the floor cube is in the regime that has ever won at full prefix.
+
+The other half of §48.1 — "run 15, 16, 17 whole with a bigger budget" —
+was not wrong so much as unnecessary, which §49.2 is about.
+
+### 49.2 `--seqprefix`, which this development has used before
+
+`sequence_cubes` takes a `prefix`: fix the first `prefix` degrees exactly
+and leave the rest free, subject only to being fillable. That is still a
+partition of the models — still a sound split — and it is coarser by
+however much one asks for.
+
+**This is not a new lever and the first draft of this section said it
+was.** `docs/ladder/iota4_11.deg13.p3.tsv` is a prefix-3 split of the
+`deg(0) = 13` cube at eleven points, target **32**, from the session that
+added the flag: 27 sub-cubes instead of the full split's 1939, with
+fourteen rows recorded. The novelty audit runs against this repository's
+own ladder directory first (§45.4), and this section is the second time
+in three sessions that it has caught something.
+
+What is new here is the *table* — the flag applied to all seven open cubes
+at target 28, measured rather than reasoned about — and §49.3.
+
+All seven open cubes, at every prefix worth using:
+
+```text
+  deg(0)        11     12     13      14        15       16       17    total
+  prefix 3      12     44     90     120       136      153      171      726
+  prefix 4      53    288    529     680       816      969    1 140    4 475
+  prefix 5      57    433  1 241   2 429     4 022    6 090    8 713   22 985
+  full split   224  7 857 80 062 417 711 1 420 570    >10^6    >10^6        —
+```
+
+At ten points a split into 144 sub-cubes beat the cube whole and one into
+1939 lost (§40, §43.5). At `--seqprefix 3` **every one of the seven lands
+inside the winning regime**, and the whole remaining eleven-point problem
+is 726 sub-cubes — five times the split that decided one ten-point cube,
+for seven cubes on a double-size instance.
+
+This inverts §48.1 entirely. Its plan was "small `deg(0)` split, large
+`deg(0)` whole with a bigger budget"; the measurement says the prefix is
+the dial and one setting of it serves all seven:
+
+```sh
+  RUNG_SEQPREFIX=3 RUNG_CUBECAP=300 RUNG_SLICE=60 RUNG_THREADS=4 \
+    tools/rung.sh 4 11 28 43200  11 12 13 14 15 16 17
+```
+
+`--cubecap 300` admits every one of the seven prefix-3 splits (the largest
+is 171) and admits nothing larger by accident. `RUNG_SLICE=60` is small
+against the 43 200 s budget, so §49.3's trap is not sprung. The cubes are
+independent, so the seven may go in any order, on any machine, or not at
+all.
+
+`RUNG_SEQPREFIX` did not exist before this section and `rung.sh` could not
+express the plan without it. Two other things in that script had to move:
+
+* **The checkpoint was keyed by `(b, ground)` and a rung is a
+  `(b, ground, target)` question.** `tools/rung.sh 4 11 28` would have
+  appended to `docs/ladder/iota4_11.tsv`, which holds the **target 32**
+  rung, and the skip test matches the deg column and ignores everything
+  else — so every one of the seven cubes would have been skipped as
+  "already decided" on the strength of a different question's verdict.
+  That is a recorded result for a search that never ran, the exact failure
+  §36 exists to prevent, and it was one command away. The target now picks
+  the file: existing rungs keep their names, `4 11 28` gets
+  `iota4_11.t28.tsv`, and `RUNG_CHECKPOINT` overrides.
+* **A newly created checkpoint now gets a header naming its target**, so
+  the routing has something to read next time.
+
+Prefix 4 is the fallback if a prefix-3 sub-cube proves too coarse: 4 475
+sub-cubes total, still finite, still per-cube independent. Prefix 5 at
+22 985 is past what the ten-point evidence supports.
+
+`rust/tests/cube_budget.rs` pins the prefix-3 and prefix-4 rows and the
+full-split row, so a change to the enumeration cannot silently move the
+plan.
+
+**What a prefix-3 sub-cube costs, from the one measurement there is.**
+`iota4_11.deg13.p3.tsv` is the same shape one rung over in the target —
+eleven points, `deg(0) = 13`, prefix 3, but target 32 — and it is not
+encouraging:
+
+```text
+  27 sub-cubes at a 600 s cap:  5 UNSAT (136.1, 381.9, 429.2, 459.0, 491.4 s)
+                                9 UNKNOWN at the cap
+                               13 never attempted
+```
+
+Five of fourteen attempted landed, and the ones that did used most of the
+600 s. **And target 28 is the strictly harder instance**, not the easier
+one. That is `Product.IotaAtLeast_antitone`, already in the kernel and
+already audited: uniformity, distinctness, intersecting-ness and
+sunflower-freeness all pass to subfamilies, so a 32-member family has a
+28-member one and UNSAT at 28 implies UNSAT at 32. It transfers to the
+encoding because `all_points_used` is off by default — the instance asks
+for a family on *at most* eleven points, so the trimmed subfamily is still
+a model. The 600 s cap that decided five of fourteen at target 32 will
+decide fewer at 28.
+
+So 726 sub-cubes is the right *shape* and no basis at all for a cost
+estimate. If a sub-cube needs the 3600 s the coarse pass already spent per
+cube, 726 of them is 726 core-hours. If prefix 3 leaves sub-cubes too hard
+and prefix 4 is needed, the count rises to 4 475 but the per-sub-cube cost
+falls — by how much, nothing here measures, and the product is the number
+that matters. Both are guesses, and §48.2's refusal to
+estimate stands — every extrapolation attempted on this ladder has been
+wrong, §39 by 1.92× and §43.4's four ratios by lying on no curve at all.
+What §49 changes is that the work is now *shaped* into independent
+few-hundred-second pieces that a checkpoint can accumulate across
+container deaths, instead of seven twelve-hour monoliths that lose
+everything when the container is reclaimed.
+
+### 49.3 The driver was solving the hard cubes twice
+
+Found while reproducing the four eleven-point jobs that exited
+immediately. The reproduction did not reproduce the failure — the code
+ran correctly — but the run showed this:
+
+```text
+  iota_sym 4 11 28 --only-deg 17 --seconds 45 --slice 45
+      g=11 deg(0)=17    UNKNOWN   45.1s      <- phase one
+  # 1 cube(s) past the slice; re-splitting by degree sequence
+  # 0 of 1 cubes refined
+      g=11 deg(0)=17    UNKNOWN   45.1s      <- phase two, same cube
+  # UNKNOWN after 90.2s
+```
+
+A cube whose split exceeds the cap does not refine, so it enters phase two
+**in exactly the form it has already failed in**. Each cube is a fresh
+solver process — nothing crosses between phases, no learnt clauses, no
+restarts — so with an equal budget the second run is the first run again.
+At the twelve-hour budgets the hard cubes need, that is twelve hours per
+cube, and the four-job batch §48 recommended would have burned two days of
+wall clock re-deriving four UNKNOWNs it already had.
+
+`symbreak::phase_two_adds_budget` now decides it, and the flag semantics
+are why it is a named function rather than a comparison: zero means "no
+limit" on both `--slice` and `--seconds`, so `--slice 0 --seconds 43200`
+and `--slice 43200 --seconds 43200` are both the trap, while
+`--slice 120 --seconds 0` is not. A naive `seconds > slice` gets the first
+of those wrong.
+
+**The danger in the fix is not the time, it is the verdict.** A cube
+skipped for want of budget is still undecided. Dropping it silently would
+leave a rung with an open cube reporting UNSAT — the one error class this
+development cannot detect from the outside, since UNSAT is the verdict no
+witness contradicts. So the skipped cubes are carried and counted:
+`at_limit = stalled + carried`, and the verdict is UNSAT only when that is
+zero.
+
+That rule was in the driver, where no suite could reach it, so the whole
+phase-two assembly moved into the library: `symbreak::plan_phase_two`
+returns `PhaseTwo { fine, carried, refined }` and `PhaseTwo::at_limit` is
+the single place the verdict rule lives.
+`cube_budget::a_carried_cube_cannot_become_an_unsat` then states it as an
+assertion rather than an observation — at `(4,11,28)` with a cap of 300,
+equal budgets carry six cubes and `at_limit(0) = 6`, so an all-UNSAT phase
+two is still not UNSAT. Checked end to end too, on the mixed case where
+the danger actually lives — one cube refines, seventeen are carried:
+
+```text
+  iota_sym 4 11 28 --slice 3 --seconds 3 --cubecap 300 --threads 4
+  # 18 cube(s) past the slice at deg(0) in [11..28]
+  # 17 cube(s) did not refine and phase two adds no budget
+  #    (--seconds 3 is not more than the 3s slice); not re-run, they stay UNKNOWN
+  # 1 of 18 cubes refined
+  # 224 degree-sequence cubes
+  # UNKNOWN after 187.6s (224 sequence cubes, 241 at the limit)
+```
+
+`241 = 224 + 17`. The seventeen carried cubes are counted, and the verdict
+is UNKNOWN rather than the UNSAT that dropping them would have produced.
+
+Every existing recorded rung used `--slice` well below `--seconds`
+(60 against 86 400 in `tools/rung.sh`, 120 against unlimited by default),
+so `phase_two_adds_budget` is true throughout and **no recorded result
+changes**.
+
+### 49.4 What this does not do
+
+It does not decide a single cube. Seven remain open at eleven points and
+target 28, exactly as in §48, and the standing bracket `27 ≤ ι(4) ≤ 71` is
+untouched. What changed is the price of deciding them and the shape of the
+run that would: all seven moved into the split regime that has won twice,
+every hard cube stopped costing double, and the checkpoint stopped being
+one command away from recording another question's verdicts as this one's.
+
+**That is scheduling and bookkeeping, not mathematics**, and this section
+is the place that says so rather than dressing it up. The one thing here
+that is about sunflowers rather than about this repository is negative and
+small: `ι(4,11) ≥ 28` was not refuted, and the prefix-3 timings at target
+32 say the seven cubes are dearer than §48.2 was willing to guess.
+
+The nearest mathematics, for whoever picks this up: `τ = 3` is the case
+that would close the rung without any of this compute. §42 did `τ = 2`
+with a two-part split and a cross-intersecting bound, `CrossPairOnNine 20`
+plus 6, giving 26 against 32. The three-part analogue needs a
+cross-*triple* bound where §42 needed a cross-pair, and
+`rust/examples/cross_pair_scan.rs` is the shape of the search that would
+measure it. Two elementary pieces of it are free: at most **two** members
+contain all three cover points (three would have pairwise intersection
+exactly the cover, which is a sunflower), and the members containing a
+fixed pair have a link with no 3-matching, so Erdős–Gallai caps them.
+Neither is formalised here, and the mixed parts are the hard bit.
