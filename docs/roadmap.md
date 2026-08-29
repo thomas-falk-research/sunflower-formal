@@ -12174,3 +12174,101 @@ split of this cube is the 27 that `iota4_11.deg13.p3.tsv` already records
 under cadical). The cadical rows in that file give the per-sub-cube cost
 to expect: five landed between 136.1 s and 491.4 s, nine did not at 600 s.
 `--seconds 7200` is twelve times the budget that left nine undecided.
+
+## 51. The exit status was read for nothing, so a crash and a budget were
+##     the same observation
+
+§50 fixed `tools/rung.sh` so a crashed run is recorded as `CRASH` rather
+than as a budget. That fix was one level too high. The user's VM, inspected
+while the run was still alive, showed why.
+
+### 51.1 What the process table said
+
+```text
+  PID    PPID   ELAPSED       RSS    STAT  COMMAND
+  41407  30818  13:42:42      306M   R+    cryptominisat5 --verb 0 --maxtime 200000 .../sym-11-4-32-seq-c0...cnf
+  30818  30817  2-14:11:43     51M   Sl+   iota_sym 4 11 32 --only-deg 13 --threads 1
+                                             --slice 200000 --seconds 200000 --cubecap 400
+```
+
+Five readings, in order of how much they cost:
+
+1. **The solver died.** `iota_sym` has been up 62.2 h and its current child
+   13.7 h, so phase one ran 62.2 − 13.7 = **48.5 h** against a `--slice` of
+   200 000 s = **55.6 h**. It ended *before* its budget. A clean timeout
+   ends *at* it.
+2. **It was not memory.** 306 MB resident, 20 GB available. The tmpfs and
+   OOM hypotheses that this session offered first were both wrong, and the
+   process table refuted them in one line.
+3. **Nothing noticed.** The tag is `sym-11-4-32-**seq**-c0`, so the driver
+   had already moved to phase two: it read the dead solver's empty output
+   as `UNKNOWN`, concluded the cube had merely stalled, and continued.
+4. **It then sprang §49.3's trap.** Cube 13's full split is 1939 sub-cubes
+   against `--cubecap 400`, so phase two did not refine and is re-solving
+   the identical whole cube — 13.7 h into a **second** 55.6 h budget.
+5. **And the crash left no trace at all.** Not in the log, not in
+   `docs/ladder/`, not in any exit status. Without the process table there
+   would have been nothing to find, and the run would eventually have
+   recorded `13 undecided 200000 200000` — a budget that was never spent
+   on a search that never finished.
+
+### 51.2 The defect, and why §50 could not catch it
+
+`sat::run_solver` called `cmd.output()?` and read `output.stdout`. The exit
+status was used for nothing but reaping the child. A solver killed by a
+signal writes nothing to stdout, and empty stdout parses as `Unknown` —
+**the same value a clean timeout produces.** So "the solver died" and "the
+budget ran out" were not merely conflated in the ladder file; they were
+the same observation at the point where the observation is made.
+
+§50's fix keys on `iota_sym`'s exit code, and `iota_sym` exits 0 in both
+cases, because as far as it knows both are `UNKNOWN`. A crash could never
+have reached it.
+
+### 51.3 What the fix rests on, measured
+
+`run_solver` now inspects the status. The normal set is `{0, 10, 15, 20}`
+and every member of it was measured against the installed binaries rather
+than taken from a manual — the timeout codes especially, because **every
+`UNKNOWN` this development has ever recorded came out of that path**, and
+a whitelist that omitted one would reclassify the entire ladder as crashes:
+
+```text
+  cadical         UNSAT 20   SAT 10   -t timeout        0
+  cryptominisat5  UNSAT 20   SAT 10   --maxtime timeout 15
+  killed by SIGKILL: no exit code at all (None on Unix)
+```
+
+Anything outside that set, or no code, is now an `Err` carrying the
+solver's name and the instance — which `solve_cube`'s caller turns into a
+panic, which is a non-zero exit, which §50's `rung.sh` records as `CRASH`
+with the wall time actually spent. The two fixes compose; neither is
+sufficient alone.
+
+`cube_budget::the_solver_exit_codes_the_crash_check_rests_on` pins the
+table, including the two timeout codes, so an upgrade that changes a
+solver's convention fails a test instead of silently reclassifying a rung.
+
+### 51.4 What this costs and what it does not
+
+**It decides nothing.** `ι(4,11) ≤ 31` still stands under cadical with
+two-solver agreement on twenty of twenty-one cubes, and cube 13's second
+opinion is still outstanding — that is exactly where §47 left it. No
+recorded verdict changes, because a crash was only ever recorded as
+`UNKNOWN`, and `UNKNOWN` rows are re-run rather than believed.
+
+What it cost was 55.6 h of the user's machine, and what it would have cost
+is worse: the run would have finished, written a row indistinguishable
+from an honest budget, and the next session would have read
+"undecided at 200 000 s" as a measurement of how hard the cube is.
+
+**The pattern worth naming.** This session found four defects and every one
+of them lived in the gap between two components that each behaved
+reasonably: the driver and the shell script disagreed about what a
+checkpoint row means (§50.2); the driver and the solver disagreed about
+what an empty output means (§51.2); phase one and phase two disagreed
+about what a budget means (§49.3); the checkpoint name and the question it
+answered disagreed about what identifies a rung (§49.2). None is a bug in
+a formula. All four are two honest components with incompatible readings
+of the same value, and none was reachable by any test in the suite until
+the code was moved to where a test could reach it.

@@ -132,6 +132,17 @@ for D in "$@"; do
       echo "rung.sh: deg0=$D exited $RC after ${ELAPSED}s with no verdict:" >&2
       printf '%s\n' "$OUT" | tail -8 >&2
       V=CRASH; S="$ELAPSED"
+    # A second detector, independent of the exit status and effective on
+    # rows already written: an UNKNOWN that stopped well SHORT of its
+    # budget did not stop because of the budget. A solver given 200000s
+    # and reporting UNKNOWN at 174541s did not run out of time; it died.
+    # Caught in the field on 2026-08-28 -- that row, deg(0)=13 of the
+    # cryptominisat5 pass, is what this test was written from.
+    elif [ "$V" = "UNKNOWN" ] && [ "$BUDGET" -gt 0 ] \
+         && [ "${S%%.*}" -lt $(( BUDGET - BUDGET / 10 )) ]; then
+      echo "rung.sh: deg0=$D reported UNKNOWN at ${S}s of a ${BUDGET}s budget --" >&2
+      echo "         it stopped for some reason other than the budget." >&2
+      V=CRASH
     # An `undecided` that did not spend most of its budget did not run.
     # Record it as an error with what actually happened, never as a
     # search that was performed.

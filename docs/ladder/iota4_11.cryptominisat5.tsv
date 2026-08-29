@@ -1,6 +1,24 @@
 # cryptominisat5 pass over the iota(4,11) >= 32 rung. Second
 # opinion for docs/ladder/iota4_11.tsv; the rung is believed only where
 # both agree.
+#
+# deg(0) = 13 IS NOT DECIDED, AND THE ROW BELOW IS A CRASH, NOT A BUDGET.
+# cryptominisat5 died 174541.0 s into a 200000 s budget on 2026-08-28.
+# Two things say so and neither was available when the row was written:
+# it stopped 26000 s SHORT of its budget, which a timeout does not do, and
+# the process table showed the driver had already moved to phase two,
+# having read the dead solver's empty output as UNKNOWN.
+#
+# It cost 55.6 h beyond the crash: phase two re-ran the identical whole
+# cube, because the full split is 1939 sub-cubes against --cubecap 400 and
+# --slice equalled --seconds. Both defects are fixed -- docs/roadmap.md
+# §49.3 for the double run, §50 and §51 for the crash -- and the row is
+# relabelled CRASH so that no future session reads 174541.0 s as a
+# measurement of how hard this cube is. It is a measurement of how long
+# the solver lived.
+#
+# Re-run it split, not whole: --seqprefix 3 --cubecap 50 --checkpoint,
+# which is 27 sub-cubes each banked as it lands. See §50.3.
 # Every row below except deg(0) = 32 was measured on an Apple M4 Air --
 # RUNG_THREADS=8 RUNG_SLICE=900 RUNG_CUBECAP=400, budget 36000 s -- and
 # transcribed here from that run's output. The 32 row was measured on the
@@ -74,3 +92,4 @@
 16	UNSAT	15226.3	36000
 15	UNSAT	23478.0	36000
 14	UNSAT	70310.9	200000
+13	CRASH	174541.0	200000

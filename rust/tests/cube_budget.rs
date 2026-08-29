@@ -18,12 +18,13 @@
 //! Skipping the re-run is a scheduling decision, and the danger in it is
 //! not wasted time but a wrong verdict: a cube skipped for lack of budget
 //! is still **undecided**, and if the driver forgot it, a rung with one
-//! undecided cube would report UNSAT. So this file pins five things: the
+//! undecided cube would report UNSAT. So this file pins six things: the
 //! budget rule itself; the determinism it rests on; that a carried cube is
 //! counted, so a rung holding one cannot read UNSAT; that the cubes which
 //! refuse to split at full prefix do split under a shorter one, which is
 //! the reason any of this matters; and the monotonicity in the target that
-//! lets one rung's timings say anything about another's.
+//! lets one rung's timings say anything about another's; and the solver
+//! exit codes that let a crash be told from a budget at all (§51).
 
 use sunflower_formal::intersecting;
 use sunflower_formal::sat::{Solver, Verdict};
@@ -292,5 +293,75 @@ fn a_carried_cube_cannot_become_an_unsat() {
             stalled.len() - p.refined,
             "{name}: a stalled cube went missing"
         );
+    }
+}
+
+/// What `sat::run_solver` assumes about the programs it shells out to, and
+/// the reason it now has to assume anything at all.
+///
+/// Until §51 the exit status was read for nothing but reaping the child.
+/// A solver that segfaults or is killed writes nothing to stdout, and
+/// empty stdout parses as `Unknown` — the *same value a clean timeout
+/// produces*. So "the solver died" and "the budget ran out" were the same
+/// observation, and on 2026-08-28 that cost 55.6 h: a cryptominisat5 run
+/// died 48.5 h into its budget, was read as a stall, and the driver spent
+/// a second full budget re-solving the identical cube.
+///
+/// Telling them apart means knowing which exit codes are normal, and that
+/// is a fact about cadical and cryptominisat5, not about this repository —
+/// so it is measured here rather than trusted. The DIMACS convention is 10
+/// SAT / 20 UNSAT; each solver's own timeout flag adds one more code, and
+/// those are the ones that must NOT read as crashes, because every
+/// `UNKNOWN` the ladder has ever recorded came out of that path.
+#[test]
+fn the_solver_exit_codes_the_crash_check_rests_on() {
+    if !have_solver() {
+        eprintln!("cadical not installed; skipping");
+        return;
+    }
+    let dir = std::env::temp_dir();
+    let unsat = dir.join("sf-exitcode-unsat.cnf");
+    let sat = dir.join("sf-exitcode-sat.cnf");
+    std::fs::write(&unsat, "p cnf 1 2\n1 0\n-1 0\n").unwrap();
+    std::fs::write(&sat, "p cnf 1 1\n1 0\n").unwrap();
+
+    let code = |bin: &str, args: &[&str]| -> Option<i32> {
+        std::process::Command::new(bin)
+            .args(args)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .ok()
+            .and_then(|s| s.code())
+    };
+
+    // The verdict codes, which are the DIMACS convention.
+    assert_eq!(code("cadical", &[unsat.to_str().unwrap()]), Some(20));
+    assert_eq!(code("cadical", &[sat.to_str().unwrap()]), Some(10));
+
+    // The timeout code. This is the one that matters: `-t` on an instance
+    // it cannot finish must stay inside the normal set, or every stalled
+    // cube in the ladder would now be reported as a crash.
+    let hard = encode(11, 4, 32, opts());
+    let hard_path = dir.join("sf-exitcode-hard.cnf");
+    std::fs::write(&hard_path, hard.cnf.to_dimacs()).unwrap();
+    let t = code("cadical", &["-t", "3", hard_path.to_str().unwrap()]);
+    assert_eq!(t, Some(0), "a cadical timeout must not look like a crash");
+    assert!(
+        [Some(0), Some(10), Some(15), Some(20)].contains(&t),
+        "cadical's timeout code left the set sat.rs treats as normal"
+    );
+
+    if Solver::CryptoMiniSat.available() {
+        assert_eq!(code("cryptominisat5", &["--verb", "0", unsat.to_str().unwrap()]), Some(20));
+        let t = code(
+            "cryptominisat5",
+            &["--verb", "0", "--maxtime", "3", hard_path.to_str().unwrap()],
+        );
+        assert_eq!(t, Some(15), "a cryptominisat5 timeout must not look like a crash");
+    }
+
+    for p in [unsat, sat, hard_path] {
+        let _ = std::fs::remove_file(p);
     }
 }
