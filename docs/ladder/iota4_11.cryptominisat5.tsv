@@ -1,0 +1,95 @@
+# cryptominisat5 pass over the iota(4,11) >= 32 rung. Second
+# opinion for docs/ladder/iota4_11.tsv; the rung is believed only where
+# both agree.
+#
+# deg(0) = 13 IS NOT DECIDED, AND THE ROW BELOW IS A CRASH, NOT A BUDGET.
+# cryptominisat5 died 174541.0 s into a 200000 s budget on 2026-08-28.
+# Two things say so and neither was available when the row was written:
+# it stopped 26000 s SHORT of its budget, which a timeout does not do, and
+# the process table showed the driver had already moved to phase two,
+# having read the dead solver's empty output as UNKNOWN.
+#
+# It cost 55.6 h beyond the crash: phase two re-ran the identical whole
+# cube, because the full split is 1939 sub-cubes against --cubecap 400 and
+# --slice equalled --seconds. Both defects are fixed -- docs/roadmap.md
+# §49.3 for the double run, §50 and §51 for the crash -- and the row is
+# relabelled CRASH so that no future session reads 174541.0 s as a
+# measurement of how hard this cube is. It is a measurement of how long
+# the solver lived.
+#
+# Re-run it split, not whole: --seqprefix 3 --cubecap 50 --checkpoint,
+# which is 27 sub-cubes each banked as it lands. See §50.3.
+# Every row below except deg(0) = 32 was measured on an Apple M4 Air --
+# RUNG_THREADS=8 RUNG_SLICE=900 RUNG_CUBECAP=400, budget 36000 s -- and
+# transcribed here from that run's output. The 32 row was measured on the
+# session container. Wall times from the two machines are NOT comparable.
+# Only deg(0) = 12 refined, into 19 sequence cubes; every other cube was
+# decided whole, which is why its split line reads "0 of 1 cubes refined".
+#
+# 14 IS NOW DECIDED. It was re-run on the user's VM at a 200000 s budget,
+# RUNG_THREADS=1 RUNG_SLICE=200000 so the split never fires, and came
+# back UNSAT at 70310.9 s -- agreeing with cadical's 51305.5 s. The two
+# solvers now agree on TWENTY of the twenty-one cubes; only deg(0) = 13
+# is outstanding, and it is in flight under the same settings.
+#
+# The 36000 s rows below for 13 and 14 were replaced rather than kept:
+# both were `UNKNOWN` at that budget, which is a true record of a run
+# that did not finish, but the file holds one row per deg and the newer
+# row carries its own (larger) budget. What the old rows said, for the
+# record: 14 UNKNOWN at 40407.0 s, 13 UNKNOWN at 40409.0 s, both against
+# a 36000 s allowance on an M4 Air at RUNG_THREADS=8.
+#
+# THE COST RATIO, WHICH IS NOT MONOTONE.
+#
+#   deg0      cadical        cms      cms/cadical
+#     17       4171.5     9455.7          2.27x
+#     16      11356.6    15226.3          1.34x
+#     15      34788.1    23478.0          0.67x   <- cms faster
+#     14      51305.5    70310.9          1.37x
+#
+# The trend narrows as the cubes deepen but does not settle, and 15 is
+# the one place cryptominisat5 wins outright. A budget for cube 13 was
+# picked at 200000 s on the strength of that narrowing rather than a fit
+# -- cadical needed 85123.9 s there, and 1.37x of that is ~117000 s.
+#
+# WHY 13 AND 14 WERE UNDECIDED, AND WHAT DECIDED 14.
+# Both were run whole, because RUNG_CUBECAP=400 refused the
+# degree-sequence split. The number of sorted sequences per cube is
+# governed by the deficiency 10*deg(0) - (4*32 - deg(0)):
+#
+#   deg(0)   deficiency   sequences
+#     12          4              19   <- split fired; UNSAT in 7149 s
+#     13         15           1 949   <- refused by the cap
+#     14         26          32 797   <- refused by the cap
+#     15         37         238 850
+#     16         48       1 045 128
+#
+# The count is exact at deg(0) = 12: the run reported 19 sequence cubes.
+# So 13 and 14 sit in the band where the cube is too hard whole and the
+# split was disallowed by a cap carried over from the g = 10 rung, where
+# 33.5a measured that paying 684 solver startups for a cube that solves
+# whole in ten minutes was a loss. That trade does not hold here: these
+# cubes do not solve whole in eleven hours.
+#
+# deg0	verdict	seconds	budget
+32	UNSAT	47.7	240
+30	UNSAT	163.0	36000
+31	UNSAT	165.3	36000
+27	UNSAT	233.9	36000
+29	UNSAT	243.4	36000
+28	UNSAT	267.5	36000
+26	UNSAT	414.5	36000
+25	UNSAT	465.0	36000
+24	UNSAT	483.4	36000
+23	UNSAT	813.1	36000
+22	UNSAT	917.0	36000
+21	UNSAT	1456.1	36000
+20	UNSAT	3584.8	36000
+19	UNSAT	5417.5	36000
+12	UNSAT	7149.4	36000
+18	UNSAT	6745.2	36000
+17	UNSAT	9455.7	36000
+16	UNSAT	15226.3	36000
+15	UNSAT	23478.0	36000
+14	UNSAT	70310.9	200000
+13	CRASH	174541.0	200000

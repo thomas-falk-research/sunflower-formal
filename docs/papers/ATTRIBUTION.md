@@ -62,6 +62,15 @@ these papers — `docs/reading.md` — is; the papers are not.
 * **Changes:** none; redistributed as retrieved on 2026-08-01
 * **SHA-256:** `0e8af82bae6723c15ee129629639041de694beff3081f265e10f4ce8f41215bf`
 
+### `pdf/frankl_wang_cover3.pdf`
+
+* **Title:** Intersecting families with covering number three
+* **Authors:** Peter Frankl, Jian Wang
+* **Source:** https://arxiv.org/abs/2207.05487v3
+* **Licence:** arXiv non-exclusive — <http://arxiv.org/licenses/nonexclusive-distrib/1.0/>
+* **Changes:** none; redistributed as retrieved on 2026-08-15
+* **SHA-256:** `a41a766e271bfd521503687b15d804bb7b27c7325f250808f4f991c85df2519d`
+
 ### `pdf/sublog.pdf`
 
 * **Title:** Sunflower Bound with a Sub-Logarithmic Base

@@ -1,0 +1,38 @@
+# iota(4,11) >= 32 ?  the deg(0) = 13 cube, one line per degree-sequence sub-cube.
+# Written by `iota_sym --checkpoint`; a line is appended the moment a
+# sub-cube lands, so a reclaimed container loses only what was in flight.
+#
+# THE CUBE IS UNSAT ONLY WHEN ALL 1939 SUB-CUBES ARE UNSAT. Resume with
+# the same --checkpoint: rows marked UNSAT or SAT are skipped, rows marked
+# UNKNOWN are re-run, because UNKNOWN is a budget and not a verdict.
+#
+# The split is the two-block degree sequence of symbreak::sequence_cubes:
+# positions 0..b-1 are non-increasing from deg(0), the ceiling resets to
+# deg(0) at position b, and positions b..g-1 are non-increasing again.
+# An independent enumeration of that model reproduces 1939 here and the
+# 19 that iota4_11.tsv records at deg(0) = 12, which is the cross-check
+# that the split is a cover.  Corrected counts, superseding the figures
+# an earlier session quoted from a globally-sorted model:
+#   deg(0)  12: 19   13: 1939   14: 31624   15: 220047   16: 914505
+#
+# Measured cost of a sub-cube, same two sub-cubes, both solvers:
+#   [.. 10, 1]  cadical UNSAT 128.6s   cryptominisat5 UNSAT 269.6s
+#   [.. 9,  2]  cadical UNKNOWN @300s  cryptominisat5 UNSAT 420.6s
+# Neither solver dominates. At ~300 s a sub-cube, 1939 of them is about
+# 40 core-hours, i.e. ~10 h wall on four cores if every one lands.
+#
+# sub-cube	verdict	seconds
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	136.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 9, 2]	UNSAT	381.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 8, 3]	UNSAT	429.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 4]	UNSAT	459.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 5]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 11, 1]	UNSAT	491.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 10, 2]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 11, 2]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNKNOWN	600.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNKNOWN	600.1

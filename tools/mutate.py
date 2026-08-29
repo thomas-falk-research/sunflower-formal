@@ -244,10 +244,26 @@ def main() -> int:
     ap.add_argument("--jobs", type=int, default=min(4, os.cpu_count() or 1))
     ap.add_argument("--timeout", type=int, default=600, help="seconds per mutant build")
     ap.add_argument("--json", type=Path, help="also write results here")
+    ap.add_argument(
+        "--validate",
+        action="store_true",
+        help="parse and structurally check the manifest, then stop -- "
+             "a second's work that catches a malformed manifest locally "
+             "instead of eighty minutes later, or in CI",
+    )
     args = ap.parse_args()
 
     muts = load_manifest()
     check_manifest(muts)
+    if args.validate:
+        killed = sum(1 for m in muts if m["expect"] == "killed")
+        controls = sum(1 for m in muts if m.get("control"))
+        print(
+            f"  tools/mutations.toml parses: {len(muts)} mutations, "
+            f"{killed} expect killed, {len(muts) - killed} expect survived, "
+            f"{controls} control"
+        )
+        return 0
     if args.only:
         wanted = set(args.only)
         unknown = wanted - {m["id"] for m in muts}

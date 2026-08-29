@@ -430,7 +430,40 @@ fn run_solver(cnf: &Cnf, solver: Solver, seconds: u64, tag: &str) -> std::io::Re
     };
     let _ = std::fs::remove_file(&cnf_path);
     let _ = std::fs::remove_file(&out_path);
-    Ok(text)
+
+    // A solver that DIED is not a solver that ran out of time, and until
+    // this check existed nothing here could tell them apart: the exit
+    // status was read for nothing but its side effect of reaping the
+    // child, and a segfaulting solver produced empty stdout, which parses
+    // as `Unknown` -- the same value a clean timeout produces.
+    //
+    // That is not hypothetical. On 2026-08-28 a cryptominisat5 run on the
+    // `deg(0) = 13` cube at eleven points died 48.5 h into a 55.6 h
+    // budget; `iota_sym` read the empty output as UNKNOWN, concluded the
+    // cube had merely stalled, and spent a second 55.6 h budget on it. The
+    // crash left no trace anywhere -- not in the log, not in the ladder
+    // file, not in the exit status of anything. See docs/roadmap.md §51.
+    //
+    // The DIMACS convention is 10 for SAT, 20 for UNSAT, and 0 or 15 for
+    // "no answer", which is what every timeout flag above produces. Death
+    // by signal gives no code at all on Unix. Anything outside that set,
+    // or no code, means the solver did not finish under its own control,
+    // and the caller must hear about it rather than receive an empty
+    // string that looks like a budget.
+    const NORMAL: [i32; 4] = [0, 10, 15, 20];
+    match output.status.code() {
+        Some(c) if NORMAL.contains(&c) => Ok(text),
+        Some(c) => Err(std::io::Error::other(format!(
+            "{} exited {c} on {stamp} -- not a DIMACS status; \
+             this is a crash, not a verdict and not a budget",
+            solver.binary()
+        ))),
+        None => Err(std::io::Error::other(format!(
+            "{} was killed by a signal on {stamp} -- \
+             this is a crash, not a verdict and not a budget",
+            solver.binary()
+        ))),
+    }
 }
 
 /// A verdict on a bare CNF: the assignment is indexed by `variable - 1`.

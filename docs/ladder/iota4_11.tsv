@@ -1,0 +1,132 @@
+# iota(4,11) >= 32 ?  one line per deg(0) cube of the symmetry-broken encoding.
+# Written by tools/rung.sh; each line is one `iota_sym --only-deg` invocation.
+# The rung is UNSAT only when EVERY cube is UNSAT. A cube marked
+# `undecided` carries the budget it was stopped at, per docs/reading.md rule 13.
+#
+# SIX OF THESE CUBES ARE PROVABLY EMPTY AND DID NOT NEED SOLVING.
+# In a 4-uniform sunflower-free family every point has degree at most
+# g(3): the star at a point IS its link, which is 3-uniform, distinct and
+# sunflower-free (PureLink.link_at_point_bounded).  PureLink.g_three_at_most_26
+# gives g(3) <= 26 unconditionally, so deg(0) >= 27 is impossible and
+# cubes 27..32 contain nothing.  They were solved anyway, before this was
+# noticed, and cadical returned UNSAT for every one -- which is a cross
+# check of the encoding against the kernel rather than wasted work, but
+# it was not deliberate.
+#
+# With AbbottGardner1969 (g(3) = 20) the empty range widens to 21..32 and
+# only deg(0) = 12..20 can hold anything.  That value is a citation, so
+# the unconditional statement is the one this file is run against.
+#
+# Cube 12 -- the floor, and the one 33.5a expected to be worst -- was
+# decided on an Apple M4 Air, not on the session container: RUNG_THREADS=8
+# RUNG_SLICE=900, so it stalled at 900 s, split into 19 degree-sequence
+# sub-cubes and finished UNSAT at 3236.4 s with none at the limit. That
+# is 33.5a's "nineteen sequences" for deficiency four, confirmed. Every
+# other row was measured on the container.
+#
+# Cubes 15 and 16 were decided on the same M4-class VM, WHOLE -- run with
+# RUNG_SLICE=90000 above the 86400 s budget, so the degree-sequence split
+# never fired and each is one sequential cadical on one core.
+#
+# THE WHOLE-CUBE COST CURVE -- AND THE FIT THAT WAS WRONG.
+#
+#   deg0   17        16         15          14           13
+#   secs   4171.5    11356.6    34788.1     51305.5      85123.9
+#   ratio  -         2.72x      3.06x       1.47x        1.66x
+#
+# An earlier version of this header fitted a log-linear curve to the
+# three points 17/16/15, got 2.89x per step down, and predicted
+# deg(0)=14 at ~98500 s (27 h) and deg(0)=13 at ~284000 s (79 h).
+#
+# deg(0)=14 came in at 51305.5 s. The prediction was HIGH BY 1.92x, and
+# the ratio broke from ~2.9x to 1.47x, so the curve is not geometric and
+# the fit's form was wrong rather than merely imprecise. THE 79 h FIGURE
+# FOR deg(0)=13 IS WITHDRAWN; three measured ratios that do not agree
+# with each other cannot support a fourth.
+#
+# What was said instead, before 13 was run: its cost is unknown, and the
+# one structural fact nearby is that the number of admissible degree
+# sequences falls sharply as deg(0) does -- 914505 at 16, 220047 at 15,
+# 31624 at 14, 1939 at 13, 19 at 12 -- while the whole-cube time rose
+# from 16 to 14. Whether that trend continues to 13 is exactly what is
+# not known.
+#
+# IT DID CONTINUE, MILDLY. deg(0)=13 came in at 85123.9 s (23.65 h),
+# a ratio of 1.66x over 14 -- close to 14's 1.47x and nothing like the
+# 2.9x the withdrawn fit assumed. A range of 21-44 h was offered before
+# the run on the strength of the two shallow ratios rather than a fit;
+# it held, near its low end. The lesson stands either way: the four
+# measured ratios are 2.72, 3.06, 1.47, 1.66, and no curve through the
+# first three would have found the last two.
+#
+# WHICH MEANS THE DEGREE-SEQUENCE SPLIT IS THE WRONG TOOL AT deg(0)=13.
+# An earlier version of this paragraph put the split at "roughly 597
+# core-hours against 79 for the cube whole". Both numbers were wrong: 597
+# came from timing the FRONT of a most-extreme-first enumeration, which
+# is an ordered prefix and not a sample, and 79 was the very figure
+# withdrawn four paragraphs above. Superseded by roadmap 40, which
+# sampled uniformly, and now by the cube itself:
+#
+#   split, lower bound (1939 sub-cubes, uniform sample of 24, 19
+#     reported, 63% censored at the 7200 s cap, mean >= 6161 core-s)
+#                                            >= 3319 core-hours
+#   cube 13 whole, one core, measured             23.65 core-hours
+#   ratio                                              >= 140x
+#
+# 3319 is a floor: most of the sample hit the cap, and it was measured
+# under 10-way contention that ran the same sub-cubes 2.7-4.0x slower
+# than uncontended. The split wins only when it is small: at deg(0)=12 it
+# is 19 sub-cubes and it turned an undecided cube into 3236 s.
+#
+# AND A KILLED SPLIT LEAVES NOTHING. rung.sh captures the solver's whole
+# output in a shell variable, so no sub-cube verdict streams while it
+# runs, and it passes no --checkpoint, so none is written either. A split
+# run at deg(0)=13 was stopped after five days and yielded zero reusable
+# work; the row rung.sh then recorded was the 60.1 s slice stall, whose
+# budget column understated the real spend by five days of ten-core time.
+# Such a row must be deleted before re-running: the skip test matches the
+# deg column alone and ignores the verdict, so it would silently skip the
+# cube as already decided.
+#
+# So iota_sym's default --cubecap 400 was RIGHT to refuse the split at
+# deg(0) = 13 and 14, and session N+11's diagnosis -- that the cap
+# carried over from the g=10 rung was the reason those cubes failed --
+# was backwards. The cap was the protection, not the bug. Raising it to
+# 3000 or 4000 forces a split that costs at least 140x more than not
+# splitting.
+#
+# ================================================================
+# THE RUNG IS CLOSED. All twenty-one cubes deg(0) = 12..32 are UNSAT,
+# 195146.4 s = 54.2 h of solver time in total. There is no 4-uniform
+# intersecting sunflower-free family of 32 members on eleven points:
+#
+#     iota(4,11) <= 31.
+#
+# What that does and does not settle is in roadmap 43. It closes the
+# ELEVEN-POINT ground set, not iota(4), which is a maximum over all
+# ground sets; Sharp.AHSOptimal at b = 4 needs 32 SOMEWHERE, and twelve
+# points and up are untouched.
+# ================================================================
+#
+# deg0	verdict	seconds	budget
+32	UNSAT	23.9	120
+30	UNSAT	14.1	300
+31	UNSAT	29.4	300
+29	UNSAT	35.5	300
+28	UNSAT	38.1	300
+27	UNSAT	58.1	800
+25	UNSAT	106.0	800
+24	UNSAT	106.9	800
+26	UNSAT	107.0	800
+23	UNSAT	108.5	1800
+22	UNSAT	227.6	1800
+21	UNSAT	527.2	1800
+20	UNSAT	667.8	1800
+19	UNSAT	933.3	1800
+18	UNSAT	2181.0	5400
+17	UNSAT	4171.5	5400
+12	UNSAT	3236.4	36000
+16	UNSAT	11356.6	86400
+15	UNSAT	34788.1	86400
+14	UNSAT	51305.5	400000
+13	UNSAT	85123.9	400000

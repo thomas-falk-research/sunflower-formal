@@ -2412,3 +2412,211 @@ because = """Killed at geom_assemble, whose hypothesis is 2a <= b with \
 a = 4d and b = ck. At a = b the series is (i+1) copies of its first term \
 and no constant bounds it; Counting.geom_le's own mutation \
 geom-weaken-the-ratio pins the same boundary one level down."""
+
+# ----------------------------------------------------------------
+# The 1969 literature value, carried as a hypothesis.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "abbottgardner-loosen"
+file = "coq/AbbottGardner.v"
+question = """Is the *number* in the 1969 value load-bearing, or would any \
+bound on g(3) do? Loosening 20 to 26 makes the hypothesis exactly \
+PureLink.g_three_at_most_26, which is already a theorem -- so every \
+consequence that genuinely uses the 1969 value must stop compiling."""
+find = "Definition AbbottGardner1969 : Prop := GAtMost 3 20."
+replace = "Definition AbbottGardner1969 : Prop := GAtMost 3 26."
+expect = "killed"
+
+# ----------------------------------------------------------------
+# Support: the two-anchor bound and the pair link.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "support-drop-intersecting"
+file = "coq/Support.v"
+question = """Is `Intersecting` load-bearing in the two-anchor support bound, \
+or does sunflower-freeness alone give it? It is load-bearing and the \
+bound is false without it: a sunflower-free family has matching number \
+at most two, so it lives on `2b + (b-1)(n-2)` points, which exceeds \
+`(4b-3) + (b-2)n` for every `n > 11` at `b = 4`."""
+find = """    2 <= b -> Uniform b F -> Distinct F -> Intersecting F ->
+    ~ ContainsKSunflower 3 F ->
+    NoDup P ->"""
+replace = """    2 <= b -> Uniform b F -> Distinct F ->
+    ~ ContainsKSunflower 3 F ->
+    NoDup P ->"""
+expect = "killed"
+
+[[mutation]]
+id = "support-core-drop-second-anchor"
+file = "coq/Support.v"
+question = """Is the *second* anchor doing the work, or would the anchor plus \
+the link cover suffice? Dropping `A1` from the core leaves the members \
+that avoid the shared point meeting it only once, which is exactly the \
+`b-1` charge the single-anchor bound already pays."""
+find = "    set (Score := A0 ++ rem_elt z A1 ++ concat M)."
+replace = "    set (Score := A0 ++ concat M)."
+expect = "killed"
+
+[[mutation]]
+id = "support-pair-link-off-by-one"
+file = "coq/Support.v"
+question = """Does the pair link know it is `(b-2)`-uniform? Charging it \
+`g(b-1)` instead would replace the six of `g(2)` by the twenty-six of \
+`g(3)` and make the counting ceiling four times weaker."""
+find = """    ~ ContainsKSunflower 3 F -> GAtMost (b - 2) Ng2 ->
+    deg Q F <= Ng2."""
+replace = """    ~ ContainsKSunflower 3 F -> GAtMost (b - 1) Ng2 ->
+    deg Q F <= Ng2."""
+expect = "killed"
+
+# ----------------------------------------------------------------
+# Substitution: maximality is preserved, and why each hypothesis is
+# load-bearing.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "substitution-drop-outer-tau"
+file = "coq/Substitution.v"
+question = """Is the outer covering number load-bearing, or would maximality \
+of the seeds alone do? It is the quantity the argument *multiplies*: \
+without tau(O) = a the covering blocks need not number a, the product \
+a*c never closes, and the candidate set is not forced onto the blocks."""
+find = "    (forall T, NoDup T -> Covers T O -> a <= length T) ->"
+replace = ""
+expect = "killed"
+
+[[mutation]]
+id = "substitution-blocks-overlap-by-one"
+file = "coq/Substitution.v"
+question = """Do the blocks have to be disjoint? Widening a slice by one \
+point makes consecutive blocks overlap; the slices of a candidate set \
+then double-count, the concatenation is no longer NoDup, and the whole \
+counting step is unsound."""
+find = "  filter (fun x => andb (Nat.leb (v * w) x) (Nat.ltb x (v * w + w))) A."
+replace = "  filter (fun x => andb (Nat.leb (v * w) x) (Nat.ltb x (v * w + w + 1))) A."
+expect = "killed"
+
+[[mutation]]
+id = "substitution-drop-inner-grounded"
+file = "coq/Substitution.v"
+question = """Does the inner family have to fit inside its block? Without \
+Grounded an inner member could carry a point at or beyond w, the \
+assembled member would spill into the next block, and the trace at the \
+block it was placed in would not see it."""
+find = "    Grounded I (seq 0 w) ->"
+replace = ""
+expect = "killed"
+
+[[mutation]]
+id = "palvolgyi-halve-the-multiplier"
+file = "coq/Palvolgyi.v"
+question = """Is the multiplier in Palvolgyi's remark load-bearing? At \
+r = 3 the inequality is g >= 2*iota and the equality is g = 2*iota, so \
+a conjecture stated with multiplier 1 would predict g(3) <= 10 against \
+the twenty-member family of Intersecting.lower_bound_3_3_20. \
+palvolgyi_pins_g_three_exactly exists precisely to make that fail."""
+find = "  forall b N, 1 <= b -> IotaAtMost b N -> GAtMost b (2 * N)."
+replace = "  forall b N, 1 <= b -> IotaAtMost b N -> GAtMost b N."
+expect = "killed"
+
+[[mutation]]
+id = "palvolgyi-refutation-off-by-one"
+file = "coq/Palvolgyi.v"
+question = """Does a refutation need 2N+1 members, or would 2N do? 2N is \
+exactly what the conjecture permits, so a refutation lemma stated at 2N \
+would fire on the conjecture's own equality case and prove it false from \
+nothing."""
+find = "    1 <= b -> IotaAtMost b N -> LowerBound b 3 (2 * N + 1) ->"
+replace = "    1 <= b -> IotaAtMost b N -> LowerBound b 3 (2 * N) ->"
+expect = "killed"
+
+[[mutation]]
+id = "palvolgyi-four-uses-the-wrong-iota-bound"
+file = "coq/Palvolgyi.v"
+question = """Is the b = 4 consequence tied to the iota(4) bound it \
+cites? 71 is PureLink.iota_four_at_most_71_if_iota_three_is_ten; \
+doubling anything else gives a number the conjecture does not \
+support."""
+find = "  replace 142 with (2 * 71) by reflexivity."
+replace = "  replace 142 with (2 * 70) by reflexivity."
+expect = "killed"
+
+[[mutation]]
+id = "two-cover-drop-distinct"
+file = "coq/Support.v"
+question = """Is distinctness load-bearing in the two-cover degree sum? \
+The proof counts members by including F in the concatenation of the two \
+stars, which needs NoDup F -- a family with repeats would have length \
+exceeding the union and the pigeonhole would be false."""
+find = "    Distinct F ->\n    (forall A, In A F -> In p A \\/ In q A) ->\n    length F <= length (star p F) + length (star q F)."
+replace = "    (forall A, In A F -> In p A \\/ In q A) ->\n    length F <= length (star p F) + length (star q F)."
+expect = "killed"
+
+[[mutation]]
+id = "two-cover-sixteen-off-by-one"
+file = "coq/Support.v"
+question = """Is 16 the right threshold for a 32-member family under a \
+two-point cover? 17 does not follow -- the two stars can split 32 as \
+16 and 16 -- so a corollary claiming it must not compile."""
+find = "    16 <= length (star p F) \\/ 16 <= length (star q F)."
+replace = "    17 <= length (star p F) \\/ 17 <= length (star q F)."
+expect = "killed"
+
+[[mutation]]
+id = "nine-point-link-bound-thirteen"
+file = "coq/Support.v"
+question = """Is 12 the load-bearing constant in the nine-point count? \
+g(3,8) = 12 is exhaustive; weakening the carried hypothesis to 13 makes \
+the count give 4|F| <= 117 and so |F| <= 29, and the theorem's 27 no \
+longer follows."""
+find = "  ~ ContainsKSunflower 3 G -> length G <= 12."
+replace = "  ~ ContainsKSunflower 3 G -> length G <= 13."
+expect = "killed"
+
+[[mutation]]
+id = "nine-point-ceiling-twenty-six"
+file = "coq/Support.v"
+question = """Is 27 the right ceiling on nine points? 26 does not \
+follow -- 4*27 = 108 = 9*12 exactly, so the counting bound lands on 27 \
+and Product.iota4 attains it."""
+find = "    ~ ContainsKSunflower 3 F ->\n    length F <= 27.\nProof.\n  intros Hg U F HndU Hlen HU HD HG Hno."
+replace = "    ~ ContainsKSunflower 3 F ->\n    length F <= 26.\nProof.\n  intros Hg U F HndU Hlen HU HD HG Hno."
+expect = "killed"
+
+[[mutation]]
+id = "tau-two-carried-constant-26"
+file = "coq/Support.v"
+question = """Is 20 load-bearing in the two-cover bound? The computation \
+says the cross-intersecting pair maximum on nine points is exactly 20. \
+Weakening the carried hypothesis to 26 makes the sum 26 + 6 = 32, and \
+the theorem's 26 no longer follows -- which is exactly the margin the \
+rung turns on."""
+find = "Theorem tau_two_on_eleven_at_most_26 :\n  CrossPairOnNine 20 ->"
+replace = "Theorem tau_two_on_eleven_at_most_26 :\n  CrossPairOnNine 26 ->"
+expect = "killed"
+
+[[mutation]]
+id = "tau-two-conclusion-twenty-five"
+file = "coq/Support.v"
+question = """Is 26 the right ceiling for a two-point cover? 25 does not \
+follow -- 20 from the pair and 6 from the both-points part is 26 exactly, \
+so the bound lands on 26 and nothing sharper is available from these \
+inputs."""
+find = "    (forall A, In A F -> In p A \\/ In q A) ->\n    length F <= 26.\nProof."
+replace = "    (forall A, In A F -> In p A \\/ In q A) ->\n    length F <= 25.\nProof."
+expect = "killed"
+
+[[mutation]]
+id = "tau-two-links-live-on-ten"
+file = "coq/Support.v"
+question = """Do the two links really land on nine points rather than \
+ten? That is the step the whole bound turns on: members of the p-part \
+avoid q, so their links miss both cover points. Restricting the carried \
+hypothesis to ground sets of size at most 8 must break the application, \
+which is the machine-checked way of saying the reduction reaches exactly \
+nine and not fewer."""
+find = "    NoDup V -> length V <= 9 ->"
+replace = "    NoDup V -> length V <= 8 ->"
+expect = "killed"

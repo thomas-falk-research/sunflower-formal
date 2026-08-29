@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 150 anecdotes into a coverage metric over the
+  mutation testing from 167 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -2322,7 +2322,12 @@ since `iota(2)` and `iota(3)` are both maximal the whole 3-adic tower is.
 
 Formalised: `Maximal.iota4_is_maximal_intersecting` at `b = 4`, through
 the general reduction, reflectively, with no ground set. The general
-statement needs `substitute` in Coq, which is §5 item 2's session.
+statement needed `substitute` in Coq — **done in session N+12**,
+`Substitution.substitution_is_maximal`, with the three pure-substitution
+rows now theorems rather than measurements:
+`triangle_squared_is_maximal` (`b = 4`),
+`iota3_into_triangle_is_maximal` (`b = 6`) and
+`iota3_squared_is_maximal` (`b = 9`). See §35.
 
 ### 13.2 What that does *not* say
 
@@ -9010,11 +9015,13 @@ New: `coq/Profile.v`, `coq/Counting.v`, `coq/Fragment.v` (three modules,
 no axiom); `tools/ceiling.py` and the `make ceilings` gate;
 `tools/prcheck.py`, `.github/pull_request_template.md` and the
 `make prcheck` gate; `rust/tests/profile.rs`, `counting.rs`,
-`fragment.rs`, `fragment_count.rs`. The development is now 45 modules,
-671 audited theorems, 129 audited definitions, 150 mutations, and 31
-Rust integration suites (the gate line below reports 33 `test result`
-lines, which is those 31 plus the library's own unit tests and its
-doctests).
+`fragment.rs`, `fragment_count.rs`. At the close of that session the
+development was 45 modules, 671 audited theorems, 129 audited
+definitions, 150 mutations, and 31 Rust integration suites (the gate
+line below reports 33 `test result` lines, which is those 31 plus the
+library's own unit tests and its doctests). The current counts are in
+§34.8; this paragraph is a record of what N+10 left behind and is not
+updated.
 
 Final gate run, all green:
 
@@ -9085,3 +9092,3183 @@ search, two cross-checked SAT solvers, prescribed-symmetry search, the
 spread decision procedures, a costing gate that refuses uncosted routes,
 and now a complete counting layer. **What is missing is a session that
 points them at an open question and reports the answer with its budget.**
+
+---
+
+## 33. Session N+11: `f(3,3)` was decided in 1969, the cone route was
+##     already dead, and the `ι(4)` ladder moved one ground point
+
+### 33.1 The verdict, without inflation
+
+Three things moved, and one of them is a number about sunflowers that
+was not here before.
+
+* **`f(3,3) = 21` has been known since 1969, and this repository's own
+  lower bound is the exact value.** Kostochka's Δ-system survey, p. 4,
+  rendered and read: *"Abbott and B. Gardner [2] proved in 1969 that
+  `f(3,3) = 20`, and since then no other exact value of `f(k,r)` for
+  `k ≥ 3` and `r ≥ 3` became known."* In his convention `f(k,r)` is the
+  largest family, so that is this development's `g(3) = 20`. `STATUS.md`
+  called `f(3,3)` *"the first unknown sunflower number"* in three places.
+  It was not unknown; the six-member gap `[21, 27]` was entirely on the
+  upper side, and `Intersecting.lower_bound_3_3_20` was exact.
+  (§33.2, `coq/AbbottGardner.v`, `docs/reading.md` A9.)
+
+* **§13.4's "most concrete thing left on the list" was already dead when
+  it was written**, by a theorem in the same tree. The cone route to
+  `ι(4) ≥ 32` needs a 3-uniform sunflower-free family of 32 members;
+  `PureLink.g_three_at_most_26` says the largest has at most 26. Six
+  short, unconditionally, on every ground set — and twelve short against
+  the 1969 value. The 601-second SAT run §13.4 records at `N(3,16) ≥ 30`
+  was asking a question the kernel already answered. (§33.3.)
+
+* **A new instrument, and one new number.** The ten-point rung —
+  `ι(4,10) ≤ 31`, which cost the branch-and-bound **4437 seconds** and
+  which the previous SAT encoding did not decide at all — now lands in
+  **866 seconds**, and is confirmed by a **second, independent solver**.
+  The genuinely new number is at `b = 5`: **`ι(5,g) ≤ 42` for every
+  `g ≤ 9`**, in 69.8 seconds, where §9 had only `ι(5,10) ≥ 42` and a
+  sixteen-minute failure above it. **`ι(4,11)` was not decided**; the run
+  was stopped by hand with its budget unspent and §33.5a says exactly
+  where. (§33.4, §33.4a, §33.5, §33.5a.)
+
+**What did not move.** `Sharp.AHSOptimal` is not decided: the boundary
+`ι(4) ∈ {31, 32}` sits inside the conditional interval `[27, 59]` and no
+ground-set bound is known that would make the ladder finite. No upper
+bound on `f(n,k)` moved, no lower bound moved, the axiom census is
+unchanged, and the greedy-cover barrier of §29 is **not** upgraded: rule
+19 forbids it while Füredi's 1978 Bolyai paper remains located and
+unopened.
+
+### 33.2 The 1969 value, and the two things the kernel checks about it
+
+`coq/AbbottGardner.v` carries `GAtMost 3 20` as a named `Prop`
+(`AbbottGardner1969`), the same discipline `SliceRank.NaslundSawinBound`
+and `Spread.SpreadYieldsDisjoint` already use. The trusted core is
+unchanged and every theorem in the file reports `Closed under the global
+context`.
+
+Two checks the kernel *can* make on a citation:
+
+```
+  gardner_value_is_not_vacuous               ~ GAtMost 3 19
+  gardner_value_is_consistent_with_the_kernel  it is weaker than g(3) <= 26
+```
+
+The first is the useful one. `Intersecting.lower_bound_3_3_20` builds
+twenty 3-sets with no 3-sunflower — the doubled `ι(3)` — so *any*
+transcription of the survey's number below 20 fails to compile. The
+value is pinned from below by an object, and from above by a citation,
+and the file says which is which.
+
+What it buys upward, through `PureLink.iota_recursion_sharp`:
+
+```
+  quantity     with g(3) <= 26 (proved)   with g(3) <= 20 (1969)
+  iota(4)               77                        65
+  iota(4), iota(3)=10   71                        59
+  g(4)                 154                       130
+```
+
+`ι(4) ≤ 59` against the witnessed `ι(4) ≥ 27`. **The 31/32 boundary is
+still inside that interval**, which is the honest reason this section
+does not end with `AHSOptimal` decided.
+
+### 33.3 Closed: the cone route to `ι(4) ≥ 32`
+
+§13.4 wrote:
+
+> **`iota(4) >= 32`, through the general row.** By the cone, a
+> *3-uniform* sunflower-free family with 32 members gives `iota(4) >= 32`,
+> refutes `Sharp.AHSOptimal`, and gives `f(3,3) >= 33`. The proved
+> `N(3,g) <= 2g` forces `g >= 16` and at `g = 16` the bound would have to
+> be met with equality [...] That is a **rigid** target, not a wide
+> search, and it is the most concrete thing left on the list.
+
+`N(3,g) ≤ 2g` is a bound in the *ground set*. `PureLink.g_three_at_most_26`
+is a bound with no ground set in it at all, and it says the object does
+not exist on any number of points. It was proved in the `PureLink`
+session, after §13 was written, and nothing went back to §13.
+
+`AbbottGardner.no_three_uniform_sunflower_free_family_has_thirty_two_members`
+is the one-line consequence, and
+`the_cone_route_to_iota_four_thirty_two_is_closed` is the same fact in
+the shape §13.4 used it. This is rule 21 again, in the direction the
+rule was written for: **a handover's task list is a hypothesis about the
+repository, and `grep` refutes it in a minute.**
+
+### 33.4 The instrument: degree-ordered symmetry breaking, and a ladder
+###      in the support size
+
+§9 diagnosed the wall precisely — *"the instances are tiny and hard,
+which is the signature of symmetry"* — and named the fix in the same
+paragraph: spend the stabiliser of the anchor on a **sorted degree
+sequence**. Nobody had built it. `rust/src/symbreak.rs` is that, plus
+three more turns of the same screw.
+
+What is sound, and why (the module comment carries the argument in full):
+
+1. **The maximum-degree point is in the anchor, and it is point 0.**
+   Pick a point `z` of maximum degree; it has degree at least one, so
+   some member contains it; relabel that member to `{0,…,b-1}` with
+   `z ↦ 0`. So `deg(0) ≥ deg(y)` for every `y`, on top of the anchor the
+   old encoding already forced.
+2. **Sorted blocks.** What is left is `Sym({1..b-1}) × Sym({b..g-1})`;
+   use it to sort each block by degree.
+3. **Lexicographic tie-breaking.** Sorting spends the group only down to
+   the equal-degree runs, and at these parameters the candidates are
+   nearly regular — at `(b,g,t) = (4,10,32)` the incidence count forces
+   every degree into `{11,12,13}` — so most of the group survives the
+   sort. Take the lex-largest family in the orbit of the degree-preserving
+   subgroup; it satisfies `F ≥_lex (p q)F` for every adjacent `p, q` of
+   equal degree, and that conjunction is encoded.
+4. **Exactly `t` members, not at least.** Everything passes to
+   subfamilies, so a family of `t' > t` contains one of exactly `t`.
+   This pins the incidence count `Σ_x deg(x) = b·t` rather than bounding
+   it, which is what makes the floor below sharp.
+5. **The floor.** Every member meets the anchor, so
+   `Σ_{x ∈ A} deg(x) ≥ |F|`; and `Σ_{x ∈ [g]} deg(x) = b|F|` exactly.
+   The maximum beats both averages:
+   `deg(0) ≥ max(⌈t/b⌉, ⌈b·t/g⌉)`. At `(4,10,32)` that is 13, not the 8
+   the first form gives.
+6. **The ladder.** Ask the question one support size at a time: for `s`
+   from `b` to `g`, *"is there such a family whose support is exactly
+   `[s]`?"*. Every family on at most `g` points has a support of some
+   size `s ≤ g` and relabels onto `[s]`, so the rungs cover the question.
+   Each rung is smaller than the flat question **and has far less
+   symmetry**, because unused points are interchangeable and a rung has
+   none.
+
+The cube split is on `deg(0)`: `deg(0) = d` for each `d` from the floor
+to the ceiling, disjoint, one per core, printed as each lands.
+
+**What stops it being confidently wrong** (`rust/tests/symbreak.rs`):
+the counter is checked to be an *iff* in both directions against a
+brute-force count — a one-directional counter makes every degree
+comparison a no-op and nothing else would notice; the symmetry
+constraints are run on and off at every small parameter and required to
+give the same verdict, which is the control §9 asked for on the degree
+cap and did not get; the cube split is checked against the unsplit
+instance; the cubes are checked to abut and cover without the solver;
+and every value is checked against `intersecting::iota`, an exhaustive
+branch-and-bound sharing no code with any of it.
+
+
+### 33.4a What the b = 5 row cost
+
+A second use of the same instrument, run because it is cheap and the row
+is thin: `docs/roadmap.md` §9 records `iota(5,10) >= 42` found by SAT in
+2025 and `>= 43` *undecided in sixteen minutes*. The ladder settles the
+rungs below it — **`iota(5,g) <= 42` for every `g <= 9`**, in 69.8 s at
+`g = 9`, twenty cubes, none at the limit — and then hits the same wall at
+ten points, where its first cube ran past the sixty-second slice and the
+run was stopped by hand. So `ι(5,10)` is still `[42, ?]` and the
+instrument's reach at `b = 5` is one ground point behind `b = 4`, which
+is what the variable counts predict: `C(10,5) = 252` candidate sets
+against `C(10,4) = 210`, and the ternary clause count grows faster.
+
+### 33.5 What it decided, with the budget
+
+The question is `ι(4, g) ≥ 32?` — the size that refutes `Sharp.AHSOptimal`
+and gives `f(3,3) ≥ 33`. Every rung is a **cover**, so an UNSAT rung is an
+exhaustion and not a failure to find.
+
+```
+  question               instrument                        budget      verdict      wall
+  ---------------------- --------------------------------- ----------- ------------ --------
+  iota(4,g) >= 32, g<=9   ladder, deg(0) cubes             none            UNSAT       2.8 s
+  iota(4,10) >= 32        ladder + 1 refined cube          none            UNSAT     866.3 s
+  iota(4,9)  >= 32        the same, under cryptominisat5   none            UNSAT       5.8 s
+  iota(4,10) >= 32        the same, under cryptominisat5   stopped     undecided  --
+  iota(4,10) >= 32        [previous] branch-and-bound      none            UNSAT    4437   s
+  iota(4,10) >= 32        [previous] SAT, orbit split      1800 s/orbit    undecided  --
+  iota(4,11) >= 32        ladder                           stopped     undecided  --
+  iota(5,g) >= 43, g<=9   ladder, b = 5                    none            UNSAT      70.2 s
+  iota(5,10) >= 43        ladder, b = 5                    stopped     undecided  --
+```
+
+**Where the previous frontier was.** §9 records `iota(4,10) >= 32` decided
+by the homegrown branch-and-bound in **4437 seconds**, and `iota(4,11) >= 32`
+as *undecided* by cadical after thirty minutes. The old SAT encoding was
+re-run at the start of this session as a control and did not decide
+`iota(4,10) >= 32` either: cadical, anchor plus orbit split, 1800 s per
+orbit, **orbit 1 timed out at 1800 s** and the run was stopped by hand
+during orbit 2. So the ten-point rung is a re-derivation by a second
+instrument at a fifth of the cost — **and the frontier did not move.**
+Eleven points remains where §9 left it, undecided; what changed is the
+price of ten, and what that buys is stated in §33.5a rather than
+inflated here.
+
+**What each verdict means.** `UNSAT` is *exhausted* — every family the rung
+covers was ruled out. `UNKNOWN` is *undecided at the limit*, and the limit
+is printed beside it. A rung that was stopped by hand is labelled as such
+and its budget is the result, which is what rule 13 exists for.
+
+**The second opinion.** `sat::solve_agreed` is this repository's standing
+rule for UNSAT — two independent solvers required to agree before the
+verdict is believed — and it was **not** run across every cube of every
+rung; the cost is a second full pass.
+
+**What was actually done, and it is less than the rule asks for.** The
+ladder was re-run end to end under `cryptominisat5`, same encoding, same
+cubes. It reproduced every rung up to and including **nine points** —
+`iota(4,9) >= 32` UNSAT in 5.8 s, eighteen cubes, agreeing with cadical
+cube for cube — and was **stopped by hand inside the ten-point rung**,
+after about fifty minutes, to give the mutation suite the machine. So:
+
+```
+  rung          cadical              cryptominisat5
+  g <= 9        UNSAT                UNSAT   -- agree
+  g = 10        UNSAT, 866.3 s       stopped by hand, no verdict
+  g = 11        stopped by hand      not attempted
+```
+
+**The 866-second ten-point verdict therefore rests on one solver.** That
+is the weakest link in this section and it is stated here rather than in
+a footnote. It is not a bare assertion — the same value was reached in
+2025 by the branch-and-bound, which shares no code with any solver — but
+"two solvers agreed" is not what happened and is not claimed.
+
+**Rule 25 applies and is stated where the result is.** The search works
+over `u32` bitmasks; `coq/Sharp.v` and `coq/IotaRate.v` work over lists of
+lists of `nat` with a `Distinct` predicate. A bitmask search cannot falsify
+a list-representation defect, and no transcription of a *negative* into Coq
+is possible — an UNSAT has no witness to transcribe. What is in the kernel
+is the *lower* end: `Product.iota_four_at_least_27`, a family, checked
+reflectively.
+
+
+
+### 33.5a What the eleven-point rung cost, and what it would take
+
+The eleven-point rung is `86597` variables and `321681` clauses — twice
+the ten-point instance — and it behaves quite differently. **Sixteen of
+its twenty-one `deg(0)` cubes were still running when the sixty-second
+slice expired**, against five at ten points, and only the five largest
+`deg(0)` values (28 through 32) landed inside it. The refinement then
+produced 34 degree-sequence cubes for the one cube it could refine
+(`deg(0) = 12`, the floor, deficiency four, nineteen sequences) and left
+the other fifteen coarse with no limit.
+
+**The run was stopped by hand, with its budget unspent**, to free the
+machine for the gates. That is the third of the three statements this
+repository distinguishes, and it is the honest one here: not
+*exhausted*, not *undecided at N seconds*, but **stopped**. Nothing about
+`ι(4,11)` is claimed.
+
+What it would take, in order of expected value:
+
+1. **Uncontended cores.** The ten-point rung landed in 866 s against a
+   `make verify` and a second ladder. Sixteen coarse cubes at eleven
+   points, each plausibly in the 10–60 minute range, is 3–15 core-hours —
+   a background run, not a research problem.
+2. **A second refinement axis.** The degree-sequence split only bites at
+   the floor, because the deficiency `g·deg(0) − b·t` grows linearly in
+   `deg(0)` and the sequence count with it. Splitting on the *trace
+   profile* instead — how many members meet the anchor in one, two,
+   three points — is bounded independently of `deg(0)` and is the obvious
+   next axis.
+3. **The proved degree ceiling.** The counters run to `t = 32` because
+   `lex_ties` needs exactness. `PureLink.g_three_at_most_26` bounds every
+   point's degree by 26, and the 1969 value bounds it by 20; asserting
+   either would delete a third of the cubes outright. It is a
+   *consequence* of the ternary clauses, so §9's measurement says it will
+   not help the solver — but it would shrink the counter, which §9 did
+   not measure.
+
+### 33.6 Costs and gates
+
+New this session: `coq/AbbottGardner.v` (one module, no axiom);
+`rust/src/symbreak.rs`, `rust/examples/iota_sym.rs`,
+`rust/tests/symbreak.rs`.
+At the end of that session the
+development was 46 modules, 683 audited theorems, 130 audited
+definitions, 151 mutations, and 32 Rust integration suites. The current counts
+are in §34.8; this paragraph records what N+11 left behind.
+
+```
+  make -j2 verify          pass    11m27s   (46 modules, clean rebuild,
+                                            683/683 audited theorems closed)
+  make coqchk              pass     2m53s   census exactly Rao20_lemma2,
+                                            all three escape hatches empty
+  python3 tools/mutate.py  pass    77m03s   151 mutations, 148 killed,
+                                            2 declared survivors, 0 unexpected
+  cargo test --release     pass    26m31s   32 integration suites, 324 tests,
+                                            0 failures
+  tools/statements.py      813 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+Zero admits; every audited theorem reports `Closed under the global
+context`.
+
+**The searches, with their budgets.** All wall times are on a
+**four-core, contended** machine — the `ι(4,11)` rung, the `b = 5`
+ladder, `make verify` and the `cryptominisat5` confirmation were run
+concurrently for part of the session — so they are upper bounds on what
+an uncontended run would cost, and the cube counts are exact regardless.
+
+### 33.7 Picking this up cold
+
+Four things, in the order they matter.
+
+**1. The ladder has no stopping rule, and that is the whole difficulty.**
+`ι(4, g)` is decided one ground set at a time and `ι(4)` is the limit.
+Nothing here bounds the ground set of an extremal *intersecting*
+family — that hypothesis is `IotaGround.IotaGroundBounded` and it is
+open; `Product.the_universal_iota_ground_reading_is_false` shows the
+naive reading of it is false, by a coned tree-path family that genuinely
+needs `2^b − 1` points. The elementary bound that *is* available,
+`PureLink.intersecting_support_bound`, gives support `≤ b + (b−1)(n−1)`,
+which at `(b,n) = (4,32)` is **97 points** — improved to **77** in §34 by
+`Support.anchored_support_bound`, which changes nothing about
+reachability and says so. So the ladder as it stands cannot close, and a
+session that means to decide `AHSOptimal` at `b = 4` needs a structural
+bound on the support, not a bigger budget — **and §34.5 argues that no
+bound of that kind gets there either.**
+
+Two things narrow it, and they are worth having in front of you:
+`τ(F) = 1` forces `|F| ≤ g(3) = 20`, so a 32-member family has covering
+number at least two; and the counting ceiling `|F| ≤ C(g,2)` at `b = 4`
+(`genprog::size_ceiling`) forces `g ≥ 9` from below. Neither is in Coq.
+
+**2. Do not re-run the rungs below the frontier.** They are in §33.5
+with their wall times, and `rust/tests/symbreak.rs` re-decides everything
+up to nine points on every `cargo test --release`.
+
+**3. The instrument is `rust/src/symbreak.rs` and its knobs are
+documented in the module comment, not in this file.** The two that
+matter: `--slice` sets how long a coarse `deg(0)` cube gets before it is
+refined, and `--cubecap` sets how many cubes the refinement may produce
+before it gives up and lets the coarse cube run to completion. Both were
+tuned on `g = 10`, where the wrong setting was measured rather than
+guessed: at `deg(0) = 14` the *full* degree-sequence split produces 684
+cubes for an instance that solves whole in about ten minutes, and paying
+684 solver startups for it is a loss. The adaptive prefix — pin the
+first `p` degrees, leave the rest free, take the largest `p` under the
+cap — exists because of that measurement.
+
+**4. `AbbottGardner1969` is a citation, and the next session should try
+to read the primary source.** H. L. Abbott and B. Gardner, *On a
+combinatorial theorem of Erdős and Rado*, in W. T. Tutte, ed., *Recent
+progress in Combinatorics*, Academic Press, 1969, 211–215. Not open
+access; four routes tried. If it turns out to say something other than
+`g(3) = 20`, every conditional corollary in `coq/AbbottGardner.v` is
+named for the value it assumes and none of them is used by anything
+else, so the retraction is one file.
+
+### 33.8 The one-line verdict
+
+> **`f(3,3)` was settled in 1969 and this repository did not know it, the
+> route its own roadmap called the most concrete thing left was already
+> dead, and the frontier that had cost 4437 seconds now costs 866 — but
+> the next ground point did not fall, and the session says so.**
+
+Two of those are corrections to this repository rather than results about
+sunflowers. What is new about sunflowers is thin and is stated as such:
+`ι(5,g) ≤ 42` for `g ≤ 9`, and a ten-point rung re-decided by a second
+*instrument* — **not** by a second solver; §33.5's table is the one that
+governs, and `cryptominisat5` was stopped inside the ten-point rung, so
+that rung rests on `cadical` alone. `Sharp.AHSOptimal` is not decided,
+and §33.5a says what the eleven-point rung would cost.
+
+Judged against §32.7's bar — *"a sentence of the form `X` is now known,
+and it was not before, where `X` is a statement about sunflowers"* — this
+session clears it, barely, at `b = 5` and not at `b = 4`. The instrument
+is the real output, and the honest reading of it is that it is one
+uncontended background run away from the answer that matters.
+
+---
+
+## 34. Session N+12 — the two levers, and a paper that was said not to exist
+
+### 34.1 The verdict, before the details
+
+> **The ground set of a hypothetical 32-member counterexample is now
+> pinned from both sides in Coq — at least nine points, at most 77 — and
+> neither end brings the ladder within reach. The one paper session N+11
+> reported as having no digitisation was on the author's own website and
+> took one request; it contains no Δ-system material at all.**
+
+Nothing here decides `Sharp.AHSOptimal`, moves `f(n,k)`, or moves the
+`10^(n/2)` record. What it does is replace two prose claims by theorems,
+improve the standing support bound by a fifth, and close — the right
+word is *close*, not *confirm* — the one acquisition the previous
+session recorded as impossible.
+
+### 34.2 Lever one: the covering number, unconditionally
+
+`Support.common_point_bounds_the_family` is
+`PureLink.link_at_point_bounded` read backwards. A family every member of
+which contains a fixed point `x` **is** its own link at `x`, so `g(b−1)`
+caps it. At `b = 4` the cap is `PureLink.g_three_at_most_26`, which is
+proved rather than cited, so:
+
+> `Support.twenty_seven_four_sets_have_no_common_point` — an intersecting
+> 3-sunflower-free family of 4-sets with **27 or more** members has no
+> common point. Its covering number is at least two.
+
+Twenty-seven is exactly the known lower bound for `ι(4)`, so the
+statement bites on the extremal object itself, and it needs no appeal to
+the 1969 value. With that value the threshold drops to 21, and that form
+is stated too, with the value as a hypothesis in `AbbottGardner`'s
+discipline.
+
+The 27-member witness is checked against it directly:
+`rust/tests/support.rs` computes the intersection of all 27 members and
+asserts it is empty.
+
+### 34.3 Lever two: the counting ceiling, and the pair link
+
+Two points determine a *pair link*, which is `(b−2)`-uniform, distinct
+and sunflower-free by the same three lemmas that give the point link. So
+`Support.link_at_pair_bounded`: `deg [x;y] F ≤ g(b−2)`. At `b = 4` that
+is `g(2) ≤ 6`, and six is the truth — two disjoint triangles are
+2-uniform and sunflower-free, which `rust/tests/support.rs` exhibits and
+cones so the six is attained at `b = 4` as well.
+
+Counting the incidences `(A, Q)` with `Q` a two-element subset of the
+member `A` in both orders — the list-level Fubini that
+`PureLink.degsum_eq_sizesum` performs for single points, done here for
+pairs by `Support.pair_incidence_swap` — gives
+
+```
+  |F| * C(b,2)  <=  C(g,2) * g(b-2)
+```
+
+and at `b = 4` the two sixes cancel, leaving `|F| ≤ C(g,2)`
+(`Support.four_uniform_size_ceiling`). Hence
+`Support.thirty_two_four_sets_need_nine_points`: **a 32-member family
+needs at least nine points**, because `C(8,2) = 28 < 32 ≤ 36 = C(9,2)`.
+
+**This is weaker than what the ladder already knows.** §33.5 records
+`ι(4,10) ≥ 32` refuted, so the true answer is at least eleven. The value
+of the theorem is that it is a proof rather than a solver verdict, and
+that it is quantified over every `b` and every family size, which a rung
+is not. `Support.the_proof_is_two_rungs_behind_the_search` says so in
+the file, as arithmetic the kernel checks.
+
+`genprog::link_bound(4, n)` computes the same `C(n,2)` and
+`genprog::least_ground(4, 32)` computes the same 9, from an
+implementation that shares no code with the Coq proof. That agreement is
+asserted.
+
+### 34.4 The new part: a support bound that beats the standing one
+
+One anchor charges each member `b−1` new points, because every member
+meets it. *Two* anchors that meet in exactly one point charge `b−2`,
+because a member avoiding the shared point has to meet the two anchors at
+two **different** points. The members that do contain the shared point
+are handled by the link there, which is sunflower-free and therefore has
+no three pairwise disjoint members — so two of its members already cover
+it, and every such member meets `{z} ∪ T_z` twice as well.
+
+> `Support.anchored_support_bound`: an intersecting, `b`-uniform,
+> distinct, 3-sunflower-free family of `n` members has support at most
+> `(4b − 3) + (b − 2)·n`.
+
+| `(b,n)` | standing bound | new bound | |
+|---|---|---|---|
+| `(4,32)` — the refutation size | 97 | **77** | `thirty_two_four_sets_need_at_most_77_points` |
+| `(3,11)` — the `ι(3)=10` exhaustion | 23 | **20** | `iota_three_eleven_needs_only_20_points` |
+| `(4,8)` | **25** | 29 | the new bound is *worse* here |
+
+**It is not uniformly better and the file says so.** The difference is
+`n − (4b − 4)`, so the second anchor pays only once the family is bigger
+than `4b − 4` members; `Support.below_the_crossover_the_single_anchor_is_better`
+records a case where quoting the new number would be quoting the worse
+one, and `wide::least_support_bound` takes the smaller of the two.
+
+**Why the coefficient is `b − 2` and not less.** A member can have two
+*private* points — points of degree one. It cannot have three: if `A` had
+three, every other member would meet `A` in the single remaining point,
+that point would lie in every member, and §34.2 would cap the family at
+26. So "each member contributes at most two new points" is the real
+obstruction, not slack in the core. Pushing the coefficient to `b − 3`
+means every member must meet the core in **three** points, which needs the
+pair links of every core point as well — about 124 points at `b = 4`.
+Against `13 + 2n` that loses for every `n` below 111, and
+`PureLink.iota_four_at_most_77` caps `ι(4)` at 77 unconditionally (59 with
+the 1969 value and the exhaustive `ι(3) = 10`), so it loses always.
+
+**What was checked before it was trusted.** `rust/tests/support.rs`
+rebuilds the core from the family alone, sharing no code with the Coq
+development, and over an exhaustive sweep of **127 466 families** —
+`(6,2)`, `(5,3)`, `(6,3)`, `(7,3)`, `(6,4)`, every intersecting
+sunflower-free family on those ground sets — asserts that the link cover
+never exceeds two members, that the core is never wider than `4b − 3`
+(and that `4b − 3` is *attained*, at `b = 2`), and that every member
+meets the core twice. Both branches of the case split are exercised —
+7 293 families take the "every member meets the anchor twice" branch and
+120 168 take the two-anchor branch — and that split is asserted, because
+a sweep that hit only one branch would leave half the proof unfalsified.
+14 000 sampled families at `(8,4)`, `(9,4)`, `(10,4)` and `(9,3)` extend
+the check past where exhaustion is affordable, and are labelled as
+sampling, not exhaustion. The exhaustive sweep stops where it does for a
+measured reason: `(7,4)` has 35 333 735 families and `(8,4)` has more
+than forty million.
+
+### 34.5 What none of this does, stated plainly
+
+**It does not bring the ladder within reach, and no bound of this kind
+would.** §33.5a measures the rungs growing by roughly two orders of
+magnitude per ground point: nine points in 5.8 s, ten in 866 s, eleven
+estimated at 3–15 core-hours. Twelve is out of reach on this machine and
+thirteen is out of reach on any. So the reachable ceiling is about twelve
+points, and the *proved floor* is now nine — with the ladder itself
+having pushed the real floor to eleven. A support bound would have to
+come in at eleven or twelve to close the gap, and the method here tops
+out at `2n + O(1)`, four times that.
+
+The honest sentence is: **the ladder cannot be closed by a support
+bound.** It could only be closed by a structure theorem strong enough to
+pin the support of a hypothetical 32-member family to within one or two
+points of its proved floor, and nothing in this development suggests such
+a theorem is available. A session that wants to decide `AHSOptimal` at
+`b = 4` should be looking for an upper-bound argument on `ι(4)` itself —
+the gap there is `[27, 59]` against the needed 31 — not for a bigger
+ground-set search.
+
+### 34.6 Füredi 1978, and what session N+11 got wrong about it
+
+Session N+11 recorded: *"no digitisation found, not on arXiv, not on the
+author's page"*, after four routes. The paper is a 31-page scan on the
+author's own publication list at `www.renyi.hu/~furedi/`, and one request
+fetched it. The Illinois host that session tried resets the connection
+from this environment; a dead host is not an absent document, and
+`docs/reading.md` rule 29 now says so.
+
+All 31 pages (177–207) are rendered and logged in
+`docs/papers/furedi78-rendered-pass.md`. **The paper contains no
+Δ-system material whatsoever** — the words *Δ-system* and *sunflower*
+occur nowhere, Erdős–Rado 1960 is not among its nine references and
+neither is Abbott. It is about the Erdős–Rothschild–Szemerédi problem:
+the largest **intersecting** `r`-uniform family whose maximum degree is
+at most `c|F|`, attacked with fractional matchings and covers,
+`ν`-critical nuclei, Baranyai's theorem and Pelikán's theorem. So it
+cannot carry the barrier remark it was fetched for, and the brief's
+premise about it was wrong.
+
+**§29's greedy-cover barrier is still not upgraded.** Both papers the
+brief named are now read and neither carries the remark, but two papers
+is not a literature search and rule 17 is not satisfied by clearing a
+two-item list. The novelty status of `Profile.greedy_forces_erdos_rado`
+is unchanged.
+
+One thing in the paper does touch this development. p. 186 builds an
+extremal family from *"a 3-uniform, intersecting set system `H_1` with 10
+members on a 6-element set"* — exactly the parameters of
+`Intersecting.iota3`. The identification is **not** made (Figure 1 is a
+dot diagram this pass did not decode), but the parameter coincidence is
+not a coincidence: `10 = ½C(6,3)`, so any such family is EKR-extremal at
+`n = 2r`, taking one set from each of the ten complementary pairs. The
+`ι(3)` witness does exactly that, with covering number 3. **At `b = 3`
+the sunflower-free constraint costs nothing.** Checked in
+`rust/tests/support.rs::the_iota_three_witness_is_also_ekr_extremal`.
+
+### 34.7 A correction inside §33
+
+§33.8's summary said the ten-point rung was *"re-decided by a second
+instrument and a second solver"*. §33.5 says, correctly and at length,
+that `cryptominisat5` agreed only up to **nine** points and was stopped
+inside the ten-point rung, so that rung rests on `cadical` alone. The
+correction landed in §33.5 and in the pull-request body and did not reach
+the one-line verdict eight paragraphs later. It has now. Rule 21, in the
+direction it was written for, inside a single session's own text.
+
+### 34.8 Costs and gates
+
+New this session: `coq/Support.v` (one module, no axiom);
+`rust/tests/support.rs`; `wide::anchored_support_bound` and
+`wide::least_support_bound`; `docs/papers/furedi78-rendered-pass.md`.
+At the end of that half the
+development was 47 modules, 703 audited theorems, 133 audited
+definitions, 154 mutations, and 33 Rust integration suites; the current
+counts are in §35.5.
+
+```
+  make -j4 verify          pass    11m37s   47 modules, clean rebuild,
+                                            703/703 audited theorems closed
+  make coqchk              pass     2m49s   census exactly Rao20_lemma2,
+                                            all three escape hatches empty
+  python3 tools/mutate.py  pass    77m59s   154 mutations, 151 killed,
+                                            2 declared survivors, 0 unexpected
+  cargo test --release     pass    26m54s   33 integration suites, 335 tests,
+                                            0 failures
+  tools/statements.py      836 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+The three mutations added this session are all **killed**, in about 225 s
+each: dropping `Intersecting` from the two-anchor bound (the bound is
+false without it — a sunflower-free family has matching number at most
+two, so it lives on `2b + (b−1)(n−2)` points, which beats `(4b−3) + (b−2)n`
+for every `n > 11` at `b = 4`); dropping the second anchor from the core
+(the members avoiding the shared point then meet it once, which is the
+charge the single-anchor bound already pays); and charging the pair link
+`g(b−1)` instead of `g(b−2)` (which would replace the six of `g(2)` by
+the twenty-six of `g(3)` and make the counting ceiling four times
+weaker). Zero admits; every audited theorem reports `Closed under the
+global context`.
+
+Wall times are on the same four-core machine as §33.6 but **uncontended**:
+the four long gates were run one after another, not concurrently, which
+is why `make verify` at 47 modules costs the same 11½ minutes §33.6
+reports for 46.
+
+### 34.9 Picking this up cold
+
+Read §34.5 first. It is the part that says what not to do next, and the
+argument in it is the session's most useful output: the `ι(4)` ladder
+has a reachable ceiling around twelve ground points and a proved floor
+of nine, and closing that gap is not a search problem.
+
+The two levers are in `coq/Support.v` and both generalise in `b`, so the
+`b = 5` row (`ι(5)`, where §33.4a's ladder ran) can be given the same
+treatment for the cost of instantiating two corollaries.
+
+---
+
+## 35. Session N+12, second half — a queued formalisation, and a proposal that was already done
+
+### 35.1 The correction first
+
+This section exists because of a mistake, and the mistake is more
+instructive than the section's content.
+
+Asked what the session's results unlocked, this session proposed as its
+sharpest moonshot: *`b = 9` is where `AHSOptimal` is exactly tight — the
+substitution family has 10 000 members against a threshold of 10 001, so
+one extra 9-set refutes the conjecture; nobody has checked whether it
+extends.* It then derived a reduction, computed that the 3-element covers
+of `ι(3)` are exactly its ten members, and reported the family maximal.
+
+**All of that was already in this repository.** §13.1 has the table —
+including the `b = 9` row, 10 000 members, `τ = 9`, *"none"* addable —
+measured three independent ways (`rust/examples/extend_ahs.rs`, brute
+force, and SAT with two solvers required to agree). It states the
+mechanism correctly: *"the covering number is multiplicative … so
+maximality is multiplicative under substitution, and since `ι(2)` and
+`ι(3)` are both maximal the whole 3-adic tower is."* `STATUS.md`'s
+`the_tower_misses_by_exactly_one` row already says `b = 9` needs 10 001
+against the 10 000 the substitution builds. `rust/tests/extension.rs`
+already contains `the_ten_thousand_member_family_at_b_nine_is_maximal`,
+by the same minimal-hitting-set method, using
+`extend::minimal_hitting_sets`, which already exists.
+
+The `rust/tests/substitution.rs` written before this was noticed was a
+reimplementation of code already in the tree and was deleted rather than
+committed. What survives is the Coq module, because §13.1 names it as
+the one missing piece.
+
+Rule 21 says a handoff's "do this first" is a hypothesis about the
+repository, checked before it is acted on. Rule 30 extends it to the
+case that actually bit: a proposal generated in conversation is a
+hypothesis about the repository too, and conversation supplies no index.
+
+### 35.2 What is actually new
+
+One thing: **the general statement is now a theorem.**
+
+> `Substitution.substitution_is_maximal` — if both seeds are maximal and
+> both have covering number equal to their uniformity, the substituted
+> family is maximal: on every ground set, for every list, using only the
+> intersecting condition.
+
+With `Substitution.tau_of_certificate` discharging the covering-number
+hypothesis from a `2^|U|` check on the seed — 64 sublists for `ι(3)`,
+8 for the triangle — the three pure-substitution rows of §13.1's table
+become kernel-checked:
+
+| row | `b` | members | theorem |
+|---|---|---|---|
+| `substitute(ι(2), ι(2))` | 4 | 27 | `triangle_squared_is_maximal` |
+| `substitute(ι(2), ι(3))` | 6 | 300 | `iota3_into_triangle_is_maximal` |
+| `substitute(ι(3), ι(3))` | 9 | 10 000 | `iota3_squared_is_maximal` |
+
+`b = 4` was already formalised, by `Maximal.maximal_of_trace_certificate`
+over `2^9` sublists. `b = 6` and `b = 9` were not and could not be: the
+same certificate is `2^18` and `2^36`. The theorem reaches all three in
+about a second, and reaches every higher level of the tower with it.
+
+### 35.3 The proof, and which hypothesis does what
+
+Fix a candidate `A` of size `a·c` meeting every member. Its **slice** in
+block `v` is what it has there; its **trace** is that read as an inner
+set. Then:
+
+1. For each outer member `T`, some `v ∈ T` has a trace covering the
+   inner family — otherwise pick an inner member missing each trace,
+   assemble, and get a member of the family disjoint from `A`.
+2. So the covering blocks `C` cover the outer family, hence `|C| ≥ τ(O) = a`.
+3. Each of those traces covers the inner family, hence has `≥ τ(I) = c`
+   points.
+4. The slices are disjoint subsets of `A`, so `a·c = |A| ≥ |C|·c ≥ a·c`.
+   Everything is tight: `|C| = a`, every trace has exactly `c` points,
+   and `A` is exactly the union of those slices — in particular `A` has
+   no points outside the blocks of `C`.
+5. `C` is an `a`-element cover of a maximal outer family, so it *is* an
+   outer member; each trace is a `c`-element cover of a maximal inner
+   family, so it *is* an inner member. So `A` was already assembled.
+
+Each hypothesis is load-bearing and each has a mutation:
+`substitution-drop-outer-tau` (step 2 is where `τ(O) = a` is multiplied),
+`substitution-blocks-overlap-by-one` (step 4 needs the slices disjoint;
+widening a block by one point makes the count unsound), and
+`substitution-drop-inner-grounded` (without it an inner member can spill
+past its block and the trace does not see it).
+
+### 35.4 What it does not buy
+
+Nothing about `AHSOptimal`. §13.2 already said so and it is worth
+repeating because the `b = 9` framing invites the opposite reading:
+**maximal is not maximum.** The Fano plane is maximal with seven
+members. `Substitution.maximality_is_not_an_upper_bound` carries that
+next to the result so the two cannot be read as one. `ι(9) ≤ 10000` is
+exactly as open as it was.
+
+What is closed is one route — *extend the canonical construction* — at
+the uniformity where extending it by a single set would have been
+enough. It was closed by measurement in an earlier session; it is now
+closed in the kernel.
+
+### 35.5 Costs and gates
+
+New this session's second half: `coq/Substitution.v` (one module, no
+axiom) and three mutations. **No new Rust**: the file written for this
+was a reimplementation of `rust/tests/extension.rs` and was deleted
+rather than committed — §35.1.
+The development is now 49 modules, 740 audited theorems, 144 audited
+definitions, 167 mutations, and 41 Rust integration suites. (That count
+is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
+arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
+and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
+`cube_budget.rs` in §49. The two paragraphs above quoting
+31 and 32 suites are historical records of earlier sessions and are
+correct as written.)
+
+`coq/Substitution.v` compiles in about a second. Everything expensive in
+it is a `2^6` or `2^3` reflective check on a seed; the theorem does the
+rest, which is the whole reason it exists.
+
+```
+  make -j4 verify          pass    11m53s   48 modules, cold container,
+                                            723/723 audited theorems closed
+  make coqchk              pass     2m49s   census exactly Rao20_lemma2,
+                                            all three escape hatches empty
+  python3 tools/mutate.py  pass    80m10s   157 mutations, 154 killed,
+                                            2 declared survivors, 0 unexpected
+  cargo test --release     pass    26m26s   33 integration suites, 335 tests,
+                                            0 failures
+  tools/statements.py      865 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+All three mutations added here are **killed**, in about 228 s each. The
+figures are within noise of §34.8's — 11m53s against 11m37s, 2m49s
+against 2m49s — so the eleventh module and the three mutations cost
+essentially nothing, and the two blocks are comparable.
+
+**One gate failed first and the reason is worth recording.** The
+container this ran in was rebuilt mid-session; `coqc`, `cadical` and
+`cryptominisat5` all had to be reinstalled. Before `cadical` was,
+`cargo test --release` failed with **two** tests in
+`rust/tests/spread_threshold.rs` panicking on
+`Os { code: 2, kind: NotFound }` — `the_witnesses_are_reachable_by_search`
+and `sat_and_dfs_agree` shell out to a solver. A missing external
+binary is indistinguishable from a broken proof in the output, which is
+a gap in the checking rather than in the mathematics;
+`docs/testing.md` now says so.
+
+## 36. Session N+12, third act — the prior art existed, it was on a blog,
+##     and reproducing it explains its own ceiling
+
+The commissioned prior-art search (§35, `docs/reading.md` A17–A21) came
+back with three claims and one honest gap: the load-bearing row rested
+on a blog thread that returned 403 to this container, and the register
+said so in bold. This section is what happened when the thread was
+finally opened.
+
+It was not opened by fetching the page. Every earlier attempt used the
+slug `2015/12/11/polymath10-post-3-…`, which **does not exist** — the
+post is at `2015/12/08/polymath-10-post-3-…`. A wrong slug on WordPress
+returns an 80 KB 404 body that, rendered through a fetch tool, is
+indistinguishable from a block. Four sessions recorded a hostile host
+when the real problem was a wrong address.
+
+The route that works needs no address:
+
+```
+  https://public-api.wordpress.com/rest/v1.1/sites/gilkalai.wordpress.com/posts/?search=polymath10
+  https://public-api.wordpress.com/rest/v1.1/sites/gilkalai.wordpress.com/posts/13400/replies/?number=100&order=ASC
+  https://public-api.wordpress.com/rest/v1.1/sites/gilkalai.wordpress.com/comments/23193
+```
+
+All 434 comments across the seven Polymath10 threads were read this way,
+and the LaTeX comes back as the `alt` text of the formula images, which
+the rendered page throws away. `docs/reading.md` rule 31 states the
+general lesson.
+
+### 36.1 What was found, and what it costs this development
+
+Three things, in increasing order of how much they matter.
+
+**One — `ι` was named in 2015, and so was the doubling lemma.** Dömötör
+Pálvölgyi, comment 23193, 23 December 2015:
+
+> If we denote the size of the largest k-uniform intersecting family
+> without an r-sunflower by `f^{int}(k,r)`, then we have
+> `(r-1)·f^{int}(k,r) ≤ f(k,r)`.
+
+At `r = 3` that is `2·ι(k) ≤ g(k)`, which is
+`Intersecting.doubling_lower_bound` on the nose, proved here by the same
+two-disjoint-copies construction. **This is the citation the development
+owes, and it changes no proof.** The naming is the smaller half of the
+find; the inequality is load-bearing and five modules sit on it.
+
+**Two — the `ι(4)` search was proposed in 2015 and never run.** Same
+author, comment 23032, 14 December 2015, proposes searching for an
+intersecting sunflower-free family at `k = 4` on ten elements by
+enumerating permutation groups of order ≤ 30 — which is exactly
+`rust/src/orbit.rs`, and exactly what §13.3 reports as exhausted over
+136 (ground, group) pairs. Gil Kalai replied on 25 December that he
+would "try to get some experimentation going in a few weeks". Nothing in
+any of the seven threads reports that it happened.
+
+**Three — and this refutes something this repository has asserted since
+N+9 — an intersecting computation *was* run, in November 2015.** Philip
+Gibbs, comment 22690, 25 November 2015: *"I have implemented a small
+variation of the process, where I also require that the family is
+intersecting."* He reports means and maxima over 100 runs at fifteen
+`(k, n)` pairs. His maxima are 10 at `k = 3`, **24** at `k = 4`, **58**
+at `k = 5`.
+
+Against this development: `ι(3) = 10` exhaustively — his randomised
+search found the exact value, which is an independent 2015
+corroboration by a different method; `ι(4) ≥ 27`, three ahead of him;
+`ι(5) ≥ 78`, twenty ahead. His search was randomised, so none of his
+numbers is an upper bound and none is in tension with anything here.
+**The negative that was wrong was "no intersecting computation exists",
+not any mathematical claim.** No proof moves.
+
+### 36.2 Reproducing the 2015 process, and why it stopped where it did
+
+`plateau::search` with zero force moves is the random-fill process:
+add addable candidates at random until the family is maximal.
+`rust/examples/gibbs2015.rs` re-runs all fifteen rows.
+
+```text
+   k    n    mean 2015   max 2015     mean here   max here
+   3    4         4.00          4          4.00          4
+   3    7         8.61         10          8.49         10
+   3   10         7.24         10          7.55         10
+   3   13         6.97         10          6.83         10
+   4    5         5.00          5          5.00          5
+   4    9        18.06         21         17.93         21
+   4   13        17.56         22         17.47         24
+   4   17        17.67         24         17.32         21
+   4   21        17.45         21         17.30         21
+   5    6         6.00          6          6.00          6
+   5   11        38.46         42         38.74         42
+   5   16        37.43         46         37.76         43
+   5   21        38.43         58         38.00         51
+   5   26        38.86         49         38.89         50
+   5   31        40.23         52         not run — `plateau::candidates` stops at 28
+```
+
+Every mean within 0.5, eleven years and two languages apart. The maxima
+scatter because a maximum over 100 runs is an extreme-value statistic;
+the means are the stable one. Fourteen rows reproduce.
+
+**What the reproduction buys is the explanation of the ceiling.** Run the
+fill a million times at `(4, 9)` — the nine points
+`Product.iota_four_at_least_27`'s family actually lives on:
+
+```text
+   size   12   13    14     15     16      17      18      19     20     21   22   23   24   25   26   27
+  count   14  348  2512  12423  72693  245268  361910  224365  66427  11624  840  978  579    0    0   19
+```
+
+Nineteen hits in a million. **In 100 runs the expected number of hits is
+0.002**, so the 2015 report of 21 at `(4, 9)` was not a near miss — the
+experiment was about five hundred times too small to see the answer once.
+That is the quantified form of the claim `plateau.rs`'s header has made
+since it was written, that a fill "can never beat" the 1972
+constructions: it can *reach* them, at a rate of `2 × 10⁻⁵`.
+
+Two further readings, and the second is the one worth chasing:
+
+* At `(4, 10)` — one more point — 100 000 fills never reach 27 at all
+  (best 26). Adding a point dilutes rather than helps, which is the same
+  effect §13's ground-set ladder measures from the other side.
+* **The spectrum has a hole.** Over a million fills, 24 was reached 579
+  times and 27 nineteen times, and **25 and 26 were reached zero times**.
+  A fill only ever stops at a *maximal* family, so every size in that
+  table is the size of some maximal intersecting sunflower-free
+  4-uniform family on nine points. Two exact zeros flanked by 579 and 19
+  is not noise. It is evidence — not proof — that no maximal family on
+  nine points has 25 or 26 members.
+
+### 36.3 The 27-member family looks unique, and the census did not finish
+
+Five million fills produced 106 hits at 27, of which 50 are distinct as
+labelled families. Canonicalised under all `9! = 362 880` relabellings,
+**all 50 fall into a single orbit, and it is `Product.iota4`'s.**
+
+Nothing in this development says the AHS family is the only 27-member
+family on nine points — `Substitution.triangle_squared_is_maximal` says
+only that it is maximal — so this is the first evidence either way, and
+it points at uniqueness.
+
+**The exhaustive census was attempted and did not finish.**
+`rust/examples/nine_point_census.rs` enumerates every 27-member family
+containing the anchor, with two prunes: the anchor's stabiliser has one
+orbit per `|B ∩ anchor| ∈ {1, 2, 3}`, so three second members suffice to
+meet every orbit; and every pair of points lies in at most `g(2) = 6`
+members, which is `Support.link_at_pair_bounded` and is the only prune
+here that is not bookkeeping. **It did not finish. Budgets: 110 s
+unpruned, then 300 s pruned, then a third attempt stopped by hand at
+about 330 s to free the cores for the gate run** — so the third is a
+run I interrupted, not a run that exhausted its budget, and it is
+recorded that way. The sampled uniqueness is therefore a measurement and
+nothing stronger, and the census is owed. The obvious next attempt is
+SAT rather than DFS: `rust/src/symbreak.rs` already encodes exact-size
+intersecting sunflower-free families with symmetry breaking, and the
+question "is there a 27-member family on nine points outside `iota4`'s
+orbit" is closer to that shape than to a clique enumeration.
+
+### 36.4 `coq/Palvolgyi.v` — the equality remark, carried as a `Prop`
+
+The same comment 23193 continues:
+
+> In fact, if I understood well, it is even possible (though unlikely)
+> that equality holds for all values of k and r. This is the case for
+> all best constructions for r=3, but not for r=4, k=3.
+
+At `r = 3` that is `g(k) = 2·ι(k)` — a named external conjecture about
+this development's central object, unknown here until this session, and
+called unlikely by its own proposer. Note the second sentence: equality
+is *known to fail* at `r = 4`, so this is a statement about
+three-sunflowers and nothing wider.
+
+It is carried as a `Prop`, never an axiom, exactly as
+`AbbottGardner.AbbottGardner1969` is:
+
+```coq
+Definition PalvolgyiEquality : Prop :=
+  forall b N, 1 <= b -> IotaAtMost b N -> GAtMost b (2 * N).
+```
+
+The upper-bound direction is the usable one; `doubling_lower_bound`
+already supplies `g ≥ 2ι` unconditionally, so together they are the
+equality. What the kernel checks:
+
+```text
+  palvolgyi_implies_abbott_gardner        PE + iota(3)<=10  ->  g(3) <= 20
+  palvolgyi_pins_g_three_exactly          ... and ~ GAtMost 3 19
+  palvolgyi_beats_the_proved_bound_at_three   20 against the proved 26
+  palvolgyi_at_four_needs_iota_four       PE + iota(3)<=10  ->  g(4) <= 142
+  palvolgyi_at_four_if_iota_four_is_27    PE + iota(4)<=27  ->  g(4) <= 54, and 54 is attained
+  palvolgyi_refuted_by_one_family         the only shape a refutation can take
+  no_refutation_at_three / _at_four       both closed
+```
+
+Three of these are worth reading twice.
+
+**It implies a theorem.** Given the exhaustive `ι(3) = 10`, Pálvölgyi's
+remark *implies* Abbott–Gardner 1969. So a conjecture its proposer
+called unlikely is at least as strong as a published result, and any
+refutation must leave that result standing.
+
+**It is pinned from below by an object, not by a citation.**
+`Intersecting.lower_bound_3_3_20` builds twenty 3-sets with no
+3-sunflower, so `GAtMost 3 19` is false and the conjecture's prediction
+at `b = 3` lands on 20 exactly. A smaller multiplier would not compile.
+
+**It gives the `ι(4)` ladder a second payoff.** If the ladder closes at
+27, the conjecture says `g(4) = 54` — and `Product.lower_bound_4_3_54`,
+the doubled substitution family, has exactly 54 members. So the
+conjecture's content at `b = 4` is precisely *that the doubled
+substitution family is optimal*, and the two ends meet on the same
+number. Deciding `ι(4)` stops being only a value and becomes a test of
+a named conjecture.
+
+**How it dies.** `palvolgyi_refuted_by_one_family` says a refutation
+needs some `b` with `ι(b) ≤ N` proved and a `b`-uniform sunflower-free
+family of `2N + 1` members. Nothing weaker: an odd `g(b)` with `ι(b)`
+undetermined says nothing. Both decided rungs are closed against it —
+`b = 3` would need 21 members against `f_3_3_at_most_21`, `b = 4` would
+need 143 against a proved 142 — so the conjecture survives everything
+this development can currently throw at it, and the file says so rather
+than implying more.
+
+### 36.5 What this section does *not* claim
+
+* No proof changed. The prior art is a citation and a conjecture, not a
+  correction.
+* The uniqueness of the 27-member family is **sampled, not proved**; the
+  census is owed and its budget is recorded.
+* The hole at 25–26 is **evidence, not a theorem**; a fill visits only
+  the maximal families it can reach.
+* `ι(4)` is still undecided, and 36.4 does not move it. What changed is
+  that deciding it now settles more than one question.
+* `PalvolgyiEquality` is a hypothesis. Nothing downstream of it is
+  proved unconditionally, and `Print Assumptions` on all eight theorems
+  reports **Closed under the global context**.
+
+### 36.6 Costs and gates
+
+```text
+  make -j4 verify          pass    12m12s   731 audited theorems, every one
+                                            "Closed under the global context"
+  make coqchk              pass     2m58s   49 modules; whole-library axiom
+                                            census exactly ALWZ.Rao20_lemma2;
+                                            type-in-type, unsafe fixpoints and
+                                            assumed positivity all <none>
+  python3 tools/mutate.py  pass    86m10s   160 mutations, 157 killed,
+                                            2 declared survivors, 1/1 controls,
+                                            0 unexpected
+  cargo test --release     pass    26m41s   36 suites, 339 tests, 0 failures
+  tools/statements.py      873 baselined entries
+  tools/docnumbers.py      17 quoted numbers match
+  tools/ceiling.py         9 routes costed, every verdict matches
+  make prcheck             the pull request body resolves
+```
+
+The three mutations added here are killed in `coq/Palvolgyi.v` in about
+236 s each. `verify` and `coqchk` are within noise of §35.5's 11m53s and
+2m49s; the mutation suite's 86m10s against 80m10s is the cost of three
+more mutations plus the new module in every sandbox build.
+
+**Two process failures this session, both worth writing down.**
+
+**One: a missing solver, again, and the twelfth lesson was right.**
+`cargo test --release` first came back with exit 101 and two failures in
+`rust/tests/spread_threshold.rs` — `sat_and_dfs_agree` and
+`the_witnesses_are_reachable_by_search`, both panicking on
+`Os { code: 2, kind: NotFound }`. The container had been rebuilt and
+`cryptominisat5` had gone with it; `src/rstar.rs` asks for
+`solve_cnf_agreed(Cadical, CryptoMiniSat)` and does not guard on
+availability the way `src/extend.rs` does. Installing the package and
+re-running gives 36 suites and 339 tests green. **Nothing mathematical
+was wrong, and the output could not say so** — which is exactly the gap
+`docs/testing.md`'s twelfth entry describes, now observed a second time.
+The cheap fix is still owed: those two tests should skip with a named
+reason when the binary is absent.
+
+**Two: a throughput estimate computed from time that never passed.**
+Partway through the mutation run this session projected twelve hours
+from an observed rate, and **stopped the suite on that basis** to run
+the three new mutations alone with `--only`. The projection was wrong.
+The waits it was measured against had been issued as background commands,
+which return immediately, so the samples that looked forty-five minutes
+apart were seconds apart. The suite had always been on its usual pace and
+finished in 86 minutes when re-run to completion.
+
+Two things saved this from becoming a false gate report. The harness
+refused to certify the `--only` run — *"FAIL: no control mutation in the
+manifest. Without one, a harness that failed to apply its edits would
+report every mutation killed and still pass"* — so the subset could not
+be mistaken for the gate. And the full suite was re-run rather than
+reported from the partial. The lesson is not about mutation testing:
+
+> **A rate is a measurement, and a measurement needs its clock checked
+> before its numerator.** Before reporting *n* per unit time, confirm the
+> unit of time actually elapsed. An asynchronous wait that returns
+> immediately turns every rate computed against it into a fabrication of
+> the same kind as a quoted timing that was never measured — and
+> `docs/reading.md` rule 13 already covers that shape.
+
+## 37. Session N+12, fourth act — the `ι(4,11)` rung reaches nineteen of
+##     twenty-one, and the split that was supposed to close it is the
+##     reason it did not
+
+### 37.1 Where the rung stands
+
+Nineteen of the twenty-one `deg(0)` cubes of `ι(4,11) ≥ 32` are UNSAT.
+Only `deg(0) = 13` and `deg(0) = 14` are open. `docs/ladder/iota4_11.tsv`
+is the record; the two new rows were measured on the user's VM:
+
+```text
+  deg0=16   UNSAT   11356.6 s
+  deg0=15   UNSAT   34788.1 s
+```
+
+Both were decided **whole** — `RUNG_SLICE` above the budget, so the
+degree-sequence split never fired, and each is one sequential `cadical`
+on one core.
+
+### 37.2 The whole-cube cost curve, and what it costs to finish
+
+Three measured points, which looked very regular:
+
+```text
+  deg0    17        16         15          14 (fit)    13 (fit)
+  secs    4171.5    11356.6    34788.1     ~98500      ~284000
+  ratio   -         2.72x      3.06x       ~2.9x       ~2.9x
+```
+
+A log-linear fit gave **2.89× per step down**, so `deg(0) = 14` was
+predicted at about **27 h** and `deg(0) = 13` at about **79 h**,
+single-threaded — labelled at the time as extrapolations two steps past
+the data.
+
+**`deg(0) = 14` then came in at 51 305.5 s, and the fit was wrong.**
+§38.5 records the correction; the short version is that the prediction
+was high by 1.92× and the ratio broke from ~2.9× to 1.47×, so the curve
+is not geometric and the 79 h figure for `deg(0) = 13` does not survive.
+
+Note the direction. The cubes get *harder as `deg(0)` falls*, and
+`deg(0) = 12` — the floor, and the one §33.5a expected to be worst — is
+the exception, because its deficiency is 4 and its split is tiny.
+
+### 37.3 The correction: the degree-sequence split is the wrong tool here
+
+This session spent an afternoon forcing the split at `deg(0) = 13` with
+`--cubecap 4000`, and measured it properly:
+
+```text
+  whole cube (1)       UNKNOWN at 36000 s cadical, 40407 s cryptominisat5
+  --seqprefix 3 (27)   4 of 4 UNKNOWN at 2400 s -- 18 core-hours for nothing
+  full split (1939)    solved sub-cubes land in 136-491 s; ~45% pass 600 s
+```
+
+The full split's total is roughly **597 core-hours** against **79** for
+the cube whole. A factor of 7.6 the wrong way.
+
+The split wins only when it is *small*. At `deg(0) = 12` it is 19
+sub-cubes and it turned an undecided cube into 3236 s. At `deg(0) = 13`
+it is 1939, and `iota_sym`'s own header always said so: *"paying 684
+solver startups for an instance that solves whole in ten minutes is a
+clear loss."*
+
+**So `--cubecap 400` was right to refuse the split at 13 and 14, and
+session N+11's diagnosis was backwards.** That session recorded the cap,
+carried over from the `g = 10` rung, as *the reason cubes 13 and 14
+failed*. The cap was the protection. Raising it buys the more expensive
+route, and this session bought it before measuring.
+
+The two split checkpoints — `iota4_11.deg13.tsv` and
+`iota4_11.deg13.p3.tsv` — are kept, with their budgets, as the
+measurement that establishes this rather than being deleted.
+
+### 37.4 Two things the tooling gained, and one it did not
+
+`iota_sym --checkpoint PATH` appends each degree-sequence sub-cube's
+verdict as it lands and skips the recorded ones on resume; UNSAT and SAT
+are skipped, UNKNOWN is re-run, because UNKNOWN is a budget and not a
+verdict. `iota_sym --seqprefix N` fixes only the first `N` degrees when
+re-splitting, which is what made §37.3's granularity ladder measurable
+at all — the parameter already existed in `symbreak::sequence_cubes` and
+`run_one` had hard-coded it to the whole ground set.
+
+The split count is now cross-checked rather than asserted. An
+independent enumeration of the two-block model — positions `0..b-1`
+non-increasing from `deg(0)`, the ceiling resetting to `deg(0)` at
+position `b`, then non-increasing again — reproduces the tool's 1939 at
+`deg(0) = 13` and 27 at `--seqprefix 3`, and the 19 that
+`iota4_11.tsv` already recorded at `deg(0) = 12`. It also **corrects the
+sub-cube counts** an earlier session quoted from a globally-sorted model,
+which was the wrong model:
+
+```text
+  deg(0)   12    13      14      15       16
+  was      19    1949    32797   238850   1045128
+  is       19    1939    31624   220047   914505
+```
+
+What the tooling did **not** gain is a way to checkpoint a cube that is
+*not* split, and that is the binding constraint on this container rather
+than the compute: a whole cube is one `cadical` process with no resume
+point, the container is reclaimed on a roughly nightly cycle, and 27 h
+and 79 h are both longer than that. Three times this session the
+container was rebuilt from an older snapshot — twice mid-work, once
+overnight — and each time the recovery was `git fetch` plus a rebase or
+reset onto the remote, because everything of value had been pushed. **The
+remaining two cubes belong on a machine that stays up.**
+
+### 37.5 What would close the rung without the compute
+
+Nothing found, and the honest statement of the gap is short. Cubes
+`12` and `15..32` are UNSAT, so the rung closes if `deg(0) ∈ {13, 14}`
+can be excluded on paper. The available levers do not reach:
+
+* `Δ ≥ ⌈128/11⌉ = 12` is the floor the cube split already uses.
+* `Δ ≤ g(3) ≤ 26` (`PureLink.link_at_point_bounded` with
+  `g_three_at_most_26`) is what kills `27..32`, and `AbbottGardner1969`
+  widens that to `21..32`. Neither touches 13 or 14.
+* Covering number: `τ = 1` is excluded because it forces `Δ = 32 > 26`
+  (`Support.twenty_seven_four_sets_have_no_common_point`). **`τ = 2`
+  would force `Δ ≥ 16` and so would close the rung outright** — but
+  `τ ≥ 3` is not excluded, and at `τ = 3` the bound is only
+  `Δ ≥ ⌈32/3⌉ = 11`.
+* Hilton–Milner at `n = 11, k = 4` gives `|F| ≤ 101`, far above 32, so it
+  does not bite; nor does the pair bound, which gives `Δ ≤ 20` from
+  `3·Δ ≤ 10·g(2) = 60`.
+
+So the open question with the best ratio of payoff to difficulty is
+**whether an intersecting 4-uniform 3-sunflower-free family of 32 sets
+on 11 points can have covering number 3 or 4**. If it cannot, the rung
+is closed by hand and 106 core-hours are not needed.
+
+### 37.6 §37.5's proposal is refuted, and the refutation is worth more
+###      than the proposal was
+
+§37.5 named the covering-number route as *"the open question with the
+best ratio of payoff to difficulty"*: `τ ∈ {3, 4}` is forced for the
+rung, so a literature maximum below 32 in both cases would close it with
+no further computation. A commissioned search answered it, and the
+answer is **no, in both cases, and not narrowly.**
+
+```text
+  k=4, tau=3   maximum grows like Theta(n); at n = 11 it is >= 74
+               (Frankl-Wang, arXiv:2207.05487v3, Example 1.3; JCTB 171
+               (2025) 96-139)
+               CORRECTED in N+13: this line read "Theta(n^3)" until the
+               paper's p. 2 was rendered and read. Exactly 13n - 69 for
+               n >= 8; the four C(.,k-1) terms of eq. (1.4) cancel to
+               leading order. The conclusion is unaffected -- 35 > 32 at
+               n = 8 -- but the rate was wrong. See docs/reading.md A24a
+               and section 41.3 below.
+  k=4, tau=4   this is Erdos-Lovasz r(k); best bracket 42 <= r(4) <= 64,
+               classical n-free bound k^k = 256
+```
+
+Every one of those is above 32, so **no citation from that literature can
+exclude a 32-member family**, and §37.5's proposal is dead as stated.
+
+**The construction was rebuilt here rather than taken on report.**
+Example 1.3 defines `B = {[2,k+1], {2}∪[k+2,2k], {3}∪[k+2,2k]}` and `A`
+as the `k`-sets containing 1 that meet every member of `B`, with
+`G(n,k) = A ∪ B`. At `n = 11, k = 4` that gives **74** members —
+matching the paper's own inclusion–exclusion — intersecting, with
+`τ = 3` and `{1,2,3}` a transversal exactly as the paper states.
+
+And it confirms a prediction this development makes about a family it did
+not build. `PureLink.iota_four_at_most_71_if_iota_three_is_ten` gives
+`ι(4) ≤ 71` on the exhaustive `ι(3) = 10`, and `74 > 71`, so `G(11,4)`
+**cannot** be sunflower-free. It is not: it contains **3481**
+three-sunflowers, and a randomised greedy keeps only **17 of its 74**
+members. `rust/tests/frankl_wang.rs` carries all of it.
+
+**What the refutation buys, which is the part worth keeping.** It
+locates the difficulty exactly. On eleven points an intersecting
+4-uniform family can have 120 members (the star, `τ = 1`), or 74 with
+`τ = 3`; the rung asserts that adding 3-sunflower-freeness brings the
+ceiling below 32. So sunflower-freeness is doing essentially all of the
+work, and the covering number almost none — which is why the
+covering-number literature cannot help and why no published theorem
+combines the two hypotheses (`docs/reading.md` A23). **The `ι(4,11)`
+computation is not replaceable by a citation.** That is a stronger and
+more useful statement than the one §37.5 hoped for, and it is the reason
+the two open cubes have to be paid for in core-hours.
+
+## 38. Nine points hold twenty-seven 4-sets, in essentially one way
+
+The moonshot that was ranked second turned out to be the one that
+finishes, and it finishes because of a computation nobody had run.
+
+### 38.1 The constant that unlocks it
+
+**`g(3,8) = 12`** — the largest distinct 3-uniform 3-sunflower-free
+family on eight points. Exhaustive: `rust/examples/g_small.rs`, 56
+candidates, 14 294 037 nodes, **2.9 s**, witness printed.
+
+Nothing about that is deep. What it unlocks is:
+
+* The link of a point in a 4-uniform family on nine points is 3-uniform,
+  distinct and sunflower-free **on the other eight**, so every degree is
+  at most 12.
+* `IotaGround.link_degree_ground_bound` — already in the development —
+  turns that into `4·|F| ≤ 9·12 = 108`, so **`|F| ≤ 27`**.
+* `Product.iota4` has 27 members on `seq 0 9`. So the bound is attained:
+  **`g(4,9) = 27`**, and since `iota4` is intersecting, `ι(4,9) = 27` is
+  the same number. At nine points the general and intersecting problems
+  coincide.
+* And 108 = 9·12 has **no slack**, so every 27-member family on nine
+  points is **exactly 12-regular**. A point that reaches degree 12 is
+  closed to every later member.
+
+`Support.GThreeOnEight` carries the computation as a hypothesis, never as
+an axiom, exactly as `AbbottGardner1969` is carried;
+`four_uniform_on_nine_at_most_27` and `four_uniform_on_nine_is_exactly_27`
+both report **Closed under the global context**.
+
+### 38.2 The census, which forced regularity makes possible
+
+The same search, without the degree constraint, ran **900 s without
+finishing** (§36.3). With it, the intersecting census finishes in **75 s**:
+
+```text
+  target 27, intersecting: 40 families containing the anchor
+  orbits under S_9: 1     -- and it is Product.iota4's
+```
+
+So **the 27-member *intersecting* 4-uniform sunflower-free family on
+nine points is unique up to relabelling, and it is the
+Abbott–Hanson–Sauer substitution of the triangle into itself.** The word
+*intersecting* is load-bearing — see §38.2a. §36.3's sampled uniqueness —
+5 000 000 fills, 50 distinct families, one orbit — is now a census rather
+than evidence. `rust/tests/nine_points.rs`.
+
+### 38.2a The general case is different, and the answer is the opposite
+
+The caution above was warranted. On nine points three pairwise disjoint
+4-sets need twelve, so an empty-core sunflower **cannot occur** and a
+sunflower-free family here need not be intersecting. The question is
+whether the degree budget survives a disjoint pair, and it does.
+
+Seeding the search with `{0,1,2,3}` and `{4,5,6,7}` — sound, because a
+relabelling carries any disjoint pair there — finds 27-member families
+immediately. One of them, verified independently and carried explicitly
+in `rust/tests/nine_points.rs`:
+
+```text
+  0123 4567 0124 0134 0234 1234 0156 0256 3456 0157 0257 3457 1267 3467
+  3567 1358 2358 1458 2458 1268 0368 0468 1278 0378 0478 1678 2678
+```
+
+4-uniform, distinct, **zero** 3-sunflowers, on exactly nine points,
+12-regular as the counting bound forces — and with **six disjoint
+pairs**, so no relabelling carries it onto the intersecting `iota4`.
+
+The enumeration then finished, so the classification is complete rather
+than merely a counterexample. **There are exactly two orbits.**
+
+```text
+  intersecting      1 orbit    Product.iota4     |Aut| = 1296   0 disjoint pairs
+  not intersecting  1 orbit    the family above  |Aut| =   48   6 disjoint pairs
+  ----------------------------------------------------------------------------
+  TOTAL             exactly 2 orbits of 27-member 4-uniform sunflower-free
+                    families on nine points
+```
+
+The cover is complete because the two cases are exhaustive and each was
+searched to the end: an intersecting family is caught by the anchored
+census (40 families containing the anchor, one orbit), and a
+non-intersecting one *must* contain a disjoint pair, so a relabelling
+puts it in the seeded search (144 families containing that pair,
+15 640 126 124 nodes, one orbit).
+
+The automorphism groups confirm the two are genuinely different without
+appealing to the canonical form: 1296 against 48. And `|Aut(iota4)| =
+1296` is the value §33 already recorded from `nauty`, which is an
+independent check on this computation rather than a restatement of it.
+
+The maximum is the same number either way — the counting bound does not
+care about intersecting, and `iota4` attains it — but relaxing
+*intersecting* admits exactly one further extremal family without
+admitting any larger one. That is the interesting part, and it is the
+opposite of what a first reading of §38.2 would suggest.
+
+**Method note.** The full general census was run for **4.3 hours without
+finishing** and was abandoned in favour of the seeded search, which
+decides the same question in under two minutes because a family that is
+not intersecting *must* contain a disjoint pair and can be relabelled to
+contain that one. Splitting the question at the right place beat waiting
+— the same lesson as §37.3, where the wrong split cost more than no
+split at all.
+
+### 38.3 Where the method stops, measured rather than assumed
+
+The counting bound is sharp at nine and reaches no further:
+
+```text
+  n     link bound        gives        vs the ladder's 32
+   9    g(3,8)  = 12      |F| <= 27    attained -- SHARP
+  10    g(3,9)  = 14      |F| <= 35    above 32, decides nothing
+  11    g(3,10) >= 16     |F| <= 44    above 32, decides nothing
+```
+
+`g(3,9) = 14` was computed here too (273 104 763 nodes, 75 s). At eleven
+points the bound would have to be `g(3,10) ≤ 12` to kill the open cubes
+`deg(0) = 13, 14`, and this development already witnesses
+`g(3,10) ≥ 16` (§9's `N(3,10) ≥ 16`). **So the elementary link count
+cannot close the `ι(4,11)` rung, and §37's two cubes stay paid for in
+core-hours.** That is the honest answer to moonshot #2 as posed: the
+combined argument works, it is sharp, and its reach ends two rungs below
+where it is needed.
+
+### 38.4 Novelty, and how far the search went
+
+The claim is `g(4,9) = ι(4,9) = 27` with a unique extremal family.
+Searched this session, first-hand: three web searches on sunflower-free
+uniqueness and exact small values, and the most recent survey in the area
+— *Delta-system method: a survey*, arXiv:2508.20132 (Aug 2025) — read for
+exact values and uniqueness statements. It has **neither**: only
+asymptotics and structural theorems.
+
+The structural argument is stronger than any single search. A uniqueness
+theorem about the extremal family at `(4,9)` presupposes the **value**
+`g(4,9) = 27`, and no exact value for `f(k,3)` beyond Abbott–Gardner's
+`g(3) = 20` appears anywhere — the commissioned search of session N+12
+covered arXiv full-text, Google Scholar citation chains from AHS 1972 and
+Kostochka, Springer, ScienceDirect, zbMATH, Semantic Scholar, and all 434
+comments of the seven Polymath10 threads read first-hand
+(`docs/reading.md` A17–A23). **Bounded-ground-set values for `k = 4` are
+exactly what nobody has published.** If the value is unpublished, a
+uniqueness statement about its extremal family is too.
+
+That is high confidence, not certainty, and it is recorded as such: no
+search proves a negative, and rule 13 applies to this paragraph as much
+as to any other.
+
+## 39. `deg(0) = 14` is UNSAT — twenty of twenty-one, and the cost curve
+##     that predicted it was wrong
+
+Measured on the user's VM, whole, one core, no split:
+
+```text
+  deg0=14   UNSAT   51305.5 s   (14 h 15 m)
+```
+
+Twenty of the twenty-one `deg(0)` cubes of `ι(4,11) ≥ 32` are now UNSAT.
+**Only `deg(0) = 13` is open.**
+
+### 39.1 The correction, which matters more than the row
+
+§37.2 fitted a log-linear curve to the three whole-cube measurements at
+`deg(0) = 17, 16, 15`, obtained 2.89× per step down, and predicted
+`deg(0) = 14` at ≈98 500 s and `deg(0) = 13` at ≈284 000 s. The first of
+those was a genuine forecast about an unrun computation, and it has now
+been tested:
+
+```text
+  deg0    17        16         15         14
+  secs    4171.5    11356.6    34788.1    51305.5
+  ratio   -         2.72x      3.06x      1.47x     <- predicted ~2.9x
+```
+
+**Predicted 98 500 s, measured 51 305.5 s: high by 1.92×.** The ratio did
+not merely drift, it halved, so the failure is in the *form* of the model
+and not in its precision. Three ratios that disagree with one another
+cannot support a fourth.
+
+**So the 79 h figure for `deg(0) = 13` is withdrawn.** It appeared in
+§37.2, in §37.4's framing of what the remaining cubes cost, and in the
+`iota4_11.tsv` header; all three now carry the correction. The honest
+statement is that the cost of the last cube is **unknown**.
+
+This is the second time this session that an extrapolation past the data
+has been wrong in the same direction — §36.3 projected the sub-cube
+harvest at ~597 core-hours from a partial sample, and §37's own opening
+correction was about a rate computed against time that had not elapsed.
+The pattern is worth naming rather than fixing case by case:
+
+> **An extrapolation is a claim about an unrun computation, and it should
+> be labelled, budgeted and checked like any other.** Two steps past
+> three points is not a measurement. Where this development would refuse
+> to state a proof from three instances, it should refuse to state a
+> timing curve from three too — and when the run lands, the prediction
+> should be scored against it in public.
+
+### 39.2 What is actually known about the last cube
+
+Nothing about its cost. The one structural fact nearby is that the number
+of admissible degree sequences collapses as `deg(0)` falls —
+
+```text
+  deg0        16       15       14      13     12
+  sequences   914505   220047   31624   1939   19
+```
+
+— while the measured whole-cube time *rose* from `deg(0) = 16` to
+`deg(0) = 14`. Whether that continues to 13, reverses, or does something
+else is exactly what is not known, and §37.3 already showed that the
+split which those sequence counts describe is the wrong tool at 13
+anyway: 1939 sub-cubes cost about 597 core-hours against 79 for the cube
+whole, and that 79 was itself the discredited fit. The comparison should
+be redone against measured numbers once 13 lands.
+
+The rung stands at twenty of twenty-one, every decided cube UNSAT, and no
+counterexample anywhere in it.
+
+## 40. Split versus whole at `deg(0) = 13`, measured at last
+
+§37.3 concluded that the degree-sequence split is the wrong tool at
+`deg(0) = 13` and put the split at ~597 core-hours against ~79 for the
+cube whole. **Both of those numbers were wrong**, in opposite directions,
+and §39 undertook to redo the comparison against measurement. This is
+that.
+
+### 40.1 What was measured
+
+A uniform random sample of the 1939 sub-cubes — `iota_sym --seq-sample 24
+20260815`, which shuffles before taking, because the sub-cubes are
+enumerated most-extreme-first and a prefix is not a sample. Run on the
+user's VM at 9 threads, with a 7200 s per-sub-cube cap, concurrently with
+`deg(0) = 13` whole on the tenth core. Stopped by hand at **19 of 24
+reported**; that is a budget and is recorded as one.
+
+```text
+  UNSAT     7    882.6  3125.9  3811.8  3825.5  5050.2  6910.0  7056.7
+  censored  12   at the 7200 s cap  -- 63% of the sample
+```
+
+Counting each censored sub-cube at the cap and no higher:
+
+```text
+  lower-bound mean          6161 core-s per sub-cube
+  lower-bound split total   1939 x 6161  =  11 946 924 core-s
+                                         =  3319 core-hours
+  cube 14 whole, same VM, one core            14.25 core-hours
+  ratio                                       >= 233x
+```
+
+### 40.2 Three caveats, none of which rescues the split
+
+**The mean is a floor, and a bad one.** Sixty-three per cent of the
+sample hit the cap, so the true mean is above 6161 core-s by an unknown
+margin. Every unknown here pushes the split further from viability.
+
+**The sample was measured under contention and the whole cube was not.**
+The same four sub-cubes, same seed, ran 2.7–4.0× slower on the VM's
+9-thread run than on the session container at 4 threads:
+
+```text
+   886.9 s -> 3125.9 s (3.5x)      2420.3 s -> 7200.3 s (3.0x, censored)
+  1718.1 s -> 6910.0 s (4.0x)      2703.5 s -> 7200.3 s (2.7x, censored)
+```
+
+Ten solver processes on ten vCPUs — likely five physical cores with
+hyperthreading — is not the single-core condition under which
+`deg(0) = 14` was timed. **The comparison is therefore unfair to the
+split**, and it should be said rather than banked. Dividing the sample
+through by 3.5 for contention, and still keeping the censoring floor,
+leaves the split at about **950 core-hours against 14.25** — a ratio of
+roughly 67×. The conclusion survives the correction with two orders of
+magnitude to spare.
+
+**`deg(0) = 13` whole is not yet measured.** The comparison is against
+`deg(0) = 14`, the nearest measured whole cube, and §39 is precisely the
+record of how badly extrapolation between cubes performs here. So the
+honest form of the claim is *"the split at 13 costs at least 233× the
+nearest measured whole cube"*, not *"233× cube 13 whole"*. The ratio to
+cube 13 itself will be a division, not a prediction, once it lands.
+
+### 40.3 What this supersedes
+
+```text
+  quantity                     was                    is
+  split at deg(0)=13           ~597 core-hours        >= 3319 core-hours
+                               (biased prefix)        (uniform sample, censored floor)
+  whole at deg(0)=13           ~79 core-hours         unknown; 14 measured at 14.25
+                               (log-linear fit)       (fit falsified, §39)
+```
+
+The 597 was an **under**estimate, not an over one, and the reason is now
+quantified: the prefix sub-cubes cost 136–491 s and the uniformly sampled
+ones cost 882 s to beyond 7200 s. Sampling the front of a systematically
+ordered list understated the mean by a factor of roughly five to fifteen.
+
+### 40.4 The standing conclusion
+
+`--cubecap 400` is right to refuse the split at `deg(0) = 13` and 14, and
+session N+11's diagnosis — that the cap was why those cubes failed —
+remains backwards. That was §37.3's conclusion and it survives; what
+changes is that it now rests on a measurement with its censoring and its
+contention stated, rather than on two estimates that were both wrong.
+
+The general lesson has been earned three times this session and is worth
+stating once more plainly: **the sample must be drawn the way the
+population is shaped.** A prefix of a sorted list, a rate against time
+that did not elapse, and a fit two steps past three points all failed the
+same way — by measuring something adjacent to the quantity of interest
+and reporting it as the quantity.
+
+---
+
+## 41. The support question is the whole conjecture
+
+Session N+13 commissioned a search for a published bound on the
+**support** — the number of points — of an extremal intersecting
+sunflower-free 4-uniform family. A bound there would turn the `ι(4,n)`
+ladder from an open-ended climb into a finite search, which is why §37.6
+kept asking for one. The answer arrived, was audited page by page, and
+is better than a bound: it explains why no bound is citable.
+
+Every page of all three primary sources was rendered to an image at
+150 dpi and read — Majumder 6 pp, Frankl–Pach–Pálvölgyi 10 pp,
+Frankl–Wang 30 pp. `pdftotext` was deliberately not used, because the
+two errors this section corrects are both errors about what a formula
+says, and both survive text extraction.
+
+### 41.0 First, what was already known here
+
+Before any of the below is read as new: **the report's central section was
+not.** `docs/references.md`'s [FPPTZ24] entry already records, from an
+earlier session's rendered read of the same pages, all three of the
+things the report presented as findings — that Conjecture 14 is
+equivalent to Erdős–Rado (crediting Hunter), that `g_v(k) ≥ 2^k − 1`, and
+the sentence *"We could not find any papers studying the quantity
+`g_v(k)`"*. `docs/reading.md` B14 has Hunter's answer read **in full**
+(MathOverflow 463150, to Pálvölgyi's question 462924, retrieved through
+the StackExchange API). `rust/tests/ground_set.rs` has checked the tree
+construction to `k = 6` since that session.
+
+§41.1 below therefore restates prior art, not discovery. It is kept
+because the *instruction* it carries is the useful part and had not been
+written down as an instruction. What is actually new this session is
+§41.2 (the intersecting reading), §41.3 (two corrections), §41.4 (the
+maximal-intersecting identification), and §41.6 (the shifted bound).
+
+### 41.1 The quantity has a name, and its authors say the literature is empty
+
+Frankl–Pach–Pálvölgyi, *Odd-Sunflowers*, arXiv:2310.16701v2, p. 7:
+
+> another upper bound is `1 + (k−1)g_v(k)` where `g_v(k)` is the size of
+> the base set of the largest sunflower-free family. **We could not find
+> any papers studying the quantity `g_v(k)`**, and the base set of most
+> sunflower-free constructions grows only linearly in `k`.
+
+`g_v` is precisely the function §37.6 wanted bounded. Its own authors
+record the literature on it as empty, in print, in 2024.
+
+Their Conjecture 14 (p. 8) is that `g_v(k) ≤ c^k`, and the same page
+records the reason it is hard:
+
+> It was pointed out by Zach Hunter that a simple argument shows that the
+> maximum number of base elements grows roughly the same way as the
+> maximum number of sets … his argument shows that **Conjecture 14 is
+> equivalent to the Erdős-Rado conjecture**.
+
+So bounding the support is not a lemma on the way to the conjecture; it
+*is* the conjecture. **The standing instruction that follows: no ladder
+design may be predicated on obtaining a support bound**, from the
+literature or otherwise, because obtaining one would already be the
+result the ladder is climbing toward.
+
+### 41.2 The support at `k = 4` is at least fifteen — and now for an *intersecting* family
+
+The same page gives `g_v(k) ≥ 2^k − 1`, witnessed by the root-to-leaf
+paths of a rooted binary tree on `k` levels. The report's one new
+mathematical observation was that this family is **intersecting** — every
+root-to-leaf path contains the root — and that observation is correct,
+and it matters here for a reason the report did not know: **the family
+this repository already had is not intersecting.**
+
+There are two readings of "root-to-leaf path", and they are different
+families. `construction::tree_paths` takes them as **edge** sets, which
+is what `ground_set.rs` checks. Two paths through different children of
+the root share no edge, so that family is **not intersecting** — at
+`k = 4` it has 64 disjoint pairs out of 120. The **vertex** reading
+shares the root vertex, so it is intersecting.
+
+```text
+  reading   members    support        intersecting   is it FPP's 2^k − 1?
+  edges     2^k        2^(k+1) − 2    no             no, it overshoots
+  vertices  2^(k−1)    2^k − 1        yes            yes, exactly
+```
+
+Two consequences. The witness this repository has had since the
+`GroundBounded` work says nothing about `ι`, the intersecting object; the
+vertex one does. And the vertex reading is the paper's — it reproduces
+`2^k − 1` on the nose, where the edge reading gives `2^(k+1) − 2` and is
+a *stronger* support witness than the figure FPP print. Neither test may
+be cited for the other's claim.
+
+Rebuilt and checked here for `k = 2…6` in `rust/tests/support_bounds.rs`:
+
+```text
+  k     members    uniform  intersecting  sunflower-free  support
+  2        2          yes       yes            yes           3
+  3        4          yes       yes            yes           7
+  4        8          yes       yes            yes          15
+  5       16          yes       yes            yes          31
+  6       32          yes       yes            yes          63
+```
+
+At `k = 4`: **eight members, 4-uniform, intersecting, sunflower-free, on
+fifteen points.** `2^k − 1` counts the *support*, not the members;
+reading it as a member count is the natural misreading and it is wrong.
+FPP note the family is *"not optimal, in fact, not even maximal"*.
+
+The consequence for this repository is direct. `Product.iota4` lives on
+nine points, and nine was the largest support exhibited here **by an
+intersecting family**. Fifteen is larger, from a 2024 paper, by a family
+that satisfies every hypothesis `ι(4, ·)` imposes. Any hope that the
+ladder terminates because the support is small at `k = 4` is dead at
+`n = 15` at the latest, and §41.1 says the true stopping point is not
+obtainable by citation.
+
+### 41.3 Two corrections to §37.6, both found by rendering
+
+**The `τ=3` maximum is linear, not cubic.** §37.6 recorded that the
+`k=4, τ=3` maximum *"grows like `Θ(n³)`"*. Frankl–Wang eq. (1.3) is
+
+```text
+  |G(n,k)| = (k^2 - k + 1) C(n-3, k-3) + O(C(n-4, k-4))
+```
+
+and at `k = 4` the leading binomial is `C(n−3, 1) = n−3`, giving
+`13(n−3) + O(1)`. The cubic reading came from treating `C(n−1,k−1)`, the
+first term of the exact eq. (1.4), as the leading term; the four
+`C(·,k−1)` terms carry coefficients `+1 −1 −1 +1`, which sum to zero, so
+the `n³/6` cancels. Exactly, and checked for `n = 8…400`:
+
+```text
+  |G(n,4)| = 13n - 69     for n >= 8
+```
+
+`13·11 − 69 = 74` reproduces the value §37.6 already had from rebuilding
+the construction, so the arithmetic is anchored at both ends. **§37.6's
+conclusion is unaffected**: `13·8 − 69 = 35 > 32` at the smallest
+admissible `n`, so the refutation never depended on the rate.
+
+**The `τ=3` case at `k=4` is not merely a construction.** Frankl–Wang's
+Theorem 1.4 does require `k ≥ 7`, so it does not cover `k = 4`. But
+eq. (1.5) on the same page gives `f(n,k,3) = |G(n,k)|` for `k ≥ 4` and
+`n > n₀(k)`, from Frankl, *On intersecting families of finite sets*,
+Bull. Austral. Math. Soc. **21** (1980), 363–372. The `k=4` maximum is
+an equality for large `n`, not a lower bound. Their reference [1], read
+off the rendered bibliography on p. 30, is
+S. Chiba, M. Furuya, R. Matsubara, M. Takatou, *Covers in 4-uniform
+intersecting families with covering number three*, Tokyo J. Math.
+**35**(1) (2012), 241–251 — the exact `k=4` case, not retrieved, and
+owed only if the small-`n` values are ever wanted.
+
+### 41.4 `Product.iota4` is a maximal intersecting family
+
+Erdős–Lovász's `N(k)` is the largest number of points in a *maximal*
+intersecting family of `k`-sets. Majumder, arXiv:1402.7158v1, p. 3
+settles its value at `k = 4`, citing Hanson and Toft:
+
+> In [3], Hanson and Toft proved that, actually,
+> `N(k) = 2k − 2 + ½C(2k−2,k−1)` for `2 ≤ k ≤ 4`.
+
+So `N(4) = 16` and `N(3) = 7` are **equalities**, not the lower bounds
+eq. (1) states. The bracket on the way there, for the record: Erdős–Lovász
+lower 16, Tuza upper 42 (eq. (6)), Majumder upper 32 (eq. (9)),
+Hanson–Toft exact 16.
+
+Whether that bears on the ladder turns on Definition 1.1: a maximal
+intersecting family is one with `tr(F) < ∞` and `F = F^⊤` — it equals its
+own family of transversals. `rust/tests/support_bounds.rs` proves
+`Product.iota4` is one:
+
+```text
+  tau(iota4) = 4 = k                      (no 1-, 2- or 3-point cover)
+  blocking 4-sets outside iota4 = 0       (so F = F-transpose)
+  support = 9 <= N(4) = 16
+```
+
+The maximality check is over the whole universe of sets, not just `[9]`:
+a blocking 4-set using a point outside `[9]` would restrict to a blocking
+3-set inside `[9]`, and `τ = 4` says there is none, so ranging over the
+4-subsets of `[9]` is exhaustive.
+
+**What this does and does not buy.** It is a genuine bridge: the extremal
+family for `ι(4,9)` is an object the Erdős–Lovász literature has an exact
+theorem about, and that theorem is satisfied with room to spare. It does
+**not** close the ladder, because a maximum-*size* intersecting
+sunflower-free family need not be maximal *as an intersecting family* —
+the set one would add may complete a sunflower. The bound applies to the
+family we have; it is not known to apply to the family we are looking
+for. Recorded as a lead, not a result.
+
+One coincidence, recorded because it is checkable and not because it is
+understood: Frankl–Wang p. 2 quotes `(k/2 + 1)^(k−1)` as the even-`k`
+lower bound for `f(n,k,k)`, from Frankl–Ota–Tokushige, *JCTA* **74**
+(1996), 33–42. At `k = 4` that is `3³ = 27`, which is `ι(4,9)`, attained
+by a family §41.4 has just shown has `τ = 4`. The two problems agree on
+27 at `k = 4`. Whether that is structure or arithmetic is open.
+
+### 41.6 `Product.iota4` is a wreath product, and the shifted bound is 35
+
+Two further things came out of pages the report did not reach.
+
+**The construction has a name.** Odd-Sunflowers p. 4 defines the *wreath
+product* `F ≀ G` on `n` disjoint copies of `G`'s ground set, with
+`|F ≀ G| = |F|·|G|^k` for `k`-uniform `F`, and Lemma 7: if `F` and `G`
+are odd-sunflower-free and `G` is an antichain, so is `F ≀ G`. Take both
+factors to be `C₃`, the three 2-subsets of a 3-set:
+
+```text
+  |C3 wr C3| = 3 * 3^2 = 27      4-uniform      support 3*3 = 9
+```
+
+and `rust/tests/support_bounds.rs` exhibits an explicit relabelling
+showing **`C₃ ≀ C₃ ≅ Product.iota4`**. Since `C₃` is an antichain and
+odd-sunflower-free, and odd-sunflower-free implies sunflower-free (p. 1),
+**FPP Lemma 7 is an independent published proof that `Product.iota4` is
+sunflower-free** — a second route to what `Product.iota_four_at_least_27`
+establishes in the kernel.
+
+FPP attribute the wreath product to Frankl's 1977 thesis (their ref. [12],
+*Extremalis halmazrendszerek*, kandidátusi értekezés, MTA Budapest) and
+the *direct-sum* idea separately to Abbott–Hanson–Sauer 1972 (their [2],
+p. 2). These are two different operations, and the one behind
+`ι(4,9) = 27` is the wreath product. That bears on rows A10/A20, whose
+open question is what AHS 1972 actually contains — but it does not settle
+them: a 2024 paper's attribution is not a rendered page of AHS 1972, and
+rule 4 still applies.
+
+**Shifting does not rescue the covering-number route.** §37.5 hoped a
+literature maximum below 32 would close the rung; §37.6 recorded that it
+does not. One loophole remained — that *shifted* families might obey a
+smaller bound — and Frankl–Wang closes it, with the only theorem in the
+paper that reaches `k = 4`. Their Theorem 1.6 (p. 3) gives, for every `k`
+and `n > 2k`, the exact maximum over intersecting **initial** (shifted)
+families with `τ ≥ s`:
+
+```text
+  K(n,k,s) = { K : 1 in K, |K cap [2, k+s-1]| >= s-1 }  U  C([2, k+s-1], k)
+  g(n,k,s) = |K(n,k,s)|
+```
+
+At `k = 4` this is computed in `rust/tests/support_bounds.rs`:
+
+```text
+  tau >= 4 :  |K(n,4,4)| = C(6,3) + C(6,4) = 35    for every n > 8
+  tau >= 3 :  |K(n,4,3)| = 10n - 45               (65 at n = 11)
+```
+
+The `τ ≥ 4` figure does not depend on `n` at all, and **35 > 32**. So the
+rung survives shifting, by three — much the tightest any literature
+number has come, and far tighter than the `42 <= r(4) <= 64` bracket
+`docs/reading.md` A22 quotes. It is still not a bound on `ι(4,11)`:
+shifting does not preserve 3-sunflower-freeness, so an extremal
+sunflower-free family need not be initial.
+
+The `τ ≥ 3` count is verified twice. The paper's own Lemma 5.1 (p. 23)
+gives a closed form for the same quantity by a different route,
+
+```text
+  g(n,k,3) = C(n-1,k-1) - C(n-k-2,k-1) - (k+1) C(n-k-2,k-2) + k + 1
+```
+
+and it agrees with the enumeration of `K(n,4,3)` at every `n` from 9 to
+30 — the construction checked against the paper's arithmetic rather than
+against a restatement of it. Their eq. (5.1), `g(n,k,3) < |G(n,k)|`,
+also holds at `k = 4`, as it must, since `G(n,k)` is not initial.
+
+### 41.5 What the report got right, and what it did not
+
+The report is the third commissioned search this session and the pattern
+is now stable enough to state. It got right: the direction of Majumder's
+eq. (1); the value `16` at `k=4` and `7` at `k=3`; eq. (1.4) verbatim;
+the reproduction of 74 at `(11,4)`; the `Θ(n)` correction to §37.6 with
+a correct `n = 100` spot check; Theorem 1.4's `k ≥ 7`; the identity of
+the Chiba et al. paper; and — its one new piece of mathematics — that the
+FPP tree family is intersecting.
+
+It got wrong: that `16` is therefore not an upper bound (Hanson–Toft
+makes it an equality, three pages later in the paper it was reading);
+and it reported no page as visually rendered, because `arxiv.org` was
+not reachable from the container it ran in, so its verification was
+cross-pipeline agreement rather than sight. Both errors are the same
+error — a conclusion drawn from a source that was not looked at — and
+both were caught by looking. **Rule 32** was minted for the first.
+
+It also presented as new three things this repository already had in
+writing (§41.0), and the first draft of `docs/reading.md` A24 repeated
+that mistake back before the prior art was checked. That is the more
+useful lesson, and it is not about the report: **the novelty audit runs
+against this repository's own record first, and a commissioned search
+cannot perform it, because the search does not know what is here.**
+
+Method note, since it was the instruction that produced all of the above:
+every page of all three sources was rendered to a PNG at 150 dpi with
+PyMuPDF and read as an image — Majumder 6, Frankl–Pach–Pálvölgyi 10,
+Frankl–Wang 30, forty-six pages in total. `pdftotext` was not used. Four
+of the findings here are about what a formula *says* — a cancellation, a
+quantity's definition, an inequality's direction, a title in a
+bibliography — and each of them survives text extraction intact and
+wrong.
+
+---
+
+## 42. `tau = 2` cannot host thirty-two
+
+The last of the four covering-number cases at the `ι(4,11)` rung. §37.6
+disposed of `τ = 3` and `τ = 4` by citation, and `docs/reading.md` A24f
+closed the shifted variant; all three ended above 32 and none of them
+decided anything. `τ = 1` was never in doubt — a star forces `Δ = 32 > 26`.
+This section closes `τ = 2`, and it does so **here**, not by citation:
+the reduction is elementary and what is left is a small exhaustive search.
+
+### 42.1 The reduction
+
+Let `F` be 4-uniform, intersecting, sunflower-free on `[11]`, with a
+2-cover `{p, q}`. Split by which cover point a member holds, and take
+links:
+
+```text
+  X = { A \ {p} : p in A, q not in A }     3-sets on the other nine points
+  Y = { B \ {q} : q in B, p not in B }     3-sets on the other nine points
+  C = { A       : p in A and q in A }
+  |F| = |X| + |Y| + |C|                    a partition, by the cover
+```
+
+Three facts.
+
+**(i) `F` is sunflower-free exactly when `L_p` and `L_q` are** — where
+`L_p` is the link at `p` of *every* member holding `p`, `C` included. A
+triple whose members neither all share `p` nor all share `q` can never be
+a sunflower: two of them meet in a set containing `p` (or `q`) while a
+third pairwise intersection does not, so the three cannot coincide.
+Checked exhaustively over the mixed shapes — **67 375 triples, zero
+sunflowers** — in `rust/tests/tau_two.rs`. The two sides therefore impose
+no joint condition, which is what makes the problem factor.
+
+**(ii) `X` and `Y` are cross-intersecting.** A member of `X`'s preimage
+has no `q`, one of `Y`'s has no `p`, so they can meet only outside
+`{p, q}` — and they must, since `F` is intersecting.
+
+**(iii) `|C| ≤ g(2) = 6`.** All of `C` contains `{p, q}`, so a sunflower
+inside `C` is exactly a sunflower among the 2-set co-links, and the
+largest sunflower-free graph is two disjoint triangles.
+`PureLink.g_two_at_most_six` already has the bound in the kernel.
+
+Hence
+
+```text
+  |F| <= max(|X| + |Y|)  +  6
+```
+
+the maximum being over cross-intersecting pairs of sunflower-free
+3-uniform families on nine points. **A maximum of 25 or less would give
+`|F| <= 31 < 32` and end the case. §42.2 computes it exactly: it is 20,
+so `|F| <= 26`.**
+
+### 42.2 What the maximum actually is
+
+`rust/examples/tau_two.rs`, exhaustive:
+
+```text
+  n     g(3,n)   2*g(3,n) would allow   max(|X|+|Y|)   nodes         time
+  5       6              12                   12             31      0.0 s
+  6      10              20                   20            603      0.0 s
+  7      12              24                   20         44 189      3.4 s
+  8      12              24                   20      1 924 790    115.9 s
+  9      14              28                   20     41 119 676   1499.4 s
+```
+
+From `n = 7` on the cross-intersecting condition is strictly binding, and
+the value sits at **`2·ι(3) = 20`** and stays there. The extremal pair is
+the same at every one of `n = 6, 7, 8, 9`: `X = Y =` the maximum
+*intersecting* sunflower-free 3-uniform family, which lives on six
+points, so extra points do not help it — which is why the value stops
+growing while `g(3,n)` keeps going.
+
+```text
+  tau = 2  =>  |F| <= 20 + g(2) = 20 + 6 = 26 < 32
+```
+
+**So `τ = 2` cannot host the 32-member family, and it is not close: 26
+against 32, six under.**
+
+The `n = 9` row was reached twice. A floor run against 25 settled the
+rung's question — can it reach 26? — in 10 674 170 nodes and 1138.6 s,
+and the exact computation, which is the control of §42.4, cost only
+1.3 times that. Both are recorded because the floor run is the one the
+argument needs and the exact one is the one that checks it.
+
+### 42.3 The estimate this corrects
+
+The commissioned report of §41 put `τ = 2` at *"8 sets from falling"*, on
+the ground that two stars are each at most `g(3) = 20`, giving 40 against
+a target of 32. That is loose by about a factor of two, and the reason is
+exactly fact (ii): it prices the two sides independently. They are not
+independent — they are cross-intersecting, and at `n = 7` the difference
+is 24 allowed against 20 attained. The right shape is `2·ι(3) + 6 = 26`,
+which is six *under* the target rather than eight over it. The case was
+not close.
+
+### 42.4 How the search was checked
+
+Three things, because a bound of this kind is only as good as its
+falsifiability.
+
+**Two algorithms agree on the small end.** The first assigns every
+candidate triple to one of four states — neither side, `X` only, `Y`
+only, both. The second branches over `X` alone and scores each `X` by
+`maxSF(N(X))`, the largest sunflower-free family among the triples still
+meeting all of `X`; this is exact because for a fixed `X` the best `Y`
+*is* that quantity. They agree at `n = 5, 6, 7` (12, 20, 20), and the
+second is 32 000 times cheaper at `n = 7` — 203 622 nodes against
+6 502 694 424.
+
+**The symmetry reduction reproduces what it must.** The problem carries
+the full symmetric group on the points, so an optimum with `{0,1,2} ∈ X`
+exists and the top-level branch need try only that triple. Turned on, it
+returns the same 12, 20, 20 at 31 / 603 / 44 189 nodes. `TAU2_NO_SYM=1`
+disables it, so the two can be run against each other.
+
+**A floor run has a control.** A floor that is never beaten proves
+nothing by itself — a search that pruned everything through a bug would
+report exactly the same thing, and would report it fast. So the `n = 9`
+floor of 25 is paired with a control at a floor the maximum is known to
+clear: `--floor 19`, which must come back *beaten*. **It does:**
+
+```text
+  n = 9, --floor 19:  BEATEN, reached 20   41 119 676 nodes   1499.4 s
+```
+
+So the search finds optima at nine points rather than pruning them away,
+and because beating 19 obliges it to go on and prove nothing beats 20,
+the control *is* the exact computation. That is where §42.2's `20` comes
+from. The identical code path with no floor had already returned the
+exact maxima at `n = 5, 6, 7, 8`; the control extends that evidence to
+the one size the claim actually rests on.
+
+One CLI note, recorded because it nearly cost a wrong run: the floor used
+to be inferred from "two arguments, the second one large", which reads
+`9 19` as ground sets 9 **and 19** rather than as a floor. It is an
+explicit `--floor` now, and ground sets above 12 are rejected outright.
+
+### 42.5 In the kernel
+
+The reduction of §42.1 is formalised in `coq/Support.v`, and every name
+in it is `Closed under the global context`.
+
+```coq
+Definition CrossPairOnNine (M : nat) : Prop :=
+  forall (V : list nat) (X Y : Family),
+    NoDup V -> length V <= 9 ->
+    Uniform 3 X -> Distinct X -> Grounded X V -> ~ ContainsKSunflower 3 X ->
+    Uniform 3 Y -> Distinct Y -> Grounded Y V -> ~ ContainsKSunflower 3 Y ->
+    (forall A B, In A X -> In B Y -> exists z, In z A /\ In z B) ->
+    length X + length Y <= M.
+
+Theorem tau_two_on_eleven_at_most_26 :
+  CrossPairOnNine 20 ->
+  forall (U : list nat) (F : Family) (p q : nat),
+    NoDup U -> length U = 11 -> In p U -> In q U -> p <> q ->
+    Uniform 4 F -> Distinct F -> Grounded F U ->
+    Intersecting F -> ~ ContainsKSunflower 3 F ->
+    (forall A, In A F -> In p A \/ In q A) ->
+    length F <= 26.
+```
+
+`CrossPairOnNine 20` is the computed input, carried as a hypothesis for
+the same reason `GThreeOnEight` is: the kernel checks what the
+computation buys, and the computation is falsifiable on its own terms.
+The supporting lemmas are `cover_partition` (the three parts really do
+partition, and this is the only place the cover hypothesis is used),
+`length_link_of_all` (a link is as long as the part it comes from), and
+`link_grounded_off_two` (the link of one cover point over its own part
+misses the *other* cover point too — the nine-point step).
+
+Three hypotheses are new relative to §42.1's sketch, and each earns its
+place. `In p U` and `In q U` keep the cover inside the ground set; a
+cover point outside `U` is met by no member and the count would not be
+nine. `p <> q` separates this from `τ = 1`, where the "two"-point cover
+is one point, the family is a star, and `two_cover_degree_sum` above
+already handles it.
+
+What the kernel does **not** check is `CrossPairOnNine 20` itself. That
+is `rust/examples/tau_two.rs`, and it is exactly the same standing
+`g(3,8) = 12` has under `GThreeOnEight` — stated here rather than left
+for a reader to infer.
+
+Three mutations in `tools/mutations.toml` hold the constants down, and
+all three are **killed**:
+
+```text
+  tau-two-carried-constant-26      killed   220.5 s
+  tau-two-conclusion-twenty-five   killed   220.2 s
+  tau-two-links-live-on-ten        killed   220.1 s
+```
+
+Weakening the carried 20 to 26 makes the sum `26 + 6 = 32` and the
+theorem's 26 stop following. Tightening the conclusion to 25 fails
+because `20 + 6` is exactly 26 — the bound has no slack in it.
+Restricting the carried hypothesis to ground sets of size 8 breaks the
+application, which is the machine-checked way of saying the reduction
+reaches exactly nine points and not fewer. The whole suite ran at
+167 mutations: 164 killed, two declared survivors, one control passing,
+**unexpected: 0**.
+
+---
+
+## 43. The eleven-point rung closes — and what that is worth
+
+`deg(0) = 13` came back **UNSAT at 85 123.9 s** (23.65 h), one core,
+uncontended, on the user's VM. That is the last of twenty-one cubes, so
+every family the symmetry-broken encoding covers at eleven points has
+been ruled out:
+
+```text
+  iota(4,11) <= 31
+```
+
+54.2 h of solver time across the rung. The ladder now reads
+`iota(4,9) = 27` exactly (§38), `iota(4,10) <= 31` (§9, 4437 s), and
+`iota(4,11) <= 31`.
+
+### 43.1 What it settles
+
+`Sharp.iota_four_at_least_32_refutes` is the reason the number 32 is the
+target: a 4-uniform intersecting sunflower-free family of 32 members
+refutes `AHSOptimal` at `b = 4`. Eleven points do not hold one. So the
+**eleven-point ground set is closed**, and the conjecture survives it.
+
+That is a genuine negative and it is worth what a negative is worth: the
+search space it exhausts, and nothing beyond. It is not evidence that
+`AHSOptimal` is true.
+
+### 43.2 What it does not settle, and the reason is structural
+
+`Product.IotaAtLeast b N` carries **no ground set** — it is
+`exists H : Family` with `length H = N`, over families on any points at
+all. So `iota(4,11) <= 31` does not touch `IotaAtLeast 4 32`; it rules
+out one ground-set size out of infinitely many.
+
+The obvious hope is that some `n` suffices — that a support bound would
+make the ladder a finite search. **§41 established that this hope is
+exactly the whole conjecture.** Frankl–Pach–Pálvölgyi's `g_v(k)` is that
+support function, their Conjecture 14 is that it is at most `c^k`, and
+Zach Hunter's argument makes that conjecture *equivalent* to Erdős–Rado.
+There is no support bound to be had short of the result itself.
+
+Worse for the ladder specifically, §41.2 exhibits a 4-uniform
+**intersecting** sunflower-free family on **fifteen** points — the vertex
+reading of the FPP tree, checked in `rust/tests/support_bounds.rs`. So
+twelve, thirteen, fourteen and fifteen points are all live ground sets on
+which such families demonstrably exist, and the ladder cannot stop at
+eleven for any reason internal to it.
+
+**The honest position: the ladder is an infinite staircase with no known
+last step, and this session climbed one more of them.**
+
+### 43.3 The second opinion is incomplete, and that is the real caveat
+
+This repository's standing rule for `UNSAT` is `sat::solve_agreed` — two
+independent solvers must agree before the verdict is believed — and
+`tools/rung.sh` keeps the second pass in its own checkpoint, whose header
+says the rung is believed only where both agree. Measured against that
+rule the rung was **19 of 21**, and is now **20 of 21**:
+
+```text
+  deg   cadical      cryptominisat5     agree?
+   15    34788 UNSAT      23478 UNSAT     yes
+   14    51306 UNSAT      70311 UNSAT     yes  -- re-run at 200 000 s
+   13    85124 UNSAT          in flight   not yet
+```
+
+The two cubes lacking a second opinion were exactly the two that cost
+cadical the most, and their original cryptominisat5 runs did not
+disagree — they ran out of budget, at 40 407 s and 40 409 s against a
+36 000 s allowance. **Cube 14 has since been re-run at a 200 000 s
+budget and came back UNSAT at 70 310.9 s**, agreeing with cadical.
+Cube 13 is running under the same settings. See §47.
+
+**This is affordable, and it should be paid.** The cost ratio moves
+steadily in cryptominisat5's favour as the cubes deepen — 11.6x slower at
+`deg(0) = 30`, 4-7x through the middle, 2.27x at 17, 1.34x at 16, and
+**0.67x at 15**, where it is the faster solver. Extrapolating that trend
+rather than a constant, a second opinion on 13 and 14 wants a budget
+around 150 000 s each:
+
+```text
+  RUNG_SOLVER=cryptominisat5 RUNG_THREADS=1 RUNG_SLICE=200000 \
+  RUNG_CUBECAP=400 tools/rung.sh 4 11 32 200000 14 13
+```
+
+Until cube 13 lands, the correct sentence is **"`iota(4,11) <= 31` under
+cadical, with two-solver agreement on twenty of twenty-one cubes"**, and
+it should be written that way wherever it is written.
+
+### 43.4 The cost curve, complete, and a prediction that held
+
+```text
+  deg0   17        16         15          14           13
+  secs   4171.5    11356.6    34788.1     51305.5      85123.9
+  ratio  -         2.72x      3.06x       1.47x        1.66x
+```
+
+§39 withdrew a log-linear fit that predicted `deg(0) = 13` at ~284 000 s
+(79 h) after it missed `deg(0) = 14` by 1.92x. Before this run a range of
+**21–44 h** was offered instead, taken from the two shallow ratios rather
+than from a curve. It held, near its low end, at 23.65 h.
+
+The range being right is not the lesson and should not be recorded as
+one. Four measured ratios reading 2.72, 3.06, 1.47, 1.66 do not lie on
+any curve, and the reason the range worked is that it declined to fit
+them — it used the two most recent points and widened. §39's rule stands:
+three ratios that disagree cannot support a fourth.
+
+### 43.5 What the split cost, finally
+
+§40 measured the degree-sequence split at `deg(0) = 13` at a floor of
+3319 core-hours against a whole-cube estimate. The whole cube is now
+measured, so the comparison is between two measurements:
+
+```text
+  split, lower bound          >= 3319 core-hours
+  whole, measured                  23.65 core-hours
+  ratio                              >= 140x
+```
+
+And a run of that split was stopped after five days having produced
+nothing reusable, because `rung.sh` neither streams nor checkpoints
+sub-cube verdicts — it captures the solver's output in a shell variable
+and passes no `--checkpoint`. The row it then recorded was the 60.1 s
+slice stall, whose budget column understated the real spend by five days
+of ten-core time. That row had to be deleted before the cube could be
+re-run at all, because the skip test matches the deg column and ignores
+the verdict. All three of those are recorded in the ladder header now.
+
+### 43.6 What is next, in order of what it buys
+
+1. **The second opinion on cubes 13 and 14** (§43.3). Cheap, owed by the
+   repository's own rule, and the only thing standing between the current
+   claim and a clean one.
+2. **`iota(4,12)`**, if the ladder is to be climbed further. Nothing
+   about the cost curve predicts it; the eleven-point rung cost 54.2 h
+   and twelve will cost more, on a staircase §43.2 shows has no known
+   top. Worth doing only if the goal is another exhausted ground set
+   rather than progress on `AHSOptimal`.
+3. **Neither** — and this is the honest recommendation. The ladder's
+   ceiling is `iota(4) <= 71` from `PureLink`, its floor is 27 from
+   `Product.iota4`, and closing ground sets one at a time narrows
+   neither. §41.1's instruction stands: no design predicated on a support
+   bound, because obtaining one is the conjecture.
+
+**A fourth option, found after this section was written: §44.** Asking
+what `iota(4,10)` *is* — rather than whether it reaches 32 — is a
+different and much cheaper question, because a witness makes it SAT
+rather than UNSAT. It cannot refute `AHSOptimal`, since 32 on ten points
+is already excluded; what it decides is whether the one construction we
+have is extremal or merely the only one. That is the question §44.2 makes
+worth asking, and it does not contradict the recommendation above: it is
+not a climb up the ladder, it is a probe across a rung already closed.
+
+---
+
+## 44. The wreath product is exhausted at four
+
+§41.4 identified `Product.iota4` — this repository's `ι(4,9) = 27`
+witness — as the wreath product `C₃ ≀ C₃`, an operation Frankl–Pach–
+Pálvölgyi (*Odd-Sunflowers*, p. 4) attribute to Frankl's 1977 thesis.
+That identification raises a question this repository had not asked: the
+construction is a *formula with free parameters*, so can it be pushed
+past 27?
+
+**It cannot.** `rust/tests/wreath_ceiling.rs`.
+
+### 44.1 Why the question is worth asking at all
+
+The prompt was an analogy, and it is recorded as an analogy rather than
+dressed up as mathematics. Records for the rank of elliptic curves over
+`Q` are not found by excluding low-rank curves; they are found by
+engineering a *parameterised family* in which many independent points are
+forced by construction, and then searching the parameter space. Refuting
+`Sharp.AHSOptimal` at `b = 4` has the same shape — it is an existence
+question, "find 32 sets", with a certificate that is trivial to verify
+and hard to find — and this repository has spent its compute on the
+opposite, excluding families on small ground sets, which §43.2 shows can
+never refute anything.
+
+So: what parameterised constructions do we have? Exactly one.
+
+### 44.2 The ceiling
+
+For `F` a `k`-uniform family and `G` an `m`-uniform family,
+
+```text
+  uniformity(F ≀ G) = k · m            |F ≀ G| = |F| · |G|^k
+```
+
+**The product is intersecting exactly when both factors are.** For `A`
+built over `F` and `B` over `F'`,
+
+```text
+  A ∩ B  =  ⋃_{j ∈ F ∩ F'} (G_j ∩ G'_j)
+```
+
+which is empty if `F ∩ F' = ∅`, and can be emptied whenever `G` has a
+disjoint pair `U, V` by choosing `G_j = U`, `G'_j = V` at every
+`j ∈ F ∩ F'`. Both directions are checked by construction in the test,
+not asserted.
+
+That is the whole ceiling, because it forces the factors to be `ι` and
+not `g`. At uniformity 2 the unconstrained maximum is `g(2) = 6` — two
+disjoint triangles — and the intersecting maximum is `ι(2) = 3`, one
+triangle. Halving each factor is what caps the product:
+
+```text
+  had the factors been free   g(2) · g(2)^2 = 6 · 36 = 216   unreachable
+  the factors are forced      ι(2) · ι(2)^2 = 3 ·  9 =  27   Product.iota4
+```
+
+At uniformity 4 the factorisations `4 = k · m` with both factors below 4
+— the only ones building something new rather than restating `ι(4)` —
+number exactly one:
+
+```text
+  k=1, m=4 :  ι(1) · ι(4)^1  =  ι(4)         degenerate
+  k=2, m=2 :  ι(2) · ι(2)^2  =  27           <- the whole non-degenerate case
+  k=4, m=1 :  ι(4) · ι(1)^4  =  ι(4)         degenerate
+```
+
+with `ι(1) = 1` because two distinct singletons are disjoint.
+
+### 44.3 What this does and does not say
+
+**Says:** `ι(4) > 27` requires a construction that is *not* a wreath
+product of smaller intersecting sunflower-free families. This repository
+has none, and the three commissioned literature searches of §36, §37 and
+§41 turned up none. That is a sharper account of where the lower bound is
+stuck than "27 is the best we know" — the best we know is the *only*
+thing we know how to build.
+
+**Does not say:** anything about `ι(4)` itself. The bracket is unchanged
+at `27 ≤ ι(4) ≤ 71`, from `Product.iota_four_at_least_27` and
+`PureLink.iota_four_at_most_71_if_iota_three_is_ten`. A ceiling on one
+construction is not an upper bound on the quantity, and must never be
+quoted as one.
+
+**Does not say** that 27 is extremal even at nine points for a *reason* —
+`ι(4,9) = 27` is proved (§38, `Support.four_uniform_on_nine_is_exactly_27`)
+and the wreath ceiling merely explains why no larger family was ever
+built by the one method available. The two facts are independent and
+happen to agree.
+
+### 44.4 The probe this suggested, and its partial result
+
+If the wreath product is exhausted, the natural question is whether 27 is
+extremal because the construction is optimal or merely because it is the
+only one. That is answerable by search, and cheaply, because the useful
+direction is now SAT rather than UNSAT: **ask what `ι(4,10)` is, rather
+than whether it reaches the refutation threshold of 32.**
+
+`iota_sym 4 10 28`, 3600 s per cube, on the user's VM:
+
+```text
+  deg(0) = 17 .. 28   UNSAT, all of them, none over 90 s
+  deg(0) = 16         UNSAT    153.9 s
+  deg(0) = 15         UNSAT    302.7 s
+  deg(0) = 14         UNSAT   1418.4 s
+  deg(0) = 13         UNSAT   1775.4 s
+  deg(0) = 12         UNKNOWN at the 3600 s limit
+```
+
+Sixteen of seventeen cubes are closed. What survives is the **floor**
+cube: a 28-member 4-uniform family on ten points has degree sum
+`4 · 28 = 112` over ten points, mean 11.2, so the maximum degree cannot
+be below 12. So the partial run already establishes
+
+> any 28-member 4-uniform intersecting sunflower-free family on ten
+> points has maximum degree **exactly 12**,
+
+with only 8 of slack to distribute over ten points. That is the same
+near-regularity that made nine points tractable (`4 · 27 = 108 = 9 · 12`
+exactly, §38) and it is why this cube is the hard one: a near-regular
+instance gives a solver nothing to exploit.
+
+`deg(0) = 12` is a *floor* cube with small slack, which is the regime
+where the degree-sequence split **wins** — at eleven points the floor
+cube split into 19 sub-cubes and turned an undecided cube into 3236 s,
+where `deg(0) = 13` split into 1939 and lost by ≥140× (§43.5). The
+distinction is the sequence count, not the split. That run is in flight;
+its result belongs in a later section, not this one.
+
+### 44.5 Standing instruction
+
+Recorded because it is the operative consequence and is easy to lose:
+**the lower bound `ι(4) ≥ 27` will not move by parameter search.** The
+one construction with free parameters is exhausted. Moving it needs a new
+idea, and §41.1 already rules out the shortcut — no design may be
+predicated on a support bound, because obtaining one is the conjecture.
+
+---
+
+## 45. Handover — session N+13
+
+Start here. §32 was the previous handover pointer and is four sessions
+stale; `STATUS.md` now points at this section.
+
+### 45.1 What moved
+
+**`τ = 2` is closed in the kernel.** `Support.tau_two_on_eleven_at_most_26`,
+`Closed under the global context`: a 4-uniform intersecting sunflower-free
+family on eleven points with a two-point cover has at most 26 members,
+against the 32 the rung asks about. The reduction is §42; the computed
+input it carries, `CrossPairOnNine 20`, is
+`rust/examples/tau_two.rs`. Three mutations hold its constants and all
+three are killed. With `τ = 1` already excluded by
+`two_cover_degree_sum`, only `τ ∈ {3, 4}` survives, and §37.6 and A24f
+show neither is excluded by anything citable.
+
+**The eleven-point rung closed.** `deg(0) = 13` UNSAT at 85 123.9 s, all
+21 cubes, so `ι(4,11) ≤ 31` — **under cadical**. See §45.3.
+
+**Forty-six pages of primary sources were rendered and read** (§41),
+correcting two of this repository's own claims: the `k=4, τ=3` maximum is
+`Θ(n)` and exactly `13n − 69`, not `Θ(n³)`; and `tools/papers.py` emitted
+every arXiv bib entry without a comma, so `sunflower.bib` did not parse.
+
+**The wreath product is exhausted at four** (§44). `Product.iota4` is
+`C₃ ≀ C₃`, the product is intersecting only when both factors are, and
+that forces `ι(2) = 3` rather than `g(2) = 6` in the formula. So
+`ι(4) > 27` needs a construction nobody has.
+
+### 45.2 What is owed, in order
+
+*Read with §46–§49, which are later than this list. Item 2 is settled:
+§46 closed `ι(4,10) = 27`. Items 1 and 3 are still open. The eleven-point
+probe at target 28 (§48) is now the live computation, and §49 replaces
+§48.1's plan for it.*
+
+1. **The second opinion on cube 13** (§43.3, §47). Cube 14 is done —
+   cryptominisat5 UNSAT at 70 310.9 s against cadical's 51 305.5 s — so
+   the rung has two-solver agreement on **20 of 21**. Cube 13 is in
+   flight at a 200 000 s budget. **Until it lands the claim is
+   "`ι(4,11) ≤ 31` under cadical, 20 of 21 agreeing" and must be written
+   that way.**
+2. **`ι(4,10)`: the `deg(0) = 12` floor cube** (§44.4). Sixteen of
+   seventeen cubes are UNSAT; the survivor is the floor. UNSAT gives
+   `ι(4,10) = 27`; SAT gives a 28-set witness that must be independently
+   re-verified before it is recorded.
+3. **`docs/reading.md` A20**, still open from three sessions back: which
+   of the three Abbott papers contains the substitution. §44 adds a data
+   point — FPP attribute the wreath product to Frankl's 1977 thesis and
+   the *direct sum* separately to AHS 1972 — but that is a 2024 paper's
+   attribution, not a rendered page of AHS 1972, and rule 4 stands.
+
+### 45.3 What must not be overstated
+
+`ι(4,11) ≤ 31` closes **one ground set**. `Product.IotaAtLeast` carries
+no ground set, so refuting `AHSOptimal` needs 32 *somewhere*, and §41.2
+exhibits a 4-uniform intersecting sunflower-free family on **fifteen**
+points — so twelve through fifteen are all live. §41.1 is the reason
+there is no shortcut: bounding the support is Frankl–Pach–Pálvölgyi's
+Conjecture 14, which Hunter's argument makes *equivalent* to Erdős–Rado.
+
+The standing bracket is unchanged: **`27 ≤ ι(4) ≤ 71`**. Nothing this
+session moved either end.
+
+### 45.4 Process failures worth not repeating
+
+Three, all recorded where they bite rather than only here.
+
+**A commissioned report re-derived what this repository already had, and
+the first draft of `docs/reading.md` A24 repeated the claim of novelty
+back before the prior art was checked.** `docs/references.md` had
+Hunter's equivalence, `g_v(k) ≥ 2^k − 1`, and the "no papers studying
+`g_v`" sentence already. The novelty audit runs against this
+repository's own record first, and a commissioned search cannot perform
+it, because it does not know what is here.
+
+**Rule 32 was minted** (`docs/reading.md`): a retraction is a claim and
+gets the same audit as the claim it retracts. The report withdrew
+`N(4) = 16` as an upper bound on a correct reading of Majumder's eq. (1)
+and a wrong conclusion — Hanson–Toft make it an equality three pages
+later.
+
+**A five-day run produced nothing**, because `RUNG_SLICE=60`
+`RUNG_CUBECAP=3000` forces the degree-sequence split, and `rung.sh`
+neither streams nor checkpoints sub-cube verdicts. The row it then
+recorded was a 60.1 s slice stall. The ladder header now says so, and
+says to delete such a row before re-running, because the skip test
+matches the deg column and ignores the verdict.
+
+---
+
+## 46. `ι(4,10) = 27`: a tenth point buys nothing
+
+The floor cube landed. **UNSAT**, 144 degree-sequence sub-cubes, none at
+the limit, 37 879.5 s wall and 41.5 core-hours of solver time. With the
+sixteen coarse cubes already closed (§44.4), every `deg(0)` at ten points
+is exhausted for a 28-member family:
+
+```text
+  iota(4,10) <= 27
+```
+
+and the `ι(4,9) = 27` family embeds in ten points by not using the tenth,
+so `ι(4,10) >= 27`. Therefore
+
+```text
+  iota(4,9) = iota(4,10) = 27.
+```
+
+`docs/ladder/iota4_10.t28.tsv` records all 144 sub-cubes with their
+times. **The target is in that filename deliberately**: `tools/rung.sh`
+derives its checkpoint name from `(b, ground)` alone and its skip test
+matches the deg column while ignoring both verdict and target, so a run
+at one target would silently skip cubes recorded at another. That is the
+same defect that made a five-day run write a false row (§43.5), in a
+third costume.
+
+### 46.1 Why this is the interesting outcome
+
+§44 showed the wreath product — the only construction this repository has
+for intersecting sunflower-free families — is exhausted at 27. The
+obvious worry was that 27 is merely *the best anyone has built*. Two
+exact values now say otherwise at the sizes we can reach: **27 is
+optimal at nine points and still optimal at ten.** A tenth point, which
+adds `C(9,3) = 84` new 4-sets to choose from, buys nothing at all.
+
+That is evidence — not proof — that `ι(4) = 27`. If true, `AHSOptimal`
+holds comfortably at `b = 4`: `27² = 729 ≤ 1000`, with the refutation
+threshold at 32 and `32² = 1024` clearing it. The standing bracket is
+unchanged and stays `27 ≤ ι(4) ≤ 71`; two ground sets are not a proof
+about a maximum taken over all of them (§43.2).
+
+### 46.2 The split's boundary, now with three points
+
+§43.5 said the degree-sequence split wins when it is small and loses
+badly when it is not. There are now three measurements, and the boundary
+is narrower than "small":
+
+```text
+  ground  deg(0)  sub-cubes   outcome
+    11      12          19    WON -- undecided cube -> 3 236 s
+    10      12         144    WON -- undecided cube -> 37 880 s, 41.5 core-h
+    11      13       1 939    LOST -- >= 3 319 core-h against 23.65 whole
+```
+
+So 144 is inside the winning regime and 1939 is far outside it. The
+operative rule for a future session: **read the `N degree-sequence
+cubes` line before letting a split run.** Under a few hundred, let it go;
+in the thousands, kill it and solve whole. `--cubecap 400` encodes
+exactly that judgement and was right in all three cases.
+
+### 46.3 What to run next, and what it costs
+
+The same probe one rung up: **is `ι(4,11) = 27` as well?** The rung at
+eleven points is closed only against the refutation threshold of 32
+(§43), so `ι(4,11)` is known merely to lie in `[27, 31]`. A third
+agreement would be the strongest evidence available that 27 is the true
+value; a 28-member family on eleven points would be the first sign the
+AHS construction is not optimal, and would be worth far more than another
+closed ground set.
+
+Cost, honestly: the ten-point probe took about 11.6 h wall in total. The
+eleven-point instance is larger in every dimension and its floor cube
+will admit more degree sequences than 144. No estimate is offered — §39
+and §43.4 are what happens when this ladder is extrapolated, and the two
+useful predictions it has produced both came from declining to fit.
+
+Priority order is unchanged from §45.2: the cryptominisat5 second opinion
+on cubes 13 and 14 comes first, because it is owed by the repository's
+own rule and converts a qualified claim into a clean one.
+
+---
+
+## 47. The second opinion: cube 14 agrees, cube 13 in flight
+
+`sat::solve_agreed` is this repository's standing rule for `UNSAT` — two
+independent solvers must agree before the verdict is believed — and §43.3
+recorded that the eleven-point rung met it on only 19 of 21 cubes. It now
+meets it on **20 of 21**.
+
+```text
+  deg(0) = 14   cadical         UNSAT   51 305.5 s
+                cryptominisat5  UNSAT   70 310.9 s   ratio 1.37x
+```
+
+Re-run on the user's VM at `RUNG_THREADS=1 RUNG_SLICE=200000` so the
+degree-sequence split never fires — one sequential solver, one core, the
+same shape as the cadical run it is checking. Cube 13 is running under
+the same settings and is the last outstanding verdict in the rung.
+
+### 47.1 Why the original runs failed, and it was not disagreement
+
+Both cubes came back `UNKNOWN` in the first cryptominisat5 pass, at
+40 407 s and 40 409 s against a **36 000 s** budget. They ran out of
+time; neither disagreed with cadical. The budget was simply too small for
+the two deepest cubes, and the fix was arithmetic rather than
+algorithmic.
+
+The old rows were replaced rather than kept, because the file holds one
+row per `deg(0)` and the new row carries its own larger budget. What they
+said is preserved in that file's header, so the record of an
+undecided-at-36 000 s run is not lost — rule 13 is about not *silently*
+converting a budget into a verdict, not about never superseding a row.
+
+### 47.2 The ratio is not monotone, and the budget was not a fit
+
+```text
+  deg0      cadical         cms      cms/cadical
+    17       4 171.5     9 455.7        2.27x
+    16      11 356.6    15 226.3        1.34x
+    15      34 788.1    23 478.0        0.67x   <- cryptominisat5 faster
+    14      51 305.5    70 310.9        1.37x
+```
+
+The disadvantage narrows as the cubes deepen but does not settle, and at
+`deg(0) = 15` cryptominisat5 wins outright. The 200 000 s budget for
+cube 13 was chosen from that *narrowing* — cadical needed 85 123.9 s
+there, and 1.37× of that is about 117 000 s, leaving most of a factor of
+two in hand — rather than from a curve through four points that plainly
+do not lie on one. §39 and §43.4 are the record of what fitting this
+ladder produces.
+
+### 47.3 What is still not settled
+
+Nothing about `ι(4)` moves here. The second opinion raises confidence in
+a verdict already recorded; it does not change it. The claim remains
+
+> `ι(4,11) ≤ 31`, under cadical, with two-solver agreement on twenty of
+> twenty-one cubes,
+
+and becomes unqualified only when cube 13's cryptominisat5 run lands.
+Should that run return `SAT`, the two solvers would disagree and the
+cadical verdict for cube 13 would have to be withdrawn — which is the
+entire point of running it, and is why the sentence above is written with
+the qualifier rather than without.
+
+---
+
+## 48. Eleven points at target 28: partial, and much harder
+
+The same probe one rung up. §46 closed `ι(4,10) = 27` in about 11.6 h;
+eleven points is a different animal.
+
+```text
+  iota_sym 4 11 28 --seconds 3600 --threads 6
+  82 215 vars, 306 034 clauses, 18 cubes deg(0) = 11..28
+
+  deg(0) = 18 .. 28   UNSAT      (18 and 19 at ~1930 s, the rest faster)
+  deg(0) = 11 .. 17   UNKNOWN at the 3600 s limit -- seven cubes
+  VERDICT UNKNOWN after 7560.6 s
+```
+
+**What is already established.** Eleven of eighteen cubes are closed, so
+
+> any 28-member 4-uniform intersecting sunflower-free family on eleven
+> points has maximum degree at most 17,
+
+and the degree sum `4 · 28 = 112` over eleven points puts the mean at
+10.18, so the maximum is at least 11. The live band is `deg(0) ∈ [11,17]`.
+
+**Why it is harder than ten points, quantified.** The instance is about
+twice the size (1.91× the variables, 2.12× the clauses) and the coarse
+pass left *seven* survivors where ten points left one:
+
+```text
+              cubes   closed by coarse   survivors
+  10 points     17           16              1  (the floor)
+  11 points     18           11              7  (deg 11..17)
+```
+
+For scale, the single ten-point survivor cost 41.5 core-hours on its own.
+
+### 48.1 The survivors are not alike, and should not be run alike
+
+The number of admissible degree sequences for a cube grows with its
+slack, `11·deg(0) − 112`:
+
+```text
+  deg(0)   slack   sequences   solving whole
+    11        9      fewest     hardest  -- near-regular, no slack to exploit
+    12       20         |           |
+    ...      ...        |           |
+    17       75      most       easiest  -- its neighbours 18, 19 closed at ~1930 s
+```
+
+So the two ends want opposite tools, and §46.2's rule — read the sequence
+count before letting a split run — cuts both ways here:
+
+* **`deg(0) = 15, 16, 17`** are close to the boundary the coarse pass was
+  already crossing. Their slack is large, so the split would produce
+  thousands of sub-cubes and lose. **Run them whole with a bigger
+  budget.**
+* **`deg(0) = 11, 12, 13`** are the near-regular ones. Their slack is
+  small, so the split should produce a few hundred sub-cubes, which is
+  the regime where it won at both floor cubes so far. **Run them split,
+  after reading the count.**
+
+`deg(0) = 14` sits between and should be decided by whichever its
+sequence count indicates.
+
+### 48.2 The honest cost position
+
+No estimate is offered for the total, and this is the section where that
+restraint costs something rather than being free. What can be said: the
+ten-point probe was ~11.6 h for one survivor on a half-size instance, and
+this has seven survivors on a double-size one. A naive product is well
+into the hundreds of core-hours, and every extrapolation attempted on
+this ladder has been wrong — §39 by 1.92×, §43.4's four ratios lying on
+no curve at all.
+
+**What it buys, weighed honestly.** `ι(4,11) = 27` would be a *third*
+ground set agreeing, after nine and ten. That is real but diminishing:
+the case that `ι(4) = 27` is already made as well as two exact values and
+an exhausted construction (§44) can make it. `ι(4,11) ≥ 28` would be a
+genuine surprise and worth far more — the first evidence the
+Abbott–Hanson–Sauer family is not optimal.
+
+Weak evidence toward the former: a satisfiable instance usually yields a
+witness quickly, and seven cubes ran 3600 s each without producing one.
+That is 7 × 3600 s of not finding a 28-set family, which is suggestive
+and nothing more — the hard cubes are exactly where a witness would hide.
+
+**This is a judgement call for the user, not a technical one**, and it is
+recorded as such. The compute is theirs and the marginal value of a third
+agreement is lower than the marginal value of the first two.
+
+## 49. The split, measured rather than guessed — and a driver that was
+##     paying twice for one answer
+
+§48.1 reasoned about which of the seven open eleven-point cubes would
+split usefully. It reasoned correctly about the *direction* and was wrong
+about the *magnitude* by three orders of magnitude, and the recommendation
+it produced was wrong for two of the three cubes it named. This section
+replaces the reasoning with the measurement, which took four minutes.
+
+### 49.1 What the split actually costs
+
+`sequence_cubes` at `(b,g,t) = (4,11,28)`, full prefix, cap 10⁶ — the
+number of degree-sequence sub-cubes each open `deg(0)` cube refines into:
+
+```text
+  deg(0)      11      12      13       14         15      16      17
+  sub-cubes  224   7 857  80 062  417 711  1 420 570   >10^6   >10^6
+```
+
+§48.1 predicted "a few hundred" for `deg(0) = 11, 12, 13`. That is right
+for 11 (224) and wrong for 12 (7 857) and 13 (80 062) — factors of 26 and
+267 against the top of that range. The curve is steeper than
+slack-counting suggests: each step multiplies by 35, 10, 5.2, 3.4. Only
+the floor cube is in the regime that has ever won at full prefix.
+
+The other half of §48.1 — "run 15, 16, 17 whole with a bigger budget" —
+was not wrong so much as unnecessary, which §49.2 is about.
+
+### 49.2 `--seqprefix`, which this development has used before
+
+`sequence_cubes` takes a `prefix`: fix the first `prefix` degrees exactly
+and leave the rest free, subject only to being fillable. That is still a
+partition of the models — still a sound split — and it is coarser by
+however much one asks for.
+
+**This is not a new lever and the first draft of this section said it
+was.** `docs/ladder/iota4_11.deg13.p3.tsv` is a prefix-3 split of the
+`deg(0) = 13` cube at eleven points, target **32**, from the session that
+added the flag: 27 sub-cubes instead of the full split's 1939, with
+fourteen rows recorded. The novelty audit runs against this repository's
+own ladder directory first (§45.4), and this section is the second time
+in three sessions that it has caught something.
+
+What is new here is the *table* — the flag applied to all seven open cubes
+at target 28, measured rather than reasoned about — and §49.3.
+
+All seven open cubes, at every prefix worth using:
+
+```text
+  deg(0)        11     12     13      14        15       16       17    total
+  prefix 3      12     44     90     120       136      153      171      726
+  prefix 4      53    288    529     680       816      969    1 140    4 475
+  prefix 5      57    433  1 241   2 429     4 022    6 090    8 713   22 985
+  full split   224  7 857 80 062 417 711 1 420 570    >10^6    >10^6        —
+```
+
+At ten points a split into 144 sub-cubes beat the cube whole and one into
+1939 lost (§40, §43.5). At `--seqprefix 3` **every one of the seven lands
+inside the winning regime**, and the whole remaining eleven-point problem
+is 726 sub-cubes — five times the split that decided one ten-point cube,
+for seven cubes on a double-size instance.
+
+### 49.2a The prefix is per-cube, because the count grows at different
+###        rates
+
+A flat `--seqprefix 3` is not the best use of the dial. How fast the count
+grows with the prefix depends on the cube, and for the *floor* cube it
+barely grows at all:
+
+```text
+  prefix          3    4    5    6    7    8   full(11)
+  deg(0) = 11    12   53   57   64   75   94      224
+  deg(0) = 15   136  816 4022 ...                >10^6
+```
+
+So the floor cube can be split at **full prefix into 224 sub-cubes**, each
+with all eleven degrees pinned, while `deg(0) = 15` cannot be pinned past
+three without leaving the winning regime. Taking the largest prefix whose
+count stays under 300:
+
+```text
+  deg(0)       11    12   13   14   15   16   17   total
+  prefix     full     4    3    3    3    3    3
+  sub-cubes   224   288   90  120  136  153  171   1 182
+```
+
+1 182 finer pieces against the flat plan's 726 coarser ones. Finer is
+worth more when the coarse pieces stall, and the target-32 rows say they
+will. **The floor cube is the one to run first**: §48.1 called it the
+hardest, it is the only one whose split is both affordable *and*
+maximally constrained, and 224 is the granularity that has already won at
+ten points (§40).
+
+This inverts §48.1 entirely. Its plan was "small `deg(0)` split, large
+`deg(0)` whole with a bigger budget"; the measurement says the prefix is
+the dial, and a flat setting of it already serves all seven:
+
+```sh
+  RUNG_SEQPREFIX=3 RUNG_CUBECAP=300 RUNG_SLICE=60 RUNG_THREADS=4 \
+    tools/rung.sh 4 11 28 43200  11 12 13 14 15 16 17
+```
+
+`--cubecap 300` admits every one of the seven prefix-3 splits (the largest
+is 171) and admits nothing larger by accident. `RUNG_SLICE=60` is small
+against the 43 200 s budget, so §49.3's trap is not sprung. The cubes are
+independent, so the seven may go in any order, on any machine, or not at
+all.
+
+`RUNG_SEQPREFIX` did not exist before this section and `rung.sh` could not
+express the plan without it. Two other things in that script had to move:
+
+* **The checkpoint was keyed by `(b, ground)` and a rung is a
+  `(b, ground, target)` question.** `tools/rung.sh 4 11 28` would have
+  appended to `docs/ladder/iota4_11.tsv`, which holds the **target 32**
+  rung, and the skip test matches the deg column and ignores everything
+  else — so every one of the seven cubes would have been skipped as
+  "already decided" on the strength of a different question's verdict.
+  That is a recorded result for a search that never ran, the exact failure
+  §36 exists to prevent, and it was one command away. The target now picks
+  the file: existing rungs keep their names, `4 11 28` gets
+  `iota4_11.t28.tsv`, and `RUNG_CHECKPOINT` overrides.
+* **A newly created checkpoint now gets a header naming its target**, so
+  the routing has something to read next time.
+
+Prefix 4 is the fallback if a prefix-3 sub-cube proves too coarse: 4 475
+sub-cubes total, still finite, still per-cube independent. Prefix 5 at
+22 985 is past what the ten-point evidence supports.
+
+`rust/tests/cube_budget.rs` pins the prefix-3 and prefix-4 rows and the
+full-split row, so a change to the enumeration cannot silently move the
+plan.
+
+**What a prefix-3 sub-cube costs, from the one measurement there is.**
+`iota4_11.deg13.p3.tsv` is the same shape one rung over in the target —
+eleven points, `deg(0) = 13`, prefix 3, but target 32 — and it is not
+encouraging:
+
+```text
+  27 sub-cubes at a 600 s cap:  5 UNSAT (136.1, 381.9, 429.2, 459.0, 491.4 s)
+                                9 UNKNOWN at the cap
+                               13 never attempted
+```
+
+Five of fourteen attempted landed, and the ones that did used most of the
+600 s. **And target 28 is the strictly harder instance**, not the easier
+one. That is `Product.IotaAtLeast_antitone`, already in the kernel and
+already audited: uniformity, distinctness, intersecting-ness and
+sunflower-freeness all pass to subfamilies, so a 32-member family has a
+28-member one and UNSAT at 28 implies UNSAT at 32. It transfers to the
+encoding because `all_points_used` is off by default — the instance asks
+for a family on *at most* eleven points, so the trimmed subfamily is still
+a model. The 600 s cap that decided five of fourteen at target 32 will
+decide fewer at 28.
+
+So 726 sub-cubes is the right *shape* and no basis at all for a cost
+estimate. If a sub-cube needs the 3600 s the coarse pass already spent per
+cube, 726 of them is 726 core-hours. If prefix 3 leaves sub-cubes too hard
+and prefix 4 is needed, the count rises to 4 475 but the per-sub-cube cost
+falls — by how much, nothing here measures, and the product is the number
+that matters. Both are guesses, and §48.2's refusal to
+estimate stands — every extrapolation attempted on this ladder has been
+wrong, §39 by 1.92× and §43.4's four ratios by lying on no curve at all.
+What §49 changes is that the work is now *shaped* into independent
+few-hundred-second pieces that a checkpoint can accumulate across
+container deaths, instead of seven twelve-hour monoliths that lose
+everything when the container is reclaimed.
+
+### 49.3 The driver was solving the hard cubes twice
+
+Found while reproducing the four eleven-point jobs that exited
+immediately. The reproduction did not reproduce the failure — the code
+ran correctly — but the run showed this:
+
+```text
+  iota_sym 4 11 28 --only-deg 17 --seconds 45 --slice 45
+      g=11 deg(0)=17    UNKNOWN   45.1s      <- phase one
+  # 1 cube(s) past the slice; re-splitting by degree sequence
+  # 0 of 1 cubes refined
+      g=11 deg(0)=17    UNKNOWN   45.1s      <- phase two, same cube
+  # UNKNOWN after 90.2s
+```
+
+A cube whose split exceeds the cap does not refine, so it enters phase two
+**in exactly the form it has already failed in**. Each cube is a fresh
+solver process — nothing crosses between phases, no learnt clauses, no
+restarts — so with an equal budget the second run is the first run again.
+At the twelve-hour budgets the hard cubes need, that is twelve hours per
+cube, and the four-job batch §48 recommended would have burned two days of
+wall clock re-deriving four UNKNOWNs it already had.
+
+`symbreak::phase_two_adds_budget` now decides it, and the flag semantics
+are why it is a named function rather than a comparison: zero means "no
+limit" on both `--slice` and `--seconds`, so `--slice 0 --seconds 43200`
+and `--slice 43200 --seconds 43200` are both the trap, while
+`--slice 120 --seconds 0` is not. A naive `seconds > slice` gets the first
+of those wrong.
+
+**The danger in the fix is not the time, it is the verdict.** A cube
+skipped for want of budget is still undecided. Dropping it silently would
+leave a rung with an open cube reporting UNSAT — the one error class this
+development cannot detect from the outside, since UNSAT is the verdict no
+witness contradicts. So the skipped cubes are carried and counted:
+`at_limit = stalled + carried`, and the verdict is UNSAT only when that is
+zero.
+
+That rule was in the driver, where no suite could reach it, so the whole
+phase-two assembly moved into the library: `symbreak::plan_phase_two`
+returns `PhaseTwo { fine, carried, refined }` and `PhaseTwo::at_limit` is
+the single place the verdict rule lives.
+`cube_budget::a_carried_cube_cannot_become_an_unsat` then states it as an
+assertion rather than an observation — at `(4,11,28)` with a cap of 300,
+equal budgets carry six cubes and `at_limit(0) = 6`, so an all-UNSAT phase
+two is still not UNSAT. Checked end to end too, on the mixed case where
+the danger actually lives — one cube refines, seventeen are carried:
+
+```text
+  iota_sym 4 11 28 --slice 3 --seconds 3 --cubecap 300 --threads 4
+  # 18 cube(s) past the slice at deg(0) in [11..28]
+  # 17 cube(s) did not refine and phase two adds no budget
+  #    (--seconds 3 is not more than the 3s slice); not re-run, they stay UNKNOWN
+  # 1 of 18 cubes refined
+  # 224 degree-sequence cubes
+  # UNKNOWN after 187.6s (224 sequence cubes, 241 at the limit)
+```
+
+`241 = 224 + 17`. The seventeen carried cubes are counted, and the verdict
+is UNKNOWN rather than the UNSAT that dropping them would have produced.
+
+Every existing recorded rung used `--slice` well below `--seconds`
+(60 against 86 400 in `tools/rung.sh`, 120 against unlimited by default),
+so `phase_two_adds_budget` is true throughout and **no recorded result
+changes**.
+
+### 49.4 What this does not do
+
+It does not decide a single cube. Seven remain open at eleven points and
+target 28, exactly as in §48, and the standing bracket `27 ≤ ι(4) ≤ 71` is
+untouched. What changed is the price of deciding them and the shape of the
+run that would: all seven moved into the split regime that has won twice,
+every hard cube stopped costing double, and the checkpoint stopped being
+one command away from recording another question's verdicts as this one's.
+
+**That is scheduling and bookkeeping, not mathematics**, and this section
+is the place that says so rather than dressing it up. The one thing here
+that is about sunflowers rather than about this repository is negative and
+small: `ι(4,11) ≥ 28` was not refuted, and the prefix-3 timings at target
+32 say the seven cubes are dearer than §48.2 was willing to guess.
+
+The nearest mathematics, for whoever picks this up: `τ = 3` is the case
+that would close the rung without any of this compute. §42 did `τ = 2`
+with a two-part split and a cross-intersecting bound, `CrossPairOnNine 20`
+plus 6, giving 26 against 32. The three-part analogue needs a
+cross-*triple* bound where §42 needed a cross-pair, and
+`rust/examples/cross_pair_scan.rs` is the shape of the search that would
+measure it. Two elementary pieces of it are free: at most **two** members
+contain all three cover points (three would have pairwise intersection
+exactly the cover, which is a sunflower), and the members containing a
+fixed pair have a link with no 3-matching, so Erdős–Gallai caps them.
+Neither is formalised here, and the mixed parts are the hard bit.
+
+### 49.5 Gates
+
+All four, on the change set of §49. Nothing in it touches a Coq source, so
+the two kernel gates are a control: they say the tree is where §48 left it.
+
+```text
+  make -j4 verify          pass    740 audited theorems, every one
+                                   "Closed under the global context";
+                                   statement baselines, docnumbers and
+                                   ceilings all matching
+  make coqchk              pass    axiom census exactly
+                                   Sunflower.ALWZ.Rao20_lemma2
+  cargo test --release     pass    30m43s, 43 result lines, 370 tests,
+                                   0 failures (41 integration suites)
+  python3 tools/mutate.py  pass    167 mutations, 164 killed, 2 survived,
+                                   controls 1/1, unexpected: 0
+```
+
+The two survivors are the declared ones — `lowerbound-at-least` and
+`iotaatleast-at-least`, both asking whether a family-size equality is a
+constraint or documentation. No new mutation was added because no new
+carried `Prop` was: `phase_two_adds_budget` and `plan_phase_two` are Rust,
+and `rust/tests/cube_budget.rs` is what holds them.
+
+## 50. A crash is a third thing, and `rung.sh` could record only two
+
+cryptominisat5 died on the cube-13 second opinion after about a week. The
+crash itself decides nothing and costs nothing already established —
+cadical's UNSAT at 85 123.9 s stands, and the claim stays exactly as §45.2
+writes it, "`ι(4,11) ≤ 31` under cadical, with two-solver agreement on
+twenty of twenty-one". What the crash exposed is worse than the lost week.
+
+### 50.1 It would have been recorded as a search that ran
+
+`rung.sh` converted a non-verdict into `ERROR` only when the run gave up
+**early**:
+
+```sh
+  if [ "$V" = "undecided" ] && [ "$ELAPSED" -lt $(( BUDGET / 2 )) ]; then
+```
+
+A solver that runs a long time and *then* dies fails that test, so the row
+would have been `13  undecided  200000  200000` — the budget in the
+seconds column, indistinguishable from "ran its full 200 000 s without
+deciding". Those are different statements about the world and only one of
+them is a search that was performed. The exit status that would have
+distinguished them was thrown away by `|| true`.
+
+Fixed: the status is kept, and a non-zero exit with no verdict is recorded
+as **`CRASH` with the wall time actually spent**.
+
+### 50.2 And then the cube would have been closed forever
+
+This is the one that matters. The skip test matched the deg column alone:
+
+```sh
+  awk -F'\t' -v d="$D" '$1==d {found=1} END {exit !found}'
+```
+
+so *any* row for `deg(0) = 13` — `undecided`, `ERROR`, `CRASH` — made
+every future `rung.sh` invocation print "skip deg0=13 (already decided)".
+The first failed attempt would have permanently prevented the cube from
+ever being run again, and the rung would have gone on reporting on a
+search nobody performed. §45.4 recorded this hazard as a note telling
+humans to delete such a row by hand; a hazard that needs a human to
+remember it is not handled.
+
+`iota_sym`'s own `load_checkpoint` has had the right rule since §36 —
+*"A cube is skipped only when the checkpoint says `UNSAT` or `SAT`.
+`UNKNOWN` is a budget, not a verdict"* — and the two files disagreed. The
+shell script was the one that was wrong. It now skips only on a verdict,
+and announces a re-run over a non-verdict row rather than silently
+appending beside it.
+
+Both paths are exercised: a deliberately impossible cube gives
+`deg0=99 exited 101 after 0s with no verdict` and the row `99 CRASH 0 60`;
+re-running it prints `rerun deg0=99`; a row carrying `UNSAT` still prints
+`skip`.
+
+### 50.3 What to do about cube 13
+
+Not "run it again the same way". The run that died was deliberately
+shaped to match the run it checks — `RUNG_THREADS=1 RUNG_SLICE=200000`,
+one sequential solver, no split (§47) — and that shape is all-or-nothing:
+a week of work, no partial credit, and this is the second time a
+week-long monolith on that machine has returned nothing (§45.4 is the
+first).
+
+The alternative is to give up shape-purity for resumability and run the
+second opinion **over the prefix-3 split**, with `--checkpoint`. The split
+is a cover, so UNSAT on every sub-cube is UNSAT on the cube — it is an
+independent verdict by a different decomposition as well as a different
+solver, which is if anything a stronger cross-check than repeating
+cadical's shape. And every sub-cube that lands is banked.
+
+```sh
+  iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+    --seqprefix 3 --cubecap 50 --slice 60 --seconds 7200 --threads T \
+    --checkpoint docs/ladder/iota4_11.deg13.p3.cryptominisat5.tsv
+```
+
+27 sub-cubes (§49.2's table is at target 28; at target 32 the prefix-3
+split of this cube is the 27 that `iota4_11.deg13.p3.tsv` already records
+under cadical). The cadical rows in that file give the per-sub-cube cost
+to expect: five landed between 136.1 s and 491.4 s, nine did not at 600 s.
+`--seconds 7200` is twelve times the budget that left nine undecided.
+
+## 51. The exit status was read for nothing, so a crash and a budget were
+##     the same observation
+
+§50 fixed `tools/rung.sh` so a crashed run is recorded as `CRASH` rather
+than as a budget. That fix was one level too high. The user's VM, inspected
+while the run was still alive, showed why.
+
+### 51.1 What the process table said
+
+```text
+  PID    PPID   ELAPSED       RSS    STAT  COMMAND
+  41407  30818  13:42:42      306M   R+    cryptominisat5 --verb 0 --maxtime 200000 .../sym-11-4-32-seq-c0...cnf
+  30818  30817  2-14:11:43     51M   Sl+   iota_sym 4 11 32 --only-deg 13 --threads 1
+                                             --slice 200000 --seconds 200000 --cubecap 400
+```
+
+Five readings, in order of how much they cost:
+
+1. **The solver died.** `iota_sym` has been up 62.2 h and its current child
+   13.7 h, so phase one ran 62.2 − 13.7 = **48.5 h** against a `--slice` of
+   200 000 s = **55.6 h**. It ended *before* its budget. A clean timeout
+   ends *at* it.
+2. **It was not memory.** 306 MB resident, 20 GB available. The tmpfs and
+   OOM hypotheses that this session offered first were both wrong, and the
+   process table refuted them in one line.
+3. **Nothing noticed.** The tag is `sym-11-4-32-**seq**-c0`, so the driver
+   had already moved to phase two: it read the dead solver's empty output
+   as `UNKNOWN`, concluded the cube had merely stalled, and continued.
+4. **It then sprang §49.3's trap.** Cube 13's full split is 1939 sub-cubes
+   against `--cubecap 400`, so phase two did not refine and is re-solving
+   the identical whole cube — 13.7 h into a **second** 55.6 h budget.
+5. **And the crash left no trace at all.** Not in the log, not in
+   `docs/ladder/`, not in any exit status. Without the process table there
+   would have been nothing to find, and the run would eventually have
+   recorded `13 undecided 200000 200000` — a budget that was never spent
+   on a search that never finished.
+
+### 51.2 The defect, and why §50 could not catch it
+
+`sat::run_solver` called `cmd.output()?` and read `output.stdout`. The exit
+status was used for nothing but reaping the child. A solver killed by a
+signal writes nothing to stdout, and empty stdout parses as `Unknown` —
+**the same value a clean timeout produces.** So "the solver died" and "the
+budget ran out" were not merely conflated in the ladder file; they were
+the same observation at the point where the observation is made.
+
+§50's fix keys on `iota_sym`'s exit code, and `iota_sym` exits 0 in both
+cases, because as far as it knows both are `UNKNOWN`. A crash could never
+have reached it.
+
+### 51.3 What the fix rests on, measured
+
+`run_solver` now inspects the status. The normal set is `{0, 10, 15, 20}`
+and every member of it was measured against the installed binaries rather
+than taken from a manual — the timeout codes especially, because **every
+`UNKNOWN` this development has ever recorded came out of that path**, and
+a whitelist that omitted one would reclassify the entire ladder as crashes:
+
+```text
+  cadical         UNSAT 20   SAT 10   -t timeout        0
+  cryptominisat5  UNSAT 20   SAT 10   --maxtime timeout 15
+  killed by SIGKILL: no exit code at all (None on Unix)
+```
+
+Anything outside that set, or no code, is now an `Err` carrying the
+solver's name and the instance — which `solve_cube`'s caller turns into a
+panic, which is a non-zero exit, which §50's `rung.sh` records as `CRASH`
+with the wall time actually spent. The two fixes compose; neither is
+sufficient alone.
+
+`cube_budget::the_solver_exit_codes_the_crash_check_rests_on` pins the
+table, including the two timeout codes, so an upgrade that changes a
+solver's convention fails a test instead of silently reclassifying a rung.
+
+### 51.4 What this costs and what it does not
+
+**It decides nothing.** `ι(4,11) ≤ 31` still stands under cadical with
+two-solver agreement on twenty of twenty-one cubes, and cube 13's second
+opinion is still outstanding — that is exactly where §47 left it. No
+recorded verdict changes, because a crash was only ever recorded as
+`UNKNOWN`, and `UNKNOWN` rows are re-run rather than believed.
+
+What it cost was 55.6 h of the user's machine, and what it would have cost
+is worse: the run would have finished, written a row indistinguishable
+from an honest budget, and the next session would have read
+"undecided at 200 000 s" as a measurement of how hard the cube is.
+
+**The pattern worth naming.** This session found four defects and every one
+of them lived in the gap between two components that each behaved
+reasonably: the driver and the shell script disagreed about what a
+checkpoint row means (§50.2); the driver and the solver disagreed about
+what an empty output means (§51.2); phase one and phase two disagreed
+about what a budget means (§49.3); the checkpoint name and the question it
+answered disagreed about what identifies a rung (§49.2). None is a bug in
+a formula. All four are two honest components with incompatible readings
+of the same value, and none was reachable by any test in the suite until
+the code was moved to where a test could reach it.

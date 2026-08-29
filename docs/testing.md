@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-150 mutations, all with the outcome the manifest declares: 147 killed
+167 mutations, all with the outcome the manifest declares: 164 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that
@@ -922,10 +922,22 @@ Once per push, not twice. A push to a branch with an open pull request
 fires both `push` and `pull_request:synchronize`, and the two carry
 different `github.ref` because they check out different trees, so no
 concurrency key can merge them. On commit `d524766` that duplication
-cost 1h28m *and* 1h32m of runner time for the same 150 mutations, where
-one run of that job takes about 1h20m — the contention is why both were
-slower than a solo run. `verify.yml` therefore does not subscribe to
-`synchronize`. `prcheck.yml` does, and must: pushing a commit changes
+cost 1h28m *and* 1h32m of runner time for the same 150 mutations.
+`verify.yml` therefore does not subscribe to `synchronize`.
+
+**The saving is one job instead of two — half the runner minutes, and
+the check-run count went 12 to 6. That is the whole of it, and the
+explanation that used to be attached here was wrong.** This paragraph
+said the two jobs were slow because they contended with each other. The
+very next measurement refutes that: on `b0f9d25` the mutation job ran
+*solo* and took **1h36m04s**, slower than either contended run and
+slower than the 1h20m "reference", which was itself a contended run on
+`2decd53`. The job varies by about a quarter of an hour on GitHub
+runners for reasons none of these measurements isolate. The duplication
+was real and removing it saved real money; the causal story about
+*why the numbers looked the way they did* was a comparison against a
+baseline carrying the same defect it was being used to measure. See
+`docs/reading.md` rule 28. `prcheck.yml` does, and must: pushing a commit changes
 the counts the pull request body asserts, so the gate has to re-read
 the body against the new tree, and eight seconds of a runner is not the
 same kind of cost.
@@ -1124,3 +1136,213 @@ rather than plausible:
 The suite ran before any of `coq/StarDefect.v` was written, which is the
 order the rest of this document asks for and the order the previous
 entry did not manage.
+
+### A tenth: a symmetry-breaking encoding, and why every restriction in
+###           it needs its own falsifier
+
+`rust/tests/symbreak.rs` guards `rust/src/symbreak.rs`, and it is the
+suite whose subject can be wrong in the one direction nothing else here
+catches.
+
+Everything else in this file falsifies a *statement*: a bound that is
+too strong, a hypothesis that is not load-bearing, a count that has
+drifted. A symmetry-breaking encoding is different. It is a claim that
+a family may be *assumed* to look a certain way, and if that claim is
+wrong the solver returns **UNSAT** — the verdict no witness can
+contradict, on an instance that was never searched. A wrong restriction
+does not produce a wrong object anyone can inspect; it produces a
+correct-looking negative.
+
+Four restrictions and one split, each with its own failure mode:
+
+* **The order counters.** A degree comparison is encoded as an
+  implication between "at least `k`" literals, and a sequential counter
+  usually encodes only one direction — enough to *assert* a threshold,
+  useless to *compare*. With the wrong direction every comparison is a
+  no-op: the run is sound and slow, and reports nothing. So both
+  directions are checked against a brute-force count, for every `k` and
+  every prefix length, by asking the solver for the two configurations
+  that must be impossible.
+* **The restrictions themselves** — maximum degree at point 0, sorted
+  blocks, exactly `t` members, the intersecting degree floor, the
+  lexicographic tie-break. Every one is run on and off at every
+  parameter small enough to decide twice, and the verdicts are required
+  to match. This is the control §9 of `docs/roadmap.md` asked for on the
+  degree cap and did not get.
+* **The cube splits.** Two of them: on `deg(0)`, and on the exact degree
+  *sequence*. A split is a cover or it is nothing, and a missing cube
+  also reads as UNSAT. The `deg(0)` cubes are checked to abut and to
+  start at the floor the encoding asserts, without the solver. The
+  degree-sequence cubes are checked against a brute-force sweep over
+  every vector in range, by code sharing nothing with the recursion that
+  generates them.
+* **The ladder.** Asking the question one support size at a time is only
+  a cover because a family on at most `g` points has a support of some
+  size `s <= g` and relabels onto `[s]`. The rungs below the frontier are
+  re-decided against `intersecting::iota`, the exhaustive
+  branch-and-bound, which shares no code with the encoder, the solver or
+  the driver.
+
+What none of it checks is the *solver*. An UNSAT here is cadical's word,
+and the repository's standing rule for that verdict — `sat::solve_agreed`,
+two independent solvers required to agree — is affordable per instance
+and was not run across the whole ladder. `docs/roadmap.md` §33.5 says so
+where the result is reported.
+
+### An eleventh: a proof whose case split is the thing that can be wrong
+
+`rust/tests/support.rs` guards `coq/Support.v`, and the interesting part
+of it is not the theorem.
+
+The theorem — support `≤ (4b−3) + (b−2)n` — is a bound, and a bound is
+easy to falsify: enumerate families, compute supports, compare. That is
+done, exhaustively, on 127 466 families. It would also have passed if the
+proof were wrong, because the bound is not tight and a weaker argument
+would still have produced a true inequality on every small case.
+
+What the proof actually turns on is a *construction*: a core of at most
+`4b−3` points that **every member meets twice**. That is the step a
+falsifier has to attack, so the test rebuilds the core from the family
+alone — no shared code with the Coq development — and asserts the
+property directly. Three things it pins that the bound alone would not:
+
+* **The link cover never exceeds two members.** The proof needs it,
+  because three pairwise disjoint members of a link lift to a sunflower
+  with empty core. If it could be three the core would be too wide and
+  the bound would be false at some `n` beyond the sweep.
+* **The core width `4b−3` is attained.** At `b = 2` it is exactly five.
+  A constant that is never reached is a constant nobody has checked, and
+  the next session would not know whether it could be lowered.
+* **Both branches of the case split are exercised, with their counts.**
+  The proof splits on whether some member meets the anchor in exactly one
+  point; only one branch builds a link cover at all. 7 293 families take
+  the first branch and 120 168 take the second, and both numbers are
+  asserted. A sweep that happened to hit only one branch would leave half
+  the proof unfalsified while reporting a clean pass — and that is
+  exactly the failure mode a case analysis has.
+
+The sweep stops where it stops for a measured reason, and the reason is
+in the file: `(7,4)` has 35 333 735 families and `(8,4)` has more than
+forty million. Beyond that the families are **sampled**, deterministically,
+and the assertions say sampling rather than exhaustion. Fourteen thousand
+samples at four larger parameters is not a proof of anything and is not
+written as though it were.
+
+
+### A twelfth, and it is a gap rather than a check: an external binary
+
+`rust/tests/spread_threshold.rs` shells out to a SAT solver in
+`the_witnesses_are_reachable_by_search` and `sat_and_dfs_agree`. With
+`cadical` absent from `PATH` both panic on
+`Os { code: 2, kind: NotFound }` — not skipped, not reported as an
+unmet dependency, just *failed*, in the same shape a broken proof
+fails in.
+
+That happened for real: session N+12's container was rebuilt mid-run and
+the solver went with it, and the first reading of the failure had to be
+"is this a regression?" before it could be "is this the environment?".
+Nothing in the suite distinguishes the two, and the cost is a wrong
+first hypothesis at exactly the moment a gate result is being reported.
+
+The honest statement of the gap: **two of the 370 tests are not
+hermetic.** `make -j4 verify`, `make coqchk` and `python3 tools/mutate.py`
+need nothing but Coq; `cargo test --release` needs `cadical` on `PATH`,
+and `docs/roadmap.md`'s reproduction block says so. A future session
+that wants the suite to be self-describing should make those two skip
+with a named reason when the binary is missing, so that a failure in
+that file always means what it appears to mean.
+
+`rust/tests/cube_budget.rs` (§49) is the first suite written that way. It
+needs `cadical` for one test and guards it:
+
+```rust
+    if !have_solver() {
+        eprintln!("cadical not installed; skipping");
+        return;
+    }
+```
+
+so a missing solver reads as a skip and a failure in that file always
+means the mathematics. `spread_threshold.rs` still does not, and the gap
+above stands until it does — one suite adopting the convention is not the
+convention being adopted.
+
+### A thirteenth: a sampled census is not a census, and the test has to
+### say which one it is
+
+`rust/tests/palvolgyi.rs` asserts that every 27-member intersecting
+sunflower-free 4-uniform family a random fill finds on nine points is a
+relabelling of `Product.iota4`. Six hundred thousand fills, every hit
+canonicalised under all `9! = 362 880` relabellings, one orbit.
+
+That is a strong test and it is **not** the statement it looks like.
+The statement it looks like is *"the 27-member family on nine points is
+unique up to relabelling"*, which would be a theorem. What the test
+actually checks is *"no counterexample is reachable by this process
+within this budget"* — and the process is a random fill, which visits
+only the maximal families its own basin structure lets it reach. The
+exhaustive census was attempted three times and did not finish
+(`docs/roadmap.md` §36.3), so the theorem is unproved and the test is
+evidence for it.
+
+The same file has a second instance of the same shape, and it is the
+sharper one. Over a million fills the size spectrum at `(4, 9)` shows
+579 hits at 24, **zero at 25 and 26**, and 19 at 27. Two exact zeros
+flanked by hundreds is not noise, and the natural reading — no maximal
+family on nine points has 25 or 26 members — is very likely true. It is
+still not proved, and
+`the_fill_reaches_twenty_seven_but_almost_never` asserts the zero with
+a message that names it as a measurement rather than a fact.
+
+The rule this suggests is about wording, not about coverage:
+
+> **A test whose assertion is stronger than its evidence must say so in
+> the assertion's failure message.** "No maximal family of size 25 or 26
+> was ever reached" and "no maximal family of size 25 or 26 exists" are
+> different claims, and the first is the one 10⁶ fills support. A
+> failure message that states the weaker claim tells the next reader
+> what a failure would mean; one that states the stronger claim invites
+> them to treat a sampling artefact as a refutation.
+
+This is the counting-argument counterpart of rule 13 — a search reported
+as an answer — applied to a passing test rather than to a failing
+acquisition.
+
+### A fourteenth: an assertion the suite could not reach, and the move
+###                that let it
+
+`rust/tests/cube_budget.rs` (§49) checks a scheduling decision rather than
+a mathematical statement, and that is unusual enough to say why it is
+here. The decision is *skip the phase-two re-run of a cube that did not
+refine, when phase two adds no budget*. The saving is real — twelve hours
+per hard cube — but the risk is not the time. It is that a cube skipped
+for want of budget is still **undecided**, and a rung with an undecided
+cube that forgot it would report **UNSAT**. UNSAT is the verdict no
+witness contradicts, so nothing downstream would catch it.
+
+The first version of the suite could not check that. `phase_two_adds_budget`
+was a library function and the split counts came from `sequence_cubes`, so
+four of five tests reached their subject — but the fifth thing, that the
+skipped cubes are carried into the verdict, lived in
+`examples/iota_sym.rs`, and **an integration test cannot reach an example
+binary**. It was checked by running it and reading the output, which is an
+observation in a roadmap section, not an assertion in a suite: it would
+not have failed if a future edit dropped the `carried` term.
+
+The fix was not more tests, it was moving the code. The phase-two
+assembly is pure given the stalled set, so it is now
+`symbreak::plan_phase_two` returning a `PhaseTwo { fine, carried,
+refined }`, with `PhaseTwo::at_limit` as the one place the verdict rule
+lives. `a_carried_cube_cannot_become_an_unsat` then says it directly: at
+`(4,11,28)` with a cap of 300, equal budgets carry six cubes and
+`at_limit(0) == 6`, so an all-UNSAT phase two is still not UNSAT; a
+bigger phase-two budget re-runs the same six and `at_limit(0) == 0`. Both
+plans account for every stalled cube.
+
+**The general rule this suggests.** When a check cannot be written
+because the logic sits in a binary, that is a fact about where the logic
+sits, not about what can be checked. Two of the three defects §49 found
+were in code no suite could reach — the double-run in the driver, the
+checkpoint collision in `tools/rung.sh` — and the shell script is still
+unreached.
+
