@@ -87,15 +87,29 @@ if ! command -v "$SOLVER" >/dev/null 2>&1; then
   exit 2
 fi
 for D in "$@"; do
-  if awk -F'\t' -v d="$D" '$1==d {found=1} END {exit !found}' "$CK" 2>/dev/null; then
+  # Skip only on a VERDICT. `UNKNOWN`, `undecided`, `ERROR` and `CRASH`
+  # are all records of a search that did not finish, and a cube carrying
+  # one must be re-run -- otherwise the first failed attempt closes the
+  # cube forever and the rung reports on a search nobody performed. This
+  # is the rule `iota_sym`'s own `load_checkpoint` already uses; the two
+  # disagreed, and this file was the one that was wrong.
+  if awk -F'\t' -v d="$D" \
+       '$1==d && ($2=="UNSAT" || $2=="SAT") {found=1} END {exit !found}' "$CK" 2>/dev/null; then
     echo "skip deg0=$D (already decided)"; continue
   fi
+  if awk -F'\t' -v d="$D" '$1==d {found=1} END {exit !found}' "$CK" 2>/dev/null; then
+    echo "rerun deg0=$D (an earlier row records no verdict; the new row supersedes it)"
+  fi
   ( T0=$(date +%s)
+    # The exit status is kept, not discarded. A solver that dies -- out of
+    # memory after a week, say -- exits non-zero and prints no verdict,
+    # and that is a third thing, distinct from both a verdict and a budget
+    # that ran out. `|| true` threw it away.
     # shellcheck disable=SC2086  # PREFIX_ARG is a flag pair or empty
-    OUT=$("$BIN" "$B" "$G" "$T" --ladder --from "$G" --only-deg "$D" \
+    if OUT=$("$BIN" "$B" "$G" "$T" --ladder --from "$G" --only-deg "$D" \
             --threads "${RUNG_THREADS:-1}" --slice "${RUNG_SLICE:-$BUDGET}" \
             --seconds "$BUDGET" --cubecap "${RUNG_CUBECAP:-400}" \
-            $PREFIX_ARG --solver "$SOLVER" 2>&1 || true)
+            $PREFIX_ARG --solver "$SOLVER" 2>&1); then RC=0; else RC=$?; fi
     printf '%s\n' "$OUT" | grep -E "^# g = .*(refined|sequence cubes|UNSAT|UNKNOWN)" || true
     # A cube decided whole reports on its own line; one decided by the
     # sequence split reports only in the rung summary, so take that.
@@ -110,10 +124,18 @@ for D in "$@"; do
     ELAPSED=$(( $(date +%s) - T0 ))
     [ -n "$V" ] || V=undecided
     [ -n "$S" ] || S="$BUDGET"
+    # Died rather than finished. Record the wall time it actually spent,
+    # never the budget: "crashed after 604800s" and "ran its 200000s
+    # budget without deciding" are different statements about the world,
+    # and only one of them is a search that was performed.
+    if [ "$RC" -ne 0 ] && [ "$V" != "UNSAT" ] && [ "$V" != "SAT" ]; then
+      echo "rung.sh: deg0=$D exited $RC after ${ELAPSED}s with no verdict:" >&2
+      printf '%s\n' "$OUT" | tail -8 >&2
+      V=CRASH; S="$ELAPSED"
     # An `undecided` that did not spend most of its budget did not run.
     # Record it as an error with what actually happened, never as a
     # search that was performed.
-    if [ "$V" = "undecided" ] && [ "$ELAPSED" -lt $(( BUDGET / 2 )) ]; then
+    elif [ "$V" = "undecided" ] && [ "$ELAPSED" -lt $(( BUDGET / 2 )) ]; then
       echo "rung.sh: deg0=$D gave up after ${ELAPSED}s of a ${BUDGET}s budget:" >&2
       printf '%s\n' "$OUT" | tail -5 >&2
       V=ERROR; S="$ELAPSED"

@@ -12091,3 +12091,86 @@ The two survivors are the declared ones — `lowerbound-at-least` and
 constraint or documentation. No new mutation was added because no new
 carried `Prop` was: `phase_two_adds_budget` and `plan_phase_two` are Rust,
 and `rust/tests/cube_budget.rs` is what holds them.
+
+## 50. A crash is a third thing, and `rung.sh` could record only two
+
+cryptominisat5 died on the cube-13 second opinion after about a week. The
+crash itself decides nothing and costs nothing already established —
+cadical's UNSAT at 85 123.9 s stands, and the claim stays exactly as §45.2
+writes it, "`ι(4,11) ≤ 31` under cadical, with two-solver agreement on
+twenty of twenty-one". What the crash exposed is worse than the lost week.
+
+### 50.1 It would have been recorded as a search that ran
+
+`rung.sh` converted a non-verdict into `ERROR` only when the run gave up
+**early**:
+
+```sh
+  if [ "$V" = "undecided" ] && [ "$ELAPSED" -lt $(( BUDGET / 2 )) ]; then
+```
+
+A solver that runs a long time and *then* dies fails that test, so the row
+would have been `13  undecided  200000  200000` — the budget in the
+seconds column, indistinguishable from "ran its full 200 000 s without
+deciding". Those are different statements about the world and only one of
+them is a search that was performed. The exit status that would have
+distinguished them was thrown away by `|| true`.
+
+Fixed: the status is kept, and a non-zero exit with no verdict is recorded
+as **`CRASH` with the wall time actually spent**.
+
+### 50.2 And then the cube would have been closed forever
+
+This is the one that matters. The skip test matched the deg column alone:
+
+```sh
+  awk -F'\t' -v d="$D" '$1==d {found=1} END {exit !found}'
+```
+
+so *any* row for `deg(0) = 13` — `undecided`, `ERROR`, `CRASH` — made
+every future `rung.sh` invocation print "skip deg0=13 (already decided)".
+The first failed attempt would have permanently prevented the cube from
+ever being run again, and the rung would have gone on reporting on a
+search nobody performed. §45.4 recorded this hazard as a note telling
+humans to delete such a row by hand; a hazard that needs a human to
+remember it is not handled.
+
+`iota_sym`'s own `load_checkpoint` has had the right rule since §36 —
+*"A cube is skipped only when the checkpoint says `UNSAT` or `SAT`.
+`UNKNOWN` is a budget, not a verdict"* — and the two files disagreed. The
+shell script was the one that was wrong. It now skips only on a verdict,
+and announces a re-run over a non-verdict row rather than silently
+appending beside it.
+
+Both paths are exercised: a deliberately impossible cube gives
+`deg0=99 exited 101 after 0s with no verdict` and the row `99 CRASH 0 60`;
+re-running it prints `rerun deg0=99`; a row carrying `UNSAT` still prints
+`skip`.
+
+### 50.3 What to do about cube 13
+
+Not "run it again the same way". The run that died was deliberately
+shaped to match the run it checks — `RUNG_THREADS=1 RUNG_SLICE=200000`,
+one sequential solver, no split (§47) — and that shape is all-or-nothing:
+a week of work, no partial credit, and this is the second time a
+week-long monolith on that machine has returned nothing (§45.4 is the
+first).
+
+The alternative is to give up shape-purity for resumability and run the
+second opinion **over the prefix-3 split**, with `--checkpoint`. The split
+is a cover, so UNSAT on every sub-cube is UNSAT on the cube — it is an
+independent verdict by a different decomposition as well as a different
+solver, which is if anything a stronger cross-check than repeating
+cadical's shape. And every sub-cube that lands is banked.
+
+```sh
+  iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+    --seqprefix 3 --cubecap 50 --slice 60 --seconds 7200 --threads T \
+    --checkpoint docs/ladder/iota4_11.deg13.p3.cryptominisat5.tsv
+```
+
+27 sub-cubes (§49.2's table is at target 28; at target 32 the prefix-3
+split of this cube is the 27 that `iota4_11.deg13.p3.tsv` already records
+under cadical). The cadical rows in that file give the per-sub-cube cost
+to expect: five landed between 136.1 s and 491.4 s, nine did not at 600 s.
+`--seconds 7200` is twelve times the budget that left nine undecided.
