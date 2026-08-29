@@ -153,6 +153,17 @@ fn the_cubes_that_will_not_split_at_full_prefix_split_at_a_short_one() {
         assert_eq!(n(d0, 3), Some(p3), "deg(0) = {d0} at prefix three");
         assert_eq!(n(d0, 4), Some(p4), "deg(0) = {d0} at prefix four");
     }
+    // The floor cube is the exception the plan turns on: its count barely
+    // moves with the prefix, so it can be pinned completely and still stay
+    // in the winning regime, while deg(0) = 15 cannot be pinned past
+    // three. That asymmetry is why the prefix is chosen per cube.
+    assert_eq!(
+        (3..=8).map(|p| n(11, p).unwrap()).collect::<Vec<_>>(),
+        vec![12, 53, 57, 64, 75, 94]
+    );
+    assert_eq!(n(11, 11), Some(224), "the floor cube splits fully at 224");
+    assert!(n(15, 5).unwrap() > 300, "deg(0) = 15 leaves the regime by prefix five");
+
     // The three that overflow whole are exactly the three at the top.
     for d0 in [15, 16, 17] {
         assert_eq!(n(d0, 11), None, "deg(0) = {d0} is supposed to overflow whole");

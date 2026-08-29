@@ -11870,9 +11870,40 @@ inside the winning regime**, and the whole remaining eleven-point problem
 is 726 sub-cubes — five times the split that decided one ten-point cube,
 for seven cubes on a double-size instance.
 
+### 49.2a The prefix is per-cube, because the count grows at different
+###        rates
+
+A flat `--seqprefix 3` is not the best use of the dial. How fast the count
+grows with the prefix depends on the cube, and for the *floor* cube it
+barely grows at all:
+
+```text
+  prefix          3    4    5    6    7    8   full(11)
+  deg(0) = 11    12   53   57   64   75   94      224
+  deg(0) = 15   136  816 4022 ...                >10^6
+```
+
+So the floor cube can be split at **full prefix into 224 sub-cubes**, each
+with all eleven degrees pinned, while `deg(0) = 15` cannot be pinned past
+three without leaving the winning regime. Taking the largest prefix whose
+count stays under 300:
+
+```text
+  deg(0)       11    12   13   14   15   16   17   total
+  prefix     full     4    3    3    3    3    3
+  sub-cubes   224   288   90  120  136  153  171   1 182
+```
+
+1 182 finer pieces against the flat plan's 726 coarser ones. Finer is
+worth more when the coarse pieces stall, and the target-32 rows say they
+will. **The floor cube is the one to run first**: §48.1 called it the
+hardest, it is the only one whose split is both affordable *and*
+maximally constrained, and 224 is the granularity that has already won at
+ten points (§40).
+
 This inverts §48.1 entirely. Its plan was "small `deg(0)` split, large
 `deg(0)` whole with a bigger budget"; the measurement says the prefix is
-the dial and one setting of it serves all seven:
+the dial, and a flat setting of it already serves all seven:
 
 ```sh
   RUNG_SEQPREFIX=3 RUNG_CUBECAP=300 RUNG_SLICE=60 RUNG_THREADS=4 \
