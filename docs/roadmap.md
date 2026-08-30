@@ -11492,7 +11492,7 @@ predicated on a support bound, because obtaining one is the conjecture.
 ## 45. Handover — session N+13
 
 Start here. §32 was the previous handover pointer and is four sessions
-stale; `STATUS.md` now points at this section.
+stale; `STATUS.md` pointed at this section; §54 is the current handover.
 
 ### 45.1 What moved
 
@@ -12822,3 +12822,73 @@ the cryptominisat5 cube-13 pass, so the wall times are not comparable with
 §49.5's. That contention is also why the seconds column in
 `docs/ladder/iota4_11.deg13.cryptominisat5.tsv` records 664–1047 s against
 a 600 s solver budget, and why that file's header says so.
+
+## 54. Handover — the session that corrected itself four times
+
+Start here. §45 was the previous pointer. Nothing below decides anything
+about `ι(4)`: the bracket is `27 ≤ ι(4) ≤ 71` and `ι(4,11) ≤ 31`
+still rests on cadical, exactly as §45 left them.
+
+### 54.1 What moved
+
+**The cube-13 second opinion is running and banking.** Not whole and not
+at prefix 3 — over the **full 1949-way split** with `--checkpoint`, which
+is §52.2. As of this section it holds **30 distinct UNSAT and zero SAT**,
+and **every one of the fourteen sub-cubes cadical ever recorded is now
+decided**: cadical landed 5 of 14 and left 9 UNKNOWN at its 600 s cap;
+cryptominisat5 has all 14. That does not decide the cube — it is about 1%
+of 1949 — but it removes the places a contradicting SAT could have hidden.
+
+**Two defects in the machinery, both in what a run records about itself.**
+§52.1: nothing recorded which of the two degree-sequence covers a run used
+(1939 with `all_points_used`, 1949 without; `tools/rung.sh` passes
+`--ladder` so every file in `docs/ladder/` is the former). `iota_sym` now
+prints it and stamps a new checkpoint's header with it. §52.2: §50.3
+costed the prefix-3 re-run from another file's rows, and the prefix-3
+split is unusable for a different reason — its 27 pieces cover 553, 325,
+180, 94, ... of the 1939, so a budget-limited pass banks nothing.
+
+**§49.4's τ = 3 proposal is worked and costed** (§53). Its pair-class
+bound is 6, not the 13 Erdős–Gallai gives, because the link graph has no
+vertex of degree three either — `PureLink.g_two_at_most_six`, already in
+the kernel. Still not enough: the decomposition yields `|F| ≤ 39` against
+the 31 that would close the rung, and `tau_three_at_eleven.rs` carries an
+explicit nineteen-member τ = 3 family that says so.
+
+### 54.2 What is owed, in order
+
+1. **Keep the cube-13 pass running.** Resume with the same checkpoint;
+   UNSAT rows are skipped and UNKNOWNs re-run. Use `--seconds 5400`, not
+   600 and not 1800 — §52.3a is why, and the documented command was wrong
+   until this session measured it.
+2. **The remaining ~1900 sub-cubes.** At the 5400 s budget this will not
+   finish on one machine in one sitting. Every banked UNSAT is permanent,
+   which is the entire reason the split was chosen over the monolith that
+   has now failed twice (§45.4, §51).
+3. **τ = 3 needs a different instrument, not a bigger budget** (§53.5).
+
+### 54.3 What this session got wrong, because the pattern repeats
+
+Four corrections, all self-inflicted and all caught inside the session:
+
+* **The cover.** Read a default-options run as authority on a
+  `--ladder` file, declared 1939 wrong, and edited four ladder files and
+  this roadmap before the row order in the file itself gave it away
+  (§52.1). Reverted. **The check that settled it took a minute and was
+  available from the start: a cover leaves a fingerprint in what it
+  omits.**
+* **The cost direction.** Claimed lex-descending order takes the hardest
+  sub-cubes first so the mean would fall. It rises — extreme is *more*
+  constrained and so easier (§52.3a).
+* **The budget.** Matched cadical's 600 s cap for comparability, against
+  timings that were never comparable, and got a cap that binds. Sixteen
+  consecutive stalls looked like a hard cube and were a small budget.
+* **A dead process.** Diagnosed a nohup signal problem and "fixed" it with
+  `setsid`; the next run died identically with PPID 1. The cause was
+  detachment itself, and the harness's own supervision was the answer.
+
+**The generalisation, which is §51.4's pattern sharpened.** When two
+components disagree about a value, the case anyone checks is usually the
+case where they agree — §37.4's cross-check at `deg(0) = 12` is the
+purest instance, since that is the one top degree where both covers give
+19. **Find the case where they must differ, and look at that one.**

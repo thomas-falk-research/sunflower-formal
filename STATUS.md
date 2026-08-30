@@ -4,7 +4,7 @@ Run `make verify` for the live audit. Below is the static state of
 the development. Definition-level testing — the checks the kernel
 cannot make — is described in [`docs/testing.md`](docs/testing.md);
 what to work on next is in [`docs/roadmap.md`](docs/roadmap.md), whose
-**§45 is the current handover** and the right place to start cold.
+**§54 is the current handover** and the right place to start cold (§45 is the previous one).
 
 ## Closed (machine-checked, zero admits, zero axioms used)
 
