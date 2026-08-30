@@ -62,36 +62,40 @@
 # used 88% of that budget, so a third pass at a larger cap would likely
 # still gain -- it is not yet at the point of diminishing returns.
 #
-# STANDING, 11 distinct UNSAT of 24 labels attempted, 0 SAT:
-#     5   agree UNSAT with cadical's pass
-#     3   cryptominisat5 DECIDED where cadical was UNKNOWN at its 600 s
-#         cap -- [.. 13, 6, 5] 939.6 s, [.. 12, 10, 2] 1588.7 s and
-#         [.. 11, 11, 2] 1366.4 s
-#     2   degree-zero sub-cubes, outside the 1939 cover (see above)
-#     1   beyond cadical's recorded fourteen ([.. 12, 12, 12, 1], 755.7 s)
+# STANDING, 12 distinct UNSAT of 32 labels attempted, 0 SAT:
+#     8   on cadical's own fourteen recorded labels -- all five it
+#         decided, plus three it left UNKNOWN at its 600 s cap
+#         ([.. 13, 6, 5], [.. 12, 10, 2], [.. 11, 11, 2])
+#     4   beyond cadical's fourteen, of 18 attempted there
 #     0   DISAGREEMENTS.  No SAT anywhere.  This is the check that
 #         matters: a SAT here would contradict cadical's UNSAT on the
 #         cube and put iota(4,11) <= 31 in question.
 #
-# ON CADICAL'S OWN FOURTEEN RECORDED LABELS, cryptominisat5 is UNSAT on
-# EIGHT -- all five cadical decided, plus three it left at its cap.  This
-# pass has strictly greater coverage of the shared set than the pass it
-# checks.  Ten of the labels attempted are beyond cadical's fourteen.
+# THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
+# HEADER HAD IT BACKWARDS.  It said the lexicographically descending
+# order puts "the MOST extreme, and so the hardest" sub-cubes first, and
+# concluded the mean would fall over the remaining 1949.  Measured, in
+# blocks of eight attempts in first-seen order:
 #
-# THE COST OF THIS ROUTE, MEASURED RATHER THAN GUESSED.  Over 24 attempts
-# the mean is 1364 s wall per sub-cube on four contended threads, i.e.
-# 10.6 attempts an hour, and 54% stall at the 1800 s cap.  Carried to
-# 1949 sub-cubes that is ~185 h wall for ONE attempt each, with half of
-# them still undecided afterwards and owed a larger-budget pass.
+#     attempts   stalled at the 1800 s cap   mean wall
+#      1 -  8          0 %                      682 s
+#      9 - 16         75 %                     1730 s
+#     17 - 24         88 %                     1681 s
+#     25 - 32         88 %                     1754 s
 #
-# TREAT THAT NUMBER AS A CEILING, NOT A FORECAST, for two reasons that
-# point opposite ways and are not quantified here.  Against it: the
-# sub-cubes are enumerated lexicographically descending, so the ones
-# attempted so far are the MOST extreme and should be the hardest --
-# the true mean over all 1949 ought to be lower.  For it: these times
-# are contended wall clock.  roadmap 48.2 records that every
-# extrapolation attempted on this ladder has been wrong, and this is an
-# extrapolation from 24 of 1949.
+# The cost rises sharply and then plateaus.  The reason is that extreme
+# is not the same as hard: a sequence with the degree mass concentrated
+# on a few points is MORE constrained and so easier to refute, and those
+# are exactly the ones lex-descending order takes first.  The first
+# eight are the same eight the 600 s pass could land.
+#
+# SO THE COST FIGURE IS A FLOOR, NOT A CEILING.  At the plateau -- 1750 s
+# a sub-cube, 88 % stalling -- one attempt at each of 1949 is on the
+# order of 240 h wall on four threads, and would leave roughly seven
+# eighths of them still undecided and owed a larger-budget pass.  Early
+# throughput on this file overestimates the rate, and any future session
+# reading a rate off the first rows will do so again.  roadmap 48.2
+# stands: this is still an extrapolation, now from 32 of 1949.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -135,3 +139,11 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 8, 6]	UNKNOWN	1809.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 7, 7]	UNKNOWN	1823.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 9, 6]	UNKNOWN	1807.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 12, 1]	UNSAT	755.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 8, 7]	UNKNOWN	1811.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 8, 8, 8]	UNSAT	1341.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 11, 2]	UNKNOWN	1819.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 10, 3]	UNKNOWN	1808.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 9, 4]	UNKNOWN	1808.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 8, 5]	UNKNOWN	1808.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 7, 6]	UNKNOWN	1824.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 11, 3]	UNKNOWN	1809.0
