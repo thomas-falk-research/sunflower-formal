@@ -5883,7 +5883,7 @@ on the other side.
 
 **Where this sits relative to the literature.** Frankl's theorem for
 3-uniform intersecting families of covering number 3 gives `|G| <= 10`,
-which is the truth (`rust/tests/tau_three.rs` exhausts it on grounds 5–7
+which is the truth (`rust/tests/tau_three_at_eleven.rs` exhausts it on grounds 5–7
 and finds 10, attained by every 3-subset of a 5-set). The bound proved
 here is 16, so it is **six worse than the classical result and is not a
 contribution to that question**. What it is, is the first bound in the
@@ -5952,7 +5952,7 @@ together with one point from each of two blocks of size four —
 
 sixteen members, `Uniform 3`, `Distinct`, intersecting, and
 `RaoSpread 3 F 4` with equality at `{0}` and at every pair through `0`.
-`star34_attains_sixteen` in Coq; `rust/tests/tau_three.rs` re-verifies it
+`star34_attains_sixteen` in Coq; `rust/tests/tau_three_at_eleven.rs` re-verifies it
 by code sharing nothing with it.
 
 So the `m = 3` row of §24.13's conjecture — *is the star extremal for
@@ -6115,7 +6115,7 @@ conditional on an unformalised construction, see §25.3.)
 
 ### 25.6 Measured
 
-All exhaustive, all in `rust/tests/tau_three.rs` and
+All exhaustive, all in `rust/tests/tau_three_at_eleven.rs` and
 `rust/tests/cross_intersecting.rs`, all under a minute.
 
 ```
@@ -6159,7 +6159,7 @@ than finished, and it is worth naming as such: the naive branch-and-bound
 in the scratchpad decides grounds 5, 6 and 7 in about four minutes
 together and had not decided ground 8 after ten more, at which point it
 was killed to free a core. Three grounds agreeing at 10 is what the
-committed test pins (`rust/tests/tau_three.rs`, seconds, exhaustive on
+committed test pins (`rust/tests/tau_three_at_eleven.rs`, seconds, exhaustive on
 each of those three); ground 8 is **undecided**, and since the bound in
 question is Frankl's 10 rather than anything this session proves, nothing
 depends on it.
@@ -6531,7 +6531,7 @@ either §24.13 or §25 noticed.
 
 The `m = 3` row of the scanner is the check that it is measuring the right
 thing: 10, on the nose, on every ground from 5 to 8, which is Frankl's
-value and `rust/tests/tau_three.rs`'s.
+value and `rust/tests/tau_three_at_eleven.rs`'s.
 
 The `I(4,5)` row is the one to read carefully. Ground 7's value of 35 is
 `C(7,4)` — *every* 4-subset of a 7-set, which is intersecting and
@@ -6702,7 +6702,7 @@ First, the same shape at `m = 3` is exactly extremal: three copies of the
 triangle (the only non-star intersecting graph) give `1 + 3·3 = 10`, and
 10 is the exhaustively measured maximum of the τ ≥ 3 piece at `m = 3`
 *without* the Rao condition at all — Frankl's value, measured on grounds
-5 to 7 by `rust/tests/tau_three.rs`. So the construction attains, with
+5 to 7 by `rust/tests/tau_three_at_eleven.rs`. So the construction attains, with
 Rao(4), a bound that holds without it: at `m = 3` the shape is not a
 lower bound, it is the answer. Second, at `m = 4` the layers
 above the one-point layer are empty in `g65` — it spends its whole budget
@@ -12106,6 +12106,18 @@ exactly the cover, which is a sunflower), and the members containing a
 fixed pair have a link with no 3-matching, so Erdős–Gallai caps them.
 Neither is formalised here, and the mixed parts are the hard bit.
 
+> **§53 works this proposal.** Both pieces are now in
+> `rust/tests/tau_three_at_eleven.rs`. The second is weaker than it
+> needed to be: the link graph of a pair class has no 3-matching
+> *and* no vertex of
+> degree three, so it is sunflower-free as a graph and
+> `PureLink.g_two_at_most_six` caps it at **6** rather than Erdős–Gallai's
+> 13 — a lemma this development already had. It is still not enough. The
+> decomposition gives `|F| ≤ 39` against the 31 that would close the rung,
+> and §53.4 carries an explicit nineteen-member `τ = 3` family that says
+> so. "The mixed parts are the hard bit" is exactly right, and §53.5 names
+> the number that would have to be computed.
+
 ### 49.5 Gates
 
 All four, on the change set of §49. Nothing in it touches a Coq source, so
@@ -12541,3 +12553,149 @@ differently, where the disagreement is invisible because the case anyone
 checks is the case where they agree.** §37.4's cross-check at
 `deg(0) = 12` is the purest instance of it yet — a confirmation that was
 evaluated at the one point that could not discriminate.
+
+## 53. The `τ = 3` route: one free piece is worth twice what §49.4 said,
+##     and the method still does not close it
+
+§49.4 named `τ = 3` as "the nearest mathematics ... the case that would
+close the rung without any of this compute", and offered two elementary
+pieces of it for free. This section works the proposal. One piece is
+better than advertised by a factor of two; the method still stops well
+above 32, and this says where.
+
+**A name, first, because two different things are called `τ = 3` here.**
+`rust/tests/tau_three.rs` and `TauThree.tau_three_bound` are the
+*uniformity-three* covering-number case that makes `r*(3,3) ≤ 4`
+unconditional (§25); this section is the *uniformity-four* case at the
+`ι(4,11)` rung, and its file is `rust/tests/tau_three_at_eleven.rs`. They
+share a phrase and nothing else.
+
+### 53.1 The decomposition
+
+`F` is 4-uniform, intersecting, sunflower-free on `[11]` with a 3-cover
+`T = {p, q, r}`. Every member meets `T`, so `F` partitions by `A ∩ T`
+into seven classes:
+
+```text
+  |F| = (a + b + c)  +  (d + e + f)  +  g
+    a,b,c   A ∩ T is one point    links are 3-sets on the other eight
+    d,e,f   A ∩ T is two points   links are 2-sets on the other eight
+    g       A ⊇ T                 links are 1-sets on the other eight
+```
+
+This is §42's split with three parts instead of two, and the same fact
+makes it factor: a triple of members that do not all share a cover point
+is never a sunflower, because one pairwise intersection contains a cover
+point and another does not.
+
+### 53.2 The triple class: `g ≤ 2`, as offered
+
+`A_i = T ∪ {x_i}` with distinct `x_i` gives `A_i ∩ A_j = T` for every
+pair — a sunflower with core `T`. So a third member through all of `T` is
+already impossible. Checked over all `C(8,3) = 56` choices of three
+outside points in `tau_three_at_eleven::the_triple_class_holds_at_most_two`, and two
+is attainable, so the bound is exact.
+
+### 53.3 The pair classes: 6, not 13, and the kernel already had it
+
+§49.4 wrote:
+
+> the members containing a fixed pair have a link with no 3-matching, so
+> Erdős–Gallai caps them.
+
+True, and weaker than what was available. A pair class has
+`A_i = {p,q} ∪ e_i`, so `A_i ∩ A_j = {p,q} ∪ (e_i ∩ e_j)` and the class is
+sunflower-free exactly when the link graph is. That forbids **two** link
+shapes, not one:
+
+```text
+  three pairwise disjoint edges     -- a 3-matching        (§49.4 saw this)
+  three edges through one vertex    -- e_i ∩ e_j = {v}     (it did not)
+```
+
+The second has matching number one, so Erdős–Gallai cannot see it, and it
+is the binding one: forbidding both is exactly "the link graph is
+sunflower-free", whose maximum is two disjoint triangles. On eight points,
+measured both ways in
+`tau_three_at_eleven::a_pair_class_is_capped_by_g_two_and_not_by_erdos_gallai`:
+
+```text
+  no 3-matching (Erdős–Gallai)   max{C(5,2), C(2,2) + 2·6}  =  13
+  sunflower-free (g(2))                                        6
+```
+
+`PureLink.g_two_at_most_six` has had `g(2) ≤ 6` in the kernel since §42
+used it for the same purpose one cover point down. **The three pair
+classes are capped at 18, not 39.** §49.4 reached outside the development
+for a theorem it already held inside — the novelty-audit failure §45.4
+exists to catch, and the third time in four sessions that audit has had
+something to catch.
+
+### 53.4 Where it stops, with a witness
+
+With both pieces at their best,
+
+```text
+  |F| <= (a + b + c) + 18 + 2
+```
+
+so `τ = 3` closes only if `a + b + c ≤ 11`. It is not. `TAU3_WITNESS` in
+`rust/tests/tau_three_at_eleven.rs` is an explicit 4-uniform intersecting
+sunflower-free family on `[11]` with `τ(F) = 3` and **nineteen** members,
+every one holding exactly one cover point, so `a + b + c = 19` and
+`d = e = f = g = 0`:
+
+```text
+  F_p (10)  125 126 134 136 145 245 247 267 347 367
+  F_q  (6)  123 127 146 147 235 456
+  F_r  (3)  157 234 246          (digits are points of [8]; p,q,r are 9,10,11)
+```
+
+It is re-verified in the test against the definitions rather than against
+the search that produced it — uniformity, distinctness, intersecting,
+sunflower-free, `T` a cover, and no 1-cover or 2-cover anywhere in `[11]`,
+which is what makes `τ` exactly 3.
+
+```text
+  bound as §49.4 proposed it   19 + 3·13 + 2  =  60
+  bound with g(2) instead      19 + 3· 6 + 2  =  39
+  what closing the rung needs                <=  31
+```
+
+**So the `τ = 2` method does not transfer.** Halving the pair term is a
+real improvement and it is nowhere near enough; the deficit is in the
+singleton classes, which the decomposition does not price at all.
+
+### 53.5 What would have to be priced
+
+The three singleton classes are 3-uniform families on eight points, each
+sunflower-free and pairwise cross-intersecting — and that much is what the
+19-member witness already satisfies, so it is not the binding condition
+either. The condition the decomposition throws away is the **transversal**
+one: one member from each of the three classes, `S_1, S_2, S_3`, is
+forbidden from having `S_1 ∩ S_2 = S_1 ∩ S_3 = S_2 ∩ S_3`. That is §49.4's
+"the mixed parts are the hard bit", and it is the whole remaining gap:
+`a + b + c` under cross-intersection alone is far above 11, and only the
+transversal condition can bring it down.
+
+Two things follow for whoever takes this up. The quantity to compute is
+`max(a + b + c)` over triples of sunflower-free 3-uniform families on
+eight points that are pairwise cross-intersecting **and transversally
+sunflower-free** — one number, on a ground of `C(8,3) = 56` candidates per
+class, which is the same shape of exhaustive search `examples/tau_two.rs`
+already runs for the two-part case and about as much larger as three
+classes over eight points is than two over nine. And the answer has to
+come in at 11 or below to close the case, against a lower bound of 19 that
+is already recorded here — so **the honest expectation is that it does
+not close, and that the decomposition is the wrong instrument**, not that
+the search is unfinished.
+
+### 53.6 What this does not do
+
+It decides nothing about `ι(4)`. `27 ≤ ι(4) ≤ 71` is untouched and
+`ι(4,11) ≤ 31` still rests on the SAT ladder. `τ = 3` remains open, and
+this section makes it *less* likely to fall to the elementary route rather
+than more: the one improvement available on §49.4's plan was found, taken,
+and shown insufficient by a factor of 8 in the wrong direction. The value
+here is that the route is now costed instead of hoped for, and that a
+kernel lemma the development already owned is back in use.
