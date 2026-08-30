@@ -40,6 +40,20 @@
 # so a 7200 s budget banks nothing.  The full split is what
 # iota4_11.deg13.tsv calls the working granularity.  See roadmap 52.2.
 #
+# TWO PASSES, AND THE ROW COUNT IS NOT THE CUBE COUNT.  A 600 s pass ran
+# first and banked 3 UNSAT of 20 attempted; an 1800 s pass then resumed
+# against this same file, which skipped those 3 and re-ran the 17 UNKNOWN
+# ones -- "checkpoint: 3 of 1949 cubes already decided".  The 600 s cap
+# was too small for this solver: cryptominisat5 landed 1 of the 8
+# sub-cubes it shares with cadical's pass, where cadical landed 5, so
+# 600 s here is about a 200 s cadical-equivalent.
+#
+# `append_checkpoint` appends unconditionally and never dedups, so a
+# re-run leaves the old UNKNOWN row in place beside the new one.  Rows are
+# therefore >= cubes attempted, and a label may appear more than once.
+# Only UNSAT/SAT rows are load-bearing, and those are written once; to
+# count progress, count DISTINCT labels with an UNSAT verdict.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -59,3 +73,5 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNKNOWN	950.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNKNOWN	1015.0
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNKNOWN	1021.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNKNOWN	1046.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNKNOWN	1012.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNKNOWN	891.5

@@ -1244,7 +1244,7 @@ the solver went with it, and the first reading of the failure had to be
 Nothing in the suite distinguishes the two, and the cost is a wrong
 first hypothesis at exactly the moment a gate result is being reported.
 
-The honest statement of the gap: **two of the 370 tests are not
+The honest statement of the gap: **two of the 378 tests are not
 hermetic.** `make -j4 verify`, `make coqchk` and `python3 tools/mutate.py`
 need nothing but Coq; `cargo test --release` needs `cadical` on `PATH`,
 and `docs/roadmap.md`'s reproduction block says so. A future session

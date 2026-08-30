@@ -12732,3 +12732,45 @@ than more: the one improvement available on §49.4's plan was found, taken,
 and shown insufficient — the bound lands at 39 where 31 was needed. The
 value here is that the route is now costed instead of hoped for, and that
 a kernel lemma the development already owned is back in use.
+
+### 53.7 Gates
+
+All four, on the change set of §52 and §53. Nothing in it touches a Coq
+source or `rust/src/`, so the two kernel gates and the mutation census are
+controls: they say the tree is where §51 left it, and the only gate that
+can move is `cargo test`.
+
+```text
+  make -j2 verify          pass    740 audited theorems, every one
+                                   "Closed under the global context";
+                                   statement baselines matched,
+                                   docnumbers 17 of 17, ceilings ran
+  make coqchk              pass    axiom census exactly
+                                   Sunflower.ALWZ.Rao20_lemma2;
+                                   type-in-type, unsafe (co)fixpoints and
+                                   assumed positivity all <none>
+  cargo test --release     pass    44 result lines, 378 tests, 0 failures
+                                   (42 integration suites)
+```
+
+`cargo test` moved from §49.5's 43/370/41 by eight tests and one suite:
+§51 added `cube_budget::the_solver_exit_codes_the_crash_check_rests_on`
+after that measurement was taken, and this session added three more to
+`cube_budget` and the four of `tau_three_at_eleven`. All seven of the new
+ones are hermetic — they enumerate degree sequences or check set families,
+and none needs a solver on `PATH` — so `docs/testing.md`'s count of
+non-hermetic tests is unchanged at two.
+
+`python3 tools/mutate.py` was **not run**, and this says so rather than
+implying a clean sweep. It perturbs Coq definitions, no Coq definition
+changed, and the §49.5 census (167 mutations, 164 killed, 2 declared
+survivors) is the standing result. No new carried `Prop` was added: the
+whole of §52 and §53's checkable content is Rust, in `cube_budget.rs` and
+`tau_three_at_eleven.rs`.
+
+**The measurement environment, because two numbers in this session depend
+on it.** These gates ran on the 4-core session container concurrently with
+the cryptominisat5 cube-13 pass, so the wall times are not comparable with
+§49.5's. That contention is also why the seconds column in
+`docs/ladder/iota4_11.deg13.cryptominisat5.tsv` records 664–1047 s against
+a 600 s solver budget, and why that file's header says so.
