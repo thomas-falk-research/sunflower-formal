@@ -62,15 +62,24 @@
 # used 88% of that budget, so a third pass at a larger cap would likely
 # still gain -- it is not yet at the point of diminishing returns.
 #
-# STANDING, 9 distinct UNSAT of 20 labels attempted:
+# STANDING, 10 distinct UNSAT of 20 labels attempted:
 #     5   agree UNSAT with cadical's pass
-#     2   cryptominisat5 DECIDED where cadical was UNKNOWN at its 600 s
-#         cap -- [.. 13, 6, 5] at 939.6 s and [.. 12, 10, 2] at 1588.7 s.
-#         The second opinion is adding sub-cubes, not only confirming.
+#     3   cryptominisat5 DECIDED where cadical was UNKNOWN at its 600 s
+#         cap -- [.. 13, 6, 5] 939.6 s, [.. 12, 10, 2] 1588.7 s and
+#         [.. 11, 11, 2] 1366.4 s.
 #     2   degree-zero sub-cubes, outside the 1939 cover (see above)
 #     0   DISAGREEMENTS.  No SAT anywhere.  This is the check that
 #         matters: a SAT here would contradict cadical's UNSAT on the
 #         cube and put iota(4,11) <= 31 in question.
+#
+# ON CADICAL'S OWN FOURTEEN RECORDED LABELS, cryptominisat5 is now UNSAT
+# on EIGHT -- all five cadical decided, plus three it left at its cap.
+# So this pass has strictly greater coverage of the shared set than the
+# pass it is checking, which is more than a second opinion usually buys.
+#
+# Eight sub-cubes are still UNKNOWN at 1800 s and the largest UNSAT used
+# 1588.7 s of that budget, so a later pass at a larger cap should still
+# convert some.  This is not yet at diminishing returns.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -101,3 +110,10 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 11, 1]	UNSAT	1089.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 10, 2]	UNSAT	1588.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNKNOWN	1818.8
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNKNOWN	1817.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNKNOWN	1810.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 11, 2]	UNSAT	1366.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNKNOWN	1821.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNKNOWN	1809.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNKNOWN	1810.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNKNOWN	1813.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNKNOWN	1814.2
