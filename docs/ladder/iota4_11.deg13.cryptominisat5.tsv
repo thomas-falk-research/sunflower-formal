@@ -88,33 +88,38 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# EVERY FIXED BUDGET HAS A FINITE USEFUL LIFE HERE, AND 5400 s IS ALREADY
-# SPENDING ITS OWN.  Cost of the decided sub-cubes, in order of first
-# attempt, in blocks of eight:
+# DO NOT RAISE THE CAP AGAIN.  The previous version of this header said
+# "raising by threes has worked twice; the next step is 16200 s" and left
+# it as a cost.  The arithmetic says it is a loss, and the right quantity
+# is UNSAT BANKED PER WALL-HOUR, not the conversion rate:
+#
+#   under the 5400 s cap    10 UNSAT, 4 stalled, 67034 core-s
+#                           = 4.66 h wall on four threads
+#                           = 2.15 UNSAT per wall-hour
+#
+#   at a 16200 s cap        four attempts cost 4.5 h wall, so beating
+#                           2.15/h needs more than 9.7 of those four to
+#                           land.  There are only four.
+#
+# So a 16200 s cap loses by at least 2.4x even if EVERY attempt landed.
+# Raising a cap buys conversion and pays for it superlinearly in time per
+# attempt, so there is an optimum and 5400 s is past the point where
+# raising helps.  Stalled sub-cubes are not lost -- they carry UNKNOWN,
+# are re-run on resume, and cost nothing to defer to a machine with more
+# cores or more hours.
+#
+# The budget's own life is over on its own terms, though: the largest
+# UNSAT is 5257 s of 5400, headroom 2.7%, and the frontier is at the
+# ceiling.  Both things are true at once -- the cap no longer converts
+# much, and raising it converts less per hour.  That is what the end of
+# this route looks like on four cores.
+#
+# COST OF THE DECIDED SUB-CUBES, in order of first attempt, per eight:
 #
 #     UNSATs  1 -  8    mean   682 s   max  1090 s
 #     UNSATs  9 - 16    mean  1931 s   max  2295 s
 #     UNSATs 17 - 24    mean  1900 s   max  2267 s
 #     UNSATs 25 - 32    mean  3588 s   max  4657 s
-#
-# Two batches ago this header said the 5400 s cap left "48% headroom and
-# nothing presses it".  That was true when written and is now stale: the
-# largest UNSAT is 4657 s, headroom is 14%, and one sub-cube has already
-# stalled at the cap.  A headroom figure on this file is a snapshot of
-# how deep the run has got, not a property of the budget.
-#
-# So the shape of the route is: each cap converts a band, works for a
-# while, and is overtaken by the depth.  600 s died after 20 attempts,
-# 1800 s after 42, and 5400 s is beginning to.  Raising by threes has
-# worked twice; the next step is 16200 s, about 4.5 h a sub-cube, or one
-# an hour on four threads.  Nothing here says that is worth it -- it says
-# what it would cost.
-#
-# THE THIRTY-TWO UNSAT TIMES, in seconds:
-#
-#    128  350  390  740  756  838  940  977 1090 1341 1366
-#   1589 1872 1912 1935 1948 1971 2038 2039 2074 2088 2096
-#   2213 2230 2267 2295 2781 4276 4464 4523 4622 4657
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -230,3 +235,9 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 7, 6]	UNSAT	4657.1
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 11, 3]	UNSAT	4523.4
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNKNOWN	5453.8
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNKNOWN	5434.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	5436.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 7, 7]	UNSAT	4824.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 10, 5]	UNSAT	5178.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	5440.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 8, 7]	UNSAT	5256.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 9, 7]	UNSAT	4686.5
