@@ -62,18 +62,31 @@
 # used 88% of that budget, so a third pass at a larger cap would likely
 # still gain -- it is not yet at the point of diminishing returns.
 #
-# STANDING, 16 distinct UNSAT of 42 labels attempted, 0 SAT:
-#    12   of cadical's own fourteen recorded labels -- against cadical's
-#         own 5.  Seven of the twelve are sub-cubes cadical left UNKNOWN
-#         at its 600 s cap and cryptominisat5 decided:
-#            [.. 13, 6, 5]   939.6      [.. 12, 9, 3]  1871.7
-#            [.. 11, 11, 2] 1366.4      [.. 12, 6, 6]  2037.7
-#            [.. 12, 10, 2] 1588.7      [.. 12, 8, 4]  2230.3
-#                                       [.. 12, 7, 5]  2294.8
-#     4   beyond cadical's fourteen
-#     0   DISAGREEMENTS.  No SAT anywhere.  This is the check that
-#         matters: a SAT here would contradict cadical's UNSAT on the
-#         cube and put iota(4,11) <= 31 in question.
+# STANDING, 21 distinct UNSAT of 42 labels attempted, 0 SAT.
+#
+# EVERY SUB-CUBE CADICAL EVER RECORDED FOR THIS CUBE IS NOW DECIDED, AND
+# THE TWO SOLVERS AGREE ON ALL OF THEM.  cadical's pass attempted
+# fourteen and landed five, leaving nine UNKNOWN at its 600 s cap.
+# cryptominisat5 is UNSAT on all fourteen -- the five it confirms, and
+# all nine cadical could not decide:
+#
+#     [.. 13, 6, 5]   939.6      [.. 12, 7, 5]  2294.8
+#     [.. 11, 11, 2] 1366.4      [.. 11, 10, 3] 1971.3
+#     [.. 12, 10, 2] 1588.7      [.. 11, 9, 4]  2087.6
+#     [.. 12, 9, 3]  1871.7      [.. 12, 6, 6]  2037.7
+#     [.. 12, 8, 4]  2230.3
+#
+# So the portion of cube 13 that any solver has examined is now fully
+# decided and fully agreed.  Seven further sub-cubes are decided beyond
+# cadical's fourteen.
+#
+# THIS DOES NOT DECIDE THE CUBE.  21 of 1949 is 1%, and iota(4,11) <= 31
+# still rests on cadical's whole-cube UNSAT at 85123.9 s.  What it
+# removes is the possibility that cadical's nine UNKNOWNs were hiding a
+# SAT: they were not, and a SAT among them would have contradicted that
+# whole-cube verdict.
+#
+#     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # THE COSTS FORM A CONTINUUM, WITH NO CLIFF SO FAR.  The sixteen UNSAT
 # times, in seconds:
@@ -184,3 +197,8 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNSAT	1871.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNSAT	2037.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNSAT	2230.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNSAT	2294.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNSAT	1971.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNSAT	2087.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNSAT	2096.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNSAT	2267.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNSAT	1934.7
