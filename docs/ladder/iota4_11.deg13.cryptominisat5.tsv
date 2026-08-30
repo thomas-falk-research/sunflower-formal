@@ -62,14 +62,31 @@
 # used 88% of that budget, so a third pass at a larger cap would likely
 # still gain -- it is not yet at the point of diminishing returns.
 #
-# STANDING, 12 distinct UNSAT of 32 labels attempted, 0 SAT:
-#     8   on cadical's own fourteen recorded labels -- all five it
-#         decided, plus three it left UNKNOWN at its 600 s cap
-#         ([.. 13, 6, 5], [.. 12, 10, 2], [.. 11, 11, 2])
-#     4   beyond cadical's fourteen, of 18 attempted there
+# STANDING, 16 distinct UNSAT of 42 labels attempted, 0 SAT:
+#    12   of cadical's own fourteen recorded labels -- against cadical's
+#         own 5.  Seven of the twelve are sub-cubes cadical left UNKNOWN
+#         at its 600 s cap and cryptominisat5 decided:
+#            [.. 13, 6, 5]   939.6      [.. 12, 9, 3]  1871.7
+#            [.. 11, 11, 2] 1366.4      [.. 12, 6, 6]  2037.7
+#            [.. 12, 10, 2] 1588.7      [.. 12, 8, 4]  2230.3
+#                                       [.. 12, 7, 5]  2294.8
+#     4   beyond cadical's fourteen
 #     0   DISAGREEMENTS.  No SAT anywhere.  This is the check that
 #         matters: a SAT here would contradict cadical's UNSAT on the
 #         cube and put iota(4,11) <= 31 in question.
+#
+# THE COSTS FORM A CONTINUUM, WITH NO CLIFF SO FAR.  The sixteen UNSAT
+# times, in seconds:
+#
+#   128  350  390  740  756  838  940  977
+#  1090 1341 1366 1589 1872 2038 2230 2295
+#
+# Raising the cap from 1800 s to 5400 s converted four sub-cubes, and all
+# four landed between 1872 s and 2295 s -- just above the old cap, not
+# near the new one.  Each budget appears to convert the band immediately
+# above the previous cap rather than a distant cluster.  That is sixteen
+# points and an observation, not a law, but it predicts further raises
+# keep working with sharply diminishing returns per unit of machine time.
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -163,3 +180,7 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 8, 7]	UNKNOWN	1818.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 9, 7]	UNKNOWN	1813.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 8, 8]	UNKNOWN	1813.2
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 11, 4]	UNKNOWN	1807.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNSAT	1871.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNSAT	2037.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNSAT	2230.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNSAT	2294.8
