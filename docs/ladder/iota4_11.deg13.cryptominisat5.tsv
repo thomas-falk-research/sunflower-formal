@@ -1,0 +1,34 @@
+# iota(4,11) >= 32 ?  the deg(0) = 13 cube under cryptominisat5, over the
+# FULL degree-sequence split, one line per sub-cube.  Second opinion for
+# cadical's UNSAT at 85123.9 s (docs/ladder/iota4_11.tsv).
+#
+# Written by `iota_sym --checkpoint`; a row is appended the moment a
+# sub-cube lands, so a reclaimed container loses only what was in flight.
+# Resume with the same --checkpoint: UNSAT/SAT rows are skipped, UNKNOWN
+# rows are re-run, because UNKNOWN is a budget and not a verdict.
+#
+# THE CUBE IS UNSAT ONLY WHEN ALL 1949 SUB-CUBES ARE UNSAT.  Note 1949,
+# not the 1939 that docs/ladder/iota4_11.deg13.tsv states -- see the
+# roadmap section for this session.  1939 is the count under
+# `all_points_used = true`; the driver runs with it FALSE, and the ten
+# extra sequences are the ones with a point of degree zero.
+#
+# Command:
+#   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+#     --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads 4 \
+#     --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
+#
+# Why the full split and not the prefix-3 split that roadmap 50.3 asked
+# for: the prefix-3 split of this cube is 27 sub-cubes, and the four that
+# were ever attempted (under cadical, iota4_11.deg13.p3.tsv) all burned
+# 2400 s without landing.  Those four are the four LARGEST -- the
+# enumeration is most-extreme-first -- covering 559, 327, 181 and 94 full
+# sub-cubes respectively.  At the 136-491 s a full sub-cube costs, the
+# largest prefix-3 cube is ~168000 s of search, so a 7200 s budget banks
+# nothing and spends 28800 s learning that again.  The full split is what
+# iota4_11.deg13.tsv calls the working granularity, and it is the only
+# granularity at target 32 with measured evidence of landing.
+#
+# sub-cube	verdict	seconds
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0

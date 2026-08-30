@@ -10236,15 +10236,18 @@ This session spent an afternoon forcing the split at `deg(0) = 13` with
 ```text
   whole cube (1)       UNKNOWN at 36000 s cadical, 40407 s cryptominisat5
   --seqprefix 3 (27)   4 of 4 UNKNOWN at 2400 s -- 18 core-hours for nothing
-  full split (1939)    solved sub-cubes land in 136-491 s; ~45% pass 600 s
+  full split (1949)    solved sub-cubes land in 136-491 s; ~45% pass 600 s
 ```
+
+*(The full-split count read 1939 here until §52; see §52.1 — the run's
+own cover is 1949, and nothing else in this subsection changes.)*
 
 The full split's total is roughly **597 core-hours** against **79** for
 the cube whole. A factor of 7.6 the wrong way.
 
 The split wins only when it is *small*. At `deg(0) = 12` it is 19
 sub-cubes and it turned an undecided cube into 3236 s. At `deg(0) = 13`
-it is 1939, and `iota_sym`'s own header always said so: *"paying 684
+it is 1949, and `iota_sym`'s own header always said so: *"paying 684
 solver startups for an instance that solves whole in ten minutes is a
 clear loss."*
 
@@ -10271,7 +10274,7 @@ at all — the parameter already existed in `symbreak::sequence_cubes` and
 The split count is now cross-checked rather than asserted. An
 independent enumeration of the two-block model — positions `0..b-1`
 non-increasing from `deg(0)`, the ceiling resetting to `deg(0)` at
-position `b`, then non-increasing again — reproduces the tool's 1939 at
+position `b`, then non-increasing again — reproduces the tool's count at
 `deg(0) = 13` and 27 at `--seqprefix 3`, and the 19 that
 `iota4_11.tsv` already recorded at `deg(0) = 12`. It also **corrects the
 sub-cube counts** an earlier session quoted from a globally-sorted model,
@@ -10282,6 +10285,16 @@ which was the wrong model:
   was      19    1949    32797   238850   1045128
   is       19    1939    31624   220047   914505
 ```
+
+> **THIS CORRECTION RAN BACKWARDS, and §52 undoes it.** The `was` row is
+> the split the driver actually enumerates; the `is` row is the split
+> under `all_points_used = true`, which the driver does not set. The
+> independent enumeration cited above agreed because it was written with
+> the same wrong assumption, and the cross-check offered as confirmation
+> — the 19 at `deg(0) = 12` — is the one entry where the two models
+> coincide, so it could not have discriminated. Every other entry could
+> have, and each of the four was replaced by the wrong one. Read the
+> `was` row as current. §52.1.
 
 What the tooling did **not** gain is a way to checkpoint a cube that is
 *not* split, and that is the binding constraint on this container rather
@@ -10575,14 +10588,14 @@ of admissible degree sequences collapses as `deg(0)` falls —
 
 ```text
   deg0        16       15       14      13     12
-  sequences   914505   220047   31624   1939   19
+  sequences  1045128   238850   32797   1949   19
 ```
 
 — while the measured whole-cube time *rose* from `deg(0) = 16` to
 `deg(0) = 14`. Whether that continues to 13, reverses, or does something
 else is exactly what is not known, and §37.3 already showed that the
 split which those sequence counts describe is the wrong tool at 13
-anyway: 1939 sub-cubes cost about 597 core-hours against 79 for the cube
+anyway: 1949 sub-cubes cost about 597 core-hours against 79 for the cube
 whole, and that 79 was itself the discredited fit. The comparison should
 be redone against measured numbers once 13 lands.
 
@@ -10599,7 +10612,7 @@ that.
 
 ### 40.1 What was measured
 
-A uniform random sample of the 1939 sub-cubes — `iota_sym --seq-sample 24
+A uniform random sample of the 1949 sub-cubes — `iota_sym --seq-sample 24
 20260815`, which shuffles before taking, because the sub-cubes are
 enumerated most-extreme-first and a prefix is not a sample. Run on the
 user's VM at 9 threads, with a 7200 s per-sub-cube cap, concurrently with
@@ -10615,10 +10628,10 @@ Counting each censored sub-cube at the cap and no higher:
 
 ```text
   lower-bound mean          6161 core-s per sub-cube
-  lower-bound split total   1939 x 6161  =  11 946 924 core-s
-                                         =  3319 core-hours
+  lower-bound split total   1949 x 6161  =  12 007 789 core-s
+                                         =  3336 core-hours
   cube 14 whole, same VM, one core            14.25 core-hours
-  ratio                                       >= 233x
+  ratio                                       >= 234x
 ```
 
 ### 40.2 Three caveats, none of which rescues the split
@@ -10656,7 +10669,7 @@ cube 13 itself will be a division, not a prediction, once it lands.
 
 ```text
   quantity                     was                    is
-  split at deg(0)=13           ~597 core-hours        >= 3319 core-hours
+  split at deg(0)=13           ~597 core-hours        >= 3336 core-hours
                                (biased prefix)        (uniform sample, censored floor)
   whole at deg(0)=13           ~79 core-hours         unknown; 14 measured at 14.25
                                (log-linear fit)       (fit falsified, §39)
@@ -11298,13 +11311,13 @@ three ratios that disagree cannot support a fourth.
 ### 43.5 What the split cost, finally
 
 §40 measured the degree-sequence split at `deg(0) = 13` at a floor of
-3319 core-hours against a whole-cube estimate. The whole cube is now
+3336 core-hours against a whole-cube estimate. The whole cube is now
 measured, so the comparison is between two measurements:
 
 ```text
-  split, lower bound          >= 3319 core-hours
+  split, lower bound          >= 3336 core-hours
   whole, measured                  23.65 core-hours
-  ratio                              >= 140x
+  ratio                              >= 141x
 ```
 
 And a run of that split was stopped after five days having produced
@@ -11467,7 +11480,7 @@ instance gives a solver nothing to exploit.
 `deg(0) = 12` is a *floor* cube with small slack, which is the regime
 where the degree-sequence split **wins** — at eleven points the floor
 cube split into 19 sub-cubes and turned an undecided cube into 3236 s,
-where `deg(0) = 13` split into 1939 and lost by ≥140× (§43.5). The
+where `deg(0) = 13` split into 1949 and lost by ≥141× (§43.5). The
 distinction is the sequence count, not the split. That run is in flight;
 its result belongs in a later section, not this one.
 
@@ -11627,7 +11640,7 @@ is narrower than "small":
     11      13       1 939    LOST -- >= 3 319 core-h against 23.65 whole
 ```
 
-So 144 is inside the winning regime and 1939 is far outside it. The
+So 144 is inside the winning regime and 1949 is far outside it. The
 operative rule for a future session: **read the `N degree-sequence
 cubes` line before letting a split run.** Under a few hundred, let it go;
 in the thousands, kill it and solve whole. `--cubecap 400` encodes
@@ -11846,8 +11859,8 @@ however much one asks for.
 **This is not a new lever and the first draft of this section said it
 was.** `docs/ladder/iota4_11.deg13.p3.tsv` is a prefix-3 split of the
 `deg(0) = 13` cube at eleven points, target **32**, from the session that
-added the flag: 27 sub-cubes instead of the full split's 1939, with
-fourteen rows recorded. The novelty audit runs against this repository's
+added the flag: 27 sub-cubes instead of the full split's 1949, with
+four rows recorded. The novelty audit runs against this repository's
 own ladder directory first (§45.4), and this section is the second time
 in three sessions that it has caught something.
 
@@ -11865,7 +11878,7 @@ All seven open cubes, at every prefix worth using:
 ```
 
 At ten points a split into 144 sub-cubes beat the cube whole and one into
-1939 lost (§40, §43.5). At `--seqprefix 3` **every one of the seven lands
+1949 lost (§40, §43.5). At `--seqprefix 3` **every one of the seven lands
 inside the winning regime**, and the whole remaining eleven-point problem
 is 726 sub-cubes — five times the split that decided one ten-point cube,
 for seven cubes on a double-size instance.
@@ -11946,21 +11959,42 @@ eleven points, `deg(0) = 13`, prefix 3, but target 32 — and it is not
 encouraging:
 
 ```text
-  27 sub-cubes at a 600 s cap:  5 UNSAT (136.1, 381.9, 429.2, 459.0, 491.4 s)
-                                9 UNKNOWN at the cap
-                               13 never attempted
+  27 sub-cubes at a 2400 s cap:  0 UNSAT
+                                 4 UNKNOWN at the cap
+                                23 never attempted
 ```
 
-Five of fourteen attempted landed, and the ones that did used most of the
-600 s. **And target 28 is the strictly harder instance**, not the easier
+> **Corrected in §52.2. This block first read:**
+>
+> ```text
+>   27 sub-cubes at a 600 s cap:  5 UNSAT (136.1, 381.9, 429.2, 459.0, 491.4 s)
+>                                 9 UNKNOWN at the cap
+>                                13 never attempted
+> ```
+>
+> Those fourteen rows are not in `iota4_11.deg13.p3.tsv`. They are the
+> fourteen in `iota4_11.deg13.tsv`, which is the **full** 1949-way split
+> of the same cube — where "13 never attempted" should read 1935. The p3
+> file holds four rows, all `UNKNOWN` at 2400.1 s, under its own recorded
+> verdict "TOO COARSE, and the budget is the result. Not retried." The
+> two files were read as one, and §50.3 then costed a re-run from the
+> wrong one.
+
+Nothing landed at four times the cap the full split uses. **And target 28 is the strictly harder instance**, not the easier
 one. That is `Product.IotaAtLeast_antitone`, already in the kernel and
 already audited: uniformity, distinctness, intersecting-ness and
 sunflower-freeness all pass to subfamilies, so a 32-member family has a
 28-member one and UNSAT at 28 implies UNSAT at 32. It transfers to the
 encoding because `all_points_used` is off by default — the instance asks
 for a family on *at most* eleven points, so the trimmed subfamily is still
-a model. The 600 s cap that decided five of fourteen at target 32 will
-decide fewer at 28.
+a model. The 2400 s cap that decided none of four at target 32 will
+decide no more at 28.
+
+(That clause — "`all_points_used` is off by default" — is exactly right,
+and it is the same fact that makes this cube's full split 1949 rather
+than 1939. §37.4 had already replaced the counts with the
+`all_points_used = true` ones four sections earlier. The repository was
+using the fact in one argument while contradicting it in another; §52.1.)
 
 So 726 sub-cubes is the right *shape* and no basis at all for a cost
 estimate. If a sub-cube needs the 3600 s the coarse pass already spent per
@@ -11971,9 +12005,13 @@ that matters. Both are guesses, and §48.2's refusal to
 estimate stands — every extrapolation attempted on this ladder has been
 wrong, §39 by 1.92× and §43.4's four ratios by lying on no curve at all.
 What §49 changes is that the work is now *shaped* into independent
-few-hundred-second pieces that a checkpoint can accumulate across
-container deaths, instead of seven twelve-hour monoliths that lose
-everything when the container is reclaimed.
+pieces that a checkpoint can accumulate across container deaths, instead
+of seven twelve-hour monoliths that lose everything when the container is
+reclaimed. **How big those pieces are is the open question, and §52.2
+says prefix 3 gets it wrong at `deg(0) = 13`**: a prefix-3 sub-cube there
+covers up to 559 full sub-cubes, so it is a monolith of its own. The
+shape argument survives; the granularity has to be chosen per cube
+against the bucket sizes, not against the sub-cube count alone.
 
 ### 49.3 The driver was solving the hard cubes twice
 
@@ -12157,23 +12195,45 @@ week-long monolith on that machine has returned nothing (§45.4 is the
 first).
 
 The alternative is to give up shape-purity for resumability and run the
-second opinion **over the prefix-3 split**, with `--checkpoint`. The split
-is a cover, so UNSAT on every sub-cube is UNSAT on the cube — it is an
+second opinion **over a split**, with `--checkpoint`. The split is a
+cover, so UNSAT on every sub-cube is UNSAT on the cube — it is an
 independent verdict by a different decomposition as well as a different
 solver, which is if anything a stronger cross-check than repeating
 cadical's shape. And every sub-cube that lands is banked.
 
+> **The command this subsection first gave was the prefix-3 split at
+> `--seconds 7200`, and §52.2 replaces it.** It read:
+>
+> ```sh
+>   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+>     --seqprefix 3 --cubecap 50 --slice 60 --seconds 7200 --threads T \
+>     --checkpoint docs/ladder/iota4_11.deg13.p3.cryptominisat5.tsv
+> ```
+>
+> justified by "the cadical rows in that file give the per-sub-cube cost
+> to expect: five landed between 136.1 s and 491.4 s, nine did not at
+> 600 s. `--seconds 7200` is twelve times the budget that left nine
+> undecided." Those rows are in `iota4_11.deg13.tsv`, not in the p3 file
+> (§49.2, corrected). The p3 file's own four rows are `UNKNOWN` at
+> 2400.1 s, so 7200 s is three times a budget that landed **nothing**,
+> not twelve times one that landed five of fourteen.
+
+The granularity that has measured evidence of landing at target 32 is the
+**full** split, which is what `iota4_11.deg13.tsv` itself calls "the
+working granularity":
+
 ```sh
   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
-    --seqprefix 3 --cubecap 50 --slice 60 --seconds 7200 --threads T \
-    --checkpoint docs/ladder/iota4_11.deg13.p3.cryptominisat5.tsv
+    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads T \
+    --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
 ```
 
-27 sub-cubes (§49.2's table is at target 28; at target 32 the prefix-3
-split of this cube is the 27 that `iota4_11.deg13.p3.tsv` already records
-under cadical). The cadical rows in that file give the per-sub-cube cost
-to expect: five landed between 136.1 s and 491.4 s, nine did not at 600 s.
-`--seconds 7200` is twelve times the budget that left nine undecided.
+1949 sub-cubes, each banked as it lands, at the same 600 s cap the cadical
+pass used so the two are directly comparable. `--cubecap 2000` is what
+admits a 1949-way split; the 400 the crashed run carried is what refused
+it (§51.1, reading 5). The checkpoint is named for the question it answers
+— cube 13 under cryptominisat5, full split — rather than for the prefix-3
+plan that is no longer the plan. §52.2.
 
 ## 51. The exit status was read for nothing, so a crash and a budget were
 ##     the same observation
@@ -12203,7 +12263,7 @@ Five readings, in order of how much they cost:
 3. **Nothing noticed.** The tag is `sym-11-4-32-**seq**-c0`, so the driver
    had already moved to phase two: it read the dead solver's empty output
    as `UNKNOWN`, concluded the cube had merely stalled, and continued.
-4. **It then sprang §49.3's trap.** Cube 13's full split is 1939 sub-cubes
+4. **It then sprang §49.3's trap.** Cube 13's full split is 1949 sub-cubes
    against `--cubecap 400`, so phase two did not refine and is re-solving
    the identical whole cube — 13.7 h into a **second** 55.6 h budget.
 5. **And the crash left no trace at all.** Not in the log, not in
@@ -12272,3 +12332,212 @@ answered disagreed about what identifies a rung (§49.2). None is a bug in
 a formula. All four are two honest components with incompatible readings
 of the same value, and none was reachable by any test in the suite until
 the code was moved to where a test could reach it.
+
+## 52. The cover was the wrong model, and the re-run was costed from
+##     another file's rows
+
+§51.4 named the pattern: "two honest components with incompatible readings
+of the same value". This section is two more instances of it, both found
+before any solver time was spent on them, and both in the machinery that
+was supposed to close cube 13. Neither changes a mathematical claim. One
+of them changes what "closed" would have meant.
+
+### 52.1 `1939` is a different question's answer, and the correction ran
+###      backwards
+
+`docs/ladder/iota4_11.deg13.tsv` opened with a soundness statement:
+
+```text
+  THE CUBE IS UNSAT ONLY WHEN ALL 1939 SUB-CUBES ARE UNSAT.
+```
+
+The number is wrong. The driver's split of that cube is **1949**, and the
+live run prints it:
+
+```text
+  # g = 11: 1 of 1 cubes refined
+  # g = 11: 1949 degree-sequence cubes
+```
+
+1939 is the count under `all_points_used = true`, which requires every one
+of the eleven points to lie in some member. `SymOptions::default()` has it
+**off** and `examples/iota_sym.rs` sets it from no flag, so the cover the
+checkpoint has to exhaust is the larger one. The ten sequences between
+them are exactly those carrying a point of degree zero.
+
+**The correction that introduced it ran backwards.** §37.4 published this
+table under the heading "It also **corrects** the sub-cube counts an
+earlier session quoted from a globally-sorted model, which was the wrong
+model":
+
+```text
+  deg(0)   12    13      14      15       16
+  was      19    1949    32797   238850   1045128
+  is       19    1939    31624   220047   914505
+```
+
+Every entry of the `was` row is the driver's own split. Every entry of the
+`is` row is the `all_points_used` split. The row called wrong was right,
+and it was right on all five entries at once, which is what a systematic
+model mismatch looks like rather than a slip.
+
+**Why the cross-check confirmed it anyway.** §37.4 offered one: an
+independent enumeration "reproduces the tool's 1939 at `deg(0) = 13` ...
+and the 19 that `iota4_11.tsv` already recorded at `deg(0) = 12`". The
+`deg(0) = 12` agreement is the evidence, and `deg(0) = 12` is the single
+entry in the table where the two models coincide — 19 either way, because
+at that top degree no admissible sequence has a zero. A cross-check
+evaluated at the one point where the hypotheses agree cannot discriminate
+between them. The four entries that could have are the four it changed.
+
+**And the repository was using the correct fact elsewhere the whole time.**
+§49.2, twelve sections later, argues that target-32 timings bound
+target-28 ones "because `all_points_used` is off by default — the instance
+asks for a family on *at most* eleven points, so the trimmed subfamily is
+still a model". That is the very premise that makes the cover 1949. One
+section relied on the option being off; another had already recounted the
+split as though it were on.
+
+**What it would have cost, and why it did not.** A session that banked
+1939 UNSAT rows against that file and read "cube closed" would have closed
+it with ten sub-cubes never attempted, and UNSAT is the verdict no witness
+contradicts — §49.3 names that as the one error class this development
+cannot detect from outside. It was not fatal, for a reason the file did
+not state: each of the ten asks for a 32-member family on at most ten
+points, and `ι(4,10) = 27 < 32` (§46) refutes all ten. The arithmetic was
+safe because of a theorem nobody had connected to it. That is luck with a
+proof behind it, not a margin to rely on — and the first sub-cube this
+session's run decided was `[13,13,13,13,13,13,13,13,13,11,0]`, one of the
+ten, UNSAT in 128.3 s.
+
+`cube_budget::the_split_cover_is_the_one_the_driver_runs` now pins both
+models at all five top degrees, asserts the tight cover is a subset of the
+wide one, asserts the difference is exactly the degree-zero sequences, and
+asserts that the two agree at `deg(0) = 12` and nowhere else — so the
+reason the old cross-check was empty is itself checked.
+
+### 52.2 The prefix-3 re-run was costed from the full split's rows
+
+§50.3 proposed re-running the cube-13 second opinion over the prefix-3
+split at `--seconds 7200`, and justified the budget like this:
+
+> The cadical rows in that file give the per-sub-cube cost to expect: five
+> landed between 136.1 s and 491.4 s, nine did not at 600 s.
+> `--seconds 7200` is twelve times the budget that left nine undecided.
+
+Those fourteen rows are not in `iota4_11.deg13.p3.tsv`. They are the
+fourteen rows of `iota4_11.deg13.tsv`, the **full** 1949-way split of the
+same cube at the same target. The p3 file holds four rows, all `UNKNOWN`
+at 2400.1 s, under its own recorded verdict:
+
+```text
+  VERDICT ON THIS GRANULARITY: TOO COARSE, and the budget is the result.
+  All four cubes of the first batch burned the full 2400 s cap without
+  landing.  Not retried.
+```
+
+So `--seconds 7200` is three times a budget that landed nothing, not
+twelve times one that landed five of fourteen — and the plan was to spend
+it on the granularity whose own file says it does not work. §49.2 made the
+same conflation first, quoting "27 sub-cubes at a 600 s cap: 5 UNSAT, 9
+UNKNOWN, 13 never attempted"; 5 + 9 + 13 = 27 is what makes it read as a
+complete account of the p3 file, and the real arithmetic is 5 + 9 + 1935 =
+1949 in the other one.
+
+**Why prefix 3 fails here, measured rather than cited.** A prefix-3
+sub-cube has to decide everything underneath it, so the question is how
+the 1949 full sub-cubes distribute over the 27:
+
+```text
+  [13,13,13] 559   [13,12,12] 246   [13,11,11]  94   [13,10,10] 30
+  [13,13,12] 327   [13,12,11] 132   [13,11,10]  45   [13,10, 9] 12
+  [13,13,11] 181   [13,12,10]  66   [13,11, 9]  19   [13,10, 8]  4
+  [13,13,10]  94   [13,12, 9]  30   [13,11, 8]   7   [13,10, 7]  1
+  [13,13, 9]  45   [13,12, 8]  12   [13,11, 7]   2   [13, 9, 9]  7
+  [13,13, 8]  19   [13,12, 7]   4                    [13, 9, 8]  2
+  [13,13, 7]   7   [13,12, 6]   1                    [13, 8, 8]  1
+  [13,13, 6]   2
+```
+
+The largest holds 559 sub-cubes that cost 136–491 s apiece under cadical,
+so it is on the order of 10⁵ s of search on its own. No budget in reach
+touches it, and `--seconds 7200` was never going to.
+
+**The enumeration order is the second half of it.** Sub-cubes come out
+lexicographically descending, so a budget-limited pass takes them in that
+order, and the first four are `[13,13,13]`, `[13,13,12]`, `[13,13,11]`,
+`[13,13,10]` — 559 + 327 + 181 + 94 = 1161 of the 1949, three fifths of
+the cube in four pieces, against a mean bucket of 72. Those are precisely
+the four the cadical pass attempted, which is why it recorded four
+`UNKNOWN`s and stopped. Meanwhile the three prefix-3 cubes holding a
+single full sub-cube each sit at indices 14, 23 and 26. **This
+granularity does not merely stall; it stalls having banked nothing**, and
+banking is the entire reason §50.3 wanted a split. `cube_budget::
+the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity` pins the
+bucket sizes, the order, and the fact that the attempted four are the
+first four rather than the largest four — `[13,12,12]` at 246 is bigger
+than two of them and is never reached.
+
+**What replaces it.** The full split, at the same 600 s cap the cadical
+pass used so the two are directly comparable:
+
+```sh
+  iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads 4 \
+    --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
+```
+
+`--cubecap 2000` is what admits a 1949-way split — the 400 the crashed run
+carried is what refused it (§51.1, reading 4). The checkpoint is named for
+the question it answers rather than for the plan that is no longer the
+plan, which is §49.2's rule applied to itself.
+
+**The measurement is now a tool**, because the next session has to make
+this choice six more times — the seven cubes open at target 28, where
+§49.2a picks a prefix per cube from the sub-cube count alone.
+`rust/examples/seq_buckets.rs` prints the bucket sizes *and the
+enumeration order*, which is what the count hides:
+
+```text
+  cargo run --release --example seq_buckets -- 11 4 32 13
+    mean bucket        72.2
+    largest bucket     559  (at index 0)
+    first four         1161 of 1949 (60% of the cube in four pieces)
+    singleton buckets  at indices [14, 23, 26]
+```
+
+Read the largest bucket against the per-sub-cube times in `docs/ladder/`
+before spending a budget on a prefix. Twenty-seven pieces looked like the
+winning regime and one of them was three fifths of a cube.
+
+### 52.3 A correction about how far this gets
+
+The full split is the working granularity, not a cheap one. §40 sampled it
+uniformly and put a floor of **≥ 3336 core-hours** on the whole 1949 under
+cadical, ≥ 141× the 23.65 core-hours the cube whole actually took. Nothing
+here repeals that: running the split is a choice to pay much more total
+time for the ability to stop and resume, taken because the alternative has
+now failed twice — 55.6 h to a crash (§51) and a week to nothing before
+that (§45.4). A second opinion that banks 200 rows and dies is worth more
+than one that burns 200 000 s and returns `UNKNOWN`, but only because the
+rows are permanent, and the honest statement of the trade is that this
+route is unlikely to finish on any single machine.
+
+### 52.4 What this does not do
+
+It decides nothing. `27 ≤ ι(4) ≤ 71` is untouched, `ι(4,11) ≤ 31` still
+rests on cadical with two-solver agreement on twenty of twenty-one cubes,
+and cube 13's second opinion is still outstanding — where §47, §50 and §51
+each left it in turn. Seven cubes remain open at eleven points and target
+28.
+
+What changed is that the cover the checkpoint has to exhaust is now the
+one the driver enumerates, the number is machine-checked at five top
+degrees against both models, and the re-run is aimed at a granularity with
+measured evidence of landing instead of one its own file had already
+rejected. Two of this session's findings and all four of §49–§51's are the
+same shape, and the count is now six: **a value that two components read
+differently, where the disagreement is invisible because the case anyone
+checks is the case where they agree.** §37.4's cross-check at
+`deg(0) = 12` is the purest instance of it yet — a confirmation that was
+evaluated at the one point that could not discriminate.

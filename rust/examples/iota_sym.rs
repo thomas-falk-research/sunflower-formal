@@ -16,9 +16,14 @@
 //! sample),
 //! `--seqprefix N` (fix only the first `N` degrees when re-splitting, so
 //! the granularity of the second phase is tunable: at `g = 11, b = 4,
-//! deg(0) = 13` the split is 6 cubes at `N = 2`, 27 at 3, 167 at 4 and
-//! 1939 at 11 — and 1939 sub-cubes each still costing minutes is a worse
-//! trade than a few dozen that are merely hard),
+//! deg(0) = 13` the split is 6 cubes at `N = 2`, 27 at 3, 171 at 4 and
+//! 1949 at 11 — and 1949 sub-cubes each still costing minutes is a worse
+//! trade than a few dozen that are merely hard. Those counts are at
+//! target 32 under `SymOptions::default()`, which is what this driver
+//! runs; `all_points_used = true` would give 1939 at full prefix, and
+//! confusing the two is what
+//! `cube_budget::the_split_cover_is_the_one_the_driver_runs` exists to
+//! stop),
 //! `--checkpoint PATH` (append each degree-sequence sub-cube's verdict as
 //! it lands, and skip the ones already recorded there — what makes a cube
 //! with thousands of sub-cubes survivable across restarts, and what lets

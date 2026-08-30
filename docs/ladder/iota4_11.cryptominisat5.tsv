@@ -10,15 +10,21 @@
 # having read the dead solver's empty output as UNKNOWN.
 #
 # It cost 55.6 h beyond the crash: phase two re-ran the identical whole
-# cube, because the full split is 1939 sub-cubes against --cubecap 400 and
+# cube, because the full split is 1949 sub-cubes against --cubecap 400 and
 # --slice equalled --seconds. Both defects are fixed -- docs/roadmap.md
 # §49.3 for the double run, §50 and §51 for the crash -- and the row is
 # relabelled CRASH so that no future session reads 174541.0 s as a
 # measurement of how hard this cube is. It is a measurement of how long
 # the solver lived.
 #
-# Re-run it split, not whole: --seqprefix 3 --cubecap 50 --checkpoint,
-# which is 27 sub-cubes each banked as it lands. See §50.3.
+# Re-run it split, not whole -- but over the FULL split, not the prefix-3
+# one that §50.3 asked for.  §50.3 costed prefix-3 from rows that are in
+# iota4_11.deg13.tsv rather than in iota4_11.deg13.p3.tsv; the p3 file's
+# own four rows are UNKNOWN at 2400 s and its own verdict is TOO COARSE.
+# The full split is 1949 sub-cubes, each banked as it lands:
+#   --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --checkpoint
+#     docs/ladder/iota4_11.deg13.cryptominisat5.tsv
+# See §52.2.
 # Every row below except deg(0) = 32 was measured on an Apple M4 Air --
 # RUNG_THREADS=8 RUNG_SLICE=900 RUNG_CUBECAP=400, budget 36000 s -- and
 # transcribed here from that run's output. The 32 row was measured on the
@@ -30,7 +36,9 @@
 # RUNG_THREADS=1 RUNG_SLICE=200000 so the split never fires, and came
 # back UNSAT at 70310.9 s -- agreeing with cadical's 51305.5 s. The two
 # solvers now agree on TWENTY of the twenty-one cubes; only deg(0) = 13
-# is outstanding, and it is in flight under the same settings.
+# is outstanding.  The whole-cube run under those settings is the one that
+# crashed; it is now being re-run over the full split, resumably, into
+# docs/ladder/iota4_11.deg13.cryptominisat5.tsv.
 #
 # The 36000 s rows below for 13 and 14 were replaced rather than kept:
 # both were `UNKNOWN` at that budget, which is a true record of a run

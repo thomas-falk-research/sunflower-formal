@@ -365,3 +365,155 @@ fn the_solver_exit_codes_the_crash_check_rests_on() {
         let _ = std::fs::remove_file(p);
     }
 }
+
+/// The cover a checkpoint must exhaust is the one the *driver* enumerates,
+/// and two models were in the tree disagreeing about what that is.
+///
+/// `docs/ladder/iota4_11.deg13.tsv` told a future session
+/// "THE CUBE IS UNSAT ONLY WHEN ALL 1939 SUB-CUBES ARE UNSAT", under a
+/// table of "corrected counts, superseding the figures an earlier session
+/// quoted". Every row of that table is the count under
+/// `all_points_used = true`. The driver runs with it **false** — that is
+/// `SymOptions::default()`, and `examples/iota_sym.rs` sets it from no
+/// flag — so its split of `deg(0) = 13` is 1949, and the live run prints
+/// exactly that. Ten sub-cubes separate the two.
+///
+/// Why the cross-check the file cites did not catch it: it checked
+/// `deg(0) = 12`, where both models give 19. That is the one value in the
+/// table where they agree, so it confirms nothing about which is being
+/// used. The discriminating cases are every other row.
+///
+/// Why it was not fatal, and why relying on that silently is still the
+/// hazard: the ten extra sequences are exactly the ones carrying a point
+/// of degree zero, so each asks for a 32-member family on at most ten
+/// points, and `iota(4,10) = 27 < 32` (§46) refutes all ten. The
+/// arithmetic is safe because of a theorem the file does not cite. A
+/// checkpoint stopping at 1939 banked rows would read "cube closed" having
+/// never attempted ten of its sub-cubes, and UNSAT is the verdict no
+/// witness contradicts.
+#[test]
+fn the_split_cover_is_the_one_the_driver_runs() {
+    let n = |o: SymOptions, d0: usize, prefix: usize| {
+        let inst = encode(11, 4, 32, o);
+        sequence_cubes(&inst, o, &[d0], prefix, 2_000_000).map(|cs| cs.len())
+    };
+    let loose = SymOptions::default();
+    let tight = SymOptions { all_points_used: true, ..SymOptions::default() };
+    assert!(!loose.all_points_used, "the driver's default is the loose model");
+
+    // The two tables that were in the tree, both at target 32. `loose` is
+    // what `docs/ladder/iota4_11.cryptominisat5.tsv` records and what the
+    // driver runs; `tight` is what `iota4_11.deg13.tsv` called a
+    // correction of it.
+    let rows = [
+        // deg(0), driver's cover, all_points_used cover
+        (12usize, 19usize, 19usize),
+        (13, 1949, 1939),
+        (14, 32797, 31624),
+        (15, 238850, 220047),
+        (16, 1045128, 914505),
+    ];
+    for (d0, wide, narrow) in rows {
+        assert_eq!(n(loose, d0, 11), Some(wide), "driver cover at deg(0) = {d0}");
+        assert_eq!(n(tight, d0, 11), Some(narrow), "all_points_used cover at deg(0) = {d0}");
+    }
+
+    // The reason a cross-check at deg(0) = 12 proves nothing, stated so it
+    // cannot be rediscovered by hand a third time.
+    assert_eq!(n(loose, 12, 11), n(tight, 12, 11), "the two models agree at deg(0) = 12");
+    for (d0, wide, narrow) in rows.iter().skip(1) {
+        assert!(wide > narrow, "and disagree at every other deg(0) = {d0}");
+    }
+
+    // Tightening can only ever remove sequences, never add: the narrow
+    // model is a sub-family of the wide one, so a run under the wide model
+    // never misses a case the narrow one would have caught.
+    for (d0, wide, narrow) in rows {
+        let w: std::collections::HashSet<Vec<usize>> =
+            sequence_cubes(&encode(11, 4, 32, loose), loose, &[d0], 11, 2_000_000)
+                .unwrap()
+                .into_iter()
+                .map(|(s, _)| s)
+                .collect();
+        let t: std::collections::HashSet<Vec<usize>> =
+            sequence_cubes(&encode(11, 4, 32, tight), tight, &[d0], 11, 2_000_000)
+                .unwrap()
+                .into_iter()
+                .map(|(s, _)| s)
+                .collect();
+        assert!(t.is_subset(&w), "deg(0) = {d0}: the tight cover must sit inside the wide one");
+        assert_eq!(w.len() - t.len(), wide - narrow);
+        // And what the difference *is*: a point of degree zero, every time.
+        assert!(
+            w.difference(&t).all(|s| s.contains(&0)),
+            "deg(0) = {d0}: the extra sequences must be the unused-point ones"
+        );
+    }
+
+    // The prefix-3 split of cube 13 is 27 under either model, which is why
+    // that number is the one figure the two files never disagreed about.
+    assert_eq!(n(loose, 13, 3), Some(27));
+    assert_eq!(n(tight, 13, 3), Some(27));
+    // And prefix four is 171, not the 167 the driver's own doc comment said.
+    assert_eq!(n(loose, 13, 4), Some(171));
+}
+
+/// What a prefix-3 sub-cube of cube 13 actually has to decide.
+///
+/// §50.3 proposed re-running the cube-13 second opinion over the prefix-3
+/// split at `--seconds 7200`, on the strength of "five landed between
+/// 136.1 s and 491.4 s, nine did not at 600 s" attributed to
+/// `docs/ladder/iota4_11.deg13.p3.tsv`. Those fourteen rows are in
+/// `iota4_11.deg13.tsv`, the **full** split. The p3 file's own four rows
+/// are UNKNOWN at 2400.1 s under cadical, and its own recorded verdict is
+/// "TOO COARSE, and the budget is the result".
+///
+/// This says why in one number rather than by citation: the enumeration is
+/// most-extreme-first, so the four sub-cubes ever attempted are the four
+/// largest, and the largest of them has to decide 559 full sub-cubes.
+#[test]
+fn the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity() {
+    let o = opts();
+    let inst = encode(11, 4, 32, o);
+    let full = sequence_cubes(&inst, o, &[13], 11, 2_000_000).unwrap();
+    let p3 = sequence_cubes(&inst, o, &[13], 3, 2_000_000).unwrap();
+    assert_eq!(full.len(), 1949);
+    assert_eq!(p3.len(), 27);
+
+    let mut buckets: std::collections::BTreeMap<Vec<usize>, usize> = Default::default();
+    for (seq, _) in &full {
+        *buckets.entry(seq[..3].to_vec()).or_insert(0) += 1;
+    }
+    // The split is a partition: every full sub-cube lands under exactly one
+    // prefix-3 cube, and no prefix-3 cube is empty.
+    assert_eq!(buckets.values().sum::<usize>(), 1949);
+    assert_eq!(buckets.len(), p3.len());
+
+    // The enumeration is lexicographically descending, so the four the
+    // cadical pass attempted are simply its first four — and they are the
+    // wrong four to spend a budget on. 559 + 327 + 181 + 94 = 1161 of the
+    // 1949: three fifths of the cube in four pieces, against a mean bucket
+    // of 1949/27 = 72.
+    let order: Vec<usize> = p3.iter().map(|(s, _)| buckets[&s[..3].to_vec()]).collect();
+    assert_eq!(&order[..4], &[559, 327, 181, 94], "the first four in enumeration order");
+    assert_eq!(order[..4].iter().sum::<usize>(), 1161);
+    assert_eq!(order[0], *buckets.values().max().unwrap(), "the very first cube is the largest");
+
+    // Not the four largest, though, and the difference is the point: the
+    // second-largest *family* of sequences, [13, 12, 12] with 246, sits at
+    // index eight, so a pass that dies inside its first four has not even
+    // reached it. Front-loading is by lex order, not by cost.
+    let mut all: Vec<usize> = buckets.values().copied().collect();
+    all.sort_unstable_by(|a, b| b.cmp(a));
+    assert_eq!(&all[..4], &[559, 327, 246, 181]);
+    assert_eq!(order.iter().position(|&n| n == 246), Some(8));
+
+    // And the cheap ones are at the far end: the smallest prefix-3 cubes
+    // hold a single full sub-cube each, at indices 14, 23 and 26. A
+    // budget-limited pass over this split in enumeration order banks
+    // nothing, because it spends the whole budget on the big end first.
+    assert_eq!(*all.last().unwrap(), 1);
+    let ones: Vec<usize> =
+        order.iter().enumerate().filter(|(_, &n)| n == 1).map(|(i, _)| i).collect();
+    assert_eq!(ones, vec![14, 23, 26]);
+}
