@@ -7,27 +7,38 @@
 # Resume with the same --checkpoint: UNSAT/SAT rows are skipped, UNKNOWN
 # rows are re-run, because UNKNOWN is a budget and not a verdict.
 #
-# THE CUBE IS UNSAT ONLY WHEN ALL 1949 SUB-CUBES ARE UNSAT.  Note 1949,
-# not the 1939 that docs/ladder/iota4_11.deg13.tsv states -- see the
-# roadmap section for this session.  1939 is the count under
-# `all_points_used = true`; the driver runs with it FALSE, and the ten
-# extra sequences are the ones with a point of degree zero.
+# all_points_used = FALSE, so THE CUBE IS UNSAT ONLY WHEN ALL 1949
+# SUB-CUBES ARE UNSAT.  This is NOT the same cover as
+# docs/ladder/iota4_11.deg13.tsv, which holds 1939 -- that file was
+# written through tools/rung.sh, which passes --ladder and so asks for a
+# family on EXACTLY eleven points.  This run was launched from the binary
+# without --ladder, so it asks for one on AT MOST eleven points: a
+# strictly larger cover, 1939 of it shared and ten more carrying a
+# degree-zero point.  UNSAT on all 1949 implies UNSAT on all 1939, so
+# this is a sound second opinion and a slightly stronger one; the ten
+# extras are redundant, being refuted already by iota(4,10) = 27 < 32.
+# Do not merge rows between the two files.  See roadmap 52.1.
 #
 # Command:
 #   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
 #     --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads 4 \
 #     --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
 #
+# THE SECONDS COLUMN IS WALL TIME UNDER CONTENTION and is not comparable
+# with the cadical rows in iota4_11.deg13.tsv.  This ran on a 4-core
+# session container alongside `cargo test --release` and `make verify`,
+# and rows recording 664-820 s against a 600 s solver budget are the
+# measure of that, not of the sub-cube.  Same caveat as roadmap 40.2.
+#
 # Why the full split and not the prefix-3 split that roadmap 50.3 asked
-# for: the prefix-3 split of this cube is 27 sub-cubes, and the four that
-# were ever attempted (under cadical, iota4_11.deg13.p3.tsv) all burned
-# 2400 s without landing.  Those four are the four LARGEST -- the
-# enumeration is most-extreme-first -- covering 559, 327, 181 and 94 full
-# sub-cubes respectively.  At the 136-491 s a full sub-cube costs, the
-# largest prefix-3 cube is ~168000 s of search, so a 7200 s budget banks
-# nothing and spends 28800 s learning that again.  The full split is what
-# iota4_11.deg13.tsv calls the working granularity, and it is the only
-# granularity at target 32 with measured evidence of landing.
+# for: the prefix-3 split of this cube is 27 sub-cubes, and the four ever
+# attempted (under cadical, iota4_11.deg13.p3.tsv) all burned 2400 s
+# without landing.  Those four are the first four in lexicographically
+# descending enumeration order, covering 553, 325, 180 and 94 full
+# sub-cubes -- 1152 of 1939, three fifths of the cube in four pieces.  At
+# the 136-491 s a full sub-cube costs, the largest is ~10^5 s of search,
+# so a 7200 s budget banks nothing.  The full split is what
+# iota4_11.deg13.tsv calls the working granularity.  See roadmap 52.2.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -37,3 +48,5 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 8, 3]	UNKNOWN	666.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 4]	UNKNOWN	711.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 12, 0]	UNSAT	350.2
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 5]	UNKNOWN	820.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 11, 1]	UNKNOWN	951.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 10, 2]	UNKNOWN	935.7

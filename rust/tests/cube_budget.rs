@@ -366,96 +366,115 @@ fn the_solver_exit_codes_the_crash_check_rests_on() {
     }
 }
 
-/// The cover a checkpoint must exhaust is the one the *driver* enumerates,
-/// and two models were in the tree disagreeing about what that is.
+/// The two degree-sequence covers of a cube, and the flag that picks one.
 ///
-/// `docs/ladder/iota4_11.deg13.tsv` told a future session
-/// "THE CUBE IS UNSAT ONLY WHEN ALL 1939 SUB-CUBES ARE UNSAT", under a
-/// table of "corrected counts, superseding the figures an earlier session
-/// quoted". Every row of that table is the count under
-/// `all_points_used = true`. The driver runs with it **false** — that is
-/// `SymOptions::default()`, and `examples/iota_sym.rs` sets it from no
-/// flag — so its split of `deg(0) = 13` is 1949, and the live run prints
-/// exactly that. Ten sub-cubes separate the two.
+/// At `(b, g, t) = (4, 11, 32)`, `deg(0) = 13` the split has **1939**
+/// sequences under `all_points_used = true` and **1949** without it. Both
+/// are real questions — "a family on exactly eleven points" and "on at
+/// most eleven points" — and the first is legitimate here only because
+/// `iota(4,10) = 27 < 32` is settled (§46), which is what
+/// `SymOptions::all_points_used`'s own doc comment says.
 ///
-/// Why the cross-check the file cites did not catch it: it checked
-/// `deg(0) = 12`, where both models give 19. That is the one value in the
-/// table where they agree, so it confirms nothing about which is being
-/// used. The discriminating cases are every other row.
+/// `examples/iota_sym.rs` sets the option from `--ladder` and nothing
+/// else, and `tools/rung.sh` passes `--ladder`, so every checkpoint in
+/// `docs/ladder/` holds the 1939 cover.
 ///
-/// Why it was not fatal, and why relying on that silently is still the
-/// hazard: the ten extra sequences are exactly the ones carrying a point
-/// of degree zero, so each asks for a 32-member family on at most ten
-/// points, and `iota(4,10) = 27 < 32` (§46) refutes all ten. The
-/// arithmetic is safe because of a theorem the file does not cite. A
-/// checkpoint stopping at 1939 banked rows would read "cube closed" having
-/// never attempted ten of its sub-cubes, and UNSAT is the verdict no
-/// witness contradicts.
+/// The hazard is not a wrong count, it is a resumed run under the wrong
+/// flag: exhaust 1939 against a file written without `--ladder` and the
+/// cube reads closed with ten sub-cubes never attempted, and UNSAT is the
+/// verdict no witness contradicts (§49.3). Until §52.1 nothing recorded
+/// which cover a run had used — not the driver's symmetry line, not a
+/// checkpoint header, not `iota_sym`'s doc comment, which quoted the
+/// `--ladder` figures without saying so — and a session duly read one
+/// file as the other and "corrected" four more to match.
+///
+/// This pins both covers so the pair can never again be mistaken for one
+/// number, and pins the reason §37.4's cross-check could not discriminate:
+/// it was evaluated at `deg(0) = 12`, the one top degree where the two
+/// models agree.
 #[test]
-fn the_split_cover_is_the_one_the_driver_runs() {
+fn the_two_covers_and_the_flag_that_picks_them() {
     let n = |o: SymOptions, d0: usize, prefix: usize| {
         let inst = encode(11, 4, 32, o);
         sequence_cubes(&inst, o, &[d0], prefix, 2_000_000).map(|cs| cs.len())
     };
-    let loose = SymOptions::default();
+    let wide = SymOptions::default();
     let tight = SymOptions { all_points_used: true, ..SymOptions::default() };
-    assert!(!loose.all_points_used, "the driver's default is the loose model");
+    assert!(!wide.all_points_used, "the binary's default is the wide cover");
 
-    // The two tables that were in the tree, both at target 32. `loose` is
-    // what `docs/ladder/iota4_11.cryptominisat5.tsv` records and what the
-    // driver runs; `tight` is what `iota4_11.deg13.tsv` called a
-    // correction of it.
+    // deg(0), cover without --ladder, cover with it.
     let rows = [
-        // deg(0), driver's cover, all_points_used cover
         (12usize, 19usize, 19usize),
         (13, 1949, 1939),
         (14, 32797, 31624),
         (15, 238850, 220047),
         (16, 1045128, 914505),
     ];
-    for (d0, wide, narrow) in rows {
-        assert_eq!(n(loose, d0, 11), Some(wide), "driver cover at deg(0) = {d0}");
-        assert_eq!(n(tight, d0, 11), Some(narrow), "all_points_used cover at deg(0) = {d0}");
+    for (d0, w, t) in rows {
+        assert_eq!(n(wide, d0, 11), Some(w), "wide cover at deg(0) = {d0}");
+        assert_eq!(n(tight, d0, 11), Some(t), "--ladder cover at deg(0) = {d0}");
     }
 
-    // The reason a cross-check at deg(0) = 12 proves nothing, stated so it
-    // cannot be rediscovered by hand a third time.
-    assert_eq!(n(loose, 12, 11), n(tight, 12, 11), "the two models agree at deg(0) = 12");
-    for (d0, wide, narrow) in rows.iter().skip(1) {
-        assert!(wide > narrow, "and disagree at every other deg(0) = {d0}");
+    // Why a check at deg(0) = 12 confirms nothing, stated so it cannot be
+    // rediscovered by hand a third time.
+    assert_eq!(n(wide, 12, 11), n(tight, 12, 11), "the two agree at deg(0) = 12");
+    for (d0, w, t) in rows.iter().skip(1) {
+        assert!(w > t, "and differ at every other deg(0) = {d0}");
     }
 
-    // Tightening can only ever remove sequences, never add: the narrow
-    // model is a sub-family of the wide one, so a run under the wide model
-    // never misses a case the narrow one would have caught.
-    for (d0, wide, narrow) in rows {
-        let w: std::collections::HashSet<Vec<usize>> =
-            sequence_cubes(&encode(11, 4, 32, loose), loose, &[d0], 11, 2_000_000)
+    // Tightening only ever removes sequences, and removes exactly the ones
+    // with an unused point — so the wide cover implies the tight one and a
+    // run under it is sound, merely larger.
+    for (d0, w, t) in rows {
+        let seqs = |o: SymOptions| -> std::collections::HashSet<Vec<usize>> {
+            sequence_cubes(&encode(11, 4, 32, o), o, &[d0], 11, 2_000_000)
                 .unwrap()
                 .into_iter()
                 .map(|(s, _)| s)
-                .collect();
-        let t: std::collections::HashSet<Vec<usize>> =
-            sequence_cubes(&encode(11, 4, 32, tight), tight, &[d0], 11, 2_000_000)
-                .unwrap()
-                .into_iter()
-                .map(|(s, _)| s)
-                .collect();
-        assert!(t.is_subset(&w), "deg(0) = {d0}: the tight cover must sit inside the wide one");
-        assert_eq!(w.len() - t.len(), wide - narrow);
-        // And what the difference *is*: a point of degree zero, every time.
+                .collect()
+        };
+        let (sw, st) = (seqs(wide), seqs(tight));
+        assert!(st.is_subset(&sw), "deg(0) = {d0}: tight must sit inside wide");
+        assert_eq!(sw.len() - st.len(), w - t);
         assert!(
-            w.difference(&t).all(|s| s.contains(&0)),
-            "deg(0) = {d0}: the extra sequences must be the unused-point ones"
+            sw.difference(&st).all(|s| s.contains(&0)),
+            "deg(0) = {d0}: the extra sequences are exactly the unused-point ones"
         );
     }
 
-    // The prefix-3 split of cube 13 is 27 under either model, which is why
-    // that number is the one figure the two files never disagreed about.
-    assert_eq!(n(loose, 13, 3), Some(27));
+    // A cover leaves a fingerprint in what it omits, and this is the check
+    // that settled which one wrote `docs/ladder/iota4_11.deg13.tsv`: its
+    // rows are a prefix of the tight enumeration, and the two sequences the
+    // wide one reaches first are absent.
+    let wide_order: Vec<Vec<usize>> =
+        sequence_cubes(&encode(11, 4, 32, wide), wide, &[13], 11, 2_000_000)
+            .unwrap()
+            .into_iter()
+            .map(|(s, _)| s)
+            .collect();
+    let tight_order: Vec<Vec<usize>> =
+        sequence_cubes(&encode(11, 4, 32, tight), tight, &[13], 11, 2_000_000)
+            .unwrap()
+            .into_iter()
+            .map(|(s, _)| s)
+            .collect();
+    assert_eq!(wide_order[0], vec![13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]);
+    assert_eq!(wide_order[6], vec![13, 13, 13, 13, 13, 13, 13, 13, 12, 12, 0]);
+    assert_eq!(tight_order[0], vec![13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]);
+    // Drop the wide cover's degree-zero sequences and the orders coincide,
+    // which is what makes the fingerprint readable at all.
+    let wide_nonzero: Vec<&Vec<usize>> =
+        wide_order.iter().filter(|s| !s.contains(&0)).collect();
+    assert_eq!(wide_nonzero.len(), tight_order.len());
+    assert!(wide_nonzero.iter().zip(&tight_order).all(|(a, b)| *a == b));
+
+    // The prefix-3 split is 27 under either cover, which is why that one
+    // figure never disagreed between the files.
+    assert_eq!(n(wide, 13, 3), Some(27));
     assert_eq!(n(tight, 13, 3), Some(27));
-    // And prefix four is 171, not the 167 the driver's own doc comment said.
-    assert_eq!(n(loose, 13, 4), Some(171));
+    // Prefix four does disagree, and the doc comment's 167 is the tight one.
+    assert_eq!(n(tight, 13, 4), Some(167));
+    assert_eq!(n(wide, 13, 4), Some(171));
 }
 
 /// What a prefix-3 sub-cube of cube 13 actually has to decide.
@@ -469,8 +488,10 @@ fn the_split_cover_is_the_one_the_driver_runs() {
 /// "TOO COARSE, and the budget is the result".
 ///
 /// This says why in one number rather than by citation: the enumeration is
-/// most-extreme-first, so the four sub-cubes ever attempted are the four
-/// largest, and the largest of them has to decide 559 full sub-cubes.
+/// lexicographically descending, so the four sub-cubes ever attempted are
+/// simply its first four, and the first of them has to decide 559 full
+/// sub-cubes (553 under the `--ladder` cover the p3 file actually used —
+/// the shape is the same either way, and both are checked below).
 #[test]
 fn the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity() {
     let o = opts();
@@ -516,4 +537,22 @@ fn the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity() {
     let ones: Vec<usize> =
         order.iter().enumerate().filter(|(_, &n)| n == 1).map(|(i, _)| i).collect();
     assert_eq!(ones, vec![14, 23, 26]);
+
+    // The same measurement under the cover `docs/ladder/iota4_11.deg13.p3.tsv`
+    // was actually written with, so the file's own four rows can be read
+    // against it. Ten fewer sub-cubes, same conclusion.
+    let tight = SymOptions { all_points_used: true, ..SymOptions::default() };
+    let ti = encode(11, 4, 32, tight);
+    let tfull = sequence_cubes(&ti, tight, &[13], 11, 2_000_000).unwrap();
+    let tp3 = sequence_cubes(&ti, tight, &[13], 3, 2_000_000).unwrap();
+    assert_eq!((tfull.len(), tp3.len()), (1939, 27));
+    let mut tb: std::collections::BTreeMap<Vec<usize>, usize> = Default::default();
+    for (seq, _) in &tfull {
+        *tb.entry(seq[..3].to_vec()).or_insert(0) += 1;
+    }
+    let torder: Vec<usize> = tp3.iter().map(|(s, _)| tb[&s[..3].to_vec()]).collect();
+    assert_eq!(&torder[..4], &[553, 325, 180, 94], "the four rows the p3 file holds");
+    assert_eq!(torder[..4].iter().sum::<usize>(), 1152);
+    assert_eq!(torder[0], *tb.values().max().unwrap());
+    assert_eq!(*tb.values().min().unwrap(), 1);
 }

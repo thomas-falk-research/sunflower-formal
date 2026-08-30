@@ -46,8 +46,8 @@
 #
 # What was said instead, before 13 was run: its cost is unknown, and the
 # one structural fact nearby is that the number of admissible degree
-# sequences falls sharply as deg(0) does -- 1045128 at 16, 238850 at 15,
-# 32797 at 14, 1949 at 13, 19 at 12 -- while the whole-cube time rose
+# sequences falls sharply as deg(0) does -- 914505 at 16, 220047 at 15,
+# 31624 at 14, 1939 at 13, 19 at 12 -- while the whole-cube time rose
 # from 16 to 14. Whether that trend continues to 13 is exactly what is
 # not known.
 #
@@ -67,13 +67,13 @@
 # withdrawn four paragraphs above. Superseded by roadmap 40, which
 # sampled uniformly, and now by the cube itself:
 #
-#   split, lower bound (1949 sub-cubes, uniform sample of 24, 19
+#   split, lower bound (1939 sub-cubes, uniform sample of 24, 19
 #     reported, 63% censored at the 7200 s cap, mean >= 6161 core-s)
-#                                            >= 3336 core-hours
+#                                            >= 3319 core-hours
 #   cube 13 whole, one core, measured             23.65 core-hours
-#   ratio                                              >= 141x
+#   ratio                                              >= 140x
 #
-# 3336 is a floor: most of the sample hit the cap, and it was measured
+# 3319 is a floor: most of the sample hit the cap, and it was measured
 # under 10-way contention that ran the same sub-cubes 2.7-4.0x slower
 # than uncontended. The split wins only when it is small: at deg(0)=12 it
 # is 19 sub-cubes and it turned an undecided cube into 3236 s.
@@ -92,7 +92,7 @@
 # deg(0) = 13 and 14, and session N+11's diagnosis -- that the cap
 # carried over from the g=10 rung was the reason those cubes failed --
 # was backwards. The cap was the protection, not the bug. Raising it to
-# 3000 or 4000 forces a split that costs at least 141x more than not
+# 3000 or 4000 forces a split that costs at least 140x more than not
 # splitting.
 #
 # ================================================================

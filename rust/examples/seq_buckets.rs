@@ -19,6 +19,13 @@
 //! 1949 full sub-cubes, which is a monolith with a small number written on
 //! it. §52.2 is that mistake, made and paid for.
 //!
+//! This runs under `SymOptions::default()`, so the counts it prints are
+//! the `all_points_used = false` ones — 1949 here, against the 1939 a
+//! `--ladder` run enumerates (§52.1). The bucket *shape* is the same
+//! either way (553 / 325 / 180 / 94 against 559 / 327 / 181 / 94), which
+//! is what the granularity decision turns on, but quote the number with
+//! its cover attached.
+//!
 //! Two things this prints that the count alone hides:
 //!
 //! * **the bucket sizes**, so the biggest piece can be costed against the

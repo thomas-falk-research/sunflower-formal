@@ -1,8 +1,8 @@
 # iota(4,11) >= 32 ?  the deg(0) = 13 cube, split at --seqprefix 3.
-# 27 cubes instead of the full split's 1949: only d_1 and d_2 are fixed,
+# 27 cubes instead of the full split's 1939: only d_1 and d_2 are fixed,
 # the rest of the sequence is left free and merely has to be fillable.
 #
-# Why the coarser split. The full split makes 1949 sub-cubes and a
+# Why the coarser split. The full split makes 1939 sub-cubes and a
 # measured sample of thirteen of them landed five UNSAT (136-491 s) with
 # eight still running at a 600 s cap -- about 23 sub-cubes an hour on four
 # cores, so 84 hours to attempt each once and most still undecided. The
@@ -24,23 +24,26 @@ g=11 [13, 13, 10]	UNKNOWN	2400.1
 # The granularity ladder for deg(0) = 13, measured rather than guessed:
 #   whole cube (1)      UNKNOWN at 36000 s cadical, 40407 s cryptominisat5
 #   --seqprefix 3 (27)  4 of 4 UNKNOWN at 2400 s          <- this file
-#   full split (1949)   solved ones land in 136-491 s; about 45% pass 600 s
+#   full split (1939)   solved ones land in 136-491 s; about 45% pass 600 s
 # The full split is the working granularity.  The cost is not the split,
 # it is the total: see iota4_11.deg13.tsv.
 #
 # WHY THE FOUR ROWS ABOVE ARE THE FOUR THEY ARE, which the "TOO COARSE"
-# verdict states without explaining.  The sub-cubes are enumerated
+# verdict states without explaining.  Sub-cubes are enumerated
 # lexicographically descending, so a budget-limited pass takes them in
 # that order, and the first four are [13,13,13], [13,13,12], [13,13,11],
-# [13,13,10] -- covering 559, 327, 181 and 94 of the 1949 full sub-cubes,
-# i.e. 1161 of them, three fifths of the cube in four pieces, against a
-# mean bucket of 1949/27 = 72.  The largest prefix-3 cube alone has to
-# decide 559 sub-cubes that cost 136-491 s apiece, so it is ~10^5 s of
+# [13,13,10] -- covering 553, 325, 180 and 94 of the 1939 full sub-cubes,
+# i.e. 1152 of them, three fifths of the cube in four pieces, against a
+# mean bucket of 1939/27 = 72.  The largest prefix-3 cube alone has to
+# decide 553 sub-cubes that cost 136-491 s apiece, so it is ~10^5 s of
 # search and no budget in reach touches it.
 #
 # The cheap end is unreachable in that order: the three prefix-3 cubes
 # holding a single full sub-cube each sit at indices 14, 23 and 26.  So
 # this granularity does not merely stall, it stalls having banked
 # NOTHING, which is the property that makes it useless for a resumable
-# second opinion.  Pinned by
-# cube_budget::the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity.
+# second opinion -- and roadmap 50.3 proposed it for exactly that.  See
+# roadmap 52.2, and `cargo run --release --example seq_buckets -- 11 4 32 13`
+# for the whole distribution.  (27 is the prefix-3 count under either
+# setting of all_points_used; the bucket sizes above are the --ladder
+# ones, matching this file.)

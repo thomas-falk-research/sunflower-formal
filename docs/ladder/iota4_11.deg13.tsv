@@ -2,53 +2,38 @@
 # Written by `iota_sym --checkpoint`; a line is appended the moment a
 # sub-cube lands, so a reclaimed container loses only what was in flight.
 #
-# THE CUBE IS UNSAT ONLY WHEN ALL 1949 SUB-CUBES ARE UNSAT. Resume with
+# THE CUBE IS UNSAT ONLY WHEN ALL 1939 SUB-CUBES ARE UNSAT. Resume with
 # the same --checkpoint: rows marked UNSAT or SAT are skipped, rows marked
 # UNKNOWN are re-run, because UNKNOWN is a budget and not a verdict.
 #
-# 1949, NOT THE 1939 THIS HEADER USED TO SAY -- and the count is a
-# soundness statement, so the correction matters.  A run that banked 1939
-# UNSAT rows against this file would have read "cube closed" having never
-# attempted ten of its sub-cubes, and UNSAT is the verdict no witness
-# contradicts.
+# AND RESUME WITH --ladder, WHICH IS WHAT 1939 ASSUMES.  These rows were
+# written through tools/rung.sh, which passes --ladder, so the instance
+# asks for a family on EXACTLY eleven points (all_points_used = true) and
+# the cover is 1939.  Without --ladder the driver asks for one on at most
+# eleven points and enumerates 1949 -- the same 1939 plus ten sequences
+# carrying a degree-zero point.  Both are sound questions and the larger
+# implies the smaller; what is not sound is exhausting one cover against
+# a checkpoint written for the other.  Neither the driver's log nor this
+# file recorded which it was until roadmap 52.1, and the fourteen rows
+# below are the evidence: they are exactly the first fourteen of the
+# 1939-enumeration, skipping the two degree-zero sequences the 1949 one
+# would have reached first.  iota_sym now prints all_points_used and
+# stamps it into a new checkpoint's header.
 #
 # The split is the two-block degree sequence of symbreak::sequence_cubes:
 # positions 0..b-1 are non-increasing from deg(0), the ceiling resets to
 # deg(0) at position b, and positions b..g-1 are non-increasing again.
-#
-# Where 1939 came from: it is the count under `all_points_used = true`,
-# which requires every one of the eleven points to lie in some member.
-# The driver runs with that option FALSE -- it is off in
-# SymOptions::default() and examples/iota_sym.rs sets it from no flag --
-# so the cover it enumerates is 1949, and the live cryptominisat5 run
-# prints "1949 degree-sequence cubes".  The ten extra sequences are
-# exactly the ones carrying a point of degree zero.
-#
-# The cross-check this header used to cite did not catch it because it
-# checked deg(0) = 12, where the two models both give 19 -- the one value
-# in the table where they agree.  The whole table was the wrong model, and
-# it superseded figures that were right:
-#
-#   deg(0)                   12    13      14       15         16
-#   driver (all_points_used off)
-#                            19  1949   32797   238850   1045128   <- cover
-#   all_points_used on       19  1939   31624   220047    914505
-#
-# The first row is what docs/ladder/iota4_11.cryptominisat5.tsv already
-# recorded and what this file wrongly called superseded.  Both rows are
-# pinned by cube_budget::the_split_cover_is_the_one_the_driver_runs.
-#
-# Why the error was not fatal, and why leaning on that silently is still
-# the hazard: each of the ten extra sequences has a degree-zero point, so
-# it asks for a 32-member family on at most ten points, and iota(4,10) =
-# 27 < 32 refutes all ten.  The arithmetic was safe because of a theorem
-# this file did not cite.
+# An independent enumeration of that model reproduces 1939 here and the
+# 19 that iota4_11.tsv records at deg(0) = 12, which is the cross-check
+# that the split is a cover.  Corrected counts, superseding the figures
+# an earlier session quoted from a globally-sorted model:
+#   deg(0)  12: 19   13: 1939   14: 31624   15: 220047   16: 914505
 #
 # Measured cost of a sub-cube, same two sub-cubes, both solvers:
 #   [.. 10, 1]  cadical UNSAT 128.6s   cryptominisat5 UNSAT 269.6s
 #   [.. 9,  2]  cadical UNKNOWN @300s  cryptominisat5 UNSAT 420.6s
-# Neither solver dominates. At ~300 s a sub-cube, 1949 of them is about
-# 41 core-hours, i.e. ~10 h wall on four cores if every one lands.
+# Neither solver dominates. At ~300 s a sub-cube, 1939 of them is about
+# 40 core-hours, i.e. ~10 h wall on four cores if every one lands.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	136.1
