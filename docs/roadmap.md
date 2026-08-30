@@ -12633,9 +12633,8 @@ measured both ways in
 `PureLink.g_two_at_most_six` has had `g(2) ≤ 6` in the kernel since §42
 used it for the same purpose one cover point down. **The three pair
 classes are capped at 18, not 39.** §49.4 reached outside the development
-for a theorem it already held inside — the novelty-audit failure §45.4
-exists to catch, and the third time in four sessions that audit has had
-something to catch.
+for a theorem it already held inside. That is the novelty-audit failure
+§45.4 exists to catch, and §49.2 records the previous occasion.
 
 ### 53.4 Where it stops, with a witness
 
@@ -12702,6 +12701,6 @@ It decides nothing about `ι(4)`. `27 ≤ ι(4) ≤ 71` is untouched and
 `ι(4,11) ≤ 31` still rests on the SAT ladder. `τ = 3` remains open, and
 this section makes it *less* likely to fall to the elementary route rather
 than more: the one improvement available on §49.4's plan was found, taken,
-and shown insufficient by a factor of 8 in the wrong direction. The value
-here is that the route is now costed instead of hoped for, and that a
-kernel lemma the development already owned is back in use.
+and shown insufficient — the bound lands at 39 where 31 was needed. The
+value here is that the route is now costed instead of hoped for, and that
+a kernel lemma the development already owned is back in use.
