@@ -54,6 +54,20 @@
 # Only UNSAT/SAT rows are load-bearing, and those are written once; to
 # count progress, count DISTINCT labels with an UNSAT verdict.
 #
+# WHAT THE 1800 s PASS BOUGHT, measured.  Its first four rows are all
+# UNSAT, at 740.5, 837.8, 939.6 and 976.7 s -- every one above the 600 s
+# cap that had left them UNKNOWN, and every one well under 1800 s.  So
+# 600 s was cutting off sub-cubes this solver can decide, and 1800 s
+# catches them; the cost of the first pass was mostly wasted.
+#
+# AGREEMENT SO FAR: 7 distinct UNSAT of 20 labels attempted.  Four are
+# shared with cadical's pass and all four agree UNSAT, at 1.83x, 1.94x,
+# 2.28x and 2.87x cadical's time (contended wall clock, see above).  Two
+# more are the degree-zero sub-cubes outside the 1939 cover.  And one --
+# [.. 13, 6, 5] -- cryptominisat5 DECIDED at 939.6 s where cadical was
+# UNKNOWN at its 600 s cap, so the second opinion is adding sub-cubes
+# rather than only confirming them.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -75,3 +89,7 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNKNOWN	1021.7
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNKNOWN	1046.8
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNKNOWN	1012.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNKNOWN	891.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 9, 2]	UNSAT	740.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 4]	UNSAT	837.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 5]	UNSAT	939.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 8, 3]	UNSAT	976.7
