@@ -72,8 +72,8 @@
 #         cube and put iota(4,11) <= 31 in question.
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
-# HEADER HAD IT BACKWARDS.  It said the lexicographically descending
-# order puts "the MOST extreme, and so the hardest" sub-cubes first, and
+# HEADER HAD IT BACKWARDS.  It said lexicographically descending order
+# puts "the MOST extreme, and so the hardest" sub-cubes first, and
 # concluded the mean would fall over the remaining 1949.  Measured, in
 # blocks of eight attempts in first-seen order:
 #
@@ -82,20 +82,26 @@
 #      9 - 16         75 %                     1730 s
 #     17 - 24         88 %                     1681 s
 #     25 - 32         88 %                     1754 s
+#     33 - 40        100 %                     1813 s
+#     41 - 42        100 %                     1810 s
 #
-# The cost rises sharply and then plateaus.  The reason is that extreme
-# is not the same as hard: a sequence with the degree mass concentrated
-# on a few points is MORE constrained and so easier to refute, and those
-# are exactly the ones lex-descending order takes first.  The first
-# eight are the same eight the 600 s pass could land.
+# Extreme is not the same as hard: a sequence with the degree mass
+# concentrated on a few points is MORE constrained and so easier to
+# refute, and those are exactly the ones lex-descending order takes
+# first.  The first eight are the same eight the 600 s pass could land.
 #
-# SO THE COST FIGURE IS A FLOOR, NOT A CEILING.  At the plateau -- 1750 s
-# a sub-cube, 88 % stalling -- one attempt at each of 1949 is on the
-# order of 240 h wall on four threads, and would leave roughly seven
-# eighths of them still undecided and owed a larger-budget pass.  Early
-# throughput on this file overestimates the rate, and any future session
-# reading a rate off the first rows will do so again.  roadmap 48.2
-# stands: this is still an extrapolation, now from 32 of 1949.
+# THE 1800 s BUDGET IS EXHAUSTED AS A PRODUCER OF VERDICTS.  The last
+# sixteen attempts stalled sixteen times; every UNSAT this file holds
+# landed between 128.3 s and 1588.7 s, and nothing has landed since.
+# Continuing at 1800 s banks nothing while still costing 1810 s a
+# sub-cube, which is the same shape of loss iota4_11.deg13.p3.tsv
+# records under "TOO COARSE, and the budget is the result".  The budget
+# was raised rather than the run continued; see the command above.
+#
+# SO THE COST FIGURE IS A FLOOR, NOT A CEILING.  At the 1800 s plateau a
+# sweep of 1949 is ~245 h wall on four threads and would bank almost
+# nothing.  roadmap 48.2 stands: this is an extrapolation, now from 42
+# of 1949, and its direction has already had to be corrected once.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -153,3 +159,7 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	1814.0
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 7, 7]	UNKNOWN	1809.4
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 10, 5]	UNKNOWN	1811.0
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	1815.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 8, 7]	UNKNOWN	1818.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 9, 7]	UNKNOWN	1813.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 8, 8]	UNKNOWN	1813.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 11, 4]	UNKNOWN	1807.5
