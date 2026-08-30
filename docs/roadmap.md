@@ -12344,11 +12344,12 @@ the code was moved to where a test could reach it.
 ## 52. Two covers, one unrecorded option — and a re-run costed from
 ##     another file's rows
 
-§51.4 named the pattern: "two honest components with incompatible
-readings of the same value, where the disagreement is invisible because
-the case anyone checks is the case where they agree." This section is two
-more instances. The first one caught this session out before it caught
-anything else, and that is the useful part of it.
+§51.4 named the pattern — "two honest components with incompatible
+readings of the same value" — and this section is two more instances,
+which sharpen it: the disagreement stays invisible because the case
+anyone checks is the case where the two agree. The first of the two
+caught this session out before it caught anything else, and that is the
+useful part of it.
 
 ### 52.1 `1939` and `1949` are both right, and nothing said which
 
@@ -12436,7 +12437,7 @@ at 2400.1 s, under its own recorded verdict:
 ```text
   VERDICT ON THIS GRANULARITY: TOO COARSE, and the budget is the result.
   All four cubes of the first batch burned the full 2400 s cap without
-  landing.  Not retried.
+  landing.  [...]  Not retried.
 ```
 
 So `--seconds 7200` is three times a budget that landed nothing, not
