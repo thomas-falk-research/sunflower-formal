@@ -12231,13 +12231,17 @@ working granularity":
 
 ```sh
   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
-    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads T \
+    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --threads T \
     --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
 ```
 
 1949 sub-cubes, each banked as it lands (1949 and not 1939 because this
-was launched from the binary, without `--ladder`; §52.1), at the same
-600 s cap the cadical pass used. `--cubecap 2000` is what
+was launched from the binary, without `--ladder`; §52.1). **`--seconds`
+was 600 in the first draft of this command, to match the cadical pass and
+make the two directly comparable. That was the wrong trade and §52.3a is
+the measurement**: at 600 s the pass decided 3 of 20, at 1800 s it stalled
+sixteen times consecutively, and at 5400 s it decides most of what it
+attempts with 48% headroom. Comparability is not worth a cap that binds. `--cubecap 2000` is what
 admits a 1949-way split; the 400 the crashed run carried is what refused
 it (§51.1, reading 5). The checkpoint is named for the question it answers
 — cube 13 under cryptominisat5, full split — rather than for the prefix-3
@@ -12489,7 +12493,7 @@ pass used so the two are directly comparable:
 
 ```sh
   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
-    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads 4 \
+    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --threads 4 \
     --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
 ```
 

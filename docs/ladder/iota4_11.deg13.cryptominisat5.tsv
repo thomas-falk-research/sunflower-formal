@@ -21,7 +21,7 @@
 #
 # Command:
 #   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
-#     --seqprefix 11 --cubecap 2000 --slice 60 --seconds 600 --threads 4 \
+#     --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --threads 4 \
 #     --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
 #
 # THE SECONDS COLUMN IS WALL TIME UNDER CONTENTION and is not comparable
