@@ -12549,6 +12549,50 @@ than one that burns 200 000 s and returns `UNKNOWN`, but only because the
 rows are permanent, and the honest statement of the trade is that this
 route is unlikely to finish on any single machine.
 
+### 52.3a The budget ladder, and why a cap that binds looks like a cube
+###        that is hard
+
+The run this session started measured something §40's uniform sample could
+not, because §40 fixed one budget and this varied it. Three passes over the
+same checkpoint, each resuming the last:
+
+```text
+  cap      attempted   decided   what the stall pattern looked like
+   600 s      20          3      12 of the last 16 attempts stalled
+  1800 s      42         12      the LAST SIXTEEN stalled, consecutively
+  5400 s      42         27+     six for six, then six for six again
+```
+
+**At 1800 s the run had stopped producing verdicts entirely and looked
+like a cube that had got too hard.** It had not. Raising the cap to 5400 s
+converted fifteen of those stalls, and every one of them landed between
+1872 s and 2781 s — just above the old cap, nowhere near the new one. The
+largest decided sub-cube uses 2781 s of a 5400 s allowance, so the budget
+now has 48% headroom and nothing presses it.
+
+Two things follow, and the second is the one worth carrying.
+
+**A run of consecutive stalls is a statement about the budget, not about
+the instance**, until a larger budget has been tried. `iota4_11.deg13.p3.tsv`
+records "TOO COARSE, and the budget is the result" for the prefix-3 split
+on exactly this evidence — 4 of 4 stalling — and §52.2 shows that verdict
+was right for a different reason (the bucket sizes), not because four
+stalls prove anything. Four stalls do not. Sixteen did not either.
+
+**The enumeration runs easy to hard, so early throughput lies.** An
+earlier version of the ladder file's header reasoned that lexicographically
+descending order takes the *most extreme* sub-cubes first and therefore the
+hardest, and concluded the mean cost would fall. It rises: 0%, 75%, 88%,
+88%, 100% stalled in blocks of eight at a fixed 1800 s cap. Extreme is not
+hard — a degree sequence with its mass concentrated on few points is *more*
+constrained and so easier to refute, and those come first. Any rate read
+off the opening rows of a checkpoint is an overestimate.
+
+The operational rule, for a session picking this up: **before concluding a
+cube is out of reach, raise the cap once and see whether the stalls were
+the cap.** The cost of the test is one batch; the cost of not running it
+was, here, believing a cube unreachable that was one factor of three away.
+
 ### 52.4 What this does not do
 
 It decides nothing. `27 ≤ ι(4) ≤ 71` is untouched, `ι(4,11) ≤ 31` still
