@@ -62,24 +62,36 @@
 # used 88% of that budget, so a third pass at a larger cap would likely
 # still gain -- it is not yet at the point of diminishing returns.
 #
-# STANDING, 10 distinct UNSAT of 20 labels attempted:
+# STANDING, 11 distinct UNSAT of 24 labels attempted, 0 SAT:
 #     5   agree UNSAT with cadical's pass
 #     3   cryptominisat5 DECIDED where cadical was UNKNOWN at its 600 s
 #         cap -- [.. 13, 6, 5] 939.6 s, [.. 12, 10, 2] 1588.7 s and
-#         [.. 11, 11, 2] 1366.4 s.
+#         [.. 11, 11, 2] 1366.4 s
 #     2   degree-zero sub-cubes, outside the 1939 cover (see above)
+#     1   beyond cadical's recorded fourteen ([.. 12, 12, 12, 1], 755.7 s)
 #     0   DISAGREEMENTS.  No SAT anywhere.  This is the check that
 #         matters: a SAT here would contradict cadical's UNSAT on the
 #         cube and put iota(4,11) <= 31 in question.
 #
-# ON CADICAL'S OWN FOURTEEN RECORDED LABELS, cryptominisat5 is now UNSAT
-# on EIGHT -- all five cadical decided, plus three it left at its cap.
-# So this pass has strictly greater coverage of the shared set than the
-# pass it is checking, which is more than a second opinion usually buys.
+# ON CADICAL'S OWN FOURTEEN RECORDED LABELS, cryptominisat5 is UNSAT on
+# EIGHT -- all five cadical decided, plus three it left at its cap.  This
+# pass has strictly greater coverage of the shared set than the pass it
+# checks.  Ten of the labels attempted are beyond cadical's fourteen.
 #
-# Eight sub-cubes are still UNKNOWN at 1800 s and the largest UNSAT used
-# 1588.7 s of that budget, so a later pass at a larger cap should still
-# convert some.  This is not yet at diminishing returns.
+# THE COST OF THIS ROUTE, MEASURED RATHER THAN GUESSED.  Over 24 attempts
+# the mean is 1364 s wall per sub-cube on four contended threads, i.e.
+# 10.6 attempts an hour, and 54% stall at the 1800 s cap.  Carried to
+# 1949 sub-cubes that is ~185 h wall for ONE attempt each, with half of
+# them still undecided afterwards and owed a larger-budget pass.
+#
+# TREAT THAT NUMBER AS A CEILING, NOT A FORECAST, for two reasons that
+# point opposite ways and are not quantified here.  Against it: the
+# sub-cubes are enumerated lexicographically descending, so the ones
+# attempted so far are the MOST extreme and should be the hardest --
+# the true mean over all 1949 ought to be lower.  For it: these times
+# are contended wall clock.  roadmap 48.2 records that every
+# extrapolation attempted on this ladder has been wrong, and this is an
+# extrapolation from 24 of 1949.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -117,3 +129,9 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNKNOWN	1809.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNKNOWN	1810.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNKNOWN	1813.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNKNOWN	1814.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNKNOWN	1811.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNKNOWN	1811.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 8, 6]	UNKNOWN	1809.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 7, 7]	UNKNOWN	1823.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 9, 6]	UNKNOWN	1807.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 12, 1]	UNSAT	755.7
