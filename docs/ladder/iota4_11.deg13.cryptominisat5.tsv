@@ -88,18 +88,25 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# THE COSTS FORM A CONTINUUM, WITH NO CLIFF SO FAR.  The sixteen UNSAT
-# times, in seconds:
+# THE 5400 s BUDGET IS THE RIGHT ONE, AND 1800 s WAS BINDING HARD.
+# Twenty-seven UNSAT times, in seconds:
 #
-#   128  350  390  740  756  838  940  977
-#  1090 1341 1366 1589 1872 2038 2230 2295
+#    128  350  390  740  756  838  940  977 1090 1341 1366 1589 1872
+#   1912 1935 1948 1971 2038 2039 2074 2088 2096 2213 2230 2267 2295
+#   2781
 #
-# Raising the cap from 1800 s to 5400 s converted four sub-cubes, and all
-# four landed between 1872 s and 2295 s -- just above the old cap, not
-# near the new one.  Each budget appears to convert the band immediately
-# above the previous cap rather than a distant cluster.  That is sixteen
-# points and an observation, not a law, but it predicts further raises
-# keep working with sharply diminishing returns per unit of machine time.
+# FIFTEEN OF THE TWENTY-SEVEN are above 1800 s -- more than half of every
+# sub-cube decided here was invisible to the previous cap, and the run
+# had stalled sixteen times consecutively before the raise.  The largest
+# is 2781 s against a 5400 s allowance, so there is 48% headroom and
+# nothing is now pressing the budget.  That is the difference between a
+# cap that binds and one that does not, and it is worth more than the
+# raw count: at 1800 s this file was producing nothing at all.
+#
+# The fifteen labels still UNKNOWN all carry times of 1813-1824 s, which
+# are stale rows from the 1800 s pass awaiting their re-attempt at 5400 s.
+# The conversion is therefore not finished and the ratio above should
+# improve again.
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -202,3 +209,9 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNSAT	2087.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNSAT	2096.1
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNSAT	2267.2
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNSAT	1934.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNSAT	2074.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 7, 7]	UNSAT	1948.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 8, 6]	UNSAT	2212.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 9, 6]	UNSAT	1912.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 8, 7]	UNSAT	2039.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 11, 2]	UNSAT	2781.3
