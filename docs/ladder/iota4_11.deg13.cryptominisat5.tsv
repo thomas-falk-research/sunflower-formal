@@ -54,19 +54,23 @@
 # Only UNSAT/SAT rows are load-bearing, and those are written once; to
 # count progress, count DISTINCT labels with an UNSAT verdict.
 #
-# WHAT THE 1800 s PASS BOUGHT, measured.  Its first four rows are all
-# UNSAT, at 740.5, 837.8, 939.6 and 976.7 s -- every one above the 600 s
-# cap that had left them UNKNOWN, and every one well under 1800 s.  So
-# 600 s was cutting off sub-cubes this solver can decide, and 1800 s
-# catches them; the cost of the first pass was mostly wasted.
+# WHAT THE 1800 s PASS BOUGHT, measured.  Its UNSAT rows land between
+# 740.5 s and 1588.7 s -- all above the 600 s cap that had left them
+# UNKNOWN, all under 1800 s.  So 600 s was cutting off sub-cubes this
+# solver can decide, and the first pass's budget was largely wasted on
+# them.  Two sub-cubes are still UNKNOWN at 1800 s, and the largest UNSAT
+# used 88% of that budget, so a third pass at a larger cap would likely
+# still gain -- it is not yet at the point of diminishing returns.
 #
-# AGREEMENT SO FAR: 7 distinct UNSAT of 20 labels attempted.  Four are
-# shared with cadical's pass and all four agree UNSAT, at 1.83x, 1.94x,
-# 2.28x and 2.87x cadical's time (contended wall clock, see above).  Two
-# more are the degree-zero sub-cubes outside the 1939 cover.  And one --
-# [.. 13, 6, 5] -- cryptominisat5 DECIDED at 939.6 s where cadical was
-# UNKNOWN at its 600 s cap, so the second opinion is adding sub-cubes
-# rather than only confirming them.
+# STANDING, 9 distinct UNSAT of 20 labels attempted:
+#     5   agree UNSAT with cadical's pass
+#     2   cryptominisat5 DECIDED where cadical was UNKNOWN at its 600 s
+#         cap -- [.. 13, 6, 5] at 939.6 s and [.. 12, 10, 2] at 1588.7 s.
+#         The second opinion is adding sub-cubes, not only confirming.
+#     2   degree-zero sub-cubes, outside the 1939 cover (see above)
+#     0   DISAGREEMENTS.  No SAT anywhere.  This is the check that
+#         matters: a SAT here would contradict cadical's UNSAT on the
+#         cube and put iota(4,11) <= 31 in question.
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -93,3 +97,7 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 9, 2]	UNSAT	740.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 4]	UNSAT	837.8
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 5]	UNSAT	939.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 8, 3]	UNSAT	976.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 11, 1]	UNSAT	1089.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 10, 2]	UNSAT	1588.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNKNOWN	1818.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNKNOWN	1817.6
