@@ -12517,6 +12517,24 @@ Read the largest bucket against the per-sub-cube times in `docs/ladder/`
 before spending a budget on a prefix. Twenty-seven pieces looked like the
 winning regime and one of them was three fifths of a cube.
 
+Run on the floor cube at target 28 — the one §49.2a says to do first — it
+confirms that section's own choice for a reason §49.2a did not give:
+
+```text
+  cargo run --release --example seq_buckets -- 11 4 28 11
+    prefix-3 split 12 pieces, full split 224
+    largest bucket     94  (at index 0)
+    first four        165 of 224 (74% of the cube in four pieces)
+```
+
+§49.2a picks **full prefix, 224 pieces** for this cube on the grounds that
+its count barely grows with the prefix. The bucket view says the same
+thing from the other side and more sharply: at prefix 3 the twelve pieces
+are so uneven that the first four hold three quarters of the cube, which
+is worse front-loading than `deg(0) = 13` has. The flat `--seqprefix 3`
+of §49.2's first plan would have been a poor choice here, and §49.2a's
+per-cube one is right.
+
 ### 52.3 A correction about how far this gets
 
 The full split is the working granularity, not a cheap one. §40 sampled it

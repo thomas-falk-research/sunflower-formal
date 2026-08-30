@@ -556,3 +556,40 @@ fn the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity() {
     assert_eq!(torder[0], *tb.values().max().unwrap());
     assert_eq!(*tb.values().min().unwrap(), 1);
 }
+
+/// Why the floor cube wants the *full* prefix, from the bucket sizes
+/// rather than from the sub-cube count.
+///
+/// §49.2a chooses full prefix for `deg(0) = 11` at target 28 — 224 pieces
+/// — on the grounds that its count barely grows with the prefix, and
+/// picks prefix 3 for the other six. The bucket view agrees and says it
+/// more sharply: at prefix 3 this cube's twelve pieces are so uneven that
+/// the first four in enumeration order hold three quarters of it, which is
+/// worse front-loading than `deg(0) = 13` has at target 32. A flat
+/// `--seqprefix 3` across all seven, which was §49.2's first plan, would
+/// have been a poor choice here.
+#[test]
+fn the_floor_cube_is_more_front_loaded_at_prefix_three_than_cube_thirteen() {
+    let o = opts();
+    let inst = encode(11, 4, 28, o);
+    let full = sequence_cubes(&inst, o, &[11], 11, 2_000_000).unwrap();
+    let p3 = sequence_cubes(&inst, o, &[11], 3, 2_000_000).unwrap();
+    assert_eq!((full.len(), p3.len()), (224, 12), "§49.2a's two counts");
+
+    let mut buckets: std::collections::BTreeMap<Vec<usize>, usize> = Default::default();
+    for (seq, _) in &full {
+        *buckets.entry(seq[..3].to_vec()).or_insert(0) += 1;
+    }
+    assert_eq!(buckets.values().sum::<usize>(), 224, "the split is a partition");
+    let order: Vec<usize> = p3.iter().map(|(s, _)| buckets[&s[..3].to_vec()]).collect();
+    assert_eq!(&order[..4], &[94, 45, 19, 7]);
+    let front: usize = order[..4].iter().sum();
+    assert_eq!(front, 165);
+
+    // Three quarters of the cube in four pieces, against three fifths for
+    // deg(0) = 13 at target 32 — so the floor cube is the worse case for a
+    // flat prefix, not the better one.
+    let floor_share = front as f64 / full.len() as f64;
+    assert!(floor_share > 0.73 && floor_share < 0.75, "{floor_share}");
+    assert!(floor_share > 1161.0 / 1949.0, "worse front-loading than cube 13");
+}
