@@ -12706,13 +12706,22 @@ Two things follow for whoever takes this up. The quantity to compute is
 `max(a + b + c)` over triples of sunflower-free 3-uniform families on
 eight points that are pairwise cross-intersecting **and transversally
 sunflower-free** — one number, on a ground of `C(8,3) = 56` candidates per
-class, which is the same shape of exhaustive search `examples/tau_two.rs`
-already runs for the two-part case and about as much larger as three
-classes over eight points is than two over nine. And the answer has to
-come in at 11 or below to close the case, against a lower bound of 19 that
-is already recorded here — so **the honest expectation is that it does
-not close, and that the decomposition is the wrong instrument**, not that
-the search is unfinished.
+class. It is the same *kind* of search `examples/tau_two.rs` runs for the
+two-part case, and materially harder: there each of `C(9,3) = 84`
+candidates is in or out of one branched-on side, and the second side is
+recovered by a bound rather than branched on at all; here each of 56
+candidates has four states — in none of the classes, or in exactly one of
+three — and the transversal condition couples all three, so the trick
+that made the two-part search affordable does not obviously carry. No
+estimate is offered for what it costs; every extrapolation attempted on
+this development has been wrong (§48.2).
+
+And the answer has to come in at 11 or below to close the case, against a
+lower bound of 19 already recorded here — so **the honest expectation is
+that it does not close, and that the decomposition is the wrong
+instrument**, not that the search is unfinished. Anyone spending the
+compute should want a reason to think `max(a + b + c)` is near 11 first,
+and this section supplies the opposite.
 
 ### 53.6 What this does not do
 
