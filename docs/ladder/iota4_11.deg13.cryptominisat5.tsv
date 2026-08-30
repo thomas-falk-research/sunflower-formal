@@ -88,25 +88,33 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# THE 5400 s BUDGET IS THE RIGHT ONE, AND 1800 s WAS BINDING HARD.
-# Twenty-seven UNSAT times, in seconds:
+# EVERY FIXED BUDGET HAS A FINITE USEFUL LIFE HERE, AND 5400 s IS ALREADY
+# SPENDING ITS OWN.  Cost of the decided sub-cubes, in order of first
+# attempt, in blocks of eight:
 #
-#    128  350  390  740  756  838  940  977 1090 1341 1366 1589 1872
-#   1912 1935 1948 1971 2038 2039 2074 2088 2096 2213 2230 2267 2295
-#   2781
+#     UNSATs  1 -  8    mean   682 s   max  1090 s
+#     UNSATs  9 - 16    mean  1931 s   max  2295 s
+#     UNSATs 17 - 24    mean  1900 s   max  2267 s
+#     UNSATs 25 - 32    mean  3588 s   max  4657 s
 #
-# FIFTEEN OF THE TWENTY-SEVEN are above 1800 s -- more than half of every
-# sub-cube decided here was invisible to the previous cap, and the run
-# had stalled sixteen times consecutively before the raise.  The largest
-# is 2781 s against a 5400 s allowance, so there is 48% headroom and
-# nothing is now pressing the budget.  That is the difference between a
-# cap that binds and one that does not, and it is worth more than the
-# raw count: at 1800 s this file was producing nothing at all.
+# Two batches ago this header said the 5400 s cap left "48% headroom and
+# nothing presses it".  That was true when written and is now stale: the
+# largest UNSAT is 4657 s, headroom is 14%, and one sub-cube has already
+# stalled at the cap.  A headroom figure on this file is a snapshot of
+# how deep the run has got, not a property of the budget.
 #
-# The fifteen labels still UNKNOWN all carry times of 1813-1824 s, which
-# are stale rows from the 1800 s pass awaiting their re-attempt at 5400 s.
-# The conversion is therefore not finished and the ratio above should
-# improve again.
+# So the shape of the route is: each cap converts a band, works for a
+# while, and is overtaken by the depth.  600 s died after 20 attempts,
+# 1800 s after 42, and 5400 s is beginning to.  Raising by threes has
+# worked twice; the next step is 16200 s, about 4.5 h a sub-cube, or one
+# an hour on four threads.  Nothing here says that is worth it -- it says
+# what it would cost.
+#
+# THE THIRTY-TWO UNSAT TIMES, in seconds:
+#
+#    128  350  390  740  756  838  940  977 1090 1341 1366
+#   1589 1872 1912 1935 1948 1971 2038 2039 2074 2088 2096
+#   2213 2230 2267 2295 2781 4276 4464 4523 4622 4657
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -218,3 +226,7 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 11, 2]	UNSAT	2781.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 10, 3]	UNSAT	4463.8
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 9, 4]	UNSAT	4621.6
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 8, 5]	UNSAT	4275.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 7, 6]	UNSAT	4657.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 11, 3]	UNSAT	4523.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNKNOWN	5453.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNKNOWN	5434.4
