@@ -88,11 +88,10 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# THE 5400 s PASS HAS CONVERGED ON WHAT IT ATTEMPTED: 41 UNSAT, 4
-# UNKNOWN, 0 SAT over 45 labels.  Each of the four has now stalled at
-# 5400 s TWICE, so they are confirmed to need more than that budget
-# rather than merely unlucky, and they are named here so a session with
-# more cores can take exactly them:
+# STANDING: 46 UNSAT, 5 UNKNOWN, 0 SAT over 51 labels.  Four of the five
+# have stalled at 5400 s TWICE, so they are confirmed to need more than
+# that budget rather than merely unlucky, and they are named here so a
+# session with more cores can take exactly them:
 #
 #     [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]
 #     [13, 13, 13, 13, 13, 13, 13, 12, 11,  9, 5]
@@ -123,7 +122,21 @@
 #     UNSATs 17 - 24    mean  1900 s   max  2267 s
 #     UNSATs 25 - 32    mean  3588 s   max  4657 s
 #
-# The largest UNSAT anywhere in this file is 5257 s of a 5400 s budget.
+# The largest UNSAT anywhere in this file is 5313 s of a 5400 s budget;
+# median 2221 s, mean 2737 s over 46.
+#
+# THE COST CLIMB IS A TREND WITH SCATTER, NOT A MONOTONE FUNCTION OF
+# DEPTH.  The last twelve decided sub-cubes, by position in first-attempt
+# order, cost:
+#
+#   39:5257  40:4686  41:4544  42:2370  43:4670  44:4207
+#   45:4533  46:5313  48:2406  49:4371  50:4756  51:4011
+#
+# Two of the twelve land near 2400 s inside a band otherwise around
+# 4500 s.  So a cheap sub-cube deep in the enumeration is ordinary
+# variance and not a sign the frontier has got easier, and one expensive
+# sub-cube early is not a sign it has got harder.  Read the trend over a
+# block of eight, as the table above does, never off single rows.
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -254,3 +267,9 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	5436.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	5459.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 9, 6]	UNSAT	4207.0
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 8, 7]	UNSAT	4533.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 10, 6]	UNSAT	5312.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 9, 7]	UNKNOWN	5445.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 10, 10, 10, 7]	UNSAT	2406.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 9, 9, 8]	UNSAT	4370.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 8, 8]	UNSAT	4755.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 10, 10, 9, 8]	UNSAT	4010.9
