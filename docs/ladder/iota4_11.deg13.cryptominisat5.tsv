@@ -88,15 +88,23 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 60 UNSAT, 7 UNKNOWN, 0 SAT over 67 labels.
+# STANDING: 63 UNSAT, 5 UNKNOWN, 0 SAT over 68 labels.
 #
-# THE RULE BELOW, APPLIED RATHER THAN GUESSED.  The 10800 s cap has run
-# 15 attempts for 8 UNSAT, 0.99 UNSAT per wall-hour over its whole life;
-# over its last eight attempts it is 1 UNSAT and 0.21/h.  Falling, as
-# 5400 s fell before it, but NOT zero -- so the cap is held.  The point
-# of writing the rule down was to stop deciding this by feel, and this is
-# the first batch where it said something other than what the trend
-# would have suggested.
+# THE RULE HELD, AND NEEDED A WINDOW.  Last batch the 10800 s cap read
+# 0.21 UNSAT per wall-hour over its last eight attempts -- three stalls
+# in four, which looks exactly like the wall that ended the 600 s and
+# 5400 s caps.  The rule said hold, because 0.21 is not zero.  It was
+# right: the next batch went three for four and the rate recovered.
+#
+#     10800 s cap, whole life   11 UNSAT / 16 attempts   1.18 UNSAT/h
+#       last  4 attempts         3 UNSAT                 1.25 UNSAT/h
+#       last  8 attempts         4 UNSAT                 0.76 UNSAT/h
+#       last 12 attempts         7 UNSAT                 0.93 UNSAT/h
+#
+# So an eight-attempt window is too noisy to trigger a raise -- batches
+# are four wide and a single bad one halves it.  **Read the rate over at
+# least twelve attempts.**  The 5400 s cap's terminal reading was zero
+# over sixteen, which is why that one was real.
 #
 # WHAT THE 10800 s CAP HAS BOUGHT.  Seven sub-cubes decided above 5400 s,
 # so unreachable at the previous cap, at 6136, 6397, 6468, 6490, 6956,
@@ -349,3 +357,7 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNKNOWN	10864.8
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 10, 6]	UNSAT	8476.4
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNKNOWN	10868.9
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNKNOWN	10936.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 11, 5]	UNSAT	5718.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 9, 9, 8]	UNSAT	8584.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 8, 8]	UNSAT	9286.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10878.2
