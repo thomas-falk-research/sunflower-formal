@@ -88,7 +88,15 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 59 UNSAT, 8 UNKNOWN, 0 SAT over 67 labels.
+# STANDING: 60 UNSAT, 7 UNKNOWN, 0 SAT over 67 labels.
+#
+# THE RULE BELOW, APPLIED RATHER THAN GUESSED.  The 10800 s cap has run
+# 15 attempts for 8 UNSAT, 0.99 UNSAT per wall-hour over its whole life;
+# over its last eight attempts it is 1 UNSAT and 0.21/h.  Falling, as
+# 5400 s fell before it, but NOT zero -- so the cap is held.  The point
+# of writing the rule down was to stop deciding this by feel, and this is
+# the first batch where it said something other than what the trend
+# would have suggested.
 #
 # WHAT THE 10800 s CAP HAS BOUGHT.  Seven sub-cubes decided above 5400 s,
 # so unreachable at the previous cap, at 6136, 6397, 6468, 6490, 6956,
@@ -337,3 +345,7 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 8, 6]	UNSAT	6135.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 9, 7]	UNSAT	7178.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 11, 4]	UNSAT	8625.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10867.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNKNOWN	10864.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 10, 6]	UNSAT	8476.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNKNOWN	10868.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNKNOWN	10936.3
