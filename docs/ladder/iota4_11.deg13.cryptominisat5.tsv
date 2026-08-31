@@ -98,22 +98,35 @@
 #     [13, 13, 13, 13, 13, 13, 13, 12, 11,  8, 6]
 #     [13, 13, 13, 13, 13, 13, 13, 12, 10,  9, 6]
 #
-# DO NOT RAISE THE CAP TO GET THEM.  An earlier version of this header
-# said "raising by threes has worked twice; the next step is 16200 s".
-# The arithmetic makes that a loss, and the quantity that decides it is
-# UNSAT BANKED PER WALL-HOUR, not the conversion rate:
+# WHEN TO RAISE THE CAP, AND WHY THIS HEADER SAID IT WRONG TWICE.
+# The quantity is UNSAT BANKED PER WALL-HOUR, and it is a comparison
+# against the CURRENT cap's rate -- which is not constant, so the answer
+# changes as the run walks deeper.  Both of this header's earlier
+# instructions were stated flatly and were conditional:
 #
-#   at 5400 s    10 UNSAT, 4 stalled, 67034 core-s = 4.66 h wall on four
-#                threads = 2.15 UNSAT per wall-hour
-#   at 16200 s   four attempts cost 4.5 h wall, so beating 2.15/h needs
-#                more than 9.7 of those four to land.  There are four.
+#   "raising by threes has worked twice, the next step is 16200 s"
+#       -- wrong while 5400 s was still converting at 2.15 UNSAT/h,
+#          because 16200 s needs more than 9.7 of four attempts to land
+#          to beat that, and there are four.
 #
-# So 16200 s loses by at least 2.4x even if EVERY attempt landed.
-# Raising buys conversion and pays superlinearly in time per attempt;
-# there is an optimum and 5400 s is past where raising helps.  The right
-# move is to keep this cap, let the run walk into fresh sub-cubes, and
-# leave the four named above to a machine with more cores.  They keep
-# UNKNOWN, are re-run on resume, and cost nothing to defer.
+#   "DO NOT RAISE THE CAP AGAIN"
+#       -- wrong once 5400 s stopped converting.  Conversion over the
+#          last 24, 16 and 8 labels attempted was 54%, 38%, 0%.  The
+#          last eight cost 43504 core-s (3.02 h wall on four threads)
+#          and banked NOTHING, so the current rate is 0.00 UNSAT/h and
+#          any nonzero conversion at a larger cap beats it.
+#
+# The rule, stated so it does not need correcting a third time:
+# **raise when the current cap's UNSAT-per-wall-hour has fallen to
+# roughly zero, and not before.**  Raising early costs throughput;
+# raising late costs nothing but the batch that measured it.
+#
+# RAISED TO 10800 s on that basis -- a doubling rather than the 3x used
+# twice before, because it gives feedback in half the time and nothing
+# here says a larger step converts more.  It is a bet: the eight
+# sub-cubes that stalled at 5400 s may need 6000 s or 60000, and this
+# file does not know which.  The known quantity is that 5400 s now
+# returns zero.
 #
 # COST OF THE DECIDED SUB-CUBES, in order of first attempt, per eight:
 #
@@ -301,3 +314,11 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 9, 5]	UNSAT	5366.7
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 8, 6]	UNKNOWN	5434.9
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 7, 7]	UNSAT	4635.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 11, 4]	UNKNOWN	5458.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	5434.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNKNOWN	5430.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNKNOWN	5447.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 10, 6]	UNKNOWN	5433.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNKNOWN	5430.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 8, 8]	UNKNOWN	5458.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 9, 9, 8]	UNKNOWN	5438.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 11, 5]	UNKNOWN	5430.8
