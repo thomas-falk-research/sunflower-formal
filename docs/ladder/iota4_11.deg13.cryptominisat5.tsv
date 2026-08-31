@@ -125,18 +125,38 @@
 # The largest UNSAT anywhere in this file is 5313 s of a 5400 s budget;
 # median 2221 s, mean 2737 s over 46.
 #
-# THE COST CLIMB IS A TREND WITH SCATTER, NOT A MONOTONE FUNCTION OF
-# DEPTH.  The last twelve decided sub-cubes, by position in first-attempt
-# order, cost:
+# WHAT ACTUALLY PREDICTS A SUB-CUBE'S COST: THE NUMBER OF LEADING 13s.
+# Not its position in the enumeration, which was this header's earlier
+# model and only correlates.  Median UNSAT time of the decided sub-cubes,
+# grouped by how many maximal degrees the sequence opens with:
 #
-#   39:5257  40:4686  41:4544  42:2370  43:4670  44:4207
-#   45:4533  46:5313  48:2406  49:4371  50:4756  51:4011
+#     leading 13s    n    min      median     max
+#          9         6     128        789      977
+#          8        19     350       1971     2295
+#          7        22     756       4528     5313
+#          6         5    1111       4636     5367
 #
-# Two of the twelve land near 2400 s inside a band otherwise around
-# 4500 s.  So a cheap sub-cube deep in the enumeration is ordinary
-# variance and not a sign the frontier has got easier, and one expensive
-# sub-cube early is not a sign it has got harder.  Read the trend over a
-# block of eight, as the table above does, never off single rows.
+# The cost rises about six-fold from nine leading 13s to seven and then
+# looks flat, though the 6-family has only five points and its cheapest
+# is 1111 s, so the flattening is not established.  The mechanism is the
+# one already in this header: a run of maximal degrees is a strong
+# constraint, and removing one makes the sub-cube freer and harder to
+# refute.
+#
+# THIS EXPLAINS THE SCATTER.  Sub-cubes are enumerated lexicographically
+# descending, so the families come in blocks and each new block RESETS to
+# its own cheap end -- the 1111 s row is the first of the 6-family, not a
+# fluke deep in the 7-family.  So "position in the enumeration" mispredicts
+# exactly at the block boundaries.  Group by leading 13s and read the
+# median; do not read a trend off single rows, and do not treat a cheap
+# row after an expensive one as the frontier easing.
+#
+# WHAT THIS SAYS ABOUT THE REMAINING ~1890.  They lie in families with
+# progressively fewer leading 13s, which on this evidence are at least as
+# expensive as the 7- and 6-families and possibly worse.  Nothing here
+# measures a family below six, and roadmap 48.2's rule applies: every
+# extrapolation attempted on this ladder has been wrong, this session's
+# included, twice.
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -273,3 +293,11 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 10, 10, 10, 7]	UNSAT	2406.2
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 9, 9, 8]	UNSAT	4370.9
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 8, 8]	UNSAT	4755.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 10, 10, 9, 8]	UNSAT	4010.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 12, 2]	UNSAT	1111.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 10, 9, 9, 9]	UNSAT	2613.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 11, 3]	UNSAT	4310.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 10, 4]	UNSAT	4805.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 9, 5]	UNSAT	5366.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 8, 6]	UNKNOWN	5434.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 7, 7]	UNSAT	4635.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 11, 4]	UNKNOWN	5458.9
