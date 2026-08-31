@@ -88,31 +88,33 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# DO NOT RAISE THE CAP AGAIN.  The previous version of this header said
-# "raising by threes has worked twice; the next step is 16200 s" and left
-# it as a cost.  The arithmetic says it is a loss, and the right quantity
-# is UNSAT BANKED PER WALL-HOUR, not the conversion rate:
+# THE 5400 s PASS HAS CONVERGED ON WHAT IT ATTEMPTED: 41 UNSAT, 4
+# UNKNOWN, 0 SAT over 45 labels.  Each of the four has now stalled at
+# 5400 s TWICE, so they are confirmed to need more than that budget
+# rather than merely unlucky, and they are named here so a session with
+# more cores can take exactly them:
 #
-#   under the 5400 s cap    10 UNSAT, 4 stalled, 67034 core-s
-#                           = 4.66 h wall on four threads
-#                           = 2.15 UNSAT per wall-hour
+#     [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]
+#     [13, 13, 13, 13, 13, 13, 13, 12, 11,  9, 5]
+#     [13, 13, 13, 13, 13, 13, 13, 12, 11,  8, 6]
+#     [13, 13, 13, 13, 13, 13, 13, 12, 10,  9, 6]
 #
-#   at a 16200 s cap        four attempts cost 4.5 h wall, so beating
-#                           2.15/h needs more than 9.7 of those four to
-#                           land.  There are only four.
+# DO NOT RAISE THE CAP TO GET THEM.  An earlier version of this header
+# said "raising by threes has worked twice; the next step is 16200 s".
+# The arithmetic makes that a loss, and the quantity that decides it is
+# UNSAT BANKED PER WALL-HOUR, not the conversion rate:
 #
-# So a 16200 s cap loses by at least 2.4x even if EVERY attempt landed.
-# Raising a cap buys conversion and pays for it superlinearly in time per
-# attempt, so there is an optimum and 5400 s is past the point where
-# raising helps.  Stalled sub-cubes are not lost -- they carry UNKNOWN,
-# are re-run on resume, and cost nothing to defer to a machine with more
-# cores or more hours.
+#   at 5400 s    10 UNSAT, 4 stalled, 67034 core-s = 4.66 h wall on four
+#                threads = 2.15 UNSAT per wall-hour
+#   at 16200 s   four attempts cost 4.5 h wall, so beating 2.15/h needs
+#                more than 9.7 of those four to land.  There are four.
 #
-# The budget's own life is over on its own terms, though: the largest
-# UNSAT is 5257 s of 5400, headroom 2.7%, and the frontier is at the
-# ceiling.  Both things are true at once -- the cap no longer converts
-# much, and raising it converts less per hour.  That is what the end of
-# this route looks like on four cores.
+# So 16200 s loses by at least 2.4x even if EVERY attempt landed.
+# Raising buys conversion and pays superlinearly in time per attempt;
+# there is an optimum and 5400 s is past where raising helps.  The right
+# move is to keep this cap, let the run walk into fresh sub-cubes, and
+# leave the four named above to a machine with more cores.  They keep
+# UNKNOWN, are re-run on resume, and cost nothing to defer.
 #
 # COST OF THE DECIDED SUB-CUBES, in order of first attempt, per eight:
 #
@@ -120,6 +122,8 @@
 #     UNSATs  9 - 16    mean  1931 s   max  2295 s
 #     UNSATs 17 - 24    mean  1900 s   max  2267 s
 #     UNSATs 25 - 32    mean  3588 s   max  4657 s
+#
+# The largest UNSAT anywhere in this file is 5257 s of a 5400 s budget.
 #
 # THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
 # HEADER HAD IT BACKWARDS.  It said lexicographically descending order
@@ -244,3 +248,9 @@ g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 9, 7]	UNSAT	4686.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 11, 4]	UNSAT	2370.5
 g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 8, 8]	UNSAT	4544.0
 g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 10, 5]	UNSAT	4669.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNKNOWN	5428.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNKNOWN	5428.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	5436.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	5459.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 9, 6]	UNSAT	4207.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 8, 7]	UNSAT	4533.3
