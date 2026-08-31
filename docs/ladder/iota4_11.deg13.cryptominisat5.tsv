@@ -88,15 +88,24 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 46 UNSAT, 5 UNKNOWN, 0 SAT over 51 labels.  Four of the five
-# have stalled at 5400 s TWICE, so they are confirmed to need more than
-# that budget rather than merely unlucky, and they are named here so a
-# session with more cores can take exactly them:
+# STANDING: 56 UNSAT, 11 UNKNOWN, 0 SAT over 67 labels.
 #
-#     [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]
-#     [13, 13, 13, 13, 13, 13, 13, 12, 11,  9, 5]
-#     [13, 13, 13, 13, 13, 13, 13, 12, 11,  8, 6]
-#     [13, 13, 13, 13, 13, 13, 13, 12, 10,  9, 6]
+# THE FOUR "CONFIRMED BEYOND 5400 s" STRAGGLERS ARE DECIDED, and this
+# header was wrong about what they needed.  It named them "so a session
+# with more cores can take exactly them".  They did not need more cores.
+# They needed 6500 s instead of 5400 s, on the same four threads:
+#
+#     [.. 12, 10, 9, 6]   UNSAT  6396.6      [.. 12, 11, 10, 4]  UNSAT  6490.0
+#     [.. 12, 11, 9, 5]   UNSAT  6468.1      [.. 12, 11,  8, 6]  UNSAT  6956.5
+#
+# Each had stalled three times at 5400 s first.  "Stalled repeatedly at a
+# cap" establishes that the cap is too small and nothing else -- not that
+# the instance is out of reach, and not what resource it wants.
+#
+# THE DOUBLING PAID, MEASURED: four UNSAT for 26311 core-s = 1.83 h wall
+# on four threads = 2.19 UNSAT per wall-hour, against 2.15/h that the
+# 5400 s cap managed at its best and 0.00/h once it stopped converting.
+# So the raise did not merely beat zero, it beat the old cap's own peak.
 #
 # WHEN TO RAISE THE CAP, AND WHY THIS HEADER SAID IT WRONG TWICE.
 # The quantity is UNSAT BANKED PER WALL-HOUR, and it is a comparison
@@ -322,3 +331,7 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNKNOWN	5430.5
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 8, 8]	UNKNOWN	5458.7
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 9, 9, 8]	UNKNOWN	5438.5
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 11, 5]	UNKNOWN	5430.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNSAT	6396.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNSAT	6468.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNSAT	6490.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNSAT	6956.5
