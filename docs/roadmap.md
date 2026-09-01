@@ -12907,6 +12907,26 @@ was recognised and §53's table says so explicitly. And the raise rule was
 stated flatly twice, in opposite directions, before being stated
 conditionally with a window.
 
+**A seventh, and this one the file caught on itself.** The cost model's
+correlation table named *leading 13s* "the best single predictor" at
+`r = -0.75` over 67 decided sub-cubes, and in the same breath said "do
+not over-fit this: n = 67". Recomputed at n = 90 the same coefficient is
+`-0.62` and *distinct values* has passed it at `+0.69`. Nothing about the
+cube changed; the sample did. Both readings are now printed side by side
+in the ladder header rather than the latest one replacing the last, which
+is the only form in which a drifting statistic is honest.
+
+**And the refusal in the paragraph above was vindicated twice.** The
+5-family's median was 3653 s at n = 11, which put an apparent cost peak
+at six leading 13s. §53's table declined to claim it. The next two rows
+took that median to 4875 s and then 6096 s — level with the 6-family's
+6136. So the peak was an artefact of a family's opening, exactly as the
+refusal said. **Twice now a median read at a family's opening has been
+overturned by its continuation** (the 6-family at n = 7, refuted at
+n = 25; the 5-family at n = 11, refuted at n = 13), and both times the
+correction went the same way: the family was more expensive than its
+opening suggested, never less.
+
 **The generalisation, which is §51.4's pattern sharpened.** When two
 components disagree about a value, the case anyone checks is usually the
 case where they agree — §37.4's cross-check at `deg(0) = 12` is the
