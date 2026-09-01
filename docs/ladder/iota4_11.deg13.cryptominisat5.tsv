@@ -88,7 +88,29 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 63 UNSAT, 5 UNKNOWN, 0 SAT over 68 labels.
+# STANDING: 67 UNSAT, 8 UNKNOWN, 0 SAT over 75 labels.
+#
+# TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE SECOND WAS MISSED AT FIRST.
+# Correlation of UNSAT cost against candidate predictors, over the 67
+# decided sub-cubes:
+#
+#     leading 13s        r = -0.75     <- best single predictor
+#     sum of squares     r = -0.65
+#     distinct values    r = +0.63
+#     MINIMUM degree     r = +0.53     <- explains the within-family spread
+#     count deg >= 12    r = -0.39
+#     count deg >= 11    r = -0.23
+#
+# The leading-13s model alone cannot explain three sub-cubes that all
+# open with six 13s and cost 1111 s, 1871 s and 10866 s.  Their minimum
+# degrees are 2, 6 and 8.  Both effects are the same structural fact from
+# opposite ends: a run of MAXIMAL degrees constrains the family, and so
+# does a point of NEAR-ZERO degree, because it is a point almost nothing
+# uses.  The expensive sub-cubes are the ones that are flat in the
+# middle -- no long run of 13s and no nearly-unused point.
+#
+# Do not over-fit this: n = 67, and no family below six leading 13s is
+# measured, which is where the remaining ~1880 sub-cubes are.
 #
 # THE RULE HELD, AND NEEDED A WINDOW.  Last batch the 10800 s cap read
 # 0.21 UNSAT per wall-hour over its last eight attempts -- three stalls
@@ -361,3 +383,10 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 11, 5]	UNSAT	5718.9
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 9, 9, 8]	UNSAT	8584.7
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 8, 8]	UNSAT	9286.7
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10878.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10900.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 8, 8]	UNSAT	10865.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10898.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 9, 9, 9]	UNSAT	6857.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 10, 10, 10, 8]	UNSAT	5228.0
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 11, 6]	UNSAT	1871.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10868.6
