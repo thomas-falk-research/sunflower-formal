@@ -688,6 +688,24 @@ gives, for every $c$. What [NaSa17] contributes is the constant
   $r$-sunflower-free families of *arbitrary-size* subsets of $[N]$, and
   the conjecture is $ES(N,r) \le (2-\epsilon_r)^N$.
 
+- **[LSpread21]** *ℓp-Spread and Restricted Isometry Properties of Sparse
+  Random Matrices*. arXiv:2108.13578. **Not read; located only, from a
+  commissioned search, and recorded because it corrects a negative this
+  development stated.** Asked whether the combinatorial `r`-spread
+  condition of [ALWZ20]/[Ra20] connects to incoherence and RIP in sparse
+  recovery, session N+14 searched, found nothing, and called the
+  resemblance "a word collision". This paper ties an ℓp-spread property
+  of sparse random matrices to RIP, null-space and ℓp-compressibility, so
+  a spread-to-RIP bridge is in print and that negative was too broad.
+
+  What is *not* refuted, and is the narrower claim worth keeping: nobody
+  found has imported the **sunflower** spread lemma — the ALWZ/Rao
+  object, or Frankston–Kahn–Narayanan–Park's — into sparse recovery or
+  dictionary learning. The ℓp-spread of a matrix is a different notion
+  that shares a word. Rule 18 applies before either half is relied on:
+  the distinction is between two *definitions*, and no page of this paper
+  has been rendered.
+
 - **[Hun24]** Zach Hunter, MathOverflow answer 463150, 30 January 2024,
   accepted, to Dömötör Pálvölgyi's question 462924 *"How many base
   elements can a sunflower-free system have?"*. The source of the

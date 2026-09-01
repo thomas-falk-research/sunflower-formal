@@ -2334,3 +2334,97 @@ load-bearing for anything in `coq/`.
   in A15a and it is about the report, not the paper.
 * **Kostochka–Mubayi PAMS 2016 and Kupavskii–Noskov arXiv:2410.06156**
   (row B19f's other two targets). Not attempted.
+
+## Session N+14: an outgoing prompt is a handoff, and this one was not
+##                checked against the repository
+
+A parallel literature session was commissioned from a prompt written in
+this session. It came back with careful work, and roughly half of it was
+spent on questions this repository had already answered — because the
+prompt was assembled from the register's *questions* without re-reading
+the register's *verdicts*.
+
+### The two items it wasted, both of them the prompt's top priorities
+
+**"M1: is there any literature on the ground-set size of extremal
+sunflower-free families? A hit closes k = 3."** Everything it found is in
+`docs/references.md` [FPPTZ24], recorded in more precise form. Frankl–
+Pach–Pálvölgyi's Conjecture 14, the Hunter equivalence, `g_v(k) ≥ 2^k−1`
+by the depth-k binary tree, and FPP's own "we could not find any papers
+studying the quantity" are all there, and Hunter's MathOverflow answer is
+marked **READ IN FULL** with the StackExchange-API route that got it.
+
+The returned report concluded that the binary tree "refutes the literal
+linear form". The entry already distinguishes what that refutation
+reaches: the **universal** reading of `GroundBounded` is false and is
+formalised false — `IotaGround.the_universal_ground_reading_is_false`,
+checked to `k = 6` in `rust/tests/ground_set.rs` — while
+`SliceRank.GroundBounded` is an **existential** over families of extremal
+size, `∀ m j, LowerBound m 3 j → ∃ F U, … length U ≤ c * m`, which the
+binary tree does not touch: it has `2^k` members against
+`f(k,3) ≥ 10^{k/2} ≈ 3.16^k`, so it is nowhere near extremal.
+`bounded_ground_set_settles_k3` is not vacuous, and the repository
+already knew the route is a *linear strengthening of a known equivalent
+formulation* rather than a shortcut.
+
+**"Tier 1 item 1: Füredi 1978, named, located, never opened."** It was
+opened in session N+12. **A15**: all 31 pages rendered at 140 dpi and
+read; *Δ-system* and *sunflower* occur nowhere in it; REFUTED as a
+target. **A15a**: the "no digitisation" claim was itself wrong, and
+records the working URL on the Rényi host. The prompt sent a session to
+re-attempt a documented dead end, and it failed by the same routes A15a
+names as the ones that fail.
+
+### What it did deliver, including one correction to this session
+
+* **A23 held** under a second, independent search: no published theorem
+  bounds intersecting **and** prescribed-`τ` **and** 3-sunflower-free
+  families. Kostochka–Mubayi, Proc. AMS 145 (2017) 2311–2321, is the
+  closest and is structural, not an exact bound. **The 85 123.9 s SAT
+  computation is not replaceable by a citation**, now on two searches
+  rather than one.
+* **M4 was overstated by this session, and is corrected here.** Asked
+  earlier whether the combinatorial `r`-spread condition connects to
+  incoherence and RIP in sparse recovery, this session searched, found
+  nothing, and reported the resemblance as "a word collision". That is
+  too strong. **arXiv:2108.13578, *ℓp-Spread and Restricted Isometry
+  Properties of Sparse Random Matrices*, ties an ℓp-spread property of
+  sparse random matrices to RIP, null-space and ℓp-compressibility.** It
+  is a matrix ℓp-spread notion rather than the ALWZ/FKNP combinatorial
+  lemma, so the narrow negative — nobody has imported the sunflower
+  spread lemma itself into sparse recovery — appears to stand. The broad
+  one does not. Recorded as a qualified hit.
+* Kostochka–Mubayi and Kupavskii–Noskov were correctly open: this file's
+  own "Not attempted" line for them was accurate.
+
+### The rule that would have caught this already existed, and this
+###     session broke it
+
+The instinct on finding a failure like this is to write a rule. That
+would be wrong here, because **rule 30 is already that rule** and it is
+four sections up this file:
+
+> *"An idea generated in conversation is a hypothesis about the
+> repository, and it is checked against the repository before it is
+> reported — especially when it feels like a discovery. Rule 21 is the
+> same rule for incoming handoffs. ... Grep first, and grep for the
+> *object*, not for the phrasing the idea happened to arrive in."*
+
+The prompt was a set of ideas generated in conversation and reported —
+to a third party, which is the only new part. Rule 30 covers it; it was
+not applied. So the entry here is not a new rule but the record of an old
+one being broken, which is the more useful thing for the next session to
+read: the rules in this file are not short of coverage, they are short of
+being run.
+
+**Rule 30 gains one clause rather than a successor**, because the
+outgoing case has a cost the incoming case does not: *an idea reported as
+a task for someone else is a handoff, and its author is the only person
+positioned to check it — the recipient cannot.* The prompt's two top
+priorities were both refuted by rows in the very tables it was assembled
+from, in the verdict column, beside the questions it copied. **A register
+is not a list of open questions. Read the row you are about to re-ask.**
+
+The mechanical fix is one command. `grep -n "Füredi 1978" docs/reading.md`
+returns A15 and A15a; `grep -n "FPP" docs/references.md` returns the entry
+that contains all of M1. Neither was run.
