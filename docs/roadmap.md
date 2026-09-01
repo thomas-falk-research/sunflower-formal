@@ -12859,10 +12859,12 @@ explicit nineteen-member τ = 3 family that says so.
 
 1. **Keep the cube-13 pass running.** Resume with the same checkpoint;
    UNSAT rows are skipped and UNKNOWNs re-run. The command in §52.2 is
-   current. **Budget: start at 5400 s and raise by the rule, not by
-   feel** — §52.3a and the ladder file's header carry it: *raise when the
-   current cap's UNSAT-per-wall-hour has fallen to roughly zero, read
-   over at least twelve attempts, and not before.* This session got that
+   current. **The cap now stands at 10800 s and the rule says hold** —
+   §52.3a and the ladder file's header carry it: *raise when the current
+   cap's UNSAT-per-wall-hour has fallen to roughly zero, read over at
+   least twelve attempts, and not before.* At the last reading that
+   window was 1.18 UNSAT/h, well clear of zero. Raise by the rule, not by
+   feel. This session got that
    call wrong in both directions before deriving the rule, and the
    twelve-attempt window matters — the eight-window under-read the cap
    twice and would have raised both times.
@@ -12877,10 +12879,32 @@ explicit nineteen-member τ = 3 family that says so.
    piece count, and note that three of the seven cubes cannot be measured
    this way at all (§55.2).
 4. **τ = 3 needs a different instrument, not a bigger budget** (§53.5).
+5. **Four papers, in this order.** The commissioned rendered pass
+   (`docs/reading.md` session N+15) closed most of the register's
+   outstanding reading and left exactly four items:
+   **(a)** Frankl 1978, *On intersecting families of finite sets*, JCTA
+   24, 146–161 — the last unread of register row B19f's four targets;
+   **(b)** Chung 1983 and Chung–Frankl 1987, the origin of the name
+   "`s`-star", without which B9's negative stays non-exhaustive on the
+   vocabulary that started it; **(c)** Erdős–Lovász 1975 pp. 620–621,
+   which should be re-rendered in a container that holds the file before
+   B12's new "FOUND" is treated as settled, since it was rendered
+   elsewhere; **(d)** [AHS72], still unreachable after **six** routes,
+   the sixth from a different container and network path — which is what
+   rules out a proxy and leaves the paywall as the whole explanation.
+   Rows A3, A20 and B10 still owe it.
+6. **One comment, when the machine is free.** `coq/Substitution.v`'s
+   header should cite Erdős–Lovász 1975 p. 620 construction (d) as
+   `substitute`'s published ancestor. It was left out of this branch
+   deliberately: a comment change in `coq/` costs a full `make verify`
+   and `make coqchk`, and the four cores were carrying the cube-13 pass.
+   `STATUS.md` and `docs/references.md` carry the attribution meanwhile,
+   so nothing is unattributed — only unattributed *in the file itself*.
 
 ### 54.3 What this session got wrong, because the pattern repeats
 
-Four corrections, all self-inflicted and all caught inside the session:
+**Seven in total, all self-inflicted and all caught inside the session.**
+Four of process:
 
 * **The cover.** Read a default-options run as authority on a
   `--ladder` file, declared 1939 wrong, and edited four ladder files and
