@@ -88,7 +88,20 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 67 UNSAT, 8 UNKNOWN, 0 SAT over 75 labels.
+# STANDING: 71 UNSAT, 5 UNKNOWN, 0 SAT over 76 labels -- 71 of 1949, so
+# 3.6% of the cube, and the rung's bound is untouched.
+#
+# THE 10800 s CAP, READ THE WAY THE RULE NOW SAYS TO:
+#
+#     last  8 attempts    4 UNSAT   0.76 UNSAT/h
+#     last 12 attempts    8 UNSAT   1.02 UNSAT/h   <- the rule's window
+#     last 16 attempts   11 UNSAT   1.03 UNSAT/h
+#     whole life (22)    17 UNSAT   1.27 UNSAT/h
+#
+# The eight-window again reads a third lower than the twelve.  That gap
+# is the reason the window is specified: on the 8-window this cap has
+# twice looked like it was dying and twice was not.  1.02/h is not zero,
+# so the cap holds.
 #
 # TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE SECOND WAS MISSED AT FIRST.
 # Correlation of UNSAT cost against candidate predictors, over the 67
@@ -391,3 +404,11 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 10, 10, 10, 8]	UNSAT	5228.0
 g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 11, 6]	UNSAT	1871.1
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10868.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 10, 10, 9, 9]	UNSAT	8971.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNSAT	10217.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNSAT	10704.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNSAT	10760.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10853.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10860.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10860.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10863.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10939.0
