@@ -2241,6 +2241,7 @@ one row that matters. Evidence classes below are exact about that.
 | A21 | Rows A14 (greedy-cover barrier), and the AHS-optimality conjecture, and the maximality of substitution families | **All three still NOT FOUND, now against a wider search** | No named conjecture for `ι(b)² ≤ 10^(b−1)` beyond Kostochka's prose; no published maximality statement for the AHS families; no barrier statement for the classical greedy/covering method. Consistent with A12, A14 and §13.1. Three independent negatives do not make an exhaustive search, and none of these is upgraded. **A19b is now a barrier *measurement* for one specific greedy method**, which is not the same thing as a barrier theorem and is not recorded as one. |
 
 | A22 | The covering-number literature can close the `ι(4,11)` rung, because `τ ∈ {3,4}` is forced there and a maximum below 32 would end it (`docs/roadmap.md` §37.5's proposal) | **REFUTED, decisively, and the refutation is checked here** | Commissioned search, then verified first-hand. **`k=4, τ=3`:** the maximum is not bounded below 32. Frankl–Wang, *Intersecting families with covering number three*, arXiv:2207.05487v3, Example 1.3 (JCTB **171** (2025), 96–139) construct `G(n,k)`, and at `n=11` it has **74 members**. ~~it grows like `Θ(n³)`~~ — **corrected in session N+13, see A24a: the growth is `Θ(n)`, and exactly `13n − 69` for `n ≥ 8`.** The conclusion is unaffected, because `13·8 − 69 = 35 > 32` already at the smallest admissible `n`. **`k=4, τ=4`:** this is Erdős–Lovász's `r(k)`; the best bracket is `42 ≤ r(4) ≤ 64`, with the classical `n`-free bound `k^k = 256`. Every one of these is above 32. **So no citation from that literature excludes a 32-member family**, and the reduction below 32 must come from 3-sunflower-freeness. |
+| A22a | Where the `τ = 4` line's numbers actually come from | **Both ends of A22's `k^k = 256` and the `42` are one theorem on one page, and it is now read. The `≤ 64` is not, and is uncited anywhere in this repository.** | A22 and §37.6 attribute the `τ = 4` case to *"Erdős–Lovász `r(k)`"* and quote `42 ≤ r(4) ≤ 64` with *"the classical `n`-free bound `k^k = 256`"*, all on report from a commissioned search. Session N+15 rendered the primary: **[EL75] p. 612, Theorem 7, `r!(e−1) ≤ M(r) ≤ r^r`**, `M(r)` the maximum size of a 3-chromatic `r`-uniform clique — an intersecting family with `τ = r`, which is exactly this case. The arithmetic is checked here, in this container, not taken from the report: `4!(e−1) = 24 × 1.718281828… = 41.2388…`, so `⌈4!(e−1)⌉ = **42**; and `r^r = 4^4 = **256**`. **So the two numbers this repository carried on report are the two ends of a single displayed inequality, and both are now confirmed from a rendered primary source.** **What is not confirmed, and is the reason this row exists:** `r(4) ≤ **64**` is *not* Theorem 7 — Theorem 7's upper bound is 256 — so that half of A22's bracket comes from some other source that neither §37.6, A22 nor `docs/references.md` names. It is quoted in two places and cited in none. It is also not load-bearing: 64 > 32 and so is 256, so A22's conclusion holds on the weaker number alone. Recorded so that a later session does not mistake it for something this development checked. |
 | A22a | `G(11,4)` rebuilt and tested here, rather than taken on report | **Reproduces exactly, and it confirms a prediction this development makes about it** | Example 1.3 quoted verbatim from the arXiv PDF (fetched, 30 pp, `pdftotext`; **p. 2 has since been rendered to an image and read, A24a**): `B = {[2,k+1], {2}∪[k+2,2k], {3}∪[k+2,2k]}` and `A = {A ∈ ([n] choose k) : 1 ∈ A and A ∩ B ≠ ∅ for each B ∈ B}`, `G(n,k) = A ∪ B`. Built at `n=11, k=4`: **74 members** (matching the paper's own inclusion–exclusion), intersecting, and `τ = 3` with `{1,2,3}` a transversal exactly as the paper says. **The prediction:** `PureLink.iota_four_at_most_71_if_iota_three_is_ten` gives `ι(4) ≤ 71` on the exhaustive `ι(3) = 10`, and `74 > 71`, so `G(11,4)` *cannot* be sunflower-free. It is not — it contains **3481** three-sunflowers, and a randomised greedy retains only **17 of 74**. `rust/tests/frankl_wang.rs`. This is the concrete form of the gap in A22: the extremal family for the covering-number problem is useless for the sunflower problem. |
 | A24 | A published bound exists on the **support** — the number of points — of an extremal sunflower-free 4-uniform family, which would make the `ι(4,n)` ladder a finite search | **NOT FOUND — and this repository already knew why, which is the finding about the report and not about sunflowers** | Third commissioned search, then every page of all three primaries rendered to an image and read here (Majumder 6 pp, Frankl–Pach–Pálvölgyi 10 pp, Frankl–Wang 30 pp; PyMuPDF at 150 dpi, `pdftotext` deliberately not used). **Nothing in the report's central section was new to this repository.** `docs/references.md`'s [FPPTZ24] entry already records, from an earlier session's rendered read of the same pages: that Conjecture 14 is *equivalent* to Erdős–Rado, crediting Hunter; that `g_v(k) ≥ 2^k − 1`; and the sentence *"We could not find any papers studying the quantity `g_v(k)`"*. Row B14 has Hunter's answer read **in full** (MathOverflow 463150, to Pálvölgyi's question 462924, via the StackExchange API). So the report re-derived a finding this repository had and presented it as news, and the first draft of this row did the same thing back. **What stands, restated as prior art rather than discovery:** `g_v` is the support function §37.6 wanted bounded; bounding it is equivalent to the whole conjecture; therefore **no ladder design may be predicated on obtaining a support bound.** That instruction is the useful residue, and it was already implicit in `docs/roadmap.md` §7's treatment of `SliceRank.GroundBounded`. One citation correction: FPP's ref. **[17] is MathOverflow question 163689**, which is the *direct-sum / wreath-product* discussion cited on their pp. 2 and 4 — **not** Hunter's equivalence, which is the inline URL truncated in the p. 8 render and is 463150 per B14. Do not merge the two. |
 | A24a | The `k=4, τ=3` maximum "grows like `Θ(n³)`" (A22, as written in session N+12) | **WRONG, and corrected — the growth is linear** | Frankl–Wang p. 2 rendered. Eq. (1.3) is `\|G(n,k)\| = (k²−k+1)·C(n−3,k−3) + O(C(n−4,k−4))`, so at `k=4` the leading binomial is `C(n−3,1) = n−3` and the growth is `13(n−3) + O(1)` — **linear**. The cubic reading came from taking `C(n−1,k−1)`, the first term of the exact eq. (1.4), as the leading term; but the four `C(·,k−1)` terms carry coefficients `+1 −1 −1 +1`, which sum to zero, so the `n³/6` cancels. Exactly: **`\|G(n,4)\| = 13n − 69` for `n ≥ 8`**, checked for `n = 8…400` in `rust/tests/support_bounds.rs`, and `13·11 − 69 = 74` reproduces A22a's rebuilt value. **A22's conclusion survives**: `35 > 32` at `n = 8`, so the refutation of §37.5 never depended on the rate. Recorded because the wrong rate was committed, not because it changed an outcome. |
@@ -2526,6 +2527,29 @@ else's work and this container cannot read the paper.
 > being looked for. This is why B9's negative survives having three
 > names for a sunflower: each name was checked at its definition.
 
+### A number the repository carried on report, now confirmed from the page
+
+The pass was commissioned to chase B9–B13 and B19f. It also, without
+being asked, settled the provenance of a number in a different row.
+Register row A22 and `docs/roadmap.md` §37.6 dispose of the `τ = 4` case
+at the `ι(4,11)` rung by citing *"Erdős–Lovász `r(k)`"* for
+`42 ≤ r(4) ≤ 64` and `k^k = 256`, on report from an earlier commissioned
+search. [EL75] p. 612 Theorem 7, rendered in this pass, reads
+`r!(e−1) ≤ M(r) ≤ r^r`. The arithmetic was done **here**, not taken from
+the report: `4!(e−1) = 41.2388…` so `⌈4!(e−1)⌉ = 42`, and `4^4 = 256`.
+Both numbers are the two ends of one displayed inequality on one page.
+
+The `≤ 64` is **not** on that page and is uncited anywhere in this
+repository — quoted twice, sourced nowhere. It is not load-bearing (64
+and 256 are both above 32, so A22's conclusion survives on either), but
+it is now flagged in the new row A22a rather than sitting unremarked.
+
+**The transferable point:** a commissioned pass aimed at one set of rows
+paid off in a row nobody asked about, because a *primary source* answers
+questions the request did not contain and a *report* answers only the
+ones it did. That is an argument for reading papers over commissioning
+answers, and it is the second time this file has recorded it.
+
 ### What is still owed after this pass
 
 1. **[AHS72] remains unreachable.** ScienceDirect returns HTTP 403 for
@@ -2539,3 +2563,8 @@ else's work and this container cannot read the paper.
    unread; Füredi 1978 (`[62]`) was closed at A15/A15a.
 4. **[EL75] p. 620–621** should be re-rendered in a container that holds
    the file, per the caveat above.
+5. **`r(4) ≤ 64` needs a source.** Row A22a: quoted in two places in this
+   repository, cited in none, and not the upper bound of the theorem the
+   surrounding numbers come from. Not load-bearing, and that is exactly
+   why it will keep being copied forward unless someone sources it or
+   drops it.

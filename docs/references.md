@@ -980,6 +980,15 @@ session N+15.
      extremal function bounded on both sides — under a `τ` hypothesis
      rather than sunflower-freeness.
 
+     **And it is the source of two numbers this repository already
+     carried.** Register row A22 and `docs/roadmap.md` §37.6 dispose of
+     the `τ = 4` case at the `ι(4,11)` rung by citing "Erdős–Lovász
+     `r(k)`" for `42 ≤ r(4) ≤ 64` with "the classical `n`-free bound
+     `k^k = 256`", both on report. Theorem 7 at `r = 4` gives
+     `⌈4!(e−1)⌉ = ⌈41.2388…⌉ = 42` and `4^4 = 256` — the two ends of one
+     displayed inequality, arithmetic checked in-container. The `≤ 64`
+     is **not** Theorem 7's and is uncited anywhere here; see row A22a.
+
 - **[Fu83]** Z. Füredi, *On finite set-systems whose every intersection
   is a kernel of a star*. Discrete Math. 47 (1983), 129–132 — the
   *nucleus*, and [Kup25] `[63]`, the paper fn. 6 names as the origin of
