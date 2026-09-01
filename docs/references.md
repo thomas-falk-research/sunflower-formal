@@ -200,7 +200,7 @@ estimate. Both are marked below.
   **Closed access, established rather than assumed.** OpenAlex's record
   for that DOI gives `oa_status: "closed"` and
   `any_repository_has_fulltext: false`, so no open copy exists in any
-  indexed repository. Five retrieval routes are recorded in
+  indexed repository. Six retrieval routes are recorded in
   `docs/reading.md`. The best classical lower bound at $k = 3$:
   $f(n,3) \gtrsim 10^{n/2 - c\log n}$, i.e. a rate of
   $10^{1/2} = 3.162\ldots$ per point. The mechanism is a *substitution*
@@ -209,13 +209,19 @@ estimate. Both are marked below.
   reaches $6^{1/2} = 2.449\ldots$. See `docs/roadmap.md` §5 for what
   formalising it would need.
 
-  **UNREACHABLE — Elsevier paywall.** Four routes were tried in July 2026
-  and all failed: ScienceDirect PDF (HTTP 403), the DOI
-  `10.1016/0097-3165(72)90103-4` (HTTP 404), CORE search (HTTP 403), and
-  the Erdős archive (Erdős is not an author; the index has no entry —
+  **UNREACHABLE — Elsevier paywall.** Six routes have been tried and all
+  failed: ScienceDirect PDF (HTTP 403), the DOI
+  `10.1016/0097-3165(72)90103-4` (HTTP 404), CORE search (HTTP 403), the
+  Erdős archive (Erdős is not an author; the index has no entry —
   confirmed by grepping it for "Intersection theorem", which returns only
-  ErRa60, EKR61, ErRa69-II and EMR74-III). Per `docs/roadmap.md` §15.2's
-  own instruction, **nothing further is built on it.**
+  ErRa60, EKR61, ErRa69-II and EMR74-III), the correct DOI (resolves to
+  the landing page, PDF endpoint 403), and — session N+15, **from a
+  different container and network path** — the `pdfft` download route
+  with a browser user-agent, 403 for both the article page and the
+  download. The sixth attempt is the one that matters: it rules out this
+  container's proxy and leaves the paywall as the whole explanation. Per
+  `docs/roadmap.md` §15.2's own instruction, **nothing further is built
+  on it.**
 
   What is recorded here is from secondary
   sources; the rate and the recursion were checked against each other
@@ -928,33 +934,138 @@ sources" as checked.
   live. [Kup25], the survey of the Δ-system method, contains no
   discussion of shifting at all.
 
-## The covering-number literature, reached at last
+## The covering-number literature, reached at last — and then read
 
 Register row B12 asked whether covering numbers of intersecting
 hypergraphs are a studied area. They are, and [Kup25] §1.7 and §1.9.4
 point straight at them — under names this repository never searched for.
-**None of the following has been read**; they are recorded so the next
-session does not have to rediscover the vocabulary.
+The entries below were recorded as vocabulary in session N+11 and all
+said **"Not attempted"**. A commissioned rendered pass (session N+15,
+`docs/reading.md`) read five of them from rendered images; the statuses
+now differ per entry and say which container did the reading.
+
+**Provenance warning.** Papers marked *read in session N+15* were fetched
+and rendered in a parallel container that no longer exists, and are **not**
+in `docs/papers/pdf/`. Their quotations are page quotations from rendered
+images, which is the strongest form `docs/reading.md` accepts, but they
+were not re-checkable here. What *was* re-checked here is every claim the
+report made about `kupavskii_survey.pdf`, which is in the corpus; that
+audit, and the one page number it corrected, is in `docs/reading.md`
+session N+15.
 
 - **[ErLo75]** P. Erdős and L. Lovász, *Problems and results on
   3-chromatic hypergraphs and some related questions*. Infinite and
   Finite Sets (Colloq. Keszthely 1973), Colloq. Math. Soc. János Bolyai
-  10, North-Holland (1975), 609–627. [Kup25] p. 52 credits the base
-  construction for maximal intersecting families to this paper:
-  *"essentially due to Erdős and Lovász [39]"*. **Not attempted.**
+  10, North-Holland (1975), 609–627. **Read in session N+15, 19/19 pages
+  rendered.** [Kup25] p. 52 credits the base construction for maximal
+  intersecting families to it — *"essentially due to Erdős and Lovász
+  [39]"* — and the reference-list entry was **confirmed here** at
+  [Kup25] p. 63. The paper matters to this development for three things:
+
+  1. **p. 620, construction (d) is `substitute`.** *"Let `H` be a
+     3-chromatic `r`-uniform clique … Define `H* = {E_{i₁} ∪ … ∪ E_{iᵣ} :
+     Eᵢ ∈ Hᵢ, {i₁, …, iᵣ} ∈ H}`. Then `H*` is a `(ρr)`-uniform 3-chromatic
+     clique."* `coq/Substitution.v` formalises exactly this operation, and
+     this is its published ancestor. Register row B12 updated.
+  2. **p. 621 carries a size recursion for it**, not a `τ` one:
+     `|H^{(k+1)}| = 7^{3^k}·|H^{(k)}|`, whence `|H^{(k)}| = 7^{(3^k−1)/2}`
+     — iterated substitution seeded with the Fano plane, the same shape as
+     [AHS72]'s `10^{b/2}` with a 7-set base instead of a 10-set one. A
+     second published multiplicativity for substitution, alongside
+     `ψ(ab) ≥ ψ(a)ψ(b)^a` on [Kup25] p. 6.
+  3. **p. 612, Theorem 7: `r!(e−1) ≤ M(r) ≤ r^r`**, `M(r)` the maximum
+     size of a 3-chromatic `r`-uniform clique = an intersecting family
+     with `τ = r`; p. 623 §4 extends it to `τ ≥ r`. This is the nearest
+     published relative of row B10's two-sided sandwich — an intersecting
+     extremal function bounded on both sides — under a `τ` hypothesis
+     rather than sunflower-freeness.
 
 - **[Fu83]** Z. Füredi, *On finite set-systems whose every intersection
   is a kernel of a star*. Discrete Math. 47 (1983), 129–132 — the
-  *nucleus*. Also **[Fu78]** *Erdős–Ko–Rado type theorems with upper
-  bounds on the maximum degree*, Colloq. Math. Soc. J. Bolyai 25 (1978),
-  177–207. **Not attempted.**
+  *nucleus*, and [Kup25] `[63]`, the paper fn. 6 names as the origin of
+  "`s`-star". **Read in session N+15, 4/4 pages rendered.** p. 129 defines
+  *"a `Δ`-system … or a `t`-star"*. No intersecting variant, no extremal
+  function `ι`. Reference-list entry confirmed here at [Kup25] p. 64.
+
+- **[Fu78]** Z. Füredi, *Erdős–Ko–Rado type theorems with upper bounds on
+  the maximum degree*, Colloq. Math. Soc. J. Bolyai 25 (1978), 177–207.
+  **Obtained and read separately — 31/31 pages, see
+  `docs/papers/furedi78-rendered-pass.md` and register rows A15/A15a.**
+  Not the missing corner.
+
+- **[FuTu85]** Z. Füredi and Zs. Tuza, *Hypergraphs without a large
+  star*, Discrete Math. 55 (1985), 317–321. **Read in session N+15, 5/5
+  pages rendered.** Recorded for one reason, and it is a trap rather than
+  a result: here a *"`t`-star"* is **`t` sets each having a point of its
+  own** — strong representability — **not** a `Δ`-system, two years after
+  [Fu83] used the same word for a `Δ`-system, same author. This is
+  `docs/reading.md` **rule 33**. Any future "`s`-star" search must read
+  the definition on the page.
+
+- **[FrFu85]** P. Frankl and Z. Füredi, *Forbidding just one
+  intersection*, JCTA 39 (1985), 160–176 — [Kup25] `[54]`, the second
+  paper fn. 6 names. **Read in session N+15, 17/17 pages rendered.**
+  p. 163 defines *"a strong `Δ`-system or an `s`-star"* and uses stars as
+  a proof tool for the forbidden-one-intersection problem. No intersecting
+  sunflower-free extremal function. Reference-list entry confirmed here at
+  [Kup25] p. 64.
+
+- **[Fu80]** Z. Füredi, *Maximal intersecting families of finite sets*,
+  JCTA 28 (1980), 282–289. **Read in session N+15, 8/8 pages rendered.**
+  The follow-up to [ErLo75] on maximal intersecting families with `τ = k`:
+  Proposition 3 gives `|H| ≤ k^r` with equality *"only in the case
+  described in the statement"*. A maximality theorem for a `τ`-extremal
+  family — but for the Erdős–Lovász problem, not for [AHS72]'s
+  sunflower-free families, so it does **not** settle row B12's second half.
 
 - **[Fr78]** P. Frankl, *On intersecting families of finite sets*.
-  J. Combin. Theory Ser. A 24 (1978), 146–161 — Frankl's *base*. And
-  **[Fr17]** P. Frankl, *Antichains of fixed diameter*, Moscow J. Combin.
-  Number Theory 7 (2017), which [Kup25] p. 52 says *"the family of
-  minimal covers is efficiently analyzed in order to bound the maximal
-  diversity of an intersecting family"*. **Not attempted.**
+  J. Combin. Theory Ser. A 24 (1978), 146–161 — Frankl's *base*, and the
+  paper [Kup25] p. 20 attributes the `c`-fraction max-degree condition to.
+  **Still not attempted, and it is now the last unread of register row
+  B19f's four targets.**
+
+- **[Fr17]** P. Frankl, *Antichains of fixed diameter*, Moscow J. Combin.
+  Number Theory **7** (N3) (2017) = [Kup25] `[52]`. **Flagged as a
+  possible mis-citation in the survey; not settled.** [Kup25] p. 52 cites
+  `[52]` for *"the family of minimal covers is efficiently analyzed in
+  order to bound the maximal diversity of an intersecting family"*.
+  Confirmed here from [Kup25] p. 64: `[52]` is this paper, and the
+  bibliography's only Frankl–Kupavskii entry is `[57]`, *The Erdős
+  Matching Conjecture and Concentration Inequalities* — so the survey
+  cites no Frankl–Kupavskii diversity paper anywhere. Session N+15
+  rendered 4 pages of *Antichains of fixed diameter*, reports it is about
+  antichains and Kleitman's diameter theorem with no minimal-cover
+  analysis, and proposes **[FrKu18]** below as the intended source. That
+  half is **not** verified here — this container cannot read the paper —
+  and a mis-citation in a published survey is a claim about someone else's
+  work, so it is recorded as a flag, not as a correction.
+
+- **[FrKu18]** P. Frankl and A. Kupavskii, *Diversity*, arXiv:1811.01111.
+  **Located; p. 1 read in session N+15**, which quotes the definition:
+  *"its diversity is the number of sets not containing an element with the
+  highest degree"*. Proposed as the source [Kup25] p. 52 meant by `[52]`.
+  Not in [Kup25]'s bibliography.
+
+- **[KoMu16]** A. Kostochka and D. Mubayi, *The structure of large
+  intersecting families*, Proc. Amer. Math. Soc. 145 (2017), arXiv:1602.01391
+  = [Kup25] `[89]`. **Read in session N+15, 11/11 pages rendered.** One of
+  register row B19f's four targets, and it is *not* the missing corner —
+  see rows B19f-KM and A23. Its `B*(H)` decomposition **derives** a
+  sunflower-free base from an intersecting family that is merely large; it
+  does not bound an intersecting family **assumed** sunflower-free. Its
+  hypotheses (p. 5) are only *"intersecting `r`-graph with `τ(H) ≥ 2` and
+  `|H| > hm″(n,r)"*, and the machinery is attributed to Frankl:
+  *"The following crucial claim proved by Frankl can be found in Lemma 1
+  in [6, 8]"*.
+
+- **[KuNo24]** A. Kupavskii and G. Noskov, *Linear dependencies,
+  polynomial factors in the Duke–Erdős forbidden sunflower problem*,
+  arXiv:2410.06156 (61pp) = [Kup25] `[96]`. **pp. 1–8 read in session
+  N+15.** Confirms register row B19g's placement of Duke–Erdős from the
+  primary source: `f(n,k,ℓ,s)` is an **absolute** cap at a **single**
+  level, with no intersecting hypothesis. Main results give exact values
+  for `n ≥ n₀(k,s)` in several `(k,ℓ)` ranges via the `Δ`-system method
+  with spread approximations.
 
 - **[AhKh97]** R. Ahlswede and L. H. Khachatrian, *The Complete
   Intersection Theorem for Systems of Finite Sets*. European J. Combin.
@@ -968,6 +1079,11 @@ session does not have to rediscover the vocabulary.
   approximation** methods. **Not attempted, and they are the most
   surprising find of the reading**: the notion `Spread.Spread`
   formalises has become a tool of the Δ-system method itself.
+
+- **[Chu83]** F. R. K. Chung ([Kup25] `[17]`, the origin of the name
+  "`s`-star") and **[ChFr87]** Chung–Frankl (`[19]`). **Not attempted,
+  and the reason register row B9's negative is still not exhaustive on
+  the vocabulary that started it.**
 
 ## Applications — Tier 4
 
