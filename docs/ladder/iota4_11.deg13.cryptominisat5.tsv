@@ -88,10 +88,12 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 88 UNSAT, 5 UNKNOWN, 0 SAT over 93 labels -- 88 of 1949, so
-# 4.5% of the cube, and the rung's bound is untouched.  The rule's
-# twelve-attempt window reads 1.74 UNSAT/h, the best this cap has done,
-# so it holds.
+# STANDING: 89 UNSAT, 5 UNKNOWN, 0 SAT over 94 labels -- 89 of 1949, so
+# 4.6% of the cube, and the rung's bound is untouched.  The rule's
+# twelve-attempt window reads 1.23 UNSAT/h, down from 1.74 but nowhere
+# near zero, so the 10800 s cap holds.  The five UNKNOWN labels are the
+# same five throughout: [.. 12, 12, 11, 10, 5], [.. 12, 11, 11, 10, 6],
+# [.. 12, 11, 11, 9, 7], [.. 12, 11, 10, 10, 7] and [.. 12, 11, 10, 9, 8].
 #
 # COST BY LEADING 13s, AND A READING THIS HEADER IS DECLINING TO MAKE:
 #
@@ -100,15 +102,17 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    11     936      3653    7780
+#        5    12     936      4875    7780
 #
-# The 5-family's median is BELOW the 6- and 7-families, so on the face of
-# it the curve peaks at six leading 13s and comes back down.  **That is
-# not claimed here.**  The 6-family read 4806 s on seven points and
-# 6136 s on twenty-five; every family opens cheap, and eleven points is
-# the same regime that produced two wrong readings already in this file.
-# The honest statement is that the 5-family is not yet sampled past its
-# opening, and its median will be worth reading at n = 25.
+# THE DECLINED READING WAS THE RIGHT CALL, AND ONE ROW SHOWED IT.  Last
+# batch the 5-family read median 3653 s on eleven points, below both the
+# 6- and 7-families, which on its face put a peak at six leading 13s.
+# This header refused to claim it on the ground that eleven points is the
+# opening of a family and every family opens cheap.  The twelfth point
+# came in at 7412.9 s and moved the median to 4875 s -- a third of the
+# way to the 6-family in a single row.  The peak is still not claimed and
+# the 5-family is still not sampled past its opening; what is now
+# measured is that its median is not stable at n = 12 either.
 #
 # AND EVERY FAMILY OPENS CHEAP.  The 5-family's first two sub-cubes cost
 # 936 s and 3108 s, against a 6-family median of 6136 s.  Same pattern as
@@ -117,27 +121,39 @@
 # into a new family, not that the frontier has eased -- which is why the
 # median per family is the thing to read, and never a single row.
 #
-# TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE SECOND WAS MISSED AT FIRST.
-# Correlation of UNSAT cost against candidate predictors, over the 67
-# decided sub-cubes:
+# TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE RANKING BETWEEN THEM HAS
+# ALREADY FLIPPED ONCE.  Correlation of UNSAT cost against candidate
+# predictors, recomputed over all 89 decided sub-cubes, with the reading
+# at n = 67 beside it:
 #
-#     leading 13s        r = -0.75     <- best single predictor
-#     sum of squares     r = -0.65
-#     distinct values    r = +0.63
-#     MINIMUM degree     r = +0.53     <- explains the within-family spread
-#     count deg >= 12    r = -0.39
-#     count deg >= 11    r = -0.23
+#                        n = 89        n = 67
+#     distinct values    r = +0.68     r = +0.63   <- best now
+#     sum of squares     r = -0.63     r = -0.65
+#     leading 13s        r = -0.61     r = -0.75   <- was best
+#     MINIMUM degree     r = +0.52     r = +0.53
+#     count deg >= 12    r = -0.40     r = -0.39
+#     count deg >= 11    r = -0.19     r = -0.23
 #
-# The leading-13s model alone cannot explain three sub-cubes that all
-# open with six 13s and cost 1111 s, 1871 s and 10866 s.  Their minimum
+# THE HEADER'S OWN WARNING CAME TRUE ON ITS OWN DATA.  At n = 67 this
+# table called leading 13s "the best single predictor" and then said "do
+# not over-fit this".  Twenty-two sub-cubes later leading 13s has fallen
+# from -0.75 to -0.61 and distinct values has passed it.  Nothing about
+# the cube changed; the sample did.  Treat every r in this table as a
+# statement about the 89 sub-cubes measured, not about the cube.
+#
+# The structural reading is unchanged and is what survives the flip: the
+# leading-13s model alone cannot explain three sub-cubes that all open
+# with six 13s and cost 1111 s, 1871 s and 10866 s.  Their minimum
 # degrees are 2, 6 and 8.  Both effects are the same structural fact from
 # opposite ends: a run of MAXIMAL degrees constrains the family, and so
 # does a point of NEAR-ZERO degree, because it is a point almost nothing
 # uses.  The expensive sub-cubes are the ones that are flat in the
-# middle -- no long run of 13s and no nearly-unused point.
+# middle -- no long run of 13s and no nearly-unused point.  "Distinct
+# values" is a third measure of the same flatness, which is why it moves
+# with the other two.
 #
-# Do not over-fit this: n = 67, and no family below six leading 13s is
-# measured, which is where the remaining ~1880 sub-cubes are.
+# Do not over-fit this: n = 89, and no family below five leading 13s is
+# measured, which is where the remaining ~1860 sub-cubes are.
 #
 # THE RULE HELD, AND NEEDED A WINDOW.  Last batch the 10800 s cap read
 # 0.21 UNSAT per wall-hour over its last eight attempts -- three stalls
@@ -447,3 +463,4 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10870.0
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10880.0
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10891.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10897.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 11, 6]	UNSAT	7412.9
