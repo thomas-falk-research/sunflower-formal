@@ -12892,3 +12892,78 @@ components disagree about a value, the case anyone checks is usually the
 case where they agree — §37.4's cross-check at `deg(0) = 12` is the
 purest instance, since that is the one top degree where both covers give
 19. **Find the case where they must differ, and look at that one.**
+
+## 55. The target-28 plan is granular by the wrong metric, and the run it
+##     describes would bank nothing
+
+§49.2a chose a per-cube `--seqprefix` for the seven cubes open at eleven
+points and target 28, by keeping the **number of pieces** under a few
+hundred:
+
+```text
+  deg(0)       11    12   13   14   15   16   17   total
+  prefix     full     4    3    3    3    3    3
+  sub-cubes   224   288   90  120  136  153  171   1 182
+```
+
+§52.2 showed that count is the wrong metric one rung over: at target 32,
+`deg(0) = 13` splits at prefix 3 into 27 pieces — comfortably "a few
+dozen" — and the largest of them has to decide **553** full sub-cubes,
+which is why `iota4_11.deg13.p3.tsv` records that granularity as *"TOO
+COARSE, and the budget is the result"*. The same measurement at target 28,
+by `rust/examples/seq_buckets.rs`, says the plan above is worse:
+
+```text
+  deg0 |  full   |  p3          p4          p5          p6          p7
+       |         | pieces,max  pieces,max  pieces,max  pieces,max  pieces,max
+    11 |     224 |   12,94       53,28       57,26       64,23       75,18
+    12 |    7857 |   44,1677    288,320     433,240     656,154    1032,77
+    13 |   80062 |   90,9741    529,1301   1241,737    2602,322    5404,104
+    14 |  417711 |  120,30570   680,2983   2429,1242   6800,414   17967,126
+```
+
+**§49.2a's prefix 3 for `deg(0) = 13` gives a worst piece of 9741, and for
+`deg(0) = 14` one of 30570** — eighteen and fifty-five times the 553 that
+was already too coarse, and on the strictly harder instance, since
+`Product.IotaAtLeast_antitone` makes target 28 harder than 32. Only the
+floor cube's entry survives contact: §49.2a says full prefix there, and
+full prefix means pieces of size one.
+
+### 55.1 The metric should be inverted, and §46.2's rule with it
+
+§46.2 records the operative rule as *"read the `N degree-sequence cubes`
+line before letting a split run. Under a few hundred, let it go; in the
+thousands, kill it."* That rule was calibrated when a sub-cube was cheap
+and the cost being avoided was **solver startups** — §33.5a measured 684
+startups as a loss against a cube that solved whole in ten minutes.
+
+This session's cube-13 run says startups are no longer the cost that
+matters. Its sub-cubes take **128 s to 10 866 s each**; a solver startup
+is milliseconds. What kills a run now is a piece too big to decide inside
+any budget, which is exactly what §52.2's sixteen consecutive stalls were.
+
+So, for a checkpointed run:
+
+> **Choose the prefix by the size of the largest piece, not by the number
+> of pieces. More pieces is better, not worse, because every one that
+> lands is banked and a piece that cannot land banks nothing.**
+
+Against that rule the table says prefix **7** for `deg(0) = 12, 13, 14` —
+largest pieces 77, 104 and 126, at 1032, 5404 and 17967 pieces. Whether
+those piece sizes are small enough is **not established here**: the only
+granularity measured end to end at these parameters is the full split at
+target 32, where a piece is one sequence. What is established is that 9741
+and 30570 are not.
+
+### 55.2 What this does not settle
+
+Nothing about `ι(4,11)`, and nothing about the seven cubes: they are open
+exactly as §48 left them. The seq_buckets table cannot be computed for
+`deg(0) = 15, 16, 17` at all, because their full splits exceed 10⁶ and
+there is nothing to bucket against — so three of the seven have no
+measured granularity and §49.2a's prefix 3 for them is neither confirmed
+nor refuted, only unevidenced.
+
+This is scheduling, again, and §49.4's judgement stands: **`τ = 3` is the
+case that would close the rung without any of this compute**, and §53 says
+the elementary route to it does not reach.
