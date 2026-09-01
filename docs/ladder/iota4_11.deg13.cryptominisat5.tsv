@@ -88,25 +88,27 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 79 UNSAT, 5 UNKNOWN, 0 SAT over 84 labels -- 79 of 1949, so
-# 4.1% of the cube, and the rung's bound is untouched.  The rule's
-# twelve-attempt window reads 1.10 UNSAT/h, so the 10800 s cap holds.
+# STANDING: 88 UNSAT, 5 UNKNOWN, 0 SAT over 93 labels -- 88 of 1949, so
+# 4.5% of the cube, and the rung's bound is untouched.  The rule's
+# twelve-attempt window reads 1.74 UNSAT/h, the best this cap has done,
+# so it holds.
 #
-# THE PLATEAU BETWEEN SEVEN AND SIX LEADING 13s WAS AN ARTIFACT OF n=7,
-# and it is now refuted.  Cost by leading 13s, as the sample has grown:
+# COST BY LEADING 13s, AND A READING THIS HEADER IS DECLINING TO MAKE:
 #
 #     lead13   n     min    median     max
 #        9     6     128       789     977
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5     2     936      2022    3108
+#        5    11     936      3653    7780
 #
-# An earlier version of this header put the 6-family median at 4806 on
-# seven points and called it a plateau, hedged as "not established".
-# With twenty-five points it is 6136, clearly above the 7-family, so the
-# climb continues rather than flattening.  The hedge was right and the
-# reading was not.
+# The 5-family's median is BELOW the 6- and 7-families, so on the face of
+# it the curve peaks at six leading 13s and comes back down.  **That is
+# not claimed here.**  The 6-family read 4806 s on seven points and
+# 6136 s on twenty-five; every family opens cheap, and eleven points is
+# the same regime that produced two wrong readings already in this file.
+# The honest statement is that the 5-family is not yet sampled past its
+# opening, and its median will be worth reading at n = 25.
 #
 # AND EVERY FAMILY OPENS CHEAP.  The 5-family's first two sub-cubes cost
 # 936 s and 3108 s, against a 6-family median of 6136 s.  Same pattern as
@@ -432,3 +434,12 @@ g=11 [13, 13, 13, 13, 13, 13, 11, 11, 10, 10, 8]	UNSAT	8766.0
 g=11 [13, 13, 13, 13, 13, 13, 11, 11, 10, 9, 9]	UNSAT	8954.2
 g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 11, 4]	UNSAT	3107.6
 g=11 [13, 13, 13, 13, 13, 13, 11, 10, 10, 10, 9]	UNSAT	5608.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 10, 5]	UNSAT	3472.5
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 9, 6]	UNSAT	3648.8
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 8, 7]	UNSAT	3383.9
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 11, 5]	UNSAT	6096.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 10, 6]	UNSAT	7655.4
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 8, 8]	UNSAT	6843.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 9, 7]	UNSAT	7780.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 10, 10, 7]	UNSAT	7168.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 9, 9, 9]	UNSAT	3653.0
