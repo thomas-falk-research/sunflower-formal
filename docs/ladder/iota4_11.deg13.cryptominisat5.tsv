@@ -88,20 +88,32 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 71 UNSAT, 5 UNKNOWN, 0 SAT over 76 labels -- 71 of 1949, so
-# 3.6% of the cube, and the rung's bound is untouched.
+# STANDING: 79 UNSAT, 5 UNKNOWN, 0 SAT over 84 labels -- 79 of 1949, so
+# 4.1% of the cube, and the rung's bound is untouched.  The rule's
+# twelve-attempt window reads 1.10 UNSAT/h, so the 10800 s cap holds.
 #
-# THE 10800 s CAP, READ THE WAY THE RULE NOW SAYS TO:
+# THE PLATEAU BETWEEN SEVEN AND SIX LEADING 13s WAS AN ARTIFACT OF n=7,
+# and it is now refuted.  Cost by leading 13s, as the sample has grown:
 #
-#     last  8 attempts    4 UNSAT   0.76 UNSAT/h
-#     last 12 attempts    8 UNSAT   1.02 UNSAT/h   <- the rule's window
-#     last 16 attempts   11 UNSAT   1.03 UNSAT/h
-#     whole life (22)    17 UNSAT   1.27 UNSAT/h
+#     lead13   n     min    median     max
+#        9     6     128       789     977
+#        8    19     350      1971    2295
+#        7    27     756      4622    7179
+#        6    25     731      6136   10866
+#        5     2     936      2022    3108
 #
-# The eight-window again reads a third lower than the twelve.  That gap
-# is the reason the window is specified: on the 8-window this cap has
-# twice looked like it was dying and twice was not.  1.02/h is not zero,
-# so the cap holds.
+# An earlier version of this header put the 6-family median at 4806 on
+# seven points and called it a plateau, hedged as "not established".
+# With twenty-five points it is 6136, clearly above the 7-family, so the
+# climb continues rather than flattening.  The hedge was right and the
+# reading was not.
+#
+# AND EVERY FAMILY OPENS CHEAP.  The 5-family's first two sub-cubes cost
+# 936 s and 3108 s, against a 6-family median of 6136 s.  Same pattern as
+# the 6-family's 731 s opener and the 7-family's 756 s.  A cheap row
+# right after an expensive one usually means the enumeration has crossed
+# into a new family, not that the frontier has eased -- which is why the
+# median per family is the thing to read, and never a single row.
 #
 # TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE SECOND WAS MISSED AT FIRST.
 # Correlation of UNSAT cost against candidate predictors, over the 67
@@ -412,3 +424,11 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10860.4
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10860.2
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10863.1
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10939.0
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 10, 7]	UNSAT	5298.1
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 9, 8]	UNSAT	5410.1
+g=11 [13, 13, 13, 13, 13, 13, 10, 10, 10, 10, 10]	UNSAT	730.8
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 12, 3]	UNSAT	936.3
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 10, 10, 8]	UNSAT	8766.0
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 10, 9, 9]	UNSAT	8954.2
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 11, 4]	UNSAT	3107.6
+g=11 [13, 13, 13, 13, 13, 13, 11, 10, 10, 10, 9]	UNSAT	5608.6
