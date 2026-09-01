@@ -12858,14 +12858,25 @@ explicit nineteen-member τ = 3 family that says so.
 ### 54.2 What is owed, in order
 
 1. **Keep the cube-13 pass running.** Resume with the same checkpoint;
-   UNSAT rows are skipped and UNKNOWNs re-run. Use `--seconds 5400`, not
-   600 and not 1800 — §52.3a is why, and the documented command was wrong
-   until this session measured it.
-2. **The remaining ~1900 sub-cubes.** At the 5400 s budget this will not
-   finish on one machine in one sitting. Every banked UNSAT is permanent,
-   which is the entire reason the split was chosen over the monolith that
-   has now failed twice (§45.4, §51).
-3. **τ = 3 needs a different instrument, not a bigger budget** (§53.5).
+   UNSAT rows are skipped and UNKNOWNs re-run. The command in §52.2 is
+   current. **Budget: start at 5400 s and raise by the rule, not by
+   feel** — §52.3a and the ladder file's header carry it: *raise when the
+   current cap's UNSAT-per-wall-hour has fallen to roughly zero, read
+   over at least twelve attempts, and not before.* This session got that
+   call wrong in both directions before deriving the rule, and the
+   twelve-attempt window matters — the eight-window under-read the cap
+   twice and would have raised both times.
+2. **The remaining ~1860 sub-cubes.** It will not finish on one machine
+   in one sitting. Every banked UNSAT is permanent, which is the entire
+   reason the split was chosen over the monolith that has now failed
+   twice (§45.4, §51) — and which four container restarts in this session
+   demonstrated rather than argued.
+3. **Do not run §49.2a's target-28 plan as written.** §55 measures its
+   pieces and they are eighteen and fifty-five times too big at
+   `deg(0) = 13` and `14`. Re-pick the prefix by largest piece, not by
+   piece count, and note that three of the seven cubes cannot be measured
+   this way at all (§55.2).
+4. **τ = 3 needs a different instrument, not a bigger budget** (§53.5).
 
 ### 54.3 What this session got wrong, because the pattern repeats
 
@@ -12886,6 +12897,15 @@ Four corrections, all self-inflicted and all caught inside the session:
 * **A dead process.** Diagnosed a nohup signal problem and "fixed" it with
   `setsid`; the next run died identically with PPID 1. The cause was
   detachment itself, and the harness's own supervision was the answer.
+
+**Two more corrections, both about reading a measurement.** The cost
+model went through three wrong readings before settling: "extreme is
+hardest" (backwards — extreme is *more constrained* and so easier), a
+plateau at six leading 13s declared on n=7 and refuted at n=25, and a
+peak at five declared nowhere, because by then the n-too-small pattern
+was recognised and §53's table says so explicitly. And the raise rule was
+stated flatly twice, in opposite directions, before being stated
+conditionally with a window.
 
 **The generalisation, which is §51.4's pattern sharpened.** When two
 components disagree about a value, the case anyone checks is usually the
