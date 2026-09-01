@@ -88,12 +88,26 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 90 UNSAT, 5 UNKNOWN, 0 SAT over 95 labels -- 90 of 1949, so
+# STANDING: 90 UNSAT, 6 UNKNOWN, 0 SAT over 96 labels -- 90 of 1949, so
 # 4.6% of the cube, and the rung's bound is untouched.  The rule's
-# twelve-attempt window reads 1.18 UNSAT/h, down from 1.74 but nowhere
-# near zero, so the 10800 s cap holds.  The five UNKNOWN labels are the
-# same five throughout: [.. 12, 12, 11, 10, 5], [.. 12, 11, 11, 10, 6],
-# [.. 12, 11, 11, 9, 7], [.. 12, 11, 10, 10, 7] and [.. 12, 11, 10, 9, 8].
+# twelve-attempt window reads 0.81 UNSAT/h, down from 1.18 and 1.74 but
+# still well clear of zero, so the 10800 s cap holds.  The eight-attempt
+# window reads 0.36; it is not the window the rule uses, for the reason
+# recorded below -- it under-read the cap twice.
+#
+# THE STRAGGLERS, AND A SIXTH THAT IS NEW IN KIND.  Five labels have now
+# stalled three or four times each at this cap, and every one of them
+# opens with SIX 13s:
+#
+#     [.. 12, 12, 11, 10, 5]   4 attempts     [.. 12, 11, 11, 9, 7]   3
+#     [.. 12, 11, 11, 10, 6]   3 attempts     [.. 12, 11, 10, 10, 7]  3
+#     [.. 12, 11, 10, 9, 8]    3 attempts
+#
+# The sixth is [13,13,13,13,13, 12,12,11,11,10,7] -- FIVE leading 13s,
+# stalled on its first attempt.  It is the first 5-family sub-cube this
+# solver has failed to decide, against thirteen it decided, and it is
+# the second thing in two batches to say the 5-family is not the cheap
+# one this file briefly read it as.
 #
 # COST BY LEADING 13s, AND A READING THIS HEADER IS DECLINING TO MAKE:
 #
@@ -476,3 +490,5 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10891.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10897.1
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 11, 6]	UNSAT	7412.9
 g=11 [13, 13, 13, 13, 13, 12, 12, 12, 10, 9, 8]	UNSAT	7838.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10911.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10917.0
