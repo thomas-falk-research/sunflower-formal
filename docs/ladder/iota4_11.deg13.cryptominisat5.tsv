@@ -106,8 +106,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 120 UNSAT, 10 UNKNOWN, 0 SAT over 130 labels -- 120 of 1949,
-# 219 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 121 UNSAT, 10 UNKNOWN, 0 SAT over 131 labels -- 121 of 1949,
+# 220 rows.  The 8-window reads 8 of 8; the 12-window 10 of 12.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -257,7 +257,7 @@
 #
 #     run>=12    decided  stalled   stall rate
 #       10          6        0         0.0%
-#        9         31        0         0.0%
+#        9         32        0         0.0%
 #        8         41        1         2.4%
 #        7         23        8        25.8%
 #        6         13        1         7.1%   <- NO LONGER ZERO
@@ -301,7 +301,7 @@
 #
 #    #13s    n     min    median     max
 #      9     6     128       789     977
-#      8    21     319      1948    2295   <- gained the two violators
+#      8    22     319      1941    2295   <- holds the three violators
 #      7    27     756      4622    7179
 #      6    25     731      6136   10866
 #      5    21     936      3653    8647
@@ -349,10 +349,20 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Checked over all 218 rows: **0 violate block-wise
-# sortedness, 2 violate global sortedness** -- the second arrived in the
-# very next batch, [13,13,13,12,13,13,13,13,13,11,1], exactly as the
-# paragraph below predicted.
+# across the two.  Checked over all 220 rows: **0 violate block-wise
+# sortedness, 3 violate global sortedness.**  They arrived in three
+# consecutive batches and share one shape exactly:
+#
+#     [13,13,13, 12, 13,13,13,13,13, 12, 0]
+#     [13,13,13, 12, 13,13,13,13,13, 11, 1]
+#     [13,13,13, 12, 13,13,13,13,13, 10, 2]
+#      anchor  block 1   block 2
+#
+# Block 1 is [13,13,12] in every one and block 2 opens 13.  The
+# violation is exactly "block 1's minimum drops below block 2's
+# maximum", which is the only way a block-sorted pair can fail to be
+# globally sorted, and the enumeration has evidently reached the region
+# where that happens routinely.  Expect the count to keep climbing.
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
@@ -369,13 +379,15 @@
 #   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
 #     runs the wrong way for the story this header was telling:
 #
-#         leading run of 13s   r = -0.14  ->  -0.13 one batch later
-#         COUNT of 13s         r = -0.21  ->  -0.21 one batch later
+#         leading run of 13s   r = -0.14  ->  -0.13  ->  -0.12
+#         COUNT of 13s         r = -0.21  ->  -0.21  ->  -0.21
 #
-#     The follow-up reading confirms it: under counts the coefficient is
-#     flat across three measurements (-0.21, -0.21, -0.21) while the
-#     leading-run version keeps drifting down on rows whose definition it
-#     is getting wrong.
+#     Four readings now.  Under counts the coefficient is flat at -0.21
+#     throughout; the leading-run version has drifted -0.14, -0.13, -0.12
+#     and every step of that drift came from a row whose definition it
+#     was getting wrong.  **The two series are separating at about 0.01
+#     per violator, which is the rate at which the abandoned definition
+#     would have been inventing a decay.**
 #
 #     At n = 115, before any violator, the two were the same number,
 #     -0.21.  So the apparent further fall to -0.14 this batch is **an
@@ -901,3 +913,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 12, 0]	UNSAT	319.1
 g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 10, 9]	UNSAT	6412.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 11, 1]	UNSAT	1018.0
 g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 10, 10]	UNSAT	3093.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 10, 2]	UNSAT	1692.4
