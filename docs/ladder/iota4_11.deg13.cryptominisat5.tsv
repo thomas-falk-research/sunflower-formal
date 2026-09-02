@@ -88,7 +88,7 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 94 UNSAT, 9 UNKNOWN, 0 SAT over 103 labels -- 94 of 1949, so
+# STANDING: 96 UNSAT, 9 UNKNOWN, 0 SAT over 105 labels -- 96 of 1949, so
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -114,7 +114,7 @@
 # trend.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  0.87 is six UNSAT in the last twelve, not zero or one.
+# recovered.  1.10 is seven UNSAT in the last twelve, not zero or one.
 #
 # SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
 # in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
@@ -133,11 +133,19 @@
 #             [.. 12, 12, 11, 10,  9, 9]  1 attempt
 #
 # Four 5-family stallers, in four consecutive batches, every one on a
-# first attempt.  The 5-family stands at 17 decided of 21 labels -- a
-# 19% stall rate against the 6-family's 5 of 30, 16.7%.  4 of 21 against
-# 5 of 30 is not a significant difference; what is established is the
-# sign, not the size, and two batches with no new 5-family stall have
-# already moved it from 21.1% to 19%.
+# first attempt.  The 5-family stands at 19 decided of 23 labels -- a
+# 17.4% stall rate against the 6-family's 5 of 30, 16.7%.
+#
+# **AND THE STALL-RATE COMPARISON IS NOW WITHDRAWN TOO.**  Three batches
+# ago this header read 4 of 19 (21.1%) against 5 of 30 (16.7%), said the
+# difference was not significant, and kept "the sign is established" as
+# the residue.  Three batches without a new 5-family stall have taken it
+# to 4 of 23, 17.4% against 16.7%.  **The sign is gone.**  There is no
+# measured difference between the two families on either quantity.  What
+# this cost was five batches of narrating a gap that was sampling noise
+# in a count of four, and the useful residue is the arithmetic: a rate
+# built on FOUR events moves by four points when the denominator moves
+# by four, so it could never have separated 17% from 21% at this n.
 #
 # **AND THE MEDIAN COMPARISON IS WITHDRAWN, BECAUSE THE MEDIAN HAS NEVER
 # BEEN STABLE.**  The 5-family median has taken SEVEN values as the
@@ -177,9 +185,15 @@
 #        9         26        0         0.0%
 #        8         36        1         2.7%
 #        7         18        8        30.8%
-#        6         10        0         0.0%   <- n = 10, still zero
+#        6         11        0         0.0%   <- n = 11, still zero
+#        5          1        0         0.0%   <- NEW, one label so far
 #
 #   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
+#
+# The enumeration has now reached run>=12 = 5, and the first label there
+# decided in 1149.4 s -- the cheapest since the 9-family.  One label
+# decides nothing, and it is in the table only so the next session sees
+# the bucket exists.
 #
 # EIGHT of the nine stalls sit at run>=12 exactly 7 -- and all four
 # 5-family stallers are among them -- while NOTHING with run>=12 of nine
@@ -208,7 +222,7 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    17     936      5761    7838
+#        5    19     936      5761    8647
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -593,3 +607,5 @@ g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 11, 7]	UNSAT	2888.5
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10881.7
 g=11 [13, 13, 13, 13, 13, 12, 11, 10, 10, 10, 10]	UNSAT	3373.1
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 9, 9]	UNSAT	7047.2
+g=11 [13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 8]	UNSAT	1149.4
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 10, 8]	UNSAT	8647.1
