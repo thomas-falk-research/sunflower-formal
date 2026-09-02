@@ -106,8 +106,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 117 UNSAT, 10 UNKNOWN, 0 SAT over 127 labels -- 117 of 1949,
-# 216 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 119 UNSAT, 10 UNKNOWN, 0 SAT over 129 labels -- 119 of 1949,
+# 218 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -338,24 +338,41 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Checked over all 216 rows: **0 violate block-wise
-# sortedness, 1 violates global sortedness.**
+# across the two.  Checked over all 218 rows: **0 violate block-wise
+# sortedness, 2 violate global sortedness** -- the second arrived in the
+# very next batch, [13,13,13,12,13,13,13,13,13,11,1], exactly as the
+# paragraph below predicted.
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
 # guaranteed that, and this row is where it stopped.
 #
-# WHAT IT COSTS THE TABLES, MEASURED RATHER THAN FEARED.  "leading run of
-# 13s" reads 3 on that row while the sequence contains EIGHT 13s;
-# "leading run >= 12" happens to read 10 either way.  Across all 216 rows
-# the leading-run and the count disagree on exactly ONE.  So the tables
-# below are wrong in one cell and the conclusions are untouched -- but
-# **the definitions were resting on a property of the data that the
-# generator never promised**, and the next block-crossing row will add
-# another.  A later session that recomputes these should use COUNTS
-# (`#{x : deg x >= 13}`) rather than leading runs, or state the block
-# structure explicitly; the two are not the same function and only
-# coincided by luck.
+# WHAT IT COSTS, NOW MEASURED BOTH WAYS RATHER THAN ESTIMATED.  Both
+# statistics were recomputed under leading-run and under COUNT over all
+# 218 rows:
+#
+#   * THE STALL TABLE IS IDENTICAL under the two definitions, bucket for
+#     bucket.  Both violators keep their >= 12 degrees contiguous at the
+#     front, so lead and count agree there.  Nothing in that table moves.
+#
+#   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
+#     runs the wrong way for the story this header was telling:
+#
+#         leading run of 13s   r = -0.14
+#         COUNT of 13s         r = -0.21
+#
+#     At n = 115, before any violator, the two were the same number,
+#     -0.21.  So the apparent further fall to -0.14 this batch is **an
+#     artefact of the definition, not a change in the cube.**  Under
+#     counts the coefficient is flat at -0.21, which is what the watch
+#     item recorded two batches ago and what the leading-run version
+#     would have quietly overwritten with a spurious continuation of the
+#     decay.
+#
+# **THE 13s STATISTIC IS THEREFORE READ AS A COUNT FROM HERE ON.**  The
+# >= 12 statistic may keep its leading-run form -- the two agree on every
+# row so far -- but it is the same accident and should be migrated the
+# moment they diverge.
 #
 # This is the ninth item for roadmap 54.3a and a third kind: not a small
 # sample, and not a mis-described measurement, but a statistic whose
@@ -865,3 +882,5 @@ g=11 [13, 13, 13, 13, 12, 12, 12, 11, 10, 10, 9]	UNSAT	6336.5
 g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 11, 9]	UNSAT	1528.8
 g=11 [13, 13, 13, 13, 11, 11, 11, 11, 11, 11, 10]	UNSAT	510.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 12, 0]	UNSAT	319.1
+g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 10, 9]	UNSAT	6412.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 11, 1]	UNSAT	1018.0
