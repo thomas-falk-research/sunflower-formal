@@ -101,7 +101,7 @@
 # after writing "monotone decline over six readings".  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  0.51 is four UNSAT in the last twelve attempts, not zero.
+# recovered.  0.52 is four UNSAT in the last twelve attempts, not zero.
 #
 # SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
 # in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
@@ -121,7 +121,7 @@
 # Three 5-family stallers now, in three consecutive batches, every one
 # on a first attempt.  The 5-family stands at 14 decided of 17 labels --
 # a 17.6% stall rate against the 6-family's 5 of 30, 16.7% -- and median
-# 5929 against 6136.  **On both measures the 5-family now matches the
+# 5761 against 6136.  **On both measures the 5-family now matches the
 # 6-family**, which is what five batches have established and the exact
 # opposite of the reading this header declined to make at n = 11.
 #
@@ -187,6 +187,7 @@
 #     n = 12   median 4875     a third of the way to the 6-family
 #     n = 13   median 6096     level with the 6-family's 6136
 #     n = 14   median 5929     still level; the move was not a blip
+#     n = 15   median 5761     and level is where it stayed
 #
 # So the apparent peak was an artefact of a family's opening, exactly as
 # the refusal said it might be.  This is the second time in this file
