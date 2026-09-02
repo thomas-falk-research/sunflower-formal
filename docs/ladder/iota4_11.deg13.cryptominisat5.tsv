@@ -48,10 +48,10 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
-# EIGHT CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
-# ~17:53 UTC, the seventh at ~21:36 and the eighth at ~22:00; each
-# killed the driver and all four solvers mid-flight.  Every time the
-# same command printed
+# NINE CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
+# ~17:53 UTC, the seventh at ~21:36, the eighth at ~22:00 and the ninth
+# at ~22:05; each killed the driver and all four solvers mid-flight.
+# Every time the same command printed
 # "checkpoint: 129 of 1949 cubes already decided" and resumed -- a number
 # that matches an independent recount of the distinct UNSAT labels in
 # this file, which is the check that makes "zero rows lost" a verified
@@ -59,7 +59,7 @@
 # lost is the partial search in the four solvers that were running,
 # which is bounded by the cap.
 # **This is the entire argument for the degree-sequence split over the
-# whole-cube monolith, and it is now demonstrated eight times rather
+# whole-cube monolith, and it is now demonstrated nine times rather
 # than argued once** -- the monolith has twice been killed at ~85000 s
 # and lost everything, because a single instance has nothing to check
 # point.
@@ -73,26 +73,47 @@
 #     all ten stragglers, ten attempts over four threads at a 10800 s
 #     cap = three batches = ABOUT 7.5 UNINTERRUPTED WALL-HOURS;
 #
-#     observed gaps between the last four restarts:
-#         5th -> 6th   12 h 57 m     (long enough)
-#         6th -> 7th    3 h 43 m     (not enough)
-#         7th -> 8th       24 m      (not enough)
+#     observed gaps between the last five restarts:
+#         5th -> 6th   12 h 57 m     long enough
+#         6th -> 7th    3 h 43 m     not enough
+#         7th -> 8th       24 m      not enough
+#         8th -> 9th        5 m      not enough for ANY attempt at all
 #
-# A restart resets the sweep to its beginning -- after the eighth the
-# driver went straight back to c59/c67/c68/c70, the same four the sixth
-# and seventh had started on.  **So if the gap between restarts stays
-# below about 7.5 hours, this run re-runs stragglers forever and never
+# A restart resets the sweep to its beginning -- after the eighth AND
+# the ninth the driver went straight back to c59/c67/c68/c70, the same
+# four the sixth and seventh had started on.  **While the gap stays
+# below about 7.5 hours this run re-runs stragglers forever and never
 # attempts a fresh sub-cube again**, banking nothing while looking
-# perfectly healthy: driver up, four solvers busy, no errors.
+# perfectly healthy: driver up, four solvers busy, no errors.  That
+# failure mode is invisible from the process list, which is why it is
+# written here.
 #
-# That is recorded as a risk and NOT acted on.  The fix would be to
-# change the resume order so fresh cubes are attempted before straggler
-# repeats, and that is a change to `rust/`, which this branch has
-# deliberately not touched since 105b00e0 and which is outside what the
-# current instruction covers.  Flagged for a decision rather than made
-# quietly.  Note also that the two-restarts-in-24-minutes reading is a
-# sample of one gap: do not conclude the cadence has permanently
-# changed, only that it HAS been short enough to matter.
+# **THE PREVIOUS PARAGRAPH'S OWN CAVEAT IS NOW WITHDRAWN.**  One batch
+# ago this said "two-restarts-in-24-minutes is a sample of one gap; do
+# not conclude the cadence has permanently changed".  That caution was
+# right to write and is now overtaken: the very next gap was FIVE
+# MINUTES.  Three consecutive gaps -- 3 h 43 m, 24 m, 5 m -- are all
+# below the 7.5 hours the sweep needs, and the last is below the 3 h a
+# SINGLE straggler attempt needs, so nothing at all can now complete.
+# The run is not progressing; it is being restarted.
+#
+# STILL NOT ACTED ON, AND THE OPTIONS ARE WRITTEN DOWN RATHER THAN
+# CHOSEN.  Each changes the experiment, so each is a decision and not a
+# repair:
+#   (a) accept it and keep restarting -- costs nothing, banks nothing
+#       while the cadence holds;
+#   (b) lower `--seconds` so an attempt fits inside the observed uptime.
+#       This CHANGES THE CAP, which the budget rule governs, and would
+#       mix rows measured at different caps into one file -- the exact
+#       confusion 52.1 and 50.3 were about;
+#   (c) change the resume order so fresh cubes are attempted before
+#       straggler repeats.  Cheap sub-cubes have landed in 300-2400 s
+#       and would fit inside even a 24 m window, so this is the option
+#       that would actually bank rows -- but it is a change under
+#       `rust/`, which this branch has not touched since 105b00e0, and
+#       that untouched tree is what the gates argument in the PR body
+#       rests on.
+# Flagged for a decision rather than made quietly.
 #
 # WHAT THE SEVENTH RESTART ACTUALLY COST, WHICH IS LESS THAN "FOUR
 # SOLVERS' WORK" SOUNDS.  Both the sixth and the seventh landed while
