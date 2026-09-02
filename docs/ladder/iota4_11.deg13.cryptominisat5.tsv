@@ -88,27 +88,48 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 91 UNSAT, 6 UNKNOWN, 0 SAT over 97 labels -- 91 of 1949, so
-# 4.7% of the cube, and the rung's bound is untouched.  The rule's
-# twelve-attempt window reads 0.82 UNSAT/h, down from 1.18 and 1.74 but
-# still well clear of zero and flat across the last two batches, so the
-# 10800 s cap holds.  The eight-attempt
-# window reads 0.36; it is not the window the rule uses, for the reason
-# recorded below -- it under-read the cap twice.
+# STANDING: 91 UNSAT, 7 UNKNOWN, 0 SAT over 98 labels -- 91 of 1949, so
+# 4.7% of the cube, and the rung's bound is untouched.
 #
-# THE STRAGGLERS, AND A SIXTH THAT IS NEW IN KIND.  Five labels have now
-# stalled three or four times each at this cap, and every one of them
-# opens with SIX 13s:
+# THE RATE IS FALLING AND THE RULE STILL SAYS HOLD.  The twelve-attempt
+# window has read 1.74, 1.18, 0.81, 0.82 and now 0.67 UNSAT/h over the
+# last five batches.  That is a decline, it is named here rather than
+# smoothed over, and it does not trigger a raise: the rule is stated
+# against ZERO, not against the previous reading, precisely because this
+# header twice acted on a fall that then recovered.  0.67 is not zero.
+# Hold, and read it again next batch.  The eight-attempt window reads
+# 0.95 and is not the window the rule uses -- it under-read the cap
+# twice, which is the same reason.
 #
-#     [.. 12, 12, 11, 10, 5]   4 attempts     [.. 12, 11, 11, 9, 7]   3
-#     [.. 12, 11, 11, 10, 6]   3 attempts     [.. 12, 11, 10, 10, 7]  3
-#     [.. 12, 11, 10, 9, 8]    3 attempts
+# THE STRAGGLERS: SEVEN LABELS, AND THE SPLIT IS NO LONGER 6-ONLY.
 #
-# The sixth is [13,13,13,13,13, 12,12,11,11,10,7] -- FIVE leading 13s,
-# stalled on its first attempt.  It is the first 5-family sub-cube this
-# solver has failed to decide, against thirteen it decided, and it is
-# the second thing in two batches to say the 5-family is not the cheap
-# one this file briefly read it as.
+#   lead13=6  [.. 12, 12, 11, 10, 5]  4 attempts
+#             [.. 12, 11, 11, 10, 6]  3     [.. 12, 11, 11, 9, 7]  3
+#             [.. 12, 11, 10, 10, 7]  3     [.. 12, 11, 10, 9, 8]  3
+#   lead13=5  [.. 12, 12, 11, 11, 10, 7]  1 attempt
+#             [.. 12, 12, 11, 11,  9, 8]  1 attempt
+#
+# The two 5-family stallers arrived in consecutive batches, both on a
+# first attempt.  The 5-family now stands at 14 decided of 16 labels
+# attempted -- a 12.5% stall rate against the 6-family's 5 of 30, 17% --
+# and median 5929 against 6136.  **On both measures the 5-family now
+# looks like the 6-family**, which is the cleanest statement of what
+# four batches have established, and the exact opposite of the reading
+# this header declined to make at n = 11.
+#
+# ONE FINER PATTERN, RECORDED AS A CANDIDATE AND NOT AS A FINDING.  Both
+# 5-family stallers share a NINE-long opening with a decided sub-cube:
+#
+#     13,13,13,13,13, 12,12,11,11 | 11, 6    UNSAT    7412.9
+#     13,13,13,13,13, 12,12,11,11 | 10, 7    UNKNOWN 10917.0
+#     13,13,13,13,13, 12,12,11,11 |  9, 8    UNKNOWN 10929.6
+#
+# Cost rising as the last two degrees flatten, at a fixed nine-prefix.
+# That is the minimum-degree effect the correlation table already
+# carries, seen at one prefix instead of across the cube.  **n = 3.  It
+# is written here so the next session can check it against a fourth, not
+# so it can be used.**  Every pattern this file has read at small n has
+# been wrong.
 #
 # COST BY LEADING 13s, AND A READING THIS HEADER IS DECLINING TO MAKE:
 #
