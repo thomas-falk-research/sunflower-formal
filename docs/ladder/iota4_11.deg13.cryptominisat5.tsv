@@ -88,10 +88,11 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 90 UNSAT, 6 UNKNOWN, 0 SAT over 96 labels -- 90 of 1949, so
-# 4.6% of the cube, and the rung's bound is untouched.  The rule's
-# twelve-attempt window reads 0.81 UNSAT/h, down from 1.18 and 1.74 but
-# still well clear of zero, so the 10800 s cap holds.  The eight-attempt
+# STANDING: 91 UNSAT, 6 UNKNOWN, 0 SAT over 97 labels -- 91 of 1949, so
+# 4.7% of the cube, and the rung's bound is untouched.  The rule's
+# twelve-attempt window reads 0.82 UNSAT/h, down from 1.18 and 1.74 but
+# still well clear of zero and flat across the last two batches, so the
+# 10800 s cap holds.  The eight-attempt
 # window reads 0.36; it is not the window the rule uses, for the reason
 # recorded below -- it under-read the cap twice.
 #
@@ -116,7 +117,7 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    13     936      6096    7838
+#        5    14     936      5929    7838
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -128,6 +129,7 @@
 #     n = 11   median 3653     "peak at six" looked available
 #     n = 12   median 4875     a third of the way to the 6-family
 #     n = 13   median 6096     level with the 6-family's 6136
+#     n = 14   median 5929     still level; the move was not a blip
 #
 # So the apparent peak was an artefact of a family's opening, exactly as
 # the refusal said it might be.  This is the second time in this file
@@ -148,20 +150,20 @@
 #
 # TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE RANKING BETWEEN THEM HAS
 # ALREADY FLIPPED ONCE.  Correlation of UNSAT cost against candidate
-# predictors, recomputed over all 90 decided sub-cubes, with the reading
+# predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                        n = 90        n = 67
+#                        n = 91        n = 67
 #     distinct values    r = +0.69     r = +0.63   <- best now
 #     sum of squares     r = -0.64     r = -0.65
 #     leading 13s        r = -0.62     r = -0.75   <- was best
 #     MINIMUM degree     r = +0.53     r = +0.53
 #     count deg >= 12    r = -0.40     r = -0.39
-#     count deg >= 11    r = -0.19     r = -0.23
+#     count deg >= 11    r = -0.20     r = -0.23
 #
 # THE HEADER'S OWN WARNING CAME TRUE ON ITS OWN DATA.  At n = 67 this
 # table called leading 13s "the best single predictor" and then said "do
-# not over-fit this".  Twenty-three sub-cubes later leading 13s has fallen
+# not over-fit this".  Twenty-four sub-cubes later leading 13s has fallen
 # from -0.75 to -0.62 and distinct values has passed it.  Nothing about
 # the cube changed; the sample did.  Treat every r in this table as a
 # statement about the 89 sub-cubes measured, not about the cube.
@@ -177,7 +179,7 @@
 # values" is a third measure of the same flatness, which is why it moves
 # with the other two.
 #
-# Do not over-fit this: n = 90, and no family below five leading 13s is
+# Do not over-fit this: n = 91, and no family below five leading 13s is
 # measured, which is where the remaining ~1860 sub-cubes are.
 #
 # THE RULE HELD, AND NEEDED A WINDOW.  Last batch the 10800 s cap read
@@ -492,3 +494,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 11, 6]	UNSAT	7412.9
 g=11 [13, 13, 13, 13, 13, 12, 12, 12, 10, 9, 8]	UNSAT	7838.0
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10911.1
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10917.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 10, 10, 10, 9]	UNSAT	5761.1
