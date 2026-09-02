@@ -88,7 +88,7 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 93 UNSAT, 9 UNKNOWN, 0 SAT over 102 labels -- 93 of 1949, so
+# STANDING: 94 UNSAT, 9 UNKNOWN, 0 SAT over 103 labels -- 94 of 1949, so
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -114,7 +114,7 @@
 # trend.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  0.70 is five UNSAT in the last twelve, not zero or one.
+# recovered.  0.87 is six UNSAT in the last twelve, not zero or one.
 #
 # SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
 # in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
@@ -133,20 +133,23 @@
 #             [.. 12, 12, 11, 10,  9, 9]  1 attempt
 #
 # Four 5-family stallers, in four consecutive batches, every one on a
-# first attempt.  The 5-family stands at 16 decided of 20 labels -- a
-# 20% stall rate against the 6-family's 5 of 30, 16.7%.  4 of 20 against
+# first attempt.  The 5-family stands at 17 decided of 21 labels -- a
+# 19% stall rate against the 6-family's 5 of 30, 16.7%.  4 of 21 against
 # 5 of 30 is not a significant difference; what is established is the
-# sign, not the size.
+# sign, not the size, and two batches with no new 5-family stall have
+# already moved it from 21.1% to 19%.
 #
 # **AND THE MEDIAN COMPARISON IS WITHDRAWN, BECAUSE THE MEDIAN HAS NEVER
-# BEEN STABLE.**  The 5-family median has taken six values as the family
-# filled in:
+# BEEN STABLE.**  The 5-family median has taken SEVEN values as the
+# family filled in:
 #
-#     n = 11  3653      n = 14  5929
+#     n = 11  3653      n = 14  5929      n = 17  5761
 #     n = 12  4875      n = 15  5761
 #     n = 13  6096      n = 16  4707
 #
-# Up, up, up, down, down -- and no reading has survived two batches.
+# Up, up, up, down, down, up -- and no reading has survived two batches.
+# The seventh value is the fifth distinct one, and it is a return to
+# 5761, which is the closest this sequence has come to repeating.
 # Two batches ago this header said "on both measures the 5-family
 # matches the 6-family"; one batch ago it said the 5-family had crossed
 # to being worse; at n = 16 the median is 4707 against 6136 and says
@@ -174,7 +177,7 @@
 #        9         26        0         0.0%
 #        8         36        1         2.7%
 #        7         18        8        30.8%
-#        6          9        0         0.0%   <- n = 9, and STILL zero
+#        6         10        0         0.0%   <- n = 10, still zero
 #
 #   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
 #
@@ -205,7 +208,7 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    16     936      4707    7838
+#        5    17     936      5761    7838
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -589,3 +592,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10889.3
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 11, 7]	UNSAT	2888.5
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10881.7
 g=11 [13, 13, 13, 13, 13, 12, 11, 10, 10, 10, 10]	UNSAT	3373.1
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 9, 9]	UNSAT	7047.2
