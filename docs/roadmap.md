@@ -12951,6 +12951,57 @@ n = 25; the 5-family at n = 11, refuted at n = 13), and both times the
 correction went the same way: the family was more expensive than its
 opening suggested, never less.
 
+### 54.3a Five withdrawals with one shape, and the rule they yield
+
+The seventh correction above was not the last, and the ones after it
+matter less individually than as a set. Over the session's later batches
+the ladder header made five quantitative readings and withdrew every one:
+
+| Reading | Withdrawn when |
+|---|---|
+| A cost plateau at six leading 13s, on `n = 7` | `n = 25` |
+| The 5-family cheaper than the 6-family, by median at `n = 11` | `n = 13`, then re-overturned at 14, 15, 16, 17 |
+| The families compared by **median** at all | The 5-family median took seven values — 3653, 4875, 6096, 5929, 5761, 4707, 5761 — and no reading survived two batches |
+| The families compared by **stall count**, which replaced the median | One batch later: 4 of 23 (17.4%) against 5 of 30 (16.7%), so even the sign vanished |
+| **Leading 13s as a cost predictor** — "the best single predictor" at `r = -0.75` | The coefficient fell at *every* measurement: `-0.75` at `n = 67`, `-0.62` at `n = 91`, `-0.46` at `n = 99`, while `distinct values` held at `+0.63/+0.69/+0.69` |
+
+Alongside them the rate itself was narrated three times — "monotone
+decline", "levelling", and an earlier `0.21` called terminal — and each
+description was overtaken by the very next batch. The rate is now
+`1.97 UNSAT/h`, above the `1.74` it started at.
+
+> **Every quantity this development computed over fewer than about
+> thirty events has been overturned by its own continuation.** Not one
+> was wrong because the arithmetic was wrong; each was a real
+> computation over a sample chosen by when a batch happened to end.
+
+Two mechanical consequences, both cheap and both worth applying before
+the next such reading rather than after it.
+
+**Check the denominator's leverage first.** A rate built on four events
+moves four percentage points when the denominator moves by four. The
+5-family stall comparison could never have separated 17% from 21% at
+`n ≈ 20`, and one division would have said so before five batches were
+spent narrating the gap.
+
+**A coefficient that decays as the sample grows is measuring the
+enumeration, not the object.** That is the leading-13s diagnosis and it
+is checkable the moment a second measurement exists: `-0.75 → -0.62 →
+-0.46` while a competing statistic sits flat is not noise, it is a
+statistic tracking arrival order. The enumeration walks families in
+descending order, so many-13s means early, early means
+early-within-family, and every family opens cheap. The two sub-cubes at
+**four** leading 13s decided in 433 s and 1094 s — the model's own
+prediction reversed.
+
+What survives the whole set is one description and it is not a cost
+model: the **leading run of degrees `≥ 12`** predicts whether a sub-cube
+decides at all. Eight of nine stalls sit at exactly 7; nothing at nine or
+more has stalled in thirty-two labels; 6 is eleven decided and zero
+stalled. Its 6-bucket breaks monotonicity, it rests on ~110 labels of
+1949, and it is offered as a description rather than a model — which is
+the distinction the five withdrawals above were all failures to make.
+
 **The generalisation, which is §51.4's pattern sharpened.** When two
 components disagree about a value, the case anyone checks is usually the
 case where they agree — §37.4's cross-check at `deg(0) = 12` is the
