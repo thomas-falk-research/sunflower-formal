@@ -106,8 +106,9 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 112 UNSAT, 10 UNKNOWN, 0 SAT over 122 labels -- 112 of 1949,
-# 209 rows.
+# STANDING: 113 UNSAT, 10 UNKNOWN, 0 SAT over 123 labels -- 113 of 1949,
+# 210 rows.  The 8-window has since climbed to 3 of 8 and the 12-window
+# sits at 4 of 12; both now say hold and the disagreement is closed.
 #
 # **THE 8-vs-12 WINDOW TEST IS RESOLVED, AND THE 12-WINDOW WAS RIGHT.**
 # This is the one prediction in this file that was written down BEFORE
@@ -252,7 +253,7 @@
 #        9         30        0         0.0%
 #        8         41        1         2.4%
 #        7         22        8        26.7%
-#        6         11        1         8.3%   <- NO LONGER ZERO
+#        6         12        1         7.7%   <- NO LONGER ZERO
 #        5          3        0         0.0%   <- three labels so far
 #
 # **"ZERO ON BOTH SIDES OF THE PEAK" IS WITHDRAWN, ONE BATCH AFTER THIS
@@ -290,7 +291,7 @@
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
 #        5    21     936      3653    8647
-#        4    14     433      1947    5492   <- OPENING, see below
+#        4    15     433      2093    5492   <- OPENING, see below
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -327,10 +328,10 @@
 # predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                   n = 110  n = 109  n = 103   n = 99   n = 91   n = 67
-#   distinct values  r = +0.63   +0.62    +0.68    +0.69    +0.69    +0.63
-#   leading 13s      r = -0.22   -0.24    -0.35    -0.46    -0.62    -0.75
-#   run>=12          r = -0.32   -0.33      --     -0.34      --       --
+#                   n = 113  n = 110  n = 103   n = 99   n = 91   n = 67
+#   distinct values  r = +0.62   +0.63    +0.68    +0.69    +0.69    +0.63
+#   leading 13s      r = -0.21   -0.22    -0.35    -0.46    -0.62    -0.75
+#   run>=12          r = -0.31   -0.32      --     -0.34      --       --
 #   MINIMUM degree   r = +0.40     --     +0.49    +0.49    +0.53    +0.53
 #   sum of squares      --         --     -0.57    -0.57    -0.64    -0.65
 #
@@ -806,3 +807,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10880.4
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10906.6
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 9, 9]	UNSAT	5127.4
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 10, 8]	UNSAT	5492.5
+g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 11, 8]	UNSAT	2260.0
