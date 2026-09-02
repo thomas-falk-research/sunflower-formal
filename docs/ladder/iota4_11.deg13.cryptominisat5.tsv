@@ -106,10 +106,9 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 125 UNSAT, 10 UNKNOWN, 0 SAT over 135 labels -- 125 of 1949,
-# 224 rows.  **The 12-window reads 12 of 12** -- the first clean sweep of
-# a full window in the run, and the furthest the cap has ever been from
-# its raise condition.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 127 UNSAT, 10 UNKNOWN, 0 SAT over 137 labels -- 127 of 1949,
+# 226 rows.  **The 12-window reads 12 of 12** -- a clean sweep, and the
+# furthest the cap has ever been from its raise condition.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -258,8 +257,8 @@
 # STALLS far more sharply than leading-13s does:
 #
 #     run>=12    decided  stalled   stall rate
-#       10          6        0         0.0%
-#        9         35        0         0.0%
+#       10          7        0         0.0%
+#        9         36        0         0.0%
 #        8         41        1         2.4%
 #        7         23        8        25.8%
 #        6         14        1         6.7%   <- NO LONGER ZERO
@@ -303,8 +302,8 @@
 #
 #    #13s    n     min    median     max
 #      9     6     128       789     977
-#      8    25     319      1971    2840   <- holds the six violators
-#      7    27     756      4622    7179
+#      8    26     319      2004    2840   <- holds seven of the eight
+#      7    28     756      4583    7179
 #      6    25     731      6136   10866
 #      5    21     936      3653    8647
 #      4    21     433      2103    6412   <- OPENING, see below
@@ -361,26 +360,50 @@
 #     [13,13,13, 12, 13,13,13,13,13,  9, 3]    2331.5
 #     [13,13,13, 12, 13,13,13,13,13,  8, 4]    2400.1
 #     [13,13,13, 12, 13,13,13,13,13,  7, 5]    2839.7  <- PREDICTED
+#     [13,13,13, 12, 13,13,13,13,13,  6, 6]    2347.3  <- PREDICTED
 #      anchor  block1     block2      tail
+#
+#   and an EIGHTH of a different shape, in the same batch:
+#
+#     [13,13,13, 12, 13,13,13,13,12, 12, 1]    2333.3
 #
 # Identical through nine positions; only the last two move, and they
 # move as `x + y = 12` with `x` walking down from 12.  The violation is
 # exactly "block 1's minimum drops below block 2's maximum", the only
 # way a block-sorted pair can fail to be globally sorted.
 #
-# **THE PREDICTION WAS MADE LAST BATCH AND HALF OF IT HAS LANDED.**  The
-# header said: if the enumeration continues down this family the
-# remaining members are tails `7,5` and `6,6`, two more violators of
-# this exact shape and then the family ends.  The very next row was
-# `7,5`, at 2839.7 s.  **One member remains predicted: tail `6,6`.**
+# **BOTH PREDICTIONS ARE NOW RESOLVED, AND THEY RESOLVED DIFFERENTLY.**
+# They were written down before the rows arrived, which is the only
+# reason either verdict is worth anything.
 #
-# Also predicted and also holding: the cost rises monotonically down the
-# family -- 319, 1018, 1692, 2332, 2400, 2840 -- as the tail flattens
-# from `12,0` toward `6,6`.  That is the minimum-degree effect this
-# header has carried since n = 67, seen along a single family with
-# everything else held fixed, which is the cleanest instance of it in
-# the file.  If `6,6` lands above 2840 the reading survives; if it lands
-# below, the effect is not monotone and the header should say so.
+# (a) MEMBERSHIP -- CONFIRMED, then immediately widened.  The header
+#     said the remaining members were tails `7,5` and `6,6` and then the
+#     family ends.  Both arrived, in that order.  It also said "a
+#     violator of a DIFFERENT shape would mean the region is wider than
+#     this reading" -- and one came in the same batch:
+#     `[13,13,13,12,13,13,13,13,12,12,1]`, where position 8 is 12 rather
+#     than 13.  So the family prediction was exactly right and the
+#     surrounding claim was exactly wrong, both inside one batch.  The
+#     violators are not one family; that family was the first of
+#     several, and the header now expects more shapes rather than more
+#     members.
+#
+# (b) MONOTONE COST -- **REFUTED.**  The header said: if `6,6` lands
+#     above 2840 s the reading survives, if below, the effect is not
+#     monotone and that gets recorded rather than explained away.  It
+#     landed at **2347.3 s**, below `7,5`'s 2840 and below `8,4`'s 2400:
+#
+#         12,0    319.1        9,3   2331.5        6,6   2347.3
+#         11,1   1018.0        8,4   2400.1
+#         10,2   1692.4        7,5   2839.7
+#
+#     Cost rises steeply from `12,0` to `9,3`, then flattens across
+#     `9,3`, `8,4` and `6,6` at 2331-2400, with `7,5` sticking out at
+#     2840.  **The minimum-degree reading survives only as far as the
+#     first four members.**  Six of the seven sit in a band; calling that
+#     monotone was reading a curve through a plateau plus one outlier.
+#     Recorded as a refutation because that is what a pre-registered
+#     prediction is for.
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
@@ -397,8 +420,8 @@
 #   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
 #     runs the wrong way for the story this header was telling:
 #
-#         leading run of 13s   r = -0.14 -> -0.13 -> -0.12 -> -0.10 -> -0.09
-#         COUNT of 13s         r = -0.21 -> -0.21 -> -0.21 -> -0.23 -> -0.23
+#         leading run of 13s   -0.14 -0.13 -0.12 -0.10 -0.09 -0.07
+#         COUNT of 13s         -0.21 -0.21 -0.21 -0.23 -0.23 -0.24
 #
 #     Five readings.  Under counts the coefficient sat at -0.21 three
 #     times and is now -0.23; the leading-run version has gone -0.14,
@@ -938,3 +961,5 @@ g=11 [13, 13, 13, 13, 12, 12, 11, 11, 10, 10, 10]	UNSAT	5737.6
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 9, 3]	UNSAT	2331.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 8, 4]	UNSAT	2400.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 7, 5]	UNSAT	2839.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 6, 6]	UNSAT	2347.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 12, 1]	UNSAT	2333.3
