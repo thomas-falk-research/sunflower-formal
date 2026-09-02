@@ -48,19 +48,32 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
-# SIX CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
-# ~17:53 UTC and killed the driver and all four solvers mid-flight.  On
-# restart the same command printed "checkpoint: 129 of 1949 cubes
-# already decided" and resumed -- a number that matches an independent
-# recount of the distinct UNSAT labels in this file, which is the check
-# that makes "zero rows lost" a verified statement and not a hope.
-# Every banked UNSAT survived; the only work lost is the partial search
-# in the four solvers that were running, which is bounded by the cap.
+# SEVEN CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
+# ~17:53 UTC and the seventh at ~21:36 UTC; each killed the driver and
+# all four solvers mid-flight.  Both times the same command printed
+# "checkpoint: 129 of 1949 cubes already decided" and resumed -- a number
+# that matches an independent recount of the distinct UNSAT labels in
+# this file, which is the check that makes "zero rows lost" a verified
+# statement and not a hope.  Every banked UNSAT survived; the only work
+# lost is the partial search in the four solvers that were running,
+# which is bounded by the cap.
 # **This is the entire argument for the degree-sequence split over the
-# whole-cube monolith, and it is now demonstrated six times rather than
-# argued once** -- the monolith has twice been killed at ~85000 s and
-# lost everything, because a single instance has nothing to check
+# whole-cube monolith, and it is now demonstrated seven times rather
+# than argued once** -- the monolith has twice been killed at ~85000 s
+# and lost everything, because a single instance has nothing to check
 # point.
+#
+# WHAT THE SEVENTH RESTART ACTUALLY COST, WHICH IS LESS THAN "FOUR
+# SOLVERS' WORK" SOUNDS.  Both the sixth and the seventh landed while
+# the resume policy was re-running stragglers, so what was in flight
+# both times was straggler repeats -- at the seventh, cubes c71, c95,
+# c96 and c97, about forty minutes into a 10800 s cap.  At the measured
+# 0.11 per repeat those four attempts carried an expected yield of
+# about 0.44 UNSAT, and they were forty minutes of the way to earning
+# it.  The loss is real but it is small, and it is smaller than the
+# same interruption would have been against fresh sub-cubes.  Recorded
+# because "killed four solvers mid-flight" invites overestimating the
+# damage, and the number is available rather than guessed at.
 #
 # NOTE ON RESTART: phase one re-runs the WHOLE deg(0) = 13 cube for one
 # --slice (60 s) before re-splitting.  On a fresh start you will see a
