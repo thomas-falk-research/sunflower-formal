@@ -107,9 +107,32 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 110 UNSAT, 10 UNKNOWN, 0 SAT over 120 labels -- 110 of 1949,
-# unchanged this batch: all four rows were straggler repeats and all four
-# came back UNKNOWN.  The rule's twelve-attempt window still reads 7 of
-# 12 and 1.47 UNSAT/h, so the cap holds.
+# unchanged across TWO batches now, 207 rows.  Both were straggler
+# repeats and all eight came back UNKNOWN.
+#
+# **THE 8-WINDOW AND THE 12-WINDOW NOW DISAGREE, WHICH IS THE FIRST LIVE
+# TEST OF THE RULE THAT SAYS IGNORE THE 8.**
+#
+#     last  8 attempts   0 UNSAT / 8    6.05 h    0.00 UNSAT/h
+#     last 12 attempts   4 UNSAT / 12   6.62 h    0.60 UNSAT/h
+#
+# The 8-window reads exactly zero -- the raise trigger, if it were the
+# window in use.  The 12-window reads four in twelve, nowhere near the
+# 0-or-1 condition.  **The rule says HOLD, and it is being obeyed.**
+# This header adopted the twelve-attempt window because the eight
+# under-read the cap twice, and both of those readings were followed by
+# recoveries; this is the first time the two windows have actually
+# pointed opposite ways, so it is the first time the choice has cost
+# anything.  Recorded now, before the outcome is known, so that the next
+# session can see whether the rule was right rather than read a
+# rationalisation written afterwards.
+#
+# The eight zero-yield attempts are all straggler repeats, which is the
+# whole reason the 8-window is degenerate here: a resume re-runs every
+# UNKNOWN label before advancing, so the window immediately after a
+# restart is guaranteed to be dense in known-hard instances and says
+# nothing about the frontier.  The run has since moved on to fresh
+# cubes (c98, c103, c119, c120).
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -426,24 +449,28 @@
 # **THE RATE WAS FIRST WRITTEN HERE AS 0.37 AND THAT WAS A DENOMINATOR
 # ERROR.**  Eight LABELS have been re-attempted, but they account for
 # SEVENTEEN repeat ATTEMPTS, because five of them have stalled three or
-# four times each.  Three successes in seventeen repeats is **0.18 per
+# four times each.  Three successes in seventeen repeats was **0.18 per
 # repeat, not 0.37** -- half what this header claimed one batch earlier.
+# It has since fallen again: **3 of 21 repeats = 0.14**, after eight more
+# straggler re-runs banked nothing.
 # Roadmap 54.3a's first check is "look at the denominator's leverage
 # before reading a rate", and this file made exactly that error two
 # batches after writing the check down.  Recorded rather than quietly
 # fixed, because a rule broken by its own author is the useful evidence
 # that the rule is worth having.
 #
-# THE FOUR STRAGGLERS THE FIFTH RESTART PUT BACK IN FLIGHT ALL RETURNED
-# UNKNOWN.  Expected yield on the (correct) 0.18 was 0.7; observed 0.
-# That is unremarkable at these counts and is NOT evidence the effect is
-# gone -- it is the same small-sample trap from the other side, and the
-# honest reading is that three successes is what the whole estimate
-# rests on.
+# EIGHT STRAGGLERS RE-RUN AFTER THE FIFTH RESTART, ALL RETURNING
+# UNKNOWN.  Expected yield on the then-current 0.18 was about 1.4;
+# observed 0.  Two rounds of zero is starting to be information rather
+# than noise, but three successes is still what the whole estimate rests
+# on, and the estimate has only ever moved DOWN as the denominator was
+# corrected and then grew: 0.37 (wrong denominator), 0.18, now 0.14.
+# **Do not read the trend in those three numbers either** -- the first
+# was an error, not a measurement, so the series is two points.
 #
 # CONSEQUENCE FOR THE RESUME POLICY, which the driver already had right:
 # re-running UNKNOWN rows is worth something rather than nothing, and
-# 0.18 per repeat is the current best number for "something".  **The
+# 0.14 per repeat is the current best number for "something".  **The
 # intuition that a repeat at a fixed cap is a repeat of a finished
 # experiment is wrong for this solver, and the file says so with counts
 # rather than with a claim about determinism.**
@@ -763,3 +790,7 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10878.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10892.4
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10893.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10916.2
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10870.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10912.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10880.4
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10906.6
