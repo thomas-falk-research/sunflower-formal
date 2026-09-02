@@ -88,7 +88,7 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 107 UNSAT, 10 UNKNOWN, 0 SAT over 117 labels -- 107 of 1949,
+# STANDING: 109 UNSAT, 10 UNKNOWN, 0 SAT over 119 labels -- 109 of 1949,
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -114,7 +114,7 @@
 # trend.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  5.40 is ELEVEN UNSAT in the last twelve -- the highest
+# recovered.  4.87 is ELEVEN UNSAT in the last twelve -- the highest
 # this cap has ever read, more than double the 1.74 that opened the
 # sequence.  The "decline" is not merely reversed, it is gone, and the
 # low reading it was drawn from (0.51) is now the outlier of the series
@@ -196,8 +196,8 @@
 #     run>=12    decided  stalled   stall rate
 #       10          5        0         0.0%
 #        9         30        0         0.0%
-#        8         40        1         2.4%
-#        7         18        8        30.8%
+#        8         41        1         2.4%
+#        7         19        8        29.6%
 #        6         11        1         8.3%   <- NO LONGER ZERO
 #        5          3        0         0.0%   <- three labels so far
 #
@@ -236,7 +236,7 @@
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
 #        5    21     936      3653    8647
-#        4     9     433      1116    2198   <- OPENING, see below
+#        4    11     433      1801    2572   <- OPENING, see below
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -273,18 +273,31 @@
 # predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                   n = 107  n = 105  n = 103   n = 99   n = 91   n = 67
-#   distinct values  r = +0.63   +0.65    +0.68    +0.69    +0.69    +0.63
-#   leading 13s      r = -0.27   -0.31    -0.35    -0.46    -0.62    -0.75
-#   sum of squares      --       -0.55    -0.57    -0.64    -0.65
-#   MINIMUM degree      --       +0.47    +0.49    +0.53    +0.53
-#   run>=12             --       -0.32    -0.34      --       --
+#                   n = 109  n = 107  n = 103   n = 99   n = 91   n = 67
+#   distinct values  r = +0.62   +0.63    +0.68    +0.69    +0.69    +0.63
+#   leading 13s      r = -0.24   -0.27    -0.35    -0.46    -0.62    -0.75
+#   run>=12          r = -0.33     --       --     -0.34      --       --
+#   MINIMUM degree   r = +0.40     --     +0.49    +0.49    +0.53    +0.53
+#   sum of squares      --         --     -0.57    -0.57    -0.64    -0.65
+#
+# **run>=12 HAS OVERTAKEN leading-13s AS A COST CORRELATE, AND IT DID SO
+# BY STANDING STILL.**  Its three measurements are -0.34 at n = 99,
+# -0.32 at n = 101 and -0.33 at n = 109: a spread of 0.02 across ten
+# sub-cubes' growth, while leading-13s went -0.46 to -0.24 over the same
+# span.  So of the two statistics this header has been contrasting, the
+# stable one is NOT "distinct values" -- which has drifted +0.69 to
+# +0.62 -- but run>=12, which was introduced as a STALL predictor and
+# explicitly disclaimed as a cost model.  It is still not offered as
+# one: three measurements is three, and a coefficient of -0.33 explains
+# about a ninth of the variance.  What is worth recording is only that
+# the ordering flipped and which statistic held.
 #
 # **THE LEADING-13s COEFFICIENT HAS FALLEN AT EVERY MEASUREMENT: -0.75
 # at n = 67, then -0.62, -0.46, -0.42, -0.38, -0.35, -0.33, -0.31, and
-# -0.27 at n = 107.**  Nine readings, each lower than the last.  It is
-# now 36% of what it was when this file called it "the best single
-# predictor".
+# -0.27 at n = 107, and -0.24 at n = 109.**  Ten readings, each lower
+# than the last.  It is now 32% of what it was when this file called it
+# "the best single predictor", and it is no longer even the best of the
+# three statistics measured this batch.
 #
 # **AND A CORRECTION TO HOW THAT WAS PUT.**  Three batches running this
 # header said the contrast was "one statistic collapsing while another
@@ -676,3 +689,5 @@ g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 6]	UNSAT	2092.9
 g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 10, 7]	UNSAT	2102.9
 g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 10, 8]	UNSAT	1801.2
 g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 9, 8]	UNSAT	2198.5
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 9, 9]	UNSAT	2126.8
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 11, 7]	UNSAT	2571.5
