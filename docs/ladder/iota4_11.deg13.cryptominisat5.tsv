@@ -106,33 +106,43 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 110 UNSAT, 10 UNKNOWN, 0 SAT over 120 labels -- 110 of 1949,
-# unchanged across TWO batches now, 207 rows.  Both were straggler
-# repeats and all eight came back UNKNOWN.
+# STANDING: 112 UNSAT, 10 UNKNOWN, 0 SAT over 122 labels -- 112 of 1949,
+# 209 rows.
 #
-# **THE 8-WINDOW AND THE 12-WINDOW NOW DISAGREE, WHICH IS THE FIRST LIVE
-# TEST OF THE RULE THAT SAYS IGNORE THE 8.**
+# **THE 8-vs-12 WINDOW TEST IS RESOLVED, AND THE 12-WINDOW WAS RIGHT.**
+# This is the one prediction in this file that was written down BEFORE
+# its outcome, so it is the only one whose verdict is not a
+# rationalisation.
 #
-#     last  8 attempts   0 UNSAT / 8    6.05 h    0.00 UNSAT/h
-#     last 12 attempts   4 UNSAT / 12   6.62 h    0.60 UNSAT/h
+# Recorded at 207 rows, with the two windows disagreeing for the first
+# time in the session:
 #
-# The 8-window reads exactly zero -- the raise trigger, if it were the
-# window in use.  The 12-window reads four in twelve, nowhere near the
-# 0-or-1 condition.  **The rule says HOLD, and it is being obeyed.**
-# This header adopted the twelve-attempt window because the eight
-# under-read the cap twice, and both of those readings were followed by
-# recoveries; this is the first time the two windows have actually
-# pointed opposite ways, so it is the first time the choice has cost
-# anything.  Recorded now, before the outcome is known, so that the next
-# session can see whether the rule was right rather than read a
-# rationalisation written afterwards.
+#     last  8 attempts   0 UNSAT / 8    0.00 UNSAT/h   <- raise trigger
+#     last 12 attempts   4 UNSAT / 12   0.60 UNSAT/h   <- hold
 #
-# The eight zero-yield attempts are all straggler repeats, which is the
-# whole reason the 8-window is degenerate here: a resume re-runs every
-# UNKNOWN label before advancing, so the window immediately after a
-# restart is guaranteed to be dense in known-hard instances and says
-# nothing about the frontier.  The run has since moved on to fresh
-# cubes (c98, c103, c119, c120).
+# The rule says use the 12 and it said HOLD.  Two rows later:
+#
+#     last  8 attempts   2 UNSAT / 8    0.38 UNSAT/h   <- no longer zero
+#     last 12 attempts   4 UNSAT / 12   0.57 UNSAT/h   <- still hold
+#
+# Had the raise fired on the 8-window it would have doubled the cap to
+# 21600 s in the batch immediately before the frontier resumed
+# converting.  **That is the third time the 8-window would have raised
+# wrongly** -- the header previously recorded two, both diagnosed
+# afterwards; this one was called in advance.
+#
+# WHY THE 8-WINDOW FAILS HERE, WHICH IS A STRUCTURAL REASON AND NOT BAD
+# LUCK.  A resume re-runs every UNKNOWN label before advancing, so the
+# eight attempts immediately after a restart are guaranteed to be
+# straggler repeats -- known-hard instances, selected precisely for
+# having failed. They say nothing about the frontier.  Any window short
+# enough to sit entirely inside that block will read zero.  The
+# twelve-attempt window survives because it is longer than the block of
+# stragglers this run has.  **If the straggler count ever exceeds
+# twelve, the 12-window inherits the same defect and the rule needs a
+# different guard -- most simply, exclude repeat attempts from the
+# window and count only first attempts.**  Ten stragglers today; the
+# margin is two.
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -241,7 +251,7 @@
 #       10          5        0         0.0%
 #        9         30        0         0.0%
 #        8         41        1         2.4%
-#        7         20        8        28.6%
+#        7         22        8        26.7%
 #        6         11        1         8.3%   <- NO LONGER ZERO
 #        5          3        0         0.0%   <- three labels so far
 #
@@ -280,7 +290,7 @@
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
 #        5    21     936      3653    8647
-#        4    12     433      1526    2572   <- OPENING, see below
+#        4    14     433      1947    5492   <- OPENING, see below
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -794,3 +804,5 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10870.9
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10912.0
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10880.4
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10906.6
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 9, 9]	UNSAT	5127.4
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 10, 8]	UNSAT	5492.5
