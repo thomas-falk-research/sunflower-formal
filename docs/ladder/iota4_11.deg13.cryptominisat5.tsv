@@ -48,6 +48,24 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
+# FIVE CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The fifth was at
+# 04:56 UTC and killed the driver and all four solvers mid-flight.  On
+# restart the same command printed "checkpoint: 110 of 1949 cubes
+# already decided" and resumed.  Every banked UNSAT survived; the only
+# work lost is the partial search in the four solvers that were running,
+# which is bounded by the cap.  **This is the entire argument for the
+# degree-sequence split over the whole-cube monolith, and it is now
+# demonstrated five times rather than argued once** -- the monolith has
+# twice been killed at ~85000 s and lost everything, because a single
+# instance has nothing to check point.
+#
+# NOTE ON RESTART: phase one re-runs the WHOLE deg(0) = 13 cube for one
+# --slice (60 s) before re-splitting.  On a fresh start you will see a
+# solver on `sf-sym-11-4-32-c0-...`, with no `seq` in the name, and the
+# split only appears a minute later on `...-seq-cNN-...`.  That is not a
+# regression to the monolith; it is `plan_phase_two`.  Wait for the
+# "checkpoint: N of 1949" line before concluding anything.
+#
 # `append_checkpoint` appends unconditionally and never dedups, so a
 # re-run leaves the old UNKNOWN row in place beside the new one.  Rows are
 # therefore >= cubes attempted, and a label may appear more than once.
@@ -88,7 +106,7 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 109 UNSAT, 10 UNKNOWN, 0 SAT over 119 labels -- 109 of 1949,
+# STANDING: 110 UNSAT, 10 UNKNOWN, 0 SAT over 120 labels -- 110 of 1949,
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -114,7 +132,7 @@
 # trend.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  4.87 is ELEVEN UNSAT in the last twelve -- the highest
+# recovered.  5.11 is ELEVEN UNSAT in the last twelve -- the highest
 # this cap has ever read, more than double the 1.74 that opened the
 # sequence.  The "decline" is not merely reversed, it is gone, and the
 # low reading it was drawn from (0.51) is now the outlier of the series
@@ -197,7 +215,7 @@
 #       10          5        0         0.0%
 #        9         30        0         0.0%
 #        8         41        1         2.4%
-#        7         19        8        29.6%
+#        7         20        8        28.6%
 #        6         11        1         8.3%   <- NO LONGER ZERO
 #        5          3        0         0.0%   <- three labels so far
 #
@@ -236,7 +254,7 @@
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
 #        5    21     936      3653    8647
-#        4    11     433      1801    2572   <- OPENING, see below
+#        4    12     433      1526    2572   <- OPENING, see below
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -273,10 +291,10 @@
 # predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                   n = 109  n = 107  n = 103   n = 99   n = 91   n = 67
-#   distinct values  r = +0.62   +0.63    +0.68    +0.69    +0.69    +0.63
-#   leading 13s      r = -0.24   -0.27    -0.35    -0.46    -0.62    -0.75
-#   run>=12          r = -0.33     --       --     -0.34      --       --
+#                   n = 110  n = 109  n = 103   n = 99   n = 91   n = 67
+#   distinct values  r = +0.63   +0.62    +0.68    +0.69    +0.69    +0.63
+#   leading 13s      r = -0.22   -0.24    -0.35    -0.46    -0.62    -0.75
+#   run>=12          r = -0.32   -0.33      --     -0.34      --       --
 #   MINIMUM degree   r = +0.40     --     +0.49    +0.49    +0.53    +0.53
 #   sum of squares      --         --     -0.57    -0.57    -0.64    -0.65
 #
@@ -294,7 +312,8 @@
 #
 # **THE LEADING-13s COEFFICIENT HAS FALLEN AT EVERY MEASUREMENT: -0.75
 # at n = 67, then -0.62, -0.46, -0.42, -0.38, -0.35, -0.33, -0.31, and
-# -0.27 at n = 107, and -0.24 at n = 109.**  Ten readings, each lower
+# -0.27 at n = 107, -0.24 at n = 109, -0.22 at n = 110.**  Eleven
+# readings, each lower
 # than the last.  It is now 32% of what it was when this file called it
 # "the best single predictor", and it is no longer even the best of the
 # three statistics measured this batch.
@@ -691,3 +710,4 @@ g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 10, 8]	UNSAT	1801.2
 g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 9, 8]	UNSAT	2198.5
 g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 9, 9]	UNSAT	2126.8
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 11, 7]	UNSAT	2571.5
+g=11 [13, 13, 13, 13, 12, 12, 12, 10, 10, 10, 10]	UNSAT	1250.2
