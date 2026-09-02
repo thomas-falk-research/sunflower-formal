@@ -12951,12 +12951,17 @@ n = 25; the 5-family at n = 11, refuted at n = 13), and both times the
 correction went the same way: the family was more expensive than its
 opening suggested, never less.
 
-### 54.3a Five withdrawals with one shape, and the rule they yield
+### 54.3a Eleven withdrawals with one shape, and the rules they yield
 
 The seventh correction above was not the last, and the ones after it
 matter less individually than as a set. Over the session's later batches
-the ladder header made eight quantitative readings and withdrew every
+the ladder header made eleven quantitative readings and withdrew every
 one:
+
+(The heading and this sentence read "five" and "eight" while the table
+below them grew to ten, which is its own small instance of the thing the
+section is about: a count written once and not re-derived when the thing
+it counts changes. Corrected here by counting the rows.)
 
 | Reading | Withdrawn when |
 |---|---|
@@ -12966,10 +12971,11 @@ one:
 | The families compared by **stall count**, which replaced the median | One batch later: 4 of 23 (17.4%) against 5 of 30 (16.7%), so even the sign vanished |
 | **Leading 13s as a cost predictor** — "the best single predictor" at `r = -0.75` | The coefficient fell at *every one of eleven* measurements: `-0.75` at `n = 67` down to `-0.22` at `n = 110` |
 | **"Zero on both sides of the stall peak"** in the `run≥12` table, which this file had just called the one description it had never withdrawn | The very next batch, when a `run≥12 = 6` label stalled at 10913.2 s. Eleven labels stood behind that zero |
-| **"One coefficient collapsing while another sits flat"** — the way the leading-13s collapse was argued for three batches | `distinct values` is not flat: `+0.69, +0.68, +0.68, +0.65, +0.63`. Both decay; only the *ratio* of rates, 0.53 against 0.06, is real. The statistic that actually held is `run≥12` at `-0.34, -0.32, -0.33` |
+| **"One coefficient collapsing while another sits flat"** — the way the leading-13s collapse was argued for three batches | `distinct values` is not flat: `+0.69, +0.68, +0.68, +0.65, +0.63`. Both decay; only the *ratio* of rates, 0.53 against 0.06, is real. (This row used to end "the statistic that actually held is `run≥12`" — see the next row but one, which withdraws that too) |
 | **"Stalling repeatedly at a cap establishes that the cap is too small"** | Eight labels were re-attempted at an *unchanged* 10800 s cap and three were decided by the repeat alone, each landing at less wall time than its own earlier stall |
 | **The yield of those repeats, first written as `0.37`** | One batch later, by this section's *own* first check: eight labels but **seventeen** repeat attempts, so `3/17 = 0.18`, half the figure claimed. See below |
 | **Every "leading run of degree ≥ k" statistic**, which assumed the degree sequences were sorted | Row 216. `symbreak` sorts **two blocks separately** — `deg(1..b−1)` and `deg(b..g−1)` — because the residual symmetry after fixing the anchor is `Sym({1..b−1}) × Sym({b..g−1})`. Global sortedness held for 215 rows by coincidence and then stopped |
+| **`run≥12` "held steady" and "overtook leading-13s by standing still"** — the replacement offered when leading-13s was withdrawn | It has since moved `-0.34, -0.32, -0.33, -0.31, -0.28, -0.27`: 0.07 from its peak, having been called stable on a spread of 0.02 |
 
 Alongside them the rate itself was narrated three times — "monotone
 decline", "levelling", and an earlier `0.21` called terminal — and each
