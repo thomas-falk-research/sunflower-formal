@@ -499,10 +499,22 @@
 # predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                   n = 115  n = 114  n = 110  n = 103   n = 99   n = 91   n = 67
-#   distinct values  r = +0.62   +0.63    +0.63    +0.68    +0.69    +0.69    +0.63
-#   leading 13s      r = -0.21   -0.22    -0.22    -0.35    -0.46    -0.62    -0.75
-#   run>=12          r = -0.28   -0.31    -0.32      --     -0.34      --       --
+#                   n = 129  n = 115  n = 114  n = 110  n = 103   n = 99   n = 91   n = 67
+#   distinct values  r = +0.62   +0.62    +0.63    +0.63    +0.68    +0.69    +0.69    +0.63
+#   COUNT of 13s     r = -0.23   -0.21    -0.22    -0.22    -0.35    -0.46    -0.62    -0.75
+#   run>=12          r = -0.27   -0.28    -0.31    -0.32      --     -0.34      --       --
+#
+#   The row was labelled "leading 13s" until this batch.  It is renamed
+#   because the two readings of that phrase -- the COUNT of 13s anywhere
+#   in the sequence, and the LEADING RUN of them -- are now different
+#   statistics, and the rename is safe rather than a silent redefinition:
+#   checked over all 139 labels, they are **identical on every one of the
+#   129 globally sorted ones and differ on all 10 violators**.  A sorted
+#   sequence puts every 13 at the front, so count and leading run cannot
+#   disagree; they became two statistics exactly when the first violator
+#   landed.  Every column left of n = 115 therefore reads the same under
+#   either definition, and the table is continuous.  The leading-RUN
+#   version, tracked separately above, is at -0.08 and still falling.
 #
 # **THE WATCH ITEM FROM LAST BATCH HAS A SECOND READING, AND IT IS STILL
 # NOT A FINDING.**  leading-13s has now sat at -0.21, -0.22, -0.21 across
@@ -516,8 +528,43 @@
 # threshold was chosen before the data arrived, and a rule met exactly at
 # its boundary is the weakest form of confirmation there is.  Wait for
 # five.
-#   MINIMUM degree   r = +0.40     --     +0.49    +0.49    +0.53    +0.53
-#   sum of squares      --         --     -0.57    -0.57    -0.64    -0.65
+#
+# **THE "WAIT FOR FIVE" THRESHOLD IS RESOLVED, AND WAITING WAS RIGHT.**
+# The fourth reading arrived at n = 129 and it MOVED: -0.23, against
+# -0.21, -0.22, -0.21.  So the count never reached five flat readings,
+# and had this header called the statistic bottomed out at three -- the
+# threshold it had itself set, met exactly at its boundary -- the call
+# would have been wrong one batch later.  This is the first pre-declared
+# threshold in this file that was met and then deliberately NOT acted on,
+# and it is the only one whose continuation vindicated the caution rather
+# than punishing it.
+#
+#   And it exposes the yardstick, which is the more useful finding.  The
+#   move is 0.02.  This header once called run>=12 "stable" on **a spread
+#   of 0.02 across ten sub-cubes' growth**, and built the reading "run>=12
+#   HAS OVERTAKEN leading-13s BY STANDING STILL" on top of it.  By that
+#   same 0.02 yardstick, leading-13s' three readings were equally
+#   "stable", and run>=12 has since moved 0.07 from its own peak
+#   (-0.34 to -0.27).  **The problem was never which statistic was
+#   steady; it was that 0.02 was being read as stability on a sample
+#   where 0.02 is noise.**  The "BY STANDING STILL" block below is left
+#   in place as the superseded reading it is, not as a live claim.
+#
+# **THE TWO LARGEST MOVERS THIS BATCH, AND A MECHANISM PROPOSED AND THEN
+# KILLED IN THE SAME BATCH.**  sum of squares went -0.57 to -0.42 and
+# MINIMUM degree +0.49 to +0.37 -- far larger moves than anything else in
+# the table.  The obvious explanation is the ten violator sub-cubes, whose
+# tails run down to 0, 1, 2, 3 and which are new to the sample.  **That
+# explanation was tested and is false.**  17 of the 119 non-violators
+# also have minimum degree <= 3, and the violators' sum-of-squares range
+# (1568-1640) sits INSIDE the non-violators' (1502-1642) -- on both
+# statistics the violators are unremarkable.  No mechanism is offered for
+# the movement, and none should be invented: the honest entry is that two
+# coefficients moved a lot, the first hypothesis for why was checked
+# against the data and rejected within the batch, and the cause is
+# unknown.
+#   MINIMUM degree   r = +0.37   +0.40     --     +0.49    +0.49    +0.53    +0.53
+#   sum of squares   r = -0.42     --       --     -0.57    -0.57    -0.64    -0.65
 #
 # **run>=12 HAS OVERTAKEN leading-13s AS A COST CORRELATE, AND IT DID SO
 # BY STANDING STILL.**  Its three measurements are -0.34 at n = 99,
