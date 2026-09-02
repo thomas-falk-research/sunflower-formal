@@ -106,8 +106,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 115 UNSAT, 10 UNKNOWN, 0 SAT over 125 labels -- 115 of 1949,
-# 214 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 117 UNSAT, 10 UNKNOWN, 0 SAT over 127 labels -- 117 of 1949,
+# 216 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -329,6 +329,37 @@
 # right after an expensive one usually means the enumeration has crossed
 # into a new family, not that the frontier has eased -- which is why the
 # median per family is the thing to read, and never a single row.
+#
+# **THE DEGREE SEQUENCES ARE NOT GLOBALLY SORTED, AND EVERY "LEADING
+# RUN" STATISTIC IN THIS HEADER ASSUMED THEY WERE.**  Row 216 is
+# [13,13,13,12,13,13,13,13,13,12,0] -- a 12 at position three followed by
+# five 13s.  It is the FIRST of 216 rows that is not non-increasing, and
+# it is not a bug.  `symbreak` sorts TWO BLOCKS SEPARATELY: point 0 is
+# the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
+# `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
+# the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
+# across the two.  Checked over all 216 rows: **0 violate block-wise
+# sortedness, 1 violates global sortedness.**
+#
+# Global sortedness held for the first 215 rows only because block 1's
+# minimum happened to stay at or above block 2's maximum.  Nothing
+# guaranteed that, and this row is where it stopped.
+#
+# WHAT IT COSTS THE TABLES, MEASURED RATHER THAN FEARED.  "leading run of
+# 13s" reads 3 on that row while the sequence contains EIGHT 13s;
+# "leading run >= 12" happens to read 10 either way.  Across all 216 rows
+# the leading-run and the count disagree on exactly ONE.  So the tables
+# below are wrong in one cell and the conclusions are untouched -- but
+# **the definitions were resting on a property of the data that the
+# generator never promised**, and the next block-crossing row will add
+# another.  A later session that recomputes these should use COUNTS
+# (`#{x : deg x >= 13}`) rather than leading runs, or state the block
+# structure explicitly; the two are not the same function and only
+# coincided by luck.
+#
+# This is the ninth item for roadmap 54.3a and a third kind: not a small
+# sample, and not a mis-described measurement, but a statistic whose
+# DEFINITION depended on an unstated property of its input.
 #
 # TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE RANKING BETWEEN THEM HAS
 # ALREADY FLIPPED ONCE.  Correlation of UNSAT cost against candidate
@@ -832,3 +863,5 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10889.6
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNKNOWN	10928.4
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 10, 10, 9]	UNSAT	6336.5
 g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 11, 9]	UNSAT	1528.8
+g=11 [13, 13, 13, 13, 11, 11, 11, 11, 11, 11, 10]	UNSAT	510.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 12, 0]	UNSAT	319.1

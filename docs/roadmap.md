@@ -12969,6 +12969,7 @@ one:
 | **"One coefficient collapsing while another sits flat"** — the way the leading-13s collapse was argued for three batches | `distinct values` is not flat: `+0.69, +0.68, +0.68, +0.65, +0.63`. Both decay; only the *ratio* of rates, 0.53 against 0.06, is real. The statistic that actually held is `run≥12` at `-0.34, -0.32, -0.33` |
 | **"Stalling repeatedly at a cap establishes that the cap is too small"** | Eight labels were re-attempted at an *unchanged* 10800 s cap and three were decided by the repeat alone, each landing at less wall time than its own earlier stall |
 | **The yield of those repeats, first written as `0.37`** | One batch later, by this section's *own* first check: eight labels but **seventeen** repeat attempts, so `3/17 = 0.18`, half the figure claimed. See below |
+| **Every "leading run of degree ≥ k" statistic**, which assumed the degree sequences were sorted | Row 216. `symbreak` sorts **two blocks separately** — `deg(1..b−1)` and `deg(b..g−1)` — because the residual symmetry after fixing the anchor is `Sym({1..b−1}) × Sym({b..g−1})`. Global sortedness held for 215 rows by coincidence and then stopped |
 
 Alongside them the rate itself was narrated three times — "monotone
 decline", "levelling", and an earlier `0.21` called terminal — and each
@@ -13000,6 +13001,22 @@ quantity was counted, which is what "check the denominator" means and is
 harder to notice than an arithmetic slip. A rule is not defensive until
 it is applied to the number you are about to publish, and the evidence
 that it is worth having is that its own author walked past it.
+
+**A third kind, and the one hardest to see: check what the generator
+actually promises.** The two above are about samples and about how a
+measurement is described. The ninth withdrawal is neither. Every
+"leading run of degree ≥ k" statistic in the ladder header was a
+well-defined function computed correctly on the data — and it silently
+meant something other than intended, because it assumed the degree
+sequences were globally sorted and `symbreak` only ever guaranteed them
+sorted **within two blocks**. For 215 consecutive rows the two agreed,
+because block 1's minimum happened to stay above block 2's maximum.
+Row 216 was the first where it did not, and there "leading run of 13s"
+read 3 on a sequence containing eight. The conclusions survived — one
+cell in one table — but the *definition* had been resting on an unstated
+property of its input the whole time. **Ask what the producer guarantees
+before defining a statistic over its output; "it has looked like this
+every time so far" is a fact about the sample, not about the function.**
 
 **A coefficient that decays as the sample grows is measuring the
 enumeration, not the object.** That is the leading-13s diagnosis and it
