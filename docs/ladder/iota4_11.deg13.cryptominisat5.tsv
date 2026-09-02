@@ -106,8 +106,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 127 UNSAT, 10 UNKNOWN, 0 SAT over 137 labels -- 127 of 1949,
-# 226 rows.  **The 12-window reads 12 of 12** -- a clean sweep, and the
+# STANDING: 128 UNSAT, 10 UNKNOWN, 0 SAT over 138 labels -- 128 of 1949,
+# 227 rows.  **The 12-window reads 12 of 12** -- a clean sweep, and the
 # furthest the cap has ever been from its raise condition.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
@@ -258,7 +258,7 @@
 #
 #     run>=12    decided  stalled   stall rate
 #       10          7        0         0.0%
-#        9         36        0         0.0%
+#        9         37        0         0.0%
 #        8         41        1         2.4%
 #        7         23        8        25.8%
 #        6         14        1         6.7%   <- NO LONGER ZERO
@@ -303,7 +303,7 @@
 #    #13s    n     min    median     max
 #      9     6     128       789     977
 #      8    26     319      2004    2840   <- holds seven of the eight
-#      7    28     756      4583    7179
+#      7    29     756      4544    7179
 #      6    25     731      6136   10866
 #      5    21     936      3653    8647
 #      4    21     433      2103    6412   <- OPENING, see below
@@ -363,9 +363,10 @@
 #     [13,13,13, 12, 13,13,13,13,13,  6, 6]    2347.3  <- PREDICTED
 #      anchor  block1     block2      tail
 #
-#   and an EIGHTH of a different shape, in the same batch:
+#   and a SECOND FAMILY, position 8 = 12 instead of 13, now two deep:
 #
 #     [13,13,13, 12, 13,13,13,13,12, 12, 1]    2333.3
+#     [13,13,13, 12, 13,13,13,13,12, 11, 2]    4259.7
 #
 # Identical through nine positions; only the last two move, and they
 # move as `x + y = 12` with `x` walking down from 12.  The violation is
@@ -405,6 +406,27 @@
 #     Recorded as a refutation because that is what a pre-registered
 #     prediction is for.
 #
+# **THE SECOND FAMILY, AND WHAT THIS HEADER WILL AND WILL NOT PREDICT
+# ABOUT IT.**  The eighth violator opened a new shape and the ninth
+# confirmed it is a family too: block 2 is `13,13,13,13,12,x,y` with
+# `x + y = 13`, and block-2 sortedness forces `12 >= x >= y`, so the
+# complete list is `x = 12,11,10,9,8,7` -- six members, of which `12,1`
+# and `11,2` have landed.
+#
+#   PREDICTED: four more, tails `10,3`, `9,4`, `8,5`, `7,6`, then this
+#   family ends too.  This is the same kind of claim that held exactly
+#   for the first family, and it is arithmetic about the encoding rather
+#   than a reading of the data.
+#
+#   NOT PREDICTED: anything about their cost.  The first family's costs
+#   went 319, 1018, 1692, 2332, 2400, 2840, 2347 -- rising then falling,
+#   which refuted this header's monotone reading one batch ago.  The
+#   second family opens 2333, 4260, also rising.  **This header is
+#   deliberately not saying what comes next**, because the identical
+#   setup produced a monotone-looking prefix last time and the
+#   continuation broke it.  One refutation is enough to stop guessing the
+#   same way twice.
+#
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
 # guaranteed that, and this row is where it stopped.
@@ -420,8 +442,8 @@
 #   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
 #     runs the wrong way for the story this header was telling:
 #
-#         leading run of 13s   -0.14 -0.13 -0.12 -0.10 -0.09 -0.07
-#         COUNT of 13s         -0.21 -0.21 -0.21 -0.23 -0.23 -0.24
+#         leading run of 13s   -0.14 -0.13 -0.12 -0.10 -0.09 -0.07 -0.07
+#         COUNT of 13s         -0.21 -0.21 -0.21 -0.23 -0.23 -0.24 -0.24
 #
 #     Five readings.  Under counts the coefficient sat at -0.21 three
 #     times and is now -0.23; the leading-run version has gone -0.14,
@@ -963,3 +985,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 8, 4]	UNSAT	2400.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 7, 5]	UNSAT	2839.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 6, 6]	UNSAT	2347.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 12, 1]	UNSAT	2333.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 11, 2]	UNSAT	4259.7
