@@ -400,6 +400,32 @@
 # establishes that the cap is too small and nothing else: not that the
 # instance is out of reach, and not which resource it is short of.
 #
+# **AND A STALL DOES NOT EVEN ESTABLISH THAT MUCH -- RE-RUNNING AT AN
+# UNCHANGED CAP DECIDES ABOUT A THIRD OF THEM.**  This was checked
+# because the fifth restart put four known stragglers back in flight at
+# the same 10800 s, which looked like predictable waste.  It is not.
+# Eight labels have been re-attempted inside the 10800 s era, and THREE
+# were decided by the repeat alone, with no change of cap:
+#
+#     [.. 12, 12, 11, 9, 6]   UNKNOWN 10865  ->  UNSAT 10704
+#     [.. 12, 12, 11, 8, 7]   UNKNOWN 10869  ->  UNSAT 10218
+#     [.. 12, 12, 10, 9, 7]   UNKNOWN 10936  ->  UNSAT 10760
+#
+# Each landed at LESS wall time than its own earlier stall, so this is
+# not "it got a bit further".  cryptominisat5 is not reproducing its
+# previous search: same instance, same budget, different outcome, 3 of 8.
+# These three are marginal instances sitting right at the cap -- the
+# failed attempts read 10865-10936 s of wall against a 10800 s SOLVER
+# budget, i.e. contention overhead, and the successes came in just under
+# -- which is exactly the population a re-roll can flip.
+#
+# CONSEQUENCE FOR THE RESUME POLICY, which the driver already had right:
+# re-running UNKNOWN rows is worth about 0.37 UNSAT per attempt here, not
+# zero.  The four stragglers now back in flight have an expected yield
+# near 1.5.  **The intuition that a repeat at a fixed cap is a repeat of
+# a finished experiment is wrong for this solver, and the file says so
+# with counts rather than with a claim about determinism.**
+#
 # THE PRICE OF THE RAISE, MEASURED.  Seven UNSAT for 97188 core-s = 6.75 h
 # wall on four threads = 1.04 UNSAT per wall-hour, against 2.15/h that the
 # 5400 s cap managed at its best and 0.00/h once it stopped converting.
