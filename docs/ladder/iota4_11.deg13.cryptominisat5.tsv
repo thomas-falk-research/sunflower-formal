@@ -106,8 +106,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 121 UNSAT, 10 UNKNOWN, 0 SAT over 131 labels -- 121 of 1949,
-# 220 rows.  The 8-window reads 8 of 8; the 12-window 10 of 12.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 124 UNSAT, 10 UNKNOWN, 0 SAT over 134 labels -- 124 of 1949,
+# 223 rows.  The 8-window reads 8 of 8; the 12-window 11 of 12.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -257,10 +257,10 @@
 #
 #     run>=12    decided  stalled   stall rate
 #       10          6        0         0.0%
-#        9         32        0         0.0%
+#        9         34        0         0.0%
 #        8         41        1         2.4%
 #        7         23        8        25.8%
-#        6         13        1         7.1%   <- NO LONGER ZERO
+#        6         14        1         6.7%   <- NO LONGER ZERO
 #        5          5        0         0.0%   <- five labels so far
 #        4          1        0         0.0%   <- one label so far
 #
@@ -301,11 +301,11 @@
 #
 #    #13s    n     min    median     max
 #      9     6     128       789     977
-#      8    22     319      1941    2295   <- holds the three violators
+#      8    24     319      1960    2400   <- holds the five violators
 #      7    27     756      4622    7179
 #      6    25     731      6136   10866
 #      5    21     936      3653    8647
-#      4    20     433      2098    6412   <- OPENING, see below
+#      4    21     433      2103    6412   <- OPENING, see below
 #
 # The two block-crossing rows moved here from a phantom "lead13 = 3"
 # bucket into the 8 bucket, which is where eight 13s structurally
@@ -349,20 +349,29 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Checked over all 220 rows: **0 violate block-wise
-# sortedness, 3 violate global sortedness.**  They arrived in three
-# consecutive batches and share one shape exactly:
+# across the two.  Checked over all 223 rows: **0 violate block-wise
+# sortedness, 5 violate global sortedness**, and they are one family
+# being walked in order:
 #
-#     [13,13,13, 12, 13,13,13,13,13, 12, 0]
-#     [13,13,13, 12, 13,13,13,13,13, 11, 1]
-#     [13,13,13, 12, 13,13,13,13,13, 10, 2]
-#      anchor  block 1   block 2
+#     [13,13,13, 12, 13,13,13,13,13, 12, 0]     319.1
+#     [13,13,13, 12, 13,13,13,13,13, 11, 1]    1018.0
+#     [13,13,13, 12, 13,13,13,13,13, 10, 2]    1692.4
+#     [13,13,13, 12, 13,13,13,13,13,  9, 3]    2331.5
+#     [13,13,13, 12, 13,13,13,13,13,  8, 4]    2400.1
+#      anchor  block1     block2      tail
 #
-# Block 1 is [13,13,12] in every one and block 2 opens 13.  The
-# violation is exactly "block 1's minimum drops below block 2's
-# maximum", which is the only way a block-sorted pair can fail to be
-# globally sorted, and the enumeration has evidently reached the region
-# where that happens routinely.  Expect the count to keep climbing.
+# Identical through nine positions; only the last two move, and they
+# move as `x + y = 12` with `x` walking down from 12.  The violation is
+# exactly "block 1's minimum drops below block 2's maximum", the only
+# way a block-sorted pair can fail to be globally sorted.
+#
+# **A CHECKABLE PREDICTION RATHER THAN A SHRUG:** if the enumeration
+# continues down this family the remaining members are tails `7,5` and
+# `6,6`, so **two more violators of this exact shape and then the family
+# ends.**  A sixth and seventh of a different shape would mean the
+# region is wider than this reading; none at all would mean the
+# enumeration left the family early.  Either is informative, which is
+# the point of writing the number down.
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
@@ -379,15 +388,17 @@
 #   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
 #     runs the wrong way for the story this header was telling:
 #
-#         leading run of 13s   r = -0.14  ->  -0.13  ->  -0.12
-#         COUNT of 13s         r = -0.21  ->  -0.21  ->  -0.21
+#         leading run of 13s   r = -0.14 -> -0.13 -> -0.12 -> -0.10
+#         COUNT of 13s         r = -0.21 -> -0.21 -> -0.21 -> -0.23
 #
-#     Four readings now.  Under counts the coefficient is flat at -0.21
-#     throughout; the leading-run version has drifted -0.14, -0.13, -0.12
-#     and every step of that drift came from a row whose definition it
-#     was getting wrong.  **The two series are separating at about 0.01
-#     per violator, which is the rate at which the abandoned definition
-#     would have been inventing a decay.**
+#     Five readings.  Under counts the coefficient sat at -0.21 three
+#     times and is now -0.23; the leading-run version has gone -0.14,
+#     -0.13, -0.12, -0.10.  **The two series are separating at about
+#     0.01 per violator and are now 0.13 apart, from a common value of
+#     -0.21 five rows ago.**  That is the rate at which the abandoned
+#     definition would have been inventing a decay -- and note the count
+#     version moved the OTHER way this batch, so under the right
+#     definition there is no decay to see at all.
 #
 #     At n = 115, before any violator, the two were the same number,
 #     -0.21.  So the apparent further fall to -0.14 this batch is **an
@@ -914,3 +925,6 @@ g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 10, 9]	UNSAT	6412.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 11, 1]	UNSAT	1018.0
 g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 10, 10]	UNSAT	3093.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 10, 2]	UNSAT	1692.4
+g=11 [13, 13, 13, 13, 12, 12, 11, 11, 10, 10, 10]	UNSAT	5737.6
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 9, 3]	UNSAT	2331.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 8, 4]	UNSAT	2400.1
