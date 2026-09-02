@@ -88,17 +88,21 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 92 UNSAT, 8 UNKNOWN, 0 SAT over 100 labels -- 92 of 1949, so
+# STANDING: 92 UNSAT, 9 UNKNOWN, 0 SAT over 101 labels -- 92 of 1949, so
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
-# labels attempted is the first round number this pass has reached and
-# it is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
-# disagreement with cadical anywhere.
+# labels attempted was the first round number this pass reached and it
+# is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
+# disagreement with cadical anywhere.  101 now, and the extra label is a
+# stall.
 #
 # THE RATE HAS FALLEN SIX BATCHES RUNNING AND THE RULE STILL SAYS HOLD.
 # The twelve-attempt window: 1.74, 1.18, 0.81, 0.82, 0.67, 0.51, 0.52
-# UNSAT/h.  Six falls and then a flat reading -- so the decline is NOT
-# monotone after all, and this header is correcting itself one batch
-# after writing "monotone decline over six readings".  It does NOT trigger a raise, because the
+# UNSAT/h, then 0.52 again.  Six falls and then two flat readings -- so
+# the decline is NOT monotone, and this header is correcting itself one
+# batch after writing "monotone decline over six readings".  Two batches
+# at 0.52 is the first sign the rate may be levelling rather than
+# heading to zero; one more flat reading and that becomes the thing to
+# say, but not yet.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
 # recovered.  0.52 is four UNSAT in the last twelve attempts, not zero.
@@ -117,13 +121,17 @@
 #   lead13=5  [.. 12, 12, 11, 11, 10, 7]  1 attempt
 #             [.. 12, 12, 11, 11,  9, 8]  1 attempt
 #             [.. 12, 12, 11, 10, 10, 8]  1 attempt
+#             [.. 12, 12, 11, 10,  9, 9]  1 attempt
 #
-# Three 5-family stallers now, in three consecutive batches, every one
-# on a first attempt.  The 5-family stands at 14 decided of 17 labels --
-# a 17.6% stall rate against the 6-family's 5 of 30, 16.7% -- and median
-# 5761 against 6136.  **On both measures the 5-family now matches the
-# 6-family**, which is what five batches have established and the exact
-# opposite of the reading this header declined to make at n = 11.
+# FOUR 5-family stallers now, in four consecutive batches, every one on
+# a first attempt.  The 5-family stands at 15 decided of 19 labels -- a
+# 21.1% stall rate against the 6-family's 5 of 30, 16.7% -- and median
+# 5761 against 6136.  **The 5-family has gone from matching the
+# 6-family to stalling MORE often than it**, which is the fourth
+# consecutive batch to move in the same direction and the exact opposite
+# of the reading this header declined to make at n = 11.  The stall rate
+# is 4 of 19 and the difference from 5 of 30 is not significant at that
+# sample; what is established is the sign, not the size.
 #
 # THE NINE-PREFIX CANDIDATE WAS PUT UP TO BE TESTED, AND THE TEST CAME
 # BACK NEGATIVE.  Last batch this header recorded, explicitly as a
@@ -143,13 +151,14 @@
 #       10          4        0         0.0%
 #        9         26        0         0.0%
 #        8         36        1         2.7%
-#        7         18        7        28.0%
+#        7         18        8        30.8%
 #        6          8        0         0.0%   <- n = 8, and STILL zero
 #
 #   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
 #
-# Seven of the eight stalls sit at run>=12 exactly 7, and NOTHING with
-# run>=12 of nine or more has ever stalled, in thirty labels.  **The
+# EIGHT of the nine stalls sit at run>=12 exactly 7 -- and all four
+# 5-family stallers are among them -- while NOTHING with run>=12 of nine
+# or more has ever stalled, in thirty labels.  **The
 # stall risk is not monotone in the run length: it PEAKS at 7 and is
 # zero on both sides of it.**  Last batch that dip was flagged as an
 # n = 7 artefact that might wash out; it did not.  A ninth label landed
@@ -556,3 +565,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 10, 10, 10, 9]	UNSAT	5761.1
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10929.6
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10889.3
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 11, 7]	UNSAT	2888.5
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10881.7
