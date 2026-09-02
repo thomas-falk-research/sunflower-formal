@@ -110,16 +110,34 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 129 UNSAT, 10 UNKNOWN, 0 SAT over 139 labels -- 129 of 1949,
-# 228 rows.  **Both windows are now clean sweeps: 8 of 8 and 12 of 12**
-# -- the furthest the cap has ever been from its raise condition, and
-# the raise stays unarmed.
+# 232 rows.  **No new label was decided this batch.**  The four rows are
+# straggler repeats, every one UNKNOWN at the cap (10891.1, 10893.7,
+# 10895.6, 10919.8), on labels that already had four or five attempts
+# behind them.
+#
+# **THE TWO WINDOW DEFINITIONS NOW DISAGREE, AND THE DISAGREEMENT IS
+# ENTIRELY THOSE FOUR ROWS.**
+#
+#     counting ALL attempts     8-window 4 of 8    12-window  8 of 12
+#     counting FIRST attempts   8-window 8 of 8    12-window 12 of 12
+#
+# Last batch both definitions read clean sweeps.  Nothing about the
+# frontier changed in between -- not one fresh sub-cube was attempted.
+# Four known-hard labels were re-run and returned what they have
+# returned every time.  Under either definition the raise stays unarmed,
+# since the condition is 0 or 1 banked in twelve and the worse reading is
+# 8, so this changes no decision.  It is recorded because it is the first
+# time the two definitions have separated, and they separated by four in
+# a single batch.
 #
 # (Housekeeping, recorded rather than silently fixed: this block until
 # now ended with the sentence "The 8-window is 5 of 8 and the 12-window
 # 5 of 12; both say hold and the earlier disagreement is closed."  That
 # was stale text from an earlier batch, left in place while the sentence
 # above it was updated, and the two flatly contradicted each other.  A
-# recount over all 228 rows gives 8 of 8 and 12 of 12.  I have not tried
+# recount over all 228 rows gave 8 of 8 and 12 of 12 -- a reading of
+# THAT batch, superseded one batch later when four straggler repeats
+# landed; see the standing block above for the current pair.  I have not tried
 # to establish which batch the 5-of-8 reading was true for; the point of
 # recording it is that a header edited in place accumulates sentences
 # that were each true once, and only a recount distinguishes them.)
@@ -163,8 +181,26 @@
 # stragglers this run has.  **If the straggler count ever exceeds
 # twelve, the 12-window inherits the same defect and the rule needs a
 # different guard -- most simply, exclude repeat attempts from the
-# window and count only first attempts.**  Ten stragglers today; the
-# margin is two.
+# window and count only first attempts.**
+#
+# **CORRECTION TO THAT MARGIN: IT WAS STATED IN TERMS OF THE WRONG
+# QUANTITY.**  This paragraph used to end "Ten stragglers today; the
+# margin is two", comparing the straggler COUNT against the window
+# LENGTH.  But the raise condition is not "twelve non-banking attempts";
+# it is **0 or 1 banked in twelve**.  So ten straggler repeats filling a
+# 12-window leave two slots, and a SINGLE fresh stall among those two
+# leaves at most one banked and trips the raise.  **The operative margin
+# is one, and it is one fresh stall -- not two stragglers.**  That is
+# arithmetic about the rule, not a reading of the data, and it was
+# wrong in the safe direction only by luck.
+#
+# The contamination is also no longer hypothetical.  Four straggler
+# repeats landing together took the all-attempts 12-window from 12 of 12
+# to 8 of 12 in one batch, while the first-attempts window did not move
+# at all: four of the twelve slots spent on labels selected for having
+# already failed.  **Prefer the first-attempts window whenever a restart
+# has just put stragglers back in flight**, and never let a raise be
+# triggered by a window the resume policy filled.
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -363,7 +399,7 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Re-checked over all 228 rows / 139 distinct labels:
+# across the two.  Re-checked over all 232 rows / 139 distinct labels:
 # **0 violate block-wise sortedness, 10 violate global sortedness**, and
 # they fall into two families, each walked in order.  The first, now
 # complete at seven members:
@@ -694,7 +730,15 @@
 # four times each.  Three successes in seventeen repeats was **0.18 per
 # repeat, not 0.37** -- half what this header claimed one batch earlier.
 # It has since fallen again: **3 of 23 repeats = 0.13**, after a complete
-# cycle of all ten stragglers banked nothing.
+# cycle of all ten stragglers banked nothing, and again to **3 of 27 =
+# 0.11** after the sixth restart's first four repeats also banked
+# nothing.  **The numerator has not moved since it reached three.**
+# Every revision -- 0.37, 0.18, 0.14, 0.13, 0.11 -- has come from the
+# denominator growing, never from a new success and never from a
+# recount.  That is what a weak estimate looks like while it is being
+# measured, and it is NOT evidence of a decaying effect: three
+# successes is still the entire basis, and the honest reading is a rate
+# somewhere near a tenth with almost no resolution.
 # Roadmap 54.3a's first check is "look at the denominator's leverage
 # before reading a rate", and this file made exactly that error two
 # batches after writing the check down.  Recorded rather than quietly
@@ -1057,3 +1101,7 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 6, 6]	UNSAT	2347.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 12, 1]	UNSAT	2333.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 11, 2]	UNSAT	4259.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 10, 3]	UNSAT	5658.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10891.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10893.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10895.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10919.8
