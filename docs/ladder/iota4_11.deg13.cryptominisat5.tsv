@@ -107,8 +107,15 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 113 UNSAT, 10 UNKNOWN, 0 SAT over 123 labels -- 113 of 1949,
-# 210 rows.  The 8-window has since climbed to 3 of 8 and the 12-window
-# sits at 4 of 12; both now say hold and the disagreement is closed.
+# 212 rows.  The 8-window is 3 of 8 and the 12-window 3 of 12; both say
+# hold and the earlier disagreement is closed.
+#
+# **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
+# THEM.**  That is the complete cycle, not a sample of it: every label
+# this run carried as UNKNOWN was given a fresh 10800 s and every one
+# came back UNKNOWN.  Cost, ten attempts at ~10900 s on four threads,
+# about 7.6 wall-hours.  It is the price the resume policy charges after
+# each container restart, and it is now measured rather than estimated.
 #
 # **THE 8-vs-12 WINDOW TEST IS RESOLVED, AND THE 12-WINDOW WAS RIGHT.**
 # This is the one prediction in this file that was written down BEFORE
@@ -462,16 +469,16 @@
 # SEVENTEEN repeat ATTEMPTS, because five of them have stalled three or
 # four times each.  Three successes in seventeen repeats was **0.18 per
 # repeat, not 0.37** -- half what this header claimed one batch earlier.
-# It has since fallen again: **3 of 21 repeats = 0.14**, after eight more
-# straggler re-runs banked nothing.
+# It has since fallen again: **3 of 23 repeats = 0.13**, after a complete
+# cycle of all ten stragglers banked nothing.
 # Roadmap 54.3a's first check is "look at the denominator's leverage
 # before reading a rate", and this file made exactly that error two
 # batches after writing the check down.  Recorded rather than quietly
 # fixed, because a rule broken by its own author is the useful evidence
 # that the rule is worth having.
 #
-# EIGHT STRAGGLERS RE-RUN AFTER THE FIFTH RESTART, ALL RETURNING
-# UNKNOWN.  Expected yield on the then-current 0.18 was about 1.4;
+# ALL TEN STRAGGLERS RE-RUN AFTER THE FIFTH RESTART, ALL RETURNING
+# UNKNOWN.  Expected yield on the then-current 0.18 was about 1.8;
 # observed 0.  Two rounds of zero is starting to be information rather
 # than noise, but three successes is still what the whole estimate rests
 # on, and the estimate has only ever moved DOWN as the denominator was
@@ -481,7 +488,7 @@
 #
 # CONSEQUENCE FOR THE RESUME POLICY, which the driver already had right:
 # re-running UNKNOWN rows is worth something rather than nothing, and
-# 0.14 per repeat is the current best number for "something".  **The
+# 0.13 per repeat is the current best number for "something".  **The
 # intuition that a repeat at a fixed cap is a repeat of a finished
 # experiment is wrong for this solver, and the file says so with counts
 # rather than with a claim about determinism.**
@@ -808,3 +815,5 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10906.6
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 9, 9]	UNSAT	5127.4
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 10, 8]	UNSAT	5492.5
 g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 11, 8]	UNSAT	2260.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10889.6
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNKNOWN	10928.4
