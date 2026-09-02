@@ -12968,6 +12968,7 @@ one:
 | **"Zero on both sides of the stall peak"** in the `run≥12` table, which this file had just called the one description it had never withdrawn | The very next batch, when a `run≥12 = 6` label stalled at 10913.2 s. Eleven labels stood behind that zero |
 | **"One coefficient collapsing while another sits flat"** — the way the leading-13s collapse was argued for three batches | `distinct values` is not flat: `+0.69, +0.68, +0.68, +0.65, +0.63`. Both decay; only the *ratio* of rates, 0.53 against 0.06, is real. The statistic that actually held is `run≥12` at `-0.34, -0.32, -0.33` |
 | **"Stalling repeatedly at a cap establishes that the cap is too small"** | Eight labels were re-attempted at an *unchanged* 10800 s cap and three were decided by the repeat alone, each landing at less wall time than its own earlier stall |
+| **The yield of those repeats, first written as `0.37`** | One batch later, by this section's *own* first check: eight labels but **seventeen** repeat attempts, so `3/17 = 0.18`, half the figure claimed. See below |
 
 Alongside them the rate itself was narrated three times — "monotone
 decline", "levelling", and an earlier `0.21` called terminal — and each
@@ -12987,6 +12988,18 @@ moves four percentage points when the denominator moves by four. The
 5-family stall comparison could never have separated 17% from 21% at
 `n ≈ 20`, and one division would have said so before five batches were
 spent narrating the gap.
+
+**This check was then broken by the session that wrote it, two batches
+later, and that is the most useful thing in this section.** The re-run
+yield above was recorded as `0.37` — three successes over the *eight
+labels* that had been re-attempted. The right denominator is *repeat
+attempts*, and those eight labels account for **seventeen** repeats,
+because five of them stalled three or four times each. The true figure
+is `3/17 = 0.18`, half what was written. Nobody mis-divided; the wrong
+quantity was counted, which is what "check the denominator" means and is
+harder to notice than an arithmetic slip. A rule is not defensive until
+it is applied to the number you are about to publish, and the evidence
+that it is worth having is that its own author walked past it.
 
 **A coefficient that decays as the sample grows is measuring the
 enumeration, not the object.** That is the leading-13s diagnosis and it

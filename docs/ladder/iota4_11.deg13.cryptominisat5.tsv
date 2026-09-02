@@ -107,6 +107,9 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 110 UNSAT, 10 UNKNOWN, 0 SAT over 120 labels -- 110 of 1949,
+# unchanged this batch: all four rows were straggler repeats and all four
+# came back UNKNOWN.  The rule's twelve-attempt window still reads 7 of
+# 12 and 1.47 UNSAT/h, so the cap holds.
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -404,7 +407,8 @@
 # UNCHANGED CAP DECIDES ABOUT A THIRD OF THEM.**  This was checked
 # because the fifth restart put four known stragglers back in flight at
 # the same 10800 s, which looked like predictable waste.  It is not.
-# Eight labels have been re-attempted inside the 10800 s era, and THREE
+# Eight labels have been re-attempted inside the 10800 s era -- seventeen
+# repeat attempts between them -- and THREE
 # were decided by the repeat alone, with no change of cap:
 #
 #     [.. 12, 12, 11, 9, 6]   UNKNOWN 10865  ->  UNSAT 10704
@@ -413,18 +417,36 @@
 #
 # Each landed at LESS wall time than its own earlier stall, so this is
 # not "it got a bit further".  cryptominisat5 is not reproducing its
-# previous search: same instance, same budget, different outcome, 3 of 8.
-# These three are marginal instances sitting right at the cap -- the
-# failed attempts read 10865-10936 s of wall against a 10800 s SOLVER
-# budget, i.e. contention overhead, and the successes came in just under
-# -- which is exactly the population a re-roll can flip.
+# previous search: same instance, same budget, different outcome.  These
+# three are marginal instances sitting right at the cap -- the failed
+# attempts read 10865-10936 s of wall against a 10800 s SOLVER budget,
+# i.e. contention overhead, and the successes came in just under -- which
+# is exactly the population a re-roll can flip.
+#
+# **THE RATE WAS FIRST WRITTEN HERE AS 0.37 AND THAT WAS A DENOMINATOR
+# ERROR.**  Eight LABELS have been re-attempted, but they account for
+# SEVENTEEN repeat ATTEMPTS, because five of them have stalled three or
+# four times each.  Three successes in seventeen repeats is **0.18 per
+# repeat, not 0.37** -- half what this header claimed one batch earlier.
+# Roadmap 54.3a's first check is "look at the denominator's leverage
+# before reading a rate", and this file made exactly that error two
+# batches after writing the check down.  Recorded rather than quietly
+# fixed, because a rule broken by its own author is the useful evidence
+# that the rule is worth having.
+#
+# THE FOUR STRAGGLERS THE FIFTH RESTART PUT BACK IN FLIGHT ALL RETURNED
+# UNKNOWN.  Expected yield on the (correct) 0.18 was 0.7; observed 0.
+# That is unremarkable at these counts and is NOT evidence the effect is
+# gone -- it is the same small-sample trap from the other side, and the
+# honest reading is that three successes is what the whole estimate
+# rests on.
 #
 # CONSEQUENCE FOR THE RESUME POLICY, which the driver already had right:
-# re-running UNKNOWN rows is worth about 0.37 UNSAT per attempt here, not
-# zero.  The four stragglers now back in flight have an expected yield
-# near 1.5.  **The intuition that a repeat at a fixed cap is a repeat of
-# a finished experiment is wrong for this solver, and the file says so
-# with counts rather than with a claim about determinism.**
+# re-running UNKNOWN rows is worth something rather than nothing, and
+# 0.18 per repeat is the current best number for "something".  **The
+# intuition that a repeat at a fixed cap is a repeat of a finished
+# experiment is wrong for this solver, and the file says so with counts
+# rather than with a claim about determinism.**
 #
 # THE PRICE OF THE RAISE, MEASURED.  Seven UNSAT for 97188 core-s = 6.75 h
 # wall on four threads = 1.04 UNSAT per wall-hour, against 2.15/h that the
@@ -737,3 +759,7 @@ g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 9, 8]	UNSAT	2198.5
 g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 9, 9]	UNSAT	2126.8
 g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 11, 7]	UNSAT	2571.5
 g=11 [13, 13, 13, 13, 12, 12, 12, 10, 10, 10, 10]	UNSAT	1250.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10878.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10892.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10893.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10916.2
