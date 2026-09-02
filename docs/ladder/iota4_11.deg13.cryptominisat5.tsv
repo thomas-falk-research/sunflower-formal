@@ -88,13 +88,17 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 91 UNSAT, 8 UNKNOWN, 0 SAT over 99 labels -- 91 of 1949, so
-# 4.7% of the cube, and the rung's bound is untouched.
+# STANDING: 92 UNSAT, 8 UNKNOWN, 0 SAT over 100 labels -- 92 of 1949, so
+# 4.7% of the cube, and the rung's bound is untouched.  One hundred
+# labels attempted is the first round number this pass has reached and
+# it is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
+# disagreement with cadical anywhere.
 #
 # THE RATE HAS FALLEN SIX BATCHES RUNNING AND THE RULE STILL SAYS HOLD.
-# The twelve-attempt window: 1.74, 1.18, 0.81, 0.82, 0.67, 0.51 UNSAT/h.
-# That is a monotone decline over six readings and it is named here
-# rather than smoothed over.  It does NOT trigger a raise, because the
+# The twelve-attempt window: 1.74, 1.18, 0.81, 0.82, 0.67, 0.51, 0.52
+# UNSAT/h.  Six falls and then a flat reading -- so the decline is NOT
+# monotone after all, and this header is correcting itself one batch
+# after writing "monotone decline over six readings".  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
 # recovered.  0.51 is four UNSAT in the last twelve attempts, not zero.
@@ -140,12 +144,18 @@
 #        9         26        0         0.0%
 #        8         36        1         2.7%
 #        7         18        7        28.0%
-#        6          7        0         0.0%   <- n = 7, breaks monotone
+#        6          8        0         0.0%   <- n = 8, and STILL zero
 #
 #   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
 #
 # Seven of the eight stalls sit at run>=12 exactly 7, and NOTHING with
-# run>=12 of nine or more has ever stalled, in thirty labels.  But on
+# run>=12 of nine or more has ever stalled, in thirty labels.  **The
+# stall risk is not monotone in the run length: it PEAKS at 7 and is
+# zero on both sides of it.**  Last batch that dip was flagged as an
+# n = 7 artefact that might wash out; it did not.  A ninth label landed
+# in the bucket, UNSAT in 2888.5 s, the second-cheapest the 5-family has
+# produced.  Two batches is not enough to call the peak real either, but
+# it is no longer the smaller of the two explanations.  But on
 # COST AMONG THE DECIDED the ranking inverts: leading-13s scores
 # r = -0.62 and run>=12 only -0.40.  **So they answer different
 # questions -- leading-13s predicts what a decided sub-cube costs,
@@ -164,7 +174,7 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    14     936      5929    7838
+#        5    15     936      5761    7838
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -544,3 +554,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10917.0
 g=11 [13, 13, 13, 13, 13, 12, 12, 10, 10, 10, 9]	UNSAT	5761.1
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10929.6
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10889.3
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 11, 7]	UNSAT	2888.5
