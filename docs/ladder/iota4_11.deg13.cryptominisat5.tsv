@@ -106,8 +106,10 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 124 UNSAT, 10 UNKNOWN, 0 SAT over 134 labels -- 124 of 1949,
-# 223 rows.  The 8-window reads 8 of 8; the 12-window 11 of 12.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 125 UNSAT, 10 UNKNOWN, 0 SAT over 135 labels -- 125 of 1949,
+# 224 rows.  **The 12-window reads 12 of 12** -- the first clean sweep of
+# a full window in the run, and the furthest the cap has ever been from
+# its raise condition.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -257,7 +259,7 @@
 #
 #     run>=12    decided  stalled   stall rate
 #       10          6        0         0.0%
-#        9         34        0         0.0%
+#        9         35        0         0.0%
 #        8         41        1         2.4%
 #        7         23        8        25.8%
 #        6         14        1         6.7%   <- NO LONGER ZERO
@@ -301,7 +303,7 @@
 #
 #    #13s    n     min    median     max
 #      9     6     128       789     977
-#      8    24     319      1960    2400   <- holds the five violators
+#      8    25     319      1971    2840   <- holds the six violators
 #      7    27     756      4622    7179
 #      6    25     731      6136   10866
 #      5    21     936      3653    8647
@@ -358,6 +360,7 @@
 #     [13,13,13, 12, 13,13,13,13,13, 10, 2]    1692.4
 #     [13,13,13, 12, 13,13,13,13,13,  9, 3]    2331.5
 #     [13,13,13, 12, 13,13,13,13,13,  8, 4]    2400.1
+#     [13,13,13, 12, 13,13,13,13,13,  7, 5]    2839.7  <- PREDICTED
 #      anchor  block1     block2      tail
 #
 # Identical through nine positions; only the last two move, and they
@@ -365,13 +368,19 @@
 # exactly "block 1's minimum drops below block 2's maximum", the only
 # way a block-sorted pair can fail to be globally sorted.
 #
-# **A CHECKABLE PREDICTION RATHER THAN A SHRUG:** if the enumeration
-# continues down this family the remaining members are tails `7,5` and
-# `6,6`, so **two more violators of this exact shape and then the family
-# ends.**  A sixth and seventh of a different shape would mean the
-# region is wider than this reading; none at all would mean the
-# enumeration left the family early.  Either is informative, which is
-# the point of writing the number down.
+# **THE PREDICTION WAS MADE LAST BATCH AND HALF OF IT HAS LANDED.**  The
+# header said: if the enumeration continues down this family the
+# remaining members are tails `7,5` and `6,6`, two more violators of
+# this exact shape and then the family ends.  The very next row was
+# `7,5`, at 2839.7 s.  **One member remains predicted: tail `6,6`.**
+#
+# Also predicted and also holding: the cost rises monotonically down the
+# family -- 319, 1018, 1692, 2332, 2400, 2840 -- as the tail flattens
+# from `12,0` toward `6,6`.  That is the minimum-degree effect this
+# header has carried since n = 67, seen along a single family with
+# everything else held fixed, which is the cleanest instance of it in
+# the file.  If `6,6` lands above 2840 the reading survives; if it lands
+# below, the effect is not monotone and the header should say so.
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
@@ -388,8 +397,8 @@
 #   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
 #     runs the wrong way for the story this header was telling:
 #
-#         leading run of 13s   r = -0.14 -> -0.13 -> -0.12 -> -0.10
-#         COUNT of 13s         r = -0.21 -> -0.21 -> -0.21 -> -0.23
+#         leading run of 13s   r = -0.14 -> -0.13 -> -0.12 -> -0.10 -> -0.09
+#         COUNT of 13s         r = -0.21 -> -0.21 -> -0.21 -> -0.23 -> -0.23
 #
 #     Five readings.  Under counts the coefficient sat at -0.21 three
 #     times and is now -0.23; the leading-run version has gone -0.14,
@@ -928,3 +937,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 10, 2]	UNSAT	1692.4
 g=11 [13, 13, 13, 13, 12, 12, 11, 11, 10, 10, 10]	UNSAT	5737.6
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 9, 3]	UNSAT	2331.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 8, 4]	UNSAT	2400.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 7, 5]	UNSAT	2839.7
