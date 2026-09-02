@@ -106,8 +106,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 119 UNSAT, 10 UNKNOWN, 0 SAT over 129 labels -- 119 of 1949,
-# 218 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
+# STANDING: 120 UNSAT, 10 UNKNOWN, 0 SAT over 130 labels -- 120 of 1949,
+# 219 rows.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
 # hold and the earlier disagreement is closed.
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
@@ -256,12 +256,17 @@
 # STALLS far more sharply than leading-13s does:
 #
 #     run>=12    decided  stalled   stall rate
-#       10          5        0         0.0%
-#        9         30        0         0.0%
+#       10          6        0         0.0%
+#        9         31        0         0.0%
 #        8         41        1         2.4%
 #        7         23        8        25.8%
-#        6         12        1         7.7%   <- NO LONGER ZERO
-#        5          4        0         0.0%   <- four labels so far
+#        6         13        1         7.1%   <- NO LONGER ZERO
+#        5          5        0         0.0%   <- five labels so far
+#        4          1        0         0.0%   <- one label so far
+#
+# Recomputed under COUNT of degrees >= 12 as well: **identical, bucket
+# for bucket**, so this table is unaffected by the definition change and
+# keeps its leading-run form until the two diverge.
 #
 # **"ZERO ON BOTH SIDES OF THE PEAK" IS WITHDRAWN, ONE BATCH AFTER THIS
 # HEADER SINGLED IT OUT AS THE ONE DESCRIPTION IT HAD NEVER HAD TO
@@ -290,15 +295,21 @@
 # it was noticed: by eighth degree, deg8=12 is 12 decided and 0 stalled,
 # deg8=11 is 1 decided and 3 stalled.
 #
-# COST BY LEADING 13s, AND A READING THIS HEADER IS DECLINING TO MAKE:
+# COST BY COUNT OF 13s -- NOT by leading run; see the block-sortedness
+# note below for why the definition changed.  A READING THIS HEADER IS
+# STILL DECLINING TO MAKE:
 #
-#     lead13   n     min    median     max
-#        9     6     128       789     977
-#        8    19     350      1971    2295
-#        7    27     756      4622    7179
-#        6    25     731      6136   10866
-#        5    21     936      3653    8647
-#        4    17     433      2093    6336   <- OPENING, see below
+#    #13s    n     min    median     max
+#      9     6     128       789     977
+#      8    21     319      1948    2295   <- gained the two violators
+#      7    27     756      4622    7179
+#      6    25     731      6136   10866
+#      5    21     936      3653    8647
+#      4    20     433      2098    6412   <- OPENING, see below
+#
+# The two block-crossing rows moved here from a phantom "lead13 = 3"
+# bucket into the 8 bucket, which is where eight 13s structurally
+# belong.  That is the table correcting itself, not a new measurement.
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -358,8 +369,13 @@
 #   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
 #     runs the wrong way for the story this header was telling:
 #
-#         leading run of 13s   r = -0.14
-#         COUNT of 13s         r = -0.21
+#         leading run of 13s   r = -0.14  ->  -0.13 one batch later
+#         COUNT of 13s         r = -0.21  ->  -0.21 one batch later
+#
+#     The follow-up reading confirms it: under counts the coefficient is
+#     flat across three measurements (-0.21, -0.21, -0.21) while the
+#     leading-run version keeps drifting down on rows whose definition it
+#     is getting wrong.
 #
 #     At n = 115, before any violator, the two were the same number,
 #     -0.21.  So the apparent further fall to -0.14 this batch is **an
@@ -884,3 +900,4 @@ g=11 [13, 13, 13, 13, 11, 11, 11, 11, 11, 11, 10]	UNSAT	510.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 12, 0]	UNSAT	319.1
 g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 10, 9]	UNSAT	6412.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 11, 1]	UNSAT	1018.0
+g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 10, 10]	UNSAT	3093.8
