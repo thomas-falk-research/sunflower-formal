@@ -88,7 +88,7 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 92 UNSAT, 9 UNKNOWN, 0 SAT over 101 labels -- 92 of 1949, so
+# STANDING: 93 UNSAT, 9 UNKNOWN, 0 SAT over 102 labels -- 93 of 1949, so
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -97,15 +97,24 @@
 #
 # THE RATE HAS FALLEN SIX BATCHES RUNNING AND THE RULE STILL SAYS HOLD.
 # The twelve-attempt window: 1.74, 1.18, 0.81, 0.82, 0.67, 0.51, 0.52
-# UNSAT/h, then 0.52 again.  Six falls and then two flat readings -- so
-# the decline is NOT monotone, and this header is correcting itself one
-# batch after writing "monotone decline over six readings".  Two batches
-# at 0.52 is the first sign the rate may be levelling rather than
-# heading to zero; one more flat reading and that becomes the thing to
-# say, but not yet.  It does NOT trigger a raise, because the
+# UNSAT/h, then 0.52, then 0.70.  It fell six times, sat flat twice, and
+# went back UP.  Last batch this header said two flat readings were "the
+# first sign the rate may be levelling rather than heading to zero; one
+# more flat reading and that becomes the thing to say".  The next
+# reading was neither flat nor down.
+#
+# **THE RATE IS NOISE AT THIS WINDOW WIDTH AND THIS HEADER SHOULD STOP
+# NARRATING ITS SHAPE.**  Three times now a trend has been described
+# here and overtaken by the next batch: "monotone decline", "levelling",
+# and before them the 0.21 reading that recovered.  Twelve attempts is
+# four batches of four, and one batch of three stalls halves it.  The
+# raise condition is stated in numbers -- 0 or 1 UNSAT in twelve
+# consecutive attempts -- for exactly this reason, and it is the ONLY
+# thing that should move the cap.  The sequence above is a record, not a
+# trend.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  0.52 is four UNSAT in the last twelve attempts, not zero.
+# recovered.  0.70 is five UNSAT in the last twelve, not zero or one.
 #
 # SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
 # in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
@@ -123,15 +132,28 @@
 #             [.. 12, 12, 11, 10, 10, 8]  1 attempt
 #             [.. 12, 12, 11, 10,  9, 9]  1 attempt
 #
-# FOUR 5-family stallers now, in four consecutive batches, every one on
-# a first attempt.  The 5-family stands at 15 decided of 19 labels -- a
-# 21.1% stall rate against the 6-family's 5 of 30, 16.7% -- and median
-# 5761 against 6136.  **The 5-family has gone from matching the
-# 6-family to stalling MORE often than it**, which is the fourth
-# consecutive batch to move in the same direction and the exact opposite
-# of the reading this header declined to make at n = 11.  The stall rate
-# is 4 of 19 and the difference from 5 of 30 is not significant at that
-# sample; what is established is the sign, not the size.
+# Four 5-family stallers, in four consecutive batches, every one on a
+# first attempt.  The 5-family stands at 16 decided of 20 labels -- a
+# 20% stall rate against the 6-family's 5 of 30, 16.7%.  4 of 20 against
+# 5 of 30 is not a significant difference; what is established is the
+# sign, not the size.
+#
+# **AND THE MEDIAN COMPARISON IS WITHDRAWN, BECAUSE THE MEDIAN HAS NEVER
+# BEEN STABLE.**  The 5-family median has taken six values as the family
+# filled in:
+#
+#     n = 11  3653      n = 14  5929
+#     n = 12  4875      n = 15  5761
+#     n = 13  6096      n = 16  4707
+#
+# Up, up, up, down, down -- and no reading has survived two batches.
+# Two batches ago this header said "on both measures the 5-family
+# matches the 6-family"; one batch ago it said the 5-family had crossed
+# to being worse; at n = 16 the median is 4707 against 6136 and says
+# cheaper again.  **The fault is not in the 5-family.  It is in
+# comparing families by a median over sixteen points.**  The stall rate
+# is a count and survives; the median is withdrawn as a basis for
+# comparison until a family is complete.
 #
 # THE NINE-PREFIX CANDIDATE WAS PUT UP TO BE TESTED, AND THE TEST CAME
 # BACK NEGATIVE.  Last batch this header recorded, explicitly as a
@@ -152,7 +174,7 @@
 #        9         26        0         0.0%
 #        8         36        1         2.7%
 #        7         18        8        30.8%
-#        6          8        0         0.0%   <- n = 8, and STILL zero
+#        6          9        0         0.0%   <- n = 9, and STILL zero
 #
 #   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
 #
@@ -183,7 +205,7 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    15     936      5761    7838
+#        5    16     936      4707    7838
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
