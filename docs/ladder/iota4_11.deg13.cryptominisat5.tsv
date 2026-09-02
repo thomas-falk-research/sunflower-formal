@@ -88,48 +88,74 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 91 UNSAT, 7 UNKNOWN, 0 SAT over 98 labels -- 91 of 1949, so
+# STANDING: 91 UNSAT, 8 UNKNOWN, 0 SAT over 99 labels -- 91 of 1949, so
 # 4.7% of the cube, and the rung's bound is untouched.
 #
-# THE RATE IS FALLING AND THE RULE STILL SAYS HOLD.  The twelve-attempt
-# window has read 1.74, 1.18, 0.81, 0.82 and now 0.67 UNSAT/h over the
-# last five batches.  That is a decline, it is named here rather than
-# smoothed over, and it does not trigger a raise: the rule is stated
-# against ZERO, not against the previous reading, precisely because this
-# header twice acted on a fall that then recovered.  0.67 is not zero.
-# Hold, and read it again next batch.  The eight-attempt window reads
-# 0.95 and is not the window the rule uses -- it under-read the cap
-# twice, which is the same reason.
+# THE RATE HAS FALLEN SIX BATCHES RUNNING AND THE RULE STILL SAYS HOLD.
+# The twelve-attempt window: 1.74, 1.18, 0.81, 0.82, 0.67, 0.51 UNSAT/h.
+# That is a monotone decline over six readings and it is named here
+# rather than smoothed over.  It does NOT trigger a raise, because the
+# rule is stated against ZERO and not against the previous reading --
+# precisely because this header twice acted on a fall that then
+# recovered.  0.51 is four UNSAT in the last twelve attempts, not zero.
 #
-# THE STRAGGLERS: SEVEN LABELS, AND THE SPLIT IS NO LONGER 6-ONLY.
+# SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
+# in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
+# four the cap is still converting; at one it is not, and the argument
+# that any nonzero conversion at a larger cap beats 0.00/h applies.  The
+# eight-attempt window reads 0.57 and is still not the window to use.
+#
+# THE STRAGGLERS: EIGHT LABELS, AND THE SPLIT IS NO LONGER 6-ONLY.
 #
 #   lead13=6  [.. 12, 12, 11, 10, 5]  4 attempts
 #             [.. 12, 11, 11, 10, 6]  3     [.. 12, 11, 11, 9, 7]  3
 #             [.. 12, 11, 10, 10, 7]  3     [.. 12, 11, 10, 9, 8]  3
 #   lead13=5  [.. 12, 12, 11, 11, 10, 7]  1 attempt
 #             [.. 12, 12, 11, 11,  9, 8]  1 attempt
+#             [.. 12, 12, 11, 10, 10, 8]  1 attempt
 #
-# The two 5-family stallers arrived in consecutive batches, both on a
-# first attempt.  The 5-family now stands at 14 decided of 16 labels
-# attempted -- a 12.5% stall rate against the 6-family's 5 of 30, 17% --
-# and median 5929 against 6136.  **On both measures the 5-family now
-# looks like the 6-family**, which is the cleanest statement of what
-# four batches have established, and the exact opposite of the reading
-# this header declined to make at n = 11.
+# Three 5-family stallers now, in three consecutive batches, every one
+# on a first attempt.  The 5-family stands at 14 decided of 17 labels --
+# a 17.6% stall rate against the 6-family's 5 of 30, 16.7% -- and median
+# 5929 against 6136.  **On both measures the 5-family now matches the
+# 6-family**, which is what five batches have established and the exact
+# opposite of the reading this header declined to make at n = 11.
 #
-# ONE FINER PATTERN, RECORDED AS A CANDIDATE AND NOT AS A FINDING.  Both
-# 5-family stallers share a NINE-long opening with a decided sub-cube:
+# THE NINE-PREFIX CANDIDATE WAS PUT UP TO BE TESTED, AND THE TEST CAME
+# BACK NEGATIVE.  Last batch this header recorded, explicitly as a
+# candidate at n = 3, that both 5-family stallers shared the nine-long
+# opening 13,13,13,13,13,12,12,11,11 with a decided sub-cube.  The third
+# staller opens 13,13,13,13,13,12,12,11,10 -- a DIFFERENT nine-prefix.
+# The candidate is not extended.  Stalls are not confined to one prefix,
+# and the pattern is withdrawn rather than restated with the exception
+# attached.
 #
-#     13,13,13,13,13, 12,12,11,11 | 11, 6    UNSAT    7412.9
-#     13,13,13,13,13, 12,12,11,11 | 10, 7    UNKNOWN 10917.0
-#     13,13,13,13,13, 12,12,11,11 |  9, 8    UNKNOWN 10929.6
+# WHAT SURVIVED THE TEST IS BETTER, AND IT IS TWO PREDICTORS AND NOT
+# ONE.  Splitting all 99 labels attempted by the length of the leading
+# run of degrees >= 12 -- not the run of 13s -- separates DECIDES from
+# STALLS far more sharply than leading-13s does:
 #
-# Cost rising as the last two degrees flatten, at a fixed nine-prefix.
-# That is the minimum-degree effect the correlation table already
-# carries, seen at one prefix instead of across the cube.  **n = 3.  It
-# is written here so the next session can check it against a fourth, not
-# so it can be used.**  Every pattern this file has read at small n has
-# been wrong.
+#     run>=12    decided  stalled   stall rate
+#       10          4        0         0.0%
+#        9         26        0         0.0%
+#        8         36        1         2.7%
+#        7         18        7        28.0%
+#        6          7        0         0.0%   <- n = 7, breaks monotone
+#
+#   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
+#
+# Seven of the eight stalls sit at run>=12 exactly 7, and NOTHING with
+# run>=12 of nine or more has ever stalled, in thirty labels.  But on
+# COST AMONG THE DECIDED the ranking inverts: leading-13s scores
+# r = -0.62 and run>=12 only -0.40.  **So they answer different
+# questions -- leading-13s predicts what a decided sub-cube costs,
+# run>=12 predicts whether it decides at all -- and the run>=12=6 bucket
+# already breaks monotonicity at n = 7.**  Neither is a model.  Both are
+# descriptions of 99 labels.
+#
+# The same effect is visible inside the 5-family alone, which is where
+# it was noticed: by eighth degree, deg8=12 is 12 decided and 0 stalled,
+# deg8=11 is 1 decided and 3 stalled.
 #
 # COST BY LEADING 13s, AND A READING THIS HEADER IS DECLINING TO MAKE:
 #
@@ -517,3 +543,4 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10911.1
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10917.0
 g=11 [13, 13, 13, 13, 13, 12, 12, 10, 10, 10, 9]	UNSAT	5761.1
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10929.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10889.3
