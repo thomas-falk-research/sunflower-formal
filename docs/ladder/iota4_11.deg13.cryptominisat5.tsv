@@ -88,7 +88,7 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 96 UNSAT, 9 UNKNOWN, 0 SAT over 105 labels -- 96 of 1949, so
+# STANDING: 99 UNSAT, 9 UNKNOWN, 0 SAT over 108 labels -- 99 of 1949, so
 # 4.7% of the cube, and the rung's bound is untouched.  One hundred
 # labels attempted was the first round number this pass reached and it
 # is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
@@ -114,7 +114,9 @@
 # trend.  It does NOT trigger a raise, because the
 # rule is stated against ZERO and not against the previous reading --
 # precisely because this header twice acted on a fall that then
-# recovered.  1.10 is seven UNSAT in the last twelve, not zero or one.
+# recovered.  1.97 is NINE UNSAT in the last twelve -- the highest this
+# cap has ever read, above the 1.74 that opened the sequence.  The
+# "decline" is not merely reversed, it is gone.
 #
 # SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
 # in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
@@ -181,12 +183,12 @@
 # STALLS far more sharply than leading-13s does:
 #
 #     run>=12    decided  stalled   stall rate
-#       10          4        0         0.0%
-#        9         26        0         0.0%
+#       10          5        0         0.0%
+#        9         27        0         0.0%
 #        8         36        1         2.7%
 #        7         18        8        30.8%
 #        6         11        0         0.0%   <- n = 11, still zero
-#        5          1        0         0.0%   <- NEW, one label so far
+#        5          2        0         0.0%   <- two labels so far
 #
 #   against leading-13s: 0%, 0%, 0% at 9, 8, 7 and then 16.7%, 17.6%.
 #
@@ -222,7 +224,8 @@
 #        8    19     350      1971    2295
 #        7    27     756      4622    7179
 #        6    25     731      6136   10866
-#        5    19     936      5761    8647
+#        5    20     936      4707    8647
+#        4     2     433       763    1094   <- OPENING, see below
 #
 # THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
 # batch the 5-family read median 3653 s on eleven points, below both the
@@ -259,13 +262,36 @@
 # predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                        n = 91        n = 67
-#     distinct values    r = +0.69     r = +0.63   <- best now
-#     sum of squares     r = -0.64     r = -0.65
-#     leading 13s        r = -0.62     r = -0.75   <- was best
-#     MINIMUM degree     r = +0.53     r = +0.53
-#     count deg >= 12    r = -0.40     r = -0.39
-#     count deg >= 11    r = -0.20     r = -0.23
+#                      n = 99    n = 91    n = 67
+#   distinct values    r = +0.69   +0.69     +0.63   <- best throughout
+#   sum of squares     r = -0.57   -0.64     -0.65
+#   leading 13s        r = -0.46   -0.62     -0.75   <- COLLAPSING
+#   MINIMUM degree     r = +0.49   +0.53     +0.53
+#   run>=12            r = -0.34     --        --
+#   count deg >= 12    r = -0.34   -0.40     -0.39
+#
+# **THE LEADING-13s COEFFICIENT HAS FALLEN AT EVERY MEASUREMENT: -0.75
+# at n = 67, -0.62 at n = 91, -0.46 at n = 99.**  Three readings, each
+# lower than the last, while "distinct values" has not moved at all.  A
+# coefficient that decays as the sample grows is the signature of a
+# statistic that was tracking the enumeration rather than the cube, and
+# leading-13s is exactly that: the enumeration walks families in
+# descending order, so early = many 13s = also early-within-family, and
+# early-within-family is cheap for every family.  Treat the leading-13s
+# number as describing the order rows arrived in, not the difficulty of
+# a sub-cube.
+#
+# THE ROWS THAT DID IT, AND WHAT THIS HEADER IS NOT CLAIMING ABOUT THEM.
+# The enumeration reached FOUR leading 13s and the two labels there
+# decided in 433.1 s and 1093.7 s -- against a leading-13s model that
+# predicts the 4-family should be the most expensive yet.  Their
+# run>=12 is 10 and 9, buckets that have never stalled and are cheap,
+# so run>=12 called them right and leading-13s called them backwards.
+# **But n = 2 is the purest possible opening, and this header's own rule
+# is never to read a family at its opening.**  The 4-family median of
+# 763 is NOT offered as "the cheapest family"; it is offered as two
+# rows that the leading-13s model got wrong, which is a claim about the
+# model and not about the family.
 #
 # THE HEADER'S OWN WARNING CAME TRUE ON ITS OWN DATA.  At n = 67 this
 # table called leading 13s "the best single predictor" and then said "do
@@ -609,3 +635,6 @@ g=11 [13, 13, 13, 13, 13, 12, 11, 10, 10, 10, 10]	UNSAT	3373.1
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 9, 9]	UNSAT	7047.2
 g=11 [13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 8]	UNSAT	1149.4
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 10, 8]	UNSAT	8647.1
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 12, 4]	UNSAT	433.1
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 11, 5]	UNSAT	1093.7
+g=11 [13, 13, 13, 13, 13, 11, 11, 11, 11, 10, 9]	UNSAT	2794.8
