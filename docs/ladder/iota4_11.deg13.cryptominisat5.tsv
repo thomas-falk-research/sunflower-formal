@@ -48,16 +48,19 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
-# FIVE CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The fifth was at
-# 04:56 UTC and killed the driver and all four solvers mid-flight.  On
-# restart the same command printed "checkpoint: 110 of 1949 cubes
-# already decided" and resumed.  Every banked UNSAT survived; the only
-# work lost is the partial search in the four solvers that were running,
-# which is bounded by the cap.  **This is the entire argument for the
-# degree-sequence split over the whole-cube monolith, and it is now
-# demonstrated five times rather than argued once** -- the monolith has
-# twice been killed at ~85000 s and lost everything, because a single
-# instance has nothing to check point.
+# SIX CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
+# ~17:53 UTC and killed the driver and all four solvers mid-flight.  On
+# restart the same command printed "checkpoint: 129 of 1949 cubes
+# already decided" and resumed -- a number that matches an independent
+# recount of the distinct UNSAT labels in this file, which is the check
+# that makes "zero rows lost" a verified statement and not a hope.
+# Every banked UNSAT survived; the only work lost is the partial search
+# in the four solvers that were running, which is bounded by the cap.
+# **This is the entire argument for the degree-sequence split over the
+# whole-cube monolith, and it is now demonstrated six times rather than
+# argued once** -- the monolith has twice been killed at ~85000 s and
+# lost everything, because a single instance has nothing to check
+# point.
 #
 # NOTE ON RESTART: phase one re-runs the WHOLE deg(0) = 13 cube for one
 # --slice (60 s) before re-splitting.  On a fresh start you will see a
@@ -106,10 +109,20 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 128 UNSAT, 10 UNKNOWN, 0 SAT over 138 labels -- 128 of 1949,
-# 227 rows.  **The 12-window reads 12 of 12** -- a clean sweep, and the
-# furthest the cap has ever been from its raise condition.  The 8-window is 5 of 8 and the 12-window 5 of 12; both say
-# hold and the earlier disagreement is closed.
+# STANDING: 129 UNSAT, 10 UNKNOWN, 0 SAT over 139 labels -- 129 of 1949,
+# 228 rows.  **Both windows are now clean sweeps: 8 of 8 and 12 of 12**
+# -- the furthest the cap has ever been from its raise condition, and
+# the raise stays unarmed.
+#
+# (Housekeeping, recorded rather than silently fixed: this block until
+# now ended with the sentence "The 8-window is 5 of 8 and the 12-window
+# 5 of 12; both say hold and the earlier disagreement is closed."  That
+# was stale text from an earlier batch, left in place while the sentence
+# above it was updated, and the two flatly contradicted each other.  A
+# recount over all 228 rows gives 8 of 8 and 12 of 12.  I have not tried
+# to establish which batch the 5-of-8 reading was true for; the point of
+# recording it is that a header edited in place accumulates sentences
+# that were each true once, and only a recount distinguishes them.)
 #
 # **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
 # THEM.**  That is the complete cycle, not a sample of it: every label
@@ -350,9 +363,10 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Checked over all 223 rows: **0 violate block-wise
-# sortedness, 5 violate global sortedness**, and they are one family
-# being walked in order:
+# across the two.  Re-checked over all 228 rows / 139 distinct labels:
+# **0 violate block-wise sortedness, 10 violate global sortedness**, and
+# they fall into two families, each walked in order.  The first, now
+# complete at seven members:
 #
 #     [13,13,13, 12, 13,13,13,13,13, 12, 0]     319.1
 #     [13,13,13, 12, 13,13,13,13,13, 11, 1]    1018.0
@@ -363,10 +377,11 @@
 #     [13,13,13, 12, 13,13,13,13,13,  6, 6]    2347.3  <- PREDICTED
 #      anchor  block1     block2      tail
 #
-#   and a SECOND FAMILY, position 8 = 12 instead of 13, now two deep:
+#   and a SECOND FAMILY, position 8 = 12 instead of 13, now three deep:
 #
 #     [13,13,13, 12, 13,13,13,13,12, 12, 1]    2333.3
 #     [13,13,13, 12, 13,13,13,13,12, 11, 2]    4259.7
+#     [13,13,13, 12, 13,13,13,13,12, 10, 3]    5658.5  <- PREDICTED
 #
 # Identical through nine positions; only the last two move, and they
 # move as `x + y = 12` with `x` walking down from 12.  The violation is
@@ -413,19 +428,27 @@
 # complete list is `x = 12,11,10,9,8,7` -- six members, of which `12,1`
 # and `11,2` have landed.
 #
-#   PREDICTED: four more, tails `10,3`, `9,4`, `8,5`, `7,6`, then this
-#   family ends too.  This is the same kind of claim that held exactly
-#   for the first family, and it is arithmetic about the encoding rather
-#   than a reading of the data.
+#   PREDICTED, and now THREE OF SIX CONFIRMED: tails `10,3` (landed,
+#   5658.5), then `9,4`, `8,5`, `7,6`, then this family ends too.  This
+#   is the same kind of claim that held exactly for the first family,
+#   and it is arithmetic about the encoding rather than a reading of the
+#   data -- which is why it is the only part of this section stated as a
+#   prediction at all.
 #
-#   NOT PREDICTED: anything about their cost.  The first family's costs
-#   went 319, 1018, 1692, 2332, 2400, 2840, 2347 -- rising then falling,
-#   which refuted this header's monotone reading one batch ago.  The
-#   second family opens 2333, 4260, also rising.  **This header is
-#   deliberately not saying what comes next**, because the identical
-#   setup produced a monotone-looking prefix last time and the
-#   continuation broke it.  One refutation is enough to stop guessing the
-#   same way twice.
+#   NOT PREDICTED: anything about their cost -- and the third member is
+#   the first real test of that abstention, so it is worth being precise
+#   about what it did and did not settle.  The second family now reads
+#   2333, 4260, 5659: three points, rising, and rising faster than the
+#   first family did over its own first three (319, 1018, 1692).  That
+#   is a fact about three numbers.  It is NOT a monotone cost law, and
+#   this header still declines to predict the fourth, because the first
+#   family ALSO rose monotonically through its first FIVE members
+#   (319, 1018, 1692, 2332, 2400) before `7,5` and `6,6` broke it.  A
+#   three-long rising prefix is weaker evidence than the five-long
+#   rising prefix that already failed here once.  **The abstention is
+#   not being revised, and the temptation to revise it -- now that the
+#   numbers look obliging -- is exactly the thing it was written to
+#   resist.**
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
@@ -986,3 +1009,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 7, 5]	UNSAT	2839.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 6, 6]	UNSAT	2347.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 12, 1]	UNSAT	2333.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 11, 2]	UNSAT	4259.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 10, 3]	UNSAT	5658.5
