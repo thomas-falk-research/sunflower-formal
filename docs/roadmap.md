@@ -12955,7 +12955,8 @@ opening suggested, never less.
 
 The seventh correction above was not the last, and the ones after it
 matter less individually than as a set. Over the session's later batches
-the ladder header made five quantitative readings and withdrew every one:
+the ladder header made eight quantitative readings and withdrew every
+one:
 
 | Reading | Withdrawn when |
 |---|---|
@@ -12963,7 +12964,10 @@ the ladder header made five quantitative readings and withdrew every one:
 | The 5-family cheaper than the 6-family, by median at `n = 11` | `n = 13`, then re-overturned at 14, 15, 16, 17 |
 | The families compared by **median** at all | The 5-family median took seven values — 3653, 4875, 6096, 5929, 5761, 4707, 5761 — and no reading survived two batches |
 | The families compared by **stall count**, which replaced the median | One batch later: 4 of 23 (17.4%) against 5 of 30 (16.7%), so even the sign vanished |
-| **Leading 13s as a cost predictor** — "the best single predictor" at `r = -0.75` | The coefficient fell at *every* measurement: `-0.75` at `n = 67`, `-0.62` at `n = 91`, `-0.46` at `n = 99`, while `distinct values` held at `+0.63/+0.69/+0.69` |
+| **Leading 13s as a cost predictor** — "the best single predictor" at `r = -0.75` | The coefficient fell at *every one of eleven* measurements: `-0.75` at `n = 67` down to `-0.22` at `n = 110` |
+| **"Zero on both sides of the stall peak"** in the `run≥12` table, which this file had just called the one description it had never withdrawn | The very next batch, when a `run≥12 = 6` label stalled at 10913.2 s. Eleven labels stood behind that zero |
+| **"One coefficient collapsing while another sits flat"** — the way the leading-13s collapse was argued for three batches | `distinct values` is not flat: `+0.69, +0.68, +0.68, +0.65, +0.63`. Both decay; only the *ratio* of rates, 0.53 against 0.06, is real. The statistic that actually held is `run≥12` at `-0.34, -0.32, -0.33` |
+| **"Stalling repeatedly at a cap establishes that the cap is too small"** | Eight labels were re-attempted at an *unchanged* 10800 s cap and three were decided by the repeat alone, each landing at less wall time than its own earlier stall |
 
 Alongside them the rate itself was narrated three times — "monotone
 decline", "levelling", and an earlier `0.21` called terminal — and each
