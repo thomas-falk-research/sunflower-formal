@@ -768,10 +768,44 @@
 # predictors, recomputed over all 91 decided sub-cubes, with the reading
 # at n = 67 beside it:
 #
-#                   n = 129  n = 115  n = 114  n = 110  n = 103   n = 99   n = 91   n = 67
-#   distinct values  r = +0.62   +0.62    +0.63    +0.63    +0.68    +0.69    +0.69    +0.63
-#   COUNT of 13s     r = -0.23   -0.21    -0.22    -0.22    -0.35    -0.46    -0.62    -0.75
-#   run>=12          r = -0.27   -0.28    -0.31    -0.32      --     -0.34      --       --
+#                   n = 141  n = 129  n = 115  n = 114  n = 110  n = 103   n = 99   n = 91   n = 67
+#   distinct values  r = +0.69   +0.62    +0.62    +0.63    +0.63    +0.68    +0.69    +0.69    +0.63
+#   COUNT of 13s     r = -0.27   -0.23    -0.21    -0.22    -0.22    -0.35    -0.46    -0.62    -0.75
+#   run>=12          r = -0.31   -0.27    -0.28    -0.31    -0.32      --     -0.34      --       --
+#   MINIMUM degree   r = +0.39   +0.37
+#   sum of squares   r = -0.45   -0.42
+#   leading RUN 13s  r = -0.09   -0.08
+#
+# **EVERY ONE OF THE SIX MOVED AWAY FROM ZERO AT THE SAME TIME, AND THAT
+# IS NOT SIX RELATIONSHIPS GETTING CLEARER.**  Six coefficients drifting
+# in six directions is noise; six strengthening together is a change in
+# the sample.  Two candidate explanations were checked:
+#
+#   RANGE EXTENSION -- REJECTED.  Adding points at the extreme of the
+#   dependent variable inflates r mechanically.  It did not happen here:
+#   the cost spread is 128.3 .. 10865.7 both before and after, identical
+#   to the decimal, because first-attempt decisions already spanned it.
+#
+#   CENSORING ON THE DEPENDENT VARIABLE -- CONFIRMED, AND IT APPLIES
+#   RETROACTIVELY TO EVERY EARLIER COLUMN OF THIS TABLE.  The twelve
+#   labels added between n = 129 and n = 141 are the ten stragglers plus
+#   two violators, and they have **median cost 8780 s against 3384 s for
+#   the earlier 129**.  They were absent from every previous column not
+#   at random but PRECISELY BECAUSE THEY WERE EXPENSIVE: a label enters
+#   the decided set only when it is decided, so the hardest labels are
+#   systematically the last to arrive and were missing from every
+#   correlation this file has ever computed.
+#
+# So the n = 141 column is the first computed on a sample that is not
+# missing its own hardest members, and every column to its left was
+# biased by their absence.  **That is a criticism of the earlier numbers,
+# not a promotion of this one.**  141 of 1949 is still 7%, still chosen
+# by enumeration order rather than at random, and the same censoring is
+# still operating on everything not yet decided -- whatever is hardest
+# among the remaining 1808 is, by construction, absent from this column
+# too.  The right reading is that these coefficients will keep
+# strengthening as the run proceeds, for the same reason, and that this
+# is a property of the measurement process rather than of the cube.
 #
 #   The row was labelled "leading 13s" until this batch.  It is renamed
 #   because the two readings of that phrase -- the COUNT of 13s anywhere
