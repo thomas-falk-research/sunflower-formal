@@ -196,13 +196,11 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 244 rows.  **THE SWEEP IS COMPLETE: ALL TEN STRAGGLERS HAVE FALLEN,
-# AND THERE ARE NO UNKNOWN LABELS LEFT AT ALL.**  139 UNSAT, 0 UNKNOWN,
-# 0 SAT over 139 labels -- the first time in this run that every label
-# ever attempted is decided.  The last to go was
-# `[13,13,13,13,13,12,11,11,10,10,9]` at 9811.3 s from the 06:42 launch.
-# `seq-c139` through `c142` are in flight on ground never recorded
-# before, so the next rows will be genuinely new sub-cubes.
+# 245 rows.  **THE SWEEP IS COMPLETE AND THE RUN HAS REACHED FRESH
+# GROUND.**  140 UNSAT, 0 UNKNOWN, 0 SAT over 140 labels -- every label
+# ever attempted is decided, and the newest is the first genuinely new
+# sub-cube since the sweep began: `[13,13,13,12,13,13,13,13,12,9,4]` at
+# 3555.5 s, decided on its first attempt.
 #
 # **AND THE HEADLINE IS THAT ONE COHORT OF FOUR WENT FOUR FOR FOUR.**
 # The four solvers launched together at ~04:13 all decided their cubes,
@@ -306,7 +304,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 244 rows: ALL attempts 8 of 8 and 10 of 12; FIRST attempts
+# WINDOWS at 245 rows: ALL attempts 8 of 8 and 10 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -615,8 +613,8 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Re-checked over all 232 rows / 139 distinct labels:
-# **0 violate block-wise sortedness, 10 violate global sortedness**, and
+# across the two.  Re-checked over all 245 rows / 140 distinct labels:
+# **0 violate block-wise sortedness, 11 violate global sortedness**, and
 # they fall into two families, each walked in order.  The first, now
 # complete at seven members:
 #
@@ -680,27 +678,35 @@
 # complete list is `x = 12,11,10,9,8,7` -- six members, of which `12,1`
 # and `11,2` have landed.
 #
-#   PREDICTED, and now THREE OF SIX CONFIRMED: tails `10,3` (landed,
-#   5658.5), then `9,4`, `8,5`, `7,6`, then this family ends too.  This
-#   is the same kind of claim that held exactly for the first family,
-#   and it is arithmetic about the encoding rather than a reading of the
-#   data -- which is why it is the only part of this section stated as a
-#   prediction at all.
+#   PREDICTED, and now FOUR OF SIX CONFIRMED IN THE PREDICTED ORDER:
+#   `12,1`, `11,2`, `10,3` and now **`9,4` (landed 3555.5)**; `8,5` and
+#   `7,6` remain, then this family ends too.  This is the same kind of
+#   claim that held exactly for the first family, and it is arithmetic
+#   about the encoding rather than a reading of the data -- which is why
+#   it is the only part of this section stated as a prediction at all.
 #
-#   NOT PREDICTED: anything about their cost -- and the third member is
-#   the first real test of that abstention, so it is worth being precise
-#   about what it did and did not settle.  The second family now reads
-#   2333, 4260, 5659: three points, rising, and rising faster than the
-#   first family did over its own first three (319, 1018, 1692).  That
-#   is a fact about three numbers.  It is NOT a monotone cost law, and
+#   **AND THE COST ABSTENTION HAS NOW BEEN TESTED AND VINDICATED.**  One
+#   batch ago this header wrote, of the second family's 2333 / 4260 /
+#   5659: "three points, rising ... It is NOT a monotone cost law, and
 #   this header still declines to predict the fourth, because the first
-#   family ALSO rose monotonically through its first FIVE members
-#   (319, 1018, 1692, 2332, 2400) before `7,5` and `6,6` broke it.  A
-#   three-long rising prefix is weaker evidence than the five-long
-#   rising prefix that already failed here once.  **The abstention is
-#   not being revised, and the temptation to revise it -- now that the
-#   numbers look obliging -- is exactly the thing it was written to
-#   resist.**
+#   family ALSO rose monotonically through its first FIVE members before
+#   `7,5` and `6,6` broke it."  It then said in as many words that the
+#   temptation to revise the abstention, now that the numbers looked
+#   obliging, was exactly the thing it was written to resist.
+#
+#   **The fourth member came in at 3555.5 -- a fall of more than 2100 s.**
+#   The second family reads 2333, 4260, 5659, 3556: up, up, down, the
+#   same shape that broke the first family, arriving one member sooner.
+#   Extrapolating the rising prefix would have been wrong, and the only
+#   reason this header did not extrapolate it is that a rising prefix had
+#   already failed here once.
+#
+#   Two things resolved together, and they resolved in opposite
+#   directions on purpose.  **The prediction derived from the ENCODING --
+#   which tails can exist -- is 4 for 4.  Every prediction derived from
+#   the OBSERVED CURVE has failed, in both families.**  That is the whole
+#   distinction this section was built to record: arithmetic about the
+#   generator predicts; extrapolation of its output does not.
 #
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
@@ -1454,3 +1460,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNSAT	8658.6
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNSAT	8956.0
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNSAT	9313.9
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNSAT	9811.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 9, 4]	UNSAT	3555.5
