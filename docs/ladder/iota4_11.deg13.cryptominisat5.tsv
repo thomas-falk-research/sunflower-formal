@@ -175,8 +175,10 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 234 rows.  **TWO STRAGGLERS FELL, ONE ON ITS SEVENTH ATTEMPT AND ONE
-# ON ITS SIXTH.**
+# 236 rows.  **TWO STRAGGLERS FELL, ONE ON ITS SEVENTH ATTEMPT AND ONE
+# ON ITS SIXTH** -- and the other two of that batch of four came back
+# UNKNOWN at the cap (10870.2, 10881.6), so the batch was two decided
+# and two not.
 # `[13,13,13,13,13,13,12,12,11,10,5]` had gone UNKNOWN at 5434.3 under
 # the old 5400 s cap and then five times at the 10800 s cap
 # (10867.3, 10853.3, 10870.0, 10878.6, 10895.6).  It came back
@@ -208,15 +210,15 @@
 # and it was a run>=12 = 7 label.  The current table:
 #
 #     run>=12 = 8    8 repeats, 4 decided     0.500
-#     run>=12 <= 7  21 repeats, 1 decided     0.048
-#     pooled        29 repeats, 5 decided     0.17    <- the header figure
+#     run>=12 <= 7  23 repeats, 1 decided     0.043
+#     pooled        31 repeats, 5 decided     0.16    <- the header figure
 #
 # **The caveat was vindicated within a single row.**  Two claims from
 # the first version are dead: that the second arm's rate is zero, and
 # that every open straggler sits in an arm that has never produced a
 # success.  What survives is weaker and is all that was ever supportable:
 # the two arms' point estimates differ by about a factor of ten on 8 and
-# 21 repeats, which is suggestive and is not a demonstrated difference.
+# 23 repeats, which is suggestive and is not a demonstrated difference.
 #
 # The composition point does survive, because it does not depend on the
 # rates: **all four of the run>=12 = 8 stragglers have now been decided**,
@@ -242,10 +244,13 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 233 rows: ALL attempts 4 of 8 and 8 of 12; FIRST attempts
+# WINDOWS at 236 rows: ALL attempts 2 of 8 and 6 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
-# is 0 or 1 banked in twelve).  Never raise off a window the resume
-# policy filled.
+# is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
+# off a window the resume policy filled: the all-attempts window has now
+# spent ten of its last twelve slots on straggler repeats, and the
+# first-attempts window -- which is the one that says anything about the
+# frontier -- has not moved off a clean sweep since it was introduced.
 #
 # (Housekeeping, recorded rather than silently fixed: this block until
 # now ended with the sentence "The 8-window is 5 of 8 and the 12-window
@@ -864,8 +869,10 @@
 # denominator growing.
 #
 # **THEN IT MOVED, TWICE, IN ONE BATCH.**  A fourth success took it to
-# 4 of 28 = 0.14 and a fifth, minutes later, to **5 of 29 = 0.17** --
-# up for the first time ever.  The header had said, one batch earlier,
+# 4 of 28 = 0.14 and a fifth, minutes later, to 5 of 29 = 0.17 -- up for
+# the first time ever, and then to **5 of 31 = 0.16** as the same batch's
+# two UNKNOWNs landed.  The direction reversed; the resolution did not
+# improve.  The header had said, one batch earlier,
 # that the unmoving numerator was what a weak estimate looks like while
 # it is being measured and NOT evidence of a decaying effect.  That was
 # the right call: the sequence 0.37 -> 0.11 was never a decay, and two
@@ -1244,3 +1251,5 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10895.6
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10919.8
 g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNSAT	10053.0
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNSAT	10270.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10870.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10881.6
