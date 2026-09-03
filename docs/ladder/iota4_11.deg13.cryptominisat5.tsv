@@ -48,10 +48,10 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
-# NINE CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
-# ~17:53 UTC, the seventh at ~21:36, the eighth at ~22:00 and the ninth
-# at ~22:05; each killed the driver and all four solvers mid-flight.
-# Every time the same command printed
+# TEN CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
+# ~17:53 UTC, the seventh at ~21:36, the eighth at ~22:00, the ninth at
+# ~22:05 and the tenth at ~03:32; each killed the driver and all four
+# solvers mid-flight.  Every time the same command printed
 # "checkpoint: 129 of 1949 cubes already decided" and resumed -- a number
 # that matches an independent recount of the distinct UNSAT labels in
 # this file, which is the check that makes "zero rows lost" a verified
@@ -59,7 +59,7 @@
 # lost is the partial search in the four solvers that were running,
 # which is bounded by the cap.
 # **This is the entire argument for the degree-sequence split over the
-# whole-cube monolith, and it is now demonstrated nine times rather
+# whole-cube monolith, and it is now demonstrated ten times rather
 # than argued once** -- the monolith has twice been killed at ~85000 s
 # and lost everything, because a single instance has nothing to check
 # point.
@@ -73,11 +73,13 @@
 #     all ten stragglers, ten attempts over four threads at a 10800 s
 #     cap = three batches = ABOUT 7.5 UNINTERRUPTED WALL-HOURS;
 #
-#     observed gaps between the last five restarts:
-#         5th -> 6th   12 h 57 m     long enough
-#         6th -> 7th    3 h 43 m     not enough
-#         7th -> 8th       24 m      not enough
-#         8th -> 9th        5 m      not enough for ANY attempt at all
+#     observed gaps between the last six restarts:
+#         5th ->  6th  12 h 57 m     long enough
+#         6th ->  7th   3 h 43 m     not enough
+#         7th ->  8th      24 m      not enough
+#         8th ->  9th       5 m      not enough for ANY attempt at all
+#         9th -> 10th   5 h 27 m     not enough for the sweep, but the
+#                                    run banked four rows inside it
 #
 # A restart resets the sweep to its beginning -- after the eighth AND
 # the ninth the driver went straight back to c59/c67/c68/c70, the same
@@ -114,6 +116,25 @@
 #       that untouched tree is what the gates argument in the PR body
 #       rests on.
 # Flagged for a decision rather than made quietly.
+#
+# **THE TENTH RESTART WAS THE EXPENSIVE ONE, AND THE REASON IS WHEN IT
+# LANDED RATHER THAN WHAT IT KILLED.**  Batch 2 of the sweep started at
+# 00:55-01:08 on c71, c95, c96 and c97; the restart came at ~03:32, so
+# those four solvers died about 2 h 25 m into a 3 h cap -- roughly 85%
+# of the way through, against the seventh restart's 40 minutes, or 22%.
+# Same four cubes, same cap, more than three times the wall time thrown
+# away: about ten solver-hours here against two and a half there.
+#
+# **The expected yield lost is nonetheless small, and the two numbers
+# should not be confused.**  Every remaining straggler is run>=12 <= 7,
+# where the observed repeat yield is 1 of 23, so those four attempts were
+# worth about 0.17 UNSAT between them however far they had got.  A
+# restart's cost in WALL TIME depends sharply on when in the batch it
+# lands; its cost in EXPECTED ROWS does not, because an attempt that is
+# 85% finished has banked exactly as much as one that is 22% finished,
+# which is nothing.  That asymmetry is the whole reason a checkpoint at
+# sub-cube granularity is worth having, and it is also why "we lost ten
+# solver-hours" and "we lost a sixth of an UNSAT" are both true here.
 #
 # WHAT THE SEVENTH RESTART ACTUALLY COST, WHICH IS LESS THAN "FOUR
 # SOLVERS' WORK" SOUNDS.  Both the sixth and the seventh landed while
