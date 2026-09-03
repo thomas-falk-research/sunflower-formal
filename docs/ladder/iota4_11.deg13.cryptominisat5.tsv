@@ -195,13 +195,21 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 251 rows.  **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE THIRD VIOLATOR SUB-FAMILY IS FOUR OF FIVE.**  146 UNSAT,
-# 0 UNKNOWN, 0 SAT over 146 labels -- every label ever attempted is
+# STANDING: 147 UNSAT, 0 UNKNOWN, 0 SAT over 147 labels -- 147 of 1949,
+# 252 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# the sentence two lines below it already said 146 and 0 -- stale from the
+# batch that introduced the sweep-complete line and not re-derived since.
+# Corrected by recounting from the rows; logged in 54.3a.)
+# **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
+# AND THE THIRD VIOLATOR SUB-FAMILY IS COMPLETE AT FIVE.**  147 UNSAT,
+# 0 UNKNOWN, 0 SAT over 147 labels -- every label ever attempted is
 # decided.  The `w = 11` sub-family has `11,3` at 2821.4, `10,4` at
-# 3155.1, `9,5` at 3639.7 and `7,7` at 2933.8.  **`8,6` is still
-# missing: `7,7` OVERTOOK IT.**
+# 3155.1, `9,5` at 3639.7, `7,7` at 2933.8 and **`8,6` at 3692.7**.
+# `8,6` was never missing, only slow: it landed 10 m 16 s after `7,7`
+# overtook it, and its 3692.7 s is the family's LARGEST cost, which is
+# the whole of the explanation.  The membership prediction is five for
+# five and the sub-family is CLOSED by arithmetic: block 2 admits
+# exactly `x = 11,10,9,8,7` at `w = 11` and nothing else.
 #
 # **THAT BREAKS A PHRASE THIS HEADER HAS USED REPEATEDLY, AND THE PHRASE
 # WAS ALWAYS AN OVERSTATEMENT.**  Every batch since the second family
@@ -212,7 +220,58 @@
 # families did arrive strictly in order (checked: x ran 12,11,10,9,8,7,6
 # and 12,11,10,9,8,7), and that was scheduling luck being read as
 # confirmation of something never claimed.  `7,7` finished in 2933.8 s
-# while `8,6` is still running, so it landed first.
+# while `8,6` was still running, so it landed first; `8,6` came in ten
+# minutes later at 3692.7, the largest cost in the family.
+#
+# **AND IT WAS NOT THE FIRST TIME -- THIS FILE ALREADY HELD THREE
+# COUNTEREXAMPLES WHILE THE PHRASE WAS IN USE.**  Scripting arrival order
+# across ALL 36 families that have two or more members in hand finds three
+# that arrived out of descending-`x` order well before this one:
+#     [13,13,13,13,13,12,12,12,11]  arrived  11,10,8,9    88th label
+#     [13,13,13,13,13,12,11,11,11]  arrived  11,9,10     100th label
+#     [13,13,13,13,12,12,12,11,11]  arrived  11,9,10     119th label
+# (Ordinals only, deliberately: these are permanent facts about arrival
+# position, and pinning a "of N labels" denominator to them would go
+# stale on the next row -- which is the failure this section is about.
+# The w = 11 family above is itself the fourth such case, at 143.)
+# The first violator family -- the only kind the phrase was ever applied
+# to -- was the 127th label, so the earliest counterexample had been in
+# this file for 39 labels before the phrase was first written.
+# All three are globally sorted -- NON-violator families -- and "in the
+# predicted order" was only ever said of the violator families, where it
+# did hold.  The phrase was therefore checked against the slice that
+# prompted it and never against the rest of the file, which had already
+# refuted the general property three times over.
+#
+# That makes this a DIFFERENT failure from the block-sortedness one, and
+# the difference is the useful part.  There the counterexample did not yet
+# exist: 215 rows agreed and row 216 was the first that could have
+# disagreed.  Here the counterexamples were sitting in this same file the
+# whole time, one script away, and were missed because the claim was only
+# ever run against the rows it was about.  **When a regularity shows up in
+# a slice, the cheapest test is the rest of the data already in hand.**
+#
+# **AND THE CHECK FOR ALL OF THE ABOVE WAS ITSELF WRONG, WHICH IS THE
+# PART WORTH KEEPING.**  The script that verified these numbers reported
+# `89 UNSAT, 57 UNKNOWN` against a header saying `146 UNSAT, 0 UNKNOWN`
+# (the counts as they then stood, at 146 labels).
+# The HEADER was right.  Getting arrival order requires keeping each
+# label's FIRST row, so the script was built first-write-wins -- and that
+# silently redefined the status tally from "how each label stands now" to
+# "how each label came back on attempt one".  Both are real quantities;
+# only one is what STANDING means.  Taken at face value it would have
+# converted a correct header into a wrong one, in the name of verifying
+# it.  **A check that disagrees with the thing it checks has two
+# suspects, and the newer code is the better bet.**  Resolved by
+# computing first-, last- and any-UNSAT per label side by side: last and
+# any-UNSAT agreed with each other and with the header, and no label has
+# ever regressed from UNSAT.
+#
+# The wrong reading is a real statistic under its correct name, and it
+# has not been stated in this file before: **57 of the 147 decided
+# labels -- 38.8% -- were NOT decided on their first attempt**, and all
+# 57 were later banked by a re-run or a cap raise.  90 fell first time.
+# (This ratio moves with every row; it is quoted as of 147 labels.)
 #
 # The membership prediction is untouched -- `7,7` is a predicted member
 # and `8,6` remains outstanding -- and this is recorded because a claim
@@ -784,19 +843,32 @@
 #
 #     w = 13   7 members   (12,0) (11,1) (10,2) (9,3) (8,4) (7,5) (6,6)   ALL LANDED
 #     w = 12   6 members   (12,1) (11,2) (10,3) (9,4) (8,5) (7,6)         ALL LANDED
-#     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)   FOUR LANDED, (8,6) OUTSTANDING
+#     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)   ALL LANDED
 #     w = 10   3 members   (10,5) (9,6) (8,7)
 #     w =  9   2 members   (9,7) (8,8)
 #
-# **PREDICTED, on the same encoding arithmetic that has never missed:**
-# `(8,6)` completes the w = 11 sub-family (`7,7` already landed, out of
-# enumeration order -- arrival order is a scheduling artefact and no part
-# of the prediction), then
-# `(10,5)`, `(9,6)`, `(8,7)`, then `(9,7)`, `(8,8)`, and then this
-# first-eight group is exhausted at 23 and the enumeration moves to
-# `[13,13,13,12,13,13,13,12]`, which has 14 members.  Seventeen of the 23
-# are in hand.  NO COST PREDICTION IS MADE, for the reason the last two
-# abstentions were made and vindicated.
+# **RESOLVED: `(8,6)` LANDED at 3692.7 and the w = 11 sub-family is
+# COMPLETE at five of five.**  All three sub-families closed so far hold
+# EXACTLY the members the encoding permits and nothing else -- 7, 6 and
+# 5, so 18 of the group's 23 -- with none missing and none outside the
+# permitted set (checked by generating each set from `x + y = 25 - w`,
+# `w >= x >= y`, and comparing against the banked labels).  `8,6`
+# arrived last of
+# the five despite being fourth in the enumeration, and it carries the
+# family's largest cost -- 3692.7 against 2821.4, 3155.1, 3639.7 and
+# 2933.8 -- so the overtaking needs no explanation beyond "it was the
+# slowest one".  This is stated as a fact about these five costs and
+# NOT as a rule: nothing here licenses "late arrival means high cost",
+# and the sample is one family.
+#
+# **PREDICTED NEXT, on the same encoding arithmetic that has never
+# missed:** `(10,5)`, `(9,6)`, `(8,7)` complete `w = 10`, then `(9,7)`,
+# `(8,8)` complete `w = 9`, and then this first-eight group is exhausted
+# at 23 and the enumeration moves to `[13,13,13,12,13,13,13,12]`, which
+# has 14 members.  **Eighteen of the 23 are in hand.**  Arrival order is
+# explicitly NOT predicted -- see the four counterexamples above.  NO
+# COST PREDICTION IS MADE, for the reason the last two abstentions were
+# made and vindicated.
 #
 # WHAT IT COSTS, NOW MEASURED BOTH WAYS RATHER THAN ESTIMATED.  Both
 # statistics were recomputed under leading-run and under COUNT over all
@@ -1587,3 +1659,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 11, 3]	UNSAT	2821.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 10, 4]	UNSAT	3155.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 9, 5]	UNSAT	3639.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 7, 7]	UNSAT	2933.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 8, 6]	UNSAT	3692.7

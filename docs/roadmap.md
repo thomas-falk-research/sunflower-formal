@@ -12951,12 +12951,12 @@ n = 25; the 5-family at n = 11, refuted at n = 13), and both times the
 correction went the same way: the family was more expensive than its
 opening suggested, never less.
 
-### 54.3a Fifteen withdrawals with one shape, and the rules they yield
+### 54.3a Sixteen withdrawals with one shape, and the rules they yield
 
 The seventh correction above was not the last, and the ones after it
 matter less individually than as a set. Over the session's later batches
-the ladder header made fifteen quantitative readings and withdrew every
-one:
+the ladder header made sixteen readings — fifteen quantitative and one
+descriptive — and withdrew every one:
 
 (The heading and this sentence read "five" and "eight" while the table
 below them grew to ten, which is its own small instance of the thing the
@@ -12980,6 +12980,7 @@ it counts changes. Corrected here by counting the rows.)
 | **"The `run≥12 ≤ 7` arm has yield zero"**, from 0 of 20 repeats | Broken by the **next row**, before the claim could even be committed — a `run≥12 = 7` label decided on its sixth attempt. The header had attached the rule-of-three caveat (95% upper bound ≈ `3/20 = 0.15`, which contains the pooled rate); the caveat was vindicated within one row |
 | **"45 of 45 stalled-then-decided at `run≥12 ≥ 8`"** | **41 of those 45 stalled only at the OLD 5400 s cap** and were decided by the raise to 10800, not by a repeat. Restricted to the current cap it is 4 of 4 against 0 of 9 — thirteen labels, not fifty-seven |
 | **"The four re-run successes share the prefix `13,13,13,13,13,13,12,12`"** — read off the four successes by eye | An artefact of looking only at the successes instead of at every label that ever stalled. The separating variable is `run≥12`. Killed by scripting the reading in the same batch it was formed |
+| **"The sub-family members land in the predicted order"** — written in every batch from the second violator family onward, and in three commit subjects | `7,7` landed while `8,6` was still running. The prediction was about MEMBERSHIP — which tails the encoding permits — and never mentioned arrival order, which four solvers finishing at different times decide. Worse than unverified: scripting arrival order across **all 36 families with two or more members** found **three** that had already arrived out of order (the 88th, 100th and 119th labels) while the phrase was in use |
 
 One statement from the same stretch is deliberately **not** in the table,
 because it is a different thing and the difference is worth keeping: the
@@ -13036,6 +13037,47 @@ cell in one table — but the *definition* had been resting on an unstated
 property of its input the whole time. **Ask what the producer guarantees
 before defining a statistic over its output; "it has looked like this
 every time so far" is a fact about the sample, not about the function.**
+
+**A fourth kind, and the cheapest to have avoided: run the claim against
+the data you already hold.** The third kind above is exculpatory in one
+respect — when "leading run of 13s" was defined, no counterexample to
+global sortedness existed anywhere in the file. 215 rows agreed and row
+216 was the first that *could* disagree; nothing short of asking the
+producer would have caught it. The sixteenth withdrawal has no such
+defence. When the header began saying the sub-family members landed "in
+the predicted order", **three families in this same file had already
+arrived out of order.** The first violator family — the only kind the
+phrase was ever applied to — was the 127th label, and the earliest
+counterexample the 88th, so it had been sitting in this file for **39
+labels** before the phrase was first written. The phrase held on the
+violator families and was never once run against the other 33 families
+in the same table. One script, written after the fact, found all three
+in under a second.
+
+The distinction is worth keeping sharp because the remedies differ. A
+third-kind error is prevented by reading the producer's contract before
+writing the statistic. A fourth-kind error is prevented by a reflex:
+**when a regularity turns up in a slice, evaluate it on the rest of the
+data before naming it.** The slice that suggested the pattern is the
+worst available place to test it, and the rest of the data is usually
+already on disk.
+
+**And the check itself is a suspect.** The script written to verify the
+above reported `89 UNSAT, 57 UNKNOWN` against a header claiming `146
+UNSAT, 0 UNKNOWN`. The header was right. Recovering arrival order
+requires keeping each label's *first* row, so the script was built
+first-write-wins, and that silently redefined the status tally from "how
+each label stands now" to "how it came back on attempt one". Both are
+real quantities; only one is what the header meant. Taken at face value
+it would have converted a correct header into a wrong one *in the act of
+verifying it* — a failure mode this section had not previously recorded,
+since every other entry is a claim too weak against its data rather than
+a check wrong about a sound claim. **A check that disagrees with the
+thing it checks has two suspects, and the newer code is the better bet.**
+Resolved by computing first-, last- and any-UNSAT per label side by side.
+The discarded reading is a genuine statistic under its own name: **57 of
+the 147 decided labels (38.8%) were not decided on their first attempt** —
+a figure that moves with every row, and is quoted here as of 147.
 
 **A coefficient that decays as the sample grows is measuring the
 enumeration, not the object.** That is the leading-13s diagnosis and it
