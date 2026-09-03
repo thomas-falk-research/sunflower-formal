@@ -196,12 +196,15 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 247 rows.  **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE ONE PREDICTION IN THIS FILE IS CLOSED AT SIX OF SIX.**  142
-# UNSAT, 0 UNKNOWN, 0 SAT over 142 labels -- every label ever attempted
-# is decided.  The last three rows are fresh sub-cubes decided on first
-# attempt: `9,4` at 3555.5, `8,5` at 3566.2 and `7,6` at 3841.7, which
-# completes the second violator family.
+# 248 rows.  **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
+# AND A THIRD VIOLATOR SUB-FAMILY HAS OPENED.**  143 UNSAT, 0 UNKNOWN,
+# 0 SAT over 143 labels -- every label ever attempted is decided.  The
+# second family closed at six of six (`7,6` at 3841.7) and the very next
+# row, `[13,13,13,12,13,13,13,13,11,11,3]` at 2821.4, is the first
+# member of the `w = 11` sub-family -- the THIRD shape, exactly as the
+# check-in asked to be flagged.  See the violator section: counting the
+# enumeration directly shows violators are 92% of this cube, not a
+# curiosity.
 #
 # **AND THE HEADLINE IS THAT ONE COHORT OF FOUR WENT FOUR FOR FOUR.**
 # The four solvers launched together at ~04:13 all decided their cubes,
@@ -305,7 +308,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 247 rows: ALL attempts 8 of 8 and 11 of 12; FIRST attempts
+# WINDOWS at 248 rows: ALL attempts 8 of 8 and 12 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -614,8 +617,8 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Re-checked over all 247 rows / 142 distinct labels:
-# **0 violate block-wise sortedness, 13 violate global sortedness**, and
+# across the two.  Re-checked over all 248 rows / 143 distinct labels:
+# **0 violate block-wise sortedness, 14 violate global sortedness**, and
 # they fall into two families, each walked in order.  The first, now
 # complete at seven members:
 #
@@ -741,6 +744,42 @@
 # Global sortedness held for the first 215 rows only because block 1's
 # minimum happened to stay at or above block 2's maximum.  Nothing
 # guaranteed that, and this row is where it stopped.
+#
+# **AND THE WHOLE FRAMING ABOVE UNDERSTATES IT BY A FACTOR OF A HUNDRED.**
+# This header has been treating violators as a rare structured curiosity
+# -- "ten violators, two families".  The enumeration was counted directly
+# rather than sampled, and the truth is the other way round:
+#
+#     sequences satisfying the block constraints   1949
+#     globally SORTED                               162   (8.3%)
+#     VIOLATORS                                    1787  (91.7%)
+#
+# **Violators are not the exception in this cube; they are 92% of it.**
+# The run has seen only fourteen because it has spent its whole life in
+# the sorted region, which is small, and has just crossed into the other
+# one.  "Global sortedness held for 215 rows and then stopped" is true
+# and reads as though something broke; what actually happened is that the
+# enumeration finished the 8% and entered the 92%.
+#
+# The "families" are real and are simply the grouping by the first eight
+# entries, of which there are a few hundred, not two.  The group the run
+# is in now is `[13,13,13,12,13,13,13,13]`, whose last three entries must
+# sum to 25 with `13 >= w >= x >= y`, giving exactly 23 members in five
+# sub-families:
+#
+#     w = 13   7 members   (12,0) (11,1) (10,2) (9,3) (8,4) (7,5) (6,6)   ALL LANDED
+#     w = 12   6 members   (12,1) (11,2) (10,3) (9,4) (8,5) (7,6)         ALL LANDED
+#     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)                (11,3) LANDED
+#     w = 10   3 members   (10,5) (9,6) (8,7)
+#     w =  9   2 members   (9,7) (8,8)
+#
+# **PREDICTED, on the same encoding arithmetic that has never missed:**
+# `(10,4)`, `(9,5)`, `(8,6)`, `(7,7)` complete the w = 11 sub-family, then
+# `(10,5)`, `(9,6)`, `(8,7)`, then `(9,7)`, `(8,8)`, and then this
+# first-eight group is exhausted at 23 and the enumeration moves to
+# `[13,13,13,12,13,13,13,12]`, which has 14 members.  Fourteen of the 23
+# are in hand.  NO COST PREDICTION IS MADE, for the reason the last two
+# abstentions were made and vindicated.
 #
 # WHAT IT COSTS, NOW MEASURED BOTH WAYS RATHER THAN ESTIMATED.  Both
 # statistics were recomputed under leading-run and under COUNT over all
@@ -1527,3 +1566,4 @@ g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNSAT	9811.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 9, 4]	UNSAT	3555.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 8, 5]	UNSAT	3566.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 7, 6]	UNSAT	3841.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 11, 3]	UNSAT	2821.4
