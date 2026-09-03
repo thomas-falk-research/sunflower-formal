@@ -196,12 +196,28 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 238 rows.  **FOUR STRAGGLERS HAVE NOW FALLEN TO REPEATS**, on their
-# seventh, seventh, sixth and third attempts.  Six stragglers remain,
-# five at run>=12 = 7 and one at 6.  The latest,
-# `[13,13,13,13,13,13,12,11,10,10,7]`, had stalled SIX times -- 10898.1,
-# 10863.1, 10897.1, 10916.2, 10919.8, 10870.2, every one within 120 s of
-# the cap -- and then decided at **7838.8**, nearly 3000 s clear of it.
+# 239 rows.  **FIVE STRAGGLERS HAVE NOW FALLEN TO REPEATS.**  Five
+# remain, four at run>=12 = 7 and one at 6.  Three of the five fell in
+# the last twelve minutes at 7497.4, 7838.8 and 8270.4 -- all clear of
+# the cap by 2500-3300 s -- and one of those,
+# `[13,13,13,13,13,13,12,11,10,10,7]`, had stalled SIX times first
+# (10898.1, 10863.1, 10897.1, 10916.2, 10919.8, 10870.2, every one
+# within 120 s of the cap).
+#
+# **THOSE THREE ARE ONE COHORT, NOT THREE INDEPENDENT EVENTS, AND THAT
+# MATTERS FOR HOW MUCH THEY ARE WORTH.**  They did not arrive six
+# minutes apart because something changed three times; they were three
+# of the four solvers launched together at ~04:13, finishing in order at
+# 7497 / 7838 / 8270 s of their own runtime.  The fourth of that cohort
+# was still running at 8314 s when this was written, and the driver had
+# already started c96, c97 and c98 in the freed slots.  Whatever made
+# this cohort go well -- less contention, a warmer cache, luck in the
+# restarts -- applied to all three at once.  **Three successes in one
+# cohort is weaker evidence than three successes in three cohorts**, and
+# no attempt is made here to say which of those explanations it was: the
+# file records wall time, not solver-side time, so "the machine was
+# faster" and "the search was luckier" cannot be separated from these
+# rows.
 # `[13,13,13,13,13,13,12,12,11,10,5]` had gone UNKNOWN at 5434.3 under
 # the old 5400 s cap and then five times at the 10800 s cap
 # (10867.3, 10853.3, 10870.0, 10878.6, 10895.6).  It came back
@@ -233,23 +249,25 @@
 # and it was a run>=12 = 7 label.  The current table:
 #
 #     run>=12 = 8    8 repeats, 4 decided     0.500
-#     run>=12 <= 7  25 repeats, 3 decided     0.120
-#     pooled        33 repeats, 7 decided     0.21    <- the header figure
+#     run>=12 <= 7  26 repeats, 4 decided     0.154
+#     pooled        34 repeats, 8 decided     0.235   <- the header figure
 #
 # **The caveat was vindicated within a single row.**  Two claims from
 # the first version are dead: that the second arm's rate is zero, and
 # that every open straggler sits in an arm that has never produced a
 # success.  What survives is weaker and is all that was ever supportable:
-# the two arms' point estimates differ by about a factor of four on 8 and
-# 25 repeats, which is suggestive and is not a demonstrated difference.
-# **THE GAP HAS NOW CLOSED THREE TIMES RUNNING, ON THREE CONSECUTIVE
-# ROWS: a factor of ten, then six, then four.** Every one of those moves
-# came from the LOWER arm gaining a success, and the upper arm has not
-# gained a repeat since it emptied.  A ratio that shrinks monotonically
-# as the sample grows is the signature 54.3a's second check names -- it
-# is measuring the smallness of the sample, not a property of the cubes.
-# **Do not quote the ratio.**  The honest statement is that 4 of 8 and
-# 3 of 25 are both consistent with the pooled 0.21 and with each other.
+# the two arms' point estimates differ by about a factor of three on 8
+# and 26 repeats, which is suggestive and is not a demonstrated
+# difference.  **THE GAP HAS NOW CLOSED FOUR TIMES RUNNING, ON FOUR
+# CONSECUTIVE ROWS: a factor of ten, then six, then four, then three.**
+# Every one of those moves came from the LOWER arm gaining a success,
+# and the upper arm has not gained a repeat since it emptied.  A ratio
+# that shrinks monotonically as the sample grows is the signature 54.3a's
+# second check names -- it is measuring the smallness of the sample, not
+# a property of the cubes.  **Do not quote the ratio.**  The honest
+# statement is that 4 of 8 and 4 of 26 are both consistent with the
+# pooled 0.235 and with each other, and that on this trajectory the
+# split will read as no difference at all within a few more rows.
 #
 # The composition point does survive, because it does not depend on the
 # rates: **all four of the run>=12 = 8 stragglers have now been decided**,
@@ -275,11 +293,11 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 238 rows: ALL attempts 4 of 8 and 6 of 12; FIRST attempts
+# WINDOWS at 239 rows: ALL attempts 5 of 8 and 6 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
-# spent ten of its last twelve slots on straggler repeats, and the
+# spent ELEVEN of its last twelve slots on straggler repeats, and the
 # first-attempts window -- which is the one that says anything about the
 # frontier -- has not moved off a clean sweep since it was introduced.
 #
@@ -482,11 +500,14 @@
 #
 # What is left of the description, stated smaller:
 #
-#   * The peak at 7 survives -- now 16.1% against 6.7% and 0.0% on
-#     either side -- and 5 of the 6 remaining stalls are there.  It has
-#     softened at EVERY recount: 30.8%, 25.8%, 22.6%, 19.4%, 16.1%.
-#     **Five consecutive softenings, all from the 7 bucket's own
-#     stragglers being decided one by one.**  The watch item from last
+#   * The peak at 7 survives -- now 12.9% against 6.7% and 0.0% on
+#     either side -- and 4 of the 5 remaining stalls are there.  It has
+#     softened at EVERY recount: 30.8%, 25.8%, 22.6%, 19.4%, 16.1%,
+#     12.9%.  **Six consecutive softenings, all from the 7 bucket's own
+#     stragglers being decided one by one**, and it is now less than
+#     twice the 6 bucket's 6.7% -- from four and a half times at the
+#     start.  The peak is being erased by the resume policy, not
+#     confirmed by it.  The watch item from last
 #     batch is now the live reading: on this trajectory the peak is a
 #     statement about which labels have been re-run most, not about
 #     which are hard, and it will keep shrinking for as long as the
@@ -887,8 +908,8 @@
 # not "it got a bit further".  cryptominisat5 is not reproducing its
 # previous search: same instance, same budget, different outcome.
 #
-# **THE MECHANISM OFFERED HERE COVERS FIVE OF THE SEVEN SUCCESSES AND
-# NOT THE OTHER TWO, AND THOSE TWO ARE THE INTERESTING ONES.**  The explanation was
+# **THE MECHANISM OFFERED HERE COVERS FIVE OF THE EIGHT SUCCESSES AND
+# NOT THE OTHER THREE -- AND THOSE THREE ARE ONE COHORT.**  The explanation was
 # that these are marginal instances sitting right at the cap: the failed
 # attempts read 10865-10936 s of wall against a 10800 s SOLVER budget,
 # i.e. contention overhead, and the successes came in just under -- which
@@ -897,6 +918,7 @@
 #
 #     decided   7497.4   after stall 10870.9    run>=12 = 7   clear 3302
 #     decided   7838.8   after stall 10870.2    run>=12 = 7   clear 2961
+#     decided   8270.4   after stall 10881.6    run>=12 = 7   clear 2530
 #     decided  10053.0   after stall 10895.6    run>=12 = 8   near cap
 #     decided  10217.5   after stall 10868.9    run>=12 = 8   near cap
 #     decided  10270.3   after stall 10891.1    run>=12 = 7   near cap
@@ -912,12 +934,16 @@
 # stall within 120 s of the cap, which makes it the single strongest row
 # in the file for the claim that the search is not reproduced.
 #
-#   AN OBSERVATION HELD AT ARM'S LENGTH: both clear-of-cap successes are
-#   at run>=12 = 7 and all four near-cap ones at run>=12 = 8.  That is
-#   seven events split four and three, it is exactly the shape of reading
-#   this file has withdrawn fifteen times, and it is written down only so
-#   that a later batch can check it rather than rediscover it.  **It is
-#   not a claim.**
+#   AN OBSERVATION HELD AT ARM'S LENGTH, AND NOW WITH A SECOND REASON TO
+#   HOLD IT THERE: all three clear-of-cap successes are at run>=12 = 7
+#   and four of the five near-cap ones at run>=12 = 8.  That was written
+#   down at seven events as "not a claim"; at eight events it is still
+#   not a claim, and it is now WEAKER rather than stronger, because the
+#   three that carry it turn out to be one cohort launched at one moment
+#   rather than three independent confirmations.  A pattern that grows
+#   only along its correlated axis has not been tested by growing.  It
+#   is recorded so a later batch can check it against a DIFFERENT
+#   cohort, which is the only thing that would make it evidence.
 #
 # So the marginal-instance story is a description of most of the sample
 # rather than the mechanism of the effect, and it should not be leaned
@@ -1327,3 +1353,4 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10870.2
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10881.6
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNSAT	7497.4
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNSAT	7838.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNSAT	8270.4
