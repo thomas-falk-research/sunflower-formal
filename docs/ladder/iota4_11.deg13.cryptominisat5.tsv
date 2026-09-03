@@ -48,7 +48,27 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
-# TEN CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The sixth was at
+# ELEVEN CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The eleventh was
+# at 14:58Z: driver pid 1613 and all four solvers gone, restarted as pid
+# 1615, which printed `checkpoint: 156 of 1949 cubes already decided`
+# against an independent recount of 156 distinct UNSAT labels -- MATCH,
+# nothing lost.  The one-slice monolithic pass (61.4 s UNKNOWN at
+# deg(0)=13, then re-split) wrote NO row: there are zero non
+# degree-sequence labels in the file, checked.
+#
+# **AND THIS ONE EXPOSED A FLAW IN THE MONITORING, NOT IN THE DRIVER.**
+# The row waiter exits as soon as it sees a row, so between a row
+# landing and the waiter being re-armed -- header edit, verification,
+# commit, push -- NOTHING is watching the driver.  The death fell in
+# exactly that window.  Its time is therefore NOT KNOWN, only bounded:
+# the last row landed 14:23:53Z and the loss was noticed at 14:58:58Z,
+# so the gap is somewhere in 0..35 minutes and no narrower claim is
+# made.  Fix adopted: **RE-ARM THE WAITER FIRST, BEFORE THE HEADER
+# WORK**, so the unwatched window is seconds rather than minutes.  Every
+# earlier restart was caught promptly because it happened while a waiter
+# was live; that was luck about timing, not a property of the setup.
+#
+# The sixth was at
 # ~17:53 UTC, the seventh at ~21:36, the eighth at ~22:00, the ninth at
 # ~22:05 and the tenth at ~03:32; each killed the driver and all four
 # solvers mid-flight.  Every time the same command printed
@@ -195,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 155 UNSAT, 0 UNKNOWN, 0 SAT over 155 labels -- 155 of 1949,
-# 260 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 156 UNSAT, 0 UNKNOWN, 0 SAT over 156 labels -- 156 of 1949,
+# 261 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -207,9 +227,9 @@
 # 23 when `8,8` landed at 3082.8, and the very next row was
 # `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
 # group this header had already named, and the first of the fourteen
-# members it had already listed.**  `12,11,3` 6342.8 and `12,10,4`
-# 7134.5 followed, so **3 of 14 are in hand, none outside the permitted
-# set, all three on first attempt.**
+# members it had already listed.**  `12,11,3` 6342.8, `12,10,4` 7134.5
+# and `12,9,5` 7533.0 followed, so **4 of 14 are in hand, none outside
+# the permitted set, all four on first attempt.**
 #
 # **AND THE FRAMING THIS HEADER USED ONE ROW AGO IS WITHDRAWN.**  It
 # called `12,11,3` "1.74x the running median", which is arithmetically
@@ -217,13 +237,14 @@
 # expensive outliers.  Against the WHOLE file they are ordinary:
 #
 #     cost      percentile   labels costing more
-#     3348.7        45th            85 of 155
-#     6342.8        76th            37 of 155
-#     7134.5        82nd            28 of 155
+#     3348.7        45th            86 of 156
+#     6342.8        76th            38 of 156
+#     7134.5        81st            29 of 156
+#     7533.0        85th            24 of 156
 #
-# The file's interquartile range is 2092.9 .. 6336.5 with median 3653.0
+# The file's interquartile range is 2093.7 .. 6341.2 with median 3659.2
 # and maximum 10865.7, so `6342.8` sits essentially ON the upper
-# quartile and 28 labels cost more than `7134.5`.  **What was unusual
+# quartile and 24 labels still cost more than `7533.0`.  **What was unusual
 # was the PRECEDING BAND, not these rows.**  The eleven labels before
 # the group change -- 3841.7, 2821.4, 3155.1, 3639.7, 2933.8, 3692.7,
 # 3118.9, 3766.2, 3665.4, 3258.5, 3082.8 -- all fall inside 2800..3900,
@@ -341,11 +362,11 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **57 of the 155 decided
-# labels -- 36.8% -- were NOT decided on their first attempt**, and all
-# 57 were later banked by a re-run or a cap raise.  98 fell first time.
-# (This ratio moves with every row; it is quoted as of 155 labels.  The
-# numerator is frozen: **the last 42 labels have every one of them
+# has not been stated in this file before: **57 of the 156 decided
+# labels -- 36.5% -- were NOT decided on their first attempt**, and all
+# 57 were later banked by a re-run or a cap raise.  99 fell first time.
+# (This ratio moves with every row; it is quoted as of 156 labels.  The
+# numerator is frozen: **the last 43 labels have every one of them
 # fallen on their first attempt**, so 57 was fixed 36 labels ago and
 # the percentage is drifting down purely on its denominator.  This
 # sentence first said "seven rows", typed from impression; the script
@@ -955,7 +976,8 @@
 #     (12,12,2)  3348.7
 #     (12,11,3)  6342.8
 #     (12,10,4)  7134.5
-# 3 of 14.
+#     (12,9,5)   7533.0
+# 4 of 14.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1763,3 +1785,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 8, 8]	UNSAT	3082.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 12, 2]	UNSAT	3348.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 11, 3]	UNSAT	6342.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 10, 4]	UNSAT	7134.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 9, 5]	UNSAT	7533.0
