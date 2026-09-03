@@ -195,8 +195,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 153 UNSAT, 0 UNKNOWN, 0 SAT over 153 labels -- 153 of 1949,
-# 258 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 154 UNSAT, 0 UNKNOWN, 0 SAT over 154 labels -- 154 of 1949,
+# 259 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -207,8 +207,20 @@
 # 23 when `8,8` landed at 3082.8, and the very next row was
 # `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
 # group this header had already named, and the first of the fourteen
-# members it had already listed.**  1 of 14 in hand, none outside the
-# permitted set.
+# members it had already listed.**  `12,11,3` followed at 6342.8, so
+# **2 of 14 are in hand and none is outside the permitted set.**
+#
+# `12,11,3` COST 6342.8, WHICH IS 1.74x THE RUNNING MEDIAN, and this is
+# recorded as a fact and NOT read.  The eleven labels before it ran
+# 2821.4, 3155.1, 3639.7, 2933.8, 3692.7, 3118.9, 3766.2, 3665.4,
+# 3258.5, 3082.8, 3348.7 -- a tight band -- and the median over the
+# earlier 153 labels is 3648.8.  So the new group's first two, 3348.7
+# and 6342.8, are already a wider spread than the whole of the previous
+# group's tail.  **NOTHING IS CONCLUDED FROM TWO POINTS.**  If this
+# group is systematically dearer it will show over its 14 members, and
+# the standing abstention on cost is not being revised to notice a
+# single expensive row -- that is the exact move this file has withdrawn
+# five times.  Both members decided on their FIRST attempt.
 #
 # Two things were predicted here and both held: WHICH GROUP comes next,
 # and WHICH TAILS it admits.  Neither is a claim about difficulty and
@@ -307,11 +319,11 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **57 of the 153 decided
-# labels -- 37.3% -- were NOT decided on their first attempt**, and all
-# 57 were later banked by a re-run or a cap raise.  96 fell first time.
-# (This ratio moves with every row; it is quoted as of 153 labels.  The
-# numerator is frozen: **the last 40 labels have every one of them
+# has not been stated in this file before: **57 of the 154 decided
+# labels -- 37.0% -- were NOT decided on their first attempt**, and all
+# 57 were later banked by a re-run or a cap raise.  97 fell first time.
+# (This ratio moves with every row; it is quoted as of 154 labels.  The
+# numerator is frozen: **the last 41 labels have every one of them
 # fallen on their first attempt**, so 57 was fixed 36 labels ago and
 # the percentage is drifting down purely on its denominator.  This
 # sentence first said "seven rows", typed from impression; the script
@@ -917,7 +929,10 @@
 #     (10,10,6) (10,9,7)  (10,8,8)
 #     (9,9,8)
 #
-# `(12,12,2)` LANDED at 3348.7 -- 1 of 14, and in the permitted set.
+# LANDED so far, both in the permitted set and both on first attempt:
+#     (12,12,2)  3348.7
+#     (12,11,3)  6342.8
+# 2 of 14.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1723,3 +1738,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 8, 7]	UNSAT	3665.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 9, 7]	UNSAT	3258.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 8, 8]	UNSAT	3082.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 12, 2]	UNSAT	3348.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 11, 3]	UNSAT	6342.8
