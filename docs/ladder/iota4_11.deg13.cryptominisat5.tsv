@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 157 UNSAT, **4 UNKNOWN**, 0 SAT over 161 labels -- 157 of
-# 1949, 266 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 157 UNSAT, **7 UNKNOWN**, 0 SAT over 164 labels -- 157 of
+# 1949, 269 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -233,15 +233,35 @@
 # group this header had already named, and the first of the fourteen
 # members it had already listed.**  `12,11,3` 6342.8, `12,10,4` 7134.5,
 # `12,9,5` 7533.0 and `12,7,7` 8957.3 followed, so **5 of 14 are
-# decided, 4 more are UNKNOWN at the cap, 9 of 14 seen, and none is
+# decided, 7 more are UNKNOWN at the cap, 12 of 14 seen, and none is
 # outside the permitted set.**
 #
-# **A CLEAN SPLIT HAS APPEARED IN THIS GROUP AND IT IS NOT BEING READ,
-# FOR A NAMED REASON RATHER THAN OUT OF CAUTION.**  Of the nine members
-# seen, the five with `w = 12` are ALL decided (3348.7, 6342.8, 7134.5,
-# 7533.0, 8957.3) and the four with `w = 11` are ALL undecided at the
-# cap.  Five of five against zero of four, on the group's own leading
-# entry, is the most inviting pattern this file has produced in a while.
+# **THE SPLIT THIS HEADER CALLED "CLEAN" ONE BATCH AGO WAS MIS-STATED,
+# AND THE ERROR MADE IT LOOK CLEANER THAN IT IS.**  The text said "the
+# five with `w = 12` are ALL decided", giving five of five against zero
+# of four.  Six `w = 12` members had been seen, not five: **`12,8,6` is
+# `w = 12` and it is UNDECIDED at the cap**, and it was already in the
+# list of UNKNOWNs three lines further down the same header.  The real
+# table, at twelve of fourteen seen:
+#
+#      w  | decided | undecided
+#     12  |    5    |    1
+#     11  |    0    |    4
+#     10  |    0    |    2
+#
+# Five of SIX against zero of four and zero of two. Still lopsided,
+# no longer clean, and it was found by regrouping the members with a
+# script rather than by re-reading the prose.
+#
+# **THE USEFUL PART IS THAT THE REFUSAL AND THE DESCRIPTION FAILED
+# INDEPENDENTLY.**  The paragraph below was right to decline the
+# inference and is unchanged.  Declining to draw a conclusion from a
+# pattern gave no protection at all against getting the pattern itself
+# wrong -- and the error ran in the flattering direction, sharpening the
+# very split being refused.  54.3a's fourth rule says to run a
+# regularity against the rest of the data before naming it; this is the
+# same rule one step earlier: **count the cells before describing the
+# table, even when the plan is to describe it and stop.**
 #
 # It is the leading-13s artefact wearing a new label.  That model --
 # `-0.75` at `n = 67`, refuted at every one of eleven measurements --
@@ -265,9 +285,10 @@
 # 10886.9, `11,10,5` 10896.2, `11,11,4` 10906.1 and now `11,9,6`
 # 10898.3 all came back at the 10800 s cap.  Three consequences, all recorded as what happened:
 #   * the run of first-attempt decisions ENDS at 44 labels;
-#   * the re-run numerator UNFREEZES, 57 -> 60 of 160 (37.5%) at that
-#     moment, and 61 of 161 (37.9%) as this is written -- the first
-#     figure is the event, the second is the state;
+#   * the re-run numerator UNFREEZES, 57 -> 60 of 160 (37.5%).  That is
+#     the EVENT and is fixed; for the current state read the paragraph
+#     lower down that quotes it against the live label count, rather
+#     than a second copy here that has to be edited every row;
 #   * the stall table is no longer zero in every bucket.
 #
 # **AND THE THREE STALLS SIT AT `run>=12` = 9, 8, 8 -- INSIDE THE ARM
@@ -440,10 +461,10 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **61 of the 161 attempted
-# labels -- 37.9% -- were NOT decided on their first attempt**.  100
-# fell first time; 57 of the 61 were later banked by a re-run or a cap
-# raise and 4 are outstanding right now.
+# has not been stated in this file before: **64 of the 164 attempted
+# labels -- 39.0% -- were NOT decided on their first attempt**.  100
+# fell first time; 57 of the 64 were later banked by a re-run or a cap
+# raise and 7 are outstanding right now.
 #
 # **THE FREEZE IS OVER AND THE CAVEAT ATTACHED TO IT WAS RIGHT.**  This
 # paragraph used to say the numerator was frozen at 57 across the last
@@ -1061,10 +1082,21 @@
 #     (11,10,5)  UNKNOWN at 10896.2 (cap)
 #     (11,11,4)  UNKNOWN at the cap (10906.1)
 #     (11,9,6)   UNKNOWN at the cap (10898.3)
-# 9 of 14 seen: 5 decided, 4 outstanding.  None outside the permitted
-# set, so the membership test is undisturbed.  Every decided member has
-# `w = 12` and every outstanding one `w = 11`; see above for why that is
-# recorded and not read.
+#     (11,8,7)   UNKNOWN at the cap (10897.9)
+#     (10,10,6)  UNKNOWN at the cap (10896.2)
+#     (10,9,7)   UNKNOWN at the cap (10897.1)
+# **12 of 14 seen: 5 decided, 7 outstanding.**  None outside the
+# permitted set, so the membership test is undisturbed.  Only `(10,8,8)`
+# and `(9,9,8)` remain unseen.
+#
+# **SEVEN CONSECUTIVE ROWS HAVE BANKED NO UNSAT** -- the last was
+# `12,7,7` at 8957.3.  The budget rule is numeric and says HOLD: raise
+# the 10800 s cap only after TWELVE consecutive attempts bank 0 or 1
+# UNSAT, then to 21600.  Seven is not twelve, and this file has already
+# withdrawn one version of this rule for being stated in terms of the
+# wrong quantity and another for acting on an eight-attempt window.  The
+# count is recorded at each row precisely so the threshold is reached by
+# arithmetic rather than by impatience.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1878,3 +1910,6 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 8, 6]	UNKNOWN	10886.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10896.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10906.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10898.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNKNOWN	10896.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10897.1
