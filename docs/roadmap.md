@@ -12951,11 +12951,11 @@ n = 25; the 5-family at n = 11, refuted at n = 13), and both times the
 correction went the same way: the family was more expensive than its
 opening suggested, never less.
 
-### 54.3a Eleven withdrawals with one shape, and the rules they yield
+### 54.3a Fifteen withdrawals with one shape, and the rules they yield
 
 The seventh correction above was not the last, and the ones after it
 matter less individually than as a set. Over the session's later batches
-the ladder header made eleven quantitative readings and withdrew every
+the ladder header made fifteen quantitative readings and withdrew every
 one:
 
 (The heading and this sentence read "five" and "eight" while the table
@@ -12976,6 +12976,19 @@ it counts changes. Corrected here by counting the rows.)
 | **The yield of those repeats, first written as `0.37`** | One batch later, by this section's *own* first check: eight labels but **seventeen** repeat attempts, so `3/17 = 0.18`, half the figure claimed. See below |
 | **Every "leading run of degree ≥ k" statistic**, which assumed the degree sequences were sorted | Row 216. `symbreak` sorts **two blocks separately** — `deg(1..b−1)` and `deg(b..g−1)` — because the residual symmetry after fixing the anchor is `Sym({1..b−1}) × Sym({b..g−1})`. Global sortedness held for 215 rows by coincidence and then stopped |
 | **`run≥12` "held steady" and "overtook leading-13s by standing still"** — the replacement offered when leading-13s was withdrawn | It has since moved `-0.34, -0.32, -0.33, -0.31, -0.28, -0.27`: 0.07 from its peak, having been called stable on a spread of 0.02 |
+| **"Two restarts in 24 minutes is a sample of one gap"** — a caution written to avoid over-reading a short container-restart cadence | Right to write, and overtaken by the very next gap, which was **five minutes**. Three consecutive gaps then ran 3 h 43 m, 24 m, 5 m |
+| **"The `run≥12 ≤ 7` arm has yield zero"**, from 0 of 20 repeats | Broken by the **next row**, before the claim could even be committed — a `run≥12 = 7` label decided on its sixth attempt. The header had attached the rule-of-three caveat (95% upper bound ≈ `3/20 = 0.15`, which contains the pooled rate); the caveat was vindicated within one row |
+| **"45 of 45 stalled-then-decided at `run≥12 ≥ 8`"** | **41 of those 45 stalled only at the OLD 5400 s cap** and were decided by the raise to 10800, not by a repeat. Restricted to the current cap it is 4 of 4 against 0 of 9 — thirteen labels, not fifty-seven |
+| **"The four re-run successes share the prefix `13,13,13,13,13,13,12,12`"** — read off the four successes by eye | An artefact of looking only at the successes instead of at every label that ever stalled. The separating variable is `run≥12`. Killed by scripting the reading in the same batch it was formed |
+
+One statement from the same stretch is deliberately **not** in the table,
+because it is a different thing and the difference is worth keeping: the
+header said "the run is not progressing; it is being restarted". That was
+explicitly conditional on the short cadence holding, the cadence then
+recovered, and four rows landed. A conditional whose condition lapses has
+not been refuted — it has expired. Filing it as a withdrawal would
+inflate the count and blur the one distinction this section exists to
+draw.
 
 Alongside them the rate itself was narrated three times — "monotone
 decline", "levelling", and an earlier `0.21` called terminal — and each
