@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 157 UNSAT, **7 UNKNOWN**, 0 SAT over 164 labels -- 157 of
-# 1949, 269 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 158 UNSAT, **7 UNKNOWN**, 0 SAT over 165 labels -- 158 of
+# 1949, 270 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -461,8 +461,8 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **64 of the 164 attempted
-# labels -- 39.0% -- were NOT decided on their first attempt**.  100
+# has not been stated in this file before: **64 of the 165 attempted
+# labels -- 38.8% -- were NOT decided on their first attempt**.  101
 # fell first time; 57 of the 64 were later banked by a re-run or a cap
 # raise and 7 are outstanding right now.
 #
@@ -1089,14 +1089,42 @@
 # permitted set, so the membership test is undisturbed.  Only `(10,8,8)`
 # and `(9,9,8)` remain unseen.
 #
-# **SEVEN CONSECUTIVE ROWS HAVE BANKED NO UNSAT** -- the last was
-# `12,7,7` at 8957.3.  The budget rule is numeric and says HOLD: raise
-# the 10800 s cap only after TWELVE consecutive attempts bank 0 or 1
-# UNSAT, then to 21600.  Seven is not twelve, and this file has already
-# withdrawn one version of this rule for being stated in terms of the
-# wrong quantity and another for acting on an eight-attempt window.  The
-# count is recorded at each row precisely so the threshold is reached by
-# arithmetic rather than by impatience.
+# **THE NO-UNSAT RUN ENDED AT SEVEN AND THE BUDGET RULE NEVER FIRED.**
+# Seven consecutive rows banked nothing, then `[..,11,11,5]` came in at
+# 6654.1.  The rule needs TWELVE consecutive attempts banking 0 or 1
+# UNSAT before the 10800 s cap is raised to 21600; the run reached
+# seven and reset.  Recorded because the temptation at seven was real
+# and the threshold is the whole point: this file has already withdrawn
+# one version of the rule for being stated in terms of the wrong
+# quantity and another for acting on an eight-attempt window.  Waiting
+# cost nothing and the run ended on its own.
+#
+# **AND THAT ROW IS IN A NEW GROUP, WHILE THE OLD ONE IS STILL OPEN --
+# THE DRIVER WORKS TWO GROUPS AT ONCE.**  `[..,11,11,5]` has first eight
+# `13,13,13,12,13,13,13,11`, not `...,12`.  Meanwhile
+# `[13,13,13,12,13,13,13,12]` still has **`(10,8,8)` and `(9,9,8)`
+# unseen**, 12 of 14.  Nothing is wrong: four threads take cubes in
+# enumeration order, so up to four adjacent cubes are in flight at once
+# and they straddle a group boundary whenever one is near.
+#
+# The consequence matters for the membership test and is stated before
+# it can be got wrong: **a group is tested when it is COMPLETE, not when
+# the enumeration appears to have moved past it.**  The previous group
+# closed at exactly 23 before its successor's first row, and that made
+# strict sequencing look like a property of the run.  It is not; it was
+# scheduling.  The two outstanding members are still coming.
+#
+# THE NEXT GROUP'S MEMBERSHIP, generated and stated in advance on the
+# same arithmetic: `[13,13,13,12,13,13,13,11]` has last three summing to
+# 27 with `11 >= w >= x >= y`, giving **exactly 7 members**:
+#
+#     (11,11,5) (11,10,6) (11,9,7) (11,8,8)
+#     (10,10,7) (10,9,8)  (9,9,9)
+#
+# `(11,11,5)` LANDED at 6654.1 -- 1 of 7, in the permitted set.  If this
+# group closes at any set other than exactly those seven, the encoding
+# argument is wrong.  ARRIVAL ORDER IS NOT PREDICTED.  NO COST
+# PREDICTION IS MADE.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1913,3 +1941,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10898.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNKNOWN	10896.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10897.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 11, 5]	UNSAT	6654.1
