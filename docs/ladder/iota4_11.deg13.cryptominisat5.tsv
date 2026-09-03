@@ -195,15 +195,25 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 152 UNSAT, 0 UNKNOWN, 0 SAT over 152 labels -- 152 of 1949,
-# 257 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 153 UNSAT, 0 UNKNOWN, 0 SAT over 153 labels -- 153 of 1949,
+# 258 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
 # **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE GROUP IS EXHAUSTED AT EXACTLY 23.**  152 UNSAT, 0 UNKNOWN,
-# 0 SAT over 152 labels -- every label ever attempted is decided.
-# `8,8` landed at 3082.8 and it was the last permitted tail.
+# AND THE ENUMERATION HAS MOVED TO THE PREDICTED NEXT GROUP.**  153
+# UNSAT, 0 UNKNOWN, 0 SAT over 153 labels -- every label ever attempted
+# is decided.  The group `[13,13,13,12,13,13,13,13]` closed at exactly
+# 23 when `8,8` landed at 3082.8, and the very next row was
+# `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
+# group this header had already named, and the first of the fourteen
+# members it had already listed.**  1 of 14 in hand, none outside the
+# permitted set.
+#
+# Two things were predicted here and both held: WHICH GROUP comes next,
+# and WHICH TAILS it admits.  Neither is a claim about difficulty and
+# neither is a result about sunflowers -- both are arithmetic about what
+# the encoding permits, checked by generating the set and comparing.
 #
 # **THE PREDICTION RESOLVES, AND IT WAS PUT WHERE IT COULD FAIL.**  One
 # row ago this header said `8,8` was the single most-checkable claim it
@@ -297,11 +307,11 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **57 of the 152 decided
-# labels -- 37.5% -- were NOT decided on their first attempt**, and all
-# 57 were later banked by a re-run or a cap raise.  95 fell first time.
-# (This ratio moves with every row; it is quoted as of 152 labels.  The
-# numerator is frozen: **the last 39 labels have every one of them
+# has not been stated in this file before: **57 of the 153 decided
+# labels -- 37.3% -- were NOT decided on their first attempt**, and all
+# 57 were later banked by a re-run or a cap raise.  96 fell first time.
+# (This ratio moves with every row; it is quoted as of 153 labels.  The
+# numerator is frozen: **the last 40 labels have every one of them
 # fallen on their first attempt**, so 57 was fixed 36 labels ago and
 # the percentage is drifting down purely on its denominator.  This
 # sentence first said "seven rows", typed from impression; the script
@@ -906,6 +916,8 @@
 #     (11,11,4) (11,10,5) (11,9,6)  (11,8,7)
 #     (10,10,6) (10,9,7)  (10,8,8)
 #     (9,9,8)
+#
+# `(12,12,2)` LANDED at 3348.7 -- 1 of 14, and in the permitted set.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1710,3 +1722,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 9, 6]	UNSAT	3766.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 8, 7]	UNSAT	3665.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 9, 7]	UNSAT	3258.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 8, 8]	UNSAT	3082.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 12, 2]	UNSAT	3348.7
