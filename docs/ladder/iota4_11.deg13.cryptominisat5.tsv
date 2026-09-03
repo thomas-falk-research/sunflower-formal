@@ -196,12 +196,12 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 249 rows.  **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE THIRD VIOLATOR SUB-FAMILY IS TWO DEEP.**  144 UNSAT, 0 UNKNOWN,
-# 0 SAT over 144 labels -- every label ever attempted is decided.  The
-# second family closed at six of six (`7,6` at 3841.7); the `w = 11`
-# sub-family then opened with `11,3` at 2821.4 and continued with `10,4`
-# at 3155.1, both in the predicted order.  See the violator section:
+# 250 rows.  **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
+# AND THE THIRD VIOLATOR SUB-FAMILY IS THREE DEEP.**  145 UNSAT,
+# 0 UNKNOWN, 0 SAT over 145 labels -- every label ever attempted is
+# decided.  The second family closed at six of six (`7,6` at 3841.7);
+# the `w = 11` sub-family then ran `11,3` at 2821.4, `10,4` at 3155.1
+# and `9,5` at 3639.7, all in the predicted order.  See the violator section:
 # counting the enumeration directly shows violators are 92% of this
 # cube, not a curiosity.
 #
@@ -307,7 +307,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 249 rows: ALL attempts 8 of 8 and 12 of 12; FIRST attempts
+# WINDOWS at 250 rows: ALL attempts 8 of 8 and 12 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -616,8 +616,8 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Re-checked over all 249 rows / 144 distinct labels:
-# **0 violate block-wise sortedness, 15 violate global sortedness**, and
+# across the two.  Re-checked over all 250 rows / 145 distinct labels:
+# **0 violate block-wise sortedness, 16 violate global sortedness**, and
 # they fall into two families, each walked in order.  The first, now
 # complete at seven members:
 #
@@ -768,15 +768,15 @@
 #
 #     w = 13   7 members   (12,0) (11,1) (10,2) (9,3) (8,4) (7,5) (6,6)   ALL LANDED
 #     w = 12   6 members   (12,1) (11,2) (10,3) (9,4) (8,5) (7,6)         ALL LANDED
-#     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)      (11,3)(10,4) LANDED
+#     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)   first THREE LANDED
 #     w = 10   3 members   (10,5) (9,6) (8,7)
 #     w =  9   2 members   (9,7) (8,8)
 #
 # **PREDICTED, on the same encoding arithmetic that has never missed:**
-# `(9,5)`, `(8,6)`, `(7,7)` complete the w = 11 sub-family, then
+# `(8,6)`, `(7,7)` complete the w = 11 sub-family, then
 # `(10,5)`, `(9,6)`, `(8,7)`, then `(9,7)`, `(8,8)`, and then this
 # first-eight group is exhausted at 23 and the enumeration moves to
-# `[13,13,13,12,13,13,13,12]`, which has 14 members.  Fifteen of the 23
+# `[13,13,13,12,13,13,13,12]`, which has 14 members.  Sixteen of the 23
 # are in hand.  NO COST PREDICTION IS MADE, for the reason the last two
 # abstentions were made and vindicated.
 #
@@ -1567,3 +1567,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 8, 5]	UNSAT	3566.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 7, 6]	UNSAT	3841.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 11, 3]	UNSAT	2821.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 10, 4]	UNSAT	3155.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 9, 5]	UNSAT	3639.7
