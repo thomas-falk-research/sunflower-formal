@@ -196,10 +196,10 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 241 rows.  **SEVEN STRAGGLERS HAVE NOW FALLEN TO REPEATS.**  Three
-# remain, two at run>=12 = 7 and one at 6, and `seq-c139` -- past every
-# index this run has ever recorded -- is in flight, so the sweep is
-# essentially over.
+# 242 rows.  **EIGHT STRAGGLERS HAVE NOW FALLEN TO REPEATS.**  Two
+# remain, one at run>=12 = 7 and one at 6, and `seq-c139` and `seq-c140`
+# -- past every index this run has ever recorded -- are in flight, so
+# the sweep is over in all but the last two slots.
 #
 # **AND THE HEADLINE IS THAT ONE COHORT OF FOUR WENT FOUR FOR FOUR.**
 # The four solvers launched together at ~04:13 all decided their cubes,
@@ -257,8 +257,8 @@
 # and it was a run>=12 = 7 label.  The current table:
 #
 #     run>=12 = 8    8 repeats, 4 decided     0.500
-#     run>=12 <= 7  28 repeats, 6 decided     0.214
-#     pooled        36 repeats, 10 decided    0.278   <- the header figure
+#     run>=12 <= 7  29 repeats, 7 decided     0.241
+#     pooled        37 repeats, 11 decided    0.297   <- the header figure
 #
 # **The caveat was vindicated within a single row.**  Two claims from
 # the first version are dead: that the second arm's rate is zero, and
@@ -266,8 +266,8 @@
 # success.  What survives is weaker and is all that was ever supportable:
 # the two arms' point estimates differ by about a factor of three on 8
 # and 26 repeats, which is suggestive and is not a demonstrated
-# difference.  **THE GAP HAS NOW CLOSED SIX TIMES RUNNING, ON SIX
-# CONSECUTIVE ROWS: ten, six, four, three, 2.7, and now 2.3.**
+# difference.  **THE GAP HAS NOW CLOSED SEVEN TIMES RUNNING, ON SEVEN
+# CONSECUTIVE ROWS: ten, six, four, three, 2.7, 2.3, and now 2.1.**
 # Every one of those moves came from the LOWER arm gaining a success,
 # and the upper arm has not gained a repeat since it emptied.  A ratio
 # that shrinks monotonically as the sample grows is the signature 54.3a's
@@ -301,7 +301,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 241 rows: ALL attempts 6 of 8 and 7 of 12; FIRST attempts
+# WINDOWS at 242 rows: ALL attempts 6 of 8 and 8 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -508,13 +508,14 @@
 #
 # What is left of the description, stated smaller:
 #
-#   * **THE PEAK AT 7 IS GONE, AND THE ORDERING HAS INVERTED.**  It now
-#     reads 6.5% (2 of 31) against the 6 bucket's 6.7% (1 of 15) -- the
-#     bucket that was the peak is now marginally the LOWER of the two.
-#     It softened at every single recount: 30.8%, 25.8%, 22.6%, 19.4%,
-#     16.1%, 12.9%, 9.7%, 6.5%, eight in a row, every one from that
-#     bucket's own stragglers being decided.  It began at four and a
-#     half times the 6 bucket and ended below it.  This is no longer
+#   * **THE PEAK AT 7 IS GONE, AND THE ORDERING HAS INVERTED BY A
+#     FACTOR OF TWO.**  It now reads 3.2% (1 of 31) against the 6
+#     bucket's 6.7% (1 of 15) -- the bucket that was the peak is now
+#     half the rate of its neighbour.  It softened at every single
+#     recount: 30.8%, 25.8%, 22.6%, 19.4%, 16.1%, 12.9%, 9.7%, 6.5%,
+#     3.2%, nine in a row, every one from that bucket's own stragglers
+#     being decided.  It began at four and a half times the 6 bucket
+#     and ended at half of it -- a swing of nine-fold in the ratio.  This is no longer
 #     "withdrawn in all but name"; it is withdrawn, and the crossover is
 #     recorded because a reading that decays monotonically to nothing
 #     across eight recounts is the cleanest example in this file of the
@@ -956,23 +957,34 @@
 #   at 8658.6 s -- 2141 s clear of the cap -- from the cohort launched at
 #   06:18, not the 04:13 one (predicted finish 08:42:18 from an 8658.6 s
 #   runtime, row landed 08:43:46).  It is at run>=12 = 7.  The tally is
-#   now five clear-of-cap successes, EVERY ONE at run>=12 = 7, against
+#   now SIX clear-of-cap successes, EVERY ONE at run>=12 = 7, against
 #   five near-cap of which four are at run>=12 = 8.
 #
-#   **AND THE STRENGTH DEPENDS ENTIRELY ON HOW THE COHORT IS COUNTED, SO
-#   BOTH NUMBERS ARE GIVEN.**  Fisher's exact, one-tailed, on the 2x2:
+#   **THE TEST HAS NOW REPLICATED TWICE MORE.**  The header asked for
+#   "clear-of-cap successes from a third and fourth cohort".  c96 gave
+#   one at 8658.6 s and c97 another at 8956.0 s -- separate launches,
+#   started when slots freed at 06:18 and 06:24, not members of the
+#   synchronised 04:13 four -- and both are at run>=12 = 7.  Three
+#   distinct launches have now produced a clear-of-cap success and every
+#   one of them landed in the same bucket.
 #
-#     treating all ten successes as independent      p = 0.024
-#     collapsing the 04:13 cohort to ONE observation p = 0.143
+#   **THE STRENGTH STILL DEPENDS ENTIRELY ON HOW THE LAUNCHES ARE
+#   COUNTED, SO ALL THREE READINGS ARE GIVEN.**  Fisher's exact,
+#   one-tailed, on the 2x2 of clear-vs-near against run>=12 = 7 vs 8:
 #
-#   The truth is between: four solvers launched together are not four
-#   independent draws, and they are not one either.  **So the honest
-#   statement is that the observation passed the test set for it and is
-#   now evidence rather than a restatement, and that it is NOT
-#   established** -- the conservative reading does not reach
-#   significance, and no correction has been applied for the fact that
-#   this comparison was chosen after looking at the data.  What would
-#   settle it is clear-of-cap successes from a third and fourth cohort.
+#     all eleven successes independent               p = 0.015
+#     collapsing the 04:13 cohort to one observation p = 0.071
+#     collapsing the WHOLE 04:12 driver run to one   p = 0.333
+#
+#   The middle reading is the defensible one -- c96 and c97 were
+#   staggered launches minutes apart, more independent than the
+#   synchronised four and less than separate machines -- and it has
+#   improved from 0.143 to 0.071 purely by replication, which is the
+#   right reason for a p-value to move.  **It still does not reach 0.05,
+#   no correction has been applied for choosing this comparison after
+#   seeing the data, and the maximally conservative reading is nowhere
+#   near significant.**  The claim remains: tested twice more, survived
+#   twice more, not established.
 #
 # So the marginal-instance story is a description of most of the sample
 # rather than the mechanism of the effect, and it should not be leaned
@@ -1385,3 +1397,4 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNSAT	7838.8
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNSAT	8270.4
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNSAT	8900.8
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNSAT	8658.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNSAT	8956.0
