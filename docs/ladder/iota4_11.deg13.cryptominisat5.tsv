@@ -215,28 +215,59 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 157 UNSAT, **3 UNKNOWN**, 0 SAT over 160 labels -- 157 of
-# 1949, 265 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 157 UNSAT, **4 UNKNOWN**, 0 SAT over 161 labels -- 157 of
+# 1949, 266 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
 # **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE ENUMERATION HAS MOVED TO THE PREDICTED NEXT GROUP.**  153
-# UNSAT, 0 UNKNOWN, 0 SAT over 153 labels -- every label ever attempted
-# is decided.  The group `[13,13,13,12,13,13,13,13]` closed at exactly
+# AND THE ENUMERATION HAS MOVED TO THE PREDICTED NEXT GROUP.**  (This
+# paragraph read "153 UNSAT, 0 UNKNOWN over 153 labels -- every label
+# ever attempted is decided" while the STANDING line above it and the
+# UNKNOWN section below it both said otherwise; stale from the batch
+# that wrote it, corrected by recounting.  Logged in 54.3a as the same
+# shape as the earlier lead: a count written once and not re-derived.)
+# The group `[13,13,13,12,13,13,13,13]` closed at exactly
 # 23 when `8,8` landed at 3082.8, and the very next row was
 # `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
 # group this header had already named, and the first of the fourteen
 # members it had already listed.**  `12,11,3` 6342.8, `12,10,4` 7134.5,
 # `12,9,5` 7533.0 and `12,7,7` 8957.3 followed, so **5 of 14 are
-# decided, 3 more are UNKNOWN at the cap, 8 of 14 seen, and none is
+# decided, 4 more are UNKNOWN at the cap, 9 of 14 seen, and none is
 # outside the permitted set.**
 #
+# **A CLEAN SPLIT HAS APPEARED IN THIS GROUP AND IT IS NOT BEING READ,
+# FOR A NAMED REASON RATHER THAN OUT OF CAUTION.**  Of the nine members
+# seen, the five with `w = 12` are ALL decided (3348.7, 6342.8, 7134.5,
+# 7533.0, 8957.3) and the four with `w = 11` are ALL undecided at the
+# cap.  Five of five against zero of four, on the group's own leading
+# entry, is the most inviting pattern this file has produced in a while.
+#
+# It is the leading-13s artefact wearing a new label.  That model --
+# `-0.75` at `n = 67`, refuted at every one of eleven measurements --
+# was diagnosed as tracking ARRIVAL ORDER rather than difficulty,
+# because the enumeration walks families in DESCENDING order, so many
+# leading 13s means early, early means early-within-family, and every
+# family in this file opens cheap.  Within a group the enumeration walks
+# `w` descending too.  So `w = 12` means EARLY-WITHIN-GROUP by
+# construction, and "the early ones are cheaper" is the exact statement
+# already shown to be about the walk rather than about the sub-cubes.
+# The split is what that artefact looks like once the cap is close
+# enough to turn a cost difference into a decided/undecided difference.
+#
+# The honest test exists and is NOT being run yet: whether `w` predicts
+# anything survives only if it holds ACROSS groups, on members matched
+# for position within their own group.  ONE GROUP CANNOT SEPARATE `w`
+# FROM ARRIVAL POSITION, because inside one group they are the same
+# variable.
+#
 # **THE FIRST UNKNOWNs SINCE THE STRAGGLER SWEEP COMPLETED.**  `12,8,6`
-# 10886.9, `11,10,5` 10896.2 and `11,11,4` all came back at the 10800 s
-# cap.  Three consequences, all recorded as what happened:
+# 10886.9, `11,10,5` 10896.2, `11,11,4` 10906.1 and now `11,9,6`
+# 10898.3 all came back at the 10800 s cap.  Three consequences, all recorded as what happened:
 #   * the run of first-attempt decisions ENDS at 44 labels;
-#   * the re-run numerator UNFREEZES, 57 -> 60 of 160 (37.5%);
+#   * the re-run numerator UNFREEZES, 57 -> 60 of 160 (37.5%) at that
+#     moment, and 61 of 161 (37.9%) as this is written -- the first
+#     figure is the event, the second is the state;
 #   * the stall table is no longer zero in every bucket.
 #
 # **AND THE THREE STALLS SIT AT `run>=12` = 9, 8, 8 -- INSIDE THE ARM
@@ -409,10 +440,10 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **60 of the 160 attempted
-# labels -- 37.5% -- were NOT decided on their first attempt**.  100
-# fell first time; 57 of the 60 were later banked by a re-run or a cap
-# raise and 3 are outstanding right now.
+# has not been stated in this file before: **61 of the 161 attempted
+# labels -- 37.9% -- were NOT decided on their first attempt**.  100
+# fell first time; 57 of the 61 were later banked by a re-run or a cap
+# raise and 4 are outstanding right now.
 #
 # **THE FREEZE IS OVER AND THE CAVEAT ATTACHED TO IT WAS RIGHT.**  This
 # paragraph used to say the numerator was frozen at 57 across the last
@@ -1028,9 +1059,12 @@
 #     (12,7,7)   8957.3   <- overtook (12,8,6)
 #     (12,8,6)   UNKNOWN at 10886.9 (cap)
 #     (11,10,5)  UNKNOWN at 10896.2 (cap)
-#     (11,11,4)  UNKNOWN at the cap
-# 8 of 14 seen: 5 decided, 3 outstanding.  None outside the permitted
-# set, so the membership test is undisturbed.
+#     (11,11,4)  UNKNOWN at the cap (10906.1)
+#     (11,9,6)   UNKNOWN at the cap (10898.3)
+# 9 of 14 seen: 5 decided, 4 outstanding.  None outside the permitted
+# set, so the membership test is undisturbed.  Every decided member has
+# `w = 12` and every outstanding one `w = 11`; see above for why that is
+# recorded and not read.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1843,3 +1877,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 7, 7]	UNSAT	8957.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 8, 6]	UNKNOWN	10886.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10896.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10906.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10898.3
