@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 157 UNSAT, 0 UNKNOWN, 0 SAT over 157 labels -- 157 of 1949,
-# 262 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 157 UNSAT, **3 UNKNOWN**, 0 SAT over 160 labels -- 157 of
+# 1949, 265 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -228,8 +228,38 @@
 # `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
 # group this header had already named, and the first of the fourteen
 # members it had already listed.**  `12,11,3` 6342.8, `12,10,4` 7134.5,
-# `12,9,5` 7533.0 and `12,7,7` 8957.3 followed, so **5 of 14 are in
-# hand, none outside the permitted set, all five on first attempt.**
+# `12,9,5` 7533.0 and `12,7,7` 8957.3 followed, so **5 of 14 are
+# decided, 3 more are UNKNOWN at the cap, 8 of 14 seen, and none is
+# outside the permitted set.**
+#
+# **THE FIRST UNKNOWNs SINCE THE STRAGGLER SWEEP COMPLETED.**  `12,8,6`
+# 10886.9, `11,10,5` 10896.2 and `11,11,4` all came back at the 10800 s
+# cap.  Three consequences, all recorded as what happened:
+#   * the run of first-attempt decisions ENDS at 44 labels;
+#   * the re-run numerator UNFREEZES, 57 -> 60 of 160 (37.5%);
+#   * the stall table is no longer zero in every bucket.
+#
+# **AND THE THREE STALLS SIT AT `run>=12` = 9, 8, 8 -- INSIDE THE ARM
+# THE WITHDRAWN PREDICTOR CALLED STALL-FREE.**  That predictor's
+# strongest clause was "nothing at eight or more has stalled, across 87
+# labels", and this header twice called it the strongest thing in the
+# file.  It was already withdrawn on the methodological ground that it
+# tracked how far the straggler sweep had got rather than any property
+# of the sub-cubes.  It is now ALSO refuted on new data: when stalls
+# returned, every one of them returned in the region it said was safe.
+# A statistic withdrawn for the right reason and then contradicted
+# outright is worth more than either half alone, and it is the reason
+# the withdrawal is not being softened now that the table has numbers
+# in it again.
+#
+# **WHAT IS NOT EVIDENCE: that all three stalls are in the new group.**
+# The driver is working ONLY this group, so every currently undecided
+# label must be in it.  That is guaranteed by construction and says
+# nothing about the group's difficulty -- the same selection effect that
+# made the censoring finding necessary.  Within the group the five
+# decided sit at `run>=12` = 10, 9, 9, 9, 9 and the three undecided at
+# 9, 8, 8, which is a difference on eight labels and is NOT being read.
+# NO COST MODEL IS PROPOSED FOR THIS GROUP.
 #
 # **`12,7,7` OVERTOOK `12,8,6`, WHICH IS THE SAME OVERTAKING SHAPE AS
 # LAST GROUP'S, AND THAT IS RECORDED AS A COINCIDENCE AND NOT AS A
@@ -379,17 +409,18 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **57 of the 157 decided
-# labels -- 36.3% -- were NOT decided on their first attempt**, and all
-# 57 were later banked by a re-run or a cap raise.  100 fell first time.
-# (This ratio moves with every row; it is quoted as of 157 labels.  The
-# numerator is frozen: **the last 44 labels have every one of them
-# fallen on their first attempt**, so 57 was fixed 36 labels ago and
-# the percentage is drifting down purely on its denominator.  This
-# sentence first said "seven rows", typed from impression; the script
-# said 36.  The straggler era is over as a matter of record, not of
-# expectation -- and no claim is made that it stays over, since the
-# enumeration has just entered the 92% it had never touched.)
+# has not been stated in this file before: **60 of the 160 attempted
+# labels -- 37.5% -- were NOT decided on their first attempt**.  100
+# fell first time; 57 of the 60 were later banked by a re-run or a cap
+# raise and 3 are outstanding right now.
+#
+# **THE FREEZE IS OVER AND THE CAVEAT ATTACHED TO IT WAS RIGHT.**  This
+# paragraph used to say the numerator was frozen at 57 across the last
+# 44 labels, and added: "no claim is made that it stays over, since the
+# enumeration has just entered the 92% it had never touched."  It did
+# not stay over.  The caveat was written two batches before it was
+# needed and is the reason this is a recorded outcome rather than a
+# withdrawal.
 #
 # The membership prediction is untouched -- `7,7` is a predicted member
 # and `8,6` remains outstanding -- and this is recorded because a claim
@@ -995,7 +1026,11 @@
 #     (12,10,4)  7134.5
 #     (12,9,5)   7533.0
 #     (12,7,7)   8957.3   <- overtook (12,8,6)
-# 5 of 14.
+#     (12,8,6)   UNKNOWN at 10886.9 (cap)
+#     (11,10,5)  UNKNOWN at 10896.2 (cap)
+#     (11,11,4)  UNKNOWN at the cap
+# 8 of 14 seen: 5 decided, 3 outstanding.  None outside the permitted
+# set, so the membership test is undisturbed.
 #
 # The same test applies and is stated in advance the same way: if this
 # group closes at any set other than exactly those 14, the encoding
@@ -1805,3 +1840,6 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 11, 3]	UNSAT	6342.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 10, 4]	UNSAT	7134.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 9, 5]	UNSAT	7533.0
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 7, 7]	UNSAT	8957.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 8, 6]	UNKNOWN	10886.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10896.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10906.1
