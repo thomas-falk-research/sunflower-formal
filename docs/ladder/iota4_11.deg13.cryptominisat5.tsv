@@ -195,20 +195,20 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 150 UNSAT, 0 UNKNOWN, 0 SAT over 150 labels -- 150 of 1949,
-# 255 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 151 UNSAT, 0 UNKNOWN, 0 SAT over 151 labels -- 151 of 1949,
+# 256 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
 # **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE FOURTH VIOLATOR SUB-FAMILY IS CLOSED.**  150 UNSAT,
-# 0 UNKNOWN, 0 SAT over 150 labels -- every label ever attempted is
-# decided.  `w = 10` is COMPLETE at three: `10,5` 3118.9, `9,6` 3766.2,
-# `8,7` 3665.4.  **FOUR sub-families are now closed at exactly the
-# members the encoding permits -- 7, 6, 5, 3 = 21 of the group's 23** --
-# none missing, none outside the permitted set, checked by generating
-# each set from `x + y = 25 - w`, `w >= x >= y` and comparing.  Only
-# `9,7` and `8,8` remain, and they close `w = 9` and the group.
+# AND THE GROUP IS ONE ROW FROM EXHAUSTION.**  151 UNSAT,
+# 0 UNKNOWN, 0 SAT over 151 labels -- every label ever attempted is
+# decided.  `9,7` landed at 3258.5, opening the last sub-family, so
+# **22 of the group's 23 are in hand and only `8,8` remains.**  Four
+# sub-families are closed at exactly the members the encoding permits --
+# 7, 6, 5, 3 -- none missing, none outside the permitted set, checked by
+# generating each set from `x + y = 25 - w`, `w >= x >= y` and comparing
+# against the banked labels rather than by reading the list.
 #
 # `w = 10` arrived in descending-`x` order (10, 9, 8).  Recorded as WHAT
 # HAPPENED and not as a return to form: the sub-family before it did
@@ -280,11 +280,11 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **57 of the 150 decided
-# labels -- 38.0% -- were NOT decided on their first attempt**, and all
-# 57 were later banked by a re-run or a cap raise.  93 fell first time.
-# (This ratio moves with every row; it is quoted as of 150 labels.  The
-# numerator is frozen: **the last 37 labels have every one of them
+# has not been stated in this file before: **57 of the 151 decided
+# labels -- 37.7% -- were NOT decided on their first attempt**, and all
+# 57 were later banked by a re-run or a cap raise.  94 fell first time.
+# (This ratio moves with every row; it is quoted as of 151 labels.  The
+# numerator is frozen: **the last 38 labels have every one of them
 # fallen on their first attempt**, so 57 was fixed 36 labels ago and
 # the percentage is drifting down purely on its denominator.  This
 # sentence first said "seven rows", typed from impression; the script
@@ -864,7 +864,7 @@
 #     w = 12   6 members   (12,1) (11,2) (10,3) (9,4) (8,5) (7,6)         ALL LANDED
 #     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)   ALL LANDED
 #     w = 10   3 members   (10,5) (9,6) (8,7)   ALL LANDED
-#     w =  9   2 members   (9,7) (8,8)
+#     w =  9   2 members   (9,7) (8,8)   (9,7) LANDED
 #
 # **RESOLVED: `(8,6)` LANDED at 3692.7 and the w = 11 sub-family is
 # COMPLETE at five of five.**  All three sub-families closed so far hold
@@ -881,10 +881,13 @@
 # and the sample is one family.
 #
 # **PREDICTED NEXT, on the same encoding arithmetic that has never
-# missed:** `(9,7)` and `(8,8)` complete `w = 9`, and then this
+# missed:** `(8,8)` completes `w = 9`, and then this
 # first-eight group is exhausted
 # at 23 and the enumeration moves to `[13,13,13,12,13,13,13,12]`, which
-# has 14 members.  **Twenty-one of the 23 are in hand.**  Arrival order is
+# has 14 members.  **Twenty-two of the 23 are in hand.**  `8,8` is the
+# single most-checkable prediction this file has left: it is the last
+# permitted tail, and if the group closes at anything other than exactly
+# `8,8` the encoding argument is wrong.  Arrival order is
 # explicitly NOT predicted -- see the four counterexamples above.  NO
 # COST PREDICTION IS MADE, for the reason the last two abstentions were
 # made and vindicated.
@@ -1682,3 +1685,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 8, 6]	UNSAT	3692.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 10, 5]	UNSAT	3118.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 9, 6]	UNSAT	3766.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 8, 7]	UNSAT	3665.4
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 9, 7]	UNSAT	3258.5
