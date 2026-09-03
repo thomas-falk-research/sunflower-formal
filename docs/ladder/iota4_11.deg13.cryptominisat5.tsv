@@ -195,17 +195,20 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 148 UNSAT, 0 UNKNOWN, 0 SAT over 148 labels -- 148 of 1949,
-# 253 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 149 UNSAT, 0 UNKNOWN, 0 SAT over 149 labels -- 149 of 1949,
+# 254 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
 # **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
-# AND THE FOURTH VIOLATOR SUB-FAMILY HAS OPENED.**  148 UNSAT,
-# 0 UNKNOWN, 0 SAT over 148 labels -- every label ever attempted is
-# decided.  `10,5` landed at 3118.9, the first member of `w = 10`,
-# exactly the tail the encoding said would come next.  19 of the
-# group's 23 are in hand.  The `w = 11` sub-family has `11,3` at 2821.4, `10,4` at
+# AND THE FOURTH VIOLATOR SUB-FAMILY IS TWO OF THREE.**  149 UNSAT,
+# 0 UNKNOWN, 0 SAT over 149 labels -- every label ever attempted is
+# decided.  `w = 10` has `10,5` at 3118.9 and `9,6` at 3766.2, both
+# predicted tails; only `8,7` is outstanding.  20 of the group's 23 are
+# in hand.  These two arrived in descending-`x` order, which is recorded
+# as WHAT HAPPENED and not as a return to form: the previous sub-family
+# did not, three earlier families did not, and this file no longer
+# claims arrival order is predictable in either direction.  The `w = 11` sub-family has `11,3` at 2821.4, `10,4` at
 # 3155.1, `9,5` at 3639.7, `7,7` at 2933.8 and **`8,6` at 3692.7**.
 # `8,6` was never missing, only slow: it landed 10 m 16 s after `7,7`
 # overtook it, and its 3692.7 s is the family's LARGEST cost, which is
@@ -270,10 +273,17 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **57 of the 148 decided
-# labels -- 38.5% -- were NOT decided on their first attempt**, and all
-# 57 were later banked by a re-run or a cap raise.  91 fell first time.
-# (This ratio moves with every row; it is quoted as of 148 labels.)
+# has not been stated in this file before: **57 of the 149 decided
+# labels -- 38.3% -- were NOT decided on their first attempt**, and all
+# 57 were later banked by a re-run or a cap raise.  92 fell first time.
+# (This ratio moves with every row; it is quoted as of 149 labels.  The
+# numerator is frozen: **the last 36 labels have every one of them
+# fallen on their first attempt**, so 57 was fixed 36 labels ago and
+# the percentage is drifting down purely on its denominator.  This
+# sentence first said "seven rows", typed from impression; the script
+# said 36.  The straggler era is over as a matter of record, not of
+# expectation -- and no claim is made that it stays over, since the
+# enumeration has just entered the 92% it had never touched.)
 #
 # The membership prediction is untouched -- `7,7` is a predicted member
 # and `8,6` remains outstanding -- and this is recorded because a claim
@@ -846,7 +856,7 @@
 #     w = 13   7 members   (12,0) (11,1) (10,2) (9,3) (8,4) (7,5) (6,6)   ALL LANDED
 #     w = 12   6 members   (12,1) (11,2) (10,3) (9,4) (8,5) (7,6)         ALL LANDED
 #     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)   ALL LANDED
-#     w = 10   3 members   (10,5) (9,6) (8,7)   (10,5) LANDED
+#     w = 10   3 members   (10,5) (9,6) (8,7)   (10,5) (9,6) LANDED
 #     w =  9   2 members   (9,7) (8,8)
 #
 # **RESOLVED: `(8,6)` LANDED at 3692.7 and the w = 11 sub-family is
@@ -864,10 +874,10 @@
 # and the sample is one family.
 #
 # **PREDICTED NEXT, on the same encoding arithmetic that has never
-# missed:** `(9,6)` and `(8,7)` complete `w = 10`, then `(9,7)`,
+# missed:** `(8,7)` completes `w = 10`, then `(9,7)`,
 # `(8,8)` complete `w = 9`, and then this first-eight group is exhausted
 # at 23 and the enumeration moves to `[13,13,13,12,13,13,13,12]`, which
-# has 14 members.  **Nineteen of the 23 are in hand.**  Arrival order is
+# has 14 members.  **Twenty of the 23 are in hand.**  Arrival order is
 # explicitly NOT predicted -- see the four counterexamples above.  NO
 # COST PREDICTION IS MADE, for the reason the last two abstentions were
 # made and vindicated.
@@ -1663,3 +1673,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 9, 5]	UNSAT	3639.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 7, 7]	UNSAT	2933.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 8, 6]	UNSAT	3692.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 10, 5]	UNSAT	3118.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 9, 6]	UNSAT	3766.2
