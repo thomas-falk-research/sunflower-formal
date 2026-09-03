@@ -1,0 +1,1845 @@
+# iota(4,11) >= 32 ?  the deg(0) = 13 cube under cryptominisat5, over the
+# FULL degree-sequence split, one line per sub-cube.  Second opinion for
+# cadical's UNSAT at 85123.9 s (docs/ladder/iota4_11.tsv).
+#
+# Written by `iota_sym --checkpoint`; a row is appended the moment a
+# sub-cube lands, so a reclaimed container loses only what was in flight.
+# Resume with the same --checkpoint: UNSAT/SAT rows are skipped, UNKNOWN
+# rows are re-run, because UNKNOWN is a budget and not a verdict.
+#
+# all_points_used = FALSE, so THE CUBE IS UNSAT ONLY WHEN ALL 1949
+# SUB-CUBES ARE UNSAT.  This is NOT the same cover as
+# docs/ladder/iota4_11.deg13.tsv, which holds 1939 -- that file was
+# written through tools/rung.sh, which passes --ladder and so asks for a
+# family on EXACTLY eleven points.  This run was launched from the binary
+# without --ladder, so it asks for one on AT MOST eleven points: a
+# strictly larger cover, 1939 of it shared and ten more carrying a
+# degree-zero point.  UNSAT on all 1949 implies UNSAT on all 1939, so
+# this is a sound second opinion and a slightly stronger one; the ten
+# extras are redundant, being refuted already by iota(4,10) = 27 < 32.
+# Do not merge rows between the two files.  See roadmap 52.1.
+#
+# Command:
+#   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+#     --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --threads 4 \
+#     --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
+#
+# THE SECONDS COLUMN IS WALL TIME UNDER CONTENTION and is not comparable
+# with the cadical rows in iota4_11.deg13.tsv.  This ran on a 4-core
+# session container alongside `cargo test --release` and `make verify`,
+# and rows recording 664-820 s against a 600 s solver budget are the
+# measure of that, not of the sub-cube.  Same caveat as roadmap 40.2.
+#
+# Why the full split and not the prefix-3 split that roadmap 50.3 asked
+# for: the prefix-3 split of this cube is 27 sub-cubes, and the four ever
+# attempted (under cadical, iota4_11.deg13.p3.tsv) all burned 2400 s
+# without landing.  Those four are the first four in lexicographically
+# descending enumeration order, covering 553, 325, 180 and 94 full
+# sub-cubes -- 1152 of 1939, three fifths of the cube in four pieces.  At
+# the 136-491 s a full sub-cube costs, the largest is ~10^5 s of search,
+# so a 7200 s budget banks nothing.  The full split is what
+# iota4_11.deg13.tsv calls the working granularity.  See roadmap 52.2.
+#
+# TWO PASSES, AND THE ROW COUNT IS NOT THE CUBE COUNT.  A 600 s pass ran
+# first and banked 3 UNSAT of 20 attempted; an 1800 s pass then resumed
+# against this same file, which skipped those 3 and re-ran the 17 UNKNOWN
+# ones -- "checkpoint: 3 of 1949 cubes already decided".  The 600 s cap
+# was too small for this solver: cryptominisat5 landed 1 of the 8
+# sub-cubes it shares with cadical's pass, where cadical landed 5, so
+# 600 s here is about a 200 s cadical-equivalent.
+#
+# ELEVEN CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The eleventh was
+# at 14:58Z: driver pid 1613 and all four solvers gone, restarted as pid
+# 1615, which printed `checkpoint: 156 of 1949 cubes already decided`
+# against an independent recount of 156 distinct UNSAT labels -- MATCH,
+# nothing lost.  The one-slice monolithic pass (61.4 s UNKNOWN at
+# deg(0)=13, then re-split) wrote NO row: there are zero non
+# degree-sequence labels in the file, checked.
+#
+# **AND THIS ONE EXPOSED A FLAW IN THE MONITORING, NOT IN THE DRIVER.**
+# The row waiter exits as soon as it sees a row, so between a row
+# landing and the waiter being re-armed -- header edit, verification,
+# commit, push -- NOTHING is watching the driver.  The death fell in
+# exactly that window.  Its time is therefore NOT KNOWN, only bounded:
+# the last row landed 14:23:53Z and the loss was noticed at 14:58:58Z,
+# so the gap is somewhere in 0..35 minutes and no narrower claim is
+# made.  Fix adopted: **RE-ARM THE WAITER FIRST, BEFORE THE HEADER
+# WORK**, so the unwatched window is seconds rather than minutes.  Every
+# earlier restart was caught promptly because it happened while a waiter
+# was live; that was luck about timing, not a property of the setup.
+#
+# The sixth was at
+# ~17:53 UTC, the seventh at ~21:36, the eighth at ~22:00, the ninth at
+# ~22:05 and the tenth at ~03:32; each killed the driver and all four
+# solvers mid-flight.  Every time the same command printed
+# "checkpoint: 129 of 1949 cubes already decided" and resumed -- a number
+# that matches an independent recount of the distinct UNSAT labels in
+# this file, which is the check that makes "zero rows lost" a verified
+# statement and not a hope.  Every banked UNSAT survived; the only work
+# lost is the partial search in the four solvers that were running,
+# which is bounded by the cap.
+# **This is the entire argument for the degree-sequence split over the
+# whole-cube monolith, and it is now demonstrated ten times rather
+# than argued once** -- the monolith has twice been killed at ~85000 s
+# and lost everything, because a single instance has nothing to check
+# point.
+#
+# **AND THE RESTART CADENCE HAS BECOME THE BINDING CONSTRAINT ON
+# PROGRESS, WHICH IS A DIFFERENT PROBLEM FROM LOSING ROWS.**  No row has
+# ever been lost, and that is not the issue.  The issue is arithmetic
+# between two numbers:
+#
+#     to reach ANY fresh sub-cube the resume policy must first re-run
+#     all ten stragglers, ten attempts over four threads at a 10800 s
+#     cap = three batches = ABOUT 7.5 UNINTERRUPTED WALL-HOURS;
+#
+#     observed gaps between the last six restarts:
+#         5th ->  6th  12 h 57 m     long enough
+#         6th ->  7th   3 h 43 m     not enough
+#         7th ->  8th      24 m      not enough
+#         8th ->  9th       5 m      not enough for ANY attempt at all
+#         9th -> 10th   5 h 27 m     not enough for the sweep, but the
+#                                    run banked four rows inside it
+#
+# A restart resets the sweep to its beginning -- after the eighth AND
+# the ninth the driver went straight back to c59/c67/c68/c70, the same
+# four the sixth and seventh had started on.  **While the gap stays
+# below about 7.5 hours this run re-runs stragglers forever and never
+# attempts a fresh sub-cube again**, banking nothing while looking
+# perfectly healthy: driver up, four solvers busy, no errors.  That
+# failure mode is invisible from the process list, which is why it is
+# written here.
+#
+# **THE PREVIOUS PARAGRAPH'S OWN CAVEAT IS NOW WITHDRAWN.**  One batch
+# ago this said "two-restarts-in-24-minutes is a sample of one gap; do
+# not conclude the cadence has permanently changed".  That caution was
+# right to write and is now overtaken: the very next gap was FIVE
+# MINUTES.  Three consecutive gaps -- 3 h 43 m, 24 m, 5 m -- are all
+# below the 7.5 hours the sweep needs, and the last is below the 3 h a
+# SINGLE straggler attempt needs, so nothing at all can now complete.
+# The run is not progressing; it is being restarted.
+#
+# STILL NOT ACTED ON, AND THE OPTIONS ARE WRITTEN DOWN RATHER THAN
+# CHOSEN.  Each changes the experiment, so each is a decision and not a
+# repair:
+#   (a) accept it and keep restarting -- costs nothing, banks nothing
+#       while the cadence holds;
+#   (b) lower `--seconds` so an attempt fits inside the observed uptime.
+#       This CHANGES THE CAP, which the budget rule governs, and would
+#       mix rows measured at different caps into one file -- the exact
+#       confusion 52.1 and 50.3 were about;
+#   (c) change the resume order so fresh cubes are attempted before
+#       straggler repeats.  Cheap sub-cubes have landed in 300-2400 s
+#       and would fit inside even a 24 m window, so this is the option
+#       that would actually bank rows -- but it is a change under
+#       `rust/`, which this branch has not touched since 105b00e0, and
+#       that untouched tree is what the gates argument in the PR body
+#       rests on.
+# Flagged for a decision rather than made quietly.
+#
+# **THE TENTH RESTART WAS THE EXPENSIVE ONE, AND THE REASON IS WHEN IT
+# LANDED RATHER THAN WHAT IT KILLED.**  Batch 2 of the sweep started at
+# 00:55-01:08 on c71, c95, c96 and c97; the restart came at ~03:32, so
+# those four solvers died about 2 h 25 m into a 3 h cap -- roughly 85%
+# of the way through, against the seventh restart's 40 minutes, or 22%.
+# Same four cubes, same cap, more than three times the wall time thrown
+# away: about ten solver-hours here against two and a half there.
+#
+# **The expected yield lost is nonetheless small, and the two numbers
+# should not be confused.**  Every remaining straggler is run>=12 <= 7,
+# where the observed repeat yield is 1 of 23, so those four attempts were
+# worth about 0.17 UNSAT between them however far they had got.  A
+# restart's cost in WALL TIME depends sharply on when in the batch it
+# lands; its cost in EXPECTED ROWS does not, because an attempt that is
+# 85% finished has banked exactly as much as one that is 22% finished,
+# which is nothing.  That asymmetry is the whole reason a checkpoint at
+# sub-cube granularity is worth having, and it is also why "we lost ten
+# solver-hours" and "we lost a sixth of an UNSAT" are both true here.
+#
+# WHAT THE SEVENTH RESTART ACTUALLY COST, WHICH IS LESS THAN "FOUR
+# SOLVERS' WORK" SOUNDS.  Both the sixth and the seventh landed while
+# the resume policy was re-running stragglers, so what was in flight
+# both times was straggler repeats -- at the seventh, cubes c71, c95,
+# c96 and c97, about forty minutes into a 10800 s cap.  At the measured
+# 0.11 per repeat those four attempts carried an expected yield of
+# about 0.44 UNSAT, and they were forty minutes of the way to earning
+# it.  The loss is real but it is small, and it is smaller than the
+# same interruption would have been against fresh sub-cubes.  Recorded
+# because "killed four solvers mid-flight" invites overestimating the
+# damage, and the number is available rather than guessed at.
+#
+# NOTE ON RESTART: phase one re-runs the WHOLE deg(0) = 13 cube for one
+# --slice (60 s) before re-splitting.  On a fresh start you will see a
+# solver on `sf-sym-11-4-32-c0-...`, with no `seq` in the name, and the
+# split only appears a minute later on `...-seq-cNN-...`.  That is not a
+# regression to the monolith; it is `plan_phase_two`.  Wait for the
+# "checkpoint: N of 1949" line before concluding anything.
+#
+# `append_checkpoint` appends unconditionally and never dedups, so a
+# re-run leaves the old UNKNOWN row in place beside the new one.  Rows are
+# therefore >= cubes attempted, and a label may appear more than once.
+# Only UNSAT/SAT rows are load-bearing, and those are written once; to
+# count progress, count DISTINCT labels with an UNSAT verdict.
+#
+# WHAT THE 1800 s PASS BOUGHT, measured.  Its UNSAT rows land between
+# 740.5 s and 1588.7 s -- all above the 600 s cap that had left them
+# UNKNOWN, all under 1800 s.  So 600 s was cutting off sub-cubes this
+# solver can decide, and the first pass's budget was largely wasted on
+# them.  Two sub-cubes are still UNKNOWN at 1800 s, and the largest UNSAT
+# used 88% of that budget, so a third pass at a larger cap would likely
+# still gain -- it is not yet at the point of diminishing returns.
+#
+# STANDING, 21 distinct UNSAT of 42 labels attempted, 0 SAT.
+#
+# EVERY SUB-CUBE CADICAL EVER RECORDED FOR THIS CUBE IS NOW DECIDED, AND
+# THE TWO SOLVERS AGREE ON ALL OF THEM.  cadical's pass attempted
+# fourteen and landed five, leaving nine UNKNOWN at its 600 s cap.
+# cryptominisat5 is UNSAT on all fourteen -- the five it confirms, and
+# all nine cadical could not decide:
+#
+#     [.. 13, 6, 5]   939.6      [.. 12, 7, 5]  2294.8
+#     [.. 11, 11, 2] 1366.4      [.. 11, 10, 3] 1971.3
+#     [.. 12, 10, 2] 1588.7      [.. 11, 9, 4]  2087.6
+#     [.. 12, 9, 3]  1871.7      [.. 12, 6, 6]  2037.7
+#     [.. 12, 8, 4]  2230.3
+#
+# So the portion of cube 13 that any solver has examined is now fully
+# decided and fully agreed.  Seven further sub-cubes are decided beyond
+# cadical's fourteen.
+#
+# THIS DOES NOT DECIDE THE CUBE.  21 of 1949 is 1%, and iota(4,11) <= 31
+# still rests on cadical's whole-cube UNSAT at 85123.9 s.  What it
+# removes is the possibility that cadical's nine UNKNOWNs were hiding a
+# SAT: they were not, and a SAT among them would have contradicted that
+# whole-cube verdict.
+#
+#     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
+#
+# STANDING: 157 UNSAT, **3 UNKNOWN**, 0 SAT over 160 labels -- 157 of
+# 1949, 265 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# the sentence two lines below it already said 146 and 0 -- stale from the
+# batch that introduced the sweep-complete line and not re-derived since.
+# Corrected by recounting from the rows; logged in 54.3a.)
+# **THE SWEEP IS COMPLETE, THE RUN IS BANKING FRESH SUB-CUBES,
+# AND THE ENUMERATION HAS MOVED TO THE PREDICTED NEXT GROUP.**  153
+# UNSAT, 0 UNKNOWN, 0 SAT over 153 labels -- every label ever attempted
+# is decided.  The group `[13,13,13,12,13,13,13,13]` closed at exactly
+# 23 when `8,8` landed at 3082.8, and the very next row was
+# `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
+# group this header had already named, and the first of the fourteen
+# members it had already listed.**  `12,11,3` 6342.8, `12,10,4` 7134.5,
+# `12,9,5` 7533.0 and `12,7,7` 8957.3 followed, so **5 of 14 are
+# decided, 3 more are UNKNOWN at the cap, 8 of 14 seen, and none is
+# outside the permitted set.**
+#
+# **THE FIRST UNKNOWNs SINCE THE STRAGGLER SWEEP COMPLETED.**  `12,8,6`
+# 10886.9, `11,10,5` 10896.2 and `11,11,4` all came back at the 10800 s
+# cap.  Three consequences, all recorded as what happened:
+#   * the run of first-attempt decisions ENDS at 44 labels;
+#   * the re-run numerator UNFREEZES, 57 -> 60 of 160 (37.5%);
+#   * the stall table is no longer zero in every bucket.
+#
+# **AND THE THREE STALLS SIT AT `run>=12` = 9, 8, 8 -- INSIDE THE ARM
+# THE WITHDRAWN PREDICTOR CALLED STALL-FREE.**  That predictor's
+# strongest clause was "nothing at eight or more has stalled, across 87
+# labels", and this header twice called it the strongest thing in the
+# file.  It was already withdrawn on the methodological ground that it
+# tracked how far the straggler sweep had got rather than any property
+# of the sub-cubes.  It is now ALSO refuted on new data: when stalls
+# returned, every one of them returned in the region it said was safe.
+# A statistic withdrawn for the right reason and then contradicted
+# outright is worth more than either half alone, and it is the reason
+# the withdrawal is not being softened now that the table has numbers
+# in it again.
+#
+# **WHAT IS NOT EVIDENCE: that all three stalls are in the new group.**
+# The driver is working ONLY this group, so every currently undecided
+# label must be in it.  That is guaranteed by construction and says
+# nothing about the group's difficulty -- the same selection effect that
+# made the censoring finding necessary.  Within the group the five
+# decided sit at `run>=12` = 10, 9, 9, 9, 9 and the three undecided at
+# 9, 8, 8, which is a difference on eight labels and is NOT being read.
+# NO COST MODEL IS PROPOSED FOR THIS GROUP.
+#
+# **`12,7,7` OVERTOOK `12,8,6`, WHICH IS THE SAME OVERTAKING SHAPE AS
+# LAST GROUP'S, AND THAT IS RECORDED AS A COINCIDENCE AND NOT AS A
+# RULE.**  In `[13,13,13,12,13,13,13,13]` the tail `7,7` landed while
+# `8,6` was still running; here `12,7,7` landed while `12,8,6` is still
+# running.  Same two shapes, same direction, twice.  **Two occurrences
+# is precisely the evidence this file has learned not to generalise
+# from**, and an arrival-order claim is the specific thing withdrawn as
+# the sixteenth withdrawal -- where the phrase survived 39 labels only
+# because nobody ran it against the rest of the file.  Arrival order is
+# set by four solvers finishing at different times.  NO RULE IS CLAIMED;
+# if a `(.,7,7) overtakes (.,8,6)` pattern is real it will still be
+# there after several more groups, and it can be tested then against
+# every group at once rather than asserted now on two.
+#
+# **AND THE FRAMING THIS HEADER USED ONE ROW AGO IS WITHDRAWN.**  It
+# called `12,11,3` "1.74x the running median", which is arithmetically
+# true and misleading, because it invites reading these rows as
+# expensive outliers.  Against the WHOLE file they are ordinary:
+#
+#     cost      percentile   labels costing more
+#     3348.7        45th            87 of 157
+#     6342.8        75th            39 of 157
+#     7134.5        81st            30 of 157
+#     7533.0        84th            25 of 157
+#     8957.3        94th            10 of 157
+#
+# The file's interquartile range is 2094.5 .. 6369.7 with median 3665.4
+# and maximum 10865.7, so `6342.8` sits essentially ON the upper
+# quartile and 25 labels still cost more than `7533.0`.  `8957.3` is
+# the dearest of this group so far and reaches the 94th percentile,
+# with 10 labels still above it; that is high and it is not new.  **What was unusual
+# was the PRECEDING BAND, not these rows.**  The eleven labels before
+# the group change -- 3841.7, 2821.4, 3155.1, 3639.7, 2933.8, 3692.7,
+# 3118.9, 3766.2, 3665.4, 3258.5, 3082.8 -- all fall inside 2800..3900,
+# a band holding only 24 of 155 labels (15%).
+#
+# `0.155^11 = 1.2e-09` is the arithmetic and it is **NOT** offered as a
+# significance test, because these labels are not independent draws:
+# they are consecutive in an enumeration that walks structurally
+# adjacent sequences, which is precisely the dependence that makes such
+# a product meaningless.  It is written down only to say that the tight
+# band is the thing that would need explaining, and it is not being
+# explained either.
+#
+# So the abstention on cost holds, now for a better reason than
+# discipline: **on the file's own distribution there is nothing here to
+# explain.**  A reading of 3348.7 -> 6342.8 -> 7134.5 as "rising" would
+# be the sixth instance of the move this file has withdrawn five times,
+# and the first violator family rose through FIVE members before it
+# broke.
+#
+# Two things were predicted here and both held: WHICH GROUP comes next,
+# and WHICH TAILS it admits.  Neither is a claim about difficulty and
+# neither is a result about sunflowers -- both are arithmetic about what
+# the encoding permits, checked by generating the set and comparing.
+#
+# **THE PREDICTION RESOLVES, AND IT WAS PUT WHERE IT COULD FAIL.**  One
+# row ago this header said `8,8` was the single most-checkable claim it
+# had left, and that if the group closed at anything other than exactly
+# `8,8` the encoding argument was wrong.  Generating the whole permitted
+# set for `[13,13,13,12,13,13,13,13]` -- all `(w,x,y)` with
+# `w + x + y = 25` and `13 >= w >= x >= y >= 0` -- and comparing it
+# against the banked labels as SETS:
+#
+#     permitted members      23
+#     landed members         23
+#     landed but not permitted   NONE
+#     permitted but not landed   NONE
+#
+# Five sub-families, 7 + 6 + 5 + 3 + 2 = 23.  This is the one kind of
+# claim in this file that has never failed, and the reason is worth
+# repeating rather than celebrating: it is arithmetic about what the
+# ENCODING permits, not a fit to any measured curve.  Every reading of
+# the observed cost curve in this file has been withdrawn; every reading
+# of the generator has held.  What it demonstrates is that the block
+# constraints are understood correctly, which is worth having and is not
+# a result about sunflowers.
+#
+# `w = 10` arrived in descending-`x` order (10, 9, 8).  Recorded as WHAT
+# HAPPENED and not as a return to form: the sub-family before it did
+# not, three earlier families did not, and this file no longer claims
+# arrival order is predictable in either direction.  Two in-order
+# families in a row is exactly the evidence that produced the sixteenth
+# withdrawal, and it is not being read a second time.  The `w = 11` sub-family has `11,3` at 2821.4, `10,4` at
+# 3155.1, `9,5` at 3639.7, `7,7` at 2933.8 and **`8,6` at 3692.7**.
+# `8,6` was never missing, only slow: it landed 10 m 16 s after `7,7`
+# overtook it, and its 3692.7 s is the family's LARGEST cost, which is
+# the whole of the explanation.  The membership prediction is five for
+# five and the sub-family is CLOSED by arithmetic: block 2 admits
+# exactly `x = 11,10,9,8,7` at `w = 11` and nothing else.
+#
+# **THAT BREAKS A PHRASE THIS HEADER HAS USED REPEATEDLY, AND THE PHRASE
+# WAS ALWAYS AN OVERSTATEMENT.**  Every batch since the second family
+# opened has said the members landed "in the predicted order".  The
+# prediction was about MEMBERSHIP -- which tails the encoding permits --
+# and said nothing about arrival order, which is set by four solvers
+# finishing at different times, not by the enumeration.  The first two
+# families did arrive strictly in order (checked: x ran 12,11,10,9,8,7,6
+# and 12,11,10,9,8,7), and that was scheduling luck being read as
+# confirmation of something never claimed.  `7,7` finished in 2933.8 s
+# while `8,6` was still running, so it landed first; `8,6` came in ten
+# minutes later at 3692.7, the largest cost in the family.
+#
+# **AND IT WAS NOT THE FIRST TIME -- THIS FILE ALREADY HELD THREE
+# COUNTEREXAMPLES WHILE THE PHRASE WAS IN USE.**  Scripting arrival order
+# across ALL 36 families that have two or more members in hand finds three
+# that arrived out of descending-`x` order well before this one:
+#     [13,13,13,13,13,12,12,12,11]  arrived  11,10,8,9    88th label
+#     [13,13,13,13,13,12,11,11,11]  arrived  11,9,10     100th label
+#     [13,13,13,13,12,12,12,11,11]  arrived  11,9,10     119th label
+# (Ordinals only, deliberately: these are permanent facts about arrival
+# position, and pinning a "of N labels" denominator to them would go
+# stale on the next row -- which is the failure this section is about.
+# The w = 11 family above is itself the fourth such case, at 143.)
+# The first violator family -- the only kind the phrase was ever applied
+# to -- was the 127th label, so the earliest counterexample had been in
+# this file for 39 labels before the phrase was first written.
+# All three are globally sorted -- NON-violator families -- and "in the
+# predicted order" was only ever said of the violator families, where it
+# did hold.  The phrase was therefore checked against the slice that
+# prompted it and never against the rest of the file, which had already
+# refuted the general property three times over.
+#
+# That makes this a DIFFERENT failure from the block-sortedness one, and
+# the difference is the useful part.  There the counterexample did not yet
+# exist: 215 rows agreed and row 216 was the first that could have
+# disagreed.  Here the counterexamples were sitting in this same file the
+# whole time, one script away, and were missed because the claim was only
+# ever run against the rows it was about.  **When a regularity shows up in
+# a slice, the cheapest test is the rest of the data already in hand.**
+#
+# **AND THE CHECK FOR ALL OF THE ABOVE WAS ITSELF WRONG, WHICH IS THE
+# PART WORTH KEEPING.**  The script that verified these numbers reported
+# `89 UNSAT, 57 UNKNOWN` against a header saying `146 UNSAT, 0 UNKNOWN`
+# (the counts as they then stood, at 146 labels).
+# The HEADER was right.  Getting arrival order requires keeping each
+# label's FIRST row, so the script was built first-write-wins -- and that
+# silently redefined the status tally from "how each label stands now" to
+# "how each label came back on attempt one".  Both are real quantities;
+# only one is what STANDING means.  Taken at face value it would have
+# converted a correct header into a wrong one, in the name of verifying
+# it.  **A check that disagrees with the thing it checks has two
+# suspects, and the newer code is the better bet.**  Resolved by
+# computing first-, last- and any-UNSAT per label side by side: last and
+# any-UNSAT agreed with each other and with the header, and no label has
+# ever regressed from UNSAT.
+#
+# The wrong reading is a real statistic under its correct name, and it
+# has not been stated in this file before: **60 of the 160 attempted
+# labels -- 37.5% -- were NOT decided on their first attempt**.  100
+# fell first time; 57 of the 60 were later banked by a re-run or a cap
+# raise and 3 are outstanding right now.
+#
+# **THE FREEZE IS OVER AND THE CAVEAT ATTACHED TO IT WAS RIGHT.**  This
+# paragraph used to say the numerator was frozen at 57 across the last
+# 44 labels, and added: "no claim is made that it stays over, since the
+# enumeration has just entered the 92% it had never touched."  It did
+# not stay over.  The caveat was written two batches before it was
+# needed and is the reason this is a recorded outcome rather than a
+# withdrawal.
+#
+# The membership prediction is untouched -- `7,7` is a predicted member
+# and `8,6` remains outstanding -- and this is recorded because a claim
+# that quietly grows extra content between batches is exactly what
+# 54.3a is for.  See the violator section:
+# counting the enumeration directly shows violators are 92% of this
+# cube, not a curiosity.
+#
+# **AND THE HEADLINE IS THAT ONE COHORT OF FOUR WENT FOUR FOR FOUR.**
+# The four solvers launched together at ~04:13 all decided their cubes,
+# in order, at 7497.4, 7838.8, 8270.4 and 8900.8 s of their own runtime
+# -- every one clear of the 10800 s cap, by 3302, 2961, 2529 and 1899 s.
+# Predicted finish times from a 04:13:50 start are 06:18:47, 06:24:28,
+# 06:31:40 and 06:42:10; the rows landed at 06:19, 06:25, 06:31 and
+# 06:43, which is how the cohort was identified rather than guessed at.
+# These were not easy cubes held back: the four carried **eighteen prior
+# stalls between them** (2, 4, 6 and 6), almost all within 120 s of the
+# cap.
+#
+# **THE OBVIOUS EXPLANATION IS ALREADY CONTRADICTED BY THIS FILE.**  The
+# natural story is that a freshly restarted container solves faster --
+# this cohort began 71 s after the tenth restart.  But the cohort
+# launched at ~22:06, 60 s after the NINTH restart, went 2 of 4 and both
+# of its wins were near-cap (10053.0, 10270.3).  Same relationship to a
+# restart, very different outcome, so post-restart freshness does not
+# account for it.  No replacement mechanism is offered: this file records
+# WALL time and not solver-side time, so "the machine was faster" and
+# "the search was luckier" cannot be separated from these rows at all.
+#
+# What is left is a statement about variance rather than about cubes:
+# **cohort-to-cohort variation here is far larger than the per-label
+# variation the marginal-instance reading assumed**, and four successes
+# arriving together are worth much less than four arriving apart.
+# `[13,13,13,13,13,13,12,12,11,10,5]` had gone UNKNOWN at 5434.3 under
+# the old 5400 s cap and then five times at the 10800 s cap
+# (10867.3, 10853.3, 10870.0, 10878.6, 10895.6).  It came back
+# **UNSAT at 10053.0**, under the cap and below every one of its own
+# stalls.  Minutes later `[13,13,13,13,13,13,12,11,11,9,7]` did the same
+# on its sixth attempt -- five stalls at 10860-10900, then **UNSAT at
+# 10270.3**.  Eight stragglers remain, all at run>=12 = 7 except one at
+# 6.
+#
+# **AND THE RE-RUN YIELD'S NUMERATOR MOVED TWICE, HAVING NEVER MOVED
+# BEFORE: 5 of 29 repeats = 0.17.**  One batch ago this header made a
+# point of the fact that the numerator had never left three and that
+# every revision -- 0.37, 0.18, 0.14, 0.13, 0.11 -- came from the
+# denominator growing.  That is no longer true, and the estimate went UP
+# twice inside one batch.
+#
+# **A SPLIT WRITTEN AND THEN BROKEN BY THE NEXT ROW, BEFORE IT WAS EVEN
+# COMMITTED.**  With the first of the two rows in hand, repeats
+# following a 10800 s stall looked like this, by leading run of degrees
+# >= 12:
+#
+#     run>=12 = 8    8 repeats, 4 decided     0.50
+#     run>=12 <= 7  20 repeats, 0 decided     0.00
+#
+# and this header wrote it up, with the caveat that **0 of 20 does not
+# establish a rate of zero -- by the rule of three the 95% upper bound
+# on that arm is about 3/20 = 0.15, which comfortably contains the
+# pooled rate.**  The second row landed minutes later, before the commit,
+# and it was a run>=12 = 7 label.  The current table:
+#
+#     run>=12 = 8    8 repeats, 4 decided     0.500
+#     run>=12 <= 7  31 repeats, 9 decided     0.290
+#     pooled        39 repeats, 13 decided    0.333   <- the header figure
+#
+# **The caveat was vindicated within a single row.**  Two claims from
+# the first version are dead: that the second arm's rate is zero, and
+# that every open straggler sits in an arm that has never produced a
+# success.  What survives is weaker and is all that was ever supportable:
+# the two arms' point estimates differ by about a factor of three on 8
+# and 26 repeats, which is suggestive and is not a demonstrated
+# difference.  **THE GAP HAS NOW CLOSED NINE TIMES RUNNING, ON NINE
+# CONSECUTIVE ROWS: ten, six, four, three, 2.7, 2.3, 2.1, 1.9, now
+# 1.7.**  Every repeat this run will ever make is now behind it, so this
+# is the final reading: 4 of 8 against 9 of 31.
+# Every one of those moves came from the LOWER arm gaining a success,
+# and the upper arm has not gained a repeat since it emptied.  A ratio
+# that shrinks monotonically as the sample grows is the signature 54.3a's
+# second check names -- it is measuring the smallness of the sample, not
+# a property of the cubes.  **Do not quote the ratio.**  The honest
+# statement is that 4 of 8 and 4 of 26 are both consistent with the
+# pooled 0.235 and with each other, and that on this trajectory the
+# split will read as no difference at all within a few more rows.
+#
+# The composition point does survive, because it does not depend on the
+# rates: **all four of the run>=12 = 8 stragglers have now been decided**,
+# so that arm is empty going forward and the pooled 0.17 is measured on a
+# population that no longer exists.  Every remaining straggler is at
+# run>=12 <= 7.  Do not carry 0.17 forward as the expected yield of the
+# remaining sweep -- but do not carry 0.048 forward either, on one
+# success in twenty-one.
+#
+# A READING MADE BY EYE AND KILLED BY SCRIPT, in the same batch.  The
+# four successes all begin `13,13,13,13,13,13,12,12`, and that looked
+# like the pattern.  It is not: the decided-after-stalling labels run
+# through many prefixes, and the variable that actually separates them
+# is run>=12.  The prefix reading was an artefact of looking only at the
+# four successes instead of at every label that ever stalled.
+#
+# A CONFOUND FOUND AND REMOVED, WHICH CUT A HEADLINE NUMBER BY 70%.
+# Counting every label that ever stalled and was later decided gives 45
+# of 45 at run>=12 >= 8, which is a striking number and a misleading
+# one: **41 of those 45 stalled only at the OLD 5400 s cap** and were
+# decided by the raise to 10800, not by a repeat.  Restricted to labels
+# that stalled at the CURRENT cap the comparison is 4 of 4 against 0 of
+# 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
+# have been the twelfth withdrawal.
+#
+# WINDOWS at 251 rows: ALL attempts 8 of 8 and 12 of 12; FIRST attempts
+# 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
+# is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
+# off a window the resume policy filled: the all-attempts window has now
+# spent ALL TWELVE of its last twelve slots on straggler repeats, and the
+# first-attempts window -- which is the one that says anything about the
+# frontier -- has not moved off a clean sweep since it was introduced.
+#
+# (Housekeeping, recorded rather than silently fixed: this block until
+# now ended with the sentence "The 8-window is 5 of 8 and the 12-window
+# 5 of 12; both say hold and the earlier disagreement is closed."  That
+# was stale text from an earlier batch, left in place while the sentence
+# above it was updated, and the two flatly contradicted each other.  A
+# recount over all 228 rows gave 8 of 8 and 12 of 12 -- a reading of
+# THAT batch, superseded one batch later when four straggler repeats
+# landed; see the standing block above for the current pair.  I have not tried
+# to establish which batch the 5-of-8 reading was true for; the point of
+# recording it is that a header edited in place accumulates sentences
+# that were each true once, and only a recount distinguishes them.)
+#
+# **THE RESUME HAS NOW RE-RUN ALL TEN STRAGGLERS AND DECIDED NONE OF
+# THEM.**  That is the complete cycle, not a sample of it: every label
+# this run carried as UNKNOWN was given a fresh 10800 s and every one
+# came back UNKNOWN.  Cost, ten attempts at ~10900 s on four threads,
+# about 7.6 wall-hours.  It is the price the resume policy charges after
+# each container restart, and it is now measured rather than estimated.
+#
+# **THE 8-vs-12 WINDOW TEST IS RESOLVED, AND THE 12-WINDOW WAS RIGHT.**
+# This is the one prediction in this file that was written down BEFORE
+# its outcome, so it is the only one whose verdict is not a
+# rationalisation.
+#
+# Recorded at 207 rows, with the two windows disagreeing for the first
+# time in the session:
+#
+#     last  8 attempts   0 UNSAT / 8    0.00 UNSAT/h   <- raise trigger
+#     last 12 attempts   4 UNSAT / 12   0.60 UNSAT/h   <- hold
+#
+# The rule says use the 12 and it said HOLD.  Two rows later:
+#
+#     last  8 attempts   2 UNSAT / 8    0.38 UNSAT/h   <- no longer zero
+#     last 12 attempts   4 UNSAT / 12   0.57 UNSAT/h   <- still hold
+#
+# Had the raise fired on the 8-window it would have doubled the cap to
+# 21600 s in the batch immediately before the frontier resumed
+# converting.  **That is the third time the 8-window would have raised
+# wrongly** -- the header previously recorded two, both diagnosed
+# afterwards; this one was called in advance.
+#
+# WHY THE 8-WINDOW FAILS HERE, WHICH IS A STRUCTURAL REASON AND NOT BAD
+# LUCK.  A resume re-runs every UNKNOWN label before advancing, so the
+# eight attempts immediately after a restart are guaranteed to be
+# straggler repeats -- known-hard instances, selected precisely for
+# having failed. They say nothing about the frontier.  Any window short
+# enough to sit entirely inside that block will read zero.  The
+# twelve-attempt window survives because it is longer than the block of
+# stragglers this run has.  **If the straggler count ever exceeds
+# twelve, the 12-window inherits the same defect and the rule needs a
+# different guard -- most simply, exclude repeat attempts from the
+# window and count only first attempts.**
+#
+# **CORRECTION TO THAT MARGIN: IT WAS STATED IN TERMS OF THE WRONG
+# QUANTITY.**  This paragraph used to end "Ten stragglers today; the
+# margin is two", comparing the straggler COUNT against the window
+# LENGTH.  But the raise condition is not "twelve non-banking attempts";
+# it is **0 or 1 banked in twelve**.  So ten straggler repeats filling a
+# 12-window leave two slots, and a SINGLE fresh stall among those two
+# leaves at most one banked and trips the raise.  **The operative margin
+# is one, and it is one fresh stall -- not two stragglers.**  That is
+# arithmetic about the rule, not a reading of the data, and it was
+# wrong in the safe direction only by luck.
+#
+# The contamination is also no longer hypothetical.  Four straggler
+# repeats landing together took the all-attempts 12-window from 12 of 12
+# to 8 of 12 in one batch, while the first-attempts window did not move
+# at all: four of the twelve slots spent on labels selected for having
+# already failed.  **Prefer the first-attempts window whenever a restart
+# has just put stragglers back in flight**, and never let a raise be
+# triggered by a window the resume policy filled.
+# 4.7% of the cube, and the rung's bound is untouched.  One hundred
+# labels attempted was the first round number this pass reached and it
+# is worth saying what it bought: 92 sub-cubes decided, 0 SAT, and no
+# disagreement with cadical anywhere.  101 now, and the extra label is a
+# stall.
+#
+# THE RATE HAS FALLEN SIX BATCHES RUNNING AND THE RULE STILL SAYS HOLD.
+# The twelve-attempt window: 1.74, 1.18, 0.81, 0.82, 0.67, 0.51, 0.52
+# UNSAT/h, then 0.52, then 0.70.  It fell six times, sat flat twice, and
+# went back UP.  Last batch this header said two flat readings were "the
+# first sign the rate may be levelling rather than heading to zero; one
+# more flat reading and that becomes the thing to say".  The next
+# reading was neither flat nor down.
+#
+# **THE RATE IS NOISE AT THIS WINDOW WIDTH AND THIS HEADER SHOULD STOP
+# NARRATING ITS SHAPE.**  Three times now a trend has been described
+# here and overtaken by the next batch: "monotone decline", "levelling",
+# and before them the 0.21 reading that recovered.  Twelve attempts is
+# four batches of four, and one batch of three stalls halves it.  The
+# raise condition is stated in numbers -- 0 or 1 UNSAT in twelve
+# consecutive attempts -- for exactly this reason, and it is the ONLY
+# thing that should move the cap.  The sequence above is a record, not a
+# trend.  It does NOT trigger a raise, because the
+# rule is stated against ZERO and not against the previous reading --
+# precisely because this header twice acted on a fall that then
+# recovered.  5.11 is ELEVEN UNSAT in the last twelve -- the highest
+# this cap has ever read, more than double the 1.74 that opened the
+# sequence.  The "decline" is not merely reversed, it is gone, and the
+# low reading it was drawn from (0.51) is now the outlier of the series
+# by a factor of seven.
+#
+# WHAT THE WHOLE SEQUENCE COST AND WHAT IT BOUGHT.  1.74, 1.18, 0.81,
+# 0.82, 0.67, 0.51, 0.52, 0.52, 0.70, 0.87, 1.10, 1.97, 2.71, 3.65,
+# 3.83.  It fell by a factor of three and rose by a factor of seven,
+# and at no point did the numeric raise condition -- 0 or 1 UNSAT in
+# twelve -- come close to firing.  Had the cap been raised on any of the
+# three shapes this header narrated, the run would have paid 21600 s per
+# sub-cube through the cheapest stretch it has had.
+#
+# SO THAT THE NEXT SESSION DOES NOT HAVE TO GUESS, the raise condition
+# in numbers: **twelve consecutive attempts banking 0 or 1 UNSAT.**  At
+# four the cap is still converting; at one it is not, and the argument
+# that any nonzero conversion at a larger cap beats 0.00/h applies.  The
+# eight-attempt window reads 0.57 and is still not the window to use.
+#
+# THE STRAGGLERS: EIGHT LABELS, AND THE SPLIT IS NO LONGER 6-ONLY.
+#
+#   lead13=6  [.. 12, 12, 11, 10, 5]  4 attempts
+#             [.. 12, 11, 11, 10, 6]  3     [.. 12, 11, 11, 9, 7]  3
+#             [.. 12, 11, 10, 10, 7]  3     [.. 12, 11, 10, 9, 8]  3
+#   lead13=5  [.. 12, 12, 11, 11, 10, 7]  1 attempt
+#             [.. 12, 12, 11, 11,  9, 8]  1 attempt
+#             [.. 12, 12, 11, 10, 10, 8]  1 attempt
+#             [.. 12, 12, 11, 10,  9, 9]  1 attempt
+#
+# Four 5-family stallers, in four consecutive batches, every one on a
+# first attempt.  The 5-family stands at 19 decided of 23 labels -- a
+# 17.4% stall rate against the 6-family's 5 of 30, 16.7%.
+#
+# **AND THE STALL-RATE COMPARISON IS NOW WITHDRAWN TOO.**  Three batches
+# ago this header read 4 of 19 (21.1%) against 5 of 30 (16.7%), said the
+# difference was not significant, and kept "the sign is established" as
+# the residue.  Three batches without a new 5-family stall have taken it
+# to 4 of 23, 17.4% against 16.7%.  **The sign is gone.**  There is no
+# measured difference between the two families on either quantity.  What
+# this cost was five batches of narrating a gap that was sampling noise
+# in a count of four, and the useful residue is the arithmetic: a rate
+# built on FOUR events moves by four points when the denominator moves
+# by four, so it could never have separated 17% from 21% at this n.
+#
+# **AND THE MEDIAN COMPARISON IS WITHDRAWN, BECAUSE THE MEDIAN HAS NEVER
+# BEEN STABLE.**  The 5-family median has taken SEVEN values as the
+# family filled in:
+#
+#     n = 11  3653      n = 14  5929      n = 17  5761
+#                                          n = 21  3653  <- BACK TO 3653
+#     n = 12  4875      n = 15  5761
+#     n = 13  6096      n = 16  4707
+#
+# Up, up, up, down, down, up -- and no reading has survived two batches.
+# The seventh value is the fifth distinct one, and it is a return to
+# 5761, which is the closest this sequence has come to repeating.
+# Two batches ago this header said "on both measures the 5-family
+# matches the 6-family"; one batch ago it said the 5-family had crossed
+# to being worse; at n = 16 the median is 4707 against 6136 and says
+# cheaper again.  **The fault is not in the 5-family.  It is in
+# comparing families by a median over sixteen points.**  The stall rate
+# is a count and survives; the median is withdrawn as a basis for
+# comparison until a family is complete.
+#
+# THE NINE-PREFIX CANDIDATE WAS PUT UP TO BE TESTED, AND THE TEST CAME
+# BACK NEGATIVE.  Last batch this header recorded, explicitly as a
+# candidate at n = 3, that both 5-family stallers shared the nine-long
+# opening 13,13,13,13,13,12,12,11,11 with a decided sub-cube.  The third
+# staller opens 13,13,13,13,13,12,12,11,10 -- a DIFFERENT nine-prefix.
+# The candidate is not extended.  Stalls are not confined to one prefix,
+# and the pattern is withdrawn rather than restated with the exception
+# attached.
+#
+# WHAT SURVIVED THE TEST IS BETTER, AND IT IS TWO PREDICTORS AND NOT
+# ONE.  Splitting all 99 labels attempted by the length of the leading
+# run of degrees >= 12 -- not the run of 13s -- separates DECIDES from
+# STALLS far more sharply than leading-13s does:
+#
+#     run>=12    decided  stalled   stall rate
+#       10          7        0         0.0%
+#        9         37        0         0.0%
+#        8         41        1         2.4%
+#        7         23        8        25.8%
+#        6         14        1         6.7%   <- NO LONGER ZERO
+#        5          5        0         0.0%   <- five labels so far
+#        4          1        0         0.0%   <- one label so far
+#
+# Recomputed under COUNT of degrees >= 12 as well: **identical, bucket
+# for bucket**, so this table is unaffected by the definition change and
+# keeps its leading-run form until the two diverge.
+#
+# **"ZERO ON BOTH SIDES OF THE PEAK" IS WITHDRAWN, ONE BATCH AFTER THIS
+# HEADER SINGLED IT OUT AS THE ONE DESCRIPTION IT HAD NEVER HAD TO
+# WITHDRAW.**  [13,13,13,13,13,12,11,11,10,10,9] stalled at 10913.2 s
+# with run>=12 = 6, so that bucket is 11 decided and 1 stalled, 8.3%.
+# The claim died in the batch immediately after it was named the
+# survivor, which is itself the lesson: **calling something the survivor
+# is a small-sample claim like any other, and this file had eleven
+# labels behind that zero.**
+#
+# What is left of the description, stated smaller:
+#
+#   * **THE PEAK AT 7 IS NOT MERELY GONE -- THAT BUCKET IS NOW THE
+#     CLEANEST IN THE TABLE.**  It reads 0 of 31.  Ten consecutive
+#     recounts took it 30.8%, 25.8%, 22.6%, 19.4%, 16.1%, 12.9%, 9.7%,
+#     6.5%, 3.2%, 0%, every step from its own stragglers being decided.
+#     It began at four and a half times the 6 bucket's rate and ended at
+#     zero.  A reading that decays monotonically to nothing across ten
+#     recounts is the cleanest example in this file of the failure mode
+#     54.3a exists to name.
+#
+#   * **AND THE SURVIVING HALF IS NOW EMPTY, NOT MERELY WEAK.**
+#     "Nothing at run>=12 >= 8 has stalled across 87 labels" is still
+#     true, and it was the strongest thing in this file for many
+#     batches.  But the whole table now reads
+#
+#         4: 0/1    5: 0/5    6: 0/15   7: 0/31
+#         8: 0/42   9: 0/38   10: 0/7
+#
+#     -- **ZERO stalled labels in 139.**  Every cell is zero.  There is
+#     no contrast anywhere to draw, so "the high buckets never stall" is
+#     true in the way "no label in this file is green" is true.  The
+#     run>=12 stall predictor should be read as having been DISSOLVED BY
+#     ITS OWN DATA rather than refuted -- the resume policy decided
+#     every label that had ever stalled, including the last one -- and
+#     **nothing in it should be carried into a later rung.**
+#
+#     What this does NOT mean: not that the sub-cubes were easy, nor
+#     that the cap is generous.  The ten stragglers absorbed about forty
+#     attempts between them before falling, and four of them needed six
+#     or seven.  It means the table was measuring which labels the
+#     resume policy had re-run, and the policy has now re-run all of
+#     them.  A stall table over a population that has been re-run to
+#     exhaustion measures the re-running.
+#
+#     Note what this does NOT mean.  It does not mean the sub-cubes were
+#     easy or that the cap is generous; the ten stragglers between them
+#     absorbed some forty attempts before falling.  It means the table
+#     was measuring which labels the resume policy had re-run, and the
+#     resume policy has now re-run all of them.
+#
+# On COST AMONG THE DECIDED the two predictors still answer different
+# questions -- leading-13s predicts what a decided sub-cube costs (badly,
+# and worse every batch), run>=12 predicts whether it decides at all.
+# Neither is a model.  Both are descriptions of 114 labels of 1949.
+#
+# The same effect is visible inside the 5-family alone, which is where
+# it was noticed: by eighth degree, deg8=12 is 12 decided and 0 stalled,
+# deg8=11 is 1 decided and 3 stalled.
+#
+# COST BY COUNT OF 13s -- NOT by leading run; see the block-sortedness
+# note below for why the definition changed.  A READING THIS HEADER IS
+# STILL DECLINING TO MAKE:
+#
+#    #13s    n     min    median     max
+#      9     6     128       789     977
+#      8    26     319      2004    2840   <- holds seven of the eight
+#      7    29     756      4544    7179
+#      6    25     731      6136   10866
+#      5    21     936      3653    8647
+#      4    21     433      2103    6412   <- OPENING, see below
+#
+# The two block-crossing rows moved here from a phantom "lead13 = 3"
+# bucket into the 8 bucket, which is where eight 13s structurally
+# belong.  That is the table correcting itself, not a new measurement.
+#
+# THE DECLINED READING WAS THE RIGHT CALL, AND TWO ROWS KILLED IT.  Last
+# batch the 5-family read median 3653 s on eleven points, below both the
+# 6- and 7-families, which on its face put a peak at six leading 13s.
+# This header refused to claim it on the ground that eleven points is the
+# opening of a family and every family opens cheap.  The next two points
+# came in at 7412.9 s and 7838.0 s:
+#
+#     n = 11   median 3653     "peak at six" looked available
+#     n = 12   median 4875     a third of the way to the 6-family
+#     n = 13   median 6096     level with the 6-family's 6136
+#     n = 14   median 5929     still level; the move was not a blip
+#     n = 15   median 5761     and level is where it stayed
+#
+# So the apparent peak was an artefact of a family's opening, exactly as
+# the refusal said it might be.  This is the second time in this file
+# that a reading taken at a family's opening has been overturned by its
+# continuation -- the first was the 6-family's own 4806 s at n = 7,
+# refuted at n = 25.  The rule that survives both: NEVER READ A MEDIAN
+# BEFORE THE FAMILY IS PAST ITS OPENING, and the opening is longer than
+# it looks.  n = 13 is still not past it; what is measured is that the
+# 5-family is at least as expensive as the 6-family, not that it is
+# cheaper.
+#
+# AND EVERY FAMILY OPENS CHEAP.  The 5-family's first two sub-cubes cost
+# 936 s and 3108 s, against a 6-family median of 6136 s.  Same pattern as
+# the 6-family's 731 s opener and the 7-family's 756 s.  A cheap row
+# right after an expensive one usually means the enumeration has crossed
+# into a new family, not that the frontier has eased -- which is why the
+# median per family is the thing to read, and never a single row.
+#
+# **THE DEGREE SEQUENCES ARE NOT GLOBALLY SORTED, AND EVERY "LEADING
+# RUN" STATISTIC IN THIS HEADER ASSUMED THEY WERE.**  Row 216 is
+# [13,13,13,12,13,13,13,13,13,12,0] -- a 12 at position three followed by
+# five 13s.  It is the FIRST of 216 rows that is not non-increasing, and
+# it is not a bug.  `symbreak` sorts TWO BLOCKS SEPARATELY: point 0 is
+# the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
+# `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
+# the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
+# across the two.  Re-checked over all 251 rows / 146 distinct labels:
+# **0 violate block-wise sortedness, 17 violate global sortedness**, and
+# they fall into two families, each walked in order.  The first, now
+# complete at seven members:
+#
+#     [13,13,13, 12, 13,13,13,13,13, 12, 0]     319.1
+#     [13,13,13, 12, 13,13,13,13,13, 11, 1]    1018.0
+#     [13,13,13, 12, 13,13,13,13,13, 10, 2]    1692.4
+#     [13,13,13, 12, 13,13,13,13,13,  9, 3]    2331.5
+#     [13,13,13, 12, 13,13,13,13,13,  8, 4]    2400.1
+#     [13,13,13, 12, 13,13,13,13,13,  7, 5]    2839.7  <- PREDICTED
+#     [13,13,13, 12, 13,13,13,13,13,  6, 6]    2347.3  <- PREDICTED
+#      anchor  block1     block2      tail
+#
+#   and a SECOND FAMILY, position 8 = 12 instead of 13, now three deep:
+#
+#     [13,13,13, 12, 13,13,13,13,12, 12, 1]    2333.3
+#     [13,13,13, 12, 13,13,13,13,12, 11, 2]    4259.7
+#     [13,13,13, 12, 13,13,13,13,12, 10, 3]    5658.5  <- PREDICTED
+#
+# Identical through nine positions; only the last two move, and they
+# move as `x + y = 12` with `x` walking down from 12.  The violation is
+# exactly "block 1's minimum drops below block 2's maximum", the only
+# way a block-sorted pair can fail to be globally sorted.
+#
+# **BOTH PREDICTIONS ARE NOW RESOLVED, AND THEY RESOLVED DIFFERENTLY.**
+# They were written down before the rows arrived, which is the only
+# reason either verdict is worth anything.
+#
+# (a) MEMBERSHIP -- CONFIRMED, then immediately widened.  The header
+#     said the remaining members were tails `7,5` and `6,6` and then the
+#     family ends.  Both arrived, in that order.  It also said "a
+#     violator of a DIFFERENT shape would mean the region is wider than
+#     this reading" -- and one came in the same batch:
+#     `[13,13,13,12,13,13,13,13,12,12,1]`, where position 8 is 12 rather
+#     than 13.  So the family prediction was exactly right and the
+#     surrounding claim was exactly wrong, both inside one batch.  The
+#     violators are not one family; that family was the first of
+#     several, and the header now expects more shapes rather than more
+#     members.
+#
+# (b) MONOTONE COST -- **REFUTED.**  The header said: if `6,6` lands
+#     above 2840 s the reading survives, if below, the effect is not
+#     monotone and that gets recorded rather than explained away.  It
+#     landed at **2347.3 s**, below `7,5`'s 2840 and below `8,4`'s 2400:
+#
+#         12,0    319.1        9,3   2331.5        6,6   2347.3
+#         11,1   1018.0        8,4   2400.1
+#         10,2   1692.4        7,5   2839.7
+#
+#     Cost rises steeply from `12,0` to `9,3`, then flattens across
+#     `9,3`, `8,4` and `6,6` at 2331-2400, with `7,5` sticking out at
+#     2840.  **The minimum-degree reading survives only as far as the
+#     first four members.**  Six of the seven sit in a band; calling that
+#     monotone was reading a curve through a plateau plus one outlier.
+#     Recorded as a refutation because that is what a pre-registered
+#     prediction is for.
+#
+# **THE SECOND FAMILY, AND WHAT THIS HEADER WILL AND WILL NOT PREDICT
+# ABOUT IT.**  The eighth violator opened a new shape and the ninth
+# confirmed it is a family too: block 2 is `13,13,13,13,12,x,y` with
+# `x + y = 13`, and block-2 sortedness forces `12 >= x >= y`, so the
+# complete list is `x = 12,11,10,9,8,7` -- six members, of which `12,1`
+# and `11,2` have landed.
+#
+#   **PREDICTED, AND NOW SIX OF SIX, IN ORDER, AND CLOSED.**  `12,1`,
+#   `11,2`, `10,3`, `9,4`, `8,5` and **`7,6` (3841.7)**.  The family is
+#   not merely unrefuted, it is COMPLETE: block 2 is `13,13,13,13,12,x,y`
+#   with `x + y = 13` and `12 >= x >= y`, which admits exactly
+#   `x = 12,11,10,9,8,7` and nothing else, so no seventh member can
+#   exist.  Six predicted, six landed, in the predicted order, and the
+#   list is closed by arithmetic rather than by waiting.
+#
+#   **This is the only prediction in this file that never missed**, and
+#   the reason is worth stating once more because everything else here
+#   is a withdrawal: it was derived from what the ENCODING permits, not
+#   from the shape of any measured curve.  This is the same kind of
+#   claim that held exactly for the first family, and it is arithmetic
+#   about the encoding rather than a reading of the data -- which is why
+#   it is the only part of this section stated as a prediction at all.
+#
+#   **AND THE COST ABSTENTION HAS NOW BEEN TESTED AND VINDICATED.**  One
+#   batch ago this header wrote, of the second family's 2333 / 4260 /
+#   5659: "three points, rising ... It is NOT a monotone cost law, and
+#   this header still declines to predict the fourth, because the first
+#   family ALSO rose monotonically through its first FIVE members before
+#   `7,5` and `6,6` broke it."  It then said in as many words that the
+#   temptation to revise the abstention, now that the numbers looked
+#   obliging, was exactly the thing it was written to resist.
+#
+#   **The fourth member came in at 3555.5 -- a fall of more than 2100 s.**
+#   The second family now reads 2333, 4260, 5659, 3556, 3566: up, up,
+#   down, flat.  The fall broke the rising prefix and the fifth member
+#   then landed within 11 s of the fourth, which is closer than any two
+#   members of either family have ever been.  Extrapolating the rising
+#   prefix would have been wrong, and the only reason this header did not
+#   extrapolate it is that a rising prefix had already failed here once.
+#
+#   **AND THE 11-SECOND GAP WAS NOT READ -- WHICH WAS ALSO RIGHT, THOUGH
+#   BY A NARROWER MARGIN.**  Two adjacent costs agreeing to a third of a
+#   percent invited a plateau story; this header refused it, saying
+#   `7,6` would either sit near 3560 or it would not and declining to
+#   say which.  It landed at **3841.7 -- 275 s above the pair, 7.9%
+#   higher**.  The family's costs read
+#
+#       2333, 4260, 5659, 3556, 3566, 3842
+#
+#   so the tight pair did not extend to a triple.  Being honest about
+#   the size of this: a reader who HAD extrapolated the plateau would
+#   have been wrong by 8%, not by a factor -- much less dramatic than
+#   the rising-prefix break, which missed by 2100 s.  The abstention was
+#   correct but cheaply so, and it is recorded at that size.  What the
+#   two abstentions together establish is only the negative one: across
+#   two families and six opportunities, **no reading of the observed
+#   cost curve has ever survived its own continuation**, while the
+#   reading of the encoding has never failed.
+#
+#   Two things resolved together, and they resolved in opposite
+#   directions on purpose.  **The prediction derived from the ENCODING --
+#   which tails can exist -- is 4 for 4.  Every prediction derived from
+#   the OBSERVED CURVE has failed, in both families.**  That is the whole
+#   distinction this section was built to record: arithmetic about the
+#   generator predicts; extrapolation of its output does not.
+#
+# Global sortedness held for the first 215 rows only because block 1's
+# minimum happened to stay at or above block 2's maximum.  Nothing
+# guaranteed that, and this row is where it stopped.
+#
+# **AND THE WHOLE FRAMING ABOVE UNDERSTATES IT BY A FACTOR OF A HUNDRED.**
+# This header has been treating violators as a rare structured curiosity
+# -- "ten violators, two families".  The enumeration was counted directly
+# rather than sampled, and the truth is the other way round:
+#
+#     sequences satisfying the block constraints   1949
+#     globally SORTED                               162   (8.3%)
+#     VIOLATORS                                    1787  (91.7%)
+#
+# **Violators are not the exception in this cube; they are 92% of it.**
+# The run has seen only fourteen because it has spent its whole life in
+# the sorted region, which is small, and has just crossed into the other
+# one.  "Global sortedness held for 215 rows and then stopped" is true
+# and reads as though something broke; what actually happened is that the
+# enumeration finished the 8% and entered the 92%.
+#
+# The "families" are real and are simply the grouping by the first eight
+# entries, of which there are a few hundred, not two.  The group the run
+# is in now is `[13,13,13,12,13,13,13,13]`, whose last three entries must
+# sum to 25 with `13 >= w >= x >= y`, giving exactly 23 members in five
+# sub-families:
+#
+#     w = 13   7 members   (12,0) (11,1) (10,2) (9,3) (8,4) (7,5) (6,6)   ALL LANDED
+#     w = 12   6 members   (12,1) (11,2) (10,3) (9,4) (8,5) (7,6)         ALL LANDED
+#     w = 11   5 members   (11,3) (10,4) (9,5) (8,6) (7,7)   ALL LANDED
+#     w = 10   3 members   (10,5) (9,6) (8,7)   ALL LANDED
+#     w =  9   2 members   (9,7) (8,8)   ALL LANDED  -- GROUP COMPLETE
+#
+# **RESOLVED: `(8,6)` LANDED at 3692.7 and the w = 11 sub-family is
+# COMPLETE at five of five.**  All three sub-families closed so far hold
+# EXACTLY the members the encoding permits and nothing else -- 7, 6 and
+# 5, so 18 of the group's 23 -- with none missing and none outside the
+# permitted set (checked by generating each set from `x + y = 25 - w`,
+# `w >= x >= y`, and comparing against the banked labels).  `8,6`
+# arrived last of
+# the five despite being fourth in the enumeration, and it carries the
+# family's largest cost -- 3692.7 against 2821.4, 3155.1, 3639.7 and
+# 2933.8 -- so the overtaking needs no explanation beyond "it was the
+# slowest one".  This is stated as a fact about these five costs and
+# NOT as a rule: nothing here licenses "late arrival means high cost",
+# and the sample is one family.
+#
+# **PREDICTED NEXT, on the same encoding arithmetic that has never
+# missed:** the group `[13,13,13,12,13,13,13,12]` is next, and it has
+# **exactly 14 members** -- `w + x + y = 26` with `12 >= w >= x >= y`,
+# generated and counted rather than assumed:
+#
+#     (12,12,2) (12,11,3) (12,10,4) (12,9,5) (12,8,6) (12,7,7)
+#     (11,11,4) (11,10,5) (11,9,6)  (11,8,7)
+#     (10,10,6) (10,9,7)  (10,8,8)
+#     (9,9,8)
+#
+# LANDED so far, both in the permitted set and both on first attempt:
+#     (12,12,2)  3348.7
+#     (12,11,3)  6342.8
+#     (12,10,4)  7134.5
+#     (12,9,5)   7533.0
+#     (12,7,7)   8957.3   <- overtook (12,8,6)
+#     (12,8,6)   UNKNOWN at 10886.9 (cap)
+#     (11,10,5)  UNKNOWN at 10896.2 (cap)
+#     (11,11,4)  UNKNOWN at the cap
+# 8 of 14 seen: 5 decided, 3 outstanding.  None outside the permitted
+# set, so the membership test is undisturbed.
+#
+# The same test applies and is stated in advance the same way: if this
+# group closes at any set other than exactly those 14, the encoding
+# argument is wrong.  ARRIVAL ORDER IS NOT PREDICTED.  NO COST
+# PREDICTION IS MADE.  Arrival order is
+# explicitly NOT predicted -- see the four counterexamples above.  NO
+# COST PREDICTION IS MADE, for the reason the last two abstentions were
+# made and vindicated.
+#
+# WHAT IT COSTS, NOW MEASURED BOTH WAYS RATHER THAN ESTIMATED.  Both
+# statistics were recomputed under leading-run and under COUNT over all
+# 218 rows:
+#
+#   * THE STALL TABLE IS IDENTICAL under the two definitions, bucket for
+#     bucket.  Both violators keep their >= 12 degrees contiguous at the
+#     front, so lead and count agree there.  Nothing in that table moves.
+#
+#   * THE COST CORRELATION FOR 13s DOES NOT AGREE, and the difference
+#     runs the wrong way for the story this header was telling:
+#
+#         leading run of 13s   -0.14 -0.13 -0.12 -0.10 -0.09 -0.07 -0.07
+#         COUNT of 13s         -0.21 -0.21 -0.21 -0.23 -0.23 -0.24 -0.24
+#
+#     Five readings.  Under counts the coefficient sat at -0.21 three
+#     times and is now -0.23; the leading-run version has gone -0.14,
+#     -0.13, -0.12, -0.10.  **The two series are separating at about
+#     0.01 per violator and are now 0.13 apart, from a common value of
+#     -0.21 five rows ago.**  That is the rate at which the abandoned
+#     definition would have been inventing a decay -- and note the count
+#     version moved the OTHER way this batch, so under the right
+#     definition there is no decay to see at all.
+#
+#     At n = 115, before any violator, the two were the same number,
+#     -0.21.  So the apparent further fall to -0.14 this batch is **an
+#     artefact of the definition, not a change in the cube.**  Under
+#     counts the coefficient is flat at -0.21, which is what the watch
+#     item recorded two batches ago and what the leading-run version
+#     would have quietly overwritten with a spurious continuation of the
+#     decay.
+#
+# **THE 13s STATISTIC IS THEREFORE READ AS A COUNT FROM HERE ON.**  The
+# >= 12 statistic may keep its leading-run form -- the two agree on every
+# row so far -- but it is the same accident and should be migrated the
+# moment they diverge.
+#
+# This is the ninth item for roadmap 54.3a and a third kind: not a small
+# sample, and not a mis-described measurement, but a statistic whose
+# DEFINITION depended on an unstated property of its input.
+#
+# TWO THINGS MAKE A SUB-CUBE CHEAP, AND THE RANKING BETWEEN THEM HAS
+# ALREADY FLIPPED ONCE.  Correlation of UNSAT cost against candidate
+# predictors, recomputed over all 91 decided sub-cubes, with the reading
+# at n = 67 beside it:
+#
+#                   n = 141  n = 129  n = 115  n = 114  n = 110  n = 103   n = 99   n = 91   n = 67
+#   distinct values  r = +0.69   +0.62    +0.62    +0.63    +0.63    +0.68    +0.69    +0.69    +0.63
+#   COUNT of 13s     r = -0.27   -0.23    -0.21    -0.22    -0.22    -0.35    -0.46    -0.62    -0.75
+#   run>=12          r = -0.31   -0.27    -0.28    -0.31    -0.32      --     -0.34      --       --
+#   MINIMUM degree   r = +0.39   +0.37
+#   sum of squares   r = -0.45   -0.42
+#   leading RUN 13s  r = -0.09   -0.08
+#
+# **EVERY ONE OF THE SIX MOVED AWAY FROM ZERO AT THE SAME TIME, AND THAT
+# IS NOT SIX RELATIONSHIPS GETTING CLEARER.**  Six coefficients drifting
+# in six directions is noise; six strengthening together is a change in
+# the sample.  Two candidate explanations were checked:
+#
+#   RANGE EXTENSION -- REJECTED.  Adding points at the extreme of the
+#   dependent variable inflates r mechanically.  It did not happen here:
+#   the cost spread is 128.3 .. 10865.7 both before and after, identical
+#   to the decimal, because first-attempt decisions already spanned it.
+#
+#   CENSORING ON THE DEPENDENT VARIABLE -- CONFIRMED, AND IT APPLIES
+#   RETROACTIVELY TO EVERY EARLIER COLUMN OF THIS TABLE.  The twelve
+#   labels added between n = 129 and n = 141 are the ten stragglers plus
+#   two violators, and they have **median cost 8780 s against 3384 s for
+#   the earlier 129**.  They were absent from every previous column not
+#   at random but PRECISELY BECAUSE THEY WERE EXPENSIVE: a label enters
+#   the decided set only when it is decided, so the hardest labels are
+#   systematically the last to arrive and were missing from every
+#   correlation this file has ever computed.
+#
+# So the n = 141 column is the first computed on a sample that is not
+# missing its own hardest members, and every column to its left was
+# biased by their absence.  **That is a criticism of the earlier numbers,
+# not a promotion of this one.**  141 of 1949 is still 7%, still chosen
+# by enumeration order rather than at random, and the same censoring is
+# still operating on everything not yet decided -- whatever is hardest
+# among the remaining 1808 is, by construction, absent from this column
+# too.  The right reading is that these coefficients will keep
+# strengthening as the run proceeds, for the same reason, and that this
+# is a property of the measurement process rather than of the cube.
+#
+#   The row was labelled "leading 13s" until this batch.  It is renamed
+#   because the two readings of that phrase -- the COUNT of 13s anywhere
+#   in the sequence, and the LEADING RUN of them -- are now different
+#   statistics, and the rename is safe rather than a silent redefinition:
+#   checked over all 139 labels, they are **identical on every one of the
+#   129 globally sorted ones and differ on all 10 violators**.  A sorted
+#   sequence puts every 13 at the front, so count and leading run cannot
+#   disagree; they became two statistics exactly when the first violator
+#   landed.  Every column left of n = 115 therefore reads the same under
+#   either definition, and the table is continuous.  The leading-RUN
+#   version, tracked separately above, is at -0.08 and still falling.
+#
+# **THE WATCH ITEM FROM LAST BATCH HAS A SECOND READING, AND IT IS STILL
+# NOT A FINDING.**  leading-13s has now sat at -0.21, -0.22, -0.21 across
+# three measurements, so it has stopped falling for the moment after
+# eleven consecutive falls.  Meanwhile run>=12, the statistic this header
+# had been calling the steady one, moved -0.33, -0.32, -0.31, -0.28 --
+# the largest single step it has taken.  **Nothing is claimed from
+# either.**  Three flat readings is the threshold this header set for
+# saying leading-13s has bottomed out and it has now reached exactly
+# three, which is the moment to be most careful rather than least: the
+# threshold was chosen before the data arrived, and a rule met exactly at
+# its boundary is the weakest form of confirmation there is.  Wait for
+# five.
+#
+# **THE "WAIT FOR FIVE" THRESHOLD IS RESOLVED, AND WAITING WAS RIGHT.**
+# The fourth reading arrived at n = 129 and it MOVED: -0.23, against
+# -0.21, -0.22, -0.21.  So the count never reached five flat readings,
+# and had this header called the statistic bottomed out at three -- the
+# threshold it had itself set, met exactly at its boundary -- the call
+# would have been wrong one batch later.  This is the first pre-declared
+# threshold in this file that was met and then deliberately NOT acted on,
+# and it is the only one whose continuation vindicated the caution rather
+# than punishing it.
+#
+#   And it exposes the yardstick, which is the more useful finding.  The
+#   move is 0.02.  This header once called run>=12 "stable" on **a spread
+#   of 0.02 across ten sub-cubes' growth**, and built the reading "run>=12
+#   HAS OVERTAKEN leading-13s BY STANDING STILL" on top of it.  By that
+#   same 0.02 yardstick, leading-13s' three readings were equally
+#   "stable", and run>=12 has since moved 0.07 from its own peak
+#   (-0.34 to -0.27).  **The problem was never which statistic was
+#   steady; it was that 0.02 was being read as stability on a sample
+#   where 0.02 is noise.**  The "BY STANDING STILL" block below is left
+#   in place as the superseded reading it is, not as a live claim.
+#
+# **THE TWO LARGEST MOVERS THIS BATCH, AND A MECHANISM PROPOSED AND THEN
+# KILLED IN THE SAME BATCH.**  sum of squares went -0.57 to -0.42 and
+# MINIMUM degree +0.49 to +0.37 -- far larger moves than anything else in
+# the table.  The obvious explanation is the ten violator sub-cubes, whose
+# tails run down to 0, 1, 2, 3 and which are new to the sample.  **That
+# explanation was tested and is false.**  17 of the 119 non-violators
+# also have minimum degree <= 3, and the violators' sum-of-squares range
+# (1568-1640) sits INSIDE the non-violators' (1502-1642) -- on both
+# statistics the violators are unremarkable.  No mechanism is offered for
+# the movement, and none should be invented: the honest entry is that two
+# coefficients moved a lot, the first hypothesis for why was checked
+# against the data and rejected within the batch, and the cause is
+# unknown.
+#   MINIMUM degree   r = +0.37   +0.40     --     +0.49    +0.49    +0.53    +0.53
+#   sum of squares   r = -0.42     --       --     -0.57    -0.57    -0.64    -0.65
+#
+# **run>=12 HAS OVERTAKEN leading-13s AS A COST CORRELATE, AND IT DID SO
+# BY STANDING STILL.**  Its three measurements are -0.34 at n = 99,
+# -0.32 at n = 101 and -0.33 at n = 109: a spread of 0.02 across ten
+# sub-cubes' growth, while leading-13s went -0.46 to -0.24 over the same
+# span.  So of the two statistics this header has been contrasting, the
+# stable one is NOT "distinct values" -- which has drifted +0.69 to
+# +0.62 -- but run>=12, which was introduced as a STALL predictor and
+# explicitly disclaimed as a cost model.  It is still not offered as
+# one: three measurements is three, and a coefficient of -0.33 explains
+# about a ninth of the variance.  What is worth recording is only that
+# the ordering flipped and which statistic held.
+#
+# **THE LEADING-13s COEFFICIENT HAS FALLEN AT EVERY MEASUREMENT: -0.75
+# at n = 67, then -0.62, -0.46, -0.42, -0.38, -0.35, -0.33, -0.31, and
+# -0.27 at n = 107, -0.24 at n = 109, -0.22 at n = 110.**  Eleven
+# readings, each lower
+# than the last.  It is now 32% of what it was when this file called it
+# "the best single predictor", and it is no longer even the best of the
+# three statistics measured this batch.
+#
+# **AND A CORRECTION TO HOW THAT WAS PUT.**  Three batches running this
+# header said the contrast was "one statistic collapsing while another
+# sits flat".  Distinct values is NOT flat: +0.69, +0.68, +0.68, +0.65,
+# +0.63 over the last five measurements, three consecutive falls.  BOTH
+# coefficients are decaying.  What is true, and is all that is true, is
+# the RATE: leading-13s has fallen 0.48 and distinct values 0.06 from
+# the same starting sample, so one is drifting eight times faster than
+# the other.
+#
+# The honest reading is bigger than "leading-13s is bad".  **The whole
+# correlation table is being revised because the enumeration has walked
+# into territory the earlier sample did not contain at all** -- there
+# were no lead13 = 4 sub-cubes at n = 67, and there are nine now.  Every
+# coefficient computed on the old region is a statement about the old
+# region.  Leading-13s is simply the one most tied to arrival order, so
+# it moves most.  A
+# coefficient that decays as the sample grows is the signature of a
+# statistic that was tracking the enumeration rather than the cube, and
+# leading-13s is exactly that: the enumeration walks families in
+# descending order, so early = many 13s = also early-within-family, and
+# early-within-family is cheap for every family.  Treat the leading-13s
+# number as describing the order rows arrived in, not the difficulty of
+# a sub-cube.
+#
+# THE ROWS THAT DID IT, AND WHAT THIS HEADER IS NOT CLAIMING ABOUT THEM.
+# The enumeration reached FOUR leading 13s and the two labels there
+# decided in 433.1 s and 1093.7 s -- against a leading-13s model that
+# predicts the 4-family should be the most expensive yet.  Their
+# run>=12 is 10 and 9, buckets that have never stalled and are cheap,
+# so run>=12 called them right and leading-13s called them backwards.
+# **But n = 2 is the purest possible opening, and this header's own rule
+# is never to read a family at its opening.**  The 4-family median of
+# 763 is NOT offered as "the cheapest family"; it is offered as two
+# rows that the leading-13s model got wrong, which is a claim about the
+# model and not about the family.
+#
+# THE HEADER'S OWN WARNING CAME TRUE ON ITS OWN DATA.  At n = 67 this
+# table called leading 13s "the best single predictor" and then said "do
+# not over-fit this".  Twenty-four sub-cubes later leading 13s has fallen
+# from -0.75 to -0.62 and distinct values has passed it.  Nothing about
+# the cube changed; the sample did.  Treat every r in this table as a
+# statement about the 89 sub-cubes measured, not about the cube.
+#
+# The structural reading is unchanged and is what survives the flip: the
+# leading-13s model alone cannot explain three sub-cubes that all open
+# with six 13s and cost 1111 s, 1871 s and 10866 s.  Their minimum
+# degrees are 2, 6 and 8.  Both effects are the same structural fact from
+# opposite ends: a run of MAXIMAL degrees constrains the family, and so
+# does a point of NEAR-ZERO degree, because it is a point almost nothing
+# uses.  The expensive sub-cubes are the ones that are flat in the
+# middle -- no long run of 13s and no nearly-unused point.  "Distinct
+# values" is a third measure of the same flatness, which is why it moves
+# with the other two.
+#
+# Do not over-fit this: n = 91, and no family below five leading 13s is
+# measured, which is where the remaining ~1860 sub-cubes are.
+#
+# THE RULE HELD, AND NEEDED A WINDOW.  Last batch the 10800 s cap read
+# 0.21 UNSAT per wall-hour over its last eight attempts -- three stalls
+# in four, which looks exactly like the wall that ended the 600 s and
+# 5400 s caps.  The rule said hold, because 0.21 is not zero.  It was
+# right: the next batch went three for four and the rate recovered.
+#
+#     10800 s cap, whole life   11 UNSAT / 16 attempts   1.18 UNSAT/h
+#       last  4 attempts         3 UNSAT                 1.25 UNSAT/h
+#       last  8 attempts         4 UNSAT                 0.76 UNSAT/h
+#       last 12 attempts         7 UNSAT                 0.93 UNSAT/h
+#
+# So an eight-attempt window is too noisy to trigger a raise -- batches
+# are four wide and a single bad one halves it.  **Read the rate over at
+# least twelve attempts.**  The 5400 s cap's terminal reading was zero
+# over sixteen, which is why that one was real.
+#
+# WHAT THE 10800 s CAP HAS BOUGHT.  Seven sub-cubes decided above 5400 s,
+# so unreachable at the previous cap, at 6136, 6397, 6468, 6490, 6956,
+# 7179 and 8626 s.  Four of those were the ones this header had named as
+# "confirmed beyond 5400 s" after stalling three times each -- and it was
+# wrong about what they needed, saying "a session with more cores".  They
+# needed 6500 s on the same four threads.  Stalling repeatedly at a cap
+# establishes that the cap is too small and nothing else: not that the
+# instance is out of reach, and not which resource it is short of.
+#
+# **AND A STALL DOES NOT EVEN ESTABLISH THAT MUCH -- RE-RUNNING AT AN
+# UNCHANGED CAP DECIDES ABOUT A THIRD OF THEM.**  This was checked
+# because the fifth restart put four known stragglers back in flight at
+# the same 10800 s, which looked like predictable waste.  It is not.
+# Eight labels have been re-attempted inside the 10800 s era -- seventeen
+# repeat attempts between them -- and THREE
+# were decided by the repeat alone, with no change of cap:
+#
+#     [.. 12, 12, 11, 9, 6]   UNKNOWN 10865  ->  UNSAT 10704
+#     [.. 12, 12, 11, 8, 7]   UNKNOWN 10869  ->  UNSAT 10218
+#     [.. 12, 12, 10, 9, 7]   UNKNOWN 10936  ->  UNSAT 10760
+#
+# Each landed at LESS wall time than its own earlier stall, so this is
+# not "it got a bit further".  cryptominisat5 is not reproducing its
+# previous search: same instance, same budget, different outcome.
+#
+# **THE MECHANISM OFFERED HERE COVERS FIVE OF THE NINE SUCCESSES AND NOT
+# THE OTHER FOUR -- AND THOSE FOUR ARE ONE COHORT, COMPLETE.**  The explanation was
+# that these are marginal instances sitting right at the cap: the failed
+# attempts read 10865-10936 s of wall against a 10800 s SOLVER budget,
+# i.e. contention overhead, and the successes came in just under -- which
+# is exactly the population a re-roll can flip.  All six successes, with
+# the stall each one followed:
+#
+#     decided   7497.4   after stall 10870.9    run>=12 = 7   clear 3302
+#     decided   7838.8   after stall 10870.2    run>=12 = 7   clear 2961
+#     decided   8270.4   after stall 10881.6    run>=12 = 7   clear 2530
+#     decided   8900.8   after stall 10919.8    run>=12 = 7   clear 1899
+#     decided  10053.0   after stall 10895.6    run>=12 = 8   near cap
+#     decided  10217.5   after stall 10868.9    run>=12 = 8   near cap
+#     decided  10270.3   after stall 10891.1    run>=12 = 7   near cap
+#     decided  10704.4   after stall 10864.8    run>=12 = 8   near cap
+#     decided  10760.5   after stall 10936.3    run>=12 = 8   near cap
+#
+# Five land in 10053-10760, within 750 s of the cap, exactly as the
+# marginal-instance reading predicts.  **Two do not: 7497.4 and 7838.8,
+# using 69% and 73% of the budget and finishing about 3300 s and 3000 s
+# clear of it.**  Neither is a re-roll nudging a boundary case over the
+# line; both are the solver finding a proof substantially faster from a
+# fresh start.  The second of them had stalled SIX times first, every
+# stall within 120 s of the cap, which makes it the single strongest row
+# in the file for the claim that the search is not reproduced.
+#
+#   **THE PRE-REGISTERED TEST ON THIS OBSERVATION HAS NOW BEEN RUN, AND
+#   IT PASSED.**  The header said, when the pattern rested on one
+#   cohort: "the only thing that would make it evidence is a
+#   clear-of-cap success from a DIFFERENT cohort, and this file does not
+#   have one."  It does now.  `[13,13,13,13,13,12,12,11,11,9,8]` decided
+#   at 8658.6 s -- 2141 s clear of the cap -- from the cohort launched at
+#   06:18, not the 04:13 one (predicted finish 08:42:18 from an 8658.6 s
+#   runtime, row landed 08:43:46).  It is at run>=12 = 7.  The tally is
+#   now SIX clear-of-cap successes, EVERY ONE at run>=12 = 7, against
+#   five near-cap of which four are at run>=12 = 8.
+#
+#   **THE TEST HAS NOW REPLICATED TWICE MORE.**  The header asked for
+#   "clear-of-cap successes from a third and fourth cohort".  c96 gave
+#   one at 8658.6 s and c97 another at 8956.0 s -- separate launches,
+#   started when slots freed at 06:18 and 06:24, not members of the
+#   synchronised 04:13 four -- and both are at run>=12 = 7.  Three
+#   distinct launches have now produced a clear-of-cap success and every
+#   one of them landed in the same bucket.
+#
+#   **THE STRENGTH STILL DEPENDS ENTIRELY ON HOW THE LAUNCHES ARE
+#   COUNTED, SO ALL THREE READINGS ARE GIVEN.**  Fisher's exact,
+#   one-tailed, on the 2x2 of clear-vs-near against run>=12 = 7 vs 8:
+#
+#     all twelve successes independent               p = 0.010
+#     collapsing the 04:13 cohort to one observation p = 0.040
+#     collapsing the WHOLE 04:12 driver run to one   p = 0.333
+#
+#   c98 replicated it a fourth time, at 9313.9 s from the 06:31 launch,
+#   again at run>=12 = 7.
+#
+#   **AND THEN THE FIFTH ONE MISSED.**  The last straggler decided at
+#   9811.3 s -- clear of the cap -- at **run>=12 = 6, not 7**.  Under the
+#   claim AS THIS HEADER ORIGINALLY WORDED IT ("all clear-of-cap
+#   successes are at run>=12 = 7") that is a miss, and the test weakens:
+#
+#     FRAMING A, run>=12 == 7, the wording actually used
+#       all independent            p = 0.032   (was 0.010)
+#       collapse the 04:13 cohort  p = 0.103   (was 0.040)
+#
+#   **THERE IS A SECOND FRAMING THAT MAKES IT LOOK BETTER, AND THAT IS
+#   EXACTLY WHY IT IS FLAGGED RATHER THAN ADOPTED.**  Reading the split
+#   as run>=12 <= 7 against >= 8 -- the dichotomy the repeat ARMS use
+#   elsewhere in this file, and one that predates this row -- the eighth
+#   success is a hit, not a miss, and everything improves:
+#
+#     FRAMING B, run>=12 <= 7 vs >= 8
+#       all independent            p = 0.007
+#       collapse the 04:13 cohort  p = 0.024
+#
+#   Both are defensible in isolation and choosing between them AFTER
+#   seeing which one helps is precisely the error 54.3a exists to catch.
+#   **So the header reports A as the verdict and B as a note.**  The
+#   claim was written as "= 7"; it was tested as "= 7"; the eighth event
+#   missed it; the honest reading is p = 0.032 all-independent and
+#   0.103 collapsed, which is weaker than last batch and does not
+#   survive the conservative accounting.  That B exists is worth
+#   recording -- a later rung could pre-register B and test it cleanly --
+#   but B has not been tested, only fitted.
+#
+#   The middle reading is the defensible one -- c96, c97 and c98 were
+#   staggered launches minutes apart, more independent than the
+#   synchronised four and less than separate machines -- and it has gone
+#   0.143 -> 0.071 -> 0.040 **purely by replication, which is the right
+#   reason for a p-value to move**, and has now crossed 0.05 for the
+#   first time.
+#
+#   **THAT IS NOT THE SAME AS ESTABLISHED, AND THREE THINGS ARE AGAINST
+#   IT.**  No correction has been applied for choosing this comparison
+#   after seeing the data, and it was chosen that way.  The maximally
+#   conservative reading is unchanged at 0.333 and will stay there
+#   because every clear-of-cap success this file has came from a single
+#   driver run.  And twelve events is twelve.  The right summary is: it
+#   passed a test set in advance, replicated three times, reaches
+#   conventional significance under the middle accounting, and needs a
+#   clear-of-cap success from a DIFFERENT DRIVER RUN before it is worth
+#   more than that.
+#
+# So the marginal-instance story is a description of most of the sample
+# rather than the mechanism of the effect, and it should not be leaned
+# on: it was doing double duty as an explanation for WHY a repeat works,
+# and the one row that most clearly shows a repeat working is the row it
+# does not explain.  What survives is the weaker and better-supported
+# statement already made above -- cryptominisat5 does not reproduce its
+# previous search -- for which a success 3300 s clear of the cap is
+# stronger evidence than any of the near-cap five.
+#
+# **THE RATE WAS FIRST WRITTEN HERE AS 0.37 AND THAT WAS A DENOMINATOR
+# ERROR.**  Eight LABELS have been re-attempted, but they account for
+# SEVENTEEN repeat ATTEMPTS, because five of them have stalled three or
+# four times each.  Three successes in seventeen repeats was **0.18 per
+# repeat, not 0.37** -- half what this header claimed one batch earlier.
+# It has since fallen again: **3 of 23 repeats = 0.13**, after a complete
+# cycle of all ten stragglers banked nothing, and again to **3 of 27 =
+# 0.11** after the sixth restart's first four repeats also banked
+# nothing.  Through all of that the numerator never moved off three, and
+# every revision -- 0.37, 0.18, 0.14, 0.13, 0.11 -- came from the
+# denominator growing.
+#
+# **THEN IT MOVED, TWICE, IN ONE BATCH.**  A fourth success took it to
+# 4 of 28 = 0.14 and a fifth, minutes later, to 5 of 29 = 0.17 -- up for
+# the first time ever, and then to **5 of 31 = 0.16** as the same batch's
+# two UNKNOWNs landed.  The direction reversed; the resolution did not
+# improve.  The header had said, one batch earlier,
+# that the unmoving numerator was what a weak estimate looks like while
+# it is being measured and NOT evidence of a decaying effect.  That was
+# the right call: the sequence 0.37 -> 0.11 was never a decay, and two
+# rows reversed its direction.
+#
+# See the STANDING block for the rest, including a split by run>=12 that
+# this header wrote up and the very next row broke -- and for the one
+# part of it that survives, which is that all four run>=12 = 8
+# stragglers are now decided, so the pooled rate describes a population
+# that no longer exists.
+# Roadmap 54.3a's first check is "look at the denominator's leverage
+# before reading a rate", and this file made exactly that error two
+# batches after writing the check down.  Recorded rather than quietly
+# fixed, because a rule broken by its own author is the useful evidence
+# that the rule is worth having.
+#
+# ALL TEN STRAGGLERS RE-RUN AFTER THE FIFTH RESTART, ALL RETURNING
+# UNKNOWN.  Expected yield on the then-current 0.18 was about 1.8;
+# observed 0.  Two rounds of zero is starting to be information rather
+# than noise, but three successes is still what the whole estimate rests
+# on, and the estimate has only ever moved DOWN as the denominator was
+# corrected and then grew: 0.37 (wrong denominator), 0.18, now 0.14.
+# **Do not read the trend in those three numbers either** -- the first
+# was an error, not a measurement, so the series is two points.
+#
+# CONSEQUENCE FOR THE RESUME POLICY, which the driver already had right:
+# re-running UNKNOWN rows is worth something rather than nothing, and
+# 0.13 per repeat is the current best number for "something".  **The
+# intuition that a repeat at a fixed cap is a repeat of a finished
+# experiment is wrong for this solver, and the file says so with counts
+# rather than with a claim about determinism.**
+#
+# THE PRICE OF THE RAISE, MEASURED.  Seven UNSAT for 97188 core-s = 6.75 h
+# wall on four threads = 1.04 UNSAT per wall-hour, against 2.15/h that the
+# 5400 s cap managed at its best and 0.00/h once it stopped converting.
+# So raising halves the peak rate and beats the terminal one, which is
+# exactly what the rule below predicts and why it is conditional.
+#
+# WHEN TO RAISE THE CAP, AND WHY THIS HEADER SAID IT WRONG TWICE.
+# The quantity is UNSAT BANKED PER WALL-HOUR, and it is a comparison
+# against the CURRENT cap's rate -- which is not constant, so the answer
+# changes as the run walks deeper.  Both of this header's earlier
+# instructions were stated flatly and were conditional:
+#
+#   "raising by threes has worked twice, the next step is 16200 s"
+#       -- wrong while 5400 s was still converting at 2.15 UNSAT/h,
+#          because 16200 s needs more than 9.7 of four attempts to land
+#          to beat that, and there are four.
+#
+#   "DO NOT RAISE THE CAP AGAIN"
+#       -- wrong once 5400 s stopped converting.  Conversion over the
+#          last 24, 16 and 8 labels attempted was 54%, 38%, 0%.  The
+#          last eight cost 43504 core-s (3.02 h wall on four threads)
+#          and banked NOTHING, so the current rate is 0.00 UNSAT/h and
+#          any nonzero conversion at a larger cap beats it.
+#
+# The rule, stated so it does not need correcting a third time:
+# **raise when the current cap's UNSAT-per-wall-hour has fallen to
+# roughly zero, and not before.**  Raising early costs throughput;
+# raising late costs nothing but the batch that measured it.
+#
+# RAISED TO 10800 s on that basis -- a doubling rather than the 3x used
+# twice before, because it gives feedback in half the time and nothing
+# here says a larger step converts more.  It is a bet: the eight
+# sub-cubes that stalled at 5400 s may need 6000 s or 60000, and this
+# file does not know which.  The known quantity is that 5400 s now
+# returns zero.
+#
+# COST OF THE DECIDED SUB-CUBES, in order of first attempt, per eight:
+#
+#     UNSATs  1 -  8    mean   682 s   max  1090 s
+#     UNSATs  9 - 16    mean  1931 s   max  2295 s
+#     UNSATs 17 - 24    mean  1900 s   max  2267 s
+#     UNSATs 25 - 32    mean  3588 s   max  4657 s
+#
+# The largest UNSAT anywhere in this file is 5313 s of a 5400 s budget;
+# median 2221 s, mean 2737 s over 46.
+#
+# WHAT ACTUALLY PREDICTS A SUB-CUBE'S COST: THE NUMBER OF LEADING 13s.
+# Not its position in the enumeration, which was this header's earlier
+# model and only correlates.  Median UNSAT time of the decided sub-cubes,
+# grouped by how many maximal degrees the sequence opens with:
+#
+#     leading 13s    n    min      median     max
+#          9         6     128        789      977
+#          8        19     350       1971     2295
+#          7        22     756       4528     5313
+#          6         5    1111       4636     5367
+#
+# The cost rises about six-fold from nine leading 13s to seven and then
+# looks flat, though the 6-family has only five points and its cheapest
+# is 1111 s, so the flattening is not established.  The mechanism is the
+# one already in this header: a run of maximal degrees is a strong
+# constraint, and removing one makes the sub-cube freer and harder to
+# refute.
+#
+# THIS EXPLAINS THE SCATTER.  Sub-cubes are enumerated lexicographically
+# descending, so the families come in blocks and each new block RESETS to
+# its own cheap end -- the 1111 s row is the first of the 6-family, not a
+# fluke deep in the 7-family.  So "position in the enumeration" mispredicts
+# exactly at the block boundaries.  Group by leading 13s and read the
+# median; do not read a trend off single rows, and do not treat a cheap
+# row after an expensive one as the frontier easing.
+#
+# WHAT THIS SAYS ABOUT THE REMAINING ~1890.  They lie in families with
+# progressively fewer leading 13s, which on this evidence are at least as
+# expensive as the 7- and 6-families and possibly worse.  Nothing here
+# measures a family below six, and roadmap 48.2's rule applies: every
+# extrapolation attempted on this ladder has been wrong, this session's
+# included, twice.
+#
+# THE ENUMERATION RUNS EASY TO HARD, AND AN EARLIER VERSION OF THIS
+# HEADER HAD IT BACKWARDS.  It said lexicographically descending order
+# puts "the MOST extreme, and so the hardest" sub-cubes first, and
+# concluded the mean would fall over the remaining 1949.  Measured, in
+# blocks of eight attempts in first-seen order:
+#
+#     attempts   stalled at the 1800 s cap   mean wall
+#      1 -  8          0 %                      682 s
+#      9 - 16         75 %                     1730 s
+#     17 - 24         88 %                     1681 s
+#     25 - 32         88 %                     1754 s
+#     33 - 40        100 %                     1813 s
+#     41 - 42        100 %                     1810 s
+#
+# Extreme is not the same as hard: a sequence with the degree mass
+# concentrated on a few points is MORE constrained and so easier to
+# refute, and those are exactly the ones lex-descending order takes
+# first.  The first eight are the same eight the 600 s pass could land.
+#
+# THE 1800 s BUDGET IS EXHAUSTED AS A PRODUCER OF VERDICTS.  The last
+# sixteen attempts stalled sixteen times; every UNSAT this file holds
+# landed between 128.3 s and 1588.7 s, and nothing has landed since.
+# Continuing at 1800 s banks nothing while still costing 1810 s a
+# sub-cube, which is the same shape of loss iota4_11.deg13.p3.tsv
+# records under "TOO COARSE, and the budget is the result".  The budget
+# was raised rather than the run continued; see the command above.
+#
+# SO THE COST FIGURE IS A FLOOR, NOT A CEILING.  At the 1800 s plateau a
+# sweep of 1949 is ~245 h wall on four threads and would bank almost
+# nothing.  roadmap 48.2 stands: this is an extrapolation, now from 42
+# of 1949, and its direction has already had to be corrected once.
+#
+# sub-cube	verdict	seconds
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 9, 2]	UNKNOWN	664.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 8, 3]	UNKNOWN	666.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 4]	UNKNOWN	711.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 12, 0]	UNSAT	350.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 5]	UNKNOWN	820.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 11, 1]	UNKNOWN	951.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 10, 2]	UNKNOWN	935.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNKNOWN	944.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNKNOWN	914.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNKNOWN	905.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNKNOWN	929.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 11, 2]	UNKNOWN	914.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNKNOWN	950.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNKNOWN	1015.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNKNOWN	1021.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNKNOWN	1046.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNKNOWN	1012.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNKNOWN	891.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 9, 2]	UNSAT	740.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 7, 4]	UNSAT	837.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 6, 5]	UNSAT	939.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 8, 3]	UNSAT	976.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 11, 1]	UNSAT	1089.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 10, 2]	UNSAT	1588.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNKNOWN	1818.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNKNOWN	1817.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNKNOWN	1810.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 11, 2]	UNSAT	1366.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNKNOWN	1821.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNKNOWN	1809.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNKNOWN	1810.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNKNOWN	1813.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNKNOWN	1814.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNKNOWN	1811.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNKNOWN	1811.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 8, 6]	UNKNOWN	1809.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 7, 7]	UNKNOWN	1823.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 9, 6]	UNKNOWN	1807.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 12, 1]	UNSAT	755.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 8, 7]	UNKNOWN	1811.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 8, 8, 8]	UNSAT	1341.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 11, 2]	UNKNOWN	1819.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 10, 3]	UNKNOWN	1808.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 9, 4]	UNKNOWN	1808.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 8, 5]	UNKNOWN	1808.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 7, 6]	UNKNOWN	1824.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 11, 3]	UNKNOWN	1809.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNKNOWN	1809.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNKNOWN	1810.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	1814.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 7, 7]	UNKNOWN	1809.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 10, 5]	UNKNOWN	1811.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	1815.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 8, 7]	UNKNOWN	1818.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 9, 7]	UNKNOWN	1813.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 8, 8]	UNKNOWN	1813.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 11, 4]	UNKNOWN	1807.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 9, 3]	UNSAT	1871.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 6, 6]	UNSAT	2037.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 8, 4]	UNSAT	2230.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 12, 7, 5]	UNSAT	2294.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 10, 3]	UNSAT	1971.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 9, 4]	UNSAT	2087.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 7, 6]	UNSAT	2096.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 11, 8, 5]	UNSAT	2267.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 10, 4]	UNSAT	1934.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 9, 5]	UNSAT	2074.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 7, 7]	UNSAT	1948.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 10, 8, 6]	UNSAT	2212.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 9, 6]	UNSAT	1912.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 13, 9, 8, 7]	UNSAT	2039.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 11, 2]	UNSAT	2781.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 10, 3]	UNSAT	4463.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 9, 4]	UNSAT	4621.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 8, 5]	UNSAT	4275.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 12, 7, 6]	UNSAT	4657.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 11, 3]	UNSAT	4523.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNKNOWN	5453.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNKNOWN	5434.4
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	5436.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 7, 7]	UNSAT	4824.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 10, 5]	UNSAT	5178.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	5440.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 8, 7]	UNSAT	5256.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 9, 7]	UNSAT	4686.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 11, 4]	UNSAT	2370.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 9, 8, 8]	UNSAT	4544.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 10, 5]	UNSAT	4669.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNKNOWN	5428.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNKNOWN	5428.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNKNOWN	5436.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNKNOWN	5459.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 9, 6]	UNSAT	4207.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 11, 8, 7]	UNSAT	4533.3
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 10, 6]	UNSAT	5312.7
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 9, 7]	UNKNOWN	5445.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 10, 10, 10, 7]	UNSAT	2406.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 9, 9, 8]	UNSAT	4370.9
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 8, 8]	UNSAT	4755.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 10, 10, 9, 8]	UNSAT	4010.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 12, 2]	UNSAT	1111.2
+g=11 [13, 13, 13, 13, 13, 13, 13, 10, 9, 9, 9]	UNSAT	2613.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 11, 3]	UNSAT	4310.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 10, 4]	UNSAT	4805.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 9, 5]	UNSAT	5366.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 8, 6]	UNKNOWN	5434.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 7, 7]	UNSAT	4635.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 11, 4]	UNKNOWN	5458.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	5434.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNKNOWN	5430.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNKNOWN	5447.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 10, 6]	UNKNOWN	5433.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNKNOWN	5430.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 8, 8]	UNKNOWN	5458.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 9, 9, 8]	UNKNOWN	5438.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 11, 5]	UNKNOWN	5430.8
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 10, 9, 6]	UNSAT	6396.6
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 9, 5]	UNSAT	6468.1
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 10, 4]	UNSAT	6490.0
+g=11 [13, 13, 13, 13, 13, 13, 13, 12, 11, 8, 6]	UNSAT	6956.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 12, 8, 6]	UNSAT	6135.5
+g=11 [13, 13, 13, 13, 13, 13, 13, 11, 10, 9, 7]	UNSAT	7178.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 11, 4]	UNSAT	8625.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10867.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNKNOWN	10864.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 10, 6]	UNSAT	8476.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNKNOWN	10868.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNKNOWN	10936.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 11, 5]	UNSAT	5718.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 9, 9, 8]	UNSAT	8584.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 8, 8]	UNSAT	9286.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10878.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10900.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 8, 8]	UNSAT	10865.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10898.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 9, 9, 9]	UNSAT	6857.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 10, 10, 10, 8]	UNSAT	5228.0
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 11, 6]	UNSAT	1871.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10868.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 10, 10, 9, 9]	UNSAT	8971.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 8, 7]	UNSAT	10217.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 9, 6]	UNSAT	10704.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 10, 9, 7]	UNSAT	10760.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10853.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10860.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10860.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10863.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10939.0
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 10, 7]	UNSAT	5298.1
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 11, 9, 8]	UNSAT	5410.1
+g=11 [13, 13, 13, 13, 13, 13, 10, 10, 10, 10, 10]	UNSAT	730.8
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 12, 3]	UNSAT	936.3
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 10, 10, 8]	UNSAT	8766.0
+g=11 [13, 13, 13, 13, 13, 13, 11, 11, 10, 9, 9]	UNSAT	8954.2
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 11, 4]	UNSAT	3107.6
+g=11 [13, 13, 13, 13, 13, 13, 11, 10, 10, 10, 9]	UNSAT	5608.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 10, 5]	UNSAT	3472.5
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 9, 6]	UNSAT	3648.8
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 12, 8, 7]	UNSAT	3383.9
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 11, 5]	UNSAT	6096.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 10, 6]	UNSAT	7655.4
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 8, 8]	UNSAT	6843.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 11, 9, 7]	UNSAT	7780.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 10, 10, 7]	UNSAT	7168.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 9, 9, 9]	UNSAT	3653.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10870.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10880.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10891.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10897.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 11, 6]	UNSAT	7412.9
+g=11 [13, 13, 13, 13, 13, 12, 12, 12, 10, 9, 8]	UNSAT	7838.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10911.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10917.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 10, 10, 10, 9]	UNSAT	5761.1
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10929.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10889.3
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 11, 7]	UNSAT	2888.5
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10881.7
+g=11 [13, 13, 13, 13, 13, 12, 11, 10, 10, 10, 10]	UNSAT	3373.1
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 9, 9]	UNSAT	7047.2
+g=11 [13, 13, 13, 13, 13, 11, 11, 11, 11, 11, 8]	UNSAT	1149.4
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 11, 10, 8]	UNSAT	8647.1
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 12, 4]	UNSAT	433.1
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 11, 5]	UNSAT	1093.7
+g=11 [13, 13, 13, 13, 13, 11, 11, 11, 11, 10, 9]	UNSAT	2794.8
+g=11 [13, 13, 13, 13, 13, 11, 11, 11, 10, 10, 10]	UNSAT	2937.1
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 10, 6]	UNSAT	978.6
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 9, 7]	UNSAT	1115.9
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 12, 8, 8]	UNSAT	897.3
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNKNOWN	10913.2
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 11, 6]	UNSAT	2092.9
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 10, 7]	UNSAT	2102.9
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 10, 8]	UNSAT	1801.2
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 11, 9, 8]	UNSAT	2198.5
+g=11 [13, 13, 13, 13, 12, 12, 12, 12, 10, 9, 9]	UNSAT	2126.8
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 11, 7]	UNSAT	2571.5
+g=11 [13, 13, 13, 13, 12, 12, 12, 10, 10, 10, 10]	UNSAT	1250.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10878.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10892.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10893.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10916.2
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNKNOWN	10870.9
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNKNOWN	10912.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNKNOWN	10880.4
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNKNOWN	10906.6
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 9, 9]	UNSAT	5127.4
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 11, 10, 8]	UNSAT	5492.5
+g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 11, 8]	UNSAT	2260.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNKNOWN	10889.6
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNKNOWN	10928.4
+g=11 [13, 13, 13, 13, 12, 12, 12, 11, 10, 10, 9]	UNSAT	6336.5
+g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 11, 9]	UNSAT	1528.8
+g=11 [13, 13, 13, 13, 11, 11, 11, 11, 11, 11, 10]	UNSAT	510.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 12, 0]	UNSAT	319.1
+g=11 [13, 13, 13, 13, 12, 12, 11, 11, 11, 10, 9]	UNSAT	6412.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 11, 1]	UNSAT	1018.0
+g=11 [13, 13, 13, 13, 12, 11, 11, 11, 11, 10, 10]	UNSAT	3093.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 10, 2]	UNSAT	1692.4
+g=11 [13, 13, 13, 13, 12, 12, 11, 11, 10, 10, 10]	UNSAT	5737.6
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 9, 3]	UNSAT	2331.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 8, 4]	UNSAT	2400.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 7, 5]	UNSAT	2839.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 13, 6, 6]	UNSAT	2347.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 12, 1]	UNSAT	2333.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 11, 2]	UNSAT	4259.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 10, 3]	UNSAT	5658.5
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNKNOWN	10891.1
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10893.7
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNKNOWN	10895.6
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10919.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNSAT	10053.0
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNSAT	10270.3
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10870.2
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10881.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNSAT	7497.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNSAT	7838.8
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNSAT	8270.4
+g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNSAT	8900.8
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNSAT	8658.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNSAT	8956.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNSAT	9313.9
+g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNSAT	9811.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 9, 4]	UNSAT	3555.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 8, 5]	UNSAT	3566.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 7, 6]	UNSAT	3841.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 11, 3]	UNSAT	2821.4
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 10, 4]	UNSAT	3155.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 9, 5]	UNSAT	3639.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 7, 7]	UNSAT	2933.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 11, 8, 6]	UNSAT	3692.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 10, 5]	UNSAT	3118.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 9, 6]	UNSAT	3766.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 10, 8, 7]	UNSAT	3665.4
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 9, 7]	UNSAT	3258.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 9, 8, 8]	UNSAT	3082.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 12, 2]	UNSAT	3348.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 11, 3]	UNSAT	6342.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 10, 4]	UNSAT	7134.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 9, 5]	UNSAT	7533.0
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 7, 7]	UNSAT	8957.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 8, 6]	UNKNOWN	10886.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10896.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10906.1

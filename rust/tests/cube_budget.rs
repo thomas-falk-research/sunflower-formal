@@ -365,3 +365,231 @@ fn the_solver_exit_codes_the_crash_check_rests_on() {
         let _ = std::fs::remove_file(p);
     }
 }
+
+/// The two degree-sequence covers of a cube, and the flag that picks one.
+///
+/// At `(b, g, t) = (4, 11, 32)`, `deg(0) = 13` the split has **1939**
+/// sequences under `all_points_used = true` and **1949** without it. Both
+/// are real questions — "a family on exactly eleven points" and "on at
+/// most eleven points" — and the first is legitimate here only because
+/// `iota(4,10) = 27 < 32` is settled (§46), which is what
+/// `SymOptions::all_points_used`'s own doc comment says.
+///
+/// `examples/iota_sym.rs` sets the option from `--ladder` and nothing
+/// else, and `tools/rung.sh` passes `--ladder`, so every checkpoint in
+/// `docs/ladder/` holds the 1939 cover.
+///
+/// The hazard is not a wrong count, it is a resumed run under the wrong
+/// flag: exhaust 1939 against a file written without `--ladder` and the
+/// cube reads closed with ten sub-cubes never attempted, and UNSAT is the
+/// verdict no witness contradicts (§49.3). Until §52.1 nothing recorded
+/// which cover a run had used — not the driver's symmetry line, not a
+/// checkpoint header, not `iota_sym`'s doc comment, which quoted the
+/// `--ladder` figures without saying so — and a session duly read one
+/// file as the other and "corrected" four more to match.
+///
+/// This pins both covers so the pair can never again be mistaken for one
+/// number, and pins the reason §37.4's cross-check could not discriminate:
+/// it was evaluated at `deg(0) = 12`, the one top degree where the two
+/// models agree.
+#[test]
+fn the_two_covers_and_the_flag_that_picks_them() {
+    let n = |o: SymOptions, d0: usize, prefix: usize| {
+        let inst = encode(11, 4, 32, o);
+        sequence_cubes(&inst, o, &[d0], prefix, 2_000_000).map(|cs| cs.len())
+    };
+    let wide = SymOptions::default();
+    let tight = SymOptions { all_points_used: true, ..SymOptions::default() };
+    assert!(!wide.all_points_used, "the binary's default is the wide cover");
+
+    // deg(0), cover without --ladder, cover with it.
+    let rows = [
+        (12usize, 19usize, 19usize),
+        (13, 1949, 1939),
+        (14, 32797, 31624),
+        (15, 238850, 220047),
+        (16, 1045128, 914505),
+    ];
+    for (d0, w, t) in rows {
+        assert_eq!(n(wide, d0, 11), Some(w), "wide cover at deg(0) = {d0}");
+        assert_eq!(n(tight, d0, 11), Some(t), "--ladder cover at deg(0) = {d0}");
+    }
+
+    // Why a check at deg(0) = 12 confirms nothing, stated so it cannot be
+    // rediscovered by hand a third time.
+    assert_eq!(n(wide, 12, 11), n(tight, 12, 11), "the two agree at deg(0) = 12");
+    for (d0, w, t) in rows.iter().skip(1) {
+        assert!(w > t, "and differ at every other deg(0) = {d0}");
+    }
+
+    // Tightening only ever removes sequences, and removes exactly the ones
+    // with an unused point — so the wide cover implies the tight one and a
+    // run under it is sound, merely larger.
+    for (d0, w, t) in rows {
+        let seqs = |o: SymOptions| -> std::collections::HashSet<Vec<usize>> {
+            sequence_cubes(&encode(11, 4, 32, o), o, &[d0], 11, 2_000_000)
+                .unwrap()
+                .into_iter()
+                .map(|(s, _)| s)
+                .collect()
+        };
+        let (sw, st) = (seqs(wide), seqs(tight));
+        assert!(st.is_subset(&sw), "deg(0) = {d0}: tight must sit inside wide");
+        assert_eq!(sw.len() - st.len(), w - t);
+        assert!(
+            sw.difference(&st).all(|s| s.contains(&0)),
+            "deg(0) = {d0}: the extra sequences are exactly the unused-point ones"
+        );
+    }
+
+    // A cover leaves a fingerprint in what it omits, and this is the check
+    // that settled which one wrote `docs/ladder/iota4_11.deg13.tsv`: its
+    // rows are a prefix of the tight enumeration, and the two sequences the
+    // wide one reaches first are absent.
+    let wide_order: Vec<Vec<usize>> =
+        sequence_cubes(&encode(11, 4, 32, wide), wide, &[13], 11, 2_000_000)
+            .unwrap()
+            .into_iter()
+            .map(|(s, _)| s)
+            .collect();
+    let tight_order: Vec<Vec<usize>> =
+        sequence_cubes(&encode(11, 4, 32, tight), tight, &[13], 11, 2_000_000)
+            .unwrap()
+            .into_iter()
+            .map(|(s, _)| s)
+            .collect();
+    assert_eq!(wide_order[0], vec![13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]);
+    assert_eq!(wide_order[6], vec![13, 13, 13, 13, 13, 13, 13, 13, 12, 12, 0]);
+    assert_eq!(tight_order[0], vec![13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]);
+    // Drop the wide cover's degree-zero sequences and the orders coincide,
+    // which is what makes the fingerprint readable at all.
+    let wide_nonzero: Vec<&Vec<usize>> =
+        wide_order.iter().filter(|s| !s.contains(&0)).collect();
+    assert_eq!(wide_nonzero.len(), tight_order.len());
+    assert!(wide_nonzero.iter().zip(&tight_order).all(|(a, b)| *a == b));
+
+    // The prefix-3 split is 27 under either cover, which is why that one
+    // figure never disagreed between the files.
+    assert_eq!(n(wide, 13, 3), Some(27));
+    assert_eq!(n(tight, 13, 3), Some(27));
+    // Prefix four does disagree, and the doc comment's 167 is the tight one.
+    assert_eq!(n(tight, 13, 4), Some(167));
+    assert_eq!(n(wide, 13, 4), Some(171));
+}
+
+/// What a prefix-3 sub-cube of cube 13 actually has to decide.
+///
+/// §50.3 proposed re-running the cube-13 second opinion over the prefix-3
+/// split at `--seconds 7200`, on the strength of "five landed between
+/// 136.1 s and 491.4 s, nine did not at 600 s" attributed to
+/// `docs/ladder/iota4_11.deg13.p3.tsv`. Those fourteen rows are in
+/// `iota4_11.deg13.tsv`, the **full** split. The p3 file's own four rows
+/// are UNKNOWN at 2400.1 s under cadical, and its own recorded verdict is
+/// "TOO COARSE, and the budget is the result".
+///
+/// This says why in one number rather than by citation: the enumeration is
+/// lexicographically descending, so the four sub-cubes ever attempted are
+/// simply its first four, and the first of them has to decide 559 full
+/// sub-cubes (553 under the `--ladder` cover the p3 file actually used —
+/// the shape is the same either way, and both are checked below).
+#[test]
+fn the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity() {
+    let o = opts();
+    let inst = encode(11, 4, 32, o);
+    let full = sequence_cubes(&inst, o, &[13], 11, 2_000_000).unwrap();
+    let p3 = sequence_cubes(&inst, o, &[13], 3, 2_000_000).unwrap();
+    assert_eq!(full.len(), 1949);
+    assert_eq!(p3.len(), 27);
+
+    let mut buckets: std::collections::BTreeMap<Vec<usize>, usize> = Default::default();
+    for (seq, _) in &full {
+        *buckets.entry(seq[..3].to_vec()).or_insert(0) += 1;
+    }
+    // The split is a partition: every full sub-cube lands under exactly one
+    // prefix-3 cube, and no prefix-3 cube is empty.
+    assert_eq!(buckets.values().sum::<usize>(), 1949);
+    assert_eq!(buckets.len(), p3.len());
+
+    // The enumeration is lexicographically descending, so the four the
+    // cadical pass attempted are simply its first four — and they are the
+    // wrong four to spend a budget on. 559 + 327 + 181 + 94 = 1161 of the
+    // 1949: three fifths of the cube in four pieces, against a mean bucket
+    // of 1949/27 = 72.
+    let order: Vec<usize> = p3.iter().map(|(s, _)| buckets[&s[..3].to_vec()]).collect();
+    assert_eq!(&order[..4], &[559, 327, 181, 94], "the first four in enumeration order");
+    assert_eq!(order[..4].iter().sum::<usize>(), 1161);
+    assert_eq!(order[0], *buckets.values().max().unwrap(), "the very first cube is the largest");
+
+    // Not the four largest, though, and the difference is the point: the
+    // second-largest *family* of sequences, [13, 12, 12] with 246, sits at
+    // index eight, so a pass that dies inside its first four has not even
+    // reached it. Front-loading is by lex order, not by cost.
+    let mut all: Vec<usize> = buckets.values().copied().collect();
+    all.sort_unstable_by(|a, b| b.cmp(a));
+    assert_eq!(&all[..4], &[559, 327, 246, 181]);
+    assert_eq!(order.iter().position(|&n| n == 246), Some(8));
+
+    // And the cheap ones are at the far end: the smallest prefix-3 cubes
+    // hold a single full sub-cube each, at indices 14, 23 and 26. A
+    // budget-limited pass over this split in enumeration order banks
+    // nothing, because it spends the whole budget on the big end first.
+    assert_eq!(*all.last().unwrap(), 1);
+    let ones: Vec<usize> =
+        order.iter().enumerate().filter(|(_, &n)| n == 1).map(|(i, _)| i).collect();
+    assert_eq!(ones, vec![14, 23, 26]);
+
+    // The same measurement under the cover `docs/ladder/iota4_11.deg13.p3.tsv`
+    // was actually written with, so the file's own four rows can be read
+    // against it. Ten fewer sub-cubes, same conclusion.
+    let tight = SymOptions { all_points_used: true, ..SymOptions::default() };
+    let ti = encode(11, 4, 32, tight);
+    let tfull = sequence_cubes(&ti, tight, &[13], 11, 2_000_000).unwrap();
+    let tp3 = sequence_cubes(&ti, tight, &[13], 3, 2_000_000).unwrap();
+    assert_eq!((tfull.len(), tp3.len()), (1939, 27));
+    let mut tb: std::collections::BTreeMap<Vec<usize>, usize> = Default::default();
+    for (seq, _) in &tfull {
+        *tb.entry(seq[..3].to_vec()).or_insert(0) += 1;
+    }
+    let torder: Vec<usize> = tp3.iter().map(|(s, _)| tb[&s[..3].to_vec()]).collect();
+    assert_eq!(&torder[..4], &[553, 325, 180, 94], "the four rows the p3 file holds");
+    assert_eq!(torder[..4].iter().sum::<usize>(), 1152);
+    assert_eq!(torder[0], *tb.values().max().unwrap());
+    assert_eq!(*tb.values().min().unwrap(), 1);
+}
+
+/// Why the floor cube wants the *full* prefix, from the bucket sizes
+/// rather than from the sub-cube count.
+///
+/// §49.2a chooses full prefix for `deg(0) = 11` at target 28 — 224 pieces
+/// — on the grounds that its count barely grows with the prefix, and
+/// picks prefix 3 for the other six. The bucket view agrees and says it
+/// more sharply: at prefix 3 this cube's twelve pieces are so uneven that
+/// the first four in enumeration order hold three quarters of it, which is
+/// worse front-loading than `deg(0) = 13` has at target 32. A flat
+/// `--seqprefix 3` across all seven, which was §49.2's first plan, would
+/// have been a poor choice here.
+#[test]
+fn the_floor_cube_is_more_front_loaded_at_prefix_three_than_cube_thirteen() {
+    let o = opts();
+    let inst = encode(11, 4, 28, o);
+    let full = sequence_cubes(&inst, o, &[11], 11, 2_000_000).unwrap();
+    let p3 = sequence_cubes(&inst, o, &[11], 3, 2_000_000).unwrap();
+    assert_eq!((full.len(), p3.len()), (224, 12), "§49.2a's two counts");
+
+    let mut buckets: std::collections::BTreeMap<Vec<usize>, usize> = Default::default();
+    for (seq, _) in &full {
+        *buckets.entry(seq[..3].to_vec()).or_insert(0) += 1;
+    }
+    assert_eq!(buckets.values().sum::<usize>(), 224, "the split is a partition");
+    let order: Vec<usize> = p3.iter().map(|(s, _)| buckets[&s[..3].to_vec()]).collect();
+    assert_eq!(&order[..4], &[94, 45, 19, 7]);
+    let front: usize = order[..4].iter().sum();
+    assert_eq!(front, 165);
+
+    // Three quarters of the cube in four pieces, against three fifths for
+    // deg(0) = 13 at target 32 — so the floor cube is the worse case for a
+    // flat prefix, not the better one.
+    let floor_share = front as f64 / full.len() as f64;
+    assert!(floor_share > 0.73 && floor_share < 0.75, "{floor_share}");
+    assert!(floor_share > 1161.0 / 1949.0, "worse front-loading than cube 13");
+}

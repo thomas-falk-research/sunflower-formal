@@ -96,6 +96,36 @@ fn load_checkpoint(path: &Path) -> HashMap<String, String> {
     out
 }
 
+/// Stamp a newly created checkpoint with the cover it is going to hold.
+///
+/// A checkpoint records verdicts by degree sequence, and which sequences
+/// exist depends on `all_points_used` — 1939 of them at `(4,11,32)`,
+/// `deg(0) = 13` when it is set and 1949 when it is not. Resuming a file
+/// written under one setting with the other silently answers a different
+/// question, and roadmap 52.1 is a session that read one file as the other
+/// and "corrected" four more to match. So the file says which it is.
+fn stamp_checkpoint(path: &Path, b: u32, ground: u32, target: usize, opts: SymOptions) {
+    use std::io::Write as _;
+    if path.exists() {
+        return;
+    }
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+        let _ = writeln!(
+            f,
+            "# iota({b},{ground}) >= {target} ?  degree-sequence sub-cubes, \
+             all_points_used={}",
+            opts.all_points_used
+        );
+        let _ = writeln!(
+            f,
+            "# so these rows cover families on {} {ground} points. Resume only \
+             with the same setting: the two covers differ.",
+            if opts.all_points_used { "exactly" } else { "at most" }
+        );
+        let _ = writeln!(f, "# sub-cube\tverdict\tseconds");
+    }
+}
+
 fn append_checkpoint(path: &Path, label: &str, verdict: &str, secs: f64) {
     use std::io::Write as _;
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
@@ -498,13 +528,27 @@ fn main() {
     );
     println!(
         "# symmetry: max_at_zero={} sorted_blocks={} degree_floor={} exact_size={} \
-         lex_ties={} kmax={}",
+         lex_ties={} kmax={} all_points_used={}",
         opts.max_at_zero,
         opts.sorted_blocks,
         opts.degree_floor,
         opts.exact_size,
         opts.lex_ties,
-        opts.kmax
+        opts.kmax,
+        ladder
+    );
+    // `all_points_used` is the only option here that changes the SIZE of the
+    // degree-sequence cover -- at (4,11,32), deg(0) = 13 it is 1939 sequences
+    // when set and 1949 when not -- and until roadmap 52.1 it was the only one
+    // this line did not print. A checkpoint written by one and resumed by the
+    // other exhausts a cover it never enumerated, and nothing in the file, the
+    // log or the exit status says which it was.
+    println!(
+        "# cover: each rung asks for a family on {} its ground set. This is \
+         what sizes the degree-sequence split -- at (4,11,32), deg(0) = 13 it \
+         is 1939 sequences with all_points_used and 1949 without -- so a \
+         checkpoint is resumable only under the setting that wrote it.",
+        if ladder { "exactly" } else { "at most" }
     );
     let _ = std::io::stdout().flush();
 
@@ -519,6 +563,11 @@ fn main() {
              the ladder is a cover only if they were decided elsewhere. \
              docs/roadmap.md 33.5 records where."
         );
+    }
+    if let Some(p) = checkpoint.as_deref() {
+        let mut o = opts;
+        o.all_points_used = ladder;
+        stamp_checkpoint(p, b, ground, target, o);
     }
     let mut any_unknown = false;
     let mut witness: Option<Vec<u32>> = None;

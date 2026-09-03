@@ -17,8 +17,15 @@
 # measurement of how hard this cube is. It is a measurement of how long
 # the solver lived.
 #
-# Re-run it split, not whole: --seqprefix 3 --cubecap 50 --checkpoint,
-# which is 27 sub-cubes each banked as it lands. See §50.3.
+# Re-run it split, not whole -- but over the FULL split, not the
+# prefix-3 one §50.3 asked for.  §50.3 costed prefix-3 from rows that are
+# in iota4_11.deg13.tsv, the full 1939-way split, rather than from
+# iota4_11.deg13.p3.tsv, whose own four rows are UNKNOWN at 2400 s under
+# its own verdict TOO COARSE.  In flight as
+# docs/ladder/iota4_11.deg13.cryptominisat5.tsv:
+#   --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --checkpoint
+# See §52.2.  That run is on the 1949 cover (no --ladder), which is
+# larger than this file's and implies it.
 # Every row below except deg(0) = 32 was measured on an Apple M4 Air --
 # RUNG_THREADS=8 RUNG_SLICE=900 RUNG_CUBECAP=400, budget 36000 s -- and
 # transcribed here from that run's output. The 32 row was measured on the
@@ -30,7 +37,8 @@
 # RUNG_THREADS=1 RUNG_SLICE=200000 so the split never fires, and came
 # back UNSAT at 70310.9 s -- agreeing with cadical's 51305.5 s. The two
 # solvers now agree on TWENTY of the twenty-one cubes; only deg(0) = 13
-# is outstanding, and it is in flight under the same settings.
+# is outstanding.  The whole-cube run under those settings is the one
+# that crashed; it is now being re-run over the full split, resumably.
 #
 # The 36000 s rows below for 13 and 14 were replaced rather than kept:
 # both were `UNKNOWN` at that budget, which is a true record of a run

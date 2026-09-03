@@ -110,13 +110,13 @@ literature, resolved.
 
 | # | Claim | Verdict | Evidence |
 |---|---|---|---|
-| B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **Not found** — but the search vocabulary was too narrow | Not in [Kup25] (now read in full, 66pp), [Ra20] (8pp), [ALWZ20] (19pp), [Lovett] (28pp), [Rao25] (12pp). **Caveat found this session:** [Kup25] fn. 6, p. 21, records that *"it is in this paper that `Δ(s)`-systems are called **`s`-stars**, a name that appears in the follow-up papers of Frankl and Füredi."* A third name for a sunflower, which every search here has missed. Empty is not absence, and this corpus is not vocabulary-complete. |
-| B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **Not found — and the negative is now suspect for a second reason; see rule 18.** The claim is an inequality, and no text-extraction search can locate one. | Same corpus. But see B10a — the *ingredients* are all published. |
+| B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **Not found under three vocabularies — sunflower, `Δ`-system, `s`-star — and the `[63]`/`[54]` chase is now COMPLETE. Still NOT EXHAUSTIVE.** The row's earlier caveat is discharged; its "not exhaustive" is not. | Not in [Kup25] (read in full, 66pp), [Ra20] (8pp), [ALWZ20] (19pp), [Lovett] (28pp), [Rao25] (12pp). **The caveat that opened this row is now chased.** [Kup25] fn. 6, p. 21 records that *"it is in this paper that `Δ(s)`-systems are called **`s`-stars**, a name that appears in the follow-up papers of Frankl and Füredi."* The two papers it names are [Kup25] `[63]` = Füredi, *On finite set-systems whose every intersection is a kernel of a star*, Disc. Math. 47 (1983) 129–132, and `[54]` = Frankl–Füredi, *Forbidding just one intersection*, JCTA 39 (1985) 160–176 — **both reference-list entries confirmed here by rendering [Kup25] pp. 63–64**. A commissioned session (N+15) then rendered and read both papers in full, 4/4 and 17/17 pages: [Fü83] p. 129 defines *"a `Δ`-system … or a `t`-star"* and proves a structural theorem; [FF85] p. 163 defines *"a strong `Δ`-system or an `s`-star"* and uses stars as a proof tool. **Neither names an intersecting sunflower-free extremal function.** **And the third vocabulary has a trap — see rule 33:** in [FT85] (Füredi–Tuza, *Hypergraphs without a large star*, Disc. Math. 55 (1985) 317–321, 5/5 rendered) a *"`t`-star"* is a **different object** — `t` sets each with a private point — not a `Δ`-system. Same word, same author, adjacent years. Still unfetched, so still not exhaustive: Chung 1983 ([Kup25] `[17]`, the origin of "`s`-star") and Chung–Frankl 1987 (`[19]`). |
+| B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **Not found — and the negative now stands on the RIGHT KIND of evidence.** The rule-18 objection is discharged: session N+15 rendered 136 pages and read 96 as images, no text extraction at any point, and the chain is on none of them. Still **NOT EXHAUSTIVE**. | Same corpus, plus the nine sources of the N+15 rendered pass. Specifically: [Kup25] pp. 5–7 (the `φ(k,s)`/AHS pages) carry `φ(k,3) ⩾ 10^{k/2 − c log k}` and Observation 2 `φ(a+b,s) ⩾ φ(a,s)φ(b,s)` — **no intersecting-side function and no two-sided chain**; §1.7 pp. 47–53 none; [Fü83], [FF85], [FT85], [Fü80], [EL75], [KM17] none. **The nearest published relative, and it is close enough to name:** [EL75] p. 612 Theorem 7, `r!(e−1) ≤ M(r) ≤ r^r`, where `M(r)` is the maximum number of edges of a 3-chromatic `r`-uniform *clique* — that is, an intersecting family with `τ = r` — and p. 623 §4 states the same bounds for *"`r`-uniform cliques which cannot be covered by less than `r` points"*. So an intersecting extremal function **is** bounded on both sides in print; the hypothesis is `τ`, not sunflower-freeness, and no unrestricted sunflower-free function stands beside it. Corpus still not searched: [AHS72] (unreachable, see below), Abbott–Hanson 1974/1977, Kostochka's `Δ`-system survey. But see B10a — the *ingredients* are all published. |
 | B10a | "the intersecting side has never been pointed at" | **REFUTED** | [ALWZ20] §4.2, titled *Intersecting set systems*, Theorem 4.2 p. 13: *"If F is an intersecting w-uniform set system, and for all T, \|F_T\| ≤ κ^{−\|T\|}\|F\|, then κ = O(log w)."* Different hypothesis from `ι` (spread, not sunflower-free), but the claim as written is false. Withdrawn in `coq/IotaRate.v`; the elementary version is now `IotaRate.intersecting_not_spread_above_uniformity`. |
 | B10b | Theorem 4.2 is independent of the spread lemma, so it could give the modern bound at `k=3` without the axiom | **REFUTED, and the target it supported is closed** | The *proof* is on the same page as the statement, four lines below, and had never been read. [ALWZ20] p. 13 introduces it with *"We note the following corollary of Theorem 2.5:"* and proves it in full by *"If `F` is intersecting then it is not `(1/2, 1/2)`-satisfying (apply Lemma 1.6 for `r = 2`). Thus by the improvement of Theorem 2.5 from [19], it cannot be `(C log w)`-spread for a large enough constant `C`."* Theorem 2.5 **is** the spread lemma and [19] is Rao, i.e. `ALWZ.Rao20_lemma2`. Formalising 4.2 would consume the axiom, not demote it. Independently, the chain it was to feed is arithmetically worse than Erdős–Rado — see `docs/roadmap.md` §21.2 and `coq/IntersectingSpread.v`. Rule 6: page 1 is not the paper, and neither is the statement of a theorem on it.|
 | B11 | The cone `g(b−1) ≤ ι(b)` is folklore | **Technique found; exact statement still not found** | Hunter's answer uses the same move — *"start with a maximal `t`-sunflower-free collection in uniformity `k−1`, and then add a unique 'dummy element' to each edge"* — in exactly this context. His dummies are *distinct per edge* (which grows the ground set); the repository adds *one shared* fresh point to every member (which makes the family intersecting). Same idea, different construction, different conclusion. No novelty was claimed and none is now. |
-| B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **The earlier "not found" is WITHDRAWN. The surrounding literature is central to the survey; the specific identity is "still not found" — but see rule 18: it is an *identity*, so no extraction-based search could have found it, and that half of the verdict is unsupported.** | [Kup25] read in full. Its §1.7 *Approaches to constructing bases* is about exactly this material, under names this repository did not search for: **base**, **nucleus**, **generating set**, **crosscut**, **minimal cover**. p. 52: *"the produced sets ... give exactly the family of **minimal covers** for the sets in `F`. These are the bases of the type used by Frankl in [44]. In a recent paper of Frankl [52], the family of minimal covers is efficiently analyzed in order to bound the maximal diversity of an intersecting family."* — and the construction is *"essentially due to Erdős and Lovász [39]"*. p. 59: *"a `d`-simplex are the simplest examples of non-trivial intersecting families, that is, **intersecting families with covering number 2**."* So `τ` of intersecting families is a studied quantity with a named literature. The multiplicativity identity itself is still not found, but the search that said the area was untouched was wrong twice over — wrong vocabulary, and a broken extractor. |
-| B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found — unsupported for the same reason as B10; see rule 18.** Both claims are formulas. | Not in [ALWZ20] §3 (read), not in [Kup25] (now read in full). But note [Kup25] §1.7, p. 49: spreadness is now a *tool* in this literature — *"r-spread families in many ways behave like sunflowers with r petals, albeit they are much easier to find"* — via the Kupavskii–Zakharov **peeling-simplification** and **spread approximation** methods, neither of which this repository knew about. Not exhaustive. |
+| B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **Split verdict, and the halves now go opposite ways. The OPERATION is FOUND, published in 1975. The IDENTITY is still not found, now on rendered evidence rather than on a broken extractor.** | [Kup25] read in full; §1.7 *Approaches to constructing bases* is this material under names this repository did not search for — **base**, **nucleus**, **generating set**, **crosscut**, **minimal cover**. p. 52: *"the produced sets ... give exactly the family of **minimal covers** for the sets in `F`. These are the bases of the type used by Frankl in [44]. In a recent paper of Frankl [52], the family of minimal covers is efficiently analyzed in order to bound the maximal diversity of an intersecting family."* — and the construction is *"essentially due to Erdős and Lovász [39]"*. **Session N+15 followed `[39]` to the source and the operation is there verbatim.** [EL75] p. 620, construction (d), rendered: *"Let `H` be a 3-chromatic `r`-uniform clique, `V(H) = {1, …, n}`. Let `H₁, …, Hₙ` be 3-chromatic `ρ`-uniform cliques, `V(Hᵢ) ∩ V(Hⱼ) = ∅`. Define `H* = {E_{i₁} ∪ … ∪ E_{iᵣ} : Eᵢ ∈ Hᵢ, {i₁, …, iᵣ} ∈ H}`. Then `H*` is a `(ρr)`-uniform 3-chromatic clique."* That is `substitute` — `coq/Substitution.v` — and the paper records that it preserves intersecting-and-not-2-colourable. **What is multiplied there is the SIZE, not `τ`:** p. 621, proof of Theorem 6, *"`|H^{(k+1)}| = 7^{3^k} · |H^{(k)}|`, whence `|H^{(k)}| = 7^{(3^k−1)/2}`"* — iterated substitution with the Fano plane, the same shape as AHS's `10^{b/2}` with a 7-set base. The paper's `τ` statements are p. 621 (the `r^r` upper bound uses only *"that `H` is an `r`-uniform clique which cannot be covered by less than `r` points"*) and p. 623 §4; **no line states `τ(H*)` in terms of `τ(H)` and `τ(Hᵢ)`**, and `τ(H*) = ρr` is implied only through 3-chromaticity, never written. [Fü80] (*Maximal intersecting families of finite sets*, JCTA 28 (1980) 282–289, 8/8 rendered) is the follow-up on maximal intersecting families with `τ = k`: Proposition 3 gives `|H| ≤ k^r` with equality *"only in the case described in the statement"* — a maximality statement for a `τ`-extremal family, but for the Erdős–Lovász problem, not for AHS sunflower-free families. **So: cite [EL75] for the operation. The identity and the AHS maximality remain not found.** See also the [52] mis-citation recorded in session N+15. |
+| B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found — and, like B10, the negative now rests on rendered pages rather than on extraction.** Still **NOT EXHAUSTIVE**. | Not in [ALWZ20] §3 (read), not in [Kup25] (read in full). Session N+15 re-rendered the two regions that could hold it. [Kup25] §1.7 p. 49, rendered: *"A family `F` is `r`-spread for some `r > 1` if `|F(X)| < r^{−|X|}|F|` for any set `X`. We will see that `r`-spread families in many ways behave like sunflowers with `r` petals, albeit they are much easier to find."* — spread is a **tool** here, via Kupavskii–Zakharov **peeling-simplification** and **spread approximation**. pp. 49–53 contain **no spreadness computed for any explicit construction and no product rule**; pp. 5–7 (the AHS pages) contain no spreadness statement at all. **The exponent `log₃ 2` appears on no rendered page.** The object the profile describes *is* in print — [EL75] p. 621's iterated 3-fold substitution `|H^{(k)}| = 7^{(3^k−1)/2}` on `3^k`-uniform families — but no degree or spreadness statistic is computed for it there. Corpus not re-rendered: ALWZ20 §3, Rao 2020, Lovett's notes, Kupavskii–Zakharov 2022 — all previously extraction-read only, so rule 18 still stands over that part. |
 | B14 | Zach Hunter's ground-set equivalence, credited to MathOverflow | **FOUND AND READ IN FULL** | `mathoverflow.net/a/463150`, 30 Jan 2024, answering domotorp's question 462924. Retrieved verbatim through the StackExchange API after `WebFetch` was blocked for the site. Quoted in full below; it confirms the equivalence *and* contains two further things this repository has. |
 | B15 | Prescribed-symmetry / Kramer–Mesner applied to sunflower-free families | **Not found** | Nothing in the 2024–2026 arXiv sweep, nothing in [Kup25] pp. 5–6. Not exhaustive over design-theory venues. |
 | B16 | `ι(3)=10` is the unique simple 2-(6,3,2) design | **VERIFIED — by exhaustion, not by citation** | The Handbook of Combinatorial Designs is not open access, so the uniqueness claim could not be read. It does not need to be: there are only `C(20,10) = 184756` ways to choose ten triples from the twenty on six points. Enumerated — exactly **12** are simple 2-(6,3,2) designs, and all 12 form a **single** isomorphism class under `Sym(6)`. `720/12 = 60` re-derives `\|Aut\|` independently of `structure::automorphisms`, and agrees with it. `rust/tests/iota_structure.rs::the_two_six_three_two_design_is_unique_and_that_is_checked_not_cited`. |
@@ -126,8 +126,10 @@ literature, resolved.
 | B19c | A **level-wise, geometric** cap on the degrees of a family is not a studied notion | **REFUTED. It is studied, it is named, and the name contains neither "spread" nor "degree".** | [Kup25] p. 53, **rendered and read**: *"We say that a family `F ⊂ A` is `τ`-homogeneous with respect to `A`, if for any set `X` we have `|F(X)|/|F| ≤ τ^|X| · |A(X)|/|A|`. ... then it transforms into `μ(F(X)) ≤ τ^|X| μ(F)`."* Attributed to Zakharov and the author [98], alongside the *spread approximation* method, with a footnote recording a notation clash with Füredi's `τ`-homogeneous. This is a cap at **every** level, **geometric in `|X|`** — the shape of Rao's condition, generalised to an arbitrary ambient family `A`. With `A = binom([n],k)` it is the fractional condition (`Spread.Spread`) rather than the absolute one (`Spread.RaoSpread`), so it is not the same hypothesis; but §24.13's framing — that the neighbouring literature caps *one* statistic and a level-wise cap is a different kind of object — is **too strong as written**. What remains not found is what B19d says: the **extremal question** under the absolute condition together with an intersecting hypothesis. *The absolute condition itself is published and is in this corpus* — this row used to claim otherwise and was contradicted by the RaoSpread transcription check below and by [BCW21]'s own definition, *"a family `S` of `k`-element sets is called `r`-spread if there are at most `r^{k−\|T\|}` sets of `S` that contain any non-empty set `T`"*. Corrected session N+11; see the note at the end of this file. |
 | B19d | Where this development's hypothesis sits, now that the rendered pass has read the neighbours | **A 2×2, and only one corner is unoccupied** | Two axes: **relative** (`deg ≤ c·|F|`) vs **absolute** (`deg ≤ r^(m−|T|)`), and **one level** vs **every level**. [Kup25] p. 20, rendered: Frankl [44] *"studies the families in which no element is contained in more than a `c`-fraction of sets"* — relative, level 1. p. 53: `τ`-homogeneous — relative, every level. p. 46, Jiang–Longbrake's quantitative Füredi (Thm 52), rendered: the subfamily it produces satisfies *"for every `J = A ∩ B` ... and every `x ∈ [n] \ J` we have `|F*(J ∪ {x})| ≤ (1/s)|F*(J)|`"*, with a matching lower bound — relative, every level, **two-sided**, and phrased exactly as Rao's is, as a decay by a factor per added point. The unoccupied corner is **absolute at every level under an intersecting hypothesis**, which is `Spread.RaoSpread` and the setting of `I(m,r)`. §24.13's "the neighbouring literature caps one statistic" is right about Frankl and wrong as a general characterisation: the axis separating this work from the literature is relative-vs-absolute, not one-level-vs-all-levels. |
 | B19e | `SpreadReduction.spread_reduction`'s recursion is peculiar to this development | **It has a published counterpart, one setting over** | [Kup25] p. 50, rendered, Observation 58: *"If `G ⊂ binom([n],ℓ)` is such that there is no `X` such that `G(X)` is `r`-spread, then `|G| ≤ r^ℓ`"* — proved by taking an inclusion-maximal `X` violating spreadness, so that `G(X)` is spread by maximality. That is the same argument as this repository's reduction (find a violating `T`, pass to the link, recurse, conclude `|F| ≤ r^m`), in the fractional setting rather than the absolute one. No novelty was ever claimed for `spread_reduction`; this records where its counterpart is. |
-| B19f | §24.13 dates the degree-condition line to "Frankl 1987" | **Two earlier sources, both 1978, and one of them is titled the question** | [Kup25] reference list, rendered. p. 63, [44]: *P. Frankl, "On intersecting families of finite sets", J. Combin. Theory Ser. A 24 (1978), 146–161* — the paper p. 20 attributes the `c`-fraction max-degree condition to, so that condition is Frankl **1978**. p. 64, [62]: *Z. Füredi, "**Erdős–Ko–Rado type theorems with upper bounds on the maximum degree**", Colloquia Math. Soc. J. Bolyai 25, Szeged, 1978, pp. 177–207* — the closest-titled paper found anywhere, and nine years earlier than the attribution §24.13 carries. Neither is in this corpus. Both are the first targets of any continuation of the B19 search, together with p. 65's [89] *Kostochka–Mubayi, "The structure of large intersecting families", PAMS 145 (2016)* and [96] *Kupavskii–Noskov (2025), arXiv:2410.06156*, on the Duke–Erdős corner. |
+| B19f | §24.13 dates the degree-condition line to "Frankl 1987" | **Two earlier sources, both 1978, and one of them is titled the question** | [Kup25] reference list, rendered. p. 63, [44]: *P. Frankl, "On intersecting families of finite sets", J. Combin. Theory Ser. A 24 (1978), 146–161* — the paper p. 20 attributes the `c`-fraction max-degree condition to, so that condition is Frankl **1978**. p. 64, [62]: *Z. Füredi, "**Erdős–Ko–Rado type theorems with upper bounds on the maximum degree**", Colloquia Math. Soc. J. Bolyai 25, Szeged, 1978, pp. 177–207* — the closest-titled paper found anywhere, and nine years earlier than the attribution §24.13 carries. Neither is in this corpus. Both are the first targets of any continuation of the B19 search, together with p. 65's [89] *Kostochka–Mubayi, "The structure of large intersecting families", PAMS 145 (2016)* and [96] *Kupavskii–Noskov (2025), arXiv:2410.06156*, on the Duke–Erdős corner. **Session N+15 closed two of the four targets and neither is the missing corner.** [KM17] (Kostochka–Mubayi, *The structure of large intersecting families*, arXiv:1602.01391) read 11/11 rendered — see B19f-KM. [KN24] (Kupavskii–Noskov, arXiv:2410.06156) read pp. 1–8 of 61 — see B19f-KN. The two that remain are Füredi 1978 `[62]` and Frankl 1978 `[44]`; Füredi 1978 was separately obtained and refuted at rows A15/A15a (`docs/papers/furedi78-rendered-pass.md`, 31/31 pages), so **`[44]` is the only one of the four still owed.** |
 | B19g | The absolute-one-level corner of B19d's 2×2 is empty | **REFUTED — it is the Duke–Erdős function, and the corpus already holds the paper** | [Kup25] p. 57, rendered, §1.9.3: `f(n,k,ℓ,s)` is the largest `k`-uniform family with no `Δ(s)`-system of kernel size `ℓ`, which the survey states for `k=3, ℓ=2` as *"no pair of elements is contained in `s` triples"* — that is `deg T < s` for every `\|T\| = ℓ`, an **absolute cap at one level**. Quoted values: `f(n,3,2,s) ~ (1/6)sn²`; `f(n,k,ℓ,s) = Θ_k(s^(ℓ+1)n^(k−ℓ−1))` for `k ≥ 2ℓ+2` (Bradač–Bucić–Sudakov). So Rao's condition is the **simultaneous, geometric** version of Duke–Erdős's single-level cap. **With one precision, found on p. 34 and worth the correction:** `f(n,k,ℓ,s)` forbids a `Δ(s)`-*system* with kernel of size `ℓ`, and a sunflower needs **pairwise disjoint petals**, so that condition is strictly *weaker* than `deg T < s` for `|T| = ℓ` — except at `ℓ = k−1`, where the petals are singletons and disjointness is automatic. p. 57's phrasing is exactly that case (`k=3, ℓ=2`). So Duke–Erdős occupies the corner **exactly at `ℓ = k−1`** and only approximately below it. `dukeerdos.pdf` has been in the corpus throughout and was never connected to `I(m,r)`. |
+| B19f-KM | Whether [KM17]'s `B*(H)` layers impose sunflower-freeness as a hypothesis, or derive it | **CONFIRMED BY RENDERING, both exponents exactly as previously extracted — and it is a DERIVED structural decomposition, not an imposed hypothesis. A23's verdict stands.** | [KM17] p. 5, rendered: *"Define `B*(H)` to be the set of `T ⊂ V(H)` such that (i) `0 < |T| < r`, and (ii) `T` is the core of an `(r+1)^{|T|}`-sunflower in `H`."* Then `B′(H)` = inclusion-minimal members, `B″(H)` = edges containing no member of `B*(H)`, `B(H) = B′ ∪ B″`, `B_i` = members of size `i`. p. 6, rendered: *"Claim. `B_i` contains no `(r+1)^{i−1}`-sunflower."* with a half-page proof, then *"Applying the Claim and Lemma 11 yields `|B_i| < f((r+1)^{i−1}, i)` for all `i > 1`."* The **only** hypotheses on `H` (p. 5) are *"intersecting `r`-graph with `τ(H) ≥ 2` and `|H| > hm″(n,r)`"*, and the paper attributes the machinery: *"The following crucial claim proved by Frankl can be found in Lemma 1 in [6, 8]"* — Frankl's `Δ`-system base construction, applied with petal count `r+1` chosen by the authors. **So it is a theorem *about* intersecting families that *produces* a sunflower-free base, not a theorem *bounding* intersecting families *assumed* sunflower-free with prescribed `τ`.** It does not replace the `ι(4,11)` computation. Note the degree-type condition is **relative** (`n` large, `|H| ~ (r−2)·C(n, r−2)`), stated at **one** level at a time but for **every** `i` — Rao's shape in the fractional setting, which is B19d's *relative / every level* corner again. |
+| B19f-KN | Where [KN24] sits in B19d's 2×2, from the primary source rather than from the survey | **Absolute, one level — B19g confirmed from the primary.** Read pp. 1–8 of 61. | p. 1, abstract, rendered: the Duke–Erdős problem *"determine the maximum size of an `n`-vertex `k`-uniform hypergraph without a sunflower with `s` petals and a kernel of size `ℓ`"* — the extremal function `f(n,k,ℓ,s)`, an **absolute** cap (`< s` petals on a kernel of size exactly `ℓ`) at a **single** level `ℓ`. Main results pp. 2–4: exact `f(n,k,ℓ,s)` for `n ≥ n₀(k,s)` in several `(k,ℓ)` ranges plus extremal structure, via the `Δ`-system method with spread approximations. **No intersecting hypothesis and no cap at every level.** B19g reached this corner through [Kup25] p. 57; this reaches it through the paper. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -552,7 +554,7 @@ that this session found. That is a stronger negative than a list of
 failed fetches, and it is the right kind: a machine-readable answer from
 a comprehensive index rather than an exhausted search.
 
-Five attempts, all recorded:
+Six attempts, all recorded:
 
 1. `sciencedirect.com/science/article/pii/0097316572901034/pdf` → HTTP 403.
 2. `doi.org/10.1016/0097-3165(72)90103-4` → HTTP 404 (DOI suffix guessed).
@@ -564,6 +566,12 @@ Five attempts, all recorded:
 5. `doi.org/10.1016/0097-3165(72)90103-3` with the **correct** DOI →
    resolves to the ScienceDirect landing page; the PDF endpoint returns
    HTTP 403.
+6. The ScienceDirect `pdfft` download route, with a **browser
+   user-agent** rather than the default — the one variable the earlier
+   five had not changed. HTTP 403 for both the article page and the
+   download. Tried in the session N+15 commissioned pass, from a
+   different container and a different network path, which also rules
+   out this container's proxy as the cause.
 
 **Elsevier paywall, no legitimate open copy found. Recorded as unread.**
 Per `docs/roadmap.md` §15.2's own instruction: nothing further is built
@@ -1264,7 +1272,7 @@ attribution CC BY requires.
 
 | Source | Reason |
 |---|---|
-| [AHS72], JCTA 12 (1972) 381–389 | Elsevier paywall; four routes tried (see above). No legitimate open copy. |
+| [AHS72], JCTA 12 (1972) 381–389 | Elsevier paywall; **six** routes tried (see above), the sixth from a different container and network path in session N+15. No legitimate open copy. |
 | [BaKh09], Discrete Math. 309 (2009) 4176–4180 | Paywalled; unchanged from earlier sessions. |
 | [ChHa76], JCTB 20 (1976) 128–138 | Not attempted this session. |
 | Handbook of Combinatorial Designs | Not open access. **No longer needed**: the `2-(6,3,2)` uniqueness is now verified by exhaustion in `rust/tests/iota_structure.rs`. |
@@ -2233,6 +2241,7 @@ one row that matters. Evidence classes below are exact about that.
 | A21 | Rows A14 (greedy-cover barrier), and the AHS-optimality conjecture, and the maximality of substitution families | **All three still NOT FOUND, now against a wider search** | No named conjecture for `ι(b)² ≤ 10^(b−1)` beyond Kostochka's prose; no published maximality statement for the AHS families; no barrier statement for the classical greedy/covering method. Consistent with A12, A14 and §13.1. Three independent negatives do not make an exhaustive search, and none of these is upgraded. **A19b is now a barrier *measurement* for one specific greedy method**, which is not the same thing as a barrier theorem and is not recorded as one. |
 
 | A22 | The covering-number literature can close the `ι(4,11)` rung, because `τ ∈ {3,4}` is forced there and a maximum below 32 would end it (`docs/roadmap.md` §37.5's proposal) | **REFUTED, decisively, and the refutation is checked here** | Commissioned search, then verified first-hand. **`k=4, τ=3`:** the maximum is not bounded below 32. Frankl–Wang, *Intersecting families with covering number three*, arXiv:2207.05487v3, Example 1.3 (JCTB **171** (2025), 96–139) construct `G(n,k)`, and at `n=11` it has **74 members**. ~~it grows like `Θ(n³)`~~ — **corrected in session N+13, see A24a: the growth is `Θ(n)`, and exactly `13n − 69` for `n ≥ 8`.** The conclusion is unaffected, because `13·8 − 69 = 35 > 32` already at the smallest admissible `n`. **`k=4, τ=4`:** this is Erdős–Lovász's `r(k)`; the best bracket is `42 ≤ r(4) ≤ 64`, with the classical `n`-free bound `k^k = 256`. Every one of these is above 32. **So no citation from that literature excludes a 32-member family**, and the reduction below 32 must come from 3-sunflower-freeness. |
+| A22a | Where the `τ = 4` line's numbers actually come from | **Both ends of A22's `k^k = 256` and the `42` are one theorem on one page, and it is now read. The `≤ 64` is not, and is uncited anywhere in this repository.** | A22 and §37.6 attribute the `τ = 4` case to *"Erdős–Lovász `r(k)`"* and quote `42 ≤ r(4) ≤ 64` with *"the classical `n`-free bound `k^k = 256`"*, all on report from a commissioned search. Session N+15 rendered the primary: **[EL75] p. 612, Theorem 7, `r!(e−1) ≤ M(r) ≤ r^r`**, `M(r)` the maximum size of a 3-chromatic `r`-uniform clique — an intersecting family with `τ = r`, which is exactly this case. The arithmetic is checked here, in this container, not taken from the report: `4!(e−1) = 24 × 1.718281828… = 41.2388…`, so `⌈4!(e−1)⌉ = **42**; and `r^r = 4^4 = **256**`. **So the two numbers this repository carried on report are the two ends of a single displayed inequality, and both are now confirmed from a rendered primary source.** **What is not confirmed, and is the reason this row exists:** `r(4) ≤ **64**` is *not* Theorem 7 — Theorem 7's upper bound is 256 — so that half of A22's bracket comes from some other source that neither §37.6, A22 nor `docs/references.md` names. It is quoted in two places and cited in none. It is also not load-bearing: 64 > 32 and so is 256, so A22's conclusion holds on the weaker number alone. Recorded so that a later session does not mistake it for something this development checked. |
 | A22a | `G(11,4)` rebuilt and tested here, rather than taken on report | **Reproduces exactly, and it confirms a prediction this development makes about it** | Example 1.3 quoted verbatim from the arXiv PDF (fetched, 30 pp, `pdftotext`; **p. 2 has since been rendered to an image and read, A24a**): `B = {[2,k+1], {2}∪[k+2,2k], {3}∪[k+2,2k]}` and `A = {A ∈ ([n] choose k) : 1 ∈ A and A ∩ B ≠ ∅ for each B ∈ B}`, `G(n,k) = A ∪ B`. Built at `n=11, k=4`: **74 members** (matching the paper's own inclusion–exclusion), intersecting, and `τ = 3` with `{1,2,3}` a transversal exactly as the paper says. **The prediction:** `PureLink.iota_four_at_most_71_if_iota_three_is_ten` gives `ι(4) ≤ 71` on the exhaustive `ι(3) = 10`, and `74 > 71`, so `G(11,4)` *cannot* be sunflower-free. It is not — it contains **3481** three-sunflowers, and a randomised greedy retains only **17 of 74**. `rust/tests/frankl_wang.rs`. This is the concrete form of the gap in A22: the extremal family for the covering-number problem is useless for the sunflower problem. |
 | A24 | A published bound exists on the **support** — the number of points — of an extremal sunflower-free 4-uniform family, which would make the `ι(4,n)` ladder a finite search | **NOT FOUND — and this repository already knew why, which is the finding about the report and not about sunflowers** | Third commissioned search, then every page of all three primaries rendered to an image and read here (Majumder 6 pp, Frankl–Pach–Pálvölgyi 10 pp, Frankl–Wang 30 pp; PyMuPDF at 150 dpi, `pdftotext` deliberately not used). **Nothing in the report's central section was new to this repository.** `docs/references.md`'s [FPPTZ24] entry already records, from an earlier session's rendered read of the same pages: that Conjecture 14 is *equivalent* to Erdős–Rado, crediting Hunter; that `g_v(k) ≥ 2^k − 1`; and the sentence *"We could not find any papers studying the quantity `g_v(k)`"*. Row B14 has Hunter's answer read **in full** (MathOverflow 463150, to Pálvölgyi's question 462924, via the StackExchange API). So the report re-derived a finding this repository had and presented it as news, and the first draft of this row did the same thing back. **What stands, restated as prior art rather than discovery:** `g_v` is the support function §37.6 wanted bounded; bounding it is equivalent to the whole conjecture; therefore **no ladder design may be predicated on obtaining a support bound.** That instruction is the useful residue, and it was already implicit in `docs/roadmap.md` §7's treatment of `SliceRank.GroundBounded`. One citation correction: FPP's ref. **[17] is MathOverflow question 163689**, which is the *direct-sum / wreath-product* discussion cited on their pp. 2 and 4 — **not** Hunter's equivalence, which is the inline URL truncated in the p. 8 render and is 463150 per B14. Do not merge the two. |
 | A24a | The `k=4, τ=3` maximum "grows like `Θ(n³)`" (A22, as written in session N+12) | **WRONG, and corrected — the growth is linear** | Frankl–Wang p. 2 rendered. Eq. (1.3) is `\|G(n,k)\| = (k²−k+1)·C(n−3,k−3) + O(C(n−4,k−4))`, so at `k=4` the leading binomial is `C(n−3,1) = n−3` and the growth is `13(n−3) + O(1)` — **linear**. The cubic reading came from taking `C(n−1,k−1)`, the first term of the exact eq. (1.4), as the leading term; but the four `C(·,k−1)` terms carry coefficients `+1 −1 −1 +1`, which sum to zero, so the `n³/6` cancels. Exactly: **`\|G(n,4)\| = 13n − 69` for `n ≥ 8`**, checked for `n = 8…400` in `rust/tests/support_bounds.rs`, and `13·11 − 69 = 74` reproduces A22a's rebuilt value. **A22's conclusion survives**: `35 > 32` at `n = 8`, so the refutation of §37.5 never depended on the rate. Recorded because the wrong rate was committed, not because it changed an outcome. |
@@ -2334,3 +2343,228 @@ load-bearing for anything in `coq/`.
   in A15a and it is about the report, not the paper.
 * **Kostochka–Mubayi PAMS 2016 and Kupavskii–Noskov arXiv:2410.06156**
   (row B19f's other two targets). Not attempted.
+
+## Session N+14: an outgoing prompt is a handoff, and this one was not
+##                checked against the repository
+
+A parallel literature session was commissioned from a prompt written in
+this session. It came back with careful work, and roughly half of it was
+spent on questions this repository had already answered — because the
+prompt was assembled from the register's *questions* without re-reading
+the register's *verdicts*.
+
+### The two items it wasted, both of them the prompt's top priorities
+
+**"M1: is there any literature on the ground-set size of extremal
+sunflower-free families? A hit closes k = 3."** Everything it found is in
+`docs/references.md` [FPPTZ24], recorded in more precise form. Frankl–
+Pach–Pálvölgyi's Conjecture 14, the Hunter equivalence, `g_v(k) ≥ 2^k−1`
+by the depth-k binary tree, and FPP's own "we could not find any papers
+studying the quantity" are all there, and Hunter's MathOverflow answer is
+marked **READ IN FULL** with the StackExchange-API route that got it.
+
+The returned report concluded that the binary tree "refutes the literal
+linear form". The entry already distinguishes what that refutation
+reaches: the **universal** reading of `GroundBounded` is false and is
+formalised false — `IotaGround.the_universal_ground_reading_is_false`,
+checked to `k = 6` in `rust/tests/ground_set.rs` — while
+`SliceRank.GroundBounded` is an **existential** over families of extremal
+size, `∀ m j, LowerBound m 3 j → ∃ F U, … length U ≤ c * m`, which the
+binary tree does not touch: it has `2^k` members against
+`f(k,3) ≥ 10^{k/2} ≈ 3.16^k`, so it is nowhere near extremal.
+`bounded_ground_set_settles_k3` is not vacuous, and the repository
+already knew the route is a *linear strengthening of a known equivalent
+formulation* rather than a shortcut.
+
+**"Tier 1 item 1: Füredi 1978, named, located, never opened."** It was
+opened in session N+12. **A15**: all 31 pages rendered at 140 dpi and
+read; *Δ-system* and *sunflower* occur nowhere in it; REFUTED as a
+target. **A15a**: the "no digitisation" claim was itself wrong, and
+records the working URL on the Rényi host. The prompt sent a session to
+re-attempt a documented dead end, and it failed by the same routes A15a
+names as the ones that fail.
+
+### What it did deliver, including one correction to this session
+
+* **A23 held** under a second, independent search: no published theorem
+  bounds intersecting **and** prescribed-`τ` **and** 3-sunflower-free
+  families. Kostochka–Mubayi, Proc. AMS 145 (2017) 2311–2321, is the
+  closest and is structural, not an exact bound. **The 85 123.9 s SAT
+  computation is not replaceable by a citation**, now on two searches
+  rather than one.
+* **M4 was overstated by this session, and is corrected here.** Asked
+  earlier whether the combinatorial `r`-spread condition connects to
+  incoherence and RIP in sparse recovery, this session searched, found
+  nothing, and reported the resemblance as "a word collision". That is
+  too strong. **arXiv:2108.13578, *ℓp-Spread and Restricted Isometry
+  Properties of Sparse Random Matrices*, ties an ℓp-spread property of
+  sparse random matrices to RIP, null-space and ℓp-compressibility.** It
+  is a matrix ℓp-spread notion rather than the ALWZ/FKNP combinatorial
+  lemma, so the narrow negative — nobody has imported the sunflower
+  spread lemma itself into sparse recovery — appears to stand. The broad
+  one does not. Recorded as a qualified hit.
+* Kostochka–Mubayi and Kupavskii–Noskov were correctly open: this file's
+  own "Not attempted" line for them was accurate.
+
+### The rule that would have caught this already existed, and this
+###     session broke it
+
+The instinct on finding a failure like this is to write a rule. That
+would be wrong here, because **rule 30 is already that rule** and it is
+four sections up this file:
+
+> *"An idea generated in conversation is a hypothesis about the
+> repository, and it is checked against the repository before it is
+> reported — especially when it feels like a discovery. Rule 21 is the
+> same rule for incoming handoffs. ... Grep first, and grep for the
+> *object*, not for the phrasing the idea happened to arrive in."*
+
+The prompt was a set of ideas generated in conversation and reported —
+to a third party, which is the only new part. Rule 30 covers it; it was
+not applied. So the entry here is not a new rule but the record of an old
+one being broken, which is the more useful thing for the next session to
+read: the rules in this file are not short of coverage, they are short of
+being run.
+
+**Rule 30 gains one clause rather than a successor**, because the
+outgoing case has a cost the incoming case does not: *an idea reported as
+a task for someone else is a handoff, and its author is the only person
+positioned to check it — the recipient cannot.* The prompt's two top
+priorities were both refuted by rows in the very tables it was assembled
+from, in the verdict column, beside the questions it copied. **A register
+is not a list of open questions. Read the row you are about to re-ask.**
+
+The mechanical fix is one command. `grep -n "Füredi 1978" docs/reading.md`
+returns A15 and A15a; `grep -n "FPP" docs/references.md` returns the entry
+that contains all of M1. Neither was run.
+
+## Session N+15: a commissioned rendered pass, and the part of it that
+##                could be checked here
+
+The second commissioned literature session came back with a corpus, not
+a claim: **136 pages rendered at 150 dpi, 96 read as images, no text
+extraction at any point, not even to locate a page.** That is rule 19 run
+properly, and it is the first pass in this development's history to
+satisfy rule 18 across more than one paper. Thirteen sources, nine of
+them read: [Kup25] (repo copy, 16pp), [KM17] 11/11, [KN24] 8 of 61,
+[Fü83] 4/4, [FF85] 17/17, [FT85] 5/5, [Fü80] 8/8, [FFnt] 2, [EL75] 19/19,
+[Fr17] 4 of 30, [FK18] 2.
+
+**What it bought.** Four negatives this file had been forced to mark
+*unsupported* under rule 18 — B9, B10, B12, B13 — are now negatives on
+rendered evidence. That does not make them exhaustive and the rows still
+say so. It makes them the right *kind* of statement: previously they said
+"we ran a search that could not have found this"; now they say "we looked
+at the pages and it is not on them". Two of B19f's four named targets are
+closed, and B19g's placement of Duke–Erdős is confirmed from the primary
+source rather than from the survey. And B12's operation, which every
+earlier pass called unfound, turns out to be published in 1975.
+
+### What was checked in this container, and what was not
+
+Rule 21 and rule 30 both say an incoming report is a hypothesis. The
+report names a corpus that is **not** in `docs/papers/pdf/` — eight of its
+thirteen sources were fetched in the other container and are gone with
+it — so most of it cannot be re-verified here. What *can* be is every
+claim it makes about `kupavskii_survey.pdf`, which is in the corpus. Those
+were re-rendered here at 150 dpi and read:
+
+| Checked | Result |
+|---|---|
+| `[39]` = Erdős–Lovász, *Problems and results on 3-chromatic hypergraphs…*, Colloq. Math. Soc. János Bolyai **10**, 609–627, 1975 | **Confirmed**, [Kup25] p. 63 |
+| `[52]` = P. Frankl, *Antichains of fixed diameter*, Moscow J. Combin. Number Theory **7** (N3) (2017) | **Confirmed** — but on p. **64**, not p. 63 as the report states. See below. |
+| `[54]` = Frankl–Füredi, *Forbidding just one intersection*, JCTA **39** (1985) 160–176 | **Confirmed**, p. 64 |
+| `[63]` = Füredi, *On finite set-systems whose every intersection is a kernel of a star*, Disc. Math. **47** (1983) 129–132 | **Confirmed**, p. 64 |
+| The list holds exactly **one** Frankl–Kupavskii entry, `[57]` *The Erdős Matching Conjecture and Concentration Inequalities*, JCTB 157 (2022) | **Confirmed**, p. 64 — so the survey cites **no** Frankl–Kupavskii diversity paper anywhere |
+
+**Not checkable here, and recorded as reported:** everything quoted from
+[EL75], [KM17], [KN24], [Fü83], [FF85], [FT85], [Fü80] and [Fr17] —
+including [EL75] p. 620 construction (d), which is the session's most
+load-bearing find and is now cited in row B12. It is a page quotation from
+a rendered image, which is the strongest form this file accepts, but it
+was rendered elsewhere. A session that re-obtains `1975-34.pdf` should
+re-read p. 620 and p. 621 before B12's "FOUND" is treated as settled.
+
+### One page number was wrong, and that is the useful part
+
+The report cites the reference list as p. 63. It is p. 64: p. 63 carries
+`[21]`–`[44]`, p. 64 carries `[45]`–`[73]`. This file's own B19f row had
+p. 63/`[44]` and p. 64/`[62]` right all along, from the N+9 pass. A single
+digit, no consequence for the claim — and exactly the kind of drift that
+makes a report worth checking against the one source you hold rather than
+accepted whole. The finding stands; the citation did not.
+
+### The `[52]` mis-citation
+
+[Kup25] p. 52 credits *"a recent paper of Frankl [52]"* with analysing
+minimal covers *"in order to bound the maximal diversity of an
+intersecting family"*. `[52]` resolves — confirmed here, p. 64 — to
+*Antichains of fixed diameter*. The commissioned session rendered four
+pages of that paper and reports it is about antichains and Kleitman's
+diameter theorem, with no minimal-cover analysis, and proposes
+Frankl–Kupavskii, *Diversity*, arXiv:1811.01111 as the intended source
+(p. 1: *"its diversity is the number of sets not containing an element
+with the highest degree"*).
+
+Half of this is verified here and half is not. Verified: what `[52]`
+resolves to, and that the survey's bibliography contains no
+Frankl–Kupavskii diversity paper — so if the diversity line is theirs,
+the survey does not cite it. Not verified: the contents of *Antichains of
+fixed diameter*. The register's `[Fr17]` entry in `docs/references.md` now
+carries the discrepancy as a flag rather than as a settled correction,
+because a mis-citation in a published survey is a claim about someone
+else's work and this container cannot read the paper.
+
+> **Rule 33. The same word can name two objects in the same author's
+> papers in the same year.** In [Fü83] a *`t`-star* is a `Δ`-system; in
+> [FT85] — Füredi again, two years later, with Tuza — a *`t`-star* is
+> `t` sets each having a point of its own, which is a completely
+> different object. Rule 18 says the alphabet can change under you;
+> rule 33 says the **vocabulary** can too, and it is worse, because a
+> word that renders correctly gives no sign that it has been redefined.
+> A vocabulary search is not done when the word is found. It is done when
+> the *definition* on that page has been read and matched to the object
+> being looked for. This is why B9's negative survives having three
+> names for a sunflower: each name was checked at its definition.
+
+### A number the repository carried on report, now confirmed from the page
+
+The pass was commissioned to chase B9–B13 and B19f. It also, without
+being asked, settled the provenance of a number in a different row.
+Register row A22 and `docs/roadmap.md` §37.6 dispose of the `τ = 4` case
+at the `ι(4,11)` rung by citing *"Erdős–Lovász `r(k)`"* for
+`42 ≤ r(4) ≤ 64` and `k^k = 256`, on report from an earlier commissioned
+search. [EL75] p. 612 Theorem 7, rendered in this pass, reads
+`r!(e−1) ≤ M(r) ≤ r^r`. The arithmetic was done **here**, not taken from
+the report: `4!(e−1) = 41.2388…` so `⌈4!(e−1)⌉ = 42`, and `4^4 = 256`.
+Both numbers are the two ends of one displayed inequality on one page.
+
+The `≤ 64` is **not** on that page and is uncited anywhere in this
+repository — quoted twice, sourced nowhere. It is not load-bearing (64
+and 256 are both above 32, so A22's conclusion survives on either), but
+it is now flagged in the new row A22a rather than sitting unremarked.
+
+**The transferable point:** a commissioned pass aimed at one set of rows
+paid off in a row nobody asked about, because a *primary source* answers
+questions the request did not contain and a *report* answers only the
+ones it did. That is an argument for reading papers over commissioning
+answers, and it is the second time this file has recorded it.
+
+### What is still owed after this pass
+
+1. **[AHS72] remains unreachable.** ScienceDirect returns HTTP 403 for
+   both the article page and the `pdfft` route, with a browser
+   user-agent. That is a fifth failed route. Rows A3, A20 and B10 still
+   owe it, and rule 29 applies: this is a statement about the routes
+   tried, not about the paper.
+2. **Chung 1983 (`[17]`) and Chung–Frankl 1987 (`[19]`)** were not
+   fetched, so B9 stays non-exhaustive on the vocabulary that started it.
+3. **Frankl 1978 (`[44]`)** is the last of B19f's four targets still
+   unread; Füredi 1978 (`[62]`) was closed at A15/A15a.
+4. **[EL75] p. 620–621** should be re-rendered in a container that holds
+   the file, per the caveat above.
+5. **`r(4) ≤ 64` needs a source.** Row A22a: quoted in two places in this
+   repository, cited in none, and not the upper bound of the theorem the
+   surrounding numbers come from. Not load-bearing, and that is exactly
+   why it will keep being copied forward unless someone sources it or
+   drops it.

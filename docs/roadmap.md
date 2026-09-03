@@ -5883,7 +5883,7 @@ on the other side.
 
 **Where this sits relative to the literature.** Frankl's theorem for
 3-uniform intersecting families of covering number 3 gives `|G| <= 10`,
-which is the truth (`rust/tests/tau_three.rs` exhausts it on grounds 5–7
+which is the truth (`rust/tests/tau_three_at_eleven.rs` exhausts it on grounds 5–7
 and finds 10, attained by every 3-subset of a 5-set). The bound proved
 here is 16, so it is **six worse than the classical result and is not a
 contribution to that question**. What it is, is the first bound in the
@@ -5952,7 +5952,7 @@ together with one point from each of two blocks of size four —
 
 sixteen members, `Uniform 3`, `Distinct`, intersecting, and
 `RaoSpread 3 F 4` with equality at `{0}` and at every pair through `0`.
-`star34_attains_sixteen` in Coq; `rust/tests/tau_three.rs` re-verifies it
+`star34_attains_sixteen` in Coq; `rust/tests/tau_three_at_eleven.rs` re-verifies it
 by code sharing nothing with it.
 
 So the `m = 3` row of §24.13's conjecture — *is the star extremal for
@@ -6115,7 +6115,7 @@ conditional on an unformalised construction, see §25.3.)
 
 ### 25.6 Measured
 
-All exhaustive, all in `rust/tests/tau_three.rs` and
+All exhaustive, all in `rust/tests/tau_three_at_eleven.rs` and
 `rust/tests/cross_intersecting.rs`, all under a minute.
 
 ```
@@ -6159,7 +6159,7 @@ than finished, and it is worth naming as such: the naive branch-and-bound
 in the scratchpad decides grounds 5, 6 and 7 in about four minutes
 together and had not decided ground 8 after ten more, at which point it
 was killed to free a core. Three grounds agreeing at 10 is what the
-committed test pins (`rust/tests/tau_three.rs`, seconds, exhaustive on
+committed test pins (`rust/tests/tau_three_at_eleven.rs`, seconds, exhaustive on
 each of those three); ground 8 is **undecided**, and since the bound in
 question is Frankl's 10 rather than anything this session proves, nothing
 depends on it.
@@ -6531,7 +6531,7 @@ either §24.13 or §25 noticed.
 
 The `m = 3` row of the scanner is the check that it is measuring the right
 thing: 10, on the nose, on every ground from 5 to 8, which is Frankl's
-value and `rust/tests/tau_three.rs`'s.
+value and `rust/tests/tau_three_at_eleven.rs`'s.
 
 The `I(4,5)` row is the one to read carefully. Ground 7's value of 35 is
 `C(7,4)` — *every* 4-subset of a 7-set, which is intersecting and
@@ -6702,7 +6702,7 @@ First, the same shape at `m = 3` is exactly extremal: three copies of the
 triangle (the only non-star intersecting graph) give `1 + 3·3 = 10`, and
 10 is the exhaustively measured maximum of the τ ≥ 3 piece at `m = 3`
 *without* the Rao condition at all — Frankl's value, measured on grounds
-5 to 7 by `rust/tests/tau_three.rs`. So the construction attains, with
+5 to 7 by `rust/tests/tau_three_at_eleven.rs`. So the construction attains, with
 Rao(4), a bound that holds without it: at `m = 3` the shape is not a
 lower bound, it is the answer. Second, at `m = 4` the layers
 above the one-point layer are empty in `g65` — it spends its whole budget
@@ -10283,6 +10283,14 @@ which was the wrong model:
   is       19    1939    31624   220047   914505
 ```
 
+> **Both rows are real, and §52.1 says which is which.** The `is` row is
+> the cover under `all_points_used = true`, which is what `tools/rung.sh`
+> runs (it passes `--ladder`), so it is the right one for every checkpoint
+> in `docs/ladder/`. The `was` row is the cover without that option, which
+> is what the raw binary defaults to. What this table does not say — and
+> what nothing said until §52.1 — is that the difference is an *option*
+> rather than an error.
+
 What the tooling did **not** gain is a way to checkpoint a cube that is
 *not* split, and that is the binding constraint on this container rather
 than the compute: a whole cube is one `cadical` process with no resume
@@ -11484,7 +11492,7 @@ predicated on a support bound, because obtaining one is the conjecture.
 ## 45. Handover — session N+13
 
 Start here. §32 was the previous handover pointer and is four sessions
-stale; `STATUS.md` now points at this section.
+stale; `STATUS.md` pointed at this section; §54 is the current handover.
 
 ### 45.1 What moved
 
@@ -11847,7 +11855,7 @@ however much one asks for.
 was.** `docs/ladder/iota4_11.deg13.p3.tsv` is a prefix-3 split of the
 `deg(0) = 13` cube at eleven points, target **32**, from the session that
 added the flag: 27 sub-cubes instead of the full split's 1939, with
-fourteen rows recorded. The novelty audit runs against this repository's
+four rows recorded. The novelty audit runs against this repository's
 own ladder directory first (§45.4), and this section is the second time
 in three sessions that it has caught something.
 
@@ -11946,21 +11954,42 @@ eleven points, `deg(0) = 13`, prefix 3, but target 32 — and it is not
 encouraging:
 
 ```text
-  27 sub-cubes at a 600 s cap:  5 UNSAT (136.1, 381.9, 429.2, 459.0, 491.4 s)
-                                9 UNKNOWN at the cap
-                               13 never attempted
+  27 sub-cubes at a 2400 s cap:  0 UNSAT
+                                 4 UNKNOWN at the cap
+                                23 never attempted
 ```
 
-Five of fourteen attempted landed, and the ones that did used most of the
-600 s. **And target 28 is the strictly harder instance**, not the easier
+> **Corrected in §52.2. This block first read:**
+>
+> ```text
+>   27 sub-cubes at a 600 s cap:  5 UNSAT (136.1, 381.9, 429.2, 459.0, 491.4 s)
+>                                 9 UNKNOWN at the cap
+>                                13 never attempted
+> ```
+>
+> Those fourteen rows are not in `iota4_11.deg13.p3.tsv`. They are the
+> fourteen in `iota4_11.deg13.tsv`, which is the **full** 1949-way split
+> of the same cube — where "13 never attempted" should read 1935. The p3
+> file holds four rows, all `UNKNOWN` at 2400.1 s, under its own recorded
+> verdict "TOO COARSE, and the budget is the result. Not retried." The
+> two files were read as one, and §50.3 then costed a re-run from the
+> wrong one.
+
+Nothing landed at four times the cap the full split uses. **And target 28 is the strictly harder instance**, not the easier
 one. That is `Product.IotaAtLeast_antitone`, already in the kernel and
 already audited: uniformity, distinctness, intersecting-ness and
 sunflower-freeness all pass to subfamilies, so a 32-member family has a
 28-member one and UNSAT at 28 implies UNSAT at 32. It transfers to the
 encoding because `all_points_used` is off by default — the instance asks
 for a family on *at most* eleven points, so the trimmed subfamily is still
-a model. The 600 s cap that decided five of fourteen at target 32 will
-decide fewer at 28.
+a model. The 2400 s cap that decided none of four at target 32 will
+decide no more at 28.
+
+(That clause — "`all_points_used` is off by default" — is exactly right,
+and it is the same fact that makes this cube's full split 1949 rather
+than 1939. §37.4 had already replaced the counts with the
+`all_points_used = true` ones four sections earlier. The repository was
+using the fact in one argument while contradicting it in another; §52.1.)
 
 So 726 sub-cubes is the right *shape* and no basis at all for a cost
 estimate. If a sub-cube needs the 3600 s the coarse pass already spent per
@@ -11971,9 +12000,13 @@ that matters. Both are guesses, and §48.2's refusal to
 estimate stands — every extrapolation attempted on this ladder has been
 wrong, §39 by 1.92× and §43.4's four ratios by lying on no curve at all.
 What §49 changes is that the work is now *shaped* into independent
-few-hundred-second pieces that a checkpoint can accumulate across
-container deaths, instead of seven twelve-hour monoliths that lose
-everything when the container is reclaimed.
+pieces that a checkpoint can accumulate across container deaths, instead
+of seven twelve-hour monoliths that lose everything when the container is
+reclaimed. **How big those pieces are is the open question, and §52.2
+says prefix 3 gets it wrong at `deg(0) = 13`**: a prefix-3 sub-cube there
+covers up to 559 full sub-cubes, so it is a monolith of its own. The
+shape argument survives; the granularity has to be chosen per cube
+against the bucket sizes, not against the sub-cube count alone.
 
 ### 49.3 The driver was solving the hard cubes twice
 
@@ -12068,6 +12101,18 @@ exactly the cover, which is a sunflower), and the members containing a
 fixed pair have a link with no 3-matching, so Erdős–Gallai caps them.
 Neither is formalised here, and the mixed parts are the hard bit.
 
+> **§53 works this proposal.** Both pieces are now in
+> `rust/tests/tau_three_at_eleven.rs`. The second is weaker than it
+> needed to be: the link graph of a pair class has no 3-matching
+> *and* no vertex of
+> degree three, so it is sunflower-free as a graph and
+> `PureLink.g_two_at_most_six` caps it at **6** rather than Erdős–Gallai's
+> 13 — a lemma this development already had. It is still not enough. The
+> decomposition gives `|F| ≤ 39` against the 31 that would close the rung,
+> and §53.4 carries an explicit nineteen-member `τ = 3` family that says
+> so. "The mixed parts are the hard bit" is exactly right, and §53.5 names
+> the number that would have to be computed.
+
 ### 49.5 Gates
 
 All four, on the change set of §49. Nothing in it touches a Coq source, so
@@ -12157,23 +12202,50 @@ week-long monolith on that machine has returned nothing (§45.4 is the
 first).
 
 The alternative is to give up shape-purity for resumability and run the
-second opinion **over the prefix-3 split**, with `--checkpoint`. The split
-is a cover, so UNSAT on every sub-cube is UNSAT on the cube — it is an
+second opinion **over a split**, with `--checkpoint`. The split is a
+cover, so UNSAT on every sub-cube is UNSAT on the cube — it is an
 independent verdict by a different decomposition as well as a different
 solver, which is if anything a stronger cross-check than repeating
 cadical's shape. And every sub-cube that lands is banked.
 
+> **The command this subsection first gave was the prefix-3 split at
+> `--seconds 7200`, and §52.2 replaces it.** It read:
+>
+> ```sh
+>   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+>     --seqprefix 3 --cubecap 50 --slice 60 --seconds 7200 --threads T \
+>     --checkpoint docs/ladder/iota4_11.deg13.p3.cryptominisat5.tsv
+> ```
+>
+> justified by "the cadical rows in that file give the per-sub-cube cost
+> to expect: five landed between 136.1 s and 491.4 s, nine did not at
+> 600 s. `--seconds 7200` is twelve times the budget that left nine
+> undecided." Those rows are in `iota4_11.deg13.tsv`, not in the p3 file
+> (§49.2, corrected). The p3 file's own four rows are `UNKNOWN` at
+> 2400.1 s, so 7200 s is three times a budget that landed **nothing**,
+> not twelve times one that landed five of fourteen.
+
+The granularity that has measured evidence of landing at target 32 is the
+**full** split, which is what `iota4_11.deg13.tsv` itself calls "the
+working granularity":
+
 ```sh
   iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
-    --seqprefix 3 --cubecap 50 --slice 60 --seconds 7200 --threads T \
-    --checkpoint docs/ladder/iota4_11.deg13.p3.cryptominisat5.tsv
+    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --threads T \
+    --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
 ```
 
-27 sub-cubes (§49.2's table is at target 28; at target 32 the prefix-3
-split of this cube is the 27 that `iota4_11.deg13.p3.tsv` already records
-under cadical). The cadical rows in that file give the per-sub-cube cost
-to expect: five landed between 136.1 s and 491.4 s, nine did not at 600 s.
-`--seconds 7200` is twelve times the budget that left nine undecided.
+1949 sub-cubes, each banked as it lands (1949 and not 1939 because this
+was launched from the binary, without `--ladder`; §52.1). **`--seconds`
+was 600 in the first draft of this command, to match the cadical pass and
+make the two directly comparable. That was the wrong trade and §52.3a is
+the measurement**: at 600 s the pass decided 3 of 20, at 1800 s it stalled
+sixteen times consecutively, and at 5400 s it decides most of what it
+attempts with 48% headroom. Comparability is not worth a cap that binds. `--cubecap 2000` is what
+admits a 1949-way split; the 400 the crashed run carried is what refused
+it (§51.1, reading 5). The checkpoint is named for the question it answers
+— cube 13 under cryptominisat5, full split — rather than for the prefix-3
+plan that is no longer the plan. §52.2.
 
 ## 51. The exit status was read for nothing, so a crash and a budget were
 ##     the same observation
@@ -12272,3 +12344,836 @@ answered disagreed about what identifies a rung (§49.2). None is a bug in
 a formula. All four are two honest components with incompatible readings
 of the same value, and none was reachable by any test in the suite until
 the code was moved to where a test could reach it.
+
+## 52. Two covers, one unrecorded option — and a re-run costed from
+##     another file's rows
+
+§51.4 named the pattern — "two honest components with incompatible
+readings of the same value" — and this section is two more instances,
+which sharpen it: the disagreement stays invisible because the case
+anyone checks is the case where the two agree. The first of the two
+caught this session out before it caught anything else, and that is the
+useful part of it.
+
+### 52.1 `1939` and `1949` are both right, and nothing said which
+
+The `deg(0) = 13` cube at `(b, g, t) = (4, 11, 32)` has **two**
+degree-sequence covers, and which one a run enumerates is set by a flag:
+
+```text
+  all_points_used = true    1939 sequences   family on EXACTLY 11 points
+  all_points_used = false   1949 sequences   family on AT MOST 11 points
+```
+
+The 1939 are a subset of the 1949; the ten extra each carry a
+degree-zero point. `examples/iota_sym.rs` sets the option from `--ladder`
+and from nothing else, and **`tools/rung.sh` passes `--ladder`** — so
+every checkpoint in `docs/ladder/` holds the 1939 cover, and every count
+recorded against them, §37.4's table included, is right.
+
+**What was missing is the label.** Until this section the driver printed
+six symmetry options and not that one; a checkpoint file carried no record
+of it; and `iota_sym.rs`'s own doc comment quoted "27 at 3, 167 at 4 and
+1939 at 11" without saying which model those were. So a run's cover was
+recoverable only by knowing how it had been launched.
+
+**This session walked straight into it.** Reading `1949 degree-sequence
+cubes` off a fresh default-options run, it concluded that
+`iota4_11.deg13.tsv`'s header — "THE CUBE IS UNSAT ONLY WHEN ALL 1939
+SUB-CUBES ARE UNSAT" — was wrong, that §37.4's correction had run
+backwards, and it edited four ladder files and this roadmap to match.
+All of that was itself wrong and is reverted. What settled it is in the
+file the whole time:
+
+```text
+  the 14 rows of iota4_11.deg13.tsv, in order, are exactly the first 14
+  of the 1939-enumeration -- skipping [.. 13, 11, 0] and [.. 12, 12, 0],
+  the two degree-zero sequences the 1949-enumeration reaches at
+  positions 0 and 6, and which are among the fastest sub-cubes there are
+```
+
+A cover leaves its fingerprint in which sequences it omits, and the
+omitted ones here are cheap, so they land early and their absence is
+loud. That check took a minute and should have come first.
+
+**The fix is that the option is now recorded three times.** `iota_sym`
+prints `all_points_used=` in its symmetry line and a `# cover:` line
+saying whether the question is "exactly" or "at most"; and a newly
+created checkpoint is stamped with a header naming its setting and
+warning that the two covers are not interchangeable. `cube_budget::
+the_two_covers_and_the_flag_that_picks_them` pins both counts at five top
+degrees, that the tight cover is a subset of the wide one, that the
+difference is exactly the degree-zero sequences, and that the two agree
+at `deg(0) = 12` and nowhere else — which is why §37.4's cross-check,
+evaluated there, could confirm either model.
+
+**What is actually at risk, stated properly.** Not a wrong number: a
+resumed run under the wrong flag. Exhaust 1939 against a checkpoint
+written without `--ladder` and the cube reads closed with ten sub-cubes
+never attempted, and UNSAT is the verdict no witness contradicts (§49.3).
+It would not have been fatal even so — each of the ten asks for a
+32-member family on at most ten points, and `ι(4,10) = 27 < 32` (§46)
+refutes them all — but that is a theorem nobody had connected to the
+question, and safety by unnoticed coincidence is what this section is
+about.
+
+**This session's own second-opinion run is on the 1949 cover**, having
+been launched from the binary rather than through `rung.sh`. That is
+sound and slightly stronger — UNSAT on 1949 implies UNSAT on 1939 — and
+the ten extras are the redundant ones above. It is recorded in a separate
+file, `iota4_11.deg13.cryptominisat5.tsv`, which says so in its header;
+rows must not be merged between the two.
+
+### 52.2 The prefix-3 re-run was costed from the full split's rows
+
+§50.3 proposed re-running the cube-13 second opinion over the prefix-3
+split at `--seconds 7200`, and justified the budget like this:
+
+> The cadical rows in that file give the per-sub-cube cost to expect: five
+> landed between 136.1 s and 491.4 s, nine did not at 600 s.
+> `--seconds 7200` is twelve times the budget that left nine undecided.
+
+Those fourteen rows are not in `iota4_11.deg13.p3.tsv`. They are the
+fourteen rows of `iota4_11.deg13.tsv`, the **full** 1939-way split of the
+same cube at the same target. The p3 file holds four rows, all `UNKNOWN`
+at 2400.1 s, under its own recorded verdict:
+
+```text
+  VERDICT ON THIS GRANULARITY: TOO COARSE, and the budget is the result.
+  All four cubes of the first batch burned the full 2400 s cap without
+  landing.  [...]  Not retried.
+```
+
+So `--seconds 7200` is three times a budget that landed nothing, not
+twelve times one that landed five of fourteen — and the plan was to spend
+it on the granularity whose own file says it does not work. §49.2 made the
+same conflation first, quoting "27 sub-cubes at a 600 s cap: 5 UNSAT, 9
+UNKNOWN, 13 never attempted"; 5 + 9 + 13 = 27 is what makes it read as a
+complete account of the p3 file, and the real arithmetic is 5 + 9 + 1925 =
+1939 in the other one.
+
+**Why prefix 3 fails here, measured rather than cited.** A prefix-3
+sub-cube has to decide everything underneath it, so the question is how
+the 1939 full sub-cubes distribute over the 27 (the prefix-3 count is 27
+under either cover; these are the `--ladder` bucket sizes, matching the
+file):
+
+```text
+  [13,13,13] 553   [13,12,12] 245   [13,11,11]  94   [13,10,10] 30
+  [13,13,12] 325   [13,12,11] 131   [13,11,10]  45   [13,10, 9] 12
+  [13,13,11] 180   [13,12,10]  66   [13,11, 9]  19   [13,10, 8]  4
+  [13,13,10]  94   [13,12, 9]  30   [13,11, 8]   7   [13,10, 7]  1
+  [13,13, 9]  45   [13,12, 8]  12   [13,11, 7]   2   [13, 9, 9]  7
+  [13,13, 8]  19   [13,12, 7]   4                    [13, 9, 8]  2
+  [13,13, 7]   7   [13,12, 6]   1                    [13, 8, 8]  1
+  [13,13, 6]   2
+```
+
+The largest holds 553 sub-cubes that cost 136–491 s apiece under cadical,
+so it is on the order of 10⁵ s of search on its own. No budget in reach
+touches it, and `--seconds 7200` was never going to.
+
+**The enumeration order is the second half of it.** Sub-cubes come out
+lexicographically descending, so a budget-limited pass takes them in that
+order, and the first four are `[13,13,13]`, `[13,13,12]`, `[13,13,11]`,
+`[13,13,10]` — 553 + 325 + 180 + 94 = 1152 of the 1939, three fifths of
+the cube in four pieces, against a mean bucket of 72. Those are precisely
+the four the cadical pass attempted, which is why it recorded four
+`UNKNOWN`s and stopped. Meanwhile the three prefix-3 cubes holding a
+single full sub-cube each sit at indices 14, 23 and 26. **This
+granularity does not merely stall; it stalls having banked nothing**, and
+banking is the entire reason §50.3 wanted a split. `cube_budget::
+the_prefix_three_cubes_of_thirteen_are_not_a_working_granularity` pins the
+bucket sizes, the order, and the fact that the attempted four are the
+first four rather than the largest four — `[13,12,12]` at 245 is bigger
+than two of them and is never reached.
+
+**What replaces it.** The full split, at the same 600 s cap the cadical
+pass used so the two are directly comparable:
+
+```sh
+  iota_sym 4 11 32 --only-deg 13 --solver cryptominisat5 \
+    --seqprefix 11 --cubecap 2000 --slice 60 --seconds 5400 --threads 4 \
+    --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
+```
+
+`--cubecap 2000` is what admits a split this size — the 400 the crashed run
+carried is what refused it (§51.1, reading 4). The checkpoint is named for
+the question it answers rather than for the plan that is no longer the
+plan, which is §49.2's rule applied to itself.
+
+**The measurement is now a tool**, because the next session has to make
+this choice six more times — the seven cubes open at target 28, where
+§49.2a picks a prefix per cube from the sub-cube count alone.
+`rust/examples/seq_buckets.rs` prints the bucket sizes *and the
+enumeration order*, which is what the count hides:
+
+```text
+  cargo run --release --example seq_buckets -- 11 4 32 13
+    mean bucket        72.2
+    largest bucket     559  (at index 0)
+    first four         1161 of 1949 (60% of the cube in four pieces)
+    singleton buckets  at indices [14, 23, 26]
+  (default options, so 1949; --ladder gives 553/325/180/94 of 1939, and
+   the same shape, which is the point)
+```
+
+Read the largest bucket against the per-sub-cube times in `docs/ladder/`
+before spending a budget on a prefix. Twenty-seven pieces looked like the
+winning regime and one of them was three fifths of a cube.
+
+Run on the floor cube at target 28 — the one §49.2a says to do first — it
+confirms that section's own choice for a reason §49.2a did not give:
+
+```text
+  cargo run --release --example seq_buckets -- 11 4 28 11
+    prefix-3 split 12 pieces, full split 224
+    largest bucket     94  (at index 0)
+    first four        165 of 224 (74% of the cube in four pieces)
+```
+
+§49.2a picks **full prefix, 224 pieces** for this cube on the grounds that
+its count barely grows with the prefix. The bucket view says the same
+thing from the other side and more sharply: at prefix 3 the twelve pieces
+are so uneven that the first four hold three quarters of the cube, which
+is worse front-loading than `deg(0) = 13` has. The flat `--seqprefix 3`
+of §49.2's first plan would have been a poor choice here, and §49.2a's
+per-cube one is right.
+
+### 52.3 A correction about how far this gets
+
+The full split is the working granularity, not a cheap one. §40 sampled it
+uniformly and put a floor of **≥ 3319 core-hours** on the whole 1939 under
+cadical, ≥ 140× the 23.65 core-hours the cube whole actually took. Nothing
+here repeals that: running the split is a choice to pay much more total
+time for the ability to stop and resume, taken because the alternative has
+now failed twice — 55.6 h to a crash (§51) and a week to nothing before
+that (§45.4). A second opinion that banks 200 rows and dies is worth more
+than one that burns 200 000 s and returns `UNKNOWN`, but only because the
+rows are permanent, and the honest statement of the trade is that this
+route is unlikely to finish on any single machine.
+
+### 52.3a The budget ladder, and why a cap that binds looks like a cube
+###        that is hard
+
+The run this session started measured something §40's uniform sample could
+not, because §40 fixed one budget and this varied it. Three passes over the
+same checkpoint, each resuming the last:
+
+```text
+  cap      attempted   decided   what the stall pattern looked like
+   600 s      20          3      12 of the last 16 attempts stalled
+  1800 s      42         12      the LAST SIXTEEN stalled, consecutively
+  5400 s      42         27+     six for six, then six for six again
+```
+
+**At 1800 s the run had stopped producing verdicts entirely and looked
+like a cube that had got too hard.** It had not. Raising the cap to 5400 s
+converted fifteen of those stalls, and every one of them landed between
+1872 s and 2781 s — just above the old cap, nowhere near the new one. The
+largest decided sub-cube uses 2781 s of a 5400 s allowance, so the budget
+now has 48% headroom and nothing presses it.
+
+Two things follow, and the second is the one worth carrying.
+
+**A run of consecutive stalls is a statement about the budget, not about
+the instance**, until a larger budget has been tried. `iota4_11.deg13.p3.tsv`
+records "TOO COARSE, and the budget is the result" for the prefix-3 split
+on exactly this evidence — 4 of 4 stalling — and §52.2 shows that verdict
+was right for a different reason (the bucket sizes), not because four
+stalls prove anything. Four stalls do not. Sixteen did not either.
+
+**The enumeration runs easy to hard, so early throughput lies.** An
+earlier version of the ladder file's header reasoned that lexicographically
+descending order takes the *most extreme* sub-cubes first and therefore the
+hardest, and concluded the mean cost would fall. It rises: 0%, 75%, 88%,
+88%, 100% stalled in blocks of eight at a fixed 1800 s cap. Extreme is not
+hard — a degree sequence with its mass concentrated on few points is *more*
+constrained and so easier to refute, and those come first. Any rate read
+off the opening rows of a checkpoint is an overestimate.
+
+The operational rule, for a session picking this up: **before concluding a
+cube is out of reach, raise the cap once and see whether the stalls were
+the cap.** The cost of the test is one batch; the cost of not running it
+was, here, believing a cube unreachable that was one factor of three away.
+
+### 52.4 What this does not do
+
+It decides nothing. `27 ≤ ι(4) ≤ 71` is untouched, `ι(4,11) ≤ 31` still
+rests on cadical with two-solver agreement on twenty of twenty-one cubes,
+and cube 13's second opinion is still outstanding — where §47, §50 and §51
+each left it in turn. Seven cubes remain open at eleven points and target
+28.
+
+What changed is that a run now records which of the two covers it
+enumerated — in its log, and in the header of any checkpoint it creates —
+and that both covers are machine-checked at five top degrees; and that the
+re-run is aimed at a granularity with measured evidence of landing instead
+of one its own file had already rejected.
+
+**And the count of §51.4's pattern is now six, with this session
+supplying the sixth by falling for it.** Five were found by inspecting
+other sessions' work: the driver and the shell script on what a
+checkpoint row means, the driver and the solver on what empty output
+means, phase one and phase two on what a budget means, the checkpoint
+name and the question it answered, and §50.3 reading one ladder file's
+rows as another's. The sixth was found by making it — reading a
+default-options enumeration as the authority on a `--ladder` file, and
+"correcting" four files and this roadmap in the wrong direction before
+the row order in the file itself gave it away. §37.4's cross-check at
+`deg(0) = 12` is still the purest illustration, a confirmation evaluated
+at the one point that could not discriminate; but the lesson that
+generalises is cheaper than that. **When two components disagree about a
+value, find the case where they must differ and look at that one.** Here
+it cost a minute and it was available from the start.
+
+## 53. The `τ = 3` route: one free piece is worth twice what §49.4 said,
+##     and the method still does not close it
+
+§49.4 named `τ = 3` as "the nearest mathematics ... the case that would
+close the rung without any of this compute", and offered two elementary
+pieces of it for free. This section works the proposal. One piece is
+better than advertised by a factor of two; the method still stops well
+above 32, and this says where.
+
+**A name, first, because two different things are called `τ = 3` here.**
+`rust/tests/tau_three.rs` and `TauThree.tau_three_bound` are the
+*uniformity-three* covering-number case that makes `r*(3,3) ≤ 4`
+unconditional (§25); this section is the *uniformity-four* case at the
+`ι(4,11)` rung, and its file is `rust/tests/tau_three_at_eleven.rs`. They
+share a phrase and nothing else.
+
+### 53.1 The decomposition
+
+`F` is 4-uniform, intersecting, sunflower-free on `[11]` with a 3-cover
+`T = {p, q, r}`. Every member meets `T`, so `F` partitions by `A ∩ T`
+into seven classes:
+
+```text
+  |F| = (a + b + c)  +  (d + e + f)  +  g
+    a,b,c   A ∩ T is one point    links are 3-sets on the other eight
+    d,e,f   A ∩ T is two points   links are 2-sets on the other eight
+    g       A ⊇ T                 links are 1-sets on the other eight
+```
+
+This is §42's split with three parts instead of two, and the same fact
+makes it factor: a triple of members that do not all share a cover point
+is never a sunflower, because one pairwise intersection contains a cover
+point and another does not.
+
+### 53.2 The triple class: `g ≤ 2`, as offered
+
+`A_i = T ∪ {x_i}` with distinct `x_i` gives `A_i ∩ A_j = T` for every
+pair — a sunflower with core `T`. So a third member through all of `T` is
+already impossible. Checked over all `C(8,3) = 56` choices of three
+outside points in `tau_three_at_eleven::the_triple_class_holds_at_most_two`, and two
+is attainable, so the bound is exact.
+
+### 53.3 The pair classes: 6, not 13, and the kernel already had it
+
+§49.4 wrote:
+
+> the members containing a fixed pair have a link with no 3-matching, so
+> Erdős–Gallai caps them.
+
+True, and weaker than what was available. A pair class has
+`A_i = {p,q} ∪ e_i`, so `A_i ∩ A_j = {p,q} ∪ (e_i ∩ e_j)` and the class is
+sunflower-free exactly when the link graph is. That forbids **two** link
+shapes, not one:
+
+```text
+  three pairwise disjoint edges     -- a 3-matching        (§49.4 saw this)
+  three edges through one vertex    -- e_i ∩ e_j = {v}     (it did not)
+```
+
+The second has matching number one, so Erdős–Gallai cannot see it, and it
+is the binding one: forbidding both is exactly "the link graph is
+sunflower-free", whose maximum is two disjoint triangles. On eight points,
+measured both ways in
+`tau_three_at_eleven::a_pair_class_is_capped_by_g_two_and_not_by_erdos_gallai`:
+
+```text
+  no 3-matching (Erdős–Gallai)   max{C(5,2), C(2,2) + 2·6}  =  13
+  sunflower-free (g(2))                                        6
+```
+
+`PureLink.g_two_at_most_six` has had `g(2) ≤ 6` in the kernel since §42
+used it for the same purpose one cover point down. **The three pair
+classes are capped at 18, not 39.** §49.4 reached outside the development
+for a theorem it already held inside. That is the novelty-audit failure
+§45.4 exists to catch, and §49.2 records the previous occasion.
+
+### 53.4 Where it stops, with a witness
+
+With both pieces at their best,
+
+```text
+  |F| <= (a + b + c) + 18 + 2
+```
+
+so `τ = 3` closes only if `a + b + c ≤ 11`. It is not. `TAU3_WITNESS` in
+`rust/tests/tau_three_at_eleven.rs` is an explicit 4-uniform intersecting
+sunflower-free family on `[11]` with `τ(F) = 3` and **nineteen** members,
+every one holding exactly one cover point, so `a + b + c = 19` and
+`d = e = f = g = 0`:
+
+```text
+  F_p (10)  125 126 134 136 145 245 247 267 347 367
+  F_q  (6)  123 127 146 147 235 456
+  F_r  (3)  157 234 246          (digits are points of [8]; p,q,r are 9,10,11)
+```
+
+It is re-verified in the test against the definitions rather than against
+the search that produced it — uniformity, distinctness, intersecting,
+sunflower-free, `T` a cover, and no 1-cover or 2-cover anywhere in `[11]`,
+which is what makes `τ` exactly 3.
+
+```text
+  bound as §49.4 proposed it   19 + 3·13 + 2  =  60
+  bound with g(2) instead      19 + 3· 6 + 2  =  39
+  what closing the rung needs                <=  31
+```
+
+**So the `τ = 2` method does not transfer.** Halving the pair term is a
+real improvement and it is nowhere near enough; the deficit is in the
+singleton classes, which the decomposition does not price at all.
+
+### 53.5 What would have to be priced
+
+The three singleton classes are 3-uniform families on eight points, each
+sunflower-free and pairwise cross-intersecting — and that much is what the
+19-member witness already satisfies, so it is not the binding condition
+either. The condition the decomposition throws away is the **transversal**
+one: one member from each of the three classes, `S_1, S_2, S_3`, is
+forbidden from having `S_1 ∩ S_2 = S_1 ∩ S_3 = S_2 ∩ S_3`. That is §49.4's
+"the mixed parts are the hard bit", and it is the whole remaining gap:
+`a + b + c` under cross-intersection alone is far above 11, and only the
+transversal condition can bring it down.
+
+Two things follow for whoever takes this up. The quantity to compute is
+`max(a + b + c)` over triples of sunflower-free 3-uniform families on
+eight points that are pairwise cross-intersecting **and transversally
+sunflower-free** — one number, on a ground of `C(8,3) = 56` candidates per
+class. It is the same *kind* of search `examples/tau_two.rs` runs for the
+two-part case, and materially harder: there each of `C(9,3) = 84`
+candidates is in or out of one branched-on side, and the second side is
+recovered by a bound rather than branched on at all; here each of 56
+candidates has four states — in none of the classes, or in exactly one of
+three — and the transversal condition couples all three, so the trick
+that made the two-part search affordable does not obviously carry. No
+estimate is offered for what it costs; every extrapolation attempted on
+this development has been wrong (§48.2).
+
+And the answer has to come in at 11 or below to close the case, against a
+lower bound of 19 already recorded here — so **the honest expectation is
+that it does not close, and that the decomposition is the wrong
+instrument**, not that the search is unfinished. Anyone spending the
+compute should want a reason to think `max(a + b + c)` is near 11 first,
+and this section supplies the opposite.
+
+### 53.6 What this does not do
+
+It decides nothing about `ι(4)`. `27 ≤ ι(4) ≤ 71` is untouched and
+`ι(4,11) ≤ 31` still rests on the SAT ladder. `τ = 3` remains open, and
+this section makes it *less* likely to fall to the elementary route rather
+than more: the one improvement available on §49.4's plan was found, taken,
+and shown insufficient — the bound lands at 39 where 31 was needed. The
+value here is that the route is now costed instead of hoped for, and that
+a kernel lemma the development already owned is back in use.
+
+### 53.7 Gates
+
+All four, on the change set of §52 and §53. Nothing in it touches a Coq
+source or `rust/src/`, so the two kernel gates and the mutation census are
+controls: they say the tree is where §51 left it, and the only gate that
+can move is `cargo test`.
+
+```text
+  make -j2 verify          pass    740 audited theorems, every one
+                                   "Closed under the global context";
+                                   statement baselines matched,
+                                   docnumbers 17 of 17, ceilings ran
+  make coqchk              pass    axiom census exactly
+                                   Sunflower.ALWZ.Rao20_lemma2;
+                                   type-in-type, unsafe (co)fixpoints and
+                                   assumed positivity all <none>
+  cargo test --release     pass    44 result lines, 378 tests, 0 failures
+                                   (42 integration suites)
+```
+
+`cargo test` moved from §49.5's 43/370/41 by eight tests and one suite:
+§51 added `cube_budget::the_solver_exit_codes_the_crash_check_rests_on`
+after that measurement was taken, and this session added three more to
+`cube_budget` and the four of `tau_three_at_eleven`. All seven of the new
+ones are hermetic — they enumerate degree sequences or check set families,
+and none needs a solver on `PATH` — so `docs/testing.md`'s count of
+non-hermetic tests is unchanged at two.
+
+`python3 tools/mutate.py` was **not run**, and this says so rather than
+implying a clean sweep. It perturbs Coq definitions, no Coq definition
+changed, and the §49.5 census (167 mutations, 164 killed, 2 declared
+survivors) is the standing result. No new carried `Prop` was added: the
+whole of §52 and §53's checkable content is Rust, in `cube_budget.rs` and
+`tau_three_at_eleven.rs`.
+
+**The measurement environment, because two numbers in this session depend
+on it.** These gates ran on the 4-core session container concurrently with
+the cryptominisat5 cube-13 pass, so the wall times are not comparable with
+§49.5's. That contention is also why the seconds column in
+`docs/ladder/iota4_11.deg13.cryptominisat5.tsv` records 664–1047 s against
+a 600 s solver budget, and why that file's header says so.
+
+## 54. Handover — the session that corrected itself four times
+
+Start here. §45 was the previous pointer. Nothing below decides anything
+about `ι(4)`: the bracket is `27 ≤ ι(4) ≤ 71` and `ι(4,11) ≤ 31`
+still rests on cadical, exactly as §45 left them.
+
+### 54.1 What moved
+
+**The cube-13 second opinion is running and banking.** Not whole and not
+at prefix 3 — over the **full 1949-way split** with `--checkpoint`, which
+is §52.2. As of this section it holds **30 distinct UNSAT and zero SAT**,
+and **every one of the fourteen sub-cubes cadical ever recorded is now
+decided**: cadical landed 5 of 14 and left 9 UNKNOWN at its 600 s cap;
+cryptominisat5 has all 14. That does not decide the cube — it is about 1%
+of 1949 — but it removes the places a contradicting SAT could have hidden.
+
+**Two defects in the machinery, both in what a run records about itself.**
+§52.1: nothing recorded which of the two degree-sequence covers a run used
+(1939 with `all_points_used`, 1949 without; `tools/rung.sh` passes
+`--ladder` so every file in `docs/ladder/` is the former). `iota_sym` now
+prints it and stamps a new checkpoint's header with it. §52.2: §50.3
+costed the prefix-3 re-run from another file's rows, and the prefix-3
+split is unusable for a different reason — its 27 pieces cover 553, 325,
+180, 94, ... of the 1939, so a budget-limited pass banks nothing.
+
+**§49.4's τ = 3 proposal is worked and costed** (§53). Its pair-class
+bound is 6, not the 13 Erdős–Gallai gives, because the link graph has no
+vertex of degree three either — `PureLink.g_two_at_most_six`, already in
+the kernel. Still not enough: the decomposition yields `|F| ≤ 39` against
+the 31 that would close the rung, and `tau_three_at_eleven.rs` carries an
+explicit nineteen-member τ = 3 family that says so.
+
+### 54.2 What is owed, in order
+
+1. **Keep the cube-13 pass running.** Resume with the same checkpoint;
+   UNSAT rows are skipped and UNKNOWNs re-run. The command in §52.2 is
+   current. **The cap now stands at 10800 s and the rule says hold** —
+   §52.3a and the ladder file's header carry it: *raise when the current
+   cap's UNSAT-per-wall-hour has fallen to roughly zero, read over at
+   least twelve attempts, and not before.* At the last reading that
+   window was 1.18 UNSAT/h, well clear of zero. Raise by the rule, not by
+   feel. This session got that
+   call wrong in both directions before deriving the rule, and the
+   twelve-attempt window matters — the eight-window under-read the cap
+   twice and would have raised both times.
+2. **The remaining ~1860 sub-cubes.** It will not finish on one machine
+   in one sitting. Every banked UNSAT is permanent, which is the entire
+   reason the split was chosen over the monolith that has now failed
+   twice (§45.4, §51) — and which four container restarts in this session
+   demonstrated rather than argued.
+3. **Do not run §49.2a's target-28 plan as written.** §55 measures its
+   pieces and they are eighteen and fifty-five times too big at
+   `deg(0) = 13` and `14`. Re-pick the prefix by largest piece, not by
+   piece count, and note that three of the seven cubes cannot be measured
+   this way at all (§55.2).
+4. **τ = 3 needs a different instrument, not a bigger budget** (§53.5).
+5. **Four papers, in this order.** The commissioned rendered pass
+   (`docs/reading.md` session N+15) closed most of the register's
+   outstanding reading and left exactly four items:
+   **(a)** Frankl 1978, *On intersecting families of finite sets*, JCTA
+   24, 146–161 — the last unread of register row B19f's four targets;
+   **(b)** Chung 1983 and Chung–Frankl 1987, the origin of the name
+   "`s`-star", without which B9's negative stays non-exhaustive on the
+   vocabulary that started it; **(c)** Erdős–Lovász 1975 pp. 620–621,
+   which should be re-rendered in a container that holds the file before
+   B12's new "FOUND" is treated as settled, since it was rendered
+   elsewhere; **(d)** [AHS72], still unreachable after **six** routes,
+   the sixth from a different container and network path — which is what
+   rules out a proxy and leaves the paywall as the whole explanation.
+   Rows A3, A20 and B10 still owe it.
+6. **One comment, when the machine is free.** `coq/Substitution.v`'s
+   header should cite Erdős–Lovász 1975 p. 620 construction (d) as
+   `substitute`'s published ancestor. It was left out of this branch
+   deliberately: a comment change in `coq/` costs a full `make verify`
+   and `make coqchk`, and the four cores were carrying the cube-13 pass.
+   `STATUS.md` and `docs/references.md` carry the attribution meanwhile,
+   so nothing is unattributed — only unattributed *in the file itself*.
+
+### 54.3 What this session got wrong, because the pattern repeats
+
+**Seven in total, all self-inflicted and all caught inside the session.**
+Four of process:
+
+* **The cover.** Read a default-options run as authority on a
+  `--ladder` file, declared 1939 wrong, and edited four ladder files and
+  this roadmap before the row order in the file itself gave it away
+  (§52.1). Reverted. **The check that settled it took a minute and was
+  available from the start: a cover leaves a fingerprint in what it
+  omits.**
+* **The cost direction.** Claimed lex-descending order takes the hardest
+  sub-cubes first so the mean would fall. It rises — extreme is *more*
+  constrained and so easier (§52.3a).
+* **The budget.** Matched cadical's 600 s cap for comparability, against
+  timings that were never comparable, and got a cap that binds. Sixteen
+  consecutive stalls looked like a hard cube and were a small budget.
+* **A dead process.** Diagnosed a nohup signal problem and "fixed" it with
+  `setsid`; the next run died identically with PPID 1. The cause was
+  detachment itself, and the harness's own supervision was the answer.
+
+**Two more corrections, both about reading a measurement.** The cost
+model went through three wrong readings before settling: "extreme is
+hardest" (backwards — extreme is *more constrained* and so easier), a
+plateau at six leading 13s declared on n=7 and refuted at n=25, and a
+peak at five declared nowhere, because by then the n-too-small pattern
+was recognised and §53's table says so explicitly. And the raise rule was
+stated flatly twice, in opposite directions, before being stated
+conditionally with a window.
+
+**A seventh, and this one the file caught on itself.** The cost model's
+correlation table named *leading 13s* "the best single predictor" at
+`r = -0.75` over 67 decided sub-cubes, and in the same breath said "do
+not over-fit this: n = 67". Recomputed at n = 90 the same coefficient is
+`-0.62` and *distinct values* has passed it at `+0.69`. Nothing about the
+cube changed; the sample did. Both readings are now printed side by side
+in the ladder header rather than the latest one replacing the last, which
+is the only form in which a drifting statistic is honest.
+
+**And the refusal in the paragraph above was vindicated twice.** The
+5-family's median was 3653 s at n = 11, which put an apparent cost peak
+at six leading 13s. §53's table declined to claim it. The next two rows
+took that median to 4875 s and then 6096 s — level with the 6-family's
+6136. So the peak was an artefact of a family's opening, exactly as the
+refusal said. **Twice now a median read at a family's opening has been
+overturned by its continuation** (the 6-family at n = 7, refuted at
+n = 25; the 5-family at n = 11, refuted at n = 13), and both times the
+correction went the same way: the family was more expensive than its
+opening suggested, never less.
+
+### 54.3a Sixteen withdrawals with one shape, and the rules they yield
+
+The seventh correction above was not the last, and the ones after it
+matter less individually than as a set. Over the session's later batches
+the ladder header made sixteen readings — fifteen quantitative and one
+descriptive — and withdrew every one:
+
+(The heading and this sentence read "five" and "eight" while the table
+below them grew to ten, which is its own small instance of the thing the
+section is about: a count written once and not re-derived when the thing
+it counts changes. Corrected here by counting the rows.)
+
+| Reading | Withdrawn when |
+|---|---|
+| A cost plateau at six leading 13s, on `n = 7` | `n = 25` |
+| The 5-family cheaper than the 6-family, by median at `n = 11` | `n = 13`, then re-overturned at 14, 15, 16, 17 |
+| The families compared by **median** at all | The 5-family median took seven values — 3653, 4875, 6096, 5929, 5761, 4707, 5761 — and no reading survived two batches |
+| The families compared by **stall count**, which replaced the median | One batch later: 4 of 23 (17.4%) against 5 of 30 (16.7%), so even the sign vanished |
+| **Leading 13s as a cost predictor** — "the best single predictor" at `r = -0.75` | The coefficient fell at *every one of eleven* measurements: `-0.75` at `n = 67` down to `-0.22` at `n = 110` |
+| **"Zero on both sides of the stall peak"** in the `run≥12` table, which this file had just called the one description it had never withdrawn | The very next batch, when a `run≥12 = 6` label stalled at 10913.2 s. Eleven labels stood behind that zero |
+| **"One coefficient collapsing while another sits flat"** — the way the leading-13s collapse was argued for three batches | `distinct values` is not flat: `+0.69, +0.68, +0.68, +0.65, +0.63`. Both decay; only the *ratio* of rates, 0.53 against 0.06, is real. (This row used to end "the statistic that actually held is `run≥12`" — see the next row but one, which withdraws that too) |
+| **"Stalling repeatedly at a cap establishes that the cap is too small"** | Eight labels were re-attempted at an *unchanged* 10800 s cap and three were decided by the repeat alone, each landing at less wall time than its own earlier stall |
+| **The yield of those repeats, first written as `0.37`** | One batch later, by this section's *own* first check: eight labels but **seventeen** repeat attempts, so `3/17 = 0.18`, half the figure claimed. See below |
+| **Every "leading run of degree ≥ k" statistic**, which assumed the degree sequences were sorted | Row 216. `symbreak` sorts **two blocks separately** — `deg(1..b−1)` and `deg(b..g−1)` — because the residual symmetry after fixing the anchor is `Sym({1..b−1}) × Sym({b..g−1})`. Global sortedness held for 215 rows by coincidence and then stopped |
+| **`run≥12` "held steady" and "overtook leading-13s by standing still"** — the replacement offered when leading-13s was withdrawn | It has since moved `-0.34, -0.32, -0.33, -0.31, -0.28, -0.27`: 0.07 from its peak, having been called stable on a spread of 0.02 |
+| **"Two restarts in 24 minutes is a sample of one gap"** — a caution written to avoid over-reading a short container-restart cadence | Right to write, and overtaken by the very next gap, which was **five minutes**. Three consecutive gaps then ran 3 h 43 m, 24 m, 5 m |
+| **"The `run≥12 ≤ 7` arm has yield zero"**, from 0 of 20 repeats | Broken by the **next row**, before the claim could even be committed — a `run≥12 = 7` label decided on its sixth attempt. The header had attached the rule-of-three caveat (95% upper bound ≈ `3/20 = 0.15`, which contains the pooled rate); the caveat was vindicated within one row |
+| **"45 of 45 stalled-then-decided at `run≥12 ≥ 8`"** | **41 of those 45 stalled only at the OLD 5400 s cap** and were decided by the raise to 10800, not by a repeat. Restricted to the current cap it is 4 of 4 against 0 of 9 — thirteen labels, not fifty-seven |
+| **"The four re-run successes share the prefix `13,13,13,13,13,13,12,12`"** — read off the four successes by eye | An artefact of looking only at the successes instead of at every label that ever stalled. The separating variable is `run≥12`. Killed by scripting the reading in the same batch it was formed |
+| **"The sub-family members land in the predicted order"** — written in every batch from the second violator family onward, and in three commit subjects | `7,7` landed while `8,6` was still running. The prediction was about MEMBERSHIP — which tails the encoding permits — and never mentioned arrival order, which four solvers finishing at different times decide. Worse than unverified: scripting arrival order across **all 36 families with two or more members** found **three** that had already arrived out of order (the 88th, 100th and 119th labels) while the phrase was in use |
+
+One statement from the same stretch is deliberately **not** in the table,
+because it is a different thing and the difference is worth keeping: the
+header said "the run is not progressing; it is being restarted". That was
+explicitly conditional on the short cadence holding, the cadence then
+recovered, and four rows landed. A conditional whose condition lapses has
+not been refuted — it has expired. Filing it as a withdrawal would
+inflate the count and blur the one distinction this section exists to
+draw.
+
+Alongside them the rate itself was narrated three times — "monotone
+decline", "levelling", and an earlier `0.21` called terminal — and each
+description was overtaken by the very next batch. The rate is now
+`1.97 UNSAT/h`, above the `1.74` it started at.
+
+> **Every quantity this development computed over fewer than about
+> thirty events has been overturned by its own continuation.** Not one
+> was wrong because the arithmetic was wrong; each was a real
+> computation over a sample chosen by when a batch happened to end.
+
+Two mechanical consequences, both cheap and both worth applying before
+the next such reading rather than after it.
+
+**Check the denominator's leverage first.** A rate built on four events
+moves four percentage points when the denominator moves by four. The
+5-family stall comparison could never have separated 17% from 21% at
+`n ≈ 20`, and one division would have said so before five batches were
+spent narrating the gap.
+
+**This check was then broken by the session that wrote it, two batches
+later, and that is the most useful thing in this section.** The re-run
+yield above was recorded as `0.37` — three successes over the *eight
+labels* that had been re-attempted. The right denominator is *repeat
+attempts*, and those eight labels account for **seventeen** repeats,
+because five of them stalled three or four times each. The true figure
+is `3/17 = 0.18`, half what was written. Nobody mis-divided; the wrong
+quantity was counted, which is what "check the denominator" means and is
+harder to notice than an arithmetic slip. A rule is not defensive until
+it is applied to the number you are about to publish, and the evidence
+that it is worth having is that its own author walked past it.
+
+**A third kind, and the one hardest to see: check what the generator
+actually promises.** The two above are about samples and about how a
+measurement is described. The ninth withdrawal is neither. Every
+"leading run of degree ≥ k" statistic in the ladder header was a
+well-defined function computed correctly on the data — and it silently
+meant something other than intended, because it assumed the degree
+sequences were globally sorted and `symbreak` only ever guaranteed them
+sorted **within two blocks**. For 215 consecutive rows the two agreed,
+because block 1's minimum happened to stay above block 2's maximum.
+Row 216 was the first where it did not, and there "leading run of 13s"
+read 3 on a sequence containing eight. The conclusions survived — one
+cell in one table — but the *definition* had been resting on an unstated
+property of its input the whole time. **Ask what the producer guarantees
+before defining a statistic over its output; "it has looked like this
+every time so far" is a fact about the sample, not about the function.**
+
+**A fourth kind, and the cheapest to have avoided: run the claim against
+the data you already hold.** The third kind above is exculpatory in one
+respect — when "leading run of 13s" was defined, no counterexample to
+global sortedness existed anywhere in the file. 215 rows agreed and row
+216 was the first that *could* disagree; nothing short of asking the
+producer would have caught it. The sixteenth withdrawal has no such
+defence. When the header began saying the sub-family members landed "in
+the predicted order", **three families in this same file had already
+arrived out of order.** The first violator family — the only kind the
+phrase was ever applied to — was the 127th label, and the earliest
+counterexample the 88th, so it had been sitting in this file for **39
+labels** before the phrase was first written. The phrase held on the
+violator families and was never once run against the other 33 families
+in the same table. One script, written after the fact, found all three
+in under a second.
+
+The distinction is worth keeping sharp because the remedies differ. A
+third-kind error is prevented by reading the producer's contract before
+writing the statistic. A fourth-kind error is prevented by a reflex:
+**when a regularity turns up in a slice, evaluate it on the rest of the
+data before naming it.** The slice that suggested the pattern is the
+worst available place to test it, and the rest of the data is usually
+already on disk.
+
+**And the check itself is a suspect.** The script written to verify the
+above reported `89 UNSAT, 57 UNKNOWN` against a header claiming `146
+UNSAT, 0 UNKNOWN`. The header was right. Recovering arrival order
+requires keeping each label's *first* row, so the script was built
+first-write-wins, and that silently redefined the status tally from "how
+each label stands now" to "how it came back on attempt one". Both are
+real quantities; only one is what the header meant. Taken at face value
+it would have converted a correct header into a wrong one *in the act of
+verifying it* — a failure mode this section had not previously recorded,
+since every other entry is a claim too weak against its data rather than
+a check wrong about a sound claim. **A check that disagrees with the
+thing it checks has two suspects, and the newer code is the better bet.**
+Resolved by computing first-, last- and any-UNSAT per label side by side.
+The discarded reading is a genuine statistic under its own name: **57 of
+the 147 decided labels (38.8%) were not decided on their first attempt** —
+a figure that moves with every row, and is quoted here as of 147.
+
+**A coefficient that decays as the sample grows is measuring the
+enumeration, not the object.** That is the leading-13s diagnosis and it
+is checkable the moment a second measurement exists: `-0.75 → -0.62 →
+-0.46` while a competing statistic sits flat is not noise, it is a
+statistic tracking arrival order. The enumeration walks families in
+descending order, so many-13s means early, early means
+early-within-family, and every family opens cheap. The two sub-cubes at
+**four** leading 13s decided in 433 s and 1094 s — the model's own
+prediction reversed.
+
+What survives the whole set is one description and it is not a cost
+model: the **leading run of degrees `≥ 12`** predicts whether a sub-cube
+decides at all. Eight of nine stalls sit at exactly 7; nothing at nine or
+more has stalled in thirty-two labels; 6 is eleven decided and zero
+stalled. Its 6-bucket breaks monotonicity, it rests on ~110 labels of
+1949, and it is offered as a description rather than a model — which is
+the distinction the five withdrawals above were all failures to make.
+
+**The generalisation, which is §51.4's pattern sharpened.** When two
+components disagree about a value, the case anyone checks is usually the
+case where they agree — §37.4's cross-check at `deg(0) = 12` is the
+purest instance, since that is the one top degree where both covers give
+19. **Find the case where they must differ, and look at that one.**
+
+## 55. The target-28 plan is granular by the wrong metric, and the run it
+##     describes would bank nothing
+
+§49.2a chose a per-cube `--seqprefix` for the seven cubes open at eleven
+points and target 28, by keeping the **number of pieces** under a few
+hundred:
+
+```text
+  deg(0)       11    12   13   14   15   16   17   total
+  prefix     full     4    3    3    3    3    3
+  sub-cubes   224   288   90  120  136  153  171   1 182
+```
+
+§52.2 showed that count is the wrong metric one rung over: at target 32,
+`deg(0) = 13` splits at prefix 3 into 27 pieces — comfortably "a few
+dozen" — and the largest of them has to decide **553** full sub-cubes,
+which is why `iota4_11.deg13.p3.tsv` records that granularity as *"TOO
+COARSE, and the budget is the result"*. The same measurement at target 28,
+by `rust/examples/seq_buckets.rs`, says the plan above is worse:
+
+```text
+  deg0 |  full   |  p3          p4          p5          p6          p7
+       |         | pieces,max  pieces,max  pieces,max  pieces,max  pieces,max
+    11 |     224 |   12,94       53,28       57,26       64,23       75,18
+    12 |    7857 |   44,1677    288,320     433,240     656,154    1032,77
+    13 |   80062 |   90,9741    529,1301   1241,737    2602,322    5404,104
+    14 |  417711 |  120,30570   680,2983   2429,1242   6800,414   17967,126
+```
+
+**§49.2a's prefix 3 for `deg(0) = 13` gives a worst piece of 9741, and for
+`deg(0) = 14` one of 30570** — eighteen and fifty-five times the 553 that
+was already too coarse, and on the strictly harder instance, since
+`Product.IotaAtLeast_antitone` makes target 28 harder than 32. Only the
+floor cube's entry survives contact: §49.2a says full prefix there, and
+full prefix means pieces of size one.
+
+### 55.1 The metric should be inverted, and §46.2's rule with it
+
+§46.2 records the operative rule as *"read the `N degree-sequence cubes`
+line before letting a split run. Under a few hundred, let it go; in the
+thousands, kill it."* That rule was calibrated when a sub-cube was cheap
+and the cost being avoided was **solver startups** — §33.5a measured 684
+startups as a loss against a cube that solved whole in ten minutes.
+
+This session's cube-13 run says startups are no longer the cost that
+matters. Its sub-cubes take **128 s to 10 866 s each**; a solver startup
+is milliseconds. What kills a run now is a piece too big to decide inside
+any budget, which is exactly what §52.2's sixteen consecutive stalls were.
+
+So, for a checkpointed run:
+
+> **Choose the prefix by the size of the largest piece, not by the number
+> of pieces. More pieces is better, not worse, because every one that
+> lands is banked and a piece that cannot land banks nothing.**
+
+Against that rule the table says prefix **7** for `deg(0) = 12, 13, 14` —
+largest pieces 77, 104 and 126, at 1032, 5404 and 17967 pieces. Whether
+those piece sizes are small enough is **not established here**: the only
+granularity measured end to end at these parameters is the full split at
+target 32, where a piece is one sequence. What is established is that 9741
+and 30570 are not.
+
+### 55.2 What this does not settle
+
+Nothing about `ι(4,11)`, and nothing about the seven cubes: they are open
+exactly as §48 left them. The seq_buckets table cannot be computed for
+`deg(0) = 15, 16, 17` at all, because their full splits exceed 10⁶ and
+there is nothing to bucket against — so three of the seven have no
+measured granularity and §49.2a's prefix 3 for them is neither confirmed
+nor refuted, only unevidenced.
+
+This is scheduling, again, and §49.4's judgement stands: **`τ = 3` is the
+case that would close the rung without any of this compute**, and §53 says
+the elementary route to it does not reach.

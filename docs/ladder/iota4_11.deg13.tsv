@@ -6,6 +6,20 @@
 # the same --checkpoint: rows marked UNSAT or SAT are skipped, rows marked
 # UNKNOWN are re-run, because UNKNOWN is a budget and not a verdict.
 #
+# AND RESUME WITH --ladder, WHICH IS WHAT 1939 ASSUMES.  These rows were
+# written through tools/rung.sh, which passes --ladder, so the instance
+# asks for a family on EXACTLY eleven points (all_points_used = true) and
+# the cover is 1939.  Without --ladder the driver asks for one on at most
+# eleven points and enumerates 1949 -- the same 1939 plus ten sequences
+# carrying a degree-zero point.  Both are sound questions and the larger
+# implies the smaller; what is not sound is exhausting one cover against
+# a checkpoint written for the other.  Neither the driver's log nor this
+# file recorded which it was until roadmap 52.1, and the fourteen rows
+# below are the evidence: they are exactly the first fourteen of the
+# 1939-enumeration, skipping the two degree-zero sequences the 1949 one
+# would have reached first.  iota_sym now prints all_points_used and
+# stamps it into a new checkpoint's header.
+#
 # The split is the two-block degree sequence of symbreak::sequence_cubes:
 # positions 0..b-1 are non-increasing from deg(0), the ceiling resets to
 # deg(0) at position b, and positions b..g-1 are non-increasing again.

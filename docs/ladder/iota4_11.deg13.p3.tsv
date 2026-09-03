@@ -27,3 +27,23 @@ g=11 [13, 13, 10]	UNKNOWN	2400.1
 #   full split (1939)   solved ones land in 136-491 s; about 45% pass 600 s
 # The full split is the working granularity.  The cost is not the split,
 # it is the total: see iota4_11.deg13.tsv.
+#
+# WHY THE FOUR ROWS ABOVE ARE THE FOUR THEY ARE, which the "TOO COARSE"
+# verdict states without explaining.  Sub-cubes are enumerated
+# lexicographically descending, so a budget-limited pass takes them in
+# that order, and the first four are [13,13,13], [13,13,12], [13,13,11],
+# [13,13,10] -- covering 553, 325, 180 and 94 of the 1939 full sub-cubes,
+# i.e. 1152 of them, three fifths of the cube in four pieces, against a
+# mean bucket of 1939/27 = 72.  The largest prefix-3 cube alone has to
+# decide 553 sub-cubes that cost 136-491 s apiece, so it is ~10^5 s of
+# search and no budget in reach touches it.
+#
+# The cheap end is unreachable in that order: the three prefix-3 cubes
+# holding a single full sub-cube each sit at indices 14, 23 and 26.  So
+# this granularity does not merely stall, it stalls having banked
+# NOTHING, which is the property that makes it useless for a resumable
+# second opinion -- and roadmap 50.3 proposed it for exactly that.  See
+# roadmap 52.2, and `cargo run --release --example seq_buckets -- 11 4 32 13`
+# for the whole distribution.  (27 is the prefix-3 count under either
+# setting of all_points_used; the bucket sizes above are the --ladder
+# ones, matching this file.)
