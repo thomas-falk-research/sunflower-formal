@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 158 UNSAT, **7 UNKNOWN**, 0 SAT over 165 labels -- 158 of
-# 1949, 270 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 158 UNSAT, **8 UNKNOWN**, 0 SAT over 166 labels -- 158 of
+# 1949, 271 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -232,9 +232,13 @@
 # `[13,13,13,12,13,13,13,12]` with tail `12,12,2` at 3348.7 -- **the new
 # group this header had already named, and the first of the fourteen
 # members it had already listed.**  `12,11,3` 6342.8, `12,10,4` 7134.5,
-# `12,9,5` 7533.0 and `12,7,7` 8957.3 followed, so **5 of 14 are
-# decided, 7 more are UNKNOWN at the cap, 12 of 14 seen, and none is
-# outside the permitted set.**
+# `12,9,5` 7533.0 and `12,7,7` 8957.3 followed.  **Five members of that
+# group are decided and none seen is outside the permitted set**; for
+# the live decided/outstanding/unseen counts read the itemised list
+# further down rather than a second copy here.  (This sentence carried
+# such a copy and needed hand-editing on every row for three batches
+# running, which is the rot 54.3a exists for -- the fix is to state
+# the invariant here and keep the moving numbers in one place.)
 #
 # **THE SPLIT THIS HEADER CALLED "CLEAN" ONE BATCH AGO WAS MIS-STATED,
 # AND THE ERROR MADE IT LOOK CLEANER THAN IT IS.**  The text said "the
@@ -247,11 +251,11 @@
 #      w  | decided | undecided
 #     12  |    5    |    1
 #     11  |    0    |    4
-#     10  |    0    |    2
+#     10  |    0    |    3
 #
-# Five of SIX against zero of four and zero of two. Still lopsided,
-# no longer clean, and it was found by regrouping the members with a
-# script rather than by re-reading the prose.
+# Five of SIX against zero of four and zero of three, at 13 of 14 seen.
+# Still lopsided, no longer clean, and it was found by regrouping the
+# members with a script rather than by re-reading the prose.
 #
 # **THE USEFUL PART IS THAT THE REFUSAL AND THE DESCRIPTION FAILED
 # INDEPENDENTLY.**  The paragraph below was right to decline the
@@ -461,10 +465,10 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **64 of the 165 attempted
-# labels -- 38.8% -- were NOT decided on their first attempt**.  101
-# fell first time; 57 of the 64 were later banked by a re-run or a cap
-# raise and 7 are outstanding right now.
+# has not been stated in this file before: **65 of the 166 attempted
+# labels -- 39.2% -- were NOT decided on their first attempt**.  101
+# fell first time; 57 of the 65 were later banked by a re-run or a cap
+# raise and 8 are outstanding right now.
 #
 # **THE FREEZE IS OVER AND THE CAVEAT ATTACHED TO IT WAS RIGHT.**  This
 # paragraph used to say the numerator was frozen at 57 across the last
@@ -1085,9 +1089,10 @@
 #     (11,8,7)   UNKNOWN at the cap (10897.9)
 #     (10,10,6)  UNKNOWN at the cap (10896.2)
 #     (10,9,7)   UNKNOWN at the cap (10897.1)
-# **12 of 14 seen: 5 decided, 7 outstanding.**  None outside the
-# permitted set, so the membership test is undisturbed.  Only `(10,8,8)`
-# and `(9,9,8)` remain unseen.
+#     (10,8,8)   UNKNOWN at the cap (10887.3)
+# **13 of 14 seen: 5 decided, 8 outstanding.**  None outside the
+# permitted set, so the membership test is undisturbed.  Only `(9,9,8)`
+# remains unseen, and the group is NOT tested until it arrives.
 #
 # **THE NO-UNSAT RUN ENDED AT SEVEN AND THE BUDGET RULE NEVER FIRED.**
 # Seven consecutive rows banked nothing, then `[..,11,11,5]` came in at
@@ -1101,9 +1106,10 @@
 #
 # **AND THAT ROW IS IN A NEW GROUP, WHILE THE OLD ONE IS STILL OPEN --
 # THE DRIVER WORKS TWO GROUPS AT ONCE.**  `[..,11,11,5]` has first eight
-# `13,13,13,12,13,13,13,11`, not `...,12`.  Meanwhile
-# `[13,13,13,12,13,13,13,12]` still has **`(10,8,8)` and `(9,9,8)`
-# unseen**, 12 of 14.  Nothing is wrong: four threads take cubes in
+# `13,13,13,12,13,13,13,11`, not `...,12`.  `(10,8,8)` has since come
+# back UNKNOWN at 10887.3, exactly as the note below said it would --
+# it was in flight, not skipped -- leaving
+# `[13,13,13,12,13,13,13,12]` with **only `(9,9,8)` unseen**, 13 of 14.  Nothing is wrong: four threads take cubes in
 # enumeration order, so up to four adjacent cubes are in flight at once
 # and they straddle a group boundary whenever one is near.
 #
@@ -1942,3 +1948,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNKNOWN	10896.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10897.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 11, 5]	UNSAT	6654.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10887.3
