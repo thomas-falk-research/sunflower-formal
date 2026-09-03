@@ -196,10 +196,10 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 236 rows.  **TWO STRAGGLERS FELL, ONE ON ITS SEVENTH ATTEMPT AND ONE
-# ON ITS SIXTH** -- and the other two of that batch of four came back
-# UNKNOWN at the cap (10870.2, 10881.6), so the batch was two decided
-# and two not.
+# 237 rows.  **THREE STRAGGLERS HAVE NOW FALLEN TO REPEATS**, on their
+# seventh, sixth and third attempts; two others of the same batch came
+# back UNKNOWN at the cap (10870.2, 10881.6).  Seven stragglers remain,
+# six at run>=12 = 7 and one at 6.
 # `[13,13,13,13,13,13,12,12,11,10,5]` had gone UNKNOWN at 5434.3 under
 # the old 5400 s cap and then five times at the 10800 s cap
 # (10867.3, 10853.3, 10870.0, 10878.6, 10895.6).  It came back
@@ -231,15 +231,18 @@
 # and it was a run>=12 = 7 label.  The current table:
 #
 #     run>=12 = 8    8 repeats, 4 decided     0.500
-#     run>=12 <= 7  23 repeats, 1 decided     0.043
-#     pooled        31 repeats, 5 decided     0.16    <- the header figure
+#     run>=12 <= 7  24 repeats, 2 decided     0.083
+#     pooled        32 repeats, 6 decided     0.19    <- the header figure
 #
 # **The caveat was vindicated within a single row.**  Two claims from
 # the first version are dead: that the second arm's rate is zero, and
 # that every open straggler sits in an arm that has never produced a
 # success.  What survives is weaker and is all that was ever supportable:
-# the two arms' point estimates differ by about a factor of ten on 8 and
-# 23 repeats, which is suggestive and is not a demonstrated difference.
+# the two arms' point estimates differ by about a factor of six on 8 and
+# 24 repeats, which is suggestive and is not a demonstrated difference.
+# **The gap has closed once already**: it was quoted as a factor of ten
+# one batch ago, and a single row in the lower arm moved it.  Expect it
+# to keep moving; do not quote the ratio as a finding.
 #
 # The composition point does survive, because it does not depend on the
 # rates: **all four of the run>=12 = 8 stragglers have now been decided**,
@@ -265,7 +268,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 236 rows: ALL attempts 2 of 8 and 6 of 12; FIRST attempts
+# WINDOWS at 237 rows: ALL attempts 3 of 8 and 6 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -472,11 +475,13 @@
 #
 # What is left of the description, stated smaller:
 #
-#   * The peak at 7 survives -- now 22.6% against 6.7% and 0.0% on
-#     either side -- and 7 of the 8 remaining stalls are there.  It has
-#     softened at every recount (30.8% -> 25.8% -> 22.6%) as the 7
-#     bucket's own stragglers have been decided one by one, while
-#     staying a peak.
+#   * The peak at 7 survives -- now 19.4% against 6.7% and 0.0% on
+#     either side -- and 6 of the 7 remaining stalls are there.  It has
+#     softened at every recount (30.8% -> 25.8% -> 22.6% -> 19.4%) as
+#     the 7 bucket's own stragglers have been decided one by one, while
+#     staying a peak.  Four consecutive softenings is worth watching:
+#     if the 7 bucket keeps clearing, the peak is a statement about
+#     which labels have been re-run most, not about which are hard.
 #   * NOTHING with run>=12 of EIGHT or more has stalled, in 87 labels.
 #     This strengthened on one row: the 8 bucket's single stall was
 #     `[13,13,13,13,13,13,12,12,11,10,5]`, and it has now been decided,
@@ -871,11 +876,38 @@
 #
 # Each landed at LESS wall time than its own earlier stall, so this is
 # not "it got a bit further".  cryptominisat5 is not reproducing its
-# previous search: same instance, same budget, different outcome.  These
-# three are marginal instances sitting right at the cap -- the failed
+# previous search: same instance, same budget, different outcome.
+#
+# **THE MECHANISM OFFERED HERE COVERS FIVE OF THE SIX SUCCESSES AND NOT
+# THE SIXTH, AND THE SIXTH IS THE INTERESTING ONE.**  The explanation was
+# that these are marginal instances sitting right at the cap: the failed
 # attempts read 10865-10936 s of wall against a 10800 s SOLVER budget,
 # i.e. contention overhead, and the successes came in just under -- which
-# is exactly the population a re-roll can flip.
+# is exactly the population a re-roll can flip.  All six successes, with
+# the stall each one followed:
+#
+#     decided   7497.4   after stall 10870.9    run>=12 = 7
+#     decided  10053.0   after stall 10895.6    run>=12 = 8
+#     decided  10217.5   after stall 10868.9    run>=12 = 8
+#     decided  10270.3   after stall 10891.1    run>=12 = 7
+#     decided  10704.4   after stall 10864.8    run>=12 = 8
+#     decided  10760.5   after stall 10936.3    run>=12 = 8
+#
+# Five of them land in 10053-10760, within 750 s of the cap, exactly as
+# the marginal-instance reading predicts.  **The sixth decided at 7497.4
+# s, using 69% of the budget and finishing more than 3300 s clear of
+# it** -- on its THIRD attempt, after stalls at 10917.0 and 10870.9.
+# That is not a re-roll nudging a boundary case over the line; it is the
+# solver finding a proof substantially faster on a fresh start.
+#
+# So the marginal-instance story is a description of most of the sample
+# rather than the mechanism of the effect, and it should not be leaned
+# on: it was doing double duty as an explanation for WHY a repeat works,
+# and the one row that most clearly shows a repeat working is the row it
+# does not explain.  What survives is the weaker and better-supported
+# statement already made above -- cryptominisat5 does not reproduce its
+# previous search -- for which a success 3300 s clear of the cap is
+# stronger evidence than any of the near-cap five.
 #
 # **THE RATE WAS FIRST WRITTEN HERE AS 0.37 AND THAT WAS A DENOMINATOR
 # ERROR.**  Eight LABELS have been re-attempted, but they account for
@@ -1274,3 +1306,4 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 12, 11, 10, 5]	UNSAT	10053.0
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 9, 7]	UNSAT	10270.3
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 10, 7]	UNKNOWN	10870.2
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNKNOWN	10881.6
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 10, 7]	UNSAT	7497.4
