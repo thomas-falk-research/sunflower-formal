@@ -196,10 +196,10 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 242 rows.  **EIGHT STRAGGLERS HAVE NOW FALLEN TO REPEATS.**  Two
-# remain, one at run>=12 = 7 and one at 6, and `seq-c139` and `seq-c140`
-# -- past every index this run has ever recorded -- are in flight, so
-# the sweep is over in all but the last two slots.
+# 243 rows.  **NINE OF THE TEN STRAGGLERS HAVE FALLEN TO REPEATS.**  One
+# remains, at run>=12 = 6, and `seq-c139`, `c140` and `c141` -- past
+# every index this run has ever recorded -- are in flight.  138 of 139
+# labels are decided.
 #
 # **AND THE HEADLINE IS THAT ONE COHORT OF FOUR WENT FOUR FOR FOUR.**
 # The four solvers launched together at ~04:13 all decided their cubes,
@@ -257,8 +257,8 @@
 # and it was a run>=12 = 7 label.  The current table:
 #
 #     run>=12 = 8    8 repeats, 4 decided     0.500
-#     run>=12 <= 7  29 repeats, 7 decided     0.241
-#     pooled        37 repeats, 11 decided    0.297   <- the header figure
+#     run>=12 <= 7  30 repeats, 8 decided     0.267
+#     pooled        38 repeats, 12 decided    0.316   <- the header figure
 #
 # **The caveat was vindicated within a single row.**  Two claims from
 # the first version are dead: that the second arm's rate is zero, and
@@ -266,8 +266,8 @@
 # success.  What survives is weaker and is all that was ever supportable:
 # the two arms' point estimates differ by about a factor of three on 8
 # and 26 repeats, which is suggestive and is not a demonstrated
-# difference.  **THE GAP HAS NOW CLOSED SEVEN TIMES RUNNING, ON SEVEN
-# CONSECUTIVE ROWS: ten, six, four, three, 2.7, 2.3, and now 2.1.**
+# difference.  **THE GAP HAS NOW CLOSED EIGHT TIMES RUNNING, ON EIGHT
+# CONSECUTIVE ROWS: ten, six, four, three, 2.7, 2.3, 2.1, now 1.9.**
 # Every one of those moves came from the LOWER arm gaining a success,
 # and the upper arm has not gained a repeat since it emptied.  A ratio
 # that shrinks monotonically as the sample grows is the signature 54.3a's
@@ -301,7 +301,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 242 rows: ALL attempts 6 of 8 and 8 of 12; FIRST attempts
+# WINDOWS at 243 rows: ALL attempts 7 of 8 and 9 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -508,35 +508,38 @@
 #
 # What is left of the description, stated smaller:
 #
-#   * **THE PEAK AT 7 IS GONE, AND THE ORDERING HAS INVERTED BY A
-#     FACTOR OF TWO.**  It now reads 3.2% (1 of 31) against the 6
-#     bucket's 6.7% (1 of 15) -- the bucket that was the peak is now
-#     half the rate of its neighbour.  It softened at every single
-#     recount: 30.8%, 25.8%, 22.6%, 19.4%, 16.1%, 12.9%, 9.7%, 6.5%,
-#     3.2%, nine in a row, every one from that bucket's own stragglers
-#     being decided.  It began at four and a half times the 6 bucket
-#     and ended at half of it -- a swing of nine-fold in the ratio.  This is no longer
-#     "withdrawn in all but name"; it is withdrawn, and the crossover is
-#     recorded because a reading that decays monotonically to nothing
-#     across eight recounts is the cleanest example in this file of the
-#     failure mode 54.3a exists to name.  What the table still supports
-#     is the OTHER half -- nothing at run>=12 >= 8 has stalled across 87
-#     labels -- and that half has never moved at any recount.  The watch item from last
-#     batch is now the live reading: on this trajectory the peak is a
-#     statement about which labels have been re-run most, not about
-#     which are hard, and it will keep shrinking for as long as the
-#     resume policy keeps feeding that bucket repeats.
-#   * NOTHING with run>=12 of EIGHT or more has stalled, in 87 labels.
-#     This strengthened on one row: the 8 bucket's single stall was
-#     `[13,13,13,13,13,13,12,12,11,10,5]`, and it has now been decided,
-#     taking that bucket to 0 of 42 and moving the clean threshold down
-#     from nine to eight while nearly doubling the sample (35 -> 87).
-#     All nine remaining stalls sit at run>=12 <= 7.  Read it with the
-#     cap in mind: 41 of the labels in this range stalled only at the
-#     old 5400 s cap and were decided by the raise, so this is a
-#     statement about final state, not about first attempts.
-#   * The bottom of the table is no longer clean.  6 has a stall; 5 has
-#     three labels and no stalls, which at n = 3 says nothing.
+#   * **THE PEAK AT 7 IS NOT MERELY GONE -- THAT BUCKET IS NOW THE
+#     CLEANEST IN THE TABLE.**  It reads 0 of 31.  Ten consecutive
+#     recounts took it 30.8%, 25.8%, 22.6%, 19.4%, 16.1%, 12.9%, 9.7%,
+#     6.5%, 3.2%, 0%, every step from its own stragglers being decided.
+#     It began at four and a half times the 6 bucket's rate and ended at
+#     zero.  A reading that decays monotonically to nothing across ten
+#     recounts is the cleanest example in this file of the failure mode
+#     54.3a exists to name.
+#
+#   * **AND THE SURVIVING HALF HAS QUIETLY BECOME VACUOUS, WHICH IS
+#     WORTH SAYING PLAINLY RATHER THAN LEAVING AS A TRUE-BUT-EMPTY
+#     CLAIM.**  "Nothing at run>=12 >= 8 has stalled across 87 labels"
+#     is still true, and it was the strongest thing in this file for
+#     many batches.  But the whole table now reads
+#
+#         4: 0/1    5: 0/5    6: 1/15   7: 0/31
+#         8: 0/42   9: 0/38   10: 0/7
+#
+#     -- **ONE stalled label in 139**, and it is at run>=12 = 6.  With
+#     nothing stalling anywhere, "the high buckets never stall" has no
+#     contrast left to draw: it is a statement about a table with a
+#     single non-zero cell, and it supports nothing.  The run>=12 stall
+#     predictor should be read as having been DISSOLVED BY ITS OWN DATA
+#     rather than refuted -- the resume policy simply decided almost
+#     every label that had ever stalled -- and nothing in it should be
+#     carried into a later rung.
+#
+#     Note what this does NOT mean.  It does not mean the sub-cubes were
+#     easy or that the cap is generous; the ten stragglers between them
+#     absorbed some forty attempts before falling.  It means the table
+#     was measuring which labels the resume policy had re-run, and the
+#     resume policy has now re-run all of them.
 #
 # On COST AMONG THE DECIDED the two predictors still answer different
 # questions -- leading-13s predicts what a decided sub-cube costs (badly,
@@ -972,19 +975,32 @@
 #   COUNTED, SO ALL THREE READINGS ARE GIVEN.**  Fisher's exact,
 #   one-tailed, on the 2x2 of clear-vs-near against run>=12 = 7 vs 8:
 #
-#     all eleven successes independent               p = 0.015
-#     collapsing the 04:13 cohort to one observation p = 0.071
+#     all twelve successes independent               p = 0.010
+#     collapsing the 04:13 cohort to one observation p = 0.040
 #     collapsing the WHOLE 04:12 driver run to one   p = 0.333
 #
-#   The middle reading is the defensible one -- c96 and c97 were
+#   c98 replicated it a fourth time, at 9313.9 s from the 06:31 launch,
+#   again at run>=12 = 7.  **Seven clear-of-cap successes, every one at
+#   run>=12 = 7, from four distinct launches**, against five near-cap of
+#   which four are at 8.
+#
+#   The middle reading is the defensible one -- c96, c97 and c98 were
 #   staggered launches minutes apart, more independent than the
-#   synchronised four and less than separate machines -- and it has
-#   improved from 0.143 to 0.071 purely by replication, which is the
-#   right reason for a p-value to move.  **It still does not reach 0.05,
-#   no correction has been applied for choosing this comparison after
-#   seeing the data, and the maximally conservative reading is nowhere
-#   near significant.**  The claim remains: tested twice more, survived
-#   twice more, not established.
+#   synchronised four and less than separate machines -- and it has gone
+#   0.143 -> 0.071 -> 0.040 **purely by replication, which is the right
+#   reason for a p-value to move**, and has now crossed 0.05 for the
+#   first time.
+#
+#   **THAT IS NOT THE SAME AS ESTABLISHED, AND THREE THINGS ARE AGAINST
+#   IT.**  No correction has been applied for choosing this comparison
+#   after seeing the data, and it was chosen that way.  The maximally
+#   conservative reading is unchanged at 0.333 and will stay there
+#   because every clear-of-cap success this file has came from a single
+#   driver run.  And twelve events is twelve.  The right summary is: it
+#   passed a test set in advance, replicated three times, reaches
+#   conventional significance under the middle accounting, and needs a
+#   clear-of-cap success from a DIFFERENT DRIVER RUN before it is worth
+#   more than that.
 #
 # So the marginal-instance story is a description of most of the sample
 # rather than the mechanism of the effect, and it should not be leaned
@@ -1398,3 +1414,4 @@ g=11 [13, 13, 13, 13, 13, 13, 12, 11, 11, 10, 6]	UNSAT	8270.4
 g=11 [13, 13, 13, 13, 13, 13, 12, 11, 10, 9, 8]	UNSAT	8900.8
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 11, 9, 8]	UNSAT	8658.6
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNSAT	8956.0
+g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNSAT	9313.9
