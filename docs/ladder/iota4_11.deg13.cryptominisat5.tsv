@@ -196,11 +196,11 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 131 UNSAT, 8 UNKNOWN, 0 SAT over 139 labels -- 131 of 1949,
-# 245 rows.  **THE SWEEP IS COMPLETE AND THE RUN HAS REACHED FRESH
-# GROUND.**  140 UNSAT, 0 UNKNOWN, 0 SAT over 140 labels -- every label
-# ever attempted is decided, and the newest is the first genuinely new
-# sub-cube since the sweep began: `[13,13,13,12,13,13,13,13,12,9,4]` at
-# 3555.5 s, decided on its first attempt.
+# 246 rows.  **THE SWEEP IS COMPLETE AND THE RUN IS BANKING FRESH
+# SUB-CUBES AGAIN.**  141 UNSAT, 0 UNKNOWN, 0 SAT over 141 labels --
+# every label ever attempted is decided, and the last two rows are the
+# first genuinely new sub-cubes since the sweep began, both decided on
+# their first attempt: `9,4` at 3555.5 s and `8,5` at 3566.2 s.
 #
 # **AND THE HEADLINE IS THAT ONE COHORT OF FOUR WENT FOUR FOR FOUR.**
 # The four solvers launched together at ~04:13 all decided their cubes,
@@ -304,7 +304,7 @@
 # 9 -- thirteen labels, not fifty-seven.  The 45-of-45 version would
 # have been the twelfth withdrawal.
 #
-# WINDOWS at 245 rows: ALL attempts 8 of 8 and 10 of 12; FIRST attempts
+# WINDOWS at 246 rows: ALL attempts 8 of 8 and 10 of 12; FIRST attempts
 # 8 of 8 and 12 of 12.  The raise stays unarmed under either (condition
 # is 0 or 1 banked in twelve, and the worse reading is 6).  Never raise
 # off a window the resume policy filled: the all-attempts window has now
@@ -613,8 +613,8 @@
 # the max-degree anchor, then `deg(1) >= deg(2) >= deg(3)` and
 # `deg(4) >= ... >= deg(10)`, because the residual symmetry after fixing
 # the anchor member is `Sym({1,2,3}) x Sym({4..10})` and nothing relabels
-# across the two.  Re-checked over all 245 rows / 140 distinct labels:
-# **0 violate block-wise sortedness, 11 violate global sortedness**, and
+# across the two.  Re-checked over all 246 rows / 141 distinct labels:
+# **0 violate block-wise sortedness, 12 violate global sortedness**, and
 # they fall into two families, each walked in order.  The first, now
 # complete at seven members:
 #
@@ -678,9 +678,10 @@
 # complete list is `x = 12,11,10,9,8,7` -- six members, of which `12,1`
 # and `11,2` have landed.
 #
-#   PREDICTED, and now FOUR OF SIX CONFIRMED IN THE PREDICTED ORDER:
-#   `12,1`, `11,2`, `10,3` and now **`9,4` (landed 3555.5)**; `8,5` and
-#   `7,6` remain, then this family ends too.  This is the same kind of
+#   PREDICTED, and now FIVE OF SIX CONFIRMED IN THE PREDICTED ORDER:
+#   `12,1`, `11,2`, `10,3`, `9,4` (3555.5) and **`8,5` (3566.2)**.  Only
+#   `7,6` remains, and then this family ends -- the last live piece of
+#   the only prediction in this file that has never missed.  This is the same kind of
 #   claim that held exactly for the first family, and it is arithmetic
 #   about the encoding rather than a reading of the data -- which is why
 #   it is the only part of this section stated as a prediction at all.
@@ -695,11 +696,21 @@
 #   obliging, was exactly the thing it was written to resist.
 #
 #   **The fourth member came in at 3555.5 -- a fall of more than 2100 s.**
-#   The second family reads 2333, 4260, 5659, 3556: up, up, down, the
-#   same shape that broke the first family, arriving one member sooner.
-#   Extrapolating the rising prefix would have been wrong, and the only
-#   reason this header did not extrapolate it is that a rising prefix had
-#   already failed here once.
+#   The second family now reads 2333, 4260, 5659, 3556, 3566: up, up,
+#   down, flat.  The fall broke the rising prefix and the fifth member
+#   then landed within 11 s of the fourth, which is closer than any two
+#   members of either family have ever been.  Extrapolating the rising
+#   prefix would have been wrong, and the only reason this header did not
+#   extrapolate it is that a rising prefix had already failed here once.
+#
+#   **AND THE 11-SECOND GAP IS NOT BEING READ EITHER.**  Two adjacent
+#   costs agreeing to a third of a percent is the kind of thing that
+#   invites a story -- that the family has reached a plateau, that the
+#   last two tails are interchangeable.  Two points make a plateau the
+#   way two points make a line.  `7,6` will either sit near 3560 or it
+#   will not, and this header is not saying which, for exactly the
+#   reason the previous abstention was written and exactly the reason it
+#   was vindicated.
 #
 #   Two things resolved together, and they resolved in opposite
 #   directions on purpose.  **The prediction derived from the ENCODING --
@@ -1461,3 +1472,4 @@ g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 10, 8]	UNSAT	8956.0
 g=11 [13, 13, 13, 13, 13, 12, 12, 11, 10, 9, 9]	UNSAT	9313.9
 g=11 [13, 13, 13, 13, 13, 12, 11, 11, 10, 10, 9]	UNSAT	9811.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 9, 4]	UNSAT	3555.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 13, 12, 8, 5]	UNSAT	3566.2
