@@ -81,10 +81,10 @@
 # from the completed sweep was 13 of 39 = 0.333 over a far larger
 # sample, and four attempts cannot revise it in either direction.  It is
 # recorded because the DENOMINATOR is the thing worth watching here:
-# ten stragglers remain, seven have now had two attempts each, and the
+# ten stragglers remain, seven have had two attempts each, and the
 # budget rule counts CONSECUTIVE ATTEMPTS BANKING 0 OR 1 UNSAT toward
-# the twelve that would justify raising the cap.  SEVEN consecutive
-# failures is seven, not twelve.
+# the twelve that would justify raising the cap.  The run reached SEVEN
+# and then reset to zero when a fresh cube banked; see above.
 #
 # **THE EIGHT-ATTEMPT WINDOW IS ONE ROW AWAY AND IS EXPLICITLY NOT A
 # TRIGGER.**  The paragraph above was written at six, before the
@@ -286,8 +286,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 164 UNSAT, **10 UNKNOWN**, 0 SAT over 174 labels -- 164 of
-# 1949, 287 rows.
+# STANDING: 165 UNSAT, **10 UNKNOWN**, 0 SAT over 175 labels -- 165 of
+# 1949, 288 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -1307,8 +1307,22 @@
 # THE NEW GROUP'S MEMBERSHIP, generated in advance on the same
 # arithmetic: `[13,13,13,12,13,13,13,10]` has last three summing to 28
 # with `10 >= w >= x >= y`, giving **exactly 2 members** -- `(10,10,8)`
-# and `(10,9,9)`.  If it closes at any other set the encoding argument
-# is wrong.  `(10,10,8)` has landed, 1 of 2, in the permitted set.
+# and `(10,9,9)`.
+#
+# **CLOSED, AND THE TEST PASSES -- FOURTH GROUP, FOURTH EXACT MATCH.**
+# `(10,10,8)` UNSAT 5132.3 and `(10,9,9)` UNSAT 8237.8: 2 permitted, 2
+# seen, none outside, none missing.  Across the four groups closed so
+# far the encoding has predicted **23 + 14 + 7 + 2 = 46 members and got
+# all 46**, with nothing ever landing outside a permitted set.
+#
+# **AND IT BROKE THE FAILURE RUN AT SEVEN.**  `(10,9,9)` is a FRESH
+# cube, not a straggler, so the consecutive-attempts-banking-nothing
+# count RESETS TO ZERO having reached seven.  The eight-attempt window
+# was one row away and never arrived; the budget rule's twelve was never
+# approached, and the cap stays at 10800 s.  The note that recorded the
+# threshold in advance stands: waiting cost nothing, and this is the
+# second time in this file that a run of failures ended on its own
+# before the rule would have fired.
 #
 # Its 5132.3 is the cheapest UNSAT since `12,12,2` at 3348.7 (checked
 # against every UNSAT cost in between), and sits at rank 102 of 162
@@ -2175,3 +2189,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10896.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNKNOWN	10884.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10875.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10909.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 9, 9]	UNSAT	8237.8
