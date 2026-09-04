@@ -22,17 +22,49 @@ name: verify
 # an hour on GitHub runners. See docs/reading.md rule 28.
 #
 # Dropping `synchronize` removes exactly the duplicate and nothing else.
-# Every push is still built, audited, re-checked and mutated -- once,
-# through `push`, on every branch, which is the discipline this
-# repository states in docs/testing.md.
+# Every push that touches a file these gates read is still built,
+# audited, re-checked and mutated -- once, through `push`, on every
+# branch, which is the discipline this repository states in
+# docs/testing.md.
 #
 # `opened` and `reopened` are kept deliberately: they are the one thing
 # `push` can never do, because they build the *merge commit* -- this
 # branch merged into its base -- and so catch a conflict with `main`
 # that is invisible on either side alone. That is one extra run per pull
 # request, not one per push.
+#
+# `paths-ignore` is the qualifier in that first sentence, and it lists
+# exactly two directories because those are the two that were CHECKED to
+# be unread. The motivating waste is real and measured: a branch banking
+# solver rows into `docs/ladder/*.tsv` re-verifies a byte-identical tree
+# on every push, and the deg-13 branch did that for 88 consecutive
+# commits -- `git diff --name-only <base> HEAD -- coq/ rust/ tools/
+# Makefile .github/` empty throughout -- across ~113 runs and roughly
+# 150 runner-hours, nearly all of it the ~1h55m mutation job being
+# started and cancelled by the next push about 24 minutes in.
+#
+# THE FIRST DRAFT OF THIS FILTER SAID `docs/**`, AND THAT WOULD HAVE
+# BEEN A BUG. The gates are not confined to code: `tools/docnumbers.py`
+# opens `docs/roadmap.md`, `docs/testing.md`, `STATUS.md`, `README.md`,
+# `MANIFEST.md` and `ATTRIBUTION.md`, and `make ceilings` reads
+# `docs/roadmap.md` too. Ignoring `docs/**` would therefore have
+# switched off the prose gates on precisely the prose they police --
+# buying runner time by deleting the coverage this repository added
+# after prose drifted from its own lists twice. `docs/ladder/` and
+# `docs/papers/` are the only doc paths no gate opens: checked by
+# grepping every literal path in `tools/*.py`, not assumed.
+#
+# Note what is deliberately NOT skipped. `pull_request: [opened,
+# reopened]` carries no path filter, so every pull request still gets
+# one full run against the merge commit however documentary its diff;
+# that is the run whose green result a pull request body cites, and
+# skipping it would trade the evidence for the runner time.
+# `prcheck.yml` is left unfiltered too: it is seconds, not hours.
 on:
   push:
+    paths-ignore:
+      - 'docs/ladder/**'
+      - 'docs/papers/**'
   pull_request:
     types: [opened, reopened]
 

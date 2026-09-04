@@ -912,11 +912,33 @@ cargo run --release --example iota_structure   # the extremal families, dumped
 cargo run --release --example iota_extend      # the iota table past the search
 ```
 
-CI runs these as separate jobs on every push, with `RUSTFLAGS=-D
-warnings` on the Rust side, plus once more against the *merge commit*
-when a pull request is opened — the one tree no push ever builds, and
-the only place a conflict with `main` that is invisible on either side
-alone can show up.
+CI runs these as separate jobs on every push **that touches a file
+they read**, with `RUSTFLAGS=-D warnings` on the Rust side, plus once
+more against the *merge commit* when a pull request is opened — the one
+tree no push ever builds, and the only place a conflict with `main`
+that is invisible on either side alone can show up.
+
+The qualifier is a `paths-ignore` on `docs/ladder/**` and
+`docs/papers/**`, and it is a measurement rather than a preference. A
+branch banking solver rows into `docs/ladder/*.tsv` re-verifies a
+byte-identical tree on every push; the deg-13 branch did that for 88
+consecutive commits, across roughly 113 runs and 150 runner-hours,
+nearly all of it the ~1h55m mutation job being started and then
+cancelled by the next push.
+
+**The filter is two directories rather than `docs/**` for a reason worth
+stating, because the wider version was written first and was wrong.**
+These gates are not confined to code: `docnumbers` opens
+`docs/roadmap.md`, `docs/testing.md`, `STATUS.md`, `README.md`,
+`MANIFEST.md` and `ATTRIBUTION.md`, and `ceilings` reads
+`docs/roadmap.md`. Ignoring `docs/**` would have switched off the prose
+gates on exactly the prose they police — buying runner time by deleting
+the coverage added after prose drifted from its own lists twice.
+`docs/ladder/` and `docs/papers/` are the only documentation paths no
+gate opens, established by grepping every literal path in `tools/*.py`.
+The pull-request run is left unfiltered, so every pull request still
+gets one full green suite against its merge commit however documentary
+its diff.
 
 Once per push, not twice. A push to a branch with an open pull request
 fires both `push` and `pull_request:synchronize`, and the two carry
