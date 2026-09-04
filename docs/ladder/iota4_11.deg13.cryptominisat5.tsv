@@ -286,8 +286,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 167 UNSAT, **10 UNKNOWN**, 0 SAT over 177 labels -- 167 of
-# 1949, 293 rows.
+# STANDING: 167 UNSAT, **11 UNKNOWN**, 0 SAT over 178 labels -- 167 of
+# 1949, 294 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -1348,9 +1348,10 @@
 # enumeration is guaranteed to pass the point where it would appear;
 # it has now passed, so this is a resolution and not a still-open bet.
 #
-# **ARM (b) IS OPEN AT 2 OF 12** -- `(12,12,3)` UNSAT 3091.4 and
-# `(12,11,4)` UNKNOWN at the cap 10897.6, both permitted, nothing
-# outside the set.  It resolves when the group closes, not before.
+# **ARM (b) IS OPEN AT 3 OF 12** -- `(12,12,3)` UNSAT 3091.4,
+# `(12,11,4)` UNKNOWN 10897.6 and `(12,10,5)` UNKNOWN 10895.9, all
+# permitted, nothing outside the set.  It resolves when the group
+# closes, not before.
 #
 # **A SECOND STRAGGLER HAS SINCE RECOVERED, AND THE DENOMINATOR NEEDS
 # CARE.**  `(11,10,6)`, UNKNOWN at 10896.8, came back **UNSAT at
@@ -2282,3 +2283,5 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10891.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNKNOWN	10915.6
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 12, 3]	UNSAT	3091.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNKNOWN	10897.6
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNKNOWN	10895.9
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNKNOWN	10900.0
