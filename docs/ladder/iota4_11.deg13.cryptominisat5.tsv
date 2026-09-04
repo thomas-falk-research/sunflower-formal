@@ -2101,6 +2101,79 @@
 # CONTEXT FOR READING THE RESULT, not grounds for suspending it.  If
 # the window reads <=1, the rule is met and the cap goes to 21600.
 #
+# ================================================================
+# THE NEXT ROW WAS AN UNSAT, AND IT CAME IN UNDER THE CAP
+# ================================================================
+#
+# Attempt #301 at 22:47:04Z: [13,13,13,12,13,13,13,12,10,10,6] UNSAT at
+# **10406.4 s**.  The run of non-banking attempts ended at EIGHT, one
+# row after the block above said the window would read <=1 on the very
+# next row.  The trailing count is back to zero, the last twelve still
+# hold two UNSAT, and **THE BUDGET RULE NEVER FIRED** -- for the second
+# time, the first having ended at seven.  Tally 168 UNSAT / 12 UNKNOWN
+# / 0 SAT over 301 rows and 180 labels; stragglers 13 -> 12.
+#
+# THE ROW IS NOT JUST A RESET, IT IS EVIDENCE ABOUT THE CAP.  That
+# label had stalled TWICE at this cap -- 10896.2 at #268 and 10884.2 at
+# #285 -- and then returned a verdict at 10406.4, which is INSIDE the
+# 10800 s budget it had twice failed to finish in.  The cube was
+# decidable within the existing budget the whole time.  It did not need
+# a bigger cap; it needed another draw.  A raise to 21600 would have
+# bought this verdict nothing.
+#
+# SO THE QUESTION WAS MEASURED PROPERLY RATHER THAN ARGUED.  Restricted
+# to the 10800 s era, re-draws (any attempt after a label's first):
+#
+#     48 attempts, 13 conversions = 27.1%
+#     139.4 solver-hours spent, so **10.7 SOLVER-HOURS PER VERDICT**
+#     mean attempt 2.90 h; a converting attempt averages 2.57 h
+#
+# An attempt at 21600 s costs at most 6.0 solver-hours, so to be
+# cheaper per verdict than re-drawing it would have to convert at
+# better than 6.0/10.7 = **56%**.  The observed conversion rate at the
+# current cap is 27%.  Nothing in this file suggests doubling the
+# budget would double-and-then-some the conversion rate, and the raise
+# only helps cubes whose true solve time falls in (10800, 21600].
+#
+# AND PERSISTENCE AT THIS CAP DEMONSTRABLY WORKS.  In the 10800 s era
+# stragglers have converted on attempt 2 (twice), 3 (six times), 5, 6
+# and SEVEN (three times).  A label being on its third or seventh
+# attempt is not evidence that it is out of reach of this cap; it is
+# the ordinary way verdicts arrive here.
+#
+# WHAT THE CAP EDGE ACTUALLY LOOKS LIKE.  Of 97 UNSATs in the era, the
+# cost distribution is 45.4% under 3600 s, 27.8% to 7200, 17.5% to
+# 9000, 3.1% to 10000, 5.2% to 10800, one above.  Six needed >= 10000 s
+# (#233, #234, #272, #274, #289, #301) and four of those six are in the
+# last thirty attempts.  The last 7.4% of the budget is buying 6.2% of
+# the verdicts -- roughly proportional, so the cut is not sharp, and
+# verdicts are still arriving right at the edge.  That is the strongest
+# thing that can honestly be said FOR a raise, and it is not close to
+# 56%.  The dip-then-rise across the last two buckets (3 rows then 5)
+# is n=8 and is NOT named as a shape; roadmap 54.3a rule four applies.
+#
+# TWO NOTES ON HOW THIS WAS REACHED, BOTH UNCOMFORTABLE.
+#
+# First: the five points in the block above all cut against honouring
+# the threshold, I flagged that as the classic rationalisation shape,
+# and committed to raise anyway if the window read <=1.  That was the
+# right procedure and the points were ALSO right -- the numbers have
+# since confirmed them.  Being suspicious of your own reasoning is not
+# the same as that reasoning being wrong.  Hold the threshold, record
+# the context, and let the data settle it; that is what happened.
+#
+# Second, and against the temptation this row creates: the cost
+# measurement above is a BETTER instrument than the twelve-attempt
+# window, which only counts UNSATs and never looks at what they cost.
+# It is not adopted as the rule here.  This file has already withdrawn
+# two versions of the budget rule, and proposing a third within an hour
+# of the second nearly binding -- in a direction that happens to
+# vindicate the reading I already held -- is precisely the moment not
+# to.  If the cost rule is a better rule it will still be a better rule
+# when adopting it is inconvenient.  THE RULE REMAINS: twelve
+# consecutive attempts banking 0 or 1 UNSAT, then 10800 -> 21600.
+#
+#
 #
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
@@ -2403,3 +2476,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10881.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10888.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10890.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNSAT	10406.4
