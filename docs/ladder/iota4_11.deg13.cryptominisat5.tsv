@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 162 UNSAT, **11 UNKNOWN**, 0 SAT over 173 labels -- 162 of
-# 1949, 278 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 163 UNSAT, **11 UNKNOWN**, 0 SAT over 174 labels -- 163 of
+# 1949, 279 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -465,8 +465,8 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **68 of the 173 attempted
-# labels -- 39.3% -- were NOT decided on their first attempt**.  105
+# has not been stated in this file before: **68 of the 174 attempted
+# labels -- 39.1% -- were NOT decided on their first attempt**.  106
 # fell first time; 57 of the 68 were later banked by a re-run or a cap
 # raise and 11 are outstanding right now.
 #
@@ -1172,11 +1172,36 @@
 #     (11,8,8)   UNSAT 8837.4
 #     (10,10,7)  UNKNOWN at the cap 10894.5
 #     (10,9,8)   UNKNOWN at the cap 10880.1
+#     (9,9,9)    UNSAT 6421.5
+#
+# **THE GROUP IS COMPLETE AT 7 OF 7 AND THE MEMBERSHIP TEST PASSES
+# EXACTLY -- THIRD GROUP, THIRD EXACT MATCH.**  7 permitted, 7 seen,
+# none outside, none missing.  Across the three groups closed so far the
+# encoding has predicted **23 + 14 + 7 = 44 members and got all 44**,
+# with nothing landing outside a permitted set.  This is arithmetic
+# about the generator, not a claim about sunflowers, and it is the only
+# kind of prediction in this file that has never missed.
+#
+# **AND THE `w` SPLIT IS NOW CONTRADICTED IN TWO CONSECUTIVE GROUPS AT
+# ITS OWN EXTREME.**  This group reads `w = 11: 3 dec / 1 undec`,
+# `10: 0/2`, `9: 1/0`.  The lowest `w` decided while the middle `w`
+# stalled outright -- the same shape as the group above, where `(9,9,8)`
+# also decided.  Both lowest-`w` members decided:
+#
+#     [..,12] lowest-w (9,9,8)  UNSAT 10844.4   (knife-edge)
+#     [..,11] lowest-w (9,9,9)  UNSAT  6421.5   (comfortable)
+#
+# **THE TEMPTATION NOW IS TO READ IT BACKWARDS, AND THAT IS THE SAME
+# ERROR INVERTED.**  "The lowest `w` is easiest" rests on exactly two
+# groups, which is precisely the sample that produced the original
+# split it would be replacing.  No claim is made in either direction.
+# What is established is narrower and holds: `w` does not separate
+# decided from stalled, because within `w = 11` the outcomes already
+# differ with `w` held constant.
 #
 # **AND THE ENUMERATION HAS STRADDLED AGAIN, EXACTLY AS BEFORE.**
-# `[13,13,13,12,13,13,13,10]` has opened with `(10,10,8)` UNSAT 5132.3
-# while `(9,9,9)` of the group above is still in flight.  That group
-# stays at 6 of 7 and is NOT tested until `(9,9,9)` lands.  This is the
+# `[13,13,13,12,13,13,13,10]` opened with `(10,10,8)` UNSAT 5132.3
+# while `(9,9,9)` was still in flight -- it has since landed.  This is the
 # second time the boundary has been crossed with a member outstanding,
 # so it is now the expected behaviour rather than an observation: four
 # threads take cubes in enumeration order and the last cubes of one
@@ -2044,3 +2069,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 8, 8]	UNSAT	8837.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNKNOWN	10894.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10880.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 10, 8]	UNSAT	5132.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 9, 9, 9]	UNSAT	6421.5
