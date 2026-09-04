@@ -286,8 +286,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 165 UNSAT, **10 UNKNOWN**, 0 SAT over 175 labels -- 165 of
-# 1949, 288 rows.
+# STANDING: 166 UNSAT, **9 UNKNOWN**, 0 SAT over 175 labels -- 166 of
+# 1949, 289 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -1337,6 +1337,26 @@
 # other than exactly those twelve.  ARRIVAL ORDER IS NOT PREDICTED.
 # NO COST PREDICTION IS MADE.
 #
+# **A SECOND STRAGGLER HAS SINCE RECOVERED, AND THE DENOMINATOR NEEDS
+# CARE.**  `(11,10,6)`, UNKNOWN at 10896.8, came back **UNSAT at
+# 10739.7** on attempt two -- below its own stall and below the 10800 s
+# cap.  Stragglers drop 10 -> 9.
+#
+# The sweep has banked 3 of the 10 rows since the twelfth restart, and
+# **that is NOT the re-run yield**: one of the three, `(10,9,9)` at
+# 8237.8, was a FRESH cube with no prior stall.  Counting only actual
+# re-run attempts the figure is **2 of 9**.  Quoting 3 of 10 would
+# inflate it by counting a first attempt as a repeat -- precisely the
+# error 54.3a records, where a re-run yield of `0.37` was really `0.18`
+# because labels were counted where attempts were meant.  Both
+# denominators are small and neither is offered as a rate; the settled
+# figure remains 13 of 39 = 0.333 from the completed sweep.
+#
+# Both recoveries decided BELOW their own earlier stall -- 9769.5
+# against 10886.9, and 10739.7 against 10896.8 -- which is the pattern
+# this file has recorded throughout and the reason a repeat is worth
+# something: `cryptominisat5` does not reproduce its previous search.
+#
 # **AND IT BROKE THE FAILURE RUN AT SEVEN.**  `(10,9,9)` is a FRESH
 # cube, not a straggler, so the consecutive-attempts-banking-nothing
 # count RESETS TO ZERO having reached seven.  The eight-attempt window
@@ -2212,3 +2232,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNKNOWN	10884.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10875.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10909.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 9, 9]	UNSAT	8237.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 10, 6]	UNSAT	10739.7
