@@ -48,7 +48,28 @@
 # sub-cubes it shares with cadical's pass, where cadical landed 5, so
 # 600 s here is about a 200 s cadical-equivalent.
 #
-# ELEVEN CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The eleventh was
+# TWELVE CONTAINER RESTARTS ABSORBED, ZERO ROWS LOST.  The twelfth was
+# at 03:53Z: driver pid 1615 and all four solvers gone, restarted as pid
+# 11901, which printed `checkpoint: 163 of 1949 cubes already decided`
+# against an independent recount of 163 distinct UNSAT labels -- MATCH.
+# Zero non-degree-sequence labels, so the one-slice monolithic pass
+# (60.4 s UNKNOWN, then re-split) again wrote no row.  The last commit
+# was pushed before the container went, so nothing was at risk in the
+# working tree either.
+#
+# **THIS RESTART IS THE EXPENSIVE KIND, AND FOR A REASON THE FILE
+# ALREADY NAMED.**  The resume policy re-runs every straggler before
+# any fresh cube, and there are now **11 UNKNOWN labels** against the
+# 4 that made the earlier sweeps cheap.  At a 10800 s cap over four
+# threads that is up to about 8.25 uninterrupted wall-hours of
+# re-attempting cubes that already failed once, before a single new
+# sub-cube is touched.  The hazard was recorded when the count was low
+# and it is now being paid.  It is NOT a reason to restart differently
+# or to raise the cap: the budget rule is unchanged and the stragglers
+# are genuinely undecided.  Recorded so a flat row count over the next
+# several hours is read as the sweep rather than as a hang.
+#
+# The eleventh was
 # at 14:58Z: driver pid 1613 and all four solvers gone, restarted as pid
 # 1615, which printed `checkpoint: 156 of 1949 cubes already decided`
 # against an independent recount of 156 distinct UNSAT labels -- MATCH,
