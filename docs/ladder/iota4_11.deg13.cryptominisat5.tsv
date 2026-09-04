@@ -286,8 +286,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 167 UNSAT, **12 UNKNOWN**, 0 SAT over 179 labels -- 167 of
-# 1949, 295 rows.
+# STANDING: 167 UNSAT, **13 UNKNOWN**, 0 SAT over 180 labels -- 167 of
+# 1949, 296 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -1348,15 +1348,18 @@
 # enumeration is guaranteed to pass the point where it would appear;
 # it has now passed, so this is a resolution and not a still-open bet.
 #
-# **ARM (b) IS OPEN AT 4 OF 12** -- `(12,12,3)` UNSAT 3091.4,
-# `(12,11,4)` UNKNOWN 10897.6, `(12,10,5)` UNKNOWN 10895.9 and
-# `(12,9,6)` UNKNOWN 10900.0, all permitted, nothing outside the set.
-# It resolves when the group closes, not before.
+# **ARM (b) IS OPEN AT 5 OF 12** -- `(12,12,3)` UNSAT 3091.4, then
+# `(12,11,4)` 10897.6, `(12,10,5)` 10895.9, `(12,9,6)` 10900.0 and
+# `(12,8,7)` 10897.3 all UNKNOWN at the cap.  All permitted, nothing
+# outside the set.  It resolves when the group closes, not before.
 #
-# **THREE CONSECUTIVE STALLS IN THIS GROUP, AND THE HEADER IS NOT GOING
-# TO CALL IT A TREND.**  `12,11,4`, `12,10,5`, `12,9,6` all hit the cap
-# within 5 s of each other -- 10897.6, 10895.9, 10900.0 -- after
-# `12,12,3` decided in 3091.4.  The costs cluster because the CAP
+# **THE `w = 12` SUB-FAMILY IS NOW COMPLETE AT FIVE: one decided, four
+# stalled.**  The permitted tails at `w = 12` are exactly `(12,12,3)
+# (12,11,4) (12,10,5) (12,9,6) (12,8,7)` and all five are in.
+#
+# **FOUR CONSECUTIVE STALLS, AND THE HEADER IS NOT GOING TO CALL IT A
+# TREND.**  They hit the cap within 5 s of each other -- 10897.6,
+# 10895.9, 10900.0, 10897.3 -- after `12,12,3` decided in 3091.4.  The costs cluster because the CAP
 # clusters them: every cube that fails to decide reports a time just
 # past 10800, so three stalls always look like three near-identical
 # numbers.  That similarity is an artefact of censoring, not evidence
@@ -2296,3 +2299,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 12, 3]	UNSAT	3091.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNKNOWN	10897.6
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNKNOWN	10895.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNKNOWN	10900.0
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10897.3
