@@ -1315,6 +1315,28 @@
 # far the encoding has predicted **23 + 14 + 7 + 2 = 46 members and got
 # all 46**, with nothing ever landing outside a permitted set.
 #
+# **THE NEXT PREDICTION IS SHARPER THAN THE PREVIOUS ONES, BECAUSE IT
+# ALSO SAYS WHAT WILL NEVER APPEAR.**  The eighth entry has been
+# descending 13, 12, 11, 10.  It does NOT continue to 9: with the
+# first eight fixed at `[13,13,13,12,13,13,13,9]` the last three must
+# sum to 29 with every part at most 9, and `3 x 9 = 27 < 29`, so that
+# prefix admits ZERO members.  The same holds for `...,8` (sum 30) and
+# `...,7` (sum 31).  Those three prefixes must be SKIPPED ENTIRELY.
+#
+# So the next non-empty group is `[13,13,13,12,13,13,12,12]`, whose
+# tail sums to 27 with `12 >= w >= x >= y`, giving **exactly 12
+# members**:
+#
+#     (12,12,3) (12,11,4) (12,10,5) (12,9,6) (12,8,7)
+#     (11,11,5) (11,10,6) (11,9,7)  (11,8,8)
+#     (10,10,7) (10,9,8)  (9,9,9)
+#
+# Two ways for this to be wrong, both cheap to check: a row whose
+# first eight are `[13,13,13,12,13,13,13,9]`, `...,8` or `...,7` --
+# any such row refutes the skip -- or this group closing at a set
+# other than exactly those twelve.  ARRIVAL ORDER IS NOT PREDICTED.
+# NO COST PREDICTION IS MADE.
+#
 # **AND IT BROKE THE FAILURE RUN AT SEVEN.**  `(10,9,9)` is a FRESH
 # cube, not a straggler, so the consecutive-attempts-banking-nothing
 # count RESETS TO ZERO having reached seven.  The eight-attempt window
