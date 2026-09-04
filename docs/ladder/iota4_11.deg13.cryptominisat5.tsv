@@ -57,10 +57,30 @@
 # was pushed before the container went, so nothing was at risk in the
 # working tree either.
 #
+# **AND THE SWEEP IS ALREADY PAYING.**  `(12,8,6)`, UNKNOWN at 10886.9
+# before the restart, came back **UNSAT at 9769.5** on its re-run: the
+# straggler count drops 11 -> 10 while the LABEL count stays at 174,
+# because a re-run adds a row and not a label.  It decided at less wall
+# time than its own earlier stall, which is the pattern this file has
+# recorded before and the reason a `cryptominisat5` re-run is worth
+# something rather than nothing: it does not reproduce its previous
+# search.  That recovery cost 2 h 43 m of the sweep budget and banked
+# one label.
+#
+# One consequence for the `w` table, recorded because it cuts AGAINST
+# the caution rather than for it: group `[..,12]` now reads `w = 12:
+# 6 dec / 0 undec`, `11: 0/4`, `10: 0/3`, `9: 1/0`.  The `w = 12`
+# sub-family is now CLEANLY all-decided, which is what the original
+# split claimed -- and the table is still non-monotone, because `w = 9`
+# is all-decided too with `10` and `11` empty between them.  A reading
+# that got sharper at one end and stayed broken in the middle is not a
+# reading.
+#
 # **THIS RESTART IS THE EXPENSIVE KIND, AND FOR A REASON THE FILE
 # ALREADY NAMED.**  The resume policy re-runs every straggler before
 # any fresh cube, and there are now **11 UNKNOWN labels** against the
-# 4 that made the earlier sweeps cheap.  At a 10800 s cap over four
+# 4 that made the earlier sweeps cheap, 10 after the first recovery.
+# At a 10800 s cap over four
 # threads that is up to about 8.25 uninterrupted wall-hours of
 # re-attempting cubes that already failed once, before a single new
 # sub-cube is touched.  The hazard was recorded when the count was low
@@ -236,8 +256,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 163 UNSAT, **11 UNKNOWN**, 0 SAT over 174 labels -- 163 of
-# 1949, 279 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 164 UNSAT, **10 UNKNOWN**, 0 SAT over 174 labels -- 164 of
+# 1949, 280 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -1103,7 +1123,8 @@
 #     (12,10,4)  7134.5
 #     (12,9,5)   7533.0
 #     (12,7,7)   8957.3   <- overtook (12,8,6)
-#     (12,8,6)   UNKNOWN at 10886.9 (cap)
+#     (12,8,6)   UNKNOWN at 10886.9 (cap), then UNSAT 9769.5 on the
+#                twelfth-restart re-run -- first straggler recovered
 #     (11,10,5)  UNKNOWN at 10896.2 (cap)
 #     (11,11,4)  UNKNOWN at the cap (10906.1)
 #     (11,9,6)   UNKNOWN at the cap (10898.3)
@@ -2091,3 +2112,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNKNOWN	10894.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10880.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 10, 8]	UNSAT	5132.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 9, 9, 9]	UNSAT	6421.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 8, 6]	UNSAT	9769.5
