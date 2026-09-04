@@ -2209,6 +2209,21 @@
 # three.  On the record above, the four that have had three attempts
 # are not the hopeless ones -- #233, #238 and #239 each took SEVEN.
 #
+# THE BATCH FINISHED 2 AND 2.  #303 [..,12,10,8,8] UNKNOWN 10887.3 and
+# #304 [..,12,10,9,7] UNKNOWN 10890.8 closed the wave that started at
+# 19:53Z, so all four of its cubes were THIRD attempts and it converted
+# two of four.  Rows 304, labels still 180, tally 169 UNSAT / 11
+# UNKNOWN / 0 SAT.  The last twelve hold two UNSAT; the rule does not
+# fire.
+#
+# 2 of 4 is NOT offered as a rate -- n=4, and the settled re-draw
+# figure over the era is 28.6%.  It is recorded because it is the
+# denominator that matters: the eleven remaining stragglers now sit at
+# four labels with one attempt, ONE with two, and SIX with three.  The
+# three-attempt group is where the sweep is concentrated and, on the
+# twelve-conversion record above, is not the discouraging end of it.
+#
+#
 #
 #
 #
@@ -2515,3 +2530,5 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10890.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNSAT	10406.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNSAT	10703.6
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10887.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10890.8
