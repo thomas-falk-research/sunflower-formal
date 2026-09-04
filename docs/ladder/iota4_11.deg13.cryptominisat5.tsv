@@ -286,8 +286,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 166 UNSAT, **9 UNKNOWN**, 0 SAT over 175 labels -- 166 of
-# 1949, 291 rows.
+# STANDING: 167 UNSAT, **9 UNKNOWN**, 0 SAT over 176 labels -- 167 of
+# 1949, 292 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -1337,6 +1337,20 @@
 # other than exactly those twelve.  ARRIVAL ORDER IS NOT PREDICTED.
 # NO COST PREDICTION IS MADE.
 #
+# **ARM (a) HAS RESOLVED AND THE SKIP HELD.**  `(12,12,3)` UNSAT 3091.4
+# landed with first eight `[13,13,13,12,13,13,12,12]`, so the
+# enumeration has moved PAST the three predicted-empty prefixes.  Zero
+# rows carry `...,13,9`, `...,13,8` or `...,13,7` -- checked directly,
+# not inferred from their absence in the last few rows -- and the last
+# three distinct prefixes to arrive are `[..,13,11]`, `[..,13,10]`,
+# `[..,12,12]` in that order, with nothing between them.  A prediction
+# that something will NEVER be observed is only worth making when the
+# enumeration is guaranteed to pass the point where it would appear;
+# it has now passed, so this is a resolution and not a still-open bet.
+#
+# **ARM (b) IS OPEN AT 1 OF 12**, `(12,12,3)` being the first permitted
+# member, nothing outside the set.  It resolves when the group closes.
+#
 # **A SECOND STRAGGLER HAS SINCE RECOVERED, AND THE DENOMINATOR NEEDS
 # CARE.**  `(11,10,6)`, UNKNOWN at 10896.8, came back **UNSAT at
 # 10739.7** on attempt two -- below its own stall and below the 10800 s
@@ -2265,3 +2279,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 9, 9]	UNSAT	8237.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 10, 6]	UNSAT	10739.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10891.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNKNOWN	10915.6
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 12, 3]	UNSAT	3091.4
