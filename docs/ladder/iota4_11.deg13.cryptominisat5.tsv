@@ -67,22 +67,35 @@
 # search.  That recovery cost 2 h 43 m of the sweep budget and banked
 # one label.
 #
-# **THE NEXT FOUR RE-RUNS ALL RE-STALLED, AND THE SWEEP IS 1 OF 5.**
-# `11,11,4` 10881.6, `11,9,6` 10881.9, `11,10,5` 10894.7 and `11,8,7`
-# 10896.5 each came back at the cap on their SECOND attempt.  Rows go
-# 280 -> 284 while labels, UNSAT and UNKNOWN all stand still at
-# 174 / 164 / 10, which is what a re-run that fails looks like in this
-# file: it costs about three hours of solver time and moves no counter
-# at all.
+# **THE NEXT SEVEN RE-RUNS ALL RE-STALLED, AND THE SWEEP IS 1 OF 8.**
+# `11,11,4` 10881.6, `11,9,6` 10881.9, `11,10,5` 10894.7, `11,8,7`
+# 10896.5, `10,10,6` 10884.2, `10,8,8` 10875.2 and `10,9,7` 10909.7 each
+# came back at the cap on their SECOND attempt.  Rows go 280 -> 287
+# while labels, UNSAT and UNKNOWN all stand still at 174 / 164 / 10,
+# which is what a re-run that fails looks like in this file: it costs
+# about three hours of solver time and moves no counter at all.  Seven
+# failures is roughly TWENTY-ONE SOLVER-HOURS that changed nothing
+# observable.
 #
 # 1 of 4 is NOT a rate and is not offered as one -- the settled figure
 # from the completed sweep was 13 of 39 = 0.333 over a far larger
 # sample, and four attempts cannot revise it in either direction.  It is
 # recorded because the DENOMINATOR is the thing worth watching here:
-# ten stragglers remain, four have now had two attempts each, and the
+# ten stragglers remain, seven have now had two attempts each, and the
 # budget rule counts CONSECUTIVE ATTEMPTS BANKING 0 OR 1 UNSAT toward
-# the twelve that would justify raising the cap.  FOUR consecutive
-# failures is four, not twelve.
+# the twelve that would justify raising the cap.  SEVEN consecutive
+# failures is seven, not twelve.
+#
+# **THE EIGHT-ATTEMPT WINDOW IS ONE ROW AWAY AND IS EXPLICITLY NOT A
+# TRIGGER.**  The paragraph above was written at six, before the
+# seventh landed, and said the eight would arrive within two rows; one
+# has since landed and it is now one away.  This file has ALREADY acted
+# on an eight-attempt window once and withdrew it, and the rule was
+# then restated numerically at TWELVE precisely so the eight could not
+# tempt anyone again.  Eight is not twelve.  The note stays here having
+# been written BEFORE the count reached it, because a threshold
+# recorded after the fact is not a threshold -- and the whole point of
+# a numeric budget rule is that it binds when the waiting is annoying.
 #
 # One consequence for the `w` table, recorded because it cuts AGAINST
 # the caution rather than for it: group `[..,12]` now reads `w = 12:
@@ -274,7 +287,7 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 164 UNSAT, **10 UNKNOWN**, 0 SAT over 174 labels -- 164 of
-# 1949, 284 rows.
+# 1949, 287 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -2159,3 +2172,6 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10881.6
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10881.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10894.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10896.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNKNOWN	10884.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10875.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10909.7
