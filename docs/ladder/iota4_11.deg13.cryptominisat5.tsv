@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 161 UNSAT, **11 UNKNOWN**, 0 SAT over 172 labels -- 161 of
-# 1949, 277 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 162 UNSAT, **11 UNKNOWN**, 0 SAT over 173 labels -- 162 of
+# 1949, 278 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -465,8 +465,8 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **68 of the 172 attempted
-# labels -- 39.5% -- were NOT decided on their first attempt**.  104
+# has not been stated in this file before: **68 of the 173 attempted
+# labels -- 39.3% -- were NOT decided on their first attempt**.  105
 # fell first time; 57 of the 68 were later banked by a re-run or a cap
 # raise and 11 are outstanding right now.
 #
@@ -1172,6 +1172,35 @@
 #     (11,8,8)   UNSAT 8837.4
 #     (10,10,7)  UNKNOWN at the cap 10894.5
 #     (10,9,8)   UNKNOWN at the cap 10880.1
+#
+# **AND THE ENUMERATION HAS STRADDLED AGAIN, EXACTLY AS BEFORE.**
+# `[13,13,13,12,13,13,13,10]` has opened with `(10,10,8)` UNSAT 5132.3
+# while `(9,9,9)` of the group above is still in flight.  That group
+# stays at 6 of 7 and is NOT tested until `(9,9,9)` lands.  This is the
+# second time the boundary has been crossed with a member outstanding,
+# so it is now the expected behaviour rather than an observation: four
+# threads take cubes in enumeration order and the last cubes of one
+# group overlap the first of the next.
+#
+# THE NEW GROUP'S MEMBERSHIP, generated in advance on the same
+# arithmetic: `[13,13,13,12,13,13,13,10]` has last three summing to 28
+# with `10 >= w >= x >= y`, giving **exactly 2 members** -- `(10,10,8)`
+# and `(10,9,9)`.  If it closes at any other set the encoding argument
+# is wrong.  `(10,10,8)` has landed, 1 of 2, in the permitted set.
+#
+# Its 5132.3 is the cheapest UNSAT since `12,12,2` at 3348.7 (checked
+# against every UNSAT cost in between), and sits at rank 102 of 162
+# UNSAT costs against a median of 3841.7.
+#
+# This sentence first added "after nine consecutive rows at or near the
+# cap", which is FALSE and is withdrawn: only TWO rows immediately
+# before it were at the cap, and the stretch before that was mixed --
+# 8837.4 and 10420.8 UNSAT interleaved with stalls.  Typed from
+# impression, caught by counting.  The correction is recorded rather
+# than swallowed because the false clause was doing rhetorical work:
+# it made a single cheap row look like a break in a run, which is the
+# exact shape that invited five withdrawn cost readings.  Recorded,
+# not read.
 #
 # Four members at ONE value of `w`, in arrival order: decided, stalled,
 # decided, decided.  Costs 6654.1, cap, 10420.8, 8837.4 -- up, over,
@@ -2014,3 +2043,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 9, 7]	UNSAT	10420.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 8, 8]	UNSAT	8837.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNKNOWN	10894.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10880.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 10, 8]	UNSAT	5132.3
