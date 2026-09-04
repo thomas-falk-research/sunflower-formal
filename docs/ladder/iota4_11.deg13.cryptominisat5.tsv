@@ -287,7 +287,7 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 166 UNSAT, **9 UNKNOWN**, 0 SAT over 175 labels -- 166 of
-# 1949, 289 rows.
+# 1949, 291 rows.
 #
 # **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
 # THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
@@ -1345,7 +1345,37 @@
 # The sweep has banked 3 of the 10 rows since the twelfth restart, and
 # **that is NOT the re-run yield**: one of the three, `(10,9,9)` at
 # 8237.8, was a FRESH cube with no prior stall.  Counting only actual
-# re-run attempts the figure is **2 of 9**.  Quoting 3 of 10 would
+# re-run attempts the figure is **2 of 11** -- `10,9,8` 10891.1 and
+# `10,10,7` 10915.6 both re-stalled while this paragraph was being
+# written, taking it from 2 of 9 to 2 of 10 to 2 of 11 in one sitting,
+# which is itself the argument for not quoting it as a rate.
+#
+# **THE SECOND PASS OVER THE STRAGGLERS IS NOW COMPLETE.**  All nine
+# remaining UNKNOWN labels have had exactly TWO attempts each -- the
+# attempt histogram over the undecided is `{2: 9}` with nothing left at
+# one.  So the sweep has finished re-running every straggler once since
+# the twelfth restart: 11 re-run attempts, 2 recovered, 9 still
+# undecided.  Anything further on these labels is a THIRD attempt.
+#
+# **AND THIS PARAGRAPH BRIEFLY CORRUPTED THE FILE, WHICH IS WORTH MORE
+# THAN THE PARAGRAPH.**  The edit that wrote it ended a substitution
+# mid-line, orphaning the tail `  Quoting 3 of 10 would` as a line with
+# NO leading `#`.  Every reader of this file -- including this header's
+# own verification scripts and the row waiter, which count lines not
+# starting with `#` -- then treated that prose as a DATA ROW.  The row
+# count read one too high, and a parser splitting on tabs raised
+# IndexError instead of silently mis-counting, which is the only reason
+# it surfaced within a minute.
+#
+# The guard used for every edit here checks that each substitution
+# matches EXACTLY ONCE and that no banked row is lost.  It did both
+# correctly and still let this through, because it never checked that
+# the RESULT was well-formed.  **A guard that verifies its inputs and
+# not its output is half a guard.**  It now refuses to write unless
+# every non-comment line splits into exactly three tab-separated
+# fields, which would have caught this before it reached disk.
+#
+# Quoting 3 of 11 would
 # inflate it by counting a first attempt as a repeat -- precisely the
 # error 54.3a records, where a re-run yield of `0.37` was really `0.18`
 # because labels were counted where attempts were meant.  Both
@@ -2233,3 +2263,5 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10875.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10909.7
 g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 9, 9]	UNSAT	8237.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 11, 10, 6]	UNSAT	10739.7
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10891.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNKNOWN	10915.6
