@@ -67,6 +67,22 @@
 # search.  That recovery cost 2 h 43 m of the sweep budget and banked
 # one label.
 #
+# **THE NEXT THREE RE-RUNS ALL RE-STALLED, AND THE SWEEP IS 1 OF 4.**
+# `11,11,4` 10881.6, `11,9,6` 10881.9 and `11,10,5` 10894.7 each came
+# back at the cap on their SECOND attempt.  Rows go 280 -> 283 while
+# labels, UNSAT and UNKNOWN all stand still at 174 / 164 / 10, which is
+# what a re-run that fails looks like in this file: it costs three
+# hours of solver time and moves no counter at all.
+#
+# 1 of 4 is NOT a rate and is not offered as one -- the settled figure
+# from the completed sweep was 13 of 39 = 0.333 over a far larger
+# sample, and four attempts cannot revise it in either direction.  It is
+# recorded because the DENOMINATOR is the thing worth watching here:
+# ten stragglers remain, three have now had two attempts each, and the
+# budget rule counts CONSECUTIVE ATTEMPTS BANKING 0 OR 1 UNSAT toward
+# the twelve that would justify raising the cap.  Three consecutive
+# failures is three, not twelve.
+#
 # One consequence for the `w` table, recorded because it cuts AGAINST
 # the caution rather than for it: group `[..,12]` now reads `w = 12:
 # 6 dec / 0 undec`, `11: 0/4`, `10: 0/3`, `9: 1/0`.  The `w = 12`
@@ -257,7 +273,7 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 164 UNSAT, **10 UNKNOWN**, 0 SAT over 174 labels -- 164 of
-# 1949, 280 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# 1949, 283 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -2113,3 +2129,6 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10880.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 10, 10, 10, 8]	UNSAT	5132.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 9, 9, 9]	UNSAT	6421.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 12, 8, 6]	UNSAT	9769.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10881.6
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10881.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10894.7
