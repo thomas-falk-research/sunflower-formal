@@ -274,7 +274,32 @@
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
 # STANDING: 164 UNSAT, **10 UNKNOWN**, 0 SAT over 174 labels -- 164 of
-# 1949, 284 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# 1949, 284 rows.
+#
+# **THE CI FILTER FROM PR #20 IS CONFIRMED END TO END, AND IT DOES MORE
+# THAN THE PULL REQUEST CLAIMED.**  That body said the saving was not
+# verified end to end because no push had exercised it.  It has now:
+#
+#   CONTROL  `babc370` touched `.github/` and DID start verify run
+#            33850298091 -- the filter is not over-broad.
+#   TEST     `be57245` changed ONLY `docs/ladder/` (checked with
+#            `git diff --name-only`) and started NO run.  The branch's
+#            newest verify run is still `babc370` and the branch run
+#            total is unchanged at 128 across the push.
+#
+# `[skip ci]` is therefore no longer needed on row commits and has been
+# dropped.
+#
+# **THE UNCLAIMED EFFECT IS THE LARGER ONE.**  Run 33850298091 was
+# still IN PROGRESS when `be57245` was pushed, and it was NOT
+# cancelled -- because a push that starts no run also trips no
+# concurrency group.  Before this, every row push cancelled the
+# in-flight suite, which is why 73 of 113 runs on the previous branch
+# ended `cancelled` and the ~1h55m mutation job almost never finished.
+# The filter does not merely stop useless runs from STARTING; it stops
+# useful ones from being KILLED.  PR #20 argued only the first and got
+# the second by accident, which is recorded here rather than
+# retrofitted into the merged body as though it had been foreseen.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
