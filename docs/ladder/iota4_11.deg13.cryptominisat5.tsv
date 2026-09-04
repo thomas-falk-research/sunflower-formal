@@ -215,8 +215,8 @@
 #
 #     0   DISAGREEMENTS throughout.  No SAT anywhere, in 68 rows.
 #
-# STANDING: 161 UNSAT, **10 UNKNOWN**, 0 SAT over 171 labels -- 161 of
-# 1949, 276 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
+# STANDING: 161 UNSAT, **11 UNKNOWN**, 0 SAT over 172 labels -- 161 of
+# 1949, 277 rows.  (This lead read "131 UNSAT, 8 UNKNOWN over 139 labels" while
 # the sentence two lines below it already said 146 and 0 -- stale from the
 # batch that introduced the sweep-complete line and not re-derived since.
 # Corrected by recounting from the rows; logged in 54.3a.)
@@ -465,10 +465,10 @@
 # ever regressed from UNSAT.
 #
 # The wrong reading is a real statistic under its correct name, and it
-# has not been stated in this file before: **67 of the 171 attempted
-# labels -- 39.2% -- were NOT decided on their first attempt**.  104
-# fell first time; 57 of the 67 were later banked by a re-run or a cap
-# raise and 10 are outstanding right now.
+# has not been stated in this file before: **68 of the 172 attempted
+# labels -- 39.5% -- were NOT decided on their first attempt**.  104
+# fell first time; 57 of the 68 were later banked by a re-run or a cap
+# raise and 11 are outstanding right now.
 #
 # **THE FREEZE IS OVER AND THE CAVEAT ATTACHED TO IT WAS RIGHT.**  This
 # paragraph used to say the numerator was frozen at 57 across the last
@@ -1163,13 +1163,15 @@
 #     (11,11,5) (11,10,6) (11,9,7) (11,8,8)
 #     (10,10,7) (10,9,8)  (9,9,9)
 #
-# LANDED so far, all in the permitted set -- 5 of 7, with the `w = 11`
-# sub-family COMPLETE at four:
+# LANDED so far, all in the permitted set -- 6 of 7, with `w = 11`
+# COMPLETE at four and `w = 10` COMPLETE at two (both stalled).  Only
+# `(9,9,9)` is unseen, and the group is NOT tested until it lands:
 #     (11,11,5)  UNSAT 6654.1
 #     (11,10,6)  UNKNOWN at the cap 10896.8
 #     (11,9,7)   UNSAT 10420.8
 #     (11,8,8)   UNSAT 8837.4
 #     (10,10,7)  UNKNOWN at the cap 10894.5
+#     (10,9,8)   UNKNOWN at the cap 10880.1
 #
 # Four members at ONE value of `w`, in arrival order: decided, stalled,
 # decided, decided.  Costs 6654.1, cap, 10420.8, 8837.4 -- up, over,
