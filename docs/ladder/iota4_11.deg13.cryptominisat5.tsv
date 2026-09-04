@@ -2026,6 +2026,82 @@
 # nothing.  roadmap 48.2 stands: this is an extrapolation, now from 42
 # of 1949, and its direction has already had to be corrected once.
 #
+# ================================================================
+# FOUR MORE STALLS, AND THE BUDGET RULE IS ONE ROW FROM FIRING
+# ================================================================
+#
+# Attempts 297-300 landed together at 19:53Z, all four from group
+# [13,13,13,12,13,13,13,12], all four UNKNOWN at the cap: 10881.2,
+# 10888.9, 10890.2, 10897.5.  Row count 300; LABELS UNCHANGED AT 180
+# and the tally unchanged at 167 UNSAT / 13 UNKNOWN / 0 SAT, because
+# all four are RE-RUNS -- and not second attempts but THIRD.  Each of
+# these four labels has now been given three hours three times and
+# returned nothing three times.
+#
+# **THE RULE DOES NOT FIRE, AND IT IS ONE ROW AWAY.**  The last twelve
+# attempts hold TWO UNSAT (#289 at 10739.7 and #292 at 3091.4); the
+# rule needs 0 or 1 in twelve.  One more stall drops #289 out of the
+# window and leaves one, and the condition is met.  This is recorded
+# BEFORE that row lands, on the same standard the eight-attempt note
+# above was written to: a threshold recorded after the fact is not a
+# threshold.
+#
+# WHAT THE NEXT SESSION SHOULD KNOW BEFORE IT ACTS ON THAT.
+#
+# 1. THE CAP HAS NEVER BEEN CONSTANT, and this is now measured rather
+#    than remembered.  Spread of UNKNOWN costs per 50 attempts:
+#        1-50  1159.8     51-100  3651.8    101-150  5508.5
+#      151-200    59.6    201-250    58.2    251-300    40.4
+#    A settled cap pins every stall inside a 40-60 s band; a block that
+#    spans a raise spreads over thousands.  So the cap was ~1800 s to
+#    attempt ~50, ~5400 s to ~100, and 10800 s from ~150 onward.
+#
+# 2. THE RULE HAS FIRED THREE TIMES AND NEVER ONCE AT THIS CAP.  The
+#    windows reading <=1 end at attempts 14-21, 38-42 and 53-60 -- all
+#    of them inside the 1800 s era.  In the 240 attempts since the cap
+#    reached 10800 the window has not read <=1 once.  When it fires it
+#    will be firing under conditions unlike any it has fired under.
+#
+# 3. THE ONE RAISE THIS FILE DOCUMENTS WAS A STRONGER CASE THAN THIS
+#    ONE.  See "THE 1800 s BUDGET IS EXHAUSTED" immediately above:
+#    SIXTEEN consecutive stalls, ZERO UNSAT in the window, and every
+#    UNSAT the file then held had landed between 128.3 s and 1588.7 s
+#    -- so the cap sat above every price the run had ever paid for a
+#    verdict and was still buying nothing.  Today: EIGHT consecutive
+#    stalls, an UNSAT four rows back, and #292 -- a FIRST attempt on a
+#    fresh cube -- banked UNSAT at 3091.4 s, under a third of the cap.
+#    The cap is not binding on cubes that are going to be decided.
+#
+# 4. HALF THE STALL RUN IS MANUFACTURED BY THE SCHEDULE.  Of the eight
+#    trailing non-banking attempts, FOUR are re-runs of labels already
+#    known to stall and four are first attempts.  A straggler sweep
+#    produces non-banking attempts by construction, and the rule counts
+#    attempts.  This is the first time the rule has approached firing
+#    during a sweep.  The confound is real and it is partial.
+#
+# 5. WHAT A RAISE WOULD COST, IN NUMBERS.  Thirteen stragglers have
+#    absorbed 78.7 solver-hours over 26 attempts and banked nothing.
+#    One full straggler pass costs 39.0 solver-h = 9.75 wall-h on four
+#    threads at 10800 s, and 78.0 solver-h = 19.50 wall-h at 21600 s.
+#    The median UNSAT now costs 3679.1 s against 888.7 s in the 1800 s
+#    era, so verdicts have grown about four times dearer -- which
+#    argues FOR a raise -- while the thirteen stragglers have each had
+#    3.03 to 9.08 solver-hours already, which argues that another
+#    doubling is not what they are short of.
+#
+# AND NOW THE HONEST PART, BECAUSE THE FIVE POINTS ABOVE HAVE A SHAPE.
+# They were assembled in the minutes before a numeric threshold binds,
+# and every one of them happens to cut against honouring it.  That is
+# exactly the failure mode the rule exists to prevent.  This file has
+# already withdrawn one version of the rule for being stated in the
+# wrong quantity and another for acting on an eight-attempt window;
+# withdrawing a third for being inconvenient would be worse than
+# either, because the first two were withdrawn for being too loose and
+# this one would be gutted for being too tight.  The five points are
+# CONTEXT FOR READING THE RESULT, not grounds for suspending it.  If
+# the window reads <=1, the rule is met and the cap goes to 21600.
+#
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -2323,3 +2399,7 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNKNOWN	10897.6
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNKNOWN	10895.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNKNOWN	10900.0
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10897.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNKNOWN	10881.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10888.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10890.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.5
