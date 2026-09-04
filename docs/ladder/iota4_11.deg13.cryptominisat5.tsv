@@ -2173,6 +2173,43 @@
 # when adopting it is inconvenient.  THE RULE REMAINS: twelve
 # consecutive attempts banking 0 or 1 UNSAT, then 10800 -> 21600.
 #
+# ----------------------------------------------------------------
+# AND THE ROW AFTER THAT DID IT AGAIN -- SO THE PATTERN GOT COUNTED
+# ----------------------------------------------------------------
+#
+# Attempt #302 at 22:52:48Z: [13,13,13,12,13,13,13,11,10,10,7] UNSAT at
+# **10703.6 s**, again UNDER the cap, again on its THIRD attempt, after
+# stalling at 10894.5 (#276) and 10915.6 (#291).  Two in a row, both
+# the same shape as #301.  Tally 169 UNSAT / 11 UNKNOWN / 0 SAT over
+# 302 rows and 180 labels; stragglers 13 -> 11 in six minutes.
+#
+# TWO IN A ROW IS AN ANECDOTE, SO THE WHOLE FILE WAS COUNTED INSTEAD.
+# In the 10800 s era, conversions that came in UNDER 10800 s on a label
+# that had ALREADY STALLED AT LEAST TWICE at that same cap:
+#
+#   #233 (att 7) 10053.0   #234 (att 6) 10270.3   #237 (att 3)  7497.4
+#   #238 (att 7)  7838.8   #239 (att 7)  8270.4   #240 (att 5)  8900.8
+#   #241 (att 3)  8658.6   #242 (att 3)  8956.0   #243 (att 3)  9313.9
+#   #244 (att 3)  9811.3   #301 (att 3) 10406.4   #302 (att 3) 10703.6
+#
+# **TWELVE OF THEM.**  Every one is a cube that two or more 10800 s
+# attempts failed to finish and a later 10800 s attempt finished
+# comfortably inside the same budget -- four of them under 9000 s, on
+# cubes that had twice burned the full three hours.  The straggler
+# population is not made of cubes that need a bigger budget.  It is
+# made of cubes whose solve time is INSIDE the budget and which lose
+# draws.  A cap raise is aimed at the wrong failure mode.
+#
+# The economics move the same way with the two new rows: re-draws in
+# the era now run 14 of 49 = 28.6% for 142.4 solver-hours, so **10.2
+# solver-hours per verdict**, and a 21600 s attempt would have to
+# convert at better than **59%** to beat that.
+#
+# ELEVEN STRAGGLERS REMAIN: four on one attempt, three on two, four on
+# three.  On the record above, the four that have had three attempts
+# are not the hopeless ones -- #233, #238 and #239 each took SEVEN.
+#
+#
 #
 #
 # sub-cube	verdict	seconds
@@ -2477,3 +2514,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10888.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10890.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10897.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNSAT	10406.4
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNSAT	10703.6
