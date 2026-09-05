@@ -2752,6 +2752,50 @@
 # the old band -- 11500 s, 14000 s, 18000 s.  That is still the thing to
 # watch for, and it has not happened.
 #
+# ================================================================
+# IT HAPPENED SIX MINUTES LATER.  TEST 3 READS "YES".
+# ================================================================
+#
+# #322 at 15:03:36Z: [13,13,13,12,13,13,13,12,11,9,6] **UNSAT at
+# 11237.1 s** on its fifth attempt, after stalls at 10898.3 (#266),
+# 10881.9 (#282), 10890.2 (#299) and 10868.8 (#314).
+#
+# **11237.1 IS 298.1 s ABOVE THE HIGHEST STALL THE OLD CAP EVER
+# PRODUCED** (10939.0, over 81 observations).  Every one of those 81
+# was cut at or below 10939.0, so this solve WOULD CERTAINLY HAVE BEEN
+# CUT at the old cap.  The paragraph directly above says "that is still
+# the thing to watch for, and it has not happened", and it was written
+# at 14:58Z.  It happened at 15:03Z.
+#
+# THIS IS A DIRECT COUNTEREXAMPLE TO THE STRONG FORM OF THE CASE
+# AGAINST THE RAISE.  That case was: the stragglers lose draws rather
+# than run out of budget.  Here is a cube that ran out of budget --
+# four times cut in [10868, 10899], then decided at 11237.1 the moment
+# it was allowed past.  The raise decided it.  No amount of re-drawing
+# at 10800 would have.
+#
+# BUT THE MARGIN IS 298 SECONDS, NOT 10800.  The cube used 52.0% of the
+# new budget and needed 298.1 s beyond where the old cap was cutting.
+# A cap of 12000 would have caught it; the raise bought 10800 s of
+# headroom and this verdict consumed 3% of that.  So the row refutes
+# "the old cap was never too small" and does NOT establish "21600 was
+# the right number" -- it points at a much smaller raise.
+#
+# TESTS 1 AND 2 ARE NOW RUNNING AGAINST THE REGISTERED PREDICTION.  Two
+# rows at the new cap, TWO conversions, 6.14 solver-hours for 2
+# verdicts = 3.07 h per verdict against 10.37 at the old cap.  The
+# prediction registered before the first row was 35-45% conversion and
+# 13-17 h per verdict.  At n = 2 that is worth nothing as a rate and is
+# said here only because it runs AGAINST what this file predicted, and
+# a prediction is only worth registering if its failures are reported
+# as promptly as its successes.  The four solvers reporting between now
+# and ~17:56Z are the sample that matters.
+#
+# Stragglers 10 -> 8 in six minutes.  Rows 322, labels 183, tally 175
+# UNSAT / 8 UNKNOWN / 0 SAT.  Both new-cap rows are attempt-5 re-runs,
+# so the sweep model is 2 for 2 on pid 29501.
+#
+#
 #
 #
 #
@@ -3094,3 +3138,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10871.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10888.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10907.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNSAT	10878.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNSAT	11237.1
