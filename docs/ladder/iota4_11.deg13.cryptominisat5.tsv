@@ -2361,6 +2361,26 @@
 # rule that governs the cap is still the twelve-attempt window, which
 # reads 5 UNSAT in the last twelve and does not fire.
 #
+# #309 STALLED ON THE ONE CUBE BOTH THREADS WERE WAITING ON.
+# [13,13,13,12,13,13,12,12,12,8,7] UNKNOWN at 10883.6 on its SECOND
+# attempt, after 10897.3 (#296).  That label was simultaneously the
+# last single-attempt straggler AND arm (b)'s last undecided w = 12
+# tail, so its stalling holds both at once: the straggler list stays at
+# EIGHT, now ONE on two attempts and SEVEN on three, and arm (b)'s
+# w = 12 row stays 4 decided of 5.  Tally unchanged at 172 UNSAT / 8
+# UNKNOWN / 0 SAT over 309 rows.
+#
+# The break-even figure reads **62.8%** today (re-draws 17 of 56 =
+# 30.4%, 162.5 solver-hours, 9.56 h per verdict).  Sequence so far:
+# 56.0, 59.0, 59.6, 62.4, 65.2, 63.9, 62.8.  Two falls after five
+# rises; still a running number, still not a direction.
+#
+# WHAT THIS ROW DOES NOT MEAN.  A second stall on one label is not
+# evidence that the label is harder than the seven on three attempts --
+# it is one draw.  #233, #238 and #239 each stalled six times before
+# converting.  The resume order will bring it round again.
+#
+#
 #
 #
 #
@@ -2678,3 +2698,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNSAT	9272.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNSAT	9873.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNSAT	9988.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10885.3
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10883.6
