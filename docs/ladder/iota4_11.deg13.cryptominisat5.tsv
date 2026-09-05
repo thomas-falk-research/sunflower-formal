@@ -2542,6 +2542,23 @@
 # histogram as "six hard cubes and three easy ones" would be reading
 # the restart history, not the cubes.
 #
+# #316 AND A COUNT THAT WAS ONE BEHIND.  [..,13,12,11,8,7] UNKNOWN
+# 10899.5, a FOURTH attempt on the straggler first seen at #267 -- four
+# for four since the restart.  It landed between that block's recount
+# and its `git add`, so the block above says "Rows 315" while the
+# commit it belongs to (fd8eb1c) actually carries 316 data rows.  The
+# file is right and the sentence was stale by one; the pure-append
+# guard did its job and nothing was lost.  Correct figure: **316 rows**,
+# 183 labels, 173 UNSAT / 10 UNKNOWN / 0 SAT, last twelve hold 4 UNSAT,
+# rule does not fire.
+#
+# That is twice now that a row has arrived inside the read-edit-write
+# window (#307 was the first).  At four threads finishing a 10800 s
+# batch within minutes of each other, the window is no longer rare, and
+# any figure quoted in a header block should be read as "as of the
+# recount that block ran", not as the file's state at commit time.
+#
+#
 #
 #
 #
