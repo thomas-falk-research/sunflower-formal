@@ -2714,6 +2714,45 @@
 # stragglers lose draws rather than run out of budget.  A cube landing
 # at, say, 15000 s would be the first direct evidence against that.
 #
+# ================================================================
+# THE FIRST ROW AT THE NEW CAP, AND IT ANSWERS TEST 3 WITH "NO"
+# ================================================================
+#
+# #321 at 14:57:35Z: [13,13,13,12,13,13,13,12,11,10,5] **UNSAT at
+# 10878.8 s** on its FIFTH attempt, after stalls at 10896.2 (#264),
+# 10894.7 (#283), 10888.9 (#298) and 10875.9 (#315).  Stragglers 10 ->
+# 9; rows 321, labels 183, tally 174 UNSAT / 9 UNKNOWN / 0 SAT.  It is
+# a re-run, so the sweep model is 1 for 1 on pid 29501 as required.
+#
+# **THE CUBE USED 50.4% OF THE NEW BUDGET.  IT DID NOT NEED THE RAISE.**
+# 10878.8 s is a new maximum UNSAT cost -- the previous high was 10865.7
+# -- but by THIRTEEN SECONDS, and it sits INSIDE the band where the old
+# cap's periodic check was actually firing: the 81 stalls recorded at
+# 10800 spread over [10853.3, 10939.0], of which only 17 were cut below
+# 10878.8.  So on this file's own numbers the old cap would have
+# allowed this solve to finish roughly four times in five.  Whether it
+# would have is genuinely unknowable; what is NOT in doubt is that this
+# is not a cube the old budget was too small for.
+#
+# THE SHARPEST DETAIL IS THE GAP BETWEEN ATTEMPTS 4 AND 5.  Attempt 4
+# was cut at 10875.9.  Attempt 5 finished at 10878.8.  **2.9 SECONDS
+# APART**, opposite outcomes, same cube, same encoding.  That is the
+# run-to-run-variance story this header has been telling for two days,
+# stated as sharply as the data can state it -- and it is the opposite
+# of a budget story.  Doubling the cap did not decide this cube; being
+# on the right side of a three-second coin flip did.
+#
+# SO TEST 3 READS "NO" ON ITS FIRST DATA POINT, and tests 1 and 2 are
+# untouched -- one conversion is not a conversion RATE, and the four
+# solvers that will report between now and ~17:56Z are the sample that
+# matters.  n = 1.  This block is recorded because the row is the first
+# at the new cap, not because it settles anything.
+#
+# WHAT WOULD CHANGE THE READING: a straggler finishing anywhere clear of
+# the old band -- 11500 s, 14000 s, 18000 s.  That is still the thing to
+# watch for, and it has not happened.
+#
+#
 #
 #
 #
@@ -3054,3 +3093,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10889.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10871.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10888.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10907.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNSAT	10878.8
