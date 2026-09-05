@@ -2281,6 +2281,71 @@
 # encoding test counts which tails APPEAR, not which are decided, so a
 # status change does not advance it.  Still: do not test until COMPLETE.
 #
+# ----------------------------------------------------------------
+# #306, AND THE STRAGGLER LIST IS DRAINING FAST
+# ----------------------------------------------------------------
+#
+# Attempt #306 at 01:40:28Z: [13,13,13,12,13,13,12,12,12,9,6] UNSAT at
+# **9873.2 s** on its SECOND attempt, after one stall at 10900.0
+# (#295).  Also in arm (b)'s group.  Tally 171 UNSAT / 9 UNKNOWN / 0
+# SAT over 306 rows and 180 labels.
+#
+# THE SWEEP IS WORKING FASTER THAN THE HEADER EXPECTED.  Stragglers by
+# row: 13 after #300, 11 after #302, 10 after #305, **9 after #306** --
+# four conversions in under three hours of wall time, on attempts 3, 3,
+# 2 and 2.  The earlier note warning of "up to ~9.75 uninterrupted
+# wall-hours" for a full pass over thirteen assumed every straggler
+# would burn the full cap; four of them did not.
+#
+# Economics with #306: re-draws **16 of 53 = 30.2%** for 153.7
+# solver-hours, **9.61 solver-hours per verdict**, so a 21600 s attempt
+# would now have to convert at better than **62.4%** to beat
+# re-drawing.  The bar has risen with each of the last four rows.  This
+# is still the same instrument that was deliberately NOT adopted as the
+# rule; it is recorded, not acted on.
+#
+# NINE STRAGGLERS: two on one attempt, one on two, six on three.
+#
+# ARM (b) NOW READS 3 DECIDED OF THE 5 TAILS SEEN -- (12,12,3),
+# (12,11,4) and (12,9,6) UNSAT; (12,10,5) and (12,8,7) still UNKNOWN,
+# each a straggler on ONE attempt.  Those two are the whole of the
+# w = 12 sub-block, so once they resolve the group's `w = 12` row is
+# complete.  **THE SEVEN REMAINING TAILS CANNOT APPEAR UNTIL THE
+# STRAGGLER LIST DRAINS AND THE DRIVER TAKES FRESH CUBES**, since the
+# resume policy re-runs every straggler before any new sub-cube.  Seen
+# is still 5 of 12 and the encoding test stays untested until COMPLETE.
+#
+# AND #307 LANDED WHILE THAT PARAGRAPH WAS BEING WRITTEN.
+# [13,13,13,12,13,13,12,12,12,10,5] UNSAT at **9988.5 s** on its SECOND
+# attempt, after one stall at 10895.9 (#294).  Arm (b)'s group again.
+# Tally 172 UNSAT / 8 UNKNOWN / 0 SAT over 307 rows.  (The guard's
+# pure-append check is what made this safe: the row arrived between the
+# read and the write and was carried through untouched.)
+#
+# FIVE CONVERSIONS IN THREE HOURS, THREE OF THEM IN FIFTEEN MINUTES --
+# #301 (att 3), #302 (att 3), #305 (att 2), #306 (att 2), #307 (att 2).
+# Stragglers 13 -> 8.  Re-draws now **17 of 54 = 31.5%** for 156.5
+# solver-hours, **9.21 h per verdict**, break-even for a 21600 s
+# attempt **65.2%**.  The bar has risen on every one of the last five
+# rows, from 56% to 65%.
+#
+# THAT TREND IS EXACTLY THE KIND THIS FILE HAS BEEN WRONG ABOUT BEFORE.
+# "Monotone decline", "levelling" and the 0.21 reading were all
+# narrated here and all overtaken.  Five rows moving one figure in one
+# direction is not a trend, and the 65% is not a stronger argument than
+# the 56% was -- it is the same argument with a slightly larger sample.
+# Recorded as a running figure, not as a direction.
+#
+# ARM (b)'s w = 12 SUB-BLOCK IS ONE ROW FROM COMPLETE: (12,12,3),
+# (12,11,4), (12,10,5) and (12,9,6) all UNSAT, with only (12,8,7) still
+# UNKNOWN on one attempt.  That completes a ROW of the w-table, not the
+# GROUP: the seven w <= 11 tails remain unseen and cannot appear until
+# the stragglers drain.  Seen stays 5 of 12.
+#
+# EIGHT STRAGGLERS: one on one attempt, one on two, six on three.
+#
+#
+#
 #
 #
 #
@@ -2592,3 +2657,5 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNSAT	10703.6
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10887.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10890.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNSAT	9272.9
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNSAT	9873.2
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNSAT	9988.5
