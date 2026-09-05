@@ -2967,6 +2967,38 @@
 # variance effect, and unlike the conversion costs it does not depend
 # on where in the sweep the cube sits.
 #
+# THIRD DEADLINE MET, AND IT CLOSES ARM (b)'s w = 12 ROW.  pid 30304
+# reported at 18:28:11Z as #327: [13,13,13,12,13,13,12,12,12,8,7]
+# **UNSAT at 11894.8 s** on attempt 4, against a deadline of 18:37:41Z.
+# 955.8 s clear of the old band's top, inside 11000-12500, and a new
+# maximum conversion cost.  Prior stalls 10897.3, 10883.6, 10907.8 --
+# a 24.2 s spread.
+#
+# That label was arm (b)'s LAST UNDECIDED w = 12 TAIL, so the group's
+# w = 12 row now reads (12,12,3) (12,11,4) (12,10,5) (12,9,6) (12,8,7)
+# all UNSAT -- five for five.  **THIS DOES NOT ADVANCE THE ENCODING
+# TEST.**  Tails SEEN is still 8 of 12; the four unseen are (11,8,8)
+# (10,10,7) (10,9,8) (9,9,9).  The test counts which tails APPEAR, and
+# a status change appears nowhere in it.  Do not test at eight.
+#
+# New cap: 10878.8, 11237.1, 11586.5, 11824.3, 11573.2, 11572.0,
+# 11894.8 -- **7 of 7, 22.38 solver-hours, 3.20 h per verdict**.
+# Stragglers 10 -> 3, and ALL THREE are single-attempt cubes:
+# [..,12,12,11,11,5] [..,12,12,11,10,6] [..,12,12,11,9,7], which are
+# arm (b)'s three seen w = 11 tails.
+#
+# ONE DEADLINE LEFT: pid 30406 by 18:41:39Z, at 11697 s when #327
+# landed -- inside the band with about thirteen minutes of band left.
+#
+# NOTE WHAT THE STRAGGLER POOL HAS BECOME.  It is now exactly the three
+# w = 11 tails of arm (b), each on ONE attempt, each stalled once at
+# 10882-10899 under the old cap.  On the deadline reading they should
+# convert in the same 11000-12500 window.  If they do, the pool empties
+# and the sweep moves to fresh cubes -- and the four unseen arm (b)
+# tails become reachable, which is what the encoding test has been
+# waiting on since #312.
+#
+#
 #
 #
 #
@@ -3320,3 +3352,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNSAT	11586.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNSAT	11824.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNSAT	11573.2
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNSAT	11572.0
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNSAT	11894.8
