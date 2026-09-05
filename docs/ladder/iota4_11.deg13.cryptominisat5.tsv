@@ -2795,6 +2795,60 @@
 # UNSAT / 8 UNKNOWN / 0 SAT.  Both new-cap rows are attempt-5 re-runs,
 # so the sweep model is 2 for 2 on pid 29501.
 #
+# ================================================================
+# THREE FOR THREE, AND THE REAL SHAPE FINALLY SHOWS UP:
+# SURVIVORSHIP, NOT VARIANCE-VERSUS-BUDGET
+# ================================================================
+#
+# #323 at 15:10:14Z: [13,13,13,12,13,13,13,12,10,9,7] **UNSAT at
+# 11586.5 s** on attempt 5 -- 647.5 s clear of the old band's top.  The
+# new cap now stands at THREE ROWS, THREE CONVERSIONS, 9.36 solver-hours
+# for 3 verdicts = **3.12 h per verdict** against 10.37 at the old cap.
+# Stragglers 10 -> 7 in thirteen minutes.  Rows 323, tally 176 UNSAT /
+# 7 UNKNOWN / 0 SAT.
+#
+# **THE REGISTERED PREDICTION IS FAILING AND SHOULD BE SAID SO
+# PLAINLY.**  It said 35-45% conversion and 13-17 solver-hours per
+# verdict.  Observed: 100% and 3.12.  n = 3 makes that no kind of rate,
+# but the direction is not marginal and it is against me.
+#
+# WHY BOTH EARLIER READINGS WERE PARTLY RIGHT.  Median cost of a
+# re-run conversion AT THE OLD CAP, by attempt number:
+#
+#     attempt 2:  n=35   median 4621.6   max 10739.7
+#     attempt 3:  n=20   median 4896.1   max 10760.5
+#     attempt 4:  n= 5   median 6490.0   max 10578.1
+#     attempt 5-7:n= 5   median 8900.8   max 10270.3
+#
+# Monotone, and computed entirely from OLD-cap data, so it is not
+# circular with the raise.  The three new-cap conversions -- all
+# attempt 5, at 10878.8, 11237.1, 11586.5 -- continue that curve
+# straight through where the old cap was cutting.
+#
+# The mechanism is SURVIVORSHIP.  A cube that converts cheaply on a
+# re-draw leaves the straggler pool immediately; one whose solve time
+# sits just above the cap cannot leave at all.  So the pool's
+# composition shifts with every round: early on it is mostly unlucky
+# draws, and after four or five rounds it is mostly cubes the cap was
+# too small for.  **BOTH READINGS THIS HEADER GAVE WERE TRUE OF
+# DIFFERENT POOLS.**  "The stragglers lose draws rather than run out of
+# budget" described the pool of two days ago and was stated without
+# that qualification, which made it wrong as written.  The twelve
+# under-cap conversions after repeated stalls were real; so is this.
+#
+# WHAT IS STILL NOT ESTABLISHED: that 21600 was the right number.  All
+# three conversions landed below 11600, and a cap of 12000 would have
+# caught every one.  The raise bought 10800 s of headroom and the
+# largest verdict so far used 647 s of it.
+#
+# NEW PREDICTION, REGISTERED NOW.  The seven remaining stragglers have
+# max stalls in [10882, 10908] -- all inside the old band.  If the
+# survivorship reading is right they should convert in roughly
+# **11000-12500 s**, not at 15000 or 20000.  A conversion well above
+# 13000 would say the pool contains genuinely much harder cubes and
+# that the modest-raise conclusion is also too tidy.
+#
+#
 #
 #
 #
@@ -3139,3 +3193,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10888.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10907.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNSAT	10878.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNSAT	11237.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNSAT	11586.5
