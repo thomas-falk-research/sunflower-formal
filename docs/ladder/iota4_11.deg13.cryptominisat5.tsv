@@ -2344,6 +2344,24 @@
 #
 # EIGHT STRAGGLERS: one on one attempt, one on two, six on three.
 #
+# #308 STALLED, AND REVERSED THE FIGURE IN THE PARAGRAPH ABOVE.
+# [13,13,13,12,13,13,13,11,10,9,8] UNKNOWN at 10885.3 on its THIRD
+# attempt, after 10880.1 (#277) and 10891.1 (#290).  Tally unchanged at
+# 172 UNSAT / 8 UNKNOWN / 0 SAT over 308 rows; the label was already a
+# straggler, so the count stays at eight -- now ONE on one attempt and
+# SEVEN on three.
+#
+# The break-even figure went 56.0, 59.0, 59.6, 62.4, 65.2 and now
+# **63.9**.  The paragraph above called that sequence "a running
+# figure, not a direction" and said five rows moving one number one way
+# is not a trend.  The very next row moved it back.  Recorded because
+# the caution was written BEFORE the reversal rather than after it, and
+# because this is the fourth time in this file a narrated direction has
+# been overtaken by the next batch.  The number is 63.9% today; the
+# rule that governs the cap is still the twelve-attempt window, which
+# reads 5 UNSAT in the last twelve and does not fire.
+#
+#
 #
 #
 #
@@ -2659,3 +2677,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10890.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNSAT	9272.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNSAT	9873.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNSAT	9988.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10885.3
