@@ -3071,6 +3071,54 @@
 # 11000-12500 band the three straggler re-runs should report between
 # ~21:50Z and ~22:15Z.  The fresh cube has no prediction attached.
 #
+# ================================================================
+# **THE BAND FAILED.  ALL FOUR, NOT ONE.**
+# ================================================================
+#
+# At 22:19:08Z all four solvers of pid 32499 stand at **12763 s
+# elapsed** with NO rows landed -- row count still 327.  The band's
+# close was 12500 s at 22:15:44Z.  Whichever three of the four threads
+# hold the straggler re-runs, every running cube is past 12500, so
+# **THE 11000-12500 BAND IS FALSIFIED FOR ALL THREE STRAGGLERS AT
+# ONCE.**  This is the outcome the previous block called the more
+# interesting one and did not predict.
+#
+# WHAT IT REFUTES, PRECISELY.  "All seven conversions landed below
+# 11900, so a cap of 12000-12500 would have caught them" remains TRUE
+# of those seven.  The conclusion drawn from it -- that ~12500 is the
+# right cap and the doubling to 21600 was unjustified -- is now WRONG.
+# The very next three cubes in the same sweep need more than 12763 s.
+#
+# SO THE CAP LEDGER READS, HONESTLY:
+#   * the budget rule mandated 10800 -> 21600; I argued against it on
+#     measured cost and honoured it anyway;
+#   * #322/#323/#324 then cleared the OLD cap's cutoff band, refuting
+#     the case that stragglers only lose draws;
+#   * the "modest raise would have sufficed" retreat I fell back to has
+#     now been refuted in turn, by these three;
+#   * the raise the rule demanded is doing work BOTH of my readings
+#     said it would not.
+# A numeric pre-commitment has now beaten two successive analyses of
+# mine that were fitted after the fact.  That is the whole argument for
+# having one.
+#
+# **NO NEW BAND IS REGISTERED.**  Fitting a second interval to the same
+# seven conversions, an hour after the first one failed, would be
+# exactly the shape-narrating this file has recorded being overtaken
+# five times.  What can be said without fitting anything: these three
+# cubes need more than 12763 s, and the only upper bound is the 21600 s
+# cap, which they reach at **00:46:39Z**.  Whether they convert before
+# then is the next fact, and there is no prediction attached to it.
+#
+# THE SURVIVORSHIP MECHANISM SURVIVES THIS; the band did not.  Those
+# are separate claims and only the second was refuted.  The mechanism
+# says the pool enriches for cubes above whatever the current cap is,
+# and it predicts the ordering (later survivors cost more) without
+# predicting any particular number.  The band added a number, that
+# number was fitted to seven front-of-sweep rows, and it broke on the
+# next three.  Keep the mechanism, discard the interval.
+#
+#
 #
 #
 #
