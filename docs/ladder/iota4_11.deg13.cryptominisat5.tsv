@@ -2521,6 +2521,28 @@
 # SAT over 313 rows; re-draws 18 of 57 = 31.6%, 9.19 solver-hours per
 # verdict, break-even 65.3% today.
 #
+# #314 AND #315 MADE IT THREE FOR THREE AFTER THE RESTART.
+# [..,13,12,11,9,6] UNKNOWN 10868.8 and [..,13,12,11,10,5] UNKNOWN
+# 10875.9, both FOURTH attempts on stragglers first seen at #266 and
+# #264.  So pid 27750 has produced three rows and all three are
+# re-runs, against pid 21928's last three which were all first
+# attempts.  Six rows, two opposite predictions, no misses.
+#
+# Rows 315, labels still 183, tally 173 UNSAT / 10 UNKNOWN / 0 SAT;
+# stragglers 10, now three on one attempt, one on two, four on three
+# and TWO ON FOUR.  The last twelve hold 4 UNSAT; the rule does not
+# fire.
+#
+# A NOTE ON WHAT THE ATTEMPT COUNTS MEAN NOW THAT THE MECHANISM IS
+# KNOWN.  An attempt count is not a measure of a cube's difficulty --
+# it is a count of how many process restarts have happened since the
+# sweep first reached it.  A cube first seen at #264 has had four
+# attempts because four processes have walked past it; one first seen
+# at #310 has had one because only this one has.  Reading the
+# histogram as "six hard cubes and three easy ones" would be reading
+# the restart history, not the cubes.
+#
+#
 #
 #
 #
@@ -2848,3 +2870,6 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNKNOWN	10887.5
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNKNOWN	10882.3
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNKNOWN	10898.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNSAT	10578.1
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10868.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10875.9
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10899.5
