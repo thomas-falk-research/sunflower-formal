@@ -2848,6 +2848,39 @@
 # 13000 would say the pool contains genuinely much harder cubes and
 # that the modest-raise conclusion is also too tidy.
 #
+# ----------------------------------------------------------------
+# #324: FOUR FOR FOUR, AND THE NEW PREDICTION LANDS INSIDE ITS BAND
+# ----------------------------------------------------------------
+#
+# [13,13,13,12,13,13,13,12,11,8,7] **UNSAT at 11824.3 s** on attempt 5,
+# after stalls at 10897.9 (#267), 10896.5 (#284), 10897.5 (#300) and
+# 10899.5 (#316).  885.3 s clear of the old band's top -- it would
+# certainly have been cut at 10800 -- and INSIDE the 11000-12500 band
+# registered one row earlier.  Stragglers 10 -> 6; rows 324, tally 177
+# UNSAT / 6 UNKNOWN / 0 SAT.
+#
+# The four new-cap verdicts read 10878.8, 11237.1, 11586.5, 11824.3.
+# Four conversions in four attempts, 12.65 solver-hours, **3.16 h per
+# verdict** against 10.37 at the old cap.  Note what the four prior
+# stalls of THIS label look like: 10897.9, 10896.5, 10897.5, 10899.5 --
+# a spread of 3.0 seconds across four independent runs.  That is not a
+# cube with a wide solve-time distribution being unlucky; it is a cube
+# being cut at the same place every time by a deadline it sits just
+# past.  The variance reading never applied to it.
+#
+# **A CAP OF 12000 WOULD STILL HAVE CAUGHT ALL FOUR.**  The largest
+# verdict so far used 11824.3 of 21600 -- 54.7% -- and the most any of
+# them needed beyond the old band's top is 885 s.  The doubling remains
+# unjustified by anything observed; what is now well supported is a
+# raise of about 10%.
+#
+# Standing caution: four rows is four rows, they are the four cubes
+# nearest the front of the sweep, and the six remaining stragglers have
+# not reported.  The 11000-12500 band is registered and holding at 3 of
+# 3 clear cases (#322, #323, #324); #321 was ambiguous.  A conversion
+# above 13000 still overturns the modest-raise reading.
+#
+#
 #
 #
 #
@@ -3194,3 +3227,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10907.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNSAT	10878.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNSAT	11237.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNSAT	11586.5
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNSAT	11824.3
