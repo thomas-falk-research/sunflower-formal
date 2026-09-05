@@ -2938,6 +2938,36 @@
 # a deadline, which is the honest form; it is not yet a description of
 # the population.
 #
+# SECOND DEADLINE MET, FIFTEEN MINUTES EARLY.  pid 30203 reported at
+# 18:16:42Z as #326: [13,13,13,12,13,13,13,11,10,9,8] **UNSAT at
+# 11572.0 s** on attempt 5, against a deadline of 18:31:52Z.  633.0 s
+# clear of the old band's top, inside 11000-12500.  Prior stalls
+# 10880.1, 10891.1, 10885.3, 10888.4 -- an 11.0 s spread.
+#
+# New cap: 10878.8, 11237.1, 11586.5, 11824.3, 11573.2, 11572.0 --
+# **6 of 6, 19.08 solver-hours, 3.18 h per verdict**.  Stragglers 10 ->
+# 4, and only ONE of the four has more than a single attempt.
+#
+# A COINCIDENCE, NAMED SO IT IS NOT MISTAKEN FOR A FINDING: #325 came in
+# at 11573.2 and #326 at 11572.0, DIFFERENT CUBES 1.2 SECONDS APART.
+# No mechanism would make two distinct sub-cubes agree to a second, and
+# with six samples spread over 950 s a near-collision is unremarkable.
+# It is recorded because it is exactly the kind of detail this header
+# has twice been tempted to narrate into a pattern.
+#
+# TWO DEADLINES REMAIN: pid 30304 by 18:37:41Z (at 11246 s when #326
+# landed) and pid 30406 by 18:41:39Z (at 11008 s).  Both are already
+# inside the band and still running.
+#
+# THE PRIOR-STALL SPREADS ARE THE ROBUST PART OF ALL THIS.  Across the
+# converted stragglers, the spread of each cube's OWN stalls has run
+# 3.0 s, 11.0 s, 16.1 s -- a cube's four or five independent stalls
+# agree with each other to within seconds, and then it converts 600-900
+# s past where they were cut.  That is a deadline effect, not a
+# variance effect, and unlike the conversion costs it does not depend
+# on where in the sweep the cube sits.
+#
+#
 #
 #
 #
@@ -3289,3 +3319,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNSAT	11237.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNSAT	11586.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNSAT	11824.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNSAT	11573.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNSAT	11572.0
