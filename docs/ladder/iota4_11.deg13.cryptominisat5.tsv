@@ -2911,6 +2911,34 @@
 # never anticipated.  The second outcome would be the more interesting
 # one and it is not the one predicted.
 #
+# FIRST DEADLINE MET, WITH FOURTEEN MINUTES TO SPARE.  pid 30106
+# reported at 18:11:10Z as #325: [13,13,13,12,13,13,13,12,10,8,8]
+# **UNSAT at 11573.2 s** on attempt 5, against a band deadline of
+# 18:25:53Z.  634.2 s clear of the old cutoff band's top and INSIDE
+# 11000-12500.  Its four prior stalls: 10887.3, 10875.2, 10887.3,
+# 10871.2 -- a 16.1 s spread, the same signature as #324's 3.0 s.
+#
+# The new cap now reads 10878.8, 11237.1, 11586.5, 11824.3, 11573.2 --
+# **5 of 5 conversions, 15.86 solver-hours, 3.17 h per verdict** against
+# 10.37 at the old cap.  Every one below 11825.  Stragglers 10 -> 5.
+#
+# THREE DEADLINES REMAIN LIVE: pid 30203 by 18:31:52Z, pid 30304 by
+# 18:37:41Z, pid 30406 by 18:41:39Z.  At 18:11Z they stood at 11264 s,
+# 10915 s and 10677 s -- 30203 is already inside the band and still
+# running.  Nothing about the first deadline being met makes the other
+# three likelier; each is its own cube.
+#
+# AND A CAUTION AGAINST THE OBVIOUS EXTRAPOLATION.  Five conversions in
+# [10879, 11825] is a tight cluster, and the temptation is to call the
+# straggler tail "cubes needing 11-12 ks" and be done.  Two reasons not
+# to yet.  First, all five sit at the FRONT of the sweep, which is
+# where the longest-surviving cubes are -- the sample is ordered, not
+# random.  Second, this file has been overtaken five times by the next
+# batch after naming a shape.  The band is a registered prediction with
+# a deadline, which is the honest form; it is not yet a description of
+# the population.
+#
+#
 #
 #
 #
@@ -3260,3 +3288,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNSAT	10878.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNSAT	11237.1
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNSAT	11586.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNSAT	11824.3
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNSAT	11573.2
