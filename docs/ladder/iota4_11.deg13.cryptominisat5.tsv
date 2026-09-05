@@ -2880,6 +2880,38 @@
 # 3 clear cases (#322, #323, #324); #321 was ambiguous.  A conversion
 # above 13000 still overturns the modest-raise reading.
 #
+# ----------------------------------------------------------------
+# THE BAND GETS A DATED DEADLINE, WRITTEN BEFORE IT RESOLVES
+# ----------------------------------------------------------------
+#
+# At 18:04Z the four live solvers have been running 10235-11181 s --
+# ALL FOUR ARE NOW PAST THE OLD 10800 s CAP and none has reported.  So
+# every one of them is already a cube the old cap would have cut, and
+# the 11000-12500 band is about to be tested on all four at once.
+# Started, and the clock at which each leaves the band:
+#
+#     pid 30106  started 14:57:33Z   leaves the band at 18:25:53Z
+#     pid 30203  started 15:03:32Z   leaves at 18:31:52Z
+#     pid 30304  started 15:09:21Z   leaves at 18:37:41Z
+#     pid 30406  started 15:13:19Z   leaves at 18:41:39Z
+#
+# **IF ANY OF THE FOUR IS STILL RUNNING AFTER ITS TIME ABOVE, THE
+# 11000-12500 READING IS WRONG FOR THAT CUBE.**  Recorded now, at
+# 18:04Z, while all four are still inside the band and nothing is
+# known -- the same standard the eight-attempt note and the budget-rule
+# firing were written to.
+#
+# What each outcome would mean.  All four reporting by ~18:42 keeps
+# the modest-raise conclusion and says a cap of 12500 would have
+# sufficed for everything this run has met.  One or more running past
+# it -- to 15000, 18000, the full 21600 -- says the straggler pool has
+# a genuinely harder tail, that the tidy "cut just past the deadline"
+# picture describes only the cubes met so far, and that the doubling
+# may have been the right size after all for reasons the cost argument
+# never anticipated.  The second outcome would be the more interesting
+# one and it is not the one predicted.
+#
+#
 #
 #
 #
