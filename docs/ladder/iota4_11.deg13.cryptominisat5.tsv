@@ -3033,6 +3033,45 @@
 # falsifies it.  New-cap totals stand at 7 of 7, 3.20 h per verdict;
 # rows 327, labels 183, tally 180 UNSAT / 3 UNKNOWN / 0 SAT.
 #
+# ----------------------------------------------------------------
+# CORRECTION: THAT PREDICTION WAS MIS-STATED, AND ORDINARY BEHAVIOUR
+# WOULD HAVE "FALSIFIED" IT
+# ----------------------------------------------------------------
+#
+# The paragraph immediately above says a FIRST attempt before all three
+# stragglers are crossed falsifies the sweep model.  **THAT IS WRONG,
+# and it is wrong by arithmetic rather than by evidence.**  There are
+# FOUR threads and only THREE undecided cubes behind the head.  The
+# sweep hands each freed thread the next not-yet-decided index, so
+# three threads take the three stragglers and the FOURTH NECESSARILY
+# TAKES A FRESH CUBE, immediately.  A first attempt among the first
+# four rows of pid 32499 is exactly what the model predicts; treating
+# it as a refutation would have thrown away a correct model on a
+# miscount.
+#
+# THE CORRECTED PREDICTION: of pid 32499's first FOUR rows, exactly
+# THREE should be re-runs -- of [..,12,12,11,11,5] [..,12,12,11,10,6]
+# [..,12,12,11,9,7] -- and exactly ONE a first attempt.  Two or more
+# first attempts in the first four, or any straggler skipped entirely,
+# would falsify it.
+#
+# Confirmed against ps at 19:58Z: four solvers, all started 18:46Z, all
+# at 4302 s.  Four threads, three stragglers -- so the fourth is
+# already on fresh ground.
+#
+# This is the third prediction in this file to fail on its own
+# framing rather than on the data (after "the resume policy re-runs
+# every straggler first" and "nothing can land before 17:56Z"), and all
+# three failed the same way: a claim about the SCHEDULER inferred from
+# how the rows happened to look, rather than from the four-thread
+# arithmetic or the source.  The band predictions, which are about
+# SOLVE TIMES, have held.
+#
+# DATED EXPECTATION FOR THIS BATCH: the four started 18:46:39Z.  On the
+# 11000-12500 band the three straggler re-runs should report between
+# ~21:50Z and ~22:15Z.  The fresh cube has no prediction attached.
+#
+#
 #
 #
 #
