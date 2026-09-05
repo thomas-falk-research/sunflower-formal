@@ -2604,6 +2604,90 @@
 # #317 and a correct 317-row file.  Only the header text was missing
 # and only the commit message overstated.
 #
+# ----------------------------------------------------------------
+# #318, SIX FOR SIX -- AND THE BUDGET RULE IS TWO ROWS OUT AGAIN
+# ----------------------------------------------------------------
+#
+# [..,13,12,10,8,8] UNKNOWN 10871.2, a fourth attempt on the straggler
+# first seen at #271.  Six of the original eleven re-crossed, all six
+# re-runs.  FIVE LEFT: [..,13,11,10,9,8] [..,12,12,12,8,7]
+# [..,12,12,11,11,5] [..,12,12,11,10,6] [..,12,12,11,9,7].  Rows 318,
+# labels 183, tally 173 UNSAT / 10 UNKNOWN / 0 SAT.
+#
+# **THE LAST TWELVE NOW HOLD TWO UNSAT** (#305 and #313), down from
+# five.  The rule needs 0 or 1, so it is two more non-banking rows
+# away -- the same position this file was in at #300, when the note
+# said the window would read <=1 on the very next row and the next row
+# was an UNSAT instead.  It is recorded here BEFORE those rows land,
+# on the standing rule that a threshold noted after the fact is not a
+# threshold.  IF IT FIRES, the cap goes 10800 -> 21600 and the driver
+# restarts with --seconds 21600; the measured argument against a raise
+# is context for reading that, NOT grounds for suspending it.
+#
+# One thing the sweep model now lets us say that could not be said at
+# #300: the five remaining crossings are all straggler re-runs, and a
+# straggler is by construction a cube that has stalled every time so
+# far.  So the window is being fed from the part of the list most
+# likely to bank nothing.  That is a REASON THE RULE MIGHT FIRE ON
+# SCHEDULING RATHER THAN ON DIFFICULTY, and it is a genuine problem
+# with the rule as written -- but it is NOT a licence to ignore the
+# rule when it fires.  If a numeric threshold has a known bias, the
+# fix is to restate the threshold at a moment when doing so is
+# inconvenient, not to decline it at the moment it binds.
+#
+# ================================================================
+# **THE BUDGET RULE FIRED AT #320.  THE CAP GOES 10800 -> 21600.**
+# ================================================================
+#
+# #319 [..,13,11,10,9,8] UNKNOWN 10888.4 (attempt 4) and #320
+# [..,12,12,12,8,7] UNKNOWN 10907.8 (attempt 3) landed at 11:52-11:53Z.
+# The last twelve attempts are #309-#320 and they hold exactly ONE
+# UNSAT -- #313 at 10578.1.  The rule is: twelve consecutive attempts
+# banking 0 or 1 UNSAT raises the cap to 21600.  **IT IS MET.**
+#
+# Rows 320, labels 183, tally 173 UNSAT / 10 UNKNOWN / 0 SAT.  Eight
+# rows from pid 27750 and all eight re-runs, so the sweep model is
+# eight for eight; THREE stragglers are still to be crossed --
+# [..,12,12,11,11,5] [..,12,12,11,10,6] [..,12,12,11,9,7].
+#
+# WHY THIS IS BEING HONOURED RATHER THAN ARGUED WITH.  Everything this
+# header has measured says the raise is uneconomic: re-draws at the
+# current cap run 18 of 64 = 28.1% for 186.7 solver-hours, 10.37 hours
+# per verdict, so a 21600 s attempt must convert at better than 57.9%
+# to be cheaper.  One row ago this header noted a REAL BIAS in the rule
+# -- that the window was being fed from straggler re-runs, which stall
+# by construction -- and it noted it BEFORE the rule fired.  All of
+# that is true and none of it is a reason to decline.
+#
+# The pre-commitment was explicit and was made twice: "if the window
+# reads <=1, the rule is met and the cap goes to 21600", and "the cost
+# measurement is a better instrument but is NOT adopted as the rule;
+# adopt it only when doing so is inconvenient."  Adopting the cost rule
+# NOW would be the CONVENIENT move -- it delivers the answer already
+# preferred.  Honouring the old rule is the inconvenient one.  A
+# threshold that is only obeyed when it agrees with you is not a
+# threshold, and this file has withdrawn two rules for being too loose;
+# gutting a third for being too tight, at the exact moment it binds,
+# would be worse than either.
+#
+# **SO THE FIRING TURNS THE DISAGREEMENT INTO AN EXPERIMENT, AND THE
+# PREDICTION IS REGISTERED HERE BEFORE THE FIRST 21600 s ROW LANDS.**
+# At the 10800 s cap, re-draws convert at 28.1% and cost 10.37
+# solver-hours per verdict.  For the raise to pay, conversion at 21600
+# must exceed 57.9%.  PREDICTED: it will land nearer 35-45% -- some
+# gain from the extra time, nothing like a doubling -- which at 6.0
+# solver-hours per attempt is 13-17 hours per verdict, i.e. ROUGHLY
+# HALF AS EFFICIENT as the cap it replaced.  If instead it clears 57.9%
+# the cost analysis in this file is wrong and should be discarded.
+# Either way the next session has a number to check rather than an
+# argument to re-run.
+#
+# The four solvers were 0-6 minutes old when the rule fired, so the
+# restart costs almost nothing.  New command differs from the old in
+# exactly one token: --seconds 21600.
+#
+#
+#
 #
 #
 #
@@ -2938,3 +3022,6 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 9, 6]	UNKNOWN	10868.8
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 10, 5]	UNKNOWN	10875.9
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 8, 7]	UNKNOWN	10899.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10889.4
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10871.2
+g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10888.4
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10907.8
