@@ -2998,6 +2998,42 @@
 # tails become reachable, which is what the encoding test has been
 # waiting on since #312.
 #
+# ================================================================
+# FIFTEENTH RESTART, AND IT VOIDED THE FOURTH DEADLINE
+# ================================================================
+#
+# The container restarted at ~18:44Z, killing pid 29501 after 6h48m.
+# Absorbed cleanly: tree clean at 956b6f1, 327 rows on disk, and the
+# fresh process printed **`checkpoint: 180 of 1949 cubes already
+# decided`** -- matching an independent recount of 180 UNSAT + 0 SAT.
+# Nothing lost from the file.  New driver **pid 32499** up at 18:46Z,
+# banner `21600 s per cube`, four solvers started.
+#
+# **BUT THE FOURTH BAND DEADLINE IS GONE, NOT MET AND NOT MISSED.**
+# pid 30406 was at 11697 s and still running when the container died;
+# its deadline was 18:41:39Z and the restart landed at ~18:44Z.  There
+# is no row for it and there never will be -- the sweep will re-run
+# that cube from zero.  So the dated test recorded in 48ae5b5 closes at
+# **THREE OF FOUR MET, ONE VOIDED**, and it must not be written up as
+# four for four.  A test whose fourth case was destroyed by an
+# unrelated event scored three, and saying otherwise would be inventing
+# a data point.
+#
+# What that costs: the voided cube was inside the band and 803 s from
+# leaving it, so it was the closest of the four to falsifying the
+# reading, and it is exactly the one there is now no answer for.  The
+# honest summary of the whole exercise is 3 of 4 met, all three early,
+# with the sharpest case unresolved.
+#
+# THE POOL IS UNCHANGED AT THREE STRAGGLERS, all single-attempt, all
+# arm (b) w = 11 tails: [..,12,12,11,11,5] [..,12,12,11,10,6]
+# [..,12,12,11,9,7].  The new process restarts the sweep from index 0,
+# so its first rows should be RE-RUNS of those three -- the sweep model
+# predicts it, and a FIRST attempt before all three are crossed
+# falsifies it.  New-cap totals stand at 7 of 7, 3.20 h per verdict;
+# rows 327, labels 183, tally 180 UNSAT / 3 UNKNOWN / 0 SAT.
+#
+#
 #
 #
 #
