@@ -2380,6 +2380,67 @@
 # it is one draw.  #233, #238 and #239 each stalled six times before
 # converting.  The resume order will bring it round again.
 #
+# ================================================================
+# THE "RESUME POLICY" THIS HEADER DESCRIBED DOES NOT EXIST
+# ================================================================
+#
+# #310 [13,13,13,12,13,13,12,12,11,11,5] UNKNOWN 10887.5 and #311
+# [..,12,12,11,10,6] UNKNOWN 10882.3, BOTH FIRST ATTEMPTS, landed while
+# TEN stragglers were still undecided.  That is flatly incompatible
+# with the sentence this header has been repeating -- "the resume
+# policy re-runs every straggler before any fresh sub-cube" -- so the
+# source was read instead of the pattern.
+#
+# WHAT rust/examples/iota_sym.rs ACTUALLY DOES (load_checkpoint at :79,
+# solve_all at :150-215):
+#
+#   * load_checkpoint reads the file ONCE at process start and keeps
+#     only labels whose verdict is UNSAT or SAT.  Its own comment says
+#     it: "UNKNOWN is a budget, not a verdict, so a stalled cube is
+#     re-run."
+#   * the workers share ONE AtomicUsize and walk the cube list in index
+#     order, `continue`-ing past any label in `done`.
+#
+# So THERE IS NO STRAGGLER PHASE.  Each process makes ONE LINEAR SWEEP
+# of the cube list, skipping what is already decided.  A stalled cube is
+# re-run AT ITS OWN POSITION IN THE LIST, not at the front.  And since
+# each index is claimed at most once per process, **EVERY RE-ATTEMPT IN
+# THIS FILE COMES FROM A PROCESS RESTART** -- which is why the attempt
+# counts track the thirteen restarts.
+#
+# Checked against the data: rows #297-#311 are all from pid 21928 and
+# contain NO duplicate label.
+#
+# WHY IT LOOKED LIKE A STRAGGLER PASS.  The undecided cubes sit early in
+# the list -- they were reached on earlier sweeps and left undecided --
+# so a fresh process walks over them first and appears to be draining a
+# straggler queue.  It is not; it is the sweep passing the same
+# positions again.  The reading survived because every row for hours
+# happened to be a re-run.  #310 was the first row that could falsify
+# it, and did.
+#
+# TWO EARLIER STATEMENTS FALL WITH IT.  "At a 10800 s cap over four
+# threads a full straggler pass is up to ~9.75 uninterrupted
+# wall-hours" was derived from the phantom policy; the true cost of a
+# restart's opening phase is (undecided cubes AHEAD OF THE HEAD) x cap
+# / threads.  And "the resume order will bring it round again", written
+# one block above about (12,8,7), is true only ACROSS A RESTART.
+#
+# A FALSIFIABLE CONSEQUENCE, RECORDED BEFORE IT IS TESTED.  The ten
+# stragglers first appeared at rows #264-#296 and the sweep head is now
+# at (11,10,6); all ten are BEHIND it.  **THIS PROCESS WILL NOT RETRY
+# ANY OF THEM.**  Every further row from pid 21928 should be a FIRST
+# attempt.  If a re-run of a current straggler appears with no restart
+# in between, this model is wrong and should be re-derived from source
+# rather than patched.
+#
+# ARM (b) IS NOW 7 OF 12 TAILS SEEN -- (12,12,3) (12,11,4) (12,10,5)
+# (12,9,6) UNSAT, (12,8,7) (11,11,5) (11,10,6) UNKNOWN.  Nothing
+# outside the permitted set has appeared.  Still NOT complete, so still
+# not tested.  Labels 182, tally 172 UNSAT / 10 UNKNOWN / 0 SAT over
+# 311 rows; the last twelve hold 5 UNSAT and the rule does not fire.
+#
+#
 #
 #
 #
@@ -2699,3 +2760,5 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 9, 6]	UNSAT	9873.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 10, 5]	UNSAT	9988.5
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10885.3
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10883.6
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNKNOWN	10887.5
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNKNOWN	10882.3
