@@ -2686,6 +2686,35 @@
 # restart costs almost nothing.  New command differs from the old in
 # exactly one token: --seconds 21600.
 #
+# THE RAISE IS LIVE AND VERIFIED.  Old pid 27750 stopped at 11:53Z, its
+# four solvers killed at 0-6 minutes old.  New driver **pid 29501** up
+# at 11:56Z, banner reading `21600 s per cube`, and
+# `checkpoint: 173 of 1949 cubes already decided` -- matching an
+# independent recount of 173 UNSAT + 0 SAT.  Nothing lost; the file
+# stands at 320 rows, 183 labels, 173 UNSAT / 10 UNKNOWN / 0 SAT.
+#
+# **EXPECT A SIX-HOUR FLAT STRETCH AND DO NOT READ IT AS A HANG.**  At
+# 21600 s the first four cubes cannot report before ~17:56Z.  That is
+# the single most important operational consequence of the raise and it
+# doubles every wait in this file: a full pass over the ten stragglers
+# is now 60 solver-hours, 15 wall-hours on four threads, against 7.5
+# before.
+#
+# ALSO DOUBLED: the cost of being wrong.  If the registered prediction
+# holds and conversion lands at 35-45%, every verdict from here costs
+# 13-17 solver-hours instead of 10.37, and the rule that produced this
+# will need restating -- from a position where restating it means
+# LOWERING the cap, which is the inconvenient direction and therefore
+# the honest moment to do it.  The three tests that matter, in order:
+#   1. does a 21600 s attempt convert at better than 57.9%?
+#   2. if not, what is the actual solver-hours-per-verdict?
+#   3. do any of the ten stragglers finish in (10800, 21600] -- i.e.
+#      was there ever a cube the old cap was genuinely too small for?
+# Test 3 is the sharpest: the whole case against the raise was that the
+# stragglers lose draws rather than run out of budget.  A cube landing
+# at, say, 15000 s would be the first direct evidence against that.
+#
+#
 #
 #
 #
