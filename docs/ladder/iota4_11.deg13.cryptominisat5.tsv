@@ -2500,6 +2500,28 @@
 # only approximately the list order.  The prediction above is stated
 # only over re-run-versus-first-attempt, which the noise cannot touch.
 #
+# **THE INVERTED PREDICTION HELD ON ITS FIRST TEST.**  #313 at
+# 08:46:24Z: [13,13,13,12,13,13,13,12,11,11,4] UNSAT at 10578.1 on its
+# FOURTH attempt.  A re-run, as the model requires of a fresh process
+# walking the list from index 0 -- and the label is one of the eleven
+# stragglers, first seen at #265.  Had it been a first attempt the
+# model would have been dead.
+#
+# THE MODEL HAS NOW BEEN TESTED IN BOTH DIRECTIONS.  Before the restart
+# it predicted first attempts and delivered three (#310, #311, #312);
+# after the restart it predicted re-runs and delivered one.  Those are
+# opposite predictions from the same source reading, which is worth
+# more than four confirmations of the same one.  It is still four rows
+# in total and the test stays live on every row from pid 27750 until
+# the eleven have been re-crossed.
+#
+# The row also converted: three stalls at the cap, then UNSAT at
+# 10578.1 on the fourth draw.  Stragglers 11 -> 10 (three on one
+# attempt, one on two, six on three); tally 173 UNSAT / 10 UNKNOWN / 0
+# SAT over 313 rows; re-draws 18 of 57 = 31.6%, 9.19 solver-hours per
+# verdict, break-even 65.3% today.
+#
+#
 #
 #
 #
@@ -2825,3 +2847,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10883.6
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNKNOWN	10887.5
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNKNOWN	10882.3
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNKNOWN	10898.8
+g=11 [13, 13, 13, 12, 13, 13, 13, 12, 11, 11, 4]	UNSAT	10578.1
