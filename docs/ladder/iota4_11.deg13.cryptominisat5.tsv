@@ -2558,6 +2558,53 @@
 # any figure quoted in a header block should be read as "as of the
 # recount that block ran", not as the file's state at commit time.
 #
+# #317 MAKES IT FIVE FOR FIVE.  [..,13,12,10,9,7] UNKNOWN 10889.4, a
+# fourth attempt on the straggler first seen at #269.  Five of the
+# original eleven have now been re-crossed by pid 27750 and every one
+# arrived as a re-run.  SIX ARE LEFT TO CROSS: [..,13,12,10,8,8]
+# [..,13,11,10,9,8] [..,12,12,12,8,7] [..,12,12,11,11,5]
+# [..,12,12,11,10,6] [..,12,12,11,9,7].  Rows 317, tally 173 UNSAT / 10
+# UNKNOWN / 0 SAT; last twelve hold 3 UNSAT, rule does not fire.
+#
+# The count of confirmations is not the point and should not be quoted
+# as though it were -- five re-runs in a row is exactly what a sweep
+# that has to re-cross eleven undecided cubes would produce whether or
+# not the mechanism is understood correctly.  What made the model worth
+# believing was that it predicted the OPPOSITE outcome an hour earlier
+# and got that right too.  The remaining six are the last chance for
+# this process to falsify it; after that the sweep reaches fresh cubes
+# and the test lapses until the next restart.
+#
+# ----------------------------------------------------------------
+# THE GUARD PROTECTS THE FILE.  IT DOES NOT PROTECT THE WORKFLOW.
+# ----------------------------------------------------------------
+#
+# The paragraph above was supposed to land in commit 3a1b19c and did
+# not.  Its anchor string was written inside a quoted heredoc with a
+# backslash-escaped quote, which a quoted heredoc passes through
+# LITERALLY, so the anchor never matched.  The guard did exactly what
+# it should: it printed `NOT WRITTEN [0]` and refused to touch the
+# file.  But the `git add`/`git commit` sat in the SAME shell
+# invocation, after it, unconditional -- so the commit went ahead and
+# pushed row #317 under a message describing a header block that was
+# not there.
+#
+# Two lessons, both cheap and both already paid for:
+#   * A REFUSAL THAT DOES NOT STOP THE NEXT STEP IS ONLY HALF A GUARD.
+#     Same shape as the corruption incident that created this guard --
+#     that one verified inputs but not output; this one verifies the
+#     write but not what follows it.  The edit and the commit must be
+#     separate invocations, or the commit must be conditional on the
+#     edit's exit status.
+#   * NEVER PUT A BACKSLASH-ESCAPED QUOTE IN AN ANCHOR INSIDE A QUOTED
+#     HEREDOC.  Build the quote with chr(34), or anchor on a line that
+#     has no quote in it.
+#
+# The file itself was never at risk -- 3a1b19c carries a correct row
+# #317 and a correct 317-row file.  Only the header text was missing
+# and only the commit message overstated.
+#
+#
 #
 #
 #
