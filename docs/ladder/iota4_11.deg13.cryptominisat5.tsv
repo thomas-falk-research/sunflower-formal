@@ -2462,6 +2462,45 @@
 # SAT; stragglers 11 (three on one attempt, one on two, seven on
 # three).
 #
+# ================================================================
+# FOURTEENTH RESTART, ZERO ROWS LOST, AND THE MODEL NOW PREDICTS
+# THE OPPOSITE OF WHAT IT PREDICTED AN HOUR AGO
+# ================================================================
+#
+# The container restarted at ~05:48Z, killing pid 21928 after 12h50m.
+# Absorbed: the tree was clean at b68f0c8, the file held 312 rows, and
+# the fresh process printed **`checkpoint: 172 of 1949 cubes already
+# decided`** -- which matches an independent recount of 172 UNSAT + 0
+# SAT exactly.  Nothing lost.  New driver pid 27750, four solvers up at
+# 05:49Z, same command and the SAME 10800 s cap (the budget rule reads
+# 5 UNSAT in the last twelve and does not fire).
+#
+# WHY THIS RESTART IS AN EXPERIMENT.  The sweep model says each process
+# re-reads the checkpoint, keeps only the DECIDED labels, and starts a
+# fresh linear walk from index 0 -- so a new process must re-run every
+# undecided cube it passes.  For thirteen hours the model predicted
+# "every further row is a FIRST attempt", because pid 21928's head had
+# gone past all the stragglers; that held on #310, #311 and #312.  The
+# restart inverts it exactly:
+#
+#   **THE NEXT ROWS FROM PID 27750 SHOULD BE RE-RUNS OF THE ELEVEN
+#   STRAGGLERS, NOT FIRST ATTEMPTS.**
+#
+# A first attempt appearing before the eleven have been re-run would
+# falsify the model as squarely as a re-run would have falsified it an
+# hour ago.  Recorded before the first row lands.
+#
+# ONE THING THAT WOULD HAVE BEEN CLAIMED TOO PRECISELY.  The eleven
+# stragglers first appeared at rows #264, #265, #266, #267, #269, #271,
+# #277, #296, #310, #311, #312, and it is tempting to predict that
+# exact order.  It is not safe: rows are appended when a cube
+# COMPLETES, and with four threads at different speeds completion order
+# is not claim order.  #264 is tail (11,10,5) and #265 is (11,11,4),
+# which are already out of lex order -- so first-appearance order is
+# only approximately the list order.  The prediction above is stated
+# only over re-run-versus-first-attempt, which the noise cannot touch.
+#
+#
 #
 #
 #
