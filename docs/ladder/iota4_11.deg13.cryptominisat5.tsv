@@ -2223,6 +2223,65 @@
 # three-attempt group is where the sweep is concentrated and, on the
 # twelve-conversion record above, is not the discouraging end of it.
 #
+# ================================================================
+# #305, AND A CORRECTION TO HOW THE LAST TWO BLOCKS PUT IT
+# ================================================================
+#
+# Attempt #305 at 01:26:52Z, twenty minutes EARLY against the ~01:47Z
+# expiry: [13,13,13,12,13,13,12,12,12,11,4] UNSAT at **9272.9 s** on
+# its SECOND attempt, after one stall at 10897.6 (#293).  Tally 170
+# UNSAT / 10 UNKNOWN / 0 SAT over 305 rows and 180 labels; stragglers
+# 11 -> 10 (three labels on one attempt, one on two, six on three).
+#
+# **THE PHRASE "CAME IN UNDER THE CAP" WAS DOING WORK IT CANNOT DO.**
+# The two blocks above leaned on it, and at a 10800 s cap it is close
+# to a tautology: the cap censors, so a conversion much above it is
+# nearly unobservable.  Only #272's 10844.4 shows the cap is a periodic
+# check rather than a hard deadline at all.  Every one of the 15
+# re-draw conversions in this era came in under 10800 s, and that fact
+# on its own is worth almost nothing.  It is recorded as a correction
+# because the reading it invites -- "the cubes fit inside the budget" --
+# is one the data cannot license from the cap side.
+#
+# WHAT IS NOT CENSORED IS THE WITHIN-LABEL COMPARISON, and that is
+# where the argument actually lives.  Same cube, same encoding, same
+# cap, different draw:
+#
+#   [..,13,13,12,11,10,10,7]  SIX stalls, 10863.1 to 10919.8,
+#                             then UNSAT at 7838.8 on attempt 7
+#   [..,13,13,12,11,11,10,6]  SIX stalls, 10860.4 to 10893.7,
+#                             then UNSAT at 8270.4 on attempt 7
+#   [..,13,12,12,11,11,10,7]  stalls at 10917.0 and 10870.9,
+#                             then UNSAT at 7497.4 on attempt 3
+#   [..,13,12,12,11,11, 9,8]  stalls at 10929.6 and 10906.6,
+#                             then UNSAT at 8658.6 on attempt 3
+#
+# Six draws burning the full three hours and a seventh finishing in two
+# hours ten is not a cube that is short of budget.  The run-to-run
+# spread on ONE label is larger than the whole increment a raise to
+# 21600 would add at the margin, and unlike the cap-edge statistic this
+# comparison is immune to the censoring, because the stalls and the
+# conversion are the same cube under the same cap.
+#
+# Margins under the cap of the 15 era re-draw conversions: min 60.3,
+# median 1486.1 (13.8% of the cap), max 3302.6, with three finishing
+# more than 2500 s early.  THIS DISTRIBUTION IS ALSO CONDITIONAL ON
+# CONVERTING -- a draw that would have wanted 12000 s appears as a
+# stall, not as a negative margin -- so it describes successful draws
+# and is NOT offered as the distribution of solve times.
+#
+# Economics with #305: re-draws 15 of 52 = 28.8% for 151.0 solver-hours,
+# **10.1 solver-hours per verdict**, so a 21600 s attempt would have to
+# convert at better than **59.6%** to beat re-drawing.
+#
+# ARM (b) IS UNMOVED.  #305 is in arm (b)'s group with tail (12,11,4),
+# which was ALREADY one of the five tails seen there; it changed that
+# tail's status from UNKNOWN to UNSAT.  The group therefore still shows
+# 5 of the 12 required tails, now 2 decided and 3 undecided.  The
+# encoding test counts which tails APPEAR, not which are decided, so a
+# status change does not advance it.  Still: do not test until COMPLETE.
+#
+#
 #
 #
 #
@@ -2532,3 +2591,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 10, 6]	UNSAT	10406.4
 g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 10, 7]	UNSAT	10703.6
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 8, 8]	UNKNOWN	10887.3
 g=11 [13, 13, 13, 12, 13, 13, 13, 12, 10, 9, 7]	UNKNOWN	10890.8
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 11, 4]	UNSAT	9272.9
