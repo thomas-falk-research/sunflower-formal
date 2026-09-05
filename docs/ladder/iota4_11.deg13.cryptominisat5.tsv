@@ -2440,6 +2440,29 @@
 # not tested.  Labels 182, tally 172 UNSAT / 10 UNKNOWN / 0 SAT over
 # 311 rows; the last twelve hold 5 UNSAT and the rule does not fire.
 #
+# THE PREDICTION HELD ON ITS FIRST TWO TESTS.  #311 [..,12,12,11,10,6]
+# UNKNOWN 10882.3 and #312 [..,12,12,11,9,7] UNKNOWN 10898.8 are BOTH
+# first attempts, as the one-linear-sweep model requires while eleven
+# stragglers sit behind the head.  Two rows is two rows; the test stays
+# live on every further row from pid 21928.
+#
+# **ARM (b) IS FOUR ROWS FROM TESTABLE.**  Eight of the twelve tails are
+# now seen -- (12,12,3) (12,11,4) (12,10,5) (12,9,6) UNSAT, and
+# (12,8,7) (11,11,5) (11,10,6) (11,9,7) UNKNOWN -- with nothing outside
+# the permitted set.  The four still unseen are (11,8,8) (10,10,7)
+# (10,9,8) (9,9,9), all ahead of the sweep head.  NOTE WHAT THE TEST
+# DOES AND DOES NOT NEED: it asks which tails APPEAR, not which are
+# decided, so the group becomes testable when the twelfth tail lands
+# even if every one of them is UNKNOWN.  Do not test at eleven.
+#
+# The three fresh w = 11 tails all stalled at the cap.  That is n = 3
+# and is NOT a finding about w = 11 being harder; the w = 12 tails
+# stalled on their first attempts too and four of the five have since
+# converted.  Rows 312, labels 183, tally 172 UNSAT / 11 UNKNOWN / 0
+# SAT; stragglers 11 (three on one attempt, one on two, seven on
+# three).
+#
+#
 #
 #
 #
@@ -2762,3 +2785,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNKNOWN	10885.3
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNKNOWN	10883.6
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNKNOWN	10887.5
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNKNOWN	10882.3
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNKNOWN	10898.8
