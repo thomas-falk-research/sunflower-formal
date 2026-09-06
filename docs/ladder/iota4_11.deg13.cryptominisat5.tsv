@@ -3280,6 +3280,36 @@
 # TEST AT NINE, TEN OR ELEVEN.  Nothing outside the permitted set has
 # ever appeared, across 46 members of four closed groups and nine here.
 #
+# ----------------------------------------------------------------
+# #332: (9,9,9) ARRIVES -- ARM (b) IS TWO TAILS FROM TESTABLE
+# ----------------------------------------------------------------
+#
+# At 02:55:53Z: [13,13,13,12,13,13,12,12,9,9,9] **UNSAT at 9430.7 s**
+# on its FIRST attempt.  Rows 332, labels 185, 185 UNSAT, 0 UNKNOWN, 0
+# SAT -- the pool stays empty.  New cap 12 of 12, 3.90 h per verdict.
+#
+# **ARM (b) GOES TO TEN OF TWELVE**, and all ten seen are UNSAT.  Still
+# unseen: (10,10,7) and (10,9,8).  Nothing outside the permitted set
+# has ever appeared.  DO NOT TEST AT TEN OR ELEVEN.
+#
+# 9430.7 s IS THE USEFUL PART OF THIS ROW.  It is 1369.3 s UNDER the
+# old 10800 cap and used 43.7% of the current one -- a fresh cube from
+# the same group as the four that needed 18600-20800 s, decided in
+# under three hours.  So the population is NOT uniformly hard, and the
+# reading that would have been tempting after #328-#331 -- "everything
+# from here needs most of the doubled budget" -- is wrong on the very
+# next row.  Nothing in this file supports a per-group difficulty
+# story: the same eight-entry prefix produced 9430.7 and 20770.8.
+#
+# ALSO WORTH RECORDING: (9,9,9) arrived BEFORE (10,10,7) and (10,9,8),
+# which are earlier in the lex-descending tail order.  That is the
+# completion-order-is-not-claim-order fact again, and it means the two
+# remaining tails may be running right now and simply slower.  The
+# arrival order of arm (b)'s tails so far is (12,12,3) (12,11,4)
+# (12,10,5) (12,9,6) (12,8,7) (11,11,5) (11,10,6) (11,9,7) (11,8,8)
+# (9,9,9) -- lex-descending except for the last, which jumped two.
+#
+#
 #
 #
 #
@@ -3646,3 +3676,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 8, 8]	UNSAT	18613.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNSAT	19176.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNSAT	19907.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNSAT	20770.8
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 9, 9, 9]	UNSAT	9430.7
