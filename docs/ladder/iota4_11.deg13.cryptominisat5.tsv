@@ -3759,6 +3759,29 @@
 # idx 196 is now at 16725 s -- past every conversion cost this file has
 # recorded except the four in the 18600-20800 band, and still running.
 #
+# #350: [13,13,13,12,13,13,11,11,10,10,9] **UNSAT at 18700.0 s** -- that
+# is idx 196, in flight since ~14:39Z, and it **CLOSES THE SEVENTH
+# GROUP AT 4 OF 4**: (11,11,7) 3299.0, (11,10,8) 9122.4, (11,9,9)
+# 7538.3, (10,10,9) 18700.0, all UNSAT, matching the enumerated set
+# exactly.  Rows 350, labels 203, 201 UNSAT / 2 UNKNOWN / 0 SAT.
+#
+# **THE FIRST 200 ENUMERATED INDICES ARE NOW FULLY ACCOUNTED FOR.**
+# Every cube at idx 0-199 has been reached -- none skipped, none
+# missing -- and exactly TWO are undecided:
+#
+#     idx 189  [13,13,13,12,13,13,12,11,11,9,8]  UNKNOWN 21777.9
+#     idx 190  [13,13,13,12,13,13,12,11,10,10,8] UNKNOWN 21756.7
+#
+# Both are the pair that stalled 78 s apart at #338/#339, and both will
+# only be retried on a restart.  That coverage check is the enumeration
+# earning its keep: "none skipped, none missing" is a statement about
+# 200 specific indices, not an inference from arrival patterns.
+#
+# Note the spread within group 7: 3299.0 to 18700.0, a factor of 5.7
+# across four cubes sharing seven of eight prefix entries.  Whatever
+# governs cost here, it is not the prefix.
+#
+#
 #
 #
 #
@@ -4162,3 +4185,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 11, 5]	UNSAT	6064.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 10, 6]	UNSAT	6207.4
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 9, 7]	UNSAT	5779.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 8, 8]	UNSAT	4445.2
+g=11 [13, 13, 13, 12, 13, 13, 11, 11, 10, 10, 9]	UNSAT	18700.0
