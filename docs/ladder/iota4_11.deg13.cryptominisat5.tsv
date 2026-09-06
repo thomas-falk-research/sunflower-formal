@@ -3703,6 +3703,13 @@
 # narrative blocks above were earned by uncertainty that no longer
 # exists, and continuing them at that length would be padding.
 #
+# #343: [13,13,13,12,13,13,12,10,10,10,9] UNSAT 10313.5 -- the idx-192
+# singleton group, 1 of 1, CLOSED.  Its only permitted tail is
+# (10,10,9) and that is what arrived, which also confirms the cube the
+# enumeration assigned to that index.  Rows 343, labels 196, 194 UNSAT
+# / 2 UNKNOWN / 0 SAT; 194 of 1949 decided (10.0%).
+#
+#
 #
 #
 #
@@ -4092,3 +4099,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.9
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 11, 7]	UNSAT	3299.0
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 9, 9]	UNSAT	7538.3
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 10, 8]	UNSAT	9122.4
+g=11 [13, 13, 13, 12, 13, 13, 12, 10, 10, 10, 9]	UNSAT	10313.5
