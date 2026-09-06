@@ -3487,6 +3487,130 @@
 # 19176.1, 19907.2, 20770.8, 20809.6 -- a spread that supports no
 # interval narrower than "somewhere under the cap, or not".
 #
+# ----------------------------------------------------------------
+# #337 CONVERTS **ABOVE** THE CAP, AT 21678.5 s
+# ----------------------------------------------------------------
+#
+# At 13:44:54Z: [13,13,13,12,13,13,12,11,11,10,7] **UNSAT at 21678.5 s
+# -- 78.5 s PAST the 21600 s cap.**  Rows 337, labels 190, 190 UNSAT, 0
+# UNKNOWN, 0 SAT.  Sixth group at 3 of 5; (11,9,8) and (10,10,8) still
+# unseen.  Seventeen rows at this cap, seventeen conversions, still not
+# one stall.
+#
+# THIS IS THE PERIODIC-CHECK PROPERTY, CONFIRMED AT THE NEW CAP.  The
+# header recorded long ago that "10844.4 s is ABOVE the 10800 s cap and
+# still returned UNSAT, so the cap is a periodic check rather than a
+# hard deadline".  #337 is the same thing at 21600, and the whole file
+# now shows 72 rows recorded above their own cap: 70 UNKNOWN and TWO
+# UNSAT (#272 at +44.4, #337 at +78.5).  The overshoot band at 10800
+# ran +68.8 to +139.0; the single sample at 21600 sits at +78.5, inside
+# the same range -- so the check interval looks absolute, not
+# proportional, which is what a fixed polling period would give.
+#
+# WHY IT MATTERS BEYOND BOOKKEEPING: **#337 NEEDED MORE THAN THE CAP
+# IT WAS GIVEN AND WAS DECIDED ANYWAY, BY LUCK OF POLLING.**  Had the
+# check fired 79 s earlier it would be an UNKNOWN and this group would
+# still be at 2 of 5.  That sharpens the #331 note about a 3.8% margin
+# into something starker: at the top of this run the difference between
+# a verdict and a stall is now smaller than the resolution of the
+# instrument that decides it.
+#
+# TWO SOLVERS ARE STILL RUNNING AT 21704 s -- ALSO PAST THE CAP, ALSO
+# UNREPORTED.  They are inside the same polling window that let #337
+# through.  Whatever they return will be the first evidence about
+# whether that window is wide enough to matter systematically, and no
+# prediction is registered for them.
+#
+# New cap: 17 of 17, 71.77 solver-hours, 4.22 h per verdict.  Last
+# twelve hold 12 UNSAT; the budget rule is as far from firing as it can
+# be.
+#
+# ================================================================
+# **#338: THE FIRST STALL AT 21600 -- AND IT LANDS 78 s AFTER #337**
+# ================================================================
+#
+# #338: [13,13,13,12,13,13,12,11,10,10,8] **UNKNOWN at 21756.7 s**, the
+# first stall this cap has ever produced.  It arrived while the block
+# above was being written; the pure-append guard carried it through.
+# Rows 338, labels 191, 190 UNSAT / 1 UNKNOWN / 0 SAT.
+#
+#     #337  UNSAT    21678.5   (+78.5 past the cap)
+#     #338  UNKNOWN  21756.7   (+156.7 past the cap)
+#
+# **SEVENTY-EIGHT POINT TWO SECONDS SEPARATE A VERDICT FROM A STALL.**
+# Both cubes ran past 21600; one was polled after it finished and one
+# was polled before.  The block written one row earlier said "the
+# difference between a verdict and a stall is now smaller than the
+# resolution of the instrument that decides it" -- that was a claim
+# about the margin, and the very next row is a worked example of it.
+#
+# WHAT THIS DOES AND DOES NOT SAY.  It does NOT say #338's cube is
+# harder than #337's in any interesting sense; 21756.7 is a censored
+# observation and the header has already retired the habit of reading a
+# stall cost as a solve time (#329, gap 8288.6 s).  All that is known
+# of #338's cube is that it needs MORE than ~21757 s.  It could be
+# 21800 or 40000.
+#
+# THE STREAK ENDS AT SEVENTEEN.  New cap: 17 conversions in 18 rows,
+# 77.81 solver-hours, 4.58 h per verdict.  Last twelve hold 11 UNSAT,
+# so the budget rule is nowhere near firing and NOTHING should be done
+# about the cap on the strength of one stall.  The rule needs 0 or 1 in
+# twelve; one stall in eighteen is not a signal, and acting on it would
+# be precisely the error the rule exists to prevent -- in the opposite
+# direction from last time.
+#
+# SIXTH GROUP AT 4 OF 5 TAILS SEEN: (11,11,6) (11,10,7) (10,9,9) UNSAT,
+# (10,10,8) UNKNOWN, and **(11,9,8) still unseen**.  Note the encoding
+# test counts APPEARANCES, so (10,10,8) being undecided does not block
+# it -- but the group is not testable until (11,9,8) appears, and the
+# closure argument then needs the sweep to have passed the group with
+# nothing of it in flight.  The straggler pool is back to ONE.
+#
+# ----------------------------------------------------------------
+# #339: THE FIFTH TAIL APPEARS -- AND THE GROUP IS **NOT** CLOSED YET
+# ----------------------------------------------------------------
+#
+# #339: [13,13,13,12,13,13,12,11,11,9,8] **UNKNOWN at 21777.9 s**
+# (+177.9 past the cap).  It too landed inside a read-edit-write window
+# and the guard carried it through.  Rows 339, labels 192, 190 UNSAT /
+# 2 UNKNOWN / 0 SAT.  The four rows of this process, in order:
+#
+#     #336 UNSAT   20809.6   (-790.4)
+#     #337 UNSAT   21678.5   (+78.5)
+#     #338 UNKNOWN 21756.7   (+156.7)
+#     #339 UNKNOWN 21777.9   (+177.9)
+#
+# Three consecutive rows inside a 99-second window on either side of
+# the cap, two of them stalls.  The polling interval is now the
+# dominant term in whether these cubes get verdicts.
+#
+# **ALL FIVE PERMITTED TAILS OF THE SIXTH GROUP HAVE NOW APPEARED** --
+# (11,11,6) (11,10,7) (11,9,8) (10,10,8) (10,9,9), nothing outside the
+# set, two of them UNKNOWN.  **AND THE TEST STILL CANNOT BE RUN.**
+#
+# WHY NOT, PRECISELY.  Five-of-five is necessary and not sufficient;
+# the claim is that the group closes at EXACTLY five, which requires
+# knowing no sixth tail is still in flight.  This process started at
+# 07:43Z and its first four claims were exactly the four undecided
+# sixth-group cubes (#336-#339, each ~21600-21800 s, all consistent
+# with a 07:43-07:44 start).  The NEXT claim went to the thread freed
+# at 13:30Z -- pid 5201, running now at 1021 s -- and **that cube could
+# be a sixth tail of this group if one exists.**  Nothing yet
+# distinguishes "the group has five" from "the group has six and the
+# sixth is running".  The test needs a row from a LATER group to prove
+# the sweep passed, exactly as arm (b) needed #333.
+#
+# Recorded because the temptation is real: five of five with nothing
+# outside the set looks like a pass, and calling it one now would repeat
+# the error of testing on "seen so far" instead of on a closed group.
+#
+# New cap: 17 conversions in 19 rows, 83.86 solver-hours, 4.93 h per
+# verdict.  Last twelve hold 10 UNSAT -- the budget rule remains far
+# from firing, and two stalls in nineteen is not a signal.
+#
+#
+#
+#
 #
 #
 #
@@ -3864,3 +3988,6 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 11, 6]	UNSAT	11164.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 10, 7]	UNSAT	17598.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 9, 8]	UNSAT	18652.3
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 9, 9]	UNSAT	20809.6
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 10, 7]	UNSAT	21678.5
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21756.7
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.9
