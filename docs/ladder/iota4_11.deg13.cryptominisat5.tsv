@@ -3464,6 +3464,30 @@
 # existed.  With the pool empty the sweep model predicts the opposite,
 # and that is a prediction, not an exception.
 #
+# **THE PREDICTION HELD, AND THE CAP IS ABOUT TO BE TESTED PROPERLY.**
+# #336 at 13:30:37Z: [13,13,13,12,13,13,12,11,10,9,9] **UNSAT at
+# 20809.6 s** -- a FIRST attempt, as the no-pool restart required.
+# 96.3% of the budget, 790.4 s of headroom.  Rows 336, labels 189, 189
+# UNSAT, 0 UNKNOWN, 0 SAT.  Sixth group at 2 of 5: (11,11,6) and
+# (10,9,9) seen; (11,10,7) (11,9,8) (10,10,8) not yet.
+#
+# AT THE MOMENT #336 LANDED, THE OTHER THREE SOLVERS STOOD AT 20861 s
+# -- 739 s FROM THE CAP.  So within about twelve minutes the run will
+# either bank three more verdicts or produce **THE FIRST UNKNOWNS THIS
+# CAP HAS EVER SEEN**.  Sixteen rows at 21600 s, sixteen conversions,
+# no stall yet; that streak is a fact about a sample of sixteen and
+# nothing more.  If they stall, the budget-rule window starts filling
+# again from a base of twelve consecutive UNSAT, so nothing fires soon
+# -- but the "the cap is barely enough" note from #331 gets its second
+# data point, and this time from cubes that had the full 21600 s.
+#
+# NO PREDICTION IS REGISTERED FOR THE THREE.  The last attempt to put
+# an interval on solve times (11000-12500) failed on the next three
+# cubes it met, and the record since is 17598.9, 18613.8, 18652.3,
+# 19176.1, 19907.2, 20770.8, 20809.6 -- a spread that supports no
+# interval narrower than "somewhere under the cap, or not".
+#
+#
 #
 #
 #
@@ -3839,3 +3863,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 9, 9, 9]	UNSAT	9430.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 11, 6]	UNSAT	11164.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 10, 7]	UNSAT	17598.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 9, 8]	UNSAT	18652.3
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 9, 9]	UNSAT	20809.6
