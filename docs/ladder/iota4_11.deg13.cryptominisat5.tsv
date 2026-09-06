@@ -3309,6 +3309,44 @@
 # (12,10,5) (12,9,6) (12,8,7) (11,11,5) (11,10,6) (11,9,7) (11,8,8)
 # (9,9,9) -- lex-descending except for the last, which jumped two.
 #
+# ----------------------------------------------------------------
+# #333: THE SWEEP LEAVES ARM (b)'s GROUP, AND A FIFTH GROUP OPENS
+# ----------------------------------------------------------------
+#
+# At 03:38:40Z: [13,13,13,12,13,13,12,11,11,11,6] **UNSAT at 11164.2 s**
+# on its first attempt.  Rows 333, labels 186, 186 UNSAT, 0 UNKNOWN, 0
+# SAT.  Its first eight are **[13,13,13,12,13,13,12,11]** -- sum 100,
+# not 101 -- so this is a NEW GROUP and the sweep head has passed out
+# of arm (b)'s.
+#
+# **THAT DOES NOT MEAN ARM (b) IS ABANDONED.**  Two solvers are still
+# running at 13339 s and 12777 s, started ~23:56Z and ~00:06Z, and the
+# two unseen tails (10,10,7) and (10,9,8) are the obvious candidates:
+# they are earlier in the list than #333's cube, so they were claimed
+# earlier and are simply slower.  At the 21600 cap they expire ~05:56Z
+# and ~06:06Z.  Arm (b) remains at TEN of twelve seen and is NOT
+# testable; if those two rows never arrive, the reason must be
+# established, not assumed.
+#
+# **THE FIFTH GROUP'S PREDICTION, REGISTERED NOW WITH ONE ROW SEEN.**
+# For first eight [13,13,13,12,13,13,12,11]: sum 100, so the tail must
+# sum to 28, and the encoding requires 11 = p8[-1] >= w >= x >= y >= 0.
+# That permits EXACTLY FIVE tails:
+#
+#     (11,11,6)  (11,10,7)  (11,9,8)  (10,10,8)  (10,9,9)
+#
+# #333 is (11,11,6), the first of them.  The group must close at
+# exactly these five -- no more, no fewer, nothing outside.  Test AS A
+# SET and ONLY when all five have APPEARED; do not test at four.
+# Running score of the encoding prediction: 46 of 46 across four closed
+# groups, plus 10 of 10 so far in arm (b) and 1 of 1 here, with nothing
+# outside a permitted set ever observed.
+#
+# Note the arithmetic that makes this group small: w is capped by
+# p8[-1] = 11 while the tail must sum to 28, so w = 9 is already
+# impossible (9+9+9 = 27 < 28).  Groups shrink as the prefix falls.
+#
+#
 #
 #
 #
@@ -3677,3 +3715,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNSAT	19176.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNSAT	19907.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNSAT	20770.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 9, 9, 9]	UNSAT	9430.7
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 11, 6]	UNSAT	11164.2
