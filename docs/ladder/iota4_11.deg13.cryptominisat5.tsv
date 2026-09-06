@@ -3741,6 +3741,16 @@
 # (12,11,5) at 6064.6.  Rows 347, labels 200, 198 UNSAT / 2 UNKNOWN /
 # 0 SAT; 198 of 1949 decided.  idx 196 now at 13739 s.
 #
+# #348: [13,13,13,12,13,12,12,12,12,9,7] UNSAT 5779.8 -- the eighth
+# group's fourth tail.  Rows 348, labels 201, 199 UNSAT / 2 UNKNOWN /
+# 0 SAT; 199 of 1949 decided.  The group's four costs so far are
+# 1611.9, 6064.6, 6207.4, 5779.8 -- not monotone in the tail order, and
+# NOT to be read as a trend: the four ran on different threads with
+# different start times, so arrival order is neither claim order nor
+# cost order here (unlike the #328-#331 batch, where a shared start
+# made arrival order cost order by construction).
+#
+#
 #
 #
 #
@@ -4140,3 +4150,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 12, 4]	UNSAT	1611.9
 g=11 [13, 13, 13, 12, 13, 13, 11, 10, 10, 10, 10]	UNSAT	4234.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 11, 5]	UNSAT	6064.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 10, 6]	UNSAT	6207.4
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 9, 7]	UNSAT	5779.8
