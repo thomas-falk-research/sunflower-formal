@@ -3608,6 +3608,62 @@
 # verdict.  Last twelve hold 10 UNSAT -- the budget rule remains far
 # from firing, and two stalls in nineteen is not a signal.
 #
+# ================================================================
+# **THE CUBE LIST WAS ENUMERATED, AND THAT RETIRES THE GUESSWORK**
+# ================================================================
+#
+# #340 [13,13,13,12,13,13,11,11,11,11,7] UNSAT at 3299.0 s opened a
+# seventh prefix and raised the question of whether the sixth group had
+# closed.  The previous block tried to answer it from CLAIM TIMES and
+# could not: three cubes had been claimed between the sixth group's
+# last row and #340's, and their identity was unknown.  So instead of
+# inferring, `fill` from rust/src/symbreak.rs:506 was re-implemented in
+# Python and the cube list generated directly.
+#
+# **IT REPRODUCES 1949 CUBES -- the exact number the driver prints.**
+# Two further anchors tie the re-implementation to the real binary:
+# every one of the 193 distinct labels this file has ever recorded
+# appears in the generated list (ZERO orphans), and the group index
+# ranges line up with observed arrival.  A re-implementation that
+# matched the count, the membership of 193 samples, and the ordering,
+# while differing from the Rust, is possible but not likely.
+#
+# WHAT IT SETTLES IMMEDIATELY:
+#
+#   [13,13,13,12,13,13,12,12]  idx 175-186  n=12  <- arm (b), CLOSED
+#   [13,13,13,12,13,13,12,11]  idx 187-191  n= 5  <- sixth, CLOSED at 5
+#   [13,13,13,12,13,13,12,10]  idx 192-192  n= 1
+#   [13,13,13,12,13,13,11,11]  idx 193-196  n= 4  <- #340 is its first
+#
+# So the sixth group DOES close at five, and the three unidentified
+# in-flight cubes are idx 192 and two of 193-196 -- no sixth tail, no
+# anomaly.  Closure is now an index range, not a timing argument.
+#
+# **AND THE ENCODING RULE IS NOW CHECKED EXHAUSTIVELY, NOT SAMPLED.**
+# Over ALL 561 groups and ALL 1949 cubes, the arithmetic rule
+# (p8[-1] >= w >= x >= y >= 0, w+x+y = 128 - sum(p8)) reproduces the
+# generator's tail set EXACTLY: **zero mismatches**.  The running
+# "58 of 58 across five closed groups" score is superseded -- it was a
+# sampling estimate of something that can be computed in full.
+#
+# WHAT THAT IS AND IS NOT WORTH.  It is a check that the arithmetic
+# rule matches the source, anchored to the binary by the 1949 count and
+# the 193 observed labels.  It is NOT independent confirmation from the
+# solver, and it is NOT mathematics: it says nothing about intersecting
+# sunflower-free families and **27 <= iota(4) <= 71 is untouched**.
+# What it buys is operational: group closure is now decidable without
+# waiting, the next cubes are predictable by index, and any future row
+# whose label is not in the generated list is an immediate alarm.
+#
+# PROGRESS, MEASURED PROPERLY FOR THE FIRST TIME: 191 of 1949 cubes
+# decided (9.8%), 193 reached, 340 rows spent getting there.
+#
+# The generator script lives in this session's scratchpad, not in
+# tools/ -- adding a file there triggers the full CI suite, and the
+# result is recorded here in full.  Promoting it is a deliberate
+# separate step with the gates run.
+#
+#
 #
 #
 #
@@ -3991,3 +4047,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 9, 9]	UNSAT	20809.6
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 10, 7]	UNSAT	21678.5
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21756.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.9
+g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 11, 7]	UNSAT	3299.0
