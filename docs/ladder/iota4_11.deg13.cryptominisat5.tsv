@@ -3709,6 +3709,19 @@
 # enumeration assigned to that index.  Rows 343, labels 196, 194 UNSAT
 # / 2 UNKNOWN / 0 SAT; 194 of 1949 decided (10.0%).
 #
+# #344: [13,13,13,12,13,12,12,12,12,12,4] UNSAT 1611.9 -- an EIGHTH
+# prefix opens, [13,13,13,12,13,12,12,12], enumerated at idx 198-207
+# with ten permitted tails.  Rows 344, labels 197, 195 UNSAT / 2
+# UNKNOWN / 0 SAT; 195 of 1949 decided.
+#
+# Note the sweep has moved to idx 198+ while idx 196 ((10,10,9) of the
+# seventh group) and idx 197 (the singleton (10,10,10)) are still in
+# flight -- ordinary out-of-order completion, and with the enumeration
+# in hand it needs no investigation.  1611.9 s is the cheapest verdict
+# since #292; the cost spread within a single sweep now runs from about
+# 1600 s to past the cap.
+#
+#
 #
 #
 #
@@ -4100,3 +4113,4 @@ g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 11, 7]	UNSAT	3299.0
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 9, 9]	UNSAT	7538.3
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 10, 8]	UNSAT	9122.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 10, 10, 10, 9]	UNSAT	10313.5
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 12, 4]	UNSAT	1611.9
