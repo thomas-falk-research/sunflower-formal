@@ -3686,6 +3686,24 @@
 # thread holds which cube, and no further attempt should be made to
 # infer that from timestamps.
 #
+# #342: [13,13,13,12,13,13,11,11,11,10,8] UNSAT 9122.4 -- the seventh
+# group's (11,10,8).  That group now stands at 3 of its enumerated 4:
+# (11,11,7) 3299.0, (11,10,8) 9122.4, (11,9,9) 7538.3 all UNSAT, with
+# only (10,10,9) outstanding.  Nothing outside the enumerated set.
+# Rows 342, labels 195, 193 UNSAT / 2 UNKNOWN / 0 SAT; 193 of 1949
+# decided (9.9%).
+#
+# A NOTE ON HOW THIS FILE IS NOW WRITTEN.  With the cube list
+# enumerated, a routine row carries no methodological content: its
+# group, its permitted tails and its closure condition are all known
+# before it lands.  Header blocks from here should be SHORT for
+# ordinary rows and reserved for things the enumeration cannot predict
+# -- a stall, a cost outside anything seen, a restart, a label absent
+# from the generated list, or the budget rule moving.  The long
+# narrative blocks above were earned by uncertainty that no longer
+# exists, and continuing them at that length would be padding.
+#
+#
 #
 #
 #
@@ -4073,3 +4091,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21756.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.9
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 11, 7]	UNSAT	3299.0
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 9, 9]	UNSAT	7538.3
+g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 10, 8]	UNSAT	9122.4
