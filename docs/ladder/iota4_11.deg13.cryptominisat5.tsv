@@ -3721,6 +3721,16 @@
 # since #292; the cost spread within a single sweep now runs from about
 # 1600 s to past the cap.
 #
+# #345: [13,13,13,12,13,13,11,10,10,10,10] UNSAT 4234.9 -- the idx-197
+# singleton, 1 of 1, CLOSED.  Rows 345, labels 198, 196 UNSAT / 2
+# UNKNOWN / 0 SAT; 196 of 1949 decided.
+#
+# Of the enumerated indices up to 197, exactly ONE is still outstanding:
+# idx 196, the seventh group's (10,10,9), in flight since ~14:39Z.  The
+# two stalls at idx 190-191 remain undecided and will only be retried on
+# a restart.
+#
+#
 #
 #
 #
@@ -4114,3 +4124,4 @@ g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 9, 9]	UNSAT	7538.3
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 10, 8]	UNSAT	9122.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 10, 10, 10, 9]	UNSAT	10313.5
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 12, 4]	UNSAT	1611.9
+g=11 [13, 13, 13, 12, 13, 13, 11, 10, 10, 10, 10]	UNSAT	4234.9
