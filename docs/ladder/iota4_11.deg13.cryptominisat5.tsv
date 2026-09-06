@@ -3663,6 +3663,30 @@
 # result is recorded here in full.  Promoting it is a deliberate
 # separate step with the gates run.
 #
+# #341: [13,13,13,12,13,13,11,11,11,9,9] UNSAT at 7538.3 s, the seventh
+# group's third tail.  Rows 341, labels 194, 192 UNSAT / 2 UNKNOWN / 0
+# SAT.  **192 of 1949 decided (9.9%).**  New cap 19 of 21, 4.57 h per
+# verdict.
+#
+#   seventh group [13,13,13,12,13,13,11,11], enumerated idx 193-196:
+#     (11,11,7) UNSAT 3299.0   (11,10,8) not yet
+#     (11, 9,9) UNSAT 7538.3   (10,10,9) not yet
+#   nothing outside the enumerated set.
+#
+# A SMALL NEGATIVE RESULT WORTH RECORDING, because it bounds what the
+# enumeration bought.  With the index list in hand it is tempting to
+# map each RUNNING solver to an index by claim time and so know what is
+# in flight.  It does not work at this resolution: `ps` etimes and the
+# lag between a solve finishing and its row being appended leave ~40 s
+# of slack, and the claims here are 20-40 s apart.  Reconstructing
+# thread-to-index assignment from timing gives contradictions
+# (#340 appears to be claimed both before and after pid 5381 depending
+# which clock is trusted).  The enumeration settles GROUP MEMBERSHIP
+# and SIZES, which is what closure needs; it does not settle which
+# thread holds which cube, and no further attempt should be made to
+# infer that from timestamps.
+#
+#
 #
 #
 #
@@ -4048,3 +4072,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 10, 7]	UNSAT	21678.5
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21756.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.9
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 11, 7]	UNSAT	3299.0
+g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 9, 9]	UNSAT	7538.3
