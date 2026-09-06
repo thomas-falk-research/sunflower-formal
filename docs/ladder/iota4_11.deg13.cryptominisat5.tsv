@@ -3346,6 +3346,43 @@
 # p8[-1] = 11 while the tail must sum to 28, so w = 9 is already
 # impossible (9+9+9 = 27 < 28).  Groups shrink as the prefix falls.
 #
+# ----------------------------------------------------------------
+# #334: (10,10,7) ARRIVES LATE, AS PREDICTED -- ARM (b) AT 11 OF 12
+# ----------------------------------------------------------------
+#
+# At 04:50:36Z: [13,13,13,12,13,13,12,12,10,10,7] **UNSAT at 17598.9 s**
+# on its first attempt.  81.5% of the budget, +6798.9 over the old cap.
+# Rows 334, labels 187, 187 UNSAT, 0 UNKNOWN, 0 SAT.
+#
+# **THE READING FROM #333 WAS RIGHT.**  That block said arm (b) was not
+# abandoned -- that the two long-running solvers were most likely
+# (10,10,7) and (10,9,8), claimed earlier than #333's cube and simply
+# slower.  #334 is exactly that: (10,10,7), claimed before the sweep
+# left the group, landing an hour and twelve minutes after a row from
+# the NEXT group.  Completion order is not claim order, and this is the
+# cleanest instance of it in the file.
+#
+# **ARM (b) STANDS AT ELEVEN OF TWELVE.**  Every one of the eleven is
+# UNSAT and every one is in the permitted set.  ONE TAIL REMAINS:
+# **(10,9,8)**.  The surviving solver has been running 17091 s, started
+# ~00:06Z, and reaches the 21600 cap at ~06:06Z.  DO NOT TEST AT
+# ELEVEN -- the encoding claim is that the group closes at EXACTLY
+# those twelve, and eleven-of-twelve is consistent with a thirteenth
+# tail existing that has simply not appeared.  The test needs the
+# twelfth to APPEAR and nothing else to appear alongside it.
+#
+# WHAT THE TEST WILL AND WILL NOT SHOW.  If (10,9,8) lands and nothing
+# outside the set ever does, arm (b) closes at 12 of 12 and the
+# encoding prediction goes to 58 of 58 across five closed groups.  That
+# is a prediction about which degree sequences the encoding EMITS, not
+# about the sunflower bound: it constrains nothing about iota(4) and
+# moves no bracket.  **27 <= iota(4) <= 71 stands and is untouched by
+# any of this.**
+#
+# New cap: 14 of 14 conversions, 54.79 solver-hours, 3.91 h per
+# verdict.
+#
+#
 #
 #
 #
@@ -3716,3 +3753,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNSAT	19907.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNSAT	20770.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 9, 9, 9]	UNSAT	9430.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 11, 6]	UNSAT	11164.2
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 10, 7]	UNSAT	17598.9
