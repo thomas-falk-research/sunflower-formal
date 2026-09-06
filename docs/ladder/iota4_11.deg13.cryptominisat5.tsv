@@ -3437,6 +3437,34 @@
 # (10,9,9) not yet.  DO NOT TEST IT BELOW FIVE, and require the same
 # closure argument before calling it shut.
 #
+# ----------------------------------------------------------------
+# SIXTEENTH RESTART, ~07:41Z -- ABSORBED, AND WHAT IT COST
+# ----------------------------------------------------------------
+#
+# Old pid 32499 gone after 10h55m.  Tree clean at 80f8d5f, 335 rows on
+# disk, and the fresh process printed **`checkpoint: 188 of 1949 cubes
+# already decided`** -- matching an independent recount of 188 UNSAT +
+# 0 SAT.  Nothing lost from the file.  New driver **pid 4138** up at
+# 07:43Z, banner `21600 s per cube`, four solvers started.
+#
+# WHAT WAS LOST IS SOLVER TIME, NOT DATA.  Four cubes were in flight,
+# started 02:55Z-05:17Z, so between 2.4 and 4.8 wall-hours of work on
+# each was discarded and every one will be re-run from zero.  At the
+# doubled cap that is the expensive kind of restart: a cube two hours
+# into a 21600 s budget loses two hours.  Across sixteen restarts this
+# is the mechanism that has actually cost the run time -- not the cap,
+# and not the re-draw policy the header spent two days analysing.
+#
+# NO STRAGGLERS EXIST, so unlike the fifteenth restart this one does
+# not re-cross a pool: the new sweep skips all 188 decided labels and
+# resumes at the sixth group.  Expect its first rows to be FIRST
+# attempts on [13,13,13,12,13,13,12,11] tails -- (11,10,7) (11,9,8)
+# (10,10,8) (10,9,9) are the four still unseen there -- and note that
+# the "re-runs after a restart" pattern held only because a pool
+# existed.  With the pool empty the sweep model predicts the opposite,
+# and that is a prediction, not an exception.
+#
+#
 #
 #
 #
