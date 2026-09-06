@@ -3238,6 +3238,49 @@
 # already seen.  Unseen: (10,10,7) (10,9,8) (9,9,9).  Nothing outside
 # the permitted set has ever appeared.  DO NOT TEST AT NINE.
 #
+# ================================================================
+# **#331: THE STRAGGLER POOL IS EMPTY.**
+# ================================================================
+#
+# At 00:32:56Z: [13,13,13,12,13,13,12,12,11,9,7] **UNSAT at 20770.8 s**
+# on attempt 2, after one stall at 10898.8 (#312) -- a gap of 9872.0 s.
+# **96.2% of the doubled budget, with 829.2 s of headroom left.**
+#
+# **331 rows, 184 labels, 184 UNSAT, 0 UNKNOWN, 0 SAT.**  Every label
+# this file has ever attempted is now decided.  The pool has not been
+# empty since row #264; it stood at thirteen twelve hours ago and at
+# ten when the cap was raised.
+#
+# A TAUTOLOGY, CAUGHT BEFORE IT WAS NARRATED.  The four big conversions
+# read 18613.8, 19176.1, 19907.2, 20770.8 -- monotone increasing, and
+# it is tempting to call that a trend.  IT IS NOT ONE.  All four
+# threads started together at 18:46:39Z, so a row's cost IS its elapsed
+# time at completion, and rows from one simultaneous batch necessarily
+# ARRIVE IN COST ORDER.  The monotone rise is arithmetic, not evidence.
+# (Checked: 18:46:39 + each cost reproduces each row's landing time to
+# within seconds.)  This is the same failure mode as reading a stall
+# cost as a solve time, and the same batch produced both.
+#
+# WHAT IS NOT TAUTOLOGICAL, AND IS THE THING TO CARRY FORWARD: three of
+# the last four verdicts used 86%, 89%, 92% and 96% of the 21600 s
+# budget.  **THE DOUBLED CAP IS NOT GENEROUS -- IT IS BARELY ENOUGH.**
+# A cube needing 800 s more than #331 would have stalled.  The pool is
+# empty because every cube met so far happened to fit, and nothing in
+# the data says the next one will.  No prediction is registered; the
+# record simply is that the margin at the top of the run is 3.8%.
+#
+# NEW-CAP TOTALS: 11 of 11 conversions, 44.18 solver-hours, 4.02 h per
+# verdict.  Against 10.37 at the old cap -- and against my registered
+# prediction of 13-17, which failed by a factor of three to four.
+#
+# ARM (b) STAYS AT NINE OF TWELVE: (11,9,7) is UNSAT now but was
+# already seen.  Unseen: (10,10,7) (10,9,8) (9,9,9).  With the pool
+# empty, ALL FOUR THREADS ARE ON FRESH CUBES for the first time in this
+# process, so the three remaining tails are finally reachable.  DO NOT
+# TEST AT NINE, TEN OR ELEVEN.  Nothing outside the permitted set has
+# ever appeared, across 46 members of four closed groups and nine here.
+#
+#
 #
 #
 #
@@ -3602,3 +3645,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNSAT	11894.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 8, 8]	UNSAT	18613.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNSAT	19176.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNSAT	19907.2
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNSAT	20770.8
