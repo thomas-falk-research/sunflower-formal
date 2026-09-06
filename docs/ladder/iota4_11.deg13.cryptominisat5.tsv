@@ -3730,6 +3730,13 @@
 # two stalls at idx 190-191 remain undecided and will only be retried on
 # a restart.
 #
+# #346: [13,13,13,12,13,12,12,12,12,11,5] UNSAT 6064.6 -- the eighth
+# group's second tail (12,11,5).  Rows 346, labels 199, 197 UNSAT / 2
+# UNKNOWN / 0 SAT; 197 of 1949 decided.  idx 196 is still in flight at
+# 12278 s, now the oldest live solver by a factor of two and past the
+# old 10800 cap.
+#
+#
 #
 #
 #
@@ -4125,3 +4132,4 @@ g=11 [13, 13, 13, 12, 13, 13, 11, 11, 11, 10, 8]	UNSAT	9122.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 10, 10, 10, 9]	UNSAT	10313.5
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 12, 4]	UNSAT	1611.9
 g=11 [13, 13, 13, 12, 13, 13, 11, 10, 10, 10, 10]	UNSAT	4234.9
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 11, 5]	UNSAT	6064.6
