@@ -3750,6 +3750,16 @@
 # cost order here (unlike the #328-#331 batch, where a shared start
 # made arrival order cost order by construction).
 #
+# #349: [13,13,13,12,13,12,12,12,12,8,8] UNSAT 4445.2 -- the eighth
+# group's fifth tail, and the last of its w = 12 row.  Rows 349, labels
+# 202, **200 UNSAT** / 2 UNKNOWN / 0 SAT; 200 of 1949 decided (10.3%).
+# Five of the group's ten enumerated tails are in; (11,11,6) (11,10,7)
+# (11,9,8) (10,10,8) (10,9,9) remain.
+#
+# idx 196 is now at 16725 s -- past every conversion cost this file has
+# recorded except the four in the 18600-20800 band, and still running.
+#
+#
 #
 #
 #
@@ -4151,3 +4161,4 @@ g=11 [13, 13, 13, 12, 13, 13, 11, 10, 10, 10, 10]	UNSAT	4234.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 11, 5]	UNSAT	6064.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 10, 6]	UNSAT	6207.4
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 9, 7]	UNSAT	5779.8
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 8, 8]	UNSAT	4445.2
