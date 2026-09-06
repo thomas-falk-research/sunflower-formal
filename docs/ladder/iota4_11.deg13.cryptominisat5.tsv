@@ -3736,6 +3736,12 @@
 # 12278 s, now the oldest live solver by a factor of two and past the
 # old 10800 cap.
 #
+# #347: [13,13,13,12,13,12,12,12,12,10,6] UNSAT 6207.4 -- the eighth
+# group's third tail (12,10,6), 143 s dearer than its predecessor
+# (12,11,5) at 6064.6.  Rows 347, labels 200, 198 UNSAT / 2 UNKNOWN /
+# 0 SAT; 198 of 1949 decided.  idx 196 now at 13739 s.
+#
+#
 #
 #
 #
@@ -4133,3 +4139,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 10, 10, 10, 9]	UNSAT	10313.5
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 12, 4]	UNSAT	1611.9
 g=11 [13, 13, 13, 12, 13, 13, 11, 10, 10, 10, 10]	UNSAT	4234.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 11, 5]	UNSAT	6064.6
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 10, 6]	UNSAT	6207.4
