@@ -3211,6 +3211,34 @@
 # #329 there is no reason to expect them under 12500, and no number is
 # predicted for them.
 #
+# #330 AT 19907.2 s: THREE IN A ROW ABOVE 18500.  At 00:18:22Z,
+# [13,13,13,12,13,13,12,12,11,10,6] **UNSAT at 19907.2 s** on attempt
+# 2, after one stall at 10882.3 (#311) -- a gap of **9024.9 s** between
+# where the old cap cut it and what it actually needed.  92.2% of the
+# doubled budget.  Rows 330, labels 184, tally 183 UNSAT / 1 UNKNOWN /
+# 0 SAT.  Stragglers 3 -> 1 in twelve minutes.
+#
+# The new cap's ten costs, in arrival order: 10878.8, 11237.1, 11586.5,
+# 11824.3, 11573.2, 11572.0, 11894.8, **18613.8, 19176.1, 19907.2**.
+# 38.41 solver-hours, 3.84 h per verdict.  The last three used 86%, 89%
+# and 92% of a budget I argued should never have been granted.
+#
+# THE STALL-TO-TRUTH GAPS, NOW MEASURED THREE TIMES: 8288.6 s (#329)
+# and 9024.9 s (#330), against prior stalls that agreed with each other
+# to within a few seconds.  A cube cut at 10882 needed 19907.  There is
+# no reading of a stall cost that would have told anyone that, and the
+# header spent a day inferring solve times from exactly those numbers.
+#
+# ONE STRAGGLER LEFT: [..,12,12,11,9,7], single attempt, running at
+# 19923 s, reaching the 21600 cap at 00:46:39Z.  If it converts before
+# then the pool empties for the first time since #264.  No number is
+# predicted for it.
+#
+# ARM (b) STAYS AT NINE OF TWELVE.  (11,10,6) is now UNSAT but was
+# already seen.  Unseen: (10,10,7) (10,9,8) (9,9,9).  Nothing outside
+# the permitted set has ever appeared.  DO NOT TEST AT NINE.
+#
+#
 #
 #
 #
@@ -3573,3 +3601,4 @@ g=11 [13, 13, 13, 12, 13, 13, 13, 11, 10, 9, 8]	UNSAT	11572.0
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 12, 8, 7]	UNSAT	11894.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 8, 8]	UNSAT	18613.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 11, 5]	UNSAT	19176.1
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 10, 6]	UNSAT	19907.2
