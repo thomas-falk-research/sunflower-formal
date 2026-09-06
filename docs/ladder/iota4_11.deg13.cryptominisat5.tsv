@@ -3382,6 +3382,62 @@
 # New cap: 14 of 14 conversions, 54.79 solver-hours, 3.91 h per
 # verdict.
 #
+# ================================================================
+# **ARM (b) CLOSES AT TWELVE OF TWELVE.  THE TEST PASSES.**
+# ================================================================
+#
+# #335 at 05:17:20Z: [13,13,13,12,13,13,12,12,10,9,8] **UNSAT at
+# 18652.3 s** on its first attempt -- 86.4% of the budget -- and its
+# tail (10,9,8) was the twelfth and last.  Rows 335, labels 188, 188
+# UNSAT, 0 UNKNOWN, 0 SAT.
+#
+# THE TEST, RUN AS A SET AND ONLY ON A CLOSED GROUP:
+#
+#   group          [13,13,13,12,13,13,12,12], tail sums to 27,
+#                  12 = p8[-1] >= w >= x >= y >= 0
+#   PERMITTED (12) (12,12,3) (12,11,4) (12,10,5) (12,9,6) (12,8,7)
+#                  (11,11,5) (11,10,6) (11,9,7) (11,8,8) (10,10,7)
+#                  (10,9,8) (9,9,9)
+#   SEEN      (12) identical
+#   permitted-but-unseen: NONE.  seen-but-unpermitted: NONE.
+#   SETS EQUAL: True.  All twelve UNSAT.
+#
+# **AND THE GROUP IS PROVABLY CLOSED, not merely quiet.**  The first
+# next-group row (#333) cost 11164.2 s and landed 03:38:40Z, so it was
+# CLAIMED at 00:32:35Z.  The sweep claims indices in order, so every
+# arm (b) cube was claimed before that instant.  Every solver running
+# now started at 02:55Z or later.  Therefore no arm (b) cube is still
+# in flight and none can ever be claimed again -- the group is shut at
+# exactly twelve rows.  Without that argument, "twelve seen" would only
+# have meant "twelve so far".
+#
+# ENCODING PREDICTION: **58 OF 58 ACROSS FIVE CLOSED GROUPS** (23 + 14
+# + 7 + 2 + 12), plus 1 of 5 in the sixth, with nothing outside a
+# permitted set ever observed.
+#
+# **WHAT THIS IS WORTH, STATED HONESTLY AND DOWNWARD.**  58 of 58 reads
+# impressive and mostly is not.  The permitted set is DERIVED from the
+# symmetry options the driver prints on every run -- sorted_blocks and
+# degree_floor -- so the prediction SHOULD hold, and confirming it
+# tells us the encoding was read correctly, not that anything new is
+# true.  The informative outcome was always the other one: a tail
+# outside the set would have meant the model of `symbreak` was wrong
+# and every group-completeness claim in this file needed rebuilding.
+# That has not happened in 58 members.  This is a consistency check
+# that keeps passing, and its value is that it licenses predicting what
+# the sweep will emit next and noticing at once when it does not.
+#
+# **IT MOVES NOTHING ABOUT THE MATHEMATICS.**  This is a statement
+# about which degree sequences the enumeration emits, not about
+# intersecting sunflower-free families.  **27 <= iota(4) <= 71 stands
+# unchanged**, exactly as it has all run.
+#
+# The sixth group [13,13,13,12,13,13,12,11] remains open at 1 of its 5
+# permitted tails: (11,11,6) seen; (11,10,7) (11,9,8) (10,10,8)
+# (10,9,9) not yet.  DO NOT TEST IT BELOW FIVE, and require the same
+# closure argument before calling it shut.
+#
+#
 #
 #
 #
@@ -3754,3 +3810,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 12, 11, 9, 7]	UNSAT	20770.8
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 9, 9, 9]	UNSAT	9430.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 11, 6]	UNSAT	11164.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 10, 7]	UNSAT	17598.9
+g=11 [13, 13, 13, 12, 13, 13, 12, 12, 10, 9, 8]	UNSAT	18652.3
