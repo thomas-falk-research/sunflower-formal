@@ -3781,6 +3781,29 @@
 # across four cubes sharing seven of eight prefix entries.  Whatever
 # governs cost here, it is not the prefix.
 #
+# ----------------------------------------------------------------
+# SEVENTEENTH RESTART, ~20:37Z -- ABSORBED
+# ----------------------------------------------------------------
+#
+# Old pid 4138 gone after 12h54m.  Tree clean at d246863, 350 rows on
+# disk, and the fresh process printed **`checkpoint: 201 of 1949 cubes
+# already decided`** -- matching an independent recount of 201 UNSAT +
+# 0 SAT.  New driver **pid 8404** up at 20:40Z, banner `21600 s per
+# cube`.  Nothing lost from the file.
+#
+# COST OF THIS ONE: four cubes were in flight at 33-83 minutes each, so
+# roughly 3.4 wall-hours of solver work discarded -- the cheapest
+# restart in a while, because it landed early in a batch rather than
+# late.  The seventeen restarts remain the run's dominant waste.
+#
+# WHAT THE SWEEP DOES NEXT IS NOW PREDICTABLE FROM THE ENUMERATION, not
+# guessed: the new process skips the 201 decided labels and its first
+# claims are the lowest-index undecided cubes, which are **idx 189 and
+# idx 190** -- the two stalls from #338/#339 -- followed by fresh
+# indices from 208 on.  So the first two rows should be RE-RUNS of
+# those two labels.  Anything else is a surprise worth investigating.
+#
+#
 #
 #
 #
