@@ -3908,6 +3908,35 @@
 # decided (10.4%).  Bracket 27 <= iota(4) <= 71 untouched by all of
 # this.
 #
+# #355: [13,13,13,12,13,12,12,12,10,10,8] UNSAT 10240.9, a FIRST
+# attempt, idx 206.  Landed 03:20:01Z from the solver that had been
+# running since 00:29Z.
+#
+# Index bookkeeping, re-derived from the regenerated cube list (1949
+# cubes, 0 orphans among the 206 observed labels): every index from 0
+# to 206 has now been attempted EXCEPT 205, which is in flight, and
+# exactly two remain undecided -- 189 and 190, the two stragglers.  No
+# index below 206 was skipped.  That is the closure accounting, not a
+# timing argument.
+#
+# The ninth group, prefix [13,13,13,12,13,12,12,12] (p8 sums to 100,
+# so tails are w+x+y=28 with 12 >= w >= x >= y >= 0, ten of them), now
+# stands at 8 of 10 with the last two in flight:
+#   (12,12,4)  1611.9   (11,11,6) 12717.7
+#   (12,11,5)  6064.6   (11,10,7) 13747.7
+#   (12,10,6)  6207.4   (11, 9,8)  in flight  = idx 205
+#   (12, 9,7)  5779.8   (10,10,8) 10240.9
+#   (12, 8,8)  4445.2   (10, 9,9)  in flight  = idx 207
+# Recorded flat, on purpose.  Two blocks ago I called 12717.7 the
+# group dearest by a factor of two; #352 then beat it and #355 came
+# third.  Costs within a group are not ordered by the tail, and I am
+# not going to fit a shape to eight numbers.
+#
+# No prediction is live.  Not inventing one to have something to test.
+#
+# Rows 355, labels 206, 204 UNSAT / 2 UNKNOWN / 0 SAT; 204 of 1949
+# decided (10.5%).  Bracket unchanged.
+#
 #
 #
 #
@@ -4320,3 +4349,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 11, 6]	UNSAT	12717.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 10, 7]	UNSAT	13747.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21754.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21795.6
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 10, 8]	UNSAT	10240.9
