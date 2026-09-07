@@ -4395,6 +4395,26 @@
 # Rows 374, labels 222, 218 UNSAT / 4 UNKNOWN / 0 SAT; 218 of 1949
 # decided, crossing to 11.2%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #375: [13,13,13,12,12,12,12,12,11,9,9] UNSAT 3607.9, a FIRST
+# attempt, idx 224, landed 21:08:01Z.  Fourteenth group at 6 of 8,
+# with idx 223 = (11,10,8) and idx 225 = (10,10,9) still in flight.
+# Its costs so far: 721.0, 2128.6, 2053.6, 2058.9, 4097.9, --, 3607.9,
+# --.  Still recorded flat; the leading-entry question stays closed.
+#
+# Gaps at or below the highest index seen are 211 and 223, both in
+# flight.  Cost order, not index order, decides arrival.
+#
+# Block [13,13,13,12]: 90 decided of 104, 94 attempted, 10 unreached.
+# Straggler pool unchanged at {189, 190, 209, 210}; idx 211 at ~19700
+# s, minutes from its cap.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve -- the window is nearly
+# full of verdicts, so the rule is as far from firing as it has been.
+# Cap stays 21600.
+#
+# Rows 375, labels 223, 219 UNSAT / 4 UNKNOWN / 0 SAT; 219 of 1949
+# decided (11.2%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4827,3 +4847,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 11, 6]	UNSAT	2128.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 10, 7]	UNSAT	2053.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 9, 8]	UNSAT	2058.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 11, 7]	UNSAT	4097.9
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 9, 9]	UNSAT	3607.9
