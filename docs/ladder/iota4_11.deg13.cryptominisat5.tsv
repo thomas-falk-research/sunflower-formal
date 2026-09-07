@@ -3937,6 +3937,32 @@
 # Rows 355, labels 206, 204 UNSAT / 2 UNKNOWN / 0 SAT; 204 of 1949
 # decided (10.5%).  Bracket unchanged.
 #
+# #356: [13,13,13,12,13,12,12,12,11,9,8] UNSAT 13853.7, a FIRST
+# attempt, idx 205, landed 04:02:58Z.  That was the (11,9,8) tail I
+# listed as in flight one block ago.  The ninth group is now 9 of 10;
+# only idx 207 = (10,9,9) is left, running at ~4800 s.
+#
+# Index accounting again: idx 0 through 206 all attempted, no gaps,
+# exactly two undecided (189, 190), 0 orphans among 207 labels.
+#
+# One observation about the ninth group, recorded as a description of
+# nine numbers and NOT as a rule.  The five tails leading with 12 come
+# in at 1611.9, 6064.6, 6207.4, 5779.8, 4445.2 -- all under 6300.  The
+# four decided tails leading with 11 or 10 come in at 12717.7,
+# 13747.7, 13853.7, 10240.9 -- all over 10200.  No overlap, a factor
+# of 1.65 between the two bands.  It splits on the first tail entry,
+# not on how balanced the tail is: (12,12,4) is the most skewed and
+# the cheapest, while (12,8,8) is the most balanced of the 12-tails
+# and still cheap.  Prefix is held fixed across all ten, so this is
+# the within-group comparison, which is the one structure that does
+# not confound.  Nine points is still nine points.  It costs nothing
+# to check against the tenth group as that closes, so I will look --
+# without registering it as a prediction, because I did not derive it
+# from anything and would only be fitting.
+#
+# Rows 356, labels 207, 205 UNSAT / 2 UNKNOWN / 0 SAT; 205 of 1949
+# decided (10.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4350,3 +4376,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 10, 7]	UNSAT	13747.7
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21754.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21795.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 10, 8]	UNSAT	10240.9
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 9, 8]	UNSAT	13853.7
