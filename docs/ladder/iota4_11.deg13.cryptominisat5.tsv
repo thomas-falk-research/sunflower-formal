@@ -4346,6 +4346,20 @@
 # Rows 371, labels 219, 215 UNSAT / 4 UNKNOWN / 0 SAT; 215 of 1949
 # decided (11.0%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #372: [13,13,13,12,12,12,12,12,12,10,7] UNSAT 2053.6, a FIRST
+# attempt, idx 220, landed 20:04:06Z.  Fourteenth group at 3 of 8:
+# 721.0, 2128.6, 2053.6 -- all cheap so far.
+#
+# Block [13,13,13,12]: 87 decided of 104, 91 attempted, 13 unreached.
+# Straggler pool unchanged at {189, 190, 209, 210}; idx 211 still in
+# flight at ~15850 s, reaching the cap ~21:40Z.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire; cap
+# stays 21600.
+#
+# Rows 372, labels 220, 216 UNSAT / 4 UNKNOWN / 0 SAT; 216 of 1949
+# decided, crossing to 11.1%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4775,3 +4789,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 5]	UNSAT	721.0
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 10, 9]	UNSAT	13762.7
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 10, 10, 10]	UNSAT	13986.1
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 11, 6]	UNSAT	2128.6
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 10, 7]	UNSAT	2053.6
