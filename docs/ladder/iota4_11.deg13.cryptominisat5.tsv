@@ -4415,6 +4415,24 @@
 # Rows 375, labels 223, 219 UNSAT / 4 UNKNOWN / 0 SAT; 219 of 1949
 # decided (11.2%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #376: [13,13,13,12,12,12,12,12,11,10,8] UNSAT 4824.8, a FIRST
+# attempt, idx 223, landed 21:24:16Z.  Fourteenth group at 7 of 8 --
+# only idx 225 = (10,10,9) is left.  The single remaining gap at or
+# below the highest index seen is idx 211, at ~20660 s and reaching
+# its cap around 21:40Z.
+#
+# BUDGET RULE: TWELVE UNSAT in the last twelve.  The window is
+# completely full of verdicts for the first time since before the
+# straggler batch, which is the furthest the rule can possibly be from
+# firing.  Cap stays 21600.
+#
+# Block [13,13,13,12]: 91 decided of 104, 95 attempted, 9 unreached.
+# Straggler pool unchanged at {189, 190, 209, 210}, still behind the
+# sweep counter.
+#
+# Rows 376, labels 224, 220 UNSAT / 4 UNKNOWN / 0 SAT; 220 of 1949
+# decided, crossing to 11.3%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4848,3 +4866,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 10, 7]	UNSAT	2053.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 9, 8]	UNSAT	2058.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 11, 7]	UNSAT	4097.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 9, 9]	UNSAT	3607.9
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 10, 8]	UNSAT	4824.8
