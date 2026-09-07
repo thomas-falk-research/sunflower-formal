@@ -4497,6 +4497,19 @@
 # Rows 378, labels 226, 221 UNSAT / 5 UNKNOWN / 0 SAT; 221 of 1949
 # decided (11.3%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #379: [13,13,13,12,12,12,12,11,11,11,8] UNSAT 5025.2, a FIRST
+# attempt, idx 226, landed 22:31:45Z.  It opens the FIFTEENTH group,
+# prefix [13,13,13,12,12,12,12,11], three tails, idx 226-228.
+#
+# Block [13,13,13,12]: 93 decided of 104, 98 attempted, 6 unreached --
+# so this block is six cubes from having every index attempted, after
+# which only its five stragglers stand between it and closure.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 379, labels 227, 222 UNSAT / 5 UNKNOWN / 0 SAT; 222 of 1949
+# decided, crossing to 11.4%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4933,3 +4946,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 9, 9]	UNSAT	3607.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 10, 8]	UNSAT	4824.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21774.3
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 10, 10, 9]	UNSAT	4077.5
+g=11 [13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 8]	UNSAT	5025.2
