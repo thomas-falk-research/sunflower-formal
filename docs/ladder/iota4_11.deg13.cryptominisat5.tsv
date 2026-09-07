@@ -4360,6 +4360,28 @@
 # Rows 372, labels 220, 216 UNSAT / 4 UNKNOWN / 0 SAT; 216 of 1949
 # decided, crossing to 11.1%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #373: [13,13,13,12,12,12,12,12,12,9,8] UNSAT 2058.9, a FIRST
+# attempt, idx 221, landed 20:08:00Z.  Fourteenth group at 4 of 8:
+# (12,12,5) 721.0, (12,11,6) 2128.6, (12,10,7) 2053.6, (12,9,8)
+# 2058.9.  Those are the four 12-leading tails; the remaining four
+# lead with 11 or 10.
+#
+# Recorded flat ON PURPOSE.  That split is exactly the leading-entry
+# shape, and the temptation is to re-run the group test now.  I will
+# not: the question was settled once against all 20 testable groups
+# (strong form dead, direction survives 16 of 19, p = 0.0022), and
+# re-testing at every group closure is repeated peeking that inflates
+# false positives.  If it is ever revisited it should be one pass over
+# every closed group, not a running commentary.
+#
+# Block [13,13,13,12]: 88 decided of 104, 92 attempted, 12 unreached.
+# Straggler pool unchanged; idx 211 in flight at ~16100 s.
+#
+# BUDGET RULE: nine UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 373, labels 221, 217 UNSAT / 4 UNKNOWN / 0 SAT; 217 of 1949
+# decided (11.1%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4790,3 +4812,4 @@ g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 10, 9]	UNSAT	13762.7
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 10, 10, 10]	UNSAT	13986.1
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 11, 6]	UNSAT	2128.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 10, 7]	UNSAT	2053.6
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 9, 8]	UNSAT	2058.9
