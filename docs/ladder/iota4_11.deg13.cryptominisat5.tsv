@@ -4101,6 +4101,45 @@
 # decided (10.7%).  Bracket 27 <= iota(4) <= 71 unchanged -- none of
 # this touches it.
 #
+# EIGHTEENTH CONTAINER RESTART, between 09:22:46Z (four solvers alive)
+# and 09:35:59Z (none).  Driver relaunched 09:36Z, same command, cap
+# still 21600.  Phase one took 60.3 s, the split reproduced 1949
+# degree-sequence cubes, and the driver printed
+#   # checkpoint: 208 of 1949 cubes already decided
+# against an independent recount of 208 decided labels.  They MATCH:
+# zero rows lost.  Rows on disk 360, unchanged.
+#
+# What it cost.  Four solvers were killed mid-flight, last observed at
+# 19198, 11451, 6000 and 8 s.  The kill moment is unknown inside a 793
+# s window, so the discarded work is a RANGE and not a point estimate:
+# between 36657 and 39829 CPU-seconds, i.e. 10.2 to 11.1 CPU-hours.
+# The worst single loss is idx 210, which stood at roughly 19200-19990
+# s -- within about 1600 s of the cap -- and is now back at zero.
+#
+# The restart also forces every straggler back into the sweep.
+# load_checkpoint keeps only UNSAT and SAT, so all three UNKNOWN cubes
+# are undecided again, and the sweep claims the lowest undecided
+# indices in order.  The four threads therefore hold:
+#   idx 189  attempt 3   (previously UNKNOWN twice)
+#   idx 190  attempt 3   (previously UNKNOWN twice)
+#   idx 209  attempt 2   (previously UNKNOWN once)
+#   idx 210  attempt 1   (never attempted)
+# So for the next cap period three quarters of capacity sits on cubes
+# that have already stalled.  That, not the cap and not the re-draw
+# policy, is what restarts cost this run, and this is the eighteenth.
+#
+# PREDICTION REGISTERED, and derived rather than fitted: the next four
+# rows from this driver should be exactly idx 189, 190, 209 and 210 in
+# some order -- three re-runs and one first attempt, with no index
+# above 210 among them.  It follows from load_checkpoint plus
+# index-order claiming plus four threads, which is the same arithmetic
+# I got wrong twice before, so it is worth testing.  Falsified by any
+# fifth index appearing among the first four rows, or by fewer than
+# three re-runs.
+#
+# Rows 360, labels 211, 208 UNSAT / 3 UNKNOWN / 0 SAT; 208 of 1949
+# decided (10.7%).  Bracket unchanged.
+#
 #
 #
 #
