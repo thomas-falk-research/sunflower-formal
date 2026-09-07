@@ -3963,6 +3963,61 @@
 # Rows 356, labels 207, 205 UNSAT / 2 UNKNOWN / 0 SAT; 205 of 1949
 # decided (10.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #357: [13,13,13,12,13,12,12,12,10,9,9] UNSAT 12563.9, a FIRST
+# attempt, idx 207, landed 06:12:09Z.  The ninth group CLOSES at 10 of
+# 10.  Its full cost table, by leading tail entry:
+#   lead 12: 1611.9  4445.2  5779.8  6064.6  6207.4
+#   lead 11: 12717.7 13747.7 13853.7
+#   lead 10: 10240.9 12563.9
+#
+# I said one block ago that I would check the 1.65x split for free.  I
+# did better than wait for the tenth group: the record already holds
+# 31 fully-UNSAT groups, 20 of them with more than one leading value,
+# and the shape was derived from group nine alone -- so the other 19
+# are out of sample.  Result, reported as promptly as a success would
+# be:
+#
+# THE STRONG FORM IS DEAD.  The claim tested was group nine exactly:
+# within a group, every tail leading with the largest permitted first
+# entry costs less than every other tail.  That perfect separation
+# FAILS in 9 of the 20 groups, including both large ones -- idx 0-24
+# has a non-top-lead tail at 350.2 against a top-lead tail at 976.7
+# (ratio 0.36), and idx 129-151 gives 0.82.  A 1.46x draw effect
+# cannot explain a 0.36.  The no-overlap band with its tidy 1.65x gap
+# was group nine being lucky, and I would have been fitting.
+#
+# A WEAKER FORM SURVIVES.  Perfect separation is a bad statistic --
+# it is dominated by group size, since demanding it of 25 tails is a
+# far stronger ask than of 5.  The size-robust version is the
+# direction: does the top-lead band sit lower by MEAN RANK?  It does
+# in 17 of 20 groups, and excluding group nine itself, 16 of 19,
+# one-sided sign-test p = 0.0022.  Only idx 49, 66 and 123 run
+# against it, all small (n = 3, 7, 3).  So tails leading with the
+# largest permitted first entry are systematically cheaper; they are
+# just not uniformly cheaper.
+#
+# Limits, stated rather than glossed.  (a) Costs span four cap eras
+# (1800, 5400, 10800, 21600) and some groups straddle a raise; a
+# re-run conversion cost also depends on the contention draw, spread
+# at least 1.46x as established above.  Within-group RANKING is less
+# exposed to this than absolute cost, but it is not immune.  (b) Only
+# fully-UNSAT groups with more than one leading value are testable --
+# 20 of the 31 closed groups.  (c) The direction was read off group
+# nine, so it is not an independent hypothesis; 16 of 19 is the honest
+# number, not 17 of 20.  (d) Within the lead-12 band the ordering is
+# 1611.9, 4445.2, 5779.8, 6064.6, 6207.4, which is monotone in
+# nothing I can see -- the leading entry is what carries the effect,
+# and the rest is unexplained.
+#
+# NOT actionable and not proposed as such.  Every cube must be decided
+# regardless of order, so reordering the sweep changes which rows land
+# first and not the total work.  And this is a statement about SAT
+# difficulty on these cubes; it says nothing about intersecting
+# sunflower-free families and does not touch the bracket.
+#
+# Rows 357, labels 208, 206 UNSAT / 2 UNKNOWN / 0 SAT; 206 of 1949
+# decided (10.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4377,3 +4432,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21754.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21795.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 10, 8]	UNSAT	10240.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 9, 8]	UNSAT	13853.7
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 9, 9]	UNSAT	12563.9
