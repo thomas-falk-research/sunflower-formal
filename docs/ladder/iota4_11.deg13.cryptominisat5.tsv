@@ -3803,6 +3803,43 @@
 # indices from 208 on.  So the first two rows should be RE-RUNS of
 # those two labels.  Anything else is a surprise worth investigating.
 #
+# ================================================================
+# **THAT PREDICTION WAS WRONG, AND I HAD ALREADY WRITTEN THE FIX**
+# ================================================================
+#
+# #351: [13,13,13,12,13,12,12,12,11,11,6] **UNSAT 12717.7 on a FIRST
+# attempt** -- idx 203, a fresh cube -- when the block above said the
+# first rows should be re-runs of idx 189 and 190.
+#
+# It is not a falsification of the sweep model.  It is the SAME
+# FOUR-THREAD ARITHMETIC ERROR corrected in ab7653e and then repeated
+# in the very next restart write-up.  Four threads claim the four
+# lowest undecided indices at once.  Those were **189, 190, 203, 204**
+# -- only TWO stalls exist, so two threads necessarily took fresh
+# cubes.  All four solvers started 20:40:00Z within a second of each
+# other, which confirms it.
+#
+# THE CORRECT PREDICTION, for the fourth time of asking: of this
+# process's first FOUR rows, exactly TWO should be re-runs (idx 189,
+# 190) and exactly TWO first attempts (idx 203, 204).  #351 is one of
+# the latter.  Falsifying it needs THREE first attempts among the first
+# four, or a straggler skipped.
+#
+# **RECORDED AS A REPEAT, NOT A ONE-OFF.**  ab7653e already stated the
+# rule -- "there are FOUR threads and only THREE undecided cubes behind
+# the head, so the fourth NECESSARILY takes a fresh cube" -- and called
+# it the third prediction to fail on framing rather than data.  This is
+# the fourth, and the first to repeat an error after its correction was
+# written down.  Writing a correction is not the same as applying it,
+# and a rule that lives only in a header block is not a rule that gets
+# used.  Concretely: BEFORE PREDICTING WHAT A RESTART DOES, COUNT THE
+# UNDECIDED INDICES AND COMPARE WITH THE THREAD COUNT.  Two numbers.
+#
+# Rows 351, labels 204, 202 UNSAT / 2 UNKNOWN / 0 SAT; 202 of 1949
+# decided.  12717.7 s is the eighth group's sixth tail and its dearest
+# so far by a factor of two.
+#
+#
 #
 #
 #
@@ -4209,3 +4246,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 10, 6]	UNSAT	6207.4
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 9, 7]	UNSAT	5779.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 8, 8]	UNSAT	4445.2
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 10, 10, 9]	UNSAT	18700.0
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 11, 6]	UNSAT	12717.7
