@@ -3847,6 +3847,67 @@
 # and is not yet resolved.  Rows 352, labels 205, 203 UNSAT / 2
 # UNKNOWN / 0 SAT; 203 of 1949 decided.
 #
+# #353 and #354 resolve the prediction, and CONFIRM it.  #353
+# [13,13,13,12,13,13,12,11,10,10,8] UNKNOWN 21754.1 (idx 190) and #354
+# [13,13,13,12,13,13,12,11,11,9,8] UNKNOWN 21795.6 (idx 189) are both
+# RE-RUNS.  So pid 8404 first four rows = two first attempts (#351 idx
+# 203, #352 idx 204) and two re-runs, exactly as the corrected
+# four-thread arithmetic required.  First time that corrected framing
+# made a call and held.  Claim it modestly: given the sweep model the
+# split was close to forced, so this confirms the model rather than
+# discovering anything.
+#
+# Both stragglers have now stalled TWICE at the doubled cap.  idx 190
+# has burned 43510.8 s over two attempts, idx 189 43573.5 s, for zero
+# verdicts -- 24.2 CPU-hours.  Budget rule checked: last twelve
+# attempts hold 10 UNSAT, so it does NOT fire.  Cap stays 21600.
+#
+# A PREDICTION I ALMOST PUBLISHED AND THE DATA KILLED.  Checking the
+# source: cryptominisat5 --help gives --random default 0 (fixed seed)
+# and --threads default 1, and sat.rs:405-410 passes neither -- only
+# --verb 0 --maxtime CAP CNF.  The CNF is regenerated identically from
+# the same cube.  I was about to write that a re-run at an unchanged
+# cap must therefore repeat the identical search and return UNKNOWN
+# again, i.e. that re-drawing an above-cap cube is provably pure
+# waste.  Tested it against all 354 rows first.  FALSE: 22 of the 75
+# re-run conversions converted BELOW their own prior stall cost.
+# [13,13,13,13,13,12,12,11,11,10,7] stalled at 10917.0 and later
+# converted at 7497.4 -- same cap, factor 1.46.  So the recorded cost
+# of one label varies substantially between attempts.
+#
+# What that leaves standing, separated by how well it is established.
+# Verified from source: fixed seed, one thread, no seed passed;
+# recorded cost is driver-side wall clock (iota_sym.rs:190-194);
+# --maxtime is a time limit.  Verified from data: same-label cost
+# spread of at least 1.46x, median 1.10x over the 22 draw-wins, and
+# these are LOWER bounds because the stall side is censored at the
+# cap.  NOT established: that the search trajectory is identical
+# across attempts -- fixed seed and one thread make it plausible, but
+# a time-limited solver may consult the clock, and the cap itself
+# differed across some of these attempts.  Also not established: what
+# causes the spread (cache and memory-bandwidth contention, container
+# CPU quota, or a varying number of co-resident solvers).
+#
+# This also corrects me in the other direction.  I earlier recorded
+# the framing -- stragglers lose draws rather than run out of budget
+# -- as REFUTED.  That overshot.  The split is 22 draw-wins to 53
+# budget-needs: both mechanisms are real and budget dominates at
+# roughly 71 percent.  What I refuted correctly was the draw framing
+# applied to the LATE pool, where #322-#324 converted above the old
+# cap and so needed budget, not luck.  Stated as a claim about the
+# whole record it was wrong.
+#
+# Bearing on the two stragglers: two stalls at 21600 do NOT show they
+# need more than 21600.  They show f*s > 21600 on two draws.  With a
+# spread of at least 1.46x a third draw can still convert if the
+# uncontended cost sits between about 14800 and 21600.  No probability
+# offered -- there is no distribution for the slowdown factor, and the
+# 1.46x is a max over censored observations.
+#
+# Rows 354, labels 205, 203 UNSAT / 2 UNKNOWN / 0 SAT; 203 of 1949
+# decided (10.4%).  Bracket 27 <= iota(4) <= 71 untouched by all of
+# this.
+#
 #
 #
 #
@@ -4257,3 +4318,5 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 8, 8]	UNSAT	4445.2
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 10, 10, 9]	UNSAT	18700.0
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 11, 6]	UNSAT	12717.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 10, 7]	UNSAT	13747.7
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21754.1
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21795.6
