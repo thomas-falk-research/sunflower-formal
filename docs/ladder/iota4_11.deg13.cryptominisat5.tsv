@@ -4064,6 +4064,43 @@
 # Rows 359, labels 210, 208 UNSAT / 2 UNKNOWN / 0 SAT; 208 of 1949
 # decided (10.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #360: [13,13,13,12,13,12,12,11,11,10,8] UNKNOWN 21772.9, a FIRST
+# attempt, idx 209, landed 09:22:39Z.  A THIRD straggler joins the
+# pool, which is now {189, 190, 209}.  It is the tenth group tail
+# (11,10,8), so that group cannot close until 209 is decided.
+#
+# BUDGET RULE CHECKED: the last twelve attempts read U U U U . . U U U
+# U U . -- nine UNSAT.  The rule needs zero or one to fire.  It does
+# NOT fire.  Cap stays 21600.
+#
+# Measured the cap economics rather than eyeballing the new straggler,
+# since a fresh stall is exactly the moment I would be tempted to
+# raise on vibes.  Doubled-cap era, from #320, 41 attempts:
+#   first attempts  n=28   stalled  3  (11%)
+#   re-runs         n=13   stalled  3  (23%)
+# against the old 10800 era, #234-#319:
+#   first attempts  n=44   stalled 18  (41%)
+# So the doubling cut the first-attempt stall rate from 41% to 11%,
+# and it is still earning its keep: of the 25 first-attempt
+# conversions in this era, 12 came in above 10800 and would have
+# stalled under the old cap.  Median conversion 10314, max 21678.
+#
+# The cap is nonetheless still binding at the top -- the two dearest
+# conversions, 20810 and 21678, sit within 4% of it, and 21678 is
+# #337, which converted 78.5 s PAST the cap on polling luck.
+#
+# No tension to resolve this time: the measurement and the rule agree,
+# and both say do not raise.  Recording the principle anyway, because
+# the precedent runs the other way.  At #320 the rule said raise and
+# every measurement I had said the raise was uneconomic, and I raised
+# because the pre-commitment was explicit.  A rule that I would
+# override whenever my current numbers disagreed would not be a
+# pre-commitment at all, so it governs in both directions.
+#
+# Rows 360, labels 211, 208 UNSAT / 3 UNKNOWN / 0 SAT; 208 of 1949
+# decided (10.7%).  Bracket 27 <= iota(4) <= 71 unchanged -- none of
+# this touches it.
+#
 #
 #
 #
@@ -4481,3 +4518,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 9, 8]	UNSAT	13853.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 9, 9]	UNSAT	12563.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 11, 7]	UNSAT	12985.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 10, 10, 10, 10]	UNSAT	4988.5
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21772.9
