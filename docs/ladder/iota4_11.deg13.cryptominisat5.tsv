@@ -4246,6 +4246,42 @@
 # decided, which crosses to 10.8%.  Bracket 27 <= iota(4) <= 71
 # unchanged.
 #
+# #367: [13,13,13,12,13,11,11,11,11,10,10] UNSAT 4465.6, a FIRST
+# attempt, idx 217, landed 19:08:02Z.  It CLOSES the thirteenth group
+# at 2 of 2 -- idx 216 at 1747.7 and idx 217 at 4465.6.
+#
+# A CORRECTION, caught by computing instead of writing.  I supposed
+# #367 might close a structural block, on the premise that the cube
+# list is in flat descending lex order so that everything with d[4]=13
+# would end here.  WRONG.  The sequence has TWO sorted blocks --
+# positions 0-3, and positions 4-10 -- and at position 4 the ceiling
+# RESETS to 13 rather than continuing to descend from d[3].  That is
+# the sorted_blocks symmetry, and it is visible in fill() as
+# `ceiling = top if pos == b else prev` with b = 4.  So d[4]=13 cubes
+# run all the way to idx 1948, and idx 217 closes nothing structural.
+#
+# What the enumeration DOES say, by first block:
+#   block [13,13,13,13]  idx    0- 128  129 cubes  129 decided -- COMPLETE
+#   block [13,13,13,12]  idx  129- 232  104 cubes   82 decided,
+#                        86 attempted, 4 undecided (the stragglers
+#                        189, 190, 209, 210), 18 not yet reached
+#   idx 233-1948         1716 cubes, none attempted
+# Cross-check: 129 + 82 = 211, which is the decided count, so the
+# partition and the tally agree.
+#
+# That is a better progress picture than 10.8%.  The first block is
+# genuinely finished; the second is four fifths done; and the whole
+# remainder of the list is untouched.  It also shows the work is
+# front-loaded -- the blocks shrink fast, 129, 104, 82, 65, 49, 38,
+# ... -- though that says nothing about per-cube cost, only about
+# counts.
+#
+# BUDGET RULE: last twelve read U U U U . . . . . U U U -- seven
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 367, labels 215, 211 UNSAT / 4 UNKNOWN / 0 SAT; 211 of 1949
+# decided (10.8%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4670,3 +4706,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNKNOWN	21782.4
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 11, 8]	UNSAT	6256.4
 g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 11, 9]	UNSAT	1747.7
+g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 10, 10]	UNSAT	4465.6
