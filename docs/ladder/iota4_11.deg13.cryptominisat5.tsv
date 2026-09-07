@@ -4191,6 +4191,39 @@
 # decided (10.7%) -- unmoved by this batch.  Bracket 27 <= iota(4) <=
 # 71 unchanged.
 #
+# #365: [13,13,13,12,13,12,11,11,11,11,8] UNSAT 6256.4, a FIRST
+# attempt, idx 213, landed 17:24:20Z.  The first verdict since #359 --
+# roughly six hours of wall time in which the only rows were the four
+# cap-time stalls.  It opens the TWELFTH group, prefix
+# [13,13,13,12,13,12,11,11], three tails, idx 213-215:
+#   idx 213  (11,11,8)  UNSAT 6256.4
+#   idx 214  (11,10,9)  in flight
+#   idx 215  (10,10,10) in flight
+# 6256.4 is an ordinary cheap conversion, so the run is back on
+# productive ground.
+#
+# The TENTH group is stuck at 2 of 4 and cannot close: idx 209 and 210
+# are both in the straggler pool, and idx 211 is still in flight.
+#
+# BUDGET RULE: last twelve now read . U U U U U . . . . . U -- six
+# UNSAT.  It does NOT fire; cap stays 21600.
+#
+# Correcting my own note from the previous block, which said two more
+# all-stall batches would empty the window and fire the rule.  #365
+# puts a U back into it, so that schedule no longer holds.  Firing now
+# needs another straggler-heavy stretch, which in practice means
+# another container restart pushing the four stragglers back to the
+# front of the sweep.  The projection was fair when written and is
+# simply stale; leaving it uncorrected would have made the rule look
+# closer to firing than it is.
+#
+# Counter position: the newest solver holds idx 216, so 217 onward are
+# next.  Stragglers 189, 190, 209, 210 are behind the counter and wait
+# for the next process restart.
+#
+# Rows 365, labels 213, 209 UNSAT / 4 UNKNOWN / 0 SAT; 209 of 1949
+# decided (10.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4613,3 +4646,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21765.4
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21766.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNKNOWN	21782.4
+g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 11, 8]	UNSAT	6256.4
