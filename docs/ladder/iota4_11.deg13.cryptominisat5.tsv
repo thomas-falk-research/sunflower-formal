@@ -4042,6 +4042,28 @@
 # Rows 358, labels 209, 207 UNSAT / 2 UNKNOWN / 0 SAT; 207 of 1949
 # decided (10.6%).  Bracket unchanged.
 #
+# #359: [13,13,13,12,13,12,12,10,10,10,10] UNSAT 4988.5, a FIRST
+# attempt, idx 212, landed 07:42:53Z.  It is the ENTIRE eleventh
+# group.  Prefix [13,13,13,12,13,12,12,10] sums to 98, leaving 30 for
+# the tail with every entry capped at 10, so (10,10,10) is the only
+# permitted tail and the group opens and closes in one row.  It is
+# also one of the 11 groups that carry no information about the
+# leading-entry direction, having a single leading value.
+#
+# The index list now shows GAPS at 209, 210 and 211.  That is not a
+# skip and nothing is wrong.  All three are in flight (15793 s, 13210
+# s and 5463 s as of 07:42Z).  Rows land in COST order, not index
+# order, so a higher index finishing first is the ordinary case, and
+# idx 212 at 4988.5 simply beat three cubes claimed before it.  I have
+# misread arrival order as meaningful before; recording the mechanism
+# here so I do not do it again.
+#
+# Index accounting: 210 labels, 0 orphans, exactly two undecided (189,
+# 190), and every index from 0 to 212 either decided or in flight.
+#
+# Rows 359, labels 210, 208 UNSAT / 2 UNKNOWN / 0 SAT; 208 of 1949
+# decided (10.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4458,3 +4480,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 10, 8]	UNSAT	10240.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 9, 8]	UNSAT	13853.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 9, 9]	UNSAT	12563.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 11, 7]	UNSAT	12985.6
+g=11 [13, 13, 13, 12, 13, 12, 12, 10, 10, 10, 10]	UNSAT	4988.5
