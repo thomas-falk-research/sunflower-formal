@@ -3839,6 +3839,15 @@
 # decided.  12717.7 s is the eighth group's sixth tail and its dearest
 # so far by a factor of two.
 #
+# #352: [13,13,13,12,13,12,12,12,11,10,7] UNSAT 13747.7, also a FIRST
+# attempt -- idx 204.  So the first two rows of pid 8404 are the two
+# fresh cubes the corrected prediction called for, and the two solvers
+# still running at 13818 s are the re-runs of idx 189 and 190.  They
+# reach the cap at ~02:40Z.  The prediction stands at 2 of its 4 rows
+# and is not yet resolved.  Rows 352, labels 205, 203 UNSAT / 2
+# UNKNOWN / 0 SAT; 203 of 1949 decided.
+#
+#
 #
 #
 #
@@ -4247,3 +4256,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 9, 7]	UNSAT	5779.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 12, 8, 8]	UNSAT	4445.2
 g=11 [13, 13, 13, 12, 13, 13, 11, 11, 10, 10, 9]	UNSAT	18700.0
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 11, 6]	UNSAT	12717.7
+g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 10, 7]	UNSAT	13747.7
