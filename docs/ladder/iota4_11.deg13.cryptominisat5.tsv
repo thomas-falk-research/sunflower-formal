@@ -4140,6 +4140,57 @@
 # Rows 360, labels 211, 208 UNSAT / 3 UNKNOWN / 0 SAT; 208 of 1949
 # decided (10.7%).  Bracket unchanged.
 #
+# #361-#364 all landed together at ~15:37-15:40Z, the four threads
+# reaching the cap within 17 s of each other:
+#   #361 idx 190  attempt 3  UNKNOWN 21765.4
+#   #362 idx 209  attempt 2  UNKNOWN 21766.4
+#   #363 idx 189  attempt 3  UNKNOWN 21777.7
+#   #364 idx 210  attempt 1  UNKNOWN 21782.4
+#
+# PREDICTION CONFIRMED, exactly.  The registered claim was idx {189,
+# 190, 209, 210}, three re-runs and one first attempt, nothing above
+# 210.  Observed: that set, three re-runs, one first attempt, nothing
+# above 210.  Claim it for what it is -- given load_checkpoint plus
+# index-order claiming plus four threads the outcome was close to
+# forced, so this checks MY ARITHMETIC, which I have botched twice,
+# rather than discovering anything about the model.
+#
+# The news is otherwise bad.  All four stalled.  That is 4 x ~21770 s
+# = 24.2 CPU-hours that banked nothing, and the straggler pool grows
+# to four: 189, 190, 209, 210.  Cumulative spend on those four, for
+# zero verdicts:
+#   idx 189  3 attempts  21777.9 + 21795.6 + 21777.7  = 65351.2
+#   idx 190  3 attempts  21756.7 + 21754.1 + 21765.4  = 65276.2
+#   idx 209  2 attempts  21772.9 + 21766.4            = 43539.3
+#   idx 210  1 attempt   21782.4                      = 21782.4
+#   TOTAL 195949.1 s = 54.4 CPU-hours.
+#
+# The obvious next worry is that the run is now stuck looping on those
+# four.  IT IS NOT, and I checked rather than assumed, because the
+# mirror-image error is one I have already made here -- "the resume
+# policy re-runs every straggler before any fresh sub-cube" was false.
+# solve_all walks ONE shared counter forward and never rewinds.  The
+# counter has passed 210, so the next indices it claims are 211, 213,
+# 214, 215 (212 is decided), and that is exactly what the four solvers
+# started at 15:40Z hold.  The stragglers are not retried until the
+# next process restart -- and at eighteen restarts so far, that is
+# likely hours, not days.
+#
+# BUDGET RULE CHECKED: the last twelve attempts read . . U U U U U . .
+# . . . -- five UNSAT, and the rule needs zero or one.  It does NOT
+# fire; cap stays 21600.  Recording the mechanics without acting on
+# them: those five UNSAT are #355-#359, so if the next two batches
+# also stall outright the window empties and the rule fires on its
+# own.  That is an observation about when the rule would trigger, not
+# a licence to raise early.
+#
+# Overshoot past the cap on this batch: +165.4, +166.4, +177.7,
+# +182.4, in line with the +154 to +196 band seen at this cap.
+#
+# Rows 364, labels 212, 208 UNSAT / 4 UNKNOWN / 0 SAT; 208 of 1949
+# decided (10.7%) -- unmoved by this batch.  Bracket 27 <= iota(4) <=
+# 71 unchanged.
+#
 #
 #
 #
@@ -4558,3 +4609,7 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 9, 9]	UNSAT	12563.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 11, 7]	UNSAT	12985.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 10, 10, 10, 10]	UNSAT	4988.5
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21772.9
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21765.4
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21766.4
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.7
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNKNOWN	21782.4
