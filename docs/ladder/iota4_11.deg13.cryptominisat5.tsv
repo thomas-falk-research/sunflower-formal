@@ -4312,6 +4312,26 @@
 # Rows 369, labels 217, 213 UNSAT / 4 UNKNOWN / 0 SAT; 213 of 1949
 # decided (10.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #370: [13,13,13,12,13,12,11,11,10,10,10] UNSAT 13986.1, a FIRST
+# attempt, idx 215, landed 19:33:31Z.  It CLOSES the twelfth group at
+# 3 of 3: 6256.4, 13762.7, 13986.1.
+#
+# 214 of 1949 decided, which crosses 11.0%.  Block [13,13,13,12] is at
+# 85 decided of 104, 89 attempted, 15 not yet reached.
+#
+# The only gap at or below the highest index seen is idx 211, still in
+# flight at ~14000 s from the 15:40Z batch; it is the last tail of the
+# tenth group, which cannot close regardless because idx 209 and 210
+# are stragglers.
+#
+# BUDGET RULE: last twelve read U . . . . . U U U U U U -- seven
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 370, labels 218, 214 UNSAT / 4 UNKNOWN / 0 SAT; 214 of 1949
+# decided (11.0%).  Bracket 27 <= iota(4) <= 71 unchanged -- eleven
+# percent of one cube of one rung is not progress on the bracket, and
+# is not claimed as any.
+#
 #
 #
 #
@@ -4739,3 +4759,4 @@ g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 11, 9]	UNSAT	1747.7
 g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 10, 10]	UNSAT	4465.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 5]	UNSAT	721.0
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 10, 9]	UNSAT	13762.7
+g=11 [13, 13, 13, 12, 13, 12, 11, 11, 10, 10, 10]	UNSAT	13986.1
