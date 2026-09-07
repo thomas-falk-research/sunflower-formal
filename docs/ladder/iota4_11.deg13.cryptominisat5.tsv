@@ -4018,6 +4018,30 @@
 # Rows 357, labels 208, 206 UNSAT / 2 UNKNOWN / 0 SAT; 206 of 1949
 # decided (10.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #358: [13,13,13,12,13,12,12,11,11,11,7] UNSAT 12985.6, a FIRST
+# attempt, idx 208, landed 06:19:52Z.  It opens the TENTH group,
+# prefix [13,13,13,12,13,12,12,11], which has only FOUR tails,
+# idx 208-211:
+#   idx 208  (11,11,7)  UNSAT 12985.6
+#   idx 209  (11,10,8)  not yet attempted
+#   idx 210  (11, 9,9)  not yet attempted
+#   idx 211  (10,10,9)  not yet attempted
+#
+# One line to head off a mistake I would otherwise make when this
+# group closes.  Three of its four tails lead with 11 and one with 10,
+# so as a test of the leading-entry direction it is a = 3, b = 1 and
+# the null probability of perfect separation is 1/4.  Closing
+# consistently would carry almost no information.  The question is
+# closed anyway -- it was settled above against all 20 testable
+# groups, 16 of 19 out of sample -- and a four-tail group is not going
+# to reopen it in either direction.
+#
+# Index accounting: idx 0 through 208 all attempted, no gaps, 0
+# orphans among 209 labels, exactly two undecided (189, 190).
+#
+# Rows 358, labels 209, 207 UNSAT / 2 UNKNOWN / 0 SAT; 207 of 1949
+# decided (10.6%).  Bracket unchanged.
+#
 #
 #
 #
@@ -4433,3 +4457,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21795.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 10, 8]	UNSAT	10240.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 11, 9, 8]	UNSAT	13853.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 12, 10, 9, 9]	UNSAT	12563.9
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 11, 7]	UNSAT	12985.6
