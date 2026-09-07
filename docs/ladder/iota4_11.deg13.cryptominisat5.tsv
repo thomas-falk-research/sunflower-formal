@@ -4433,6 +4433,45 @@
 # Rows 376, labels 224, 220 UNSAT / 4 UNKNOWN / 0 SAT; 220 of 1949
 # decided, crossing to 11.3%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #377: [13,13,13,12,13,12,12,11,10,10,9] UNKNOWN 21774.3, a FIRST
+# attempt, idx 211, landed 21:43:09Z.  The straggler pool grows to
+# FIVE: 189, 190, 209, 210, 211.
+#
+# The TENTH group is now the worst in the run, 1 of 4 with three
+# stragglers:
+#   idx 208  (11,11,7)  UNSAT 12985.6
+#   idx 209  (11,10,8)  UNKNOWN 21766.4
+#   idx 210  (11, 9,9)  UNKNOWN 21782.4
+#   idx 211  (10,10,9)  UNKNOWN 21774.3
+# Three of its four tails sit at the cap, so the group is blocked
+# entirely by the 21600 s budget rather than by anything else.
+#
+# All five stragglers live in just TWO groups -- 189 and 190 under
+# prefix [13,13,13,12,13,13,12,11], and 209, 210, 211 under
+# [13,13,13,12,13,12,12,11].  Recorded as a fact.  I am not offering
+# an explanation for the concentration, and two groups is not a
+# sample.
+#
+# Straggler spend now 217723.4 s = 60.5 CPU-hours for zero verdicts.
+#
+# UPDATING A FIGURE I CITED.  At #360 I gave the doubled-cap-era
+# first-attempt stall rate as 3 of 28 = 11% and used it as evidence
+# the cap was adequate.  Two more first attempts have stalled since,
+# so the honest current figure is 5 of 42 = 12%.  It barely moved and
+# the earlier conclusion stands -- 12% against 41% at the old 10800
+# cap.  Re-runs are now 6 of 16 = 38%, up from 23%, but that is
+# small-n, dominated by the four-stall batch after the restart, and
+# re-runs are selected for difficulty; it is not read as a trend.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire; cap
+# stays 21600.
+#
+# Block [13,13,13,12]: 91 decided of 104, 96 attempted, 8 unreached.
+#
+# Rows 377, labels 225, 220 UNSAT / 5 UNKNOWN / 0 SAT; 220 of 1949
+# decided (11.3%), unmoved by this row.  Bracket 27 <= iota(4) <= 71
+# unchanged.
+#
 #
 #
 #
@@ -4867,3 +4906,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 9, 8]	UNSAT	2058.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 11, 7]	UNSAT	4097.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 9, 9]	UNSAT	3607.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 10, 8]	UNSAT	4824.8
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21774.3
