@@ -4282,6 +4282,22 @@
 # Rows 367, labels 215, 211 UNSAT / 4 UNKNOWN / 0 SAT; 211 of 1949
 # decided (10.8%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #368: [13,13,13,12,12,12,12,12,12,12,5] UNSAT 721.0, a FIRST
+# attempt, idx 218, landed 19:19:59Z.  It opens the FOURTEENTH group,
+# prefix [13,13,13,12,12,12,12,12], eight tails, idx 218-225, and at
+# 721.0 s it is the cheapest conversion the run has seen in a long
+# while.
+#
+# Block [13,13,13,12] now stands at 83 decided of 104, 87 attempted.
+# Straggler pool unchanged at {189, 190, 209, 210}, still behind the
+# sweep counter.
+#
+# BUDGET RULE: last twelve read U U U . . . . . U U U U -- seven
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 368, labels 216, 212 UNSAT / 4 UNKNOWN / 0 SAT; 212 of 1949
+# decided, crossing to 10.9%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4707,3 +4723,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNKNOWN	21782.4
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 11, 8]	UNSAT	6256.4
 g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 11, 9]	UNSAT	1747.7
 g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 10, 10]	UNSAT	4465.6
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 5]	UNSAT	721.0
