@@ -4224,6 +4224,28 @@
 # Rows 365, labels 213, 209 UNSAT / 4 UNKNOWN / 0 SAT; 209 of 1949
 # decided (10.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #366: [13,13,13,12,13,11,11,11,11,11,9] UNSAT 1747.7, a FIRST
+# attempt, idx 216, landed 17:53:38Z.  It opens the THIRTEENTH group,
+# prefix [13,13,13,12,13,11,11,11], which has just two tails, idx
+# 216-217.
+#
+# The sweep is passing through a run of very small groups.  By prefix:
+#   [13,13,13,12,13,12,12,11]  idx 208-211  4 tails  UNSAT 1, UNKNOWN 2, 1 in flight
+#   [13,13,13,12,13,12,12,10]  idx 212      1 tail   UNSAT
+#   [13,13,13,12,13,12,11,11]  idx 213-215  3 tails  UNSAT 1, 2 in flight
+#   [13,13,13,12,13,11,11,11]  idx 216-217  2 tails  UNSAT 1, 1 in flight
+#   [13,13,13,12,12,12,12,12]  idx 218-225  8 tails  none attempted
+# so ten indices span four groups here, against eight in the single
+# group that follows.  Nothing is read into that -- group size is
+# fixed by the arithmetic of the prefix, not by anything the run does.
+#
+# BUDGET RULE: last twelve read U U U U U . . . . . U U -- seven
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 366, labels 214, 210 UNSAT / 4 UNKNOWN / 0 SAT; 210 of 1949
+# decided, which crosses to 10.8%.  Bracket 27 <= iota(4) <= 71
+# unchanged.
+#
 #
 #
 #
@@ -4647,3 +4669,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21766.4
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21777.7
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNKNOWN	21782.4
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 11, 8]	UNSAT	6256.4
+g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 11, 9]	UNSAT	1747.7
