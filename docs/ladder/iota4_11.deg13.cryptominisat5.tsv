@@ -4332,6 +4332,20 @@
 # percent of one cube of one rung is not progress on the bracket, and
 # is not claimed as any.
 #
+# #371: [13,13,13,12,12,12,12,12,12,11,6] UNSAT 2128.6, a FIRST
+# attempt, idx 219, landed 19:55:28Z.  Fourteenth group at 2 of 8:
+# idx 218 at 721.0, idx 219 at 2128.6.
+#
+# Block [13,13,13,12]: 86 decided of 104, 90 attempted, 14 unreached.
+# Straggler pool unchanged at {189, 190, 209, 210}; idx 211 still in
+# flight at ~15300 s.
+#
+# BUDGET RULE: seven UNSAT in the last twelve.  Does NOT fire; cap
+# stays 21600.
+#
+# Rows 371, labels 219, 215 UNSAT / 4 UNKNOWN / 0 SAT; 215 of 1949
+# decided (11.0%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4760,3 +4774,4 @@ g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 10, 10]	UNSAT	4465.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 5]	UNSAT	721.0
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 10, 9]	UNSAT	13762.7
 g=11 [13, 13, 13, 12, 13, 12, 11, 11, 10, 10, 10]	UNSAT	13986.1
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 11, 6]	UNSAT	2128.6
