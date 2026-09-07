@@ -4510,6 +4510,37 @@
 # Rows 379, labels 227, 222 UNSAT / 5 UNKNOWN / 0 SAT; 222 of 1949
 # decided, crossing to 11.4%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# NINETEENTH CONTAINER RESTART, between 22:31:50Z (four solvers alive)
+# and 22:33:03Z (none) -- a window of only 73 s.  Driver relaunched
+# 22:33Z as pid 21981, same command, cap still 21600.  Phase one 60 s,
+# split reproduced 1949 cubes, and the driver printed
+#   # checkpoint: 222 of 1949 cubes already decided
+# against an independent recount of 222.  They MATCH: zero rows lost.
+# Rows on disk 379, unchanged.
+#
+# Cost, and it is SMALL this time.  The four solvers were at 4056,
+# 2936, 1214 and 15 s, so the discarded work is between 8221 and 8513
+# CPU-seconds -- 2.28 to 2.36 CPU-hours.  Compare the eighteenth
+# restart at 10.2 to 11.1 hours.  Nothing improved; the restart simply
+# landed just after a batch turnover, when every solver was young.  A
+# restart's cost is set entirely by how deep the running solvers are
+# into their budgets, which is luck, so this is not evidence that
+# restarts are getting cheaper.
+#
+# Two restarts in about thirteen hours (the eighteenth at 09:23-09:36Z,
+# this one at 22:31-22:33Z).
+#
+# The restart again pushes every straggler to the front of the sweep,
+# and there are now FIVE of them.  Four threads take idx 189, 190, 209
+# and 210; idx 211 goes to whichever finishes first.  I am NOT
+# registering that as a prediction: the same derivation has been
+# confirmed twice already, and re-registering a settled derivation is
+# not a test, it is scorekeeping.  It is written here as bookkeeping,
+# to be checked against the rows when they land.
+#
+# Rows 379, labels 227, 222 UNSAT / 5 UNKNOWN / 0 SAT; 222 of 1949
+# decided (11.4%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
