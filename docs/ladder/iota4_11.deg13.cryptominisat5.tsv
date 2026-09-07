@@ -4298,6 +4298,20 @@
 # Rows 368, labels 216, 212 UNSAT / 4 UNKNOWN / 0 SAT; 212 of 1949
 # decided, crossing to 10.9%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #369: [13,13,13,12,13,12,11,11,11,10,9] UNSAT 13762.7, a FIRST
+# attempt, idx 214, landed 19:29:36Z from the solver running since
+# 15:40Z.  The TWELFTH group is now 2 of 3 -- idx 213 at 6256.4 and
+# idx 214 at 13762.7, with only idx 215 = (10,10,10) still in flight.
+#
+# Block [13,13,13,12]: 104 cubes, 84 decided, 88 attempted, 16 not yet
+# reached.  Straggler pool unchanged at {189, 190, 209, 210}.
+#
+# BUDGET RULE: last twelve read U U . . . . . U U U U U -- seven
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 369, labels 217, 213 UNSAT / 4 UNKNOWN / 0 SAT; 213 of 1949
+# decided (10.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4724,3 +4738,4 @@ g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 11, 8]	UNSAT	6256.4
 g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 11, 9]	UNSAT	1747.7
 g=11 [13, 13, 13, 12, 13, 11, 11, 11, 11, 10, 10]	UNSAT	4465.6
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 12, 12, 5]	UNSAT	721.0
+g=11 [13, 13, 13, 12, 13, 12, 11, 11, 11, 10, 9]	UNSAT	13762.7
