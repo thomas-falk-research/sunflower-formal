@@ -4472,6 +4472,31 @@
 # decided (11.3%), unmoved by this row.  Bracket 27 <= iota(4) <= 71
 # unchanged.
 #
+# #378: [13,13,13,12,12,12,12,12,10,10,9] UNSAT 4077.5, a FIRST
+# attempt, idx 225, landed 22:11:50Z.  It CLOSES the FOURTEENTH group
+# at 8 of 8:
+#   (12,12,5)  721.0    (11,11,7) 4097.9
+#   (12,11,6) 2128.6    (11,10,8) 4824.8
+#   (12,10,7) 2053.6    (11, 9,9) 3607.9
+#   (12, 9,8) 2058.9    (10,10,9) 4077.5
+# Costs listed and left alone.  I am not scoring this group against
+# the leading-entry test, per the commitment two blocks ago: that
+# question was settled once over all closed groups, and adding a
+# verdict per closure is the running commentary I said I would not do.
+#
+# Every index from 0 to 225 now carries at least one row -- no gaps at
+# all, for the first time in a while, since idx 211 finally reported.
+# The five undecided are 189, 190, 209, 210, 211, all stalled rather
+# than unattempted.
+#
+# Block [13,13,13,12]: 92 decided of 104, 97 attempted, 7 unreached.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire; cap
+# stays 21600.
+#
+# Rows 378, labels 226, 221 UNSAT / 5 UNKNOWN / 0 SAT; 221 of 1949
+# decided (11.3%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4907,3 +4932,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 11, 7]	UNSAT	4097.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 9, 9]	UNSAT	3607.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 10, 8]	UNSAT	4824.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21774.3
+g=11 [13, 13, 13, 12, 12, 12, 12, 12, 10, 10, 9]	UNSAT	4077.5
