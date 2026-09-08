@@ -5031,6 +5031,16 @@
 # Rows 410, labels 249, 245 UNSAT / 4 UNKNOWN / 0 SAT; 245 of 1949
 # decided, crossing to 12.6%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #411: [13,13,13,11,13,13,13,13,11,8,7] UNSAT 4948.7, a FIRST
+# attempt, idx 249, landed 18:56:31Z.  Block [13,13,13,11] at 17 of
+# 82.  idx 247 is the only gap at or below the highest index seen, and
+# it is in flight.
+#
+# BUDGET RULE: seven UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 411, labels 250, 246 UNSAT / 4 UNKNOWN / 0 SAT; 246 of 1949
+# decided (12.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5499,3 +5509,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21780.5
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21788.2
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 10, 10, 6]	UNSAT	4427.3
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 11, 9, 6]	UNSAT	4680.6
+g=11 [13, 13, 13, 11, 13, 13, 13, 13, 11, 8, 7]	UNSAT	4948.7
