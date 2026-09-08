@@ -4646,6 +4646,20 @@
 # Rows 384, labels 228, 224 UNSAT / 4 UNKNOWN / 0 SAT; 224 of 1949
 # decided, crossing to 11.5%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #385: [13,13,13,12,12,12,12,11,10,10,10] UNSAT 6414.3, a FIRST
+# attempt, idx 228, landed 06:24:07Z.  The fifteenth group (prefix
+# [13,13,13,12,12,12,12,11], idx 226-228) is at 2 of 3: idx 226 at
+# 5025.2 and idx 228 at 6414.3 decided, idx 227 still in flight.
+#
+# Block [13,13,13,12]: 96 decided of 104, 100 attempted, unreached
+# 227 (in flight), 230, 231, 232.  Straggler pool unchanged at 189,
+# 190, 209, 211.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 385, labels 229, 225 UNSAT / 4 UNKNOWN / 0 SAT; 225 of 1949
+# decided (11.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5088,3 +5102,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21765.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21772.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21806.6
 g=11 [13, 13, 13, 12, 12, 12, 11, 11, 11, 11, 9]	UNSAT	3277.2
+g=11 [13, 13, 13, 12, 12, 12, 12, 11, 10, 10, 10]	UNSAT	6414.3
