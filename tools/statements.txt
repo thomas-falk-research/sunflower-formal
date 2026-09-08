@@ -2658,3 +2658,108 @@ ec5b92bd768f2f72  thm Support.cover_partition
 
 3a4225d2d14793e7  thm Support.the_two_cover_case_is_not_close
     the_two_cover_case_is_not_close : 20 + 6 = 26 /\ 26 < 32 /\ 32 - 26 = 6
+
+ecf07342211dc040  thm TightThreshold.nine27_uniform
+    nine27_uniform : Uniform 3 nine27
+
+06becc1001b3fdc0  thm TightThreshold.nine27_distinct
+    nine27_distinct : Distinct nine27
+
+eadf54dbbeb14c8e  thm TightThreshold.nine27_rao_spread
+    nine27_rao_spread : RaoSpread 3 nine27 3
+
+64c41ced7b47785e  thm TightThreshold.nine27_rao_spread_second_opinion
+    nine27_rao_spread_second_opinion : rao_spreadb 3 nine27 3 nine_ground = true
+
+f8cc36e6da9eace5  thm TightThreshold.nine27_regular
+    nine27_regular : List.forallb (fun x : nat => PeanoNat.Nat.eqb (deg (x :: nil) nine27) 9) nine_ground = true
+
+9e8438f7833f6414  thm TightThreshold.nine27_no_three_disjoint
+    nine27_no_three_disjoint : NoKDisjoint 3 nine27
+
+9bab67d6121c16e8  thm TightThreshold.threshold_27_is_attained
+    threshold_27_is_attained : exists F : Family, Uniform 3 F /\ Distinct F /\ length F = PeanoNat.Nat.pow 3 3 /\ RaoSpread 3 F 3 /\ NoKDisjoint 3 F
+
+aeb505c50cded016  thm TightThreshold.non_strict_threshold_fails_at_3_3_3
+    non_strict_threshold_fails_at_3_3_3 : ~ SpreadYieldsDisjointNonStrict 3 3 3
+
+333d0df52cd6cd13  def TightThreshold.SpreadYieldsDisjointNonStrict
+    SpreadYieldsDisjointNonStrict = fun n k r : nat => forall (m : nat) (F : Family), 1 <= m -> m <= n -> Uniform m F -> Distinct F -> PeanoNat.Nat.pow r m <= length F -> RaoSpread m F r -> exists S : list (list nat), List.incl S F /\ List.NoDup S /\ length S = k /\ PairwiseDisjoint S : nat -> nat -> nat -> Prop Arguments SpreadYieldsDisjointNonStrict (n k r)%nat_scope
+
+9ecbf3789bed2f23  def TightThreshold.nine27
+    nine27 = ((0 :: 1 :: 2 :: nil) :: (0 :: 1 :: 6 :: nil) :: (0 :: 1 :: 7 :: nil) :: (0 :: 2 :: 8 :: nil) :: (0 :: 3 :: 4 :: nil) :: (0 :: 3 :: 5 :: nil) :: (0 :: 4 :: 5 :: nil) :: (0 :: 6 :: 7 :: nil) :: (0 :: 7 :: 8 :: nil) :: (1 :: 2 :: 3 :: nil) :: (1 :: 2 :: 5 :: nil) :: (1 :: 3 :: 4 :: nil) :: (1 :: 3 :: 8 :: nil) :: (1 :: 5 :: 6 :: nil) :: (1 :: 5 :: 8 :: nil) :: (2 :: 3 :: 6 :: nil) :: (2 :: 4 :: 6 :: nil) :: (2 :: 4 :: 7 :: nil) :: (2 :: 4 :: 8 :: nil) :: (2 :: 5 :: 7 :: nil) :: (3 :: 4 :: 5 :: nil) :: (3 :: 6 :: 7 :: nil) :: (3 :: 6 :: 8 :: nil) :: (4 :: 6 :: 7 :: nil) :: (4 :: 7 :: 8 :: nil) :: (5 :: 6 :: 8 :: nil) :: (5 :: 7 :: 8 :: nil) :: nil)%list : Family
+
+b67a0efae7beb698  thm TwoCoverSharp.cover_degsum
+    cover_degsum : forall (Ts : list (list nat)) (F : Family), (forall A : list nat, List.In A F -> exists T : list nat, List.In T Ts /\ Subset T A) -> length F <= TwoCoverSharp.degsum Ts F
+
+fc58fcbcb3c3bfb5  thm TwoCoverSharp.three_of_three
+    three_of_three : forall (C : list nat) (x y z : nat), length C = 3 -> List.NoDup C -> x <> y -> x <> z -> y <> z -> List.In x C -> List.In y C -> List.In z C -> forall t : nat, List.In t C -> t = x \/ t = y \/ t = z
+
+a21f097992f8a0b0  thm TwoCoverSharp.four_in_three
+    four_in_three : forall (C : list nat) (w x y z : nat), length C = 3 -> List.NoDup C -> w <> x -> w <> y -> w <> z -> x <> y -> x <> z -> y <> z -> List.In w C -> List.In x C -> List.In y C -> List.In z C -> False
+
+bcf66a6f18df1538  thm TwoCoverSharp.rao_full
+    rao_full : forall (r : nat) (G : Family), RaoSpread 3 G r -> forall T : list nat, List.NoDup T -> length T = 3 -> deg T G <= 1
+
+4ccb80aee83cf467  thm TwoCoverSharp.piece_split
+    piece_split : forall G : Family, Uniform 3 G -> forall (a b : nat) (C : list nat), List.In C (piece G a b) -> exists u v : nat, u <> v /\ a <> u /\ a <> v /\ b <> u /\ b <> v /\ List.In u C /\ List.In v C /\ (forall y : nat, List.In y C -> y = a \/ y = u \/ y = v)
+
+7fc1e1b09c453cdd  thm TwoCoverSharp.cross_meet
+    cross_meet : forall G : Family, (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall (a b : nat) (C D : list nat), List.In C (piece G a b) -> List.In D (piece G b a) -> exists x : nat, List.In x C /\ List.In x D /\ x <> a /\ x <> b
+
+4948dbbfd60d639c  thm TwoCoverSharp.piece_pair_bound
+    piece_pair_bound : forall (r : nat) (G : Family), RaoSpread 3 G r -> forall a b w : nat, a <> w -> (forall C : list nat, List.In C (piece G a b) -> List.In w C) -> length (piece G a b) <= r
+
+8ced8fa7520c58b8  thm TwoCoverSharp.piece_two_pairs_bound
+    piece_two_pairs_bound : forall (r : nat) (G : Family), RaoSpread 3 G r -> forall a b u v : nat, a <> u -> a <> v -> (forall C : list nat, List.In C (piece G a b) -> List.In u C \/ List.In v C) -> length (piece G a b) <= 2 * r
+
+d71269ac46c70062  thm TwoCoverSharp.piece_triples_bound
+    piece_triples_bound : forall (r : nat) (G : Family), RaoSpread 3 G r -> forall (a b : nat) (Ts : list (list nat)), (forall T : list nat, List.In T Ts -> List.NoDup T /\ length T = 3) -> (forall C : list nat, List.In C (piece G a b) -> exists T : list nat, List.In T Ts /\ Subset T C) -> length (piece G a b) <= length Ts
+
+49eb89ab13e02f88  thm TwoCoverSharp.common_point_case
+    common_point_case : forall (r : nat) (G : Family), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall a b u : nat, a <> b -> a <> u -> (forall C : list nat, List.In C (piece G a b) -> List.In u C) -> piece G a b <> nil -> length (piece G a b) + length (piece G b a) <= 2 * r + 1
+
+52ff26160a6a7d85  thm TwoCoverSharp.tails_meet_no_common_point
+    tails_meet_no_common_point : forall (r : nat) (G : Family), Uniform 3 G -> RaoSpread 3 G r -> forall a b : nat, a <> b -> (forall C C' : list nat, List.In C (piece G a b) -> List.In C' (piece G a b) -> exists x : nat, List.In x C /\ List.In x C' /\ x <> a) -> (forall w : nat, w <> a -> exists C : list nat, List.In C (piece G a b) /\ ~ List.In w C) -> piece G a b <> nil -> length (piece G a b) <= 3
+
+16bc676e1f8a4a67  thm TwoCoverSharp.disjoint_tails_pin
+    disjoint_tails_pin : forall G : Family, (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall (a b : nat) (C C' : list nat) (x1 x2 y1 y2 : nat), List.In C (piece G a b) -> List.In C' (piece G a b) -> (forall y : nat, List.In y C -> y = a \/ y = x1 \/ y = x2) -> (forall y : nat, List.In y C' -> y = a \/ y = y1 \/ y = y2) -> forall D : list nat, List.In D (piece G b a) -> exists T : list nat, List.In T ((b :: x1 :: y1 :: nil)%list :: (b :: x1 :: y2 :: nil)%list :: (b :: x2 :: y1 :: nil)%list :: (b :: x2 :: y2 :: nil)%list :: nil) /\ Subset T D
+
+dd413adfb42e6f6f  thm TwoCoverSharp.four_pinned_all_present
+    four_pinned_all_present : forall (r : nat) (G : Family), RaoSpread 3 G r -> forall (a b : nat) (T1 T2 T3 T4 : list nat), (forall T : list nat, List.In T (T1 :: T2 :: T3 :: T4 :: nil) -> List.NoDup T /\ length T = 3) -> (forall D : list nat, List.In D (piece G b a) -> exists T : list nat, List.In T (T1 :: T2 :: T3 :: T4 :: nil) /\ Subset T D) -> 4 <= length (piece G b a) -> (exists D : list nat, List.In D (piece G b a) /\ Subset T1 D) /\ (exists D : list nat, List.In D (piece G b a) /\ Subset T2 D) /\ (exists D : list nat, List.In D (piece G b a) /\ Subset T3 D) /\ (exists D : list nat, List.In D (piece G b a) /\ Subset T4 D)
+
+dffc19a893dbedf9  thm TwoCoverSharp.four_present_force_tails
+    four_present_force_tails : forall G : Family, Uniform 3 G -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall (a b x1 x2 y1 y2 : nat) (D11 D12 D21 D22 : list nat), a <> b -> a <> x1 -> a <> x2 -> a <> y1 -> a <> y2 -> x1 <> x2 -> y1 <> y2 -> x1 <> y1 -> x1 <> y2 -> x2 <> y1 -> x2 <> y2 -> List.In D11 (piece G b a) -> List.In D12 (piece G b a) -> List.In D21 (piece G b a) -> List.In D22 (piece G b a) -> (forall t : nat, List.In t D11 -> t = b \/ t = x1 \/ t = y1) -> (forall t : nat, List.In t D12 -> t = b \/ t = x1 \/ t = y2) -> (forall t : nat, List.In t D21 -> t = b \/ t = x2 \/ t = y1) -> (forall t : nat, List.In t D22 -> t = b \/ t = x2 \/ t = y2) -> forall E : list nat, List.In E (piece G a b) -> exists T : list nat, List.In T ((a :: x1 :: x2 :: nil)%list :: (a :: y1 :: y2 :: nil)%list :: nil) /\ Subset T E
+
+d1d27945d3385f23  thm TwoCoverSharp.disjoint_tails_case
+    disjoint_tails_case : forall (r : nat) (G : Family), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall (a b : nat) (C C' : list nat), a <> b -> List.In C (piece G a b) -> List.In C' (piece G a b) -> (forall x : nat, List.In x C -> List.In x C' -> x = a) -> length (piece G b a) <= 4 /\ (4 <= length (piece G b a) -> length (piece G a b) <= 2)
+
+1d8dec33d16d5147  thm TwoCoverSharp.no_common_point_case
+    no_common_point_case : forall (r : nat) (G : Family), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall a b : nat, a <> b -> piece G a b <> nil -> piece G b a <> nil -> (forall w : nat, w <> a -> exists C : list nat, List.In C (piece G a b) /\ ~ List.In w C) -> (forall w : nat, w <> b -> exists D : list nat, List.In D (piece G b a) /\ ~ List.In w D) -> length (piece G a b) + length (piece G b a) <= 7
+
+369f137014db55f5  thm TwoCoverSharp.pieces_sum
+    pieces_sum : forall (G : Family) (p q : nat), p <> q -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> length G = length (piece G p q) + length (piece G q p) + length (List.filter (fun C : list nat => (memb p C && memb q C)%bool) G)
+
+3efdc82bbaacae57  thm TwoCoverSharp.both_bound
+    both_bound : forall (r : nat) (G : Family), RaoSpread 3 G r -> forall p q : nat, p <> q -> length (List.filter (fun C : list nat => (memb p C && memb q C)%bool) G) <= r
+
+c53dd7dbf80863e6  thm TwoCoverSharp.two_cover_sharp
+    two_cover_sharp : forall (r : nat) (G : Family), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> forall p q : nat, p <> q -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> piece G p q <> nil -> piece G q p <> nil -> 3 <= r -> length G <= 3 * r + 1
+
+30011e33512523e7  thm TwoCoverSharp.two_cover_at_most_3r_plus_1
+    two_cover_at_most_3r_plus_1 : forall (r : nat) (G : Family) (p q : nat), Uniform 3 G -> RaoSpread 3 G r -> (forall C D : list nat, List.In C G -> List.In D G -> exists x : nat, List.In x C /\ List.In x D) -> (forall C : list nat, List.In C G -> List.In p C \/ List.In q C) -> p <> q -> 3 <= r -> (exists C : list nat, List.In C G /\ ~ List.In q C) -> (exists D : list nat, List.In D G /\ ~ List.In p D) -> length G <= 3 * r + 1
+
+36a7ded365f38068  thm TwoCoverSharp.hm_family_rao_spread
+    hm_family_rao_spread : RaoSpread 3 hm_family 3
+
+24a3e5be9f7539da  thm TwoCoverSharp.hm_family_intersecting
+    hm_family_intersecting : forall C D : list nat, List.In C hm_family -> List.In D hm_family -> exists x : nat, List.In x C /\ List.In x D
+
+b96d053b62025d09  thm TwoCoverSharp.two_cover_sharp_at_three_is_tight
+    two_cover_sharp_at_three_is_tight : length hm_family = 3 * 3 + 1 /\ (exists C : list nat, List.In C hm_family /\ ~ List.In 1 C) /\ (exists D : list nat, List.In D hm_family /\ ~ List.In 0 D)
+
+ab0b895063262063  def TwoCoverSharp.piece
+    piece = fun (G : Family) (a b : nat) => List.filter (fun C : list nat => (memb a C && negb (memb b C))%bool) G : Family -> nat -> nat -> Family Arguments piece G (a b)%nat_scope
+
+e80c483e7bb23171  def TwoCoverSharp.hm_family
+    hm_family = ((0 :: 2 :: 4 :: nil) :: (0 :: 2 :: 5 :: nil) :: (0 :: 2 :: 6 :: nil) :: (0 :: 3 :: 7 :: nil) :: (0 :: 3 :: 8 :: nil) :: (0 :: 3 :: 9 :: nil) :: (1 :: 2 :: 3 :: nil) :: (0 :: 1 :: 10 :: nil) :: (0 :: 1 :: 11 :: nil) :: (0 :: 1 :: 12 :: nil) :: nil)%list : Family

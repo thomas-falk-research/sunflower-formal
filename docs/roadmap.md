@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 167 anecdotes into a coverage metric over the
+  mutation testing from 171 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 49 modules, 740 audited theorems, 144 audited
+The development is now 51 modules, 771 audited theorems, 148 audited
 definitions, 167 mutations, and 41 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -13177,3 +13177,191 @@ nor refuted, only unevidenced.
 This is scheduling, again, and §49.4's judgement stands: **`τ = 3` is the
 case that would close the rung without any of this compute**, and §53 says
 the elementary route to it does not reach.
+
+## 56. Session N+16: the threshold at `(3,3,3)` is exactly tight, `τ = 2`
+##     is exactly `3r + 1`, and the "weak evidence" for `r*(3,3) = 3` is
+##     withdrawn
+
+**Verdict, without inflation.** Two theorems, both `Closed under the
+global context`; one exact computation; one correction to this file's
+own record. **`r*(3,3)` is still `{3, 4}`.** No bound on `f(n,k)` moved,
+the axiom census is unchanged, and nothing here touches `ι(4)`.
+
+* **The size threshold in `SpreadYieldsDisjoint 3 3 3` cannot be lowered
+  by one.** `TightThreshold.threshold_27_is_attained`: a 3-uniform family
+  of exactly `27 = 3^3` members, 9-regular on nine points, every pair in
+  at most three members, with no three pairwise disjoint members. The
+  non-strict statement (`r^m <= |F|` in place of `r^m < |F|`) is false at
+  `(3,3,3)` — `TightThreshold.non_strict_threshold_fails_at_3_3_3`.
+* **Covering number two, exactly.** `TwoCoverSharp.two_cover_at_most_3r_plus_1`:
+  an intersecting 3-uniform family under Rao's caps at `r >= 3`, covered
+  by two points and by neither alone, has at most `3r + 1` members;
+  `hm_family` attains it. `TwoCover.two_cover_bound`'s `max(4r, 3r+4)`
+  was 13 at `r = 3` against a truth of 10, and 16 at `r = 4` against 13.
+  The `I(3,3) = 10` that §24.9 measured is now one citation (Frankl's
+  `τ = 3` value) from a theorem: `τ = 1` is `r^2 = 9` (`one_cover_bound`),
+  `τ = 2` is 10 (this), `τ = 3` is 10 by Frankl and 16 by `TauThree`.
+* **The exact maximum on nine points is 27.** Not a search that found
+  27 — an optimisation that proved nothing larger exists on nine points,
+  which is also what counting says (`28 · 3 > 9 · 9`).
+* **On ten points**: an hour of CP-SAT with three workers did **not** decide it: the incumbent stayed at 27 (again a 9-regular family on nine of the ten points) and the proved upper bound stayed at 30, which is the counting bound `10 · 9 / 3`. cadical on `rstar.rs`'s own encoding was undecided at its 3500 s cap. **Ten points is open**, exactly as §22.5 left it, and it is the next thing to cube (§56.5).
+* **The record's evidence is withdrawn.** §22.5 reported the depth-first
+  search's largest find at `(3,3,10)` as 23, and STATUS.md's pinned
+  object is 23 "five short", offered as *"weak evidence that the term
+  really is 3"*. The exact maximum at ground 9 — one point *fewer* — is
+  27. The search was not finding what nine points hold, and "largest
+  found" was never evidence about the maximum. That evidence is gone; the
+  question is exactly as open as it was, but honestly so.
+
+### 56.1 What the question is, in one line
+
+`SpreadYieldsDisjoint 3 3 3` fails iff there is a 3-uniform family with
+**28** members, no three pairwise disjoint, every point in at most **9**
+members, every pair in at most **3** (`TwoCover.rao_uniform_distinct`
+makes distinctness automatic). Call the maximum size of such a family
+`M`. `r*(3,3) = 3` iff `M <= 27`. This session shows `M >= 27`.
+
+### 56.2 The object, and how it was found
+
+`rust/tests/tight_threshold.rs` re-checks it with code that shares
+nothing with the Coq:
+
+```text
+  points      9         members  27        every point in exactly 9
+  pair degree 1 x3, 2 x21, 3 x12           covering number 4
+  disjoint pairs 84                        automorphism group trivial
+```
+
+Found by an exact CP-SAT optimisation (OR-Tools 9, `nu2max.py`, kept
+with the run logs of this session, not in the tree) with the maximal
+matching `{0,1,2}, {3,4,5}` forced and every member meeting it — the
+same anchoring as `rstar.rs` — plus degree-sequence symmetry breaking.
+On nine points it proves optimality in **0.0 s**. A simple local search
+(`sa28.py`: greedy fill, random removal of one to four members, repeat)
+reaches 27 on nine points in **301 iterations** and on ten, eleven,
+twelve and thirteen points in under fifteen seconds each; it never
+reached 28 in 3·10^6 iterations on ten or eleven points. Every 27-member
+family the local search returned on twelve points had support exactly
+nine and was 9-regular; forced to use all ten points it stopped at 25.
+None of that is a proof of anything — it is recorded because it is the
+shape of the extremal region, and because §22.5's 23 was recorded as
+weak evidence and this is what replaces it.
+
+### 56.3 What a proof of `M <= 27` would have to do, and how far the elementary part goes
+
+Everything below is prose, marked so, and none of it is in the kernel.
+
+Let `|F| = 28` (the property is hereditary, so a witness can be cut to
+28). For a member `E`, write `M_E` for the members disjoint from `E`;
+`ν <= 2` makes `M_E` intersecting. Inclusion–exclusion at `E` gives the
+exact identity
+
+```text
+  |M_E|  =  3 + s_E,     s_E  =  Σ_{v in E} (9 − d_v)  +  Σ_{pairs p in E} (d_p − 1)  >=  0.
+```
+
+So every member is disjoint from at least three others, and from more
+by exactly its degree deficiency and its pairs' excess. If `I(3,3) <= 10`
+— Frankl's `τ = 3` value plus this session's `τ = 2` theorem — then
+`s_E <= 7` for every member, hence **no point has degree 1**, every
+point of degree 2 lies in two members whose other points are full and
+whose pairs all have degree 1, and summing `s_E` over members gives
+`18 n <= 196 + 168`, i.e. a 28-member family has at most **20 points**.
+That is the whole elementary content: the question is finite in
+principle and not in practice — twenty points in the counting-tight
+regime is far beyond the searches that stalled at ten (§22.5).
+
+Two things the identity makes visible. On nine points every 27-member
+family is 9-regular, so `s_E = Σ_p (d_p − 1)` and `|M_E| = 2 + s_E`; in
+the object above `|M_E|` runs from 5 to 7. A 28-member family on ten
+points has total deficiency 6 and every member's `s_E` at most 7, which
+is why ten points is the tight case and why the exact search there is the
+next thing to run to completion (§56.5).
+
+### 56.4 The `τ = 2` proof, and what it is not
+
+The argument is in the header of `coq/TwoCoverSharp.v`. It uses no graph
+theory — every step names a finite list of pairs or triples that every
+member of a piece must contain and counts them under Rao's caps, which is
+`TwoCover.v`'s discipline — and it was checked against CP-SAT before it
+was written in Coq: the two-covered maximum under the caps is 10 at
+`r = 3` and 13 at `r = 4` on nine and eleven points (0.4 s each), and
+`rust/tests/tight_threshold.rs` re-derives 9, 10, 10, 10 and 10, 12, 13,
+13 on six to nine points by an independent depth-first search.
+
+What it is not: a result about intersecting families in general. The
+caps are the hypothesis; without them the Hilton–Milner family through
+two points is `3n − 8` and unbounded. Nearest neighbour in the corpus:
+[FHHZ17]'s *degree version* of Hilton–Milner, which conditions on the
+minimum degree rather than capping the maximum. Rule 17: **new to this
+development**, searched (§56.6), not claimed new.
+
+### 56.5 What is owed, in order
+
+1. **Ten points, to completion.** The CP-SAT maximisation and cadical on
+   the `rstar.rs` encoding were both given an hour here (§56.7). Ten
+   points is the counting-tight case; deciding it exactly is the
+   cheapest fact about `M` not yet known. Cube on the degree of the
+   lowest-degree point (deficiency 6 spread over ten points) rather than
+   running the monolith — §52.2's lesson applies unchanged.
+2. **Eleven and twelve points at target 28.** Feasibility only (no
+   objective), one cube per degree sequence, checkpointed. A hit ends
+   the question at `r*(3,3) = 4` with a witness the kernel can certify
+   in the shape of `TightThreshold.v` in an afternoon.
+3. **`I(3,3) <= 10` in the kernel.** Frankl's `τ = 3` value is the only
+   missing piece, and it is the one §24.9 named. Under the caps a direct
+   proof may be shorter than Frankl's: the pair cap is free at `τ = 3`
+   (`TauThree.tt_pair`), so the gap is 16 to 10 in `TauThree.lemma_L`.
+4. **The support bound below 20.** §56.3's 20 uses only `d_v >= 2`. A
+   degree-2 point forces two extremal 10-member intersecting families
+   on the other points; classifying those (they are `K_5^(3)`, the
+   Hilton–Milner shape `hm_family`, and whatever else `τ = 3` allows
+   under the caps) should push the minimum degree up and the support
+   down. If it reaches twelve, item 2 becomes a proof.
+5. **Do not re-run the depth-first search for evidence.** Its largest
+   find was four short of the truth on a ground it had exhausted by
+   counting. Exact optimisation on the smallest counting-feasible ground
+   first; heuristics second; the search that reports "largest found"
+   last, and never as evidence.
+
+### 56.6 Prior art, searched
+
+`docs/reading.md`, "Session N+16". Thirteen PDFs, ten rendered; the two
+that bear on the problem re-read here from page images. Khare 2014 is
+Chvátal–Hanson for **linear** 3-graphs and gives only the trivial
+`(Δ−1)kν + ν = 50` at codegree 3; Hou–Yu–Gao–Liu 2017/2019 is
+codegree-only, `n` large, `3(n−2)` at these parameters. Nothing found
+with both a degree cap and a matching cap for non-linear 3-graphs, and
+nothing on 27 against 28. Chvátal–Hanson 1976 and Füredi 1981 stayed
+paywalled.
+
+### 56.7 Costs and gates
+
+```text
+  CP-SAT maximum, 9 points                    0.0 s     27, optimal
+  CP-SAT maximum, 10 points, 3 workers        3600 s, undecided: incumbent 27, bound 30
+  cadical on rstar.rs's (3,3,10) encoding     3500 s cap, undecided (the driver then
+                                              asked cryptominisat5, absent here, and stopped)
+  CP-SAT feasibility, 11 points, target 28    1 worker, 7200 s, undecided
+  CP-SAT feasibility, 12 points, target 28    1 worker, 3000 s, undecided
+  local search, 27 on 9/10/11/12/13 points    <15 s each; no 28 in 3e6 iterations (10, 11)
+  CP-SAT two-covered maximum, r=3,4, n=9,11   0.2-0.4 s each
+  coqc TwoCoverSharp.v                        ~20 s; compiles under the default 8 MB stack
+```
+
+Gates on the final tree are in the pull-request body (`body.md`).
+
+### 56.8 Three rules, each paid for here
+
+* **"Largest found" is not evidence about a maximum.** §22.5 called 23
+  weak evidence for `r*(3,3) = 3`; the maximum on a *smaller* ground is
+  27. Only an exact method's bound, or a counting ceiling, says anything
+  about a maximum.
+* **Run the exact optimiser on the smallest ground counting allows
+  before the first ground counting does not exclude.** Nine points was
+  free (0.0 s) and changed the picture; ten points is the hard case and
+  had absorbed every previous budget.
+* **Check a hand-derived constant against an exact solver before writing
+  it in Coq.** The `3r + 1` was derived by hand, confirmed at `r = 3, 4`
+  on two grounds in under a second, and only then formalised. The Coq
+  took ninety minutes; a wrong constant would have cost all of them.

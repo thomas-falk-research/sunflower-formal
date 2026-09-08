@@ -639,7 +639,7 @@ unrelated theorems.
 
 ### Current results
 
-167 mutations, all with the outcome the manifest declares: 164 killed
+171 mutations, all with the outcome the manifest declares: 168 killed
 outright, two genuine survivors (`lowerbound-at-least`, for the reason
 above, and `iotaatleast-at-least`, which asks the same question of
 `Product.IotaAtLeast` — see below), and one control surviving as it must. The mutations that

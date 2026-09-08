@@ -370,6 +370,37 @@ the shorter one to formalise. Both papers remain unread; this is an
 inference from a survey's quoted formula matching a computed table, and
 is recorded as that.
 
+## Bounded degree and bounded matching number
+
+The extremal problem the threshold `r*(3,3)` turns on — the largest
+3-uniform family with no three pairwise disjoint members, point degree at
+most 9 and pair degree at most 3 (`docs/roadmap.md` §56) — is the
+hypergraph analogue of Chvátal–Hanson with a codegree cap. Searched in
+session N+16 (`docs/reading.md`, "Session N+16"); the two nearest results
+are below, and neither reaches it.
+
+- **[Kha14]** N. Khare, *Size of a 3-uniform linear hypergraph*,
+  arXiv:1304.4791 (journal version reported as Discrete Math. 334 (2014)
+  26–37). *Read pp. 1–3 of 21, rendered.* Chvátal–Hanson for **linear**
+  3-graphs (codegree 1): `|F| ≤ 2Δν` for `Δ ≥ 5` (Thm 2), `|F| ≤ Δν` for
+  `Δ ≥ (23/6)ν(1 + 1/(ν−1))` (Thm 3), and the trivial
+  `(Δ−1)kν + ν` (ineq. (1), p. 3), which is all that applies at codegree
+  3 and gives 50 at `(3, 2, 9)`.
+- **[Hou17]** X. Hou, L. Yu, J. Gao, B. Liu, *The size of 3-uniform
+  hypergraphs with given matching number and codegree*, arXiv:1709.07208
+  (a 2019 journal version is listed by zbMATH 7004803). *Read pp. 1–4 and
+  15–16 of 16, rendered.* Codegree-only, `n` sufficiently large, no
+  vertex-degree parameter: at `ν = 2`, `Δ₂ = 3` the bound is `3(n − 2)`.
+  Its introduction lists the state of the art as graphs → linear
+  3-graphs → codegree, with no degree-capped non-linear version.
+
+Not found by that search: any bound on non-linear 3-graphs with both a
+degree cap and a matching-number cap. **[ChHa76]** itself (above) and
+Füredi 1981 (*Maximum degree and fractional matchings in uniform
+hypergraphs*, Combinatorica 1) remained unreachable — the latter is
+relevant because `ν* ≤ (k − 1 + 1/k)ν` would give `|F| ≤ 42` here and no
+better; it is cited from memory and marked *not read*.
+
 ## Pre-2020 partial results
 
 - **[Ko97]** A. V. Kostochka, *An intersection theorem for systems of

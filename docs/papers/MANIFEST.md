@@ -82,8 +82,10 @@ more; it is not a claim about the contents.
 | `Smooth21` | Sam Spiro | A Smoother Notion of Spread Hypergraphs | arXiv:2106.11882v2 | 12 | arXiv non-exclusive | not stored | not read (12 pages rendered) |
 | `Thi21` | R. Thiemann | The Sunflower Lemma of Erdős and Rado | — | 14 | BSD License (AFP entry licence) | `pdf/afp_sunflowers.pdf` | read pp. 1-4 and 13-14 of 14 |
 | `VS25` | Ferdinand Ihringer, Andrey Kupavskii | The Erdős-Rado Sunflower Problem for Vector Spaces | arXiv:2505.03671v2 | 9 | arXiv non-exclusive | not stored | not read (9 pages rendered) |
+| `Kha14` | Niraj Khare | Size of a 3-uniform linear hypergraph | arXiv:1304.4791v1 | 21 | arXiv non-exclusive | not stored | read pp. 1-3 of 21 |
+| `Hou17` | Xinmin Hou et al. | The size of 3-uniform hypergraphs with given matching number and codegree | arXiv:1709.07208v1 | 16 | arXiv non-exclusive | not stored | read pp. 1-4 and 15-16 of 16 |
 
-38 records, 17 PDFs stored,
+40 records, 17 PDFs stored,
 14 read in full.
 
 ## What bears on what
@@ -128,6 +130,8 @@ more; it is not a claim about the contents.
 | `Smooth21` | A smoother notion of spread. |
 | `Thi21` | Refutes the 'only machine-checked formalisation' claim. |
 | `VS25` | Erdos-Rado sunflower problem for vector spaces. |
+| `Kha14` | Chvatal-Hanson for LINEAR 3-graphs only (codegree 1): Thm 2 |F| <= 2 Delta nu for Delta >= 5, Thm 3 |F| <= Delta nu for Delta >= (23/6) nu (1+1/(nu-1)); ineq. (1) p. 3 the trivial (Delta-1) k nu + nu. Says nothing about codegree 3; docs/roadmap.md section 56. |
+| `Hou17` | Thm 2 p. 3: codegree-only bound e(H) <= f(n,nu,Delta_2) for n large, no vertex-degree parameter; for nu=2, Delta_2=3 it is 3(n-2), unbounded in n. Its introduction lists the state of the art as graphs -> linear 3-graphs -> codegree; no degree-capped non-linear version. docs/roadmap.md section 56. |
 
 ## Provenance rules
 

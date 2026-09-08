@@ -60,6 +60,8 @@ claim progress on it. What is machine-checked here is the complete
 | **A ground-set-aware link bound** | $b\lvert F\rvert \le \lvert U\rvert\, N(b{-}1,\lvert U\rvert{-}1)$ by double counting, met with equality at four measured rows — which forces the extremal families to be regular. Unconditionally $N(3,g) \le 2g$ | `coq/IotaGround.v` |
 | **The pure link is intersecting** | the members meeting a maximal-matching cover exactly once, with that point removed, pairwise intersect — so one of the Erdős–Rado degrees is bounded by $\iota(b{-}1)$ rather than $g(b{-}1)$, giving $2\lvert F\rvert \le \lvert T\rvert(g(b{-}1) + \iota(b{-}1))$. Reproduces $g(2)=6$ and $\iota(2)=3$ exactly; gives **$f(3,3) \le 28$**, and **$\le 27$** once the matching members are charged the $b$ points of the cover they actually occupy, where Erdős–Rado gives 49 | `coq/PureLink.v` |
 | **`ι(b)` is decided by one finite search** | an $n$-member intersecting $b$-uniform family has support $\le b + (b{-}1)(n{-}1)$, so a statement quantified over every ground set becomes a search on $b + (b{-}1)N$ points. At $b=3$ that is 23 points, the search is exhaustively empty at eleven members, and **$\iota(3) = 10$** exactly | `coq/PureLink.v`, `rust/src/wide.rs` |
+| **The size threshold at $(3,3,3)$ is exactly tight** | a 3-uniform family of exactly $27 = 3^3$ members on nine points, 9-regular, every pair in $\le 3$ members, with **no** three pairwise disjoint members — so `SpreadYieldsDisjoint 3 3 3` cannot be weakened from $r^m < \lvert F\rvert$ to $\le$, and any proof of $r^{*}(3,3) = 3$ must be tight at 27 | `coq/TightThreshold.v` |
+| **Two-point covers, exactly** | an intersecting 3-uniform family under Rao's caps at $r \ge 3$ with covering number exactly 2 has at most $3r + 1$ members, attained — sharpening the proved $\max(4r, 3r{+}4)$; at $r = 3$ that is 10 against 13 | `coq/TwoCoverSharp.v` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
 | Hall's marriage theorem (1935) | constructive, Halmos–Vaughan induction | `coq/HallCore.v`, `coq/KoenigHall.v` |
@@ -195,6 +197,18 @@ Highlights of the less-routine parts:
   enumeration with counting bounds — and pins the counterexample families
   it finds.
 
+  **Where $r^{*}(3,3)$ stands now.** The first open term of that sequence
+  is $r^{*}(3,3) \in \{3, 4\}$, and the whole question is whether a
+  3-uniform family with no three pairwise disjoint members, every point in
+  at most 9 members and every pair in at most 3, can have 28 members. It
+  can have **27**: `coq/TightThreshold.v` certifies a 9-regular family on
+  nine points that meets every hypothesis of `SpreadYieldsDisjoint 3 3 3`
+  except the strict size bound, and misses that by exactly one. So the
+  threshold $r^m$ in the statement is sharp at $(3,3,3)$, and the
+  depth-first search that had reported a largest of 23–24 was simply not
+  finding what nine points hold. The 28th member is still open —
+  `docs/roadmap.md` §56 records what was decided and at what cost.
+
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$
   members") together with his size hypothesis — checked against the
@@ -223,7 +237,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 167 mutations, 164 are killed outright, two
+  that something breaks. Of 171 mutations, 168 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -301,10 +315,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 49 Coq files, then runs the axiom audit
+make verify        # builds all 51 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (740 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (771 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

@@ -2620,3 +2620,62 @@ nine and not fewer."""
 find = "    NoDup V -> length V <= 9 ->"
 replace = "    NoDup V -> length V <= 8 ->"
 expect = "killed"
+
+# ----------------------------------------------------------------
+# TightThreshold.v -- the 27-member witness at (3,3,3).
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "tightthreshold-drop-a-member"
+file = "coq/TightThreshold.v"
+question = """threshold_27_is_attained says the size threshold 3^3 = 27 is met \
+exactly by nine27. Does removing one member -- leaving a 26-member family that \
+satisfies every other hypothesis -- break the certificate?"""
+find = "    [3;6;7]; [3;6;8]; [4;6;7]; [4;7;8]; [5;6;8]; [5;7;8] ]."
+replace = "    [3;6;7]; [3;6;8]; [4;6;7]; [4;7;8]; [5;6;8] ]."
+expect = "killed"
+
+[[mutation]]
+id = "tightthreshold-add-a-disjoint-triple"
+file = "coq/TightThreshold.v"
+question = """nine27_no_three_disjoint is decided by vm_compute. Does adding the \
+triple {0,3,6} -- which together with {1,2,5} and {4,7,8} is three pairwise \
+disjoint members -- make the boolean search notice?"""
+find = "    [3;6;7]; [3;6;8]; [4;6;7]; [4;7;8]; [5;6;8]; [5;7;8] ]."
+replace = "    [3;6;7]; [3;6;8]; [4;6;7]; [4;7;8]; [5;6;8]; [5;7;8]; [0;3;6] ]."
+expect = "killed"
+
+# ----------------------------------------------------------------
+# TwoCoverSharp.v -- tau = 2 gives 3r + 1, exactly.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "twocoversharp-three-r"
+file = "coq/TwoCoverSharp.v"
+question = """two_cover_sharp concludes 3r + 1. The +1 is the single member of \
+the smaller piece in the Hilton-Milner-like extremal family. Is 3r enough?"""
+find = """    3 <= r ->
+    length G <= 3 * r + 1.
+Proof.
+  intros p q Hpq Hcov Hne Hne' Hr."""
+replace = """    3 <= r ->
+    length G <= 3 * r.
+Proof.
+  intros p q Hpq Hcov Hne Hne' Hr."""
+expect = "killed"
+
+[[mutation]]
+id = "twocoversharp-r-at-least-two"
+file = "coq/TwoCoverSharp.v"
+question = """two_cover_sharp assumes 3 <= r. The no-common-point case gives \
+seven, which is 2r + 1 exactly at r = 3 and exceeds it at r = 2. Is the \
+hypothesis load-bearing?"""
+find = """    3 <= r ->
+    length G <= 3 * r + 1.
+Proof.
+  intros p q Hpq Hcov Hne Hne' Hr."""
+replace = """    2 <= r ->
+    length G <= 3 * r + 1.
+Proof.
+  intros p q Hpq Hcov Hne Hne' Hr."""
+expect = "killed"
