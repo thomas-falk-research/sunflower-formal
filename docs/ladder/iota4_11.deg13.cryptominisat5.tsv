@@ -4629,6 +4629,23 @@
 # decided (11.4%), unmoved by these three.  Bracket 27 <= iota(4) <=
 # 71 unchanged.
 #
+# #384: [13,13,13,12,12,12,11,11,11,11,9] UNSAT 3277.2, a FIRST
+# attempt, idx 229, landed 05:32:26Z.  It opens a two-tail group,
+# prefix [13,13,13,12,12,12,11,11], idx 229-230.  It arrived ahead of
+# idx 227 and 228, which are still in flight -- cost order again, not
+# a skip.
+#
+# Block [13,13,13,12]: 95 decided of 104, 99 attempted, 5 unreached.
+# The four undecided are the stragglers 189, 190, 209, 211; the five
+# unreached are 227 and 228 in flight plus 230, 231, 232.  So this
+# block is five cubes from having every index attempted, and after
+# that only the four stragglers stand between it and closure.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 384, labels 228, 224 UNSAT / 4 UNKNOWN / 0 SAT; 224 of 1949
+# decided, crossing to 11.5%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5070,3 +5087,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNSAT	20600.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21765.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21772.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21806.6
+g=11 [13, 13, 13, 12, 12, 12, 11, 11, 11, 11, 9]	UNSAT	3277.2
