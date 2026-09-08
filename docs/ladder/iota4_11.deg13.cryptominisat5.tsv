@@ -5092,6 +5092,16 @@
 # Rows 417, labels 256, 252 UNSAT / 4 UNKNOWN / 0 SAT; 252 of 1949
 # decided (12.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #418: [13,13,13,11,13,13,13,12,12,10,5] UNSAT 10409.0, a FIRST
+# attempt, idx 256, landed 23:04:05Z.  The twelve-tail group at idx
+# 254-265 is running dearer than the block's earlier cubes: 4814.8,
+# 9470.9, 10409.0 so far.  Block [13,13,13,11] at 24 of 82.
+#
+# BUDGET RULE: ten UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 418, labels 257, 253 UNSAT / 4 UNKNOWN / 0 SAT; 253 of 1949
+# decided, crossing to 13.0%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5567,3 +5577,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 10, 8, 8]	UNSAT	4724.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 9, 9, 8]	UNSAT	4727.5
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 12, 3]	UNSAT	4814.8
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 11, 4]	UNSAT	9470.9
+g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 10, 5]	UNSAT	10409.0
