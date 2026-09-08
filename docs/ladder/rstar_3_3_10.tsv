@@ -8,7 +8,8 @@
 # most 16" (TauThree.tau_three_bound / TwoCoverSharp / a star).  A cube listed
 # UNKNOWN at its cap and again INFEASIBLE was re-run with the stronger settings;
 # every cube ends INFEASIBLE.  Second opinion: SCIP via tools/cube10_mip.py with
-# the same lex constraints and cut, where it finished.  Session N+16
+# the same lex constraints and cut, where it finished; UNKNOWN with seconds is
+# the cap it ran to without a verdict (the second opinion is missing there).  Session N+16
 # (docs/roadmap.md section 56.9).
 # cube	degrees	K	B	cpsat_verdict	cpsat_seconds	scip_verdict	scip_seconds
 6	3,9,9,9,9,9,9,9,9,9	20	0	INFEASIBLE	1.9	INFEASIBLE	105.7
