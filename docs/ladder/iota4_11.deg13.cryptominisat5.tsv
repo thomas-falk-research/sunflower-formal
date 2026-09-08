@@ -5071,6 +5071,16 @@
 # Rows 415, labels 254, 250 UNSAT / 4 UNKNOWN / 0 SAT; 250 of 1949
 # decided (12.8%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #416: [13,13,13,11,13,13,13,12,12,12,3] UNSAT 4814.8, a FIRST
+# attempt, idx 254, landed 20:22:21Z.  It opens a twelve-tail group,
+# prefix [13,13,13,11,13,13,13,12], idx 254-265 -- the largest group
+# the sweep has met in a while.  Block [13,13,13,11] at 22 of 82.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 416, labels 255, 251 UNSAT / 4 UNKNOWN / 0 SAT; 251 of 1949
+# decided, crossing to 12.9%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5544,3 +5554,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 11, 10, 5]	UNSAT	5301.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 10, 9, 7]	UNSAT	4926.8
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 10, 8, 8]	UNSAT	4724.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 9, 9, 8]	UNSAT	4727.5
+g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 12, 3]	UNSAT	4814.8
