@@ -4583,6 +4583,52 @@
 # Rows 380, labels 227, 223 UNSAT / 4 UNKNOWN / 0 SAT; 223 of 1949
 # decided (11.4%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #381-#383, all landing 04:37-04:40Z, are the other three straggler
+# re-runs and ALL THREE STALLED:
+#   #381 idx 190  attempt 4  UNKNOWN 21765.9  (+165.9 past the cap)
+#   #382 idx 209  attempt 3  UNKNOWN 21772.9  (+172.9)
+#   #383 idx 189  attempt 4  UNKNOWN 21806.6  (+206.6)
+# So the nineteenth restart bought exactly one verdict (#380) out of
+# four straggler draws.  Pool stays at four: 189, 190, 209, 211.
+#
+# Cumulative on the four still undecided:
+#   idx 189  4 attempts  87157.8 s
+#   idx 190  4 attempts  87042.1 s
+#   idx 209  3 attempts  65312.2 s
+#   idx 211  1 attempt   21774.3 s
+#   TOTAL 261286.4 s = 72.6 CPU-hours, zero verdicts.
+# idx 189 and 190 have each burned 24.2 CPU-hours over four draws.
+#
+# The contrast with #380 is the only thing here worth reading, and
+# even that carefully.  idx 210 converted on its second draw at 5.7%
+# under the cap; 189 and 190 have failed four draws each.  That is
+# CONSISTENT with 210's true cost sitting at the cap and 189/190's
+# sitting above it, but four draws do not quantify how far above, and
+# every stall cost is censored at the cap, so there is nothing to
+# measure.  No estimate is offered.
+#
+# BUDGET RULE: last twelve read U U U U U . U U U . . . -- eight
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# I want to record why that is the RIGHT answer and not a blind spot,
+# because my first instinct on writing this block was that the rule
+# cannot see the problem -- the window mixes fresh cubes with
+# stragglers, so four hopeless cubes hide behind eight easy ones.  On
+# reflection that framing is wrong.  The cap is a GLOBAL parameter.
+# Eight of the last twelve attempts converted, so the cap is working
+# for the population; doubling it to rescue four cubes would double
+# the cost of every future stall across the remaining 1726.  Declining
+# that is exactly what the rule is for, and it is declining correctly.
+#
+# The tool that would actually fit is per-cube escalation -- re-run a
+# stalled cube at a higher budget while leaving the global cap alone.
+# That is a change to the driver, not to the cap, and it is outside
+# what I have been asked to do here, so it is noted and NOT acted on.
+#
+# Rows 383, labels 227, 223 UNSAT / 4 UNKNOWN / 0 SAT; 223 of 1949
+# decided (11.4%), unmoved by these three.  Bracket 27 <= iota(4) <=
+# 71 unchanged.
+#
 #
 #
 #
@@ -5021,3 +5067,6 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21774.3
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 10, 10, 9]	UNSAT	4077.5
 g=11 [13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 8]	UNSAT	5025.2
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNSAT	20600.2
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21765.9
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21772.9
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21806.6
