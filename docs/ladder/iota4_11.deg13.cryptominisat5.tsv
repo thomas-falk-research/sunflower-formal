@@ -4541,6 +4541,48 @@
 # Rows 379, labels 227, 222 UNSAT / 5 UNKNOWN / 0 SAT; 222 of 1949
 # decided (11.4%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #380: [13,13,13,12,13,12,12,11,11,9,9] UNSAT 20600.2, attempt 2, idx
+# 210, landed 04:17:49Z.  A STRAGGLER CONVERTED -- the first to do so
+# at the doubled cap.  The pool drops from five to four: 189, 190,
+# 209, 211.
+#
+# It converted BELOW its own prior stall: 20600.2 against 21782.4, a
+# ratio of 1.057, at an UNCHANGED cap of 21600.  So this is a draw
+# win, not a budget win -- the same deterministic search, run on a
+# better contention draw, got far enough before the wall clock bit.
+#
+# That is worth naming precisely, because it is the live instance of a
+# correction recorded above.  At #353/#354 I was one step from
+# publishing that a re-run at an unchanged cap must repeat the
+# identical search and stall again -- cryptominisat5 takes --random 0
+# and --threads 1 by default and the driver passes neither, so the
+# reasoning looked airtight -- and I tested it against the record
+# first, finding 22 of 75 re-run conversions had come in below their
+# own prior stall.  #380 is a twenty-third such case.  Had I published
+# the tidy claim, this row would have falsified it four hundred rows
+# later, in public.
+#
+# Claim it no further than that.  The margin is small (5.7%), so this
+# cube's true cost sits right at the cap either way; one row does not
+# establish a mechanism -- the 75-conversion tally did -- and it says
+# nothing about whether 189, 190, 209 or 211 will convert on their
+# next draw.
+#
+# TENTH group now 2 of 4:
+#   idx 208  (11,11,7)  UNSAT 12985.6
+#   idx 209  (11,10,8)  UNKNOWN 21766.4
+#   idx 210  (11, 9,9)  UNSAT 20600.2
+#   idx 211  (10,10,9)  UNKNOWN 21774.3
+#
+# Remaining straggler spend 195941.0 s = 54.4 CPU-hours over the four
+# still undecided.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire; cap
+# stays 21600.
+#
+# Rows 380, labels 227, 223 UNSAT / 4 UNKNOWN / 0 SAT; 223 of 1949
+# decided (11.4%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -4978,3 +5020,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 12, 11, 10, 8]	UNSAT	4824.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21774.3
 g=11 [13, 13, 13, 12, 12, 12, 12, 12, 10, 10, 9]	UNSAT	4077.5
 g=11 [13, 13, 13, 12, 12, 12, 12, 11, 11, 11, 8]	UNSAT	5025.2
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 9, 9]	UNSAT	20600.2
