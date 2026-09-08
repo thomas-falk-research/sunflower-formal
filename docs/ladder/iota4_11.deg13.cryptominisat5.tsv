@@ -4680,6 +4680,22 @@
 # Rows 386, labels 230, 226 UNSAT / 4 UNKNOWN / 0 SAT; 226 of 1949
 # decided, crossing to 11.6%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #387: [13,13,13,12,11,11,11,11,11,11,11] UNSAT 303.3, a FIRST
+# attempt, idx 232, landed 06:59:23Z.  That is the LAST cube of block
+# [13,13,13,12], and the second-cheapest conversion in the run behind
+# idx 0 at 128.3.
+#
+# The block now stands at 104 cubes: 98 decided, 2 unreached (idx 227
+# and 230, both in flight), and 4 attempted-but-undecided -- the
+# stragglers 189, 190, 209, 211.  So once 227 and 230 report, whatever
+# they say, the block's only outstanding work is those four, and three
+# of them sit behind the sweep counter until the next restart.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 387, labels 231, 227 UNSAT / 4 UNKNOWN / 0 SAT; 227 of 1949
+# decided (11.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5124,3 +5140,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21806.6
 g=11 [13, 13, 13, 12, 12, 12, 11, 11, 11, 11, 9]	UNSAT	3277.2
 g=11 [13, 13, 13, 12, 12, 12, 12, 11, 10, 10, 10]	UNSAT	6414.3
 g=11 [13, 13, 13, 12, 12, 11, 11, 11, 11, 11, 10]	UNSAT	1802.0
+g=11 [13, 13, 13, 12, 11, 11, 11, 11, 11, 11, 11]	UNSAT	303.3
