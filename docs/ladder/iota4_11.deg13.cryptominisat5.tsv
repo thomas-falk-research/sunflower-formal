@@ -4660,6 +4660,26 @@
 # Rows 385, labels 229, 225 UNSAT / 4 UNKNOWN / 0 SAT; 225 of 1949
 # decided (11.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #386: [13,13,13,12,12,11,11,11,11,11,10] UNSAT 1802.0, a FIRST
+# attempt, idx 231, landed 06:54:08Z.  Cheap.
+#
+# Block [13,13,13,12] is at 97 decided of 104, 101 attempted, with
+# only idx 227, 230 and 232 not yet reported -- 227 and 230 are in
+# flight, 232 is the block's last cube and not yet claimed.  After
+# those, the block's remaining obstacle is its four stragglers (189,
+# 190, 209, 211), three of which cannot be retried until the next
+# process restart.
+#
+# For orientation: idx 233 begins the NEXT first block,
+# [13,13,13,11], 82 cubes, none attempted.  So the sweep is close to
+# leaving [13,13,13,12] behind with holes in it, and the run's front
+# will be well past the stragglers.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 386, labels 230, 226 UNSAT / 4 UNKNOWN / 0 SAT; 226 of 1949
+# decided, crossing to 11.6%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5103,3 +5123,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21772.9
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21806.6
 g=11 [13, 13, 13, 12, 12, 12, 11, 11, 11, 11, 9]	UNSAT	3277.2
 g=11 [13, 13, 13, 12, 12, 12, 12, 11, 10, 10, 10]	UNSAT	6414.3
+g=11 [13, 13, 13, 12, 12, 11, 11, 11, 11, 11, 10]	UNSAT	1802.0
