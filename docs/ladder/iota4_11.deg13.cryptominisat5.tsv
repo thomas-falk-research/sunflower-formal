@@ -5081,6 +5081,17 @@
 # Rows 416, labels 255, 251 UNSAT / 4 UNKNOWN / 0 SAT; 251 of 1949
 # decided, crossing to 12.9%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #417: [13,13,13,11,13,13,13,12,12,11,4] UNSAT 9470.9, a FIRST
+# attempt, idx 255, landed 22:47:45Z.  Roughly twice the cost of the
+# block-3 cubes before it, which is why nothing landed for 2h25m --
+# the quiet stretch was one dear cube, not a fault.  Block
+# [13,13,13,11] at 23 of 82.
+#
+# BUDGET RULE: nine UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 417, labels 256, 252 UNSAT / 4 UNKNOWN / 0 SAT; 252 of 1949
+# decided (12.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5555,3 +5566,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 10, 9, 7]	UNSAT	4926.8
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 10, 8, 8]	UNSAT	4724.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 9, 9, 8]	UNSAT	4727.5
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 12, 3]	UNSAT	4814.8
+g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 11, 4]	UNSAT	9470.9
