@@ -4720,6 +4720,16 @@
 # Rows 388, labels 232, 228 UNSAT / 4 UNKNOWN / 0 SAT; 228 of 1949
 # decided, crossing to 11.7%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #389: [13,13,13,12,12,12,12,11,11,10,9] UNSAT 8703.5, a FIRST
+# attempt, idx 227, landed 07:02:15Z.  That was one of the two block-2
+# cubes still in flight, so block [13,13,13,12] is now 99 decided of
+# 104 with only idx 230 outstanding besides the four stragglers.
+#
+# BUDGET RULE: nine UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 389, labels 233, 229 UNSAT / 4 UNKNOWN / 0 SAT; 229 of 1949
+# decided (11.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
