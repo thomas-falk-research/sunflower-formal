@@ -5112,6 +5112,15 @@
 # Rows 419, labels 258, 254 UNSAT / 4 UNKNOWN / 0 SAT; 254 of 1949
 # decided (13.0%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #420: [13,13,13,11,13,13,13,12,12,8,7] UNSAT 10237.8, a FIRST
+# attempt, idx 258, landed 23:12:55Z.  Block [13,13,13,11] at 26 of
+# 82.
+#
+# BUDGET RULE: twelve UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 420, labels 259, 255 UNSAT / 4 UNKNOWN / 0 SAT; 255 of 1949
+# decided, crossing to 13.1%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5589,3 +5598,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 12, 3]	UNSAT	4814.8
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 11, 4]	UNSAT	9470.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 10, 5]	UNSAT	10409.0
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 9, 6]	UNSAT	10556.6
+g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 8, 7]	UNSAT	10237.8
