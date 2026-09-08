@@ -4785,6 +4785,15 @@
 # Rows 393, labels 237, 233 UNSAT / 4 UNKNOWN / 0 SAT; 233 of 1949
 # decided (12.0%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #394: [13,13,13,11,13,13,13,13,13,9,4] UNSAT 2124.8, a FIRST
+# attempt, idx 237, landed 08:00:35Z.  Block [13,13,13,11] at 5 of 82.
+# Straggler pool unchanged at 189, 190, 209, 211.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 394, labels 238, 234 UNSAT / 4 UNKNOWN / 0 SAT; 234 of 1949
+# decided (12.0%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5236,3 +5245,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 12, 1]	UNSAT	658.1
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 11, 2]	UNSAT	1379.6
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 10, 3]	UNSAT	1674.3
 g=11 [13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10]	UNSAT	7945.7
+g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 9, 4]	UNSAT	2124.8
