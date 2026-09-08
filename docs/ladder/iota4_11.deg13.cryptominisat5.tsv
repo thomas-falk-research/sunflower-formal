@@ -4902,6 +4902,16 @@
 # decided (12.3%), unmoved by this row.  Bracket 27 <= iota(4) <= 71
 # unchanged.
 #
+# #402: [13,13,13,11,13,13,13,13,12,8,6] UNSAT 4960.9, a FIRST
+# attempt, idx 244, landed 10:45:20Z.  Block [13,13,13,11] at 12 of
+# 82.  The sweep is now entirely on fresh ground; all four stragglers
+# are behind the counter.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 402, labels 245, 241 UNSAT / 4 UNKNOWN / 0 SAT; 241 of 1949
+# decided, crossing to 12.4%.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5361,3 +5371,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 11, 3]	UNSAT	4193.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 10, 4]	UNSAT	4728.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 9, 5]	UNSAT	4788.6
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21813.4
+g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 8, 6]	UNSAT	4960.9
