@@ -13409,8 +13409,11 @@ ladder (two solvers) is only partly met: the CDCL solvers cannot close
 even the easiest cube (cadical and cryptominisat5 both UNKNOWN at 500 s
 on cube 6, on a CNF with sequential-counter cardinalities), which is the
 same wall §22.5 hit, and SCIP (`tools/cube10_mip.py`, same lex
-constraints and cut) closes cube 6 in 106 s but had not finished the
-harder cubes at handover — the ladder file records what it did finish.
+constraints and cut) **agrees on seven of the eleven** — `6`, `3,3`,
+`3,2,1`, `2,2,2`, `3,1,1,1`, `4,1,1`, `2,1,1,1,1`, between 92 s and
+1779 s — and was undecided at 3000–3600 s on `5,1`, `4,2`, `2,2,1,1` and
+`1,1,1,1,1,1`; the ladder file carries every row, and the standing for
+those four is "INFEASIBLE under CP-SAT only".
 A *checked* second opinion is the right next instrument: a
 pseudo-Boolean solver with proof logging (RoundingSat) and the VeriPB
 checker would turn every INFEASIBLE row into a verified certificate, which
