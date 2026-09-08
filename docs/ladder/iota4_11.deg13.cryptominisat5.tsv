@@ -4758,6 +4758,33 @@
 # Rows 392, labels 236, 232 UNSAT / 4 UNKNOWN / 0 SAT; 232 of 1949
 # decided (11.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #393: [13,13,13,12,12,12,11,11,11,10,10] UNSAT 7945.7, a FIRST
+# attempt, idx 230, landed 07:44:58Z.  That was the LAST unreached
+# cube of block [13,13,13,12], so:
+#
+#   BLOCK [13,13,13,12] IS NOW FULLY ATTEMPTED -- all 104 cubes have
+#   at least one row.  100 are decided; the remaining 4 are the
+#   stragglers 189, 190, 209, 211, all stalled at the cap.
+#
+# Block standings:
+#   [13,13,13,13]  n=129  129 decided                      COMPLETE
+#   [13,13,13,12]  n=104  100 decided, 4 stalled, 0 unreached
+#   [13,13,13,11]  n= 82    4 decided, 78 unreached
+#   idx 315-1948   n=1634  untouched
+# 129 + 100 + 4 = 233, which is the decided count, so the partition
+# and the tally agree.
+#
+# Every index from 0 to 236 now carries at least one row -- no gaps.
+#
+# 233 of 1949 decided crosses 12.0%.  Saying plainly what that is: 12%
+# of one degree-sequence cube of one rung.  It is not 12% of anything
+# about iota(4), and the bracket has not moved.
+#
+# BUDGET RULE: ten UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 393, labels 237, 233 UNSAT / 4 UNKNOWN / 0 SAT; 233 of 1949
+# decided (12.0%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5208,3 +5235,4 @@ g=11 [13, 13, 13, 12, 12, 12, 12, 11, 11, 10, 9]	UNSAT	8703.5
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 12, 1]	UNSAT	658.1
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 11, 2]	UNSAT	1379.6
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 10, 3]	UNSAT	1674.3
+g=11 [13, 13, 13, 12, 12, 12, 11, 11, 11, 10, 10]	UNSAT	7945.7
