@@ -4749,6 +4749,15 @@
 # Rows 391, labels 235, 231 UNSAT / 4 UNKNOWN / 0 SAT; 231 of 1949
 # decided, crossing to 11.9%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #392: [13,13,13,11,13,13,13,13,13,10,3] UNSAT 1674.3, a FIRST
+# attempt, idx 236, landed 07:39:44Z.  Block [13,13,13,11] at 4 of 82;
+# block [13,13,13,12] unchanged at 99 of 104.
+#
+# BUDGET RULE: nine UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 392, labels 236, 232 UNSAT / 4 UNKNOWN / 0 SAT; 232 of 1949
+# decided (11.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5198,3 +5207,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 13, 0]	UNSAT	101.9
 g=11 [13, 13, 13, 12, 12, 12, 12, 11, 11, 10, 9]	UNSAT	8703.5
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 12, 1]	UNSAT	658.1
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 11, 2]	UNSAT	1379.6
+g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 10, 3]	UNSAT	1674.3
