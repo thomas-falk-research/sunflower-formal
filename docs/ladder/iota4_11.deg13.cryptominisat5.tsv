@@ -4930,6 +4930,40 @@
 # Rows 404, labels 247, 243 UNSAT / 4 UNKNOWN / 0 SAT; 243 of 1949
 # decided, crossing to 12.5%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTIETH CONTAINER RESTART, between 11:22:51Z (four solvers alive)
+# and 11:29:37Z (none), a window of about 406 s.  Driver relaunched
+# 11:29Z as pid 30262, same command, cap still 21600.  Phase one 60 s,
+# split reproduced 1949 cubes, driver printed
+#   # checkpoint: 243 of 1949 cubes already decided
+# against an independent recount of 243.  MATCH: zero rows lost.  Rows
+# on disk 404, unchanged.
+#
+# Cost: the four solvers were at 3704, 2257, 1931 and 22 s, so the
+# discarded work is between 7914 and 9538 CPU-seconds -- 2.20 to 2.65
+# CPU-hours.  Small again, and again only because the solvers happened
+# to be young.  Three restarts in about 26 hours (09:23-09:36Z and
+# 22:31-22:33Z yesterday, 11:23-11:29Z today).
+#
+# The restart puts all four stragglers back at the front, and this
+# time there are EXACTLY four of them for exactly four threads.  So
+# every thread is on a straggler and NO fresh cube gets picked up
+# until one of them finishes -- 100% straggler occupancy for up to six
+# hours, the worst case the restart cycle can produce.  The threads
+# hold idx 189 (attempt 5), 190 (attempt 5), 209 (attempt 4), 211
+# (attempt 3).
+#
+# Prior straggler batches: after the eighteenth restart, 0 of 4
+# converted; after the nineteenth, 1 of 4 (#380, a draw win).  This is
+# the third.  I am not predicting the outcome -- two batches is not a
+# rate, and the one conversion so far came from a cube whose cost sat
+# right at the cap while these four have failed 4, 4, 3 and 2 draws.
+#
+# Straggler spend stands at 78.6 CPU-hours for zero verdicts before
+# this batch.
+#
+# Rows 404, labels 247, 243 UNSAT / 4 UNKNOWN / 0 SAT; 243 of 1949
+# decided (12.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
