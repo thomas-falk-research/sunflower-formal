@@ -4964,6 +4964,55 @@
 # Rows 404, labels 247, 243 UNSAT / 4 UNKNOWN / 0 SAT; 243 of 1949
 # decided (12.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #405-#408, landing 17:33-17:34Z, are the whole straggler batch and
+# ALL FOUR STALLED:
+#   #405 idx 190  attempt 5  UNKNOWN 21769.1  (+169.1)
+#   #406 idx 211  attempt 3  UNKNOWN 21769.4  (+169.4)
+#   #407 idx 209  attempt 4  UNKNOWN 21780.5  (+180.5)
+#   #408 idx 189  attempt 5  UNKNOWN 21788.2  (+188.2)
+#
+# Cumulative on the four, still zero verdicts:
+#   idx 189  5 attempts  108946.0 s
+#   idx 190  5 attempts  108811.2 s
+#   idx 209  4 attempts   87092.7 s
+#   idx 211  3 attempts   65357.1 s
+#   TOTAL 370207.0 s = 102.8 CPU-hours.
+#
+# WHAT THE RESTART CYCLE COSTS, now that there are three batches to
+# measure rather than one:
+#   batch after the 18th restart -- 0 conversions of 4
+#   batch after the 19th restart -- 1 of 4 (#380, a draw win)
+#   batch after the 20th restart -- 0 of 4
+#   twelve draws, one conversion.
+# Each batch burns 4 x 21600 = 86400 s = 24.0 CPU-hours.  On fresh
+# ground the same seconds buy far more: in the doubled-cap era, first
+# attempts have run 522838.3 s for 59 conversions, so 8861.7 s per
+# verdict (2.46 CPU-hours) INCLUDING their own 8% stall rate.  86400 s
+# there would decide about TEN cubes.
+#
+# So every container restart currently costs roughly ten verdicts, by
+# sending four threads back to cubes that have now failed 5, 5, 4 and
+# 3 draws between them.  That is a measurement, not a proposal: the
+# fix is per-cube escalation or simply not re-running a cube already
+# stalled at the current cap, and both are driver changes I have said
+# I will not make unasked.  Recorded so the cost is visible.
+#
+# On whether these four are simply unlucky: seventeen draws among them
+# have now all failed.  If each draw had an independent chance p of
+# converting, seventeen failures would put p low -- but the draws are
+# NOT independent (they share machine conditions) and the four cubes
+# are not one population, so that is indicative and not a bound.  What
+# is solid is the 1.46x observed spread in same-label cost: a spread
+# that size cannot bridge a cube whose true cost sits far above 21600,
+# and five failures each for 189 and 190 is what that looks like.
+#
+# BUDGET RULE: last twelve read U U U U . U U U . . . . -- seven
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 408, labels 247, 243 UNSAT / 4 UNKNOWN / 0 SAT; 243 of 1949
+# decided (12.5%), unmoved by this batch.  Bracket 27 <= iota(4) <= 71
+# unchanged.
+#
 #
 #
 #
@@ -5426,3 +5475,7 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21813.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 8, 6]	UNSAT	4960.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 7, 7]	UNSAT	4320.1
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 11, 11, 4]	UNSAT	4311.3
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21769.1
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21769.4
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21780.5
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21788.2
