@@ -13204,7 +13204,11 @@ the axiom census is unchanged, and nothing here touches `ι(4)`.
 * **The exact maximum on nine points is 27.** Not a search that found
   27 — an optimisation that proved nothing larger exists on nine points,
   which is also what counting says (`28 · 3 > 9 · 9`).
-* **On ten points**: an hour of CP-SAT with three workers did **not** decide it: the incumbent stayed at 27 (again a 9-regular family on nine of the ten points) and the proved upper bound stayed at 30, which is the counting bound `10 · 9 / 3`. cadical on `rstar.rs`'s own encoding was undecided at its 3500 s cap. **Ten points is open**, exactly as §22.5 left it, and it is the next thing to cube (§56.5).
+* **On ten points there is no 28-member family** — under CP-SAT, all
+  eleven degree-sequence cubes INFEASIBLE (§56.9). The monolith had run an
+  hour undecided; cubed on the sorted degree sequence, the whole case took
+  about six CPU-hours. So `M` on ten points is 27, and a refutation of
+  `r*(3,3) = 3`, if one exists, lives on **eleven or more points**.
 * **The record's evidence is withdrawn.** §22.5 reported the depth-first
   search's largest find at `(3,3,10)` as 23, and STATUS.md's pinned
   object is 23 "five short", offered as *"weak evidence that the term
@@ -13365,3 +13369,58 @@ Gates on the final tree are in the pull-request body (`body.md`).
   it in Coq.** The `3r + 1` was derived by hand, confirmed at `r = 3, 4`
   on two grounds in under a second, and only then formalised. The Coq
   took ninety minutes; a wrong constant would have cost all of them.
+
+### 56.9 The ten-point cube, closed
+
+The monolith at ten points was undecided after an hour (§56.7). Cubed on
+the sorted degree sequence it closes. A 28-member family on ten points
+has degree sum 84, so the deficiencies `9 − d_v` sum to 6; sorting the
+points by degree, a cube is a partition of 6 and there are eleven.
+Inside a cube every point's degree is an *equality*, which is what CP-SAT
+wanted — the LP relaxation sees the pigeonhole at once — and the residual
+symmetry is the product of symmetric groups on the equal-degree blocks,
+broken by a lex-leader constraint per adjacent transposition (sound: the
+lex-greatest member of an orbit satisfies all of them; a prefix of a lex
+constraint is implied by it, so truncation is sound too). The cubes with
+the most equal-degree points needed the full 56-position lex constraint
+and, for two of them, the kernel-proved cut "the members disjoint from any
+member number at most 16" (`TauThree.tau_three_bound` for `τ = 3`,
+`TwoCoverSharp` for `τ = 2`, a star for `τ = 1`).
+
+```text
+  cube (deficiencies)  degrees                 verdict      seconds   settings
+  6                    3,9,9,9,9,9,9,9,9,9     INFEASIBLE      1.9   K=20
+  5,1                  4,8,9,...               INFEASIBLE     86.3   K=20
+  4,2                  5,7,9,...               INFEASIBLE    203.4   K=20
+  4,1,1                5,8,8,9,...             INFEASIBLE    541.0   K=20
+  3,3                  6,6,9,...               INFEASIBLE    278.3   K=20
+  3,2,1                6,7,8,9,...             INFEASIBLE   1658.2   K=20
+  2,2,2                7,7,7,9,...             INFEASIBLE   1784.2   K=20
+  3,1,1,1              6,8,8,8,9,...           INFEASIBLE   2089.2   K=56  (UNKNOWN at 1800 s with K=20)
+  2,2,1,1              7,7,8,8,9,...           INFEASIBLE   5120.4   K=56  (UNKNOWN at 1800 s with K=20)
+  2,1,1,1,1            7,8,8,8,8,9,...         INFEASIBLE   3455.7   K=56, B=16  (UNKNOWN at 1800 s with K=20)
+  1,1,1,1,1,1          8,8,8,8,8,8,9,9,9,9     INFEASIBLE   2991.1   K=56, B=16  (UNKNOWN at 1800 s with K=20)
+```
+
+`docs/ladder/rstar_3_3_10.tsv` carries every row including the stalled
+first attempts; `tools/cube10.py` is the model. **Standing: "no 28 on ten
+points, under CP-SAT."** The second-opinion discipline of the `ι(4)`
+ladder (two solvers) is only partly met: the CDCL solvers cannot close
+even the easiest cube (cadical and cryptominisat5 both UNKNOWN at 500 s
+on cube 6, on a CNF with sequential-counter cardinalities), which is the
+same wall §22.5 hit, and SCIP (`tools/cube10_mip.py`, same lex
+constraints and cut) closes cube 6 in 106 s but had not finished the
+harder cubes at handover — the ladder file records what it did finish.
+A *checked* second opinion is the right next instrument: a
+pseudo-Boolean solver with proof logging (RoundingSat) and the VeriPB
+checker would turn every INFEASIBLE row into a verified certificate, which
+neither CP-SAT nor SCIP can emit. That, not a Lean port, is where more
+rigour is available here.
+
+What this changes: §56.5 item 1 is done; item 2 (eleven and twelve
+points) is now the frontier, and the cube-by-degree-sequence recipe
+transfers — at eleven points the deficiency is `99 − 84 = 15`, every
+point used has degree at least 1 (degree 0 is the ten-point case, now
+closed), so the cubes are the partitions of 15 into at most eleven parts
+of size at most 8: 139 of them. Expect the
+equal-degree-heavy cubes to dominate the cost again.

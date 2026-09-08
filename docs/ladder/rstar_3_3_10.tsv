@@ -1,0 +1,28 @@
+# The ten-point cube of r*(3,3): is there a 3-uniform family on 10 points with
+# 28 members, no three pairwise disjoint, point degree <= 9, pair degree <= 3?
+# Sum of degrees is 84, so the deficiencies 9 - d_v sum to 6; sorting the points
+# by degree, each cube is a partition of 6 (eleven cubes).  Solver: OR-Tools
+# CP-SAT 9 via tools/cube10.py, one worker per cube.  K = lex-leader prefix
+# length used for the equal-degree transpositions (20 = weak, 56 = full);
+# B = 16 adds the kernel-proved cut "members disjoint from a member number at
+# most 16" (TauThree.tau_three_bound / TwoCoverSharp / a star).  A cube listed
+# UNKNOWN at its cap and again INFEASIBLE was re-run with the stronger settings;
+# every cube ends INFEASIBLE.  Second opinion: SCIP via tools/cube10_mip.py with
+# the same lex constraints and cut, where it finished.  Session N+16
+# (docs/roadmap.md section 56.9).
+# cube	degrees	K	B	cpsat_verdict	cpsat_seconds	scip_verdict	scip_seconds
+6	3,9,9,9,9,9,9,9,9,9	20	0	INFEASIBLE	1.9	INFEASIBLE	105.7
+5,1	4,8,9,9,9,9,9,9,9,9	20	0	INFEASIBLE	86.3	-	-
+4,2	5,7,9,9,9,9,9,9,9,9	20	0	INFEASIBLE	203.4	-	-
+4,1,1	5,8,8,9,9,9,9,9,9,9	20	0	INFEASIBLE	541.0	-	-
+3,3	6,6,9,9,9,9,9,9,9,9	20	0	INFEASIBLE	278.3	-	-
+3,2,1	6,7,8,9,9,9,9,9,9,9	20	0	INFEASIBLE	1658.2	-	-
+2,2,2	7,7,7,9,9,9,9,9,9,9	20	0	INFEASIBLE	1784.2	-	-
+3,1,1,1	6,8,8,8,9,9,9,9,9,9	20	0	UNKNOWN	1800.0	-	-
+3,1,1,1	6,8,8,8,9,9,9,9,9,9	56	0	INFEASIBLE	2089.2	-	-
+2,2,1,1	7,7,8,8,9,9,9,9,9,9	20	0	UNKNOWN	1800.0	-	-
+2,2,1,1	7,7,8,8,9,9,9,9,9,9	56	0	INFEASIBLE	5120.4	-	-
+2,1,1,1,1	7,8,8,8,8,9,9,9,9,9	20	0	UNKNOWN	1800.0	-	-
+2,1,1,1,1	7,8,8,8,8,9,9,9,9,9	56	16	INFEASIBLE	3455.7	-	-
+1,1,1,1,1,1	8,8,8,8,8,8,9,9,9,9	20	0	UNKNOWN	1800.0	-	-
+1,1,1,1,1,1	8,8,8,8,8,8,9,9,9,9	56	16	INFEASIBLE	2991.1	-	-

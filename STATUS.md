@@ -524,7 +524,7 @@ on nine points (`nine27`), so the strict size hypothesis of
 `SpreadYieldsDisjoint 3 3 3` is exactly tight and the row cannot be
 decided by any counting argument with slack. On nine points 27 is the
 exact maximum (an optimisation proved it, and `28 · 3 > 81` says it
-anyway). On ten points an hour of exact search (CP-SAT, three workers) and cadical at 3500 s both left the question undecided — incumbent 27, bound 30. The pinned 23-member object below and §22.5's
+anyway). On ten points the monolith was undecided after an hour, but cubed on the sorted degree sequence — eleven cubes, the partitions of the deficiency 6 — every cube is INFEASIBLE under CP-SAT (`docs/ladder/rstar_3_3_10.tsv`, `docs/roadmap.md` §56.9): **no 28-member family lives on ten points**, so a refutation of `r*(3,3) = 3` needs eleven or more. The pinned 23-member object below and §22.5's
 "weak evidence that the term really is 3" are **withdrawn as evidence**:
 the depth-first search that found 23 at ground 10 was four short of the
 maximum at ground 9. The row itself is unchanged: `r*(3,3) ∈ {3, 4}`.
