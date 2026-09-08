@@ -4836,6 +4836,45 @@
 # Rows 399, labels 243, 239 UNSAT / 4 UNKNOWN / 0 SAT; 239 of 1949
 # decided, crossing to 12.3%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #400: [13,13,13,11,13,13,13,13,12,9,5] UNSAT 4788.6, a FIRST
+# attempt, idx 243, landed 10:10:39Z.  Block [13,13,13,11] at 11 of
+# 82.
+#
+# FOUR HUNDRED ROWS.  A run-level accounting, since a round number is
+# as good a place as any and these figures have not been stated
+# together before:
+#
+#   400 rows over 244 distinct labels; 240 decided, 4 stalled.
+#   Total recorded solver time 2720964.3 s = 755.8 CPU-hours.
+#   Of that, 1338311.2 s = 371.8 CPU-hours, or 49%, sits on rows whose
+#   status is UNKNOWN.
+#
+# Read that carefully.  It is NOT "half the run was wasted".  Many of
+# those stalls were at the old 1800, 5400 and 10800 caps and were
+# followed by conversions once the cap rose; the stall established
+# that the cube cost more than the budget, which is what drove the
+# raises.  What the figure does say is that 49% of recorded solver
+# time produced no verdict on the row that recorded it.
+#
+# It also UNDERSTATES total consumption, because work discarded by a
+# container restart is never written as a row at all.  Nineteen
+# restarts so far; the two I measured cost 10.2-11.1 and 2.3
+# CPU-hours, and the rest were not measured.
+#
+# Cost per decided cube is 755.8 / 240 = 3.15 CPU-hours.  If the
+# remaining 1709 cubes cost like the first 240 -- and that is a real
+# IF -- closing this one degree-sequence cube would take roughly 5400
+# more CPU-hours, about 56 days of wall clock at four threads.  Treat
+# that as an order of magnitude and not an estimate: the 240 decided
+# are the first 12% in INDEX order, not a random sample, so nothing
+# here rules out the rest being systematically dearer or cheaper.
+#
+# BUDGET RULE: twelve UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 400, labels 244, 240 UNSAT / 4 UNKNOWN / 0 SAT; 240 of 1949
+# decided (12.3%).  Bracket 27 <= iota(4) <= 71 unchanged, and none of
+# the above bears on it.
+#
 #
 #
 #
@@ -5293,3 +5332,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 13, 7, 6]	UNSAT	2108.5
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 12, 2]	UNSAT	3021.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 11, 3]	UNSAT	4193.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 10, 4]	UNSAT	4728.4
+g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 9, 5]	UNSAT	4788.6
