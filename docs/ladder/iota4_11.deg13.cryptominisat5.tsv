@@ -4875,6 +4875,33 @@
 # decided (12.3%).  Bracket 27 <= iota(4) <= 71 unchanged, and none of
 # the above bears on it.
 #
+# #401: [13,13,13,12,13,12,12,11,10,10,9] UNKNOWN 21813.4, attempt 2,
+# idx 211, landed 10:21:21Z.  The last straggler still in flight has
+# stalled on its second draw.
+#
+# So the pool stays at four and, for the first time since the
+# nineteenth restart, NONE of them is running.  All four sit behind
+# the sweep counter, which is now claiming idx 244 onward.  They are
+# untouchable until the next process restart.
+#
+#   idx 189  4 attempts  87157.8 s
+#   idx 190  4 attempts  87042.1 s
+#   idx 209  3 attempts  65312.2 s
+#   idx 211  2 attempts  43587.7 s
+#   TOTAL 283099.8 s = 78.6 CPU-hours, zero verdicts.
+#
+# 21813.4 is +213.4 past the cap, the largest overshoot recorded; the
+# fourteen stalls at this cap span +154.1 to +213.4.  That is the
+# polling granularity of the --maxtime check plus teardown, not
+# anything about the cube.
+#
+# BUDGET RULE: eleven UNSAT in the last twelve.  Does NOT fire; cap
+# stays 21600.
+#
+# Rows 401, labels 244, 240 UNSAT / 4 UNKNOWN / 0 SAT; 240 of 1949
+# decided (12.3%), unmoved by this row.  Bracket 27 <= iota(4) <= 71
+# unchanged.
+#
 #
 #
 #
@@ -5333,3 +5360,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 12, 2]	UNSAT	3021.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 11, 3]	UNSAT	4193.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 10, 4]	UNSAT	4728.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 13, 12, 9, 5]	UNSAT	4788.6
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21813.4
