@@ -5400,6 +5400,65 @@
 # Rows 433, labels 267, 264 UNSAT / 3 UNKNOWN / 0 SAT; 264 of 1949
 # decided (13.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# AND A SECOND ONE, EIGHT MINUTES LATER.  idx 209
+# [13,13,13,12,13,12,12,11,11,10,8] UNSAT at 13607.2 s on attempt 6,
+# at 23:20:19Z, after FIVE stalls at the cap:
+#   21772.9  21766.4  21772.9  21780.5  21744.1  ->  UNSAT 13607.2
+# Strict draw-win, ratio 21744.1 / 13607.2 = 1.598.  With idx 211 an
+# hour earlier the two of them are now the top two ratios in the file,
+# both clear of the old record 1.450:
+#   1.656  idx 211   1.598  idx 209   1.450  (previous best)
+# Strict draw-wins now 20 of 78 re-run conversions (25.6%).
+#
+# CONTENTION IS RULED OUT, and this is checkable rather than asserted.
+# If the earlier batches had merely been fighting for cores, their
+# stalls would have overshot the 21600 s CPU budget badly in wall
+# clock.  Across ALL 22 cap stalls in the file, old batches included,
+# the overshoot runs 144.1 s to 213.4 s -- 0.67% to 0.99% of budget,
+# so every stalled run had at least 99.0% of a core.  The earlier
+# attempts were not starved; they were solving, and losing.
+#
+# What I CANNOT yet test is whether this container is intrinsically
+# faster than its predecessors.  A stall costs ~21600 s of CPU
+# whatever the clock rate, so stall costs carry no speed signal, and
+# this container has not yet completed a single fresh cube -- idx 267
+# and 268 are still running.  So "same machine, better draw" and
+# "faster machine" are not yet separable.  Recording the gap rather
+# than picking the flattering half.
+#
+# A STRUCTURAL COINCIDENCE, PRE-REGISTERED, NOT A FINDING.  The four
+# stragglers split cleanly on d[5]:
+#   d[5]=13   idx 189, 190   still open, 12 attempts, 0 verdicts
+#   d[5]=12   idx 209, 211   both converted, this batch
+# It is exactly the shape of pattern I fitted and had to bury once
+# already this run -- the leading-entry "1.65x split" that separated
+# perfectly in group nine and then failed in 9 of 20 closed groups out
+# of sample.  Two against two supports nothing, and I am not running
+# the fit across the 265 closed cubes to dress it up.  I record it
+# only because the next two rows test it for free: if 189 or 190
+# converts, the split is dead, and I am writing that down BEFORE the
+# outcome rather than after.
+#
+# POOL AND OCCUPANCY.  The straggler pool is now 2-for-23 across 23
+# attempts and 134.4 CPU-HOURS -- 67.2 CPU-h per verdict, against 1.91
+# CPU-h for a fresh cube under the current cap.  That trade is as bad
+# as it was yesterday and the two wins do not retroactively justify
+# it, just as the four barren batches did not condemn it; these cubes
+# are not optional, so the real comparison was always reordering, not
+# saving.  What HAS improved on its own: straggler occupancy has
+# halved.  The batch ran 4 stragglers and 0 fresh cubes at 19:33Z; it
+# now runs idx 189 and 190 alongside fresh idx 267 and 268.  As
+# stragglers fall the sweep reclaims their threads without
+# intervention.
+#
+# BUDGET RULE: 10 of the last 12 attempts decided.  Does not fire.
+# Cap stays 21600.
+#
+# FRONTIER.  Everything below idx 267 is decided except 189 and 190.
+#
+# Rows 434, labels 267, 265 UNSAT / 2 UNKNOWN / 0 SAT; 265 of 1949
+# decided (13.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5891,3 +5950,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 12, 9, 9, 9]	UNSAT	6614.0
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 10, 10, 7]	UNSAT	10720.7
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 10, 9, 8]	UNSAT	10815.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNSAT	13137.0
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNSAT	13607.2
