@@ -5274,6 +5274,26 @@
 # Rows 432, labels 267, 263 UNSAT / 4 UNKNOWN / 0 SAT; 263 of 1949
 # decided, crossing to 13.5%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTY-SECOND CONTAINER RESTART, between 12:42:53Z (four solvers
+# alive) and 13:24:20Z (none).  Driver relaunched 13:24Z as pid 12403,
+# same command, cap still 21600.  Checkpoint line read
+#   # checkpoint: 263 of 1949 cubes already decided
+# against an independent recount of 263.  MATCH: zero rows lost.  Rows
+# on disk 432, unchanged.
+#
+# Cost: solvers were at 4728, 4333, 913 and 634 s, and the observation
+# window was 2487 s wide, so the discarded work is between 10608 and
+# 20556 CPU-seconds -- 2.95 to 5.71 CPU-hours.
+#
+# FIVE restarts in about 52 hours.  All four stragglers go back to the
+# front for a FIFTH batch -- idx 189 (attempt 7), 190 (attempt 7), 209
+# (attempt 6), 211 (attempt 5).  100% straggler occupancy again, and
+# by the #408 measurement that costs roughly ten verdicts.  Batches so
+# far: 0 of 4, 1 of 4, 0 of 4, 0 of 4.
+#
+# Rows 432, labels 267, 263 UNSAT / 4 UNKNOWN / 0 SAT; 263 of 1949
+# decided (13.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
