@@ -5533,6 +5533,50 @@
 # Rows 435, labels 267, 266 UNSAT / 1 UNKNOWN / 0 SAT; 266 of 1949
 # decided (13.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# THE POOL IS EMPTY.  idx 190 [13,13,13,12,13,13,12,11,10,10,8] UNSAT
+# at 14784.4 s on attempt 7 at 23:39:59Z, after six cap stalls; ratio
+# 1.471.  All four stragglers fell inside 28 minutes, in the order
+# 211, 209, 189, 190.
+#
+# For the first time in this run the file has ZERO UNKNOWN ROWS.  267
+# labels, 267 UNSAT, 267 decided, and the decided set is exactly
+# idx 0..266 with no holes -- a contiguous frontier.  Every row from
+# here is a fresh cube until something stalls again.
+#
+# THE POOL, CLOSED OUT: 25 attempts, 4 verdicts, 513295.5 s = 142.6
+# CPU-HOURS, or 35.6 CPU-h per verdict against 1.91 for a fresh cube.
+# That is the honest price of the four, and it does not become a good
+# trade because it finished; it was always a reordering rather than a
+# saving, since these cubes were never optional.
+#
+# The batch-level signal got stronger, and so did the confound.  All
+# FOUR ratios -- 1.656, 1.598, 1.501, 1.471 -- exceed the previous
+# all-time maximum of 1.450, and exceed 1.386, the maximum among the
+# five earlier draw-wins that had 3 or more prior stalls.
+#   stall-count-matched : all 4 are the top 4 of 9,  P = 1/C(9,4)
+#                         = 1/126 = 0.0079   (but mixes cap eras)
+#   cap-era-matched     : all 4 are the top 4 of 5,  P = 1/C(5,4)
+#                         = 1/5 = 0.20       (clean but tiny)
+# The tension is unchanged from the previous block and I am not
+# resolving it by picking the smaller number.  Still suggestive, still
+# not established.
+#
+# THE PRE-REGISTERED TEST IS STILL PENDING and is the thing to wait
+# for: idx 267, 268, 269 in block [13,13,13,11], against the 34 cubes
+# of idx 233..266 decided on earlier containers at median 4801.7 s.
+# Median near 4800 s kills the machine hypothesis; near 3100 s
+# supports it.  At 23:40Z idx 267 is 28 minutes in, so neither branch
+# is excluded yet.  Do not read the outcome early.
+#
+# BUDGET RULE: 12 of the last 12 attempts decided.  Does not fire, and
+# it is worth marking that this is the exact opposite extreme from
+# #320, where 12 of 12 went the other way and the rule doubled the cap
+# against every cost number I had.  A rule that only ever fires one
+# way is not a rule; this window is what the other end looks like.
+#
+# Rows 436, labels 267, 267 UNSAT / 0 UNKNOWN / 0 SAT; 267 of 1949
+# decided (13.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
