@@ -13411,9 +13411,14 @@ on cube 6, on a CNF with sequential-counter cardinalities), which is the
 same wall §22.5 hit, and SCIP (`tools/cube10_mip.py`, same lex
 constraints and cut) **agrees on seven of the eleven** — `6`, `3,3`,
 `3,2,1`, `2,2,2`, `3,1,1,1`, `4,1,1`, `2,1,1,1,1`, between 92 s and
-1779 s — and was undecided at 3000–3600 s on `5,1`, `4,2`, `2,2,1,1` and
+1779 s — and was undecided at 7200 s on `5,1`, `4,2`, `2,2,1,1` and
 `1,1,1,1,1,1`; the ladder file carries every row, and the standing for
-those four is "INFEASIBLE under CP-SAT only".
+those four is "INFEASIBLE under CP-SAT only". Note which cubes each
+engine fails on: SCIP stalls on `5,1` and `4,2`, which CP-SAT closed in
+86 s and 203 s, and CP-SAT needed the strongest settings on the
+equal-degree-heavy cubes SCIP also stalls on. The two engines' hard
+cases are not the same set, which is some of the value of a second
+opinion and none of a certificate.
 A *checked* second opinion is the right next instrument: a
 pseudo-Boolean solver with proof logging (RoundingSat) and the VeriPB
 checker would turn every INFEASIBLE row into a verified certificate, which
