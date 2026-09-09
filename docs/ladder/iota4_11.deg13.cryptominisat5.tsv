@@ -5121,6 +5121,30 @@
 # Rows 420, labels 259, 255 UNSAT / 4 UNKNOWN / 0 SAT; 255 of 1949
 # decided, crossing to 13.1%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTY-FIRST CONTAINER RESTART, between 23:49:01Z (four solvers
+# alive) and 00:26:16Z (none).  Driver relaunched 00:26Z as pid 5195,
+# same command, cap still 21600.  Checkpoint line read
+#   # checkpoint: 255 of 1949 cubes already decided
+# against an independent recount of 255.  MATCH: zero rows lost.  Rows
+# on disk 420, unchanged.
+#
+# Cost, and this one is a WIDER range than the last two because the
+# observation window was wider -- 2235 s between the last live look
+# and the empty container, against 406 s last time.  The solvers were
+# at 3677, 2707, 2277 and 2167 s, so the discarded work is between
+# 10828 and 19768 CPU-seconds: 3.01 to 5.49 CPU-hours.  The width is a
+# fact about my sampling, not about the restart.
+#
+# Four restarts in about 39 hours.  All four stragglers go back to the
+# front again -- idx 189 (attempt 6), 190 (attempt 6), 209 (attempt
+# 5), 211 (attempt 4) -- so every thread is on one and none is free
+# for fresh ground until one finishes.  By the measurement at #408
+# that costs roughly ten verdicts.  Fourth batch; the first three went
+# 0 of 4, 1 of 4, 0 of 4.
+#
+# Rows 420, labels 259, 255 UNSAT / 4 UNKNOWN / 0 SAT; 255 of 1949
+# decided (13.1%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
