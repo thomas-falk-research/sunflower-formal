@@ -5145,6 +5145,44 @@
 # Rows 420, labels 259, 255 UNSAT / 4 UNKNOWN / 0 SAT; 255 of 1949
 # decided (13.1%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #421-#424, landing 06:29-06:31Z, are the fourth straggler batch and
+# ALL FOUR STALLED again:
+#   #421 idx 209  attempt 5  UNKNOWN 21744.1  (+144.1)
+#   #422 idx 190  attempt 6  UNKNOWN 21755.9  (+155.9)
+#   #423 idx 211  attempt 4  UNKNOWN 21759.2  (+159.2)
+#   #424 idx 189  attempt 6  UNKNOWN 21793.6  (+193.6)
+#
+# Cumulative, still zero verdicts:
+#   idx 189  6 attempts  130739.6 s
+#   idx 190  6 attempts  130567.1 s
+#   idx 209  5 attempts  108836.8 s
+#   idx 211  4 attempts   87116.3 s
+#   TOTAL 457259.8 s = 127.0 CPU-hours.
+# The batch record is now 0 of 4, 1 of 4, 0 of 4, 0 of 4 -- sixteen
+# draws, one conversion.
+#
+# A SHARPER READING OF THE SAME DATA, not a re-derivation of the #408
+# cost measurement.  The single conversion in that record was #380,
+# idx 210, which then left the pool.  The four cubes CURRENTLY in the
+# pool have 6 + 6 + 5 + 4 = 21 draws between them and have NEVER
+# converted, not once.  So the evidence splits cleanly in two: idx 210
+# went 1 for 2, and these four are 0 for 21.  That looks like two
+# populations rather than one -- 210's true cost sat right at the cap,
+# where a 1.46x draw spread can bridge the gap, and these four sit far
+# enough above it that no draw has ever reached.
+#
+# I am not turning that into a probability.  The draws share machine
+# conditions and the four cubes are not one population either.  But 0
+# for 21 is a stronger statement than anything said about them before,
+# and it belongs in the record.
+#
+# BUDGET RULE: last twelve read U U U U U U U U . . . . -- eight
+# UNSAT.  Does NOT fire; cap stays 21600.
+#
+# Rows 424, labels 259, 255 UNSAT / 4 UNKNOWN / 0 SAT; 255 of 1949
+# decided (13.1%), unmoved by this batch.  Bracket 27 <= iota(4) <= 71
+# unchanged.
+#
 #
 #
 #
@@ -5623,3 +5661,7 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 11, 4]	UNSAT	9470.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 10, 5]	UNSAT	10409.0
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 9, 6]	UNSAT	10556.6
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 12, 8, 7]	UNSAT	10237.8
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21744.1
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21755.9
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21759.2
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21793.6
