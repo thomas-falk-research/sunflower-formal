@@ -5183,6 +5183,16 @@
 # decided (13.1%), unmoved by this batch.  Bracket 27 <= iota(4) <= 71
 # unchanged.
 #
+# #425: [13,13,13,11,13,13,13,12,11,8,8] UNSAT 10699.6, a FIRST
+# attempt, idx 262, landed 09:29:06Z.  The sweep is back on fresh
+# ground, and the twelve-tail group at idx 254-265 continues to cost
+# around 10000 s per cube.  Block [13,13,13,11] at 27 of 82.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 425, labels 260, 256 UNSAT / 4 UNKNOWN / 0 SAT; 256 of 1949
+# decided (13.1%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5665,3 +5675,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNKNOWN	21744.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNKNOWN	21755.9
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNKNOWN	21759.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNKNOWN	21793.6
+g=11 [13, 13, 13, 11, 13, 13, 13, 12, 11, 8, 8]	UNSAT	10699.6
