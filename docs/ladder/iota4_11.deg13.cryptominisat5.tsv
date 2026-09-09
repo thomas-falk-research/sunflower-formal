@@ -5329,6 +5329,77 @@
 # Rows 432, labels 267, 263 UNSAT / 4 UNKNOWN / 0 SAT; 263 of 1949
 # decided (13.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# A STRAGGLER FELL.  idx 211 [13,13,13,12,13,12,12,11,10,10,9] came
+# back UNSAT at 13137.0 s on attempt 5, at 23:12:26Z.  I read the
+# status field rather than assuming, because this is not a cap-time
+# row: 13137.0 s is 39% UNDER the 21600 cap.
+#
+# Its four earlier attempts all died at the cap:
+#   attempt 1  UNKNOWN  21774.3
+#   attempt 2  UNKNOWN  21813.4
+#   attempt 3  UNKNOWN  21769.4
+#   attempt 4  UNKNOWN  21759.2
+#   attempt 5  UNSAT    13137.0
+# Every one of those four burned MORE seconds than the fifth needed to
+# finish.  The cap was never the binding constraint on this cube; the
+# draw was.  That is the cleanest instance of the draw model in the
+# file, and it is worth being exact about how clean: 21759.2 / 13137.0
+# = 1.656, the largest such ratio on record, beating 1.450.
+#
+# A CORRECTION TO MY OWN TALLY, found while checking that claim.  I
+# have been carrying "22 of 75 draw-wins, #380 the 23rd".  Recounting
+# the whole file shows that figure used a LOOSE definition -- winning
+# cost below the MOST RECENT prior stall.  Under the strict definition
+# -- winning cost below the MINIMUM of all prior stalls, so that the
+# conversion cannot be blamed on a single unlucky-short earlier
+# attempt -- the count is 19, not 23.  Of 77 re-run conversions:
+#   strict (below min prior stall)   19  (24.7%)
+#   loose  (below last prior stall)  23  (29.9%)
+# Both are honest under their definition and neither was fabricated,
+# but only one of them was ever stated.  I use the strict count from
+# here on and will name it as strict.  Two smaller provenance fixes
+# from the same audit: the extreme I had recorded as 10917.0 -> 7497.4
+# (1.46) took 10917.0 from that label's FIRST stall, while its minimum
+# prior stall was 10870.9, so under either stated definition the ratio
+# is 1.450; and idx 211 is the new extreme under BOTH definitions, so
+# no part of the headline depends on the choice.
+#
+# THE "TWO POPULATIONS" READING DID NOT SURVIVE ITS FIRST TEST.  At
+# #424 I noted the four remaining stragglers were 0-for-21 and had
+# never converted, and read that as possibly two populations rather
+# than one long tail.  I declined then to turn it into a probability.
+# That restraint was right: the pool is now 1-for-22.  The three still
+# open are 0-for-17, with attempts 7, 7 and 6 in flight.  A pool that
+# converts once is not a pool that never converts, so I am retiring
+# the two-population reading rather than defending it.
+#
+# COST, with the population named this time.  idx 211 took 5 attempts
+# and 100253.3 s = 27.85 CPU-HOURS to produce one UNSAT.  The right
+# comparison is a fresh cube under the CURRENT cap, not a lifetime
+# average, and the "8% stall rate" in my working notes was a
+# recent-window figure I had never labelled as one.  Named properly:
+#   lifetime first attempts  267 cubes, 30.0% stall, 8214.6 s per
+#                            verdict -- but 75 of those 80 stalls are
+#                            from the old 10800 cap era
+#   last 60 fresh cubes      5.0% stall, 6869.3 s = 1.91 CPU-h per
+#                            verdict
+# So idx 211 cost about 14.6 fresh verdicts.  The lifetime and
+# recent-window figures are both true and were never in conflict; I
+# had been quoting one without saying which.
+#
+# BUDGET RULE: 9 of the last 12 attempts decided.  It does not fire.
+# Cap stays 21600.  Recorded because the rule is checked, not assumed.
+#
+# FRONTIER.  Everything below idx 267 is now decided except 189, 190
+# and 209 -- 212..266 is 55 consecutive decided cubes.  The freed
+# worker has claimed idx 267 [13,13,13,11,13,13,13,11,11,10,7], which
+# has never been attempted: the first genuinely new cube this process
+# has started.  The run is back on fresh ground while the three
+# stragglers continue.
+#
+# Rows 433, labels 267, 264 UNSAT / 3 UNKNOWN / 0 SAT; 264 of 1949
+# decided (13.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5819,3 +5890,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 11, 11, 11, 6]	UNSAT	5645.1
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 9, 9, 9]	UNSAT	6614.0
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 10, 10, 7]	UNSAT	10720.7
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 10, 9, 8]	UNSAT	10815.8
+g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNSAT	13137.0
