@@ -5459,6 +5459,80 @@
 # Rows 434, labels 267, 265 UNSAT / 2 UNKNOWN / 0 SAT; 265 of 1949
 # decided (13.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# THREE OF FOUR, AND MY OWN PRE-REGISTERED SPLIT IS DEAD.  idx 189
+# [13,13,13,12,13,13,12,11,11,9,8] UNSAT at 14507.1 s on attempt 7, at
+# 23:35:16Z, after SIX cap stalls.  Fifteen minutes ago I wrote that
+# the pool split on d[5] -- the d[5]=12 pair converting, the d[5]=13
+# pair not -- and that the next two rows would test it for free.  idx
+# 189 is a d[5]=13 cube.  The split is dead, on the first row that
+# could have killed it, exactly as pre-registered.  That is the value
+# of writing the falsifier down first: this costs one paragraph
+# instead of a retraction.
+#
+# What is left is harder to dismiss.  Five earlier batches produced 1
+# conversion in 21 attempts; this batch has produced 3 in 4, and only
+# idx 190 is still open.  So I asked whether this container is simply
+# faster, and the first number I computed was WRONG IN MY FAVOUR.
+#
+# THE MISTAKE, recorded because I nearly published it.  All three of
+# this batch's draw-win ratios -- 1.656, 1.598, 1.501 -- exceed the
+# previous all-time maximum of 1.450.  Treating all 21 draw-wins as
+# exchangeable gives P(the three newest are the three largest) =
+# 1/C(21,3) = 1/1330 = 0.00075.  That figure is an artifact of
+# POOLING ACROSS CAP ERAS.  17 of the 18 earlier draw-wins stalled at
+# the OLD 10800 cap, not the current 21600, and a ratio measured
+# against a 10800 s stall is not the same quantity.  Like for like:
+#   stalled at 10800 : n=17  median 1.114  max 1.450
+#   stalled at 21600 : n= 1  ratio 1.057
+#   this batch       : n= 3  1.656  1.598  1.501
+# Among the FOUR draw-wins that ever stalled at 21600, this batch owns
+# the top three, and P = 1/C(4,3) = 0.25.  Not significant.  The
+# honest p-value is 0.25, not 0.00075.
+#
+# A second confound, tested rather than waved away: perhaps the ratio
+# simply grows with the number of prior stalls, which would explain
+# this batch (4, 5 and 6 stalls) with no machine change at all.  Over
+# the 18 earlier draw-wins the effect is weak -- Pearson +0.441 but
+# Spearman only +0.193.  Matching on stall count instead of cap era:
+# five earlier draw-wins had 3 or more prior stalls and their maximum
+# ratio is 1.386, below all three of this batch's.  P = 1/C(8,3) =
+# 0.018 under exchangeability, but that grouping still mixes cap eras,
+# so it is not clean either.
+#
+# WHERE THAT LEAVES IT: suggestive, not established.  Three framings
+# give 0.00075 (confounded), 0.25 (clean but n=4) and 0.018 (larger
+# but still mixed).  I am NOT claiming a faster container.  Note also
+# that contention was already ruled out for this batch and every other
+# -- all 22 cap stalls ran at >=99.0% of a core -- so if the machine
+# is the cause it is clock or cache, not scheduling.
+#
+# CPU RECORDED FOR FUTURE RESTARTS, since I have no prior record to
+# compare against and that is exactly why this is unresolved:
+#   Intel(R) Xeon(R) Processor @ 2.10GHz, 4 cores, 2100.0 MHz,
+#   cache 266240 KB, bogomips 4200.00, loadavg 4.00 on 4 solvers.
+# Capture these at every future restart.
+#
+# THE CLEAN TEST IS ALREADY RUNNING AND COSTS NOTHING.  idx 267, 268
+# and 269 are fresh cubes in block [13,13,13,11], the SAME block as
+# idx 233..266 -- 34 cubes, all decided on FIRST attempt on EARLIER
+# containers, zero stalls, median 4801.7 s.  Adjacent indices, same
+# block, so difficulty is matched about as well as this file allows.
+# Pre-registering the prediction before the rows land:
+#   container NOT faster   -> their median lands near 4800 s
+#   container 1.55x faster -> their median lands near 3100 s
+# These cubes must be solved anyway, so the test is free.  If they
+# come in near 4800 s the machine hypothesis is dead and this batch
+# was three lucky draws.
+#
+# POOL.  3-for-24 over 138.5 CPU-HOURS, 46.2 CPU-h per verdict against
+# 1.91 for a fresh cube.  Only idx 190 remains, on attempt 7.
+#
+# BUDGET RULE: 11 of the last 12 attempts decided.  Does not fire.
+# Cap stays 21600.
+#
+# Rows 435, labels 267, 266 UNSAT / 1 UNKNOWN / 0 SAT; 266 of 1949
+# decided (13.6%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5951,3 +6025,5 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 12, 10, 10, 7]	UNSAT	10720.7
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 10, 9, 8]	UNSAT	10815.8
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNSAT	13137.0
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNSAT	13607.2
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNSAT	14507.1
+g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNSAT	14784.4
