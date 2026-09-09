@@ -5294,6 +5294,41 @@
 # Rows 432, labels 267, 263 UNSAT / 4 UNKNOWN / 0 SAT; 263 of 1949
 # decided (13.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTY-THIRD CONTAINER RESTART.  Driver relaunched 19:32Z as pid
+# 1628; checkpoint line read 263 of 1949 against an independent
+# recount of 263.  MATCH: zero rows lost.  Rows on disk 432.
+#
+# THE COST IS MEASURED EXACTLY THIS TIME, and the method is worth
+# keeping.  My own observation window was useless here -- the last
+# live look was 13:25:34Z and the container was empty at 19:31:29Z, a
+# six-hour gap that would have bounded the loss only as 0 to 24
+# CPU-hours.  But the harness appends "[killed]" to each background
+# task's output file when the container goes down, and BOTH files
+# carry the same mtime to the nanosecond: 16:13:49.982541182Z.  That
+# is a single shutdown event, and it dates the kill directly.
+#   solvers started            13:25:31Z
+#   killed                     16:13:49Z
+#   elapsed each               10098 s
+#   discarded 4 x 10098      = 40392 s = 11.2 CPU-HOURS, a point
+#                              estimate rather than a range.
+# The leftover CNF files confirm what they were running: c189, c190,
+# c209, c211 -- the four stragglers, as expected.
+#
+# USE THIS FROM NOW ON.  Every earlier restart was recorded as a range
+# because I bounded it by my own check-in cadence; the kill marker was
+# there all along and I was not reading it.  The earlier ranges stand
+# as recorded -- those files are gone and I will not retrofit numbers
+# I cannot now verify -- but future restarts get the exact figure.
+#
+# Six restarts in about 58 hours.  The fifth straggler batch was
+# killed at 10098 s, well short of its cap, so it produced nothing;
+# the sixth batch now starts, idx 189 (attempt 7), 190 (attempt 7),
+# 209 (attempt 6), 211 (attempt 5) -- the same attempt numbers as
+# before, since the killed batch left no rows.
+#
+# Rows 432, labels 267, 263 UNSAT / 4 UNKNOWN / 0 SAT; 263 of 1949
+# decided (13.5%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
