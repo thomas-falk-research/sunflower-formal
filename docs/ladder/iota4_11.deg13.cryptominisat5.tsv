@@ -5220,6 +5220,18 @@
 # Rows 428, labels 263, 259 UNSAT / 4 UNKNOWN / 0 SAT; 259 of 1949
 # decided, crossing to 13.3%.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# #429: [13,13,13,11,13,13,13,11,11,11,6] UNSAT 5645.1, a FIRST
+# attempt, idx 266, landed 11:24:06Z.  It opens a five-tail group,
+# prefix [13,13,13,11,13,13,13,11], idx 266-270, and at 5645.1 s it is
+# back under half what the twelve-tail group has been costing.  That
+# group stands at 9 of 12, with idx 263, 264, 265 still in flight.
+# Block [13,13,13,11] at 31 of 82.
+#
+# BUDGET RULE: eight UNSAT in the last twelve.  Does NOT fire.
+#
+# Rows 429, labels 264, 260 UNSAT / 4 UNKNOWN / 0 SAT; 260 of 1949
+# decided (13.3%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -5706,3 +5718,4 @@ g=11 [13, 13, 13, 11, 13, 13, 13, 12, 11, 8, 8]	UNSAT	10699.6
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 11, 11, 5]	UNSAT	10932.7
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 11, 10, 6]	UNSAT	11424.1
 g=11 [13, 13, 13, 11, 13, 13, 13, 12, 11, 9, 7]	UNSAT	11994.9
+g=11 [13, 13, 13, 11, 13, 13, 13, 11, 11, 11, 6]	UNSAT	5645.1
