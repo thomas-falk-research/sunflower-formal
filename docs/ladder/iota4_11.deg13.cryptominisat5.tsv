@@ -5618,6 +5618,64 @@
 # Rows 437, labels 268, 268 UNSAT / 0 UNKNOWN / 0 SAT; 268 of 1949
 # decided (13.8%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# THE PRE-REGISTERED TEST IS COMPLETE AND MY HYPOTHESIS IS DEAD.
+# idx 269 [13,13,13,11,13,13,13,11,10,10,8] UNSAT at 6261.1 s at
+# 01:19:50Z completes the three:
+#   idx 267  6144.8    idx 268  5398.9    idx 269  6261.1
+#   MEDIAN 6144.8 s
+#   predicted if NOT faster    4802 s   -> observed +28%
+#   predicted if 1.55x faster  3098 s   -> observed +98%
+# The median is nearly double what the fast model required.  This
+# container is not faster, and tonight's 4-for-4 straggler batch was
+# four lucky draws.  The cap-era-matched P = 0.20 was the honest
+# number; the stall-matched 0.0079 was not.
+#
+# I THEN GOT IT WRONG A SECOND TIME, IN MY OWN FAVOUR AGAIN, and this
+# one is worth recording in full because it nearly reversed the
+# verdict.  Noticing that the baseline had a steep cost-vs-index trend
+# (Pearson +0.860), I refit the null by OLS and got trend-adjusted
+# predictions of 11167 / 11471 / 11776 s for idx 267 / 268 / 269 --
+# against which the observations sit at z = -2.79, -3.38, -3.07, i.e.
+# "far faster than expected", the answer I wanted.  That fit is
+# GARBAGE.  The baseline is not a trend, it is a STEP:
+#   idx 233..240   101.9 .. 3021.9      idx 241..254   ~4200-5300
+#   idx 255..264   ~9500-12000          idx 265,266    6614.0, 5645.1
+# A straight line through a step function extrapolates 11167 s at idx
+# 267 while the line's own last two points sit near 6000.  Twice
+# tonight a statistic came out the way I wanted and was an artifact --
+# first the 1/1330 from pooling cap eras, now this.
+#
+# THE MATCHED COMPARISON, which is the one that settles it.  idx 266
+# is the immediately preceding cube, same structural region, decided
+# on an EARLIER container:
+#   earlier container  idx 265, 266        6614.0, 5645.1   mean 6129.6
+#   THIS container     idx 267, 268, 269   6144.8, 5398.9, 6261.1
+#                                                          mean 5934.9
+#   ratio 0.97;  a 1.55x speedup would require 0.65.
+# idx 266 at 5645.1 s on the old container falls inside the range this
+# container produced.  There is no speedup to find.
+#
+# AND THE WINDOW MATTERS, so here is the honest sensitivity: widening
+# the local window to idx 260..266 gives ratio 0.61, which reads as a
+# 1.6x speedup -- because that window straddles the break, mixing the
+# ~10800 s cubes with the ~6000 s ones.  The same data supports 0.97
+# or 0.61 depending on where I cut.  I take 0.97 because idx 265,266
+# are on the near side of the break with the test cubes and idx
+# 260..264 are not; but anyone reading this should know the other
+# number exists and why I did not use it.
+#
+# WHAT SURVIVES: the draw model, unchanged and now better supported --
+# the four stragglers converted on luck, not on hardware, which is
+# exactly what "cost is a draw" predicts.  Contention was already
+# excluded.  The machine question is CLOSED for this container; keep
+# recording CPU specs at restarts anyway, since the next container is
+# a fresh question.
+#
+# BUDGET RULE: 12 of the last 12 decided.  Does not fire.
+#
+# Rows 439, labels 270, 270 UNSAT / 0 UNKNOWN / 0 SAT; 270 of 1949
+# decided (13.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -6114,3 +6172,4 @@ g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNSAT	14507.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNSAT	14784.4
 g=11 [13, 13, 13, 11, 13, 13, 13, 11, 11, 9, 8]	UNSAT	5398.9
 g=11 [13, 13, 13, 11, 13, 13, 13, 11, 11, 10, 7]	UNSAT	6144.8
+g=11 [13, 13, 13, 11, 13, 13, 13, 11, 10, 10, 8]	UNSAT	6261.1
