@@ -5676,6 +5676,48 @@
 # Rows 439, labels 270, 270 UNSAT / 0 UNKNOWN / 0 SAT; 270 of 1949
 # decided (13.9%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# A BOOKKEEPING ERROR OF MY OWN, IN FOUR COMMIT MESSAGES.  While
+# banking routine rows I stopped resolving each row's index against
+# the regenerated cube list and started INFERRING it from the label
+# count -- "labels is now 276, so the new row is idx 275".  That
+# inference is valid only while the decided set is contiguous.  It
+# stopped being contiguous the moment four solvers began finishing out
+# of index order, because rows land in COMPLETION order, not index
+# order.  The true mapping:
+#   commit    said      truly    cost
+#   a7e0929   idx 271   idx 272   2055.1
+#   5c5a832   idx 272   idx 271   3252.6
+#   aa3390c   idx 273   idx 273   6250.3   (correct, by luck)
+#   6ad47e8   idx 274   idx 276   4960.6
+#   96162c8   idx 275   idx 274   6370.9
+# Four of five wrong.  I caught it only because c275 was still running
+# in ps six minutes after I had announced idx 275 as banked.
+#
+# WHAT IS NOT AFFECTED.  The TSV rows are untouched and correct: the
+# degree sequence IS the cube's identity, the index is only my prose
+# annotation on top of it, and every verdict and cost in the file
+# stands.  The resolved machine test is also unaffected -- idx 267,
+# 268, 269 and 270 were each resolved by explicit lookup in the cube
+# list at the time (6144.8, 5398.9, 6261.1, 6185.4), not inferred, and
+# I have re-checked all four against the cube list just now.
+#
+# AND THE FRONTIER IS NOT CONTIGUOUS, which I asserted three times
+# tonight after it had stopped being true.  idx 275 is still RUNNING,
+# started 01:29:00Z, 6402 s of CPU so far against the 21600 cap, while
+# 276 is already decided.  Lowest undecided: 275, then 277 onward.
+# "Contiguous" was true through idx 273 and I kept saying it out of
+# habit rather than measurement.
+#
+# THE RULE, since the cheap inference is what failed: resolve every
+# row's index through the regenerated cube list, every time, including
+# for routine rows.  The cube list is 30 lines of Python and takes
+# under a second; the inference saved nothing and cost four wrong
+# labels in the permanent record.
+#
+# Rows 445, labels 276, 276 UNSAT / 0 UNKNOWN / 0 SAT; 276 of 1949
+# decided (14.2%).  Budget rule 12 of 12, does not fire.  Bracket
+# 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
