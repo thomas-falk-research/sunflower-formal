@@ -13432,3 +13432,22 @@ point used has degree at least 1 (degree 0 is the ten-point case, now
 closed), so the cubes are the partitions of 15 into at most eleven parts
 of size at most 8: 139 of them. Expect the
 equal-degree-heavy cubes to dominate the cost again.
+
+### 56.10 The eleven-point cube, opened
+
+Same recipe as §56.9 one point up: deficiency 15, every point used has
+degree at least 1, so the cubes are the 139 partitions of 15 into at most
+eleven parts of size at most 8 (`docs/ladder/rstar_3_3_11.cubes.txt`,
+most-concentrated first). A pilot of four says what the sweep will cost:
+`8,7` closes in 0.6 s and `5,4,4,2` in 392 s, but `3,3,3,3,3` and
+`2,2,2,2,1,1,1,1,1,1,1` are UNKNOWN at 1800 s even with the full lex
+prefix and the cut — and the flat cubes are the majority of the 139. So
+this is days of compute on four cores, not a sitting, and it is run the
+way the `ι(4)` ladder was: `tools/sweep11.sh <cap> <jobs>` banks every
+closed cube into `docs/ladder/rstar_3_3_11.tsv`, skips closed cubes on
+re-runs, and re-attempts UNKNOWN ones, so the cap can be raised by §52.3a's
+rule rather than by feel. The first pass at 1800 s harvests the easy
+cubes; the survivors get 7200 s; what survives that needs a deeper cube
+(fix the pair-degree profile of the lowest-degree point) rather than a
+bigger budget. A SAT verdict, if one comes, is a witness the kernel can
+certify in the shape of `TightThreshold.v`.

@@ -1,0 +1,23 @@
+# The eleven-point cube of r*(3,3): a 3-uniform family on 11 points with 28
+# members, no three pairwise disjoint, point degree <= 9, pair degree <= 3?
+# Deficiencies 9 - d_v sum to 99 - 84 = 15; every point used has degree >= 1
+# (degree 0 is the ten-point case, closed in rstar_3_3_10.tsv); sorted, a cube
+# is a partition of 15 into at most 11 parts of size at most 8: 139 cubes,
+# listed most-concentrated first in rstar_3_3_11.cubes.txt.  Solver: OR-Tools
+# CP-SAT via tools/cuben.py (one worker), full lex-leader prefix K = 62 per
+# equal-degree transposition, cut B = 16 (kernel-proved).  Driver:
+# tools/sweep11.sh <cap> <jobs>, checkpointed: closed cubes are skipped on
+# re-runs, UNKNOWN rows are the cap they ran to and are re-attempted.
+# Pilot (docs/roadmap.md section 56.10): 8,7 in 0.6 s; 5,4,4,2 in 392 s;
+# 3,3,3,3,3 and 2,2,2,2,1,1,1,1,1,1,1 UNKNOWN at 1800 s.
+# cube	degrees	K	B	verdict	seconds	witness
+8,7	1,2,9,9,9,9,9,9,9,9,9	62	16	INFEASIBLE	0.6	
+8,5,2	1,4,7,9,9,9,9,9,9,9,9	62	16	INFEASIBLE	5.2	
+8,6,1	1,3,8,9,9,9,9,9,9,9,9	62	16	INFEASIBLE	5.6	
+8,4,3	1,5,6,9,9,9,9,9,9,9,9	62	16	INFEASIBLE	8.3	
+8,5,1,1	1,4,8,8,9,9,9,9,9,9,9	62	16	INFEASIBLE	21.1	
+8,3,3,1	1,6,6,8,9,9,9,9,9,9,9	62	16	INFEASIBLE	35.6	
+8,4,2,1	1,5,7,8,9,9,9,9,9,9,9	62	16	INFEASIBLE	50.6	
+8,4,1,1,1	1,5,8,8,8,9,9,9,9,9,9	62	16	INFEASIBLE	57.2	
+8,3,2,2	1,6,7,7,9,9,9,9,9,9,9	62	16	INFEASIBLE	47.8	
+8,2,2,2,1	1,7,7,7,8,9,9,9,9,9,9	62	16	INFEASIBLE	46.5	
