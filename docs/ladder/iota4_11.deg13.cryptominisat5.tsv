@@ -5752,6 +5752,47 @@
 # measured.  Budget rule 12 of 12, does not fire, cap stays 21600.
 # Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTY-FIFTH RESTART, AND A BETTER WAY TO MEASURE IT.  Killed at
+# 21:24:39.649463031Z, both task files sharing one mtime as usual.
+# But this time BOTH ends of the measurement are filesystem
+# timestamps, because the driver writes each cube's CNF immediately
+# before launching its solver, so the CNF mtime IS the solver start:
+#   c332  started 20:55:59.365361   ->  1720.284 s
+#   c333  started 20:59:47.281374   ->  1492.368 s
+#   c334  started 21:12:05.529418   ->   754.120 s
+#   c335  started 21:19:28.893445   ->   310.756 s
+#   TOTAL 4277.528 s = 1.1882 CPU-HOURS
+# No interpolation anywhere.  At the last restart I took solver ages
+# from a `ps` reading 62 s before the kill and added that 62 s back by
+# hand; that was a good estimate but it was still an estimate.  This
+# is not.  USE THE CNF MTIMES FROM NOW ON:
+#   ls -la --time-style=full-iso /tmp/sf-sym-11-4-32-seq-c*.cnf
+# The files survive the restart, so the evidence is there to be read
+# whether or not I happened to look at ps beforehand.
+#
+# It is also the cheapest restart in the run by a wide margin -- 1.19
+# CPU-hours against 5.16 last time and 11.2 the time before -- because
+# the four cubes in flight were young.  That is luck about WHEN the
+# kill landed, not an improvement in anything I control.
+#
+# ZERO ROWS LOST: the driver printed "checkpoint: 332 of 1949 cubes
+# already decided", matching an independent recount of 332.
+# Relaunched 21:25Z as pid 19179, same command and cap, reclaiming
+# c332 through c335.
+#
+# CPU IDENTICAL FOR THE THIRD CONTAINER RUNNING:
+#   Intel(R) Xeon(R) Processor @ 2.10GHz, 4 cores, 2100.0 MHz,
+#   cache 266240 KB, bogomips 4200.00
+# Three for three now.  Still only evidence that these three match,
+# and still not a reason to reopen the machine-speed question, which
+# was settled on the matched idx 265,266 vs 267..270 comparison and
+# not on hardware readings.
+#
+# Rows 501, labels 332, 332 UNSAT / 0 UNKNOWN / 0 SAT; 332 of 1949
+# decided (17.0%).  Frontier contiguous 0..331, measured.  Budget rule
+# 12 of 12, does not fire, cap stays 21600.  Bracket
+# 27 <= iota(4) <= 71 unchanged.
+#
 # TWO CORRECTIONS, both found while banking idx 284.
 #
 # FIRST, A WRONG SUPERLATIVE IN COMMIT e482eaf.  I wrote there that
