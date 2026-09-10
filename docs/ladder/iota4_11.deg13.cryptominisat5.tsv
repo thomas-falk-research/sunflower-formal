@@ -5577,6 +5577,47 @@
 # Rows 436, labels 267, 267 UNSAT / 0 UNKNOWN / 0 SAT; 267 of 1949
 # decided (13.7%).  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# FIRST DATA POINT OF THE PRE-REGISTERED TEST, AND IT GOES AGAINST MY
+# HYPOTHESIS.  idx 268 [13,13,13,11,13,13,13,11,11,9,8] UNSAT at
+# 5398.9 s at 00:50:12Z -- a fresh cube, first attempt, in block
+# [13,13,13,11], the same block as the idx 233..266 baseline.
+#   predicted, container NOT faster   ~4802 s   observed is +12%
+#   predicted, container 1.55x faster ~3098 s   observed is +74%
+# The observation sits just above the null prediction and nowhere near
+# the fast one.
+#
+# The three still running say the same thing, and censoring is
+# evidence here rather than a gap: under the fast model all of them
+# should have finished by ~3100 s, and none has.
+#   idx 267  >= 5855 s   idx 269  >= 4494 s   idx 270  >= 4214 s
+# Reading the four together against the empirical baseline (34 cubes,
+# same block, earlier containers):
+#   joint likelihood under null    0.0543
+#   joint likelihood under 1.55x   0.0082
+#   likelihood ratio               6.6 : 1 FOR the null
+#
+# NOT RESOLVED, and I am not calling it.  6.6 : 1 is a lean, not a
+# verdict; three cubes are still open and my pre-registration named
+# their MEDIAN, which I do not have yet.  What I can say is that the
+# evidence so far runs against the faster-container reading, and that
+# every additional second those three run without finishing pushes it
+# further that way -- the fast model is the one that needed them to
+# finish early.  So the likely end state is that tonight's 4-for-4 was
+# four lucky draws after all, and the cap-era-matched P = 0.20 was the
+# honest number rather than the stall-matched 0.0079.
+#
+# Caveats on my own arithmetic, since I am the one who wants the fast
+# answer: the likelihood treats the four cubes as independent draws
+# from an unchanged difficulty distribution, and the baseline has only
+# 34 points, so the scaled tail probabilities are coarse and repeat.
+# It is a lean computed from a small empirical distribution, not a
+# test with a calibrated size.
+#
+# BUDGET RULE: 12 of the last 12 decided.  Does not fire.
+#
+# Rows 437, labels 268, 268 UNSAT / 0 UNKNOWN / 0 SAT; 268 of 1949
+# decided (13.8%).  Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -6071,3 +6112,4 @@ g=11 [13, 13, 13, 12, 13, 12, 12, 11, 10, 10, 9]	UNSAT	13137.0
 g=11 [13, 13, 13, 12, 13, 12, 12, 11, 11, 10, 8]	UNSAT	13607.2
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 11, 9, 8]	UNSAT	14507.1
 g=11 [13, 13, 13, 12, 13, 13, 12, 11, 10, 10, 8]	UNSAT	14784.4
+g=11 [13, 13, 13, 11, 13, 13, 13, 11, 11, 9, 8]	UNSAT	5398.9
