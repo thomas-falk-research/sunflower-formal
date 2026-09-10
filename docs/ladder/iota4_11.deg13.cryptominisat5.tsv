@@ -5718,6 +5718,40 @@
 # decided (14.2%).  Budget rule 12 of 12, does not fire.  Bracket
 # 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTY-FOURTH CONTAINER RESTART, and the first one where the CPU
+# comparison could actually be made.
+#   killed                     08:28:02.782693175Z  (both task files,
+#                              same mtime to the nanosecond)
+#   last live reading          08:27:00Z, about 62 s earlier
+#   discarded  c283 8198 s + c284 7732 s + c285 2550 s + c286 87 s
+#            = 18567 s = 5.16 CPU-HOURS
+# The cheapest restart yet, because the kill landed a minute after a
+# check rather than hours after one.  The figure is a point estimate
+# to about +/- 5 s, not a range.
+#
+# ZERO ROWS LOST: the driver printed "checkpoint: 283 of 1949 cubes
+# already decided", matching an independent recount of 283 exactly.
+# Relaunched at 08:28Z as pid 9585, same command and cap, and it
+# reclaimed the same four cubes, c283 through c286.
+#
+# THE CPU IS IDENTICAL TO THE PREVIOUS CONTAINER, byte for byte:
+#   Intel(R) Xeon(R) Processor @ 2.10GHz, 4 cores, 2100.0 MHz,
+#   cache 266240 KB, bogomips 4200.00
+# I started recording this at the last restart precisely because the
+# machine-speed question could not be settled without it, and this is
+# the first before/after pair I have.  It is consistent with the
+# verdict already reached on other grounds -- that the 4-for-4
+# straggler batch was luck, not hardware -- but it is worth being
+# exact about how much it proves: two identical readings show that
+# these two containers match, not that every earlier container did.
+# The provisioning looks uniform; one pair is not a survey, and I am
+# not reopening the question on the strength of it.
+#
+# Rows 452, labels 283, 283 UNSAT / 0 UNKNOWN / 0 SAT; 283 of 1949
+# decided (14.5%).  Frontier contiguous 0..282, lowest undecided 283,
+# measured.  Budget rule 12 of 12, does not fire, cap stays 21600.
+# Bracket 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
