@@ -5797,6 +5797,52 @@
 # 11800 s, then 289.  Budget rule 12 of 12, does not fire.  Bracket
 # 27 <= iota(4) <= 71 unchanged.
 #
+# I REPEATED THE ERROR I HAD JUST FINISHED DOCUMENTING.  Twice.
+#
+# In 358215b I recorded that calling idx 278 "the second costliest
+# first attempt in the file" was wrong because I had reused a local
+# window as if it were the file, and I wrote down the lesson: compute
+# over the whole file, name the population, check before writing.  I
+# then put that lesson in my own check-in notes as error (4).  Within
+# a few hours I committed the same mistake twice more:
+#   89f936c  "idx 290 at 1029.0 s is the cheapest row since idx 233"
+#            FALSE -- idx 234 is 658.1 s.
+#   e71f57b  "idx 303 at 1131.1 s -- the cheapest row since idx 233"
+#            FALSE -- idx 234 at 658.1 and idx 290 at 1029.0 are both
+#            cheaper.  It ranks THIRD of the 67 decided cubes above
+#            idx 233, not first.
+# The correct cheap tail above idx 233 is 234 at 658.1, 290 at 1029.0,
+# 303 at 1131.1, 235 at 1379.6, 236 at 1674.3.
+#
+# WHY THE RULE DID NOT CATCH IT.  I had filed the lesson under
+# "analysis" and these were throwaway descriptive asides in commit
+# messages -- the kind of line written in the same breath as the row
+# itself, without a thought that it was a claim at all.  It is a
+# claim.  It goes into the permanent record with the same weight as
+# the numbers around it, and a reader has no way to tell which
+# sentences I computed and which I merely felt.  The rule applies to
+# every sentence with a superlative or a comparison in it, not to the
+# paragraphs I have mentally labelled as analysis.
+#
+# There is a second, smaller lesson in the specific shape of the
+# error.  Both false claims say "since idx 233".  I chose that anchor
+# because idx 233 costs 101.9 s and is the cheapest cube in the file,
+# so I wanted it excluded -- and then never looked at idx 234, which
+# sits immediately next to it at 658.1 s and is the thing that
+# actually falsifies both statements.  An anchor picked to exclude an
+# inconvenient point is exactly where the next inconvenient point
+# will be.
+#
+# One earlier claim of the same form survives checking: a7e0929's "the
+# cheapest row since idx 240" for idx 272 at 2055.1 s is true --
+# nothing in idx 241..272 is below it.  I am recording that it was
+# verified rather than quietly leaving all three under suspicion.
+#
+# Rows 470, labels 301, 301 UNSAT / 0 UNKNOWN / 0 SAT; 301 of 1949
+# decided (15.4%).  Frontier NOT contiguous: 299, 300, 302 open, then
+# 304.  Budget rule 12 of 12, does not fire.  Bracket
+# 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
