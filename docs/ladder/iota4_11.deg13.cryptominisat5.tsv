@@ -5752,6 +5752,51 @@
 # measured.  Budget rule 12 of 12, does not fire, cap stays 21600.
 # Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# TWO CORRECTIONS, both found while banking idx 284.
+#
+# FIRST, A WRONG SUPERLATIVE IN COMMIT e482eaf.  I wrote there that
+# idx 278 at 11511.9 s was "the second costliest first attempt in the
+# file after idx 261 at 11994.9 s".  Both halves are wrong.  Ranked
+# over all 207 first-attempt UNSATs:
+#    1. idx 188  21678.5      2. idx 191  20809.6
+#    3. idx 196  18700.0      4. idx 185  18652.3
+#    5. idx 183  18613.8      6. idx 184  17598.9
+# idx 261 at 11994.9 ranks 14th and idx 278 at 11511.9 ranks 16th.
+# Not second, and not close to it.
+#
+# The cause is the same shape as the mislabelled indices: I reused a
+# LOCAL WINDOW as if it were the file.  The idx 233..266 baseline I
+# had built for the machine-speed test was still in front of me, and
+# 11994.9 is its maximum, so I reported it as the file's maximum
+# without asking.  The costly cubes live around idx 183..215, far
+# outside that window.  Claims about "the file" have to be computed
+# over the file.
+#
+# SECOND, THE COST COLUMN UNDERCOUNTS AFTER A RESTART, and idx 284 is
+# the first row where it matters.  It reads
+#   idx 284  UNSAT  11811.1
+# as a first attempt, because no UNKNOWN row was ever written for it.
+# But 7732 s of work on that same cube was discarded by the 08:28Z
+# kill, so the true CPU spent deciding it is 7732 + 11811.1 = 19543.1
+# s.  The row is not wrong -- it faithfully records the attempt that
+# produced the verdict -- but it is not the cube's total cost either.
+# The same gap applies to idx 283, 285 and 286 from this restart and
+# to every in-flight cube of the twenty-three restarts before it.
+#
+# So: per-row costs are per-attempt, and total CPU is per-attempt plus
+# whatever restarts discarded.  The discarded figures are in the
+# restart blocks; they are not in the TSV and cannot be recovered from
+# it.  Any future cost accounting has to add them back by hand, and
+# any statement of the form "this cube cost X" should say which of the
+# two it means.  I have been quoting per-attempt costs throughout,
+# which is the right number for the draw model but the wrong one for
+# what the run has actually spent.
+#
+# Rows 456, labels 287, 287 UNSAT / 0 UNKNOWN / 0 SAT; 287 of 1949
+# decided (14.7%).  Frontier NOT contiguous: 283 and 285 still open at
+# 11800 s, then 289.  Budget rule 12 of 12, does not fire.  Bracket
+# 27 <= iota(4) <= 71 unchanged.
+#
 #
 #
 #
@@ -6265,3 +6310,5 @@ g=11 [13, 13, 13, 11, 13, 13, 12, 12, 10, 9, 9]	UNSAT	9667.9
 g=11 [13, 13, 13, 11, 13, 13, 12, 10, 10, 10, 10]	UNSAT	2536.8
 g=11 [13, 13, 13, 11, 13, 13, 11, 11, 11, 11, 8]	UNSAT	2072.7
 g=11 [13, 13, 13, 11, 13, 13, 11, 11, 11, 10, 9]	UNSAT	5518.5
+g=11 [13, 13, 13, 11, 13, 13, 12, 11, 11, 9, 9]	UNSAT	11811.1
+g=11 [13, 13, 13, 11, 13, 13, 12, 11, 10, 10, 9]	UNSAT	11887.5
