@@ -5920,6 +5920,55 @@
 # 27 <= iota(4) <= 71 unchanged.
 #
 #
+# RESTART 27, 2026-09-11 23:19:21Z.  Container restarted; driver pid
+# 26892 killed after 12h40m.  Relaunched as pid 4895, same command and
+# same 21600 s cap.  Checkpoint reported "417 of 1949 cubes already
+# decided", matching an independent recount from HEAD (281d4e8).  No
+# rows lost.  Twenty-seven restarts, zero rows lost.
+#
+# COST, MEASURED NOT INTERPOLATED.  Both endpoints are filesystem
+# timestamps: the driver writes each cube's CNF immediately before
+# launching its solver, so the CNF mtime IS the solver start, and the
+# task file's mtime is the kill.  Four CNFs survived under pid 26892 --
+# c415, c418, c419, c420 -- which is exactly the four workers, and the
+# set matches the measured hole at 415 plus three cubes opened ahead of
+# the frontier.
+#
+#   killed 23:19:21.031
+#   c415   started 22:08:20.390   discarded  4260.640 s
+#   c418   started 22:39:48.166   discarded  2372.864 s
+#   c419   started 22:47:16.262   discarded  1924.768 s
+#   c420   started 23:03:16.898   discarded   964.132 s
+#   TOTAL                         discarded  9522.405 s = 2.645 CPU-hours
+#
+# Restart cost is TIMING LUCK and carries no trend.  The exactly
+# measured restarts now read 5.16, 1.19, 4.80 and 2.645 CPU-hours.
+# This one is mid-range because the kill landed with one old cube and
+# three young ones; that is the only thing it says.  Accumulate an
+# average, claim nothing.
+#
+# These discarded seconds are NOT in the TSV.  Per-row costs are
+# PER-ATTEMPT, so a cube whose in-flight work a restart threw away has
+# no UNKNOWN row and its true cost is the row plus the discarded
+# seconds, which live only in these restart blocks.
+#
+# CPU spec recorded, identical to the four containers before it:
+# Intel(R) Xeon(R) Processor @ 2.10GHz, 4 cores, 2100.000 MHz, cache
+# 266240 KB, bogomips 4200.00.  Five matching containers is evidence
+# that these five match and nothing more.  It is NOT grounds to reopen
+# the machine-speed question, which was tested and closed: the
+# pre-registered test came back at +98% against the fast model, and
+# the matched local comparison gave 0.98 where a speedup needed 0.65.
+#
+# Rows 586, labels 417, 417 UNSAT / 0 SAT / 0 labels undecided-only
+# (169 historical UNKNOWN rows all superseded by a later UNSAT on the
+# same label).  417 of 1949 decided (21.4%).  Frontier contiguous
+# 0-414, one hole at 415 -- whose in-flight work this restart
+# discarded, so it will be re-attempted from scratch.  Budget rule
+# 12 of 12, does not fire; cap stays 21600 s.  Bracket
+# 27 <= iota(4) <= 71 unchanged.
+#
+#
 #
 #
 #
