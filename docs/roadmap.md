@@ -13467,6 +13467,18 @@ slowest profile 29 s (`docs/ladder/rstar_3_3_11.sub.tsv`, driver
 `tools/subsweep.sh`). So a shape that would not close in 7200 s flat
 closes in a third of that when split — the flat solver was not finding the
 case split the profile makes explicit. The other three stalled cubes (1347
-profiles each) are queued on the same core. Standing: under CP-SAT, no
-28-member family on eleven points in the closed cubes; the eleven-point
-case is open until the remaining cubes close or produce a witness.
+profiles each) are queued on the same core.
+
+The sub-cube then closed every stall it was given (`4,3,3,2,1,1,1`,
+`4,3,2,2,2,1,1`, `4,3,2,2,1,1,1,1` at 1347 profiles each, `3,3,3,3,2,1`
+at 1288, `4,2,2,2,2,1,1,1` at 679; slowest single profile 106 s, no
+profile ever UNKNOWN), while the flat pass kept stalling on the
+deficiency-3 shapes (`3,3,3,2,2,1,1`, `3,3,3,2,1,1,1,1`, `3,3,2,2,2,2,1`
+all UNKNOWN at 7200 s). So the flat second pass was stopped at 118 closed
+with twelve flat cubes not re-attempted at 7200 s, and the remaining
+cubes go straight to sub-cubes, three at a time via `tools/subchain.sh`
+(longest-stalled first): a stall costs 7200 s of a core for nothing, a
+sub-cube sweep closes the same cube in about an hour. Standing: under
+CP-SAT, no 28-member family on eleven points in the closed cubes; the
+eleven-point case is open until every cube is closed flat or by
+sub-cubes, or a witness appears.
