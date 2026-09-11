@@ -13451,3 +13451,22 @@ cubes; the survivors get 7200 s; what survives that needs a deeper cube
 (fix the pair-degree profile of the lowest-degree point) rather than a
 bigger budget. A SAT verdict, if one comes, is a witness the kernel can
 certify in the shape of `TightThreshold.v`.
+
+**Standing (in progress).** First pass at 1800 s (four jobs): 84 closed,
+55 UNKNOWN. Second pass at 7200 s (three jobs), still running: 112 closed
+so far, four stalled at the cap (`4,3,3,2,2,1`, `4,3,3,2,1,1,1`,
+`4,3,2,2,2,1,1`, `4,3,2,2,1,1,1,1`), no witness. The deeper cube is now in
+place and it is decisive. `tools/cubesub.py` fixes, on top of the degree
+sequence, the pair-degree profile of point 0 (the unique point of minimum
+degree 5): ten numbers in 0..3 summing to 10, non-increasing inside each
+equal-degree block (sound by the block symmetry), with the lex prefix kept
+only for transpositions of equal degree *and* equal profile entry, i.e.
+inside the profile's stabiliser, so the two breaks compose. The cube
+`4,3,3,2,2,1` has 1093 profiles; all 1093 are INFEASIBLE, 2021 s in total,
+slowest profile 29 s (`docs/ladder/rstar_3_3_11.sub.tsv`, driver
+`tools/subsweep.sh`). So a shape that would not close in 7200 s flat
+closes in a third of that when split — the flat solver was not finding the
+case split the profile makes explicit. The other three stalled cubes (1347
+profiles each) are queued on the same core. Standing: under CP-SAT, no
+28-member family on eleven points in the closed cubes; the eleven-point
+case is open until the remaining cubes close or produce a witness.
