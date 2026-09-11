@@ -5793,6 +5793,41 @@
 # 12 of 12, does not fire, cap stays 21600.  Bracket
 # 27 <= iota(4) <= 71 unchanged.
 #
+# TWENTY-SIXTH RESTART.  Killed 10:22:38.196237742Z, both task files
+# sharing one mtime.  Measured by the CNF-mtime method, so both ends
+# are filesystem timestamps and nothing is interpolated:
+#   c366  started 08:44:12.979887  ->  5905.216 s
+#   c367  started 09:03:08.131954  ->  4770.064 s
+#   c368  started 09:23:35.260027  ->  3542.936 s
+#   c369  started 09:31:48.992056  ->  3049.204 s
+#   TOTAL 17267.421 s = 4.7965 CPU-HOURS
+#
+# ZERO ROWS LOST: driver printed "checkpoint: 366 of 1949 cubes
+# already decided", matching an independent recount of 366.
+# Relaunched 10:23Z as pid 26892, same command and cap, reclaiming
+# c366 through c369.
+#
+# THE THREE MEASURED RESTARTS NOW READ 5.16, 1.19 and 4.80 CPU-HOURS.
+# When #25 came in at 1.19 I wrote that it was cheap only because the
+# cubes in flight happened to be young, and that this was luck about
+# timing rather than anything I control.  #26 confirms it: same
+# procedure, same cap, nearly four times the loss.  The cost of a
+# restart is set by where the kill lands in the solve cycle and by
+# nothing else, so there is no trend here to read and no improvement
+# to claim -- only an average to accumulate.
+#
+# CPU IDENTICAL FOR THE FOURTH CONTAINER RUNNING:
+#   Intel(R) Xeon(R) Processor @ 2.10GHz, 4 cores, 2100.0 MHz,
+#   cache 266240 KB, bogomips 4200.00
+# Four for four.  Still evidence only that these four match, and
+# still not grounds to reopen the machine-speed question, which was
+# settled on the matched idx 265,266 vs 267..270 comparison.
+#
+# Rows 535, labels 366, 366 UNSAT / 0 UNKNOWN / 0 SAT; 366 of 1949
+# decided (18.8%).  Frontier contiguous 0..365, measured.  Budget rule
+# 12 of 12, does not fire, cap stays 21600.  Bracket
+# 27 <= iota(4) <= 71 unchanged.
+#
 # TWO CORRECTIONS, both found while banking idx 284.
 #
 # FIRST, A WRONG SUPERLATIVE IN COMMIT e482eaf.  I wrote there that
