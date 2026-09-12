@@ -5969,6 +5969,51 @@
 # 27 <= iota(4) <= 71 unchanged.
 #
 #
+# RESTART 28, 2026-09-12 12:16:53Z.  Container restarted; driver pid
+# 4895 killed after 12h50m.  Relaunched as pid 16437, same command and
+# same 21600 s cap.  No rows lost -- twenty-eight restarts, zero losses.
+#
+# COST, MEASURED NOT INTERPOLATED.  Four CNFs survived under pid 4895 --
+# c486, c487, c488, c489 -- exactly the four workers, and every one of
+# them a cube ABOVE the frontier at 0-485, which is what the sweep is
+# expected to hold open.  The CNF mtime IS the solver start and the task
+# file's mtime is the kill, so both ends are filesystem timestamps:
+#
+#   killed 12:16:53.537
+#   c486   started 11:41:20.217   discarded  2133.320 s
+#   c487   started 11:54:42.281   discarded  1331.256 s
+#   c488   started 12:01:52.133   discarded   901.404 s
+#   c489   started 12:09:50.485   discarded   423.052 s
+#   TOTAL                         discarded  4789.032 s = 1.330 CPU-hours
+#
+# The exactly measured restarts now read 5.16, 1.19, 4.80, 2.645 and
+# 1.330 CPU-hours.  This is the second-cheapest of the five and the
+# reason is visible in the table: the kill caught four YOUNG cubes, the
+# oldest only 36 minutes in.  That is timing luck and nothing else.  It
+# is NOT evidence that restarts are getting cheaper -- restart 26 lost
+# nearly four times what restart 25 did under the identical procedure.
+# Accumulate an average, claim no trend.
+#
+# These discarded seconds are NOT in the TSV.  Per-row costs are
+# PER-ATTEMPT, so each of c486-c489 will land with a row that understates
+# its true cost by the figure above, exactly as idx 415, 418, 419 and 420
+# did after restart 27 (758d8f0).
+#
+# CPU spec recorded, identical for a sixth container: Intel(R) Xeon(R)
+# Processor @ 2.10GHz, 4 cores, 2100.000 MHz, cache 266240 KB, bogomips
+# 4200.00.  Six matching containers is evidence that these six match and
+# nothing more.  It is NOT grounds to reopen the machine-speed question,
+# which was tested and closed at +98% against the fast model.
+#
+# Rows 655, labels 486, 486 UNSAT / 0 SAT / 0 labels undecided-only (169
+# historical UNKNOWN rows all superseded by a later UNSAT on the same
+# label).  486 of 1949 decided (24.9%).  Frontier contiguous 0-485, no
+# holes.  Six blocks complete: [13,13,13,13] 129, [13,13,13,12] 104,
+# [13,13,13,11] 82, [13,13,13,10] 65, [13,13,13,9] 49, [13,13,13,8] 38;
+# [13,13,13,7] 467-494 stands at 19 of 28.  Budget rule 12 of 12, does
+# not fire; cap stays 21600 s.  Bracket 27 <= iota(4) <= 71 unchanged.
+#
+#
 #
 #
 #
