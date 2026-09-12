@@ -13648,7 +13648,22 @@ case (§56.5 item 3, 16 down to 10 in `TauThree`), and the solver verdicts
 need either proof logs (a proof-logging pseudo-Boolean solver, §56.10) or
 a kernel-checked replay. What *is* established without either condition
 is unchanged: ten and eleven points are closed under CP-SAT alone, and
-the support certificate is exact. A fresh-context review of this section
+the support certificate is exact.
+
+**Proof logging, tried.** RoundingSat (master, built here without
+SoPlex) writes VeriPB proofs and VeriPB 3.0.2 checks them;
+`tools/cube_opb.py` exports a cube as OPB with the same constraints as
+`tools/cuben.py` and `tools/pbrun.sh` runs solve-and-verify. The pipeline
+works: the ten-point cube `6` is `s UNSATISFIABLE` in 25 s and
+**`s VERIFIED UNSATISFIABLE`** by VeriPB in 0.7 s (20 MB proof). It does
+not scale to the ladders on this machine: the twelve-point cube
+`7,5,3,3,3,3` with the Frankl cut, which CP-SAT closes in 12 s, was still
+running after an hour with or without the lex prefix (proof files of
+60 MB to 700 MB), and the ten-point cube `3,2,1` (CP-SAT 1658 s) after
+two hours. So the solver condition in the theorem stays a condition;
+discharging it needs either a much larger machine or a different
+encoding (the cardinality-heavy constraints are what the clause-learning
+and PB engines both struggle with, cf. cadical and SCIP in §56.9). A fresh-context review of this section
 (reduction to 28 members, both cuts against the kernel lemmas, cube
 exhaustiveness regenerated at every rung, ladder integrity, the lex
 prefix at 12–15, the assembly) confirmed it and supplied the three
