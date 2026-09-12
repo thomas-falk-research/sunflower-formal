@@ -7038,6 +7038,64 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **A NEW ENTRY FOR THE ERROR-PATTERN LIST, EARNED BY A PREDICTION I
+# DECLINED TO REGISTER AND WHICH WOULD HAVE FAILED: THE PATTERN I AM
+# MOST TEMPTED TO REGISTER IS THE ONE ABOUT TO BREAK.**
+# ================================================================
+#
+# Block [13,13,12,12] opened with a strictly increasing run of TWELVE
+# cubes -- 54.1, 595.4, 938.9, 1115.7, 1204.3, 1311.4, 1421.6, 1607.6,
+# 2394.6, 2610.6, 3078.9, 3261.1 -- against a longest run of SIX in any
+# other block (recomputed over every block with a decided opener: 6, 5,
+# 4, 4, 4, 4, 4, 3, 3, 2, 2, 2, 2, 1).  Twice the previous maximum.
+#
+# Across three commits (df4a06f, 37031b2, b8050cd) I noted it, declined
+# to attach a chance rate to it, and declined to register anything on
+# it.  37031b2 named the candidate exactly: "the run continues across
+# the next d[8] boundary, cost(572) > cost(571)".  BOTH FORMS HAVE NOW
+# RESOLVED AND BOTH WOULD HAVE FAILED:
+#
+#   the BROAD form -- "the run keeps going" -- died at 570->571,
+#   3261.1 -> 2828.7, a drop of 432.4;
+#
+#   the NARROW form I actually named -- cost(572) > 2828.7 -- came in
+#   at 2308.7, FAILING BY 520.0 s.
+#
+# NEITHER ENTERS THE REGISTERED TALLY.  Nothing was registered, so
+# nothing is scored: the tally stays NINE REGISTERED PREDICTIONS, EIGHT
+# HOLDING, ONE FAILING.  An unregistered claim that would have failed
+# is not a failure on the books -- and it is not nothing either, which
+# is why it is written down here rather than dropped once it turned
+# unflattering.
+#
+# **AND THE DECLINE WAS NOT FORESIGHT.**  I did not decline because I
+# expected the run to break; I declined because registering a pattern
+# noticed post hoc is fishing, which is a rule about METHOD.  The
+# method was vindicated.  MY JUDGEMENT WAS NOT -- my instinct, stated
+# in the file three times, was that the run was worth betting on, and
+# that instinct was wrong twice within four rows.  Those are different
+# things and collapsing them into "good call" would be the flattering
+# misreading.
+#
+# THE STRUCTURAL REASON, WHICH MAKES THIS A PRINCIPLE AND NOT AN
+# ANECDOTE.  A run's observed length is maximal EXACTLY at the moment
+# before it breaks -- that is what it means to be observing a run.  So
+# the instant a run looks most impressive is, by construction, the
+# instant you are closest to its end, and "register its continuation"
+# is a bet taken at the worst available moment.  The longer I had
+# waited to be impressed, the worse the bet would have been.
+#
+# THE RULE: a pattern noticed while it is running is evidence about the
+# past only.  To bet on it, derive the prediction from something OTHER
+# than the run itself -- a mechanism, a structure in the cube list, a
+# relation that held in other blocks -- or do not bet.
+#
+# None of this touches the four registrations open in this block, which
+# were fixed at 0542580 before any of their cubes started and stand
+# exactly as written.  No verdict changes.  The bracket stays
+# 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7837,3 +7895,4 @@ g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 10, 4]	UNSAT	2610.6
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 9, 5]	UNSAT	3078.9
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 8, 6]	UNSAT	3261.1
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 7, 7]	UNSAT	2828.7
+g=11 [13, 13, 12, 12, 13, 13, 13, 13, 11, 11, 4]	UNSAT	2308.7
