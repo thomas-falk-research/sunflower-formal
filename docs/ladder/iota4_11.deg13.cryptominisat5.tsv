@@ -6424,6 +6424,49 @@
 #
 # No verdict changes; the bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **A LIMITATION ON THE K=5 SCAN TABLE ABOVE, FOUND THE FIRST TIME IT
+# WAS APPLIED TO A SMALL BLOCK: IT DEGENERATES AS BLOCKS SHRINK, AND
+# EVERY REMAINING BLOCK IS SMALL.  USE THE K=2 SCAN FROM HERE ON.**
+# ----------------------------------------------------------------
+#
+# 6619896 promised the [13,13,13,6] scan rank once that block closed.
+# It has closed at 21 of 21, and the two scans disagree sharply:
+#
+#   K=5   12 splits   median split 1.92   max 2.02   REAL 1.94
+#                     -> rank  8/12,  63.6th percentile
+#   K=2   18 splits   median split 1.10   max 2.68   REAL 1.74
+#                     -> rank 16/18,  88.2nd percentile
+#
+# The K=2 figure matches the seven earlier blocks, whose real
+# boundaries sat at the 86th to 93rd percentile.  THE K=5 FIGURE DOES
+# NOT, and the reason is mechanical rather than substantive: with 21
+# cubes and K=5, each split's two windows cover 10 of the 21, so
+# adjacent splits share 9 of their 10 cubes and every split straddles
+# most of the block.  The statistic saturates -- a median split ratio
+# of 1.92 means nearly EVERY split reports the same ~1.9 -- so the
+# real boundary cannot stand out no matter what is there.
+#
+# THE EARLIER BLOCKS WERE BIG ENOUGH TO HIDE THIS.  They run 129, 104,
+# 82, 65, 49, 38 and 28 cubes, and their K=5 median split ratios are
+# 1.03, 1.02, 1.06, 1.04, 1.00, 1.14, 1.10 -- unsaturated.  So the K=5
+# table above is sound for those seven and worthless for this one.
+#
+# AND IT ONLY GETS WORSE.  The remaining blocks are 15, 11, 8, 7, 5, 4,
+# 3 and 2 cubes.  At K=5 a 15-cube block yields 6 splits and an
+# 11-cube block yields 2; below that, none.  **SO THE K=5 SCAN IS
+# FINISHED AS A TOOL HERE, and the K=2 scan -- which gave 18 usable
+# splits with an unsaturated median of 1.10 in this block -- is the one
+# to carry forward.**  Where the two disagree, K=2 is the reading.
+#
+# The per-position table is unaffected and stable at eight blocks
+# (K=2): p=4 3.6%, p=5 8.0%, p=6 36.9%, p=7 82.9%, p=8 81.7%, against
+# 3.6 / 9.1 / 35.5 / 82.1 / 80.0 at seven.  The replacement claim
+# stands as written -- jump at a late-coordinate first drop, fall at an
+# early one -- and it was always the K=2 column that carried it.
+#
+# Nothing here touches a verdict; the bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7170,3 +7213,4 @@ g=11 [13, 13, 13, 6, 13, 13, 12, 12, 12, 11, 10]	UNSAT	4096.4
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 13, 12, 7]	UNSAT	803.3
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 13, 11, 8]	UNSAT	775.1
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 13, 10, 9]	UNSAT	790.4
+g=11 [13, 13, 13, 6, 13, 13, 12, 12, 11, 11, 11]	UNSAT	4636.4
