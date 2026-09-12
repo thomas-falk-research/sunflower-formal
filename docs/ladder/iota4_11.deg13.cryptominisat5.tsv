@@ -6229,6 +6229,102 @@
 # Every UNSAT row still stands and the bracket is still
 # 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **THE SEPARATING CONTROL WAS RUN.  IT CORRECTS MY OWN CONTROL FROM
+# ONE ROW AGO, AND IT REPLACES THE d[7] CLAIM WITH A NARROWER AND
+# BETTER ONE: THE JUMP IS AT A BOUNDARY, IT IS NOT AT d[7]
+# PARTICULARLY, AND IT REVERSES SIGN AT EARLY COORDINATES.**
+# ----------------------------------------------------------------
+#
+# The block above registered this as the test that would tell "the
+# d[7] boundary" from "a structural boundary of any kind".  It is
+# EXPLORATORY -- the data already existed -- but a control that can
+# only cut against my own published claim is a different hazard from a
+# retrospective test that can only support one, so it was run.
+#
+# STEP 1, BY COORDINATE POSITION.  For each completed block and each
+# position p, take the FIRST index where d[p] drops below 13 -- the
+# exact analogue of the d[7] boundary -- and rank it in the all-splits
+# distribution.  Mean percentile over the seven completed blocks:
+#
+#            K=5      K=2      K=1
+#   p=4     3.1%     3.6%    11.7%
+#   p=5    13.7%     9.1%    25.8%
+#   p=6    53.3%    35.5%    20.0%
+#   p=7    89.6%    82.1%    64.6%
+#   p=8    87.4%    80.0%    68.0%
+#   p=9    (edge)   (edge)   99.2%
+#
+# TWO THINGS FALL OUT AND THEY POINT OPPOSITE WAYS.
+#
+#   NOT A GENERIC BOUNDARY EFFECT.  p=4 sits at the 3rd percentile and
+#   p=5 at the 9th: at those boundaries the ratio is at the BOTTOM of
+#   the distribution, i.e. cost FALLS.  "Cost jumps at enumeration
+#   boundaries" is false, and the worry recorded one row above is
+#   answered.
+#
+#   NOT ABOUT d[7].  p=8 is as high as p=7 at every K (80.0 vs 82.1 at
+#   K=2; 68.0 vs 64.6 at K=1) and p=9 reads 99.2% where it is
+#   computable.  The registered test singled out d[7] because that is
+#   where it was built, not because d[7] is distinguished.
+#
+# STEP 2, AND IT CORRECTS MY OWN CONTROL.  The +/-3 local control in
+# the block above gave the real boundary a mean local percentile of
+# 69% and was read as "the boundary sits inside a broad plateau, not
+# at its peak".  THAT READING IS WRONG AND THE CONTROL WAS INVALID:
+# with K=5 windows, a split at offset off+j for j < K STILL STRADDLES
+# the boundary, so its high ratio is the same boundary counted again.
+# Of course the neighbours were high.
+#
+# Redone at K=2, where windows 2 apart are DISJOINT, comparing the
+# d[7] boundary only against splits whose windows do not contain it
+# (offsets off-4..off-2 and off+2..off+4):
+#
+#   [13,13,13,13]  1.05  vs 0.90 0.95 0.88 2.57 1.23 0.98  beats 4/6
+#   [13,13,13,12]  1.53  vs 1.23 1.01 0.85 1.51 1.28 1.28  beats 6/6
+#   [13,13,13,11]  1.51  vs 0.97 1.03 1.01 1.47 1.05 1.01  beats 6/6
+#   [13,13,13,10]  2.10  vs 0.88 0.90 0.87 1.24 0.85 0.95  beats 6/6
+#   [13,13,13, 9]  1.90  vs 1.13 0.96 0.85 1.18 0.98 1.13  beats 6/6
+#   [13,13,13, 8]  1.77  vs 1.00 1.06 0.96 1.12 1.07 1.24  beats 6/6
+#   [13,13,13, 7]  1.96  vs 0.90 1.00 0.89 1.23 0.99 0.83  beats 6/6
+#
+#   40 of 42 comparisons.  The boundary-free neighbours sit at about
+#   1.00 while the boundary reads 1.05 to 2.10.  SO POSITION ALONE
+#   DOES NOT PRODUCE THE JUMP -- the neighbours are at essentially the
+#   same position in the block and lack the boundary.  The jump IS
+#   localized at the boundary.  My own correction went against me.
+#
+#   A limit, since the neighbour sets are not clean: in these small
+#   blocks consecutive coordinate boundaries are only 4 or 5 offsets
+#   apart, so a neighbour window can sit on ANOTHER boundary.  That is
+#   visibly what the 2.57 in block [13,13,13,13] is, and it is why
+#   that block reads 4 of 6 rather than 6 of 6.
+#
+# **THE CLAIM THAT REPLACES THE PUBLISHED ONE.**  Within a block, the
+# adjacent-window cost ratio JUMPS at the first drop of a LATE
+# coordinate (p = 7, 8, and 9 where measurable) and FALLS at the first
+# drop of an EARLY one (p = 4, 5).  The d[7] 13->12 boundary is ONE
+# INSTANCE of the late-coordinate pattern and is not distinguished
+# within it.  Everything published from 2dd42a0 to 6619896 as "a ~2x
+# step at the d[7] boundary" should be read as that instead.
+#
+# THE WHOLE OF STEPS 1 AND 2 IS EXPLORATORY: the data existed and the
+# designs were chosen after seeing earlier results.  So three
+# predictions are registered here, on a block with NOTHING landed, at
+# K=2 with a threshold of 1.10x:
+#
+#   BLOCK [13,13,13,5] = idx 516-530, 15 cubes.
+#     p=7 boundary, idx 524 (offset  8):  ratio  > 1.10
+#     p=8 boundary, idx 520 (offset  4):  ratio  > 1.10
+#     p=5 boundary, idx 529 (offset 13):  ratio  < 1.10
+#
+#   The third is the one that matters: it predicts a REVERSAL, and
+#   nothing in the published account of this file would have predicted
+#   it before the table above existed.  Report all three when the
+#   block closes, in whichever direction they fall.
+#
+# Every UNSAT row still stands; the bracket is still 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -6964,3 +7060,4 @@ g=11 [13, 13, 13, 6, 13, 13, 13, 13, 11, 10, 10]	UNSAT	1835.6
 g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 12, 8]	UNSAT	2825.8
 g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 11, 9]	UNSAT	3737.6
 g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 10, 10]	UNSAT	3732.9
+g=11 [13, 13, 13, 6, 13, 13, 13, 11, 11, 11, 11]	UNSAT	1450.3
