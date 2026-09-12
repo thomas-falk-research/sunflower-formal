@@ -171,6 +171,12 @@ support15:
 audit11:
 	@python3 tools/audit11.py .
 
+# The support ladders (section 56.11): the 378 cubes at 13, 14 and 15
+# points, all INFEASIBLE under CP-SAT with the Frankl cut. Regenerates the
+# cube lists from the relaxation. Needs no build. See tools/audit_support.py.
+audit-support:
+	@python3 tools/audit_support.py .
+
 rust:
 	cd rust && cargo build --release
 

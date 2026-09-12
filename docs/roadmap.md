@@ -13549,11 +13549,16 @@ points, and the relaxation lists every degree profile it allows at 13, 14
 and 15 points: 285, 87 and 6 profiles (`tools/typeprof.py 7 2 <n>`).
 Those are degree-sequence cubes, and each is a CP-SAT run with the Frankl
 cut `B = 10` instead of the kernel's 16 (`tools/supsweep.sh <n> <cap>`).
-Pilot at fifteen points: the first three cubes are INFEASIBLE in 65–81 s
-each. VALIDATED so far; the sweep of all 378 cubes is running, and a
-second opinion on the relaxation itself — SCIP, a different engine,
-deciding the type system for *every* degree profile with 16 to 42 points
-one profile at a time (`tools/typescip.py 16`) — is running beside it.
+**All 378 cubes are INFEASIBLE** (`docs/ladder/rstar_3_3_support{15,14,13}.tsv`:
+6, 87 and 285 rows, slowest 105 s, no witness; `tools/audit_support.py`
+regenerates the cube lists from the relaxation and checks every cube has
+its INFEASIBLE row at `K = 62, B = 10`; `make audit-support` runs it).
+VALIDATED under CP-SAT. A second opinion on the relaxation itself —
+SCIP, a different engine, deciding the type system for *every* degree
+profile with 16 to 42 points, 68 797 profiles, one at a time
+(`tools/typescip.py 16`) — has found none feasible through twenty points
+and is still running; it is now a cross-check of the CP-SAT relaxation
+rather than load-bearing, since the certificate below covers 16 and up.
 
 **The bound is now a certificate, not a solver verdict.** Only one of
 the pair caps is needed: with just *pairs of two full points number at
@@ -13589,12 +13594,15 @@ ingredients (weak duality for a bounded LP, and the tree's coverage) are
 each a page; a Coq version would be the natural next formalisation, and
 would make §56.3's "twenty" a kernel fifteen once Frankl's value is in.
 
-**What it would mean.** If the 378 cubes are INFEASIBLE and SCIP agrees
-that no profile with 16 or more points is feasible, then under Frankl's
-`I(3,3) <= 10` and under CP-SAT (SCIP for the relaxation), a 28-member
-family lives on at most twelve points; §56.9–56.10 already exclude ten
-and eleven; and the twelve-point sweep of §56.10, now running, is the
-last rung: `r*(3,3) = 3` would follow, conditional on exactly those two
-things — Frankl's value, and solver verdicts without proof logs. The
+**Standing.** Under Frankl's `I(3,3) <= 10`: sixteen or more points is
+impossible by the exact certificate (PROVEN modulo Frankl); thirteen,
+fourteen and fifteen points are excluded under CP-SAT with the Frankl
+cut; ten and eleven are excluded under CP-SAT with the kernel cut
+(§56.9–56.10); nine or fewer hold at most 27 (exact). So **a 28-member
+family, if one exists, lives on exactly twelve points**, and the
+twelve-point sweep of §56.10, now running (738 cubes, sub-cubes for the
+stalls), is the last rung: `r*(3,3) = 3` would follow from it,
+conditional on exactly two things — Frankl's value, which is cited and
+not in the kernel, and solver verdicts without proof logs. The
 kernel-only version (`s_E <= 13`, degrees `>= 1`) of the relaxation gives
 24 points and is not being swept.

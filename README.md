@@ -210,9 +210,14 @@ Highlights of the less-routine parts:
   on ten or eleven points: cubed on the degree sequence (eleven cubes at
   ten points, 139 at eleven), every cube is infeasible under CP-SAT, the
   eleven-point stalls being closed by the deeper cube that also fixes the
-  pair-degree profile of a minimum-degree point. So a refutation needs
-  twelve points or more — `docs/roadmap.md` §56.9–56.10 record what was
-  decided and at what cost.
+  pair-degree profile of a minimum-degree point. From above, a
+  member-type relaxation with an exact LP-duality certificate
+  (`make support15`) shows that under Frankl's `I(3,3) <= 10` such a
+  family has at most fifteen points, and the cubes it allows at 13, 14 and
+  15 points are all infeasible under CP-SAT (`make audit-support`). So,
+  under Frankl's value, a refutation would live on exactly twelve points,
+  and the twelve-point sweep is the last rung — `docs/roadmap.md`
+  §56.9–56.11 record what was decided and at what cost.
 
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$

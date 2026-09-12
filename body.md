@@ -99,6 +99,22 @@ novelty  = "new-to-this-development"
 search   = "as above"
 
 [[claim]]
+id       = "support-at-most-15-under-frankl"
+statement = "A 28-member 3-uniform family with s_E <= 7 for every member and every degree >= 2 (both follow from I(3,3) <= 10) has at most 15 points: a 61-leaf LP-duality certificate, docs/ladder/support15_cert.json, re-verified in exact rational arithmetic without a solver by tools/support15_check.py (make support15)."
+kind     = "measurement"
+evidence = "tools/support15_check.py"
+novelty  = "new-to-this-development"
+search   = "as above"
+
+[[claim]]
+id       = "no-28-on-13-to-15-points-under-frankl"
+statement = "The 378 degree-profile cubes the relaxation allows at 13, 14 and 15 points are all INFEASIBLE under CP-SAT with the Frankl cut B = 10 (tools/audit_support.py, make audit-support)."
+kind     = "measurement"
+evidence = "docs/ladder/rstar_3_3_support13.tsv"
+novelty  = "new-to-this-development"
+search   = "as above"
+
+[[claim]]
 id       = "no-28-on-eleven-points"
 statement = "No 3-uniform family on eleven points with 28 members, no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 exists: all 139 degree-sequence cubes are infeasible under CP-SAT, 118 flat and 21 via every pair-degree-profile sub-cube; tools/audit11.py checks the ladders and exits 0."
 kind     = "measurement"
@@ -163,8 +179,12 @@ cargo had skipped after the failure were run separately and pass.
 28-member question — `r*(3,3) = 3` or `4` — is open; ten points (§56.9,
 eleven cubes) and eleven points (§56.10, 139 cubes, the stalls closed by
 pair-degree-profile sub-cubes, about 110 core-hours in all) are now
-excluded under CP-SAT, so twelve points is the next thing to cube, with
-the sub-cube first and a proof-logging PB solver as the second opinion.
+excluded under CP-SAT; from above, an exact LP-duality certificate caps
+the support at fifteen under Frankl's `I(3,3) <= 10` (§56.11) and the
+13–15-point cubes are excluded under CP-SAT with the Frankl cut, so a
+refutation of `r*(3,3) = 3` would live on exactly twelve points. The
+twelve-point sweep is running; a proof-logging PB solver is the second
+opinion still owed.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
