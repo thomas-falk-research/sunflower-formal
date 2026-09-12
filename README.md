@@ -214,10 +214,12 @@ Highlights of the less-routine parts:
   member-type relaxation with an exact LP-duality certificate
   (`make support15`) shows that under Frankl's `I(3,3) <= 10` such a
   family has at most fifteen points, and the cubes it allows at 13, 14 and
-  15 points are all infeasible under CP-SAT (`make audit-support`). So,
-  under Frankl's value, a refutation would live on exactly twelve points,
-  and the twelve-point sweep is the last rung — `docs/roadmap.md`
-  §56.9–56.11 record what was decided and at what cost.
+  15 points are all infeasible under CP-SAT (`make audit-support`). And
+  all 738 twelve-point cubes are infeasible with the Frankl cut. So the
+  row is decided *conditionally*: if Frankl's `I(3,3) <= 10` holds and
+  every CP-SAT infeasibility verdict in the ladders is correct, then
+  `r*(3,3) = 3`; the table keeps `{3, 4}` until both are discharged —
+  `docs/roadmap.md` §56.9–56.12 record what was decided and at what cost.
 
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$

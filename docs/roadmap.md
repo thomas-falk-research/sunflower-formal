@@ -13618,10 +13618,12 @@ is its cube list). The decisive rung is the *Frankl-assisted* one, since
 `B = 10` the 328 twelve-point cubes the relaxation allows
 (`docs/ladder/rstar_3_3_support12.cubes.txt`) are **all INFEASIBLE**
 (`docs/ladder/rstar_3_3_support12.tsv`: 5 508 s of solver time in all,
-slowest 99 s, no witness). The other 410 cubes, which the relaxation
-excludes, are being swept with the same cut so that this rung will not
-depend on the relaxation at all; `tools/audit_support.py` reports both
-counts.
+slowest 99 s, no witness), and then so are the other 410 cubes that the
+relaxation excludes — **all 738 twelve-point cubes are INFEASIBLE with
+`B = 10`** (9 237 s in all, slowest 176 s, no witness), so this rung
+depends on Frankl's value and CP-SAT only, not on the relaxation;
+`tools/audit_support.py` checks all 738 against the regenerated
+partition list.
 
 **Conditional decision.** Put together:
 
@@ -13630,13 +13632,13 @@ counts.
 | `<= 9` | no 28-member family: `28 · 3 = 84 > 81 >= 9 · Δ` | counting (PROVEN) |
 | 10 | 11 cubes INFEASIBLE (9 with no cut, 2 with `B = 16`; §56.9) | CP-SAT |
 | 11 | 139 cubes INFEASIBLE, `B = 16`, 21 by sub-cubes (§56.10) | CP-SAT |
-| 12 | 328 relaxation-allowed cubes INFEASIBLE, `B = 10` (the other 410 in progress) | Frankl + CP-SAT (+ relaxation until the 410 are in) |
+| 12 | all 738 cubes INFEASIBLE, `B = 10` | Frankl + CP-SAT |
 | 13, 14, 15 | 285 + 87 + 6 relaxation-allowed cubes INFEASIBLE, `B = 10` (§56.11) | Frankl + CP-SAT (relaxation: CP-SAT, SCIP cross-check running) |
 | `>= 16` | exact LP-duality certificate, `make support15` (§56.11) | Frankl (PROVEN modulo Frankl) |
 
 So: **if Frankl's `I(3,3) <= 10` holds and every CP-SAT INFEASIBLE verdict
 above is correct — the cube verdicts in the ladders *and* the
-relaxation's verdicts that no other degree profile exists at 12–15 points
+relaxation's verdicts that no other degree profile exists at 13–15 points
 (`tools/typeprof.py`, a no-good enumeration whose last step is an
 INFEASIBLE) — then `M <= 27`, i.e. `r*(3,3) = 3`.** Both conditions
 are named, neither is in the kernel, and the row in the table stays

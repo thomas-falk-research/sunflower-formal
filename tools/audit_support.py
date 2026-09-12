@@ -25,6 +25,7 @@ for n in (15, 14, 13, 12):
     if n == 12:  # the full cube list (all 738 partitions) must also be closed once the second sweep is in
         allc = [l.strip() for l in open(f"{root}/docs/ladder/rstar_3_3_12.cubes.txt") if l.strip()]
         extra = f", all-738 missing {len(set(allc) - closed)}"
+        ok = ok and not (set(allc) - closed)
     print(f"n={n}: cubes {len(cubes)} (regenerated {len(regen)}, equal={set(cubes)==regen}), INFEASIBLE rows {len(closed)}, missing {len(missing)}, bad rows {len(bad)}{extra}")
     ok = ok and set(cubes) == regen and not missing and not bad
 sys.exit(0 if ok else 1)

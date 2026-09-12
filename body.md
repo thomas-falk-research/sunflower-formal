@@ -115,6 +115,14 @@ novelty  = "new-to-this-development"
 search   = "as above"
 
 [[claim]]
+id       = "no-28-on-twelve-points-under-frankl"
+statement = "All 738 degree-sequence cubes of a 28-member family on twelve points are INFEASIBLE under CP-SAT with the Frankl cut B = 10 (tools/audit_support.py checks them against the regenerated partition list); with sections 56.9-56.11 this decides r*(3,3) = 3 conditionally on Frankl's I(3,3) <= 10 and on the CP-SAT verdicts."
+kind     = "measurement"
+evidence = "docs/ladder/rstar_3_3_support12.tsv"
+novelty  = "new-to-this-development"
+search   = "as above"
+
+[[claim]]
 id       = "no-28-on-eleven-points"
 statement = "No 3-uniform family on eleven points with 28 members, no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 exists: all 139 degree-sequence cubes are infeasible under CP-SAT, 118 flat and 21 via every pair-degree-profile sub-cube; tools/audit11.py checks the ladders and exits 0."
 kind     = "measurement"
@@ -182,9 +190,12 @@ pair-degree-profile sub-cubes, about 110 core-hours in all) are now
 excluded under CP-SAT; from above, an exact LP-duality certificate caps
 the support at fifteen under Frankl's `I(3,3) <= 10` (§56.11) and the
 13–15-point cubes are excluded under CP-SAT with the Frankl cut, so a
-refutation of `r*(3,3) = 3` would live on exactly twelve points. The
-twelve-point sweep is running; a proof-logging PB solver is the second
-opinion still owed.
+refutation of `r*(3,3) = 3` would live on exactly twelve points; and all
+738 twelve-point cubes are excluded the same way (§56.12). So the row is
+decided conditionally on Frankl's value and on the CP-SAT verdicts, and
+stays `{3, 4}` in the table until both are discharged; a proof-logging PB
+solver replay and a Coq proof of Frankl's `τ = 3` value are the two
+things owed.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
