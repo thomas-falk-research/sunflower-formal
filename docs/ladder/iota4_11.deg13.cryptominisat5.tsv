@@ -6683,6 +6683,79 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **THE SECOND OWED NOTE: BLOCK [13,13,13,4] HAS CLOSED AND ALL THREE
+# OF ITS REGISTERED PREDICTIONS HOLD -- EACH WITH A QUALIFICATION
+# THAT WAS WRITTEN DOWN BEFORE OR FOUND BY LOOKING, NOT AFTER.**
+# ================================================================
+#
+# 2451695 registered three predictions on block [13,13,13,4] (idx
+# 531-541, n=11), K=2, threshold 1.10x, after a CNF read showing idx
+# 534-541 unstarted.  The block closed at 11 of 11 with an empty
+# missing-index list -- the ELEVENTH completed block -- and the values
+# are:
+#
+#   p=8  idx 535   denom 569.5, 466.5  = 518.00
+#                  numer 1012.0, 1159.6 = 1085.80   RATIO 2.096
+#                  predicted > 1.10   HOLDS
+#   p=7  idx 538   denom 1159.6, 859.0 = 1009.30
+#                  numer 1548.1, 2032.9 = 1790.50   RATIO 1.774
+#                  predicted > 1.10   HOLDS
+#   p=6  idx 540   denom 1548.1, 2032.9 = 1790.50
+#                  numer 964.4, 258.7   =  611.55   RATIO 0.342
+#                  predicted < 1.10   HOLDS
+#
+# EVERY BOUND PUBLISHED ALONG THE WAY HELD: p=8 >= 1.879 then exact
+# 2.096; p=7 >= 1.246, >= 1.524, exact 1.774; p=6 <= 0.486, <= 0.398,
+# exact 0.342.
+#
+# **AND EACH ONE CARRIES A QUALIFICATION.**  Three-for-three is the
+# headline and it is the least informative part of this note.
+#
+#   p=8 LANDED ON AN EASIER BAR THAN USUAL.  Both denominator cubes
+#   came in cheap, so the jump threshold was 569.8 s against roughly
+#   1600 s in the previous block.  Flagged at ee48e79, one row BEFORE
+#   the result.
+#
+#   p=6's WINDOW IS NOT WHERE THE OTHERS WERE.  Its numerator is the
+#   block's LAST TWO cubes -- the only block of eleven where that
+#   happens -- so it sits in the cheap tail where the p=5 and p=4
+#   structure lives, and "< 1.10" is easier there.  0.342 is below all
+#   nine historical p=6 ratios (min 0.82) because the window moved,
+#   not because the effect is stronger.  Found at 128b450 by checking
+#   every block's offsets; 2451695 had checked only that the offset
+#   was in RANGE.  A RANGE CHECK IS NOT A POSITION CHECK.
+#
+#   p=7 IS THE UNREMARKABLE ONE, and that is worth saying plainly:
+#   1.774 against a nine-block median of 1.74.
+#
+# WHAT THIS ADDS UP TO.  Two blocks have now had every registered
+# prediction hold -- [13,13,13,5] at 2.075 / 1.654 / 0.229 and
+# [13,13,13,4] at 2.096 / 1.774 / 0.342.  Six predictions, six holds.
+# That is six points from TWO blocks, testing a gradient measured on
+# the eight blocks before them, and confined -- per the scoping note
+# above -- to the first 28% of the enumeration, all of it
+# d[1]=d[2]=13.  It is replication on the same population, not
+# generality.
+#
+# THE BLOCK CONSTRUCT IS NOW FINISHED AS A SOURCE OF TESTS, and for
+# three separate reasons that all bite as n falls:
+#
+#   1. THE STATISTIC SATURATES at K=5 on small blocks (0e321fb).
+#   2. WINDOWS GET DISPLACED to the block tail (128b450).
+#   3. ADJACENT BOUNDARIES' WINDOWS SHARE CUBES, so tests within a
+#      block stop being independent.  In [13,13,13,3] the p=8
+#      numerator and the p=7 denominator are the IDENTICAL pair, so a
+#      high p=8 ratio makes p=7 mechanically harder; checked across
+#      all blocks, this happens only where the two boundaries sit K
+#      apart, which is only the smallest ones.
+#
+# The remaining d[1]=d[2]=13 blocks are n=5, n=3 and n=2.  The next
+# real test of the gradient is [13,13,12,12] at idx 559-640, n=82,
+# which is where it meets a population it has never been tested on.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7459,3 +7532,10 @@ g=11 [13, 13, 13, 3, 13, 13, 13, 13, 12, 11, 11]	UNSAT	512.2
 g=11 [13, 13, 13, 2, 13, 13, 13, 13, 13, 13, 9]	UNSAT	64.3
 g=11 [13, 13, 13, 3, 13, 13, 12, 12, 12, 12, 12]	UNSAT	231.3
 g=11 [13, 13, 13, 2, 13, 13, 13, 13, 13, 12, 10]	UNSAT	115.6
+g=11 [13, 13, 13, 4, 13, 13, 13, 12, 12, 11, 11]	UNSAT	2032.9
+g=11 [13, 13, 13, 2, 13, 13, 13, 13, 13, 11, 11]	UNSAT	132.1
+g=11 [13, 13, 13, 1, 13, 13, 13, 13, 13, 13, 10]	UNSAT	22.8
+g=11 [13, 13, 13, 1, 13, 13, 13, 13, 13, 12, 11]	UNSAT	39.3
+g=11 [13, 13, 13, 1, 13, 13, 13, 13, 12, 12, 12]	UNSAT	56.0
+g=11 [13, 13, 13, 0, 13, 13, 13, 13, 13, 13, 11]	UNSAT	0.1
+g=11 [13, 13, 13, 0, 13, 13, 13, 13, 13, 12, 12]	UNSAT	0.1
