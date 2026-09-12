@@ -13538,7 +13538,7 @@ incidence `Σ_T t_T · mult_T((a,b),e) = e · q_{(a,b),e}`; at most
 the members all of whose pairs have degree `>= e` are triples whose
 2-shadow lies among the pairs of degree `>= e`, so those pairs number at
 least the minimum shadow of that many triples (`e = 2, 3`, and the whole
-family against `shadow(28) = 21`). Every 28-member family under the caps
+family against `shadow(28) = 20`). Every 28-member family under the caps
 with `s_E <= 7` yields a solution, so anything the relaxation forbids is
 forbidden. It is a small integer program (329 member types).
 
@@ -13628,18 +13628,25 @@ counts.
 | points | verdict | rests on |
 |---|---|---|
 | `<= 9` | no 28-member family: `28 · 3 = 84 > 81 >= 9 · Δ` | counting (PROVEN) |
-| 10 | 11 cubes INFEASIBLE, `B = 16` (§56.9) | CP-SAT |
+| 10 | 11 cubes INFEASIBLE (9 with no cut, 2 with `B = 16`; §56.9) | CP-SAT |
 | 11 | 139 cubes INFEASIBLE, `B = 16`, 21 by sub-cubes (§56.10) | CP-SAT |
 | 12 | 328 relaxation-allowed cubes INFEASIBLE, `B = 10` (the other 410 in progress) | Frankl + CP-SAT (+ relaxation until the 410 are in) |
 | 13, 14, 15 | 285 + 87 + 6 relaxation-allowed cubes INFEASIBLE, `B = 10` (§56.11) | Frankl + CP-SAT (relaxation: CP-SAT, SCIP cross-check running) |
 | `>= 16` | exact LP-duality certificate, `make support15` (§56.11) | Frankl (PROVEN modulo Frankl) |
 
 So: **if Frankl's `I(3,3) <= 10` holds and every CP-SAT INFEASIBLE verdict
-above is correct, then `M <= 27`, i.e. `r*(3,3) = 3`.** Both conditions
+above is correct — the cube verdicts in the ladders *and* the
+relaxation's verdicts that no other degree profile exists at 12–15 points
+(`tools/typeprof.py`, a no-good enumeration whose last step is an
+INFEASIBLE) — then `M <= 27`, i.e. `r*(3,3) = 3`.** Both conditions
 are named, neither is in the kernel, and the row in the table stays
 `{3, 4}` until they are: Frankl's value needs a Coq proof of the `τ = 3`
 case (§56.5 item 3, 16 down to 10 in `TauThree`), and the solver verdicts
 need either proof logs (a proof-logging pseudo-Boolean solver, §56.10) or
 a kernel-checked replay. What *is* established without either condition
 is unchanged: ten and eleven points are closed under CP-SAT alone, and
-the support certificate is exact.
+the support certificate is exact. A fresh-context review of this section
+(reduction to 28 members, both cuts against the kernel lemmas, cube
+exhaustiveness regenerated at every rung, ladder integrity, the lex
+prefix at 12–15, the assembly) confirmed it and supplied the three
+wording corrections now made here.
