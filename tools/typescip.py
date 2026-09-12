@@ -59,8 +59,8 @@ def profiles(n):
             return
         for k in range(0, left_n+1):
             rem=left_sum-k*d
-            if rem<(left_n-k)*(d+1): break
-            if rem>(left_n-k)*9: continue
+            if rem<(left_n-k)*(d+1): continue   # k too small for the remaining points
+            if rem>(left_n-k)*9: break          # k too large: remaining points cannot absorb the sum
             yield from rec(d+1,left_n-k,rem,cur+[(d,k)])
     for pr in rec(2,n,84,[]): yield dict(pr)
 total=0; feas=[]
