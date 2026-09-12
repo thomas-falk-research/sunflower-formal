@@ -13440,8 +13440,8 @@ degree at least 1, so the cubes are the 139 partitions of 15 into at most
 eleven parts of size at most 8 (`docs/ladder/rstar_3_3_11.cubes.txt`,
 most-concentrated first). A pilot of four says what the sweep will cost:
 `8,7` closes in 0.6 s and `5,4,4,2` in 392 s, but `3,3,3,3,3` and
-`2,2,2,2,1,1,1,1,1,1,1` are UNKNOWN at 1800 s even with the full lex
-prefix and the cut — and the flat cubes are the majority of the 139. So
+`2,2,2,2,1,1,1,1,1,1,1` are UNKNOWN at 1800 s even with the lex prefix
+(K = 62 of the 72 positions an adjacent transposition moves) and the cut — and the flat cubes are the majority of the 139. So
 this is days of compute on four cores, not a sitting, and it is run the
 way the `ι(4)` ladder was: `tools/sweep11.sh <cap> <jobs>` banks every
 closed cube into `docs/ladder/rstar_3_3_11.tsv`, skips closed cubes on
@@ -13483,14 +13483,22 @@ sub-cube sweep closes the same cube in about an hour.
 **Closed.** Every one of the 139 cubes is now closed: 118 flat
 (INFEASIBLE in `docs/ladder/rstar_3_3_11.tsv`, 150 746 s of solver time
 in total, slowest `3,3,3,2,2,2` at 7004 s) and 21 by sub-cubes (every
-profile INFEASIBLE in `docs/ladder/rstar_3_3_11.sub.tsv`, 22 509 rows,
-88 509 s in total, slowest single profile 372 s, no profile ever
+profile INFEASIBLE in `docs/ladder/rstar_3_3_11.sub.tsv`, 22 485 rows
+after removing 24 duplicates where two workers met on the same profile
+and both said INFEASIBLE, 88 509 s in total, slowest single profile 372 s, no profile ever
 UNKNOWN at the 600 s cap). No row anywhere is FEASIBLE and no witness
 was ever printed. `tools/audit11.py` re-derives the 139 cubes as the
 partitions of 15 into at most eleven parts of size at most 8, regenerates
 every closed-by-sub-cubes cube's profile list with `tools/cubesub.py
 --list`, and checks that each profile has an INFEASIBLE row and that no
-row carries any other verdict or a witness; it exits 0. So, **under
+row carries any other verdict or a witness; it exits 0. A fresh-context
+review of the cube list, the model, both symmetry breaks (including the
+cubes where the minimum degree is not unique, where relabelling any
+minimum-degree point to 0 is what makes the profile sorting sound), the
+cut, and the audit script found nothing wrong; its two notes are the
+K = 62 truncation (a prefix, so still sound) and that the ten-point
+ladder ran with K = 56, B = 16 while this one runs K = 62, B = 16, each
+sound on its own. So, **under
 CP-SAT: no 3-uniform family on eleven points with 28 members, no three
 pairwise disjoint, point degree at most 9 and pair degree at most 3.**
 With nine points exact (27) and ten points closed in §56.9, a refutation
