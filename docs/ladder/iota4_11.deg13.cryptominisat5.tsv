@@ -6137,6 +6137,98 @@
 # Nothing here touches a verdict.  Every UNSAT row stands, the frontier
 # is unchanged, and the bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **ADDENDUM, ONE ROW LATER: A NEGATIVE CONTROL WAS BUILT AND IT
+# RETRACTS TWO THINGS THE BLOCK ABOVE SAYS -- ONE IN EACH
+# DIRECTION.**
+# ----------------------------------------------------------------
+#
+# The block above ends by worrying that the d[7] design "has never been
+# demonstrated capable of returning a null".  That was a testable
+# worry, so it was tested rather than left as a caveat.
+#
+# ATTEMPT ONE, A PLACEBO SPLIT, AND IT WAS A BAD CONTROL.  Run the
+# identical machinery on a FAKE boundary at the midpoint of the
+# d[7]=13 run, where d[7] does not change at all:
+#
+#   K=5: 1.09, 1.00, 1.58, 1.93, 2.25, 1.99, 2.18, 2.02
+#        -> 6 of 8 above 1.10x, median 1.96
+#
+# Read alone that looks fatal -- a fake boundary reproducing the real
+# median of 2.09.  It is not fatal, because ONE arbitrary split is a
+# sample of one and the midpoint of the d[7]=13 run is not a neutral
+# place to stand.  Recorded because it was computed first and pointed
+# the other way; a control that is discarded should be visible.
+#
+# ATTEMPT TWO, THE RIGHT CONTROL: scan EVERY interior split of each
+# block with the same machinery, then rank the real d[7] boundary in
+# that distribution.  K=5:
+#
+#   block          splits  median  max    REAL  rank     pctile
+#   [13,13,13,13]     120    1.03  2.45   2.19  109/120   90.8%
+#   [13,13,13,12]      95    1.02  2.92   2.19   87/ 95   91.5%
+#   [13,13,13,11]      73    1.06  2.50   2.17   63/ 73   86.1%
+#   [13,13,13,10]      56    1.04  2.29   1.95   49/ 56   87.3%
+#   [13,13,13, 9]      40    1.00  2.28   2.08   36/ 40   89.7%
+#   [13,13,13, 8]      29    1.14  2.00   1.98   27/ 29   92.9%
+#   [13,13,13, 7]      19    1.10  2.18   2.09   17/ 19   88.9%
+#
+# **RETRACTION ONE, AGAINST MY OWN CAUTION.**  The design does NOT
+# generically produce 2x.  At a typical split it returns about 1.00 --
+# the median split ratio is 1.00 to 1.14 in every block.  So it
+# returns nulls in abundance, and the worry written one row above,
+# that it had never been shown able to, is WITHDRAWN.  The missing
+# null was never a property of the machinery; it was the artefact
+# corrected in the block above.
+#
+# **RETRACTION TWO, AGAINST THE RESULT.**  The real boundary is NOT
+# special, only high: it sits at the 86th to 93rd percentile, never at
+# the maximum, and roughly ONE SPLIT IN TEN inside any block matches
+# or beats it.  So "a ~2x step AT the d[7] boundary" overstates what
+# is there.  What is there is that the d[7] boundary lands in the top
+# tenth of splits in seven blocks out of seven.
+#
+# HOW MUCH THAT IS WORTH, with the assumptions named.  If the
+# boundary's percentile were uniform under a null and blocks were
+# independent, seven of seven at >= 86% would run about 1e-6.  BOTH
+# ASSUMPTIONS ARE DOUBTFUL: the scanned windows overlap heavily, so
+# the ranks within a block are not draws from a uniform; and the
+# blocks share a solver and a machine.  Treat 1e-6 as an order of
+# magnitude for "consistent", not as a P-value.
+#
+# **AND THE CONFOUND THAT SURVIVES ALL OF THIS.**  The scan cannot
+# separate "the d[7] boundary" from "a structural boundary of any
+# kind".  The real split sits where the d[7]=13 run ends, which is a
+# distinguished position in the enumeration whatever d[7] is doing.
+# The test that would separate them is to rank the OTHER coordinate
+# boundaries -- d[8], d[9], group edges -- the same way.  If they also
+# sit near the 90th percentile, the finding is "cost jumps at
+# enumeration boundaries", not "d[7] matters".  THAT TEST HAS NOT BEEN
+# RUN, and until it is, the d[7] result should be stated as the weaker
+# claim.
+#
+# ALSO WITHDRAWN: the sentence, repeated since 2dd42a0, that the
+# position confound "predicts the OPPOSITE SIGN -- that is the whole
+# reason the design means anything".  That described a comparison
+# across a BLOCK boundary, end of one block against start of the
+# next.  The design does no such thing: the last K of d[7]=13 and the
+# first K of d[7]=12 are ADJACENT INDICES INSIDE ONE BLOCK.  The
+# sentence was a misdescription of the geometry and it was load-bearing
+# for seven commits.  The Spearman figures were the wrong statistic for
+# the same reason -- a whole-block rank correlation is insensitive to a
+# local jump.  The scan above is the argument that actually applies.
+#
+# The eighth block's K=3 instance resolved here at 1.94 against a
+# threshold of 2118.9 s fixed in the block above BEFORE idx 506 and
+# 507 existed.  Its scan rank is 5 of 8 splits, which is NOT
+# comparable to the others: only 13 of its 21 cubes have landed, all
+# in the early region, so its median split ratio is 1.70 rather than
+# ~1.0 and the distribution it would be ranked against does not exist
+# yet.  Report it when the block closes.
+#
+# Every UNSAT row still stands and the bracket is still
+# 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -6870,3 +6962,5 @@ g=11 [13, 13, 13, 6, 13, 13, 13, 13, 11, 11, 9]	UNSAT	1926.3
 g=11 [13, 13, 13, 6, 13, 13, 13, 13, 12, 10, 9]	UNSAT	1942.6
 g=11 [13, 13, 13, 6, 13, 13, 13, 13, 11, 10, 10]	UNSAT	1835.6
 g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 12, 8]	UNSAT	2825.8
+g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 11, 9]	UNSAT	3737.6
+g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 10, 10]	UNSAT	3732.9
