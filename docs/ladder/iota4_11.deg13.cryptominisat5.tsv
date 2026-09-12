@@ -6756,6 +6756,61 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **A REGISTERED PREDICTION HAS FAILED.  BLOCK [13,13,13,3]'s p=7
+# CAME IN AT 1.009 AGAINST A PREDICTED > 1.10.  AND THE REGISTRATION
+# ITSELF ARGUED, IN ADVANCE, THAT THIS INSTANCE WOULD BE HARD --
+# WHICH MAKES THE REGISTRATION INCOHERENT, NOT THE FAILURE EXCUSABLE.**
+# ================================================================
+#
+#   denominator  median(505.8, 512.2) = 509.00
+#   numerator    median(795.8, 231.3) = 513.55
+#   RATIO 1.0089   predicted > 1.10   **FAILS**
+#
+# It needed idx 547 above 888.5 s and idx 547 came in at 795.8 -- short
+# by 92.7 s.  Block [13,13,13,3] is complete at 7 of 7, and with it the
+# ENTIRE d[1]=d[2]=13 prefix, idx 0-558, is decided.
+#
+# THE TALLY IS NOW NINE REGISTERED PREDICTIONS, EIGHT HOLDING, ONE
+# FAILING.  Report it that way and not as "eight of nine".
+#
+#   [13,13,13,5]  p=8 2.075 / 2.001   p=7 1.654 / 1.590   p=5 0.229
+#   [13,13,13,4]  p=8 2.096           p=7 1.774           p=6 0.342
+#   [13,13,13,3]  p=8 1.599           p=7 1.009  FAILS
+#
+# **WHY THIS IS A FAULT IN THE REGISTRATION AND NOT JUST BAD LUCK.**
+# 0967cec registered p=7 here at "> 1.10" and, in the same paragraph,
+# wrote that the numerator window was the block's LAST TWO cubes, that
+# a tail window sits in the cheap p=5/p=4 region, and that the
+# displacement therefore made "> 1.10" HARDER.  Both statements were
+# written before any cube of that window started.
+#
+#   Predicting a direction FROM AN UNDISPLACED MEDIAN while
+#   simultaneously arguing the window is displaced AWAY from it is
+#   incoherent.  The right move was to predict the displaced
+#   direction, or to declare the instance untestable and not register
+#   it.  Instead the caveat was recorded and then ignored in setting
+#   the number.
+#
+# A PRE-REGISTERED CAVEAT DOES NOT MAKE A FAILURE NOT COUNT.  It only
+# means the failure was foreseeable, and here it was foreseen and
+# written down by me, one commit before it happened.  The failure
+# stands in the tally at full weight.
+#
+# WHAT IT DOES AND DOES NOT SAY ABOUT THE GRADIENT.  This block is the
+# one where all three small-block pathologies apply at once: n=7, the
+# p=7 numerator on the block tail, and the p=8 numerator IDENTICAL to
+# the p=7 denominator so that the strong p=8 result (1.599)
+# mechanically raised the bar p=7 had to clear.  A miss here is weak
+# evidence against the gradient for the same reason a hit here would
+# have been weak evidence for it.  THE TEST THAT MATTERS IS
+# [13,13,12,12], idx 559-640, n=82, where all five positions are in
+# range, none displaced, none overlapping, and p=4 and p=5 -- the
+# reversal half -- are testable for the first time in three blocks.
+# Five predictions are registered there with every check run first.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7542,3 +7597,4 @@ g=11 [13, 13, 13, 0, 13, 13, 13, 13, 13, 12, 12]	UNSAT	0.1
 g=11 [13, 13, 13, 2, 13, 13, 13, 13, 12, 12, 11]	UNSAT	203.3
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 13, 0]	UNSAT	54.1
 g=11 [13, 13, 13, 2, 13, 13, 13, 12, 12, 12, 12]	UNSAT	192.7
+g=11 [13, 13, 13, 3, 13, 13, 13, 12, 12, 12, 11]	UNSAT	795.8
