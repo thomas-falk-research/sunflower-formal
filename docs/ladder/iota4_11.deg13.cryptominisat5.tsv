@@ -6861,6 +6861,99 @@
 # 28.8% is the counter, not the rung.  deg(0)=13 is UNSAT only when all
 # 1949 sub-cubes are.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **BLOCK [13,13,12,12]'s p=8 PREDICTION HOLDS -- AND THE TALLY IT
+# JOINS WAS ALREADY WRONG BEFORE IT GOT THERE.  THE ERROR IS MINE, IT
+# RAN FOR SEVEN COMMITS, AND IT RAN IN MY FAVOUR.**
+# ================================================================
+#
+# THE ARITHMETIC ERROR FIRST, BECAUSE IT IS THE LARGER ITEM.
+#
+# e8a5a6a wrote, at line 6774 of this file and again at 6828:
+#
+#   "THE TALLY IS NOW NINE REGISTERED PREDICTIONS, EIGHT HOLDING,
+#    ONE FAILING"
+#
+# and set immediately beneath it the very table it was counting:
+#
+#   [13,13,13,5]  p=8, p=7, p=5    3 predictions, 3 holding
+#   [13,13,13,4]  p=8, p=7, p=6    3 predictions, 3 holding
+#   [13,13,13,3]  p=8, p=7         2 predictions, 1 holding, 1 FAILING
+#
+# THAT IS EIGHT PREDICTIONS, SEVEN HOLDING, ONE FAILING.  43b576c had
+# already put the two-block running total in words -- "Six predictions,
+# six holds" -- and [13,13,13,3] contributed exactly two more.  Six
+# plus two is eight.  The tally line and the table it sits on top of
+# contradict each other, and I never added the table up.
+#
+# THE DIRECTION IS IN MY FAVOUR.  It inflates the holding count from
+# seven to eight while leaving the single failure untouched: 8 of 9 =
+# 88.9 per cent claimed against 7 of 8 = 87.5 per cent true.  The
+# margin is small and the direction is not incidental.  An error that
+# flatters the record is the kind this file exists to catch, and this
+# one sat here for seven commits without my reading catching it -- it
+# surfaced only because a NEW result forced me to add one to the total.
+#
+# IT PROPAGATED THROUGH SEVEN COMMITS -- e8a5a6a, dd96057, 5fbf569,
+# fe6254c, ded544b, 18bb948, 8b0acc7 -- and through both header lines
+# above.  THOSE LINES ARE NOT BEING EDITED.  Keeping the record of an
+# error is the point of keeping a record.
+#
+# **AND NOW THE COINCIDENCE THAT MUST NOT BE ALLOWED TO HIDE IT.**
+# With the p=8 instance below resolving as a HOLD, the corrected tally
+# becomes NINE REGISTERED PREDICTIONS, EIGHT HOLDING, ONE FAILING --
+# numerically identical to the wrong line.  IT WAS STILL WRONG WHEN IT
+# WAS WRITTEN.  The right number then was eight / seven / one; it is
+# nine / eight / one only from this row forward, and for a different
+# reason.  Nobody reading the two lines side by side should conclude
+# the original was right after all.
+#
+# ================================================================
+# THE p=8 PREDICTION IN BLOCK [13,13,12,12] HOLDS
+# ================================================================
+#
+# Registered at 0542580 with all twenty window cubes unstarted:
+# boundary idx 566, K=2, denominator idx 564 and 565, numerator idx 566
+# and 567, predicted ratio > 1.10.
+#
+#   denominator  median(1311.4, 1421.6) = 1366.50   FIXED
+#   bar          1.10 * 1366.50         = 1503.15
+#   numerator    median(1607.6, c567), c567 >= 1739 s and still running
+#                                      >= 1673.30
+#   RATIO >= 1.2245   predicted > 1.10   **HOLDS**
+#
+# THE VERDICT IS SETTLED AND THE NUMBER IS NOT.  c567 is still running
+# at 20:33:17Z, so 1.2245 is a LOWER BOUND that can only rise.  The exact
+# ratio waits on that cube and will be written here when it lands.
+#
+# THE TIME-STAMPED CONDITIONAL FROM 8b0acc7 FIRED, AND NARROWLY.  That
+# commit -- pushed at 20:24:02Z, four minutes early, precisely so the
+# claim would predate the check -- said: if both c566 and c567 are
+# still running at 20:28:07Z, the prediction holds whatever they do
+# afterwards.  c566 started 20:01:49Z and ran 1607.6 s, so it finished
+# at 20:28:36.6Z -- 29.6 SECONDS past the threshold.  Cross-checked
+# independently: c570's CNF is written at 20:28:36, the driver
+# launching the replacement the instant c566 finished.
+#
+# A THIRTY-SECOND MARGIN ON A SUFFICIENT CONDITION IS NOT THE
+# PREDICTION CONFIRMED TWICE.  Had c566 finished half a minute earlier
+# the conditional would simply have said nothing -- it was sufficient,
+# not necessary, and the prediction could still have held on c567
+# alone.  Its value was that it could have failed to fire, and it
+# nearly did.
+#
+# WHAT THIS INSTANCE IS WORTH.  It is the FIRST registered prediction
+# to resolve OUTSIDE the d[1]=d[2]=13 prefix -- the population c9982c9
+# showed to be only 28.7 per cent of the enumeration and the source of
+# every earlier measurement in this file.  That is what makes it worth
+# more than the eight before it, and it is ONE point.  FOUR
+# REGISTRATIONS IN THIS BLOCK REMAIN OPEN -- p=7 at idx 580, p=6 at
+# 598, p=5 at 616, p=4 at 630 -- with none of their sixteen cubes
+# started.  p=5 and p=4 are the reversal half, testable here for the
+# first time in three blocks.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7654,3 +7747,4 @@ g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 10, 3]	UNSAT	1115.7
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 9, 4]	UNSAT	1204.3
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 8, 5]	UNSAT	1311.4
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 7, 6]	UNSAT	1421.6
+g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 12, 2]	UNSAT	1607.6
