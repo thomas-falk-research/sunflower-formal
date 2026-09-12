@@ -6013,6 +6013,130 @@
 # [13,13,13,7] 467-494 stands at 19 of 28.  Budget rule 12 of 12, does
 # not fire; cap stays 21600 s.  Bracket 27 <= iota(4) <= 71 unchanged.
 #
+# ================================================================
+# **AN ERROR TO CORRECT.  TEST 1 WAS COMPUTED ON THE WRONG
+# POPULATION FOR SEVEN COMMITS.  THE BLOCK THAT "SHOWED NO STEP"
+# WAS TWO CAP VALUES COMPARED AGAINST EACH OTHER.  THE TALLY GOES
+# SIX OF SEVEN TO SEVEN OF SEVEN -- THE AGREEABLE DIRECTION -- SO
+# THE EVIDENCE IS SET OUT IN FULL AND SO IS WHAT IT COSTS.**
+# ================================================================
+#
+# WHAT WAS PUBLISHED.  2dd42a0 registered the d[7] test as "comparing
+# the last five d[7]=13 cubes against the first five d[7]=12 cubes"
+# within a block, and reported for the first block
+#
+#     [13,13,13,13]   1809.7 -> 1808.6   ratio 1.00   NO step
+#
+# Every re-run since -- 286807b, 0913ce3, 63b226f -- carried that line
+# forward, and every commit and check-in since repeated the sentence
+# "[13,13,13,13] shows none and remains the honest denominator".
+#
+# WHAT THOSE TWO NUMBERS ACTUALLY ARE.  They are UNKNOWN rows:
+#
+#   idx 20  [13,13,13,13,13,13,13,13,10,8,6]   UNKNOWN 1809.7
+#                                         then  UNSAT   2212.7
+#   idx 27  [13,13,13,13,13,13,13,12,12,10,3]  UNKNOWN 1808.6
+#                                         then  UNSAT   4463.8
+#
+# 1809.7 and 1808.6 are the 1800 s CAP of the era in which those cubes
+# were first attempted.  They are not solve times.  The ratio of 1.00
+# is one cap divided by another.
+#
+# IDENTIFIED MECHANICALLY, NOT INFERRED.  Three candidate populations
+# were run against the registered design:
+#
+#   UNSAT only .................  K=5  1948.2 -> 4275.6   2.19
+#   LAST row per label .........  K=5  1948.2 -> 4275.6   2.19
+#   FIRST row per label ........  K=5  1809.7 -> 1808.6   1.00
+#
+# The first-row population reproduces the published figures bit for
+# bit, K=3 included (1807.7 -> 1808.6).  So the design was right and
+# the population was wrong.
+#
+# THE CORRECT POPULATION IS SETTLED BY THIS FILE'S OWN RULE, written
+# long before this test existed and visible at the top: "rows are
+# re-run, because UNKNOWN is a budget and not a verdict."  An UNKNOWN
+# row's number is a cap, not a cost.  Cost analysis takes UNSAT rows.
+#
+# ONLY THE FIRST BLOCK IS AFFECTED, checked rather than assumed: the
+# other six blocks return IDENTICAL medians under both populations,
+# because their windows contain no superseded first attempts.  That is
+# why six of seven numbers always reproduced and one never did.
+#
+# CORRECTED, UNSAT ONLY:
+#
+#                         K=5                      K=3
+#   [13,13,13,13]   1948.2 ->  4275.6  2.19   1912.0 -> 2781.3  1.45
+#   [13,13,13,12]   3258.5 ->  7134.5  2.19   3258.5 -> 6342.8  1.95
+#   [13,13,13,11]   4727.5 -> 10237.8  2.17   4727.5 -> 9470.9  2.00
+#   [13,13,13,10]   2531.0 ->  4944.4  1.95   2199.3 -> 5739.2  2.61
+#   [13,13,13, 9]   2366.0 ->  4911.5  2.08   2206.2 -> 4895.0  2.22
+#   [13,13,13, 8]   2015.6 ->  3981.0  1.98   2015.6 -> 3981.0  1.98
+#   [13,13,13, 7]   1932.5 ->  4038.7  2.09   1900.8 -> 3978.7  2.09
+#
+#   SEVEN OF SEVEN blocks show a step above 1.10x, at both K.
+#
+# **WHAT THE CORRECTION COSTS, WHICH IS MORE THAN IT GAINS.**  The
+# test has just lost its only negative control.  "One block shows no
+# step and remains the denominator" was the strongest caution attached
+# to this result and the line quoted in every report of it -- and it
+# was an artefact.  With it gone, THERE IS NO BLOCK IN WHICH THIS
+# DESIGN EVER RETURNED A NULL, so the design has never been
+# demonstrated capable of returning one.  A test that has never
+# produced a negative is weaker evidence than a test that produced one
+# negative out of seven, whatever the tally says.  The count went up
+# and the evidential structure got worse.  Both halves of that belong
+# in every future report of this test.
+#
+# AND THE EARLIER CATCH WAS RIGHT BUT SHALLOW.  2dd42a0 flagged that
+# at K=3 its own script had called block one a "step up" off 1808.6
+# versus 1807.7 -- a 0.05% difference -- and logged it as a
+# self-favouring error.  Correct, but it stopped at the threshold.  The
+# reason two numbers sat within 0.05% of each other is that BOTH WERE
+# THE CAP.  The real fault was one level up, in what went into the
+# median, and looking at the threshold instead of the inputs is what
+# hid it for seven commits.
+#
+# ON WHICH DIRECTION THIS ERROR FAVOURED.  It made the headline tally
+# LOOK WORSE, so it was not self-favouring in the ordinary way.  It was
+# self-favouring in a quieter way: a false null is a free display of
+# rigour.  Quoting "and one block shows none" in every report made
+# every report look better hedged than it was.  That is the form to
+# watch for next -- a caveat that is doing rhetorical work and has
+# never been audited.
+#
+# **TEST 2B IS WITHDRAWN FROM QUOTATION AS UNVERIFIED.**  Having found
+# one carried figure wrong, the other was checked.  286807b registered
+# it as "GROUP openers inside a block: mean 28.7%, median 32.8%, 11 of
+# 12 below their group median, sign test P = 0.0032", later reported as
+# n=15 and P=0.0005 at seven blocks.  It could NOT be reproduced.  The
+# obvious reading -- openers of complete groups keyed on d[0..7],
+# excluding block openers -- gives n=61, mean 1.0%, 61 of 61 below
+# median; and block [13,13,13,13] ALONE holds 15 such groups, so n=12
+# across FIVE blocks cannot be that population.
+#
+#   THE n=61 RESULT IS NOT OFFERED AS A CORRECTION.  It is an analysis
+#   invented after seeing the data, on a population chosen by me, and
+#   it points the agreeable way.  That is exactly the pattern this file
+#   has catalogued seven times.  2B's figures are simply not quotable
+#   until its registered population is recovered from the record.
+#
+# A CONSEQUENCE FOR TEST 2A, WHICH CUTS AGAINST WHAT 91327dc
+# PUBLISHED ONE ROW AGO.  Block openers ARE group openers -- the first
+# cube of a block is also the first cube of its first group.  If group
+# openers are usually the cheapest in their group, then "block openers
+# cheapest in their group, eight of eight" is close to a COROLLARY and
+# carries far less independent information than eight-for-eight
+# suggests.  The base rate is the denominator that matters, not 1/2.
+# The unregistered reconstruction above puts that base rate near 58 of
+# 61, and that number is not to be trusted -- but the structural point
+# does not depend on its value.  UNTIL THE BASE RATE IS ESTABLISHED ON
+# A REGISTERED POPULATION, TEST 2A MUST NOT BE READ AS EIGHT
+# INDEPENDENT SUCCESSES.
+#
+# Nothing here touches a verdict.  Every UNSAT row stands, the frontier
+# is unchanged, and the bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -6745,3 +6869,4 @@ g=11 [13, 13, 13, 6, 13, 13, 13, 13, 12, 11, 8]	UNSAT	2194.4
 g=11 [13, 13, 13, 6, 13, 13, 13, 13, 11, 11, 9]	UNSAT	1926.3
 g=11 [13, 13, 13, 6, 13, 13, 13, 13, 12, 10, 9]	UNSAT	1942.6
 g=11 [13, 13, 13, 6, 13, 13, 13, 13, 11, 10, 10]	UNSAT	1835.6
+g=11 [13, 13, 13, 6, 13, 13, 13, 12, 12, 12, 8]	UNSAT	2825.8
