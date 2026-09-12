@@ -13606,3 +13606,40 @@ conditional on exactly two things — Frankl's value, which is cited and
 not in the kernel, and solver verdicts without proof logs. The
 kernel-only version (`s_E <= 13`, degrees `>= 1`) of the relaxation gives
 24 points and is not being swept.
+
+### 56.12 The twelve-point rung under Frankl, and what is now decided conditionally
+
+The kernel-only twelve-point sweep of §56.10 (cut `B = 16`) is a
+multi-week job: 117 of the first 186 cubes stall at 120 s and the
+sub-cube chain closes about eight of the 323 462 profiles a minute. It
+keeps one core as a long-term job (`docs/ladder/rstar_3_3_12.cubes.txt`
+is its cube list). The decisive rung is the *Frankl-assisted* one, since
+§56.11 is conditional on `I(3,3) <= 10` anyway: with the Frankl cut
+`B = 10` the 328 twelve-point cubes the relaxation allows
+(`docs/ladder/rstar_3_3_support12.cubes.txt`) are **all INFEASIBLE**
+(`docs/ladder/rstar_3_3_support12.tsv`: 5 508 s of solver time in all,
+slowest 99 s, no witness). The other 410 cubes, which the relaxation
+excludes, are being swept with the same cut so that this rung will not
+depend on the relaxation at all; `tools/audit_support.py` reports both
+counts.
+
+**Conditional decision.** Put together:
+
+| points | verdict | rests on |
+|---|---|---|
+| `<= 9` | no 28-member family: `28 · 3 = 84 > 81 >= 9 · Δ` | counting (PROVEN) |
+| 10 | 11 cubes INFEASIBLE, `B = 16` (§56.9) | CP-SAT |
+| 11 | 139 cubes INFEASIBLE, `B = 16`, 21 by sub-cubes (§56.10) | CP-SAT |
+| 12 | 328 relaxation-allowed cubes INFEASIBLE, `B = 10` (the other 410 in progress) | Frankl + CP-SAT (+ relaxation until the 410 are in) |
+| 13, 14, 15 | 285 + 87 + 6 relaxation-allowed cubes INFEASIBLE, `B = 10` (§56.11) | Frankl + CP-SAT (relaxation: CP-SAT, SCIP cross-check running) |
+| `>= 16` | exact LP-duality certificate, `make support15` (§56.11) | Frankl (PROVEN modulo Frankl) |
+
+So: **if Frankl's `I(3,3) <= 10` holds and every CP-SAT INFEASIBLE verdict
+above is correct, then `M <= 27`, i.e. `r*(3,3) = 3`.** Both conditions
+are named, neither is in the kernel, and the row in the table stays
+`{3, 4}` until they are: Frankl's value needs a Coq proof of the `τ = 3`
+case (§56.5 item 3, 16 down to 10 in `TauThree`), and the solver verdicts
+need either proof logs (a proof-logging pseudo-Boolean solver, §56.10) or
+a kernel-checked replay. What *is* established without either condition
+is unchanged: ten and eleven points are closed under CP-SAT alone, and
+the support certificate is exact.

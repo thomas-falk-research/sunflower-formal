@@ -7,7 +7,7 @@ tools/typeprof.py 7 2 <n> enumerates (regenerated here).  Exit 0 iff so."""
 import subprocess, sys
 root = sys.argv[1] if len(sys.argv) > 1 else "."
 ok = True
-for n in (15, 14, 13):
+for n in (15, 14, 13, 12):
     cubes = [l.strip() for l in open(f"{root}/docs/ladder/rstar_3_3_support{n}.cubes.txt") if l.strip()]
     prof = subprocess.run([sys.executable, f"{root}/tools/typeprof.py", "7", "2", str(n)], capture_output=True, text=True).stdout
     regen = set()
@@ -21,6 +21,10 @@ for n in (15, 14, 13):
     bad = [r for r in rows if r[4] != "INFEASIBLE" or r[2] != "62" or r[3] != "10" or (len(r) > 6 and r[6].strip())]
     closed = {r[0] for r in rows if r[4] == "INFEASIBLE"}
     missing = set(cubes) - closed
-    print(f"n={n}: cubes {len(cubes)} (regenerated {len(regen)}, equal={set(cubes)==regen}), INFEASIBLE rows {len(closed)}, missing {len(missing)}, bad rows {len(bad)}")
+    extra = ""
+    if n == 12:  # the full cube list (all 738 partitions) must also be closed once the second sweep is in
+        allc = [l.strip() for l in open(f"{root}/docs/ladder/rstar_3_3_12.cubes.txt") if l.strip()]
+        extra = f", all-738 missing {len(set(allc) - closed)}"
+    print(f"n={n}: cubes {len(cubes)} (regenerated {len(regen)}, equal={set(cubes)==regen}), INFEASIBLE rows {len(closed)}, missing {len(missing)}, bad rows {len(bad)}{extra}")
     ok = ok and set(cubes) == regen and not missing and not bad
 sys.exit(0 if ok else 1)
