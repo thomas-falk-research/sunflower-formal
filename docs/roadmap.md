@@ -13659,8 +13659,8 @@ works: the ten-point cube `6` is `s UNSATISFIABLE` in 25 s and
 not scale to the ladders on this machine: the twelve-point cube
 `7,5,3,3,3,3` with the Frankl cut, which CP-SAT closes in 12 s, was still
 running after an hour with or without the lex prefix (proof files of
-60 MB to 700 MB), and the ten-point cube `3,2,1` (CP-SAT 1658 s) after
-two hours. So the solver condition in the theorem stays a condition;
+60 MB to 700 MB), and the ten-point cube `3,2,1` (CP-SAT 1658 s) was stopped
+unfinished after 3.8 hours with a 300 MB proof. So the solver condition in the theorem stays a condition;
 discharging it needs either a much larger machine or a different
 encoding (the cardinality-heavy constraints are what the clause-learning
 and PB engines both struggle with, cf. cadical and SCIP in §56.9). A fresh-context review of this section
