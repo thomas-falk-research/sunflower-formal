@@ -6325,6 +6325,59 @@
 #
 # Every UNSAT row still stands; the bracket is still 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **A CAVEAT ON READING THE TABLE ABOVE, AND A CORRECTION TO MY OWN
+# COMMENTARY AT c20607d AND 163c0d2: A BOUNDARY CUBE'S COST IS A
+# POOR PROXY FOR THE RATIO AT THAT BOUNDARY, AND "THE BOUNDARY CUBE
+# CAME IN CHEAP" IS VERY NEARLY VACUOUS.**
+# ----------------------------------------------------------------
+#
+# Two commits called a cheap boundary CUBE "consistent with" a low
+# RATIO at its position, on the argument that the boundary cube is the
+# first member of the numerator window so its cheapness pushes the
+# ratio down.  163c0d2 at least flagged that "consistent" was all it
+# was.  The argument was never measured, which is exactly the failure
+# this file named at b6617ab -- a caveat doing rhetorical work that
+# has never itself been audited.  So it was measured.
+#
+# Percentile of the boundary CUBE's own cost within its block, mean
+# over the seven completed blocks, against the RATIO percentile at the
+# same position:
+#
+#         cube    ratio (K=2)
+#   p=4    2.6%     3.6%
+#   p=5   11.2%     9.1%
+#   p=6   26.0%    35.5%
+#   p=7   46.0%    82.1%
+#   p=8   23.2%    80.0%
+#   p=9    6.8%      n/a
+#
+#   Pearson across p=4..8: +0.840.
+#
+# SO THE LINK IS NOT VACUOUS IN GENERAL -- boundary cubes are not
+# uniformly cheap, their percentile swings from 2.6% to 46.0% with p,
+# and it tracks the ratio.  TWO THINGS SPOIL IT ANYWAY.
+#
+#   IT FAILS AT p=8, THE POSITION WHERE IT MATTERS MOST.  There the
+#   cube is CHEAP (23.2%) while the ratio is HIGH (80.0%) -- the exact
+#   opposite of the asserted mechanism.  The reason is visible once
+#   stated: the ratio's numerator is a MEDIAN over K cubes, so cubes
+#   after a cheap boundary cube can carry that median up on their own.
+#   The boundary cube's cost constrains the ratio hardly at all.
+#
+#   AND THE REMARK IS NEARLY EMPTY.  At EVERY position the boundary
+#   cube averages BELOW its block's median -- 2.6, 11.2, 26.0, 46.0,
+#   23.2, 6.8 percent.  Boundary cubes are cheap as a rule, whatever p
+#   is.  So noting that one "came in cheap" reports the norm, and the
+#   two commits that noted it were saying less than they sounded like.
+#
+# THE RULE GOING FORWARD: report a boundary cube's cost and the ratio
+# at its boundary as SEPARATE observations.  Do not offer either as
+# evidence for the other.
+#
+# This changes no measurement in the table above and no verdict.  The
+# bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7064,3 +7117,4 @@ g=11 [13, 13, 13, 6, 13, 13, 13, 11, 11, 11, 11]	UNSAT	1450.3
 g=11 [13, 13, 13, 6, 13, 13, 13, 12, 11, 11, 10]	UNSAT	4430.5
 g=11 [13, 13, 13, 6, 13, 13, 12, 12, 12, 12, 9]	UNSAT	1804.6
 g=11 [13, 13, 13, 6, 13, 12, 12, 12, 12, 12, 10]	UNSAT	990.5
+g=11 [13, 13, 13, 6, 12, 12, 12, 12, 12, 12, 11]	UNSAT	412.1
