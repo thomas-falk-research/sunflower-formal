@@ -6378,6 +6378,52 @@
 # This changes no measurement in the table above and no verdict.  The
 # bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **A NEW RULE, BECAUSE I REGISTERED A PREDICTION WHOSE ANSWER WAS
+# ALREADY SITTING ON THE FILESYSTEM: BEFORE REGISTERING ANYTHING
+# ABOUT PENDING CUBES, READ THEIR ELAPSED SOLVER TIME FIRST.**
+# ----------------------------------------------------------------
+#
+# 163c0d2 registered the K=2 split at block [13,13,13,6]'s p=5
+# boundary -- last-2 = idx 511, 512 against first-2 = idx 513, 514 --
+# and predicted ratio < 1.10 with three of the four points unlanded.
+# With idx 514 in at 1991.8 the numerator is fixed at median(990.5,
+# 1991.8) = 1491.15, so the prediction resolves purely on
+# median(511, 512): it HOLDS if that exceeds 1355.6 s.
+#
+# THE ELAPSED TIMES SETTLE IT, AND THEY ALREADY DID AT REGISTRATION.
+# This file's own restart method reads a cube's solver start from its
+# CNF mtime, and idx 511 and 512 are still in flight under the same
+# driver pid:
+#
+#   c511  CNF written 16:05:48.78Z   elapsed at 17:10:22Z  3873.2 s
+#   c512  CNF written 16:13:32.39Z   elapsed at 17:10:22Z  3409.6 s
+#
+# Elapsed is a HARD LOWER BOUND on final cost, so median(511,512) is
+# already >= 3410 s and the ratio is already <= 0.437.  The prediction
+# is determined without either row landing.
+#
+# **AND AT 16:52:04Z, WHEN IT WAS REGISTERED, THE ELAPSED TIMES WERE
+# 2775.2 s AND 2311.6 s -- BOTH ALREADY PAST 1355.6 s.**  So the
+# prediction was never open.  I did not look, which is why it was not
+# rigged; but "I happened not to check" is not a method.  The
+# information was on disk and one `ls` away.
+#
+# THE RULE: a registration about pending cubes must be preceded by a
+# read of those cubes' CNF mtimes.  If the elapsed time already
+# settles the question, SAY SO AND DO NOT REGISTER IT AS A TEST --
+# record it as a determination instead.  Registering the already-known
+# inflates the count of confirmed predictions, which is the same
+# self-favouring shape as every other entry in this file's error list.
+#
+# WHAT SURVIVES AS GENUINELY PROSPECTIVE: the three predictions at
+# 6c23e5c for block [13,13,13,5] -- p=7 at idx 524 and p=8 at idx 520
+# above 1.10x, p=5 at idx 529 below it.  Those were registered when
+# NOTHING in that block had landed and no cube of it had started, and
+# idx 524, 520 and 529 have no CNF yet.  They are unaffected.
+#
+# No verdict changes; the bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7119,3 +7165,4 @@ g=11 [13, 13, 13, 6, 13, 13, 12, 12, 12, 12, 9]	UNSAT	1804.6
 g=11 [13, 13, 13, 6, 13, 12, 12, 12, 12, 12, 10]	UNSAT	990.5
 g=11 [13, 13, 13, 6, 12, 12, 12, 12, 12, 12, 11]	UNSAT	412.1
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 13, 13, 6]	UNSAT	374.0
+g=11 [13, 13, 13, 6, 13, 12, 12, 12, 12, 11, 11]	UNSAT	1991.8
