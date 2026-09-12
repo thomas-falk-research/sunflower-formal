@@ -6467,6 +6467,74 @@
 #
 # Nothing here touches a verdict; the bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **THE BASE RATE TEST 2A NEEDS IS NOW MEASURED, AND IT DEFLATES 2A
+# ALMOST COMPLETELY.  "NINE OF NINE" CARRIES ESSENTIALLY NO
+# INFORMATION.**
+# ----------------------------------------------------------------
+#
+# b6617ab warned that block openers ARE group openers, so if group
+# openers are usually the cheapest in their group then 2A's tally is
+# close to a corollary, and that the denominator that mattered -- the
+# group-opener base rate -- was unestablished.  It is established now.
+#
+# ON POPULATIONS, because this file has been burned once already: the
+# definition below is MINE, not test 2B's.  2B stays withdrawn because
+# its REGISTERED population could not be reproduced, and the same
+# numbers were explicitly refused as a substitute for it at b6617ab.
+# Using them as a BASE RATE for 2A is a different purpose, and it can
+# only WEAKEN 2A.  A control that can only cost me is a different
+# hazard from a result chosen after seeing the data.
+#
+# Among COMPLETE groups of size >= 2, EXCLUDING the nine block-opener
+# groups because those are the 2A instances themselves, the group
+# opener is the cheapest cube of its group in
+#
+#   61 of 64 = 95.3%.
+#
+#   by group size:  n=2 13/13   n=3 12/12   n=4 10/10   n=5  7/8
+#                   n=7  4/6    n=8  5/5    n=10 4/4    n=12 3/3
+#                   n=14 2/2    n=16 1/1
+#
+# **SO 2A IN CONTEXT.**  If block openers behaved like any other group
+# opener, nine-for-nine would have probability 0.953^9 = 0.65.  Not a
+# surprise at all.  AND THE CLEAN COMPARISON IS WORSE THAN THAT:
+# block-opener groups are the LARGEST groups in the file (n = 25, 23,
+# 21, 19, 16, 14, 12, 10, 8), and among the base-rate groups with
+# n >= 8 the opener is cheapest 15 OF 15 = 100%.  Against that
+# reference nine-for-nine is exactly what is expected and carries no
+# information whatever.
+#
+# 2A's tally has been reported nine times in this file.  IT STANDS AS
+# ARITHMETIC AND FALLS AS EVIDENCE.  The regularity that is real is
+# the base rate itself -- group openers are the cheapest cube of their
+# group about 95% of the time -- and that is a statement about group
+# openers generally, measured on data already in hand, not a finding
+# about block openers.
+#
+# THE THREE EXCEPTIONS, recorded because a 95% rule is more useful
+# with its failures named:
+#
+#   group 166-172 (n=7)  opener 6654.1 at the 16.7 pctile, min 6421.5
+#   group 266-270 (n=5)  opener 5645.1 at the 25.0 pctile, min 5398.9
+#   group 443-449 (n=7)  opener 3149.0 at the 16.7 pctile, min 3119.6
+#
+# In all three the opener is still cheap, just not cheapest, and the
+# margin is small -- 232.6 s, 246.2 s and 29.4 s.
+#
+# A FOURTH INSTANCE OF THE SAME SCRIPT FAULT, caught before writing.
+# My helper printed a narrative line claiming "the rate FALLS with n".
+# It does not: 100, 100, 100, 87.5, 66.7, then 100, 100, 100, 100, 100
+# for n = 2, 3, 4, 5, 7, 8, 10, 12, 14, 16.  The two dips sit at n=5
+# and n=7 and the rate returns to 100% above them.  That is the same
+# fault as the "sorted:" heading at 40413a1 and the loop variable at
+# 9f1f392 -- A SCRIPT WHOSE PROSE ASSERTS WHAT ITS NUMBERS DO NOT.
+# The numbers were printed beside it, which is the only reason it was
+# caught; a narrative line with no table under it should not be
+# trusted at all.
+#
+# No verdict changes; the bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7217,3 +7285,4 @@ g=11 [13, 13, 13, 6, 13, 13, 12, 12, 11, 11, 11]	UNSAT	4636.4
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 12, 12, 8]	UNSAT	1500.2
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 12, 11, 9]	UNSAT	1747.9
 g=11 [13, 13, 13, 5, 13, 13, 13, 13, 12, 10, 10]	UNSAT	1581.8
+g=11 [13, 13, 13, 5, 13, 13, 13, 13, 11, 11, 10]	UNSAT	1605.9
