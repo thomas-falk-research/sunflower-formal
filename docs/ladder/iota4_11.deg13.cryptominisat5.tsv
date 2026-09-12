@@ -6535,6 +6535,85 @@
 #
 # No verdict changes; the bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **THE NOTE OWED SINCE 6c23e5c: BLOCK [13,13,13,5] HAS CLOSED AND
+# ALL THREE OF ITS REGISTERED PREDICTIONS RESOLVE, EXACTLY, IN THE
+# PREDICTED DIRECTION -- INCLUDING THE REVERSAL.**
+# ================================================================
+#
+# 6c23e5c registered three predictions on a block where NOTHING had
+# landed and no cube had started, so no CNF existed to read and
+# nothing on disk could have settled any of them.  The block closed at
+# 15 of 15 with an empty missing-index list -- the tenth completed
+# block -- and the values are:
+#
+#   p=8  idx 520   K=2  775.1, 790.4        -> 1500.2, 1747.9
+#                       denom 782.75, numer 1624.05   RATIO 2.075
+#                  K=3  803.3, 775.1, 790.4 -> 1500.2, 1747.9, 1581.8
+#                       denom 790.40, numer 1581.80   RATIO 2.001
+#                  predicted > 1.10   HOLDS
+#
+#   p=7  idx 524   K=2  1581.8, 1605.9      -> 2096.7, 3176.8
+#                       denom 1593.85, numer 2636.75  RATIO 1.654
+#                  K=3  1747.9, 1581.8, 1605.9 -> 2096.7, 3176.8, 2553.1
+#                       denom 1605.90, numer 2553.10  RATIO 1.590
+#                  predicted > 1.10   HOLDS
+#
+#   p=5  idx 529   K=2  1450.2, 3120.4      -> 880.2, 164.3
+#                       denom 2285.30, numer 522.25   RATIO 0.229
+#                  predicted < 1.10   HOLDS   <-- THE REVERSAL
+#                  (K=3 does not exist here: the boundary sits at
+#                   offset 13 of a 15-cube block and a K=3 numerator
+#                   would need offset 15.  K=2 was what was registered.)
+#
+# EVERY ELAPSED-TIME BOUND PUBLISHED ALONG THE WAY HELD: p=8 at
+# >= 1.654 then >= 1.793 then >= 1.837; p=7 at >= 1.184, >= 1.163,
+# >= 1.590; p=5 at <= 0.720, <= 0.310, <= 0.303, <= 0.297, <= 0.242,
+# <= 0.239.  None was ever contradicted by the value that followed it.
+#
+# **p=5 IS THE ONE THAT MATTERS AND THE TALLY SHOULD NEVER BE QUOTED
+# WITHOUT SAYING SO.**  p=8 and p=7 are both "late coordinate, jump",
+# which a plain "coordinate boundaries are expensive" story predicts
+# exactly as well.  Only p=5 asks the ratio to go the OTHER way at an
+# early coordinate, and that story gets it wrong.  The reversal came in
+# at 0.229 -- not marginally under 1.10 but a quarter of it.
+#
+# AND THE PROPORTION.  Three predictions, ONE block, testing a claim
+# derived from the eight-block ratio table.  That is a single
+# out-of-sample replication of a pattern already measured, NOT
+# independent confirmation of a general law.  Two of the three were
+# also the easy half.
+#
+# WHAT THE NINTH AND TENTH BLOCKS DO TO THE STANDING TABLES:
+#
+#   TEST 1 (d[7] 13->12), nine completed blocks, UNSAT-only:
+#     K=5  2.19 2.19 2.17 1.95 2.08 1.98 2.09 1.94 1.61   9 of 9
+#     K=3  1.45 1.95 2.00 2.61 2.22 1.98 2.09 1.94 1.59   9 of 9
+#     The new block is the LOWEST of the nine at K=5 (1.61) and the
+#     second lowest at K=3.  Medians 2.08 and 1.98.
+#
+#   K=2 SCAN RANK for [13,13,13,5]: 12 splits, median 1.22, max 2.07,
+#     real p=7 boundary 1.65 -> rank 11/12, 90.9th percentile.  In line
+#     with the 86-93% of the seven large blocks, and a reminder that
+#     the K=5 scan retired at 0e321fb would have been useless here.
+#
+#   RAW BOUNDARY RATIOS BY POSITION, K=2, NINE BLOCKS:
+#     p=4  median 0.23   above 1.10 in 0 of 7
+#     p=5  median 0.38   above 1.10 in 0 of 9
+#     p=6  median 0.92   above 1.10 in 1 of 9
+#     p=7  median 1.74   above 1.10 in 8 of 9
+#     p=8  median 1.97   above 1.10 in 8 of 9
+#     The gradient is unchanged from eight blocks (0.23, 0.41, 0.92,
+#     1.76, 1.91).  STATE THE GRADIENT, not "jumps late, falls early".
+#
+#   TEST 2A reaches TEN OF TEN with group 531-537's opener at the 0.0
+#   percentile.  IT STILL CARRIES ESSENTIALLY NO INFORMATION: the
+#   group-opener base rate is 95.3% overall, so ten-for-ten runs
+#   0.953^10 = 0.62.  Never quote the tally without the base rate.
+#
+# Nothing here concerns any cube's verdict.  Every UNSAT row stands and
+# the bracket is unchanged at 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7298,3 +7377,5 @@ g=11 [13, 13, 13, 4, 13, 13, 13, 13, 13, 11, 9]	UNSAT	569.5
 g=11 [13, 13, 13, 4, 13, 13, 13, 13, 13, 10, 10]	UNSAT	466.5
 g=11 [13, 13, 13, 4, 13, 13, 13, 13, 12, 12, 9]	UNSAT	1012.0
 g=11 [13, 13, 13, 4, 13, 13, 13, 13, 11, 11, 11]	UNSAT	859.0
+g=11 [13, 13, 13, 4, 13, 13, 13, 13, 12, 11, 10]	UNSAT	1159.6
+g=11 [13, 13, 13, 5, 13, 13, 12, 12, 12, 11, 11]	UNSAT	3120.4
