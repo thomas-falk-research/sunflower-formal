@@ -10,6 +10,11 @@
 # re-runs, UNKNOWN rows are the cap they ran to and are re-attempted.
 # Pilot (docs/roadmap.md section 56.10): 8,7 in 0.6 s; 5,4,4,2 in 392 s;
 # 3,3,3,3,3 and 2,2,2,2,1,1,1,1,1,1,1 UNKNOWN at 1800 s.
+# Outcome: 118 cubes INFEASIBLE flat (first pass 1800 s, second 7200 s);
+# the 21 cubes whose last row here is UNKNOWN are closed in
+# rstar_3_3_11.sub.tsv, every pair-degree-profile sub-cube INFEASIBLE.
+# tools/audit11.py checks that all 139 cubes are closed one way or the
+# other and that no row anywhere is FEASIBLE.  No witness was ever found.
 # cube	degrees	K	B	verdict	seconds	witness
 8,7	1,2,9,9,9,9,9,9,9,9,9	62	16	INFEASIBLE	0.6	
 8,5,2	1,4,7,9,9,9,9,9,9,9,9	62	16	INFEASIBLE	5.2	

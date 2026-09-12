@@ -13478,7 +13478,27 @@ all UNKNOWN at 7200 s). So the flat second pass was stopped at 118 closed
 with twelve flat cubes not re-attempted at 7200 s, and the remaining
 cubes go straight to sub-cubes, three at a time via `tools/subchain.sh`
 (longest-stalled first): a stall costs 7200 s of a core for nothing, a
-sub-cube sweep closes the same cube in about an hour. Standing: under
-CP-SAT, no 28-member family on eleven points in the closed cubes; the
-eleven-point case is open until every cube is closed flat or by
-sub-cubes, or a witness appears.
+sub-cube sweep closes the same cube in about an hour.
+
+**Closed.** Every one of the 139 cubes is now closed: 118 flat
+(INFEASIBLE in `docs/ladder/rstar_3_3_11.tsv`, 150 746 s of solver time
+in total, slowest `3,3,3,2,2,2` at 7004 s) and 21 by sub-cubes (every
+profile INFEASIBLE in `docs/ladder/rstar_3_3_11.sub.tsv`, 22 509 rows,
+88 509 s in total, slowest single profile 372 s, no profile ever
+UNKNOWN at the 600 s cap). No row anywhere is FEASIBLE and no witness
+was ever printed. `tools/audit11.py` re-derives the 139 cubes as the
+partitions of 15 into at most eleven parts of size at most 8, regenerates
+every closed-by-sub-cubes cube's profile list with `tools/cubesub.py
+--list`, and checks that each profile has an INFEASIBLE row and that no
+row carries any other verdict or a witness; it exits 0. So, **under
+CP-SAT: no 3-uniform family on eleven points with 28 members, no three
+pairwise disjoint, point degree at most 9 and pair degree at most 3.**
+With nine points exact (27) and ten points closed in §56.9, a refutation
+of `r*(3,3) = 3` now needs twelve or more points. Second opinion: none
+yet at eleven points (SCIP confirmed 7 of the 11 ten-point cubes and
+stalled on the rest, §56.9; it is not expected to finish the flat
+eleven-point cubes either). The twelve-point deficiency is 24 on twelve
+points, so the cube count and the per-cube difficulty both grow; the
+profile sub-cube is the tool to reach for first there, not the flat
+cube, and a second opinion should be a proof-logging PB solver rather
+than a second CP solver.

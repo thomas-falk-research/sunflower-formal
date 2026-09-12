@@ -207,9 +207,12 @@ Highlights of the less-routine parts:
   threshold $r^m$ in the statement is sharp at $(3,3,3)$, and the
   depth-first search that had reported a largest of 23–24 was simply not
   finding what nine points hold. The 28th member is still open, but not
-  on ten points: cubed on the degree sequence, every one of the eleven
-  cubes is infeasible under CP-SAT, so a refutation needs eleven points or
-  more — `docs/roadmap.md` §56 records what was decided and at what cost.
+  on ten or eleven points: cubed on the degree sequence (eleven cubes at
+  ten points, 139 at eleven), every cube is infeasible under CP-SAT, the
+  eleven-point stalls being closed by the deeper cube that also fixes the
+  pair-degree profile of a minimum-degree point. So a refutation needs
+  twelve points or more — `docs/roadmap.md` §56.9–56.10 record what was
+  decided and at what cost.
 
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$

@@ -11,8 +11,8 @@ sunflowers themselves: nothing — `r*(3,3)` is still `{3, 4}`.
 
 ## What did not move
 
-`r*(3,3) ∈ {3, 4}` is unchanged at both ends (ten points are excluded as
-a home for a refutation, which narrows where, not whether). No bound on `f(n,k)`, no
+`r*(3,3) ∈ {3, 4}` is unchanged at both ends (ten and eleven points are
+excluded as a home for a refutation, which narrows where, not whether). No bound on `f(n,k)`, no
 exact value, no row of the `r*(m,3)` table, no entry of the conjecture
 ledger, and no constant in `[65, 125]` moved. `ι(4)` is still bracketed
 `27 ≤ ι(4) ≤ 71`, `ι(4,11) ≤ 31` still rests on cadical with the cube-13
@@ -99,6 +99,14 @@ novelty  = "new-to-this-development"
 search   = "as above"
 
 [[claim]]
+id       = "no-28-on-eleven-points"
+statement = "No 3-uniform family on eleven points with 28 members, no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 exists: all 139 degree-sequence cubes are infeasible under CP-SAT, 118 flat and 21 via every pair-degree-profile sub-cube; tools/audit11.py checks the ladders and exits 0."
+kind     = "measurement"
+evidence = "docs/ladder/rstar_3_3_11.sub.tsv"
+novelty  = "new-to-this-development"
+search   = "as above"
+
+[[claim]]
 id       = "weak-evidence-withdrawn"
 statement = "The 23-member object pinned in rust/tests/spread_threshold.rs and offered in docs/roadmap.md section 22.5 as weak evidence for r*(3,3) = 3 is no evidence: the exact maximum on a smaller ground is 27."
 kind     = "correction"
@@ -152,9 +160,11 @@ after installing it, that suite passes 20 of 20, and the eleven suites
 cargo had skipped after the failure were run separately and pass.
 
 **Costs and what remains.** `docs/roadmap.md` §56.7 and §56.5. The
-28-member question — `r*(3,3) = 3` or `4` — is open; ten points are now
-excluded (§56.9, eleven cubes, under CP-SAT), so eleven points is the
-next thing to cube.
+28-member question — `r*(3,3) = 3` or `4` — is open; ten points (§56.9,
+eleven cubes) and eleven points (§56.10, 139 cubes, the stalls closed by
+pair-degree-profile sub-cubes, about 110 core-hours in all) are now
+excluded under CP-SAT, so twelve points is the next thing to cube, with
+the sub-cube first and a proof-logging PB solver as the second opinion.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
