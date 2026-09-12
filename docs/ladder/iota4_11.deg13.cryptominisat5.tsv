@@ -6811,6 +6811,56 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# idx 560 -- the second cube of [13,13,12,12], and the p=8 window
+# starts running
+# ================================================================
+#
+#   idx 560  [13,13,12,12,13,13,13,13,13,12,1]  UNSAT  595.4 s  rank 46/561
+#
+# Rows 730, labels 561, 561 UNSAT, 0 SAT, 0 labels undecided-only (169
+# historical UNKNOWN rows all superseded by a later UNSAT on the same
+# label).  Frontier contiguous 0-560, NO HOLES.  Decided 561 of 1949
+# (28.8%); 1388 remain.  Rank is ascending over all 561 decided cubes.
+#
+# Block [13,13,12,12] stands at 2 of 82.  idx 560 falls in NONE of the
+# five registered windows, so nothing resolves here and no tally moves:
+# NINE REGISTERED PREDICTIONS, EIGHT HOLDING, ONE FAILING.
+#
+# THE FIVE WINDOWS, read from CNF mtimes and cross-checked against an
+# independent ls, at the moment this row was banked:
+#
+#   p=8  idx 566   denom  564 IN FLIGHT 204 s | 565 not started
+#                  numer  566 not started     | 567 not started
+#   p=7  idx 580   all four not started
+#   p=6  idx 598   all four not started
+#   p=5  idx 616   all four not started
+#   p=4  idx 630   all four not started
+#
+# THAT FIRST LINE IS A CHANGE AND IT GETS STATED RATHER THAN LET PASS.
+# At registration (0542580) not one of the twenty window cubes had
+# started.  c564 is now running, so the p=8 instance is no longer
+# prospective in the strongest sense: its number is still fixed ahead
+# of every result, but the clock on its first denominator cube has
+# started.  The other four instances remain untouched on every cube.
+#
+# The block's two landed cubes are 54.1 s (opener, idx 559) and 595.4 s
+# (idx 560) -- an eleven-fold step.  ONE PAIR IS NOT A RESULT.  It is
+# written down here only so that it cannot later be presented as though
+# it had been a prediction.
+#
+# Test 2A's next point is group d[0..7] = [13,13,12,12,13,13,13,13],
+# idx 559-579, n=21, with 2 of 21 landed: UNCOUNTED.  Per 7465542 a
+# further 2A point carries essentially no information in any case --
+# the group-opener base rate is 61 of 64 = 95.3%, and 15 of 15 among
+# groups with n >= 8, the size range block-opener groups occupy.
+#
+# Budget rule: the last twelve attempts hold 12 UNSAT and the rule
+# needs 0 or 1, so it does not fire; the cap stays 21600 s per cube.
+#
+# 28.8% is the counter, not the rung.  deg(0)=13 is UNSAT only when all
+# 1949 sub-cubes are.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7598,3 +7648,4 @@ g=11 [13, 13, 13, 2, 13, 13, 13, 13, 12, 12, 11]	UNSAT	203.3
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 13, 0]	UNSAT	54.1
 g=11 [13, 13, 13, 2, 13, 13, 13, 12, 12, 12, 12]	UNSAT	192.7
 g=11 [13, 13, 13, 3, 13, 13, 13, 12, 12, 12, 11]	UNSAT	795.8
+g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 12, 1]	UNSAT	595.4
