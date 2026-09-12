@@ -13556,9 +13556,10 @@ its INFEASIBLE row at `K = 62, B = 10`; `make audit-support` runs it).
 VALIDATED under CP-SAT. A second opinion on the relaxation itself —
 SCIP, a different engine, deciding the type system for *every* degree
 profile with 16 to 42 points, 68 797 profiles, one at a time
-(`tools/typescip.py 16`) — has found none feasible through twenty points
-and is still running; it is now a cross-check of the CP-SAT relaxation
-rather than load-bearing, since the certificate below covers 16 and up.
+(`tools/typescip.py 16`) — finished: **none of the 68 797 profiles is
+feasible, none undecided**, agreeing with the certificate below (which is
+what carries 16 and up; SCIP is a cross-check of the CP-SAT relaxation,
+not load-bearing).
 
 **The bound is now a certificate, not a solver verdict.** Only one of
 the pair caps is needed: with just *pairs of two full points number at
