@@ -7096,6 +7096,110 @@
 # exactly as written.  No verdict changes.  The bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **THE p=7 PREDICTION IN BLOCK [13,13,12,12] HOLDS -- ON A TWO-SIDED
+# TEST THAT COULD HAVE FAILED, AND AGAINST MY OWN PRE-RECORDED LEAN.**
+# ================================================================
+#
+# Registered at 0542580 with all twenty window cubes unstarted:
+# boundary idx 580, K=2, denominator idx 578 and 579, numerator idx 580
+# and 581, predicted ratio > 1.10.
+#
+#   denominator  median(2706.6, 2721.4) = 2714.00   FIXED
+#   bar          1.10 * 2714.00         = 2985.40
+#   numerator    median(2764.0, c581), c581 >= 3795 s and still running
+#                                      >= 3279.50
+#   RATIO >= 1.2084   predicted > 1.10   **HOLDS**
+#
+# THE VERDICT IS SETTLED AND THE NUMBER IS NOT.  c581 is still running
+# at 23:56:06Z, so 1.2084 is a LOWER BOUND that can only rise; the exact ratio
+# waits on that cube and will be written here when it lands.
+#
+# THE TALLY IS TEN REGISTERED PREDICTIONS, NINE HOLDING, ONE FAILING.
+# (That is the CORRECTED base from caff592 plus this one, not the
+# arithmetic that stood wrongly for seven commits.)
+#
+# **THE TEST WAS TWO-SIDED AND IT COULD HAVE GONE THE OTHER WAY.**  By
+# c7f571b the instance had reduced to one cube against one number:
+# c580 fixed at 2764.0, so p=7 held iff c581 > 3206.80, i.e. iff c581
+# was STILL RUNNING at 23:46:17Z and FAILED otherwise.  That was
+# committed and pushed at 23:08:49Z, thirty-eight minutes ahead of the
+# deadline.  c581 started 22:52:50Z and is still running at 3795 s,
+# clearing the bar by 588 s.
+#
+# This matters because the equivalent conditional at p=8 (8b0acc7) was
+# only SUFFICIENT -- it could confirm and never refute.  The one before
+# this one, at a33544a, did not even fire: it needed both c580 and c581
+# alive at 23:26:40Z and c580 finished at 23:07:03Z, nineteen minutes
+# short.  A conditional that cannot fail is decoration; these two could,
+# and one of them didn't fire at all.
+#
+# **AND MY OWN PRE-RECORDED LEAN WAS WRONG, WHICH IS WORTH MORE THAN
+# THE HIT.**  c7f571b noted, before the answer, that the bar of 3206.80
+# sat ABOVE all three most recently decided cubes -- 2706.6, 2721.4,
+# 2764.0 -- and called that "a real observation pointing against p=7".
+# The observation was factually correct and the lean drawn from it was
+# wrong: c581 has run past 3795 s, materially above all three.  The
+# correction runs IN MY FAVOUR and is stated as such.
+#
+# === WHERE 1.19 SITS, WHICH IS LOW, AND WHAT DOES NOT EXPLAIN IT ===
+#
+# Method validated first: recomputing every p=7 K=2 ratio from the cube
+# list reproduces the file's published figures exactly -- 1.6543 vs
+# 1.654, 1.7740 vs 1.774, 1.0089 vs 1.009.
+#
+#   block              n     p=7 ratio
+#   [13,13,13,13]     129     1.0463
+#   [13,13,13,12]     104     1.5283
+#   [13,13,13,11]      82     1.5114
+#   [13,13,13,10]      65     2.0953
+#   [13,13,13,9]       49     1.9047
+#   [13,13,13,8]       38     1.7746
+#   [13,13,13,7]       28     1.9605
+#   [13,13,13,6]       21     1.7447
+#   [13,13,13,5]       15     1.6543
+#   [13,13,13,4]       11     1.7740
+#   [13,13,13,3]        7     1.0089
+#
+#   eleven instances: min 1.0089, median 1.7447, max 2.0953; 9 of 11
+#   above the 1.10 threshold.
+#
+# The new bound of 1.2084 is PROVISIONAL RANK 3 OF 12 ascending -- only
+# [13,13,13,13] at 1.0463 and [13,13,13,3] at 1.0089 sit below it -- and
+# it is far under the 1.7447 median.  It can only rise, but it clears a
+# 1.10 bar while sitting near the bottom of its own distribution.
+#
+# **AND THE SIZE CONFOUND DOES NOT TRANSFER TO THIS POSITION.**  a2bf077
+# found the p=8 ratio tracking block size at Pearson -0.727 / Spearman
+# -0.471, and used it to cut down what the p=8 hit was worth.  Asking
+# the same question at p=7:
+#
+#   Pearson(block size, p=7 ratio)  = -0.289
+#   Spearman                        = -0.036
+#
+# -- essentially nothing.  So this block being large does NOT explain
+# its low p=7 ratio, and the caveat that deflated p=8 is unavailable
+# here.
+#
+# WHICH OPENS A QUESTION RATHER THAN SETTLING ONE.  Both out-of-prefix
+# instances have come in BELOW their in-prefix medians: p=8 at 1.4644
+# against 1.8414, p=7 at >= 1.2084 against 1.7447.  At p=8 block size is a
+# candidate explanation; at p=7 it is not.  A single alternative reading
+# covers both -- that ratios are simply SMALLER outside the
+# d[1]=d[2]=13 prefix -- and it is NOT yet distinguishable from the size
+# story at p=8.  TWO POINTS, ONE OF THEM A RISING LOWER BOUND, IS NOT
+# ENOUGH TO CHOOSE BETWEEN THEM, and no choice is being made here.  It
+# also means a2bf077's confident use of size to deflate p=8 was more
+# confident than the evidence now supports.
+#
+# THREE REGISTRATIONS REMAIN, fixed at 0542580 and unchanged: p=6 at idx
+# 598 predicted < 1.10, p=5 at 616 < 1.10, p=4 at 630 < 1.10.  None of
+# their twelve cubes has started.  p=5 and p=4 are the reversal half,
+# testable for the first time in three blocks, and they are the ones
+# that would tell the two readings above apart.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
