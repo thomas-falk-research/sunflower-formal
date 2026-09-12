@@ -13510,3 +13510,57 @@ points, so the cube count and the per-cube difficulty both grow; the
 profile sub-cube is the tool to reach for first there, not the flat
 cube, and a second opinion should be a proof-logging PB solver rather
 than a second CP solver.
+
+### 56.11 The support bound, second attempt: a type relaxation
+
+**Status: in progress; every bound below is under Frankl's `I(3,3) <= 10`
+(equivalently `s_E <= 7` for every member) unless marked kernel-only.**
+
+§56.3 summed the identity `|M_E| = 3 + s_E` over the members and got
+twenty points from `d_v >= 2`. Two corrections first. The exact optimum
+of that sum alone (degrees in `2..9` summing to 84 with
+`Σ d_v (9 − d_v) <= 196`) is **19**, not 20 (a two-line dynamic program,
+`tools/typelp.py` reproduces it as the no-pair case). And a hand argument
+made here that no point has degree 2 was wrong and is withdrawn: it
+assumed that a member disjoint from `E_1` must meet `E_2` when `E_1` and
+`E_2` share a point, which `ν <= 2` does not say. Nothing in the kernel or
+the ladders depended on it.
+
+**The relaxation.** Forget which triples the members are and keep only
+*types*: a member's type is its sorted degree triple `(d_1 <= d_2 <= d_3)`
+together with the degrees of its three pairs `(e_12, e_13, e_23)`, subject
+to `s_E = Σ (9 − d_i) + Σ (e_ij − 1) <= 7`. Unknowns: `n_d` points of
+degree `d` (`d >= 2`), `t_T` members of each type, `q_{(a,b),e}` point-pairs
+with degree types `a <= b` and pair degree `e in 1..3`. Constraints:
+`Σ t_T = 28`; point incidence `Σ_T t_T · mult_T(d) = d · n_d`; pair
+incidence `Σ_T t_T · mult_T((a,b),e) = e · q_{(a,b),e}`; at most
+`n_a n_b` (or `C(n_a, 2)`) pairs of degree type `(a,b)`; and Kruskal–Katona:
+the members all of whose pairs have degree `>= e` are triples whose
+2-shadow lies among the pairs of degree `>= e`, so those pairs number at
+least the minimum shadow of that many triples (`e = 2, 3`, and the whole
+family against `shadow(28) = 21`). Every 28-member family under the caps
+with `s_E <= 7` yields a solution, so anything the relaxation forbids is
+forbidden. It is a small integer program (329 member types).
+
+**What it gives.** Maximising `Σ n_d`: **15** (CP-SAT, OPTIMAL, proved
+bound 15; without the pair classes it is 19 and without Kruskal–Katona
+still 15). So under Frankl a 28-member family lives on at most fifteen
+points, and the relaxation lists every degree profile it allows at 13, 14
+and 15 points: 285, 87 and 6 profiles (`tools/typeprof.py 7 2 <n>`).
+Those are degree-sequence cubes, and each is a CP-SAT run with the Frankl
+cut `B = 10` instead of the kernel's 16 (`tools/supsweep.sh <n> <cap>`).
+Pilot at fifteen points: the first three cubes are INFEASIBLE in 65–81 s
+each. VALIDATED so far; the sweep of all 378 cubes is running, and a
+second opinion on the relaxation itself — SCIP, a different engine,
+deciding the type system for *every* degree profile with 16 to 42 points
+one profile at a time (`tools/typescip.py 16`) — is running beside it.
+
+**What it would mean.** If the 378 cubes are INFEASIBLE and SCIP agrees
+that no profile with 16 or more points is feasible, then under Frankl's
+`I(3,3) <= 10` and under CP-SAT (SCIP for the relaxation), a 28-member
+family lives on at most twelve points; §56.9–56.10 already exclude ten
+and eleven; and the twelve-point sweep of §56.10, now running, is the
+last rung: `r*(3,3) = 3` would follow, conditional on exactly those two
+things — Frankl's value, and solver verdicts without proof logs. The
+kernel-only version (`s_E <= 13`, degrees `>= 1`) of the relaxation gives
+24 points and is not being swept.
