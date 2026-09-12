@@ -13555,6 +13555,33 @@ second opinion on the relaxation itself — SCIP, a different engine,
 deciding the type system for *every* degree profile with 16 to 42 points
 one profile at a time (`tools/typescip.py 16`) — is running beside it.
 
+**The bound is now a certificate, not a solver verdict.** Only one of
+the pair caps is needed: with just *pairs of two full points number at
+most `C(n_9, 2)`* the optimum is still 15 (and the Kruskal–Katona rows
+are not needed either). With `n_9` fixed that system is a linear
+program, so `tools/typelp_tree.py` branches on `n_9`, then on `n_8`,
+`n_7`, … only where the LP bound is still `>= 16`, and stops at 61
+leaves, every one with LP optimum below 16 (the worst is
+`n_9 = 3, n_8 = 3, n_7 = 1` at `15.958`). `tools/typelp_cert.py` then
+takes each leaf's dual solution, rounds it to rationals, and re-evaluates
+weak duality in exact arithmetic (for the three LP-infeasible leaves, a
+Farkas vector, same evaluation with a zero objective); every leaf
+certifies. `docs/ladder/support15_cert.json` holds the tree and the 61
+vectors, and `tools/support15_check.py` — pure Python, `fractions`, no
+solver — rebuilds the LP from the definition, checks every leaf bound
+exactly, and checks that the tree covers every integer assignment of the
+degree counts. It exits 0. So:
+
+> **PROVEN (exact LP-duality certificate, independently checked):** a
+> 28-member family with `s_E <= 7` for every member and every degree at
+> least 2 — in particular any 28-member family under the caps if
+> `I(3,3) <= 10` — lives on at most **15** points.
+
+Not yet in Coq: the checker is Python over rationals, and its two
+ingredients (weak duality for a bounded LP, and the tree's coverage) are
+each a page; a Coq version would be the natural next formalisation, and
+would make §56.3's "twenty" a kernel fifteen once Frankl's value is in.
+
 **What it would mean.** If the 378 cubes are INFEASIBLE and SCIP agrees
 that no profile with 16 or more points is feasible, then under Frankl's
 `I(3,3) <= 10` and under CP-SAT (SCIP for the relaxation), a 28-member
