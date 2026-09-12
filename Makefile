@@ -157,6 +157,20 @@ ceilings:
 prcheck:
 	@python3 tools/prcheck.py $(if $(PR_BODY),--body $(PR_BODY),--template)
 
+# The support-bound certificate (docs/roadmap.md section 56.11): a
+# 28-member family with s_E <= 7 for every member and every degree >= 2
+# has at most fifteen points. The certificate is a 61-leaf LP-duality
+# tree; the checker rebuilds every LP from the definition and re-evaluates
+# every dual and Farkas vector in exact rational arithmetic, with no
+# solver. Needs no build. See tools/support15_check.py.
+support15:
+	@python3 tools/support15_check.py docs/ladder/support15_cert.json
+
+# The eleven-point ladder of r*(3,3): every one of the 139 cubes closed
+# flat or by sub-cubes, no witness. Needs no build. See tools/audit11.py.
+audit11:
+	@python3 tools/audit11.py .
+
 rust:
 	cd rust && cargo build --release
 

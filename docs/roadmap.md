@@ -13577,7 +13577,14 @@ degree counts. It exits 0. So:
 > least 2 — in particular any 28-member family under the caps if
 > `I(3,3) <= 10` — lives on at most **15** points.
 
-Not yet in Coq: the checker is Python over rationals, and its two
+A fresh-context review re-derived the identity, re-implemented the
+dual evaluation from scratch (all 61 leaves agree; worst bound `383/24`),
+brute-forced coverage over all 1 065 947 degree-count vectors, and found
+nothing wrong; its two remarks are recorded: the certified LP is the
+*weaker* relaxation (full-pair cap only, no Kruskal–Katona) as stated in
+the checker's docstring, and the checker reads `s_E <= 7` and `d >= 2`
+from the certificate file, which matches the claim. `make support15`
+runs the checker. Not yet in Coq: the checker is Python over rationals, and its two
 ingredients (weak duality for a bounded LP, and the tree's coverage) are
 each a page; a Coq version would be the natural next formalisation, and
 would make §56.3's "twenty" a kernel fifteen once Frankl's value is in.
