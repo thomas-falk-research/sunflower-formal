@@ -6614,6 +6614,75 @@
 # Nothing here concerns any cube's verdict.  Every UNSAT row stands and
 # the bracket is unchanged at 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **A SCOPING ERROR THAT INVALIDATES NOTHING MEASURED AND LIMITS
+# EVERYTHING CLAIMED: EVERY "BLOCK" IN THIS FILE HAS d[1]=d[2]=13,
+# AND THOSE FOURTEEN BLOCKS ARE ONLY 559 OF THE 1949 CUBES.**
+# ================================================================
+#
+# Found by checking a throwaway size claim.  0e321fb wrote that the
+# blocks remaining after [13,13,13,6] were "15, 11, 8, 7, 5, 4, 3 and
+# 2 cubes".  Recomputed from the cube list the truth is 15, 11, 7, 5,
+# 3, 2 -- six blocks, not eight, and two of the sizes were invented.
+# That alone is a fourth-order slip.  Checking it exposed the real one.
+#
+# THE FOURTEEN BLOCKS, RECOMPUTED, WITH THEIR INDEX RANGES:
+#
+#   [13,13,13,13] 0-128 129   [13,13,13,6]  495-515  21
+#   [13,13,13,12] 129-232 104  [13,13,13,5]  516-530  15
+#   [13,13,13,11] 233-314  82  [13,13,13,4]  531-541  11
+#   [13,13,13,10] 315-379  65  [13,13,13,3]  542-548   7
+#   [13,13,13, 9] 380-428  49  [13,13,13,2]  549-553   5
+#   [13,13,13, 8] 429-466  38  [13,13,13,1]  554-556   3
+#   [13,13,13, 7] 467-494  28  [13,13,13,0]  557-558   2
+#
+#   THEY SUM TO 559, NOT 1949.
+#
+# **SO "BLOCK" HAS SILENTLY MEANT "d[0..3] WITH d[1] = d[2] = 13"
+# THROUGHOUT.**  Those fourteen cover idx 0-558, which is 28.7% of the
+# enumeration, and the TEN completed ones cover idx 0-530 -- 27.2%.
+# Every per-block result in this file -- test 1's nine-of-nine, the
+# ratio gradient 0.23 / 0.38 / 0.92 / 1.74 / 1.97, the K=2 scan ranks,
+# test 2A's ten-of-ten, the group-opener base rate -- was computed on
+# that head of the list and on nothing else.  I never wrote the
+# restriction down because I never noticed it: the sweep walks in index
+# order and the first 559 cubes all happen to share d[1]=d[2]=13.
+#
+# NOTHING MEASURED IS WRONG.  Every ratio, rank and count stands as
+# computed.  WHAT IS WRONG IS THE SCOPE I IMPLIED by calling them
+# "blocks" without qualification.  The honest statement of every one
+# of those results now carries "over the first 27% of the enumeration,
+# all of it d[1]=d[2]=13".  Whether any of it holds on the other 71.3%
+# IS UNTESTED.
+#
+# AND THE CONSTRUCT WAS ABOUT TO RUN OUT WITHOUT WARNING.  The frontier
+# is at 537 and the last of the fourteen ends at 558 -- twenty-one
+# cubes away.  Had this not surfaced now it would have surfaced as
+# confusion when the block key stopped producing blocks.
+#
+# THE FIX IS ONE DROPPED RESTRICTION, AND IT IS A PLAN, NOT A RESULT.
+# Key a block on d[0..3] for ANY d[1], d[2] and the list partitions
+# into 171 blocks covering all 1949 cubes, of which 83 have n >= 5 and
+# so admit at least one K=2 split.  The size ladder simply restarts:
+#
+#   [13,13,12,12] 559-640  82    [13,13,12, 9] 755-792  38
+#   [13,13,12,11] 641-705  65    [13,13,12, 8] 793-820  28
+#   [13,13,12,10] 706-754  49    [13,13,12, 7] 821-841  21
+#
+# So the per-position ratio test continues past idx 558 with no change
+# of design, only of scope.  THAT IS NOT A CONFIRMATION OF ANYTHING --
+# it means the gradient becomes testable on a population it has never
+# been tested on, and the first such block, [13,13,12,12], is where the
+# claim earns or loses its generality.
+#
+# This is the sixth entry in the error list whose shape is "a
+# convenient population", and the first where the population was
+# convenient by accident rather than by choice.  The remedy is the one
+# that caught it: recompute a structural claim from the cube list
+# instead of carrying it, even when the claim is an aside.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7380,3 +7449,4 @@ g=11 [13, 13, 13, 4, 13, 13, 13, 13, 11, 11, 11]	UNSAT	859.0
 g=11 [13, 13, 13, 4, 13, 13, 13, 13, 12, 11, 10]	UNSAT	1159.6
 g=11 [13, 13, 13, 5, 13, 13, 12, 12, 12, 11, 11]	UNSAT	3120.4
 g=11 [13, 13, 13, 4, 13, 12, 12, 12, 12, 12, 12]	UNSAT	258.7
+g=11 [13, 13, 13, 3, 13, 13, 13, 13, 13, 13, 8]	UNSAT	155.9
