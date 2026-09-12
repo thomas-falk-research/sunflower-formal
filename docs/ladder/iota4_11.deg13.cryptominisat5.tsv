@@ -6954,6 +6954,90 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **p=8 IS EXACT AT 1.4644 AND HOLDS -- AND A CONFOUND CHECK SHOWS
+# THE VALUE IS ABOUT WHAT THE BLOCK'S SIZE PREDICTS, WHICH IS LESS
+# THAN THE BLOCK ABOVE CLAIMED FOR IT.**
+# ================================================================
+#
+#   denominator  median(1311.4, 1421.6) = 1366.50
+#   numerator    median(1607.6, 2394.6) = 2001.10
+#   RATIO 1.4644   predicted > 1.10   **HOLDS**
+#
+# Both published lower bounds held: >= 1.1479 and >= 1.2245, against
+# an exact 1.4644.  THE TALLY IS NINE REGISTERED PREDICTIONS, EIGHT
+# HOLDING, ONE FAILING -- the CORRECTED count, for the reason in the
+# block above, not the arithmetic that stood for seven commits.
+#
+# THE METHOD WAS VALIDATED BEFORE ANYTHING WAS RANKED.  Recomputing
+# every p=8 K=2 boundary ratio from the regenerated cube list
+# reproduces this file's own published figures exactly: [13,13,13,5]
+# 2.0748 against a published 2.075, [13,13,13,4] 2.0961 against 2.096,
+# [13,13,13,3] 1.5994 against 1.599, and across the first NINE blocks
+# a median of 1.9706 against the published 1.97 with 8 of 9 above
+# threshold against the published 8 of 9.
+#
+#   block              n     p=8 ratio
+#   [13,13,13,13]     129     0.8101
+#   [13,13,13,12]     104     1.2711
+#   [13,13,13,11]      82     1.7654
+#   [13,13,12,12]      82     1.4644   <- new, and out of the prefix
+#   [13,13,13,10]      65     1.8414
+#   [13,13,13,9]       49     2.0325
+#   [13,13,13,8]       38     2.1233
+#   [13,13,13,7]       28     1.9706
+#   [13,13,13,6]       21     2.1810
+#   [13,13,13,5]       15     2.0748
+#   [13,13,13,4]       11     2.0961
+#   [13,13,13,3]        7     1.5994
+#   [13,13,13,2]        5     1.5987
+#
+#   thirteen instances: min 0.8101, median 1.8414, max 2.1810; 12 of
+#   13 above the 1.10 threshold.
+#
+# I EXPECTED THIS TO BE THE LOWEST p=8 RATIO ON RECORD AND IT IS NOT.
+# It is rank 3 of 13 ascending -- [13,13,13,13] at 0.8101 and
+# [13,13,13,12] at 1.2711 are lower.  The expectation was checked
+# before it was written anywhere, which is the only reason this is a
+# note and not another correction.
+#
+# **THE CONFOUND, AND IT CUTS AGAINST THE BLOCK ABOVE.**  That block
+# called this instance worth more than the eight before it because it
+# is the first to resolve OUTSIDE the d[1]=d[2]=13 prefix.  That much
+# is a fact about where it sits.  But the p=8 ratio is associated with
+# BLOCK SIZE:
+#
+#   Pearson(n, ratio)  = -0.727
+#   Spearman(n, ratio) = -0.471
+#
+# The gap between them says the Pearson is leveraged by [13,13,13,13]
+# alone, and the relation is NOT monotone -- the two smallest blocks
+# sit low as well, at 1.5994 and 1.5987.  Taken at its weakest the
+# association still bites here: THE ONLY TWO INSTANCES BELOW 1.4644
+# ARE THE TWO LARGEST BLOCKS, and [13,13,12,12] is tied-largest among
+# everything else at n=82, against the other n=82 block's 1.7654.
+#
+#   SO 1.4644 IS ABOUT WHAT THIS BLOCK'S SIZE PREDICTS.  The
+#   out-of-prefix character of the block is CONFOUNDED with its size.
+#   This single point does NOT show the effect has the same magnitude
+#   outside the prefix.  It shows the effect is PRESENT there, above a
+#   1.10 bar, at a value consistent with a large block -- which is a
+#   weaker statement than the one written one block above, and it is
+#   the one that survives.
+#
+# A WARNING FOR THE FOUR REGISTRATIONS STILL OPEN IN THIS BLOCK.  p=7
+# at idx 580, p=6 at 598, p=5 at 616 and p=4 at 630 all sit in this
+# same n=82 block and carry the same confound, while the historical
+# medians they will be read against are dominated by small blocks.
+# THE REGISTRATIONS ARE NOT BEING CHANGED: 0542580 fixed them at
+# > 1.10, > 1.10, < 1.10, < 1.10, < 1.10 and they stand exactly as
+# written.  This is recorded so their results are read correctly and
+# NOT as a threshold to move -- e8a5a6a's lesson is that a caveat
+# written in advance neither excuses a failure nor licenses resetting
+# the number it was written beside.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -7748,3 +7832,4 @@ g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 9, 4]	UNSAT	1204.3
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 8, 5]	UNSAT	1311.4
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 13, 7, 6]	UNSAT	1421.6
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 12, 2]	UNSAT	1607.6
+g=11 [13, 13, 12, 12, 13, 13, 13, 13, 12, 11, 3]	UNSAT	2394.6
