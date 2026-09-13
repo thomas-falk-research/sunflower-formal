@@ -7946,6 +7946,97 @@
 # computed BEFORE it resolves, not after.  Budget rule does not fire.
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# c615 LANDS: p=5 RATIO IS EXACTLY 0.4079 -- AND IT FALSIFIES
+# 4e5e443's "UNIFORMLY SMALLER OUTSIDE THE PREFIX"
+# ================================================================
+#
+# idx 615 landed UNSAT at 5310.4 s, closing the last hole.  FRONTIER IS
+# CONTIGUOUS 0..618 WITH NO HOLES.  619 of 1949 (31.8 percent), 1330
+# remain, block [13,13,12,12] at 60 of 82.
+#
+#   numerator   median(c616,c617) = median(1185.4, 3453.6) = 2319.5
+#   denominator median(c614,c615) = median(6061.5, 5310.4) = 5685.9
+#   *** EXACT RATIO 0.4079, against a registered threshold of 1.10. ***
+#   VERDICT UNCHANGED: HOLDS -- as already decided at d395cb0 from c617
+#   alone, and the exact value only says by how much.
+#
+# THE TWO-SIDED THRESHOLD FROM d395cb0 RESOLVED.  Recorded at 18:39Z:
+# c615 crosses 6035.0 s at 18:58:57Z, landing before means the ratio is
+# ABOVE the prior p=5 median 0.3835, landing after means below.  c615
+# landed at 5310.4 s -- 724.6 s, or 12.1 minutes, INSIDE the crossing.
+# The consequence stated in advance was "ABOVE"; the actual ratio is
+# 0.4079, which IS above.  BUT IT NAMED NO SIDE, so like the 20:16:54Z
+# cap disjunction at 255adbc IT DOES NOT ENTER THE TALLY.  That stays at
+# TWELVE REGISTERED PREDICTIONS, ELEVEN HOLDING, ONE FAILING.
+#
+# ----------------------------------------------------------------
+# AND NOW THE FINDING THAT COSTS ME A STANDING CLAIM.
+# ----------------------------------------------------------------
+#
+# 4e5e443 concluded: "What survives is simpler and has nothing to do
+# with effect strength -- RATIOS ARE UNIFORMLY SMALLER OUTSIDE THE
+# d[1]=d[2]=13 PREFIX, whichever side of 1.10 they fall on."
+#
+# THAT IS NOW FALSE.  The in-prefix population was VALIDATED first by
+# reproducing 4e5e443's own published medians exactly (p=8 1.9060,
+# p=7 1.7447, p=6 0.9107 vs 0.9106 published), so the comparison is
+# being made against the same population it was made against then:
+#
+#   p=8  1.4644  vs in-prefix median 1.9060   BELOW
+#   p=7  1.5778  vs in-prefix median 1.7447   BELOW
+#   p=6  0.8626  vs in-prefix median 0.9107   BELOW
+#   p=5  0.4079  vs in-prefix median 0.3835   *** ABOVE ***
+#
+# THREE OF FOUR, NOT FOUR OF FOUR.  "Uniformly" is falsified by one
+# counterexample and this is one: 0.4079 sits at rank 6 of 10 among the
+# in-prefix priors, 6.4 percent above their median.  A rank is
+# legitimate here, unlike at 8263cab, because 0.4079 is a COMPLETED
+# ratio from four completed costs and not a bound.
+#
+# The margin is small and the claim was never strong, but it is the
+# claim I wrote down, and the correction at d395cb0 that refused the
+# premature "four of four" was refusing exactly the wrong answer.  Had
+# I let that stand, this counterexample would have been buried.
+#
+# CONSEQUENCE FOR p=4, STATED BEFORE IT RUNS: 4e5e443 argued p=5 and
+# p=4 were "BIASED TOWARD HOLDING" because ratios are uniformly smaller
+# out here.  THAT PREMISE IS NOW DEAD, so that particular bias argument
+# must be WITHDRAWN, not quietly reused at p=4.
+#
+# ----------------------------------------------------------------
+# p=4's PRIOR BASE RATE, COMPUTED NOW, WITH ALL FOUR CUBES UNSTARTED
+# ----------------------------------------------------------------
+#
+# The base-rate deflation is independent of the dead premise and it is
+# far stronger.  Prior p=4 boundaries, in-prefix and all-blocks
+# identical (n=7, the two populations coincide at this position just as
+# they did at p=5):
+#
+#   0.1738  0.2017  0.2245  0.2268  0.2664  0.4586  0.5079
+#   median 0.2268
+#
+#   *** BASE RATE FOR "< 1.10" AT p=4: SEVEN OF SEVEN = 100 PERCENT. ***
+#
+# The registered prediction at idx 630 is "< 1.10".  EVERY prior p=4
+# boundary is below it, and the largest is 0.5079 -- less than half the
+# threshold.  So p=4, like p=5, is a prediction that succeeds 100
+# percent of the time from the prior majority alone, with NO gradient
+# input whatsoever.  RECORDED HERE BEFORE A SINGLE ONE OF ITS FOUR
+# CUBES HAS STARTED, so that it cannot be produced afterwards as though
+# it had been known all along.
+#
+# JOINT PROBABILITY OF FIVE-FOR-FIVE from always predicting the prior
+# majority, using no gradient at all:
+#   0.917 * 0.818 * 0.900 * 1.000 * 1.000 = 0.675
+# UNCHANGED from 4e5e443's figure for three, because two 100-percent
+# base rates add nothing.  NEVER QUOTE 5-FOR-5 WITHOUT THAT 0.675.
+# 0542580 called p=5 and p=4 the sharpest test in the block.  Both were
+# the cheapest calls in it.
+#
+# Budget rule does not fire.  No verdict changes.  The bracket stays
+# 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8734,3 +8825,4 @@ g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 10, 8]	UNSAT	12592.0
 g=11 [13, 13, 12, 12, 13, 12, 12, 12, 12, 12, 5]	UNSAT	1185.4
 g=11 [13, 13, 12, 12, 13, 12, 12, 12, 12, 11, 6]	UNSAT	3453.6
 g=11 [13, 13, 12, 12, 13, 12, 12, 12, 12, 10, 7]	UNSAT	3410.9
+g=11 [13, 13, 12, 12, 13, 13, 11, 11, 10, 10, 10]	UNSAT	5310.4
