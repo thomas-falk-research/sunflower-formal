@@ -7686,6 +7686,47 @@
 # 610, 611, which at 3 h 02 m on this attempt are deep but not stalled.
 # Budget rule does not fire.  Bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# idx 610 RESETS THE BLOCK COST RECORD -- AND THAT IS ARITHMETIC,
+# NOT A PREDICTION, SO IT DOES NOT TOUCH THE TALLY
+# ----------------------------------------------------------------
+#
+# idx 610 landed UNSAT at 11876.7 s, past the block's previous deepest
+# of 11254.0 s.  Block range is now 54.1 to 11876.7 s, deepest 55.0
+# percent of the 21600 s cap, which supersedes the "52.1 percent" line
+# in the blocks above.  A BLOCK record is not a FILE record: the file's
+# deepest decided cube is still 21678.5 s.  Reconciles -- landed
+# 17:35:06Z minus 11876.7 s gives an implied start in (14:16:49,
+# 14:17:09] and the CNF was written 14:16:54.643Z.
+#
+# THE RECORD RESET WAS ALREADY CERTAIN AND IS NOT A HIT.  At the 17:26Z
+# check-in these three cubes had run 11386 s on this attempt, already
+# 132 s past the old block max, and costs are PER-ATTEMPT (measured at
+# e9a0192).  So any cost they eventually reported HAD to exceed 11254.0
+# s.  That is a deduction from the mechanics, available to anyone
+# reading a clock, and it is NOT a registered prediction.  IT DOES NOT
+# ENTER THE TALLY, which stays at ELEVEN REGISTERED PREDICTIONS, TEN
+# HOLDING, ONE FAILING.  Counting arithmetic as foresight is how a
+# tally stops meaning anything.
+#
+# ONE OF THE THREE DEEP CUBES IS DOWN, TWO REMAIN.  Holes are now 609
+# and 611, both started 14:16:54Z and both at 55.1 percent of cap.
+# THEIR CAP STILL FIRES AT 20:16:54Z: either they land before then or
+# they write UNKNOWN rows at 21600 s.  Two-sided, and unchanged by 610
+# landing.  If UNKNOWN rows appear, the budget rule needs rechecking --
+# it wants 0 or 1 UNSAT in the last twelve attempts and currently sees
+# 12, so it does not fire.
+#
+# c616 STARTED 17:34:51Z -- the first NUMERATOR cube of the p=5
+# registration.  The registration is unchanged, fixed at 0542580, K=2:
+# REFUTED iff c616 + c617 >= 1.10 * (6061.5 + c615).  c615 is still
+# running, so the threshold is still undetermined and the table
+# recorded at 82ac8d7 stands as written -- use that table, do not
+# recompute a single convenient row after the fact.
+#
+# 613 of 1949 (31.5 percent), 1336 remain, block at 54 of 82.  Frontier
+# still contiguous 0..608.  Bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8468,3 +8509,4 @@ g=11 [13, 13, 12, 12, 13, 13, 12, 12, 10, 9, 9]	UNSAT	10005.4
 g=11 [13, 13, 12, 12, 13, 13, 12, 10, 10, 10, 10]	UNSAT	2709.9
 g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 11, 8]	UNSAT	2118.0
 g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 10, 9]	UNSAT	6061.5
+g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 9, 9]	UNSAT	11876.7
