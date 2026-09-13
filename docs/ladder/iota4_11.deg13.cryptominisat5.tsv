@@ -7792,6 +7792,53 @@
 # rule does not fire: 12 UNSAT in the last twelve, rule needs 0 or 1.
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# idx 616 = 1185.4 s: A TIME-STAMPED CONDITIONAL ON p=5, RECORDED
+# BEFORE c617 LANDS
+# ----------------------------------------------------------------
+#
+# idx 616 landed UNSAT at 1185.4 s -- a NUMERATOR cube of the p=5
+# registration, and a very cheap one.  Reconciles: implied start in
+# (17:34:48, 17:35:08] against a CNF written 17:34:51Z.  616 of 1949
+# (31.6 percent), 1333 remain, block at 57 of 82.  Frontier is
+# contiguous 0..614 with ONE hole at 615, which is simply the cube
+# still running; 616 banked ahead of it because it was cheaper.
+#
+# WITH c614 AND c616 BOTH FINAL, THE REGISTERED CONDITION REARRANGES TO
+# A SINGLE INEQUALITY IN c617:
+#
+#     REFUTED iff c616 + c617 >= 1.10 * (c614 + c615)
+#             iff c617 >= 1.10*6061.5 - 1185.4 + 1.10*c615
+#             iff c617 >= 5482.25 + 1.10 * c615
+#
+# c615 IS STILL RUNNING and has already reached 2197 s, so c615 > 2197
+# is KNOWN, which puts a floor under the bar:
+#
+#     c617 must reach AT LEAST 7899.0 s for refutation to stay alive.
+#
+# c617 started 17:41:22Z and has run 818 s.  THEREFORE:
+#
+#     *** IF c617 LANDS BEFORE 19:53:00Z, THE p=5 PREDICTION HOLDS. ***
+#
+# The bar RISES by 1.10 s for every further second c615 runs, so
+# 19:53:00Z is a FLOOR on that deadline and can only move later.
+#
+# THIS IS SUFFICIENT-ONLY AND CANNOT REFUTE -- the same limitation
+# recorded at 8b0acc7.  c617 running past 19:53:00Z refutes nothing; it
+# merely keeps refutation possible.  A conditional that can only
+# confirm is worth less than one that can also kill, and this one is
+# written down anyway because a deadline fixed BEFORE the data is the
+# only kind that means anything.
+#
+# AND THE HONEST READING OF WHY IT LOOKS SAFE.  c616 at 1185.4 s is
+# 5.11x cheaper than c614, which is the predicted direction and
+# strongly so.  But the large-denominator help flagged at 82ac8d7 is
+# still doing work, c617 is entirely unknown, and ONE NUMERATOR CUBE IS
+# NOT THE MEDIAN OF TWO.  If c617 comes in anywhere near the block's
+# deep end the arithmetic changes completely.  Registration unchanged,
+# fixed at 0542580.  Budget rule does not fire.  Bracket stays
+# 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8577,3 +8624,4 @@ g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 10, 9]	UNSAT	6061.5
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 9, 9]	UNSAT	11876.7
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 10, 10, 9]	UNSAT	12267.7
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 10, 8]	UNSAT	12592.0
+g=11 [13, 13, 12, 12, 13, 12, 12, 12, 12, 12, 5]	UNSAT	1185.4
