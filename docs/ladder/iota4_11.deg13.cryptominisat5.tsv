@@ -8348,6 +8348,105 @@
 # Sixteen cubes to the block boundary at idx 640.  No verdict changes.
 # The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# p=4 RESOLVES: *** VERDICT: HOLDS *** -- THE LAST OF THE BLOCK'S FIVE
+# REGISTRATIONS, AND A WEAKER HIT THAN p=5 WAS
+# ================================================================
+#
+# idx 631 landed UNSAT at 1315.6 s.  630 of 1949 (32.3 percent), 1319
+# remain, frontier contiguous 0..624 with holes at 625 and 628, both in
+# flight.
+#
+# With c629, c630 and c631 all final the registered condition is settled:
+#
+#   registered 0542580: REFUTED iff c630 + c631 >= 1.10*(c628 + c629)
+#   c629 = 1181.1, c630 = 482.9, c631 = 1315.6
+#   LHS = 1798.5.  Rearranged, REFUTATION NEEDS c628 <= 453.9 s.
+#   c628 is still running and has passed 6838 s -- FIFTEEN TIMES that.
+#
+#   *** VERDICT: HOLDS *** -- a VERDICT, per 8263cab.  The EXACT ratio
+#   still needs c628; it is 1798.5/(1181.1 + c628), already below 0.2243.
+#
+# THE CONDITIONAL FIRED.  68a2119, written 23:05:47Z, said p=4 holds if
+# c631 lands before 01:00:53Z.  It landed 23:22:17Z, INSIDE BY 98.6
+# MINUTES.  SUFFICIENT-ONLY: it could never have refuted (8b0acc7).
+#
+# ALL FIVE OF THIS BLOCK'S REGISTRATIONS ARE NOW RESOLVED AND ALL FIVE
+# HELD: p=8, p=7, p=6, p=5, p=4.  THE TALLY IS THIRTEEN REGISTERED
+# PREDICTIONS, TWELVE HOLDING, ONE FAILING.
+#
+# ----------------------------------------------------------------
+# AND NOW THE TWO THINGS THAT MATTER MORE THAN FIVE-FOR-FIVE.
+# ----------------------------------------------------------------
+#
+# FIRST, THE BASE RATE, WHICH HAS NOT MOVED.  Predicting the prior
+# majority at each position, using NO gradient at all, succeeds with
+# probability 0.917 * 0.818 * 0.900 * 1.000 * 1.000 = 0.675.  A clean
+# sweep of five is roughly a 68 percent event under the null I should
+# have been testing against.  NEVER QUOTE 5-FOR-5 WITHOUT THE 0.675.
+# Two of the five -- p=5 and p=4 -- sat on base rates of exactly 100
+# percent, so they added no difficulty whatsoever.
+#
+# SECOND, p=4 IS A MEASURABLY WEAKER HIT THAN p=5, AND THE TALLY CANNOT
+# SEE THE DIFFERENCE.
+#
+#   p=5: refutation required c616 + c617 >= 1.10*(6061.5 + c615).  The
+#        LHS came to 4639.0 and the RHS MINIMUM, at c615 = 0, was
+#        6667.65.  REFUTATION WAS IMPOSSIBLE FOR ANY c615 >= 0.  The
+#        prediction could not have failed once c617 landed.
+#
+#   p=4: refutation required c628 <= 453.9 s.  That is not impossible --
+#        the block holds a cube at 54.1 s, and 1 of its 71 decided cubes
+#        (1.4 percent) is at or under 453.9 s; across the whole file 38
+#        of 630 (6.0 percent) are.  HAD c628 DRAWN CHEAP, p=4 WOULD HAVE
+#        FAILED.  It ran past 6838 s instead.
+#
+# So one of these was over-determined and the other turned on the draw
+# of a single cube, and BOTH ENTER THE TALLY AS ONE HIT EACH.  That is
+# precisely why a tally quoted without its base rates says so little,
+# which is the lesson 4e5e443 recorded and this block has now
+# illustrated twice.
+#
+# THE MIXED MECHANICS RESOLVED THE EASY WAY.  3e192aa registered, before
+# any numerator finished, that c629 at 0.27x the block median was a
+# SMALL denominator and made "< 1.10" HARDER; 68a2119 added that c630 at
+# 0.11x was a small numerator pushing the other way.  The numerator side
+# won -- c630 and c631 together came to 1798.5 s against a block median
+# of 4411.6 s for a single cube.  The deflation was correctly registered
+# and correctly qualified, and it simply did not decide the outcome.
+#
+# NOTHING REMAINS OPEN FROM 0542580.  The one live commitment is the
+# FORWARD test registered at 6ec69dc: when the next block after idx 640
+# has enough decided triples, run the same stratified permutation test
+# on its median CV, on data that had no hand in raising the question.
+#
+# ----------------------------------------------------------------
+# SIXTEENTH INSTANCE, CAUGHT BEFORE COMMIT, AND IT IS TWO ERRORS.
+# ----------------------------------------------------------------
+#
+# This block first read "Nine cubes to the block boundary at idx 640".
+# Wrong, and wrong in prose I wrote by hand rather than in script output.
+# The block still holds ELEVEN undecided cubes: 625, 628, 632, 633, 634,
+# 635, 636, 637, 638, 639, 640.
+#
+# The second error is older and worse, because I repeated it: for several
+# commits I quoted "sixteen cubes to the rebase break", computed as
+# (640 + 1 - frontier) = 16.  THAT FORMULA ANSWERS A DIFFERENT QUESTION.
+# It measures the distance from the contiguous frontier to the block end,
+# and so COUNTS CUBES ALREADY DECIDED beyond the frontier -- 626, 627,
+# 629, 630 and 631 are all done and all sit above it.  The rebase trigger
+# is the BLOCK FINISHING, which needs every member decided, and that is
+# ELEVEN, not sixteen.  Right arithmetic, wrong question.
+#
+# Both are the same habit as the previous fifteen: a number described as
+# something the expression does not compute.  The fix that keeps working
+# is to make the label state the filter -- "undecided members of the
+# block" computes one thing, "distance to the block end" another, and
+# only the first is the rebase condition.
+#
+# ELEVEN CUBES REMAIN IN BLOCK [13,13,12,12].  Budget rule does not fire.
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -9147,3 +9246,4 @@ g=11 [13, 13, 12, 12, 13, 12, 12, 11, 11, 11, 8]	UNSAT	7744.3
 g=11 [13, 13, 12, 12, 13, 11, 11, 11, 11, 11, 10]	UNSAT	1181.1
 g=11 [13, 13, 12, 12, 13, 12, 12, 11, 10, 10, 10]	UNSAT	8664.2
 g=11 [13, 13, 12, 12, 12, 12, 12, 12, 12, 12, 6]	UNSAT	482.9
+g=11 [13, 13, 12, 12, 12, 12, 12, 12, 12, 11, 7]	UNSAT	1315.6
