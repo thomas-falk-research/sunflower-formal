@@ -7254,6 +7254,75 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# TWENTY-NINTH CONTAINER RESTART.  2.111 CPU-HOURS LOST, ZERO ROWS
+# LOST -- AND A MEASUREMENT METHOD THAT FAILED AND WAS CAUGHT BY THE
+# SIGN OF ITS OWN OUTPUT.
+# ================================================================
+#
+# The session container was restarted at 01:14:34Z, killing driver pid
+# 16437 and its waiter.  Relaunched at 01:17Z on pid 31493 with the
+# command unchanged and the settings confirmed from the driver's own
+# header: cryptominisat5, 4 threads, 21600 s PER CUBE, seqprefix 11,
+# cubecap 2000, slice 60, 1949 sequences without all_points_used.
+#
+# ZERO ROWS LOST, by an INDEPENDENT recount of the checkpoint rather
+# than by trusting the number I had been carrying: 754 data rows, 585
+# distinct labels, 585 UNSAT, 169 UNKNOWN rows, 0 SAT, working tree
+# clean, HEAD b438383 identical to origin.  Decided 585 of 1949 (30.0%),
+# frontier contiguous 0-584 with no holes.  TWENTY-NINE RESTARTS, ZERO
+# ROWS LOST.
+#
+# LOST WORK, EXACTLY MEASURED.  The [killed] marker appears in BOTH
+# stopped task files at 01:14:34Z, which fixes the moment; elapsed for
+# each in-flight cube is then its CNF mtime to that instant:
+#
+#   c585  started 00:29:31Z   2702.8 s
+#   c586  started 00:46:16Z   1697.9 s
+#   c587  started 00:46:16Z   1697.8 s
+#   c588  started 00:49:31Z   1502.5 s
+#   TOTAL 7600.9 s = 2.111 CPU-HOURS across four threads
+#
+# The six exactly measured restarts now read 5.16, 1.19, 4.80, 2.645,
+# 1.330 and 2.111 CPU-hours.  THAT IS TIMING LUCK AND NOT A TREND --
+# the figure is just how far the four in-flight cubes happened to have
+# run when the axe fell, and it says nothing about restarts getting
+# cheaper or dearer.
+#
+# RESUMPTION VERIFIED, NOT ASSUMED.  The new driver's first four CNFs
+# are c585, c586, c587 and c588, all written at 01:17:51Z -- EXACTLY the
+# four cubes that were in flight when the old driver died.  It neither
+# restarted from scratch nor skipped past them, and the 2.111 CPU-hours
+# above is precisely the work those four now have to redo.
+#
+# CPU SPEC: 4 x Intel(R) Xeon(R) @ 2.10GHz, 15 GB.  IDENTICAL for a
+# SEVENTH container.  The machine-speed question stays closed and
+# per-row costs remain comparable across the whole file.
+#
+# **AND A METHOD THAT FAILED.**  My first attempt to time the restart
+# read /proc/stat btime and called it the restart moment.  It is not:
+# btime is the VM's boot, 09-09 19:30:47Z, and the VM had been up three
+# days -- only the session process restarted, not the machine.  The
+# script duly reported every in-flight cube with NEGATIVE elapsed time,
+# -77 hours apiece, which gave it away on sight.
+#
+#   It belongs on the books anyway, next to the five earlier instances
+#   of a script asserting what its code does not do.  This one was
+#   harmless ONLY because the wrong answer was absurd on its face.  Had
+#   the VM rebooted with the container, btime would have been close
+#   enough to look right and wrong enough to corrupt the figure, and
+#   nothing in the output would have shown it.  A check that happens to
+#   fail loudly is not a check that works.
+#
+#   THE CORRECT MARKER IS THE [killed] MTIME IN THE STOPPED TASK FILES,
+#   which is what this file's own restart procedure already said to use.
+#   I had the right method written down and reached for a different one.
+#
+# No verdict changes.  Nothing about a restart touches the mathematics:
+# the three registrations still open in block [13,13,12,12] were fixed
+# at 0542580 and are untouched, and the bracket stays
+# 27 <= iota(4) <= 71.
+#
 #
 #
 #
