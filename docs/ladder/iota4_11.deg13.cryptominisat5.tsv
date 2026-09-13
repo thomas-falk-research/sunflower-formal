@@ -7727,6 +7727,71 @@
 # 613 of 1949 (31.5 percent), 1336 remain, block at 54 of 82.  Frontier
 # still contiguous 0..608.  Bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# FRONTIER WHOLE AGAIN AT 0..614; THE THREE DEEP CUBES ALL DECIDED
+# ================================================================
+#
+# idx 609 landed UNSAT at 12592.0 s, the last of the three cubes that
+# survived restart #30, and THE FRONTIER IS NOW CONTIGUOUS 0..614 WITH
+# NO HOLES.  615 of 1949 (31.6 percent), 1334 remain, block
+# [13,13,12,12] at 56 of 82.  Reconciles: implied start in (14:16:44,
+# 14:17:04], CNF written 14:16:54.635Z.
+#
+# Third successive block record reset in twelve minutes: 11254.0 ->
+# 11876.7 -> 12267.7 -> 12592.0 s, now 58.3 percent of the 21600 s cap.
+# Still not a FILE record; the file's deepest decided cube is 21678.5 s.
+#
+# THE CAP QUESTION RESOLVED, AND IT IS NOT A PREDICTION.  At 17:26Z the
+# open statement was: either these three land before 20:16:54Z or they
+# write UNKNOWN rows at 21600 s.  All three landed, at 12592.0, 11876.7
+# and 12267.7 s.  That statement was EXPLICITLY TWO-SIDED and named no
+# side, so it CANNOT count as a hit.  THE TALLY STAYS AT ELEVEN
+# REGISTERED PREDICTIONS, TEN HOLDING, ONE FAILING.  A disjunction that
+# exhausts the possibilities is not foresight, and neither was the
+# record-reset deduction at 7d5e5e7.
+#
+# ----------------------------------------------------------------
+# A TEMPTING PATTERN, EXAMINED AND DECLINED
+# ----------------------------------------------------------------
+#
+# The three costs are strikingly tight: 11876.7, 12267.7, 12592.0 --
+# a spread of 715.3 s, 5.8 percent of their mean, coefficient of
+# variation 0.029.  Three sibling cubes differing only in the tail of
+# the degree sequence, landing within 6 percent of each other, is
+# exactly the kind of thing I would want to register.
+#
+# IT IS AN ARTIFACT OF HOW I FOUND THEM.  These are not three cubes
+# sampled at random.  They are precisely the cubes STILL RUNNING when I
+# looked at 17:26Z -- conditioned on cost > 11386 s.  Selecting on
+# "still running at time T" truncates the distribution FROM BELOW, and
+# a truncated sample is mechanically compressed.  The tight lower edge
+# is the floor itself, not a property of the cubes.
+#
+#   excess over the 11386 s floor:  c610 490.7, c611 881.7, c609 1206.0
+#   spread 715.3 s on a mean excess of 859.5 s -- a ratio of 0.83,
+#   which is not tight at all.  It only looked tight because the floor
+#   was included in the denominator.
+#
+# NOT REGISTERED.  This is 5682de6's shape exactly: a pattern is most
+# visible at the moment it is least supported, and here the visibility
+# was manufactured by the selection rule that made me notice it.  The
+# same objection would apply to any "these long cubes cluster" claim
+# drawn from cubes identified BY being long.
+#
+# ----------------------------------------------------------------
+#
+# p=5 IS NOW FULLY IN FLIGHT: c614 decided at 6061.5 s, c615 running
+# since 17:18:23Z, c616 since 17:34:51Z, c617 since 17:41:22Z.  The
+# threshold is still UNDETERMINED because c615 is unfinished, so the
+# table at 82ac8d7 stands exactly as written and the resolution will be
+# read off it rather than recomputed to suit.  REFUTED iff c616 + c617
+# >= 1.10 * (6061.5 + c615).  Registration unchanged, fixed at 0542580.
+# A hold is not a clean confirmation: three deflations apply.
+#
+# p=4 at idx 630 remains open with all four cubes unstarted.  Budget
+# rule does not fire: 12 UNSAT in the last twelve, rule needs 0 or 1.
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8511,3 +8576,4 @@ g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 11, 8]	UNSAT	2118.0
 g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 10, 9]	UNSAT	6061.5
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 9, 9]	UNSAT	11876.7
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 10, 10, 9]	UNSAT	12267.7
+g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 10, 8]	UNSAT	12592.0
