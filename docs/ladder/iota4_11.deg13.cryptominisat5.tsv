@@ -7323,6 +7323,92 @@
 # at 0542580 and are untouched, and the bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ================================================================
+# **p=6 HOLDS AT 0.8626 -- AND TWO MEASUREMENTS TAKEN ON ITS ARRIVAL
+# CUT THE VALUE OF THIS BLOCK'S WHOLE THREE-FOR-THREE RECORD DOWN.**
+# ================================================================
+#
+# Registered at 0542580 with all twenty window cubes unstarted:
+# boundary idx 598, K=2, denominator idx 596 and 597, numerator idx 598
+# and 599, predicted ratio < 1.10.
+#
+#   denominator  median(6013.1, 3318.2) = 4665.65
+#   numerator    median(2199.5, 5849.3) = 4024.40
+#   RATIO 0.8626   predicted < 1.10   **HOLDS**
+#
+# Method validated first: recomputing every p=6 K=2 ratio from the cube
+# list reproduces this file's published [13,13,13,4] figure of 0.342 as
+# 0.3416.
+#
+# THE TWO-SIDED DEADLINE FROM 440eaa2 RESOLVED CLEANLY.  That commit,
+# pushed 06:50:21Z, said p=6 FAILS if c599 was still running at
+# 08:38:45Z and HOLDS otherwise.  c599 started 06:24:20Z and ran 5849.3
+# s, finishing 08:01:49Z -- 37 minutes inside the deadline, and 2215.6 s
+# short of the 8064.93 s that would have refuted it.  440eaa2 also put
+# my lean on the record: I said I expected it to hold.  This time the
+# lean was right; at c7f571b it was wrong.  A lean that is sometimes
+# right is not evidence, and it is recorded both times for that reason.
+#
+# THE TALLY IS ELEVEN REGISTERED PREDICTIONS, TEN HOLDING, ONE FAILING.
+#
+# ================================================================
+# **AND NOW THE PART THAT MATTERS MORE THAN THE HIT.**
+# ================================================================
+#
+# **FIRST: ALL THREE OF THIS BLOCK'S PREDICTIONS WERE HIGH-BASE-RATE
+# CALLS, AND THREE-FOR-THREE IS BARELY BETTER THAN GUESSING THE
+# MAJORITY.**  Measured against the PRIOR instances only -- what was
+# knowable when 0542580 fixed them:
+#
+#   p=8  predicted > 1.10   prior 11 of 12 matched = 91.7%
+#   p=7  predicted > 1.10   prior  9 of 11 matched = 81.8%
+#   p=6  predicted < 1.10   prior  9 of 10 matched = 90.0%
+#
+#   joint probability of THREE-FOR-THREE from a strategy that always
+#   predicts the prior majority and uses NO GRADIENT AT ALL: 0.675.
+#
+# So this block's clean sweep is roughly a 68% event under the null I
+# should have been testing against.  It is not nothing -- the gradient
+# is what SAYS which side is the majority at each p, and getting the
+# sides right at three different positions is the claim -- but "three
+# predictions, three holds" reported without that 68% is the same error
+# 7465542 caught in test 2A, where ten-for-ten sat on a 95.3% base rate.
+# I did not compute this base rate when I registered the predictions,
+# and I should have.  NEVER QUOTE THIS BLOCK'S 3/3 WITHOUT THE 0.675.
+#
+# **SECOND: THE NEW POINT IS BELOW ITS IN-PREFIX MEDIAN AT ALL THREE
+# POSITIONS, AND THAT IS NOT WHAT I HAVE BEEN CALLING IT.**
+#
+#   p=8  1.4644 vs prior median 1.9060   BELOW   = a WEAKER effect
+#   p=7  1.5778 vs prior median 1.7447   BELOW   = a WEAKER effect
+#   p=6  0.8626 vs prior median 0.9106   BELOW   = a STRONGER effect
+#
+# Three of three below, a 12.5% event on coin flips.  a2bf077 and
+# d068050 read the first two as "the effect is weaker outside the
+# d[1]=d[2]=13 prefix".  THAT READING IS NOW WRONG: at p=6 a lower ratio
+# is a DEEPER drop, so the same direction means a STRONGER effect there.
+# What survives is simpler and has nothing to do with effect strength --
+# **RATIOS ARE UNIFORMLY SMALLER OUTSIDE THE PREFIX**, whichever side of
+# 1.10 they fall on.
+#
+# a2bf077's block-size explanation does not cover it either.  Measured
+# at each position: Pearson(size, ratio) is -0.727 at p=8, -0.293 at
+# p=7 and +0.240 at p=6 -- it changes SIGN.  One mechanism does not do
+# that; "smaller outside the prefix" does.
+#
+# **AND THE CONSEQUENCE FOR THE TWO TESTS STILL OPEN, STATED BEFORE
+# THEY RUN.**  p=5 at idx 616 and p=4 at idx 630 are both registered
+# "< 1.10".  If ratios really are uniformly smaller out here, both are
+# BIASED TOWARD HOLDING before a single cube of either has started --
+# the same displacement that made p=6 easier makes them easier.  They
+# were described at 0542580 as the reversal half and the sharpest test
+# in the block; on this reading they are the WEAKEST of the five, not
+# the strongest.  THE REGISTRATIONS ARE NOT BEING CHANGED -- 0542580
+# fixed them and they stand -- but when they resolve, a hold must be
+# read against this bias and not as a clean confirmation.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -8149,3 +8235,4 @@ g=11 [13, 13, 12, 12, 13, 13, 13, 11, 10, 10, 8]	UNSAT	6088.5
 g=11 [13, 13, 12, 12, 13, 13, 12, 12, 12, 12, 4]	UNSAT	2199.5
 g=11 [13, 13, 12, 12, 13, 13, 13, 11, 10, 9, 9]	UNSAT	6013.1
 g=11 [13, 13, 12, 12, 13, 13, 13, 10, 10, 10, 9]	UNSAT	3318.2
+g=11 [13, 13, 12, 12, 13, 13, 12, 12, 12, 11, 5]	UNSAT	5849.3
