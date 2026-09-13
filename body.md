@@ -199,9 +199,11 @@ Plus `r` for the members through both cover points. The mutations
 and the `3 <= r` are load-bearing.
 
 **Gates.** `verify`, `coqchk` (census exactly `Sunflower.ALWZ.Rao20_lemma2`),
-`statements` (919 entries, no existing hash moved), `docnumbers` (17),
-`ceilings` (9 routes) all pass on the final tree; the four new mutations
-are all killed (`tools/mutate.py --only ...`, 365 s each); the new suite
+`statements` (941 entries, no existing hash moved), `docnumbers` (17),
+`ceilings` (9 routes) all pass on the final tree; the eight new mutations
+(four on `TightThreshold`/`TwoCoverSharp`, four on `TauThreeTen`) are all
+killed (`tools/mutate.py --only ...`); `make support15`, `make audit11`
+and `make audit-support` exit 0; the new suite
 `rust/tests/tight_threshold.rs` passes. The full Rust suite passes, 43 of 43: on the first run two tests in
 `spread_threshold.rs` (a file this branch does not touch) panicked with
 `NotFound` because `cryptominisat5` was not installed in the container;
