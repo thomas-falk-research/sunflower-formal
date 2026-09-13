@@ -8219,6 +8219,77 @@
 # unstarted.  Budget rule does not fire.  Bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ================================================================
+# p=4's FIRST DENOMINATOR LANDS SMALL -- AND THAT CUTS AGAINST THE
+# PREDICTION, WHICH IS THE OPPOSITE OF WHAT HAPPENED AT p=5
+# ================================================================
+#
+# idx 629 landed UNSAT at 1181.1 s.  627 of 1949 (32.2 percent), 1322
+# remain, block [13,13,12,12] at 68 of 82, frontier contiguous 0..624
+# with holes at 625, 626 and 628 -- all three in flight.  Reconciles:
+# implied start in (22:37:04, 22:37:24] against a solver that started
+# 22:37:18Z.
+#
+# c629 IS A DENOMINATOR CUBE OF THE p=4 REGISTRATION, and it is CHEAP:
+# 1181.1 s against a block median of 4411.6 s, or 0.27x.  The other
+# denominator, c628, is still running at 5328 s.
+#
+#   REFUTED iff c630 + c631 >= 1.10 * (c628 + 1181.1)
+#
+# With c628 already past 5328 s the bar is at least 7159.7 s and rises
+# by 1.10 s for every further second c628 runs.
+#
+# WHY THIS MATTERS, AND IT IS NOT IN THE PREDICTION'S FAVOUR.  At p=5
+# the deflation registered at 82ac8d7 was that c614 arrived at 1.62x
+# the block median, and A LARGE DENOMINATOR MAKES "< 1.10" EASIER
+# mechanically, with no help from the positional gradient.  The final
+# p=5 denominator median was 5685.9 s, comfortably ABOVE the block
+# median, and the prediction got that help.
+#
+# HERE THE SIGN IS REVERSED.  c629 at 0.27x the block median is a SMALL
+# denominator cube, and a small denominator makes "< 1.10" HARDER.  If
+# c628 lands anywhere near ordinary, the p=4 denominator median will sit
+# BELOW the block median rather than above it, and the free help p=5
+# enjoyed will not be there.
+#
+# THE HONEST QUALIFICATION: c628 IS UNRESOLVED AND COULD OFFSET THIS
+# ENTIRELY.  It has already run 5328 s, and if it runs long the
+# denominator median climbs back.  So this is a statement about ONE of
+# the two denominator cubes, not about the pair.  What can be said
+# without hedging is that the p=5 situation has NOT repeated so far.
+#
+# Recorded now, with c628 unresolved, c631 unstarted and NEITHER
+# numerator cube finished -- so no numerator cost is known and this note
+# cannot have been shaped by one.
+#
+# ----------------------------------------------------------------
+# FIFTEENTH INSTANCE, AND THE THIRD TO CONTRADICT ITS OWN OUTPUT.
+# ----------------------------------------------------------------
+#
+# The script that produced the figures above closed with "Recorded
+# BEFORE c628 lands and before either numerator cube starts."  FALSE:
+# c630 started 22:56:59Z, seven seconds before the row landed, and the
+# in-flight table SIX LINES ABOVE the claim lists it.  It overstates how
+# far in advance the note was written.  Corrected above to what is
+# actually true -- before either numerator cube FINISHES, which is the
+# property that matters, since it is a numerator COST that could shape
+# the note and none exists yet.
+#
+# That is the third time a summary line has contradicted a table printed
+# directly beneath it (caff592, then the 141x line, now this), and the
+# fifteenth instance overall of a prose label describing what the
+# adjacent expression does not compute.
+#
+# ----------------------------------------------------------------
+#
+# Registration unchanged, fixed at 0542580: idx 630, denom 628,629 |
+# numer 630,631, "< 1.10", K=2.  Its prior base rate is SEVEN OF SEVEN
+# = 100 PERCENT (42a0eda, recorded before any of its cubes started), so
+# a hold still confirms very little; what the small denominator changes
+# is that the mechanical help is absent, not that the base rate moved.
+# Budget rule does not fire.  Sixteen cubes to the block boundary at idx
+# 640.  No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -9015,3 +9086,4 @@ g=11 [13, 13, 12, 12, 13, 12, 12, 12, 11, 9, 9]	UNSAT	6532.8
 g=11 [13, 13, 12, 12, 13, 12, 12, 12, 10, 10, 9]	UNSAT	6570.8
 g=11 [13, 13, 12, 12, 13, 12, 11, 11, 11, 11, 9]	UNSAT	2825.5
 g=11 [13, 13, 12, 12, 13, 12, 12, 11, 11, 11, 8]	UNSAT	7744.3
+g=11 [13, 13, 12, 12, 13, 11, 11, 11, 11, 11, 10]	UNSAT	1181.1
