@@ -7621,6 +7621,71 @@
 # eight of their cubes remain unstarted -- idx 612 is not one of them.
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# p=5 DENOMINATOR OPENS: c614 = 6061.5 s, AND A THIRD DEFLATION
+# REGISTERED BEFORE THE REMAINING THREE CUBES LAND
+# ----------------------------------------------------------------
+#
+# idx 614 landed UNSAT at 6061.5 s -- the FIRST of the four cubes in
+# the p=5 registration to produce a number.  Reconciles: landed
+# 17:18:31Z minus 6061.5 s puts the implied start in (15:37:09,
+# 15:37:29], and the CNF was written 15:37:22.471Z.  c615 started
+# 17:18:23Z, so the denominator completes next.
+#
+# THE REGISTRATION IS UNCHANGED and is not being touched: 0542580
+# fixed median(c616,c617) / median(c614,c615) < 1.10 at K=2.  With K=2
+# a median of two values is their mean, so the arithmetic is exactly:
+#
+#     REFUTED  iff  c616 + c617  >=  1.10 * (6061.5 + c615)
+#
+# WHERE c614 SITS.  It is a completed COST, not a bound, so a rank is
+# legitimate here in a way it was not at 8263cab: 6061.5 s is rank 36
+# of the block's 53 decided cubes, the 66th percentile, and 1.649x the
+# block median of 3675.8 s.  It is an ABOVE-MEDIAN denominator cube.
+#
+# AND THAT HELPS THE PREDICTION FOR THE WRONG REASON.  A LARGER
+# DENOMINATOR MAKES "< 1.10" EASIER TO SATISFY, mechanically, with no
+# input at all from the positional gradient the prediction claims to be
+# testing.  This is the THIRD deflation now attached to this block's
+# predictions, after the 0.675 joint base rate and the "ratios are
+# uniformly smaller outside the prefix" bias, both at 4e5e443.
+#
+# HOW MUCH IT HELPS DEPENDS ENTIRELY ON c615, WHICH IS UNKNOWN, so the
+# whole table is recorded NOW rather than the one row that suits the
+# outcome later:
+#
+#   c615 = block min     54.1  -> refuted iff c616+c617 >=  6727.2 (avg 3363.6)
+#   c615 = Q1          2640.3  -> refuted iff c616+c617 >=  9572.0 (avg 4786.0)
+#   c615 = median      3675.8  -> refuted iff c616+c617 >= 10711.0 (avg 5355.5)
+#   c615 = c614        6061.5  -> refuted iff c616+c617 >= 13335.3 (avg 6667.7)
+#   c615 = Q3          6168.4  -> refuted iff c616+c617 >= 13452.8 (avg 6726.4)
+#   c615 = block max  11254.0  -> refuted iff c616+c617 >= 19047.1 (avg 9523.5)
+#
+# Block cost quartiles for comparison: min 54.1, Q1 2640.3, median
+# 3675.8, Q3 6168.4, max 11254.0 s.
+#
+# READ THE TABLE BOTH WAYS, WHICH IS THE POINT OF WRITING IT EARLY.  If
+# c615 lands near the block median, refutation needs BOTH numerator
+# cubes to average about 5355 s -- roughly the 70th percentile -- and
+# the prediction is getting substantial free help.  But if c615 comes in
+# small, say near Q1 or below, refutation needs only about 4786 s or
+# less on average, BELOW the block median, and the help largely
+# evaporates.  A small c615 would make this a real test; a large one
+# would make it nearly free.  I do not know which, and recording the
+# thresholds now is what stops me from discovering afterwards that I
+# had expected whichever one happened.
+#
+# The prediction stands exactly as registered.  When it resolves it gets
+# its own header block, the ratio is reported as a VERDICT and never as
+# a rank, and a HOLD IS NOT A CLEAN CONFIRMATION -- it must be read
+# against all three deflations, this one included.
+#
+# 612 of 1949 (31.4 percent), 1337 remain, block [13,13,12,12] at 53 of
+# 82.  c614 does NOT reset the block record: 6061.5 against 11254.0.
+# Frontier still contiguous 0..608 with the same three holes at 609,
+# 610, 611, which at 3 h 02 m on this attempt are deep but not stalled.
+# Budget rule does not fire.  Bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8402,3 +8467,4 @@ g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 11, 7]	UNSAT	7934.6
 g=11 [13, 13, 12, 12, 13, 13, 12, 12, 10, 9, 9]	UNSAT	10005.4
 g=11 [13, 13, 12, 12, 13, 13, 12, 10, 10, 10, 10]	UNSAT	2709.9
 g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 11, 8]	UNSAT	2118.0
+g=11 [13, 13, 12, 12, 13, 13, 11, 11, 11, 10, 9]	UNSAT	6061.5
