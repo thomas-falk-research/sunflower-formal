@@ -2679,3 +2679,45 @@ replace = """    2 <= r ->
 Proof.
   intros p q Hpq Hcov Hne Hne' Hr."""
 expect = "killed"
+
+# ----------------------------------------------------------------
+# TauThreeTen.v -- covering number three, tight at ten.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "tauthreeten-nine-to-eight"
+file = "coq/TauThreeTen.v"
+question = """The graph lemma [nine] bounds the three tail graphs with their \
+cores by 9, and 9 is attained (three single edges on the same pair, each \
+with core 2). Does the proof break at 8?"""
+find = "      + core_count ex Tx + core_count ey Ty + core_count ez Tz <= 9.\nProof.\n  intros Tx Ty Tz ex ey ez HSx HSy HSz Hxy Hxz Hyz Hex Hey Hez H2x H2y H2z."
+replace = "      + core_count ex Tx + core_count ey Ty + core_count ez Tz <= 8.\nProof.\n  intros Tx Ty Tz ex ey ez HSx HSy HSz Hxy Hxz Hyz Hex Hey Hez H2x H2y H2z."
+expect = "killed"
+
+[[mutation]]
+id = "tauthreeten-ten-to-nine"
+file = "coq/TauThreeTen.v"
+question = """Is ten really where the proof lands, and not nine? Frankl's \
+value is sharp (k53), so the statement at 9 is false and no proof can \
+survive."""
+find = "    length G <= 10.\nProof.\n  intros G HU HD Hint Htau.\n  destruct G as [|M G0] eqn:EG; [simpl; lia | rewrite <- EG in *]."
+replace = "    length G <= 9.\nProof.\n  intros G HU HD Hint Htau.\n  destruct G as [|M G0] eqn:EG; [simpl; lia | rewrite <- EG in *]."
+expect = "killed"
+
+[[mutation]]
+id = "tauthreeten-drop-a-member"
+file = "coq/TauThreeTen.v"
+question = """ten_is_attained says k53 has exactly ten members meeting every \
+hypothesis. Does removing one break the certificate?"""
+find = "[1;2;3];[1;2;4];[1;3;4];[2;3;4]]."
+replace = "[1;2;3];[1;2;4];[1;3;4]]."
+expect = "killed"
+
+[[mutation]]
+id = "tauthreeten-add-a-disjoint-triple"
+file = "coq/TauThreeTen.v"
+question = """Does the intersecting check on k53 actually look at every \
+pair? Adding [5;6;7], disjoint from every member, must break it."""
+find = "[1;2;3];[1;2;4];[1;3;4];[2;3;4]]."
+replace = "[1;2;3];[1;2;4];[1;3;4];[2;3;4];[5;6;7]]."
+expect = "killed"

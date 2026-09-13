@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 171 anecdotes into a coverage metric over the
+  mutation testing from 175 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,8 +9842,8 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 51 modules, 771 audited theorems, 148 audited
-definitions, 167 mutations, and 41 Rust integration suites. (That count
+The development is now 52 modules, 789 audited theorems, 152 audited
+definitions, 175 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
@@ -13312,7 +13312,7 @@ development**, searched (§56.6), not claimed new.
    objective), one cube per degree sequence, checkpointed. A hit ends
    the question at `r*(3,3) = 4` with a witness the kernel can certify
    in the shape of `TightThreshold.v` in an afternoon.
-3. **`I(3,3) <= 10` in the kernel.** Frankl's `τ = 3` value is the only
+3. **`I(3,3) <= 10` in the kernel.** *(Done: §56.13, `coq/TauThreeTen.v`.)* Frankl's `τ = 3` value is the only
    missing piece, and it is the one §24.9 named. Under the caps a direct
    proof may be shorter than Frankl's: the pair cap is free at `τ = 3`
    (`TauThree.tt_pair`), so the gap is 16 to 10 in `TauThree.lemma_L`.
@@ -13633,20 +13633,20 @@ partition list.
 | `<= 9` | no 28-member family: `28 · 3 = 84 > 81 >= 9 · Δ` | counting (PROVEN) |
 | 10 | 11 cubes INFEASIBLE (9 with no cut, 2 with `B = 16`; §56.9) | CP-SAT |
 | 11 | 139 cubes INFEASIBLE, `B = 16`, 21 by sub-cubes (§56.10) | CP-SAT |
-| 12 | all 738 cubes INFEASIBLE, `B = 10` | Frankl + CP-SAT |
-| 13, 14, 15 | 285 + 87 + 6 relaxation-allowed cubes INFEASIBLE, `B = 10` (§56.11) | Frankl + CP-SAT (relaxation: CP-SAT, SCIP cross-check running) |
-| `>= 16` | exact LP-duality certificate, `make support15` (§56.11) | Frankl (PROVEN modulo Frankl) |
+| 12 | all 738 cubes INFEASIBLE, `B = 10` | CP-SAT (`B = 10` kernel-proved since §56.13) |
+| 13, 14, 15 | 285 + 87 + 6 relaxation-allowed cubes INFEASIBLE, `B = 10` (§56.11) | CP-SAT (relaxation: CP-SAT, SCIP cross-check done) |
+| `>= 16` | exact LP-duality certificate, `make support15` (§56.11) | PROVEN (its hypothesis `s_E <= 7` is §56.13's theorem) |
 
 So: **if Frankl's `I(3,3) <= 10` holds and every CP-SAT INFEASIBLE verdict
 above is correct — the cube verdicts in the ladders *and* the
 relaxation's verdicts that no other degree profile exists at 13–15 points
 (`tools/typeprof.py`, a no-good enumeration whose last step is an
 INFEASIBLE) — then `M <= 27`, i.e. `r*(3,3) = 3`.** Both conditions
-are named, neither is in the kernel, and the row in the table stays
-`{3, 4}` until they are: Frankl's value needs a Coq proof of the `τ = 3`
-case (§56.5 item 3, 16 down to 10 in `TauThree`), and the solver verdicts
-need either proof logs (a proof-logging pseudo-Boolean solver, §56.10) or
-a kernel-checked replay. What *is* established without either condition
+were named when this was written; §56.13 has since discharged the first —
+Frankl's value is `TauThreeTen.tau_three_ten`, axiom-free — so **only the
+solver verdicts remain**, and the row in the table stays `{3, 4}` until
+they are replayed with proof logs (a proof-logging pseudo-Boolean solver,
+§56.10, tried below) or a kernel-checked replay. What *is* established without either condition
 is unchanged: ten and eleven points are closed under CP-SAT alone, and
 the support certificate is exact.
 
@@ -13668,3 +13668,66 @@ and PB engines both struggle with, cf. cadical and SCIP in §56.9). A fresh-cont
 exhaustiveness regenerated at every rung, ladder integrity, the lex
 prefix at 12–15, the assembly) confirmed it and supplied the three
 wording corrections now made here.
+
+### 56.13 Frankl's value, proved: covering number three gives ten
+
+`coq/TauThreeTen.v`. **Theorem** (`tau_three_ten`, axiom-free, `Print
+Assumptions` closed): a 3-uniform family of distinct members, pairwise
+intersecting, with no two points meeting every member, has at most ten
+members. No degree cap, no pair cap — exactly the statement `TwoCover.v`
+named `FranklTauThree`, which is now `frankl_tau_three`. The ten
+3-subsets of a 5-set (`k53`) meet every hypothesis, so `TauThreeAtMost 9`
+is false and the bound is sharp. With the star (`one_cover_bound`, 9 at
+`r = 3`) and the two-point bound (`TwoCoverSharp`, 10), the intersecting
+bound under Rao's caps at `r = 3` is exactly ten
+(`i_three_three_is_ten`), which is the `B = 10` cut of §56.11–56.12.
+
+**The proof, in a page.** Fix a member `M = {x, y, z}`. Every member meets
+`M`; distinctness leaves `M` alone with all three points. A member
+`{x, y, w}` meeting `M` in two points must meet every member `{z} ∪ f`
+of the `z`-layer outside `M`, so `w` lies in every tail `f` — in the
+*core* of the tail graph `T_z`. Hence
+
+```text
+  |G| <= 1 + Σ_i (|T_i| + core(T_i)),
+```
+
+and the lemma `nine` says the sum is at most nine for three nonempty,
+pairwise cross-intersecting simple graphs, provided (`Tau2`) that for
+every point `c` some edge of the other two graphs avoids `c` or some core
+point of the first graph differs from `c` — which is what "no member
+avoids both `x` and `c`" would violate. If no graph has two disjoint
+edges, each is a star or a triangle; a star with three leaves at `c`
+forces every edge of the others through `c` and `Tau2` fails at `c`
+(`star_contra`); otherwise every graph has `|T| + core(T) <= 3`
+(`int_graph_bound`: an edge with core 2, a two-edge star with core 1, a
+triangle with core 0). If `T_x` has disjoint edges `{a,a'}`, `{b,b'}`,
+every edge of `T_y`, `T_z` is a cross edge; if neither of those has two
+disjoint edges, their union is an intersecting subgraph of a 4-cycle and
+has a common point (`c4_common`), and `Tau2` fails there (`caseB2`); if
+`T_y` has the disjoint edges `{a,b}`, `{a',b'}`, then `T_x` sits inside
+four cross edges, `T_z` inside the two edges `{a,b'}`, `{a',b}`, and one
+of those two excludes the other everywhere, so `3 + 3 + 3 + 0 + 0 <= 9`
+(`caseB1_core`). The family-side bookkeeping (`two_layer_bound`,
+`tau2_of`, `ten_core`) is `TauThree.v`'s peel, with the two-point layers
+counted by cores instead of pair degrees.
+
+**Checks.** `tools/audited.txt` carries the theorems; four mutations
+(`tauthreeten-*`: 9 → 8 in `nine`, 10 → 9 in the theorem, a member
+dropped from `k53`, a disjoint triple added to it) are killed. A
+fresh-context review confirmed the statements against the definitions
+(`Distinct` forbids equal sets in another order; the covering-number
+hypothesis with `p = q` allowed), the identity of the hypotheses with
+`tau_three_bound`'s, the non-vacuity via `k53`, the meaning of `Tau2`
+and its derivation in `tau2_of`, and, by its own exhaustive search on
+5–7 points and randomised search on 8–9, that no such family has eleven
+members; `rust/tests/tau_three.rs` had measured the same ten. The
+proof was found by asking what the sixteen-bound wastes — it charged the
+two-point layers by pair degree and the tails by a degree-capped graph
+lemma — and it uses neither cap.
+
+**Prior art.** The value is Frankl's (the repository cites it as such in
+§24 and §56.5); this file supplies a proof, not a new theorem. No claim
+of novelty is made for the bound; the argument is the development's own
+and was not compared line by line with Frankl's paper, which was not
+re-read for this section.

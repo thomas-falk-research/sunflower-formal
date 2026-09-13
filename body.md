@@ -25,11 +25,11 @@ term really is 3" — the exact maximum on nine points is 27.
 
 ```toml
 [state]
-modules             = 51
-audited_theorems    = 771
-audited_definitions = 148
-mutations           = 171
-mutations_killed    = 168
+modules             = 52
+audited_theorems    = 789
+audited_definitions = 152
+mutations           = 175
+mutations_killed    = 172
 rust_suites         = 43
 axioms              = ["Sunflower.ALWZ.Rao20_lemma2"]
 
@@ -95,6 +95,22 @@ id       = "no-28-on-ten-points"
 statement = "No 3-uniform family on ten points with 28 members, no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 exists: all eleven degree-sequence cubes are infeasible under CP-SAT."
 kind     = "measurement"
 evidence = "docs/ladder/rstar_3_3_10.tsv"
+novelty  = "new-to-this-development"
+search   = "as above"
+
+[[claim]]
+id       = "frankl-tau-three-proved"
+statement = "A 3-uniform intersecting family of distinct members with covering number at least 3 has at most 10 members (Frankl's value), with no degree or pair cap; attained by the 3-subsets of a 5-set, so TauThreeAtMost 9 is false. TwoCover.FranklTauThree is discharged and I(3,3) = 10 is a theorem."
+kind     = "theorem"
+evidence = "TauThreeTen.tau_three_ten"
+novelty  = "not-new"
+search   = "the value is Frankl's, cited in docs/roadmap.md 24 and 56.5; the proof here is the development's own"
+
+[[claim]]
+id       = "i-three-three-is-ten"
+statement = "An intersecting 3-uniform family under Rao's caps at r = 3 has at most 10 members, and k53 attains it under the caps."
+kind     = "theorem"
+evidence = "TauThreeTen.i_three_three_is_ten"
 novelty  = "new-to-this-development"
 search   = "as above"
 
@@ -191,11 +207,11 @@ excluded under CP-SAT; from above, an exact LP-duality certificate caps
 the support at fifteen under Frankl's `I(3,3) <= 10` (§56.11) and the
 13–15-point cubes are excluded under CP-SAT with the Frankl cut, so a
 refutation of `r*(3,3) = 3` would live on exactly twelve points; and all
-738 twelve-point cubes are excluded the same way (§56.12). So the row is
-decided conditionally on Frankl's value and on the CP-SAT verdicts, and
-stays `{3, 4}` in the table until both are discharged; a proof-logging PB
-solver replay and a Coq proof of Frankl's `τ = 3` value are the two
-things owed.
+738 twelve-point cubes are excluded the same way (§56.12). Frankl's `τ = 3`
+value is now proved (`coq/TauThreeTen.v`, §56.13), so the row is decided
+conditionally on the CP-SAT verdicts alone and stays `{3, 4}` in the
+table until they are replayed with checked proofs; that replay is the
+one thing owed.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 

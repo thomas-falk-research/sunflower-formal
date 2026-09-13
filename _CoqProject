@@ -41,6 +41,7 @@ coq/LinkCeiling.v
 coq/TwoCover.v
 coq/TwoCoverSharp.v
 coq/TauThree.v
+coq/TauThreeTen.v
 coq/CrossIntersecting.v
 coq/CrossRefined.v
 coq/HiltonMilner.v

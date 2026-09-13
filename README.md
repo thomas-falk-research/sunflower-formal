@@ -62,6 +62,7 @@ claim progress on it. What is machine-checked here is the complete
 | **`ι(b)` is decided by one finite search** | an $n$-member intersecting $b$-uniform family has support $\le b + (b{-}1)(n{-}1)$, so a statement quantified over every ground set becomes a search on $b + (b{-}1)N$ points. At $b=3$ that is 23 points, the search is exhaustively empty at eleven members, and **$\iota(3) = 10$** exactly | `coq/PureLink.v`, `rust/src/wide.rs` |
 | **The size threshold at $(3,3,3)$ is exactly tight** | a 3-uniform family of exactly $27 = 3^3$ members on nine points, 9-regular, every pair in $\le 3$ members, with **no** three pairwise disjoint members — so `SpreadYieldsDisjoint 3 3 3` cannot be weakened from $r^m < \lvert F\rvert$ to $\le$, and any proof of $r^{*}(3,3) = 3$ must be tight at 27 | `coq/TightThreshold.v` |
 | **Two-point covers, exactly** | an intersecting 3-uniform family under Rao's caps at $r \ge 3$ with covering number exactly 2 has at most $3r + 1$ members, attained — sharpening the proved $\max(4r, 3r{+}4)$; at $r = 3$ that is 10 against 13 | `coq/TwoCoverSharp.v` |
+| **Covering number three, exactly** | a 3-uniform intersecting family of distinct members that no two points cover has at most **10** members — Frankl's value, proved here with no degree cap in a page: fix a member, count the two-point layers by the *cores* of the three tail graphs, and three nonempty pairwise cross-intersecting graphs carry at most 9 edges plus cores; attained by the ten 3-subsets of a 5-set. With the star ($r^2 = 9$) and the two-point bound ($3r+1 = 10$) this makes **$I(3,3) = 10$** a theorem, and the cut the $r^{*}(3,3)$ ladders call "Frankl's" is kernel-proved | `coq/TauThreeTen.v` |
 | **Spread reduction** (ALWZ §4 / Rao) | "$r$-spread $\Rightarrow k$ disjoint members" $\Rightarrow f(n,k) \le r^n + 1$ | `coq/SpreadReduction.v` |
 | **Bound via the spread framework** | $f(n,k) \le (n(k-1)+1)^n + 1$, **axiom-free** | `coq/SpreadReduction.v` |
 | Hall's marriage theorem (1935) | constructive, Halmos–Vaughan induction | `coq/HallCore.v`, `coq/KoenigHall.v` |
@@ -216,10 +217,11 @@ Highlights of the less-routine parts:
   family has at most fifteen points, and the cubes it allows at 13, 14 and
   15 points are all infeasible under CP-SAT (`make audit-support`). And
   all 738 twelve-point cubes are infeasible with the Frankl cut. So the
-  row is decided *conditionally*: if Frankl's `I(3,3) <= 10` holds and
-  every CP-SAT infeasibility verdict in the ladders is correct, then
-  `r*(3,3) = 3`; the table keeps `{3, 4}` until both are discharged —
-  `docs/roadmap.md` §56.9–56.12 record what was decided and at what cost.
+  row is decided *conditionally on the solver alone*: Frankl's
+  `I(3,3) <= 10` is now `coq/TauThreeTen.v`, so if every CP-SAT
+  infeasibility verdict in the ladders is correct then `r*(3,3) = 3`; the
+  table keeps `{3, 4}` until the verdicts are replayed with proofs —
+  `docs/roadmap.md` §56.9–56.13 record what was decided and at what cost.
 
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$
@@ -249,7 +251,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 171 mutations, 168 are killed outright, two
+  that something breaks. Of 175 mutations, 172 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -327,10 +329,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 51 Coq files, then runs the axiom audit
+make verify        # builds all 52 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (771 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (789 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
