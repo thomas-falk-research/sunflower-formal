@@ -8447,6 +8447,71 @@
 # ELEVEN CUBES REMAIN IN BLOCK [13,13,12,12].  Budget rule does not fire.
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# c628 LANDS: p=4's EXACT RATIO IS 0.2198, AND THE BLOCK'S FIVE-POINT
+# PICTURE IS COMPLETE
+# ================================================================
+#
+# idx 628 landed UNSAT at 7000.2 s.  631 of 1949 (32.4 percent), 1318
+# remain; frontier contiguous 0..624 with a single hole at 625, the one
+# cube still running.  TEN MEMBERS OF BLOCK [13,13,12,12] REMAIN
+# UNDECIDED: 625, 632, 633, 634, 635, 636, 637, 638, 639, 640.
+#
+#   denominator median(c628, c629) = median(7000.2, 1181.1) = 4090.65
+#   numerator   median(c630, c631) = median( 482.9, 1315.6) =  899.25
+#   *** EXACT RATIO 0.2198 *** against the registered 1.10.  HOLDS,
+#   as already decided at fffd32b from c631 alone.
+#
+# THE MECHANICS SETTLED THE WAY 3e192aa SAID THEY MIGHT.  Against a
+# block median of 4411.6 s: c628 came in at 1.59x and DID offset c629's
+# 0.27x, leaving the denominator median at 0.93x -- only slightly small,
+# not the large inflation p=5 enjoyed.  THE RATIO IS LOW BECAUSE THE
+# NUMERATOR IS TINY, 0.20x the block median, not because the denominator
+# was inflated.  That is the OPPOSITE mechanism from p=5, where a 1.62x
+# denominator did the work.  The deflation registered before any
+# numerator finished was correct to flag the small denominator, correct
+# to qualify it as possibly offset, and in the end simply not decisive.
+#
+# ----------------------------------------------------------------
+# THE FIVE-POSITION PICTURE, NOW COMPLETE.
+# ----------------------------------------------------------------
+#
+#   p=8  1.4644  vs in-prefix median 1.9060   BELOW
+#   p=7  1.5778  vs in-prefix median 1.7447   BELOW
+#   p=6  0.8626  vs in-prefix median 0.9106   BELOW
+#   p=5  0.4079  vs in-prefix median 0.3835   ABOVE
+#   p=4  0.2198  vs in-prefix median 0.2268   BELOW
+#
+# FOUR OF FIVE BELOW.  4e5e443's "RATIOS ARE UNIFORMLY SMALLER OUTSIDE
+# THE d[1]=d[2]=13 PREFIX" STAYS FALSIFIED: p=5 is a counterexample and
+# one is enough to kill the word "uniformly".  What survives is a
+# TENDENCY -- four of five, margins mostly slim (p=4 is 3.1 percent
+# below its median, rank 3 of 8) -- and a tendency is all it ever
+# legitimately was.  Stating it as a law was the error; stating it as a
+# lean is defensible and worth carrying to the next block.
+#
+# p=4's 0.2198 may be RANKED because it is a COMPLETED ratio built from
+# four completed costs, not a bound (8263cab).
+#
+# ----------------------------------------------------------------
+#
+# NOTHING FROM 0542580 REMAINS OPEN.  All five registrations resolved,
+# all five held, TALLY THIRTEEN REGISTERED / TWELVE HOLDING / ONE
+# FAILING -- and the two qualifications recorded at fffd32b travel with
+# it permanently: the joint prior-majority probability of five-for-five
+# is 0.675, and p=4 was a weaker hit than p=5 because refutation there
+# needed only c628 <= 453.9 s, which 1 of the block's 71 decided cubes
+# and 6.0 percent of the file's would have satisfied, whereas p=5 could
+# not have failed for any value at all.
+#
+# The one live commitment is the FORWARD test at 6ec69dc: when the next
+# block after idx 640 has enough decided triples, run the same
+# stratified permutation test on its median CV, on data that had no hand
+# in raising the question.
+#
+# Budget rule does not fire.  No verdict changes.  The bracket stays
+# 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -9247,3 +9312,4 @@ g=11 [13, 13, 12, 12, 13, 11, 11, 11, 11, 11, 10]	UNSAT	1181.1
 g=11 [13, 13, 12, 12, 13, 12, 12, 11, 10, 10, 10]	UNSAT	8664.2
 g=11 [13, 13, 12, 12, 12, 12, 12, 12, 12, 12, 6]	UNSAT	482.9
 g=11 [13, 13, 12, 12, 12, 12, 12, 12, 12, 11, 7]	UNSAT	1315.6
+g=11 [13, 13, 12, 12, 13, 12, 11, 11, 11, 10, 10]	UNSAT	7000.2
