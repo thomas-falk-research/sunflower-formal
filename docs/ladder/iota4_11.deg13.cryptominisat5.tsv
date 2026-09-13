@@ -7466,6 +7466,93 @@
 #
 #
 #
+# ================================================================
+# CONTAINER RESTART #30 -- LARGEST WORK LOSS OF THE SEVEN MEASURED
+# ================================================================
+#
+# The container restarted at 14:12:11Z on 2026-09-13, killing driver
+# pid 31493 and the waiter armed on it.  Relaunched 14:14Z; the new
+# binary took pid 8086 and wrote its first CNFs at 14:16:54Z.
+#
+# ZERO ROWS LOST.  Independent recount of the checkpoint after the
+# kill: 778 rows, 609 distinct labels, 609 UNSAT, 0 SAT, 0 labels
+# undecided-only (the 169 UNKNOWN rows are all historical -- every one
+# is superseded by a later UNSAT on the same label, which is how that
+# must be said; it is NOT "0 UNKNOWN").  Frontier contiguous 0..608,
+# no holes, MEASURED and not assumed.  Identical to the state at
+# d77aa44, which is what "zero rows lost" means here.
+#
+# RESUME VERIFIED, NOT ASSUMED.  The new pid's first four CNFs are
+# exactly c609, c610, c611, c612 -- the same four that were in flight
+# when the kill came -- and the driver's own banner reads "checkpoint:
+# 609 of 1949 cubes already decided".  Not from scratch, nothing
+# skipped.
+#
+# WORK LOST: 25934.0 s = 7.204 CPU-hours, measured from each cube's
+# CNF mtime (which IS its solver start, since the driver writes the
+# CNF immediately before launching the solver) to the [killed] marker
+# at 14:12:11.915Z.  NOT from /proc/stat btime -- that is the VM boot,
+# three days earlier, and reading it as the restart time is the error
+# that produced a NEGATIVE elapsed at 2d24e48.
+#
+#   c609  started 11:14:38Z   lost 10653.0 s
+#   c610  started 11:26:40Z   lost  9931.5 s
+#   c611  started 13:14:05Z   lost  3486.1 s
+#   c612  started 13:41:08Z   lost  1863.5 s
+#
+# This is the LARGEST loss of the seven restarts measured this way:
+# 5.16, 1.19, 4.80, 2.645, 1.330, 2.111, 7.204 CPU-hours.  IT IS NOT A
+# TREND AND MUST NOT BE READ AS ONE.  The loss is set entirely by how
+# far into their cubes the four workers happened to be when the kill
+# landed, which has nothing to do with the restart; here two of them
+# were nearly three hours deep.  A new maximum arriving on the last of
+# seven exchangeable draws is a 1-in-7 = 14.3 percent event -- exactly
+# what turns up now and then, and precisely the shape 5682de6 warns
+# about: a pattern is most tempting at the moment it is least
+# supported.
+#
+# Container is 4 x Intel Xeon at 2.10GHz, 16461028 kB -- the EIGHTH
+# consecutive container with an identical spec.
+#
+# ----------------------------------------------------------------
+# EIGHTH INSTANCE OF "A SCRIPT WHOSE OUTPUT ASSERTS WHAT ITS CODE DOES
+# NOT DO", AND THIS ONE WOULD HAVE LEFT THE SWEEP DEAD.
+# ----------------------------------------------------------------
+#
+# The first assessment command ran `pgrep -af iota_sym` under a heading
+# that read "process state".  It printed a match.  THE MATCH WAS MY OWN
+# SHELL: the command string being executed contains the substring
+# "iota_sym", so -f matched the pattern against the very command doing
+# the matching.  Read on its own, that output asserts a live driver --
+# and the correct response to a live driver is to do nothing, which
+# would have left the sweep stopped until the next check-in noticed.
+#
+# It was caught only because two other checks in the same command
+# disagreed: `kill -0 31493` said GONE, and a `ps -eo pid,ppid,etime,
+# time,comm` filtered for iota_sym or cryptominisat returned NONE.  The
+# cross-check is what caught it, not my reading of the pgrep line.  The
+# previous seven instances of this pattern were each caught by an
+# absurd-on-its-face answer; this one was not absurd at all, which
+# makes it the most dangerous of the eight.
+#
+# DURABLE FIX, USED FOR EVERYTHING SINCE: `pgrep -x iota_sym` matches
+# the executable's comm exactly and cannot match a shell that merely
+# mentions the name.  That is what returned pid 8086, and that is the
+# pid the waiter is armed on.
+#
+# ----------------------------------------------------------------
+#
+# POSITION UNCHANGED BY ANY OF THE ABOVE: 609 of 1949 decided (31.2
+# percent), 1340 remain, block [13,13,12,12] at 50 of 82.  No verdict
+# changes.  The bracket stays 27 <= iota(4) <= 71.
+#
+# The two registered predictions remain open and unchanged, fixed at
+# 0542580: p=5 boundary at idx 616 and p=4 boundary at idx 630, both
+# "< 1.10", K=2, and ALL EIGHT of their cubes are still unstarted.  The
+# bias recorded at 4e5e443 applies to both when they resolve: on the
+# "ratios are uniformly smaller outside the prefix" reading, both are
+# biased TOWARD holding, so a hold is not a clean confirmation.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
