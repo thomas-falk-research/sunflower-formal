@@ -13731,3 +13731,78 @@ lemma — and it uses neither cap.
 of novelty is made for the bound; the argument is the development's own
 and was not compared line by line with Frankl's paper, which was not
 re-read for this section.
+
+## 57. Handover — `r*(3,3)` decided on the solver's word, Frankl's value in the kernel
+
+Start here. §54 was the previous pointer; §56 is the section this one
+summarises and every claim below is made there at length. Nothing here
+touches `ι(4)` or the conjecture ledger.
+
+### 57.1 Standing, in one table
+
+| claim | status | where |
+|---|---|---|
+| The size threshold in `SpreadYieldsDisjoint 3 3 3` is tight: a 27-member family under Rao's caps at `r = 3` with no three disjoint members | PROVEN (Coq) | `coq/TightThreshold.v`, §56.2 |
+| An intersecting 3-uniform family under the caps at `r >= 3`, covered by two points and by neither alone, has at most `3r + 1`, attained | PROVEN (Coq) | `coq/TwoCoverSharp.v`, §56.4 |
+| A 3-uniform intersecting family of distinct members with covering number 3 has at most 10 — Frankl's value — with no caps; sharp; hence `I(3,3) = 10` | PROVEN (Coq, axiom-free) | `coq/TauThreeTen.v`, §56.13 |
+| A 28-member family with `s_E <= 7` and degrees `>= 2` (both now theorems via `I(3,3) <= 10`) lives on at most 15 points | PROVEN (exact LP-duality certificate, solver-free Python checker, not Coq) | `make support15`, §56.11 |
+| No 28-member family on 10, 11 points (kernel cut `B = 16`), on 12 points (all 738 cubes, `B = 10`), on 13–15 points (the 378 relaxation-allowed cubes, `B = 10`) | VALIDATED under CP-SAT: INFEASIBLE verdicts with no proof logs | `docs/ladder/rstar_3_3_{10,11,support12,support13,support14,support15}.tsv`, `make audit11`, `make audit-support` |
+| Therefore `M <= 27`, i.e. **`r*(3,3) = 3`** | **CONDITIONAL on the CP-SAT verdicts only** | §56.12 |
+| Nine or fewer points: counting (`84 > 81`) | PROVEN (prose, trivial) | §56.12 |
+| The Sunflower Conjecture | open; no progress claimed | — |
+
+The table in STATUS.md keeps `r*(3,3) ∈ {3, 4}`, because a solver verdict
+without a proof log is not a theorem here (rule in §56.8). Every other
+row of `r*(m,3)` is as §54 left it.
+
+### 57.2 What is owed, in order
+
+1. **Replay the CP-SAT verdicts with checked proofs.** This is the only
+   condition left. RoundingSat + VeriPB were built and work
+   (`tools/cube_opb.py`, `tools/pbrun.sh`; one ten-point cube
+   `VERIFIED UNSATISFIABLE`) but are orders of magnitude slower than
+   CP-SAT on these cardinality-heavy cubes (§56.12): a twelve-point cube
+   CP-SAT closes in 12 s ran over an hour. Options: a bigger machine; a
+   better PB encoding (the lex prefix with `2^61` weights is suspect —
+   try `K = 0` or cardinality-only lex); CaDiCaL with DRAT on a
+   totalizer encoding; or a kernel-checked replay of the *degree-sequence*
+   structure rather than of the solver.
+2. **Formalise the support certificate** (`tools/support15_check.py`,
+   61 leaves, weak duality in exact rationals; the tree's coverage is one
+   induction) so the `>= 16` row is Coq and not Python. With Frankl's
+   value now in the kernel, its hypothesis is a theorem.
+3. **Twelve points kernel-only** is *not* owed: the `B = 10` sweep is
+   kernel-justified since §56.13. The stopped partial `B = 16` ladders
+   (`docs/ladder/rstar_3_3_12.tsv`, `.sub.tsv`) are a record, nothing
+   depends on them.
+4. **Relaxation dependence at 13–15 points**: the cube lists there are
+   the profiles the member-type relaxation allows (a CP-SAT no-good
+   enumeration, cross-checked by SCIP at 16–42 points but not at 13–15).
+   Sweeping *all* cubes at 13–15 with `B = 10` (1524, 2983, 4652 cubes
+   with degrees `>= 2`) would remove it at a few hours each.
+5. **Prior art for the extremal problem itself** (degree `<= 9`, pair
+   `<= 3`, `ν <= 2`, maximum 27): one rendered-page pass (session N+16)
+   found neighbours, not the problem. A second pass — Frankl–Kupavskii on
+   `ν = 2` with degree conditions, and the "Erdős matching conjecture
+   with bounded degree" literature — before any novelty word is used.
+
+### 57.3 How to resume
+
+- `make verify && make coqchk` — green at the branch tip (52 modules, one
+  axiom `Sunflower.ALWZ.Rao20_lemma2`, 789 audited theorems).
+- `make support15`, `make audit11`, `make audit-support` — the three
+  solver-free or solver-verdict audits, all exit 0.
+- `make prcheck PR_BODY=body.md` — the pull-request body is gated;
+  `body.md` at the root is the current one.
+- The scratch runs (solver drivers, RoundingSat/VeriPB builds, the
+  kernel-cut sweep) lived under the session scratchpad and are gone;
+  everything load-bearing is under `docs/ladder/` and `tools/`. To rerun
+  a cube: `tools/cuben.py <n> <parts> 1 <cap> 62 <B>`; a sub-cube:
+  `tools/cubesub.py`; the relaxation: `tools/typelp.py`,
+  `tools/typeprof.py`, `tools/typescip.py`; the certificate:
+  `tools/typelp_tree.py`, `tools/typelp_cert.py`.
+- Rules that held this session and should hold the next: a stall is not
+  a verdict; a solver verdict is "under CP-SAT" until replayed; no
+  novelty word without a rendered-page search; every hand argument that
+  reaches a contradiction gets a computer check before it is written down
+  (§56.11 records one that was wrong and withdrawn).

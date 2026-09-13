@@ -6,8 +6,17 @@ satisfies Rao's spread condition at `r = 3` and has no three pairwise
 disjoint members (`coq/TightThreshold.v`). Separately, an intersecting
 3-uniform family under Rao's caps at `r >= 3` with covering number
 exactly two has at most `3r + 1` members, attained
-(`coq/TwoCoverSharp.v`), sharpening the proved `max(4r, 3r+4)`. About
-sunflowers themselves: nothing — `r*(3,3)` is still `{3, 4}`.
+(`coq/TwoCoverSharp.v`), sharpening the proved `max(4r, 3r+4)`. Frankl's
+value for covering number 3 — ten, with no caps — is proved in
+`coq/TauThreeTen.v`, axiom-free and sharp, so `I(3,3) = 10` is a theorem
+(§56.13). On the solver's word (CP-SAT INFEASIBLE verdicts, no proof
+logs) and nothing else, no 28-member family exists on any number of
+points — ten and eleven with the kernel cut, twelve to fifteen with the
+now-kernel-justified cut `B = 10`, sixteen and up by an exact LP-duality
+certificate checked without a solver (`make support15`) — so `r*(3,3) = 3`
+conditionally on those verdicts (§56.12). About sunflowers themselves:
+nothing — `r*(3,3)` stays `{3, 4}` in the tables until the verdicts are
+replayed with checked proofs. §57 is the handover.
 
 ## What did not move
 

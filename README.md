@@ -223,6 +223,21 @@ Highlights of the less-routine parts:
   table keeps `{3, 4}` until the verdicts are replayed with proofs —
   `docs/roadmap.md` §56.9–56.13 record what was decided and at what cost.
 
+  **What is new, and what is not.** Nothing here is progress on the
+  sunflower conjecture. The quantity $r^{*}(m,3)$ is this development's
+  own (the least $r$ at which Rao's absolute spread condition forces three
+  disjoint members), so results about it are new *to this development*
+  by construction; whether the underlying extremal problem — 3-uniform
+  families with point degree $\le 9$, pair degree $\le 3$ and no three
+  pairwise disjoint members, whose maximum is 27 on nine points and, on
+  the solver's word, everywhere — has been studied before is
+  **PLAUSIBLE-not-novel, not PROVEN-novel**: one rendered-page search
+  (`docs/reading.md`, session N+16) found the linear and codegree
+  neighbours but not this problem, and absence of a found result is all
+  that search can say. The one theorem that is certainly not new is
+  Frankl's ten (`coq/TauThreeTen.v`); what is new there is a
+  machine-checked proof.
+
   The axiom is stated as **Rao's Lemma 2 verbatim**, in his absolute
   form of spreadness ("every nonempty $Z$ lies in at most $r^{n-|Z|}$
   members") together with his size hypothesis — checked against the
