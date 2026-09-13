@@ -7200,6 +7200,60 @@
 #
 # No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# **p=7 IS NOW EXACT AT 1.5778 -- AND THAT CORRECTS, IN MY FAVOUR,
+# THE RANK PUBLISHED IN THE BLOCK IMMEDIATELY ABOVE.**
+# ----------------------------------------------------------------
+#
+# idx 581 landed at 5800.2 s.
+#
+#   denominator  median(2706.6, 2721.4) = 2714.00
+#   numerator    median(2764.0, 5800.2) = 4282.10
+#   RATIO 1.5778   predicted > 1.10   **HOLDS**
+#
+# The published lower bound of 1.2084 held, as every elapsed bound in
+# this file has.  The verdict is unchanged; only the number sharpens.
+#
+# **THE CORRECTION, AND ITS DIRECTION.**  The block above reported the
+# instance as "PROVISIONAL RANK 3 OF 12 ascending" and "far under the
+# 1.7447 median", computed from the 1.2084 bound while c581 was still
+# running.  With c581 in at 5800.2 the exact figure is RANK 5 OF 12:
+# only [13,13,13,3] 1.0089, [13,13,13,13] 1.0463, [13,13,13,11] 1.5114
+# and [13,13,13,12] 1.5283 sit below it.  It is still below the 1.7447
+# median, but 1.5778 against 1.7447 is not "far under".
+#
+# THAT CORRECTION MAKES MY RESULT LOOK BETTER THAN WHAT I PUBLISHED
+# THIRTY-FOUR MINUTES EARLIER, so it is flagged rather than quietly
+# absorbed.  It also shows the cost of ranking on a lower bound: a
+# bound is honest about the VERDICT and misleading about the POSITION,
+# because it places the instance at the bottom of a distribution it has
+# not finished climbing.  THE RULE: report a bound as a verdict, never
+# as a rank.
+#
+# WHAT IT DOES TO THE OPEN QUESTION ABOVE.  The block above set out two
+# competing readings of why both out-of-prefix instances came in low --
+# block size (which fits p=8 and not p=7) versus ratios simply being
+# smaller outside the d[1]=d[2]=13 prefix.  The exact figure WEAKENS the
+# second: 1.5778 is an ordinary value, not a depressed one.  Both
+# out-of-prefix instances are still below their in-prefix medians, so
+# the question is not closed, but it is now a smaller question than the
+# block above made it sound.  Pearson(size, p=7 ratio) including this
+# point is -0.293, essentially where it was.
+#
+# ONE OBSERVATION, FLAGGED AS POST HOC AND UNCOUNTED.  The three blocks
+# closest in size -- [13,13,13,12] n=104, [13,13,13,11] n=82 and
+# [13,13,12,12] n=82 -- give 1.5283, 1.5114 and 1.5778, which are
+# strikingly close together.  NO STORY IS BEING BUILT ON THAT.  It was
+# noticed after the fact, on three points, in a correlation that is
+# -0.293 overall, and 5682de6's rule applies: a pattern noticed while
+# looking is evidence about the past only, and to bet on it I would
+# have to derive it from something other than itself.
+#
+# TALLY: TEN REGISTERED PREDICTIONS, NINE HOLDING, ONE FAILING.
+# Unchanged -- this sharpens a number, it does not resolve anything new.
+#
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 #
 #
 #
@@ -8008,3 +8062,4 @@ g=11 [13, 13, 12, 12, 13, 13, 13, 13, 10, 9, 7]	UNSAT	3149.6
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 10, 8, 8]	UNSAT	2706.6
 g=11 [13, 13, 12, 12, 13, 13, 13, 13, 9, 9, 8]	UNSAT	2721.4
 g=11 [13, 13, 12, 12, 13, 13, 13, 12, 12, 12, 3]	UNSAT	2764.0
+g=11 [13, 13, 12, 12, 13, 13, 13, 12, 12, 11, 4]	UNSAT	5800.2
