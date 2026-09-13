@@ -1,0 +1,14 @@
+# Support cubes at 15 points (docs/roadmap.md section 56.11): the degree
+# profiles the member-type relaxation allows for a 28-member family with
+# s_E <= 7 (Frankl's I(3,3) <= 10) and degrees >= 2, as deficiency cubes
+# (tools/typeprof.py 7 2 15; list in rstar_3_3_support15.cubes.txt).  Each
+# row is one CP-SAT run of tools/cuben.py 15 <cube> 1 <cap> 62 10: lex
+# prefix K = 62, cut B = 10 (the Frankl cut: members disjoint from any
+# member number at most 10).  Driver tools/supsweep.sh 15 <cap>.
+# Columns: cube, degrees, K, B, verdict, seconds, witness.
+7,7,6,6,6,6,6,6,1	2,2,3,3,3,3,3,3,8,9,9,9,9,9,9	62	10	INFEASIBLE	66.6	
+7,7,7,6,6,6,5,5,2	2,2,2,3,3,3,4,4,7,9,9,9,9,9,9	62	10	INFEASIBLE	76.0	
+7,7,7,6,6,6,6,6	2,2,2,3,3,3,3,3,9,9,9,9,9,9,9	62	10	INFEASIBLE	60.3	
+7,7,7,6,6,6,6,3,3	2,2,2,3,3,3,3,6,6,9,9,9,9,9,9	62	10	INFEASIBLE	62.3	
+7,7,7,6,6,6,6,5,1	2,2,2,3,3,3,3,4,8,9,9,9,9,9,9	62	10	INFEASIBLE	67.4	
+7,7,7,6,6,6,6,4,2	2,2,2,3,3,3,3,5,7,9,9,9,9,9,9	62	10	INFEASIBLE	73.4	

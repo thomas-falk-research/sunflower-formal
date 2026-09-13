@@ -2568,3 +2568,90 @@ answers, and it is the second time this file has recorded it.
    surrounding numbers come from. Not load-bearing, and that is exactly
    why it will keep being copied forward unless someone sources it or
    drops it.
+
+## Session N+16: the extremal problem behind `r*(3,3)`, searched and read
+
+The session that produced `coq/TightThreshold.v` and `coq/TwoCoverSharp.v`
+(`docs/roadmap.md` §56) asked one literature question before claiming
+anything: is the maximum number of edges of a 3-uniform hypergraph with
+matching number at most 2, maximum degree at most `D`, and codegree at
+most `c` known — in particular at `(D, c) = (9, 3)`, where `27` against
+`28` is exactly `r*(3,3) = 3` against `4`? A commissioned search ran 17
+arXiv API queries, 4 zbMATH Open queries, Semantic Scholar citation
+look-ups and 23 web searches (the query log is preserved with the report),
+downloaded 13 PDFs and rendered pages from 10 of them. The two rows below
+are the ones this repository relies on, and **both were re-read here from
+the rendered page images** (rule 1), not taken from the report's text.
+
+### [Kha14] Niraj Khare, *Size of a 3-uniform linear hypergraph*, arXiv:1304.4791v1
+
+Read pp. 1–3 of 21, rendered at 110 dpi. Journal version reported as
+Discrete Math. 334 (2014) 26–37 by [Hou17]'s reference [15]; not opened.
+
+> **Theorem 2** Let `F` be a 3-uniform linear set system with maximum
+> matching size `ν(F) = ν` and maximum degree `Δ(F) = Δ`. If `Δ ≥ 5`,
+> then `|F| ≤ 2Δν`. [p. 2]
+
+> **Theorem 3 (The main result)** Let `F` be a 3-uniform linear set
+> system with maximum matching size `ν(F) = ν` and maximum degree
+> `Δ(F) = Δ`. If `Δ ≥ (23/6) ν (1 + 1/(ν−1))`, then `|F| ≤ Δν`. [p. 2]
+
+> Since the set of vertices that are covered by a maximum matching form a
+> vertex cover (also known as transversal), each hyperedge is covered by
+> `kν` vertices. As the maximum degree is `Δ`, we get
+> `|H| ≤ (Δ − 1)(kν) + ν`. (1) [p. 3]
+
+*Linear* means codegree at most one, so neither theorem applies to
+codegree 3. Inequality (1) is the only printed bound that does apply, and
+at `(k, ν, Δ) = (3, 2, 9)` it gives 50 — the repository's own
+`SpreadThreshold.no_three_disjoint_cover_bound` is the same count. Page 3
+also records, verbatim, that "there are 3-uniform liner families `F` with
+`ν = ν(F)` such that `|F| > Δ(F)ν(F)`", from Steiner triple systems —
+which is the linear analogue of what `nine27` does at codegree 3 (27 = 3Δ
+against `Δν = 18`).
+
+### [Hou17] Xinmin Hou, Lei Yu, Jun Gao, Boyuan Liu, *The size of 3-uniform hypergraphs with given matching number and codegree*, arXiv:1709.07208v1
+
+Read pp. 1–4 and 15–16 of 16, rendered at 110 dpi. zbMATH 7004803 lists a
+2019 journal version; not opened.
+
+> **Theorem 2.** Given positive integers `Δ₂` and `ν`, if `H` is a
+> 3-graph of sufficiently large order `n` with `Δ₂(H) ≤ Δ₂` and
+> `ν(H) ≤ ν`, then `e(H) ≤ f(n, ν, Δ₂)`, and the upper bound is tight.
+> [p. 3]
+
+with `f(n, ν, Δ₂) = ⌊ν(n−ν)Δ₂/2⌋ + g(…)` and `g(2, λ, s) = 0` [pp. 2–3].
+It is a codegree-only bound: no vertex-degree parameter, `n` large, and
+at `ν = 2`, `Δ₂ = 3` it reads `3(n − 2)`, unbounded in `n`. Its
+introduction (p. 1, abstract, and p. 2) lays out the lineage exactly as
+Chvátal–Hanson (graphs) → Khare (linear 3-graphs) → this (codegree), and
+names no vertex-degree version for non-linear 3-graphs.
+
+### What the search did not find
+
+No paper determining or bounding the maximum size of a non-linear
+3-uniform hypergraph with bounded matching number **and** bounded maximum
+degree, with or without a codegree cap; nothing on the specific values 27
+or 28 at these parameters. Also examined and found off-point (rendered
+pages read by the commissioned pass, not re-read here): Frankl
+arXiv:1205.6847 (the Erdős Matching Conjecture at `k = 3`), Łuczak–
+Mieczkowska arXiv:1202.4196, Huang–Loh–Sudakov arXiv:1107.5544,
+Frankl–Kupavskii arXiv:1607.06126 and arXiv:1701.04107, Zhang–Cao–Lu
+arXiv:2605.21208 and arXiv:2604.21855, Balachandran–Khare
+arXiv:math/0611842 — all parametrised by `n` and `s`, none by a degree cap.
+**Unreachable**: Chvátal–Hanson 1976 (ScienceDirect 403), Füredi 1981
+(Springer), Abbott–Hanson–Sauer 1972 (a seventh failed route), and
+Tang–Zou–Diao 2023 (Springer login).
+
+Per rule 17 this is a search that happened, not an absence: the verdict
+on the two theorems of §56 is **new-to-this-development, and not found in
+the literature by this search** — the honest label short of "new".
+
+### A rule this session broke and then kept
+
+The commissioned report's verbatim quotations were used *only after* the
+three pages they came from were rendered and looked at in this container
+(`khare-02.png`, `khare-03.png`, `hou-03.png`). The other eight papers'
+readings are the report's, and are labelled as such above rather than
+promoted. That is rule 30's clause, applied: a commissioned reading is
+evidence about the commission until the page is on screen here.

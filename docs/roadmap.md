@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 167 anecdotes into a coverage metric over the
+  mutation testing from 175 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,8 +9842,8 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 49 modules, 740 audited theorems, 144 audited
-definitions, 167 mutations, and 41 Rust integration suites. (That count
+The development is now 52 modules, 789 audited theorems, 152 audited
+definitions, 175 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
@@ -13177,3 +13177,632 @@ nor refuted, only unevidenced.
 This is scheduling, again, and §49.4's judgement stands: **`τ = 3` is the
 case that would close the rung without any of this compute**, and §53 says
 the elementary route to it does not reach.
+
+## 56. Session N+16: the threshold at `(3,3,3)` is exactly tight, `τ = 2`
+##     is exactly `3r + 1`, and the "weak evidence" for `r*(3,3) = 3` is
+##     withdrawn
+
+**Verdict, without inflation.** Two theorems, both `Closed under the
+global context`; one exact computation; one correction to this file's
+own record. **`r*(3,3)` is still `{3, 4}`.** No bound on `f(n,k)` moved,
+the axiom census is unchanged, and nothing here touches `ι(4)`.
+
+* **The size threshold in `SpreadYieldsDisjoint 3 3 3` cannot be lowered
+  by one.** `TightThreshold.threshold_27_is_attained`: a 3-uniform family
+  of exactly `27 = 3^3` members, 9-regular on nine points, every pair in
+  at most three members, with no three pairwise disjoint members. The
+  non-strict statement (`r^m <= |F|` in place of `r^m < |F|`) is false at
+  `(3,3,3)` — `TightThreshold.non_strict_threshold_fails_at_3_3_3`.
+* **Covering number two, exactly.** `TwoCoverSharp.two_cover_at_most_3r_plus_1`:
+  an intersecting 3-uniform family under Rao's caps at `r >= 3`, covered
+  by two points and by neither alone, has at most `3r + 1` members;
+  `hm_family` attains it. `TwoCover.two_cover_bound`'s `max(4r, 3r+4)`
+  was 13 at `r = 3` against a truth of 10, and 16 at `r = 4` against 13.
+  The `I(3,3) = 10` that §24.9 measured is now one citation (Frankl's
+  `τ = 3` value) from a theorem: `τ = 1` is `r^2 = 9` (`one_cover_bound`),
+  `τ = 2` is 10 (this), `τ = 3` is 10 by Frankl and 16 by `TauThree`.
+* **The exact maximum on nine points is 27.** Not a search that found
+  27 — an optimisation that proved nothing larger exists on nine points,
+  which is also what counting says (`28 · 3 > 9 · 9`).
+* **On ten points there is no 28-member family** — under CP-SAT, all
+  eleven degree-sequence cubes INFEASIBLE (§56.9). The monolith had run an
+  hour undecided; cubed on the sorted degree sequence, the whole case took
+  about six CPU-hours. So `M` on ten points is 27, and a refutation of
+  `r*(3,3) = 3`, if one exists, lives on **eleven or more points**.
+* **The record's evidence is withdrawn.** §22.5 reported the depth-first
+  search's largest find at `(3,3,10)` as 23, and STATUS.md's pinned
+  object is 23 "five short", offered as *"weak evidence that the term
+  really is 3"*. The exact maximum at ground 9 — one point *fewer* — is
+  27. The search was not finding what nine points hold, and "largest
+  found" was never evidence about the maximum. That evidence is gone; the
+  question is exactly as open as it was, but honestly so.
+
+### 56.1 What the question is, in one line
+
+`SpreadYieldsDisjoint 3 3 3` fails iff there is a 3-uniform family with
+**28** members, no three pairwise disjoint, every point in at most **9**
+members, every pair in at most **3** (`TwoCover.rao_uniform_distinct`
+makes distinctness automatic). Call the maximum size of such a family
+`M`. `r*(3,3) = 3` iff `M <= 27`. This session shows `M >= 27`.
+
+### 56.2 The object, and how it was found
+
+`rust/tests/tight_threshold.rs` re-checks it with code that shares
+nothing with the Coq:
+
+```text
+  points      9         members  27        every point in exactly 9
+  pair degree 1 x3, 2 x21, 3 x12           covering number 4
+  disjoint pairs 84                        automorphism group trivial
+```
+
+Found by an exact CP-SAT optimisation (OR-Tools 9, `nu2max.py`, kept
+with the run logs of this session, not in the tree) with the maximal
+matching `{0,1,2}, {3,4,5}` forced and every member meeting it — the
+same anchoring as `rstar.rs` — plus degree-sequence symmetry breaking.
+On nine points it proves optimality in **0.0 s**. A simple local search
+(`sa28.py`: greedy fill, random removal of one to four members, repeat)
+reaches 27 on nine points in **301 iterations** and on ten, eleven,
+twelve and thirteen points in under fifteen seconds each; it never
+reached 28 in 3·10^6 iterations on ten or eleven points. Every 27-member
+family the local search returned on twelve points had support exactly
+nine and was 9-regular; forced to use all ten points it stopped at 25.
+None of that is a proof of anything — it is recorded because it is the
+shape of the extremal region, and because §22.5's 23 was recorded as
+weak evidence and this is what replaces it.
+
+### 56.3 What a proof of `M <= 27` would have to do, and how far the elementary part goes
+
+Everything below is prose, marked so, and none of it is in the kernel.
+
+Let `|F| = 28` (the property is hereditary, so a witness can be cut to
+28). For a member `E`, write `M_E` for the members disjoint from `E`;
+`ν <= 2` makes `M_E` intersecting. Inclusion–exclusion at `E` gives the
+exact identity
+
+```text
+  |M_E|  =  3 + s_E,     s_E  =  Σ_{v in E} (9 − d_v)  +  Σ_{pairs p in E} (d_p − 1)  >=  0.
+```
+
+So every member is disjoint from at least three others, and from more
+by exactly its degree deficiency and its pairs' excess. If `I(3,3) <= 10`
+— Frankl's `τ = 3` value plus this session's `τ = 2` theorem — then
+`s_E <= 7` for every member, hence **no point has degree 1**, every
+point of degree 2 lies in two members whose other points are full and
+whose pairs all have degree 1, and summing `s_E` over members gives
+`18 n <= 196 + 168`, i.e. a 28-member family has at most **20 points**.
+That is the whole elementary content: the question is finite in
+principle and not in practice — twenty points in the counting-tight
+regime is far beyond the searches that stalled at ten (§22.5).
+
+Two things the identity makes visible. On nine points every 27-member
+family is 9-regular, so `s_E = Σ_p (d_p − 1)` and `|M_E| = 2 + s_E`; in
+the object above `|M_E|` runs from 5 to 7. A 28-member family on ten
+points has total deficiency 6 and every member's `s_E` at most 7, which
+is why ten points is the tight case and why the exact search there is the
+next thing to run to completion (§56.5).
+
+### 56.4 The `τ = 2` proof, and what it is not
+
+The argument is in the header of `coq/TwoCoverSharp.v`. It uses no graph
+theory — every step names a finite list of pairs or triples that every
+member of a piece must contain and counts them under Rao's caps, which is
+`TwoCover.v`'s discipline — and it was checked against CP-SAT before it
+was written in Coq: the two-covered maximum under the caps is 10 at
+`r = 3` and 13 at `r = 4` on nine and eleven points (0.4 s each), and
+`rust/tests/tight_threshold.rs` re-derives 9, 10, 10, 10 and 10, 12, 13,
+13 on six to nine points by an independent depth-first search.
+
+What it is not: a result about intersecting families in general. The
+caps are the hypothesis; without them the Hilton–Milner family through
+two points is `3n − 8` and unbounded. Nearest neighbour in the corpus:
+[FHHZ17]'s *degree version* of Hilton–Milner, which conditions on the
+minimum degree rather than capping the maximum. Rule 17: **new to this
+development**, searched (§56.6), not claimed new.
+
+### 56.5 What is owed, in order
+
+1. **Ten points, to completion.** The CP-SAT maximisation and cadical on
+   the `rstar.rs` encoding were both given an hour here (§56.7). Ten
+   points is the counting-tight case; deciding it exactly is the
+   cheapest fact about `M` not yet known. Cube on the degree of the
+   lowest-degree point (deficiency 6 spread over ten points) rather than
+   running the monolith — §52.2's lesson applies unchanged.
+2. **Eleven and twelve points at target 28.** Feasibility only (no
+   objective), one cube per degree sequence, checkpointed. A hit ends
+   the question at `r*(3,3) = 4` with a witness the kernel can certify
+   in the shape of `TightThreshold.v` in an afternoon.
+3. **`I(3,3) <= 10` in the kernel.** *(Done: §56.13, `coq/TauThreeTen.v`.)* Frankl's `τ = 3` value is the only
+   missing piece, and it is the one §24.9 named. Under the caps a direct
+   proof may be shorter than Frankl's: the pair cap is free at `τ = 3`
+   (`TauThree.tt_pair`), so the gap is 16 to 10 in `TauThree.lemma_L`.
+4. **The support bound below 20.** §56.3's 20 uses only `d_v >= 2`. A
+   degree-2 point forces two extremal 10-member intersecting families
+   on the other points; classifying those (they are `K_5^(3)`, the
+   Hilton–Milner shape `hm_family`, and whatever else `τ = 3` allows
+   under the caps) should push the minimum degree up and the support
+   down. If it reaches twelve, item 2 becomes a proof.
+5. **Do not re-run the depth-first search for evidence.** Its largest
+   find was four short of the truth on a ground it had exhausted by
+   counting. Exact optimisation on the smallest counting-feasible ground
+   first; heuristics second; the search that reports "largest found"
+   last, and never as evidence.
+
+### 56.6 Prior art, searched
+
+`docs/reading.md`, "Session N+16". Thirteen PDFs, ten rendered; the two
+that bear on the problem re-read here from page images. Khare 2014 is
+Chvátal–Hanson for **linear** 3-graphs and gives only the trivial
+`(Δ−1)kν + ν = 50` at codegree 3; Hou–Yu–Gao–Liu 2017/2019 is
+codegree-only, `n` large, `3(n−2)` at these parameters. Nothing found
+with both a degree cap and a matching cap for non-linear 3-graphs, and
+nothing on 27 against 28. Chvátal–Hanson 1976 and Füredi 1981 stayed
+paywalled.
+
+### 56.7 Costs and gates
+
+```text
+  CP-SAT maximum, 9 points                    0.0 s     27, optimal
+  CP-SAT maximum, 10 points, 3 workers        3600 s, undecided: incumbent 27, bound 30
+  cadical on rstar.rs's (3,3,10) encoding     3500 s cap, undecided (the driver then
+                                              asked cryptominisat5, absent here, and stopped)
+  CP-SAT feasibility, 11 points, target 28    1 worker, 7200 s, undecided
+  CP-SAT feasibility, 12 points, target 28    1 worker, 3000 s, undecided
+  local search, 27 on 9/10/11/12/13 points    <15 s each; no 28 in 3e6 iterations (10, 11)
+  CP-SAT two-covered maximum, r=3,4, n=9,11   0.2-0.4 s each
+  coqc TwoCoverSharp.v                        ~20 s; compiles under the default 8 MB stack
+```
+
+Gates on the final tree are in the pull-request body (`body.md`).
+
+### 56.8 Three rules, each paid for here
+
+* **"Largest found" is not evidence about a maximum.** §22.5 called 23
+  weak evidence for `r*(3,3) = 3`; the maximum on a *smaller* ground is
+  27. Only an exact method's bound, or a counting ceiling, says anything
+  about a maximum.
+* **Run the exact optimiser on the smallest ground counting allows
+  before the first ground counting does not exclude.** Nine points was
+  free (0.0 s) and changed the picture; ten points is the hard case and
+  had absorbed every previous budget.
+* **Check a hand-derived constant against an exact solver before writing
+  it in Coq.** The `3r + 1` was derived by hand, confirmed at `r = 3, 4`
+  on two grounds in under a second, and only then formalised. The Coq
+  took ninety minutes; a wrong constant would have cost all of them.
+
+### 56.9 The ten-point cube, closed
+
+The monolith at ten points was undecided after an hour (§56.7). Cubed on
+the sorted degree sequence it closes. A 28-member family on ten points
+has degree sum 84, so the deficiencies `9 − d_v` sum to 6; sorting the
+points by degree, a cube is a partition of 6 and there are eleven.
+Inside a cube every point's degree is an *equality*, which is what CP-SAT
+wanted — the LP relaxation sees the pigeonhole at once — and the residual
+symmetry is the product of symmetric groups on the equal-degree blocks,
+broken by a lex-leader constraint per adjacent transposition (sound: the
+lex-greatest member of an orbit satisfies all of them; a prefix of a lex
+constraint is implied by it, so truncation is sound too). The cubes with
+the most equal-degree points needed the full 56-position lex constraint
+and, for two of them, the kernel-proved cut "the members disjoint from any
+member number at most 16" (`TauThree.tau_three_bound` for `τ = 3`,
+`TwoCoverSharp` for `τ = 2`, a star for `τ = 1`).
+
+```text
+  cube (deficiencies)  degrees                 verdict      seconds   settings
+  6                    3,9,9,9,9,9,9,9,9,9     INFEASIBLE      1.9   K=20
+  5,1                  4,8,9,...               INFEASIBLE     86.3   K=20
+  4,2                  5,7,9,...               INFEASIBLE    203.4   K=20
+  4,1,1                5,8,8,9,...             INFEASIBLE    541.0   K=20
+  3,3                  6,6,9,...               INFEASIBLE    278.3   K=20
+  3,2,1                6,7,8,9,...             INFEASIBLE   1658.2   K=20
+  2,2,2                7,7,7,9,...             INFEASIBLE   1784.2   K=20
+  3,1,1,1              6,8,8,8,9,...           INFEASIBLE   2089.2   K=56  (UNKNOWN at 1800 s with K=20)
+  2,2,1,1              7,7,8,8,9,...           INFEASIBLE   5120.4   K=56  (UNKNOWN at 1800 s with K=20)
+  2,1,1,1,1            7,8,8,8,8,9,...         INFEASIBLE   3455.7   K=56, B=16  (UNKNOWN at 1800 s with K=20)
+  1,1,1,1,1,1          8,8,8,8,8,8,9,9,9,9     INFEASIBLE   2991.1   K=56, B=16  (UNKNOWN at 1800 s with K=20)
+```
+
+`docs/ladder/rstar_3_3_10.tsv` carries every row including the stalled
+first attempts; `tools/cube10.py` is the model. **Standing: "no 28 on ten
+points, under CP-SAT."** The second-opinion discipline of the `ι(4)`
+ladder (two solvers) is only partly met: the CDCL solvers cannot close
+even the easiest cube (cadical and cryptominisat5 both UNKNOWN at 500 s
+on cube 6, on a CNF with sequential-counter cardinalities), which is the
+same wall §22.5 hit, and SCIP (`tools/cube10_mip.py`, same lex
+constraints and cut) **agrees on seven of the eleven** — `6`, `3,3`,
+`3,2,1`, `2,2,2`, `3,1,1,1`, `4,1,1`, `2,1,1,1,1`, between 92 s and
+1779 s — and was undecided at 7200 s on `5,1`, `4,2`, `2,2,1,1` and
+`1,1,1,1,1,1`; the ladder file carries every row, and the standing for
+those four is "INFEASIBLE under CP-SAT only". Note which cubes each
+engine fails on: SCIP stalls on `5,1` and `4,2`, which CP-SAT closed in
+86 s and 203 s, and CP-SAT needed the strongest settings on the
+equal-degree-heavy cubes SCIP also stalls on. The two engines' hard
+cases are not the same set, which is some of the value of a second
+opinion and none of a certificate.
+A *checked* second opinion is the right next instrument: a
+pseudo-Boolean solver with proof logging (RoundingSat) and the VeriPB
+checker would turn every INFEASIBLE row into a verified certificate, which
+neither CP-SAT nor SCIP can emit. That, not a Lean port, is where more
+rigour is available here.
+
+What this changes: §56.5 item 1 is done; item 2 (eleven and twelve
+points) is now the frontier, and the cube-by-degree-sequence recipe
+transfers — at eleven points the deficiency is `99 − 84 = 15`, every
+point used has degree at least 1 (degree 0 is the ten-point case, now
+closed), so the cubes are the partitions of 15 into at most eleven parts
+of size at most 8: 139 of them. Expect the
+equal-degree-heavy cubes to dominate the cost again.
+
+### 56.10 The eleven-point cube, opened
+
+Same recipe as §56.9 one point up: deficiency 15, every point used has
+degree at least 1, so the cubes are the 139 partitions of 15 into at most
+eleven parts of size at most 8 (`docs/ladder/rstar_3_3_11.cubes.txt`,
+most-concentrated first). A pilot of four says what the sweep will cost:
+`8,7` closes in 0.6 s and `5,4,4,2` in 392 s, but `3,3,3,3,3` and
+`2,2,2,2,1,1,1,1,1,1,1` are UNKNOWN at 1800 s even with the lex prefix
+(K = 62 of the 72 positions an adjacent transposition moves) and the cut — and the flat cubes are the majority of the 139. So
+this is days of compute on four cores, not a sitting, and it is run the
+way the `ι(4)` ladder was: `tools/sweep11.sh <cap> <jobs>` banks every
+closed cube into `docs/ladder/rstar_3_3_11.tsv`, skips closed cubes on
+re-runs, and re-attempts UNKNOWN ones, so the cap can be raised by §52.3a's
+rule rather than by feel. The first pass at 1800 s harvests the easy
+cubes; the survivors get 7200 s; what survives that needs a deeper cube
+(fix the pair-degree profile of the lowest-degree point) rather than a
+bigger budget. A SAT verdict, if one comes, is a witness the kernel can
+certify in the shape of `TightThreshold.v`.
+
+**Standing (in progress).** First pass at 1800 s (four jobs): 84 closed,
+55 UNKNOWN. Second pass at 7200 s (three jobs), still running: 112 closed
+so far, four stalled at the cap (`4,3,3,2,2,1`, `4,3,3,2,1,1,1`,
+`4,3,2,2,2,1,1`, `4,3,2,2,1,1,1,1`), no witness. The deeper cube is now in
+place and it is decisive. `tools/cubesub.py` fixes, on top of the degree
+sequence, the pair-degree profile of point 0 (the unique point of minimum
+degree 5): ten numbers in 0..3 summing to 10, non-increasing inside each
+equal-degree block (sound by the block symmetry), with the lex prefix kept
+only for transpositions of equal degree *and* equal profile entry, i.e.
+inside the profile's stabiliser, so the two breaks compose. The cube
+`4,3,3,2,2,1` has 1093 profiles; all 1093 are INFEASIBLE, 2021 s in total,
+slowest profile 29 s (`docs/ladder/rstar_3_3_11.sub.tsv`, driver
+`tools/subsweep.sh`). So a shape that would not close in 7200 s flat
+closes in a third of that when split — the flat solver was not finding the
+case split the profile makes explicit. The other three stalled cubes (1347
+profiles each) are queued on the same core.
+
+The sub-cube then closed every stall it was given (`4,3,3,2,1,1,1`,
+`4,3,2,2,2,1,1`, `4,3,2,2,1,1,1,1` at 1347 profiles each, `3,3,3,3,2,1`
+at 1288, `4,2,2,2,2,1,1,1` at 679; slowest single profile 106 s, no
+profile ever UNKNOWN), while the flat pass kept stalling on the
+deficiency-3 shapes (`3,3,3,2,2,1,1`, `3,3,3,2,1,1,1,1`, `3,3,2,2,2,2,1`
+all UNKNOWN at 7200 s). So the flat second pass was stopped at 118 closed
+with twelve flat cubes not re-attempted at 7200 s, and the remaining
+cubes go straight to sub-cubes, three at a time via `tools/subchain.sh`
+(longest-stalled first): a stall costs 7200 s of a core for nothing, a
+sub-cube sweep closes the same cube in about an hour.
+
+**Closed.** Every one of the 139 cubes is now closed: 118 flat
+(INFEASIBLE in `docs/ladder/rstar_3_3_11.tsv`, 150 746 s of solver time
+in total, slowest `3,3,3,2,2,2` at 7004 s) and 21 by sub-cubes (every
+profile INFEASIBLE in `docs/ladder/rstar_3_3_11.sub.tsv`, 22 485 rows
+after removing 24 duplicates where two workers met on the same profile
+and both said INFEASIBLE, 88 509 s in total, slowest single profile 372 s, no profile ever
+UNKNOWN at the 600 s cap). No row anywhere is FEASIBLE and no witness
+was ever printed. `tools/audit11.py` re-derives the 139 cubes as the
+partitions of 15 into at most eleven parts of size at most 8, regenerates
+every closed-by-sub-cubes cube's profile list with `tools/cubesub.py
+--list`, and checks that each profile has an INFEASIBLE row and that no
+row carries any other verdict or a witness; it exits 0. A fresh-context
+review of the cube list, the model, both symmetry breaks (including the
+cubes where the minimum degree is not unique, where relabelling any
+minimum-degree point to 0 is what makes the profile sorting sound), the
+cut, and the audit script found nothing wrong; its two notes are the
+K = 62 truncation (a prefix, so still sound) and that the ten-point
+ladder ran with K = 56, B = 16 while this one runs K = 62, B = 16, each
+sound on its own. So, **under
+CP-SAT: no 3-uniform family on eleven points with 28 members, no three
+pairwise disjoint, point degree at most 9 and pair degree at most 3.**
+With nine points exact (27) and ten points closed in §56.9, a refutation
+of `r*(3,3) = 3` now needs twelve or more points. Second opinion: none
+yet at eleven points (SCIP confirmed 7 of the 11 ten-point cubes and
+stalled on the rest, §56.9; it is not expected to finish the flat
+eleven-point cubes either). The twelve-point deficiency is 24 on twelve
+points, so the cube count and the per-cube difficulty both grow; the
+profile sub-cube is the tool to reach for first there, not the flat
+cube, and a second opinion should be a proof-logging PB solver rather
+than a second CP solver.
+
+### 56.11 The support bound, second attempt: a type relaxation
+
+**Status: in progress; every bound below is under Frankl's `I(3,3) <= 10`
+(equivalently `s_E <= 7` for every member) unless marked kernel-only.**
+
+§56.3 summed the identity `|M_E| = 3 + s_E` over the members and got
+twenty points from `d_v >= 2`. Two corrections first. The exact optimum
+of that sum alone (degrees in `2..9` summing to 84 with
+`Σ d_v (9 − d_v) <= 196`) is **19**, not 20 (a two-line dynamic program,
+`tools/typelp.py` reproduces it as the no-pair case). And a hand argument
+made here that no point has degree 2 was wrong and is withdrawn: it
+assumed that a member disjoint from `E_1` must meet `E_2` when `E_1` and
+`E_2` share a point, which `ν <= 2` does not say. Nothing in the kernel or
+the ladders depended on it.
+
+**The relaxation.** Forget which triples the members are and keep only
+*types*: a member's type is its sorted degree triple `(d_1 <= d_2 <= d_3)`
+together with the degrees of its three pairs `(e_12, e_13, e_23)`, subject
+to `s_E = Σ (9 − d_i) + Σ (e_ij − 1) <= 7`. Unknowns: `n_d` points of
+degree `d` (`d >= 2`), `t_T` members of each type, `q_{(a,b),e}` point-pairs
+with degree types `a <= b` and pair degree `e in 1..3`. Constraints:
+`Σ t_T = 28`; point incidence `Σ_T t_T · mult_T(d) = d · n_d`; pair
+incidence `Σ_T t_T · mult_T((a,b),e) = e · q_{(a,b),e}`; at most
+`n_a n_b` (or `C(n_a, 2)`) pairs of degree type `(a,b)`; and Kruskal–Katona:
+the members all of whose pairs have degree `>= e` are triples whose
+2-shadow lies among the pairs of degree `>= e`, so those pairs number at
+least the minimum shadow of that many triples (`e = 2, 3`, and the whole
+family against `shadow(28) = 20`). Every 28-member family under the caps
+with `s_E <= 7` yields a solution, so anything the relaxation forbids is
+forbidden. It is a small integer program (329 member types).
+
+**What it gives.** Maximising `Σ n_d`: **15** (CP-SAT, OPTIMAL, proved
+bound 15; without the pair classes it is 19 and without Kruskal–Katona
+still 15). So under Frankl a 28-member family lives on at most fifteen
+points, and the relaxation lists every degree profile it allows at 13, 14
+and 15 points: 285, 87 and 6 profiles (`tools/typeprof.py 7 2 <n>`).
+Those are degree-sequence cubes, and each is a CP-SAT run with the Frankl
+cut `B = 10` instead of the kernel's 16 (`tools/supsweep.sh <n> <cap>`).
+**All 378 cubes are INFEASIBLE** (`docs/ladder/rstar_3_3_support{15,14,13}.tsv`:
+6, 87 and 285 rows, slowest 105 s, no witness; `tools/audit_support.py`
+regenerates the cube lists from the relaxation and checks every cube has
+its INFEASIBLE row at `K = 62, B = 10`; `make audit-support` runs it).
+VALIDATED under CP-SAT. A second opinion on the relaxation itself —
+SCIP, a different engine, deciding the type system for *every* degree
+profile with 16 to 42 points, 68 797 profiles, one at a time
+(`tools/typescip.py 16`) — finished: **none of the 68 797 profiles is
+feasible, none undecided**, agreeing with the certificate below (which is
+what carries 16 and up; SCIP is a cross-check of the CP-SAT relaxation,
+not load-bearing).
+
+**The bound is now a certificate, not a solver verdict.** Only one of
+the pair caps is needed: with just *pairs of two full points number at
+most `C(n_9, 2)`* the optimum is still 15 (and the Kruskal–Katona rows
+are not needed either). With `n_9` fixed that system is a linear
+program, so `tools/typelp_tree.py` branches on `n_9`, then on `n_8`,
+`n_7`, … only where the LP bound is still `>= 16`, and stops at 61
+leaves, every one with LP optimum below 16 (the worst is
+`n_9 = 3, n_8 = 3, n_7 = 1` at `15.958`). `tools/typelp_cert.py` then
+takes each leaf's dual solution, rounds it to rationals, and re-evaluates
+weak duality in exact arithmetic (for the three LP-infeasible leaves, a
+Farkas vector, same evaluation with a zero objective); every leaf
+certifies. `docs/ladder/support15_cert.json` holds the tree and the 61
+vectors, and `tools/support15_check.py` — pure Python, `fractions`, no
+solver — rebuilds the LP from the definition, checks every leaf bound
+exactly, and checks that the tree covers every integer assignment of the
+degree counts. It exits 0. So:
+
+> **PROVEN (exact LP-duality certificate, independently checked):** a
+> 28-member family with `s_E <= 7` for every member and every degree at
+> least 2 — in particular any 28-member family under the caps if
+> `I(3,3) <= 10` — lives on at most **15** points.
+
+A fresh-context review re-derived the identity, re-implemented the
+dual evaluation from scratch (all 61 leaves agree; worst bound `383/24`),
+brute-forced coverage over all 1 065 947 degree-count vectors, and found
+nothing wrong; its two remarks are recorded: the certified LP is the
+*weaker* relaxation (full-pair cap only, no Kruskal–Katona) as stated in
+the checker's docstring, and the checker reads `s_E <= 7` and `d >= 2`
+from the certificate file, which matches the claim. `make support15`
+runs the checker. Not yet in Coq: the checker is Python over rationals, and its two
+ingredients (weak duality for a bounded LP, and the tree's coverage) are
+each a page; a Coq version would be the natural next formalisation, and
+would make §56.3's "twenty" a kernel fifteen once Frankl's value is in.
+
+**Standing.** Under Frankl's `I(3,3) <= 10`: sixteen or more points is
+impossible by the exact certificate (PROVEN modulo Frankl); thirteen,
+fourteen and fifteen points are excluded under CP-SAT with the Frankl
+cut; ten and eleven are excluded under CP-SAT with the kernel cut
+(§56.9–56.10); nine or fewer hold at most 27 (exact). So **a 28-member
+family, if one exists, lives on exactly twelve points**, and the
+twelve-point sweep of §56.10, now running (738 cubes, sub-cubes for the
+stalls), is the last rung: `r*(3,3) = 3` would follow from it,
+conditional on exactly two things — Frankl's value, which is cited and
+not in the kernel, and solver verdicts without proof logs. The
+kernel-only version (`s_E <= 13`, degrees `>= 1`) of the relaxation gives
+24 points and is not being swept.
+
+### 56.12 The twelve-point rung under Frankl, and what is now decided conditionally
+
+The kernel-only twelve-point sweep of §56.10 (cut `B = 16`) is a
+multi-week job: 117 of the first 186 cubes stall at 120 s and the
+sub-cube chain closes about eight of the 323 462 profiles a minute. It
+keeps one core as a long-term job (`docs/ladder/rstar_3_3_12.cubes.txt`
+is its cube list). The decisive rung is the *Frankl-assisted* one, since
+§56.11 is conditional on `I(3,3) <= 10` anyway: with the Frankl cut
+`B = 10` the 328 twelve-point cubes the relaxation allows
+(`docs/ladder/rstar_3_3_support12.cubes.txt`) are **all INFEASIBLE**
+(`docs/ladder/rstar_3_3_support12.tsv`: 5 508 s of solver time in all,
+slowest 99 s, no witness), and then so are the other 410 cubes that the
+relaxation excludes — **all 738 twelve-point cubes are INFEASIBLE with
+`B = 10`** (9 237 s in all, slowest 176 s, no witness), so this rung
+depends on Frankl's value and CP-SAT only, not on the relaxation;
+`tools/audit_support.py` checks all 738 against the regenerated
+partition list.
+
+**Conditional decision.** Put together:
+
+| points | verdict | rests on |
+|---|---|---|
+| `<= 9` | no 28-member family: `28 · 3 = 84 > 81 >= 9 · Δ` | counting (PROVEN) |
+| 10 | 11 cubes INFEASIBLE (9 with no cut, 2 with `B = 16`; §56.9) | CP-SAT |
+| 11 | 139 cubes INFEASIBLE, `B = 16`, 21 by sub-cubes (§56.10) | CP-SAT |
+| 12 | all 738 cubes INFEASIBLE, `B = 10` | CP-SAT (`B = 10` kernel-proved since §56.13) |
+| 13, 14, 15 | 285 + 87 + 6 relaxation-allowed cubes INFEASIBLE, `B = 10` (§56.11) | CP-SAT (relaxation: CP-SAT, SCIP cross-check done) |
+| `>= 16` | exact LP-duality certificate, `make support15` (§56.11) | PROVEN (its hypothesis `s_E <= 7` is §56.13's theorem) |
+
+So: **if Frankl's `I(3,3) <= 10` holds and every CP-SAT INFEASIBLE verdict
+above is correct — the cube verdicts in the ladders *and* the
+relaxation's verdicts that no other degree profile exists at 13–15 points
+(`tools/typeprof.py`, a no-good enumeration whose last step is an
+INFEASIBLE) — then `M <= 27`, i.e. `r*(3,3) = 3`.** Both conditions
+were named when this was written; §56.13 has since discharged the first —
+Frankl's value is `TauThreeTen.tau_three_ten`, axiom-free — so **only the
+solver verdicts remain**, and the row in the table stays `{3, 4}` until
+they are replayed with proof logs (a proof-logging pseudo-Boolean solver,
+§56.10, tried below) or a kernel-checked replay. What *is* established without either condition
+is unchanged: ten and eleven points are closed under CP-SAT alone, and
+the support certificate is exact.
+
+**Proof logging, tried.** RoundingSat (master, built here without
+SoPlex) writes VeriPB proofs and VeriPB 3.0.2 checks them;
+`tools/cube_opb.py` exports a cube as OPB with the same constraints as
+`tools/cuben.py` and `tools/pbrun.sh` runs solve-and-verify. The pipeline
+works: the ten-point cube `6` is `s UNSATISFIABLE` in 25 s and
+**`s VERIFIED UNSATISFIABLE`** by VeriPB in 0.7 s (20 MB proof). It does
+not scale to the ladders on this machine: the twelve-point cube
+`7,5,3,3,3,3` with the Frankl cut, which CP-SAT closes in 12 s, was still
+running after an hour with or without the lex prefix (proof files of
+60 MB to 700 MB), and the ten-point cube `3,2,1` (CP-SAT 1658 s) was stopped
+unfinished after 3.8 hours with a 300 MB proof. So the solver condition in the theorem stays a condition;
+discharging it needs either a much larger machine or a different
+encoding (the cardinality-heavy constraints are what the clause-learning
+and PB engines both struggle with, cf. cadical and SCIP in §56.9). A fresh-context review of this section
+(reduction to 28 members, both cuts against the kernel lemmas, cube
+exhaustiveness regenerated at every rung, ladder integrity, the lex
+prefix at 12–15, the assembly) confirmed it and supplied the three
+wording corrections now made here.
+
+### 56.13 Frankl's value, proved: covering number three gives ten
+
+`coq/TauThreeTen.v`. **Theorem** (`tau_three_ten`, axiom-free, `Print
+Assumptions` closed): a 3-uniform family of distinct members, pairwise
+intersecting, with no two points meeting every member, has at most ten
+members. No degree cap, no pair cap — exactly the statement `TwoCover.v`
+named `FranklTauThree`, which is now `frankl_tau_three`. The ten
+3-subsets of a 5-set (`k53`) meet every hypothesis, so `TauThreeAtMost 9`
+is false and the bound is sharp. With the star (`one_cover_bound`, 9 at
+`r = 3`) and the two-point bound (`TwoCoverSharp`, 10), the intersecting
+bound under Rao's caps at `r = 3` is exactly ten
+(`i_three_three_is_ten`), which is the `B = 10` cut of §56.11–56.12.
+
+**The proof, in a page.** Fix a member `M = {x, y, z}`. Every member meets
+`M`; distinctness leaves `M` alone with all three points. A member
+`{x, y, w}` meeting `M` in two points must meet every member `{z} ∪ f`
+of the `z`-layer outside `M`, so `w` lies in every tail `f` — in the
+*core* of the tail graph `T_z`. Hence
+
+```text
+  |G| <= 1 + Σ_i (|T_i| + core(T_i)),
+```
+
+and the lemma `nine` says the sum is at most nine for three nonempty,
+pairwise cross-intersecting simple graphs, provided (`Tau2`) that for
+every point `c` some edge of the other two graphs avoids `c` or some core
+point of the first graph differs from `c` — which is what "no member
+avoids both `x` and `c`" would violate. If no graph has two disjoint
+edges, each is a star or a triangle; a star with three leaves at `c`
+forces every edge of the others through `c` and `Tau2` fails at `c`
+(`star_contra`); otherwise every graph has `|T| + core(T) <= 3`
+(`int_graph_bound`: an edge with core 2, a two-edge star with core 1, a
+triangle with core 0). If `T_x` has disjoint edges `{a,a'}`, `{b,b'}`,
+every edge of `T_y`, `T_z` is a cross edge; if neither of those has two
+disjoint edges, their union is an intersecting subgraph of a 4-cycle and
+has a common point (`c4_common`), and `Tau2` fails there (`caseB2`); if
+`T_y` has the disjoint edges `{a,b}`, `{a',b'}`, then `T_x` sits inside
+four cross edges, `T_z` inside the two edges `{a,b'}`, `{a',b}`, and one
+of those two excludes the other everywhere, so `3 + 3 + 3 + 0 + 0 <= 9`
+(`caseB1_core`). The family-side bookkeeping (`two_layer_bound`,
+`tau2_of`, `ten_core`) is `TauThree.v`'s peel, with the two-point layers
+counted by cores instead of pair degrees.
+
+**Checks.** `tools/audited.txt` carries the theorems; four mutations
+(`tauthreeten-*`: 9 → 8 in `nine`, 10 → 9 in the theorem, a member
+dropped from `k53`, a disjoint triple added to it) are killed. A
+fresh-context review confirmed the statements against the definitions
+(`Distinct` forbids equal sets in another order; the covering-number
+hypothesis with `p = q` allowed), the identity of the hypotheses with
+`tau_three_bound`'s, the non-vacuity via `k53`, the meaning of `Tau2`
+and its derivation in `tau2_of`, and, by its own exhaustive search on
+5–7 points and randomised search on 8–9, that no such family has eleven
+members; `rust/tests/tau_three.rs` had measured the same ten. The
+proof was found by asking what the sixteen-bound wastes — it charged the
+two-point layers by pair degree and the tails by a degree-capped graph
+lemma — and it uses neither cap.
+
+**Prior art.** The value is Frankl's (the repository cites it as such in
+§24 and §56.5); this file supplies a proof, not a new theorem. No claim
+of novelty is made for the bound; the argument is the development's own
+and was not compared line by line with Frankl's paper, which was not
+re-read for this section.
+
+## 57. Handover — `r*(3,3)` decided on the solver's word, Frankl's value in the kernel
+
+Start here. §54 was the previous pointer; §56 is the section this one
+summarises and every claim below is made there at length. Nothing here
+touches `ι(4)` or the conjecture ledger.
+
+### 57.1 Standing, in one table
+
+| claim | status | where |
+|---|---|---|
+| The size threshold in `SpreadYieldsDisjoint 3 3 3` is tight: a 27-member family under Rao's caps at `r = 3` with no three disjoint members | PROVEN (Coq) | `coq/TightThreshold.v`, §56.2 |
+| An intersecting 3-uniform family under the caps at `r >= 3`, covered by two points and by neither alone, has at most `3r + 1`, attained | PROVEN (Coq) | `coq/TwoCoverSharp.v`, §56.4 |
+| A 3-uniform intersecting family of distinct members with covering number 3 has at most 10 — Frankl's value — with no caps; sharp; hence `I(3,3) = 10` | PROVEN (Coq, axiom-free) | `coq/TauThreeTen.v`, §56.13 |
+| A 28-member family with `s_E <= 7` and degrees `>= 2` (both now theorems via `I(3,3) <= 10`) lives on at most 15 points | PROVEN (exact LP-duality certificate, solver-free Python checker, not Coq) | `make support15`, §56.11 |
+| No 28-member family on 10, 11 points (kernel cut `B = 16`), on 12 points (all 738 cubes, `B = 10`), on 13–15 points (the 378 relaxation-allowed cubes, `B = 10`) | VALIDATED under CP-SAT: INFEASIBLE verdicts with no proof logs | `docs/ladder/rstar_3_3_{10,11,support12,support13,support14,support15}.tsv`, `make audit11`, `make audit-support` |
+| Therefore `M <= 27`, i.e. **`r*(3,3) = 3`** | **CONDITIONAL on the CP-SAT verdicts only** | §56.12 |
+| Nine or fewer points: counting (`84 > 81`) | PROVEN (prose, trivial) | §56.12 |
+| The Sunflower Conjecture | open; no progress claimed | — |
+
+The table in STATUS.md keeps `r*(3,3) ∈ {3, 4}`, because a solver verdict
+without a proof log is not a theorem here (rule in §56.8). Every other
+row of `r*(m,3)` is as §54 left it.
+
+### 57.2 What is owed, in order
+
+1. **Replay the CP-SAT verdicts with checked proofs.** This is the only
+   condition left. RoundingSat + VeriPB were built and work
+   (`tools/cube_opb.py`, `tools/pbrun.sh`; one ten-point cube
+   `VERIFIED UNSATISFIABLE`) but are orders of magnitude slower than
+   CP-SAT on these cardinality-heavy cubes (§56.12): a twelve-point cube
+   CP-SAT closes in 12 s ran over an hour. Options: a bigger machine; a
+   better PB encoding (the lex prefix with `2^61` weights is suspect —
+   try `K = 0` or cardinality-only lex); CaDiCaL with DRAT on a
+   totalizer encoding; or a kernel-checked replay of the *degree-sequence*
+   structure rather than of the solver.
+2. **Formalise the support certificate** (`tools/support15_check.py`,
+   61 leaves, weak duality in exact rationals; the tree's coverage is one
+   induction) so the `>= 16` row is Coq and not Python. With Frankl's
+   value now in the kernel, its hypothesis is a theorem.
+3. **Twelve points kernel-only** is *not* owed: the `B = 10` sweep is
+   kernel-justified since §56.13. The stopped partial `B = 16` ladders
+   (`docs/ladder/rstar_3_3_12.tsv`, `.sub.tsv`) are a record, nothing
+   depends on them.
+4. **Relaxation dependence at 13–15 points**: the cube lists there are
+   the profiles the member-type relaxation allows (a CP-SAT no-good
+   enumeration, cross-checked by SCIP at 16–42 points but not at 13–15).
+   Sweeping *all* cubes at 13–15 with `B = 10` (1524, 2983, 4652 cubes
+   with degrees `>= 2`) would remove it at a few hours each.
+5. **Prior art for the extremal problem itself** (degree `<= 9`, pair
+   `<= 3`, `ν <= 2`, maximum 27): one rendered-page pass (session N+16)
+   found neighbours, not the problem. A second pass — Frankl–Kupavskii on
+   `ν = 2` with degree conditions, and the "Erdős matching conjecture
+   with bounded degree" literature — before any novelty word is used.
+
+### 57.3 How to resume
+
+- `make verify && make coqchk` — green at the branch tip (52 modules, one
+  axiom `Sunflower.ALWZ.Rao20_lemma2`, 789 audited theorems).
+- `make support15`, `make audit11`, `make audit-support` — the three
+  solver-free or solver-verdict audits, all exit 0.
+- `make prcheck PR_BODY=body.md` — the pull-request body is gated;
+  `body.md` at the root is the current one.
+- The scratch runs (solver drivers, RoundingSat/VeriPB builds, the
+  kernel-cut sweep) lived under the session scratchpad and are gone;
+  everything load-bearing is under `docs/ladder/` and `tools/`. To rerun
+  a cube: `tools/cuben.py <n> <parts> 1 <cap> 62 <B>`; a sub-cube:
+  `tools/cubesub.py`; the relaxation: `tools/typelp.py`,
+  `tools/typeprof.py`, `tools/typescip.py`; the certificate:
+  `tools/typelp_tree.py`, `tools/typelp_cert.py`.
+- Rules that held this session and should hold the next: a stall is not
+  a verdict; a solver verdict is "under CP-SAT" until replayed; no
+  novelty word without a rendered-page search; every hand argument that
+  reaches a contradiction gets a computer check before it is written down
+  (§56.11 records one that was wrong and withdrawn).

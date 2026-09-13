@@ -912,5 +912,54 @@
     "redistributable": false,
     "read": "not read (9 pages rendered)",
     "bears_on": "Erdos-Rado sunflower problem for vector spaces."
+  },
+  {
+    "key": "Kha14",
+    "file": "khare_linear.pdf",
+    "kind": "arxiv",
+    "arxiv": "1304.4791v1",
+    "title": "Size of a 3-uniform linear hypergraph",
+    "authors": [
+      "Niraj Khare"
+    ],
+    "published": "2013-04-17",
+    "updated": "2013-04-17",
+    "journal_ref": "Discrete Math. 334 (2014) 26-37, as 'On the size of 3-uniform linear hypergraphs' (per [Hou17] ref. [15], p. 16; journal version not opened)",
+    "doi": null,
+    "license": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+    "url": "https://arxiv.org/pdf/1304.4791v1",
+    "retrieved": "2026-09-08",
+    "sha256": "52a6e8b4479fa84cb952c5986ece5c4e9fa9de556d49d6a39c6825d5c29aa4cc",
+    "bytes": 244316,
+    "pages": 21,
+    "redistributable": false,
+    "read": "read pp. 1-3 of 21",
+    "bears_on": "Chvatal-Hanson for LINEAR 3-graphs only (codegree 1): Thm 2 |F| <= 2 Delta nu for Delta >= 5, Thm 3 |F| <= Delta nu for Delta >= (23/6) nu (1+1/(nu-1)); ineq. (1) p. 3 the trivial (Delta-1) k nu + nu. Says nothing about codegree 3; docs/roadmap.md section 56."
+  },
+  {
+    "key": "Hou17",
+    "file": "hou_codegree.pdf",
+    "kind": "arxiv",
+    "arxiv": "1709.07208v1",
+    "title": "The size of 3-uniform hypergraphs with given matching number and codegree",
+    "authors": [
+      "Xinmin Hou",
+      "Lei Yu",
+      "Jun Gao",
+      "Boyuan Liu"
+    ],
+    "published": "2017-09-21",
+    "updated": "2017-09-21",
+    "journal_ref": "zbMATH 7004803 lists a 2019 journal version (Hou, Yu, Gao); not opened",
+    "doi": null,
+    "license": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+    "url": "https://arxiv.org/pdf/1709.07208v1",
+    "retrieved": "2026-09-08",
+    "sha256": "3a2699097d4b3c0066f09803bd9cb57b04ea0d87ded2558455c2d2a584bb3027",
+    "bytes": 178657,
+    "pages": 16,
+    "redistributable": false,
+    "read": "read pp. 1-4 and 15-16 of 16",
+    "bears_on": "Thm 2 p. 3: codegree-only bound e(H) <= f(n,nu,Delta_2) for n large, no vertex-degree parameter; for nu=2, Delta_2=3 it is 3(n-2), unbounded in n. Its introduction lists the state of the art as graphs -> linear 3-graphs -> codegree; no degree-capped non-linear version. docs/roadmap.md section 56."
   }
 ]
