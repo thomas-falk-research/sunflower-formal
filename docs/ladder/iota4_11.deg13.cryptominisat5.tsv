@@ -7839,6 +7839,113 @@
 # fixed at 0542580.  Budget rule does not fire.  Bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ================================================================
+# p=5 REGISTRATION RESOLVES: *** VERDICT: HOLDS *** -- AND ITS PRIOR
+# BASE RATE WAS 100 PERCENT, SO IT WAS VERY NEARLY A FREE PREDICTION
+# ================================================================
+#
+# idx 617 landed UNSAT at 3453.6 s.  With c616 = 1185.4 s that fixes
+# the numerator, and the registered condition becomes unmeetable:
+#
+#   registered 0542580: median(c616,c617)/median(c614,c615) < 1.10, K=2
+#   REFUTED iff c616 + c617 >= 1.10*(c614 + c615)
+#           iff 4639.0 >= 6667.65 + 1.10*c615
+#   The RHS is smallest at c615 = 0, where it is 6667.65, and
+#   4639.0 < 6667.65.  SO REFUTATION IS IMPOSSIBLE FOR ANY c615 >= 0.
+#
+#   *** VERDICT: HOLDS *** -- stated as a VERDICT, which is what 8263cab
+#   requires of a bound.  The EXACT ratio still needs c615, which is
+#   running; it is bounded above by 0.7653 unconditionally and by
+#   0.4257 given the 4836 s c615 has already run.
+#
+# THE TIME-STAMPED CONDITIONAL FIRED.  820d735, written at 17:56Z, said
+# p=5 holds if c617 lands before the then-current deadline (19:53:00Z,
+# labelled a floor, later 20:30:29Z).  c617 landed 18:38:56Z, inside by
+# 111.5 minutes.  IT WAS SUFFICIENT-ONLY AND COULD NEVER HAVE REFUTED
+# (8b0acc7), so firing is worth less than it looks.
+#
+# THE TALLY IS TWELVE REGISTERED PREDICTIONS, ELEVEN HOLDING, ONE
+# FAILING.  And now the part that matters more.
+#
+# ----------------------------------------------------------------
+# THE PRIOR BASE RATE AT p=5 IS NINE OF NINE. ONE HUNDRED PERCENT.
+# ----------------------------------------------------------------
+#
+# Measured by the same boundary rule, VALIDATED FIRST by reproducing
+# all three known results exactly (p=8 -> 1.4644, p=7 -> 1.5778,
+# p=6 -> 0.8626) before being trusted on p=5:
+#
+#   idx  82  0.6379     idx 417  0.3609
+#   idx 198  0.3347     idx 459  0.6439
+#   idx 290  0.4364     idx 490  0.3835
+#   idx 362  0.6551     idx 513  0.3415
+#                       idx 529  0.2285
+#
+# EVERY prior p=5 boundary was already below 1.10, most of them far
+# below -- the largest is 0.6551, not close to the threshold.  So
+# "predict < 1.10 at p=5" succeeds 100 percent of the time from the
+# prior majority alone, with NO gradient input whatsoever.  0542580
+# called p=5 and p=4 the sharpest test in the block.  ON THE EVIDENCE
+# THIS ONE WAS THE CHEAPEST PREDICTION IN THE WHOLE SET: the three
+# earlier calls sat on base rates of 91.7, 81.8 and 90.0 percent; this
+# one sat on 100.0.
+#
+# Combined with 4e5e443's 0.675 for the first three, the joint
+# probability of FOUR-FOR-FOUR from always predicting the prior
+# majority is 0.675 * 1.000 = 0.675 -- UNCHANGED, because a
+# hundred-percent base rate adds no difficulty at all.  NEVER QUOTE
+# 4-FOR-4 WITHOUT THAT 0.675.
+#
+# And the mechanism the deflation at 82ac8d7 predicted is exactly what
+# happened.  Against a block median of 3738.9 s: BOTH numerator cubes
+# came in below it (c616 0.32x, c617 0.92x) while the finished
+# denominator cube came in 1.62x above it and the other denominator
+# cube is still running at 1.29x.  A small numerator over a large
+# denominator is the whole of it.
+#
+# ----------------------------------------------------------------
+# TENTH INSTANCE OF "A SCRIPT WHOSE OUTPUT ASSERTS WHAT ITS CODE DOES
+# NOT DO" -- AND IT IS 8263cab's BOUND-AS-RANK ERROR, RECURRING.
+# ----------------------------------------------------------------
+#
+# The base-rate script printed: "this instance's ratio is bounded above
+# by 0.4257, so it is BELOW the prior median 0.3835 -- that is now FOUR
+# of FOUR below their in-prefix medians."
+#
+# FALSE, AND FALSE IN MY FAVOUR.  0.4257 is an UPPER BOUND; the true
+# ratio lies in (0, 0.4257]; and 0.3835 LIES INSIDE THAT INTERVAL.  The
+# code computed a bound and the output asserted a rank -- which is
+# precisely the error 8263cab is on the books for, committed again
+# while writing up a prediction whose own header cites it.
+#
+#   ratio < 0.3835  iff  c615 > 6035.0 s.  c615 had run 4837 s.
+#   SO AS OF NOW THE RATIO IS **ABOVE** THE PRIOR MEDIAN, the opposite
+#   of what the script claimed, and it only falls below if c615 keeps
+#   running.
+#
+# CORRECTED COUNT: p=8, p=7 and p=6 are below their in-prefix medians.
+# THREE OF THREE, not four of four.  p=5 IS UNDETERMINED.
+#
+# A GENUINELY TWO-SIDED THRESHOLD, RECORDED BEFORE IT RESOLVES, which
+# the failed claim was not:
+#
+#   c615 started 17:18:23Z and crosses 6035.0 s at 18:58:57Z.
+#   IF c615 LANDS BEFORE 18:58:57Z -> ratio ABOVE the prior p=5 median.
+#   IF c615 LANDS AFTER  18:58:57Z -> ratio BELOW it.
+#
+# Written at 18:39Z, twenty minutes ahead, and it can be wrong either
+# way.  It does NOT touch the verdict: p=5 HOLDS regardless, since even
+# the c615 = 0 bound of 0.7653 is far below 1.10.
+#
+# ----------------------------------------------------------------
+#
+# 617 of 1949 (31.7 percent), 1332 remain.  Frontier contiguous 0..614,
+# one hole at 615 -- the cube still running, which 616 and 617 both
+# overtook by being cheaper.  p=4 at idx 630 remains open and unchanged
+# with all four cubes unstarted; its own prior base rate must be
+# computed BEFORE it resolves, not after.  Budget rule does not fire.
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8625,3 +8732,4 @@ g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 9, 9]	UNSAT	11876.7
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 10, 10, 9]	UNSAT	12267.7
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 10, 8]	UNSAT	12592.0
 g=11 [13, 13, 12, 12, 13, 12, 12, 12, 12, 12, 5]	UNSAT	1185.4
+g=11 [13, 13, 12, 12, 13, 12, 12, 12, 12, 11, 6]	UNSAT	3453.6
