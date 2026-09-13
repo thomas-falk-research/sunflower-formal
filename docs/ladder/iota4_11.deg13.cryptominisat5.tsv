@@ -7553,6 +7553,74 @@
 # "ratios are uniformly smaller outside the prefix" reading, both are
 # biased TOWARD holding, so a hold is not a clean confirmation.
 #
+# ----------------------------------------------------------------
+# FIRST ROW AFTER RESTART #30: THE PER-ATTEMPT CLAIM, MEASURED
+# ----------------------------------------------------------------
+#
+# idx 612 landed UNSAT at 2709.9 s, at 15:02:12Z.  It is the first row
+# banked under the new driver, and it closes the restart accounting
+# with a measurement rather than an assertion.
+#
+# DERIVED RECONCILIATION (cube derived from the label through the
+# regenerated cube list, never hardcoded -- ab1bb14):
+#
+#   landed 15:02:12Z  minus recorded 2709.9 s  ->  implied start 14:17:02Z
+#   the waiter polls every 20 s, so the row landed in (15:01:52, 15:02:12]
+#   and the implied start therefore lies in (14:16:42, 14:17:02]
+#   this cube's CNF under the NEW pid was written 14:16:54.639Z
+#   -- INSIDE that interval.  Reconciles.
+#
+# THE POINT: the same cube had ALREADY started once, at 13:41:08Z under
+# the dead pid, and burned 1863.5 s before the kill.  If cost were
+# cumulative the implied start would sit back near 13:41Z.  It does
+# not.  RECORDED COSTS ARE PER-ATTEMPT -- carried as a claim since
+# 2d24e48, now measured directly, and the 1863.5 s really is gone, as
+# the 7.204 CPU-hour figure at 72dd356 said.
+#
+# ----------------------------------------------------------------
+# NINTH INSTANCE OF "A SCRIPT WHOSE OUTPUT ASSERTS WHAT ITS CODE DOES
+# NOT DO" -- MINE, IN THE VERY SCRIPT THAT RAN THE ABOVE.
+# ----------------------------------------------------------------
+#
+# The reconciliation script printed:
+#     "the gap is 2154.1 s = the discarded pre-kill run"
+# The code computed implied_start minus original_start.  That quantity
+# is NOT the discarded pre-kill run.  It is the discarded run PLUS the
+# downtime between the kill and the relaunch:
+#
+#   discarded pre-kill run (13:41:08 -> 14:12:11.9)   1863.5 s
+#   downtime               (14:12:11.9 -> 14:17:02)    290.1 s
+#   sum, which is what the code actually computed      2153.6 s
+#
+# The LABEL overstated the discarded run by 290.1 s, 15.6 percent too
+# high.  The arithmetic was right and the conclusion is unaffected --
+# the 7.204 CPU-hour loss at 72dd356 was computed separately, straight
+# from the [killed] marker, and does not depend on this line.  But the
+# error is the same shape as the other eight and is logged as the
+# ninth, one commit after the eighth, because a pattern that recurs
+# twice in an hour is not a historical curiosity.
+#
+# ----------------------------------------------------------------
+#
+# FRONTIER SHAPE, AND WHY IT IS THE NORMAL ONE.  610 of 1949 decided
+# (31.3 percent), 1339 remain, but the contiguous prefix is STILL
+# 0..608 and there are now THREE HOLES, at 609, 610 and 611 -- exactly
+# the three cubes still in flight.  idx 612 banked first because it was
+# the cheapest of the four, not because it was furthest along.  A HIGH
+# INDEX IS NOT COMPLETION; rows land in COMPLETION order.  Holes open
+# and close routinely and must be MEASURED every time, never assumed.
+#
+# Block [13,13,12,12] at 51 of 82, costs 54.1 to 11254.0 s, deepest
+# 52.1 percent of the 21600 s cap -- unchanged by this row, which at
+# 2709.9 s sits unremarkably inside the range.  Budget rule does not
+# fire: the last twelve attempts hold 12 UNSAT and the rule needs 0
+# or 1.
+#
+# Both registered predictions still open and unchanged, fixed at
+# 0542580: p=5 at idx 616 and p=4 at idx 630, both "< 1.10", K=2.  All
+# eight of their cubes remain unstarted -- idx 612 is not one of them.
+# No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -8332,3 +8400,4 @@ g=11 [13, 13, 12, 12, 13, 13, 12, 12, 11, 10, 7]	UNSAT	10944.4
 g=11 [13, 13, 12, 12, 13, 13, 12, 12, 11, 9, 8]	UNSAT	11254.0
 g=11 [13, 13, 12, 12, 13, 13, 12, 11, 11, 11, 7]	UNSAT	7934.6
 g=11 [13, 13, 12, 12, 13, 13, 12, 12, 10, 9, 9]	UNSAT	10005.4
+g=11 [13, 13, 12, 12, 13, 13, 12, 10, 10, 10, 10]	UNSAT	2709.9
