@@ -8290,6 +8290,64 @@
 # Budget rule does not fire.  Sixteen cubes to the block boundary at idx
 # 640.  No verdict changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# p=4 TIME-STAMPED CONDITIONAL, RECORDED WITH c631 STILL RUNNING
+# ----------------------------------------------------------------
+#
+# idx 630 landed UNSAT at 482.9 s -- a NUMERATOR cube of the p=4
+# registration, and a very cheap one.  629 of 1949 (32.3 percent), 1320
+# remain, frontier contiguous 0..624 with holes at 625 and 628, both in
+# flight.
+#
+# With c629 and c630 both final the registered condition collapses to a
+# single inequality in c631:
+#
+#   REFUTED iff c630 + c631 >= 1.10*(c628 + c629)
+#           iff c631 >= 1.10*c628 + 1.10*1181.1 - 482.9
+#           iff c631 >= 1.10*c628 + 816.31
+#
+# c628 IS STILL RUNNING and has reached 5842 s, so c628 > 5842 is KNOWN,
+# putting a floor under the bar:
+#
+#   c631 must reach AT LEAST 7242.2 s for refutation to stay alive.
+#
+# c631 started 23:00:11Z and has run 336 s.  THEREFORE:
+#
+#   *** IF c631 LANDS BEFORE 2026-09-14 01:00:53Z, p=4 HOLDS. ***
+#
+# Recorded 2026-09-13 23:05:47Z, 115 MINUTES AHEAD.  The bar rises 1.10 s
+# for every further second c628 runs, so that deadline is a FLOOR and can
+# only move later.  SUFFICIENT-ONLY AND CANNOT REFUTE (8b0acc7): c631
+# running past it refutes nothing, it merely keeps refutation possible.
+#
+# ----------------------------------------------------------------
+# THE TWO MECHANICAL EFFECTS NOW POINT OPPOSITE WAYS.
+# ----------------------------------------------------------------
+#
+# Against a block median of 4411.6 s:
+#
+#   c629 = 1181.1 s = 0.27x median   DENOMINATOR small -> HARDER
+#   c630 =  482.9 s = 0.11x median   NUMERATOR   small -> EASIER
+#
+# 3e192aa registered the first of these before any numerator cube had
+# finished, and it still stands.  The second now partly cancels it, and
+# c628 and c631 will decide which dominates.  NEITHER IS FORESIGHT --
+# both are cube costs I did not choose and could not have known.  The
+# honest position is that p=4's mechanical situation is MIXED, unlike
+# p=5's, where a 1.62x denominator and two below-median numerators all
+# pushed the same way.
+#
+# WHATEVER HAPPENS, A HOLD STILL CONFIRMS VERY LITTLE.  The prior base
+# rate at p=4 is SEVEN OF SEVEN = 100 PERCENT (42a0eda, computed before
+# any of its cubes started), the largest prior being 0.5079, less than
+# half the threshold.  Predicting "< 1.10" here succeeds from the prior
+# majority alone with no gradient input, and the joint five-for-five
+# figure stays 0.675.  NEVER QUOTE 5-FOR-5 WITHOUT IT.
+#
+# Registration unchanged, fixed at 0542580.  Budget rule does not fire.
+# Sixteen cubes to the block boundary at idx 640.  No verdict changes.
+# The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -9088,3 +9146,4 @@ g=11 [13, 13, 12, 12, 13, 12, 11, 11, 11, 11, 9]	UNSAT	2825.5
 g=11 [13, 13, 12, 12, 13, 12, 12, 11, 11, 11, 8]	UNSAT	7744.3
 g=11 [13, 13, 12, 12, 13, 11, 11, 11, 11, 11, 10]	UNSAT	1181.1
 g=11 [13, 13, 12, 12, 13, 12, 12, 11, 10, 10, 10]	UNSAT	8664.2
+g=11 [13, 13, 12, 12, 12, 12, 12, 12, 12, 12, 6]	UNSAT	482.9
