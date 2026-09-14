@@ -8761,6 +8761,95 @@
 # to it permanently.  No verdict changes.  The bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ---------------------------------------------------------------------
+# THE REGISTERED FORWARD TEST -- RUN ONCE, 2026-09-14.  RESULT: NULL.
+#
+# Registered at 6ec69dc; stopping rule fixed at c0a21ca BEFORE any of its
+# data existed: run at the first of (a) >= 20 decided consecutive triples
+# in block [13,13,12,11], or (b) the block complete.  Condition (a) was
+# met on the row for idx 662 (67a89cd), at 22 of 65 members decided and
+# exactly 20 triples.  No in-block CV was computed or looked at before
+# that point.  Run once.  This is the result, reported as promised.
+#
+# WHAT THE TEST ASKS.  Block [13,13,12,12] appeared unusually "tight" --
+# its consecutive triples had median CV 0.1260 against 0.2843 elsewhere
+# (6ec69dc).  But that block was examined BECAUSE a tight trio turned up
+# inside it, so the finding was contaminated by selection.  The forward
+# test puts the same question to the NEXT block, whose data had no hand
+# in raising it.
+#
+# CONVENTION, fixed and stated in full before any in-block value was
+# computed.  Unit: decided consecutive triple (i, i+1, i+2 all decided).
+# Value: CV = sample sd / mean (ddof = 1) of the three DECIDED costs
+# (decided cost per 6ec69dc = max over the label's non-UNKNOWN rows).
+# Stratum: length of the common leading prefix of all THREE degree
+# sequences.  Statistic: pooled median CV in-block minus pooled median CV
+# over all other triples.  Null: reassign the in-block labels at random
+# WITHIN each stratum, preserving each stratum's in-block count; 20000
+# shuffles; random.Random(20260913).  p one-sided in the predicted
+# direction (in-block smaller), (k + 1) / 20001.
+#
+# RESULT.  20 in-block triples against 641 others.
+#   median CV in-block 0.1069   all other triples 0.2801   diff -0.1731
+#   2469 of 20000 shuffles at or below the observed difference
+#   p = 0.1235     -- NOT SIGNIFICANT.  THE TEST DOES NOT CONFIRM.
+#
+# WHY THE RAW GAP IS NOT THE STORY.  Per stratum (agreement: n_in med_in
+# vs n_out med_out):
+#     7:   2  0.3875  vs   94  0.3212
+#     8:   7  0.1031  vs  207  0.1703
+#     9:  11  0.0971  vs  206  0.1144
+# Eighteen of the 20 in-block triples sit at agreement 8 or 9, where
+# triples are already tight everywhere.  The 0.1069-vs-0.2801 gap is
+# mostly that confound, which is exactly what holding agreement fixed was
+# meant to remove -- and when it is removed, the effect does not survive.
+#
+# COMPANIONS, all declared before computing and all reported whatever
+# they gave:
+#   1. registered test, [13,13,12,12] triples dropped from the comparison
+#      set: 0.1069 vs 0.2858, p = 0.1157.  Null.
+#   2. the 6ec69dc form on the new block -- triples, CV, UNSTRATIFIED:
+#      p = 0.0112.  "Significant", and it is the confounded version; the
+#      contrast with 0.1235 shows what the stratification is doing.
+#   3. the 29785de form on the new block -- PAIRS, relative gap,
+#      stratified: 0.1558 vs 0.2042, p = 0.5435.  Flatly null.
+#   4. reference, not a test of anything new: [13,13,12,12] itself under
+#      this same convention on today's fuller file gives 0.2358 vs
+#      0.2766, p = 0.3230.  The original block does not survive its own
+#      successor's method either.
+#
+# VERDICT.  Per the registration, "a null says the original was
+# selection".  It is a null.  The [13,13,12,12] tightness is best read as
+# selection plus a prefix-agreement confound, and is withdrawn as a
+# finding.  Stated with its limit: 20 in-block triples is little power,
+# so this is a FAILURE TO CONFIRM, not a demonstration that no block
+# effect exists.  It is not entered in the prediction tally in either
+# direction -- the registration named no side, promising only that both
+# outcomes would be reported, and a test with no side named can be
+# neither a hit nor a miss (same rule that keeps 255adbc's two-sided cap
+# disjunction out).  Tally stays THIRTEEN REGISTERED, TWELVE HOLDING, ONE
+# FAILING, with its two standing qualifications.
+#
+# ONE DEFECT IN THE REGISTRATION ITSELF, found while running it and
+# recorded because it weakens this result.  The analysis scripts were
+# never committed -- only docs/ladder/** is in the repo -- so "the same
+# stratified permutation test" had to be re-implemented from the prose.
+# Every DESCRIPTIVE statistic reproduces EXACTLY: 6ec69dc's 0.1260 (n=62)
+# vs 0.2843 (n=559), and 29785de's per-stratum medians 0.2309/0.0776/
+# 0.1051 in-block against 0.4336/0.2634/0.1311 elsewhere at agreement
+# 7/8/9, and its 8.47-vs-8.10 mean pair agreements.  The p does NOT:
+# 29785de's stratified p = 0.0117 could not be reproduced under any
+# convention tried (pooled-median difference gave 0.0235, mean of
+# per-stratum median differences 0.0955), and the search was STOPPED
+# rather than continued, because trying conventions until one reproduces
+# a target is the same tuning the pre-registration exists to prevent.
+# That reproduction also showed 29785de's p = 0.0117 was computed on
+# PAIRS with relative gap, not on triples with CV -- so the phrase "the
+# same stratified permutation test on median CV" fused a statistic from
+# one result with a stratification from another, a combination that had
+# never actually been run on [13,13,12,12].  A pre-registration must ship
+# its code, not its description.
+# ---------------------------------------------------------------------
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
