@@ -8582,6 +8582,62 @@
 # FIVE UNDECIDED MEMBERS REMAIN: 635, 637, 638, 639, 640.  No verdict
 # changes.  The bracket stays 27 <= iota(4) <= 71.
 #
+# ----------------------------------------------------------------
+# CLOSING A LOOPHOLE IN MY OWN FORWARD TEST, BEFORE ITS DATA EXISTS
+# ----------------------------------------------------------------
+#
+# idx 643 landed UNSAT at 1817.8 s.  643 of 1949 (33.0 percent), 1306
+# remain.  Frontier contiguous 0..637 with the single hole at 638, the
+# last undecided member of block [13,13,12,12].  Reconciles: implied
+# start in (09-14 00:43:13, 00:43:33] against a CNF written
+# 00:43:29.507Z.
+#
+# With 641, 642 and 643 all decided, BLOCK [13,13,12,11] NOW HAS ITS
+# FIRST DECIDED CONSECUTIVE TRIPLE -- the first data the forward test
+# registered at 6ec69dc will ever see.
+#
+# THAT TEST AS WRITTEN SAYS "when the next block has ENOUGH decided
+# triples".  ENOUGH IS NOT A NUMBER.  Left as it stands I could run the
+# test at whatever count happened to give the answer I liked, and call
+# it pre-registered because the METHOD was fixed even though the STOPPING
+# RULE was not.  That is the same defect as a tally without a base rate:
+# the shape of the claim looks rigorous while a free parameter does the
+# work.
+#
+# SO IT IS FIXED NOW, WITH EXACTLY ONE TRIPLE IN HAND AND ITS VALUE
+# DELIBERATELY NOT YET COMPUTED:
+#
+#   RUN THE TEST AT THE FIRST OF THESE TWO MOMENTS:
+#     (a) block [13,13,12,11] has AT LEAST 20 decided consecutive
+#         triples, or
+#     (b) the block is complete (all 65 members decided, which admits
+#         at most 63 triples).
+#   Then compare its median CV against the median CV of all triples
+#   outside it, by the SAME stratified permutation test holding prefix
+#   agreement fixed, 20000 shuffles, seed 20260913.
+#   RUN IT ONCE, AT THAT MOMENT, AND REPORT WHATEVER IT GIVES.
+#
+# Twenty is chosen for comparability, not for taste: the [13,13,12,12]
+# result that raised the question rested on 62 in-block triples against
+# 559 outside, and twenty is the smallest count at which a median is
+# worth quoting at all.  I have NOT looked at the cost of 641, 642 or
+# 643 as a triple, and I am not going to before the threshold is in the
+# file.
+#
+# WHAT THE TEST CAN AND CANNOT SETTLE.  The in-block result for
+# [13,13,12,12] was median CV 0.1260 against 0.2843 elsewhere, p =
+# 0.0117 with prefix agreement held fixed.  It is SUGGESTIVE ONLY,
+# because that block was chosen for testing AFTER a tight run turned up
+# inside it.  This forward test is the honest version: same statistic,
+# same method, on a block named in advance.  A confirming result would
+# be evidence; a null result would say the original was selection.
+# EITHER OUTCOME GETS REPORTED.
+#
+# One undecided member remains in [13,13,12,12]: idx 638, running 65
+# minutes.  When it lands the block is complete and the rebase trigger
+# fires.  Budget rule does not fire.  No verdict changes.  The bracket
+# stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
@@ -9394,3 +9450,4 @@ g=11 [13, 13, 12, 11, 13, 13, 13, 13, 13, 13, 1]	UNSAT	144.8
 g=11 [13, 13, 12, 12, 12, 12, 11, 11, 11, 11, 10]	UNSAT	2034.8
 g=11 [13, 13, 12, 11, 13, 13, 13, 13, 13, 12, 2]	UNSAT	1405.6
 g=11 [13, 13, 12, 12, 12, 12, 12, 11, 11, 11, 9]	UNSAT	3351.7
+g=11 [13, 13, 12, 11, 13, 13, 13, 13, 13, 11, 3]	UNSAT	1817.8
