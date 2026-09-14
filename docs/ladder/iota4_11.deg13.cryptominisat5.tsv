@@ -8702,6 +8702,65 @@
 # fixed at c0a21ca.  No verdict changes.  The bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ================================================================
+# CONTAINER RESTART #31 -- THE FIRST SINCE THE REBASE, AND THE REBASE
+# SURVIVED IT
+# ================================================================
+#
+# The container restarted at 03:08:57Z on 2026-09-14, killing driver pid
+# 23104 and the waiter armed on it.  Relaunched 03:09Z on pid 24731.
+#
+# ZERO ROWS LOST.  Independent recount after the kill: 818 rows, 649
+# labels, 649 UNSAT, 0 SAT, 0 labels undecided-only (the 169 UNKNOWN
+# rows are all superseded by a later UNSAT on the same label).  Frontier
+# contiguous 0..648, no holes.  Identical to the state at 6dd5735.
+#
+# RESUME VERIFIED, NOT ASSUMED.  The driver's banner reads "checkpoint:
+# 649 of 1949 cubes already decided", and the new pid's first four CNFs
+# are exactly c649, c650, c651, c652 -- the four in flight at the kill.
+#
+# AND THE REBASE HELD.  This was the first container restart since the
+# branch was rebased onto main at 109dc97, and a restart is exactly the
+# kind of event that could have left the working tree on a stale or
+# detached state.  It did not: local and remote are both 6dd5735, the
+# tree is clean, and origin/main IS STILL AN ANCESTOR of this branch.
+# Checked rather than assumed, because "the rebase survived" is a claim
+# about the repository and not about the sweep.
+#
+# WORK LOST: 12938.1 s = 3.594 CPU-hours, measured from each cube's CNF
+# mtime to the [killed] marker at 03:08:57Z, NOT from /proc/stat btime.
+#
+#   c649  started 02:06:06Z   lost 3770.4 s
+#   c650  started 02:10:10Z   lost 3526.2 s
+#   c651  started 02:11:26Z   lost 3450.6 s
+#   c652  started 02:32:26Z   lost 2191.0 s
+#
+# Eight involuntary restarts have now been measured this way: 5.16,
+# 1.19, 4.80, 2.645, 1.330, 2.111, 7.204, 3.594 CPU-hours.  This one
+# ranks FOURTH of eight -- unremarkable, which is the point.  The loss
+# is set by how deep the four workers happen to be when the kill lands
+# and by nothing else, and reading a trend into eight draws of that
+# would be the same mistake declined at 72dd356.
+#
+# THE 0.944 CPU-HOURS DISCARDED AT 01:31Z IS NOT PART OF THIS SERIES.
+# That was a DELIBERATE stop, chosen by me at a moment I picked, to do
+# the rebase.  Mixing a voluntary cost into a series measuring
+# involuntary ones would flatter the involuntary series and muddy both.
+# Kept separate on purpose.
+#
+# Container is 4 x Intel Xeon at 2.10GHz, 16461028 kB -- the NINTH
+# consecutive container with an identical spec.
+#
+# POSITION UNCHANGED: 649 of 1949 (33.3 percent), 1300 remain.  Block
+# [13,13,12,12] closed at 82 of 82.  Forward-test block [13,13,12,11]
+# has eight decided cubes and six decided consecutive triples against
+# the threshold of twenty fixed at c0a21ca; the restart does not touch
+# that test or its stopping rule.  All five registrations from 0542580
+# remain resolved and closed; the tally stays THIRTEEN REGISTERED,
+# TWELVE HOLDING, ONE FAILING, with the 0.675 joint base rate attached
+# to it permanently.  No verdict changes.  The bracket stays
+# 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
