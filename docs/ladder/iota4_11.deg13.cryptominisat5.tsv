@@ -8512,6 +8512,76 @@
 # Budget rule does not fire.  No verdict changes.  The bracket stays
 # 27 <= iota(4) <= 71.
 #
+# ================================================================
+# SEVENTEENTH INSTANCE, AND THE FIRST ONE THAT DAMAGED THE MACHINERY
+# RATHER THAN JUST A SENTENCE: A FALSE "WAITER EXITED" ARMED A
+# DUPLICATE WAITER
+# ================================================================
+#
+# No new row in this commit.  It records a defect in the banking
+# procedure itself, which is what this file is for.
+#
+# WHAT THE CHECK CLAIMS.  After every push the standing procedure runs
+#     grep -q '\[exited' <waiter output file>
+# and reports "waiter: must re-arm" on a match.  The label says THIS
+# WAITER HAS EXITED.  The code says THIS FILE CONTAINS THAT STRING
+# ANYWHERE.
+#
+# WHY THOSE DIVERGED.  While reading a fired waiter I had begun echoing
+# the PREVIOUS waiter's output into the NEXT waiter's command, to see
+# both in one place.  That copied the previous waiter's literal
+# "[exited with code 0]" line into the new waiter's output file, on line
+# 7, ABOVE the new waiter's own startup line.  From then on the check
+# matched on the echoed text and reported "must re-arm" every time,
+# whatever the live waiter was doing.
+#
+# AND IT WAS NOT HARMLESS.  Acting on that false report I armed a
+# SECOND waiter on the same driver pid, both at 805 rows:
+#
+#   btinq3h3d  armed 804, fired 00:09:41Z with idx 636   -> exited
+#   bdegmazfg  armed 805 at 00:09:52Z                    -> LIVE
+#   bwulimsc7  armed 805 at 00:10:45Z                    -> LIVE, duplicate
+#
+# Two waiters watching one pid would both have fired on the next row,
+# delivering the same row twice.  The banking guard would have caught a
+# double-add (the staged diff must show exactly one new row), but the
+# bookkeeping would have been wrong and the notifications confusing.
+# The duplicate was stopped and exactly one waiter now remains, verified
+# by scanning /proc for the literal text "waiter armed at".
+#
+# WHAT CAUGHT IT was a contradiction, not vigilance: the check said the
+# waiter had EXITED while `git status` showed a clean tree and no new
+# row.  A fired waiter and no new row cannot both be true.
+#
+# TWO MORE OF THE SAME FAMILY, COMMITTED WHILE DIAGNOSING THIS ONE.
+# Trying to count live waiters I searched process command lines for the
+# literal "kill -0 8086" -- first with awk, then with a /proc scan.
+# BOTH REPORTED ZERO WAITERS WHILE ONE WAS RUNNING.  The script contains
+# `kill -0 $PID`, a variable; the number 8086 never appears in any
+# command line.  Right idea, pattern that cannot match.  Searching
+# instead for "waiter armed at", which IS literal in the script, found
+# the one live loop immediately.
+#
+# THE FIXES, BOTH NARROW AND CHECKABLE:
+#   1. A waiter command must NOT echo any earlier waiter's output into
+#      its own stdout.  Read the old file in a separate invocation.
+#   2. The exit check must be ANCHORED to the end of the file:
+#          tail -1 "$W" | grep -q '\[exited'
+#      A waiter that has exited has that line LAST, not merely somewhere.
+#   3. When grepping process tables, match text that is LITERAL in the
+#      script, never a value the shell substitutes at run time.
+#
+# That is seventeen instances of one habit, and the pattern has now
+# moved from misdescribing a result to misdirecting an action.  The
+# standing lesson holds and gets sharper: MAKE THE LABEL STATE THE
+# FILTER.  "This file mentions [exited" and "this waiter exited" are
+# different claims, and only the second was worth acting on.
+#
+# 636 of 1949 (32.6 percent), 1313 remain, block [13,13,12,12] at 77 of
+# 82, frontier contiguous 0..634 with one hole at 635 still in flight.
+# FIVE UNDECIDED MEMBERS REMAIN: 635, 637, 638, 639, 640.  No verdict
+# changes.  The bracket stays 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
