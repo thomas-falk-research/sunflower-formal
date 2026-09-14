@@ -8850,6 +8850,63 @@
 # never actually been run on [13,13,12,12].  A pre-registration must ship
 # its code, not its description.
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CONTAINER RESTART, 2026-09-14 16:05:54Z.  NO ROWS LOST.  3.564 CPU-HOURS
+# OF IN-FLIGHT SOLVER WORK DISCARDED.
+#
+# The container was reclaimed and the sweep driver (pid 24731) died with
+# it.  843 rows on disk before and after, identical to the row count the
+# waiter had been armed at since 15:40:01Z, so NO banked row was lost and
+# no row needs re-deriving: the checkpoint is append-only and every
+# completed cube was already committed and pushed (HEAD 2e1a583).
+#
+# WHAT WAS DISCARDED, measured rather than estimated.  The driver writes
+# each cube's CNF immediately before launching its solver, so the CNF
+# mtime IS that solver's start.  Pid 24731's four CNFs survived the
+# restart -- the glob was FILTERED BY PID, since /tmp holds 141 CNFs and
+# nearly all belong to long-dead pids.  Against the [killed] mtime of
+# 16:05:54.605Z (never /proc/stat btime):
+#
+#     idx 673   started 14:22:56   ran  6177.9 s   1.716 h
+#     idx 675   started 15:11:38   ran  3256.3 s   0.905 h
+#     idx 676   started 15:34:19   ran  1895.4 s   0.526 h
+#     idx 677   started 15:39:51   ran  1563.6 s   0.434 h
+#     TOTAL 12893.2 s wall clock = 3.5814 h; at the 99.5 percent CPU
+#     these four were measured holding, 3.5635 CPU-HOURS.
+#
+# This is a cleaner measurement than the eight earlier restarts got.
+# Those were reconstructed by extrapolating a `ps` sample forward to the
+# kill; this one is four exact start timestamps differenced against the
+# kill, with no extrapolation and no assumption that a solver kept
+# running.  The surviving CNFs also identify WHICH cubes were lost --
+# 673, 675, 676 and 677 -- which a ps sample never could.
+#
+# RESTART SERIES, now NINE involuntary restarts, all measured from the
+# [killed] mtime: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204,
+# 3.594, 3.564 CPU-hours.  This one ranks 5 of 9, dead on the series
+# median of 3.564; mean 3.511; 31.60 CPU-hours lost to restarts in total.
+# THE 0.944 CPU-HOURS DISCARDED AT 01:31Z IS STILL NOT IN THIS SERIES and
+# never will be: that was a stop I CHOSE, for the rebase, and folding a
+# voluntary cost into an involuntary series would flatter both.
+#
+# Tenth consecutive container with identical spec: 4 x Intel Xeon @
+# 2.10GHz, 16461028 kB.
+#
+# RESUMED at 16:06:2xZ as pid 1251, verified up at 16:07:23Z with its
+# phase-one slice CNF (sf-sym-...-c0-...-1251-0.cnf) written 16:06:52Z
+# and one solver at 99.9 percent CPU.  The driver spends about 90 s on
+# that slice before re-splitting, so per-cube CNFs do not appear
+# immediately; that is expected and is not a failure.  Resume is by
+# --checkpoint: UNSAT and SAT rows are skipped and UNKNOWN rows re-run,
+# because UNKNOWN is a budget and not a verdict.  The four discarded
+# cubes will simply be attempted again from scratch.
+#
+# Nothing about the mathematics changes.  674 of 1949 sub-cubes are UNSAT
+# and 1275 remain; deg(0)=13 is UNSAT only when ALL 1949 are, so 34.6
+# percent is the counter and not the rung; and this sweep remains a
+# SECOND OPINION under cryptominisat5 for cadical's UNSAT at 85123.9 s in
+# docs/ladder/iota4_11.tsv.  The bracket stays 27 <= iota(4) <= 71.
+# ---------------------------------------------------------------------
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
