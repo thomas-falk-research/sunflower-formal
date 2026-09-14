@@ -8638,6 +8638,70 @@
 # fires.  Budget rule does not fire.  No verdict changes.  The bracket
 # stays 27 <= iota(4) <= 71.
 #
+# ================================================================
+# BRANCH REBASED ONTO CURRENT main -- THE FIRST TIME IN TEN DAYS THIS
+# WORK HAS SAT ON UNMERGED HISTORY
+# ================================================================
+#
+# No new row.  This records a git operation on the branch carrying this
+# file, done at the break the user chose, and the evidence that the
+# checkpoint came through it untouched.
+#
+# WHY IT WAS NEEDED.  PR #19, whose head was this branch, WAS MERGED ON
+# 2026-09-03.  Everything banked since -- 515 commits, all of them this
+# file -- was stacked on top of already-merged history.  A merged pull
+# request cannot track new work, so the branch had to be restarted from
+# the current default branch with those commits carried across rather
+# than discarded.  The user was shown the situation and CHOSE "rebase at
+# the next natural break", which was fixed as: when block [13,13,12,12]
+# has zero undecided members, or at the next container restart,
+# whichever came first.  idx 638 landed at 01:30:38Z and completed the
+# block at 82 of 82.  The break arrived on the terms set in advance.
+#
+# WHAT WAS DONE, IN ORDER, WITH THE CHECK AT EACH STEP:
+#
+#   1. Banked idx 638 and pushed, so the tree was clean before any
+#      history was touched (58ee32a).
+#   2. Fingerprinted the checkpoint BEFORE anything else:
+#        sha256 1ae1a19b0514fa8165b611cf882b12719e3f67c1f17972a12839faad2d0fe1f7
+#        504215 bytes, 9455 lines, 814 rows, 645 labels.
+#   3. Measured what stopping would cost: c645 1752 s, c646 1071 s,
+#      c647 512 s, c648 64 s -- 3399 s = 0.944 CPU-HOURS discarded.
+#      That is the price of doing this deliberately; restart #30 threw
+#      away 7.204 CPU-hours involuntarily for comparison.
+#   4. Stopped driver pid 8086, then killed the four orphaned solvers,
+#      which would otherwise have competed with the relaunch for cores.
+#      Re-checked the sha256: UNCHANGED by the stop.
+#   5. `git fetch origin main`; `git rebase origin/main` replayed 515
+#      commits WITH ZERO CONFLICTS, exactly as the zero-file-overlap
+#      analysis predicted -- main's 111 commits never touched this file.
+#   6. VERIFIED BEFORE PUSHING, which is the step that mattered:
+#        sha256 1ae1a19b0514fa8165b611cf882b12719e3f67c1f17972a12839faad2d0fe1f7
+#        504215 bytes, 9455 lines, 814 rows, 645 labels, 645 UNSAT,
+#        169 UNKNOWN, 0 SAT.
+#      IDENTICAL BYTE FOR BYTE.  A rebase that had silently dropped or
+#      reordered a single banked row would have shown here, and this
+#      check ran BEFORE the force-push rather than after it.
+#   7. `git push --force-with-lease`: 58ee32a -> ba3e8bb.
+#   8. Relaunched and VERIFIED THE RESUME: the driver's own banner reads
+#      "checkpoint: 645 of 1949 cubes already decided", and the new
+#      pid's first four CNFs are exactly c645, c646, c647, c648 -- the
+#      same four that were in flight when it was stopped.  Not from
+#      scratch, nothing skipped.
+#
+# STATE AFTER: origin/main is an ancestor of this branch, so all 111 of
+# its commits are now present; the branch is 515 commits ahead; and the
+# whole diff against main is ONE FILE, this one, 7630 insertions and 20
+# deletions.  Any pull request opened from here is a NEW pull request.
+# PR #19 is finished and is not reused.
+#
+# 645 of 1949 (33.1 percent), 1304 remain.  Frontier contiguous 0..644
+# with no holes.  Block [13,13,12,12] closed at 82 of 82, costs 54.1 to
+# 12831.3 s.  Forward-test block [13,13,12,11] has four decided cubes
+# and two decided consecutive triples against the threshold of twenty
+# fixed at c0a21ca.  No verdict changes.  The bracket stays
+# 27 <= iota(4) <= 71.
+#
 # sub-cube	verdict	seconds
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 0]	UNSAT	128.3
 g=11 [13, 13, 13, 13, 13, 13, 13, 13, 13, 10, 1]	UNSAT	390.0
