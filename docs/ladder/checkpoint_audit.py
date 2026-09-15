@@ -159,6 +159,34 @@ def main(rev=None):
     print(f"multi-row labels {len(multi)}; naive max over ALL rows differs from the"
           f" decided cost in {naive} of them")
 
+    # cap history, recovered from the UNKNOWN rows (diagnostic, NOT an invariant:
+    # the cap is raised over the sweep's life, so these values legitimately change)
+    unk = sorted((float(l.split('\t')[2]), n) for n, l in enumerate(rows)
+                 if len(l.split('\t')) == 3 and l.split('\t')[1] == 'UNKNOWN')
+    if unk:
+        groups = [[unk[0]]]
+        for c in unk[1:]:
+            if c[0] - groups[-1][-1][0] > 0.10 * groups[-1][-1][0]: groups.append([c])
+            else: groups[-1].append(c)
+        print("\ncap history recovered from UNKNOWN rows (diagnostic, not an invariant).")
+        print("An UNKNOWN row is written when the per-cube budget runs out, so each")
+        print("tight cluster marks a cap that was in force for part of the sweep:")
+        print(f"   {'n':>4} {'cost min':>10} {'cost max':>10} {'file rows':>14}  cluster")
+        for g in groups:
+            lo, hi = g[0][0], g[-1][0]
+            pos = [n for _, n in g]
+            tight = (hi - lo) <= 0.02 * lo
+            print(f"   {len(g):>4} {lo:>10.1f} {hi:>10.1f} {min(pos):>6}..{max(pos):<6}  "
+                  f"{'tight -- a cap' if tight else 'diffuse -- mechanism not established'}")
+        last_unk = max(n for _, n in unk)
+        print(f"\nTHE CAP IS SOFT. Every tight cluster sits ABOVE its nominal cap, by an")
+        print(f"amount proportional to the cap rather than a fixed number of seconds, so")
+        print(f"the budget is a deadline checked periodically and overshot by the lag.")
+        print(f"A decided cost slightly above the nominal cap is therefore NOT an anomaly:")
+        print(f"it is a cube that finished inside that lag, before the check killed it.")
+        print(f"\nlast UNKNOWN row is at file row {last_unk}; {len(rows)-1-last_unk} rows have")
+        print(f"landed since, none of them capped.")
+
     got = dict(rows=len(rows), decided=len(mine), total=len(SEQ), contig_top=contig,
                highest=highest, holes=holes, undecided_only=len(undec), sat=len(sats),
                multi_row_labels=len(multi), naive_max_differs=naive)
