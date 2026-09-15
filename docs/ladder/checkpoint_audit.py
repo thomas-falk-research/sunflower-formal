@@ -56,7 +56,8 @@ Run with no arguments to audit the working tree; pass a git rev to audit the
 checkpoint as of that revision.
 """
 
-import collections, subprocess, sys
+import collections
+import datetime as _dt, subprocess, sys
 
 CHECKPOINT = 'docs/ladder/iota4_11.deg13.cryptominisat5.tsv'
 HELPERS    = 'docs/ladder/forward_test.py'
@@ -75,6 +76,150 @@ def load(rev=None):
         return subprocess.run(['git', 'show', f'{rev}:{CHECKPOINT}'],
                               capture_output=True, text=True, check=True).stdout
     return open(CHECKPOINT).read()
+
+
+
+# ---------------------------------------------------------------- span mode
+# WHY THIS IS CODE AND NOT PROSE
+# ------------------------------
+# 93b9351 reported a broken-frontier span by hand and summarised the
+# hole-count trajectory as "shrinking 3 -> 2 -> 1".  Recomputing it here
+# gives 3,3,3,2,2,1,1,2,2,2,1,1,1,1 -- it rose back to 2 at a2a525c, when
+# 704 opened behind the edge while 696 was still out.  The span length (14
+# commits) and duration in that message are both correct; the SHAPE was a
+# summary of a sequence nobody had printed.  So this prints the trajectory
+# and COMPUTES whether it was monotone, instead of describing it.
+#
+# WHAT A SPAN IS MEASURED BETWEEN
+# -------------------------------
+# From the commit that last left the frontier whole to the commit that made
+# it whole again, using COMMITTER TIMESTAMPS.  Those are in git for every
+# commit.  Row-landing times are not: a row that lands between a waiter
+# firing and the next arming has no observed timestamp, only a bound
+# (a2a525c/9f8cad2), so they cannot support a uniform record.  The two
+# differ by the commit lag -- span B is 4:40:49 by commit stamps and
+# 4:41:02 by the row-landing times quoted at 93b9351.
+#
+# "across N commits" counts commits AT WHICH THE FRONTIER WAS BROKEN.  It is
+# one less than `git rev-list last_whole..closing_commit`, which includes the
+# closing commit, where the frontier is already whole again.
+
+def holes_at(text, IDX):
+    """(holes, contiguous_top, highest) for one checkpoint revision."""
+    dec = set()
+    for l in text.splitlines():
+        if not l or l.startswith('#'):
+            continue
+        f = l.split('\t')
+        if len(f) == 3 and f[1] != 'UNKNOWN' and f[0] in IDX:
+            dec.add(IDX[f[0]])
+    if not dec:
+        return [], -1, -1
+    hi = max(dec)
+    c = 0
+    while c in dec:
+        c += 1
+    return [i for i in range(hi) if i not in dec], c - 1, hi
+
+
+def spans(window=80):
+    """Recompute the frontier at each checkpoint-touching commit and report
+    every span during which it was broken.  window=None walks all of them,
+    which makes the record complete enough to rank."""
+    ns = {}
+    exec(open(HELPERS).read().split(SPLIT_AT)[0], ns)
+    IDX = ns['IDX']
+
+    revs = subprocess.run(['git', 'rev-list', '--reverse', 'HEAD', '--', CHECKPOINT],
+                          capture_output=True, text=True, check=True).stdout.split()
+    total_commits = len(revs)
+    truncated = window is not None and window < total_commits
+    if truncated:
+        revs = revs[-window:]
+
+    walk = []
+    for r in revs:
+        text = subprocess.run(['git', 'show', f'{r}:{CHECKPOINT}'],
+                              capture_output=True, text=True, check=True).stdout
+        sha = subprocess.run(['git', 'rev-parse', '--short', r],
+                             capture_output=True, text=True, check=True).stdout.strip()
+        when = subprocess.run(['git', 'log', '-1', '--format=%cI', r],
+                              capture_output=True, text=True, check=True).stdout.strip()
+        h, _, _ = holes_at(text, IDX)
+        walk.append((sha, when, h))
+
+    print(f"walked {len(walk)} of {total_commits} checkpoint-touching commits"
+          f"{' (WINDOWED -- a span open at the left edge is left-truncated)' if truncated else ' (COMPLETE HISTORY)'}\n")
+
+    found, i = [], 0
+    while i < len(walk):
+        if walk[i][2]:
+            j = i
+            while j < len(walk) and walk[j][2]:
+                j += 1
+            prev = walk[i - 1] if i > 0 else None
+            close = walk[j] if j < len(walk) else None
+            found.append((prev, walk[i:j], close))
+            i = j
+        else:
+            i += 1
+
+    for prev, broken, close in found:
+        traj = [len(h) for _, _, h in broken]
+        mono = all(traj[k + 1] <= traj[k] for k in range(len(traj) - 1))
+        print(f"  span of {len(broken)} broken commit(s)")
+        print(f"    opened after : {prev[0] + '  ' + prev[1] if prev else 'UNKNOWN -- span is open at the left edge of the walk'}")
+        print(f"    closed by    : {close[0] + '  ' + close[1] if close else 'STILL BROKEN at the walk head'}")
+        if prev and close:
+            a = _dt.datetime.fromisoformat(prev[1])
+            b = _dt.datetime.fromisoformat(close[1])
+            d = b - a
+            print(f"    duration     : {d} ({d.total_seconds() / 3600:.4f} h) by committer timestamps")
+        else:
+            print(f"    duration     : NOT COMPUTED -- an endpoint is missing, so any figure would be a bound, not a span")
+        print(f"    hole counts  : {','.join(map(str, traj))}")
+        print(f"    monotone non-increasing? {mono}"
+              f"{'' if mono else '  <-- it grew again mid-span; do not summarise this as a shrink'}")
+        widest = max(broken, key=lambda t: len(t[2]))
+        print(f"    most holes at once: {len(widest[2])} at {widest[0]}  {widest[2]}")
+        print()
+
+    if not found:
+        print("  no broken span inside the walk")
+    elif truncated:
+        print("  NOT RANKED: the walk is windowed, so this is not the complete record"
+              " (9f8cad2 -- do not claim longest/first/most from a record you do not keep).")
+    else:
+        def dur(t):
+            return _dt.datetime.fromisoformat(t[2][1]) - _dt.datetime.fromisoformat(t[0][1])
+        rank = sorted((t for t in found if t[0] and t[2]), key=dur, reverse=True)
+        print(f"  RANKED over the complete history ({len(rank)} closed spans, "
+              f"{len(found) - len(rank)} with a missing endpoint excluded):")
+        for n, t in enumerate(rank[:5], 1):
+            print(f"    {n}. {dur(t)} across {len(t[1])} commits, {t[0][0]} -> {t[2][0]}")
+
+        # THE POPULATION IS PADDED, SO THE RANK IS CHECKED AGAINST A SECOND ONE.
+        # Most spans are single-commit blips: a hole opens and closes between two
+        # commits made seconds apart.  Ranking against all of them inflates how
+        # unremarkable a real span looks (c9982c9 -- a convenient population by
+        # accident).  So the same rank is recomputed against only the spans over
+        # an hour, and the two are printed together.  If they disagree, the rank
+        # is an artefact of the population and neither number should be quoted
+        # alone.
+        hour = [t for t in rank if dur(t) > _dt.timedelta(hours=1)]
+        print(f"\n  duration distribution (why the rank needs a second population):")
+        for secs, lab in ((1, '1 second'), (60, '1 minute'), (600, '10 minutes'),
+                          (3600, '1 hour'), (14400, '4 hours')):
+            n = sum(1 for t in rank if dur(t) > _dt.timedelta(seconds=secs))
+            print(f"    longer than {lab:<10}: {n:>3} of {len(rank)}")
+        print(f"  RANK ROBUSTNESS -- position among all {len(rank)} vs among the "
+              f"{len(hour)} over an hour:")
+        for t in hour:
+            ra, rh = rank.index(t) + 1, hour.index(t) + 1
+            agree = 'same' if ra == rh else 'DIFFERS -- population-dependent, do not quote alone'
+            print(f"    {t[0][0]} -> {t[2][0]}  {dur(t)}   rank {ra}/{len(rank)}"
+                  f" vs {rh}/{len(hour)}   {agree}")
+    return 0
 
 
 def main(rev=None):
@@ -208,4 +353,8 @@ def main(rev=None):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else None))
+    a = sys.argv[1:]
+    if a and a[0] == '--spans':
+        w = None if len(a) > 1 and a[1] == 'all' else (int(a[1]) if len(a) > 1 else 80)
+        sys.exit(spans(w))
+    sys.exit(main(a[0] if a else None))
