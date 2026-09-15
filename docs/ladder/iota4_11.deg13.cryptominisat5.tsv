@@ -9856,3 +9856,76 @@ g=11 [13, 13, 12, 10, 13, 13, 13, 13, 12, 10, 6]	UNSAT	5476.9
 g=11 [13, 13, 12, 10, 13, 13, 13, 13, 12, 9, 7]	UNSAT	6435.6
 g=11 [13, 13, 12, 10, 13, 13, 13, 13, 11, 11, 6]	UNSAT	4829.5
 g=11 [13, 13, 12, 10, 13, 13, 13, 13, 12, 8, 8]	UNSAT	5324.1
+# ---------------------------------------------------------------------
+# CONTAINER RESTART, 2026-09-15 14:59:17.233Z.  NO ROWS LOST.  2.965
+# CPU-HOURS DISCARDED -- RANK 7 OF 11.  THE CONTAINER SPEC IS UNCHANGED.
+#
+# 887 rows on disk before and after, identical to the count the waiter had
+# been armed at since 14:50:29Z, so NO banked row was lost: the checkpoint
+# is append-only and every completed cube was already committed and pushed
+# (HEAD 99fd566, which carries 887 rows).
+#
+# THE [killed] MARKER, and why this one is better founded than usual.  The
+# driver's background-task output ends with the literal string [killed],
+# and that file's mtime is the moment the process was torn down.  This
+# time TWO independent files carry it -- the driver's output and the
+# waiter's -- and both read 14:59:17.232863836Z, identical to the
+# nanosecond.  Two files written by two different processes agreeing
+# exactly is better corroboration of the kill moment than the single
+# marker every previous restart in this series rested on.  It does not
+# close the gap noted at 07b8a61 (the marker's own timing against the
+# process's actual death is still untested), but it removes the
+# possibility that one file's mtime was late for reasons of its own.
+#
+# WHAT WAS DISCARDED, by the CNF-mtime method.  The driver writes each
+# cube's CNF immediately before launching its solver, so the CNF mtime IS
+# that solver's start.  Pid 374's four CNFs survived the restart; THE GLOB
+# WAS FILTERED BY PID -- /tmp holds 148 CNFs and nearly all belong to dead
+# pids.  Against the [killed] mtime, never /proc/stat btime:
+#
+#     idx 718   started 13:28:53.644   ran 5423.6 s   1.5066 h   0.2511 of cap
+#     idx 719   started 13:51:23.168   ran 4074.1 s   1.1317 h   0.1886 of cap
+#     idx 720   started 14:47:35.336   ran  701.9 s   0.1950 h   0.0325 of cap
+#     idx 721   started 14:50:14.408   ran  542.8 s   0.1508 h   0.0251 of cap
+#     TOTAL 10742.4 s wall = 2.9840 h; at the 98.5-99.6 percent CPU these
+#     were measured holding at 14:50:49Z, 2.9650 CPU-HOURS.
+#
+# No single cube dominates this one, unlike 02:02Z where idx 684 was 75
+# percent of the loss.  The largest here, idx 718, is 51 percent, and
+# none of the four was anywhere near the 21600 s cap -- the deepest was
+# 0.2511 of it -- so there is no reason to think any was close to a
+# verdict.  All four restart from zero.
+#
+# A COINCIDENCE WORTH NAMING SO IT IS NOT MISREAD: idx 721's CNF was
+# written at 14:50:14.408, 36 ms after the checkpoint's own last write at
+# 14:50:14.372 -- the driver banked idx 716 and launched the next cube
+# immediately.  That is the method working as documented, not a finding.
+#
+# RESTART SERIES, now ELEVEN involuntary restarts, all measured from the
+# [killed] mtime: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204, 3.594,
+# 3.564, 4.863, 2.965 CPU-hours.  This one RANKS 7 OF 11; median 3.564,
+# mean 3.584, and 39.43 CPU-hours lost to restarts in total.  THE 0.944
+# CPU-HOURS DISCARDED AT 01:31Z ON 09-14 IS STILL NOT IN THIS SERIES: a
+# stop I CHOSE, for the rebase.  Uptime of pid 374 was 12.95 hours, the
+# longest between restarts in this series so far -- but "so far" is doing
+# real work in that sentence, because uptimes were not recorded
+# systematically before the last two, so it is a statement about the two
+# I have, not a record.
+#
+# CONTAINER SPEC, re-read per 1802af3 rather than assumed: 4 cores, Intel
+# Xeon @ 2.10GHz, MemTotal 16482220 kB.  IDENTICAL to the eleventh
+# container and still DIFFERENT from the first ten (16461028 kB).  Two
+# consecutive containers now agree; that is two, and 1802af3 is precisely
+# the lesson that a run of agreements is not a guarantee.
+#
+# THE FOUR DISCARDED CUBES OPEN A NEW RE-RUN SET.  The old set closed
+# COMPLETE at eight members (8782234) and must not be extended: 718, 719,
+# 720 and 721 are the first four of a NEW one, and no ratio may be
+# computed for them until each is decided.
+#
+# Relaunched as pid 2434.  Checkpoint stands at 887 rows, 718 labels, 718
+# UNSAT, 0 SAT, 0 labels undecided-only; frontier contiguous 0..717 with
+# NO HOLES; 718 of 1949 = 36.8394 percent, 1231 remain.  36.84 percent is
+# the counter, not the rung -- deg(0)=13 is UNSAT only when ALL 1949
+# sub-cubes are.  The bracket stays 27 <= iota(4) <= 71.
+# ---------------------------------------------------------------------
