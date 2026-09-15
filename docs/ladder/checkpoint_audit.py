@@ -198,27 +198,45 @@ def spans(window=80):
         for n, t in enumerate(rank[:5], 1):
             print(f"    {n}. {dur(t)} across {len(t[1])} commits, {t[0][0]} -> {t[2][0]}")
 
-        # THE POPULATION IS PADDED, SO THE RANK IS CHECKED AGAINST A SECOND ONE.
-        # Most spans are single-commit blips: a hole opens and closes between two
-        # commits made seconds apart.  Ranking against all of them inflates how
-        # unremarkable a real span looks (c9982c9 -- a convenient population by
-        # accident).  So the same rank is recomputed against only the spans over
-        # an hour, and the two are printed together.  If they disagree, the rank
-        # is an artefact of the population and neither number should be quoted
-        # alone.
-        hour = [t for t in rank if dur(t) > _dt.timedelta(hours=1)]
-        print(f"\n  duration distribution (why the rank needs a second population):")
+        # THE POPULATION IS PADDED.  Most spans are single-commit blips: a hole
+        # opens and closes between two commits made seconds apart, so "rank 4 of
+        # 62" is a rank against a list that is mostly trivia (c9982c9 -- a
+        # convenient population by accident).  The distribution below is what
+        # tells you how to read a rank.
+        #
+        # WHAT THIS DELIBERATELY NO LONGER DOES
+        # -------------------------------------
+        # cd03f27 shipped a "RANK ROBUSTNESS" block here that recomputed each
+        # rank against only the spans over an hour and reported that all ten
+        # agreed.  That check CANNOT FAIL.  Any population defined by
+        # "duration > T" is exactly the top-k of the list already sorted by
+        # duration, so every member keeps its position by construction --
+        # verified across cuts from 30 to 90 minutes, every one agreeing.  It
+        # was arithmetic printed as verification, which is worse than printing
+        # nothing: it manufactured confidence in a rank nobody had checked.
+        # Instance twenty-one of a script whose output asserts what its code
+        # does not do, and it survived about forty minutes.
+        #
+        # There is no cheap substitute, because the question "is this rank
+        # meaningful" is not answerable from the ranking alone.  So the
+        # distribution is printed and the reader judges.
+        print(f"\n  duration distribution -- READ THE RANK THROUGH THIS, not alone:")
+        prev_n = len(rank)
         for secs, lab in ((1, '1 second'), (60, '1 minute'), (600, '10 minutes'),
                           (3600, '1 hour'), (14400, '4 hours')):
             n = sum(1 for t in rank if dur(t) > _dt.timedelta(seconds=secs))
             print(f"    longer than {lab:<10}: {n:>3} of {len(rank)}")
-        print(f"  RANK ROBUSTNESS -- position among all {len(rank)} vs among the "
-              f"{len(hour)} over an hour:")
-        for t in hour:
-            ra, rh = rank.index(t) + 1, hour.index(t) + 1
-            agree = 'same' if ra == rh else 'DIFFERS -- population-dependent, do not quote alone'
-            print(f"    {t[0][0]} -> {t[2][0]}  {dur(t)}   rank {ra}/{len(rank)}"
-                  f" vs {rh}/{len(hour)}   {agree}")
+            prev_n = n
+
+        # Any threshold here is a number someone picked, so show what the
+        # one-hour line excludes and by how little (1ce9de9/40ea25d).
+        below = [t for t in rank if dur(t) <= _dt.timedelta(hours=1)]
+        if below:
+            near = max(below, key=dur)
+            miss = _dt.timedelta(hours=1) - dur(near)
+            print(f"  nearest span excluded by the one-hour line: {near[0][0]} -> {near[2][0]}"
+                  f"  {dur(near)}, short by {miss}"
+                  f"{'   <-- the line is doing arbitrary work here' if miss < _dt.timedelta(minutes=10) else ''}")
     return 0
 
 
