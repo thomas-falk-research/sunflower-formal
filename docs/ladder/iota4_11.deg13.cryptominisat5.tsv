@@ -9948,3 +9948,86 @@ g=11 [13, 13, 12, 10, 13, 13, 13, 11, 11, 10, 9]	UNSAT	9367.6
 g=11 [13, 13, 12, 10, 13, 13, 12, 12, 12, 11, 7]	UNSAT	9500.7
 g=11 [13, 13, 12, 10, 13, 13, 12, 12, 12, 10, 8]	UNSAT	9229.0
 g=11 [13, 13, 12, 10, 13, 13, 12, 12, 12, 9, 9]	UNSAT	7507.1
+# ---------------------------------------------------------------------
+# RESTART #35.  The container was reclaimed at 03:57:02.767637773Z,
+# killing driver pid 2434 after 46560.8 s of uptime = 12.9335 hours.
+# That uptime is STATED, NOT RANKED (9f8cad2): pid 374 ran 12.95 hours
+# before restart #34, so this one is slightly shorter, and uptimes were
+# not recorded systematically before those two anyway.
+#
+# THE KILL MOMENT.  BOTH task output files -- the driver's and the
+# waiter's -- carry the [killed] marker at the IDENTICAL nanosecond,
+# 03:57:02.767637773Z, exactly as at #34.  Two files agreeing is better
+# corroboration than one, and it is still NOT a validation of the marker
+# itself: both markers are written by the same teardown mechanism, and
+# two readings from one mechanism can be wrong together.  The gap left
+# open at 07b8a61 -- that the CNF-mtime method is validated to <= 1 s for
+# LIVE cubes (n = 8 pinned) but the marker's own timing is untested --
+# stays open.
+#
+# NO ROWS WERE LOST.  906 real data rows before the kill and 906 after;
+# HEAD was already 127bb95, which carried all 906, with a clean tree.
+# The waiter's own output is the independent check: it holds its arming
+# line at 03:02:38Z and then [killed], with no ROW LANDED line between,
+# so nothing finished in the 54.4-minute window.
+#
+# WHAT WAS DISCARDED, by the CNF-mtime method.  The driver writes each
+# cube's CNF immediately before launching its solver, so the CNF mtime IS
+# that solver's start.  Pid 2434's four CNFs survived the restart; THE
+# GLOB WAS FILTERED BY PID -- /tmp holds 152 CNFs and nearly all belong
+# to dead pids.  Measured against the [killed] mtime, never /proc/stat
+# btime:
+#
+#     idx 737   started 01:05:44.319   ran 10278.4 s   2.8551 h   0.4759 of cap
+#     idx 738   started 01:48:40.395   ran  7702.4 s   2.1395 h   0.3566 of cap
+#     idx 739   started 02:46:38.163   ran  4224.6 s   1.1735 h   0.1956 of cap
+#     idx 740   started 03:02:26.787   ran  3276.0 s   0.9100 h   0.1517 of cap
+#     TOTAL 25481.4 s wall = 7.0782 h.  Weighting each cube by its own
+#     cpu/elapsed ratio from the last live sample before the kill
+#     (03:03:22Z: 0.9952, 0.9967, 0.9930, 0.9821) gives 7.0329 CPU-HOURS.
+#
+# ONE HONEST WEAKNESS IN THAT CONVERSION: idx 740's ratio of 0.9821 was
+# measured when it had been running 56 seconds, where process startup
+# still weighs on the average.  Over its full 3276 s the true ratio is
+# very likely higher, so 740's CPU figure -- and therefore the 7.0329
+# total -- is if anything an UNDERSTATEMENT.  It is quoted as measured
+# rather than adjusted upward on a guess.
+#
+# THE RANK DOES NOT DEPEND ON WHICH FIGURE IS USED.  7.0782 wall-hours
+# ranks 2 of 12; 7.0329 CPU-hours also ranks 2 of 12.  Only the 7.204
+# CPU-hours of an earlier restart exceeds it.  That agreement is worth
+# one line and no more -- the two figures differ by 0.6 percent, so of
+# course they rank together; this is not an independent confirmation.
+#
+# No single cube dominates this loss: idx 737 is 40.3 percent of it, 738
+# is 30.2, 739 is 16.6, 740 is 12.9.  The deepest, idx 737, had reached
+# 0.4759 of the 21600 s cap -- under half the budget -- so there is no
+# basis for thinking any of the four was close to a verdict.  All four
+# restart from zero.
+#
+# RESTART SERIES, now TWELVE involuntary restarts, all measured from the
+# [killed] mtime: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204, 3.594,
+# 3.564, 4.863, 2.965, 7.033 CPU-hours.  Median 3.5790, mean 3.8716, and
+# 46.4589 CPU-hours lost to restarts in total.  THE 0.944 CPU-HOURS
+# DISCARDED AT 01:31Z ON 09-14 IS STILL NOT IN THIS SERIES: a stop I
+# CHOSE, for the rebase.
+#
+# CONTAINER SPEC, re-read per 1802af3 rather than assumed: 4 cores, Intel
+# Xeon @ 2.10GHz, MemTotal 16482220 kB.  IDENTICAL to the eleventh and
+# twelfth containers and still DIFFERENT from the first ten (16461028
+# kB).  THREE consecutive containers now agree.  Three is three; 1802af3
+# is precisely the lesson that a run of agreements is not a guarantee,
+# and the spec gets re-read at the next restart too.
+#
+# THE FOUR DISCARDED CUBES OPEN RE-RUN SET THREE.  Set one closed
+# COMPLETE at eight members (8782234) and set two closed COMPLETE at four
+# (cd2ad61); neither may be extended.  Cubes 737, 738, 739 and 740 are
+# the first four of a NEW set, and no ratio may be computed for any of
+# them until it is decided.
+#
+# Relaunched as pid 16066.  Checkpoint stands at 906 rows, 737 labels,
+# 737 UNSAT, 0 SAT, 0 labels undecided-only; frontier contiguous 0..736
+# with NO HOLES; 737 of 1949 = 37.8143 percent, 1212 remain.  37.81
+# percent is the counter, not the rung -- deg(0)=13 is UNSAT only when
+# ALL 1949 sub-cubes are.  The bracket stays 27 <= iota(4) <= 71.
+# ---------------------------------------------------------------------
