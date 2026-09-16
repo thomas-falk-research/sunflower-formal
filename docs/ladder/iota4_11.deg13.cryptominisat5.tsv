@@ -10241,3 +10241,59 @@ g=11 [13, 13, 12, 9, 13, 13, 13, 12, 12, 12, 6]	UNSAT	6139.4
 g=11 [13, 13, 12, 9, 13, 13, 13, 12, 12, 9, 9]	UNSAT	8223.6
 g=11 [13, 13, 12, 9, 13, 13, 13, 12, 12, 10, 8]	UNSAT	8426.4
 g=11 [13, 13, 12, 9, 13, 13, 13, 12, 12, 11, 7]	UNSAT	9291.9
+# ---------------------------------------------------------------------
+# BROKEN-FRONTIER SPAN CLOSED AT 30f1fbd.  Every figure below is COPIED
+# from `python3 docs/ladder/checkpoint_audit.py --spans all` (ba6ec65):
+#
+#   span of 2 broken commit(s)
+#     opened after : 47ef34b  2026-09-16T18:40:11+00:00
+#     closed by    : 30f1fbd  2026-09-16T19:33:09+00:00
+#     duration     : 0:52:58 (0.8828 h) by committer timestamps
+#     hole counts  : 2,1
+#     monotone non-increasing? True
+#     most holes at once: 2 at 0b68df2  [770, 771]
+#
+# A CORRECTION TO 0b68df2, WHICH OPENED THIS SPAN.  There I wrote that it
+# "opened after the previous span's record commit 8cfb7dc".  THAT IS
+# WRONG.  The tool's "opened after" is the last UNBROKEN commit before the
+# span, and that is 47ef34b -- the idx 769 bank.  8cfb7dc is where the
+# PREVIOUS span's record was written, and a long run of unbroken commits
+# followed it.  I asserted a definition instead of reading the one the
+# tool uses, which is the defect registered at ba6ec65 / beaa0d3 wearing a
+# different hat.  No figure printed here depends on the mistaken version.
+#
+# MONOTONE TRUE, FOR THE FIRST TIME IN THREE.  The previous two spans both
+# came back FALSE (3ebf469: 2,2,3,2,1,1,1; 8cfb7dc: 3,3,2,2,2,1,2,1).
+# This one fell 2, 1 and never rose.  THREE SPANS, FALSE-FALSE-TRUE, IS
+# NOT A TREND and is not compared: a two-commit span has only one chance
+# to rise, so its monotonicity is close to guaranteed and says nothing
+# about the other two.  The tool COMPUTES monotonicity precisely so the
+# shape is never left to prose.
+#
+# RANK, BOTH FIGURES, BECAUSE THEY DISAGREE (3ebf469).  Over 68 closed
+# spans: by DURATION 0:52:58 ranks 18 (17th is 0:58:49 at c4b6e6f ->
+# 1143ba4, 19th is 0:35:23 at 109dc97 -> cb8f668); by COMMIT COUNT 2
+# broken commits ranks 51, but FOURTEEN spans tie at 2 commits so that
+# rank is arbitrary within the tie -- the honest statement is that 37 of
+# the 68 spans ran longer than 2 commits.
+#
+# READ THE RANK THROUGH THE DISTRIBUTION.  Of the 68 closed spans, 24 are
+# longer than a second, 22 longer than a minute, 21 longer than ten
+# minutes, 15 longer than an hour and 8 longer than four hours -- so 44
+# are 0 or 1 second, and rank 18 of 68 is rank 18 of the 24 that lasted at
+# all.  The tool again names what its one-hour line excludes: f1977fd ->
+# d6424a1 at 0:58:56, short by 1:04, and this span at 0:52:58 sits just
+# under the same arbitrary line.
+#
+# THIS SPAN IS NOT COMPARED WITH THE TWO BEFORE IT.  6:05:59 across 7
+# commits, then 3:00:37 across 8, then 0:52:58 across 2 is three spans;
+# three points are not a trend, and their durations are set by which cubes
+# happened to be running long when a fast one finished.
+#
+# Both holes were IN-FLIGHT WORK.  idx 770, the last to close, ran 9291.9 s
+# to its UNSAT -- 0.4302 of the 21600 s per-cube cap.  A stall is an
+# UNKNOWN row written AT the cap plus 0.4-1.4 percent, never silence.
+#
+# Spans are systematic and MAY be ranked once closed (9f8cad2).  This one
+# is NOT a finding and is NOT in the tally.
+# ---------------------------------------------------------------------
