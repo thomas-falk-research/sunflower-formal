@@ -10155,3 +10155,85 @@ g=11 [13, 13, 12, 9, 13, 13, 13, 13, 11, 11, 7]	UNSAT	4803.3
 g=11 [13, 13, 12, 9, 13, 13, 13, 13, 11, 10, 8]	UNSAT	5178.2
 g=11 [13, 13, 12, 9, 13, 13, 13, 13, 11, 9, 9]	UNSAT	4405.2
 g=11 [13, 13, 12, 9, 13, 13, 13, 13, 10, 10, 9]	UNSAT	4502.5
+# ---------------------------------------------------------------------
+# RESTART #36.  Container reclaimed 2026-09-16T16:54:30.114410630Z,
+# killing driver pid 16066.  Relaunched as pid 32688 at 16:55Z, verbatim,
+# same checkpoint.  Machine spec re-read and UNCHANGED for the fourth
+# consecutive container: 4 cores, Intel(R) Xeon(R) Processor @ 2.10GHz,
+# MemTotal 16482220 kB.  Four identical readings is four, not a promise;
+# re-read it at #37 as well.
+#
+# NO ROWS WERE LOST.  938 real data rows before and after, tree == HEAD
+# == origin at cf2bccc, working tree clean.  The waiter's output file
+# held only its 16:40:38Z arming line and then [killed] -- no ROW LANDED
+# line -- so nothing finished in the 13m52s between the last bank and
+# teardown.  Uptime of pid 16066: about 12.94 h from the 03:58Z relaunch
+# recorded at 37d44af.  That launch time is minute-resolution, so the
+# uptime is too.  Uptimes are STATED, never ranked (9f8cad2).
+#
+# DISCARDED WORK, by the CNF-mtime method with the glob FILTERED BY PID
+# (/tmp holds 156 CNFs; exactly 4 carry pid 16066):
+#
+#   idx 769  slot 33  started 15:57:27.026Z   3423.1 s  0.9509 h  0.1585 of cap  42.6% of loss
+#   idx 770  slot 34  started 16:21:54.110Z   1956.0 s  0.5433 h  0.0906 of cap  24.3%
+#   idx 771  slot 35  started 16:24:22.338Z   1807.8 s  0.5022 h  0.0837 of cap  22.5%
+#   idx 772  slot 36  started 16:40:16.990Z    853.1 s  0.2370 h  0.0395 of cap  10.6%
+#
+#   8040.0 s wall = 2.2333 h.  Weighted by each cube's cpu/elapsed ratio
+#   from the 16:42:08Z sample -- the LAST sample before teardown, and not
+#   re-samplable because the processes are gone -- 2.2157 CPU-HOURS,
+#   RANK 10 OF 13 in the involuntary-restart series.
+#
+#   Series now n = 13: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204,
+#   3.594, 3.564, 4.863, 2.965, 7.033, 2.216 CPU-hours.
+#   median 3.5640, mean 3.7442, total 48.6747.  The 0.944 CPU-hours at
+#   01:31Z on 09-14 is NOT in this series -- that was a stop I chose.
+#
+# THE TWO [killed] MARKERS ARE NOT IDENTICAL THIS TIME, AND THAT MATTERS
+# BECAUSE I SAID THEY WERE TWICE.  At #34 and #35 the driver's and the
+# waiter's [killed] markers carried the same nanosecond, and I recorded
+# that both times as corroboration-but-not-validation.  Here:
+#
+#   driver  1789577670114410630 ns
+#   waiter  1789577670118410630 ns
+#   difference 4000000 ns = exactly 4.000000 ms
+#
+# So the identical-nanosecond observation DOES NOT REPRODUCE.  Two
+# agreements were two draws, not a property of the teardown, and the
+# right conclusion is the one that was always available: the marker's own
+# timing is UNTESTED, which is exactly why the CNF-mtime validation gap
+# has been left open since 07b8a61.  The 4.000000 ms difference is itself
+# suspiciously round and NO mechanism is offered for it -- one sample,
+# and a story written now would postdate the data it explains (1e409e8).
+# The teardown instant used above is the DRIVER's marker, the earlier of
+# the two; using the waiter's would add 4 ms across four cubes, which is
+# 0.0002% of the loss and changes no figure printed here.
+#
+# RE-RUN SET FOUR IS NOW OPEN, on idx 769, 770, 771 and 772, with
+# discarded costs 3423.1, 1956.0, 1807.8 and 853.1 s.  Sets one, two and
+# three are CLOSED (8782234, cd2ad61, 1e409e8) and are not reopened.  The
+# ratio is DISCARDED / RE-RUN (cd2ad61).
+#
+# THE RE-TAKE, MEASURED RATHER THAN ASSUMED -- AND THE OBVIOUS
+# EXPLANATION FOR IT IS WRONG.  pid 32688 started 16:55:41.810Z (from
+# /proc/32688/stat field 22 against /proc/stat btime).  All four
+# discarded cubes were re-taken at +60.7 s, their CNFs written within
+# 16 ms of each other:
+#
+#   idx 769  16:56:42.478Z   idx 770  16:56:42.478Z
+#   idx 771  16:56:42.462Z   idx 772  16:56:42.466Z
+#
+# A check at +38.5 s had found no CNF carrying pid 32688 and one solver
+# running unpaired, and at that moment I wrote that "a phase-one slice
+# appears to be running".  THAT WAS A GUESS AND IS WITHDRAWN: nothing
+# distinguishes a phase-one slice from a formula build here, and the tool
+# reports only that a solver could not be paired.
+#
+# The tempting reading is that 60.7 s is the --slice 60 value.  IT IS
+# NOT SUPPORTED: at #35, under the identical --slice 60, the same step
+# took 41 s (37d44af).  A story that fails on data already in hand is
+# not a mechanism, so none is adopted.  Two observations, 41 s and
+# 60.7 s, are two observations.
+#
+# Restart accounting is NOT a finding and is NOT in the tally.
+# ---------------------------------------------------------------------
