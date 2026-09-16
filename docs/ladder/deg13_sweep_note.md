@@ -1,6 +1,7 @@
 # deg(0) = 13 sweep — working note
 
-**Status at `068b963`, 2026-09-16T19:35Z.**
+**Status: 2026-09-16T21:04Z.** Re-verify with `checkpoint_audit.py`; the
+figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
 deg(0) = 13 sweep. It was carried for days inside a scheduled check-in
@@ -191,6 +192,10 @@ number is arbitrary within the tie — the honest form is that **37 of 68**
 ran longer than 2 commits. Read through the distribution: **44 of the 68
 are 0 or 1 second**, so rank 18 of 68 is rank 18 of the 24 that lasted at
 all.
+
+**A fourth span is OPEN** as of 21:03:42Z: idx 776 landed while 773, 774
+and 775 were still running, so the frontier broke with **three** holes.
+No duration, rank or monotonicity for it until it closes.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -417,15 +422,16 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **942 rows; 773 labels decided; 773 UNSAT; 0 SAT; 0 labels
+- **943 rows; 774 labels decided; 774 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..772, highest decided 772, no holes.**
-- **773 of 1949 = 39.6614%**; 1176 undecided. 40% needs idx 780 — **7 more**.
+- **Frontier contiguous 0..772, highest decided 776, holes [773, 774, 775].**
+- **774 of 1949 = 39.7127%**; 1175 undecided. 40% needs idx 780 — **6 more**.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **18 of 38**.
-- Nothing is open: no span, no re-run set, no forward test, no registered
-  pattern commitment. **Do not invent a commitment to fill the gap.**
+  verified) at **19 of 38**.
+- **One span is open** (holes [773, 774, 775]). No re-run set, no forward
+  test, no registered pattern commitment. **Do not invent a commitment to
+  fill the gap, and quote no span figure until this one closes.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 

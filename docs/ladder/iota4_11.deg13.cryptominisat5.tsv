@@ -10297,3 +10297,4 @@ g=11 [13, 13, 12, 9, 13, 13, 13, 12, 12, 11, 7]	UNSAT	9291.9
 # Spans are systematic and MAY be ranked once closed (9f8cad2).  This one
 # is NOT a finding and is NOT in the tally.
 # ---------------------------------------------------------------------
+g=11 [13, 13, 12, 9, 13, 13, 13, 11, 11, 11, 9]	UNSAT	5526.3
