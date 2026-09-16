@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-16T22:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-16T23:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -180,7 +180,8 @@ figures.
 | `41b168e` (rec. `3ebf469`) | 7 | 6:05:59 | 2,2,3,2,1,1,1 | **False** |
 | `49ddb49` (rec. `8cfb7dc`) | 8 | 3:00:37 | 3,3,2,2,2,1,2,1 | **False** |
 | `30f1fbd` (rec. `068b963`) | 2 | 0:52:58 | 2,1 | **True** |
-| `6286fe4` (rec. below) | 3 | 2:25:37 | 3,2,1 | **True** |
+| `6286fe4` (rec. `370cfae`) | 3 | 2:25:37 | 3,2,1 | **True** |
+| `446a24f` (rec. below) | 1 | 1:14:38 | 1 | **True**, vacuously |
 
 **These are not compared with each other.** Four points are not a trend,
 and a span's duration is set by which cubes happened to be running long
@@ -198,13 +199,17 @@ ran longer than 3 commits. Read through the distribution: **44 of the 69
 are 0 or 1 second**, so rank 11 of 69 is rank 11 of the 25 that lasted at
 all.
 
-**A fifth span is OPEN** as of 22:33:51Z: idx 778 landed ahead of 777,
-which started before it, so the frontier broke with **one** hole. No
-duration, rank or monotonicity for it until it closes. It opened with one
-hole where the last opened with three and the one before with two — that
-is not a sequence worth reading, for the same reason the durations are
-not: the opening hole count is set by which cubes happened to be running
-long when a short one finished.
+**The fifth span's `True` is vacuous.** A one-commit span has a one-point
+hole trajectory, and a single number is non-increasing by definition —
+`True` there means only that the tool ran. It must **never** be added to
+the False, False, True, True list as a fifth observation. The `True` at
+`30f1fbd` was already weak for the same reason (a two-commit span has
+exactly one chance to rise); this one has none.
+
+Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38 are not monotone,
+and commit counts 7, 8, 2, 3, 1 are not either. Both are set by which
+cubes happened to be running long when a short one finished — the same
+accident that sets how many holes a span opens with.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -385,9 +390,13 @@ alongside it.**
 
 ### Error patterns
 
-- **A script whose output asserts what its code does not do — 23 instances**
+- **A script whose output asserts what its code does not do — 24 instances**
   (#17 waiter false-positive, #18 61aebeb, #19 78e5127, #20 4be4958,
-  #21 99fd566, #22 cf2bccc, #23 068b963).
+  #21 99fd566, #22 cf2bccc, #23 068b963, #24 a rank helper that printed a
+  hardcoded "25 of 70" beside the tool's actual 26, self-flagged in the
+  same line and never quoted). Both #23 and #24 were caught in scratch
+  output before reaching a claim; the count includes them because a tally
+  that only records the ones that escaped is not a tally.
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65).
 - A tally quoted without its base rate (4e5e443).
@@ -434,16 +443,18 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **947 rows; 778 labels decided; 778 UNSAT; 0 SAT; 0 labels
+- **948 rows; 779 labels decided; 779 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..776, highest decided 778, holes [777].**
-- **778 of 1949 = 39.9179%**; 1171 undecided. 40% needs idx 780 — **2 more**.
+- **Frontier contiguous 0..778, highest decided 778, no holes.**
+- **779 of 1949 = 39.9692%**; 1170 undecided. 40% needs idx 780 — **1 more**.
+  **39.9692% is NOT 40%**: it rounds to 40.0 while sitting below it, which
+  is exactly the shape the "a rounded milestone is not a crossed one" rule
+  exists for. 780/1949 = 40.0205% is the first value above the line.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **23 of 38**.
-- **One span is open** (hole [777]). No re-run set, no forward test, no
-  registered pattern commitment. **Do not invent a commitment to fill the
-  gap, and quote no span figure until this one closes.**
+  verified) at **24 of 38**.
+- Nothing is open: no span, no re-run set, no forward test, no registered
+  pattern commitment. **Do not invent a commitment to fill the gap.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 

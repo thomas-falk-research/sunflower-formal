@@ -10360,3 +10360,64 @@ g=11 [13, 13, 12, 9, 13, 13, 13, 12, 11, 10, 9]	UNSAT	9966.7
 # ---------------------------------------------------------------------
 g=11 [13, 13, 12, 9, 13, 13, 12, 12, 12, 12, 7]	UNSAT	4015.6
 g=11 [13, 13, 12, 9, 13, 13, 13, 11, 11, 10, 10]	UNSAT	7940.3
+# ---------------------------------------------------------------------
+# BROKEN-FRONTIER SPAN CLOSED AT 446a24f.  Every figure below is COPIED
+# from `python3 docs/ladder/checkpoint_audit.py --spans all` (ba6ec65):
+#
+#   span of 1 broken commit(s)
+#     opened after : 370cfae  2026-09-16T22:02:24+00:00
+#     closed by    : 446a24f  2026-09-16T23:17:02+00:00
+#     duration     : 1:14:38 (1.2439 h) by committer timestamps
+#     hole counts  : 1
+#     monotone non-increasing? True
+#     most holes at once: 1 at a63b7a5  [777]
+#
+# THE MONOTONICITY HERE CARRIES NO INFORMATION.  A one-commit span has a
+# one-point hole trajectory, and a single number is non-increasing by
+# definition.  True here means only "the tool ran"; it is NOT evidence of
+# anything and must never be added to the FALSE, FALSE, TRUE, TRUE list
+# from the four earlier spans as though it were a fifth observation.  The
+# earlier TRUE at 30f1fbd was already weak for the same reason (a
+# two-commit span has exactly one chance to rise); this one is weaker
+# still, being no chance at all.
+#
+# "Opened after 370cfae" again confirms the definition recorded at
+# 370cfae: bdf99f9 sits between them in history but touched only
+# docs/ladder/deg13_sweep_note.md, so the span walk -- which follows
+# commits that touch THE CHECKPOINT -- does not see it.
+#
+# RANK, BOTH FIGURES, BECAUSE THEY DISAGREE (3ebf469).  Over 70 closed
+# spans: by DURATION 1:14:38 ranks 17 (16th is 1:15:36 at bef9422 ->
+# abbd653, just 58 s longer; 18th is 0:58:56 at f1977fd -> d6424a1); by
+# COMMIT COUNT 1 broken commit ranks 70 of 70 -- DEAD LAST, and that
+# number is worthless: EIGHTEEN spans tie at 1 commit, so the ordering
+# within the tie is arbitrary.  The honest form is that 52 of the 70 spans
+# ran longer than 1 commit.
+#
+# READ THE RANK THROUGH THE DISTRIBUTION.  Of the 70 closed spans, 26 are
+# longer than a second, 24 longer than a minute, 23 longer than ten
+# minutes, 17 longer than an hour and 8 longer than four hours -- so 44
+# are 0 or 1 second, and rank 17 of 70 is rank 17 of the 26 that lasted at
+# all.  The tool names what its one-hour line excludes: f1977fd ->
+# d6424a1 at 0:58:56, short by 1:04.
+#
+# THE FIVE SPANS OF THIS RUN ARE A LIST, NOT A TREND:
+#
+#   41b168e  6:05:59  7 commits   holes 2,2,3,2,1,1,1   monotone FALSE
+#   49ddb49  3:00:37  8 commits   holes 3,3,2,2,2,1,2,1 monotone FALSE
+#   30f1fbd  0:52:58  2 commits   holes 2,1             monotone TRUE
+#   6286fe4  2:25:37  3 commits   holes 3,2,1           monotone TRUE
+#   446a24f  1:14:38  1 commit    holes 1               monotone TRUE (empty)
+#
+# Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38 are not monotone
+# and never were; commit counts 7, 8, 2, 3, 1 are not either.  Both are
+# set by which cubes happened to be running long when a short one
+# finished.  They are NOT compared and NOT summarised into a shape.
+#
+# The hole was IN-FLIGHT WORK: idx 777 ran 7940.3 s to its UNSAT, 0.3676
+# of the 21600 s per-cube cap.  A stall is an UNKNOWN row written AT the
+# cap plus 0.4-1.4 percent, never silence.
+#
+# Spans are systematic and MAY be ranked once closed (9f8cad2).  This one
+# is NOT a finding and is NOT in the tally.
+# ---------------------------------------------------------------------
