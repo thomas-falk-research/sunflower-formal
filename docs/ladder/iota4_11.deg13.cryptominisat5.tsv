@@ -10031,3 +10031,4 @@ g=11 [13, 13, 12, 10, 13, 13, 12, 12, 12, 9, 9]	UNSAT	7507.1
 # percent is the counter, not the rung -- deg(0)=13 is UNSAT only when
 # ALL 1949 sub-cubes are.  The bracket stays 27 <= iota(4) <= 71.
 # ---------------------------------------------------------------------
+g=11 [13, 13, 12, 10, 13, 13, 12, 12, 10, 10, 10]	UNSAT	8491.9
