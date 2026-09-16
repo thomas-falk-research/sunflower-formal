@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-16T22:02Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-16T22:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -197,6 +197,14 @@ number is arbitrary within the tie — the honest form is that **27 of 69**
 ran longer than 3 commits. Read through the distribution: **44 of the 69
 are 0 or 1 second**, so rank 11 of 69 is rank 11 of the 25 that lasted at
 all.
+
+**A fifth span is OPEN** as of 22:33:51Z: idx 778 landed ahead of 777,
+which started before it, so the frontier broke with **one** hole. No
+duration, rank or monotonicity for it until it closes. It opened with one
+hole where the last opened with three and the one before with two — that
+is not a sequence worth reading, for the same reason the durations are
+not: the opening hole count is set by which cubes happened to be running
+long when a short one finished.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -426,15 +434,16 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **946 rows; 777 labels decided; 777 UNSAT; 0 SAT; 0 labels
+- **947 rows; 778 labels decided; 778 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..776, highest decided 776, no holes.**
-- **777 of 1949 = 39.8666%**; 1172 undecided. 40% needs idx 780 — **3 more**.
+- **Frontier contiguous 0..776, highest decided 778, holes [777].**
+- **778 of 1949 = 39.9179%**; 1171 undecided. 40% needs idx 780 — **2 more**.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **22 of 38**.
-- Nothing is open: no span, no re-run set, no forward test, no registered
-  pattern commitment. **Do not invent a commitment to fill the gap.**
+  verified) at **23 of 38**.
+- **One span is open** (hole [777]). No re-run set, no forward test, no
+  registered pattern commitment. **Do not invent a commitment to fill the
+  gap, and quote no span figure until this one closes.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
