@@ -10040,3 +10040,53 @@ g=11 [13, 13, 12, 10, 13, 12, 12, 12, 12, 12, 7]	UNSAT	2068.9
 g=11 [13, 13, 12, 10, 13, 12, 12, 12, 12, 11, 8]	UNSAT	5331.3
 g=11 [13, 13, 12, 10, 13, 12, 12, 12, 12, 10, 9]	UNSAT	5463.5
 g=11 [13, 13, 12, 10, 13, 13, 12, 11, 11, 10, 10]	UNSAT	13469.7
+# ---------------------------------------------------------------------
+# BROKEN-FRONTIER SPAN CLOSED AT 41b168e.  Every figure below is COPIED
+# from `python3 docs/ladder/checkpoint_audit.py --spans all`, not
+# recalled -- that is the rule registered at ba6ec65 after I typed a span
+# count from memory minutes after reading the correct one off the tool.
+#
+#   span of 7 broken commit(s)
+#     opened after : 37d44af  2026-09-16T04:00:11+00:00
+#     closed by    : 41b168e  2026-09-16T10:06:10+00:00
+#     duration     : 6:05:59 (6.0997 h) by committer timestamps
+#     hole counts  : 2,2,3,2,1,1,1
+#     monotone non-increasing? False
+#     most holes at once: 3 at e5243fc  [737, 738, 741]
+#
+# THE TRAJECTORY IS NOT A SHRINK AND IS NOT DESCRIBED AS ONE.  It went
+# 2,2,3,2,1,1,1 -- it GREW BACK TO THREE mid-span, at e5243fc, when idx
+# 742 landed ahead of 741.  The tool computes the monotonicity and prints
+# False; 93b9351 is the commit where I summarised a hole trajectory as
+# "shrinking 3 -> 2 -> 1" when it was nothing of the kind.
+#
+# RANK, WITH BOTH FIGURES GIVEN BECAUSE THEY DISAGREE.  Over the complete
+# history of 66 closed spans:
+#     by DURATION       6:05:59 ranks 6 of 66
+#                       (neighbours: 5th is 6:27:46 at db93f1f,
+#                        7th is 4:40:49 at 93b9351)
+#     by COMMIT COUNT   7 broken commits ranks 16 of 66
+# Quoting only the duration rank would make this span sound far more
+# unusual than quoting the commit-count rank would.  Both are printed.
+#
+# READ THE RANK THROUGH THE DISTRIBUTION, which the tool prints for
+# exactly this reason: of the 66 closed spans, 22 are longer than one
+# second, 20 longer than a minute, 19 longer than ten minutes, 14 longer
+# than an hour and 8 longer than four hours.  Forty-four of the 66 are
+# 0 or 1 second -- a frontier that is whole again by the next commit.
+# So "6 of 66" is really "6 of the 22 that lasted at all", and also "6 of
+# the 8 that lasted more than four hours".  The tool also names what its
+# one-hour line excludes: f1977fd -> d6424a1 at 0:58:56, short by 1:04,
+# and flags that the line is doing arbitrary work at that boundary.
+#
+# WHAT THE SPAN WAS.  It opened when idx 739 landed at 060fb26 while 737
+# and 738 were still running, and closed when idx 741 landed at 41b168e.
+# Every hole in it was IN-FLIGHT WORK, never a regression and never a
+# stall: the longest-lived, idx 741, ran 13469.7 s to its UNSAT, which is
+# 0.6236 of the 21600 s per-cube cap.  A stall is an UNKNOWN row written
+# AT the cap plus 0.4-1.4 percent, never silence.
+#
+# The span is CLOSED and is NOT a finding.  Spans are systematic and may
+# be ranked (9f8cad2), and that is all this is: an arithmetic property of
+# a checkpoint whose rows land in completion order.
+# ---------------------------------------------------------------------
