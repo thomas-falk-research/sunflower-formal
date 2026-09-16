@@ -10100,3 +10100,45 @@ g=11 [13, 13, 12, 10, 12, 12, 12, 12, 11, 11, 10]	UNSAT	4983.7
 g=11 [13, 13, 12, 9, 13, 13, 13, 13, 13, 13, 3]	UNSAT	720.2
 g=11 [13, 13, 12, 10, 12, 12, 12, 11, 11, 11, 11]	UNSAT	3372.5
 g=11 [13, 13, 12, 10, 13, 12, 12, 11, 11, 11, 10]	UNSAT	11939.9
+# ---------------------------------------------------------------------
+# BROKEN-FRONTIER SPAN CLOSED AT 49ddb49.  Every figure COPIED from
+# `python3 docs/ladder/checkpoint_audit.py --spans all` (ba6ec65):
+#
+#   span of 8 broken commit(s)
+#     opened after : 3ebf469  (the previous span's record commit)
+#     closed by    : 49ddb49  2026-09-16T13:08:25+00:00
+#     duration     : 3:00:37 (3.0103 h) by committer timestamps
+#     hole counts  : 3,3,2,2,2,1,2,1
+#     monotone non-increasing? False
+#     most holes at once: 3 at d06dbe4  [746, 747, 748]
+#
+# IT WENT BACK UP.  The trajectory reached ONE hole and then returned to
+# TWO before closing, because idx 755 -- the first cube of the NEXT block
+# -- landed while 754 of the previous block was still running.  That is
+# completion order doing what it always does, and it is the reason the
+# tool computes monotonicity instead of leaving the shape to prose.
+#
+# RANK, BOTH FIGURES, BECAUSE THEY DISAGREE (3ebf469).  Over 67 closed
+# spans: by DURATION 3:00:37 ranks 10 (9th is 3:10:49 at b34fc2e, 11th is
+# 1:59:31 at c62d97c); by COMMIT COUNT 8 broken commits ranks 15.
+#
+# READ THE RANK THROUGH THE DISTRIBUTION.  Of the 67 closed spans, 23 are
+# longer than a second, 21 longer than a minute, 20 longer than ten
+# minutes, 15 longer than an hour and 8 longer than four hours -- so 44
+# are 0 or 1 second, and "10 of 67" is really "10 of the 23 that lasted
+# at all".  The tool again names what its one-hour line excludes:
+# f1977fd -> d6424a1 at 0:58:56, short by 1:04.
+#
+# THIS SPAN AND THE ONE BEFORE IT ARE NOT COMPARED.  6:05:59 across 7
+# commits then 3:00:37 across 8 is two spans; two points are not a trend,
+# and their durations are set by which cubes happened to be running long
+# when a fast one finished.
+#
+# Every hole in it was IN-FLIGHT WORK.  The last to close, idx 748, ran
+# 11939.9 s to its UNSAT -- 0.5528 of the 21600 s per-cube cap.  A stall
+# is an UNKNOWN row written AT the cap plus 0.4-1.4 percent, never
+# silence and never a cube merely running a long time.
+#
+# Spans are systematic and MAY be ranked (9f8cad2).  This one is NOT a
+# finding and is NOT in the tally.
+# ---------------------------------------------------------------------
