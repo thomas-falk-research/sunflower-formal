@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-16T21:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-16T22:02Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -180,26 +180,30 @@ figures.
 | `41b168e` (rec. `3ebf469`) | 7 | 6:05:59 | 2,2,3,2,1,1,1 | **False** |
 | `49ddb49` (rec. `8cfb7dc`) | 8 | 3:00:37 | 3,3,2,2,2,1,2,1 | **False** |
 | `30f1fbd` (rec. `068b963`) | 2 | 0:52:58 | 2,1 | **True** |
+| `6286fe4` (rec. below) | 3 | 2:25:37 | 3,2,1 | **True** |
 
-**These are not compared with each other.** Three points are not a trend,
+**These are not compared with each other.** Four points are not a trend,
 and a span's duration is set by which cubes happened to be running long
-when a fast one finished. The third came back `True` only because a
-two-commit span has exactly one opportunity to rise.
+when a fast one finished — the same accident that sets how many holes it
+opens with. Monotonicity reads False, False, True, True: a **list**, not a
+trend. The third came back `True` only because a two-commit span has
+exactly one opportunity to rise; the fourth ran 3,2,1 and the shape was
+still not called until the tool computed it, because both multi-commit
+spans before it had looked like they were shrinking and then went back up.
 
-Ranks disagree, so give both. The third span: **18 of 68** by duration;
-**51 of 68** by commit count, but fourteen spans tie at 2 commits so that
-number is arbitrary within the tie — the honest form is that **37 of 68**
-ran longer than 2 commits. Read through the distribution: **44 of the 68
-are 0 or 1 second**, so rank 18 of 68 is rank 18 of the 24 that lasted at
+Ranks disagree, so give both. The fourth span: **11 of 69** by duration;
+**38 of 69** by commit count, but eleven spans tie at 3 commits so that
+number is arbitrary within the tie — the honest form is that **27 of 69**
+ran longer than 3 commits. Read through the distribution: **44 of the 69
+are 0 or 1 second**, so rank 11 of 69 is rank 11 of the 25 that lasted at
 all.
-
-**A fourth span is OPEN** as of 21:03:42Z: idx 776 landed while 773, 774
-and 775 were still running, so the frontier broke with **three** holes.
-No duration, rank or monotonicity for it until it closes.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
-`068b963`.
+`068b963`. More precisely, it is the last commit that **touched the
+checkpoint** and left the frontier whole: the fourth span names `068b963`
+rather than `fca972d` because `fca972d` added only this note file and
+changed no data row (checked with `git show --stat`, not assumed).
 
 ---
 
@@ -422,16 +426,15 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **943 rows; 774 labels decided; 774 UNSAT; 0 SAT; 0 labels
+- **946 rows; 777 labels decided; 777 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..772, highest decided 776, holes [773, 774, 775].**
-- **774 of 1949 = 39.7127%**; 1175 undecided. 40% needs idx 780 — **6 more**.
+- **Frontier contiguous 0..776, highest decided 776, no holes.**
+- **777 of 1949 = 39.8666%**; 1172 undecided. 40% needs idx 780 — **3 more**.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **19 of 38**.
-- **One span is open** (holes [773, 774, 775]). No re-run set, no forward
-  test, no registered pattern commitment. **Do not invent a commitment to
-  fill the gap, and quote no span figure until this one closes.**
+  verified) at **22 of 38**.
+- Nothing is open: no span, no re-run set, no forward test, no registered
+  pattern commitment. **Do not invent a commitment to fill the gap.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
