@@ -163,6 +163,12 @@ corrected at 060fb26 by checking it against published data).
 (launch + 61.0 s, CNFs within 4 ms) so their re-run clocks are again directly
 comparable. **No ratio, median or spread until all four land.**
 
+Landed so far: **798 at 4075.1 s** (1 of 4). Its ratio is one division away
+and is deliberately NOT computed, because the rule above was written one
+commit before this row arrived and relaxing it here is how the other rules
+in this file failed — on their next application. A single member's ratio
+also reads as a claim about the set, which is the thing being withheld.
+
 Set four in full (all four members restarted at the **same instant**, so
 their re-run clocks are directly comparable):
 
@@ -251,9 +257,11 @@ decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
 **one** — 788 alone, where idx 794 at 04:41:09Z left it (794 landed behind an
 already-decided 793, so the highest decided moved 793 → 794 and no hole
 opened). A span's hole count is not monotone while it is open, in either
-direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1 → 1 → 1 → 1 (idx
-795, 796 and 797 all landed behind the frontier top, the last at 05:19:32Z).
-No duration, rank or monotonicity for it until that hole fills.
+direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1 → 1 → 1 → 1 → 1
+(795, 796, 797 and 798 all landed behind the frontier top, the last at
+07:01:13Z). It has survived a container restart, which discarded 788's
+10652.6 s and left the hole exactly where it was. No duration, rank or
+monotonicity for it until that hole fills.
 
 **WHEN 788 LANDS, TWO THINGS CLOSE AT ONCE** and both must be done in that
 commit: run `checkpoint_audit.py --spans all` and COPY its figures for this
@@ -573,18 +581,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (966 rows, unchanged across restart #37)
+## State as of the last refresh (966 -> 967 rows)
 
-- **966 rows; 797 labels decided; 797 UNSAT; 0 SAT; 0 labels
-  undecided-only.** Unchanged across restart #37 — no rows were lost.
+- **967 rows; 798 labels decided; 798 UNSAT; 0 SAT; 0 labels
+  undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..787, highest decided 797, holes [788].**
-- **797 of 1949 = 40.8928%**; **1152 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 798, holes [788].**
+- **798 of 1949 = 40.9441%**; **1151 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 3 more (799/1949 =
-  40.9954% is not above 41; 800/1949 = 41.0467% is).
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 2 more (799/1949 =
+  40.9954% is not above 41; 800/1949 = 41.0467% is). **The count 800 and the
+  cube index 800 are unrelated quantities that happen to share a number.**
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -597,7 +606,7 @@ Task outputs live at
   verified) at **37 of 38**, one undecided: **788**, which is also the span's
   only remaining hole — so the block and the span close on the SAME row. A NEW block
   `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
-  verified, 5 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
+  verified, 6 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
   — four solver slots run ahead of the frontier and do not respect block
   boundaries. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
