@@ -10613,3 +10613,43 @@ g=11 [13, 13, 12, 8, 13, 13, 13, 12, 11, 11, 9]	UNSAT	9775.5
 g=11 [13, 13, 12, 8, 13, 13, 12, 12, 12, 12, 8]	UNSAT	3759.5
 g=11 [13, 13, 12, 8, 13, 13, 13, 12, 11, 10, 10]	UNSAT	8500.5
 g=11 [13, 13, 12, 8, 13, 13, 13, 11, 11, 11, 10]	UNSAT	5928.8
+#
+# ---------------------------------------------------------------------
+# EIGHTH SPAN CLOSED, all figures COPIED from checkpoint_audit.py
+# --spans all, not recomputed by hand:
+#
+#   opened after : 9afbec0  2026-09-17T11:54:20+00:00
+#   closed by    : 567e3b5  2026-09-17T12:30:09+00:00
+#   duration     : 0:35:49 (0.5969 h) by committer timestamps
+#   commits      : 2 broken
+#   hole counts  : 2,1
+#   monotone non-increasing? True
+#   most holes   : 2 at dbb2fb1  [809, 810]
+#
+# THE "True" HERE IS ONE COIN FLIP.  The chain has two entries, so it
+# contains exactly ONE comparison; a two-entry chain of distinct values
+# is monotone non-increasing half the time by accident.  That is more
+# than the vacuous single-entry case at 446a24f and far less than the
+# five-entry chain at 84bde6a.  Eight spans now read False, False, True,
+# True, True-vacuous, True, False, True -- 5 True of 8, which is what a
+# fair coin does, and the monotonicity of an open span was never a
+# finding in either direction.
+#
+# RANKS, BOTH WAYS, AGAINST 73 CLOSED SPANS, computed by parsing the
+# tool's own output because the tool prints only the top five:
+#
+#   by duration     : rank 23 of 73 -- 50 closed spans are SHORTER
+#   by commit count : rank 41 of 73, with 15 ties at 2 commits
+#
+# READ THOSE THROUGH THE DISTRIBUTION, which the tool prints for exactly
+# this reason: 44 of the 73 spans are one second or shorter.  Ranking
+# 23rd in a population that is mostly instantaneous means this span is
+# ordinary among the ones that lasted at all, not that it was long.  The
+# tool again flags that its one-hour line is arbitrary -- the nearest
+# excluded span misses it by 1 minute 4 seconds.
+#
+# This span opened when idx 811 landed ahead of 809 and 810, and closed
+# 35m49s later when 810 came in.  It also ended a run of six consecutive
+# landings in index order that had been noted and explicitly NOT
+# registered as a pattern on three successive commits.
+# ---------------------------------------------------------------------

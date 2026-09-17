@@ -258,14 +258,18 @@ accident that sets how many holes a span opens with.
 **The sixth span's `True` is the first non-trivial one.** Five points,
 with two flat steps (3→3 and 1→1) where the count could have risen and did
 not. The `True` at `30f1fbd` had one chance to rise; `446a24f` had none.
-**Seven** spans now read False, False, True, True, True-vacuous, True,
-**False** — still **not** a trend, and the run of Trues that had built up
-ended on the seventh: a hole count rises only when a cube that started late
-finishes before ones that started early, which is an accident of which
-cubes happen to be long.
+**Eight** spans now read False, False, True, True, True-vacuous, True,
+False, **True** — 5 True of 8, which is what a fair coin does. Still **not**
+a trend: a hole count rises only when a cube that started late finishes
+before ones that started early, which is an accident of which cubes happen
+to be long. **And the strength of a "True" depends on the chain's length**:
+the eighth's chain is `2,1`, one comparison, monotone half the time by
+accident; the fifth's was a single entry and vacuous; only the sixth's
+`3,3,2,1,1` carried several.
 
-Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15
-are not monotone, and commit counts 7, 8, 2, 3, 1, 5, 17 are not either.
+Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15,
+0:35:49 are not monotone, and commit counts 7, 8, 2, 3, 1, 5, 17, 2 are not
+either.
 
 The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
 789 were still running, breaking the frontier with **three** holes. It then
@@ -303,12 +307,24 @@ arbitrary: the nearest excluded span misses it by 1 minute 4 seconds.
 5:41:15 is wall-clock between two commits and **not solver effort**. A span
 duration never measured solver effort; this one makes it obvious.
 
-**THE EIGHTH SPAN OPENED** at 12:01:02Z when idx 811 landed while 809 and
-810 were still running, breaking the frontier with **two** holes; 809 filled
-at 12:19:11Z and **810 at 12:29:18Z, closing it**. Its duration, commit
-count, hole sequence and rank come from `checkpoint_audit.py --spans all`
-in the NEXT commit — the tool walks commits, so the closing commit has to
-exist first. No span figure is quoted until then.
+**THE EIGHTH SPAN IS CLOSED.** All figures COPIED from
+`checkpoint_audit.py --spans all`:
+
+| field | value |
+|---|---|
+| opened after | `9afbec0` 2026-09-17T11:54:20Z |
+| closed by | `567e3b5` 2026-09-17T12:30:09Z |
+| duration | 0:35:49 (0.5969 h) |
+| commits | 2 broken |
+| hole counts | 2,1 |
+| monotone non-increasing | True — **one comparison only** |
+| most holes | 2 at `dbb2fb1` [809, 810] |
+
+Ranks against **73 closed spans**, parsed from the tool's output because it
+prints only the top five: **rank 23 of 73 by duration** (50 are shorter) and
+**rank 41 of 73 by commit count**, with 15 other spans also at 2 commits.
+Read through the distribution: **44 of the 73 are one second or shorter**, so
+ranking 23rd means ordinary among the spans that lasted at all, not long.
 
 It also ended a run of **six** consecutive landings in index order. That run
 was noted and explicitly NOT registered as a pattern on each of the last
