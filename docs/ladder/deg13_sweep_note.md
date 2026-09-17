@@ -179,9 +179,11 @@ comparable. **No ratio, median or spread until all four land.** Set five's
 version of this rule was tested when honouring it cost something — a single
 member's ratio was one division away and was withheld — and it held.
 
-Landed so far: **831 at 4452.3 s, 833 at 5619.9 s** (2 of 4). No ratio,
-median or spread — and with two in hand, no comparison between them either,
-which is the same withheld claim in a different shape.
+Landed so far: **831 at 4452.3 s, 833 at 5619.9 s, 834 at 6748.2 s**
+(3 of 4). No ratio, median or spread, and no ordering read across the three:
+three numbers can be sorted and a sort looks like a finding. **832 is the
+last member**, and it is also the eleventh span's only hole, so the set and
+the span close on the same row.
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
@@ -436,8 +438,10 @@ the distribution — **44 of 75 are one second or shorter** — a 21-minute span
 ranking 26th is ordinary among the spans that lasted at all.
 
 **AN ELEVENTH SPAN IS OPEN** as of 20:22:54Z: idx 833 landed while 832 was
-still running, so the frontier broke with **one** hole. No duration, rank or
-monotonicity until it fills, and **no hand-tracked hole sequence is kept**.
+still running, so the frontier broke with **one** hole. idx 834 at 20:41:43Z
+landed behind the frontier top and did not change it. No duration, rank or
+monotonicity until 832 fills, and **no hand-tracked hole sequence is kept**.
+**832 also closes re-run set six**, so that row closes two things.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -817,20 +821,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1001 -> 1002 rows)
+## State as of the last refresh (1002 -> 1003 rows)
 
-- **1002 rows; 833 labels decided; 833 UNSAT; 0 SAT; 0 labels
+- **1003 rows; 834 labels decided; 834 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 833 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 834 decided plus 169 superseded UNKNOWN
   rows.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..831, highest decided 833, holes [832].**
+- **Frontier contiguous 0..831, highest decided 834, holes [832].**
   An eleventh span is OPEN.
-- **833 of 1949 = 42.7399%**; **1116 undecided**. **42% IS CROSSED**, at idx
+- **834 of 1949 = 42.7912%**; **1115 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 6 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 5 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -844,7 +848,7 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 12 decided.** When it closes, record its descriptive
+  contiguity verified, 13 decided.** When it closes, record its descriptive
   stats as descriptive stats, NOT findings, and do NOT compare them across
   blocks.
 - **One span is open** — its holes are named on the frontier line above
