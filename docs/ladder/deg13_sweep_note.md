@@ -369,6 +369,11 @@ parallel state had silently diverged. **The tool's sequence is the record;
 do not maintain a hand-tracked copy alongside it** — that is the
 same-quantity-written-twice defect in a new place.
 
+**A TENTH SPAN IS OPEN** as of 16:34:42Z: idx 825 landed while 824 was still
+running, so the frontier broke with **one** hole. No duration, rank or
+monotonicity until it fills, and **no hand-tracked hole sequence is kept** —
+the tool's is the record, per the lesson directly above.
+
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
 `068b963`. More precisely, it is the last commit that **touched the
@@ -747,18 +752,18 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (993 rows; span record commit)
+## State as of the last refresh (993 -> 994 rows)
 
-- **993 rows; 824 labels decided; 824 UNSAT; 0 SAT; 0 labels
+- **994 rows; 825 labels decided; 825 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..823, highest decided 823, NO HOLES.** The ninth
-  span is closed.
-- **824 of 1949 = 42.2781%**; **1125 undecided**. **42% IS CROSSED**, at idx
+- **Frontier contiguous 0..823, highest decided 825, holes [824].**
+  A tenth span is OPEN.
+- **825 of 1949 = 42.3294%**; **1124 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 15 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 14 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -772,11 +777,11 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 3 decided.** When it closes, record its descriptive
+  contiguity verified, 4 decided.** When it closes, record its descriptive
   stats as descriptive stats, NOT findings, and do NOT compare them across
   blocks.
-- **No span is open** — the frontier line above has no holes. **When one
-  IS open, its holes are named on that line and nowhere else in this file.**
+- **One span is open** — its holes are named on the frontier line above
+  **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
