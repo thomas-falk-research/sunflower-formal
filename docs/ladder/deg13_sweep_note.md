@@ -304,8 +304,9 @@ arbitrary: the nearest excluded span misses it by 1 minute 4 seconds.
 duration never measured solver effort; this one makes it obvious.
 
 **AN EIGHTH SPAN IS OPEN** as of 12:01:02Z: idx 811 landed while 809 and 810
-were still running, so the frontier broke with **two** holes. No duration,
-rank or monotonicity until both fill.
+were still running, so the frontier broke with **two** holes. idx 809 filled
+at 12:19:11Z, leaving **one** — 810. No duration, rank or monotonicity until
+it fills.
 
 It also ended a run of **six** consecutive landings in index order. That run
 was noted and explicitly NOT registered as a pattern on each of the last
@@ -663,19 +664,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (978 -> 979 rows)
+## State as of the last refresh (979 -> 980 rows)
 
-- **979 rows; 810 labels decided; 810 UNSAT; 0 SAT; 0 labels
+- **980 rows; 811 labels decided; 811 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..808, highest decided 811, holes [809, 810].**
+- **Frontier contiguous 0..809, highest decided 811, holes [810].**
   An eighth span is OPEN.
-- **810 of 1949 = 41.5598%**; **1139 undecided**. 41% was crossed at idx 800,
+- **811 of 1949 = 41.6111%**; **1138 undecided**. 41% was crossed at idx 800,
   checked and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT
   above 41; 800/1949 = 41.0467% is. Next: 42% needs
-  `ceil(0.42 × 1949) = 819` — 9 more. **A rounded milestone is not a
+  `ceil(0.42 × 1949) = 819` — 8 more. **A rounded milestone is not a
   crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -688,7 +689,7 @@ Task outputs live at
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
   above. Only `[13,13,12,8]` is open: **idx 793..820, 28 members, contiguity
-  verified, 17 decided.** When it closes, record its descriptive stats as
+  verified, 18 decided.** When it closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
 - **One span is open** — its holes are named on the frontier line above
   **and nowhere else in this file.**
