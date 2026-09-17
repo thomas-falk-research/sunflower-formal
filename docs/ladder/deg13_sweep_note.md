@@ -595,18 +595,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (968 -> 969 rows)
+## State as of the last refresh (969 -> 970 rows)
 
-- **969 rows; 800 labels decided; 800 UNSAT; 0 SAT; 0 labels
+- **970 rows; 801 labels decided; 801 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..787, highest decided 800, holes [788].**
-- **800 of 1949 = 41.0467%**; **1149 undecided**. **41% IS CROSSED**, checked
-  and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT above 41;
-  800/1949 = 41.0467% is. Next: 42% needs `ceil(0.42 × 1949) = 819` — 19
-  more. **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
+- **Frontier contiguous 0..787, highest decided 801, holes [788].**
+- **801 of 1949 = 41.0980%**; **1148 undecided**. 41% was crossed at idx 800,
+  checked and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT
+  above 41; 800/1949 = 41.0467% is. Next: 42% needs
+  `ceil(0.42 × 1949) = 819` — 18 more. **A rounded milestone is not a
+  crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -620,7 +621,7 @@ Task outputs live at
   only remaining hole AND re-run set five's last member — so **THREE things
   close on that one row**: the block, the span and the set.
   A NEW block `[13,13,12,8]` has opened: **idx 793..820, 28 members,
-  contiguity verified, 8 decided.** TWO BLOCKS ARE OPEN AT ONCE, which is
+  contiguity verified, 9 decided.** TWO BLOCKS ARE OPEN AT ONCE, which is
   normal — four solver slots run ahead of the frontier and do not respect
   block boundaries. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
