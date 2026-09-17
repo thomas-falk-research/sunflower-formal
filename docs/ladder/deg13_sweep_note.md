@@ -788,18 +788,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (998 -> 999 rows)
+## State as of the last refresh (999 -> 1000 rows)
 
-- **999 rows; 830 labels decided; 830 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restart #37.
+- **1000 rows; 831 labels decided; 831 UNSAT; 0 SAT; 0 labels
+  undecided-only.** No rows were lost across restart #37. **The round 1000
+  is a ROW count and means nothing** — 831 decided plus 169 superseded
+  UNKNOWN rows. A round count is not a milestone (b34fc2e, 85bb4d1), and
+  rows are not decisions.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..829, highest decided 829, NO HOLES.** The tenth
+- **Frontier contiguous 0..830, highest decided 830, NO HOLES.** The tenth
   span is closed.
-- **830 of 1949 = 42.5859%**; **1119 undecided**. **42% IS CROSSED**, at idx
+- **831 of 1949 = 42.6372%**; **1118 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 9 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 8 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -813,7 +816,7 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 9 decided.** When it closes, record its descriptive
+  contiguity verified, 10 decided.** When it closes, record its descriptive
   stats as descriptive stats, NOT findings, and do NOT compare them across
   blocks.
 - **No span is open** — the frontier line above has no holes. **When one
