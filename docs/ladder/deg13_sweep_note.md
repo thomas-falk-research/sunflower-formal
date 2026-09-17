@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T22:28Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T22:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -507,14 +507,15 @@ recorded spans from the same output and matching them line for line against
 the table above; a regex written for this job returned NOT FOUND for all ten
 once before, and that was a bug in the check, not in the data.
 
-**A TWELFTH SPAN IS OPEN** as of 21:07:50Z: idx 839 landed while 836, 837
-and 838 were all still running, so the frontier broke with **three** holes.
-Its hole count has since **both fallen and risen** while open, which is
-ordinary and is exactly why no verdict is quoted before a span closes. No
-duration, no rank and no monotonicity verdict until it fills, **no
-hand-tracked hole sequence is kept** — the tool's is the record (0ef2e70) —
-and the current holes are named on the state line at the foot of this file
-and nowhere else.
+**THE TWELFTH SPAN CLOSED ON THE idx-838 COMMIT.** It opened at 21:07:50Z
+when idx 839 landed while 836, 837 and 838 were all still running (three
+holes), its hole count both fell and rose while it was open, and idx 838
+filled the last one. **Its figures are not in this file yet**: `--spans
+all` walks commits, so the closing commit must exist before the tool can
+measure the span. Duration, ranks and the computed monotonicity verdict go
+in the follow-up commit that runs it, and the verdict tally above stays at
+**eleven** rows until then. No hand-tracked hole sequence was kept for it
+— the tool's is the record (0ef2e70).
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -618,17 +619,26 @@ Registration discipline, learned the hard way:
 - 1:55:26 span coincidence `ba6ec65`. 741 naming collision `e5243fc`.
 - Closed-block descriptive stats — **not findings, not compared across**:
 
-  | block | n | min | mean | max | spread |
-  |---|---|---|---|---|---|
-  | `[13,13,12,12]` | 82 | 54.1 | 3442.9 | 12831.3 | 237.18× |
-  | `[13,13,12,11]` | 65 | 144.8 | 5704.7 | 16785.7 | 115.92× |
-  | `[13,13,12,10]` | 49 | 578.0 | 5744.1 | 15490.4 | 26.80× |
-  | `[13,13,12,9]` | 38 | 720.2 | 5752.8 | 13990.6 | 19.43× |
-  | `[13,13,12,8]` | 28 | 723.5 | 5049.1 | 14316.3 | 19.79× |
+  | block | n | min | median | mean | max | spread |
+  |---|---|---|---|---|---|---|
+  | `[13,13,12,12]` | 82 | 54.1 | 3442.9 | 4694.6 | 12831.3 | 237.1774× |
+  | `[13,13,12,11]` | 65 | 144.8 | 5704.7 | 6818.7 | 16785.7 | 115.9233× |
+  | `[13,13,12,10]` | 49 | 578.0 | 5744.1 | 6791.7 | 15490.4 | 26.8000× |
+  | `[13,13,12,9]` | 38 | 720.2 | 5101.9 | 5752.8 | 13990.6 | 19.4260× |
+  | `[13,13,12,8]` | 28 | 723.5 | 4438.8 | 5049.1 | 14316.3 | 19.7876× |
+  | `[13,13,12,7]` | 21 | 664.2 | 3302.3 | 3725.1 | 6868.5 | 10.3410× |
 
-  (`[13,13,12,9]` is idx 755..792, median 5101.9, closed by idx 788;
-  `[13,13,12,8]` is idx 793..820, median 4438.8, closed by idx 814. Both
-  contiguity verified.)
+  **EVERY CELL ABOVE WAS RECOMPUTED FROM THE CHECKPOINT IN THE COMMIT THAT
+  CLOSED `[13,13,12,7]`, BECAUSE THE OLD TABLE'S MIDDLE COLUMN WAS A
+  MIXTURE.** It was headed `mean`, and it held the **median** in its first
+  three rows and the **mean** in its last two — checked cell by cell
+  against the data, not eyeballed. Anything ever read off that column as
+  "the means" was reading two different statistics in one list. Both are
+  now given, in their own columns, for all six rows.
+
+  (`[13,13,12,9]` is idx 755..792, closed by idx 788; `[13,13,12,8]` is idx
+  793..820, closed by idx 814; `[13,13,12,7]` is idx 821..841, closed by
+  idx 838. All three contiguity verified.)
 
   **THE "SPREADS FALL, MINIMA RISE" READING WAS WITHDRAWN AS CONFOUNDED, AND
   THE FIFTH BLOCK THEN BROKE IT OUTRIGHT.** It was withdrawn when four
@@ -639,13 +649,38 @@ Registration discipline, learned the hard way:
   n = 28** (4000 draws each, seed 11), so a falling spread was what NO
   structure predicted. The fifth block has n = 28, continuing the decline,
   and its spread went **UP**: 237.18, 115.92, 26.80, 19.43, **19.79**. The
-  mean did the same — 3442.9, 5704.7, 5744.1, 5752.8, **5049.1**. Only the
-  minima are still monotone. **The withdrawal came first, on the confound,
-  and the data broke the reading afterwards; the order matters, because
-  withdrawing it only after it broke would have been no discipline at all.**
-  The observed spreads sit well below the simulation at every n, and **no
-  claim is made about that gap** — the simulated pool contains these very
-  cubes and spans 0.1 s to 21678.5 s, too crude to carry a conclusion.
+  mean broke at the same block. **AND AT THE SIXTH BLOCK THE MINIMA BROKE
+  TOO, WHICH WAS THE LAST PART STILL STANDING.** All three, read off the
+  table above and tested mechanically in both directions:
+
+  - minima **54.1, 144.8, 578.0, 720.2, 723.5, 664.2** — the sixth is
+    LOWER than the fifth, so **not** non-decreasing;
+  - spreads **237.18, 115.92, 26.80, 19.43, 19.79, 10.34** — not monotone
+    (the fifth rose);
+  - means **4694.6, 6818.7, 6791.7, 5752.8, 5049.1, 3725.1** — not
+    monotone in either direction. These are the true means; the figures
+    that used to stand here were the mixed column described above.
+
+  Nothing of the reading survives. **The withdrawal came first, on the
+  confound, and the data broke the reading afterwards, in three separate
+  instalments; the order matters, because withdrawing it only after it
+  broke would have been no discipline at all.**
+  Re-run at the sixth block, same stated method (4000 draws per n, seed 11,
+  pool = all decided costs), the median simulated spreads are **217.55,
+  161.89, 113.33, 81.98, 51.84 and 38.87** against observed **237.18,
+  115.92, 26.80, 19.43, 19.79 and 10.34**.
+
+  **THESE ARE NOT THE FIGURES RECORDED EARLIER** (252.71, 183.51, 121.54,
+  91.06, 55.54) **and they are not a correction of them.** The control is
+  pool-dependent and the pool grows with every row banked — it was smaller
+  when those were computed and now holds 846 costs spanning 0.1 s to
+  21678.5 s — so the earlier numbers are not reproducible today and the two
+  sets must never be lined up as though they were. What is stable across
+  both runs is the only thing the control was ever for: **simulated spread
+  RISES as n falls, so a falling observed spread is what NO structure
+  predicts.** The observed spreads sit below the simulation at every n, and
+  **no claim is made about that gap** — the pool contains these very cubes
+  and is far too crude to carry a conclusion.
 
   **THE WHOLE BLOCK MAP IS KNOWN IN ADVANCE, SO NONE OF IT IS AN
   OBSERVATION.** One loop over `SEQ` gives every block's members:
@@ -940,6 +975,19 @@ alongside it.**
   **None of these four is on the pattern tally: they are
   procedural defects and their fix is a rule, not a prediction, and
   the tally is only for predictive commitments.**
+- **A COLUMN HEADING THAT NAMED ONE STATISTIC WHILE ITS CELLS HELD TWO** —
+  found in the commit that closed block `[13,13,12,7]`. The closed-block
+  table's middle column was headed `mean`; its first three rows held the
+  **median** and its last two held the **mean**. Every row was correct as a
+  number and the column was wrong as a column, which is why re-reading the
+  table never caught it — the defect lived in the heading, not the data.
+  It was found only by recomputing all six rows from the checkpoint in
+  order to add a sixth, and comparing cell by cell. Any "the means are…"
+  read off that column, including in this file, was a list of two different
+  statistics. Fix: **median and mean now have separate columns, and a table
+  gains a row only by recomputing every row.** Adding one row to a table is
+  the cheapest moment to audit the whole table, and it is the only moment
+  anyone ever will.
 - A convenient population by accident (c9982c9, a22c6e7).
 - Two near-identical figures treated as corroboration (37d44af).
 - A mechanism reached for to dismiss something (f0866f6).
@@ -994,20 +1042,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1013 -> 1014 rows)
+## State as of the last refresh (1014 -> 1015 rows)
 
-- **1014 rows; 845 labels decided; 845 UNSAT; 0 SAT; 0 labels
+- **1015 rows; 846 labels decided; 846 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 845 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 846 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..837, highest decided 845, holes [838].**
-  A **twelfth span is OPEN**. The eleventh closed at `b088217` and its
-  figures are recorded above, from the tool, after that commit existed.
-- **845 of 1949 = 43.3556%**; **1104 undecided**. **43% IS CROSSED**, at
+- **Frontier contiguous 0..845, highest decided 845, holes [].**
+  **No span is open.** The twelfth closed on the idx-838 commit; its
+  figures come from `--spans all` in the follow-up commit, once that commit
+  exists for the tool to walk.
+- **846 of 1949 = 43.4069%**; **1103 undecided**. **43% IS CROSSED**, at
   **cube index 841** — which is a different 841 from the decided count on
   this same line, and they coincide today only by accident. 838/1949 =
   42.9964% rounds to 43.0 and is NOT above 43;
@@ -1027,25 +1076,24 @@ Task outputs live at
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
-  there too. **TWO blocks are now open at once**, which is ordinary and not
-  a first — `[13,13,12,8]` opened at `19f9a63` before `[13,13,12,9]` closed
-  at `f05dc65` (ancestry checked with `git merge-base`, not recalled):
-  `[13,13,12,7]` **idx 821..841, 21 members, contiguity verified, 20
-  decided**, undecided 838; and **`[13,13,12,6]` OPEN, idx 842..856, 15
-  members, contiguity verified, 4 decided**. When either closes, record its
-  descriptive stats as descriptive stats, NOT findings, and do NOT compare
-  them across blocks.
-  **idx 838 is the LAST member of `[13,13,12,7]`**, so that row closes the
-  block whatever else happens. Whether it also closes the twelfth span
-  depends on the frontier line above at the moment it lands, **not on this
-  sentence**: it closes the span only if no other hole has opened by then,
-  and a row landing ahead of the frontier would open one. idx 832 made
-  exactly that double closure at `b088217`; do not assume this one repeats
-  it — check the frontier. Either way the block's stats can be computed the
-  moment the row lands, and the span's cannot, because `--spans all` walks
-  commits and needs the closing commit to exist first.
-- **One span is open.** Its holes are named on the frontier line above
-  **and nowhere else in this file.**
+  there too. Two blocks were briefly open at once, which was ordinary and
+  not a first — `[13,13,12,8]` opened at `19f9a63` before `[13,13,12,9]`
+  closed at `f05dc65` (ancestry checked with `git merge-base`, not
+  recalled).
+  **`[13,13,12,7]` is now CLOSED 21/21** (idx 821..841, contiguity
+  verified, closed by idx 838) — its stats are in the closed-block table
+  above, recomputed along with every other row. **Only `[13,13,12,6]` is
+  open: idx 842..856, 15 members, contiguity verified, 4 decided.** When it
+  closes, record its descriptive stats as descriptive stats, NOT findings,
+  and do NOT compare them across blocks.
+  idx 838 closed that block **and** the twelfth span, the second such
+  double closure after idx 832 at `b088217`. It was written down beforehand
+  as conditional — the block closure was certain, the span closure was not,
+  because any row landing ahead of the frontier would have opened a new
+  hole. It did not, and **the condition holding is not the same as having
+  predicted it**.
+- **No span is open.** When one is, its holes are named on the frontier
+  line above **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
