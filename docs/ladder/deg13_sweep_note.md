@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T02:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T03:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -221,6 +221,10 @@ cubes happen to be long.
 
 Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52 are not
 monotone, and commit counts 7, 8, 2, 3, 1, 5 are not either.
+
+**A seventh span is OPEN** as of 03:13:43Z: idx 790 landed while 787, 788
+and 789 were still running, so the frontier broke with **three** holes. No
+duration, rank or monotonicity for it until it closes.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -468,21 +472,22 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **956 rows; 787 labels decided; 787 UNSAT; 0 SAT; 0 labels
+- **957 rows; 788 labels decided; 788 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..786, highest decided 786, no holes.**
-- **787 of 1949 = 40.3797%**; 1162 undecided. 40% was crossed at idx 779
+- **Frontier contiguous 0..786, highest decided 790, holes [787, 788, 789].**
+- **788 of 1949 = 40.4310%**; 1161 undecided. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 13 more.
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 12 more.
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the 1169 undecided
   could be SAT.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **32 of 38**; six undecided: 787, 788, 789, 790, 791, 792.
-- Nothing is open: no span, no re-run set, no forward test, no registered
-  pattern commitment. **Do not invent a commitment to fill the gap.**
+  verified) at **33 of 38**; five undecided: 787, 788, 789, 791, 792.
+- **One span is open** (holes [787, 788, 789]). No re-run set, no forward
+  test, no registered pattern commitment. **Do not invent a commitment to
+  fill the gap, and quote no span figure until this one closes.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
