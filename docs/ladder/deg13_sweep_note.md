@@ -145,7 +145,7 @@ agreements corroborate and DO NOT validate.
 
 ---
 
-## Re-run sets — four CLOSED, **SET FIVE OPEN**
+## Re-run sets — all five CLOSED
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -156,22 +156,37 @@ corrected at 060fb26 by checking it against published data).
 | two | `cd2ad61` | 4 | 0.4291 | 8.15× |
 | three | `1e409e8` | 4 | 0.5026 | 2.06× |
 | four | `30f1fbd` | 4 | 0.2125 | 5.3747× |
-| five | OPEN | — | — | — |
+| five | (this commit) | 4 | 0.72115 | 2.8226× |
 
-**SET FIVE OPENED AT RESTART #37**: idx **788, 798, 799, 800**, discarded
-10652.6, 3740.6, 2356.6 and 1913.2 s, all four restarted at the same instant
-(launch + 61.0 s, CNFs within 4 ms) so their re-run clocks are again directly
-comparable. **No ratio, median or spread until all four land.**
+**SET FIVE, CLOSED.** All four restarted at the same instant (launch +
+61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
 
-Landed so far: **798 at 4075.1 s, 799 at 4493.9 s, 800 at 4998.2 s**
-(3 of 4). No ratio, median or spread — the rule above was written one commit
-before the first of these arrived, and relaxing it here is how the other
-rules in this file failed: on their next application. With three in hand the
-temptation sharpens, because three numbers can be ordered and an ordering
-looks like a finding; **it is not, and none is stated**. **788 is the last
-member, and it is also the seventh span's last hole and block
-`[13,13,12,9]`'s last undecided member — so THREE things close on that one
-row: the set, the span and the block.**
+| idx | discarded | re-run | ratio |
+|---|---|---|---|
+| 788 | 10652.6 | 9858.7 | **1.0805** |
+| 798 | 3740.6 | 4075.1 | 0.9179 |
+| 799 | 2356.6 | 4493.9 | 0.5244 |
+| 800 | 1913.2 | 4998.2 | 0.3828 |
+
+min 0.3828, **median 0.72115** (quoted to five places on purpose — it is the
+midpoint of 0.5244 and 0.9179 and rounds ambiguously at four), mean 0.7264,
+max 1.0805, spread 2.8226×.
+
+**1.0805 is the LARGEST of the 24 ratios recorded, and it is NOT the first
+above 1.0** — set one's max was 1.0063. That superlative was checked against
+the record before being written, because the previous unchecked one in this
+session was false. Two of 24 ratios exceed 1.0.
+
+A ratio above 1 means the re-run finished FASTER than the discarded attempt
+had already run. **No mechanism is proposed** and none is needed: the ratio
+depends on when the kill lands relative to a cube's total cost (bcf29c1),
+kills land uniformly in time, and nothing here predates the data.
+
+Set five's median 0.72115 is the highest of the five medians (0.3594,
+0.4291, 0.5026, 0.2125, 0.72115). **P(a given set is the highest of five |
+no structure) = 0.20**, so being highest is worth nothing on its own.
+Spreads 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226× are still not monotone and
+never were.
 
 Set four in full (all four members restarted at the **same instant**, so
 their re-run clocks are directly comparable):
@@ -269,12 +284,12 @@ written.) It has survived a container restart, which discarded 788's
 10652.6 s and left the hole exactly where it was. No duration, rank or
 monotonicity for it until that hole fills.
 
-**WHEN 788 LANDS, TWO THINGS CLOSE AT ONCE** and both must be done in that
-commit: run `checkpoint_audit.py --spans all` and COPY its figures for this
-span into a header block and into this file; and record the descriptive
-stats for block `[13,13,12,9]` (n, min, mean, max, spread) as DESCRIPTIVE
-STATS, not findings, and **not compared with the other closed blocks**.
-Neither may be computed or quoted before 788 is in the file.
+**788 LANDED at 08:37:32Z and the span CLOSED**, along with re-run set five
+and block `[13,13,12,9]` — three things on one row. The set and the block
+are recorded above; **the span's duration, commit count and rank come from
+`checkpoint_audit.py --spans all` in the NEXT commit**, because the tool
+walks commits and the closing commit has to exist before it can be walked.
+No span figure is quoted until then.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -353,12 +368,24 @@ Registration discipline, learned the hard way:
   triple itself"). **Compute this rank before calling any run tight, and
   note that computing it does not make the run mean something.**
 - 1:55:26 span coincidence `ba6ec65`. 741 naming collision `e5243fc`.
-- Block `[13,13,12,10]` closed 49/49 at `49ddb49`. Closed-block descriptive
-  stats — **not findings, not compared across**: `[13,13,12,12]` 82 members
-  54.1 / 3442.9 / 12831.3, spread 237.18×; `[13,13,12,11]` 65 members
-  144.8 / 5704.7 / 16785.7, spread 115.92×; `[13,13,12,10]` 49 members
-  578.0 / 5744.1 / 15490.4, spread 26.80×. Spreads fall, minima **rise**,
-  maxima **not** monotone; three points at unequal n.
+- Closed-block descriptive stats, min / mean / max — **not findings, not
+  compared across**: `[13,13,12,12]` 82 members 54.1 / 3442.9 / 12831.3,
+  spread 237.18×; `[13,13,12,11]` 65 members 144.8 / 5704.7 / 16785.7,
+  spread 115.92×; `[13,13,12,10]` 49 members 578.0 / 5744.1 / 15490.4,
+  spread 26.80×; **`[13,13,12,9]` 38 members 720.2 / 5752.8 / 13990.6,
+  spread 19.43×, median 5101.9** (idx 755..792, contiguity verified, closed
+  by idx 788).
+  **THE "SPREADS FALL, MINIMA RISE" READING IS CONFOUNDED AND IS WITHDRAWN AS
+  EVIDENCE OF ANYTHING.** Those blocks closed with n = 82, 65, 49, 38 —
+  strictly decreasing — and max/min grows mechanically with sample size.
+  Drawing n costs at random from the pool of all decided costs, the median
+  simulated spread runs 252.71×, 183.51×, 121.54×, 91.06× for those four
+  n (4000 draws each, seed 11): **falling spread and rising minimum are what
+  NO structure predicts here.** The observed spreads fall faster than the
+  simulation, but that simulation is crude — its pool contains these very
+  cubes and spans 0.1 s to 21678.5 s — so **no claim is made about the
+  excess**. The four lines above stay as descriptive stats and nothing is
+  read across them.
 - `SEQ[j][7] = 13` group complete 14/14 at `cf2bccc`, idx 755..768
   (contiguity **verified**): 720.2 / 4441.1 / 5406.6, spread 7.5071×.
 - **The sub-family / level story is closed and falsified**
@@ -606,18 +633,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (971 -> 972 rows)
+## State as of the last refresh (972 -> 973 rows)
 
-- **972 rows; 803 labels decided; 803 UNSAT; 0 SAT; 0 labels
+- **973 rows; 804 labels decided; 804 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..787, highest decided 803, holes [788].**
-- **803 of 1949 = 41.2006%**; **1146 undecided**. 41% was crossed at idx 800,
+- **Frontier contiguous 0..803, highest decided 803, NO HOLES.** The
+  seventh span is closed; there is no open span.
+- **804 of 1949 = 41.2519%**; **1145 undecided**. 41% was crossed at idx 800,
   checked and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT
   above 41; 800/1949 = 41.0467% is. Next: 42% needs
-  `ceil(0.42 × 1949) = 819` — 16 more. **A rounded milestone is not a
+  `ceil(0.42 × 1949) = 819` — 15 more. **A rounded milestone is not a
   crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -627,28 +655,23 @@ Task outputs live at
   onward and left stale through three refreshes while the line above was
   updated.*
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
-  `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **37 of 38**, one undecided: **788**, which is also the span's
-  only remaining hole AND re-run set five's last member — so **THREE things
-  close on that one row**: the block, the span and the set.
-  A NEW block `[13,13,12,8]` has opened: **idx 793..820, 28 members,
-  contiguity verified, 11 decided.** TWO BLOCKS ARE OPEN AT ONCE, which is
-  normal — four solver slots run ahead of the frontier and do not respect
-  block boundaries. When either closes, record its descriptive stats as
+  `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
+  755..792, contiguity verified) — its stats are in the closed-block list
+  above. Only `[13,13,12,8]` is open: **idx 793..820, 28 members, contiguity
+  verified, 11 decided.** When it closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
-- **One span is open.** Its holes are listed on the frontier line above and
-  **nowhere else as holes** — they were restated here too, and this copy was
-  left at two holes while the frontier line was updated to three. (The block
-  census below sometimes names the same indices, but as undecided members
-  of `[13,13,12,9]`: a DIFFERENT quantity that will stop coinciding the
-  moment a hole opens outside that block. Do not update one from the other,
-  and do not write down how many indices they share — that number is a
-  third copy and it went stale within one commit of being written.)
-  Caught in the staged diff, not by the re-derivation; the fix is structural
-  (state a quantity once, refer to it) because being careful demonstrably
-  is not enough. No re-run set, no forward test, no registered pattern
-  commitment. **Do not invent a commitment to fill the gap, and quote no
-  span figure until this span closes.**
+- **No span is open** — the frontier line above has no holes. **When one
+  IS open, its holes are named on that line and nowhere else in this file.**
+  They were once restated in this bullet as well, and that second copy was
+  left at two holes while the frontier line said three; the block census can
+  name the same indices, but as undecided members of a block, which is a
+  different quantity that stops coinciding the moment a hole opens outside
+  it. Do not update either from the other, and do not write down how many
+  indices they share — that count is a third copy and it went stale within
+  one commit of being written.
+- **No re-run set is open** (five are closed), **no forward test is
+  registered**, and there is **no live registered pattern commitment**. Do
+  not invent one to fill the gap.
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
