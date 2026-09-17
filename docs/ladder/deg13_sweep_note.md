@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T21:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T21:24Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -509,8 +509,12 @@ once before, and that was a bug in the check, not in the data.
 
 **A TWELFTH SPAN IS OPEN** as of 21:07:50Z: idx 839 landed while 836, 837
 and 838 were all still running, so the frontier broke with **three** holes.
-No duration, no rank, no monotonicity verdict until all three fill, and **no
-hand-tracked hole sequence is kept** — the tool's is the record (0ef2e70).
+Its hole count has since **both fallen and risen** while open, which is
+ordinary and is exactly why no verdict is quoted before a span closes. No
+duration, no rank and no monotonicity verdict until it fills, **no
+hand-tracked hole sequence is kept** — the tool's is the record (0ef2e70) —
+and the current holes are named on the state line at the foot of this file
+and nowhere else.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -696,14 +700,17 @@ Registration discipline, learned the hard way:
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
   (818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is). Next: 43% needs `ceil(0.43 × 1949) = 839` (838/1949 =
-  42.9964% is not above 43; 839/1949 = 43.0477% is).
-  **The counter is standing on that exact trap as this is written**: 838 is
-  decided, 42.9964% rounds to 43.0, and 43% is **not crossed**. Third time
-  it has stopped on a figure that rounds up while being below — 40.9954%,
-  41.9702%, 42.9964%. The arithmetic was written out in advance both times
-  before, and is written out again here, so the crossing is checked and not
-  rounded into.
+  42.0215% is), **43% at idx 841** (838/1949 = 42.9964% rounds to 43.0 and
+  is NOT above 43; 839/1949 = 43.0477% is).
+  **The counter stood on that exact trap for one commit before crossing**:
+  at 838 decided it read 42.9964%, which rounds to 43.0 while being below
+  it. Third time it has stopped there — 40.9954%, 41.9702%, 42.9964% — and
+  each time the arithmetic was printed rather than eyeballed, so the
+  crossing was checked and not rounded into.
+  Next: **44% needs `ceil(0.44 × 1949) = 858`** decided, and **the same trap
+  is already waiting**: 857/1949 = 43.9713% rounds to 44.0 and is **not**
+  above 44; 858/1949 = 44.0226% is. Written down now, before the counter
+  gets there.
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
@@ -968,26 +975,27 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1005 -> 1007 rows)
+## State as of the last refresh (1007 -> 1008 rows)
 
-- **1007 rows; 838 labels decided; 838 UNSAT; 0 SAT; 0 labels
+- **1008 rows; 839 labels decided; 839 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 838 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 839 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..836, highest decided 839, holes [837, 838].**
-  A **twelfth span is OPEN**. The eleventh closed at
+- **Frontier contiguous 0..836, highest decided 841, holes
+  [837, 838, 840].** A **twelfth span is OPEN**. The eleventh closed at
   `b088217` and its figures are recorded above, from the tool, after that
   commit existed.
-- **838 of 1949 = 42.9964%**; **1111 undecided**. **43% IS NOT CROSSED.**
-  42.9964% **rounds to 43.0 and is not above 43** — `ceil(0.43 × 1949) = 839`
-  **decided**, so it is **1 more**, and that 839 is a count, not cube index
-  839, which has already landed. **A rounded milestone is not a crossed one**
-  (b34fc2e, 85bb4d1), and the counter is sitting on exactly that trap right
-  now for the **third time**: 40.9954%, 41.9702%, 42.9964%.
+- **839 of 1949 = 43.0477%**; **1110 undecided**. **43% IS CROSSED**, at idx
+  **841** — 838/1949 = 42.9964% rounds to 43.0 and is NOT above 43;
+  839/1949 = 43.0477% is. Next: 44% needs `ceil(0.44 × 1949) = 858`
+  **decided**, and 857/1949 = 43.9713% will round to 44.0 without being
+  above it. **A rounded milestone is not a crossed one** (b34fc2e,
+  85bb4d1) — three stops on that figure so far: 40.9954%, 41.9702%,
+  42.9964%.
 - **The counter is not the rung.** More than two fifths of the sub-cubes are
   decided and every one came back UNSAT, and that settles nothing: deg(0) =
   13 is UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -1000,7 +1008,7 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 17 decided**, undecided 837, 838, 840, 841.
+  contiguity verified, 18 decided**, undecided 837, 838, 840.
   When it closes, record its descriptive stats as descriptive stats, NOT
   findings, and do NOT compare them across blocks.
 - **One span is open.** Its holes are named on the frontier line above
