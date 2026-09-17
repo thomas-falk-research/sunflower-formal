@@ -303,10 +303,12 @@ arbitrary: the nearest excluded span misses it by 1 minute 4 seconds.
 5:41:15 is wall-clock between two commits and **not solver effort**. A span
 duration never measured solver effort; this one makes it obvious.
 
-**AN EIGHTH SPAN IS OPEN** as of 12:01:02Z: idx 811 landed while 809 and 810
-were still running, so the frontier broke with **two** holes. idx 809 filled
-at 12:19:11Z, leaving **one** — 810. No duration, rank or monotonicity until
-it fills.
+**THE EIGHTH SPAN OPENED** at 12:01:02Z when idx 811 landed while 809 and
+810 were still running, breaking the frontier with **two** holes; 809 filled
+at 12:19:11Z and **810 at 12:29:18Z, closing it**. Its duration, commit
+count, hole sequence and rank come from `checkpoint_audit.py --spans all`
+in the NEXT commit — the tool walks commits, so the closing commit has to
+exist first. No span figure is quoted until then.
 
 It also ended a run of **six** consecutive landings in index order. That run
 was noted and explicitly NOT registered as a pattern on each of the last
@@ -664,19 +666,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (979 -> 980 rows)
+## State as of the last refresh (980 -> 981 rows)
 
-- **980 rows; 811 labels decided; 811 UNSAT; 0 SAT; 0 labels
+- **981 rows; 812 labels decided; 812 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..809, highest decided 811, holes [810].**
-  An eighth span is OPEN.
-- **811 of 1949 = 41.6111%**; **1138 undecided**. 41% was crossed at idx 800,
+- **Frontier contiguous 0..811, highest decided 811, NO HOLES.** The eighth
+  span is closed.
+- **812 of 1949 = 41.6624%**; **1137 undecided**. 41% was crossed at idx 800,
   checked and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT
   above 41; 800/1949 = 41.0467% is. Next: 42% needs
-  `ceil(0.42 × 1949) = 819` — 8 more. **A rounded milestone is not a
+  `ceil(0.42 × 1949) = 819` — 7 more. **A rounded milestone is not a
   crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -689,10 +691,10 @@ Task outputs live at
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
   above. Only `[13,13,12,8]` is open: **idx 793..820, 28 members, contiguity
-  verified, 18 decided.** When it closes, record its descriptive stats as
+  verified, 19 decided.** When it closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
-- **One span is open** — its holes are named on the frontier line above
-  **and nowhere else in this file.**
+- **No span is open** — the frontier line above has no holes. **When one
+  IS open, its holes are named on that line and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
