@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T22:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T22:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -994,20 +994,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1010 -> 1011 rows)
+## State as of the last refresh (1011 -> 1012 rows)
 
-- **1011 rows; 842 labels decided; 842 UNSAT; 0 SAT; 0 labels
+- **1012 rows; 843 labels decided; 843 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 842 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 843 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..836, highest decided 843, holes [837, 838].**
+- **Frontier contiguous 0..837, highest decided 843, holes [838].**
   A **twelfth span is OPEN**. The eleventh closed at `b088217` and its
   figures are recorded above, from the tool, after that commit existed.
-- **842 of 1949 = 43.2016%**; **1107 undecided**. **43% IS CROSSED**, at
+- **843 of 1949 = 43.2530%**; **1106 undecided**. **43% IS CROSSED**, at
   **cube index 841** — which is a different 841 from the decided count on
   this same line, and they coincide today only by accident. 838/1949 =
   42.9964% rounds to 43.0 and is NOT above 43;
@@ -1030,11 +1030,20 @@ Task outputs live at
   there too. **TWO blocks are now open at once**, which is ordinary and not
   a first — `[13,13,12,8]` opened at `19f9a63` before `[13,13,12,9]` closed
   at `f05dc65` (ancestry checked with `git merge-base`, not recalled):
-  `[13,13,12,7]` **idx 821..841, 21 members, contiguity verified, 19
-  decided**, undecided 837, 838; and **`[13,13,12,6]` NEWLY OPEN, idx
-  842..856, 15 members, contiguity verified, 2 decided**. When either
-  closes, record its descriptive stats as descriptive stats, NOT findings,
-  and do NOT compare them across blocks.
+  `[13,13,12,7]` **idx 821..841, 21 members, contiguity verified, 20
+  decided**, undecided 838; and **`[13,13,12,6]` OPEN, idx 842..856, 15
+  members, contiguity verified, 2 decided**. When either closes, record its
+  descriptive stats as descriptive stats, NOT findings, and do NOT compare
+  them across blocks.
+  **idx 838 is the LAST member of `[13,13,12,7]`**, so that row closes the
+  block whatever else happens. Whether it also closes the twelfth span
+  depends on the frontier line above at the moment it lands, **not on this
+  sentence**: it closes the span only if no other hole has opened by then,
+  and a row landing ahead of the frontier would open one. idx 832 made
+  exactly that double closure at `b088217`; do not assume this one repeats
+  it — check the frontier. Either way the block's stats can be computed the
+  moment the row lands, and the span's cannot, because `--spans all` walks
+  commits and needs the closing commit to exist first.
 - **One span is open.** Its holes are named on the frontier line above
   **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
