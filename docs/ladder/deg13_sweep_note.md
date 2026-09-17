@@ -232,9 +232,9 @@ decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
 **one** — 788 alone, where idx 794 at 04:41:09Z left it (794 landed behind an
 already-decided 793, so the highest decided moved 793 → 794 and no hole
 opened). A span's hole count is not monotone while it is open, in either
-direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1 → 1 (idx 795 at
-04:48:56Z also landed behind the frontier top). No duration, rank or
-monotonicity for it until that hole fills.
+direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1 → 1 → 1 (idx 795 at
+04:48:56Z and idx 796 at 05:12:05Z also landed behind the frontier top). No
+duration, rank or monotonicity for it until that hole fills.
 
 **WHEN 788 LANDS, TWO THINGS CLOSE AT ONCE** and both must be done in that
 commit: run `checkpoint_audit.py --spans all` and COPY its figures for this
@@ -299,13 +299,16 @@ Registration discipline, learned the hard way:
   ordinary).
 - 0.3-second cost coincidence `d0d1a58`; the tight triple `a22c6e7` is the
   same thing — 4 of 757 triples were that tight and the threshold was set
-  by the triple itself. **Base rate, measured at 792 decided:** 11 of the
-  791 adjacent pairs in the sorted decided-cost list sit within 0.2 s of
-  each other (1.39%), two of them exactly equal — 0.1/0.1, 1450.2/1450.3,
-  2096.7/2096.7, 2199.3/2199.5, 2552.9/2553.1, 4599.5/4599.7, 4863.0/4863.0,
-  5178.1/5178.2, 5310.2/5310.4, 6250.2/6250.3, 9982.3/9982.4. **A near-tie
-  in seconds is an ordinary event in this file. Do not remark on the next
-  one without re-deriving this figure.**
+  by the triple itself. **Base rate — RE-DERIVE IT, DO NOT QUOTE IT FROM
+  MEMORY; it moves as the file grows.** At 792 decided: 11 of 791 adjacent
+  pairs in the sorted decided-cost list within 0.2 s (1.39%), two exactly
+  equal. At **796 decided: 12 of 795 (1.51%), four exactly equal** —
+  0.1/0.1, 2096.7/2096.7, **2133.6/2133.6**, 4863.0/4863.0. The newest of
+  those is idx 707 (block `[13,13,12,10]`) and idx 796 (block
+  `[13,13,12,8]`), which are in DIFFERENT blocks, so there is not even a
+  structural coincidence to explain. **An exact tie to 0.1 s is an ordinary
+  event in this file. Do not remark on the next one without re-deriving
+  this figure.**
 - 1:55:26 span coincidence `ba6ec65`. 741 naming collision `e5243fc`.
 - Block `[13,13,12,10]` closed 49/49 at `49ddb49`. Closed-block descriptive
   stats — **not findings, not compared across**: `[13,13,12,12]` 82 members
@@ -531,14 +534,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (963 -> 964 rows)
+## State as of the last refresh (964 -> 965 rows)
 
-- **964 rows; 795 labels decided; 795 UNSAT; 0 SAT; 0 labels
+- **965 rows; 796 labels decided; 796 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 795, holes [788].**
-- **795 of 1949 = 40.7901%**; **1154 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 796, holes [788].**
+- **796 of 1949 = 40.8415%**; **1153 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 5 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 4 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -552,7 +555,7 @@ Task outputs live at
   verified) at **37 of 38**, one undecided: **788**, which is also the span's
   only remaining hole — so the block and the span close on the SAME row. A NEW block
   `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
-  verified, 3 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
+  verified, 4 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
   — four solver slots run ahead of the frontier and do not respect block
   boundaries. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
