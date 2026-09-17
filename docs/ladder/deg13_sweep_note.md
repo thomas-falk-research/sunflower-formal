@@ -788,18 +788,18 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (995 rows; span record commit)
+## State as of the last refresh (995 -> 996 rows)
 
-- **995 rows; 826 labels decided; 826 UNSAT; 0 SAT; 0 labels
+- **996 rows; 827 labels decided; 827 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..825, highest decided 825, NO HOLES.** The tenth
+- **Frontier contiguous 0..826, highest decided 826, NO HOLES.** The tenth
   span is closed.
-- **826 of 1949 = 42.3807%**; **1123 undecided**. **42% IS CROSSED**, at idx
+- **827 of 1949 = 42.4320%**; **1122 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 13 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 12 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -813,7 +813,7 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 5 decided.** When it closes, record its descriptive
+  contiguity verified, 6 decided.** When it closes, record its descriptive
   stats as descriptive stats, NOT findings, and do NOT compare them across
   blocks.
 - **No span is open** — the frontier line above has no holes. **When one
