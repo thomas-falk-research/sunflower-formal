@@ -10564,3 +10564,44 @@ g=11 [13, 13, 12, 8, 13, 13, 13, 13, 12, 9, 9]	UNSAT	4466.9
 g=11 [13, 13, 12, 8, 13, 13, 13, 13, 11, 11, 8]	UNSAT	4085.3
 g=11 [13, 13, 12, 8, 13, 13, 13, 13, 11, 10, 9]	UNSAT	4410.7
 g=11 [13, 13, 12, 9, 13, 12, 12, 12, 11, 11, 10]	UNSAT	9858.7
+#
+# ---------------------------------------------------------------------
+# SEVENTH SPAN CLOSED, all figures COPIED from checkpoint_audit.py
+# --spans all, not recomputed by hand:
+#
+#   opened after : 1cd1a6b  2026-09-17T03:00:28+00:00
+#   closed by    : f05dc65  2026-09-17T08:41:43+00:00
+#   duration     : 5:41:15 (5.6875 h) by committer timestamps
+#   commits      : 17 broken
+#   hole counts  : 3,2,2,3,2,1,1,1,1,1,1,1,1,1,1,1,1
+#   monotone non-increasing? FALSE -- the tool's own annotation reads
+#                "it grew again mid-span; do not summarise this as a
+#                shrink", and it is not summarised as one here.
+#   most holes   : 3 at 6f623fa  [787, 788, 789]
+#
+# "opened after" is the last commit that TOUCHED THE CHECKPOINT and left
+# the frontier whole -- not the previous span's record commit.  1cd1a6b
+# was that span-record commit AND touched the checkpoint, so the two
+# coincide here by accident; that is not the definition (0b68df2 asserted
+# it wrongly, 068b963 corrected it).
+#
+# RANKS, BOTH WAYS, AGAINST 72 CLOSED SPANS, computed by parsing the
+# tool's own output because the tool prints only the top five:
+#
+#   by duration     : rank 7 of 72 -- 65 closed spans are SHORTER
+#   by commit count : rank 4 of 72 -- only 91, 63 and 53 are larger
+#
+# READ THOSE RANKS THROUGH THE DISTRIBUTION, which the tool prints for
+# exactly this reason: 44 of the 72 spans are 1 second or shorter, and
+# only 9 exceed 4 hours.  Ranking 7th among a population where most
+# members are instantaneous is not the same claim as being unusual.  The
+# tool also flags that its own one-hour line is arbitrary -- the nearest
+# excluded span misses it by 1 minute 4 seconds.
+#
+# THIS SPAN IS THE LONGEST-RUNNING ONE OF THIS SWEEP SESSION but that is
+# a statement about a window I chose, not about the span.  It also
+# SURVIVED A CONTAINER RESTART: #37 discarded 10652.6 s of idx 788's work
+# at 05:51:08Z and the hole stayed exactly where it was, so 5:41:15
+# measures wall-clock between two commits and NOT solver effort.  A span
+# duration never measured solver effort; this one just makes it obvious.
+# ---------------------------------------------------------------------

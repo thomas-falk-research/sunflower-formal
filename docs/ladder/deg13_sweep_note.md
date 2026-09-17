@@ -156,7 +156,7 @@ corrected at 060fb26 by checking it against published data).
 | two | `cd2ad61` | 4 | 0.4291 | 8.15× |
 | three | `1e409e8` | 4 | 0.5026 | 2.06× |
 | four | `30f1fbd` | 4 | 0.2125 | 5.3747× |
-| five | (this commit) | 4 | 0.72115 | 2.8226× |
+| five | `f05dc65` | 4 | 0.72115 | 2.8226× |
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
@@ -258,38 +258,50 @@ accident that sets how many holes a span opens with.
 **The sixth span's `True` is the first non-trivial one.** Five points,
 with two flat steps (3→3 and 1→1) where the count could have risen and did
 not. The `True` at `30f1fbd` had one chance to rise; `446a24f` had none.
-Six spans now read False, False, True, True, True-vacuous, True — still
-**not** a trend: a hole count rises only when a cube that started late
+**Seven** spans now read False, False, True, True, True-vacuous, True,
+**False** — still **not** a trend, and the run of Trues that had built up
+ended on the seventh: a hole count rises only when a cube that started late
 finishes before ones that started early, which is an accident of which
 cubes happen to be long.
 
-Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52 are not
-monotone, and commit counts 7, 8, 2, 3, 1, 5 are not either.
+Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15
+are not monotone, and commit counts 7, 8, 2, 3, 1, 5, 17 are not either.
 
-**A seventh span is OPEN** as of 03:13:43Z: idx 790 landed while 787, 788
-and 789 were still running, so the frontier broke with **three** holes. idx
-787 filled at 03:43:32Z, leaving **two** — 788 and 789. idx 791 landed at
-03:50:40Z and did **not** widen it: 790 was already decided, so the highest
-decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
-**did** widen it, landing ahead of 792: holes are now **three** again, [788,
-789, 792]. idx 789 filled at 04:12:54Z and idx 792 at 04:36:22Z, taking it to
-**one** — 788 alone, where idx 794 at 04:41:09Z left it (794 landed behind an
-already-decided 793, so the highest decided moved 793 → 794 and no hole
-opened). A span's hole count is not monotone while it is open, in either
-direction: this one opened at **3**, narrowed to 2, went back to **3**, then
-down to **1**, and has stayed at 1 since — every landing after 792 was behind
-the frontier top and opened nothing. (Recorded as a shape, not a per-row
-chain: a chain grows by an entry per row and is stale the moment it is
-written.) It has survived a container restart, which discarded 788's
-10652.6 s and left the hole exactly where it was. No duration, rank or
-monotonicity for it until that hole fills.
+The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
+789 were still running, breaking the frontier with **three** holes. It then
+narrowed to 2, went back to **3** when idx 793 landed ahead of 792, dropped
+to **1**, and stayed at 1 until 788 finally came in — which is why the tool
+reports it non-monotone. **A span's hole count is not monotone while it is
+open, in either direction**, and that is the whole of what its shape shows.
 
-**788 LANDED at 08:37:32Z and the span CLOSED**, along with re-run set five
-and block `[13,13,12,9]` — three things on one row. The set and the block
-are recorded above; **the span's duration, commit count and rank come from
-`checkpoint_audit.py --spans all` in the NEXT commit**, because the tool
-walks commits and the closing commit has to exist before it can be walked.
-No span figure is quoted until then.
+**THE SEVENTH SPAN IS CLOSED.** All figures COPIED from
+`checkpoint_audit.py --spans all`:
+
+| field | value |
+|---|---|
+| opened after | `1cd1a6b` 2026-09-17T03:00:28Z |
+| closed by | `f05dc65` 2026-09-17T08:41:43Z |
+| duration | 5:41:15 (5.6875 h) |
+| commits | 17 broken |
+| hole counts | 3,2,2,3,2,1,1,1,1,1,1,1,1,1,1,1,1 |
+| monotone non-increasing | **FALSE** |
+| most holes | 3 at `6f623fa` [787, 788, 789] |
+
+The tool's own annotation on the monotonicity line reads *"it grew again
+mid-span; do not summarise this as a shrink"*, and it is not summarised as
+one. Ranks against **72 closed spans**, computed by parsing the tool's
+output because it prints only the top five: **rank 7 of 72 by duration**
+(65 are shorter) and **rank 4 of 72 by commit count** (only 91, 63 and 53
+are larger). Read both through the distribution the tool prints for this
+purpose — **44 of the 72 spans are 1 second or shorter** and only 9 exceed
+4 hours, so ranking 7th in a population that is mostly instantaneous is not
+a claim of unusualness. The tool also flags that its one-hour line is
+arbitrary: the nearest excluded span misses it by 1 minute 4 seconds.
+
+**This span survived a container restart.** #37 discarded 10652.6 s of idx
+788's work at 05:51:08Z and the hole stayed exactly where it was, so
+5:41:15 is wall-clock between two commits and **not solver effort**. A span
+duration never measured solver effort; this one makes it obvious.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
