@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T03:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T20:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -158,7 +158,7 @@ transcribed, which is how the 0 ns difference was established.
 
 ---
 
-## Re-run sets — five CLOSED, **SET SIX OPEN**
+## Re-run sets — **six CLOSED**, none open
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -170,20 +170,43 @@ corrected at 060fb26 by checking it against published data).
 | three | `1e409e8` | 4 | 0.5026 | 2.06× |
 | four | `30f1fbd` | 4 | 0.2125 | 5.3747× |
 | five | `f05dc65` | 4 | 0.72115 | 2.8226× |
-| six | OPEN | — | — | — |
+| six | idx-832 commit | 4 | 0.5678 | 4.6436× |
 
-**SET SIX OPENED AT RESTART #38**: idx **831, 832, 833, 834**, discarded
-4170.4, 3586.0, 3447.9 and 1361.2 s, all four restarted at the same instant
-(launch + 60.6 s, CNFs within 8 ms) so their re-run clocks are directly
-comparable. **No ratio, median or spread until all four land.** Set five's
-version of this rule was tested when honouring it cost something — a single
-member's ratio was one division away and was withheld — and it held.
+**SET SIX IS CLOSED**, by idx 832 — the same row that closed the eleventh
+span. It opened at restart #38 with idx **831, 832, 833, 834**, all four
+killed at the same instant and all four relaunched together (launch +
+60.6 s, CNFs within 8 ms), so their re-run clocks are directly comparable:
 
-Landed so far: **831 at 4452.3 s, 833 at 5619.9 s, 834 at 6748.2 s**
-(3 of 4). No ratio, median or spread, and no ordering read across the three:
-three numbers can be sorted and a sort looks like a finding. **832 is the
-last member**, and it is also the eleventh span's only hole, so the set and
-the span close on the same row.
+| idx | discarded | re-run | ratio |
+|---|---|---|---|
+| 831 | 4170.4 | 4452.3 | 0.9367 |
+| 832 | 3586.0 | 6868.5 | 0.5221 |
+| 833 | 3447.9 | 5619.9 | 0.6135 |
+| 834 | 1361.2 | 6748.2 | 0.2017 |
+
+min 0.2017, **median 0.5678** (midpoint of 0.5221 and 0.6135), mean 0.5685,
+max 0.9367, spread 4.6436×.
+
+**The ratios were withheld at 1-of-4, 2-of-4 AND 3-of-4**, on three separate
+commits, while every division was one keystroke away. That is the third
+consecutive set where honouring the rule cost something and it was honoured
+anyway. It is not a virtue worth a paragraph — it is the only way the median
+means anything, because a median chosen after seeing which members landed
+first is a median chosen for its value.
+
+Ranked against **all 28 ratios now recorded** (sets one through six; the
+earlier 24 were re-read out of commits `8782234`, `cd2ad61`, `1e409e8`,
+`30f1fbd` and `f05dc65`, not recalled): set six's max **0.9367 ranks 3 of
+28**, and it is **below 1.0**, so the count of ratios above 1.0 is still
+**two** — 1.0063 (set one) and 1.0805 (set five). Set six's other three rank
+10, 13 and 23 of 28.
+
+Medians across the six sets are 0.3594, 0.4291, 0.5026, 0.2125, 0.72115,
+**0.5678** — **not monotone in either direction**, checked, not eyeballed.
+Spreads are 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226×, **4.6436×** — also
+not monotone in either direction. Both sequences were called "a list, not a
+trend" from set three onward, and both have now gone up and down twice.
+Six points at n = 8, 4, 4, 4, 4, 4 still support no shape.
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
@@ -437,11 +460,13 @@ shorter) and **rank 57 of 75 by commit count**, 19 ties at 1. Read through
 the distribution — **44 of 75 are one second or shorter** — a 21-minute span
 ranking 26th is ordinary among the spans that lasted at all.
 
-**AN ELEVENTH SPAN IS OPEN** as of 20:22:54Z: idx 833 landed while 832 was
-still running, so the frontier broke with **one** hole. idx 834 at 20:41:43Z
-landed behind the frontier top and did not change it. No duration, rank or
-monotonicity until 832 fills, and **no hand-tracked hole sequence is kept**.
-**832 also closes re-run set six**, so that row closes two things.
+**THE ELEVENTH SPAN CLOSED ON THE idx-832 COMMIT.** It opened at 20:22:54Z
+when idx 833 landed while 832 was still running (one hole), and 832 filled
+it. **Its figures are not in this file yet**: `--spans all` walks commits, so
+the closing commit must exist before the tool can measure the span, and the
+duration, ranks and monotonicity verdict are recorded in the follow-up commit
+that runs it. Nothing about this span is stated here from memory, and the
+verdict tally above stays at **ten** rows until the tool has spoken.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -736,7 +761,18 @@ alongside it.**
   four stale figures was itself running blind to the lines those figures
   live on.
 - A definition carried inverted in my own note (060fb26).
-- A figure recalled instead of read (ba6ec65).
+- A figure recalled instead of read (ba6ec65) — **second instance**, caught
+  in the commit that banked idx 832/835 and never published. The throughput
+  window answering the user's question was about to be written into the
+  open-question bullet as "17.15 h, 45 cubes, 2.62 cubes/h, 49 commits"
+  **and attributed to a commit**. Re-derived from git: **17.47 h, 46 cubes,
+  2.63 cubes/h, 50 commits** — every figure wrong, and `git log --grep`
+  showed **no commit records any of them**, because that measurement was
+  only ever made in a chat reply. Two defects in one sentence: a stale
+  recall, and a **citation to a record that does not exist** (the
+  fabricated-identifier pattern below, in its third form). The fix is the
+  general one: **a figure in this file is either re-derived in the commit
+  that writes it, or it names a commit that a grep can find.**
 - A tally quoted without its base rate (4e5e443).
 - A bound quoted as a rank (8263cab).
 - **The pattern I am most tempted to register is the one about to break**
@@ -796,6 +832,14 @@ alongside it.**
   is that the epoch is never written down at all: the same script that reads
   `/proc` computes the difference. **Catching an error by the magnitude of
   its output is luck, not procedure.**
+  **THIRD INSTANCE, in the commit that banked idx 832/835** — see the
+  recalled-figure entry above. This one is the mildest form and the easiest
+  to miss: not an invented hash but an invented *attribution*, "the commit
+  that answered the user's question", pointing at a commit that records
+  nothing of the kind. It was caught by `git log --grep`, which is the
+  mechanical version of the rule: **before citing a commit for a figure,
+  grep for the figure in it.** A citation nobody can follow is a fabricated
+  identifier wearing a sentence instead of a hash.
 
 ---
 
@@ -821,24 +865,25 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1002 -> 1003 rows)
+## State as of the last refresh (1003 -> 1005 rows)
 
-- **1003 rows; 834 labels decided; 834 UNSAT; 0 SAT; 0 labels
+- **1005 rows; 836 labels decided; 836 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 834 decided plus 169 superseded UNKNOWN
-  rows.
+  count is not a decision count: 836 decided plus 169 superseded UNKNOWN
+  rows. Say it that way — **never "0 UNKNOWN"**, which the file would
+  contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..831, highest decided 834, holes [832].**
-  An eleventh span is OPEN.
-- **834 of 1949 = 42.7912%**; **1115 undecided**. **42% IS CROSSED**, at idx
+- **Frontier contiguous 0..835, highest decided 835, holes [].**
+  **No span is open.** The eleventh closed on the idx-832 commit.
+- **836 of 1949 = 42.8938%**; **1113 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 5 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — **3 more**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
-- **The counter is not the rung.** Two fifths of the sub-cubes are decided
-  and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
-  UNSAT only when **all 1949** are, and any one of the undecided cubes
+- **The counter is not the rung.** More than two fifths of the sub-cubes are
+  decided and every one came back UNSAT, and that settles nothing: deg(0) =
+  13 is UNSAT only when **all 1949** are, and any one of the undecided cubes
   counted on the line above could be SAT. *That count is stated once, on
   that line, deliberately: it was restated here as 1169 from `86562d4`
   onward and left stale through three refreshes while the line above was
@@ -848,11 +893,11 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 13 decided.** When it closes, record its descriptive
-  stats as descriptive stats, NOT findings, and do NOT compare them across
-  blocks.
-- **One span is open** — its holes are named on the frontier line above
-  **and nowhere else in this file.**
+  contiguity verified, 15 decided**, undecided 836..841. When it closes,
+  record its descriptive stats as descriptive stats, NOT findings, and do
+  NOT compare them across blocks.
+- **No span is open.** When one is, its holes are named on the frontier line
+  above **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
@@ -860,9 +905,10 @@ Task outputs live at
   it. Do not update either from the other, and do not write down how many
   indices they share — that count is a third copy and it went stale within
   one commit of being written.
-- **RE-RUN SET SIX IS OPEN** (831, 832, 833, 834 — see above; no figures
-  until all four land). **No forward test is registered** and there is **no
-  live registered pattern commitment.** Do not invent one to fill the gap.
+- **RE-RUN SET SIX IS CLOSED** (831, 832, 833, 834 — full table above).
+  **No re-run set is open**, **no forward test is registered**, and there is
+  **no live registered pattern commitment.** Do not invent one to fill the
+  gap: the next set opens when the next restart does, not before.
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
@@ -870,6 +916,20 @@ Task outputs live at
 
 Whether to keep running here (4 cores) or move to a VM with 10+ cores. I
 recommended moving. **The user has not decided, and this note must not be
-read as though they had.** At roughly 43.3 cubes/day, ~1176 remaining is
-~27 more days here; 48.6747 CPU-hours have been lost to thirteen restarts.
-That is context for the question, not an answer to it.
+read as though they had.**
+
+The one figure recorded here is throughput over a **named, reproducible
+window**, because nothing else in this file measures it: `6f623fa` →
+`5759836` is **17.47 h, 46 cubes decided (788 → 834), 2.63 cubes/h, 50
+commits**, re-derived from git in this commit. *A recalled version of this
+window — "17.15 h, 45 cubes, 2.62 cubes/h, 49 commits" — was about to be
+written into this bullet, citing a commit that records no such figures. Both
+halves were wrong: the numbers were stale and the citation did not exist.
+Re-deriving cost one script.* The remaining count is on the state line above;
+the restart cost is in the restart section above and nowhere else.
+
+*This bullet used to restate all three and carried "48.6747 CPU-hours across
+thirteen restarts" while the restart section said fifteen and 57.2897 — the
+same-quantity-written-twice defect for the fourth time in this file.
+Extrapolating the window above to a completion date would be one more copy of
+a number that moves; do not write one.*
