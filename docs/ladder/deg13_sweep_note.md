@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T00:57Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T02:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -181,7 +181,8 @@ figures.
 | `49ddb49` (rec. `8cfb7dc`) | 8 | 3:00:37 | 3,3,2,2,2,1,2,1 | **False** |
 | `30f1fbd` (rec. `068b963`) | 2 | 0:52:58 | 2,1 | **True** |
 | `6286fe4` (rec. `370cfae`) | 3 | 2:25:37 | 3,2,1 | **True** |
-| `446a24f` (rec. below) | 1 | 1:14:38 | 1 | **True**, vacuously |
+| `446a24f` (rec. `25ce2c7`) | 1 | 1:14:38 | 1 | **True**, vacuously |
+| `84bde6a` (rec. below) | 5 | 2:20:52 | 3,3,2,1,1 | **True**, non-trivially |
 
 **These are not compared with each other.** Four points are not a trend,
 and a span's duration is set by which cubes happened to be running long
@@ -192,12 +193,11 @@ exactly one opportunity to rise; the fourth ran 3,2,1 and the shape was
 still not called until the tool computed it, because both multi-commit
 spans before it had looked like they were shrinking and then went back up.
 
-Ranks disagree, so give both. The fourth span: **11 of 69** by duration;
-**38 of 69** by commit count, but eleven spans tie at 3 commits so that
-number is arbitrary within the tie — the honest form is that **27 of 69**
-ran longer than 3 commits. Read through the distribution: **44 of the 69
-are 0 or 1 second**, so rank 11 of 69 is rank 11 of the 25 that lasted at
-all.
+Ranks disagree, so give both. The sixth span: **12 of 71** by duration
+(11th is only 4:45 longer); **28 of 71** by commit count, five tied at 5 —
+the honest form is that **23 of 71** ran longer than 5 commits. Read
+through the distribution: **44 of the 71 are 0 or 1 second**, so rank 12
+of 71 is rank 12 of the 27 that lasted at all.
 
 **The fifth span's `True` is vacuous.** A one-commit span has a one-point
 hole trajectory, and a single number is non-increasing by definition —
@@ -211,9 +211,16 @@ and commit counts 7, 8, 2, 3, 1 are not either. Both are set by which
 cubes happened to be running long when a short one finished — the same
 accident that sets how many holes a span opens with.
 
-**A sixth span is OPEN** as of 00:56:17Z: idx 784 landed while 781, 782
-and 783 were still running, so the frontier broke with **three** holes.
-No duration, rank or monotonicity for it until it closes.
+**The sixth span's `True` is the first non-trivial one.** Five points,
+with two flat steps (3→3 and 1→1) where the count could have risen and did
+not. The `True` at `30f1fbd` had one chance to rise; `446a24f` had none.
+Six spans now read False, False, True, True, True-vacuous, True — still
+**not** a trend: a hole count rises only when a cube that started late
+finishes before ones that started early, which is an accident of which
+cubes happen to be long.
+
+Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52 are not
+monotone, and commit counts 7, 8, 2, 3, 1, 5 are not either.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -461,22 +468,21 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **951 rows; 782 labels decided; 782 UNSAT; 0 SAT; 0 labels
+- **956 rows; 787 labels decided; 787 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..780, highest decided 784, holes [781, 782, 783].**
-- **782 of 1949 = 40.1231%**; 1167 undecided. 40% was crossed at idx 779
+- **Frontier contiguous 0..786, highest decided 786, no holes.**
+- **787 of 1949 = 40.3797%**; 1162 undecided. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 18 more.
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 13 more.
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the 1169 undecided
   could be SAT.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **27 of 38**.
-- **One span is open** (holes [781, 782, 783]). No re-run set, no forward
-  test, no registered pattern commitment. **Do not invent a commitment to
-  fill the gap, and quote no span figure until this one closes.**
+  verified) at **32 of 38**; six undecided: 787, 788, 789, 790, 791, 792.
+- Nothing is open: no span, no re-run set, no forward test, no registered
+  pattern commitment. **Do not invent a commitment to fill the gap.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 

@@ -10429,3 +10429,64 @@ g=11 [13, 13, 12, 9, 13, 13, 12, 12, 11, 11, 9]	UNSAT	13990.6
 g=11 [13, 13, 12, 9, 13, 13, 12, 12, 11, 10, 10]	UNSAT	13055.4
 g=11 [13, 13, 12, 9, 13, 12, 12, 12, 12, 11, 9]	UNSAT	5429.2
 g=11 [13, 13, 12, 9, 13, 13, 12, 11, 11, 11, 10]	UNSAT	10390.4
+# ---------------------------------------------------------------------
+# BROKEN-FRONTIER SPAN CLOSED AT 84bde6a.  Every figure below is COPIED
+# from `python3 docs/ladder/checkpoint_audit.py --spans all` (ba6ec65):
+#
+#   span of 5 broken commit(s)
+#     opened after : f045721  2026-09-17T00:38:07+00:00
+#     closed by    : 84bde6a  2026-09-17T02:58:59+00:00
+#     duration     : 2:20:52 (2.3478 h) by committer timestamps
+#     hole counts  : 3,3,2,1,1
+#     monotone non-increasing? True
+#     most holes at once: 3 at 5f65c39  [781, 782, 783]
+#
+# MONOTONE TRUE, AND THIS ONE IS NOT VACUOUS.  Unlike 446a24f, whose
+# single-point trajectory made TRUE unfalsifiable, this span had FIVE
+# points and two flat steps (3->3 and 1->1) where it could have risen and
+# did not.  It is the first non-trivial TRUE in the run.  That still does
+# NOT make the four-way list a trend: FALSE, FALSE, TRUE, TRUE, TRUE
+# (vacuous), TRUE is six spans, and a hole count rises only when a cube
+# that started late finishes before ones that started early, which is an
+# accident of which cubes happened to be long.
+#
+# THE REPEATS ARE THE POINT.  At 56b80d1 and 822e860, with 3,3 and then
+# 3,3,2,1,1 partly visible, this log refused to call the shape -- because
+# both long spans (3ebf469, 8cfb7dc) had flattened and then gone back UP.
+# Here it flattened twice and did not.  The refusal was still correct: it
+# cost nothing, and the tool's computed answer is what is recorded.
+#
+# RANK, BOTH FIGURES, BECAUSE THEY DISAGREE (3ebf469).  Over 71 closed
+# spans: by DURATION 2:20:52 ranks 12 (11th is 2:25:37 at 068b963 ->
+# 6286fe4, only 4:45 longer; 13th is 1:59:31 at 59e5e74 -> c62d97c); by
+# COMMIT COUNT 5 broken commits ranks 28, with 5 spans tied at 5 -- the
+# honest form is that 23 of the 71 ran longer than 5 commits.
+#
+# READ THE RANK THROUGH THE DISTRIBUTION.  Of the 71 closed spans, 27 are
+# longer than a second, 25 longer than a minute, 24 longer than ten
+# minutes, 18 longer than an hour and 8 longer than four hours -- so 44
+# are 0 or 1 second, and rank 12 of 71 is rank 12 of the 27 that lasted at
+# all.  The tool names what its one-hour line excludes: f1977fd ->
+# d6424a1 at 0:58:56, short by 1:04.
+#
+# THE SIX SPANS OF THIS RUN ARE A LIST, NOT A TREND:
+#
+#   41b168e  6:05:59  7 commits  holes 2,2,3,2,1,1,1    FALSE
+#   49ddb49  3:00:37  8 commits  holes 3,3,2,2,2,1,2,1  FALSE
+#   30f1fbd  0:52:58  2 commits  holes 2,1              TRUE (one chance to rise)
+#   6286fe4  2:25:37  3 commits  holes 3,2,1            TRUE
+#   446a24f  1:14:38  1 commit   holes 1                TRUE (vacuous, no chance)
+#   84bde6a  2:20:52  5 commits  holes 3,3,2,1,1        TRUE (two flat steps)
+#
+# Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52 are not
+# monotone; commit counts 7, 8, 2, 3, 1, 5 are not either.  NOT compared.
+#
+# WHY THIS SPAN LASTED.  Its three holes were the three most expensive
+# cubes block [13,13,12,9] has produced: 13990.6 s, 13055.4 s and
+# 10390.4 s, or 0.6477, 0.6044 and 0.4810 of the 21600 s per-cube cap.
+# That is a description of what was in flight, not a mechanism for span
+# duration in general, and it is not compared with the other five.
+#
+# Spans are systematic and MAY be ranked once closed (9f8cad2).  This one
+# is NOT a finding and is NOT in the tally.
+# ---------------------------------------------------------------------
