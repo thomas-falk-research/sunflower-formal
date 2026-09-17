@@ -10605,3 +10605,4 @@ g=11 [13, 13, 12, 9, 13, 12, 12, 12, 11, 11, 10]	UNSAT	9858.7
 # measures wall-clock between two commits and NOT solver effort.  A span
 # duration never measured solver effort; this one just makes it obvious.
 # ---------------------------------------------------------------------
+g=11 [13, 13, 12, 8, 13, 13, 13, 13, 10, 10, 10]	UNSAT	3295.6
