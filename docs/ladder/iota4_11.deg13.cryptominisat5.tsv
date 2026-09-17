@@ -10653,3 +10653,4 @@ g=11 [13, 13, 12, 8, 13, 13, 13, 11, 11, 11, 10]	UNSAT	5928.8
 # landings in index order that had been noted and explicitly NOT
 # registered as a pattern on three successive commits.
 # ---------------------------------------------------------------------
+g=11 [13, 13, 12, 8, 13, 13, 12, 11, 11, 11, 11]	UNSAT	4085.2
