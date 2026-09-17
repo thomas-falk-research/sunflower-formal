@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T22:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T23:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1071,20 +1071,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1014 -> 1015 rows)
+## State as of the last refresh (1015 -> 1016 rows)
 
-- **1015 rows; 846 labels decided; 846 UNSAT; 0 SAT; 0 labels
+- **1016 rows; 847 labels decided; 847 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 846 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 847 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..845, highest decided 845, holes [].**
+- **Frontier contiguous 0..846, highest decided 846, holes [].**
   **No span is open.** The twelfth closed at `4875392` and its figures are
   recorded above, from the tool, after that commit existed.
-- **846 of 1949 = 43.4069%**; **1103 undecided**. **43% IS CROSSED**, at
+- **847 of 1949 = 43.4582%**; **1102 undecided**. **43% IS CROSSED**, at
   **cube index 841** — which is a different 841 from the decided count on
   this same line, and they coincide today only by accident. 838/1949 =
   42.9964% rounds to 43.0 and is NOT above 43;
@@ -1111,7 +1111,7 @@ Task outputs live at
   **`[13,13,12,7]` is now CLOSED 21/21** (idx 821..841, contiguity
   verified, closed by idx 838) — its stats are in the closed-block table
   above, recomputed along with every other row. **Only `[13,13,12,6]` is
-  open: idx 842..856, 15 members, contiguity verified, 4 decided.** When it
+  open: idx 842..856, 15 members, contiguity verified, 5 decided.** When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
   and do NOT compare them across blocks.
   idx 838 closed that block **and** the twelfth span, the second such
