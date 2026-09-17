@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T00:06Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T00:57Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -210,6 +210,10 @@ Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38 are not monotone,
 and commit counts 7, 8, 2, 3, 1 are not either. Both are set by which
 cubes happened to be running long when a short one finished — the same
 accident that sets how many holes a span opens with.
+
+**A sixth span is OPEN** as of 00:56:17Z: idx 784 landed while 781, 782
+and 783 were still running, so the frontier broke with **three** holes.
+No duration, rank or monotonicity for it until it closes.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -457,21 +461,22 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **949 rows; 780 labels decided; 780 UNSAT; 0 SAT; 0 labels
+- **951 rows; 782 labels decided; 782 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..779, highest decided 779, no holes.**
-- **780 of 1949 = 40.0205%**; 1169 undecided. **40% is crossed** (at idx
-  779, `86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 =
-  40.0205% is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 20 more.
+- **Frontier contiguous 0..780, highest decided 784, holes [781, 782, 783].**
+- **782 of 1949 = 40.1231%**; 1167 undecided. 40% was crossed at idx 779
+  (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 18 more.
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the 1169 undecided
   could be SAT.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **25 of 38**.
-- Nothing is open: no span, no re-run set, no forward test, no registered
-  pattern commitment. **Do not invent a commitment to fill the gap.**
+  verified) at **27 of 38**.
+- **One span is open** (holes [781, 782, 783]). No re-run set, no forward
+  test, no registered pattern commitment. **Do not invent a commitment to
+  fill the gap, and quote no span figure until this one closes.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
