@@ -179,6 +179,9 @@ comparable. **No ratio, median or spread until all four land.** Set five's
 version of this rule was tested when honouring it cost something — a single
 member's ratio was one division away and was withheld — and it held.
 
+Landed so far: **831 at 4452.3 s** (1 of 4). Its ratio is again one division
+away and again withheld.
+
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
 
@@ -809,21 +812,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1000 rows, unchanged across restart #38)
+## State as of the last refresh (1000 -> 1001 rows)
 
-- **1000 rows; 831 labels decided; 831 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 or #38. **The
-  round 1000 is a ROW count and means nothing** — 831 decided plus 169 superseded
-  UNKNOWN rows. A round count is not a milestone (b34fc2e, 85bb4d1), and
-  rows are not decisions.
+- **1001 rows; 832 labels decided; 832 UNSAT; 0 SAT; 0 labels
+  undecided-only.** No rows were lost across restarts #37 or #38. A row
+  count is not a decision count: 832 decided plus 169 superseded UNKNOWN
+  rows.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..830, highest decided 830, NO HOLES.** The tenth
+- **Frontier contiguous 0..831, highest decided 831, NO HOLES.** The tenth
   span is closed.
-- **831 of 1949 = 42.6372%**; **1118 undecided**. **42% IS CROSSED**, at idx
+- **832 of 1949 = 42.6886%**; **1117 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 8 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 7 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -837,7 +839,7 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 10 decided.** When it closes, record its descriptive
+  contiguity verified, 11 decided.** When it closes, record its descriptive
   stats as descriptive stats, NOT findings, and do NOT compare them across
   blocks.
 - **No span is open** — the frontier line above has no holes. **When one
