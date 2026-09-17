@@ -293,7 +293,7 @@ Registration discipline, learned the hard way:
   gave max |delta| 0 or 1 s; separate samples, not a reproduction.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
-  (`3f7c27c`), **40% at 779** (`85d9e94`). Next: 41% needs
+  (`3f7c27c`), **40% at 779** (`86562d4`). Next: 41% needs
   `ceil(0.41 × 1949) = 800`.
 - The rebase `109dc97`. **Any PR from here is a new pull request**; #19 is
   finished and must never be reused.
@@ -448,7 +448,7 @@ Task outputs live at
   undecided-only.**
 - **Frontier contiguous 0..779, highest decided 779, no holes.**
 - **780 of 1949 = 40.0205%**; 1169 undecided. **40% is crossed** (at idx
-  779, `85d9e94`): 779/1949 = 39.9692% is not above 40, 780/1949 =
+  779, `86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 =
   40.0205% is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 20 more.
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
