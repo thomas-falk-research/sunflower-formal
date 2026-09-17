@@ -94,12 +94,16 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-Thirteen involuntary restarts, CPU-hours discarded:
+**Fourteen** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204
-    3.594  3.564  4.863  2.965  7.033  2.216
+    3.594  3.564  4.863  2.965  7.033  2.216  5.1477
 
-median 3.5640, mean 3.7442, **total 48.6747**. The 0.944 CPU-hours at
+median 3.5790, mean 3.8445, **total 53.8227**. #37 is **5.1477**, rank 4
+of 14 — idx 788 alone was 57.1% of that loss, having run 10652.6 s (0.4932
+of cap) as both the seventh span's last hole and block `[13,13,12,9]`'s last
+undecided member. All of it is gone; the cube restarts from zero and its
+elapsed time never was a bound on its cost. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
 
 ### Absorbing a restart
@@ -122,17 +126,26 @@ median 3.5640, mean 3.7442, **total 48.6747**. The 0.944 CPU-hours at
    still an ancestor.
 8. **A new restart opens the next re-run set.**
 
-Machine spec has been identical for four consecutive containers: 4 cores,
-Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB. Four is four,
-not a promise — re-read it at #37.
+Machine spec has been identical for **five** consecutive containers: 4
+cores, Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB. Re-read
+at #37 as the previous version of this line demanded. Five is five, not a
+promise — re-read it at #38.
 
-**Re-take lag** after a relaunch: 41 s at #35, 60.7 s at #36. Two
-observations, not a law. That 60.7 s is near the `--slice 60` value is
-**not supported** — #35 ran 41 s under the identical flag.
+**Re-take lag** after a relaunch: 41 s at #35, 60.7 s at #36, **61.0 s at
+#37** (all four CNFs written inside 4 ms). Three observations, not a law.
+That two of them sit near the `--slice 60` value is **still not support** for
+the story that the lag tracks that flag: #35 ran 41 s under the identical
+flag, and two later points agreeing with each other explains nothing about
+the one that does not. No mechanism is proposed.
+
+The two `[killed]` markers carried the **same nanosecond** at #34, #35 and
+#37, and differed by exactly 4.000000 ms at #36. **The disagreement is the
+informative one** — it proves they are not guaranteed to agree, so three
+agreements corroborate and DO NOT validate.
 
 ---
 
-## Re-run sets — all four CLOSED
+## Re-run sets — four CLOSED, **SET FIVE OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -143,6 +156,12 @@ corrected at 060fb26 by checking it against published data).
 | two | `cd2ad61` | 4 | 0.4291 | 8.15× |
 | three | `1e409e8` | 4 | 0.5026 | 2.06× |
 | four | `30f1fbd` | 4 | 0.2125 | 5.3747× |
+| five | OPEN | — | — | — |
+
+**SET FIVE OPENED AT RESTART #37**: idx **788, 798, 799, 800**, discarded
+10652.6, 3740.6, 2356.6 and 1913.2 s, all four restarted at the same instant
+(launch + 61.0 s, CNFs within 4 ms) so their re-run clocks are again directly
+comparable. **No ratio, median or spread until all four land.**
 
 Set four in full (all four members restarted at the **same instant**, so
 their re-run clocks are directly comparable):
@@ -518,7 +537,17 @@ alongside it.**
   existed, written into this file twice and corrected at `bce9af0`. Its
   own pattern, not a script's fault, and the worst class of error here:
   every other defect on this list overshoots real evidence, while this one
-  invents a pointer to nothing. One instance.
+  invents a pointer to nothing. **SECOND INSTANCE at restart #37**, and the
+  rule names this case explicitly: "hashes, pids, indices and TIMESTAMPS are
+  read, never composed". I hardcoded a launch epoch of `1789622531.890` into
+  a scratch script after reading the ISO time off `/proc` — converting it in
+  my head instead of letting the script do it. It was wrong by exactly
+  1800.0 s, and the script duly reported a re-take lag of "+1861.0 s". **It
+  was caught only because 1861 s was absurd on its face.** Had I been off by
+  5 s the figure would have gone into a header block unchallenged. The fix
+  is that the epoch is never written down at all: the same script that reads
+  `/proc` computes the difference. **Catching an error by the magnitude of
+  its output is luck, not procedure.**
 
 ---
 
@@ -544,10 +573,13 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (965 -> 966 rows)
+## State as of the last refresh (966 rows, unchanged across restart #37)
 
 - **966 rows; 797 labels decided; 797 UNSAT; 0 SAT; 0 labels
-  undecided-only.**
+  undecided-only.** Unchanged across restart #37 — no rows were lost.
+- **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
+  `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+  from this line.
 - **Frontier contiguous 0..787, highest decided 797, holes [788].**
 - **797 of 1949 = 40.8928%**; **1152 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
