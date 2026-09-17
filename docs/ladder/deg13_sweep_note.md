@@ -653,12 +653,33 @@ Registration discipline, learned the hard way:
   the restart case — the `[killed]` marker's own timing is untested and
   **that gap stays open**. Twenty-eight live samples through 19:14:28Z all
   gave max |delta| 0 or 1 s; separate samples, not a reproduction.
+  **The sign is now measured, and it is the opposite of what "CNF mtime IS
+  solver start" implies.** Four live slots read in ONE script at one
+  instant, exact launch from `/proc/<pid>/stat` field 22 against `btime`:
+  solver launch minus CNF mtime came to **−0.256, −0.260, −0.254 and
+  −0.256 s** — the solver is spawned a quarter-second *before* the CNF's
+  final write closes. The method is unaffected at its stated ≤ 1 s
+  tolerance; what changes is that "IS" should be read as "within a third of
+  a second, and slightly after". **Four agreeing figures corroborate and do
+  not validate** — a disagreement would have been the informative outcome,
+  as at the #36
+  `[killed]` markers — and these are four slots of one driver at one moment,
+  not four independent trials.
+  *This measurement also killed a scare of my own making: comparing `ls`
+  minute-granularity mtimes against a misremembered wall clock suggested a
+  946 s discrepancy. Reading both quantities in one script at one instant
+  showed 0.26 s. The arithmetic was mine, not the method's.*
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
   (818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
   42.0215% is). Next: 43% needs `ceil(0.43 × 1949) = 839` (838/1949 =
   42.9964% is not above 43; 839/1949 = 43.0477% is).
+  **43% carries the same pure coincidence the 41% crossing did, and it
+  means nothing either:** the 839 in "43% needs 839" is a count of DECIDED
+  CUBES, and cube **index** 839 happens to be in flight right now. Two
+  different quantities wearing the same numeral. Flagged before the fact,
+  as the 41% one was, so that nobody reads it as a prediction afterwards.
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
