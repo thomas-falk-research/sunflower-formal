@@ -223,8 +223,9 @@ Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52 are not
 monotone, and commit counts 7, 8, 2, 3, 1, 5 are not either.
 
 **A seventh span is OPEN** as of 03:13:43Z: idx 790 landed while 787, 788
-and 789 were still running, so the frontier broke with **three** holes. No
-duration, rank or monotonicity for it until it closes.
+and 789 were still running, so the frontier broke with **three** holes. idx
+787 filled at 03:43:32Z, leaving **two** — 788 and 789. No duration, rank or
+monotonicity for it until the last hole fills.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -387,7 +388,18 @@ A gap that spans a restart is not a gap (c50c59e). A gap whose endpoint is
 only bounded is an **interval**, not a measurement (85691ce, c1fd32f).
 
 A statement true at its timestamp is not an error when the state moves
-(d06dbe4).
+(d06dbe4) — **but that protects a dated record, not a live one.** A figure
+sitting in a section that is rewritten around it is being asserted as
+current, whatever was true when it was typed. **Refreshing a section means
+re-deriving every figure in it, not the ones that catch the eye**, and a
+quantity is stated **once** so there is no second copy to go stale. Two
+defects in this file were found this way and corrected together (hash
+omitted deliberately — it cannot be read before the commit exists):
+`## State at 068b963` named a commit where the checkpoint held **942** rows
+while the body under it described **957**, surviving six refreshes; and
+"1169 undecided", correct at `86562d4` when 780 were decided, sat two lines
+under an updated "1161" through three more. Neither overshot its evidence.
+Both were simply never re-read.
 
 Take a second sample before quoting a zero (07b8a61). A bound is never ranked
 against completed costs (8263cab / 8782234). **Gaps and uptimes: state, never
@@ -428,12 +440,19 @@ alongside it.**
 - **The pattern I am most tempted to register is the one about to break**
   (5682de6) — two instances, 73fcf31 and aea7189.
 - Rounding one measurement into a law (36ce276 / 0cf3b8d, cd03f27).
-- A standing claim never re-checked (1802af3).
+- A standing claim never re-checked (1802af3) — second instance: the
+  `## State at 068b963` header, stale across six refreshes of the body
+  beneath it, corrected in the commit that banked idx 787.
 - A zero quoted from one sample as exactness (07b8a61, 948005d).
 - A published figure compressed until it meant something else (8b557b5,
   cd03f27, 45aacf6).
 - A superlative wider than its population (5c3b08e, e33ce40).
-- A tally line contradicting the table under it (caff592).
+- A tally line contradicting the table under it (caff592) — second
+  instance: "1169 undecided" two lines below "1161 undecided", the
+  first stale from `86562d4`, corrected in the commit that banked idx
+  787. **Neither of these two is on the pattern tally: they are
+  procedural defects and their fix is a rule, not a prediction, and
+  the tally is only for predictive commitments.**
 - A convenient population by accident (c9982c9, a22c6e7).
 - Two near-identical figures treated as corroboration (37d44af).
 - A mechanism reached for to dismiss something (f0866f6).
@@ -470,22 +489,26 @@ Task outputs live at
 
 ---
 
-## State at `068b963`
+## State as of the last refresh (957 -> 958 rows)
 
-- **957 rows; 788 labels decided; 788 UNSAT; 0 SAT; 0 labels
+- **958 rows; 789 labels decided; 789 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..786, highest decided 790, holes [787, 788, 789].**
-- **788 of 1949 = 40.4310%**; 1161 undecided. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 790, holes [788, 789].**
+- **789 of 1949 = 40.4823%**; **1160 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 12 more.
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 11 more (799/1949 =
+  40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
-  UNSAT only when **all 1949** are, and any one of the 1169 undecided
-  could be SAT.
+  UNSAT only when **all 1949** are, and any one of the undecided cubes
+  counted on the line above could be SAT. *That count is stated once, on
+  that line, deliberately: it was restated here as 1169 from `86562d4`
+  onward and left stale through three refreshes while the line above was
+  updated.*
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **33 of 38**; five undecided: 787, 788, 789, 791, 792.
-- **One span is open** (holes [787, 788, 789]). No re-run set, no forward
+  verified) at **34 of 38**; four undecided: 788, 789, 791, 792.
+- **One span is open** (holes [788, 789]). No re-run set, no forward
   test, no registered pattern commitment. **Do not invent a commitment to
   fill the gap, and quote no span figure until this one closes.**
 - All six audit invariants hold.
