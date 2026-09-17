@@ -255,21 +255,42 @@ and commit counts 7, 8, 2, 3, 1 are not either. Both are set by which
 cubes happened to be running long when a short one finished — the same
 accident that sets how many holes a span opens with.
 
-**The sixth span's `True` is the first non-trivial one.** Five points,
-with two flat steps (3→3 and 1→1) where the count could have risen and did
-not. The `True` at `30f1fbd` had one chance to rise; `446a24f` had none.
-**Nine** spans now read False, False, True, True, True-vacuous, True,
-False, True, **False** — 5 True of 9. Still **not**
-a trend: a hole count rises only when a cube that started late finishes
-before ones that started early, which is an accident of which cubes happen
-to be long. **And the strength of a "True" depends on the chain's length**:
-the eighth's chain is `2,1`, one comparison, monotone half the time by
-accident; the fifth's was a single entry and vacuous; only the sixth's
-`3,3,2,1,1` carried several.
+**"The sixth span's `True` is the first non-trivial one" is RETIRED as a
+label.** It was written on a flat-step criterion — the sixth's chain
+`3,3,2,1,1` has two steps (3→3 and 1→1) where the count could have risen
+and did not — but the table below counts COMPARISONS, and by that plainer
+reading the fourth span already had two. Two criteria for "non-trivial"
+were in use at once and the label meant different things in each. It is
+dropped; the comparison count is stated instead and speaks for itself.
+
+**Ten** spans, and the verdict tally needs its COMPARISON COUNTS beside it
+or it reads as more evidence than it is. Every row below was read back out
+of `--spans all`, not recalled:
+
+| # | closed by | hole counts | comparisons | monotone |
+|---|---|---|---|---|
+| 1 | `41b168e` | 2,2,3,2,1,1,1 | 6 | False |
+| 2 | `49ddb49` | 3,3,2,2,2,1,2,1 | 7 | False |
+| 3 | `30f1fbd` | 2,1 | 1 | True |
+| 4 | `6286fe4` | 3,2,1 | 2 | True |
+| 5 | `446a24f` | 1 | **0** | True — vacuous |
+| 6 | `84bde6a` | 3,3,2,1,1 | 4 | True |
+| 7 | `f05dc65` | 3,2,2,3,2,1,1,… | 16 | False |
+| 8 | `567e3b5` | 2,1 | 1 | True |
+| 9 | `374ea97` | 3,2,2,1,3,3,2,2,1 | 8 | False |
+| 10 | `9cdb1d1` | 1 | **0** | True — vacuous |
+
+Six True of ten — but **two of those six contain zero comparisons and could
+not have come out False**, and two more rest on a single comparison, which
+is one coin flip. Only three Trues carry more than one. A chain's length is
+set by how many commits a span happens to span, which is an accident of
+banking cadence. Still **not** a trend in either direction: a hole count
+rises only when a cube that started late finishes before ones that started
+early, which is an accident of which cubes happen to be long.
 
 Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15,
-0:35:49, 3:48:12 are not monotone, and commit counts 7, 8, 2, 3, 1, 5, 17,
-2, 9 are not either.
+0:35:49, 3:48:12, 0:21:20 are not monotone, and commit counts 7, 8, 2, 3, 1,
+5, 17, 2, 9, 1 are not either.
 
 The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
 789 were still running, breaking the frontier with **three** holes. It then
@@ -369,13 +390,25 @@ parallel state had silently diverged. **The tool's sequence is the record;
 do not maintain a hand-tracked copy alongside it** — that is the
 same-quantity-written-twice defect in a new place.
 
-**The tenth span opened** at 16:34:42Z when idx 825 landed while 824 was
-still running, breaking the frontier with **one** hole, and **closed** when
-824 landed at 16:42:10Z. No hand-tracked hole sequence was kept for it — the
-tool's is the record, per the lesson directly above. Its duration, commit
-count and rank come from `checkpoint_audit.py --spans all` in the NEXT
-commit, because the tool walks commits and the closing commit must exist
-first. No span figure is quoted until then.
+**THE TENTH SPAN IS CLOSED.** It opened at 16:34:42Z when idx 825 landed
+while 824 was still running, and closed when 824 landed at 16:42:10Z. No
+hand-tracked hole sequence was kept for it — the tool's is the record, per
+the lesson directly above. All figures COPIED from `--spans all`:
+
+| field | value |
+|---|---|
+| opened after | `0ef2e70` 2026-09-17T16:21:45Z |
+| closed by | `9cdb1d1` 2026-09-17T16:43:05Z |
+| duration | 0:21:20 (0.3556 h) |
+| commits | 1 broken |
+| hole counts | 1 |
+| monotone non-increasing | True — **vacuously, zero comparisons** |
+| most holes | 1 at `725b38b` [824] |
+
+Ranks against **75 closed spans**: **rank 26 of 75 by duration** (49 are
+shorter) and **rank 57 of 75 by commit count**, 19 ties at 1. Read through
+the distribution — **44 of 75 are one second or shorter** — a 21-minute span
+ranking 26th is ordinary among the spans that lasted at all.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -755,7 +788,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (994 -> 995 rows)
+## State as of the last refresh (995 rows; span record commit)
 
 - **995 rows; 826 labels decided; 826 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
