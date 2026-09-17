@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-16T23:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T00:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -293,7 +293,8 @@ Registration discipline, learned the hard way:
   gave max |delta| 0 or 1 s; separate samples, not a reproduction.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
-  (`3f7c27c`). Next: 40% needs `ceil(0.40 × 1949) = 780`.
+  (`3f7c27c`), **40% at 779** (`85d9e94`). Next: 41% needs
+  `ceil(0.41 × 1949) = 800`.
 - The rebase `109dc97`. **Any PR from here is a new pull request**; #19 is
   finished and must never be reused.
 
@@ -443,16 +444,19 @@ Task outputs live at
 
 ## State at `068b963`
 
-- **948 rows; 779 labels decided; 779 UNSAT; 0 SAT; 0 labels
+- **949 rows; 780 labels decided; 780 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..778, highest decided 778, no holes.**
-- **779 of 1949 = 39.9692%**; 1170 undecided. 40% needs idx 780 — **1 more**.
-  **39.9692% is NOT 40%**: it rounds to 40.0 while sitting below it, which
-  is exactly the shape the "a rounded milestone is not a crossed one" rule
-  exists for. 780/1949 = 40.0205% is the first value above the line.
+- **Frontier contiguous 0..779, highest decided 779, no holes.**
+- **780 of 1949 = 40.0205%**; 1169 undecided. **40% is crossed** (at idx
+  779, `85d9e94`): 779/1949 = 39.9692% is not above 40, 780/1949 =
+  40.0205% is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 20 more.
+- **The counter is not the rung.** Two fifths of the sub-cubes are decided
+  and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
+  UNSAT only when **all 1949** are, and any one of the 1169 undecided
+  could be SAT.
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **24 of 38**.
+  verified) at **25 of 38**.
 - Nothing is open: no span, no re-run set, no forward test, no registered
   pattern commitment. **Do not invent a commitment to fill the gap.**
 - All six audit invariants hold.
