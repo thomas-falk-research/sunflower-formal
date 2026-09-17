@@ -258,8 +258,8 @@ accident that sets how many holes a span opens with.
 **The sixth span's `True` is the first non-trivial one.** Five points,
 with two flat steps (3→3 and 1→1) where the count could have risen and did
 not. The `True` at `30f1fbd` had one chance to rise; `446a24f` had none.
-**Eight** spans now read False, False, True, True, True-vacuous, True,
-False, **True** — 5 True of 8, which is what a fair coin does. Still **not**
+**Nine** spans now read False, False, True, True, True-vacuous, True,
+False, True, **False** — 5 True of 9. Still **not**
 a trend: a hole count rises only when a cube that started late finishes
 before ones that started early, which is an accident of which cubes happen
 to be long. **And the strength of a "True" depends on the chain's length**:
@@ -268,8 +268,8 @@ accident; the fifth's was a single entry and vacuous; only the sixth's
 `3,3,2,1,1` carried several.
 
 Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15,
-0:35:49 are not monotone, and commit counts 7, 8, 2, 3, 1, 5, 17, 2 are not
-either.
+0:35:49, 3:48:12 are not monotone, and commit counts 7, 8, 2, 3, 1, 5, 17,
+2, 9 are not either.
 
 The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
 789 were still running, breaking the frontier with **three** holes. It then
@@ -326,31 +326,48 @@ prints only the top five: **rank 23 of 73 by duration** (50 are shorter) and
 Read through the distribution: **44 of the 73 are one second or shorter**, so
 ranking 23rd means ordinary among the spans that lasted at all, not long.
 
-**A NINTH SPAN IS OPEN** as of 13:37:30Z: idx 815 landed while 812, 813 and
-814 were all still running, so the frontier broke with **three** holes. idx
-813 filled at 14:02:27Z, leaving **two**; idx 816 at 14:08:55Z landed behind
-the frontier top without changing them; 812 filled at 14:17:43Z, leaving
-**one**; and idx 819 at 14:33:12Z landed ahead of 817 and 818, widening it
-back to **three** — [814, 817, 818]. This span's hole count has now gone
-3 → 2 → 2 → 1 → 3. That rise from 1 to 3 is already in the recorded
-sequence, so the tool's monotone-non-increasing test is **already
-determined** to return False — arithmetic on data in hand, NOT a forecast,
-and when the tool says so it will be no evidence of anything (aea7189).
-Duration, rank and the rest still wait until all three holes fill.
+**The eighth span's opening ended a run of six consecutive landings in index
+order.** That run was noted and explicitly NOT registered as a pattern on
+each of the three commits before it broke, on the grounds that rows land in
+completion order and index order is just what four slots on four consecutive
+cubes produce until one overtakes another. idx 811 overtook two. **The
+refusal was right, and that is not a prediction either** — refusing to
+register a pattern costs nothing when it breaks and nothing when it does not.
 
-**idx 814 LANDED at 16:17:54Z and CLOSED BOTH** — the ninth span and block
-`[13,13,12,8]` at 28/28. The block's stats are in the closed-block table
-above. **The span's duration, commit count and rank come from
-`checkpoint_audit.py --spans all` in the NEXT commit**, because the tool
-walks commits and the closing commit must exist first.
+**The ninth span opened** at 13:37:30Z: idx 815 landed while 812, 813 and
+814 were all still running, so the frontier broke with **three** holes. While it was
+open its hole count rose once — idx 819 landed ahead of 817 and 818 — which
+made the monotonicity verdict **already determined** to be False before the
+tool ever ran: arithmetic on data in hand, NOT a forecast, and the tool
+confirming it corroborated nothing (aea7189).
 
-It also ended a run of **six** consecutive landings in index order. That run
-was noted and explicitly NOT registered as a pattern on each of the last
-three commits, on the grounds that rows land in completion order and index
-order is just what four slots on four consecutive cubes produce until one
-overtakes another. 811 overtook two. **The refusal was right, and that is
-not a prediction either** — refusing to register a pattern costs nothing
-when it breaks and nothing when it does not.
+**THE NINTH SPAN IS CLOSED**, by idx 814 at 16:17:54Z, which also closed
+block `[13,13,12,8]` at 28/28. All figures COPIED from
+`checkpoint_audit.py --spans all`:
+
+| field | value |
+|---|---|
+| opened after | `9fe1277` 2026-09-17T12:31:26Z |
+| closed by | `374ea97` 2026-09-17T16:19:38Z |
+| duration | 3:48:12 (3.8033 h) |
+| commits | 9 broken |
+| hole counts | 3,2,2,1,3,3,2,2,1 |
+| monotone non-increasing | **False** (already determined) |
+| most holes | 3 at `9b7f604` [812, 813, 814] |
+
+Ranks against **74 closed spans**: **rank 10 of 74 by duration** (64 are
+shorter) and **rank 15 of 74 by commit count**, 2 ties at 9. Read through
+the distribution — **44 of 74 are one second or shorter** and only 9 exceed
+four hours, which this one does not.
+
+**MY HAND-TRACKED HOLE SEQUENCE WAS NOT THE TOOL'S.** While the span was
+open I carried `3 → 2 → 2 → 1 → 3 → 2 → 1`, seven entries; the tool
+records **nine**, because it logs the count at every commit that touched a
+broken frontier including ones where it did not change. The conclusion I
+drew (a rise is present, so the verdict is False) survives in both, but the
+parallel state had silently diverged. **The tool's sequence is the record;
+do not maintain a hand-tracked copy alongside it** — that is the
+same-quantity-written-twice defect in a new place.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -730,7 +747,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (992 -> 993 rows)
+## State as of the last refresh (993 rows; span record commit)
 
 - **993 rows; 824 labels decided; 824 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.

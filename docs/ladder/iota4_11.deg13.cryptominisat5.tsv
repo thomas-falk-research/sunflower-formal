@@ -10665,3 +10665,50 @@ g=11 [13, 13, 12, 7, 13, 13, 13, 13, 13, 12, 6]	UNSAT	2316.4
 g=11 [13, 13, 12, 7, 13, 13, 13, 13, 13, 11, 7]	UNSAT	2323.7
 g=11 [13, 13, 12, 8, 13, 12, 12, 12, 11, 11, 11]	UNSAT	7395.7
 g=11 [13, 13, 12, 8, 13, 13, 12, 12, 11, 11, 10]	UNSAT	14316.3
+#
+# ---------------------------------------------------------------------
+# NINTH SPAN CLOSED, all figures COPIED from checkpoint_audit.py
+# --spans all, not recomputed by hand:
+#
+#   opened after : 9fe1277  2026-09-17T12:31:26+00:00
+#   closed by    : 374ea97  2026-09-17T16:19:38+00:00
+#   duration     : 3:48:12 (3.8033 h) by committer timestamps
+#   commits      : 9 broken
+#   hole counts  : 3,2,2,1,3,3,2,2,1
+#   monotone non-increasing? FALSE -- the tool's own annotation reads
+#                "it grew again mid-span; do not summarise this as a
+#                shrink", and it is not summarised as one here.
+#   most holes   : 3 at 9b7f604  [812, 813, 814]
+#
+# THE FALSE WAS ALREADY DETERMINED AND THAT IS NOT A HIT.  While the span
+# was open its recorded hole counts already contained a rise (1 -> 3 when
+# idx 819 landed ahead of 817 and 818), so the test could only return
+# False.  Recording that in advance was arithmetic on data in hand; the
+# tool confirming it corroborates nothing (aea7189).
+#
+# BUT MY HAND-TRACKED SEQUENCE WAS NOT THE TOOL'S.  Across the open span
+# I carried "3 -> 2 -> 2 -> 1 -> 3 -> 2 -> 1", SEVEN entries.  The tool
+# records NINE -- 3,2,2,1,3,3,2,2,1 -- because it logs the count at every
+# commit that touched a broken frontier, including ones where the count
+# did not change and which I collapsed.  The conclusion drawn from my
+# version happened to be robust, because a rise appears in both, but
+# THE HAND-TRACKED STATE HAD DIVERGED FROM THE TOOL'S AND I DID NOT KNOW
+# IT.  The tool's sequence is the record; mine was a summary I should not
+# have been maintaining in parallel.
+#
+# RANKS, BOTH WAYS, AGAINST 74 CLOSED SPANS, computed by parsing the
+# tool's own output because the tool prints only the top five:
+#
+#   by duration     : rank 10 of 74 -- 64 closed spans are SHORTER
+#   by commit count : rank 15 of 74, 2 ties at 9 commits
+#
+# READ THOSE THROUGH THE DISTRIBUTION, which the tool prints for exactly
+# this reason: 44 of the 74 spans are one second or shorter, and only 9
+# exceed four hours -- this one does not, at 3:48:12.  Ranking 10th in a
+# population that is mostly instantaneous is not a claim of unusualness.
+# The tool again flags its own one-hour line as arbitrary; the nearest
+# excluded span misses it by 1 minute 4 seconds.
+#
+# Nine spans now read False, False, True, True, True-vacuous, True,
+# False, True, False -- 5 True of 9.
+# ---------------------------------------------------------------------
