@@ -338,13 +338,11 @@ determined** to return False — arithmetic on data in hand, NOT a forecast,
 and when the tool says so it will be no evidence of anything (aea7189).
 Duration, rank and the rest still wait until all three holes fill.
 
-**THE SPAN AND BLOCK `[13,13,12,8]` CLOSE TOGETHER, ON idx 814.** 817 filled
-at 15:18:38Z and 818 at 16:12:04Z, so **814 is the last hole of the span AND
-the last undecided member of the block**. That one row closes both, and its
-commit must run `checkpoint_audit.py --spans all` and copy its figures, AND
-record the block's descriptive stats — as descriptive stats, NOT findings,
-and NOT compared across blocks. Neither may be computed before 814 is in the
-file.
+**idx 814 LANDED at 16:17:54Z and CLOSED BOTH** — the ninth span and block
+`[13,13,12,8]` at 28/28. The block's stats are in the closed-block table
+above. **The span's duration, commit count and rank come from
+`checkpoint_audit.py --spans all` in the NEXT commit**, because the tool
+walks commits and the closing commit must exist first.
 
 It also ended a run of **six** consecutive landings in index order. That run
 was noted and explicitly NOT registered as a pattern on each of the last
@@ -454,24 +452,36 @@ Registration discipline, learned the hard way:
   triple itself"). **Compute this rank before calling any run tight, and
   note that computing it does not make the run mean something.**
 - 1:55:26 span coincidence `ba6ec65`. 741 naming collision `e5243fc`.
-- Closed-block descriptive stats, min / mean / max — **not findings, not
-  compared across**: `[13,13,12,12]` 82 members 54.1 / 3442.9 / 12831.3,
-  spread 237.18×; `[13,13,12,11]` 65 members 144.8 / 5704.7 / 16785.7,
-  spread 115.92×; `[13,13,12,10]` 49 members 578.0 / 5744.1 / 15490.4,
-  spread 26.80×; **`[13,13,12,9]` 38 members 720.2 / 5752.8 / 13990.6,
-  spread 19.43×, median 5101.9** (idx 755..792, contiguity verified, closed
-  by idx 788).
-  **THE "SPREADS FALL, MINIMA RISE" READING IS CONFOUNDED AND IS WITHDRAWN AS
-  EVIDENCE OF ANYTHING.** Those blocks closed with n = 82, 65, 49, 38 —
-  strictly decreasing — and max/min grows mechanically with sample size.
-  Drawing n costs at random from the pool of all decided costs, the median
-  simulated spread runs 252.71×, 183.51×, 121.54×, 91.06× for those four
-  n (4000 draws each, seed 11): **falling spread and rising minimum are what
-  NO structure predicts here.** The observed spreads fall faster than the
-  simulation, but that simulation is crude — its pool contains these very
-  cubes and spans 0.1 s to 21678.5 s — so **no claim is made about the
-  excess**. The four lines above stay as descriptive stats and nothing is
-  read across them.
+- Closed-block descriptive stats — **not findings, not compared across**:
+
+  | block | n | min | mean | max | spread |
+  |---|---|---|---|---|---|
+  | `[13,13,12,12]` | 82 | 54.1 | 3442.9 | 12831.3 | 237.18× |
+  | `[13,13,12,11]` | 65 | 144.8 | 5704.7 | 16785.7 | 115.92× |
+  | `[13,13,12,10]` | 49 | 578.0 | 5744.1 | 15490.4 | 26.80× |
+  | `[13,13,12,9]` | 38 | 720.2 | 5752.8 | 13990.6 | 19.43× |
+  | `[13,13,12,8]` | 28 | 723.5 | 5049.1 | 14316.3 | 19.79× |
+
+  (`[13,13,12,9]` is idx 755..792, median 5101.9, closed by idx 788;
+  `[13,13,12,8]` is idx 793..820, median 4438.8, closed by idx 814. Both
+  contiguity verified.)
+
+  **THE "SPREADS FALL, MINIMA RISE" READING WAS WITHDRAWN AS CONFOUNDED, AND
+  THE FIFTH BLOCK THEN BROKE IT OUTRIGHT.** It was withdrawn when four
+  blocks had closed, because their n ran 82, 65, 49, 38 — strictly
+  decreasing — and max/min grows mechanically with sample size: drawing n
+  costs at random from the pool of all decided costs gives median simulated
+  spreads of 252.71×, 183.51×, 121.54×, 91.06× and now **55.54× at
+  n = 28** (4000 draws each, seed 11), so a falling spread was what NO
+  structure predicted. The fifth block has n = 28, continuing the decline,
+  and its spread went **UP**: 237.18, 115.92, 26.80, 19.43, **19.79**. The
+  mean did the same — 3442.9, 5704.7, 5744.1, 5752.8, **5049.1**. Only the
+  minima are still monotone. **The withdrawal came first, on the confound,
+  and the data broke the reading afterwards; the order matters, because
+  withdrawing it only after it broke would have been no discipline at all.**
+  The observed spreads sit well below the simulation at every n, and **no
+  claim is made about that gap** — the simulated pool contains these very
+  cubes and spans 0.1 s to 21678.5 s, too crude to carry a conclusion.
 - `SEQ[j][7] = 13` group complete 14/14 at `cf2bccc`, idx 755..768
   (contiguity **verified**): 720.2 / 4441.1 / 5406.6, spread 7.5071×.
 - **The sub-family / level story is closed and falsified**
@@ -720,18 +730,18 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (991 -> 992 rows)
+## State as of the last refresh (992 -> 993 rows)
 
-- **992 rows; 823 labels decided; 823 UNSAT; 0 SAT; 0 labels
+- **993 rows; 824 labels decided; 824 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..813, highest decided 823, holes [814].**
-  A ninth span is OPEN.
-- **823 of 1949 = 42.2268%**; **1126 undecided**. **42% IS CROSSED**, at idx
+- **Frontier contiguous 0..823, highest decided 823, NO HOLES.** The ninth
+  span is closed.
+- **824 of 1949 = 42.2781%**; **1125 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 16 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 15 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -743,15 +753,13 @@ Task outputs live at
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
-  above. **TWO blocks are open.** `[13,13,12,8]`: **idx 793..820, 28
-  members, contiguity verified, 27 decided**, and its single undecided
-  member, 814, is the open span's only remaining hole — so that block and
-  the span close on that one row. A NEW block
-  `[13,13,12,7]` has opened: **idx 821..841, 21 members, contiguity
-  verified, 3 decided.** When either closes, record its descriptive stats as
-  descriptive stats, NOT findings, and do NOT compare them across blocks.
-- **One span is open** — its holes are named on the frontier line above
-  **and nowhere else in this file.**
+  above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
+  there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
+  contiguity verified, 3 decided.** When it closes, record its descriptive
+  stats as descriptive stats, NOT findings, and do NOT compare them across
+  blocks.
+- **No span is open** — the frontier line above has no holes. **When one
+  IS open, its holes are named on that line and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
