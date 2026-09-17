@@ -226,8 +226,11 @@ monotone, and commit counts 7, 8, 2, 3, 1, 5 are not either.
 and 789 were still running, so the frontier broke with **three** holes. idx
 787 filled at 03:43:32Z, leaving **two** — 788 and 789. idx 791 landed at
 03:50:40Z and did **not** widen it: 790 was already decided, so the highest
-decided simply moved 790 → 791 with the same two holes. No duration, rank or
-monotonicity for this span until the last hole fills.
+decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
+**did** widen it, landing ahead of 792: holes are now **three** again, [788,
+789, 792]. A span's hole count is not monotone while it is open, in either
+direction, and no duration, rank or monotonicity for this one until the last
+hole fills.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -452,7 +455,11 @@ alongside it.**
 - A tally line contradicting the table under it (caff592) — second
   instance: "1169 undecided" two lines below "1161 undecided", the
   first stale from `86562d4`, corrected in the commit that banked idx
-  787. **Neither of these two is on the pattern tally: they are
+  787. **THIRD INSTANCE ONE COMMIT LATER**, in the commit that banked
+  idx 793: the span's hole list, restated under the frontier line that
+  carried it, left at two holes while that line went to three. The rule
+  written for instance two did not prevent instance three; the staged
+  diff caught it. **Neither of these two is on the pattern tally: they are
   procedural defects and their fix is a rule, not a prediction, and
   the tally is only for predictive commitments.**
 - A convenient population by accident (c9982c9, a22c6e7).
@@ -491,14 +498,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (958 -> 959 rows)
+## State as of the last refresh (959 -> 960 rows)
 
-- **959 rows; 790 labels decided; 790 UNSAT; 0 SAT; 0 labels
+- **960 rows; 791 labels decided; 791 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 791, holes [788, 789].**
-- **790 of 1949 = 40.5336%**; **1159 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 793, holes [788, 789, 792].**
+- **791 of 1949 = 40.5849%**; **1158 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 10 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 9 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -509,13 +516,25 @@ Task outputs live at
   updated.*
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **35 of 38**; three undecided: 788, 789, 792. idx 792 is
-  the LAST member of this block, so the block closes when those three land
-  — record its descriptive stats then, as descriptive stats, NOT findings,
-  and do NOT compare them across blocks.
-- **One span is open** (holes [788, 789]). No re-run set, no forward
-  test, no registered pattern commitment. **Do not invent a commitment to
-  fill the gap, and quote no span figure until this one closes.**
+  verified) at **35 of 38**, three undecided: 788, 789, 792 — 792 is its
+  LAST member, so it closes when those three land. A NEW block
+  `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
+  verified, 1 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
+  — four solver slots run ahead of the frontier and do not respect block
+  boundaries. When either closes, record its descriptive stats as
+  descriptive stats, NOT findings, and do NOT compare them across blocks.
+- **One span is open.** Its holes are listed on the frontier line above and
+  **nowhere else as holes** — they were restated here too, and this copy was
+  left at two holes while the frontier line was updated to three. (The block
+  census below names the same three indices today, but as undecided members
+  of `[13,13,12,9]`: a DIFFERENT quantity that happens to coincide right now
+  and will stop coinciding the moment a hole opens outside that block. Do
+  not update one from the other.)
+  Caught in the staged diff, not by the re-derivation; the fix is structural
+  (state a quantity once, refer to it) because being careful demonstrably
+  is not enough. No re-run set, no forward test, no registered pattern
+  commitment. **Do not invent a commitment to fill the gap, and quote no
+  span figure until this span closes.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
