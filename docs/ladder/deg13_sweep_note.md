@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T21:05Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T21:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -507,6 +507,11 @@ recorded spans from the same output and matching them line for line against
 the table above; a regex written for this job returned NOT FOUND for all ten
 once before, and that was a bug in the check, not in the data.
 
+**A TWELFTH SPAN IS OPEN** as of 21:07:50Z: idx 839 landed while 836, 837
+and 838 were all still running, so the frontier broke with **three** holes.
+No duration, no rank, no monotonicity verdict until all three fill, and **no
+hand-tracked hole sequence is kept** — the tool's is the record (0ef2e70).
+
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
 `068b963`. More precisely, it is the last commit that **touched the
@@ -669,17 +674,36 @@ Registration discipline, learned the hard way:
   minute-granularity mtimes against a misremembered wall clock suggested a
   946 s discrepancy. Reading both quantities in one script at one instant
   showed 0.26 s. The arithmetic was mine, not the method's.*
+  **END-TO-END CHECK, n = 1.** Cube 839 was one of the four slots measured
+  above, at 701.9 s elapsed. It then landed at **1421.9 s**. Reading the
+  checkpoint's own mtime as the write instant: from the solver's `/proc`
+  launch the predicted cost is 1422.072 s (**+0.172 s**), and from the CNF
+  mtime it is 1421.816 s (**−0.084 s**). This is the first time the method
+  has been checked against a cube's **final recorded cost** rather than
+  against `/proc` at the same instant, and it comes out inside 0.2 s both
+  ways. **What it is not:** the CNF-based figure being the closer of the two
+  is **one sample and distinguishes nothing** — do not turn it into a rule
+  about which reference point is better. The two quantities are **not
+  independent**: the CNF write, the cost accounting and the row write all
+  come from the same driver process on the same clock. The driver's lag
+  between a solver finishing and the row being written is absorbed into the
+  delta and remains **separately untested**. **No prediction was registered**
+  — the 701.9 s reading predates the outcome, but nothing was written down
+  as a forward test, so this belongs in **neither** the forward-test series
+  **nor** the pattern tally. And it still does **not** touch the restart
+  case, which is what the method is actually used for.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
   (818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
   42.0215% is). Next: 43% needs `ceil(0.43 × 1949) = 839` (838/1949 =
   42.9964% is not above 43; 839/1949 = 43.0477% is).
-  **43% carries the same pure coincidence the 41% crossing did, and it
-  means nothing either:** the 839 in "43% needs 839" is a count of DECIDED
-  CUBES, and cube **index** 839 happens to be in flight right now. Two
-  different quantities wearing the same numeral. Flagged before the fact,
-  as the 41% one was, so that nobody reads it as a prediction afterwards.
+  **The counter is standing on that exact trap as this is written**: 838 is
+  decided, 42.9964% rounds to 43.0, and 43% is **not crossed**. Third time
+  it has stopped on a figure that rounds up while being below — 40.9954%,
+  41.9702%, 42.9964%. The arithmetic was written out in advance both times
+  before, and is written out again here, so the crossing is checked and not
+  rounded into.
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
@@ -687,6 +711,17 @@ Registration discipline, learned the hard way:
   commits BEFORE it happened, which is **not a prediction and not a hit** —
   it was noticing that two unrelated quantities shared a number, which is
   the same thing being said now.
+  **43% carried the same pure coincidence the 41% crossing did, and it meant
+  nothing either:** the 839 in "43% needs 839" is a count of DECIDED CUBES,
+  while cube **index** 839 was a cube in flight. Flagged before the fact, as
+  the 41% one was. **The two have now separated in the open:** cube 839
+  landed at 21:07:50Z and took the decided count to **837**, not to 839, so
+  the crossing did not happen with it. How far off the crossing now is lives
+  on the state line and **is not repeated here** — that distance moves with
+  every row, and a second copy of it would be stale before this paragraph
+  was read. That is what a coincidence looks like when it stops coinciding,
+  and it is the cheapest possible demonstration that the numeral never meant
+  anything.
 - The rebase `109dc97`. **Any PR from here is a new pull request**; #19 is
   finished and must never be reused.
 
@@ -933,23 +968,26 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1003 -> 1005 rows)
+## State as of the last refresh (1005 -> 1007 rows)
 
-- **1005 rows; 836 labels decided; 836 UNSAT; 0 SAT; 0 labels
+- **1007 rows; 838 labels decided; 838 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 836 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 838 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..835, highest decided 835, holes [].**
-  **No span is open.** The eleventh closed at `b088217` and its figures are
-  recorded above, from the tool, after that commit existed.
-- **836 of 1949 = 42.8938%**; **1113 undecided**. **42% IS CROSSED**, at idx
-  817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — **3 more**.
-  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
+- **Frontier contiguous 0..836, highest decided 839, holes [837, 838].**
+  A **twelfth span is OPEN**. The eleventh closed at
+  `b088217` and its figures are recorded above, from the tool, after that
+  commit existed.
+- **838 of 1949 = 42.9964%**; **1111 undecided**. **43% IS NOT CROSSED.**
+  42.9964% **rounds to 43.0 and is not above 43** — `ceil(0.43 × 1949) = 839`
+  **decided**, so it is **1 more**, and that 839 is a count, not cube index
+  839, which has already landed. **A rounded milestone is not a crossed one**
+  (b34fc2e, 85bb4d1), and the counter is sitting on exactly that trap right
+  now for the **third time**: 40.9954%, 41.9702%, 42.9964%.
 - **The counter is not the rung.** More than two fifths of the sub-cubes are
   decided and every one came back UNSAT, and that settles nothing: deg(0) =
   13 is UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -962,11 +1000,11 @@ Task outputs live at
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
   there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 15 decided**, undecided 836..841. When it closes,
-  record its descriptive stats as descriptive stats, NOT findings, and do
-  NOT compare them across blocks.
-- **No span is open.** When one is, its holes are named on the frontier line
-  above **and nowhere else in this file.**
+  contiguity verified, 17 decided**, undecided 837, 838, 840, 841.
+  When it closes, record its descriptive stats as descriptive stats, NOT
+  findings, and do NOT compare them across blocks.
+- **One span is open.** Its holes are named on the frontier line above
+  **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
