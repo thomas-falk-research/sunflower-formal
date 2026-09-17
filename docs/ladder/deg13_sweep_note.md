@@ -434,6 +434,14 @@ Registration discipline, learned the hard way:
   view — 22.0/8439.2 = 0.261% — **13 of 807 (1.61%)** are that close. Both
   are ordinary. The absolute-gap question and the relative-gap question have
   different answers and the scale must be chosen before looking, not after.
+  Same again at idx 822/823 — 2316.4 and 2323.7, **7.3 s apart** (0.314%).
+  Measured at 822 decided: **8 of 819 consecutive-index pairs are within
+  7.3 s (0.98%)**, and **15 of 819 (1.83%)** are within 0.314% relatively.
+  **The two framings swap places between the two cases.** At 22 s the
+  absolute view was the commoner (4.46% vs 1.61%); at 7.3 s it is the rarer
+  (0.98% vs 1.83%). Which framing makes a coincidence look impressive
+  therefore depends on the coincidence, so choosing between them after
+  seeing the numbers would be choosing a result.
 - **A tight RUN of consecutive costs is the same trap, and now it has a
   non-circular base rate.** idx 794..797 came in at 2307.3, 2167.7, 2133.6,
   2300.2 s — max/min = 1.0814, four in a 173.7 s window. Measured over
@@ -711,18 +719,18 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (987 -> 989 rows, TWO landings)
+## State as of the last refresh (989 -> 991 rows, TWO landings)
 
-- **989 rows; 820 labels decided; 820 UNSAT; 0 SAT; 0 labels
+- **991 rows; 822 labels decided; 822 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..813, highest decided 821, holes [814, 818].**
+- **Frontier contiguous 0..813, highest decided 823, holes [814, 818].**
   A ninth span is OPEN.
-- **820 of 1949 = 42.0729%**; **1129 undecided**. **42% IS CROSSED**, at idx
+- **822 of 1949 = 42.1755%**; **1127 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
-  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 19 more.
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 17 more.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -739,7 +747,7 @@ Task outputs live at
   are exactly the open span's two holes, so that block and the span close
   together. A NEW block
   `[13,13,12,7]` has opened: **idx 821..841, 21 members, contiguity
-  verified, 1 decided.** When either closes, record its descriptive stats as
+  verified, 3 decided.** When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
 - **One span is open** — its holes are named on the frontier line above
   **and nowhere else in this file.**
