@@ -163,11 +163,15 @@ corrected at 060fb26 by checking it against published data).
 (launch + 61.0 s, CNFs within 4 ms) so their re-run clocks are again directly
 comparable. **No ratio, median or spread until all four land.**
 
-Landed so far: **798 at 4075.1 s, 799 at 4493.9 s** (2 of 4). No ratio,
-median or spread — the rule above was written one commit before the first of
-these arrived, and relaxing it here is how the other rules in this file
-failed: on their next application. Two members also invite the comparison
-between them, which is the same withheld claim wearing a different hat.
+Landed so far: **798 at 4075.1 s, 799 at 4493.9 s, 800 at 4998.2 s**
+(3 of 4). No ratio, median or spread — the rule above was written one commit
+before the first of these arrived, and relaxing it here is how the other
+rules in this file failed: on their next application. With three in hand the
+temptation sharpens, because three numbers can be ordered and an ordering
+looks like a finding; **it is not, and none is stated**. **788 is the last
+member, and it is also the seventh span's last hole and block
+`[13,13,12,9]`'s last undecided member — so THREE things close on that one
+row: the set, the span and the block.**
 
 Set four in full (all four members restarted at the **same instant**, so
 their re-run clocks are directly comparable):
@@ -373,8 +377,16 @@ Registration discipline, learned the hard way:
   gave max |delta| 0 or 1 s; separate samples, not a reproduction.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
-  (`3f7c27c`), **40% at 779** (`86562d4`). Next: 41% needs
-  `ceil(0.41 × 1949) = 800`.
+  (`3f7c27c`), 40% at 779 (`86562d4`), **41% at idx 800**. Next: 42% needs
+  `ceil(0.42 × 1949) = 819` (818/1949 = 41.9702% is not above 42;
+  819/1949 = 42.0215% is).
+  **The 41% crossing carries a pure coincidence and it means nothing:** the
+  cube whose landing took the decided count to 800 was itself **idx 800**.
+  Four cubes were in flight and any of them would have made the count 800;
+  this one happened to carry that index. The coincidence was flagged two
+  commits BEFORE it happened, which is **not a prediction and not a hit** —
+  it was noticing that two unrelated quantities shared a number, which is
+  the same thing being said now.
 - The rebase `109dc97`. **Any PR from here is a new pull request**; #19 is
   finished and must never be reused.
 
@@ -583,21 +595,18 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (967 -> 968 rows)
+## State as of the last refresh (968 -> 969 rows)
 
-- **968 rows; 799 labels decided; 799 UNSAT; 0 SAT; 0 labels
+- **969 rows; 800 labels decided; 800 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..787, highest decided 799, holes [788].**
-- **799 of 1949 = 40.9954%**; **1150 undecided**. **THIS FIGURE ROUNDS TO
-  41.0 AND IS NOT 41%.** 41% needs `ceil(0.41 × 1949) = 800` — ONE more.
-  The same shape appeared at the 40% crossing (`86562d4`): 779/1949 =
-  39.9692% rounds to 40.0 and is below it; 780/1949 = 40.0205% is above.
-  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). **The
-  count 800 and the cube index 800 are unrelated quantities that happen to
-  share a number.**
+- **Frontier contiguous 0..787, highest decided 800, holes [788].**
+- **800 of 1949 = 41.0467%**; **1149 undecided**. **41% IS CROSSED**, checked
+  and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT above 41;
+  800/1949 = 41.0467% is. Next: 42% needs `ceil(0.42 × 1949) = 819` — 19
+  more. **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -608,11 +617,12 @@ Task outputs live at
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
   verified) at **37 of 38**, one undecided: **788**, which is also the span's
-  only remaining hole — so the block and the span close on the SAME row.
-  A NEW block `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
-  verified, 7 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
-  — four solver slots run ahead of the frontier and do not respect block
-  boundaries. When either closes, record its descriptive stats as
+  only remaining hole AND re-run set five's last member — so **THREE things
+  close on that one row**: the block, the span and the set.
+  A NEW block `[13,13,12,8]` has opened: **idx 793..820, 28 members,
+  contiguity verified, 8 decided.** TWO BLOCKS ARE OPEN AT ONCE, which is
+  normal — four solver slots run ahead of the frontier and do not respect
+  block boundaries. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
 - **One span is open.** Its holes are listed on the frontier line above and
   **nowhere else as holes** — they were restated here too, and this copy was
