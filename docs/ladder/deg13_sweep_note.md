@@ -224,8 +224,10 @@ monotone, and commit counts 7, 8, 2, 3, 1, 5 are not either.
 
 **A seventh span is OPEN** as of 03:13:43Z: idx 790 landed while 787, 788
 and 789 were still running, so the frontier broke with **three** holes. idx
-787 filled at 03:43:32Z, leaving **two** — 788 and 789. No duration, rank or
-monotonicity for it until the last hole fills.
+787 filled at 03:43:32Z, leaving **two** — 788 and 789. idx 791 landed at
+03:50:40Z and did **not** widen it: 790 was already decided, so the highest
+decided simply moved 790 → 791 with the same two holes. No duration, rank or
+monotonicity for this span until the last hole fills.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -489,14 +491,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (957 -> 958 rows)
+## State as of the last refresh (958 -> 959 rows)
 
-- **958 rows; 789 labels decided; 789 UNSAT; 0 SAT; 0 labels
+- **959 rows; 790 labels decided; 790 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 790, holes [788, 789].**
-- **789 of 1949 = 40.4823%**; **1160 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 791, holes [788, 789].**
+- **790 of 1949 = 40.5336%**; **1159 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 11 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 10 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -507,7 +509,10 @@ Task outputs live at
   updated.*
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **34 of 38**; four undecided: 788, 789, 791, 792.
+  verified) at **35 of 38**; three undecided: 788, 789, 792. idx 792 is
+  the LAST member of this block, so the block closes when those three land
+  — record its descriptive stats then, as descriptive stats, NOT findings,
+  and do NOT compare them across blocks.
 - **One span is open** (holes [788, 789]). No re-run set, no forward
   test, no registered pattern commitment. **Do not invent a commitment to
   fill the gap, and quote no span figure until this one closes.**
