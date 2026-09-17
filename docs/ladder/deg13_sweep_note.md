@@ -39,10 +39,18 @@ The published bracket is unchanged throughout: **27 ≤ ι(4) ≤ 71**.
 `--seconds` is the **per-cube** budget (21600 s = 6 h), not a total.
 Four solver slots run concurrently.
 
-Current pid **32688**, launched 2026-09-16T16:55:41.810Z after restart #36.
-Find it with `pgrep -x iota_sym`; **never** `pgrep -af iota_sym`, which
-matches the checking shell itself (72dd356). `ps -C cryptominisat5` did not
-filter usefully when tried.
+**THE PID IS NOT WRITTEN HERE.** Find it with `pgrep -x iota_sym`;
+**never** `pgrep -af iota_sym`, which matches the checking shell itself
+(72dd356). `ps -C cryptominisat5` did not filter usefully when tried.
+
+This line used to carry the live pid and its launch time. It read "Current
+pid 32688, launched 2026-09-16T16:55:41.810Z after restart #36" while the
+state section at the foot of this file said 27205 — **two restarts out of
+date**, because restarts refresh the state section and nobody refreshed
+this one. It is the same-quantity-written-twice defect that produced the
+stale `1169`, the stale `## State at` header and the divergent hole
+sequence. The state section names the current pid; this section does not,
+and `pgrep` outranks both.
 
 ---
 
@@ -94,16 +102,17 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Fourteen** involuntary restarts, CPU-hours discarded:
+**Fifteen** involuntary restarts, CPU-hours discarded:
 
-    5.160  1.190  4.800  2.645  1.330  2.111  7.204
-    3.594  3.564  4.863  2.965  7.033  2.216  5.1477
+    5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
+    3.564  4.863  2.965  7.033  2.216  5.1477 3.4670
 
-median 3.5790, mean 3.8445, **total 53.8227**. #37 is **5.1477**, rank 4
-of 14 — idx 788 alone was 57.1% of that loss, having run 10652.6 s (0.4932
-of cap) as both the seventh span's last hole and block `[13,13,12,9]`'s last
-undecided member. All of it is gone; the cube restarts from zero and its
-elapsed time never was a bound on its cost. The 0.944 CPU-hours at
+median 3.5640, mean 3.8193, **total 57.2897**. #37 was **5.1477**, rank 4
+of 15 — idx 788 alone was 57.1% of that loss. **#38 is 3.4670, rank 9 of
+15**, and is the FLATTEST of the fifteen: its four shares are 33.2, 28.5,
+27.4 and 10.8 percent. That is a description of one teardown's timing, NOT
+a finding — the shares depend entirely on where the kill landed relative to
+four independent start times. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
 
 ### Absorbing a restart
@@ -126,26 +135,30 @@ elapsed time never was a bound on its cost. The 0.944 CPU-hours at
    still an ancestor.
 8. **A new restart opens the next re-run set.**
 
-Machine spec has been identical for **five** consecutive containers: 4
+Machine spec has been identical for **six** consecutive containers: 4
 cores, Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB. Re-read
-at #37 as the previous version of this line demanded. Five is five, not a
-promise — re-read it at #38.
+at #38 as the previous version of this line demanded. Six is six, not a
+promise — re-read it at #39.
 
-**Re-take lag** after a relaunch: 41 s at #35, 60.7 s at #36, **61.0 s at
-#37** (all four CNFs written inside 4 ms). Three observations, not a law.
-That two of them sit near the `--slice 60` value is **still not support** for
-the story that the lag tracks that flag: #35 ran 41 s under the identical
-flag, and two later points agreeing with each other explains nothing about
-the one that does not. No mechanism is proposed.
+**Re-take lag** after a relaunch: 41 s (#35), 60.7 s (#36), 61.0 s (#37),
+**60.6 s (#38)**, the last with its four CNFs written inside 8 ms. Four
+observations, not a law. **Three of the four now cluster within 0.4 s and
+one does not**, and the story that the lag tracks `--slice 60` is **still
+not supported**: #35 ran 41 s under the identical flag and nothing here
+explains it. **No mechanism is proposed** — a mechanism may only explain
+data it predates (1e409e8, f0866f6), and one invented now to fit three
+points would be fitted to the very data it claims to explain.
 
-The two `[killed]` markers carried the **same nanosecond** at #34, #35 and
-#37, and differed by exactly 4.000000 ms at #36. **The disagreement is the
-informative one** — it proves they are not guaranteed to agree, so three
-agreements corroborate and DO NOT validate.
+The two `[killed]` markers carried the **same nanosecond** at #34, #35, #37
+and #38, and differed by exactly 4.000000 ms at #36 — 4 agreements against
+1 disagreement. **The disagreement is still the informative one**: it proves
+they are not guaranteed to agree, so the agreements corroborate and DO NOT
+validate. At #38 the two mtimes were read in one script rather than
+transcribed, which is how the 0 ns difference was established.
 
 ---
 
-## Re-run sets — all five CLOSED
+## Re-run sets — five CLOSED, **SET SIX OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -157,6 +170,14 @@ corrected at 060fb26 by checking it against published data).
 | three | `1e409e8` | 4 | 0.5026 | 2.06× |
 | four | `30f1fbd` | 4 | 0.2125 | 5.3747× |
 | five | `f05dc65` | 4 | 0.72115 | 2.8226× |
+| six | OPEN | — | — | — |
+
+**SET SIX OPENED AT RESTART #38**: idx **831, 832, 833, 834**, discarded
+4170.4, 3586.0, 3447.9 and 1361.2 s, all four restarted at the same instant
+(launch + 60.6 s, CNFs within 8 ms) so their re-run clocks are directly
+comparable. **No ratio, median or spread until all four land.** Set five's
+version of this rule was tested when honouring it cost something — a single
+member's ratio was one division away and was withheld — and it held.
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
@@ -788,15 +809,15 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (999 -> 1000 rows)
+## State as of the last refresh (1000 rows, unchanged across restart #38)
 
 - **1000 rows; 831 labels decided; 831 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restart #37. **The round 1000
-  is a ROW count and means nothing** — 831 decided plus 169 superseded
+  undecided-only.** No rows were lost across restarts #37 or #38. **The
+  round 1000 is a ROW count and means nothing** — 831 decided plus 169 superseded
   UNKNOWN rows. A round count is not a milestone (b34fc2e, 85bb4d1), and
   rows are not decisions.
-- **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
-  `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
+  `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
 - **Frontier contiguous 0..830, highest decided 830, NO HOLES.** The tenth
   span is closed.
@@ -828,9 +849,9 @@ Task outputs live at
   it. Do not update either from the other, and do not write down how many
   indices they share — that count is a third copy and it went stale within
   one commit of being written.
-- **No re-run set is open** (five are closed), **no forward test is
-  registered**, and there is **no live registered pattern commitment**. Do
-  not invent one to fill the gap.
+- **RE-RUN SET SIX IS OPEN** (831, 832, 833, 834 — see above; no figures
+  until all four land). **No forward test is registered** and there is **no
+  live registered pattern commitment.** Do not invent one to fill the gap.
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
