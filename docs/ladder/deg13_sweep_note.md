@@ -228,10 +228,17 @@ and 789 were still running, so the frontier broke with **three** holes. idx
 03:50:40Z and did **not** widen it: 790 was already decided, so the highest
 decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
 **did** widen it, landing ahead of 792: holes are now **three** again, [788,
-789, 792]. idx 789 filled at 04:12:54Z, taking it back to **two** — 788 and
-792. A span's hole count is not monotone while it is open, in either
-direction: this one has gone 3 → 2 → 2 → 3 → 2. No duration, rank or
-monotonicity for it until the last hole fills.
+789, 792]. idx 789 filled at 04:12:54Z and idx 792 at 04:36:22Z, taking it to
+**one** — 788 alone. A span's hole count is not monotone while it is open, in
+either direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1. No duration, rank
+or monotonicity for it until that hole fills.
+
+**WHEN 788 LANDS, TWO THINGS CLOSE AT ONCE** and both must be done in that
+commit: run `checkpoint_audit.py --spans all` and COPY its figures for this
+span into a header block and into this file; and record the descriptive
+stats for block `[13,13,12,9]` (n, min, mean, max, spread) as DESCRIPTIVE
+STATS, not findings, and **not compared with the other closed blocks**.
+Neither may be computed or quoted before 788 is in the file.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -505,14 +512,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (960 -> 961 rows)
+## State as of the last refresh (961 -> 962 rows)
 
-- **961 rows; 792 labels decided; 792 UNSAT; 0 SAT; 0 labels
+- **962 rows; 793 labels decided; 793 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 793, holes [788, 792].**
-- **792 of 1949 = 40.6362%**; **1157 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 793, holes [788].**
+- **793 of 1949 = 40.6875%**; **1156 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 8 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 7 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -523,8 +530,8 @@ Task outputs live at
   updated.*
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **36 of 38**, two undecided: 788 and 792 — 792 is its LAST
-  member, so it closes when both land. A NEW block
+  verified) at **37 of 38**, one undecided: **788**, which is also the span's
+  only remaining hole — so the block and the span close on the SAME row. A NEW block
   `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
   verified, 1 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
   — four solver slots run ahead of the frontier and do not respect block
