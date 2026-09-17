@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T21:24Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T21:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -646,6 +646,25 @@ Registration discipline, learned the hard way:
   The observed spreads sit well below the simulation at every n, and **no
   claim is made about that gap** — the simulated pool contains these very
   cubes and spans 0.1 s to 21678.5 s, too crude to carry a conclusion.
+
+  **THE WHOLE BLOCK MAP IS KNOWN IN ADVANCE, SO NONE OF IT IS AN
+  OBSERVATION.** One loop over `SEQ` gives every block's members:
+  **171 blocks** summing to 1949, sizes from **129 down to 1**, and **48 of
+  them have a single member**. That is why the confound above is a
+  certainty rather than a suspicion — the decreasing n was fixed before the
+  first cube ran. Anything of the form "how many blocks are left" or "how
+  big is the next one" is arithmetic on `SEQ`, not a finding, and must never
+  be written as though the sweep discovered it.
+
+  **THE SIZES ARE NOT MONOTONE AND THE CLOSED LIST IS ABOUT TO STOP LOOKING
+  LIKE THEY ARE.** The closed table reads 82, 65, 49, 38, 28 and the two
+  open blocks are 21 and 15, which invites "the blocks keep shrinking".
+  **False.** Sizes shrink only while the LAST coordinate falls; they reset
+  upward the moment an earlier coordinate drops. `[13,13,12,0]` has one
+  member at idx 885 and `[13,13,11,11]` immediately has **49**. Six
+  untouched blocks still hold 38 or more, the largest being
+  `[13,12,12,12]` at **65**. Written down here, from `SEQ`, before the
+  sequence visibly resets, so that the reset is not read as a surprise.
 - `SEQ[j][7] = 13` group complete 14/14 at `cf2bccc`, idx 755..768
   (contiguity **verified**): 720.2 / 4441.1 / 5406.6, spread 7.5071×.
 - **The sub-family / level story is closed and falsified**
@@ -975,21 +994,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1007 -> 1008 rows)
+## State as of the last refresh (1008 -> 1009 rows)
 
-- **1008 rows; 839 labels decided; 839 UNSAT; 0 SAT; 0 labels
+- **1009 rows; 840 labels decided; 840 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 839 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 840 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..836, highest decided 841, holes
+- **Frontier contiguous 0..836, highest decided 842, holes
   [837, 838, 840].** A **twelfth span is OPEN**. The eleventh closed at
   `b088217` and its figures are recorded above, from the tool, after that
   commit existed.
-- **839 of 1949 = 43.0477%**; **1110 undecided**. **43% IS CROSSED**, at idx
+- **840 of 1949 = 43.0990%**; **1109 undecided**. **43% IS CROSSED**, at idx
   **841** — 838/1949 = 42.9964% rounds to 43.0 and is NOT above 43;
   839/1949 = 43.0477% is. Next: 44% needs `ceil(0.44 × 1949) = 858`
   **decided**, and 857/1949 = 43.9713% will round to 44.0 without being
@@ -1007,10 +1026,14 @@ Task outputs live at
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
   above; **`[13,13,12,8]` CLOSED 28/28** (idx 793..820) — its stats are
-  there too. Only `[13,13,12,7]` is open: **idx 821..841, 21 members,
-  contiguity verified, 18 decided**, undecided 837, 838, 840.
-  When it closes, record its descriptive stats as descriptive stats, NOT
-  findings, and do NOT compare them across blocks.
+  there too. **TWO blocks are now open at once**, which is ordinary and not
+  a first — `[13,13,12,8]` opened at `19f9a63` before `[13,13,12,9]` closed
+  at `f05dc65` (ancestry checked with `git merge-base`, not recalled):
+  `[13,13,12,7]` **idx 821..841, 21 members, contiguity verified, 18
+  decided**, undecided 837, 838, 840; and **`[13,13,12,6]` NEWLY OPEN, idx
+  842..856, 15 members, contiguity verified, 1 decided**. When either
+  closes, record its descriptive stats as descriptive stats, NOT findings,
+  and do NOT compare them across blocks.
 - **One span is open.** Its holes are named on the frontier line above
   **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
