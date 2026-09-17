@@ -368,7 +368,13 @@ Registration discipline, learned the hard way:
   `[13,13,12,8]`), which are in DIFFERENT blocks, so there is not even a
   structural coincidence to explain. **An exact tie to 0.1 s is an ordinary
   event in this file. Do not remark on the next one without re-deriving
-  this figure.**
+  this figure** — **and re-derive it AT THE RIGHT SCALE.** idx 806 and 807
+  came in 22.0 s apart (8417.2 and 8439.2) and the 0.2 s figure says nothing
+  about that. Measured at 808 decided: **36 of the 807 consecutive-index
+  pairs have costs within 22.0 s of each other (4.46%)**, and on a relative
+  view — 22.0/8439.2 = 0.261% — **13 of 807 (1.61%)** are that close. Both
+  are ordinary. The absolute-gap question and the relative-gap question have
+  different answers and the scale must be chosen before looking, not after.
 - **A tight RUN of consecutive costs is the same trap, and now it has a
   non-circular base rate.** idx 794..797 came in at 2307.3, 2167.7, 2133.6,
   2300.2 s — max/min = 1.0814, four in a 173.7 s window. Measured over
@@ -645,19 +651,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (975 -> 976 rows)
+## State as of the last refresh (976 -> 977 rows)
 
-- **976 rows; 807 labels decided; 807 UNSAT; 0 SAT; 0 labels
+- **977 rows; 808 labels decided; 808 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..806, highest decided 806, NO HOLES.** The
+- **Frontier contiguous 0..807, highest decided 807, NO HOLES.** The
   seventh span is closed; there is no open span.
-- **807 of 1949 = 41.4058%**; **1142 undecided**. 41% was crossed at idx 800,
+- **808 of 1949 = 41.4572%**; **1141 undecided**. 41% was crossed at idx 800,
   checked and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT
   above 41; 800/1949 = 41.0467% is. Next: 42% needs
-  `ceil(0.42 × 1949) = 819` — 12 more. **A rounded milestone is not a
+  `ceil(0.42 × 1949) = 819` — 11 more. **A rounded milestone is not a
   crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -670,7 +676,7 @@ Task outputs live at
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
   above. Only `[13,13,12,8]` is open: **idx 793..820, 28 members, contiguity
-  verified, 14 decided.** When it closes, record its descriptive stats as
+  verified, 15 decided.** When it closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
 - **No span is open** — the frontier line above has no holes. **When one
   IS open, its holes are named on that line and nowhere else in this file.**
