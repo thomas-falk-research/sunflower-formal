@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T20:50Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T21:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -313,9 +313,9 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**Ten** spans, and the verdict tally needs its COMPARISON COUNTS beside it
-or it reads as more evidence than it is. Every row below was read back out
-of `--spans all`, not recalled:
+**Eleven** spans, and the verdict tally needs its COMPARISON COUNTS beside
+it or it reads as more evidence than it is. Every row below was read back
+out of `--spans all`, not recalled:
 
 | # | closed by | hole counts | comparisons | monotone |
 |---|---|---|---|---|
@@ -329,18 +329,35 @@ of `--spans all`, not recalled:
 | 8 | `567e3b5` | 2,1 | 1 | True |
 | 9 | `374ea97` | 3,2,2,1,3,3,2,2,1 | 8 | False |
 | 10 | `9cdb1d1` | 1 | **0** | True — vacuous |
+| 11 | `b088217` | 1,1 | 1 | True — **flat, never fell** |
 
-Six True of ten — but **two of those six contain zero comparisons and could
-not have come out False**, and two more rest on a single comparison, which
-is one coin flip. Only three Trues carry more than one. A chain's length is
-set by how many commits a span happens to span, which is an accident of
+**Seven True of eleven** — and the breakdown is where the weight goes.
+**Two of the seven contain zero comparisons and could not have come out
+False** (spans 5 and 10); **three more rest on a single comparison**
+(3, 8 and **11**), which is one coin flip; **only two carry more than one**
+(span 4 with two, span 6 with four).
+
+*The previous version of this line said "only three Trues carry more than
+one" while its own table showed two — 2 + 2 + 3 = 7 against a True count of
+6. It was wrong when it was written at ten spans and it went in a commit.
+**Fourth instance of a tally line contradicting the table under it**
+(caff592). Recomputed here from the chains rather than re-read: the
+breakdown is printed by a script that counts them, and the three parts are
+checked to sum to the True count.*
+
+Sharper still, and the reason a `True` is worth less than it looks: **three
+of the eleven chains never decreased at all** — spans 5 (`1`), 10 (`1`) and
+11 (`1,1`). A chain that never moves is "non-increasing" by definition, so
+for those three the verdict reports only that the tool ran. A chain's length
+is set by how many commits a span happens to span, which is an accident of
 banking cadence. Still **not** a trend in either direction: a hole count
 rises only when a cube that started late finishes before ones that started
 early, which is an accident of which cubes happen to be long.
 
 Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15,
-0:35:49, 3:48:12, 0:21:20 are not monotone, and commit counts 7, 8, 2, 3, 1,
-5, 17, 2, 9, 1 are not either.
+0:35:49, 3:48:12, 0:21:20, 0:46:46 are not monotone, and commit counts
+7, 8, 2, 3, 1, 5, 17, 2, 9, 1, 2 are not either. Both were tested
+mechanically in both directions, not eyeballed.
 
 The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
 789 were still running, breaking the frontier with **three** holes. It then
@@ -460,13 +477,35 @@ shorter) and **rank 57 of 75 by commit count**, 19 ties at 1. Read through
 the distribution — **44 of 75 are one second or shorter** — a 21-minute span
 ranking 26th is ordinary among the spans that lasted at all.
 
-**THE ELEVENTH SPAN CLOSED ON THE idx-832 COMMIT.** It opened at 20:22:54Z
-when idx 833 landed while 832 was still running (one hole), and 832 filled
-it. **Its figures are not in this file yet**: `--spans all` walks commits, so
-the closing commit must exist before the tool can measure the span, and the
-duration, ranks and monotonicity verdict are recorded in the follow-up commit
-that runs it. Nothing about this span is stated here from memory, and the
-verdict tally above stays at **ten** rows until the tool has spoken.
+**THE ELEVENTH SPAN IS CLOSED**, by idx 832 at `b088217` — the row that
+also closed re-run set six. All figures COPIED from
+`checkpoint_audit.py --spans all`, run only after that commit existed:
+
+| field | value |
+|---|---|
+| opened after | `8e9be16` 2026-09-17T20:05:00Z |
+| closed by | `b088217` 2026-09-17T20:51:46Z |
+| duration | 0:46:46 (0.7794 h) |
+| commits | 2 broken |
+| hole counts | 1,1 |
+| monotone non-increasing | True — **one comparison, and a flat one** |
+| most holes | 1 at `cd9bf90` [832] |
+
+Ranks against **76 closed spans**, parsed block-wise out of the tool's
+output because it prints only the top five: **rank 24 of 76 by duration**
+(52 are shorter, no ties) and **rank 42 of 76 by commit count**, with 16
+spans tied at 2. Read through the distribution the tool prints for exactly
+this purpose — **44 of the 76 are one second or shorter** — so 24th of 76 is
+ordinary among the spans that lasted at all, not long.
+
+**Its `True` is the weakest kind that is not outright vacuous.** The chain
+is `1,1`: one comparison, at which the count could have risen to 2 and did
+not, so it is not the zero-comparison case of spans 5 and 10 — but it never
+fell either, so the verdict certifies no shrinking whatsoever. The parse
+that produced these figures was checked by re-deriving the ten previously
+recorded spans from the same output and matching them line for line against
+the table above; a regex written for this job returned NOT FOUND for all ten
+once before, and that was a bug in the check, not in the data.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -808,7 +847,15 @@ alongside it.**
   idx 793: the span's hole list, restated under the frontier line that
   carried it, left at two holes while that line went to three. The rule
   written for instance two did not prevent instance three; the staged
-  diff caught it. **Neither of these two is on the pattern tally: they are
+  diff caught it. **FOURTH INSTANCE, found while adding the eleventh span**:
+  the verdict-tally paragraph read "only three Trues carry more than one"
+  under a table that supported two — 2 zero-comparison + 2 one-comparison +
+  3 = 7, against a True count of 6. It was wrong when written at ten spans
+  and it shipped in a commit; nothing downstream depended on it, which is
+  luck. The fix is not another rule about care: **the breakdown is now
+  produced by a script that partitions the Trues and asserts the parts sum
+  to the total**, which is the arithmetic a reader would have to do anyway.
+  **None of these four is on the pattern tally: they are
   procedural defects and their fix is a rule, not a prediction, and
   the tally is only for predictive commitments.**
 - A convenient population by accident (c9982c9, a22c6e7).
@@ -876,7 +923,8 @@ Task outputs live at
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
 - **Frontier contiguous 0..835, highest decided 835, holes [].**
-  **No span is open.** The eleventh closed on the idx-832 commit.
+  **No span is open.** The eleventh closed at `b088217` and its figures are
+  recorded above, from the tool, after that commit existed.
 - **836 of 1949 = 42.8938%**; **1113 undecided**. **42% IS CROSSED**, at idx
   817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
   42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — **3 more**.
