@@ -228,9 +228,10 @@ and 789 were still running, so the frontier broke with **three** holes. idx
 03:50:40Z and did **not** widen it: 790 was already decided, so the highest
 decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
 **did** widen it, landing ahead of 792: holes are now **three** again, [788,
-789, 792]. A span's hole count is not monotone while it is open, in either
-direction, and no duration, rank or monotonicity for this one until the last
-hole fills.
+789, 792]. idx 789 filled at 04:12:54Z, taking it back to **two** — 788 and
+792. A span's hole count is not monotone while it is open, in either
+direction: this one has gone 3 → 2 → 2 → 3 → 2. No duration, rank or
+monotonicity for it until the last hole fills.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -288,7 +289,13 @@ Registration discipline, learned the hard way:
   ordinary).
 - 0.3-second cost coincidence `d0d1a58`; the tight triple `a22c6e7` is the
   same thing — 4 of 757 triples were that tight and the threshold was set
-  by the triple itself.
+  by the triple itself. **Base rate, measured at 792 decided:** 11 of the
+  791 adjacent pairs in the sorted decided-cost list sit within 0.2 s of
+  each other (1.39%), two of them exactly equal — 0.1/0.1, 1450.2/1450.3,
+  2096.7/2096.7, 2199.3/2199.5, 2552.9/2553.1, 4599.5/4599.7, 4863.0/4863.0,
+  5178.1/5178.2, 5310.2/5310.4, 6250.2/6250.3, 9982.3/9982.4. **A near-tie
+  in seconds is an ordinary event in this file. Do not remark on the next
+  one without re-deriving this figure.**
 - 1:55:26 span coincidence `ba6ec65`. 741 naming collision `e5243fc`.
 - Block `[13,13,12,10]` closed 49/49 at `49ddb49`. Closed-block descriptive
   stats — **not findings, not compared across**: `[13,13,12,12]` 82 members
@@ -498,14 +505,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (959 -> 960 rows)
+## State as of the last refresh (960 -> 961 rows)
 
-- **960 rows; 791 labels decided; 791 UNSAT; 0 SAT; 0 labels
+- **961 rows; 792 labels decided; 792 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 793, holes [788, 789, 792].**
-- **791 of 1949 = 40.5849%**; **1158 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 793, holes [788, 792].**
+- **792 of 1949 = 40.6362%**; **1157 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 9 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 8 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -516,8 +523,8 @@ Task outputs live at
   updated.*
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; `[13,13,12,9]` (idx 755..792, contiguity
-  verified) at **35 of 38**, three undecided: 788, 789, 792 — 792 is its
-  LAST member, so it closes when those three land. A NEW block
+  verified) at **36 of 38**, two undecided: 788 and 792 — 792 is its LAST
+  member, so it closes when both land. A NEW block
   `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
   verified, 1 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
   — four solver slots run ahead of the frontier and do not respect block
@@ -526,10 +533,11 @@ Task outputs live at
 - **One span is open.** Its holes are listed on the frontier line above and
   **nowhere else as holes** — they were restated here too, and this copy was
   left at two holes while the frontier line was updated to three. (The block
-  census below names the same three indices today, but as undecided members
-  of `[13,13,12,9]`: a DIFFERENT quantity that happens to coincide right now
-  and will stop coinciding the moment a hole opens outside that block. Do
-  not update one from the other.)
+  census below sometimes names the same indices, but as undecided members
+  of `[13,13,12,9]`: a DIFFERENT quantity that will stop coinciding the
+  moment a hole opens outside that block. Do not update one from the other,
+  and do not write down how many indices they share — that number is a
+  third copy and it went stale within one commit of being written.)
   Caught in the staged diff, not by the re-derivation; the fix is structural
   (state a quantity once, refer to it) because being careful demonstrably
   is not enough. No re-run set, no forward test, no registered pattern
