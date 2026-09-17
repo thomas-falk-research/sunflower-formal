@@ -338,12 +338,12 @@ determined** to return False — arithmetic on data in hand, NOT a forecast,
 and when the tool says so it will be no evidence of anything (aea7189).
 Duration, rank and the rest still wait until all three holes fill.
 
-**THE SPAN AND BLOCK `[13,13,12,8]` NOW CLOSE TOGETHER.** After idx 820
-landed at 15:05:01Z the block's three undecided members are **exactly** the
-span's three holes, 814, 817 and 818. Whichever of them lands last closes
-both, and that commit must run `checkpoint_audit.py --spans all` and copy
-its figures, AND record the block's descriptive stats — as descriptive
-stats, NOT findings, and NOT compared across blocks.
+**THE SPAN AND BLOCK `[13,13,12,8]` CLOSE TOGETHER.** idx 817 filled at
+15:18:38Z, leaving **two** — 814 and 818 — which are both the span's
+remaining holes and the block's remaining undecided members. Whichever lands
+last closes both, and that commit must run `checkpoint_audit.py --spans all`
+and copy its figures, AND record the block's descriptive stats — as
+descriptive stats, NOT findings, and NOT compared across blocks.
 
 It also ended a run of **six** consecutive landings in index order. That run
 was noted and explicitly NOT registered as a pattern on each of the last
@@ -481,9 +481,10 @@ Registration discipline, learned the hard way:
   gave max |delta| 0 or 1 s; separate samples, not a reproduction.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
-  (`3f7c27c`), 40% at 779 (`86562d4`), **41% at idx 800**. Next: 42% needs
-  `ceil(0.42 × 1949) = 819` (818/1949 = 41.9702% is not above 42;
-  819/1949 = 42.0215% is).
+  (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
+  (818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
+  42.0215% is). Next: 43% needs `ceil(0.43 × 1949) = 839` (838/1949 =
+  42.9964% is not above 43; 839/1949 = 43.0477% is).
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
@@ -710,20 +711,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (986 -> 987 rows)
+## State as of the last refresh (987 -> 989 rows, TWO landings)
 
-- **987 rows; 818 labels decided; 818 UNSAT; 0 SAT; 0 labels
+- **989 rows; 820 labels decided; 820 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..813, highest decided 820, holes [814, 817, 818].**
+- **Frontier contiguous 0..813, highest decided 821, holes [814, 818].**
   A ninth span is OPEN.
-- **818 of 1949 = 41.9702%**; **1131 undecided**. **THIS FIGURE ROUNDS TO
-  42.0 AND IS NOT 42%** — the same shape as 40.9954% at idx 799 and 39.9692%
-  before the 40% crossing. 42% needs `ceil(0.42 × 1949) = 819` — ONE more;
-  819/1949 = 42.0215% is above. **A rounded milestone is not a
-  crossed one** (b34fc2e, 85bb4d1).
+- **820 of 1949 = 42.0729%**; **1129 undecided**. **42% IS CROSSED**, at idx
+  817: 818/1949 = 41.9702% rounds to 42.0 and is NOT above 42; 819/1949 =
+  42.0215% is. Next: 43% needs `ceil(0.43 × 1949) = 839` — 19 more.
+  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
   UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -734,11 +734,13 @@ Task outputs live at
 - Block census: `[13,13,12,12]` closed 82/82; `[13,13,12,11]` closed 65/65;
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
-  above. Only `[13,13,12,8]` is open: **idx 793..820, 28 members, contiguity
-  verified, 25 decided**, and its three undecided members are exactly the
-  open span's three holes, so the block and the span close together. When it
-  closes, record its descriptive stats as descriptive stats, NOT findings,
-  and do NOT compare them across blocks.
+  above. **TWO blocks are open.** `[13,13,12,8]`: **idx 793..820, 28
+  members, contiguity verified, 26 decided**, and its two undecided members
+  are exactly the open span's two holes, so that block and the span close
+  together. A NEW block
+  `[13,13,12,7]` has opened: **idx 821..841, 21 members, contiguity
+  verified, 1 decided.** When either closes, record its descriptive stats as
+  descriptive stats, NOT findings, and do NOT compare them across blocks.
 - **One span is open** — its holes are named on the frontier line above
   **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
