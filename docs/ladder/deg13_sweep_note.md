@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-17T22:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-17T22:25Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -994,20 +994,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1011 -> 1012 rows)
+## State as of the last refresh (1012 -> 1013 rows)
 
-- **1012 rows; 843 labels decided; 843 UNSAT; 0 SAT; 0 labels
+- **1013 rows; 844 labels decided; 844 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 843 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 844 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..837, highest decided 843, holes [838].**
+- **Frontier contiguous 0..837, highest decided 844, holes [838].**
   A **twelfth span is OPEN**. The eleventh closed at `b088217` and its
   figures are recorded above, from the tool, after that commit existed.
-- **843 of 1949 = 43.2530%**; **1106 undecided**. **43% IS CROSSED**, at
+- **844 of 1949 = 43.3043%**; **1105 undecided**. **43% IS CROSSED**, at
   **cube index 841** — which is a different 841 from the decided count on
   this same line, and they coincide today only by accident. 838/1949 =
   42.9964% rounds to 43.0 and is NOT above 43;
@@ -1032,7 +1032,7 @@ Task outputs live at
   at `f05dc65` (ancestry checked with `git merge-base`, not recalled):
   `[13,13,12,7]` **idx 821..841, 21 members, contiguity verified, 20
   decided**, undecided 838; and **`[13,13,12,6]` OPEN, idx 842..856, 15
-  members, contiguity verified, 2 decided**. When either closes, record its
+  members, contiguity verified, 3 decided**. When either closes, record its
   descriptive stats as descriptive stats, NOT findings, and do NOT compare
   them across blocks.
   **idx 838 is the LAST member of `[13,13,12,7]`**, so that row closes the
