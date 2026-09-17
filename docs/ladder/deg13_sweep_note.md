@@ -229,8 +229,10 @@ and 789 were still running, so the frontier broke with **three** holes. idx
 decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
 **did** widen it, landing ahead of 792: holes are now **three** again, [788,
 789, 792]. idx 789 filled at 04:12:54Z and idx 792 at 04:36:22Z, taking it to
-**one** — 788 alone. A span's hole count is not monotone while it is open, in
-either direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1. No duration, rank
+**one** — 788 alone, where idx 794 at 04:41:09Z left it (794 landed behind an
+already-decided 793, so the highest decided moved 793 → 794 and no hole
+opened). A span's hole count is not monotone while it is open, in either
+direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1. No duration, rank
 or monotonicity for it until that hole fills.
 
 **WHEN 788 LANDS, TWO THINGS CLOSE AT ONCE** and both must be done in that
@@ -465,7 +467,14 @@ alongside it.**
 - A zero quoted from one sample as exactness (07b8a61, 948005d).
 - A published figure compressed until it meant something else (8b557b5,
   cd03f27, 45aacf6).
-- A superlative wider than its population (5c3b08e, e33ce40).
+- A superlative wider than its population (5c3b08e, e33ce40) — **third
+  instance** in the commit that banked idx 794: its first subject line
+  called in-flight cube 788, at 6481 s elapsed, "the oldest thing the sweep
+  has had running", when 6481 s exceeds only 585 of 794 decided costs and
+  five UNKNOWN rows sit above 21788 s. Amended before the push. The body of
+  that message was measured and the SUBJECT was not: **a summary line is not
+  a lower standard of evidence than what it summarises, and it is the part
+  most people read.**
 - A tally line contradicting the table under it (caff592) — second
   instance: "1169 undecided" two lines below "1161 undecided", the
   first stale from `86562d4`, corrected in the commit that banked idx
@@ -512,14 +521,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (961 -> 962 rows)
+## State as of the last refresh (962 -> 963 rows)
 
-- **962 rows; 793 labels decided; 793 UNSAT; 0 SAT; 0 labels
+- **963 rows; 794 labels decided; 794 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 793, holes [788].**
-- **793 of 1949 = 40.6875%**; **1156 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 794, holes [788].**
+- **794 of 1949 = 40.7388%**; **1155 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 7 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 6 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -533,7 +542,7 @@ Task outputs live at
   verified) at **37 of 38**, one undecided: **788**, which is also the span's
   only remaining hole — so the block and the span close on the SAME row. A NEW block
   `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
-  verified, 1 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
+  verified, 2 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
   — four solver slots run ahead of the frontier and do not respect block
   boundaries. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
