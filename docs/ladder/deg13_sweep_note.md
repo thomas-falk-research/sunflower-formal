@@ -338,6 +338,13 @@ determined** to return False — arithmetic on data in hand, NOT a forecast,
 and when the tool says so it will be no evidence of anything (aea7189).
 Duration, rank and the rest still wait until all three holes fill.
 
+**THE SPAN AND BLOCK `[13,13,12,8]` NOW CLOSE TOGETHER.** After idx 820
+landed at 15:05:01Z the block's three undecided members are **exactly** the
+span's three holes, 814, 817 and 818. Whichever of them lands last closes
+both, and that commit must run `checkpoint_audit.py --spans all` and copy
+its figures, AND record the block's descriptive stats — as descriptive
+stats, NOT findings, and NOT compared across blocks.
+
 It also ended a run of **six** consecutive landings in index order. That run
 was noted and explicitly NOT registered as a pattern on each of the last
 three commits, on the grounds that rows land in completion order and index
@@ -703,19 +710,19 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (985 -> 986 rows)
+## State as of the last refresh (986 -> 987 rows)
 
-- **986 rows; 817 labels decided; 817 UNSAT; 0 SAT; 0 labels
+- **987 rows; 818 labels decided; 818 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restart #37.
 - **Driver is pid 22176**, launched 2026-09-17T05:52:11.890000Z (read from
   `/proc/22176/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..813, highest decided 819, holes [814, 817, 818].**
+- **Frontier contiguous 0..813, highest decided 820, holes [814, 817, 818].**
   A ninth span is OPEN.
-- **817 of 1949 = 41.9189%**; **1132 undecided**. 41% was crossed at idx 800,
-  checked and not rounded: 799/1949 = 40.9954% rounds to 41.0 and is NOT
-  above 41; 800/1949 = 41.0467% is. Next: 42% needs
-  `ceil(0.42 × 1949) = 819` — 2 more. **A rounded milestone is not a
+- **818 of 1949 = 41.9702%**; **1131 undecided**. **THIS FIGURE ROUNDS TO
+  42.0 AND IS NOT 42%** — the same shape as 40.9954% at idx 799 and 39.9692%
+  before the 40% crossing. 42% needs `ceil(0.42 × 1949) = 819` — ONE more;
+  819/1949 = 42.0215% is above. **A rounded milestone is not a
   crossed one** (b34fc2e, 85bb4d1).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -728,8 +735,10 @@ Task outputs live at
   `[13,13,12,10]` closed 49/49; **`[13,13,12,9]` CLOSED 38/38** (idx
   755..792, contiguity verified) — its stats are in the closed-block list
   above. Only `[13,13,12,8]` is open: **idx 793..820, 28 members, contiguity
-  verified, 24 decided.** When it closes, record its descriptive stats as
-  descriptive stats, NOT findings, and do NOT compare them across blocks.
+  verified, 25 decided**, and its three undecided members are exactly the
+  open span's three holes, so the block and the span close together. When it
+  closes, record its descriptive stats as descriptive stats, NOT findings,
+  and do NOT compare them across blocks.
 - **One span is open** — its holes are named on the frontier line above
   **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
