@@ -309,6 +309,14 @@ Compute a quantitative claim **before** writing it (78e5127). No "-ish"
 **Read the figure off the tool; do not recall it** (ba6ec65 / beaa0d3). A
 windowed `--spans` walk is not the record.
 
+**Never write an identifier you have not read from the tool** (`bce9af0`).
+Commit hashes, pids, indices and timestamps are **read**, never composed.
+If the identifier does not exist yet — because the commit has not been
+made — omit it, or commit first and patch it in afterwards. At `86562d4`
+I wrote `85d9e94` into this file twice for a commit that did not exist;
+`git cat-file -e` confirms it never did. A plausible-looking hash is worse
+than no hash: a missing one is obviously missing, a wrong one is not.
+
 **Two agreements are two draws, not a property** (4083af8). At restarts #34
 and #35 the driver's and waiter's `[killed]` markers carried the *same
 nanosecond*; at #36 they differed by exactly 4.000000 ms. The observation
@@ -417,6 +425,11 @@ alongside it.**
 - An already-determined outcome mistaken for corroboration (aea7189).
 - A guess written into a durable record before the measurement arrived
   (4083af8, withdrawn in the same commit).
+- **A FABRICATED IDENTIFIER** — `85d9e94`, a commit hash that never
+  existed, written into this file twice and corrected at `bce9af0`. Its
+  own pattern, not a script's fault, and the worst class of error here:
+  every other defect on this list overshoots real evidence, while this one
+  invents a pointer to nothing. One instance.
 
 ---
 
