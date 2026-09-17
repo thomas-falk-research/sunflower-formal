@@ -232,9 +232,9 @@ decided simply moved 790 → 791 with the same two holes. idx 793 at 04:02:47Z
 **one** — 788 alone, where idx 794 at 04:41:09Z left it (794 landed behind an
 already-decided 793, so the highest decided moved 793 → 794 and no hole
 opened). A span's hole count is not monotone while it is open, in either
-direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1 → 1 → 1 (idx 795 at
-04:48:56Z and idx 796 at 05:12:05Z also landed behind the frontier top). No
-duration, rank or monotonicity for it until that hole fills.
+direction: this one has gone 3 → 2 → 2 → 3 → 2 → 1 → 1 → 1 → 1 → 1 (idx
+795, 796 and 797 all landed behind the frontier top, the last at 05:19:32Z).
+No duration, rank or monotonicity for it until that hole fills.
 
 **WHEN 788 LANDS, TWO THINGS CLOSE AT ONCE** and both must be done in that
 commit: run `checkpoint_audit.py --spans all` and COPY its figures for this
@@ -309,6 +309,16 @@ Registration discipline, learned the hard way:
   structural coincidence to explain. **An exact tie to 0.1 s is an ordinary
   event in this file. Do not remark on the next one without re-deriving
   this figure.**
+- **A tight RUN of consecutive costs is the same trap, and now it has a
+  non-circular base rate.** idx 794..797 came in at 2307.3, 2167.7, 2133.6,
+  2300.2 s — max/min = 1.0814, four in a 173.7 s window. Measured over
+  every run of four consecutive decided indices in the file: **791 such
+  runs, 14 of them tighter, so this one is rank 15 — the top 1.77%.** That
+  is not evidence of anything. A file with 791 runs contains a tightest 2%
+  by construction, and this run was looked at BECAUSE it looked tight, which
+  is the selection that closed `a22c6e7` ("the threshold was set by the
+  triple itself"). **Compute this rank before calling any run tight, and
+  note that computing it does not make the run mean something.**
 - 1:55:26 span coincidence `ba6ec65`. 741 naming collision `e5243fc`.
 - Block `[13,13,12,10]` closed 49/49 at `49ddb49`. Closed-block descriptive
   stats — **not findings, not compared across**: `[13,13,12,12]` 82 members
@@ -534,14 +544,14 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (964 -> 965 rows)
+## State as of the last refresh (965 -> 966 rows)
 
-- **965 rows; 796 labels decided; 796 UNSAT; 0 SAT; 0 labels
+- **966 rows; 797 labels decided; 797 UNSAT; 0 SAT; 0 labels
   undecided-only.**
-- **Frontier contiguous 0..787, highest decided 796, holes [788].**
-- **796 of 1949 = 40.8415%**; **1153 undecided**. 40% was crossed at idx 779
+- **Frontier contiguous 0..787, highest decided 797, holes [788].**
+- **797 of 1949 = 40.8928%**; **1152 undecided**. 40% was crossed at idx 779
   (`86562d4`): 779/1949 = 39.9692% is not above 40, 780/1949 = 40.0205%
-  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 4 more (799/1949 =
+  is. Next: 41% needs `ceil(0.41 × 1949) = 800` — 3 more (799/1949 =
   40.9954% is not above 41; 800/1949 = 41.0467% is).
 - **The counter is not the rung.** Two fifths of the sub-cubes are decided
   and every one came back UNSAT, and that settles nothing: deg(0) = 13 is
@@ -555,7 +565,7 @@ Task outputs live at
   verified) at **37 of 38**, one undecided: **788**, which is also the span's
   only remaining hole — so the block and the span close on the SAME row. A NEW block
   `[13,13,12,8]` has opened: **idx 793..820, 28 members, contiguity
-  verified, 4 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
+  verified, 5 decided.** TWO BLOCKS ARE NOW OPEN AT ONCE, which is normal
   — four solver slots run ahead of the frontier and do not respect block
   boundaries. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
