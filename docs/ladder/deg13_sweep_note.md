@@ -1073,6 +1073,14 @@ alongside it.**
   matches nothing. **THE DIFF IS READ UNFILTERED.** The control that caught
   four stale figures was itself running blind to the lines those figures
   live on.
+  **The banned filter was typed again at `54b8d45`**, long after this entry
+  was written. Its output did drop lines — the `1059 rows; 890 labels
+  decided` bullet among them — and it was caught because the output looked
+  too short for the edit, **not** because the ban was remembered. The diff
+  was re-read with no pipe. Written down here because it is evidence about
+  the remedy rather than about diffs: the rule being on this page did not
+  stop the habit. **The only reliable form is `git diff --cached` with NO
+  PIPE AT ALL.**
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -1145,6 +1153,20 @@ alongside it.**
   gains a row only by recomputing every row.** Adding one row to a table is
   the cheapest moment to audit the whole table, and it is the only moment
   anyone ever will.
+- **A COMMIT WHOSE MESSAGE DESCRIBED SOMETHING THE COMMIT DID NOT CONTAIN**
+  — `54b8d45`, and the cause is the mirror of `e5c0c73`'s. Its message says
+  a filter-slip entry was "recorded next to the original entry" and that
+  "that is now what the entry says". **It was not**: the `python3` edit that
+  was supposed to add it raised `AssertionError` on a stale anchor and wrote
+  nothing, and the `git commit` **chained after it in the same shell call**
+  ran anyway. A failed edit did not stop the commit that announced it.
+  **Fix, mechanical:** an edit that a commit message depends on runs in its
+  OWN tool call, and the thing it wrote is grepped for before the commit is
+  made. The note's existing rule — "commit with the heredoc ALONE" — was
+  about parse mangling; this is the same hazard wearing a different coat,
+  and the rule now covers both. The filter-slip entry it failed to write is
+  in the script-output bullet **above**, added by the commit that corrected
+  this one.
 - **A COMMIT WHOSE MESSAGE DESCRIBED LESS THAN THE COMMIT CONTAINED** —
   `e5c0c73`. Its subject and body say five rows and "884 of 1949 =
   45.3566%"; the commit actually carries **seven** rows and **886 decided,
