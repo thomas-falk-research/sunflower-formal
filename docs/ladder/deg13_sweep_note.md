@@ -1564,20 +1564,31 @@ alongside it.**
   **span/rank staleness class** the spans section already names, appearing
   in a second place: **a rank against a growing population goes stale every
   time the population grows, and a denominator is not a rank.**
-- **A durable rule that lived only in the transient check-in prompt, and
-  was lost the first time that prompt was rewritten.** The prompt carried
-  "THIS PROMPT DELIBERATELY CARRIES NO STATE NUMBERS" — the checkpoint is
-  the truth, the note is the index, the prompt is only a procedure. On
-  09-18 the prompt was rewritten shorter and the replacement immediately
-  **re-acquired a pid, a row count, a decided count, a percentage and four
-  discarded costs**, every one of which would have read as authoritative
-  and gone stale on the next row. The rule was restored, but the lesson is
-  about *where rules live*: **a rule whose only copy is in a prompt I
-  rewrite is a rule with a scheduled deletion date.** It is written here
-  because this file is committed and the prompt is not. Checked when this
-  was found: the note did already carry the identifier, arithmetic,
-  commit-subject, banned-pipe and heredoc rules, so only this one was
-  load-bearing in the prompt alone.
+- **A duplicate check-in created without listing what already existed —
+  and the duplicate carried state numbers.** On 09-18, believing the
+  check-in was a spent one-shot that needed re-arming, I created a second
+  trigger with `send_later` and gave it a thin prompt that **re-acquired a
+  pid, a row count, a decided count, a percentage and four discarded
+  costs**, every one of which reads as authoritative and goes stale on the
+  next row. `list_triggers`, which I ran only afterwards, shows the real
+  check-in is a **recurring cron routine (`41 * * * *`, created
+  04:41:52Z)** that was never touched and still carries its original
+  prompt. **The fix is to list before creating.** The redundant trigger
+  was deleted and the two procedural rules its prompt had gained were
+  folded into the surviving one.
+  **THE FIRST VERSION OF THIS ENTRY TOLD THE STORY WRONG.** It said a
+  durable rule "was lost the first time that prompt was rewritten".
+  Nothing was lost: the original prompt was never rewritten, a second one
+  was created beside it, and I then "restored" a prompt that had never
+  been damaged. The correction matters because the two stories have
+  different remedies — a deleted rule calls for durable storage, a
+  duplicated prompt calls for a listing before a create — and because the
+  wrong one flattered me: it cast a mistake I made as a fragility in the
+  tooling. The precaution it recommended is kept anyway, on its own
+  merits and not as this incident's lesson: **the rules live in this file,
+  which is committed, rather than only in a prompt.** Checked at the time:
+  the identifier, arithmetic, commit-subject, banned-pipe and heredoc
+  rules were all already here.
 
 ---
 
