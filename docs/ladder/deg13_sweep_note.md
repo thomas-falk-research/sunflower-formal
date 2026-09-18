@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:06Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:04Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -857,16 +857,19 @@ Registration discipline, learned the hard way:
   not a prediction; where the counter pauses is set by which cubes finish
   when. What it buys is that the crossing is checked rather than rounded
   into, four times now.
-  Next: **45% needs `ceil(0.45 × 1949) = 878`** decided, and **the trap was
-  written down before the counter got there and the counter then landed
-  exactly on it, for the fifth time running**: 877/1949 = 44.9974% rounds to
-  45.0 and is **not** above 45; 878/1949 = 45.0487% is. **Fifth stop on a
-  rounds-up-but-below figure** — 40.9954%, 41.9702%, 42.9964%, 43.9713%,
-  44.9974%. That the counter keeps stopping there is not a discovery: every
-  threshold `ceil(0.01k × 1949)` has a predecessor that rounds up, and the
-  counter passes through every integer, so it stops on all of them. Writing
-  the arithmetic out in advance is not a prediction; it only means the
-  crossing gets checked instead of rounded into.
+  **45% at idx 880** — the trap was written down before the counter got
+  there, the counter landed exactly on it, and the next row crossed:
+  877/1949 = 44.9974% rounds to 45.0 and is **not** above 45; 878/1949 =
+  45.0487% is. **Fifth stop on a rounds-up-but-below figure** — 40.9954%,
+  41.9702%, 42.9964%, 43.9713%, 44.9974%. That the counter keeps stopping
+  there is not a discovery: every threshold `ceil(0.01k × 1949)` has a
+  predecessor that rounds up to the same tenth, and the counter passes
+  through every integer, so it stops on all of them. Five for five is
+  arithmetic, not a streak. Writing it out in advance is not a prediction;
+  it only means the crossing gets checked instead of rounded into.
+  Next: **46% needs `ceil(0.46 × 1949) = 897`** decided, and the trap is
+  there again: 896/1949 = 45.9723% rounds to 46.0 and is **not** above 46;
+  897/1949 = 46.0236% is.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1159,23 +1162,23 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1045 -> 1046 rows)
+## State as of the last refresh (1046 -> 1047 rows)
 
-- **1046 rows; 877 labels decided; 877 UNSAT; 0 SAT; 0 labels
+- **1047 rows; 878 labels decided; 878 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 877 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 878 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..872, highest decided 877, holes [873].**
+- **Frontier contiguous 0..872, highest decided 880, holes
+  [873, 878, 879].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **877 of 1949 = 44.9974%**; **1072 undecided**. **45% IS NOT CROSSED**,
-  and the counter is sitting exactly on the trap: 44.9974% **rounds to 45.0
-  and is not above it**; `ceil(0.45 × 1949) = 878` decided, so **1 more**.
+- **878 of 1949 = 45.0487%**; **1071 undecided**. **45% IS CROSSED**, at
+  cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
   stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
   44.9974%. The crossing list and the reason the counter keeps stopping
@@ -1204,13 +1207,18 @@ Task outputs live at
   its stats are in that table too, which was fully recomputed when its row
   was added. **`[13,13,12,5]` is now CLOSED 11/11** (idx 857..867,
   contiguity verified, closed by idx 865) — its stats are in that table too,
-  which was fully recomputed when its row was added. **TWO blocks are open
-  again.** `[13,13,12,4]`: idx 868..874, 7 members, contiguity verified,
+  which was fully recomputed when its row was added. **THREE blocks are
+  open.** `[13,13,12,4]`: idx 868..874, 7 members, contiguity verified,
   **6 decided**, undecided 873 — its last undecided member, so that row
   closes the block; whether it also closes the fourteenth span is NOT
   asserted, and the conditional half of that flag has failed three of five
   times. `[13,13,12,3]`: idx 875..879, 5 members, contiguity verified,
-  **3 decided**. When either closes, record its descriptive stats as
+  **3 decided**, undecided 878 and 879. `[13,13,12,2]`: idx 880..882, 3
+  members, contiguity verified, **1 decided**. Three open at once is **not
+  a first** — `3555e44` and `3910ea8` each had three open
+  (`[13,13,13,4]`, `[13,13,13,3]`, `[13,13,13,2]`), found by walking all
+  867 commits that have touched the checkpoint rather than by assuming it
+  was new. When any of them closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
   **FIVE rows have been flagged in advance as possible double closures,
   each stated CONDITIONALLY, and the outcomes have gone every way.**
