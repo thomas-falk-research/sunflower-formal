@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T22:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T23:03Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1629,11 +1629,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1119 -> 1120 rows)
+## State as of the last refresh (1120 -> 1121 rows)
 
-- **1120 rows; 951 labels decided; 951 UNSAT; 0 SAT; 0 labels
+- **1121 rows; 952 labels decided; 952 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38, #39 or #40.
-  A row count is not a decision count: 951 decided plus 169 superseded
+  A row count is not a decision count: 952 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21172**, launched 2026-09-18T20:44:48.670000Z (read from
@@ -1648,7 +1648,7 @@ Task outputs live at
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
   are running.
-- **Frontier contiguous 0..949, highest decided 952, holes [950, 951].**
+- **Frontier contiguous 0..950, highest decided 952, holes [951].**
   **A SPAN IS OPEN — the twentieth.** idx 952 landed above the frontier
   and left 950 and 951 behind it. **No figures are claimed for it yet**:
   duration, commit count and hole chain are properties of the commit
@@ -1663,7 +1663,7 @@ Task outputs live at
   recomputed together against the 84 that was current then — **those
   ranks are now stale by construction and will be recomputed with the
   twentieth's, together, when it closes.**
-- **951 of 1949 = 48.7943%**; **998 undecided**. **48% IS CROSSED**, at
+- **952 of 1949 = 48.8456%**; **997 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1707,7 +1707,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **16 decided**, undecided 22 spanning 950..972
+  **17 decided**, undecided 21 spanning 951..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
