@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T10:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T11:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1052,10 +1052,17 @@ Registration discipline, learned the hard way:
   each trap, `git log -S<pct>` on this note gives the commit that first
   wrote the figure, and `git log --grep="<pred> of 1949"` gives the
   commit whose subject carries that decided count. The first precedes
-  the second in all six cases, by 1 h 33 m at the narrowest (45.9723%,
+  the second in all six cases that HAVE a second, by 1 h 33 m at the
+  narrowest (45.9723%,
   written at `7202b55` with the count at **878**, reached at `d6e6359`
   with the count at 896 — **18 rows** of counter movement) and 7 h 47 m
-  at the widest (41.9702%, `9b56f3f` then `fe83fc8`). This is a fact
+  at the widest (41.9702%, `9b56f3f` then `fe83fc8`). **The seventh trap
+  has no second term and cannot be checked this way**: no commit carries
+  "916 of 1949", because the counter passed through 916 between commits.
+  It was still written in advance — `d6e6359` carries it with the count at
+  896 — but "written before it was reached" is unverifiable for a value
+  the commit series never reached. Six of seven, not seven of seven, and
+  the seventh is untestable rather than failed. This is a fact
   about procedure, not about sunflowers: writing a threshold down early
   costs nothing and is not evidence of anything except that the crossing
   got checked. Next,
@@ -1064,6 +1071,38 @@ Registration discipline, learned the hard way:
   this same session came out one short (915.03 instead of 916.03) and
   would have put the threshold at 916; that is why these figures are
   computed and never multiplied in the head.
+  **47% IS CROSSED, AND THE TRAP WAS NEVER LANDED ON IN THE COMMIT
+  SERIES.** idx 916 took the count to 916 = 46.9985% and idx 915 took it
+  to **917 = 47.0498%**, and **both rows were banked in one commit**. So
+  the file passed through the trap value and **no commit will ever carry
+  it**: `git log --grep="916 of 1949"` returns nothing, while the same
+  grep returns exactly one commit for each of the other six predecessors
+  (799, 818, 838, 857, 877, 896). **This is the first of the seven traps
+  the commit series never records.**
+  That is the file-instant / commit-series distinction again, the same one
+  that applies to span hole chains and to "four blocks open at once": the
+  counter's path through the FILE and its path through the COMMITS are
+  different sequences, and they diverge exactly when two rows land in one
+  commit. The trap was still real and still worth writing down — had the
+  two rows arrived in separate commits, 46.9985% would have been quoted as
+  a crossing by anyone rounding. **Seventh rounds-up-but-below figure**:
+  40.9954%, 41.9702%, 42.9964%, 43.9713%, 44.9974%, 45.9723%,
+  **46.9985%**, the last of them passed through rather than stopped on. It
+  went on the record at `d6e6359`, when the decided count was **896**.
+  **Two superlatives here, BOTH COMPUTED ACROSS ALL SEVEN before being
+  written**, because three unchecked ones had already been withdrawn or
+  refused earlier in the same session. (a) Shortfalls from the threshold
+  are 0.0046, 0.0298, 0.0036, 0.0287, 0.0026, 0.0277 and **0.0015**
+  percentage points, so **46.9985% is the closest of the seven** — which
+  matters only because it is therefore the easiest of the seven to misread
+  as crossed, not because being closest means anything. (b) Advance
+  margins in rows are 10, 18, 18, 18, 18, 18 and **20**, so this trap had
+  **the widest advance of the seven**, with no tie. *Five margins of
+  exactly 18 is arithmetic, not a habit: each trap is written at the
+  previous threshold's crossing commit, and consecutive thresholds sit
+  about nineteen rows apart.*
+  Next, **48% needs `ceil(0.48 × 1949) = 936`**, trap at 935 = 47.9733%,
+  both from the script.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1404,26 +1443,30 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1083 -> 1084 rows)
+## State as of the last refresh (1084 -> 1086 rows)
 
-- **1084 rows; 915 labels decided; 915 UNSAT; 0 SAT; 0 labels
+- **1086 rows; 917 labels decided; 917 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 915 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 917 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..914, highest decided 914, holes [].**
-  **No span is open.** The sixteenth closed at `cae2b5d`, filled by idx
-  912; it had been opened by idx 913 landing ahead of 911 and 912 on
-  ordinary completion order, with no restart involved. Its figures were
-  read from `--spans all` after `cae2b5d` existed and are recorded above:
-  0:51:42, 2 commits, chain `2,1`, monotone True on a single comparison,
-  rank 28 of 81 by duration and 45 of 81 by commit count. The fifteenth
-  closed at `a5172c7`, its figures likewise above.
-- **915 of 1949 = 46.9472%**; **1034 undecided**. **46% IS CROSSED**, at
-  cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
+- **Frontier contiguous 0..916, highest decided 916, holes [].**
+  **No span is open, and NO SEVENTEENTH SPAN EXISTS.** idx 916 landed
+  ahead of 915 and the file briefly held a hole at [915] — but idx 915
+  landed before the commit, so both were banked together and **the commit
+  series never shows a broken frontier**. A span is a property of the
+  COMMIT SEQUENCE; a hole that opens and closes between commits is not one,
+  and `--spans all` will not see it. The same distinction retired a "four
+  blocks open at once" claim earlier. The sixteenth closed at
+  `cae2b5d` — 0:51:42, 2 commits, chain `2,1`, monotone True on a single
+  comparison, rank 28 of 81 by duration and 45 of 81 by commit count — and
+  the fifteenth at `a5172c7`; both sets of figures are above, and both
+  denominators move when the next span closes.
+- **917 of 1949 = 47.0498%**; **1032 undecided**. **47% IS CROSSED**, at
+  cube index 915. Next: **48% needs `ceil(0.48 × 1949) = 936`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
   reason the counter keeps hitting these figures live in the
@@ -1458,7 +1501,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **29 decided** — the upward
+  886..934, **49 members**, contiguity verified, **31 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
