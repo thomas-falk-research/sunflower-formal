@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T09:56Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T10:10Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1378,27 +1378,28 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1081 -> 1082 rows)
+## State as of the last refresh (1082 -> 1083 rows)
 
-- **1082 rows; 913 labels decided; 913 UNSAT; 0 SAT; 0 labels
+- **1083 rows; 914 labels decided; 914 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 913 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 914 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..911, highest decided 913, holes [912].**
-  **THE SIXTEENTH SPAN IS OPEN**, opened by idx 913 landing ahead of 911
-  and 912. **No restart is involved this time** — the fifteenth came out
-  of restart #39's simultaneous re-take, this one is ordinary completion
-  order: 913 simply finished while 911 and 912 were still running.
-  **Quote no span figure until it closes.** The fifteenth closed at
-  `a5172c7` and its figures are recorded above, read from `--spans all`
-  after that commit existed: 1:29:45, 2 commits, chain `3,2`, monotone
-  True on a single comparison, rank 21 of 80 by duration and 45 of 80 by
-  commit count.
-- **913 of 1949 = 46.8445%**; **1036 undecided**. **46% IS CROSSED**, at
+- **Frontier contiguous 0..913, highest decided 913, holes [].**
+  **THE SIXTEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 912. It was
+  opened by idx 913 landing ahead of 911 and 912, with **no restart
+  involved** — the fifteenth came out of restart #39's simultaneous
+  re-take, this one was ordinary completion order. **ITS FIGURES ARE NOT
+  QUOTED HERE**: `--spans all` walks commits, so it cannot see the closing
+  commit until that commit exists. They go in the commit after this one,
+  as the fifteenth's did. The fifteenth closed at `a5172c7`, figures
+  recorded above: 1:29:45, 2 commits, chain `3,2`, monotone True on a
+  single comparison, rank 21 of 80 by duration and 45 of 80 by commit
+  count.
+- **914 of 1949 = 46.8958%**; **1035 undecided**. **46% IS CROSSED**, at
   cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1434,7 +1435,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **27 decided** — the upward
+  886..934, **49 members**, contiguity verified, **28 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
