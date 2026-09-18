@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T00:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T01:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -800,14 +800,25 @@ Registration discipline, learned the hard way:
   it. Third time it has stopped there — 40.9954%, 41.9702%, 42.9964% — and
   each time the arithmetic was printed rather than eyeballed, so the
   crossing was checked and not rounded into.
-  Next: **44% needs `ceil(0.44 × 1949) = 858`** decided, and **the trap was
-  written down before the counter reached it and then the counter landed
-  exactly on it**: 857/1949 = 43.9713% rounds to 44.0 and is **not** above
-  44; 858/1949 = 44.0226% is. **Fourth stop on a rounds-up-but-below
-  figure** — 40.9954%, 41.9702%, 42.9964%, 43.9713%. Writing the arithmetic
-  out in advance is not a prediction; where the counter pauses is set by
-  which cubes finish when. What it buys is that the crossing is checked
-  rather than rounded into, four times now.
+  **44% at idx 858** — the trap was written down before the counter reached
+  it, the counter then landed exactly on it, and the next row crossed:
+  857/1949 = 43.9713% rounds to 44.0 and is **not** above 44; 858/1949 =
+  44.0226% is. **Fourth stop on a rounds-up-but-below figure** — 40.9954%,
+  41.9702%, 42.9964%, 43.9713%. Writing the arithmetic out in advance is
+  not a prediction; where the counter pauses is set by which cubes finish
+  when. What it buys is that the crossing is checked rather than rounded
+  into, four times now.
+  Next: **45% needs `ceil(0.45 × 1949) = 878`** decided, and **the trap is
+  there again**: 877/1949 = 44.9974% rounds to 45.0 and is **not** above
+  45; 878/1949 = 45.0487% is. Written down before the counter gets there,
+  for the fifth time.
+  **44% carries a numeral collision.** The decided count reached **858** on
+  the landing of cube **index 858** — the same shape as 41%, where the count
+  reached 800 on cube idx 800. At 43% the two did **not** match: the count
+  needed 839 and the crossing was made by cube idx 841. So the collision
+  has now happened twice in four crossings and failed twice, which is what
+  a coincidence looks like from both sides. It is recorded only so nobody
+  later reads a match as structure.
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
@@ -1093,31 +1104,29 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1024 -> 1026 rows)
+## State as of the last refresh (1026 -> 1028 rows)
 
-- **1026 rows; 857 labels decided; 857 UNSAT; 0 SAT; 0 labels
+- **1028 rows; 859 labels decided; 859 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 857 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 859 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..853, highest decided 857, holes [854].**
+- **Frontier contiguous 0..853, highest decided 860, holes [854, 859].**
   A **thirteenth span is OPEN**. The twelfth closed at
   `4875392` and its figures are recorded above, from the tool, after that
   commit existed.
-- **857 of 1949 = 43.9713%**; **1092 undecided**. **44% IS NOT CROSSED**:
-  43.9713% rounds to 44.0 and is not above it; `ceil(0.44 × 1949) = 858`
-  decided, so **1 more**. **43% IS CROSSED**, at
-  **cube index 841** — which is a different 841 from the decided count on
-  this same line, and they coincide today only by accident. 838/1949 =
-  42.9964% rounds to 43.0 and is NOT above 43;
-  839/1949 = 43.0477% is. Next: 44% needs `ceil(0.44 × 1949) = 858`
-  **decided**, and 857/1949 = 43.9713% will round to 44.0 without being
-  above it. **A rounded milestone is not a crossed one** (b34fc2e,
-  85bb4d1) — three stops on that figure so far: 40.9954%, 41.9702%,
-  42.9964%.
+- **859 of 1949 = 44.0739%**; **1090 undecided**. **44% IS CROSSED**, at
+  cube index 858 — on the row that took the decided count to 858, a numeral
+  collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
+  decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
+  it. **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) —
+  four stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%,
+  43.9713%. The full crossing list, each checked rather than rounded into,
+  is in the percent-arithmetic bullet above **and nowhere else**; this line
+  states only where the counter is and what the next threshold needs.
 - **The counter is not the rung.** More than two fifths of the sub-cubes are
   decided and every one came back UNSAT, and that settles nothing: deg(0) =
   13 is UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -1141,7 +1150,7 @@ Task outputs live at
   the block. Whether it also closes the thirteenth span depends on the
   frontier line above at the moment it lands, not on this sentence.
   `[13,13,12,5]`: idx 857..867, 11 members, contiguity verified,
-  **1 decided**. When either closes, record its descriptive stats as
+  **3 decided**. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
   idx 838 closed that block **and** the twelfth span, the second such
   double closure after idx 832 at `b088217`. It was written down beforehand
