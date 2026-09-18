@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T14:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T15:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1443,31 +1443,32 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1094 -> 1095 rows)
+## State as of the last refresh (1095 -> 1096 rows)
 
-- **1095 rows; 926 labels decided; 926 UNSAT; 0 SAT; 0 labels
+- **1096 rows; 927 labels decided; 927 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 926 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 927 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..920, highest decided 926, holes [921].**
-  **THE SEVENTEENTH SPAN IS OPEN**, opened by idx 919 landing ahead of
-  918. **This commit carries the hole, so this one IS a span** — unlike
-  the hole at [915] one commit earlier, which the file held briefly but no
-  commit ever recorded, because idx 915 landed before that commit was
-  made. A span is a property of the COMMIT SEQUENCE; a hole that opens and
-  closes between commits is not one and `--spans all` will not see it.
-  That is why the count goes 16 then 17 with a non-span in between, and
-  the same distinction retired a "four blocks open at once" claim earlier.
-  **Quote no span figure until it closes.** The sixteenth closed at
+- **Frontier contiguous 0..926, highest decided 926, holes [].**
+  **THE SEVENTEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 921 after
+  it ran 9372.4 s; the frontier moved 920 -> 926 in one step because six
+  rows were already banked above the hole. It was opened by idx 919
+  landing ahead of 918, and the commit series carried a hole throughout —
+  unlike the hole at [915] before it, which the file held briefly but no
+  commit recorded, which is why the count goes 16 then 17 with a non-span
+  in between. **ITS FIGURES ARE NOT QUOTED HERE**: `--spans all` walks
+  commits and cannot see the closing commit until it exists, so duration,
+  ranks, chain and monotonicity go in the commit after this one. The
+  sixteenth closed at
   `cae2b5d` — 0:51:42, 2 commits, chain `2,1`, monotone True on a single
   comparison, rank 28 of 81 by duration and 45 of 81 by commit count — and
   the fifteenth at `a5172c7`; both sets of figures are above, and both
   denominators move when the next span closes.
-- **926 of 1949 = 47.5115%**; **1023 undecided**. **47% IS CROSSED**, at
+- **927 of 1949 = 47.5629%**; **1022 undecided**. **47% IS CROSSED**, at
   cube index 915. Next: **48% needs `ceil(0.48 × 1949) = 936`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1503,7 +1504,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **40 decided** — the upward
+  886..934, **49 members**, contiguity verified, **41 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
