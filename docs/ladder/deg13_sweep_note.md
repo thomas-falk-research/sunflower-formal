@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T00:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T00:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -800,10 +800,14 @@ Registration discipline, learned the hard way:
   it. Third time it has stopped there — 40.9954%, 41.9702%, 42.9964% — and
   each time the arithmetic was printed rather than eyeballed, so the
   crossing was checked and not rounded into.
-  Next: **44% needs `ceil(0.44 × 1949) = 858`** decided, and **the same trap
-  is already waiting**: 857/1949 = 43.9713% rounds to 44.0 and is **not**
-  above 44; 858/1949 = 44.0226% is. Written down now, before the counter
-  gets there.
+  Next: **44% needs `ceil(0.44 × 1949) = 858`** decided, and **the trap was
+  written down before the counter reached it and then the counter landed
+  exactly on it**: 857/1949 = 43.9713% rounds to 44.0 and is **not** above
+  44; 858/1949 = 44.0226% is. **Fourth stop on a rounds-up-but-below
+  figure** — 40.9954%, 41.9702%, 42.9964%, 43.9713%. Writing the arithmetic
+  out in advance is not a prediction; where the counter pauses is set by
+  which cubes finish when. What it buys is that the crossing is checked
+  rather than rounded into, four times now.
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
@@ -1089,21 +1093,23 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1023 -> 1024 rows)
+## State as of the last refresh (1024 -> 1026 rows)
 
-- **1024 rows; 855 labels decided; 855 UNSAT; 0 SAT; 0 labels
+- **1026 rows; 857 labels decided; 857 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 855 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 857 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..853, highest decided 856, holes [854, 855].**
+- **Frontier contiguous 0..853, highest decided 857, holes [854].**
   A **thirteenth span is OPEN**. The twelfth closed at
   `4875392` and its figures are recorded above, from the tool, after that
   commit existed.
-- **855 of 1949 = 43.8687%**; **1094 undecided**. **43% IS CROSSED**, at
+- **857 of 1949 = 43.9713%**; **1092 undecided**. **44% IS NOT CROSSED**:
+  43.9713% rounds to 44.0 and is not above it; `ceil(0.44 × 1949) = 858`
+  decided, so **1 more**. **43% IS CROSSED**, at
   **cube index 841** — which is a different 841 from the decided count on
   this same line, and they coincide today only by accident. 838/1949 =
   42.9964% rounds to 43.0 and is NOT above 43;
@@ -1129,14 +1135,14 @@ Task outputs live at
   recalled).
   **`[13,13,12,7]` is now CLOSED 21/21** (idx 821..841, contiguity
   verified, closed by idx 838) — its stats are in the closed-block table
-  above, recomputed along with every other row. **Only `[13,13,12,6]` is
-  open: idx 842..856, 15 members, contiguity verified, 13 decided**,
-  undecided 854 and 855. When it closes, record its descriptive stats as
+  above, recomputed along with every other row. **TWO blocks are open
+  again.** `[13,13,12,6]`: idx 842..856, 15 members, contiguity verified,
+  **14 decided**, undecided 854 — **its last member**, so that row closes
+  the block. Whether it also closes the thirteenth span depends on the
+  frontier line above at the moment it lands, not on this sentence.
+  `[13,13,12,5]`: idx 857..867, 11 members, contiguity verified,
+  **1 decided**. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
-  The next block `[13,13,12,5]` (idx 857..867, 11 members, from `SEQ`) has
-  cubes in flight but **nothing decided yet**, so it is not listed as open:
-  being in flight and being decided are different states and this census
-  counts decisions.
   idx 838 closed that block **and** the twelfth span, the second such
   double closure after idx 832 at `b088217`. It was written down beforehand
   as conditional — the block closure was certain, the span closure was not,
