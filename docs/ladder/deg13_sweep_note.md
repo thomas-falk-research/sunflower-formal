@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:00Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1153,21 +1153,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1042 -> 1044 rows)
+## State as of the last refresh (1044 -> 1045 rows)
 
-- **1044 rows; 875 labels decided; 875 UNSAT; 0 SAT; 0 labels
+- **1045 rows; 876 labels decided; 876 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 875 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 876 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..872, highest decided 875, holes [873].**
+- **Frontier contiguous 0..872, highest decided 876, holes [873].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **875 of 1949 = 44.8948%**; **1074 undecided**. **44% IS CROSSED**, at
+- **876 of 1949 = 44.9461%**; **1073 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
   decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
@@ -1204,7 +1204,7 @@ Task outputs live at
   closes the block; whether it also closes the fourteenth span is NOT
   asserted, and the conditional half of that flag has failed three of five
   times. `[13,13,12,3]`: idx 875..879, 5 members, contiguity verified,
-  **1 decided**. When either closes, record its descriptive stats as
+  **2 decided**. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
   **FIVE rows have been flagged in advance as possible double closures,
   each stated CONDITIONALLY, and the outcomes have gone every way.**
