@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T16:00Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T16:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1128,6 +1128,30 @@ Registration discipline, learned the hard way:
   about nineteen rows apart.*
   Next, **48% needs `ceil(0.48 × 1949) = 936`**, trap at 935 = 47.9733%,
   both from the script.
+  **48% — THE TRAP IS LIVE.** The decided count reached **935 = 47.9733%**
+  at cube index 933, rounding to 48.0 while sitting below 48. **Eighth
+  rounds-up-but-below figure**: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
+  44.9974%, 45.9723%, 46.9985%, **47.9733%**. It went on the record at
+  `c27eeef`, when the decided count was **917** — 18 rows ahead. 48% needs
+  **936** = 48.0246%.
+  **THE ALTERNATION IN THESE SHORTFALLS IS ARITHMETIC, AND IT IS
+  CHECKABLE.** Distances below the threshold run 0.0046, 0.0298, 0.0036,
+  0.0287, 0.0026, 0.0277, 0.0015, **0.0267** percentage points — small,
+  large, small, large. That is not a property of this sweep: `frac(k ×
+  1949 / 100)` advances by **exactly 0.49 (mod 1) at every one of the 98
+  steps from k to k+1** (computed over all of them, distinct step values =
+  {0.49}), so consecutive thresholds land alternately in a low band and a
+  high band, each band drifting down by about 0.02 every two steps. **No
+  mechanism is being proposed after the fact** — this is a deterministic
+  fact about `ceil` and the number 1949, verified across all 99
+  thresholds, not a story told about eight observations.
+  **The tightest trap in the whole run is the NEXT one.** Ranked by
+  shortfall over all 99 thresholds, **k = 49 is the smallest: 955/1949 =
+  48.9995%, short of 49 by 0.000513 percentage points**, with k = 98
+  second (0.001026) and k = 47 third (0.001539). k = 48's 0.0267 ranks
+  only 52nd. So **49% needs `ceil(0.49 × 1949) = 956`, and 955 is the
+  single most misleading figure this sweep will ever print** — recorded
+  now, 21 rows before the counter can reach it.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1468,17 +1492,17 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1102 -> 1103 rows)
+## State as of the last refresh (1103 -> 1104 rows)
 
-- **1103 rows; 934 labels decided; 934 UNSAT; 0 SAT; 0 labels
+- **1104 rows; 935 labels decided; 935 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 934 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 935 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..927, highest decided 935, holes [928, 933].**
+- **Frontier contiguous 0..927, highest decided 935, holes [928].**
   **THE EIGHTEENTH SPAN IS OPEN**, and it opened with **three holes at
   once**: idx 930 finished in 470.4 s and landed ahead of 927, 928 and
   929, all still running. A span opening at three is not unusual: of the
@@ -1493,7 +1517,7 @@ Task outputs live at
   fifteenth are recorded above, with all three ranks recomputed together
   against the 82 closed at that time — a denominator that moves again when
   this span closes.
-- **934 of 1949 = 47.9220%**; **1015 undecided**. **47% IS CROSSED**, at
+- **935 of 1949 = 47.9733%**; **1014 undecided**. **47% IS CROSSED**, at
   cube index 915. Next: **48% needs `ceil(0.48 × 1949) = 936`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1535,8 +1559,10 @@ Task outputs live at
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 11]`: idx 886..934, **49 members**, **47 decided**, undecided [928, 933]
-- `[13, 13, 11, 10]`: idx 935..972, **38 members**, **1 decided**, undecided [936, 937, 938, 939, 940, 941, 942, 943]... (37 total)
+- `[13, 13, 11, 11]` idx 886..934: **49 members**,
+  **48 decided**, undecided [928]
+- `[13, 13, 11, 10]` idx 935..972: **38 members**,
+  **1 decided**, undecided 37 spanning 936..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
