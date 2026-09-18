@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T20:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T22:46Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1614,25 +1614,38 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1118 -> 1119 rows)
+## State as of the last refresh (1119 -> 1120 rows)
 
-- **1119 rows; 950 labels decided; 950 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 950 decided plus 169 superseded UNKNOWN
-  rows. Say it that way — **never "0 UNKNOWN"**, which the file would
-  contradict.
-- **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
-  `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
-  from this line.
-- **Frontier contiguous 0..949, highest decided 949, holes [].**
-  **No span is open.** The nineteenth closed at `0362b4f`, filled by idx
-  946 after a single commit with a single hole. Its figures were read from
-  `--spans all` after `0362b4f` existed and are recorded above: **0:20:28,
+- **1120 rows; 951 labels decided; 951 UNSAT; 0 SAT; 0 labels
+  undecided-only.** No rows were lost across restarts #37, #38, #39 or #40.
+  A row count is not a decision count: 951 decided plus 169 superseded
+  UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
+  would contradict.
+- **Driver is pid 21172**, launched 2026-09-18T20:44:48.670000Z (read from
+  `/proc/21172/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+  from this line. **This line was left stale across three commits after
+  restart #40** — `dc013e9` relaunched the driver and updated the TSV
+  header block and the restart accounting but not this bullet, and
+  `8fbe75a` and `ddeda8c` went by without catching it. It was found by
+  reading the staged diff, which is the only control that has ever caught
+  it. bank.py does not own this line and cannot: the pid is not derivable
+  from the checkpoint.
+- **Frontier contiguous 0..949, highest decided 952, holes [950, 951].**
+  **A SPAN IS OPEN — the twentieth.** idx 952 landed above the frontier
+  and left 950 and 951 behind it. **No figures are claimed for it yet**:
+  duration, commit count and hole chain are properties of the commit
+  sequence and are read from `--spans all` only after the span closes,
+  never from the file's instantaneous state. A hole that opened and closed
+  between commits would not be a span at all; this one is on the record
+  because this commit carries it. The nineteenth closed at `0362b4f`,
+  filled by idx 946 after a single commit with a single hole: **0:20:28,
   1 commit, chain `1`, monotone True but VACUOUS on zero comparisons**,
   rank 36 of 84 by duration and 65 of 84 by commit count. The fifteenth
   through nineteenth sit in one table above, with all five ranks
-  recomputed together against the current 84.
-- **950 of 1949 = 48.7429%**; **999 undecided**. **48% IS CROSSED**, at
+  recomputed together against the 84 that was current then — **those
+  ranks are now stale by construction and will be recomputed with the
+  twentieth's, together, when it closes.**
+- **951 of 1949 = 48.7943%**; **998 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1676,7 +1689,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **15 decided**, undecided 23 spanning 950..972
+  **16 decided**, undecided 22 spanning 950..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
