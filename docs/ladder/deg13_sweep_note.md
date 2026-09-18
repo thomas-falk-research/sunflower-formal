@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -857,10 +857,16 @@ Registration discipline, learned the hard way:
   not a prediction; where the counter pauses is set by which cubes finish
   when. What it buys is that the crossing is checked rather than rounded
   into, four times now.
-  Next: **45% needs `ceil(0.45 × 1949) = 878`** decided, and **the trap is
-  there again**: 877/1949 = 44.9974% rounds to 45.0 and is **not** above
-  45; 878/1949 = 45.0487% is. Written down before the counter gets there,
-  for the fifth time.
+  Next: **45% needs `ceil(0.45 × 1949) = 878`** decided, and **the trap was
+  written down before the counter got there and the counter then landed
+  exactly on it, for the fifth time running**: 877/1949 = 44.9974% rounds to
+  45.0 and is **not** above 45; 878/1949 = 45.0487% is. **Fifth stop on a
+  rounds-up-but-below figure** — 40.9954%, 41.9702%, 42.9964%, 43.9713%,
+  44.9974%. That the counter keeps stopping there is not a discovery: every
+  threshold `ceil(0.01k × 1949)` has a predecessor that rounds up, and the
+  counter passes through every integer, so it stops on all of them. Writing
+  the arithmetic out in advance is not a prediction; it only means the
+  crossing gets checked instead of rounded into.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1153,29 +1159,29 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1044 -> 1045 rows)
+## State as of the last refresh (1045 -> 1046 rows)
 
-- **1045 rows; 876 labels decided; 876 UNSAT; 0 SAT; 0 labels
+- **1046 rows; 877 labels decided; 877 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 876 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 877 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..872, highest decided 876, holes [873].**
+- **Frontier contiguous 0..872, highest decided 877, holes [873].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **876 of 1949 = 44.9461%**; **1073 undecided**. **44% IS CROSSED**, at
-  cube index 858 — on the row that took the decided count to 858, a numeral
-  collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
-  decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
-  it. **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) —
-  four stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%,
-  43.9713%. The full crossing list, each checked rather than rounded into,
-  is in the percent-arithmetic bullet above **and nowhere else**; this line
-  states only where the counter is and what the next threshold needs.
+- **877 of 1949 = 44.9974%**; **1072 undecided**. **45% IS NOT CROSSED**,
+  and the counter is sitting exactly on the trap: 44.9974% **rounds to 45.0
+  and is not above it**; `ceil(0.45 × 1949) = 878` decided, so **1 more**.
+  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
+  stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
+  44.9974%. The crossing list and the reason the counter keeps stopping
+  there live in the percent-arithmetic bullet above **and nowhere else**;
+  this line states only where the counter is and what the next threshold
+  needs.
 - **The counter is not the rung.** More than two fifths of the sub-cubes are
   decided and every one came back UNSAT, and that settles nothing: deg(0) =
   13 is UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -1204,7 +1210,7 @@ Task outputs live at
   closes the block; whether it also closes the fourteenth span is NOT
   asserted, and the conditional half of that flag has failed three of five
   times. `[13,13,12,3]`: idx 875..879, 5 members, contiguity verified,
-  **2 decided**. When either closes, record its descriptive stats as
+  **3 decided**. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
   **FIVE rows have been flagged in advance as possible double closures,
   each stated CONDITIONALLY, and the outcomes have gone every way.**
