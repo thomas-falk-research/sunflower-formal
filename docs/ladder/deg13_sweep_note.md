@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T06:55Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T07:26Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1289,20 +1289,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1074 -> 1075 rows)
+## State as of the last refresh (1075 -> 1076 rows)
 
-- **1075 rows; 906 labels decided; 906 UNSAT; 0 SAT; 0 labels
+- **1076 rows; 907 labels decided; 907 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 906 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 907 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..905, highest decided 905, holes [].**
+- **Frontier contiguous 0..906, highest decided 906, holes [].**
   **No span is open.** The fourteenth closed at `e5c0c73` and its figures
   are recorded above, from the tool, after that commit existed.
-- **906 of 1949 = 46.4854%**; **1043 undecided**. **46% IS CROSSED**, at
+- **907 of 1949 = 46.5367%**; **1042 undecided**. **46% IS CROSSED**, at
   cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1338,7 +1338,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **20 decided** — the upward
+  886..934, **49 members**, contiguity verified, **21 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
