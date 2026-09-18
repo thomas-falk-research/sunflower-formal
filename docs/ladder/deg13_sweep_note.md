@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:06Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -704,6 +704,18 @@ Registration discipline, learned the hard way:
   | `[13,13,12,7]` | 21 | 664.2 | 3302.3 | 3725.1 | 6868.5 | 10.3410× |
   | `[13,13,12,6]` | 15 | 301.5 | 2914.4 | 2738.3 | 5780.2 | 19.1715× |
   | `[13,13,12,5]` | 11 | 500.2 | 1936.1 | 1958.1 | 4349.3 | 8.6951× |
+  | `[13,13,12,2]` | 3 | 109.9 | 179.8 | 188.4 | 275.4 | 2.5059× |
+  | `[13,13,12,1]` | 2 | 39.6 | 43.4 | 43.4 | 47.2 | 1.1919× |
+  | `[13,13,12,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
+
+  **THE LAST THREE ROWS CARRY NO INFORMATION ABOUT SPREAD AND MUST NOT
+  EXTEND THE SEQUENCES BELOW.** At n = 1 the min, median, mean and max are
+  the same number and the spread is 1.0000× by construction; at n = 2 the
+  median equals the mean; at n = 3 a "spread" is one ratio of two draws.
+  They are tabled because the blocks closed, and they are fenced off
+  because a monotonicity argument fed with them would be reading the
+  definition of a one-element set. The monotonicity lists below stop at
+  `[13,13,12,5]`, the last block with n ≥ 11.
 
   **EVERY CELL ABOVE IS RECOMPUTED FROM THE CHECKPOINT WHENEVER A ROW IS
   ADDED. THAT RULE EXISTS BECAUSE THE OLD TABLE'S MIDDLE COLUMN WAS A
@@ -717,7 +729,9 @@ Registration discipline, learned the hard way:
   (`[13,13,12,9]` is idx 755..792, closed by idx 788; `[13,13,12,8]` is idx
   793..820, closed by idx 814; `[13,13,12,7]` is idx 821..841, closed by
   idx 838; `[13,13,12,6]` is idx 842..856, closed by idx 854;
-  `[13,13,12,5]` is idx 857..867, closed by idx 865. All five contiguity
+  `[13,13,12,5]` is idx 857..867, closed by idx 865; `[13,13,12,2]` is idx
+  880..882, closed by idx 882; `[13,13,12,1]` is idx 883..884, closed by
+  idx 884; `[13,13,12,0]` is the single cube idx 885. All contiguity
   verified.) **Every row is recomputed from the checkpoint each time one is
   added**, per the rule below; the eighth addition left the seven earlier
   rows unchanged.
@@ -1162,22 +1176,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1047 -> 1048 rows)
+## State as of the last refresh (1048 -> 1053 rows)
 
-- **1048 rows; 879 labels decided; 879 UNSAT; 0 SAT; 0 labels
+- **1053 rows; 884 labels decided; 884 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 879 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 884 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..872, highest decided 881, holes
-  [873, 878, 879].**
+- **Frontier contiguous 0..872, highest decided 885, holes [873, 879].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **879 of 1949 = 45.1001%**; **1070 undecided**. **45% IS CROSSED**, at
+- **884 of 1949 = 45.3566%**; **1065 undecided**. **45% IS CROSSED**, at
   cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
   stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
@@ -1207,19 +1220,29 @@ Task outputs live at
   its stats are in that table too, which was fully recomputed when its row
   was added. **`[13,13,12,5]` is now CLOSED 11/11** (idx 857..867,
   contiguity verified, closed by idx 865) — its stats are in that table too,
-  which was fully recomputed when its row was added. **THREE blocks are
-  open.** `[13,13,12,4]`: idx 868..874, 7 members, contiguity verified,
-  **6 decided**, undecided 873 — its last undecided member, so that row
-  closes the block; whether it also closes the fourteenth span is NOT
-  asserted, and the conditional half of that flag has failed three of five
-  times. `[13,13,12,3]`: idx 875..879, 5 members, contiguity verified,
-  **3 decided**, undecided 878 and 879. `[13,13,12,2]`: idx 880..882, 3
-  members, contiguity verified, **2 decided**. Three open at once is **not
-  a first** — `3555e44` and `3910ea8` each had three open
-  (`[13,13,13,4]`, `[13,13,13,3]`, `[13,13,13,2]`), found by walking all
-  867 commits that have touched the checkpoint rather than by assuming it
-  was new. When any of them closes, record its descriptive stats as
-  descriptive stats, NOT findings, and do NOT compare them across blocks.
+  which was fully recomputed when its row was added. **`[13,13,12,2]`,
+  `[13,13,12,1]` and `[13,13,12,0]` all closed in one batch** (3/3, 2/2 and
+  the single cube idx 885) — their rows are in that table, fenced off as
+  carrying no spread information. **TWO blocks are open**: `[13,13,12,4]`
+  (idx 868..874, 7 members, contiguity verified, **6 decided**, undecided
+  873) and `[13,13,12,3]` (idx 875..879, 5 members, contiguity verified,
+  **4 decided**, undecided 879). Each is one row from closing, and whether
+  either also closes the fourteenth span is NOT asserted — that conditional
+  half has failed three of five times. When either closes, record its
+  descriptive stats as descriptive stats, NOT findings, and do NOT compare
+  them across blocks.
+  **FOUR BLOCKS WERE OPEN IN THE FILE AT 03:10Z AND NO COMMIT EVER SHOWED
+  IT.** Rows arrived faster than commits, so the four-open state existed
+  between two writes and this commit already shows two. The historical
+  maximum of **three** (`3555e44`, `3910ea8`) was measured PER COMMIT across
+  all 869 commits that touched the checkpoint, so "four is a first" would be
+  comparing a file instant against a commit series — **different
+  quantities**, exactly as with a span's hole chain. What is true and
+  checkable: no commit has ever shown four, and the file showed four once.
+  The mechanism is structural anyway, not a discovery: these blocks have
+  7, 5, 3 and 2 members, all read from `SEQ`, so four slots can straddle
+  four of them at the tail of a coordinate run in a way they never could at
+  n = 82.
   **FIVE rows have been flagged in advance as possible double closures,
   each stated CONDITIONALLY, and the outcomes have gone every way.**
   Re-derived from the commits, not recalled:
