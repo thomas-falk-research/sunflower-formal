@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T01:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T02:00Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1148,21 +1148,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1033 -> 1034 rows)
+## State as of the last refresh (1034 -> 1035 rows)
 
-- **1034 rows; 865 labels decided; 865 UNSAT; 0 SAT; 0 labels
+- **1035 rows; 866 labels decided; 866 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 865 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 866 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..863, highest decided 867, holes
+- **Frontier contiguous 0..863, highest decided 868, holes
   [864, 865, 866].** A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **865 of 1949 = 44.3817%**; **1084 undecided**. **44% IS CROSSED**, at
+- **866 of 1949 = 44.4330%**; **1083 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
   decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
@@ -1191,10 +1191,12 @@ Task outputs live at
   above, recomputed along with every other row. **`[13,13,12,6]` is now
   CLOSED 15/15** (idx 842..856, contiguity verified, closed by idx 854) —
   its stats are in that table too, which was fully recomputed when its row
-  was added. **Only `[13,13,12,5]` is open**: idx 857..867, 11 members,
-  contiguity verified, **8 decided**. When it closes, record its
-  descriptive stats as descriptive stats, NOT findings, and do NOT compare
-  them across blocks.
+  was added. **TWO blocks are open again.** `[13,13,12,5]`: idx 857..867,
+  11 members, contiguity verified, **8 decided**, undecided 864, 865, 866 —
+  all three in flight. `[13,13,12,4]`: idx 868..874, 7 members, contiguity
+  verified, **1 decided**. When either closes, record its descriptive stats
+  as descriptive stats, NOT findings, and do NOT compare them across
+  blocks.
   **Three block-closing rows have been flagged in advance as possible
   double closures, each stated CONDITIONALLY, and the flag went both ways:**
   idx 832 at `b088217` and idx 838 at `4875392` closed a block *and* a span;
