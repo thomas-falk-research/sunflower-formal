@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T23:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T23:17Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -204,7 +204,7 @@ integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **seven CLOSED**, **set eight OPEN**
+## Re-run sets — **eight CLOSED**, none open
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -218,6 +218,7 @@ corrected at 060fb26 by checking it against published data).
 | five | `f05dc65` | 4 | 0.72115 | 2.8226× |
 | six | idx-832 commit | 4 | 0.5678 | 4.6436× |
 | seven | idx-907/909 commit | 4 | 0.5962 | 2.0116× |
+| eight | idx-953 commit | 4 | 0.6766 | 4.3988× |
 
 **SET SIX IS CLOSED**, by idx 832 — the same row that closed the eleventh
 span. It opened at restart #38 with idx **831, 832, 833, 834**, all four
@@ -262,45 +263,83 @@ Again the ratios were not computed until all four had landed — withheld at
 computed* rather than *not reported*, because a number in hand is a number
 that leaks into how the next sentence gets phrased.
 
-**SET SEVEN'S SPREAD IS THE SMALLEST OF THE SEVEN — AND NOTHING IS MADE OF
-IT.** 2.0116× against set three's 2.06× is a margin of 0.05, and this note
+**SET SEVEN'S SPREAD IS THE SMALLEST OF THE EIGHT — AND NOTHING IS MADE OF
+IT.** Still smallest after set eight's 4.3988× came in well above it, and
+still not a ranking worth asserting: 2.0116× against set three's 2.0580×
+is a margin of 0.046, and this note
 has just withdrawn a "flattest of the fifteen" claim that rested on a
 0.6-point margin between two restarts. A near-tie is not a ranking worth
 asserting, and noticing the second one right after withdrawing the first is
 the whole reason it is refused here. The medians and spreads across all
-seven sets, and the mechanical check that neither is monotone, are in the
+eight sets, and the mechanical check that neither is monotone, are in the
 paragraph below and **not repeated here** — a first draft of this one
 carried its own copy of both lists, which is the same-quantity-written-
 twice defect this file has now logged five times, committed inside a
-paragraph about discipline. Seven sets are seven accidents of where four
+paragraph about discipline. Eight sets are eight accidents of where four
 kills landed.
 
-Ranked against **all 32 ratios now recorded** (sets one through seven; the
-earlier 28 were re-read out of commits `8782234`, `cd2ad61`, `1e409e8`,
-`30f1fbd` and `f05dc65`, not recalled — re-read again when set seven
-closed, rather than adding four to a remembered 28). Set six's max
-**0.9367 ranks 3 of 32**. Set seven's four rank **10, 11, 14 and 21 of
-32**, and its max **0.6584 is below 1.0**, so the count of ratios above
+Ranked against **all 36 ratios now recorded** (sets one through eight).
+**The prior 32 were re-read out of the commits by a script**, not recalled
+and not copied from the tables above: it walks every commit message, picks
+up each set's ratios in whatever format that commit used — three different
+formats across the eight sets — and **asserts the recovered count is 32**
+before anything is ranked. Set eight's four rank **7, 9, 11 and 32 of
+36**, and its max **0.7349 is below 1.0**, so the count of ratios above
 1.0 is still **two** — 1.0063 (set one) and 1.0805 (set five). Across all
-32 the largest is 1.0805 and the smallest 0.0183.
+36 the largest is 1.0805 and the smallest 0.0183. Set six's max **0.9367
+now ranks 3 of 36**, unchanged in position because all four of set eight's
+fall below it.
 
-Medians across the seven sets are 0.3594, 0.4291, 0.5026, 0.2125, 0.72115,
-0.5678, **0.5962** — **not monotone in either direction**, checked, not
-eyeballed. Spreads are 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226×, 4.6436×,
-**2.0116×** — also not monotone in either direction. Both sequences were
-called "a list, not a trend" from set three onward, and both have now gone
-up and down repeatedly. Seven points at n = 8, 4, 4, 4, 4, 4, 4 still
-support no shape.
+Medians across the eight sets are 0.3594, 0.4291, 0.5026, 0.2125, 0.72115,
+0.5678, 0.5962, **0.6766** — **not monotone in either direction**,
+checked, not eyeballed. Spreads are 54.99×, 8.15×, 2.06×, 5.3747×,
+2.8226×, 4.6436×, 2.0116×, **4.3988×** — also not monotone in either
+direction. Both sequences were called "a list, not a trend" from set three
+onward, and both have now gone up and down repeatedly; set eight moved the
+median up and the spread up, and that last step is the **fifth** direction
+change in the spreads alone — the step directions are down, down, up,
+down, up, down, up. *A first draft of this sentence said "fourth" from
+inspection; the count was then computed and came back five, which is the
+whole reason the rule says compute it.*
 
-**SET EIGHT IS OPEN.** Restart #40 killed idx **950, 951, 952, 953** and
-the relaunch re-took exactly those four at launch + 60.6 s, their CNFs
-written inside 8.0 ms, so their re-run clocks are directly comparable.
-Discarded times are 6057.3, 5611.2, 4924.4 and 1433.3 s. **No ratio will
-be computed until all four have landed** — the rule held through sets
-five, six and seven, each time at a real cost, and it holds here. Note
-what set eight cannot do even when it closes: it is a fifth, sixth,
-seventh and eighth accident of where a kill landed, and eight points at
-n = 8, 4, 4, 4, 4, 4, 4, 4 will support no shape either.
+Eight points at n = 8, 4, 4, 4, 4, 4, 4, 4 still support no shape, and
+eight is still eight accidents of where a kill landed.
+
+**SET EIGHT IS CLOSED**, by the commit that banked idx 953. It opened at
+restart #40 with idx **950, 951, 952, 953**, all four killed at the same
+instant and all four relaunched together (launch + 60.6 s, CNFs within
+8.0 ms), so their re-run clocks are directly comparable:
+
+| idx | discarded | re-run | ratio |
+|---|---|---|---|
+| 950 | 6057.3 | 8242.2 | 0.7349 |
+| 951 | 5611.2 | 8455.6 | 0.6636 |
+| 952 | 4924.4 | 7141.0 | 0.6896 |
+| 953 | 1433.3 | 8579.0 | 0.1671 |
+
+min 0.1671, **median 0.6766** (midpoint of 0.6636 and 0.6896), mean
+0.5638, max 0.7349, **spread 4.3988×**. **No ratio exceeds 1.0.**
+
+The ratios were **not computed** until all four had landed — withheld at
+1-of-4, 2-of-4 **and 3-of-4**, on four separate commits. That is the
+fourth consecutive set where honouring the rule cost something. The
+wording is *not computed* rather than *not reported*, because a number in
+hand leaks into how the next sentence gets phrased.
+
+**THE SPREAD WAS RECOMPUTED FROM RAW SECONDS, NOT FROM THE PUBLISHED
+FOUR-DECIMAL RATIOS**, and the distinction is not cosmetic: from the
+rounded ratios it comes to 4.3980 instead of 4.3988. Checked against the
+record rather than assumed — set four's 5.3747 and set six's 4.6436
+reproduce exactly from raw seconds and come out 5.3770 and 4.6440 from
+the rounded ratios. So the earlier sets' figures are raw-seconds figures
+and this one is computed the same way, which is the only basis on which
+the eight spreads may be compared at all.
+
+Set eight's median is the **second highest of the eight** and its spread
+the **fifth widest**; neither is made anything of. Set five's 0.72115
+still leads the medians, and this note has already had to correct itself
+for reasoning about a "highest of N" that was singled out *because* it was
+highest.
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
@@ -330,14 +369,18 @@ Set five's median 0.72115 was the highest of the five medians (0.3594,
 0.4291, 0.5026, 0.2125, 0.72115) when this was written. **P(a given set is
 the highest of five | no structure) = 0.20**, so being highest was worth
 nothing on its own. **Updated when set seven closed:** 0.72115 is still
-the highest, now of seven (0.5678 and 0.5962 both came in below it).
+the highest, **now of eight** (0.5678, 0.5962 and 0.6766 all came in
+below it, set eight's the closest yet at 0.045 short).
 **That is worth no more than it was, and the 1/N figure is not the right
 one anyway.** P(highest of N) = 1/N applies to a set NAMED IN ADVANCE; set
 five was singled out *because* it came out highest, and under no structure
-P(some set is the highest of seven) = 1. Surviving two more sets does not
-convert a post-hoc maximum into evidence — a maximum exists in every list,
-and this one has simply not moved yet. Spreads 54.99×, 8.15×, 2.06×, 5.3747×,
-2.8226× were not monotone then and the full seven are not monotone now.
+P(some set is the highest of eight) = 1. Surviving three more sets does
+not convert a post-hoc maximum into evidence — a maximum exists in every
+list, and this one has simply not moved yet. **A near-miss is not evidence
+either**: set eight coming within 0.045 of it is not the maximum being
+"nearly confirmed", because there was never a prediction to confirm.
+Spreads 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226× were not monotone then and
+the full eight are not monotone now.
 
 Set four in full (all four members restarted at the **same instant**, so
 their re-run clocks are directly comparable):
@@ -433,28 +476,52 @@ involved here either.
 3 at `e72fbb6` `[927, 928, 929]`. It closed when idx 928 landed after
 7053.6 s, moving the frontier 927 -> 935 in one step.
 
-**ALL FIVE SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 84** —
+**The twentieth span, closed by `ca5ce5a`.** Duration **2:19:09**
+(2.3192 h), opened after `dc013e9`, 2 broken commits, hole counts `2,1`,
+monotone non-increasing **True**, most holes at once 2 at `ca3dd13`
+`[950, 951]`. It opened when idx 952 landed above the frontier and closed
+when idx 951 filled the last hole. **A restart WAS involved** — it opened
+on the commit that absorbed restart #40, whose four re-taken cubes landed
+out of index order. Its `True` rests on a **single comparison**, 2 → 1,
+which is one coin flip; see the partition below.
+
+**ALL SIX SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 85** —
 because a rank against a growing population goes stale each time the
-population grows, and these have now been restated five times for that
-reason alone:
+population grows, and these have now been restated six times for that
+reason alone. **Every rank below moved or was re-derived in the same run**;
+none was carried over with its denominator relabelled, which is the error
+this note recorded against itself at restart #40:
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 22 of 84 | 2 | 47 of 84 (18 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 30 of 84 | 2 | 47 of 84 (18 tied) |
-| seventeenth `75ff84b` | 2:36:20 | **13 of 84** | 8 | **19 of 84** (5 tied) |
-| eighteenth `faa424a` | 1:06:55 | 26 of 84 | 8 | 19 of 84 (5 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 36 of 84 | 1 | 65 of 84 (20 tied) |
+| fifteenth `a5172c7` | 1:29:45 | 23 of 85 | 2 | 47 of 85 (18 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 31 of 85 | 2 | 47 of 85 (18 tied) |
+| seventeenth `75ff84b` | 2:36:20 | **13 of 85** | 8 | **19 of 85** (4 tied) |
+| eighteenth `faa424a` | 1:06:55 | 27 of 85 | 8 | 19 of 85 (4 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 37 of 85 | 1 | 66 of 85 (19 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 17 of 85 | 2 | 47 of 85 (18 tied) |
 
-Read through the distribution: **26 of 84 ran longer than an hour** and
-**40 of 84 longer than a second**, so the seventeenth's rank 13 of 84 is
-rank 13 of the 40 that lasted at all.
+**"(N tied)" means N OTHER spans share that commit count**, the span
+itself excluded. The previous table's tie figures were one higher for the
+seventeenth, eighteenth and nineteenth, which is a change of **definition,
+not of data** — adding one 2-commit span cannot change how many spans have
+8 commits. Recording it because a reader comparing the two tables would
+otherwise read a spurious movement, and because the whole point of
+recomputing in one run is that every number in the table is under the same
+definition.
 
-The seventeenth and eighteenth **tie on commit count at 19 of 84 while
+Read through the distribution: **27 of 85 ran longer than an hour** and
+**41 of 85 longer than a second**, so the seventeenth's rank 13 of 85 is
+rank 13 of the 41 that lasted at all, and the twentieth's 17 of 85 is 17
+of that same 41. **More than half the record is spans that did not last a
+second** — 44 of 85, which is 85 minus the 41 above — so a duration rank
+in the middle of 85 is near the bottom of the spans that happened at all.
+
+The seventeenth and eighteenth **tie on commit count at 19 of 85 while
 differing by 89 minutes on duration** — the same disagreement between the
 two rankings that the sixth span's entry already noted, not a new one.
 **The seventeenth's** two ranks agree far better than the fifteenth's do
-— 13 and 19 against 22 and 47 — and that is not a finding: the fifteenth
+— 13 and 19 against 23 and 47 — and that is not a finding: the fifteenth
 spent its time with almost nothing landing because a restart had just
 re-taken four long cubes, while the seventeenth and eighteenth each
 accumulated eight commits in the ordinary way.
@@ -513,31 +580,40 @@ back out of `--spans all`, not recalled:
 | 17 | `75ff84b` | 1,1,2,2,1,2,1,1 | 7 | False |
 | 18 | `faa424a` | 3,2,2,2,1,2,2,1 | 7 | False |
 | 19 | `0362b4f` | 1 | **0** | True — vacuous |
+| 20 | `ca5ce5a` | 2,1 | 1 | True |
 
-**Ten True of nineteen** — and the breakdown is where the weight goes.
-**Three of the ten contain zero comparisons and could not have come out
-False** (spans 5, 10 and **19**); **five more rest on a single
-comparison** (3, 8, 11, 15 and 16), which is one coin flip each; **only
-two carry more than one** (span 4 with two, span 6 with four). The
+**Eleven True of twenty** — and the breakdown is where the weight goes.
+**Three of the eleven contain zero comparisons and could not have come
+out False** (spans 5, 10 and 19); **six more rest on a single
+comparison** (3, 8, 11, 15, 16 and **20**), which is one coin flip each;
+**only two carry more than one** (span 4 with two, span 6 with four). The
 seventeenth and eighteenth both came back **False** on seven comparisons
 each; the nineteenth came back True on **zero**. The partition is
-produced by a script that asserts 3 + 5 + 2 = 10 against the True count,
-per the rule below.
+produced by a script that asserts 3 + 6 + 2 = 11 against the True count,
+per the rule below. The same run **re-derived the comparison count and
+the monotone verdict from every chain in the table** and found **no
+mismatch** in the eighteen it could check; span 7's chain is elided in the
+table with `…` and is not re-derivable from it, so it is kept as recorded
+rather than silently counted as verified.
 
 **THE NINETEENTH'S `True` IS VACUOUS AND MUST NOT BE READ AS AN
 OBSERVATION.** Its chain is `1`: one commit, one hole count, therefore
 zero comparisons. A single number is non-increasing by definition, so
 `True` there means only that the tool ran — exactly what this note
-already says about spans 5 and 10. The headline moved from 9/18 to 10/19
-and **the evidence did not move at all**: the "more than one comparison"
-column is still 2, where it has stood since span 6, now thirteen
-consecutive spans.
+already says about spans 5 and 10. The headline has now moved 9/18 →
+10/19 → **11/20** and **the evidence has not moved at all**: the "more
+than one comparison" column is still 2, where it has stood since span 6,
+now **fourteen consecutive spans**. The twentieth is the sixth True to
+rest on a single comparison. **A count of Trues is not evidence of
+monotonicity** and this is exactly why the partition is printed beside it:
+the headline climbs on vacuous and one-flip verdicts while the column that
+would carry weight has not gained a member in fourteen spans.
 
-The same script re-derives every chain in the table to its recorded
-comparison count and verdict, and all of them agree — so **spans 15
-through 19 were each added by recomputing the table, not by appending to
-it**, which is the rule that a table gains a row only by recomputing
-every row.
+**Spans 15 through 20 were each added by recomputing the table, not by
+appending to it** — a table gains a row only by recomputing every row.
+The re-derivation result itself is stated once, in the partition paragraph
+above, and deliberately not repeated here: writing the same quantity twice
+in one section is a defect this file has logged five times.
 
 **THE TRUE COUNT KEEPS RISING AND THE EVIDENCE DOES NOT.** Spans 15
 (`3,2`) and 16 (`2,1`) each give exactly one comparison and therefore
@@ -1629,11 +1705,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1121 -> 1122 rows)
+## State as of the last refresh (1122 -> 1123 rows)
 
-- **1122 rows; 953 labels decided; 953 UNSAT; 0 SAT; 0 labels
+- **1123 rows; 954 labels decided; 954 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38, #39 or #40.
-  A row count is not a decision count: 953 decided plus 169 superseded
+  A row count is not a decision count: 954 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21172**, launched 2026-09-18T20:44:48.670000Z (read from
@@ -1648,25 +1724,18 @@ Task outputs live at
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
   are running.
-- **Frontier contiguous 0..952, highest decided 952, holes [].**
+- **Frontier contiguous 0..953, highest decided 953, holes [].**
   <!-- SPAN-STATE: closed -->
-  **No span is open. The twentieth CLOSED with this row**, idx 951 filling
-  the last hole. It opened when idx 952 landed above the frontier leaving
-  950 and 951 behind it. **Its figures are NOT in this commit** — duration,
-  commit count and hole chain come from `--spans all`, which reads the
-  commit sequence, so it cannot see a span until the commit that closes it
-  exists. They go in the NEXT commit, together with **every quoted span
-  rank recomputed against the new N in one run**. **bank.py's new span
-  guard is what caught the close**, on its first real occasion: it printed
-  `holes [] but the note still says 'A SPAN IS OPEN'` and named the remedy.
-  The nineteenth closed at `0362b4f`, filled by idx 946 after a single
-  commit with a single hole: **0:20:28, 1 commit, chain `1`, monotone True
-  but VACUOUS on zero comparisons**, rank 36 of 84 by duration and 65 of 84
-  by commit count. The fifteenth through nineteenth sit in one table above,
-  with all five ranks recomputed together against the 84 that was current
-  then — **every one of those ranks is stale as of this commit** and is
-  recomputed with the twentieth's, in one run, in the next.
-- **953 of 1949 = 48.8969%**; **996 undecided**. **48% IS CROSSED**, at
+  **No span is open.** The twentieth closed at `ca5ce5a`, opened by idx 952
+  landing above the frontier and filled by idx 951: **2:19:09, 2 commits,
+  chain `2,1`, monotone True on a SINGLE comparison**, rank 17 of 85 by
+  duration and 47 of 85 by commit count. **bank.py's span guard is what
+  caught the close**, on its first real occasion, and then turned up two
+  defects in itself — see the error patterns. The fifteenth through
+  twentieth sit in one table above, **all six ranks recomputed together
+  against the current 85**, none carried over with a relabelled
+  denominator.
+- **954 of 1949 = 48.9482%**; **995 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1710,7 +1779,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **18 decided**, undecided 20 spanning 953..972
+  **19 decided**, undecided 19 spanning 954..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
