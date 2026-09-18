@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T04:19Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T04:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -907,14 +907,37 @@ Registration discipline, learned the hard way:
   877/1949 = 44.9974% rounds to 45.0 and is **not** above 45; 878/1949 =
   45.0487% is. **Fifth stop on a rounds-up-but-below figure** — 40.9954%,
   41.9702%, 42.9964%, 43.9713%, 44.9974%. That the counter keeps stopping
-  there is not a discovery: every threshold `ceil(0.01k × 1949)` has a
-  predecessor that rounds up to the same tenth, and the counter passes
-  through every integer, so it stops on all of them. Five for five is
-  arithmetic, not a streak. Writing it out in advance is not a prediction;
+  there is not a discovery: **97 of the 99** thresholds
+  `ceil(0.01k × 1949)` have a predecessor that rounds up to the same
+  tenth, and the counter passes through every integer, so it stops on
+  almost all of them. Five for five was arithmetic, not a streak.
+  **CORRECTION, recorded when the counter reached 896.** This bullet
+  used to say *every* threshold has such a predecessor. That is false.
+  Computed over all k in 1..99, **two thresholds have no trap: k = 2**
+  (predecessor 38, 1.9497%, rounds to 1.9) **and k = 51** (predecessor
+  993, 50.9492%, rounds to 50.9). The second is reachable by this sweep:
+  **at 51% there will be no rounds-up-but-below stop at all**, so the
+  absence of one there is not evidence of anything either. The
+  generalisation was asserted from five instances without ever being
+  computed across the range; the range was computed only when the sixth
+  instance arrived, and it came back 97, not 99.
+  Writing it out in advance is not a prediction;
   it only means the crossing gets checked instead of rounded into.
   Next: **46% needs `ceil(0.46 × 1949) = 897`** decided, and the trap is
   there again: 896/1949 = 45.9723% rounds to 46.0 and is **not** above 46;
   897/1949 = 46.0236% is.
+  **46% — THE TRAP IS NOW LIVE, AND THE COUNTER IS SITTING ON IT.** The
+  decided count reached **896 = 45.9723%** at cube index 895. That rounds
+  to 46.0 and is **not** above 46, so **46% IS NOT CROSSED**; it needs
+  **897**. Sixth stop on a rounds-up-but-below figure: 40.9954%,
+  41.9702%, 42.9964%, 43.9713%, 44.9974%, **45.9723%**. The trap went on
+  the record at `7202b55`, when the decided count was **878** — **18
+  rows** before the counter reached it. After this
+  one, **47% needs `ceil(0.47 × 1949) = 917`**, trap at 916 = 46.9985%
+  — both read from the tool. A hand multiplication of 0.47 × 1949 in
+  this same session came out one short (915.03 instead of 916.03) and
+  would have put the threshold at 916; that is why these figures are
+  computed and never multiplied in the head.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1244,27 +1267,29 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1063 -> 1064 rows)
+## State as of the last refresh (1064 -> 1065 rows)
 
-- **1064 rows; 895 labels decided; 895 UNSAT; 0 SAT; 0 labels
+- **1065 rows; 896 labels decided; 896 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 895 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 896 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..894, highest decided 894, holes [].**
+- **Frontier contiguous 0..895, highest decided 895, holes [].**
   **No span is open.** The fourteenth closed at `e5c0c73` and its figures
   are recorded above, from the tool, after that commit existed.
-- **895 of 1949 = 45.9210%**; **1054 undecided**. **45% IS CROSSED**, at
+- **896 of 1949 = 45.9723%**; **1053 undecided**. **45% IS CROSSED**, at
   cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
-  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
-  stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
-  44.9974%. The crossing list and the reason the counter keeps stopping
-  there live in the percent-arithmetic bullet above **and nowhere else**;
-  this line states only where the counter is and what the next threshold
-  needs.
+  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
+  stop list, the correction to the "every threshold" claim, and the
+  reason the counter keeps hitting these figures live in the
+  percent-arithmetic bullet above **and nowhere else** — the duplicate
+  list that used to sit here has been removed, because the note's own
+  rule said it should not be in two places and a figure kept in two
+  places is a figure that goes stale in one. This line states only where
+  the counter is and what the next threshold needs.
 - **The counter is not the rung.** More than two fifths of the sub-cubes are
   decided and every one came back UNSAT, and that settles nothing: deg(0) =
   13 is UNSAT only when **all 1949** are, and any one of the undecided cubes
@@ -1291,7 +1316,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **9 decided** — the upward
+  886..934, **49 members**, contiguity verified, **10 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
