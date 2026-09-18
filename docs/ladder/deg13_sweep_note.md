@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1162,22 +1162,22 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1046 -> 1047 rows)
+## State as of the last refresh (1047 -> 1048 rows)
 
-- **1047 rows; 878 labels decided; 878 UNSAT; 0 SAT; 0 labels
+- **1048 rows; 879 labels decided; 879 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 878 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 879 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..872, highest decided 880, holes
+- **Frontier contiguous 0..872, highest decided 881, holes
   [873, 878, 879].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **878 of 1949 = 45.0487%**; **1071 undecided**. **45% IS CROSSED**, at
+- **879 of 1949 = 45.1001%**; **1070 undecided**. **45% IS CROSSED**, at
   cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
   stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
@@ -1214,7 +1214,7 @@ Task outputs live at
   asserted, and the conditional half of that flag has failed three of five
   times. `[13,13,12,3]`: idx 875..879, 5 members, contiguity verified,
   **3 decided**, undecided 878 and 879. `[13,13,12,2]`: idx 880..882, 3
-  members, contiguity verified, **1 decided**. Three open at once is **not
+  members, contiguity verified, **2 decided**. Three open at once is **not
   a first** — `3555e44` and `3910ea8` each had three open
   (`[13,13,13,4]`, `[13,13,13,3]`, `[13,13,13,2]`), found by walking all
   867 commits that have touched the checkpoint rather than by assuming it
@@ -1237,6 +1237,15 @@ Task outputs live at
   had to be retracted in either direction. **The condition holding is not
   the same as having predicted it** — and it has now failed to hold three
   times out of five, which is the better reason not to have asserted it.
+
+  *The note's status timestamp was typed ahead of the clock TWICE IN
+  CONSECUTIVE COMMITS — 03:06Z when `date -u` said 03:04Z, then 03:07Z when
+  it said 03:06Z. The second happened one commit after the first was logged
+  with the rule "timestamps are read, not typed", which is the clearest
+  demonstration this file has that **a rule about my own care is not a
+  control**. The fix is mechanical: the status line is now written by a
+  script that calls `date -u` and substitutes the result, so there is no
+  step at which a number can be typed.*
 
   *idx 865's cell carries no hash because **a commit cannot cite itself**.
   Writing the commit's own short hash into the file it commits changes the
