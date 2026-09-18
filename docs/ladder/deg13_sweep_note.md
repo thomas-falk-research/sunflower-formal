@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T04:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T04:46Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -926,14 +926,25 @@ Registration discipline, learned the hard way:
   Next: **46% needs `ceil(0.46 × 1949) = 897`** decided, and the trap is
   there again: 896/1949 = 45.9723% rounds to 46.0 and is **not** above 46;
   897/1949 = 46.0236% is.
-  **46% — THE TRAP IS NOW LIVE, AND THE COUNTER IS SITTING ON IT.** The
-  decided count reached **896 = 45.9723%** at cube index 895. That rounds
-  to 46.0 and is **not** above 46, so **46% IS NOT CROSSED**; it needs
-  **897**. Sixth stop on a rounds-up-but-below figure: 40.9954%,
-  41.9702%, 42.9964%, 43.9713%, 44.9974%, **45.9723%**. The trap went on
-  the record at `7202b55`, when the decided count was **878** — **18
-  rows** before the counter reached it. After this
-  one, **47% needs `ceil(0.47 × 1949) = 917`**, trap at 916 = 46.9985%
+  **46% — THE COUNTER STOPPED ON THE TRAP, THEN CROSSED.** The decided
+  count reached **896 = 45.9723%** at cube index 895. That rounds to 46.0
+  and is **not** above 46, so 46% was **not** crossed there. The next row
+  crossed it: **46% IS CROSSED at cube index 896**, 897/1949 =
+  **46.0236%**. Sixth stop on a rounds-up-but-below figure: 40.9954%,
+  41.9702%, 42.9964%, 43.9713%, 44.9974%, **45.9723%** — and the sixth
+  time the stop was written down before the counter got there rather than
+  being discovered on arrival. **That is checked, not asserted**: for
+  each trap, `git log -S<pct>` on this note gives the commit that first
+  wrote the figure, and `git log --grep="<pred> of 1949"` gives the
+  commit whose subject carries that decided count. The first precedes
+  the second in all six cases, by 1 h 33 m at the narrowest (45.9723%,
+  written at `7202b55` with the count at **878**, reached at `d6e6359`
+  with the count at 896 — **18 rows** of counter movement) and 7 h 47 m
+  at the widest (41.9702%, `9b56f3f` then `fe83fc8`). This is a fact
+  about procedure, not about sunflowers: writing a threshold down early
+  costs nothing and is not evidence of anything except that the crossing
+  got checked. Next,
+  **47% needs `ceil(0.47 × 1949) = 917`**, trap at 916 = 46.9985%
   — both read from the tool. A hand multiplication of 0.47 × 1949 in
   this same session came out one short (915.03 instead of 916.03) and
   would have put the threshold at 916; that is why these figures are
@@ -1267,21 +1278,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1064 -> 1065 rows)
+## State as of the last refresh (1065 -> 1066 rows)
 
-- **1065 rows; 896 labels decided; 896 UNSAT; 0 SAT; 0 labels
+- **1066 rows; 897 labels decided; 897 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 896 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 897 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..895, highest decided 895, holes [].**
+- **Frontier contiguous 0..896, highest decided 896, holes [].**
   **No span is open.** The fourteenth closed at `e5c0c73` and its figures
   are recorded above, from the tool, after that commit existed.
-- **896 of 1949 = 45.9723%**; **1053 undecided**. **45% IS CROSSED**, at
-  cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
+- **897 of 1949 = 46.0236%**; **1052 undecided**. **46% IS CROSSED**, at
+  cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
   reason the counter keeps hitting these figures live in the
@@ -1316,7 +1327,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **10 decided** — the upward
+  886..934, **49 members**, contiguity verified, **11 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
