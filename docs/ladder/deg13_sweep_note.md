@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T05:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T06:47Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1216,6 +1216,17 @@ alongside it.**
   `git diff --cached` in the SAME tool call as the commit, never from an
   earlier resolution step. A push cannot be amended, so the correction
   lives in the next commit — which is where it went.
+  **The two tools disagreeing is the DETECTOR, not a bug** (added when
+  idx 903 and 904 were banked together). `bank.py` reads the STAGED blob;
+  `checkpoint_audit.py` reads the WORKING TREE. When a row lands between
+  the two runs they report different counts — bank.py said 1073 rows and
+  904 decided while the audit, seconds later, said 1074 and 905. That
+  gap is exactly the `e5c0c73` hazard becoming visible before the commit
+  instead of after it. **When they disagree, re-run bank.py** (it
+  re-stages and recomputes the note from the new staged blob) and do not
+  reconcile the numbers by hand or paste the audit's figures into a
+  message describing the smaller staged set. After the re-run, tree,
+  staged and the note all agree and the commit carries both rows.
 - A convenient population by accident (c9982c9, a22c6e7).
 - Two near-identical figures treated as corroboration (37d44af).
 - A mechanism reached for to dismiss something (f0866f6).
@@ -1278,20 +1289,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1071 -> 1072 rows)
+## State as of the last refresh (1072 -> 1074 rows)
 
-- **1072 rows; 903 labels decided; 903 UNSAT; 0 SAT; 0 labels
+- **1074 rows; 905 labels decided; 905 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 903 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 905 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..902, highest decided 902, holes [].**
+- **Frontier contiguous 0..904, highest decided 904, holes [].**
   **No span is open.** The fourteenth closed at `e5c0c73` and its figures
   are recorded above, from the tool, after that commit existed.
-- **903 of 1949 = 46.3315%**; **1046 undecided**. **46% IS CROSSED**, at
+- **905 of 1949 = 46.4341%**; **1044 undecided**. **46% IS CROSSED**, at
   cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1327,7 +1338,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **17 decided** — the upward
+  886..934, **49 members**, contiguity verified, **19 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
