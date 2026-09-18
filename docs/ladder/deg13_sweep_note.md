@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T19:00Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T19:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1521,25 +1521,27 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1115 -> 1116 rows)
+## State as of the last refresh (1116 -> 1117 rows)
 
-- **1116 rows; 947 labels decided; 947 UNSAT; 0 SAT; 0 labels
+- **1117 rows; 948 labels decided; 948 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 947 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 948 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..945, highest decided 947, holes [946].**
-  **THE NINETEENTH SPAN IS OPEN**, opened by idx 947 landing ahead of 946
-  on ordinary completion order. **Quote no span figure until it closes.**
-  The eighteenth closed at `faa424a` (1:06:55, 8 commits, chain
+- **Frontier contiguous 0..947, highest decided 947, holes [].**
+  **THE NINETEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 946; it had
+  been opened by idx 947 landing ahead of it on ordinary completion order.
+  **ITS FIGURES ARE NOT QUOTED HERE**: `--spans all` walks commits and
+  cannot see the closing commit until it exists, so they go in the commit
+  after this one. The eighteenth closed at `faa424a` (1:06:55, 8 commits, chain
   `3,2,2,2,1,2,2,1`, monotone FALSE, rank 26 of 83 by duration and 19 of
   83 by commit count); the fifteenth through eighteenth sit in one table
   above, with all four ranks recomputed together against the 83 closed at
   that time — a denominator that moves again when this span closes.
-- **947 of 1949 = 48.5890%**; **1002 undecided**. **48% IS CROSSED**, at
+- **948 of 1949 = 48.6403%**; **1001 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1583,7 +1585,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **12 decided**, undecided 26 spanning 946..972
+  **13 decided**, undecided 25 spanning 948..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
