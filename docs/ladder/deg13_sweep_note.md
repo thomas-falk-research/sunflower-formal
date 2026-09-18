@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:29Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1222,20 +1222,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1055 -> 1056 rows)
+## State as of the last refresh (1056 -> 1057 rows)
 
-- **1056 rows; 887 labels decided; 887 UNSAT; 0 SAT; 0 labels
+- **1057 rows; 888 labels decided; 888 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 887 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 888 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..885, highest decided 885, holes [].**
+- **Frontier contiguous 0..887, highest decided 887, holes [].**
   **No span is open.** The fourteenth closed at `e5c0c73` and its figures
   are recorded above, from the tool, after that commit existed.
-- **887 of 1949 = 45.5105%**; **1062 undecided**. **45% IS CROSSED**, at
+- **888 of 1949 = 45.5618%**; **1061 undecided**. **45% IS CROSSED**, at
   cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
   stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
@@ -1267,13 +1267,13 @@ Task outputs live at
   contiguity verified, closed by idx 865) — its stats are in that table too,
   which was fully recomputed when its row was added. **THE ENTIRE
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
-  cubes, every row in that table and every row recomputed when the last two
-  were added. **NO BLOCK IS OPEN.** **`[13,13,11,11]` is now OPEN**: idx 886..934, 49
-  members, contiguity verified, **1 decided** — the upward size
-  reset that was written down from `SEQ` several commits before it arrived,
-  so it lands as arithmetic. When it opens and later closes, record
-  its descriptive stats as descriptive stats, NOT findings, and do NOT
-  compare them across blocks.
+  cubes, every row in that table, and every row recomputed when the last
+  two were added. **The one open block is now `[13,13,11,11]`**: idx
+  886..934, **49 members**, contiguity verified, **2 decided** — the upward
+  size reset that was written down from `SEQ` several commits before it
+  arrived, so it lands as arithmetic rather than a surprise. When it
+  closes, record its descriptive stats as descriptive stats, NOT findings,
+  and do NOT compare them across blocks.
   **FOUR BLOCKS WERE OPEN IN THE FILE AT 03:10Z AND NO COMMIT EVER SHOWED
   IT.** Rows arrived faster than commits, so the four-open state existed
   between two writes and this commit already shows two. The historical
