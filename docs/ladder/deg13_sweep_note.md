@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T15:05Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T15:13Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1468,26 +1468,32 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1095 -> 1096 rows)
+## State as of the last refresh (1096 -> 1097 rows)
 
-- **1096 rows; 927 labels decided; 927 UNSAT; 0 SAT; 0 labels
+- **1097 rows; 928 labels decided; 928 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 927 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 928 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..926, highest decided 926, holes [].**
-  **No span is open.** The seventeenth closed at `75ff84b`, filled by idx
-  921 after it ran 9372.4 s; the frontier moved 920 -> 926 in one step
-  because six rows were already banked above the hole. Its figures were
-  read from `--spans all` after `75ff84b` existed and are recorded above:
-  **2:36:20, 8 commits, chain `1,1,2,2,1,2,1,1`, monotone FALSE**, rank 13
-  of 82 by duration and 19 of 82 by commit count. The fifteenth and
-  sixteenth are there too, with all three ranks recomputed together
-  against the current 82.
-- **927 of 1949 = 47.5629%**; **1022 undecided**. **47% IS CROSSED**, at
+- **Frontier contiguous 0..926, highest decided 930, holes [927, 928, 929].**
+  **THE EIGHTEENTH SPAN IS OPEN**, and it opened with **three holes at
+  once**: idx 930 finished in 470.4 s and landed ahead of 927, 928 and
+  929, all still running. A span opening at three is not unusual: of the
+  seventeen closed spans, **8 opened at 3 holes, 5 at 2 and 4 at 1**
+  (counted from the chains in the table, after a first draft of this line
+  guessed "six of the seventeen" and the count came back 8). It says
+  nothing about those three cubes except that a very cheap one finished
+  first. **Quote no span
+  figure until it closes.** The seventeenth closed at `75ff84b`
+  (2:36:20, 8 commits, chain `1,1,2,2,1,2,1,1`, monotone FALSE, rank 13 of
+  82 by duration and 19 of 82 by commit count); it, the sixteenth and the
+  fifteenth are recorded above, with all three ranks recomputed together
+  against the 82 closed at that time — a denominator that moves again when
+  this span closes.
+- **928 of 1949 = 47.6142%**; **1021 undecided**. **47% IS CROSSED**, at
   cube index 915. Next: **48% needs `ceil(0.48 × 1949) = 936`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1523,7 +1529,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **41 decided** — the upward
+  886..934, **49 members**, contiguity verified, **42 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
