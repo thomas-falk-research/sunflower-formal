@@ -381,24 +381,36 @@ idx 921 landed after 9372.4 s, moving the frontier 920 -> 926 in one step
 because six rows were already banked above the hole. No restart was
 involved here either.
 
-**ALL THREE SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 82** —
+**The eighteenth span, closed by `faa424a`.** Duration **1:06:55**
+(1.1153 h), opened after `75ff84b`, **8 broken commits**, hole counts
+`3,2,2,2,1,2,2,1`, **monotone non-increasing FALSE**, most holes at once
+3 at `e72fbb6` `[927, 928, 929]`. It closed when idx 928 landed after
+7053.6 s, moving the frontier 927 -> 935 in one step.
+
+**ALL FOUR SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 83** —
 because a rank against a growing population goes stale each time the
-population grows, and these have now been restated three times for that
+population grows, and these have now been restated four times for that
 reason alone:
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 22 of 82 | 2 | 46 of 82 (18 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 29 of 82 | 2 | 46 of 82 (18 tied) |
-| seventeenth `75ff84b` | 2:36:20 | **13 of 82** | 8 | **19 of 82** (4 tied) |
+| fifteenth `a5172c7` | 1:29:45 | 22 of 83 | 2 | 47 of 83 (18 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 30 of 83 | 2 | 47 of 83 (18 tied) |
+| seventeenth `75ff84b` | 2:36:20 | **13 of 83** | 8 | **19 of 83** (5 tied) |
+| eighteenth `faa424a` | 1:06:55 | 26 of 83 | 8 | 19 of 83 (5 tied) |
 
-Read through the distribution: **25 of 82 ran longer than an hour** and
-**38 of 82 longer than a second**, so the seventeenth's rank 13 of 82 is
-rank 13 of the 38 that lasted at all. Its two ranks agree far better than
-the fifteenth's did — 13 and 19 against 22 and 46 — and that is not a
-finding: the fifteenth spent its time with almost nothing landing because
-a restart had just re-taken four long cubes, while this one accumulated
-eight commits in the ordinary way.
+Read through the distribution: **26 of 83 ran longer than an hour** and
+**39 of 83 longer than a second**, so the seventeenth's rank 13 of 83 is
+rank 13 of the 39 that lasted at all.
+
+The seventeenth and eighteenth **tie on commit count at 19 of 83 while
+differing by 89 minutes on duration** — the same disagreement between the
+two rankings that the sixth span's entry already noted, not a new one.
+**The seventeenth's** two ranks agree far better than the fifteenth's do
+— 13 and 19 against 22 and 47 — and that is not a finding: the fifteenth
+spent its time with almost nothing landing because a restart had just
+re-taken four long cubes, while the seventeenth and eighteenth each
+accumulated eight commits in the ordinary way.
 
 *A first draft of the fifteenth's paragraph called it "the sharpest rank
 disagreement yet" on the strength of comparing it to the sixth span and
@@ -429,7 +441,7 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**Seventeen** spans, and the verdict tally needs its COMPARISON COUNTS
+**Eighteen** spans, and the verdict tally needs its COMPARISON COUNTS
 beside it or it reads as more evidence than it is. Every row below was read
 back out of `--spans all`, not recalled:
 
@@ -452,14 +464,16 @@ back out of `--spans all`, not recalled:
 | 15 | `a5172c7` | 3,2 | 1 | True |
 | 16 | `cae2b5d` | 2,1 | 1 | True |
 | 17 | `75ff84b` | 1,1,2,2,1,2,1,1 | 7 | False |
+| 18 | `faa424a` | 3,2,2,2,1,2,2,1 | 7 | False |
 
-**Nine True of seventeen** — and the breakdown is where the weight goes.
+**Nine True of eighteen** — and the breakdown is where the weight goes.
 **Two of the nine contain zero comparisons and could not have come out
 False** (spans 5 and 10); **five more rest on a single comparison**
 (3, 8, 11, 15 and 16), which is one coin flip each; **only two carry more
-than one** (span 4 with two, span 6 with four). The seventeenth came back
-**False** on seven comparisons, so the True count did not move while the
-denominator did. The partition is produced
+than one** (span 4 with two, span 6 with four). The seventeenth and the
+eighteenth both came back **False** on seven comparisons each, so the True
+count has not moved for two spans running while the denominator moved
+twice. The partition is produced
 by a script that asserts 2 + 5 + 2 = 9 against the True count, per the
 rule below. The same script re-derives every chain in the table to its
 recorded comparison count and verdict, and all of them agree — so spans 15
@@ -1518,22 +1532,15 @@ Task outputs live at
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
 - **Frontier contiguous 0..935, highest decided 935, holes [].**
-  **THE EIGHTEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 928 after
-  it ran 7053.6 s; the frontier moved 927 -> 935 in one step. It had
-  opened with **three holes at once** when idx 930 finished in 470.4 s and
-  landed ahead of 927, 928 and 929. A span opening at three is not
-  unusual: of the seventeen spans closed before it, **8 opened at 3 holes,
-  5 at 2 and 4 at 1** (counted from the chains in the table, after a first
-  draft guessed "six of the seventeen" and the count came back 8).
-  **ITS FIGURES ARE NOT QUOTED HERE**: `--spans all` walks commits and
-  cannot see the closing commit until it exists, so duration, ranks, chain
-  and monotonicity go in the commit after this one. The seventeenth closed
-  at `75ff84b`
-  (2:36:20, 8 commits, chain `1,1,2,2,1,2,1,1`, monotone FALSE, rank 13 of
-  82 by duration and 19 of 82 by commit count); it, the sixteenth and the
-  fifteenth are recorded above, with all three ranks recomputed together
-  against the 82 closed at that time — a denominator that moves again when
-  this span closes.
+  **No span is open.** The eighteenth closed at `faa424a`, filled by idx
+  928 after it ran 7053.6 s; the frontier moved 927 -> 935 in one step. It
+  had opened with three holes when idx 930 finished in 470.4 s and landed
+  ahead of 927, 928 and 929. Its figures were read from `--spans all`
+  after `faa424a` existed and are recorded above: **1:06:55, 8 commits,
+  chain `3,2,2,2,1,2,2,1`, monotone FALSE**, rank 26 of 83 by duration and
+  19 of 83 by commit count. The fifteenth through eighteenth now sit in
+  one table there, with all four ranks recomputed together against the
+  current 83.
 - **936 of 1949 = 48.0246%**; **1013 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
