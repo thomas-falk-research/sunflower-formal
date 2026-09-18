@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T02:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T02:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1148,21 +1148,22 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1039 -> 1040 rows)
+## State as of the last refresh (1040 -> 1041 rows)
 
-- **1040 rows; 871 labels decided; 871 UNSAT; 0 SAT; 0 labels
+- **1041 rows; 872 labels decided; 872 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 871 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 872 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..864, highest decided 871, holes [865].**
+- **Frontier contiguous 0..864, highest decided 874, holes
+  [865, 872, 873].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **871 of 1949 = 44.6896%**; **1078 undecided**. **44% IS CROSSED**, at
+- **872 of 1949 = 44.7409%**; **1077 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
   decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
@@ -1196,9 +1197,9 @@ Task outputs live at
   undecided member, so that row closes the block; whether it also closes the
   fourteenth span depends on the frontier line above at the moment it lands,
   not on this sentence. `[13,13,12,4]`: idx 868..874, 7 members, contiguity
-  verified, **4 decided**. When either closes, record its descriptive stats
-  as descriptive stats, NOT findings, and do NOT compare them across
-  blocks.
+  verified, **5 decided**, undecided 872 and 873. When either closes, record
+  its descriptive stats as descriptive stats, NOT findings, and do NOT
+  compare them across blocks.
   **FOUR rows have been flagged in advance as possible double closures,
   each stated CONDITIONALLY, and the outcomes are all four different.**
   Re-derived from the commits, not recalled:
