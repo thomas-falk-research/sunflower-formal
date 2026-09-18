@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T15:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T15:58Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1468,17 +1468,17 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1100 -> 1101 rows)
+## State as of the last refresh (1101 -> 1102 rows)
 
-- **1101 rows; 932 labels decided; 932 UNSAT; 0 SAT; 0 labels
+- **1102 rows; 933 labels decided; 933 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 932 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 933 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..927, highest decided 932, holes [928].**
+- **Frontier contiguous 0..927, highest decided 934, holes [928, 933].**
   **THE EIGHTEENTH SPAN IS OPEN**, and it opened with **three holes at
   once**: idx 930 finished in 470.4 s and landed ahead of 927, 928 and
   929, all still running. A span opening at three is not unusual: of the
@@ -1493,7 +1493,7 @@ Task outputs live at
   fifteenth are recorded above, with all three ranks recomputed together
   against the 82 closed at that time — a denominator that moves again when
   this span closes.
-- **932 of 1949 = 47.8194%**; **1017 undecided**. **47% IS CROSSED**, at
+- **933 of 1949 = 47.8707%**; **1016 undecided**. **47% IS CROSSED**, at
   cube index 915. Next: **48% needs `ceil(0.48 × 1949) = 936`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1529,7 +1529,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **46 decided** — the upward
+  886..934, **49 members**, contiguity verified, **47 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
