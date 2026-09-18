@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T18:47Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T19:00Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1521,27 +1521,25 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1114 -> 1115 rows)
+## State as of the last refresh (1115 -> 1116 rows)
 
-- **1115 rows; 946 labels decided; 946 UNSAT; 0 SAT; 0 labels
+- **1116 rows; 947 labels decided; 947 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 946 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 947 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..945, highest decided 945, holes [].**
-  **No span is open.** The eighteenth closed at `faa424a`, filled by idx
-  928 after it ran 7053.6 s; the frontier moved 927 -> 935 in one step. It
-  had opened with three holes when idx 930 finished in 470.4 s and landed
-  ahead of 927, 928 and 929. Its figures were read from `--spans all`
-  after `faa424a` existed and are recorded above: **1:06:55, 8 commits,
-  chain `3,2,2,2,1,2,2,1`, monotone FALSE**, rank 26 of 83 by duration and
-  19 of 83 by commit count. The fifteenth through eighteenth now sit in
-  one table there, with all four ranks recomputed together against the
-  current 83.
-- **946 of 1949 = 48.5377%**; **1003 undecided**. **48% IS CROSSED**, at
+- **Frontier contiguous 0..945, highest decided 947, holes [946].**
+  **THE NINETEENTH SPAN IS OPEN**, opened by idx 947 landing ahead of 946
+  on ordinary completion order. **Quote no span figure until it closes.**
+  The eighteenth closed at `faa424a` (1:06:55, 8 commits, chain
+  `3,2,2,2,1,2,2,1`, monotone FALSE, rank 26 of 83 by duration and 19 of
+  83 by commit count); the fifteenth through eighteenth sit in one table
+  above, with all four ranks recomputed together against the 83 closed at
+  that time — a denominator that moves again when this span closes.
+- **947 of 1949 = 48.5890%**; **1002 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1585,7 +1583,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **11 decided**, undecided 27 spanning 946..972
+  **12 decided**, undecided 26 spanning 946..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
