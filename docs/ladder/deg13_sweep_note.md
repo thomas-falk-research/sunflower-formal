@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T01:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T01:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -585,6 +585,13 @@ is this one. A single closest pair exists in every set of numbers; being
 the closest is not evidence of anything, and "two near-identical figures
 treated as corroboration" is already a registered error pattern (37d44af).
 
+**A FOURTEENTH SPAN IS OPEN** as of 01:53:18Z: idx 867 landed while 864,
+865 and 866 were still running. **No hole chain is stated here, not even
+the opening count** — the rule adopted for the thirteenth span, which cost
+nothing and removed the only way the tool's chain and a narrative sentence
+could disagree. The current holes are on the state line at the foot of this
+file; everything else comes from `--spans all` after it closes.
+
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
 `068b963`. More precisely, it is the last commit that **touched the
@@ -1141,20 +1148,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1032 -> 1033 rows)
+## State as of the last refresh (1033 -> 1034 rows)
 
-- **1033 rows; 864 labels decided; 864 UNSAT; 0 SAT; 0 labels
+- **1034 rows; 865 labels decided; 865 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 864 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 865 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..863, highest decided 863, holes [].**
-  **No span is open.** The thirteenth closed at `999f3bd` and its figures
-  are recorded above, from the tool, after that commit existed.
-- **864 of 1949 = 44.3304%**; **1085 undecided**. **44% IS CROSSED**, at
+- **Frontier contiguous 0..863, highest decided 867, holes
+  [864, 865, 866].** A **fourteenth span is OPEN**. The thirteenth closed
+  at `999f3bd` and its figures are recorded above, from the tool, after
+  that commit existed.
+- **865 of 1949 = 44.3817%**; **1084 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
   decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
@@ -1184,7 +1192,7 @@ Task outputs live at
   CLOSED 15/15** (idx 842..856, contiguity verified, closed by idx 854) —
   its stats are in that table too, which was fully recomputed when its row
   was added. **Only `[13,13,12,5]` is open**: idx 857..867, 11 members,
-  contiguity verified, **7 decided**. When it closes, record its
+  contiguity verified, **8 decided**. When it closes, record its
   descriptive stats as descriptive stats, NOT findings, and do NOT compare
   them across blocks.
   **Three block-closing rows have been flagged in advance as possible
@@ -1196,8 +1204,8 @@ Task outputs live at
   it were. **The condition holding is not the same as having predicted
   it**, and because each flag carried its own escape clause, nothing has
   had to be retracted in either direction.
-- **No span is open.** When one is, its holes are named on the frontier
-  line above **and nowhere else in this file.**
+- **One span is open.** Its holes are named on the frontier line above
+  **and nowhere else in this file.**
   They were once restated in this bullet as well, and that second copy was
   left at two holes while the frontier line said three; the block census can
   name the same indices, but as undecided members of a block, which is a
