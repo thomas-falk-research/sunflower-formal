@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T23:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T23:08Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1629,11 +1629,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1120 -> 1121 rows)
+## State as of the last refresh (1121 -> 1122 rows)
 
-- **1121 rows; 952 labels decided; 952 UNSAT; 0 SAT; 0 labels
+- **1122 rows; 953 labels decided; 953 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38, #39 or #40.
-  A row count is not a decision count: 952 decided plus 169 superseded
+  A row count is not a decision count: 953 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21172**, launched 2026-09-18T20:44:48.670000Z (read from
@@ -1648,22 +1648,25 @@ Task outputs live at
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
   are running.
-- **Frontier contiguous 0..950, highest decided 952, holes [951].**
-  **A SPAN IS OPEN — the twentieth.** idx 952 landed above the frontier
-  and left 950 and 951 behind it. **No figures are claimed for it yet**:
-  duration, commit count and hole chain are properties of the commit
-  sequence and are read from `--spans all` only after the span closes,
-  never from the file's instantaneous state. A hole that opened and closed
-  between commits would not be a span at all; this one is on the record
-  because this commit carries it. The nineteenth closed at `0362b4f`,
-  filled by idx 946 after a single commit with a single hole: **0:20:28,
-  1 commit, chain `1`, monotone True but VACUOUS on zero comparisons**,
-  rank 36 of 84 by duration and 65 of 84 by commit count. The fifteenth
-  through nineteenth sit in one table above, with all five ranks
-  recomputed together against the 84 that was current then — **those
-  ranks are now stale by construction and will be recomputed with the
-  twentieth's, together, when it closes.**
-- **952 of 1949 = 48.8456%**; **997 undecided**. **48% IS CROSSED**, at
+- **Frontier contiguous 0..952, highest decided 952, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **No span is open. The twentieth CLOSED with this row**, idx 951 filling
+  the last hole. It opened when idx 952 landed above the frontier leaving
+  950 and 951 behind it. **Its figures are NOT in this commit** — duration,
+  commit count and hole chain come from `--spans all`, which reads the
+  commit sequence, so it cannot see a span until the commit that closes it
+  exists. They go in the NEXT commit, together with **every quoted span
+  rank recomputed against the new N in one run**. **bank.py's new span
+  guard is what caught the close**, on its first real occasion: it printed
+  `holes [] but the note still says 'A SPAN IS OPEN'` and named the remedy.
+  The nineteenth closed at `0362b4f`, filled by idx 946 after a single
+  commit with a single hole: **0:20:28, 1 commit, chain `1`, monotone True
+  but VACUOUS on zero comparisons**, rank 36 of 84 by duration and 65 of 84
+  by commit count. The fifteenth through nineteenth sit in one table above,
+  with all five ranks recomputed together against the 84 that was current
+  then — **every one of those ranks is stale as of this commit** and is
+  recomputed with the twentieth's, in one run, in the next.
+- **953 of 1949 = 48.8969%**; **996 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1707,7 +1710,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **17 decided**, undecided 21 spanning 951..972
+  **18 decided**, undecided 20 spanning 953..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

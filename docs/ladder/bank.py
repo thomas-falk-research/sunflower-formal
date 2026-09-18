@@ -98,18 +98,32 @@ else:
 # sentence and not the prose after it, so it could rewrite one and leave the
 # other contradicting it.  It cannot write that prose -- a span's figures come
 # from `--spans all` after the span closes -- but it CAN refuse to be silent.
-says_none = "No span is open" in t
-says_open = "A SPAN IS OPEN" in t
-if holes and says_none:
+# The first version matched the PROSE ("No span is open" / "A SPAN IS OPEN")
+# and fired a FALSE POSITIVE the moment the note quoted the guard's own
+# message back at itself.  A substring guard cannot tell an assertion from a
+# quotation of an assertion.  It now reads an explicit marker, like the census
+# region, which prose cannot trigger by accident.
+SPAN_OPEN   = "<!-- SPAN-STATE: open -->"
+SPAN_CLOSED = "<!-- SPAN-STATE: closed -->"
+nopen, nclosed = t.count(SPAN_OPEN), t.count(SPAN_CLOSED)
+if nopen + nclosed != 1:
+    # A missing marker is not "consistent" -- the first version of this branch
+    # printed the refusal and then FELL THROUGH to a reassuring
+    # "span guard: ... -- consistent" line, which is the
+    # script-output-asserts-what-the-code-does-not-do pattern, inside a guard.
+    print(f"!! SPAN STATE MARKER MISSING OR AMBIGUOUS: {nopen} open, {nclosed} "
+          f"closed. Exactly one must be present. Restore it; do not guess. "
+          f"NO CONSISTENCY VERDICT IS GIVEN FOR THIS RUN.")
+elif holes and nclosed:
     print(f"!! SPAN PROSE CONTRADICTS THE FRONTIER: holes {holes} but the note "
           f"still says 'No span is open'. A SPAN HAS OPENED. Fix the prose; do "
           f"not claim figures for it until it closes.")
-elif not holes and says_open:
+elif not holes and nopen:
     print("!! SPAN PROSE CONTRADICTS THE FRONTIER: holes [] but the note still "
           "says 'A SPAN IS OPEN'. The span has CLOSED -- read its figures from "
           "`--spans all` AFTER this commit exists, and recompute every quoted "
           "span rank against the new N together.")
-elif holes and says_open:
+elif holes and nopen:
     print(f"span guard: holes {holes}, note says a span is open -- consistent. "
           f"No figures are claimed here; they come from `--spans all` on close.")
 else:
