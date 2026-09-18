@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T22:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T22:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -62,6 +62,7 @@ and `pgrep` outranks both.
 | `checkpoint_audit.py --spans all` (~20 s) | span record, hole trajectories, **computed** monotonicity, ranking, duration distribution. An **open span refuses a duration by design**; a windowed walk left-truncates and refuses to rank. |
 | `cnf_mtime_check.py` | validates the CNF-mtime method and prints in-flight cube→pid pairings **with elapsed seconds**. This is what tells you whether a forward-test target is still unobserved. |
 | `forward_test.py` | pinned to `REV_AS_RUN = 9528aa9`. `IDX` is keyed on the **label string**, `SEQ` is the list, `cube_list` is the function. |
+| `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
 
 Reuse the helpers with:
@@ -1555,6 +1556,20 @@ alongside it.**
   mechanical version of the rule: **before citing a commit for a figure,
   grep for the figure in it.** A citation nobody can follow is a fabricated
   identifier wearing a sentence instead of a hash.
+- **The tool the note calls mechanical had never been committed.** For its
+  whole life `bank.py` lived only in the session scratchpad while this file
+  named it as the thing that makes banking mechanical and told the reader
+  not to hand-edit the figures it owns. The scratchpad is ephemeral: it
+  survives a container restart in this environment but **not the container
+  being reclaimed**, and nothing in the repository would have let a later
+  session reproduce the banking. Found by running `git log --all` against
+  the path on a hunch while banking idx 952 — **no control was watching for
+  it**, and none of the diffs, audits or guards would ever have. It now
+  lives at `docs/ladder/bank.py` and is committed. The same shape as the entry
+  below it — a load-bearing thing whose only copy was somewhere that does
+  not survive — and this one is worse, because it is a tool rather than a
+  sentence and because the note asserted its authority while it was
+  unversioned.
 - **A rank whose denominator was relabelled instead of recomputed.** At #40
   three restart ranks quoted against n = 16 had their denominators changed
   to 17 by hand while the ranks themselves were carried over. **Two of the
@@ -1628,8 +1643,11 @@ Task outputs live at
   header block and the restart accounting but not this bullet, and
   `8fbe75a` and `ddeda8c` went by without catching it. It was found by
   reading the staged diff, which is the only control that has ever caught
-  it. bank.py does not own this line and cannot: the pid is not derivable
-  from the checkpoint.
+  it. bank.py did not own this line at the time and the note said it could
+  not; **it does now** — bank.py reads `pgrep -x iota_sym` and computes the
+  launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
+  same run, refusing loudly rather than guessing when zero or several pids
+  are running.
 - **Frontier contiguous 0..949, highest decided 952, holes [950, 951].**
   **A SPAN IS OPEN — the twentieth.** idx 952 landed above the frontier
   and left 950 and 951 behind it. **No figures are claimed for it yet**:
@@ -1686,7 +1704,7 @@ Task outputs live at
   block closes, record its descriptive stats as descriptive stats, NOT
   findings, and do NOT compare them across blocks.
 
-<!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
+<!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **16 decided**, undecided 22 spanning 950..972
