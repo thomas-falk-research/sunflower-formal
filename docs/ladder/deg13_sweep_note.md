@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T01:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T01:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1104,21 +1104,22 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1028 -> 1029 rows)
+## State as of the last refresh (1029 -> 1030 rows)
 
-- **1029 rows; 860 labels decided; 860 UNSAT; 0 SAT; 0 labels
+- **1030 rows; 861 labels decided; 861 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 860 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 861 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..853, highest decided 860, holes [854].**
+- **Frontier contiguous 0..853, highest decided 863, holes
+  [854, 861, 862].**
   A **thirteenth span is OPEN**. The twelfth closed at
   `4875392` and its figures are recorded above, from the tool, after that
   commit existed.
-- **860 of 1949 = 44.1252%**; **1089 undecided**. **44% IS CROSSED**, at
+- **861 of 1949 = 44.1765%**; **1088 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
   decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
@@ -1150,7 +1151,7 @@ Task outputs live at
   the block. Whether it also closes the thirteenth span depends on the
   frontier line above at the moment it lands, not on this sentence.
   `[13,13,12,5]`: idx 857..867, 11 members, contiguity verified,
-  **4 decided**. When either closes, record its descriptive stats as
+  **5 decided**. When either closes, record its descriptive stats as
   descriptive stats, NOT findings, and do NOT compare them across blocks.
   idx 838 closed that block **and** the twelfth span, the second such
   double closure after idx 832 at `b088217`. It was written down beforehand
