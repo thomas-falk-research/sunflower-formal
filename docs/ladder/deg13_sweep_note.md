@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T19:19Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T20:17Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1535,17 +1535,17 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1117 -> 1118 rows)
+## State as of the last refresh (1118 -> 1119 rows)
 
-- **1118 rows; 949 labels decided; 949 UNSAT; 0 SAT; 0 labels
+- **1119 rows; 950 labels decided; 950 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 949 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 950 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..948, highest decided 948, holes [].**
+- **Frontier contiguous 0..949, highest decided 949, holes [].**
   **No span is open.** The nineteenth closed at `0362b4f`, filled by idx
   946 after a single commit with a single hole. Its figures were read from
   `--spans all` after `0362b4f` existed and are recorded above: **0:20:28,
@@ -1553,7 +1553,7 @@ Task outputs live at
   rank 36 of 84 by duration and 65 of 84 by commit count. The fifteenth
   through nineteenth sit in one table above, with all five ranks
   recomputed together against the current 84.
-- **949 of 1949 = 48.6916%**; **1000 undecided**. **48% IS CROSSED**, at
+- **950 of 1949 = 48.7429%**; **999 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1597,7 +1597,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **14 decided**, undecided 24 spanning 949..972
+  **15 decided**, undecided 23 spanning 950..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
