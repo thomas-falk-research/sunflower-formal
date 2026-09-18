@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T09:11Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T09:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -168,7 +168,7 @@ is how each 0 ns difference was established.
 
 ---
 
-## Re-run sets — **six CLOSED**, **seven OPEN**
+## Re-run sets — **seven CLOSED**, none open
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -181,6 +181,7 @@ corrected at 060fb26 by checking it against published data).
 | four | `30f1fbd` | 4 | 0.2125 | 5.3747× |
 | five | `f05dc65` | 4 | 0.72115 | 2.8226× |
 | six | idx-832 commit | 4 | 0.5678 | 4.6436× |
+| seven | idx-907/909 commit | 4 | 0.5962 | 2.0116× |
 
 **SET SIX IS CLOSED**, by idx 832 — the same row that closed the eleventh
 span. It opened at restart #38 with idx **831, 832, 833, 834**, all four
@@ -204,19 +205,56 @@ anyway. It is not a virtue worth a paragraph — it is the only way the median
 means anything, because a median chosen after seeing which members landed
 first is a median chosen for its value.
 
-Ranked against **all 28 ratios now recorded** (sets one through six; the
-earlier 24 were re-read out of commits `8782234`, `cd2ad61`, `1e409e8`,
-`30f1fbd` and `f05dc65`, not recalled): set six's max **0.9367 ranks 3 of
-28**, and it is **below 1.0**, so the count of ratios above 1.0 is still
-**two** — 1.0063 (set one) and 1.0805 (set five). Set six's other three rank
-10, 13 and 23 of 28.
+**SET SEVEN IS CLOSED**, by the commit that banked idx 907 and idx 909
+together — the same commit that closed the fifteenth span. It opened at
+restart #39 with idx **907, 908, 909, 910**, all four killed at the same
+instant and all four relaunched together (launch + 60.7 s, CNFs within
+4.0 ms), so their re-run clocks are directly comparable:
 
-Medians across the six sets are 0.3594, 0.4291, 0.5026, 0.2125, 0.72115,
-**0.5678** — **not monotone in either direction**, checked, not eyeballed.
-Spreads are 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226×, **4.6436×** — also
-not monotone in either direction. Both sequences were called "a list, not a
-trend" from set three onward, and both have now gone up and down twice.
-Six points at n = 8, 4, 4, 4, 4, 4 still support no shape.
+| idx | discarded | re-run | ratio |
+|---|---|---|---|
+| 907 | 3371.5 | 5261.2 | 0.6408 |
+| 908 | 3346.7 | 5083.4 | 0.6584 |
+| 909 | 2902.2 | 5261.8 | 0.5516 |
+| 910 | 1041.5 | 3182.3 | 0.3273 |
+
+min 0.3273, **median 0.5962** (midpoint of 0.5516 and 0.6408), mean 0.5445,
+max 0.6584, spread 2.0116×. **No ratio exceeds 1.0.**
+
+Again the ratios were not computed until all four had landed — withheld at
+1-of-4 and at 2-of-4 on separate commits. The note's wording was *not
+computed* rather than *not reported*, because a number in hand is a number
+that leaks into how the next sentence gets phrased.
+
+**SET SEVEN'S SPREAD IS THE SMALLEST OF THE SEVEN — AND NOTHING IS MADE OF
+IT.** 2.0116× against set three's 2.06× is a margin of 0.05, and this note
+has just withdrawn a "flattest of the fifteen" claim that rested on a
+0.6-point margin between two restarts. A near-tie is not a ranking worth
+asserting, and noticing the second one right after withdrawing the first is
+the whole reason it is refused here. The medians and spreads across all
+seven sets, and the mechanical check that neither is monotone, are in the
+paragraph below and **not repeated here** — a first draft of this one
+carried its own copy of both lists, which is the same-quantity-written-
+twice defect this file has now logged five times, committed inside a
+paragraph about discipline. Seven sets are seven accidents of where four
+kills landed.
+
+Ranked against **all 32 ratios now recorded** (sets one through seven; the
+earlier 28 were re-read out of commits `8782234`, `cd2ad61`, `1e409e8`,
+`30f1fbd` and `f05dc65`, not recalled — re-read again when set seven
+closed, rather than adding four to a remembered 28). Set six's max
+**0.9367 ranks 3 of 32**. Set seven's four rank **10, 11, 14 and 21 of
+32**, and its max **0.6584 is below 1.0**, so the count of ratios above
+1.0 is still **two** — 1.0063 (set one) and 1.0805 (set five). Across all
+32 the largest is 1.0805 and the smallest 0.0183.
+
+Medians across the seven sets are 0.3594, 0.4291, 0.5026, 0.2125, 0.72115,
+0.5678, **0.5962** — **not monotone in either direction**, checked, not
+eyeballed. Spreads are 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226×, 4.6436×,
+**2.0116×** — also not monotone in either direction. Both sequences were
+called "a list, not a trend" from set three onward, and both have now gone
+up and down repeatedly. Seven points at n = 8, 4, 4, 4, 4, 4, 4 still
+support no shape.
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:
@@ -242,11 +280,18 @@ had already run. **No mechanism is proposed** and none is needed: the ratio
 depends on when the kill lands relative to a cube's total cost (bcf29c1),
 kills land uniformly in time, and nothing here predates the data.
 
-Set five's median 0.72115 is the highest of the five medians (0.3594,
-0.4291, 0.5026, 0.2125, 0.72115). **P(a given set is the highest of five |
-no structure) = 0.20**, so being highest is worth nothing on its own.
-Spreads 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226× are still not monotone and
-never were.
+Set five's median 0.72115 was the highest of the five medians (0.3594,
+0.4291, 0.5026, 0.2125, 0.72115) when this was written. **P(a given set is
+the highest of five | no structure) = 0.20**, so being highest was worth
+nothing on its own. **Updated when set seven closed:** 0.72115 is still
+the highest, now of seven (0.5678 and 0.5962 both came in below it).
+**That is worth no more than it was, and the 1/N figure is not the right
+one anyway.** P(highest of N) = 1/N applies to a set NAMED IN ADVANCE; set
+five was singled out *because* it came out highest, and under no structure
+P(some set is the highest of seven) = 1. Surviving two more sets does not
+convert a post-hoc maximum into evidence — a maximum exists in every list,
+and this one has simply not moved yet. Spreads 54.99×, 8.15×, 2.06×, 5.3747×,
+2.8226× were not monotone then and the full seven are not monotone now.
 
 Set four in full (all four members restarted at the **same instant**, so
 their re-run clocks are directly comparable):
@@ -1299,27 +1344,29 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1077 -> 1078 rows)
+## State as of the last refresh (1078 -> 1080 rows)
 
-- **1078 rows; 909 labels decided; 909 UNSAT; 0 SAT; 0 labels
+- **1080 rows; 911 labels decided; 911 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 909 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 911 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..906, highest decided 910, holes [907, 909].**
-  **THE FIFTEENTH SPAN IS OPEN**, opened by idx 910 landing ahead of 907,
-  908 and 909 — which is the re-run set seven ordering, not a regression:
-  rows land in COMPLETION order, never index order. **Quote no span figure
-  until it closes**: no duration, no rank, no hole-count chain, no
-  monotonicity verdict. Those come from `checkpoint_audit.py --spans all`
-  and only AFTER the closing commit exists, because a span's hole chain is
-  a property of the COMMIT SEQUENCE, not of the file's instantaneous
-  state. The fourteenth closed at `e5c0c73` and its figures are recorded
-  above, from the tool, after that commit existed.
-- **909 of 1949 = 46.6393%**; **1040 undecided**. **46% IS CROSSED**, at
+- **Frontier contiguous 0..910, highest decided 910, holes [].**
+  **THE FIFTEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 907 and idx
+  909 landing together. It was opened by idx 910 landing ahead of 907, 908
+  and 909 — the re-run set seven ordering, not a regression: rows land in
+  COMPLETION order, never index order. **ITS FIGURES ARE NOT YET QUOTED
+  HERE** — no duration, no rank, no hole-count chain, no monotonicity
+  verdict. They come from `checkpoint_audit.py --spans all` and only AFTER
+  the closing commit exists, because a span's hole chain is a property of
+  the COMMIT SEQUENCE, not of the file's instantaneous state, and this
+  file cannot name a commit that has not been made. They go in the commit
+  after this one. The fourteenth closed at `e5c0c73` and its figures are
+  recorded above, from the tool, after that commit existed.
+- **911 of 1949 = 46.7419%**; **1038 undecided**. **46% IS CROSSED**, at
   cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1355,7 +1402,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **23 decided** — the upward
+  886..934, **49 members**, contiguity verified, **25 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
@@ -1426,19 +1473,13 @@ Task outputs live at
   it. Do not update either from the other, and do not write down how many
   indices they share — that count is a third copy and it went stale within
   one commit of being written.
-- **RE-RUN SET SEVEN IS OPEN** — opened by restart #39 with **907, 908,
-  909, 910**, all four re-taken at the same instant (4.0 ms apart), so
-  their re-run clocks are directly comparable. Their discarded first runs
-  were 3371.5, 3346.7, 2902.2 and 1041.5 s. **TWO OF THE FOUR HAVE LANDED**:
-  idx 910, re-run cost 3182.3 s, and idx 908, re-run cost 5083.4 s.
-  Outstanding: 907 and 909. **Ratios, median and spread when all four
-  land, and NOT before** — the rule held through sets five and six and
-  holds here. Neither landed cube's ratio has been **computed**, not
-  merely withheld: set six's ratios were withheld at one,
-  two and three of four, and the discipline is to not have the number in
-  hand rather than to have it and keep quiet. Set six (831, 832, 833, 834)
-  is closed, full table above. **No forward test is registered** and there is **no live
-  registered pattern commitment.** Do not invent one to fill the gap.
+- **RE-RUN SET SEVEN IS CLOSED** (907, 908, 909, 910 — full table above;
+  median 0.5962, spread 2.0116×, no ratio above 1.0). The ratios were
+  withheld at 1-of-4 and at 2-of-4, on separate commits, and computed only
+  at 4-of-4. **No re-run set is open**, **no forward test is registered**,
+  and there is **no live registered pattern commitment.** Do not invent one
+  to fill the gap: the next set opens when the next restart does, not
+  before.
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
