@@ -348,6 +348,27 @@ the honest form is that **23 of 71** ran longer than 5 commits. Read
 through the distribution: **44 of the 71 are 0 or 1 second**, so rank 12
 of 71 is rank 12 of the 27 that lasted at all.
 
+**The fifteenth span, closed by `a5172c7`.** Duration **1:29:45** (1.4958
+h), opened after `72fe540`, 2 broken commits, hole counts `3,2`, most
+holes at once 3 at `3fd22b0` `[907, 908, 909]`. By duration it ranks
+**21 of 80** — 20 spans ran longer. By commit count it ranks **45 of 80**,
+with **17 spans tied at 2** and 44 carrying more. A span in the top
+quarter by time and the bottom half by commits is not a paradox and not a
+finding: restart #39 had just re-taken four cubes that each ran ~5000 s,
+so the span spent an hour and a half with almost nothing landing to
+commit. Read both ranks through the distribution: **24 of 80 ran longer
+than an hour** and **36 of 80 longer than a second**, so rank 21 of 80 is
+rank 21 of the 36 that lasted at all.
+
+*A first draft of this paragraph called it "the sharpest rank
+disagreement yet" on the strength of comparing it to the sixth span and
+nothing else — 79 spans unchecked. That is the third unchecked superlative
+this session, after "flattest of the fifteen" (withdrawn) and "smallest
+spread of the seven" (stated but refused as a ranking). The gap is not
+computed across all 80 and no superlative is claimed, because the quantity
+would be a post-hoc maximum of exactly the kind refused two sections
+above: some span has the widest gap, necessarily.*
+
 **The fifth span's `True` is vacuous.** A one-commit span has a one-point
 hole trajectory, and a single number is non-increasing by definition —
 `True` there means only that the tool ran. It must **never** be added to
@@ -368,7 +389,7 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**Fourteen** spans, and the verdict tally needs its COMPARISON COUNTS
+**Fifteen** spans, and the verdict tally needs its COMPARISON COUNTS
 beside it or it reads as more evidence than it is. Every row below was read
 back out of `--spans all`, not recalled:
 
@@ -388,13 +409,26 @@ back out of `--spans all`, not recalled:
 | 12 | `4875392` | 2,3,3,3,2,1,1,1 | 7 | False |
 | 13 | `999f3bd` | 3,2,1,3,2,1,2,1,3,2,1 | 10 | False |
 | 14 | `e5c0c73` | 3,3,3,2,2,1,1,3,2,1,1,1,3,3 | 13 | False |
+| 15 | `a5172c7` | 3,2 | 1 | True |
 
-**Seven True of fourteen** — and the breakdown is where the weight goes.
-**Two of the seven contain zero comparisons and could not have come out
-False** (spans 5 and 10); **three more rest on a single comparison**
-(3, 8 and 11), which is one coin flip; **only two carry more than one**
-(span 4 with two, span 6 with four). The partition is produced by a script
-that asserts 2 + 3 + 2 = 7 against the True count, per the rule below.
+**Eight True of fifteen** — and the breakdown is where the weight goes.
+**Two of the eight contain zero comparisons and could not have come out
+False** (spans 5 and 10); **four more rest on a single comparison**
+(3, 8, 11 and 15), which is one coin flip each; **only two carry more than
+one** (span 4 with two, span 6 with four). The partition is produced by a
+script that asserts 2 + 4 + 2 = 8 against the True count, per the rule
+below. The same script re-derives every chain in the table to its recorded
+comparison count and verdict, and all of them agree — so the fifteenth was
+added by recomputing the table, not by appending to it.
+
+**The fifteenth's `True` is one of the weak ones, and it arrives in the
+worst possible company.** Its chain is `3,2`: two hole counts, therefore
+exactly one comparison, therefore exactly one chance to rise. That is the
+same shape the note already flagged at span 3 (`30f1fbd`) as "weak for the
+same reason". Adding it moves the tally from seven-of-fourteen to
+eight-of-fifteen while adding **nothing** to the only category that
+carries weight — the "more than one comparison" column is still 2, exactly
+where it has been since span 6.
 
 *The previous version of this line said "only three Trues carry more than
 one" while its own table showed two — 2 + 2 + 3 = 7 against a True count of
@@ -1355,17 +1389,12 @@ Task outputs live at
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
 - **Frontier contiguous 0..910, highest decided 910, holes [].**
-  **THE FIFTEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 907 and idx
-  909 landing together. It was opened by idx 910 landing ahead of 907, 908
-  and 909 — the re-run set seven ordering, not a regression: rows land in
-  COMPLETION order, never index order. **ITS FIGURES ARE NOT YET QUOTED
-  HERE** — no duration, no rank, no hole-count chain, no monotonicity
-  verdict. They come from `checkpoint_audit.py --spans all` and only AFTER
-  the closing commit exists, because a span's hole chain is a property of
-  the COMMIT SEQUENCE, not of the file's instantaneous state, and this
-  file cannot name a commit that has not been made. They go in the commit
-  after this one. The fourteenth closed at `e5c0c73` and its figures are
-  recorded above, from the tool, after that commit existed.
+  **No span is open.** The fifteenth closed at `a5172c7`, filled by idx 907
+  and idx 909 landing together; it had been opened by idx 910 landing
+  ahead of them, which is completion order, not a regression. Its figures
+  were read from `--spans all` AFTER `a5172c7` existed and are recorded
+  above: 1:29:45, 2 commits, chain `3,2`, monotone True on a single
+  comparison, rank 21 of 80 by duration and 45 of 80 by commit count.
 - **911 of 1949 = 46.7419%**; **1038 undecided**. **46% IS CROSSED**, at
   cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
