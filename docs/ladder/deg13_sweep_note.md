@@ -1555,6 +1555,29 @@ alongside it.**
   mechanical version of the rule: **before citing a commit for a figure,
   grep for the figure in it.** A citation nobody can follow is a fabricated
   identifier wearing a sentence instead of a hash.
+- **A rank whose denominator was relabelled instead of recomputed.** At #40
+  three restart ranks quoted against n = 16 had their denominators changed
+  to 17 by hand while the ranks themselves were carried over. **Two of the
+  three were wrong** (#38 is 10 not 9, #39 is 12 not 11) because the new
+  member sorted above both. Caught by recomputing all four in one script
+  before the commit, which is the only reliable form. This is the
+  **span/rank staleness class** the spans section already names, appearing
+  in a second place: **a rank against a growing population goes stale every
+  time the population grows, and a denominator is not a rank.**
+- **A durable rule that lived only in the transient check-in prompt, and
+  was lost the first time that prompt was rewritten.** The prompt carried
+  "THIS PROMPT DELIBERATELY CARRIES NO STATE NUMBERS" — the checkpoint is
+  the truth, the note is the index, the prompt is only a procedure. On
+  09-18 the prompt was rewritten shorter and the replacement immediately
+  **re-acquired a pid, a row count, a decided count, a percentage and four
+  discarded costs**, every one of which would have read as authoritative
+  and gone stale on the next row. The rule was restored, but the lesson is
+  about *where rules live*: **a rule whose only copy is in a prompt I
+  rewrite is a rule with a scheduled deletion date.** It is written here
+  because this file is committed and the prompt is not. Checked when this
+  was found: the note did already carry the identifier, arithmetic,
+  commit-subject, banned-pipe and heredoc rules, so only this one was
+  load-bearing in the prompt alone.
 
 ---
 
