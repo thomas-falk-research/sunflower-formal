@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T02:52Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T02:53Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -703,6 +703,7 @@ Registration discipline, learned the hard way:
   | `[13,13,12,8]` | 28 | 723.5 | 4438.8 | 5049.1 | 14316.3 | 19.7876× |
   | `[13,13,12,7]` | 21 | 664.2 | 3302.3 | 3725.1 | 6868.5 | 10.3410× |
   | `[13,13,12,6]` | 15 | 301.5 | 2914.4 | 2738.3 | 5780.2 | 19.1715× |
+  | `[13,13,12,5]` | 11 | 500.2 | 1936.1 | 1958.1 | 4349.3 | 8.6951× |
 
   **EVERY CELL ABOVE IS RECOMPUTED FROM THE CHECKPOINT WHENEVER A ROW IS
   ADDED. THAT RULE EXISTS BECAUSE THE OLD TABLE'S MIDDLE COLUMN WAS A
@@ -715,10 +716,11 @@ Registration discipline, learned the hard way:
 
   (`[13,13,12,9]` is idx 755..792, closed by idx 788; `[13,13,12,8]` is idx
   793..820, closed by idx 814; `[13,13,12,7]` is idx 821..841, closed by
-  idx 838; `[13,13,12,6]` is idx 842..856, closed by idx 854. All four
-  contiguity verified.) **All seven rows were recomputed from the
-  checkpoint when the seventh was added**, per the rule below: a table
-  gains a row only by recomputing every row.
+  idx 838; `[13,13,12,6]` is idx 842..856, closed by idx 854;
+  `[13,13,12,5]` is idx 857..867, closed by idx 865. All five contiguity
+  verified.) **Every row is recomputed from the checkpoint each time one is
+  added**, per the rule below; the eighth addition left the seven earlier
+  rows unchanged.
 
   **THE "SPREADS FALL, MINIMA RISE" READING WAS WITHDRAWN AS CONFOUNDED, AND
   THE FIFTH BLOCK THEN BROKE IT OUTRIGHT.** It was withdrawn when four
@@ -733,33 +735,36 @@ Registration discipline, learned the hard way:
   TOO, WHICH WAS THE LAST PART STILL STANDING.** All three, read off the
   table above and tested mechanically in both directions:
 
-  - minima **54.1, 144.8, 578.0, 720.2, 723.5, 664.2, 301.5** — falls at
-    the sixth and again at the seventh, so **not** non-decreasing;
-  - spreads **237.18, 115.92, 26.80, 19.43, 19.79, 10.34, 19.17** — rises
-    at the fifth and again at the seventh, so **not** non-increasing;
-  - means **4694.6, 6818.7, 6791.7, 5752.8, 5049.1, 3725.1, 2738.3** — not
-    monotone in either direction. These are the true means; the figures
-    that used to stand here were the mixed column described above;
-  - medians **3442.9, 5704.7, 5744.1, 5101.9, 4438.8, 3302.3, 2914.4** —
-    not monotone either, added here because the table now carries them.
+  - minima **54.1, 144.8, 578.0, 720.2, 723.5, 664.2, 301.5, 500.2** —
+    falls at the sixth and seventh, rises at the eighth, so **not**
+    non-decreasing and not non-increasing either;
+  - spreads **237.18, 115.92, 26.80, 19.43, 19.79, 10.34, 19.17, 8.70** —
+    rises at the fifth and again at the seventh, so **not** non-increasing;
+  - means **4694.6, 6818.7, 6791.7, 5752.8, 5049.1, 3725.1, 2738.3,
+    1958.1** — not monotone in either direction. These are the true means;
+    the figures that used to stand here were the mixed column described
+    above;
+  - medians **3442.9, 5704.7, 5744.1, 5101.9, 4438.8, 3302.3, 2914.4,
+    1936.1** — not monotone either, added when the table gained the column.
 
   Nothing of the reading survives. **The withdrawal came first, on the
   confound, and the data broke the reading afterwards, in three separate
   instalments; the order matters, because withdrawing it only after it
   broke would have been no discipline at all.**
-  Re-run at the seventh block, same stated method (4000 draws per n, seed
-  11, pool = all decided costs), the median simulated spreads are **212.74,
-  159.77, 112.89, 83.82, 50.71, 39.43 and 26.59** against observed
-  **237.18, 115.92, 26.80, 19.43, 19.79, 10.34 and 19.17**.
+  Re-run at the eighth block, same stated method (4000 draws per n, seed
+  11, pool = all decided costs), the median simulated spreads are **203.84,
+  161.02, 107.79, 76.42, 51.67, 38.95, 27.63 and 19.34** against observed
+  **237.18, 115.92, 26.80, 19.43, 19.79, 10.34, 19.17 and 8.70**.
 
   **THESE ARE NOT THE FIGURES RECORDED EARLIER** (252.71, 183.51, 121.54,
   91.06, 55.54 at five blocks; 217.55, 161.89, 113.33, 81.98, 51.84, 38.87
-  at six) **and no two of those runs are corrections of each other.** The
-  control is pool-dependent and the pool grows with every row banked — it
-  now holds 862 costs spanning 0.1 s to 21678.5 s — so an earlier run is
-  never reproducible later and the sets must not be lined up as though they
-  were. What is stable across
-  all three runs is the only thing the control was ever for: **simulated spread
+  at six; 212.74, 159.77, 112.89, 83.82, 50.71, 39.43, 26.59 at seven)
+  **and no two of those runs are corrections of each other.** The control is
+  pool-dependent and the pool grows with every row banked — it now holds
+  873 costs spanning 0.1 s to 21678.5 s — so an earlier run is never
+  reproducible later and the sets must not be lined up as though they were.
+  What is stable across all four runs is the only thing the control was
+  ever for: **simulated spread
   RISES as n falls, so a falling observed spread is what NO structure
   predicts.** The observed spreads sit below the simulation at every n, and
   **no claim is made about that gap** — the pool contains these very cubes
@@ -1148,22 +1153,21 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1040 -> 1041 rows)
+## State as of the last refresh (1041 -> 1042 rows)
 
-- **1041 rows; 872 labels decided; 872 UNSAT; 0 SAT; 0 labels
+- **1042 rows; 873 labels decided; 873 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 872 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 873 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..864, highest decided 874, holes
-  [865, 872, 873].**
+- **Frontier contiguous 0..871, highest decided 874, holes [872, 873].**
   A **fourteenth span is OPEN**. The thirteenth closed
   at `999f3bd` and its figures are recorded above, from the tool, after
   that commit existed.
-- **872 of 1949 = 44.7409%**; **1077 undecided**. **44% IS CROSSED**, at
+- **873 of 1949 = 44.7922%**; **1076 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
   decided**, and 877/1949 = 44.9974% will round to 45.0 without being above
@@ -1192,16 +1196,14 @@ Task outputs live at
   above, recomputed along with every other row. **`[13,13,12,6]` is now
   CLOSED 15/15** (idx 842..856, contiguity verified, closed by idx 854) —
   its stats are in that table too, which was fully recomputed when its row
-  was added. **TWO blocks are open again.** `[13,13,12,5]`: idx 857..867,
-  11 members, contiguity verified, **10 decided**, undecided 865 — its last
-  undecided member, so that row closes the block; whether it also closes the
-  fourteenth span depends on the frontier line above at the moment it lands,
-  not on this sentence. `[13,13,12,4]`: idx 868..874, 7 members, contiguity
-  verified, **5 decided**, undecided 872 and 873. When either closes, record
-  its descriptive stats as descriptive stats, NOT findings, and do NOT
-  compare them across blocks.
-  **FOUR rows have been flagged in advance as possible double closures,
-  each stated CONDITIONALLY, and the outcomes are all four different.**
+  was added. **`[13,13,12,5]` is now CLOSED 11/11** (idx 857..867,
+  contiguity verified, closed by idx 865) — its stats are in that table too,
+  which was fully recomputed when its row was added. **Only `[13,13,12,4]`
+  is open**: idx 868..874, 7 members, contiguity verified, **5 decided**,
+  undecided 872 and 873. When it closes, record its descriptive stats as
+  descriptive stats, NOT findings, and do NOT compare them across blocks.
+  **FIVE rows have been flagged in advance as possible double closures,
+  each stated CONDITIONALLY, and the outcomes have gone every way.**
   Re-derived from the commits, not recalled:
 
   | row | commit | what it actually closed |
@@ -1210,11 +1212,25 @@ Task outputs live at
   | idx 838 | `4875392` | **block `[13,13,12,7]`** and the **twelfth span** |
   | idx 851 | — | **neither**; 856 had landed ahead and opened fresh holes |
   | idx 854 | `64a82ea` | **block `[13,13,12,6]`** only; the span stayed open |
+  | idx 865 | — see below | **block `[13,13,12,5]`** only; span stayed open |
 
-  Two closed two things, one closed one, one closed none. The certain half
+  Two closed two things, two closed one, one closed none. The certain half
   was certain every time and the conditional half never was, so nothing has
   had to be retracted in either direction. **The condition holding is not
-  the same as having predicted it.**
+  the same as having predicted it** — and it has now failed to hold three
+  times out of five, which is the better reason not to have asserted it.
+
+  *idx 865's cell carries no hash because **a commit cannot cite itself**.
+  Writing the commit's own short hash into the file it commits changes the
+  content, which changes the hash: `c5f621a` was patched in, the amend
+  produced `c182f48`, and the note was left pointing at an object that is
+  no longer reachable from any ref and will be garbage-collected. Verified
+  with `git merge-base --is-ancestor` (NOT reachable) and `git log --all`
+  (zero matches) rather than assumed. That is the fabricated-identifier
+  failure arrived at from a new direction — the hash was read from a tool,
+  and the act of writing it down destroyed it. **A row's own commit is
+  identified by its subject, which a grep can find; its hash can only be
+  added by a LATER commit.***
 
   *This passage said "Three block-closing rows" while listing four, and
   called idx 832 a block closure when the commit says it closed a re-run
