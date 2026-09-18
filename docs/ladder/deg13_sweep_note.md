@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T07:26Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T07:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -102,17 +102,22 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Fifteen** involuntary restarts, CPU-hours discarded:
+**Sixteen** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
-    3.564  4.863  2.965  7.033  2.216  5.1477 3.4670
+    3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
 
-median 3.5640, mean 3.8193, **total 57.2897**. #37 was **5.1477**, rank 4
-of 15 — idx 788 alone was 57.1% of that loss. **#38 is 3.4670, rank 9 of
-15**, and is the FLATTEST of the fifteen: its four shares are 33.2, 28.5,
-27.4 and 10.8 percent. That is a description of one teardown's timing, NOT
-a finding — the shares depend entirely on where the kill landed relative to
-four independent start times. The 0.944 CPU-hours at
+median 3.5155, mean 3.7648, **total 60.2367**. #37 was **5.1477**, rank 4
+of 16 — idx 788 alone was 57.1% of that loss. **#39 is 2.9470, rank 11 of
+16**, its four shares 31.6, 31.4, 27.2 and 9.8 percent, a spread of 21.8
+points. **NO FLATNESS RANKING IS CLAIMED** — the share breakdowns for the
+earlier thirteen are not in hand, so "flattest" cannot be checked, and a
+previous version of this line asserted one for #38 without checking. For
+comparison #38 is 3.4670, rank 9 of 16, its shares 33.2, 28.5, 27.4 and
+10.8 percent — a spread of 22.4 points, which is close to #39's 21.8 and
+means nothing. Shares are a description of one teardown's timing, NOT a
+finding: they depend entirely on where the kill landed relative to four
+independent start times. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
 
 ### Absorbing a restart
@@ -135,30 +140,35 @@ four independent start times. The 0.944 CPU-hours at
    still an ancestor.
 8. **A new restart opens the next re-run set.**
 
-Machine spec has been identical for **six** consecutive containers: 4
+Machine spec has been identical for **seven** consecutive containers: 4
 cores, Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB. Re-read
-at #38 as the previous version of this line demanded. Six is six, not a
-promise — re-read it at #39.
+at #39 as the previous version of this line demanded. Seven is seven, not
+a promise — re-read it at #40.
 
 **Re-take lag** after a relaunch: 41 s (#35), 60.7 s (#36), 61.0 s (#37),
-**60.6 s (#38)**, the last with its four CNFs written inside 8 ms. Four
-observations, not a law. **Three of the four now cluster within 0.4 s and
-one does not**, and the story that the lag tracks `--slice 60` is **still
-not supported**: #35 ran 41 s under the identical flag and nothing here
-explains it. **No mechanism is proposed** — a mechanism may only explain
-data it predates (1e409e8, f0866f6), and one invented now to fit three
-points would be fitted to the very data it claims to explain.
+60.6 s (#38), **60.7 s (#39)**, the last with its four CNFs written inside
+4.0 ms. Five observations, not a law. **Four of the five now cluster
+within 0.4 s and one does not**, and the story that the lag tracks
+`--slice 60` is **still not supported**: #35 ran 41 s under the identical
+flag and nothing here explains it. **A fifth point inside the cluster does
+not convert the cluster into a law and does not dispose of #35** — adding
+observations that agree with four others is the cheapest kind of
+corroboration and the one least able to validate. **No mechanism is
+proposed** — a mechanism may only explain data it predates (1e409e8,
+f0866f6), and one invented now to fit four points would be fitted to the
+very data it claims to explain.
 
-The two `[killed]` markers carried the **same nanosecond** at #34, #35, #37
-and #38, and differed by exactly 4.000000 ms at #36 — 4 agreements against
-1 disagreement. **The disagreement is still the informative one**: it proves
-they are not guaranteed to agree, so the agreements corroborate and DO NOT
-validate. At #38 the two mtimes were read in one script rather than
-transcribed, which is how the 0 ns difference was established.
+The two `[killed]` markers carried the **same nanosecond** at #34, #35, #37,
+#38 and #39, and differed by exactly 4.000000 ms at #36 — 5 agreements
+against 1 disagreement. **The disagreement is still the informative one**:
+it proves they are not guaranteed to agree, so the agreements corroborate
+and DO NOT validate, and a fifth agreement does not change that. At #38 and
+#39 the two mtimes were read in one script rather than transcribed, which
+is how each 0 ns difference was established.
 
 ---
 
-## Re-run sets — **six CLOSED**, none open
+## Re-run sets — **six CLOSED**, **seven OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -1292,12 +1302,12 @@ Task outputs live at
 ## State as of the last refresh (1075 -> 1076 rows)
 
 - **1076 rows; 907 labels decided; 907 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 or #38. A row
+  undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
   count is not a decision count: 907 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
-- **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
-  `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
+  `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
 - **Frontier contiguous 0..906, highest decided 906, holes [].**
   **No span is open.** The fourteenth closed at `e5c0c73` and its figures
@@ -1409,10 +1419,14 @@ Task outputs live at
   it. Do not update either from the other, and do not write down how many
   indices they share — that count is a third copy and it went stale within
   one commit of being written.
-- **RE-RUN SET SIX IS CLOSED** (831, 832, 833, 834 — full table above).
-  **No re-run set is open**, **no forward test is registered**, and there is
-  **no live registered pattern commitment.** Do not invent one to fill the
-  gap: the next set opens when the next restart does, not before.
+- **RE-RUN SET SEVEN IS OPEN** — opened by restart #39 with **907, 908,
+  909, 910**, all four re-taken at the same instant (4.0 ms apart), so
+  their re-run clocks are directly comparable. Their discarded first runs
+  were 3371.5, 3346.7, 2902.2 and 1041.5 s. **Ratios, median and spread
+  when all four land, and NOT before** — the rule held through sets five
+  and six and holds here. Set six (831, 832, 833, 834) is closed, full
+  table above. **No forward test is registered** and there is **no live
+  registered pattern commitment.** Do not invent one to fill the gap.
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 

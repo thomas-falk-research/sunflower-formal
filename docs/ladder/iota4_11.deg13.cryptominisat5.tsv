@@ -10904,3 +10904,75 @@ g=11 [13, 13, 11, 11, 13, 13, 13, 12, 12, 11, 6]	UNSAT	5275.6
 g=11 [13, 13, 11, 11, 13, 13, 13, 12, 12, 10, 7]	UNSAT	4975.9
 g=11 [13, 13, 11, 11, 13, 13, 13, 12, 12, 9, 8]	UNSAT	5237.9
 g=11 [13, 13, 11, 11, 13, 13, 13, 12, 11, 11, 7]	UNSAT	5499.3
+# ---------------------------------------------------------------------
+# RESTART #39.  Container restarted; both [killed] markers carry
+# 2026-09-18T07:43:27.874717Z, killing driver pid 27205.  Relaunched as
+# pid 22266, whose EXACT launch from /proc/22266/stat field 22 against
+# /proc/stat btime is 2026-09-18T07:45:20.720000Z.  Verbatim command,
+# same checkpoint.
+#
+# THE HOST DID NOT REBOOT -- ONLY THE SESSION CONTAINER.  `uptime` read
+# 3 days 5:41 and /proc/stat btime was unchanged at 1789437739, while the
+# `claude` process was 38 s old.  The driver and all four solvers were
+# gone (pgrep -x iota_sym and pgrep -x cryptominisat5 both empty) and the
+# load average was decaying through 1.89 from four busy cores.  Recorded
+# because "container restarted" and "machine rebooted" are different
+# events and btime distinguishes them.
+#
+# Machine spec re-read and UNCHANGED for the SEVENTH consecutive
+# container: 4 cores, Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal
+# 16482220 kB.  Seven identical readings is seven, not a promise; re-read
+# it at #40.
+#
+# NO ROWS WERE LOST.  1076 real data rows before and after, tree == HEAD
+# == origin at 60cd4b7, working tree clean.  The waiter's output file held
+# only its 07:26:19Z arming line and then [killed] -- no ROW LANDED line.
+#
+# BOTH [killed] MARKERS CARRY THE SAME NANOSECOND AGAIN, difference 0 ns,
+# measured by reading the two files' mtimes in one script rather than
+# transcribing them.  That is 5 agreements (#34, #35, #37, #38, #39)
+# against 1 disagreement of exactly 4.000000 ms (#36).  THE DISAGREEMENT
+# REMAINS THE INFORMATIVE OBSERVATION: it proves the markers are not
+# guaranteed to agree, so five agreements corroborate and DO NOT VALIDATE.
+#
+# DISCARDED WORK, by the CNF-mtime method with the glob FILTERED BY PID
+# (/tmp held 168 CNFs at measure time; exactly 4 carried pid 27205):
+#
+#   idx 907  started 06:47:16.410Z   3371.5 s  0.9365 h  0.1561 of cap  31.6% of loss
+#   idx 908  started 06:47:41.174Z   3346.7 s  0.9296 h  0.1549 of cap  31.4%
+#   idx 909  started 06:55:05.646Z   2902.2 s  0.8062 h  0.1344 of cap  27.2%
+#   idx 910  started 07:26:06.410Z   1041.5 s  0.2893 h  0.0482 of cap   9.8%
+#
+#   10661.9 s wall = 2.9616 h.  Weighted by each cube's cpu/elapsed ratio
+#   from the 07:41:12Z sample -- the LAST sample before teardown, and not
+#   re-samplable because the processes are gone -- 2.9470 CPU-HOURS,
+#   RANK 11 OF 16 in the involuntary-restart series.
+#
+#   Series now n = 16: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204,
+#   3.594, 3.564, 4.863, 2.965, 7.033, 2.216, 5.1477, 3.4670, 2.9470
+#   CPU-hours.  median 3.5155, mean 3.7648, total 60.2367.  The 0.944
+#   CPU-hours at 01:31Z on 09-14 is NOT in this series -- that was a stop
+#   I chose.
+#
+#   Shares 31.6, 31.4, 27.2, 9.8 percent, a spread of 21.8 points against
+#   #38's 22.4.  NO FLATNESS RANKING IS CLAIMED: the share breakdowns for
+#   the earlier thirteen restarts are not in hand, so "flattest" cannot be
+#   checked, and the shares are in any case a description of where the
+#   kill landed relative to four independent start times, NOT a finding.
+#
+# RE-TAKE LAG 60.7 s: all four cubes re-taken at launch + 60.7 s, the four
+# CNF writes spread over 4.0 ms.  Prior observations 41 s (#35), 60.7 s
+# (#36), 61.0 s (#37), 60.6 s (#38).  FIVE POINTS -- 41, 60.7, 61.0, 60.6,
+# 60.7 -- and FOUR OF THEM NOW CLUSTER WITHIN 0.4 s WHILE ONE DOES NOT.
+# The story that the lag tracks --slice 60 is STILL NOT SUPPORTED: #35 ran
+# 41 s under the identical flag and nothing here explains it.  A fifth
+# point inside the cluster does not convert the cluster into a law and
+# does not dispose of #35.  NO MECHANISM IS PROPOSED; a mechanism may only
+# explain data it predates (1e409e8, f0866f6).
+#
+# RE-RUN SET SEVEN IS OPEN: 907, 908, 909, 910 are being re-run from zero,
+# all four restarted at the same instant (4.0 ms apart) so their re-run
+# clocks are directly comparable.  Ratios, median and spread when all four
+# land, and NOT before -- the rule held through sets five and six and
+# holds here.
+# ---------------------------------------------------------------------
