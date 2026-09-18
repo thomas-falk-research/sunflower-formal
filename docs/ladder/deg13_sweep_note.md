@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T07:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T08:39Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1299,20 +1299,27 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1075 -> 1076 rows)
+## State as of the last refresh (1076 -> 1077 rows)
 
-- **1076 rows; 907 labels decided; 907 UNSAT; 0 SAT; 0 labels
+- **1077 rows; 908 labels decided; 908 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 907 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 908 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..906, highest decided 906, holes [].**
-  **No span is open.** The fourteenth closed at `e5c0c73` and its figures
-  are recorded above, from the tool, after that commit existed.
-- **907 of 1949 = 46.5367%**; **1042 undecided**. **46% IS CROSSED**, at
+- **Frontier contiguous 0..906, highest decided 910, holes [907, 908, 909].**
+  **THE FIFTEENTH SPAN IS OPEN**, opened by idx 910 landing ahead of 907,
+  908 and 909 — which is the re-run set seven ordering, not a regression:
+  rows land in COMPLETION order, never index order. **Quote no span figure
+  until it closes**: no duration, no rank, no hole-count chain, no
+  monotonicity verdict. Those come from `checkpoint_audit.py --spans all`
+  and only AFTER the closing commit exists, because a span's hole chain is
+  a property of the COMMIT SEQUENCE, not of the file's instantaneous
+  state. The fourteenth closed at `e5c0c73` and its figures are recorded
+  above, from the tool, after that commit existed.
+- **908 of 1949 = 46.5880%**; **1041 undecided**. **46% IS CROSSED**, at
   cube index 896. Next: **47% needs `ceil(0.47 × 1949) = 917`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
@@ -1348,7 +1355,7 @@ Task outputs live at
   `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
   cubes, every row in that table, and every row recomputed when the last
   two were added. **The one open block is now `[13,13,11,11]`**: idx
-  886..934, **49 members**, contiguity verified, **21 decided** — the upward
+  886..934, **49 members**, contiguity verified, **22 decided** — the upward
   size reset that was written down from `SEQ` several commits before it
   arrived, so it lands as arithmetic rather than a surprise. When it
   closes, record its descriptive stats as descriptive stats, NOT findings,
@@ -1422,10 +1429,14 @@ Task outputs live at
 - **RE-RUN SET SEVEN IS OPEN** — opened by restart #39 with **907, 908,
   909, 910**, all four re-taken at the same instant (4.0 ms apart), so
   their re-run clocks are directly comparable. Their discarded first runs
-  were 3371.5, 3346.7, 2902.2 and 1041.5 s. **Ratios, median and spread
-  when all four land, and NOT before** — the rule held through sets five
-  and six and holds here. Set six (831, 832, 833, 834) is closed, full
-  table above. **No forward test is registered** and there is **no live
+  were 3371.5, 3346.7, 2902.2 and 1041.5 s. **ONE OF THE FOUR HAS LANDED**:
+  idx 910, re-run cost 3182.3 s, banked at 46.5880%. **Ratios, median and
+  spread when all four land, and NOT before** — the rule held through sets
+  five and six and holds here. The ratio for idx 910 has **not been
+  computed**, not merely withheld: set six's ratios were withheld at one,
+  two and three of four, and the discipline is to not have the number in
+  hand rather than to have it and keep quiet. Set six (831, 832, 833, 834)
+  is closed, full table above. **No forward test is registered** and there is **no live
   registered pattern commitment.** Do not invent one to fill the gap.
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
