@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T16:06Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T16:11Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -872,6 +872,21 @@ Registration discipline, learned the hard way:
   | `[13,13,12,2]` | 3 | 109.9 | 179.8 | 188.4 | 275.4 | 2.5059× |
   | `[13,13,12,1]` | 2 | 39.6 | 43.4 | 43.4 | 47.2 | 1.1919× |
   | `[13,13,12,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
+  | `[13,13,11,11]` | 49 | 304.1 | 2698.5 | 3538.4 | 9372.4 | 30.8201× |
+
+  **`[13,13,11,11]` CLOSED 49/49** (idx 886..934, contiguity verified,
+  closed by idx 928 after it ran 7053.6 s). **Every row above was
+  recomputed from the checkpoint when this one was added** — all thirteen
+  `[13,13,12,*]` rows reproduced their recorded figures exactly, which is
+  the check, not a formality.
+  **THIS ROW IS NOT COMPARED WITH THE ONES ABOVE IT AND IS NOT ADDED TO
+  ANY MONOTONICITY LIST.** The thirteen rows above are one coordinate run;
+  this is the first row of a different one, and the note's standing rule is
+  that block statistics are descriptive and are not compared across blocks.
+  Its n = 49 happens to equal `[13,13,12,10]`'s, which makes the
+  temptation concrete and the refusal worth stating: two blocks with the
+  same member count are still two accidents of where `SEQ` put its
+  coordinate drops.
 
   **THE `[13,13,12,*]` RUN IS COMPLETE: all 13 blocks closed, idx 559..885,
   327 cubes.**
@@ -1492,33 +1507,36 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1103 -> 1104 rows)
+## State as of the last refresh (1104 -> 1105 rows)
 
-- **1104 rows; 935 labels decided; 935 UNSAT; 0 SAT; 0 labels
+- **1105 rows; 936 labels decided; 936 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38 or #39. A row
-  count is not a decision count: 935 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 936 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 22266**, launched 2026-09-18T07:45:20.720000Z (read from
   `/proc/22266/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..927, highest decided 935, holes [928].**
-  **THE EIGHTEENTH SPAN IS OPEN**, and it opened with **three holes at
-  once**: idx 930 finished in 470.4 s and landed ahead of 927, 928 and
-  929, all still running. A span opening at three is not unusual: of the
-  seventeen closed spans, **8 opened at 3 holes, 5 at 2 and 4 at 1**
-  (counted from the chains in the table, after a first draft of this line
-  guessed "six of the seventeen" and the count came back 8). It says
-  nothing about those three cubes except that a very cheap one finished
-  first. **Quote no span
-  figure until it closes.** The seventeenth closed at `75ff84b`
+- **Frontier contiguous 0..935, highest decided 935, holes [].**
+  **THE EIGHTEENTH SPAN CLOSED IN THIS COMMIT**, filled by idx 928 after
+  it ran 7053.6 s; the frontier moved 927 -> 935 in one step. It had
+  opened with **three holes at once** when idx 930 finished in 470.4 s and
+  landed ahead of 927, 928 and 929. A span opening at three is not
+  unusual: of the seventeen spans closed before it, **8 opened at 3 holes,
+  5 at 2 and 4 at 1** (counted from the chains in the table, after a first
+  draft guessed "six of the seventeen" and the count came back 8).
+  **ITS FIGURES ARE NOT QUOTED HERE**: `--spans all` walks commits and
+  cannot see the closing commit until it exists, so duration, ranks, chain
+  and monotonicity go in the commit after this one. The seventeenth closed
+  at `75ff84b`
   (2:36:20, 8 commits, chain `1,1,2,2,1,2,1,1`, monotone FALSE, rank 13 of
   82 by duration and 19 of 82 by commit count); it, the sixteenth and the
   fifteenth are recorded above, with all three ranks recomputed together
   against the 82 closed at that time — a denominator that moves again when
   this span closes.
-- **935 of 1949 = 47.9733%**; **1014 undecided**. **47% IS CROSSED**, at
-  cube index 915. Next: **48% needs `ceil(0.48 × 1949) = 936`** decided.
+- **936 of 1949 = 48.0246%**; **1013 undecided**. **48% IS CROSSED**, at
+  cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
+  and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
   reason the counter keeps hitting these figures live in the
@@ -1559,8 +1577,6 @@ Task outputs live at
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by scratchpad/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 11]` idx 886..934: **49 members**,
-  **48 decided**, undecided [928]
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **1 decided**, undecided 37 spanning 936..972
 
