@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T03:12Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T03:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -313,7 +313,7 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**Thirteen** spans, and the verdict tally needs its COMPARISON COUNTS
+**Fourteen** spans, and the verdict tally needs its COMPARISON COUNTS
 beside it or it reads as more evidence than it is. Every row below was read
 back out of `--spans all`, not recalled:
 
@@ -332,8 +332,9 @@ back out of `--spans all`, not recalled:
 | 11 | `b088217` | 1,1 | 1 | True — **flat, never fell** |
 | 12 | `4875392` | 2,3,3,3,2,1,1,1 | 7 | False |
 | 13 | `999f3bd` | 3,2,1,3,2,1,2,1,3,2,1 | 10 | False |
+| 14 | `e5c0c73` | 3,3,3,2,2,1,1,3,2,1,1,1,3,3 | 13 | False |
 
-**Seven True of thirteen** — and the breakdown is where the weight goes.
+**Seven True of fourteen** — and the breakdown is where the weight goes.
 **Two of the seven contain zero comparisons and could not have come out
 False** (spans 5 and 10); **three more rest on a single comparison**
 (3, 8 and 11), which is one coin flip; **only two carry more than one**
@@ -349,7 +350,7 @@ breakdown is printed by a script that counts them, and the three parts are
 checked to sum to the True count.*
 
 Sharper still, and the reason a `True` is worth less than it looks: **three
-of the thirteen chains never decreased at all** — spans 5 (`1`), 10 (`1`) and
+of the fourteen chains never decreased at all** — spans 5 (`1`), 10 (`1`) and
 11 (`1,1`). A chain that never moves is "non-increasing" by definition, so
 for those three the verdict reports only that the tool ran. A chain's length
 is set by how many commits a span happens to span, which is an accident of
@@ -358,9 +359,10 @@ rises only when a cube that started late finishes before ones that started
 early, which is an accident of which cubes happen to be long.
 
 Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15,
-0:35:49, 3:48:12, 0:21:20, 0:46:46, 1:47:44, 2:20:55 are not monotone, and
-commit counts 7, 8, 2, 3, 1, 5, 17, 2, 9, 1, 2, 8, 11 are not either. Both
-were tested mechanically in both directions, not eyeballed.
+0:35:49, 3:48:12, 0:21:20, 0:46:46, 1:47:44, 2:20:55, 1:26:56 are not
+monotone, and commit counts 7, 8, 2, 3, 1, 5, 17, 2, 9, 1, 2, 8, 11, 14 are
+not either. Both were tested mechanically in both directions, not
+eyeballed.
 
 The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
 789 were still running, breaking the frontier with **three** holes. It then
@@ -585,12 +587,33 @@ is this one. A single closest pair exists in every set of numbers; being
 the closest is not evidence of anything, and "two near-identical figures
 treated as corroboration" is already a registered error pattern (37d44af).
 
-**A FOURTEENTH SPAN IS OPEN** as of 01:53:18Z: idx 867 landed while 864,
-865 and 866 were still running. **No hole chain is stated here, not even
-the opening count** — the rule adopted for the thirteenth span, which cost
-nothing and removed the only way the tool's chain and a narrative sentence
-could disagree. The current holes are on the state line at the foot of this
-file; everything else comes from `--spans all` after it closes.
+**THE FOURTEENTH SPAN IS CLOSED**, by idx 873 and idx 879 at `e5c0c73`.
+All figures COPIED from `checkpoint_audit.py --spans all`:
+
+| field | value |
+|---|---|
+| opened after | `999f3bd` 2026-09-18T01:46:04Z |
+| closed by | `e5c0c73` 2026-09-18T03:13:00Z |
+| duration | 1:26:56 (1.4489 h) |
+| commits | 14 broken |
+| hole counts | 3,3,3,2,2,1,1,3,2,1,1,1,3,3 |
+| monotone non-increasing | **False** |
+| most holes | 3 at `90023a6` [864, 865, 866] |
+
+Ranks against **79 closed spans**: **rank 21 of 79 by duration** (58 are
+shorter) and **rank 6 of 79 by commit count**, 3 tied at 14. Read through
+the distribution — **44 of the 79 are one second or shorter**.
+
+**No chain was stated for it while it was open**, so the chain above is its
+only record — the second span run that way, and the rule has now cost
+nothing twice.
+
+**IT CLOSED ON A COMMIT WHOSE MESSAGE DID NOT MENTION IT.** `e5c0c73` was
+written as a five-row commit and actually carried seven; the two extra rows
+were idx 873 and idx 879, which filled this span's last holes and closed
+two blocks. The span is real and the tool found it; the commit message is
+the thing that was wrong, and the defect is recorded in the error patterns
+below.
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -704,18 +727,25 @@ Registration discipline, learned the hard way:
   | `[13,13,12,7]` | 21 | 664.2 | 3302.3 | 3725.1 | 6868.5 | 10.3410× |
   | `[13,13,12,6]` | 15 | 301.5 | 2914.4 | 2738.3 | 5780.2 | 19.1715× |
   | `[13,13,12,5]` | 11 | 500.2 | 1936.1 | 1958.1 | 4349.3 | 8.6951× |
+  | `[13,13,12,4]` | 7 | 352.9 | 829.2 | 1137.4 | 2113.2 | 5.9881× |
+  | `[13,13,12,3]` | 5 | 220.1 | 432.1 | 515.7 | 832.9 | 3.7842× |
   | `[13,13,12,2]` | 3 | 109.9 | 179.8 | 188.4 | 275.4 | 2.5059× |
   | `[13,13,12,1]` | 2 | 39.6 | 43.4 | 43.4 | 47.2 | 1.1919× |
   | `[13,13,12,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
 
-  **THE LAST THREE ROWS CARRY NO INFORMATION ABOUT SPREAD AND MUST NOT
-  EXTEND THE SEQUENCES BELOW.** At n = 1 the min, median, mean and max are
-  the same number and the spread is 1.0000× by construction; at n = 2 the
-  median equals the mean; at n = 3 a "spread" is one ratio of two draws.
-  They are tabled because the blocks closed, and they are fenced off
-  because a monotonicity argument fed with them would be reading the
-  definition of a one-element set. The monotonicity lists below stop at
-  `[13,13,12,5]`, the last block with n ≥ 11.
+  **THE `[13,13,12,*]` RUN IS COMPLETE: all 13 blocks closed, idx 559..885,
+  327 cubes.**
+
+  **THE LAST FIVE ROWS (n = 7, 5, 3, 2, 1) CARRY LITTLE OR NO INFORMATION
+  ABOUT SPREAD AND MUST NOT EXTEND THE SEQUENCES BELOW.** At n = 1 the min,
+  median, mean and max are the same number and the spread is 1.0000× by
+  construction; at n = 2 the median equals the mean; at n = 3 a "spread" is
+  one ratio of two draws; n = 5 and n = 7 are barely better, and the
+  pooled-draw control already says simulated spread falls steeply with n.
+  They are tabled because the blocks closed, and fenced off because a
+  monotonicity argument fed with them would be reading sample size. The
+  monotonicity lists below stop at `[13,13,12,5]`, the last block with
+  n ≥ 11.
 
   **EVERY CELL ABOVE IS RECOMPUTED FROM THE CHECKPOINT WHENEVER A ROW IS
   ADDED. THAT RULE EXISTS BECAUSE THE OLD TABLE'S MIDDLE COLUMN WAS A
@@ -729,10 +759,11 @@ Registration discipline, learned the hard way:
   (`[13,13,12,9]` is idx 755..792, closed by idx 788; `[13,13,12,8]` is idx
   793..820, closed by idx 814; `[13,13,12,7]` is idx 821..841, closed by
   idx 838; `[13,13,12,6]` is idx 842..856, closed by idx 854;
-  `[13,13,12,5]` is idx 857..867, closed by idx 865; `[13,13,12,2]` is idx
-  880..882, closed by idx 882; `[13,13,12,1]` is idx 883..884, closed by
-  idx 884; `[13,13,12,0]` is the single cube idx 885. All contiguity
-  verified.) **Every row is recomputed from the checkpoint each time one is
+  `[13,13,12,5]` is idx 857..867, closed by idx 865; `[13,13,12,4]` is idx
+  868..874, closed by idx 873; `[13,13,12,3]` is idx 875..879, closed by
+  idx 879; `[13,13,12,2]` is idx 880..882, closed by idx 882;
+  `[13,13,12,1]` is idx 883..884, closed by idx 884; `[13,13,12,0]` is the
+  single cube idx 885. All contiguity verified.) **Every row is recomputed from the checkpoint each time one is
   added**, per the rule below; the eighth addition left the seven earlier
   rows unchanged.
 
@@ -1114,6 +1145,21 @@ alongside it.**
   gains a row only by recomputing every row.** Adding one row to a table is
   the cheapest moment to audit the whole table, and it is the only moment
   anyone ever will.
+- **A COMMIT WHOSE MESSAGE DESCRIBED LESS THAN THE COMMIT CONTAINED** —
+  `e5c0c73`. Its subject and body say five rows and "884 of 1949 =
+  45.3566%"; the commit actually carries **seven** rows and **886 decided,
+  45.4592%**. The two undocumented rows, idx 873 and idx 879, closed blocks
+  `[13,13,12,4]` and `[13,13,12,3]` **and** the fourteenth span — three
+  structural events absent from the message that announced them.
+  **Cause, exactly:** the checkpoint was `git add`ed in one tool call, two
+  rows landed, and the commit went out without re-diffing STAGED against
+  HEAD. The tree-vs-staged check was run and passed; the staged-vs-HEAD
+  half was not. The row-landing procedure says "compare tree / staged /
+  HEAD" and only two of the three were compared.
+  **Fix:** the count that goes in a commit message is read from
+  `git diff --cached` in the SAME tool call as the commit, never from an
+  earlier resolution step. A push cannot be amended, so the correction
+  lives in the next commit — which is where it went.
 - A convenient population by accident (c9982c9, a22c6e7).
 - Two near-identical figures treated as corroboration (37d44af).
 - A mechanism reached for to dismiss something (f0866f6).
@@ -1176,21 +1222,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1048 -> 1053 rows)
+## State as of the last refresh (1055 -> 1056 rows)
 
-- **1053 rows; 884 labels decided; 884 UNSAT; 0 SAT; 0 labels
+- **1056 rows; 887 labels decided; 887 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 or #38. A row
-  count is not a decision count: 884 decided plus 169 superseded UNKNOWN
+  count is not a decision count: 887 decided plus 169 superseded UNKNOWN
   rows. Say it that way — **never "0 UNKNOWN"**, which the file would
   contradict.
 - **Driver is pid 27205**, launched 2026-09-17T18:48:13.310000Z (read from
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
-- **Frontier contiguous 0..872, highest decided 885, holes [873, 879].**
-  A **fourteenth span is OPEN**. The thirteenth closed
-  at `999f3bd` and its figures are recorded above, from the tool, after
-  that commit existed.
-- **884 of 1949 = 45.3566%**; **1065 undecided**. **45% IS CROSSED**, at
+- **Frontier contiguous 0..885, highest decided 885, holes [].**
+  **No span is open.** The fourteenth closed at `e5c0c73` and its figures
+  are recorded above, from the tool, after that commit existed.
+- **887 of 1949 = 45.5105%**; **1062 undecided**. **45% IS CROSSED**, at
   cube index 880. Next: **46% needs `ceil(0.46 × 1949) = 897`** decided.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1) — five
   stops on such a figure so far: 40.9954%, 41.9702%, 42.9964%, 43.9713%,
@@ -1220,17 +1265,15 @@ Task outputs live at
   its stats are in that table too, which was fully recomputed when its row
   was added. **`[13,13,12,5]` is now CLOSED 11/11** (idx 857..867,
   contiguity verified, closed by idx 865) — its stats are in that table too,
-  which was fully recomputed when its row was added. **`[13,13,12,2]`,
-  `[13,13,12,1]` and `[13,13,12,0]` all closed in one batch** (3/3, 2/2 and
-  the single cube idx 885) — their rows are in that table, fenced off as
-  carrying no spread information. **TWO blocks are open**: `[13,13,12,4]`
-  (idx 868..874, 7 members, contiguity verified, **6 decided**, undecided
-  873) and `[13,13,12,3]` (idx 875..879, 5 members, contiguity verified,
-  **4 decided**, undecided 879). Each is one row from closing, and whether
-  either also closes the fourteenth span is NOT asserted — that conditional
-  half has failed three of five times. When either closes, record its
-  descriptive stats as descriptive stats, NOT findings, and do NOT compare
-  them across blocks.
+  which was fully recomputed when its row was added. **THE ENTIRE
+  `[13,13,12,*]` RUN IS NOW CLOSED** — all 13 blocks, idx 559..885, 327
+  cubes, every row in that table and every row recomputed when the last two
+  were added. **NO BLOCK IS OPEN.** **`[13,13,11,11]` is now OPEN**: idx 886..934, 49
+  members, contiguity verified, **1 decided** — the upward size
+  reset that was written down from `SEQ` several commits before it arrived,
+  so it lands as arithmetic. When it opens and later closes, record
+  its descriptive stats as descriptive stats, NOT findings, and do NOT
+  compare them across blocks.
   **FOUR BLOCKS WERE OPEN IN THE FILE AT 03:10Z AND NO COMMIT EVER SHOWED
   IT.** Rows arrived faster than commits, so the four-open state existed
   between two writes and this commit already shows two. The historical
