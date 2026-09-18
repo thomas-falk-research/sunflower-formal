@@ -102,23 +102,48 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Sixteen** involuntary restarts, CPU-hours discarded:
+**Seventeen** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
+    #40 in [4.9648, 4.9688]
 
-median 3.5155, mean 3.7648, **total 60.2367**. #37 was **5.1477**, rank 4
-of 16 — idx 788 alone was 57.1% of that loss. **#39 is 2.9470, rank 11 of
-16**, its four shares 31.6, 31.4, 27.2 and 9.8 percent, a spread of 21.8
-points. **NO FLATNESS RANKING IS CLAIMED** — the share breakdowns for the
-earlier thirteen are not in hand, so "flattest" cannot be checked, and a
-previous version of this line asserted one for #38 without checking. For
-comparison #38 is 3.4670, rank 9 of 16, its shares 33.2, 28.5, 27.4 and
-10.8 percent — a spread of 22.4 points, which is close to #39's 21.8 and
-means nothing. Shares are a description of one teardown's timing, NOT a
-finding: they depend entirely on where the kill landed relative to four
-independent start times. The 0.944 CPU-hours at
+median 3.5640, mean 3.8354-3.8356, **total 65.2015-65.2055**. #40 is
+carried as a **bracket, not a point**, because its ratio sample covered
+only three of its four cubes; see below. The median is identical at both
+ends of the bracket and the mean and total differ in the fourth decimal.
+
+**All four quoted ranks were recomputed against n = 17 together**, in one
+script, rather than having their denominators relabelled: #37 **4 of 17**
+(idx 788 alone was 57.1% of that loss), #38 **10 of 17**, #39 **12 of
+17**, #40 **5 of 17 at both ends of its bracket**. The first draft of
+this line did relabel instead of recompute — it carried "#38 rank 9" and
+"#39 rank 11" straight over from n = 16 and left "#37 rank 4 of 16"
+un-updated — and **two of the three were wrong**, because #40 at ~4.965
+sorts above both. That is the rank-staleness class this note already
+names, committed inside the paragraph that names it. #40's rank is the
+one quotable despite its bracket: it is 5 at both ends.
+
+Shares: #40's are 33.6, 31.1, 27.3 and 8.0 percent, a spread of 25.7
+points; #39's 31.6, 31.4, 27.2 and 9.8, a spread of 21.8; #38's 33.2,
+28.5, 27.4 and 10.8, a spread of 22.4. **NO FLATNESS RANKING IS CLAIMED**
+— the share breakdowns for the earlier thirteen are not in hand, so
+"flattest" cannot be checked, and a previous version of this line
+asserted one for #38 without checking. The three spreads in hand span
+21.8 to 25.7 and that means nothing. Shares are a description of one
+teardown's timing, NOT a finding: they depend entirely on where the kill
+landed relative to four independent start times. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
+
+**#40 IS THE FIRST RESTART WHOSE RATIO SAMPLE DID NOT COVER THE IN-FLIGHT
+SET.** The last sample before teardown was 19:41:41Z; idx 953 started at
+20:16:47Z, 35 minutes later, and the processes are gone so it is not
+re-samplable. **No ratio was invented for it.** Its CPU time is bracketed
+instead: upper end = its elapsed time, since a single-threaded solver
+cannot exceed ratio 1.0; lower end = its elapsed time at 0.9901, the
+smallest ratio measured on the other three. The bracket is 14.19 s wide.
+Step 5 of the procedure below now has a case it did not have before, and
+the answer is a bracket, not a substituted number.
 
 ### Absorbing a restart
 
@@ -140,35 +165,45 @@ independent start times. The 0.944 CPU-hours at
    still an ancestor.
 8. **A new restart opens the next re-run set.**
 
-Machine spec has been identical for **seven** consecutive containers: 4
+Machine spec has been identical for **eight** consecutive containers: 4
 cores, Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB. Re-read
-at #39 as the previous version of this line demanded. Seven is seven, not
-a promise — re-read it at #40.
+at #40 as the previous version of this line demanded. Eight is eight, not
+a promise — re-read it at #41.
 
 **Re-take lag** after a relaunch: 41 s (#35), 60.7 s (#36), 61.0 s (#37),
-60.6 s (#38), **60.7 s (#39)**, the last with its four CNFs written inside
-4.0 ms. Five observations, not a law. **Four of the five now cluster
-within 0.4 s and one does not**, and the story that the lag tracks
+60.6 s (#38), 60.7 s (#39), **60.6 s (#40)**, the last with its four CNFs
+written inside 8.0 ms. Six observations, not a law. **Five of the six now
+cluster within 0.4 s and one does not**, and the story that the lag tracks
 `--slice 60` is **still not supported**: #35 ran 41 s under the identical
-flag and nothing here explains it. **A fifth point inside the cluster does
+flag and nothing here explains it. **A sixth point inside the cluster does
 not convert the cluster into a law and does not dispose of #35** — adding
-observations that agree with four others is the cheapest kind of
+observations that agree with five others is the cheapest kind of
 corroboration and the one least able to validate. **No mechanism is
 proposed** — a mechanism may only explain data it predates (1e409e8,
-f0866f6), and one invented now to fit four points would be fitted to the
+f0866f6), and one invented now to fit five points would be fitted to the
 very data it claims to explain.
 
 The two `[killed]` markers carried the **same nanosecond** at #34, #35, #37,
-#38 and #39, and differed by exactly 4.000000 ms at #36 — 5 agreements
-against 1 disagreement. **The disagreement is still the informative one**:
-it proves they are not guaranteed to agree, so the agreements corroborate
-and DO NOT validate, and a fifth agreement does not change that. At #38 and
-#39 the two mtimes were read in one script rather than transcribed, which
-is how each 0 ns difference was established.
+#38 and #39, and **disagreed at #36 and #40** — 5 agreements against 2
+disagreements. **The disagreements are still the informative ones**: they
+prove the markers are not guaranteed to agree, so the agreements
+corroborate and DO NOT validate. At #38, #39 and #40 the two mtimes were
+read in one script rather than transcribed, which is how each difference
+was established exactly.
+
+**The two disagreements are both ~4 ms and they differ from each other by
+1 ns** — #36 was exactly 4.000000 ms, #40 is 4.000001 ms. **That is
+recorded and nothing is concluded from it.** Two observations cannot
+establish a 4 ms quantum in the teardown path, and a mechanism proposed
+now would be fitted to the only two points that exist (1e409e8, f0866f6).
+A caution on the arithmetic: parsing those timestamps through Python's
+microsecond-resolution `datetime` prints the gap as 3.999949 ms. That is a
+parsing artifact, not a measurement; the 4000001 ns figure comes from the
+integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **seven CLOSED**, none open
+## Re-run sets — **seven CLOSED**, **set eight OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -255,6 +290,16 @@ eyeballed. Spreads are 54.99×, 8.15×, 2.06×, 5.3747×, 2.8226×, 4.6436×,
 called "a list, not a trend" from set three onward, and both have now gone
 up and down repeatedly. Seven points at n = 8, 4, 4, 4, 4, 4, 4 still
 support no shape.
+
+**SET EIGHT IS OPEN.** Restart #40 killed idx **950, 951, 952, 953** and
+the relaunch re-took exactly those four at launch + 60.6 s, their CNFs
+written inside 8.0 ms, so their re-run clocks are directly comparable.
+Discarded times are 6057.3, 5611.2, 4924.4 and 1433.3 s. **No ratio will
+be computed until all four have landed** — the rule held through sets
+five, six and seven, each time at a real cost, and it holds here. Note
+what set eight cannot do even when it closes: it is a fifth, sixth,
+seventh and eighth accident of where a kill landed, and eight points at
+n = 8, 4, 4, 4, 4, 4, 4, 4 will support no shape either.
 
 **SET FIVE, CLOSED.** All four restarted at the same instant (launch +
 61.0 s, CNFs within 4 ms), so their re-run clocks are directly comparable:

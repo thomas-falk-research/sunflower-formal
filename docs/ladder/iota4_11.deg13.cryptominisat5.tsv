@@ -11019,3 +11019,102 @@ g=11 [13, 13, 11, 10, 13, 13, 13, 13, 11, 9, 9]	UNSAT	3819.5
 g=11 [13, 13, 11, 10, 13, 13, 13, 13, 11, 10, 8]	UNSAT	4492.9
 g=11 [13, 13, 11, 10, 13, 13, 13, 13, 10, 10, 9]	UNSAT	3627.3
 g=11 [13, 13, 11, 10, 13, 13, 13, 12, 12, 12, 6]	UNSAT	5402.3
+# ---------------------------------------------------------------------
+# RESTART #40 -- container restarted 2026-09-18T20:40:41.197489079Z.
+# Driver pid 22266 and all four cryptominisat5 slots killed.  Relaunched
+# verbatim as pid 21172, exact launch 2026-09-18T20:44:48.670000Z read
+# from /proc/21172/stat field 22 against btime in /proc/stat.
+#
+# THE HOST DID NOT REBOOT: uptime 3 days 18:38 and btime UNCHANGED at
+# 1789437739, the same value carried across #39.  This was a container
+# teardown, not a machine restart; only btime distinguishes them.
+#
+# Machine spec re-read -- the previous block demanded it be re-read at
+# #40 -- and UNCHANGED for the EIGHTH consecutive container: 4 cores,
+# Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB.  Eight
+# identical readings is eight, not a promise; re-read it at #41.
+#
+# NO ROWS WERE LOST.  1119 real data rows before and after, tree == HEAD
+# == origin at 81c4218, working tree clean.  The waiter's output file
+# held only its 20:16:59Z arming line and then [killed] -- no ROW LANDED
+# line, so nothing landed inside the teardown window.
+#
+# THE TWO [killed] MARKERS DISAGREED, by 4000001 ns = 4.000001 ms:
+# driver 20:40:41.201489080Z, waiter 20:40:41.197489079Z.  The EARLIER
+# (waiter) is used, per the rule.  That is now 5 agreements (#34, #35,
+# #37, #38, #39) against 2 disagreements (#36, #40).  BOTH DISAGREEMENTS
+# ARE ~4 ms AND THEY DIFFER FROM EACH OTHER BY 1 ns -- #36 was exactly
+# 4.000000 ms, #40 is 4.000001 ms.  THAT IS RECORDED AND NOTHING IS
+# CONCLUDED FROM IT.  Two observations cannot establish a 4 ms quantum
+# in the teardown path, and inventing a mechanism now would be fitting
+# it to the only two points that exist (1e409e8, f0866f6).  The
+# disagreements remain the informative observations: they prove the
+# markers are not guaranteed to agree, so the five agreements
+# corroborate and DO NOT VALIDATE.
+#
+# DISCARDED WORK, by the CNF-mtime method with the glob FILTERED BY PID
+# (/tmp held 173 CNFs at measure time; exactly 4 carried pid 22266):
+#
+#   idx 950  started 18:59:43.945Z   6057.3 s  1.6826 h  0.2804 of cap  33.6% of loss
+#   idx 951  started 19:07:09.985Z   5611.2 s  1.5587 h  0.2598 of cap  31.1%
+#   idx 952  started 19:18:36.801Z   4924.4 s  1.3679 h  0.2280 of cap  27.3%
+#   idx 953  started 20:16:47.925Z   1433.3 s  0.3981 h  0.0664 of cap   8.0%
+#
+#   18026.1 s wall = 5.0073 h.  The set {950, 951, 952, 953} read off the
+#   CNFs is INDEPENDENTLY CORROBORATED: the new driver re-took exactly
+#   those four indices at 20:45:49Z.
+#
+#   THE RATIO SAMPLE DOES NOT COVER ALL FOUR CUBES.  This is the FIRST
+#   restart where that has happened.  The last sample before teardown is
+#   19:41:41Z and it carries idx 949 (0.9936, since landed), 950
+#   (0.9901), 951 (0.9923), 952 (0.9928).  idx 953 STARTED AT 20:16:47Z,
+#   35 MINUTES AFTER THAT SAMPLE, so it was never sampled, and the
+#   processes are gone so it is not re-samplable.  NO RATIO IS INVENTED
+#   FOR IT.  Instead the loss is reported as a BRACKET: idx 953's CPU
+#   time lies in [1419.08, 1433.27] s, the upper end being its elapsed
+#   time (a single-threaded solver cannot exceed ratio 1.0) and the lower
+#   end its elapsed time at the smallest ratio measured on the other
+#   three (0.9901).
+#
+#   TOTAL DISCARDED: 4.9648 to 4.9688 CPU-HOURS, a bracket 14.19 s wide.
+#   RANK 5 OF 17 in the involuntary-restart series AT BOTH ENDS OF THE
+#   BRACKET -- the missing ratio does not move the rank, which is why a
+#   rank is quotable here at all.
+#
+#   Series now n = 17: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204,
+#   3.594, 3.564, 4.863, 2.965, 7.033, 2.216, 5.1477, 3.4670, 2.9470,
+#   and #40 in [4.9648, 4.9688].  median 3.5640, mean 3.8354, total
+#   65.20 CPU-hours.  The 0.944 CPU-hours at 01:31Z on 09-14 is NOT in
+#   this series -- that was a stop I chose.
+#
+#   Shares 33.6, 31.1, 27.3, 8.0 percent, a spread of 25.7 points
+#   against #39's 21.8 and #38's 22.4.  NO FLATNESS RANKING IS CLAIMED:
+#   the share breakdowns for the earlier thirteen restarts are not in
+#   hand, so "flattest" cannot be checked, and the shares are in any
+#   case a description of where the kill landed relative to four
+#   independent start times, NOT a finding.
+#
+#   The CNF-mtime method takes elapsed = teardown - CNF mtime and omits
+#   the measured 0.256 s by which solver launch PRECEDES the CNF write.
+#   It therefore understates each cube by ~0.256 s, ~1.024 s over four,
+#   = 0.0057% of the wall total.  The omission is kept for consistency
+#   with #35 through #39, which were all computed the same way.
+#
+# RE-TAKE LAG 60.6 s: all four cubes re-taken at launch + 60.6 s, the
+# four CNF writes spread over 8.0 ms.  Prior observations 41 s (#35),
+# 60.7 s (#36), 61.0 s (#37), 60.6 s (#38), 60.7 s (#39).  SIX POINTS --
+# 41, 60.7, 61.0, 60.6, 60.7, 60.6 -- and FIVE OF THEM CLUSTER WITHIN
+# 0.4 s WHILE ONE DOES NOT.  The story that the lag tracks --slice 60 is
+# STILL NOT SUPPORTED: #35 ran 41 s under the identical flag and nothing
+# here explains it.  A sixth point inside the cluster does not convert
+# the cluster into a law and does not dispose of #35; adding an
+# observation that agrees with five others is the cheapest kind of
+# corroboration and the one least able to validate.  NO MECHANISM IS
+# PROPOSED; a mechanism may only explain data it predates.
+#
+# RE-RUN SET EIGHT IS OPEN: 950, 951, 952, 953 are being re-run from
+# zero, all four restarted within 8.0 ms so their re-run clocks are
+# directly comparable.  Ratios, median and spread when all four land,
+# and NOT before -- the rule held through sets five, six and seven and
+# holds here.
+# ---------------------------------------------------------------------
