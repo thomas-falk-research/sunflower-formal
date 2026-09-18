@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T01:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-18T01:48Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -313,9 +313,9 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**Twelve** spans, and the verdict tally needs its COMPARISON COUNTS beside
-it or it reads as more evidence than it is. Every row below was read back
-out of `--spans all`, not recalled:
+**Thirteen** spans, and the verdict tally needs its COMPARISON COUNTS
+beside it or it reads as more evidence than it is. Every row below was read
+back out of `--spans all`, not recalled:
 
 | # | closed by | hole counts | comparisons | monotone |
 |---|---|---|---|---|
@@ -331,8 +331,9 @@ out of `--spans all`, not recalled:
 | 10 | `9cdb1d1` | 1 | **0** | True — vacuous |
 | 11 | `b088217` | 1,1 | 1 | True — **flat, never fell** |
 | 12 | `4875392` | 2,3,3,3,2,1,1,1 | 7 | False |
+| 13 | `999f3bd` | 3,2,1,3,2,1,2,1,3,2,1 | 10 | False |
 
-**Seven True of twelve** — and the breakdown is where the weight goes.
+**Seven True of thirteen** — and the breakdown is where the weight goes.
 **Two of the seven contain zero comparisons and could not have come out
 False** (spans 5 and 10); **three more rest on a single comparison**
 (3, 8 and 11), which is one coin flip; **only two carry more than one**
@@ -348,7 +349,7 @@ breakdown is printed by a script that counts them, and the three parts are
 checked to sum to the True count.*
 
 Sharper still, and the reason a `True` is worth less than it looks: **three
-of the twelve chains never decreased at all** — spans 5 (`1`), 10 (`1`) and
+of the thirteen chains never decreased at all** — spans 5 (`1`), 10 (`1`) and
 11 (`1,1`). A chain that never moves is "non-increasing" by definition, so
 for those three the verdict reports only that the tool ran. A chain's length
 is set by how many commits a span happens to span, which is an accident of
@@ -357,9 +358,9 @@ rises only when a cube that started late finishes before ones that started
 early, which is an accident of which cubes happen to be long.
 
 Durations 6:05:59, 3:00:37, 0:52:58, 2:25:37, 1:14:38, 2:20:52, 5:41:15,
-0:35:49, 3:48:12, 0:21:20, 0:46:46, 1:47:44 are not monotone, and commit
-counts 7, 8, 2, 3, 1, 5, 17, 2, 9, 1, 2, 8 are not either. Both were tested
-mechanically in both directions, not eyeballed.
+0:35:49, 3:48:12, 0:21:20, 0:46:46, 1:47:44, 2:20:55 are not monotone, and
+commit counts 7, 8, 2, 3, 1, 5, 17, 2, 9, 1, 2, 8, 11 are not either. Both
+were tested mechanically in both directions, not eyeballed.
 
 The seventh span opened at 03:13:43Z when idx 790 landed while 787, 788 and
 789 were still running, breaking the frontier with **three** holes. It then
@@ -546,17 +547,43 @@ stands and is now sharper: **the tool's sequence is the record, and a
 narrative sentence about holes is a statement about the file, which is a
 different quantity and must not be written as though it were the span's.**
 
-**THE THIRTEENTH SPAN CLOSED ON THE idx-862 COMMIT.** It opened at
-00:03:56Z when idx 853 landed while 850, 851 and 852 were still running,
-and idx 862 filled its last hole. **Its figures are not in this file yet**:
-`--spans all` walks commits, so the closing commit must exist before the
-tool can measure the span. Duration, ranks, the hole chain and the computed
-monotonicity verdict all go in the follow-up commit that runs it, and the
-verdict tally above stays at **twelve** rows until then. **No chain was
-ever stated for it while it was open, not even the opening count** — the
-twelfth span taught that a chain is a property of the COMMIT sequence while
-a sentence about what was running describes the FILE, and the two disagreed
-by one at that span's opening.
+**THE THIRTEENTH SPAN IS CLOSED**, by idx 862 at `999f3bd`. All figures
+COPIED from `checkpoint_audit.py --spans all`, run only after that commit
+existed:
+
+| field | value |
+|---|---|
+| opened after | `70c0b82` 2026-09-17T23:25:09Z |
+| closed by | `999f3bd` 2026-09-18T01:46:04Z |
+| duration | 2:20:55 (2.3486 h) |
+| commits | 11 broken |
+| hole counts | 3,2,1,3,2,1,2,1,3,2,1 |
+| monotone non-increasing | **False** |
+| most holes | 3 at `b9fd281` [850, 851, 852] |
+
+Ranks against **78 closed spans**: **rank 14 of 78 by duration** (64 are
+shorter, no ties) and **rank 10 of 78 by commit count**, 2 tied at 11. Read
+through the distribution — **44 of the 78 are one second or shorter**.
+
+**No chain was stated for this span while it was open, not even the opening
+count**, so the chain above is its first and only record. That was
+deliberate from the moment it opened, one commit after the twelfth span's
+figures showed the tool's chain starting one lower than my narrative had
+said.
+
+**THE CHAIN LOOKS LIKE A SAW-TOOTH AND THAT IS NOT A FINDING.**
+`3,2,1,3,2,1,2,1,3,2,1` descends to 1 and climbs back to 3 three times,
+which is exactly the shape four slots produce when one cube keeps landing
+ahead of slower neighbours: holes open, fill, and open again. It is the
+longest chain here other than the seventh span's seventeen, and **nothing
+is registered on it** — no forward test, no entry in the pattern tally.
+
+**A NEAR-IDENTICAL DURATION, DISMISSED WITH ITS BASE RATE.** This span ran
+2:20:55 and the sixth ran 2:20:52 — **3 seconds apart**. Of the 78 pairs
+among the thirteen recorded durations, exactly **1** is within 3 s, which
+is this one. A single closest pair exists in every set of numbers; being
+the closest is not evidence of anything, and "two near-identical figures
+treated as corroboration" is already a registered error pattern (37d44af).
 
 The tool's **"opened after" is the last unbroken commit**, not the previous
 span's record commit — asserted wrongly at `0b68df2`, corrected at
@@ -1125,9 +1152,8 @@ Task outputs live at
   `/proc/27205/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line.
 - **Frontier contiguous 0..863, highest decided 863, holes [].**
-  **No span is open.** The thirteenth closed on the idx-862 commit; its
-  figures come from `--spans all` in the follow-up commit, once that commit
-  exists for the tool to walk.
+  **No span is open.** The thirteenth closed at `999f3bd` and its figures
+  are recorded above, from the tool, after that commit existed.
 - **864 of 1949 = 44.3304%**; **1085 undecided**. **44% IS CROSSED**, at
   cube index 858 — on the row that took the decided count to 858, a numeral
   collision and nothing more. **Next: 45% needs `ceil(0.45 × 1949) = 878`
