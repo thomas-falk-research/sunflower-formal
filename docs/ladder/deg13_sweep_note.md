@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T12:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T13:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2369,11 +2369,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1154 -> 1155 rows)
+## State as of the last refresh (1155 -> 1156 rows)
 
-- **1155 rows; 986 labels decided; 986 UNSAT; 0 SAT; 0 labels
+- **1156 rows; 987 labels decided; 987 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 986 decided plus 169 superseded
+  A row count is not a decision count: 987 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2391,8 +2391,44 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..985, highest decided 985, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..985, highest decided 987, holes [986].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — the twenty-sixth.** idx 987 came in at 7545.9 s,
+  rank 195 of 987 by cost with 792 cheaper, while idx 986 was still
+  running; 986 is the only hole. `ps` confirms it in flight — pid 25406
+  on `c986-cryptominisat5-388-31.cnf` at 7585 s elapsed — alongside 988,
+  989 and 990, which sit above 987 and are therefore not holes.
+
+  **THIS ONE OPENED ON AN EXPENSIVE CUBE, AND A DRAFT GOT THE CONTRAST
+  WRONG.** That draft said the twenty-second through twenty-fourth "all
+  opened when a *cheap* cube jumped the frontier". Computed instead of
+  asserted — every opener ranked against the same current decided set of
+  987, rank 1 being the most expensive:
+
+  | span | opener | cost | rank of 987 | cheaper |
+  |---|---|---|---|---|
+  | twenty-second | idx 964 | 1073.4 | 852 | 135 |
+  | twenty-third | idx 970 | 869.5 | 894 | 93 |
+  | twenty-fourth | idx 981 | 3954.3 | 487 | 500 |
+  | twenty-fifth | idx 984 | 2779.9 | 592 | 395 |
+  | twenty-sixth | idx 987 | 7545.9 | **195** | 792 |
+
+  Only the twenty-second and twenty-third opened on genuinely cheap
+  cubes; the twenty-fourth opened **almost exactly at the median** (487 of
+  987) and the twenty-fifth below it. The draft was wrong about one of
+  the three it named and silently dropped the twenty-fifth, which sits
+  between them. **The twenty-sixth's opener is the most expensive of the
+  five** — that much survives, and it is a fact about five spans, not a
+  trend. A frontier breaks whenever any cube finishes before a
+  lower-indexed one, which says nothing about the finisher's absolute
+  cost; the opening-cost census across all 90 closed spans is still not
+  computed and still not worth computing to chase five.
+
+  **No figures and no hole chain are claimed for it** — they come from
+  `--spans all` after it closes, with every quoted span rank recomputed
+  against the new N in the same pass. bank.py's span guard caught the
+  opening: **twelfth real firing, sixth in the open direction.**
+
   **THE TWENTY-FIFTH SPAN IS CLOSED**, filled by idx 983 at 3905.3 s.
   It opened when idx 984 came in at 2779.9 s while 982 and 983 were both
   still running; idx 982 then landed at 4095.0 s and **both were banked
@@ -2530,7 +2566,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **986 of 1949 = 50.5900%**; **963 undecided**. **50% IS CROSSED**, at
+- **987 of 1949 = 50.6414%**; **962 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2585,7 +2621,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **13 decided**, undecided 15 spanning 986..1000
+  **14 decided**, undecided 14 spanning 986..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
