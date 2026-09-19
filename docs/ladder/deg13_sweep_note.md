@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T20:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T20:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1558,12 +1558,29 @@ into a count containing successes.
 | `73fcf31` | **MISS** | 0.0245 | idx 760 |
 | `aea7189` | **MISS** | 0.4130 | idx 765 |
 | `cb54e7a` | **HIT** | 0.00087 | the next row after idx 1007 |
-| `2656fc8` | **PENDING** | 2.5e-7 | the next row after idx 1008 |
+| `2656fc8` | **HIT** | 2.5e-7 | the next row after idx 1008 |
 
-**Five registered, ONE hit, four resolved, one open.** The 0.5019
+**Five registered, TWO hits, ALL FIVE RESOLVED, none open.** The 0.5019
 counter-caveat below covers the **first three** tests and is unaffected
 by FT-4 and FT-5 — it was computed from those three pinned nulls and is
-not recomputed to absorb later results, in either direction.
+not recomputed to absorb later results, in either direction. **The two
+records must not be merged**: FT-1 to FT-3 forecast the sweep's own
+behaviour, FT-4 and FT-5 forecast an artefact of the machine that was
+discovered mid-sweep. "2 of 5" would average two different questions.
+
+**FT-5 RESOLVED: HIT.** At idx 1010's row the gap was **36 000 002 ns**,
+`k = 9`, `mod 4 ms = 2` — the **fifth observation overall and the fourth
+exact one**, all four of which sit on residue 2. *(The first, idx 1006,
+is known only to ±238 ns, so it is consistent with residue 2 and is not
+counted as confirming it. "Five on that residue" would be one more than
+the measurements support.)* **THE STOPPING RULE WRITTEN AT FT-5's REGISTRATION NOW BINDS.**
+That registration said, in as many words, that the mechanism hunt
+"stops here unless FT-5 misses". It did not miss. **So it stops** — no
+FT-6, no sixth mechanism tested, no further experiments. The rule was
+written in advance precisely to stop this becoming an open-ended chase
+of an artefact that has nothing to do with `ι(4)`, and honouring it when
+the result is *interesting* is the only time honouring it costs
+anything.
 
 **FT-4 RESOLVED: HIT — AND THE REGISTRATION SAID THAT WOULD MEAN LITTLE,
 WHICH TURNED OUT TO BE AN UNDERSTATEMENT.** At idx 1009's row the gap
@@ -2097,8 +2114,10 @@ Registration discipline, learned the hard way:
   | idx 1007 | **36 000 002** | 9 | **2** |
   | idx 1009 | **36 000 002** | 9 | **2** |
   | idx 1008 | **40 000 002** | 10 | **2** |
+  | idx 1010 | **36 000 002** | 9 | **2** |
 
-  **Every exact gap is `4 ms × k + 2 ns`.** The endpoints themselves are
+  **Every exact gap is `4 ms × k + 2 ns`** — four exact observations,
+  `k = 9, 9, 10, 9`, residue 2 every time. The endpoints themselves are
   *not* on 4 ms boundaries — checkpoint remainders 35 929, 87 665,
   95 668 and CNF remainders 35 931, 87 667, 95 670 — so **the 4 ms
   structure lives in the difference, not in either timestamp.** A fifth
@@ -2124,10 +2143,26 @@ Registration discipline, learned the hard way:
   write 2 MB — scattered over **1.21–5.39 ms across 40 trials, all
   distinct**.
 
-  **FT-5 is registered on the residue class** (`gap mod 4 000 000 == 2`),
-  which is the part that survived, with its own pinned null. **Five
-  mechanisms tested, five rejected; the sixth is not being chased.** This
-  is a side quest off the sweep and it stops here unless FT-5 misses.
+  **FT-5 HIT** on the residue class (`gap mod 4 000 000 == 2`) at idx
+  1010, its fifth confirmation. **Five mechanisms tested, five rejected,
+  and the sixth is not being chased: the stopping rule written at FT-5's
+  registration said this ends unless FT-5 misses, and it did not miss.**
+
+  **WHAT IS AND IS NOT KNOWN, so the next reader does not restart this.**
+  *Established:* the gap is `4 ms × k + 2 ns` over four exact
+  observations; the endpoints are fine-grained and not 4 ms-aligned, so
+  the structure is in the difference; the interval spans a row flush, two
+  `remove_file` calls, an instance build, `to_dimacs()` and a
+  5 874 272-byte write, every CNF in this sweep being exactly that size;
+  and five candidate mechanisms — timestamp quantisation, real work, a
+  sleep, two filesystem clocks, and multigrain timestamps — are each
+  refuted by direct measurement on this machine. *Not established:* what
+  produces the 4 ms quantum, and what produces the 2 ns. **Neither
+  question touches `ι(4)`**, the bracket, or any cost figure in this
+  file, which is the whole reason the hunt is closed rather than
+  continued. If it ever matters, it matters for the CNF-mtime method's
+  resolution at restarts — and that method is used at 1 s tolerance,
+  four thousand times coarser than the effect.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
@@ -2852,11 +2887,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1177 -> 1179 rows)
+## State as of the last refresh (1179 -> 1180 rows)
 
-- **1179 rows; 1010 labels decided; 1010 UNSAT; 0 SAT; 0 labels
+- **1180 rows; 1011 labels decided; 1011 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1010 decided plus 169 superseded
+  A row count is not a decision count: 1011 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2874,7 +2909,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1009, highest decided 1009, holes [].**
+- **Frontier contiguous 0..1010, highest decided 1010, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE FILE HELD A HOLE AT 1008 AND NO SPAN WILL EVER RECORD IT.** idx
   1009 landed at 20:16:00Z (3998.2 s) while 1008 was still running; idx
@@ -3234,7 +3269,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1010 of 1949 = 51.8214%**; **939 undecided**. **50% IS CROSSED**, at
+- **1011 of 1949 = 51.8728%**; **938 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3302,7 +3337,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **9 decided**, undecided 12 spanning 1010..1021
+  **10 decided**, undecided 11 spanning 1011..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
