@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T19:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T19:10Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2510,11 +2510,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1173 -> 1174 rows)
+## State as of the last refresh (1174 -> 1175 rows)
 
-- **1174 rows; 1005 labels decided; 1005 UNSAT; 0 SAT; 0 labels
+- **1175 rows; 1006 labels decided; 1006 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1005 decided plus 169 superseded
+  A row count is not a decision count: 1006 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2532,19 +2532,18 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1003, highest decided 1005, holes [1004].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-ninth, at ONE hole.** idx 1005 came in
-  at 1599.3 s, rank 801 of 1005 by cost with 204 cheaper, while idx 1004
-  was still running at 1712 s; 1006, 1007 and 1008 are also running but
-  sit above 1005 and are not holes. **No figures and no hole chain are
-  claimed** — they come from `--spans all` after it closes, with every
-  quoted span rank recomputed against the new N in the same pass.
-  **No bank-time state list is kept for this one**: the twenty-eighth's
-  turned out to be wrong about the banks as well as about the chain, and
-  a list that has to be corrected on close is worse than no list.
-  bank.py's span guard caught the opening: **eighteenth real firing,
-  ninth in the open direction.**
+- **Frontier contiguous 0..1005, highest decided 1005, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE TWENTY-NINTH SPAN IS CLOSED**, filled by idx 1004 at 1829.3 s.
+  It opened at one hole when idx 1005 came in at 1599.3 s while 1004 was
+  still running, and closed on the next row — 1004 landed **2 minutes 32
+  seconds** after 1005, the two costs differing by 230.0 s. **No figures
+  and no hole chain are written here yet**; they come from `--spans all`
+  run after the closing commit exists, with every quoted span rank
+  recomputed against the new N in the same pass. No bank-time state list
+  was kept, per the note added when the twenty-eighth's proved wrong
+  about the banks. bank.py's span guard caught the close: **nineteenth
+  real firing, tenth in the close direction.**
 
   **THE TWENTY-EIGHTH SPAN IS CLOSED**, filled by **idx 994 at 10427.2
   s** — the same row that closed block `[13,13,11,9]` at 28 of 28. It
@@ -2846,7 +2845,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1005 of 1949 = 51.5649%**; **944 undecided**. **50% IS CROSSED**, at
+- **1006 of 1949 = 51.6162%**; **943 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2914,7 +2913,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **4 decided**, undecided 17 spanning 1004..1021
+  **5 decided**, undecided 16 spanning 1006..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
