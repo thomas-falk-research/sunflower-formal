@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T09:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T09:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1630,9 +1630,26 @@ Registration discipline, learned the hard way:
   every trap: the seventh (46.9985%) was passed through inside a single
   commit that banked two rows, so no commit will ever carry it.
   **Next: 50% needs `ceil(0.50 × 1949) = 975`, trap at 974 = 49.9743%**,
-  both from the script. **After that, 51% HAS NO TRAP** — it is one of
-  the two exceptions (k = 2 and k = 51), its predecessor 993 = 50.9492%
-  rounding to 50.9 rather than 51.0. So the stop at 51% will simply not
+  both from the script.
+  **50% — THE TRAP IS LIVE, AND IT IS THE HALFWAY ONE.** The decided count
+  reached **974 = 49.9743%** at cube index 974, rounding to 50.0 while
+  sitting below 50. **Tenth rounds-up-but-below figure**: 40.9954%,
+  41.9702%, 42.9964%, 43.9713%, 44.9974%, 45.9723%, 46.9985%, 47.9733%,
+  48.9995%, **49.9743%**. Its shortfall is 0.025654 pp, **rank 50 of 97**
+  by tightness — the middle of the pack, and in the large band of the
+  alternation. It is **not** a tight trap; the tightest was the one before
+  it. 50% still needs **975**.
+  **AT THIS ONE THRESHOLD THE UNDECIDED COUNT EQUALS THE THRESHOLD**: 974
+  decided, **975 undecided**, and 975 is what 50% needs. That is
+  arithmetic, not coincidence, and it is **computed rather than noticed**:
+  `decided = need − 1` gives `undecided = 1949 − need + 1`, which equals
+  `need` only when `need = (1949+1)/2 = 975`. 1949 is odd, so this happens
+  at **exactly one threshold in the entire run**, and this is it. Unlike
+  the six count-equals-index collisions above, this one could not have
+  failed to happen here and could not have happened anywhere else.
+  **After that, 51% HAS NO TRAP** — it is one of the two exceptions
+  (k = 2 and k = 51), its predecessor 993 = 50.9492% rounding to 50.9
+  rather than 51.0. So the stop at 51% will simply not
   happen, and **its absence will be evidence of nothing**; it was
   computed in advance and is recorded here so it cannot later be read as
   a break in a pattern.
@@ -2040,11 +2057,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1141 -> 1142 rows)
+## State as of the last refresh (1142 -> 1143 rows)
 
-- **1142 rows; 973 labels decided; 973 UNSAT; 0 SAT; 0 labels
+- **1143 rows; 974 labels decided; 974 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 973 decided plus 169 superseded
+  A row count is not a decision count: 974 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2062,7 +2079,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 973, holes [968].**
+- **Frontier contiguous 0..967, highest decided 974, holes [968].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
   holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
@@ -2116,7 +2133,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **973 of 1949 = 49.9230%**; **976 undecided**. **49% IS CROSSED**, at
+- **974 of 1949 = 49.9743%**; **975 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2168,7 +2185,7 @@ Task outputs live at
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **37 decided**, undecided [968]
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **1 decided**, undecided 27 spanning 974..1000
+  **2 decided**, undecided 26 spanning 975..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
