@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T19:52Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T20:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1557,8 +1557,42 @@ into a count containing successes.
 | `6ec69dc` | NULL | 0.1235 | — |
 | `73fcf31` | **MISS** | 0.0245 | idx 760 |
 | `aea7189` | **MISS** | 0.4130 | idx 765 |
+| *(open)* | **PENDING** | 0.00087 | the next row after idx 1007 |
 
-**Three registered, zero hits. None currently open.**
+**Four registered, zero hits, THREE RESOLVED — and one is open.** The
+0.5019 counter-caveat below is computed over the **three resolved** tests
+and does not move until the fourth resolves.
+
+**FT-4, registered here before the outcome exists.** *Prediction:* at the
+next row landing, `(newest CNF st_mtime_ns) − (checkpoint st_mtime_ns)`
+will be within **±1000 ns of 36 000 002 ns**. *Operationally, so the
+test cannot be reinterpreted afterwards:* immediately after the waiter
+reports the row and **before any further row can land**, take the
+`st_mtime_ns` of `docs/ladder/iota4_11.deg13.cryptominisat5.tsv` and the
+largest `st_mtime_ns` among the CNFs matching the live driver's pid
+**and** `-seq-c`; subtract; compare. `st_mtime_ns`, never the float —
+the float's ulp here is 2.384e-7 s, which is 238 times the tolerance
+this test claims. If a restart intervenes, the pid in the glob is the
+new one and the test still stands. *Pinned
+null, chosen as the most favourable to the null that the direct
+measurements allow:* the gap behaves like the deliberate-sleep
+distribution measured on this machine — the only tested distribution
+whose support contains 36 ms at all — which spread 20 samples over
+2 304 759 ns, giving **P(within ±1000 ns of any named point) ≈ 2000 /
+2 304 759 = 0.00087**. Pinned now, never to be recomputed to suit the
+outcome.
+
+***THIS IS A TEST WHOSE HIT IS UNINFORMATIVE AND WHOSE MISS IS
+INFORMATIVE — THE REVERSE OF THE OTHER THREE, AND IT IS LABELLED WEAK IN
+THAT DIRECTION AT REGISTRATION.*** If the 36 000 002 ns is a
+deterministic constant of whatever writes these two files, a hit is
+**guaranteed** and demonstrates only that the constant is stable; the
+tiny p-value then measures the null's ignorance, not any skill of mine.
+A **miss** is the outcome that carries information: it would show the
+two agreeing observations were a coincidence after all, at odds the
+measurements put at roughly 5 in a million. Registering it anyway,
+because declining to guess earns nothing and because a stability claim
+that is never put at risk is not a claim.
 
 **The counter-caveat is mandatory.** Under the pinned nulls,
 
@@ -1968,7 +2002,16 @@ Registration discipline, learned the hard way:
   **The result is "inside ±1.05 s", NOT "accurate to 12 ms"** — landing
   that close with inputs quantised to a second is luck, and reading the
   delta as a precision figure would be inventing three digits the inputs
-  never had. It is weaker than cube 839's check in the way that matters:
+  never had. **THE NEXT ROW SETTLED THAT ARGUMENT IN ITS FAVOUR, n = 3.**
+  Cube **1007** was sampled at 19:52:01Z with ELAPSED **3609 s** and
+  landed at **4173.7 s**, predicting **20:01:25.700Z** against an
+  observed checkpoint mtime of **20:01:25.116036Z** — a delta of
+  **−0.584 s**. Both are inside the ±1.05 s budget; the **spread between
+  the two deltas is 0.596 s**, which is what the caveat said would
+  happen and the reason the +0.012 s was never quoted as a precision.
+  *This is not a hit in the forward-test series: no prediction was
+  registered for it either, and "the caveat held" is the weakest thing a
+  caveat can do.* It is weaker than cube 839's check in the way that matters:
   there, both `/proc` field 22 and the CNF mtime survived to be read at
   sub-second resolution; here the solver had exited and **slot 22's CNF
   had already been overwritten by idx 1010**, so the only surviving
@@ -1979,10 +2022,40 @@ Registration discipline, learned the hard way:
   pattern tally.
   *One quantity here is new and did not need the 1006 arithmetic at all:*
   idx 1010's CNF (slot 22) closes at 19:51:05.847999Z, **+0.036 s after
-  the row write**. That is a directly measured **driver turnaround** —
-  row written, next cube's CNF closed — and it is the first number this
-  note has on the lag it has repeatedly flagged as "separately untested".
-  **One observation. It does not become a bound.**
+  the row write**. **THE COMMIT THAT FIRST RECORDED THIS (`2d98555`)
+  CALLED IT A "DIRECTLY MEASURED DRIVER TURNAROUND". THAT NAME IS
+  WITHDRAWN** — it attributed a mechanism, and one row later the
+  mechanism was tested and does not survive. The **number** stands; what
+  it is a measurement *of* is now an open question. See the next entry.
+
+  **THE 36 ms GAP REPEATED TO THE NANOSECOND, WHICH RULES OUT THE THING
+  IT WAS NAMED AFTER.** At the next row the same pair was read with
+  `st_mtime_ns` rather than floats: checkpoint (idx 1007's row)
+  `1789848085116035929`, idx 1011's CNF `1789848085152035931`, a gap of
+  **36 000 002 ns**. The earlier pair is only known to ±238 ns — the
+  checkpoint side was read as a float, and `math.ulp` at this epoch is
+  2.384e-7 s — but it is **consistent with the same 36 000 002 ns**.
+  Four mechanisms were then tested directly on this machine rather than
+  reasoned about, and **all four fail**:
+
+  | candidate mechanism | direct test | result |
+  |---|---|---|
+  | mtime quantisation | 400 tight-loop writes | 400 distinct mtimes, smallest step **45 763 ns**; not ms- or µs-aligned |
+  | real work between the writes | 60 back-to-back write pairs | gaps **22 716 – 103 906 ns**, all 60 distinct, never near 36 ms |
+  | a fixed 36 ms sleep | 20 deliberate `sleep(0.036)` pairs | **36.258 – 38.562 ms**, spread **2 304 759 ns** — a real 36 ms interval does not reproduce to the nanosecond |
+  | a clock-source offset between two filesystems | writes to the repo path and `/tmp`, both orders | both are **the same ext4 `/dev/vda`**; medians **34 471 ns** and **38 058 ns**, neither near 36 ms |
+
+  **THE MECHANISM IS NOT ESTABLISHED AND NOTHING IS BUILT ON THIS.** Two
+  observations agreeing to the resolution of the weaker one is not a
+  constant; it is two observations. What the tests do establish is
+  narrower and worth keeping: **36 000 002 ns is not an elapsed interval
+  produced by work, by sleeping, by timestamp granularity, or by two
+  clocks** — every one of those was measured and none of them lands
+  there. The quantity is real as an mtime difference; its
+  interpretation is open.
+  **A forward test is registered on it** in the forward-test series
+  (FT-4), with the tolerance, the pinned null and the reason a hit there
+  would be uninformative all written down before the next row lands.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
@@ -2707,11 +2780,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1175 -> 1176 rows)
+## State as of the last refresh (1176 -> 1177 rows)
 
-- **1176 rows; 1007 labels decided; 1007 UNSAT; 0 SAT; 0 labels
+- **1177 rows; 1008 labels decided; 1008 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1007 decided plus 169 superseded
+  A row count is not a decision count: 1008 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2729,7 +2802,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1006, highest decided 1006, holes [].**
+- **Frontier contiguous 0..1007, highest decided 1007, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-NINTH SPAN IS CLOSED**, filled by idx 1004 at 1829.3 s.
   It opened at one hole when idx 1005 came in at 1599.3 s while 1004 was
@@ -3079,7 +3152,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1007 of 1949 = 51.6675%**; **942 undecided**. **50% IS CROSSED**, at
+- **1008 of 1949 = 51.7188%**; **941 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3147,7 +3220,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **6 decided**, undecided 15 spanning 1007..1021
+  **7 decided**, undecided 14 spanning 1008..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
