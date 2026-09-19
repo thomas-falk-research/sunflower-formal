@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T16:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T16:56Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2500,11 +2500,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1161 -> 1162 rows)
+## State as of the last refresh (1162 -> 1163 rows)
 
-- **1162 rows; 993 labels decided; 993 UNSAT; 0 SAT; 0 labels
+- **1163 rows; 994 labels decided; 994 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 993 decided plus 169 superseded
+  A row count is not a decision count: 994 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2522,7 +2522,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..992, highest decided 992, holes [].**
+- **Frontier contiguous 0..993, highest decided 993, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-SEVENTH SPAN IS CLOSED**, filled by idx 989 at 6754.0 s.
   It opened at **two holes** when idx 991 came in at 2486.8 s while 989
@@ -2785,14 +2785,27 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **993 of 1949 = 50.9492%**; **956 undecided**. **50% IS CROSSED**, at
+- **994 of 1949 = 51.0005%**; **955 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
-  `need = (1949+1)/2`. Next: **51% needs `ceil(0.51 × 1949) = 994`, and
-  it HAS NO TRAP** — predecessor 993 = 50.9492% rounds to 50.9, one of
-  the two exceptions (k = 2 and k = 51) computed long in advance, so the
-  absence of a stop there will be evidence of nothing.
+  `need = (1949+1)/2`. **51% IS CROSSED, AT `ceil(0.51 × 1949) = 994`,
+  AND THE PREDICTED ABSENCE OF A TRAP HELD.** The counter went 993 =
+  **50.9492%** straight to 994 = **51.0005%** with no stop at a
+  rounds-up-but-below figure, because k = 51 is one of the **two**
+  exceptions — k = 2 and k = 51 — identified by computing all 99
+  thresholds long before the counter got here. Re-verified at the
+  crossing: `ceil(0.51 × 1949)` is 994, 993/1949 rounds to **50.9** and
+  not 51.0, and the exception set recomputed over k = 1..99 is still
+  exactly {2, 51}, so 97 of 99 thresholds do have a trap.
+  **THE ABSENCE OF A STOP IS EVIDENCE OF NOTHING**, which is what the
+  prediction said it would be. A prediction that forecasts *nothing
+  happening* is confirmed by nothing happening, and that is the weakest
+  kind of confirmation there is — it is recorded because it was written
+  down in advance, not because the counter behaving arithmetically is
+  news. **Next: 52% needs 1014 (52.0267%), and it DOES have a trap** —
+  predecessor 1013 = 51.9754%, short by 0.024628 pp, which rounds to
+  52.0 without reaching it.
   **CROSSING HALF IS NOT HALF A RESULT**: deg(0)=13 is UNSAT only when
   **all 1949** are, and 975 UNSATs say nothing about the other 974.
   **COST FIGURES SPAN THREE MACHINE CONFIGURATIONS**, from restarts #41
@@ -2840,7 +2853,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **20 decided**, undecided 8 spanning 993..1000
+  **21 decided**, undecided 7 spanning 994..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
