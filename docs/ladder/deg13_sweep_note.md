@@ -1558,7 +1558,7 @@ into a count containing successes.
 | `73fcf31` | **MISS** | 0.0245 | idx 760 |
 | `aea7189` | **MISS** | 0.4130 | idx 765 |
 | `cb54e7a` | **HIT** | 0.00087 | the next row after idx 1007 |
-| *(patched below)* | **PENDING** | 2.5e-7 | the next row after idx 1008 |
+| `2656fc8` | **PENDING** | 2.5e-7 | the next row after idx 1008 |
 
 **Five registered, ONE hit, four resolved, one open.** The 0.5019
 counter-caveat below covers the **first three** tests and is unaffected
@@ -1598,8 +1598,8 @@ whose support contains 36 ms at all — which spread 20 samples over
 2 304 759 = 0.00087**. Pinned now, never to be recomputed to suit the
 outcome.
 
-**FT-5, registered before its outcome exists, replacing the claim FT-4
-killed.** *Prediction:* at the next row after idx 1008, the same gap,
+**FT-5, registered at `2656fc8` before its outcome exists, replacing the claim
+FT-4 killed.** *Prediction:* at the next row after idx 1008, the same gap,
 measured by the same operational rule as FT-4, satisfies
 `gap mod 4 000 000 == 2` — **a residue class, not a value**. The four
 observations in hand are 36 000 002, 36 000 002, 36 000 002 and
