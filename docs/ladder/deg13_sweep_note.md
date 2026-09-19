@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T10:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T10:13Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1334,6 +1334,20 @@ Registration discipline, learned the hard way:
 
   | block | n | min | median | mean | max | spread |
   |---|---|---|---|---|---|---|
+  | `[13,13,13,13]` | 129 | 128.3 | 4370.9 | 4478.0 | 10865.7 | 84.6898× |
+  | `[13,13,13,12]` | 104 | 303.3 | 6537.8 | 8021.8 | 21678.5 | 71.4754× |
+  | `[13,13,13,11]` | 82 | 101.9 | 4960.8 | 5606.5 | 12638.9 | 124.0324× |
+  | `[13,13,13,10]` | 65 | 82.0 | 2965.0 | 3802.3 | 10180.7 | 124.1549× |
+  | `[13,13,13,9]` | 49 | 289.2 | 2647.8 | 3392.9 | 9831.0 | 33.9938× |
+  | `[13,13,13,8]` | 38 | 360.6 | 2143.8 | 2739.3 | 7623.1 | 21.1400× |
+  | `[13,13,13,7]` | 28 | 372.4 | 2061.7 | 2412.2 | 7231.4 | 19.4184× |
+  | `[13,13,13,6]` | 21 | 412.1 | 1904.6 | 2105.8 | 4636.4 | 11.2507× |
+  | `[13,13,13,5]` | 15 | 164.3 | 1500.2 | 1508.0 | 3176.8 | 19.3354× |
+  | `[13,13,13,4]` | 11 | 258.7 | 859.0 | 881.7 | 2032.9 | 7.8581× |
+  | `[13,13,13,3]` | 7 | 155.9 | 329.1 | 405.4 | 795.8 | 5.1046× |
+  | `[13,13,13,2]` | 5 | 64.3 | 132.1 | 141.6 | 203.3 | 3.1617× |
+  | `[13,13,13,1]` | 3 | 22.8 | 39.3 | 39.4 | 56.0 | 2.4561× |
+  | `[13,13,13,0]` | 2 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
   | `[13,13,12,12]` | 82 | 54.1 | 3442.9 | 4694.6 | 12831.3 | 237.1774× |
   | `[13,13,12,11]` | 65 | 144.8 | 5704.7 | 6818.7 | 16785.7 | 115.9233× |
   | `[13,13,12,10]` | 49 | 578.0 | 5744.1 | 6791.7 | 15490.4 | 26.8000× |
@@ -1354,29 +1368,31 @@ Registration discipline, learned the hard way:
   `max - min + 1 == len`, checked, not eyeballed — closed by idx 968 after
   it ran 9079.9 s, the same row that closed the twenty-third span).
   **Every row above was recomputed from the checkpoint when this one was
-  added**, and all fourteen reproduced their recorded figures exactly,
-  which is the check, not a formality. `[13,13,11,11]` before it closed
-  49/49 (idx 886..934, contiguity verified, closed by idx 928 after it ran
-  7053.6 s).
+  added**, and all fourteen that were already tabled reproduced their
+  recorded figures exactly, which is the check, not a formality.
+  `[13,13,11,11]` before it closed 49/49 (idx 886..934, contiguity
+  verified, closed by idx 928 after it ran 7053.6 s).
 
-  **THIS TABLE IS NOT THE LIST OF CLOSED BLOCKS AND NEVER HAS BEEN.** The
-  same recompute that produced `[13,13,11,10]` reports **29 closed blocks**
-  against the **15** tabled here, and the 14 missing are exactly the whole
-  `[13,13,13,*]` run, idx 0..558 — checked by set difference, not by
-  eye. They closed before this table was started at `[13,13,12,12]`, and
-  nothing since ever went back for them, so a heading that reads
-  "closed-block descriptive stats" has been describing half its subject.
-  That is recorded here as found, in the commit that found it; the 14 rows
-  are not being pasted in the same breath, because a complete second run
-  of the same shape is worth more than a longer table — it is an
-  INDEPENDENT sample against which the withdrawn "spreads fall, minima
-  rise" reading below can be tested, and that test deserves its own pass
-  rather than being smuggled in as a formatting fix.
+  **THE TABLE NOW HOLDS ALL 29 CLOSED BLOCKS. IT STARTED AT THE SECOND
+  RUN AND NEVER REACHED BACK — 172 COMMITS.** Recomputing it for
+  `[13,13,11,10]` reported **29** closed blocks against the 14 tabled, and
+  the 15 missing — checked by set difference, not by eye — were the whole
+  `[13,13,13,*]` run, idx 0..558, plus the new row itself. The table was
+  created at `374ea97` with `[13,13,12,12]` as its first line, 172 commits
+  ago; the `[13,13,13,*]` run had closed before that and nothing ever
+  went back for it, so a heading reading "closed-block descriptive stats"
+  described half its subject from the day it was written. The 14 rows are
+  now in, recomputed from the checkpoint in the same run as every other
+  row, each contiguity-verified by `max - min + 1 == len`. **What they
+  cost by being absent is in the next section**: they are an independent
+  sample of exactly the shape the withdrawn "spreads fall, minima rise"
+  reading was read off, and they were complete in this very file before
+  that reading was ever written.
 
-  **THE TWO `[13,13,11,*]` ROWS ARE NOT COMPARED WITH THE THIRTEEN ABOVE
-  THEM AND ARE NOT ADDED TO ANY MONOTONICITY LIST.** The thirteen
-  `[13,13,12,*]` rows are one coordinate run; `[13,13,11,11]` and
-  `[13,13,11,10]` are the first two rows of a different one, and the
+  **THE TABLE HOLDS THREE COORDINATE RUNS AND THEY ARE NOT MERGED INTO
+  ONE LIST.** Fourteen `[13,13,13,*]` rows, thirteen `[13,13,12,*]` rows,
+  two `[13,13,11,*]` rows; `[13,13,11,11]` and `[13,13,11,10]` are the
+  first two rows of the third run, and the
   note's standing rule is that block statistics are descriptive and are
   not compared across blocks. The coincidences are the reason to say so
   out loud rather than a reason to compare: `[13,13,11,11]`'s n = 49
@@ -1500,6 +1516,53 @@ Registration discipline, learned the hard way:
   **no claim is made about that gap** — the pool contains these very cubes
   and is far too crude to carry a conclusion.
 
+  **AND THE DATA THAT WOULD HAVE BROKEN IT IMMEDIATELY WAS ALREADY IN
+  THIS FILE WHEN THE READING WAS WRITTEN.** The `[13,13,13,*]` run is an
+  independent sample of exactly the same shape — one coordinate run, the
+  same `SEQ` construction, the same solver, block sizes 129, 104, 82, 65,
+  49, 38, 28, 21, 15, 11 down to n ≥ 11. Its figures, restricted to n ≥ 11
+  the same way the lists above are:
+
+  - minima **128.3, 303.3, 101.9, 82.0, 289.2, 360.6, 372.4, 412.1,
+    164.3, 258.7** — **"minima rise" fails at the third block**;
+  - spreads **84.69, 71.48, 124.03, 124.15, 33.99, 21.14, 19.42, 11.25,
+    19.34, 7.86** — **"spreads fall" fails at the third block**;
+  - means **4478.0, 8021.8, 5606.5, 3802.3, 3392.9, 2739.3, 2412.2,
+    2105.8, 1508.0, 881.7** and medians **4370.9, 6537.8, 4960.8, 2965.0,
+    2647.8, 2143.8, 2061.7, 1904.6, 1500.2, 859.0** — neither monotone,
+    both breaking at the second block.
+
+  **The reading was written on three blocks. Three blocks of this run
+  refute both halves of it, in opposite directions.** `[13,13,12,12..10]`
+  gives minima 54.1, 144.8, 578.0 (rising) and spreads 237.18, 115.92,
+  26.80 (falling); `[13,13,13,13..11]` gives minima 128.3, 303.3, 101.9
+  and spreads 84.69, 71.48, 124.03. Same sample size, same shape,
+  opposite signs.
+
+  **The timing is checked, not assumed.** The phrase "Spreads fall, minima
+  **rise**, maxima **not** monotone; three points at unequal n" entered
+  this file at `fca972d` on 2026-09-16. At that commit the checkpoint
+  already had **773 decided cubes and all 14 `[13,13,13,*]` blocks
+  closed** — idx 0..558 complete, verified by replaying the blob at that
+  revision through the same block code. The refutation was not unavailable,
+  or expensive, or in another file. It was **in the same checkpoint, at
+  lower indices, already closed**, and the reading was read off the run
+  that happened to be landing that week.
+
+  **THE LESSON IS NOT "THE READING WAS WRONG" — IT WAS WITHDRAWN AND THEN
+  BROKEN THREE TIMES ALREADY. IT IS THAT THE CHECK COST NOTHING AND WAS
+  NOT RUN.** A pooled-draw control was built, run four times, and its
+  pool-dependence carefully documented; a second real run of the same
+  shape sat unexamined for **230 commits** — that is the distance from
+  `fca972d`, where the reading was written, to the commit that finally
+  tabled the run, **212 of those commits editing this note**. The table it
+  belonged in had simply been started one run too late, at
+  `[13,13,12,12]`, and nothing ever looked behind that starting point.
+  **When a pattern is read off a sequence of blocks, the first question is
+  whether another complete run exists in the file** — not what an
+  elaborate null model says about it. The null model is for when no second
+  sample exists. Here one did.
+
   **THE WHOLE BLOCK MAP IS KNOWN IN ADVANCE, SO NONE OF IT IS AN
   OBSERVATION.** One loop over `SEQ` gives every block's members:
   **171 blocks** summing to 1949, sizes from **129 down to 1**, and **48 of
@@ -1510,14 +1573,24 @@ Registration discipline, learned the hard way:
   be written as though the sweep discovered it.
 
   **THE SIZES ARE NOT MONOTONE AND THE CLOSED LIST IS ABOUT TO STOP LOOKING
-  LIKE THEY ARE.** The closed table reads 82, 65, 49, 38, 28 and the two
-  open blocks are 21 and 15, which invites "the blocks keep shrinking".
-  **False.** Sizes shrink only while the LAST coordinate falls; they reset
-  upward the moment an earlier coordinate drops. `[13,13,12,0]` has one
-  member at idx 885 and `[13,13,11,11]` immediately has **49**. Six
-  untouched blocks still hold 38 or more, the largest being
-  `[13,12,12,12]` at **65**. Written down here, from `SEQ`, before the
-  sequence visibly resets, so that the reset is not read as a surprise.
+  LIKE THEY ARE.** *Written when the closed table read 82, 65, 49, 38, 28
+  with two blocks open at 21 and 15 — a state the table no longer shows,
+  kept as written because the prediction in it was made before the reset
+  and is only worth anything dated.* That list invited "the blocks keep
+  shrinking". **False.** Sizes shrink only while the LAST coordinate
+  falls; they reset upward the moment an earlier coordinate drops.
+  `[13,13,12,0]` has one member at idx 885 and `[13,13,11,11]`
+  immediately has **49**. **Four** untouched blocks still hold 38 or more
+  — `[13,12,12,12]` at 65, `[13,12,12,11]` at 49, `[13,12,12,10]` at 38
+  and `[13,12,11,11]` at 38 — the largest being `[13,12,12,12]`. Written
+  down from `SEQ` before the sequence visibly resets, so that the reset is
+  not read as a surprise. *(This said **six** until it was recomputed
+  here. The sentence was true when written and decayed as the sweep ate
+  the blocks it was counting — a running count keyed to the frontier, in
+  prose, with nothing to refresh it. It is now spelled out block by block
+  so the next reader can check it in one glance instead of trusting a
+  bare numeral; the count itself still needs recomputing whenever this
+  section is touched.)*
 - `SEQ[j][7] = 13` group complete 14/14 at `cf2bccc`, idx 755..768
   (contiguity **verified**): 720.2 / 4441.1 / 5406.6, spread 7.5071×.
 - **The sub-family / level story is closed and falsified**
