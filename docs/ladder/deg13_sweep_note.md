@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T05:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T05:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1991,11 +1991,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1129 -> 1130 rows)
+## State as of the last refresh (1130 -> 1131 rows)
 
-- **1130 rows; 961 labels decided; 961 UNSAT; 0 SAT; 0 labels
+- **1131 rows; 962 labels decided; 962 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 961 decided plus 169 superseded
+  A row count is not a decision count: 962 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2013,15 +2013,22 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..960, highest decided 960, holes [].**
-  <!-- SPAN-STATE: closed -->
-  **No span is open.** The twenty-first closed at `83cabc1`, filled by idx
-  954: **5:05:31, 7 commits, chain `2,2,3,3,2,1,1`, monotone
-  non-increasing FALSE on six comparisons**, rank **8 of 86 by duration**
-  and 24 of 86 by commit count. It opened when idx 956 landed above the
-  frontier, widened to three when idx 958 landed, then narrowed
-  955 → 957 → 954, with **two restarts inside it**. bank.py's span guard
-  caught the close — third real firing, second in the close direction.
+- **Frontier contiguous 0..960, highest decided 964, holes [961, 962, 963].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — the twenty-second, and it opened at THREE holes.**
+  idx 964 came in at 1073.4 s, rank 829 of 962 by cost, while its three
+  siblings 961, 962 and 963 were still running past 4800 s, so one cheap
+  cube jumped the frontier and left all three behind at once. **No figures
+  are claimed for it** — duration, commit count and hole chain come from
+  `--spans all` after it closes. bank.py's span guard caught the opening:
+  fourth real firing, second in the open direction.
+
+  The twenty-first closed at `83cabc1`, filled by idx 954: **5:05:31, 7
+  commits, chain `2,2,3,3,2,1,1`, monotone non-increasing FALSE on six
+  comparisons**, rank **8 of 86 by duration** and 24 of 86 by commit
+  count. It opened when idx 956 landed above the frontier, widened to
+  three when idx 958 landed, then narrowed 955 → 957 → 954, with **two
+  restarts inside it**.
 
   The twentieth closed at `ca5ce5a`, opened by idx 952 landing above the
   frontier and
@@ -2032,7 +2039,7 @@ Task outputs live at
   fifteenth through **twenty-first** sit in one table above, **all seven
   ranks recomputed together against the current 86**, none carried over
   with a relabelled denominator.
-- **961 of 1949 = 49.3073%**; **988 undecided**. **49% IS CROSSED**, at
+- **962 of 1949 = 49.3586%**; **987 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2082,7 +2089,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **26 decided**, undecided 12 spanning 961..972
+  **27 decided**, undecided 11 spanning 961..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
