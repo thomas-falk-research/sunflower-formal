@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T00:47Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T01:36Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -378,7 +378,9 @@ four **on the 2.80GHz machine** (launch + 60.9 s, CNFs within 8.0 ms).
 **So set nine's ratio will NOT be added to the eight-set series**, and no
 median or spread for it will be compared against sets one through eight.
 The raw discarded and re-run seconds **will** be recorded, as data. The
-discarded times are 6853.6, 5752.3, 5415.5 and 215.7 s.
+discarded times are 6853.6, 5752.3, 5415.5 and 215.7 s. **idx 958 has
+landed, re-run 3154.6 s** — one of four, recorded as a number and **not**
+divided by anything.
 
 Two things this costs, stated plainly: the eight-set series stops growing
 at eight for as long as the machine keeps changing, and **the one thing
@@ -1427,6 +1429,20 @@ Registration discipline, learned the hard way:
   0.0026, 0.0277, 0.0015, 0.0267, **0.0005** — computed, and **strictly
   alternating small/large across all nine**, which is the `frac(k × 1949 /
   100)` fact above and not a property of this sweep.
+  **49% IS CROSSED**, at cube index 958: the decided count went 955 →
+  **956 = 49.0508%**, genuinely above 49. The tightest trap of the whole
+  run was landed on and passed through in consecutive rows, and **the
+  commit series records both** — `1b55b9a` carries 955 and the idx-958
+  commit carries 956, because each landed alone. That is not true of
+  every trap: the seventh (46.9985%) was passed through inside a single
+  commit that banked two rows, so no commit will ever carry it.
+  **Next: 50% needs `ceil(0.50 × 1949) = 975`, trap at 974 = 49.9743%**,
+  both from the script. **After that, 51% HAS NO TRAP** — it is one of
+  the two exceptions (k = 2 and k = 51), its predecessor 993 = 50.9492%
+  rounding to 50.9 rather than 51.0. So the stop at 51% will simply not
+  happen, and **its absence will be evidence of nothing**; it was
+  computed in advance and is recorded here so it cannot later be read as
+  a break in a pattern.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1815,11 +1831,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1123 -> 1124 rows)
+## State as of the last refresh (1124 -> 1125 rows)
 
-- **1124 rows; 955 labels decided; 955 UNSAT; 0 SAT; 0 labels
+- **1125 rows; 956 labels decided; 956 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #41.
-  A row count is not a decision count: 955 decided plus 169 superseded
+  A row count is not a decision count: 956 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 389**, launched 2026-09-19T00:40:37.550000Z (read from
@@ -1836,25 +1852,32 @@ Task outputs live at
   are running. **It fired for real at restart #41**, rewriting pid 21172 →
   389 with the new launch instant on the first bank after the relaunch,
   which is the same staleness that survived three commits at #40.
-- **Frontier contiguous 0..953, highest decided 956, holes [954, 955].**
+- **Frontier contiguous 0..953, highest decided 958, holes [954, 955, 957].**
   <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-first.** idx 956 landed above the frontier
-  and left 954 and 955 behind it. **No figures are claimed for it**:
-  duration, commit count and hole chain come from `--spans all` after it
-  closes, and a partial reading of a chain from the commits visible
-  mid-span was wrong once already (the seventeenth). bank.py's span guard
-  caught the opening on this bank, its second real firing. The twentieth
-  closed at `ca5ce5a`, opened by idx 952 landing above the frontier and
+  **A SPAN IS OPEN — the twenty-first.** It opened when idx 956 landed
+  above the frontier leaving 954 and 955 behind it, and has since
+  **widened to three holes** as idx 958 landed too. **No figures are
+  claimed for it** — duration, commit count and hole chain all come from
+  `--spans all` after it closes, and the three holes on the Frontier line
+  above are the file's **instantaneous state, not the chain**. A partial
+  reading of a chain from the commits visible mid-span was wrong once
+  already (the seventeenth). bank.py's span guard caught this opening,
+  its second real firing.
+
+  The twentieth closed at `ca5ce5a`, opened by idx 952 landing above the
+  frontier and
   filled by idx 951: **2:19:09, 2 commits, chain `2,1`, monotone True on a
   SINGLE comparison**, rank 17 of 85 by duration and 47 of 85 by commit
   count. **The same guard caught that close**, on its first real occasion,
-  and then turned up two defects in itself — see the error patterns. The fifteenth through
-  twentieth sit in one table above, **all six ranks recomputed together
-  against the current 85**, none carried over with a relabelled
-  denominator.
-- **955 of 1949 = 48.9995%**; **994 undecided**. **48% IS CROSSED**, at
-  cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
-  and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
+  and then turned up two defects in itself — see the error patterns. The
+  fifteenth through twentieth sit in one table above, **all six ranks
+  recomputed together against the current 85**, none carried over with a
+  relabelled denominator.
+- **956 of 1949 = 49.0508%**; **993 undecided**. **49% IS CROSSED**, at
+  cube index 958, one row after the counter sat on **955 = 48.9995%**,
+  the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
+  at **974 = 49.9743%**; and **51% has no trap at all**, being one of
+  the two exceptions.
   **COST FIGURES NOW SPAN TWO MACHINES.** Restart #41 brought a different
   CPU (see the restart accounting), so any "rank N of M by cost" and any
   block's cost stats mix cubes timed on 2.10GHz and 2.80GHz hardware.
@@ -1900,7 +1923,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **20 decided**, undecided 18 spanning 954..972
+  **21 decided**, undecided 17 spanning 954..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

@@ -11230,3 +11230,4 @@ g=11 [13, 13, 11, 10, 13, 13, 13, 11, 11, 11, 9]	UNSAT	5323.2
 # be recorded as data.  This is not a judgement call deferred to the close
 # -- it is recorded now, before any number exists to be tempted by.
 # ---------------------------------------------------------------------
+g=11 [13, 13, 11, 10, 13, 13, 12, 12, 12, 12, 7]	UNSAT	3154.6
