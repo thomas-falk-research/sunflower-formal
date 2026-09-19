@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T11:09Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T11:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2308,11 +2308,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1150 -> 1151 rows)
+## State as of the last refresh (1151 -> 1153 rows)
 
-- **1151 rows; 982 labels decided; 982 UNSAT; 0 SAT; 0 labels
+- **1153 rows; 984 labels decided; 984 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 982 decided plus 169 superseded
+  A row count is not a decision count: 984 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2330,8 +2330,31 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..981, highest decided 981, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..982, highest decided 984, holes [983].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — the twenty-fifth.** idx 984 came in at 2779.9 s
+  while 982 and 983 were both still running, then idx 982 landed at
+  4095.0 s, and **both were banked in one commit**, so 983 is the only
+  hole. idx 983 is confirmed in flight — `ps` shows pid 21560 on
+  `c983-cryptominisat5-388-28.cnf` at 3023 s elapsed — alongside 985,
+  986 and 987, which sit above 984 and are therefore not holes.
+
+  **THE FILE BRIEFLY HELD TWO HOLES AND THE COMMIT SEQUENCE WILL NEVER
+  SHOW IT.** Between the two row writes the checkpoint had 984 decided
+  with 982 and 983 undecided below it — holes `[982, 983]` — and nothing
+  committed in that window. **This is the twelfth span's trap exactly**,
+  where the narrative said three holes and `--spans all` said the chain
+  started at two, because two rows had been banked together. The note
+  settled then that a hole trajectory is a property of the **commit
+  sequence**, not of the file, and the two-hole state above is written
+  here as a fact about the file precisely so it cannot later be read back
+  as the chain's first entry.
+
+  **No figures and no hole chain are claimed for it** — they come from
+  `--spans all` after it closes, with every quoted span rank recomputed
+  against the new N in the same pass. bank.py's span guard caught the
+  opening: **tenth real firing, fifth in the open direction.**
+
   **THE TWENTY-FOURTH SPAN IS CLOSED**, filled by idx 980 at 4936.4 s.
   It opened at **one hole**, not three: idx 981 came in at 3954.3 s (rank
   483 of 981 by cost at the time, 498 cheaper) while 980 was still
@@ -2435,7 +2458,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **982 of 1949 = 50.3848%**; **967 undecided**. **50% IS CROSSED**, at
+- **984 of 1949 = 50.4874%**; **965 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2490,7 +2513,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **9 decided**, undecided 19 spanning 982..1000
+  **11 decided**, undecided 17 spanning 983..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
