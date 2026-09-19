@@ -209,6 +209,18 @@ def main():
             path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 'cpu_ratio_samples.tsv')
             head = not os.path.exists(path)
+            # Running this tool twice in one second appends the same rows
+            # twice -- harmless for a "last sample per cube" query, but noise.
+            # Skip if the file already ends with this stamp for this driver.
+            if not head:
+                try:
+                    with open(path) as fh:
+                        tailline = fh.readlines()[-1] if os.path.getsize(path) else ''
+                    if tailline.startswith(stamp + '\t'):
+                        print(f"\nsample already logged at {stamp}; not appended again")
+                        return 0
+                except (IndexError, OSError):
+                    pass
             with open(path, 'a') as fh:
                 if head:
                     fh.write("# iso_utc\tdriver_pid\tsolver_pid\tidx\telapsed_s"

@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T01:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T02:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -63,7 +63,7 @@ and `pgrep` outranks both.
 | `cnf_mtime_check.py` | validates the CNF-mtime method and prints in-flight cube→pid pairings **with elapsed seconds**. This is what tells you whether a forward-test target is still unobserved. |
 | `forward_test.py` | pinned to `REV_AS_RUN = 9528aa9`. `IDX` is keyed on the **label string**, `SEQ` is the list, `cube_list` is the function. |
 | `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** It also appends a cpu/elapsed sample to `cpu_ratio_samples.tsv` on every run. |
-| `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by `bank.py` at each bank. This is where a restart's weighting ratios come from. Read the LAST row per cube before the teardown instant; never a later one, and never an average. |
+| `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by **both** `bank.py` (each bank) and `cnf_mtime_check.py` (each run), so there is one source rather than two. Read the LAST row per cube before the teardown instant; never a later one, and never an average. **COMMIT IT** — see below. |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
 
 Reuse the helpers with:
@@ -152,6 +152,16 @@ asserted one for #38 without checking. The three spreads in hand span
 teardown's timing, NOT a finding: they depend entirely on where the kill
 landed relative to four independent start times. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
+
+**UNCOMMITTED SAMPLE ROWS ARE LOST AT THE NEXT RESTART, WHICH IS EXACTLY
+WHEN THEY ARE NEEDED.** The working tree lives in the container and comes
+back freshly cloned at HEAD, so anything appended to
+`cpu_ratio_samples.tsv` and not committed is gone. The rows that made #42
+a point rather than a bracket survived only because they had been
+committed at `d0d5605` minutes earlier. **Commit sample rows promptly**;
+with the container having rebooted twice inside one hour, that is not
+housekeeping, it is the difference between having the ratio and
+bracketing.
 
 **#40 AND #41 ARE THE FIRST RESTARTS WHOSE RATIO SAMPLE DID NOT COVER THE
 IN-FLIGHT SET**, and they are consecutive. **The cause was the sampling
