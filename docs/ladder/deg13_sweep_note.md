@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T09:12Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T09:20Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1647,6 +1647,18 @@ Registration discipline, learned the hard way:
   at **exactly one threshold in the entire run**, and this is it. Unlike
   the six count-equals-index collisions above, this one could not have
   failed to happen here and could not have happened anywhere else.
+  **50% IS CROSSED**, at cube index 975: the decided count went 974 →
+  **975 = 50.0257%**, genuinely above 50, one row after sitting on the
+  trap. The commit series records both, because each landed alone.
+  **More sub-cubes are now decided than undecided — 975 against 974** —
+  and that too flips exactly once, at the same `need = (1949+1)/2 = 975`.
+  **THIS IS NOT A RUNG AND NOT HALF A RESULT.** deg(0)=13 is UNSAT only
+  when **all 1949** sub-cubes are; 975 of them returning UNSAT establishes
+  nothing about the other 974, and this sweep is a second opinion on
+  cadical's UNSAT at 85123.9 s — it can confirm, never discover. The
+  bracket is unchanged and will stay unchanged whatever the counter reads:
+  **27 ≤ ι(4) ≤ 71**. A SAT would be the only news, and a long unbroken
+  run of UNSATs looks exactly like the morning before the one that is not.
   **After that, 51% HAS NO TRAP** — it is one of the two exceptions
   (k = 2 and k = 51), its predecessor 993 = 50.9492% rounding to 50.9
   rather than 51.0. So the stop at 51% will simply not
@@ -2057,11 +2069,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1142 -> 1143 rows)
+## State as of the last refresh (1143 -> 1144 rows)
 
-- **1143 rows; 974 labels decided; 974 UNSAT; 0 SAT; 0 labels
+- **1144 rows; 975 labels decided; 975 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 974 decided plus 169 superseded
+  A row count is not a decision count: 975 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2079,7 +2091,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 974, holes [968].**
+- **Frontier contiguous 0..967, highest decided 975, holes [968].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
   holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
@@ -2133,11 +2145,16 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **974 of 1949 = 49.9743%**; **975 undecided**. **49% IS CROSSED**, at
-  cube index 958, one row after the counter sat on **955 = 48.9995%**,
-  the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
-  at **974 = 49.9743%**; and **51% has no trap at all**, being one of
-  the two exceptions.
+- **975 of 1949 = 50.0257%**; **974 undecided**. **50% IS CROSSED**, at
+  cube index 975, one row after the counter sat on the trap at **974 =
+  49.9743%**. **More sub-cubes are decided than undecided for the first
+  time**, 975 against 974 — an identity that flips exactly once, at
+  `need = (1949+1)/2`. Next: **51% needs `ceil(0.51 × 1949) = 994`, and
+  it HAS NO TRAP** — predecessor 993 = 50.9492% rounds to 50.9, one of
+  the two exceptions (k = 2 and k = 51) computed long in advance, so the
+  absence of a stop there will be evidence of nothing.
+  **CROSSING HALF IS NOT HALF A RESULT**: deg(0)=13 is UNSAT only when
+  **all 1949** are, and 975 UNSATs say nothing about the other 974.
   **COST FIGURES SPAN THREE MACHINE CONFIGURATIONS**, from restarts #41
   and #42 (see the restart accounting), so any "rank N of M by cost" and
   any block's cost stats mix cubes timed on hardware that is not recorded
@@ -2185,7 +2202,7 @@ Task outputs live at
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **37 decided**, undecided [968]
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **2 decided**, undecided 26 spanning 975..1000
+  **3 decided**, undecided 25 spanning 976..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
