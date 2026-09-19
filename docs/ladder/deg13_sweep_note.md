@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T20:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T20:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1557,11 +1557,27 @@ into a count containing successes.
 | `6ec69dc` | NULL | 0.1235 | — |
 | `73fcf31` | **MISS** | 0.0245 | idx 760 |
 | `aea7189` | **MISS** | 0.4130 | idx 765 |
-| `cb54e7a` | **PENDING** | 0.00087 | the next row after idx 1007 |
+| `cb54e7a` | **HIT** | 0.00087 | the next row after idx 1007 |
+| *(patched below)* | **PENDING** | 2.5e-7 | the next row after idx 1008 |
 
-**Four registered, zero hits, THREE RESOLVED — and one is open.** The
-0.5019 counter-caveat below is computed over the **three resolved** tests
-and does not move until the fourth resolves.
+**Five registered, ONE hit, four resolved, one open.** The 0.5019
+counter-caveat below covers the **first three** tests and is unaffected
+by FT-4 and FT-5 — it was computed from those three pinned nulls and is
+not recomputed to absorb later results, in either direction.
+
+**FT-4 RESOLVED: HIT — AND THE REGISTRATION SAID THAT WOULD MEAN LITTLE,
+WHICH TURNED OUT TO BE AN UNDERSTATEMENT.** At idx 1009's row the gap
+was **36 000 002 ns, exact, 0 ns from the prediction**. Then the very
+next row, idx 1008, landed within the same two minutes and gave
+**40 000 002 ns**. **The quantity is not a constant, and the hypothesis
+that motivated the test is false as stated** — refuted by an
+*unregistered* fourth observation taken minutes after the registered
+hit. The p-value of 0.00087 is therefore exactly what the registration
+warned it was: a measure of the null's ignorance, not of skill. **A hit
+on a test labelled uninformative is still uninformative when it
+arrives.** Recorded as a hit because that is what the protocol says it
+is; recorded here in full because a bare "1 of 4" in the table would
+read as the opposite of what happened.
 
 **FT-4, registered at `cb54e7a` before the outcome exists.** *Prediction:* at the
 next row landing, `(newest CNF st_mtime_ns) − (checkpoint st_mtime_ns)`
@@ -1582,8 +1598,21 @@ whose support contains 36 ms at all — which spread 20 samples over
 2 304 759 = 0.00087**. Pinned now, never to be recomputed to suit the
 outcome.
 
-***THIS IS A TEST WHOSE HIT IS UNINFORMATIVE AND WHOSE MISS IS
-INFORMATIVE — THE REVERSE OF THE OTHER THREE, AND IT IS LABELLED WEAK IN
+**FT-5, registered before its outcome exists, replacing the claim FT-4
+killed.** *Prediction:* at the next row after idx 1008, the same gap,
+measured by the same operational rule as FT-4, satisfies
+`gap mod 4 000 000 == 2` — **a residue class, not a value**. The four
+observations in hand are 36 000 002, 36 000 002, 36 000 002 and
+40 000 002 ns: `4 ms × k + 2` with k = 9, 9, 9, 10. *Pinned null:* an
+arbitrary fine-grained interval lands on a named nanosecond residue mod
+4 ms with probability **1 / 4 000 000 = 2.5e-7**. **This one is not
+rigged the way FT-4 was**: the residue class is narrow, it has been
+seen three times exactly rather than being a single repeated number,
+and a **miss is entirely possible** — the k already moved once, and
+nothing rules out the residue moving too. Pinned now.
+
+***FT-4 WAS A TEST WHOSE HIT IS UNINFORMATIVE AND WHOSE MISS IS
+INFORMATIVE — THE REVERSE OF THE OTHER THREE, AND IT WAS LABELLED WEAK IN
 THAT DIRECTION AT REGISTRATION.*** If the 36 000 002 ns is a
 deterministic constant of whatever writes these two files, a hit is
 **guaranteed** and demonstrates only that the constant is stable; the
@@ -2053,9 +2082,52 @@ Registration discipline, learned the hard way:
   clocks** — every one of those was measured and none of them lands
   there. The quantity is real as an mtime difference; its
   interpretation is open.
-  **A forward test is registered on it** in the forward-test series
-  (FT-4), with the tolerance, the pinned null and the reason a hit there
-  would be uninformative all written down before the next row lands.
+
+  **AND IT IS NOT A CONSTANT — TWO ROWS LATER IT MOVED.** FT-4 hit
+  exactly at idx 1009 (36 000 002 ns, 0 ns from the prediction), and idx
+  1008's row, landing minutes afterwards, gave **40 000 002 ns**. **The
+  "constant" reading is dead**, killed by an unregistered observation
+  taken in the same minute as the registered hit. What survives is a
+  **structure in the difference**, stated over the four observations
+  (three of them exact to the nanosecond):
+
+  | row | gap (ns) | k = gap ÷ 4 ms | gap mod 4 ms |
+  |---|---|---|---|
+  | idx 1006 | ~36 000 002 (±238) | ~9 | ~2 |
+  | idx 1007 | **36 000 002** | 9 | **2** |
+  | idx 1009 | **36 000 002** | 9 | **2** |
+  | idx 1008 | **40 000 002** | 10 | **2** |
+
+  **Every exact gap is `4 ms × k + 2 ns`.** The endpoints themselves are
+  *not* on 4 ms boundaries — checkpoint remainders 35 929, 87 665,
+  95 668 and CNF remainders 35 931, 87 667, 95 670 — so **the 4 ms
+  structure lives in the difference, not in either timestamp.** A fifth
+  candidate mechanism was tested and also fails: Linux 6.13+ **multigrain
+  timestamps** (coarse unless the inode was queried since its last
+  update, which would make stat'ing a file change how it is timestamped,
+  and this note's own tooling stats the CNFs constantly). On kernel
+  **6.18.44-fc-v37** both arms come back fine-grained — 300 fresh files
+  written with no intervening `stat` gave **300 distinct mtimes**, and so
+  did 300 written with one, with 300 distinct remainders mod 4 ms in both
+  arms. **Not multigrain.**
+
+  **WHAT THE GAP SPANS IS NOW KNOWN, BY READING THE DRIVER RATHER THAN
+  GUESSING.** `rust/src/sat.rs::run_solver` writes the CNF, runs the
+  solver to completion, then **deletes the CNF**; `append_checkpoint`
+  writes and flushes the row. So the measured interval runs from *this*
+  cube's row being flushed to the *next* cube's CNF being written —
+  covering two `remove_file` calls, the next instance's construction,
+  `cnf.to_dimacs()`, and a write of **5 874 272 bytes**. Every CNF in
+  this sweep is that exact size, so the work is unusually uniform, which
+  explains why the gap is *roughly* repeatable. **It does not explain why
+  it is exact**: the closest analogue measured here — append a row, then
+  write 2 MB — scattered over **1.21–5.39 ms across 40 trials, all
+  distinct**.
+
+  **FT-5 is registered on the residue class** (`gap mod 4 000 000 == 2`),
+  which is the part that survived, with its own pinned null. **Five
+  mechanisms tested, five rejected; the sixth is not being chased.** This
+  is a side quest off the sweep and it stops here unless FT-5 misses.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
@@ -2780,11 +2852,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1176 -> 1177 rows)
+## State as of the last refresh (1177 -> 1179 rows)
 
-- **1177 rows; 1008 labels decided; 1008 UNSAT; 0 SAT; 0 labels
+- **1179 rows; 1010 labels decided; 1010 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1008 decided plus 169 superseded
+  A row count is not a decision count: 1010 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2802,8 +2874,18 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1007, highest decided 1007, holes [].**
+- **Frontier contiguous 0..1009, highest decided 1009, holes [].**
   <!-- SPAN-STATE: closed -->
+  **THE FILE HELD A HOLE AT 1008 AND NO SPAN WILL EVER RECORD IT.** idx
+  1009 landed at 20:16:00Z (3998.2 s) while 1008 was still running; idx
+  1008 landed at 20:18:21Z (4281.8 s); **both were banked in one
+  commit**, so the hole `[1008]` existed in the checkpoint for 2 minutes
+  21 seconds and never reached a commit. `--spans all` walks the commit
+  sequence, so it will show nothing here and **that is correct, not a
+  miss**. This is the twelfth and twenty-fifth spans' trap for the third
+  time: **a hole trajectory is a property of the commit sequence, never
+  of the file.** Written down as a fact about the file precisely so it
+  can never be read back as a span or as a chain entry.
   **THE TWENTY-NINTH SPAN IS CLOSED**, filled by idx 1004 at 1829.3 s.
   It opened at one hole when idx 1005 came in at 1599.3 s while 1004 was
   still running, and closed on the next row — 1004 landed **2 minutes 32
@@ -3152,7 +3234,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1008 of 1949 = 51.7188%**; **941 undecided**. **50% IS CROSSED**, at
+- **1010 of 1949 = 51.8214%**; **939 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3220,7 +3302,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **7 decided**, undecided 14 spanning 1008..1021
+  **9 decided**, undecided 12 spanning 1010..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
