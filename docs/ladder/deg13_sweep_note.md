@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T00:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T00:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -103,42 +103,57 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Seventeen** involuntary restarts, CPU-hours discarded:
+**Eighteen** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
-    #40 in [4.9648, 4.9688]
+    #40 in [4.9648, 4.9688]      #41 in [5.0256, 5.0262]
 
-median 3.5640, mean 3.8354-3.8356, **total 65.2015-65.2055**. #40 is
-carried as a **bracket, not a point**, because its ratio sample covered
-only three of its four cubes; see below. The median is identical at both
-ends of the bracket and the mean and total differ in the fourth decimal.
+median 3.5790, mean 3.9016, **total 70.2281**. **#40 and #41 are both
+carried as brackets, not points**, because each one's ratio sample covered
+only three of its four cubes; see below. The median, mean and total above
+are quoted at the bracket midpoints, and the spread between the bracket
+ends changes none of them before the fourth decimal.
 
-**All four quoted ranks were recomputed against n = 17 together**, in one
-script, rather than having their denominators relabelled: #37 **4 of 17**
-(idx 788 alone was 57.1% of that loss), #38 **10 of 17**, #39 **12 of
-17**, #40 **5 of 17 at both ends of its bracket**. The first draft of
-this line did relabel instead of recompute — it carried "#38 rank 9" and
-"#39 rank 11" straight over from n = 16 and left "#37 rank 4 of 16"
-un-updated — and **two of the three were wrong**, because #40 at ~4.965
-sorts above both. That is the rank-staleness class this note already
-names, committed inside the paragraph that names it. #40's rank is the
-one quotable despite its bracket: it is 5 at both ends.
+**All five quoted ranks were recomputed against n = 18 together**, in one
+script, rather than having their denominators relabelled: #37 **4 of 18**
+(idx 788 alone was 57.1% of that loss), #38 **11 of 18**, #39 **13 of
+18**, #40 **6 of 18**, #41 **5 of 18**. Both bracketed entries were
+ranked at all four combinations of their bracket ends and every rank came
+out the same. **#40 moved from 5 of 17 to 6 of 18** because #41 sorts
+above it — recomputed, not relabelled, which is the whole point.
 
-Shares: #40's are 33.6, 31.1, 27.3 and 8.0 percent, a spread of 25.7
-points; #39's 31.6, 31.4, 27.2 and 9.8, a spread of 21.8; #38's 33.2,
-28.5, 27.4 and 10.8, a spread of 22.4. **NO FLATNESS RANKING IS CLAIMED**
+An earlier draft of this line did relabel instead of recompute — it
+carried "#38 rank 9" and "#39 rank 11" straight over from n = 16 and left
+"#37 rank 4 of 16" un-updated — and **two of the three were wrong**,
+because #40 at ~4.965 sorted above both. That is the rank-staleness class
+this note already names, committed inside the paragraph that names it.
+**Both bracketed restarts are quotable despite their brackets**: #40 is 6
+and #41 is 5 at every combination of bracket ends.
+
+Shares: #41's are 37.6, 31.5, 29.7 and 1.2 percent, a spread of 36.4
+points; #40's 33.6, 31.1, 27.3 and 8.0, a spread of 25.7; #39's 31.6,
+31.4, 27.2 and 9.8, a spread of 21.8; #38's 33.2, 28.5, 27.4 and 10.8, a
+spread of 22.4. #41's is the widest of the four in hand only because idx
+958 had run 215.7 s when the kill landed.
+**NO FLATNESS RANKING IS CLAIMED**
 — the share breakdowns for the earlier thirteen are not in hand, so
 "flattest" cannot be checked, and a previous version of this line
 asserted one for #38 without checking. The three spreads in hand span
-21.8 to 25.7 and that means nothing. Shares are a description of one
+21.8 to 36.4 and that means nothing. Shares are a description of one
 teardown's timing, NOT a finding: they depend entirely on where the kill
 landed relative to four independent start times. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
 
-**#40 IS THE FIRST RESTART WHOSE RATIO SAMPLE DID NOT COVER THE IN-FLIGHT
-SET.** The last sample before teardown was 19:41:41Z; idx 953 started at
-20:16:47Z, 35 minutes later, and the processes are gone so it is not
+**#40 AND #41 ARE THE FIRST RESTARTS WHOSE RATIO SAMPLE DID NOT COVER THE
+IN-FLIGHT SET**, and they are consecutive. At #41 the uncovered cube was
+idx 958, started 00:35:28Z after the 23:41:47Z sample; its bracket is
+[5.0256, 5.0262] h, 1.96 s wide, and the rank is 5 of 18 at both ends.
+Twice running is not a pattern with a cause in hand, but it is enough to
+say the sample cadence does not keep up with slot turnover.
+
+**At #40**, the last sample before teardown was 19:41:41Z; idx 953 started
+at 20:16:47Z, 35 minutes later, and the processes are gone so it is not
 re-samplable. **No ratio was invented for it.** Its CPU time is bracketed
 instead: upper end = its elapsed time, since a single-threaded solver
 cannot exceed ratio 1.0; lower end = its elapsed time at 0.9901, the
@@ -166,28 +181,58 @@ the answer is a bracket, not a substituted number.
    still an ancestor.
 8. **A new restart opens the next re-run set.**
 
-Machine spec has been identical for **eight** consecutive containers: 4
-cores, Intel(R) Xeon(R) Processor @ 2.10GHz, MemTotal 16482220 kB. Re-read
-at #40 as the previous version of this line demanded. Eight is eight, not
-a promise — re-read it at #41.
+### THE MACHINE CHANGED AT #41 — read this before quoting any cost
+
+**Restart #41 was the first HOST REBOOT of the series** (`btime`
+1789437739 → 1789778349, uptime 0 min; #34 through #40 were all container
+teardowns with `btime` unchanged), **and the machine that came back is not
+the same one**:
+
+| | before, 8 consecutive containers | from #41 |
+|---|---|---|
+| CPU model name | Intel(R) Xeon(R) Processor @ 2.10GHz | **@ 2.80GHz** |
+| `cpu MHz` | never recorded | 2800.186 |
+| cache size | never recorded | 33792 KB |
+| `nproc` | 4 | 4 |
+| MemTotal | 16482220 kB | 16482220 kB |
+| kernel | never recorded | 6.18.44-fc-v33 |
+
+**NO SPEED RATIO IS CLAIMED.** The nominal clock *string* moved; the
+earlier `cpu MHz` was never read, so the old actual clock is not in hand,
+and a model name is not a benchmark. The difference is **unmeasured**, and
+it will not be estimated from this sweep's own timings: the only data that
+could do it is confounded with cube-cost variance that runs from 0.018 to
+1.08 across the recorded re-run ratios.
+
+**COSTS BEFORE AND AFTER #41 ARE NOT ON A COMMON BASIS.** Every "rank N of
+M by cost" the checkpoint prints from here on mixes cubes timed on two
+CPUs, and so do the closed-block descriptive stats. Those were never
+findings and are not now; they are descriptive **of a mixture**, and that
+has to be said wherever they are quoted. The spec is re-read at every
+restart precisely so that this could be caught rather than silently
+absorbed — **eight identical readings were eight, not a promise, and the
+ninth broke.** Re-read it at #42.
 
 **Re-take lag** after a relaunch: 41 s (#35), 60.7 s (#36), 61.0 s (#37),
-60.6 s (#38), 60.7 s (#39), **60.6 s (#40)**, the last with its four CNFs
-written inside 8.0 ms. Six observations, not a law. **Five of the six now
-cluster within 0.4 s and one does not**, and the story that the lag tracks
+60.6 s (#38), 60.7 s (#39), 60.6 s (#40), **60.9 s (#41)**, the last with
+its four CNFs written inside 8.0 ms. Seven observations, not a law. **Six
+of the seven now cluster within a 0.4 s band (60.6–61.0) and one does
+not**. **#41 is the first observation on the new CPU and the lag did not
+move** — one point, offered as a measurement and **not** as evidence that
+the lag is not CPU-bound. The story that the lag tracks
 `--slice 60` is **still not supported**: #35 ran 41 s under the identical
-flag and nothing here explains it. **A sixth point inside the cluster does
-not convert the cluster into a law and does not dispose of #35** — adding
-observations that agree with five others is the cheapest kind of
+flag and nothing here explains it. **A seventh point inside the cluster
+does not convert the cluster into a law and does not dispose of #35** —
+adding observations that agree with six others is the cheapest kind of
 corroboration and the one least able to validate. **No mechanism is
 proposed** — a mechanism may only explain data it predates (1e409e8,
-f0866f6), and one invented now to fit five points would be fitted to the
+f0866f6), and one invented now to fit six points would be fitted to the
 very data it claims to explain.
 
 The two `[killed]` markers carried the **same nanosecond** at #34, #35, #37,
-#38 and #39, and **disagreed at #36 and #40** — 5 agreements against 2
-disagreements. **The disagreements are still the informative ones**: they
-prove the markers are not guaranteed to agree, so the agreements
+#38, #39 and **#41**, and **disagreed at #36 and #40** — 6 agreements
+against 2 disagreements. **The disagreements are still the informative
+ones**: they prove the markers are not guaranteed to agree, so the agreements
 corroborate and DO NOT validate. At #38, #39 and #40 the two mtimes were
 read in one script rather than transcribed, which is how each difference
 was established exactly.
@@ -204,7 +249,7 @@ integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **eight CLOSED**, none open
+## Re-run sets — **eight CLOSED**, **set nine OPEN and CONFOUNDED**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -304,6 +349,25 @@ whole reason the rule says compute it.*
 
 Eight points at n = 8, 4, 4, 4, 4, 4, 4, 4 still support no shape, and
 eight is still eight accidents of where a kill landed.
+
+**SET NINE IS OPEN AND IT IS CONFOUNDED — recorded at the opening, before
+any number exists to be tempted by.** Restart #41 killed idx **954, 955,
+957, 958** on the 2.10GHz machine and the relaunch re-took exactly those
+four **on the 2.80GHz machine** (launch + 60.9 s, CNFs within 8.0 ms).
+`discarded / re-run` therefore mixes work lost with a machine change.
+
+**So set nine's ratio will NOT be added to the eight-set series**, and no
+median or spread for it will be compared against sets one through eight.
+The raw discarded and re-run seconds **will** be recorded, as data. The
+discarded times are 6853.6, 5752.3, 5415.5 and 215.7 s.
+
+Two things this costs, stated plainly: the eight-set series stops growing
+at eight for as long as the machine keeps changing, and **the one thing
+set nine could have told us — how much faster the new machine is — it
+cannot tell us either**, because a single set of four cubes cannot
+separate a machine effect from cube-cost variance that spans 0.018 to
+1.08 across the 36 ratios already recorded. Declaring it confounded loses
+nothing that was ever available.
 
 **SET EIGHT IS CLOSED**, by the commit that banked idx 953. It opened at
 restart #40 with idx **950, 951, 952, 953**, all four killed at the same
@@ -1735,12 +1799,12 @@ Task outputs live at
 ## State as of the last refresh (1123 -> 1124 rows)
 
 - **1124 rows; 955 labels decided; 955 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37, #38, #39 or #40.
+  undecided-only.** No rows were lost across restarts #37 through #41.
   A row count is not a decision count: 955 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 21172**, launched 2026-09-18T20:44:48.670000Z (read from
-  `/proc/21172/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 389**, launched 2026-09-19T00:40:37.550000Z (read from
+  `/proc/389/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -1750,7 +1814,9 @@ Task outputs live at
   not; **it does now** — bank.py reads `pgrep -x iota_sym` and computes the
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
-  are running.
+  are running. **It fired for real at restart #41**, rewriting pid 21172 →
+  389 with the new launch instant on the first bank after the relaunch,
+  which is the same staleness that survived three commits at #40.
 - **Frontier contiguous 0..953, highest decided 956, holes [954, 955].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-first.** idx 956 landed above the frontier
@@ -1770,7 +1836,11 @@ Task outputs live at
 - **955 of 1949 = 48.9995%**; **994 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
-  **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
+  **COST FIGURES NOW SPAN TWO MACHINES.** Restart #41 brought a different
+  CPU (see the restart accounting), so any "rank N of M by cost" and any
+  block's cost stats mix cubes timed on 2.10GHz and 2.80GHz hardware.
+  They were descriptive before and they are descriptive **of a mixture**
+  now. **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
   stop list, the correction to the "every threshold" claim, and the
   reason the counter keeps hitting these figures live in the
   percent-arithmetic bullet above **and nowhere else** — the duplicate

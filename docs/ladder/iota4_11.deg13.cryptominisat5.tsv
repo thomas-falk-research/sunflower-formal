@@ -11123,3 +11123,110 @@ g=11 [13, 13, 11, 10, 13, 13, 13, 12, 12, 11, 7]	UNSAT	8242.2
 g=11 [13, 13, 11, 10, 13, 13, 13, 12, 12, 10, 8]	UNSAT	8455.6
 g=11 [13, 13, 11, 10, 13, 13, 13, 12, 11, 11, 8]	UNSAT	8579.0
 g=11 [13, 13, 11, 10, 13, 13, 13, 11, 11, 11, 9]	UNSAT	5323.2
+# ---------------------------------------------------------------------
+# RESTART #41 -- 2026-09-19T00:39:03.862339272Z.  TWO FIRSTS IN THIS ONE.
+#
+# *** THE HOST REBOOTED.  THIS IS THE FIRST REBOOT IN THE SERIES. ***
+# btime changed 1789437739 -> 1789778349, i.e. 2026-09-15T02:02:19Z ->
+# 2026-09-19T00:39:09Z, and uptime read 0 min.  Restarts #34 through #40
+# were ALL container teardowns with btime unchanged; this is the case the
+# btime check was put in for, and it is the first time it has fired.  The
+# two [killed] markers sit at 00:39:03.862339272Z, 5.14 s BEFORE the new
+# btime: the container was torn down, then the host booted.
+#
+# *** THE MACHINE SPEC CHANGED. ***  Re-read at #41 as the previous block
+# demanded, and it is NOT the same machine:
+#
+#     CPU model name   Intel(R) Xeon(R) Processor @ 2.10GHz   ->  @ 2.80GHz
+#     cpu MHz          (never recorded before)                     2800.186
+#     cache size       (never recorded before)                     33792 KB
+#     nproc            4                                           4
+#     MemTotal         16482220 kB                                 16482220 kB
+#     kernel           (never recorded before)                     6.18.44-fc-v33
+#
+# The spec had been IDENTICAL for eight consecutive containers.  Only the
+# CPU changed; cores and memory did not.
+#
+# WHAT IS AND IS NOT CLAIMED ABOUT THAT.  The NOMINAL clock string moved
+# from 2.10 to 2.80 GHz.  NO SPEED RATIO IS CLAIMED: the earlier `cpu MHz`
+# field was never recorded, so the old actual clock is not in hand, and a
+# model-name string is not a benchmark.  The difference is UNMEASURED and
+# this file will not estimate it from the sweep's own timings, because the
+# only data that could estimate it is confounded with cube-cost variance
+# that runs from 0.018 to 1.08 across the recorded re-run ratios.
+#
+# *** CONSEQUENCE, AND IT IS NOT SMALL: COSTS BEFORE AND AFTER THIS LINE
+# ARE NOT ON A COMMON BASIS. ***  Every cost rank the checkpoint prints
+# from here on ("rank N of M by cost") mixes cubes timed on two different
+# CPUs.  So do the closed-block descriptive stats.  Those figures remain
+# DESCRIPTIVE and were never findings; they are now descriptive of a
+# mixture.  Say so wherever they are quoted.
+#
+# NO ROWS WERE LOST.  1124 real data rows before and after, tree == HEAD
+# == origin at 1b55b9a, working tree clean.  The waiter's output held only
+# its 00:35:55Z arming line and then [killed].
+#
+# BOTH [killed] MARKERS CARRY THE SAME NANOSECOND, difference 0 ns, read
+# by one script rather than transcribed.  6 agreements (#34, #35, #37,
+# #38, #39, #41) against 2 disagreements (#36, #40).  The disagreements
+# remain the informative observations.
+#
+# DISCARDED WORK, by the CNF-mtime method, glob FILTERED BY PID (176 CNFs
+# in /tmp at measure time; exactly 4 carried pid 21172):
+#
+#   idx 954  started 22:44:50.305Z   6853.6 s  1.9038 h  0.3173 of cap  37.6% of loss
+#   idx 955  started 23:03:11.529Z   5752.3 s  1.5979 h  0.2663 of cap  31.5%
+#   idx 957  started 23:08:48.318Z   5415.5 s  1.5043 h  0.2507 of cap  29.7%
+#   idx 958  started 00:35:28.122Z    215.7 s  0.0599 h  0.0100 of cap   1.2%
+#
+#   18237.2 s wall = 5.0659 h.  The set is corroborated: the relaunch
+#   re-took exactly 954, 955, 957 and 958.
+#
+#   THE RATIO SAMPLE AGAIN DID NOT COVER ALL FOUR -- second restart running
+#   where that has happened, and for the same reason: idx 958 started at
+#   00:35:28Z, after the last sample at 23:41:47Z, and the processes are
+#   gone.  NO RATIO IS INVENTED.  The loss is bracketed: 5.0256 to 5.0262
+#   CPU-HOURS, a bracket 1.96 s wide, using 1.0 as the upper bound and
+#   0.9909 -- the smallest ratio measured on the other three -- as the
+#   lower.  RANK 5 OF 18 AT BOTH ENDS.
+#
+#   Series now n = 18: 5.160, 1.190, 4.800, 2.645, 1.330, 2.111, 7.204,
+#   3.594, 3.564, 4.863, 2.965, 7.033, 2.216, 5.1477, 3.4670, 2.9470,
+#   #40 in [4.9648, 4.9688], #41 in [5.0256, 5.0262].  median 3.5790,
+#   mean 3.9015, total 70.23 CPU-hours.
+#
+#   Shares 37.6, 31.5, 29.7, 1.2 percent, a spread of 36.4 points -- the
+#   widest of the three breakdowns in hand (#38 22.4, #39 21.8, #40 25.7)
+#   because idx 958 had run only 215.7 s when the kill landed.  NO
+#   FLATNESS RANKING IS CLAIMED; shares describe where one kill landed
+#   relative to four independent start times, NOT a property of anything.
+#
+# RE-TAKE LAG 60.9 s, four CNFs within 8.0 ms.  Prior: 41 (#35), 60.7
+# (#36), 61.0 (#37), 60.6 (#38), 60.7 (#39), 60.6 (#40).  SEVEN POINTS,
+# SIX OF THEM INSIDE A 0.4 s BAND (60.6..61.0) AND ONE AT 41 s.  This is
+# the first observation on the NEW CPU and the lag did not move, which is
+# a single point and is NOT offered as evidence that the lag is not
+# CPU-bound.  The --slice 60 story is STILL unsupported: #35 ran 41 s
+# under the identical flag.  NO MECHANISM IS PROPOSED.
+#
+# A MEASUREMENT BUG WAS CAUGHT BEFORE IT PRODUCED A FIGURE.  The first
+# re-take glob was /tmp/sf-sym-*-389-*.cnf, and this driver wrote a
+# transient startup CNF named ...-c0-cryptominisat5-389-0.cnf 0.444 s
+# after launch -- no previous driver in /tmp left one.  That file matched
+# the glob, so the script would have reported a re-take lag of 0.4 s.  The
+# task was STOPPED and re-run with a glob requiring "-seq-c".  The c0 file
+# has since been deleted by the driver, so whether the original would have
+# raced past it is unknowable -- which is the point: the figure would have
+# depended on a race, not on the measurement.
+#
+# Relaunched verbatim as pid 389, exact launch 2026-09-19T00:40:37.550000Z.
+#
+# RE-RUN SET NINE OPENS -- AND IT IS CONFOUNDED, SAID AT THE OPENING AND
+# NOT AT THE CLOSE.  idx 954, 955, 957, 958 were discarded on the 2.10GHz
+# machine and are being re-run on the 2.80GHz one.  discarded / re-run
+# would mix loss with a machine change, so THE RATIO WILL NOT BE ADDED TO
+# THE EIGHT-SET SERIES and no median or spread for it will be compared
+# with sets one through eight.  The raw discarded and re-run seconds will
+# be recorded as data.  This is not a judgement call deferred to the close
+# -- it is recorded now, before any number exists to be tempted by.
+# ---------------------------------------------------------------------
