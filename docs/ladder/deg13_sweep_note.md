@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T10:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T11:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2288,11 +2288,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1149 -> 1150 rows)
+## State as of the last refresh (1150 -> 1151 rows)
 
-- **1150 rows; 981 labels decided; 981 UNSAT; 0 SAT; 0 labels
+- **1151 rows; 982 labels decided; 982 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 981 decided plus 169 superseded
+  A row count is not a decision count: 982 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2310,32 +2310,26 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..979, highest decided 981, holes [980].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-fourth — AND IT OPENED AT ONE HOLE, NOT
-  THREE.** idx 981 came in at 3954.3 s, rank 483 of 981 by cost with 498
-  cheaper, while idx 980 was still running; 980 is the only hole. The
-  other three slots were on 982, 983 and 984 — read from `ps` at the
-  bank, elapsed 1355, 253 and 46 s against 981's own 3954.3 — so all
-  three sit **above** 981 and are undecided-not-yet-reached rather than
-  holes. A hole is an undecided index below the highest decided one, and
-  only 980 qualifies. **No figures are claimed for
-  it** — duration, commit count and hole chain come from `--spans all`
-  after it closes, and **no hole chain is written here at all**: the
-  twenty-third's refused guess turned out to be wrong in length and in
-  its second entry, which is the standing reason. bank.py's span guard
-  caught the opening: **eighth real firing, fourth in the open
-  direction.**
+- **Frontier contiguous 0..981, highest decided 981, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE TWENTY-FOURTH SPAN IS CLOSED**, filled by idx 980 at 4936.4 s.
+  It opened at **one hole**, not three: idx 981 came in at 3954.3 s (rank
+  483 of 981 by cost at the time, 498 cheaper) while 980 was still
+  running, and 980 was the only index below the highest decided one left
+  undecided. The other three slots were on 982, 983 and 984, all above
+  981, so they were not holes by definition.
 
-  **THIS IS WHAT THE "TWO, NOT A PATTERN" CAUTION WAS FOR.** The
-  twenty-second and twenty-third both opened at three holes at once, and
-  the note refused to call that a trend because it would have needed the
-  opening width of all 88 closed spans to say anything. The very next
-  span opened at one. **The caution cost nothing and the trend would have
-  been wrong.** That is one observation about the refusal, not a finding
-  about openings: three spans is not a distribution either, and the
-  opening-width census is still not computed and still not worth
-  computing to chase three.
+  **No figures are written here yet**, and **no hole chain at all** —
+  duration, commit count and chain come from `checkpoint_audit.py
+  --spans all` run after the closing commit exists, and every span rank
+  quoted in this file gets recomputed against the new N in that same
+  pass. **The temptation is sharper here than usual and is being refused
+  anyway**: a span that opened at one hole and closed on the next row
+  looks certain to have the chain `1`, which is the kind of certainty
+  that produced `3 → 1 → 2 → 1` for the twenty-third and was wrong in
+  length and in content. A chain is what the commit sequence did, and the
+  commit sequence is not finished being read. bank.py's span guard caught
+  the close: **ninth real firing, fifth in the close direction.**
 
   **THE TWENTY-THIRD SPAN IS CLOSED**, filled by idx 968 — the same row
   that closed block `[13, 13, 11, 10]` at 38 of 38. It opened at **three
@@ -2411,7 +2405,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **981 of 1949 = 50.3335%**; **968 undecided**. **50% IS CROSSED**, at
+- **982 of 1949 = 50.3848%**; **967 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2466,7 +2460,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **8 decided**, undecided 20 spanning 980..1000
+  **9 decided**, undecided 19 spanning 982..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
