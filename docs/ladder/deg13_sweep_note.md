@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T08:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T08:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2040,11 +2040,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1139 -> 1140 rows)
+## State as of the last refresh (1140 -> 1141 rows)
 
-- **1140 rows; 971 labels decided; 971 UNSAT; 0 SAT; 0 labels
+- **1141 rows; 972 labels decided; 972 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 971 decided plus 169 superseded
+  A row count is not a decision count: 972 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2062,13 +2062,15 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 971, holes [968].**
+- **Frontier contiguous 0..967, highest decided 973, holes [968, 972].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
   holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
   92 cheaper, while 967, 968 and 969 were still running, so once again one
   cheap cube jumped the frontier and left three behind at once. **967 and
-  then 969 have since filled theirs, leaving 968 alone.** **No
+  then 969 filled theirs, narrowing it to 968 alone — and then idx 973
+  landed above the frontier and WIDENED it again to [968, 972].** A span
+  is not a shrinking thing; it is whatever the commit sequence does. **No
   figures are claimed for it** — duration, commit count and hole chain
   come from `--spans all` after it closes. bank.py's span guard caught the
   opening: sixth real firing, third in the open direction.
@@ -2107,7 +2109,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **971 of 1949 = 49.8204%**; **978 undecided**. **49% IS CROSSED**, at
+- **972 of 1949 = 49.8717%**; **977 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2158,6 +2160,8 @@ Task outputs live at
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **36 decided**, undecided [968, 972]
+- `[13, 13, 11, 9]` idx 973..1000: **28 members**,
+  **1 decided**, undecided 27 spanning 974..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
