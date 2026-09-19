@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T08:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T09:04Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2040,11 +2040,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1140 -> 1141 rows)
+## State as of the last refresh (1141 -> 1142 rows)
 
-- **1141 rows; 972 labels decided; 972 UNSAT; 0 SAT; 0 labels
+- **1142 rows; 973 labels decided; 973 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 972 decided plus 169 superseded
+  A row count is not a decision count: 973 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2062,15 +2062,22 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 973, holes [968, 972].**
+- **Frontier contiguous 0..967, highest decided 973, holes [968].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
   holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
   92 cheaper, while 967, 968 and 969 were still running, so once again one
   cheap cube jumped the frontier and left three behind at once. **967 and
-  then 969 filled theirs, narrowing it to 968 alone — and then idx 973
-  landed above the frontier and WIDENED it again to [968, 972].** A span
-  is not a shrinking thing; it is whatever the commit sequence does. **No
+  then 969 filled theirs, narrowing it to 968 alone; idx 973 landing above
+  the frontier WIDENED it back to two; and idx 972 has now filled its own,
+  leaving 968 alone again.** A span is not a shrinking thing; it is
+  whatever the commit sequence does, and this one has **widened as well as
+  narrowed, more than once, without closing**. *No sequence of hole counts
+  is written here on purpose: a first draft of this sentence offered
+  "3 → 1 → 2 → 1", which is the states I happened to observe at banks,
+  not the per-commit chain — the same partial reading that was wrong for
+  the seventeenth span. The chain comes from `--spans all`, on close, or
+  not at all.* **No
   figures are claimed for it** — duration, commit count and hole chain
   come from `--spans all` after it closes. bank.py's span guard caught the
   opening: sixth real firing, third in the open direction.
@@ -2109,7 +2116,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **972 of 1949 = 49.8717%**; **977 undecided**. **49% IS CROSSED**, at
+- **973 of 1949 = 49.9230%**; **976 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2159,7 +2166,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **36 decided**, undecided [968, 972]
+  **37 decided**, undecided [968]
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
   **1 decided**, undecided 27 spanning 974..1000
 
