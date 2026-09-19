@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T10:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T10:08Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -727,28 +727,30 @@ still running — and closed 963 → 961 → 962, those three costing 9313.6,
 chain starts at 3, and with four solver slots it looked possible that 3 is
 a structural ceiling — in which case a step down from 3 could not have
 gone up and would be vacuous, like a one-element chain. **It is not a
-ceiling.** Over all 87 chains the hole count has reached **15**, and every
-value from 1 to 15 occurs. A step from 3 could have gone up, so all three
+ceiling.** Over all 88 chains the hole count has reached **15**, and every
+value from 1 to 15 occurs — re-checked at 88 and unchanged. A step from 3
+could have gone up, so all three
 comparisons are genuine chances to falsify. The worry is recorded with its
 refutation because it would have deflated the one result below.
 
-**ALL EIGHT SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 87** —
+**ALL NINE SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 88** —
 because a rank against a growing population goes stale each time the
-population grows, and these have now been restated eight times for that
+population grows, and these have now been restated nine times for that
 reason alone. **Every rank below moved or was re-derived in the same run**;
 none was carried over with its denominator relabelled, which is the error
 this note recorded against itself at restart #40:
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 25 of 87 | 2 | 49 of 87 (18 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 33 of 87 | 2 | 49 of 87 (18 tied) |
-| seventeenth `75ff84b` | 2:36:20 | 14 of 87 | 8 | **19 of 87** (4 tied) |
-| eighteenth `faa424a` | 1:06:55 | 29 of 87 | 8 | 19 of 87 (4 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 39 of 87 | 1 | 68 of 87 (19 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 18 of 87 | 2 | 49 of 87 (18 tied) |
-| twenty-first `83cabc1` | **5:05:31** | **8 of 87** | 7 | 24 of 87 (6 tied) |
-| twenty-second `31d9565` | 1:57:02 | 20 of 87 | 4 | 37 of 87 (**0 tied**) |
+| fifteenth `a5172c7` | 1:29:45 | 26 of 88 | 2 | 50 of 88 (18 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 34 of 88 | 2 | 50 of 88 (18 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 14 of 88 | 8 | 20 of 88 (4 tied) |
+| eighteenth `faa424a` | 1:06:55 | 30 of 88 | 8 | 20 of 88 (4 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 40 of 88 | 1 | 69 of 88 (19 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 18 of 88 | 2 | 50 of 88 (18 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 88** | 7 | 25 of 88 (6 tied) |
+| twenty-second `31d9565` | 1:57:02 | 21 of 88 | 4 | 38 of 88 (**0 tied**) |
+| twenty-third `b4d2068` | 2:17:22 | 19 of 88 | **10** | **13 of 88** (4 tied) |
 
 **"(N tied)" means N OTHER spans share that commit count**, the span
 itself excluded. The previous table's tie figures were one higher for the
@@ -759,24 +761,44 @@ otherwise read a spurious movement, and because the whole point of
 recomputing in one run is that every number in the table is under the same
 definition.
 
-Read through the distribution: **29 of 87 ran longer than an hour** and
-**43 of 87 longer than a second**, so the seventeenth's 14 of 87 is rank
-14 of the 43 that lasted at all, and the twenty-first's **8 of 87 is 8 of
-that same 43** — the highest any of these eight has reached. **Half the
-record is spans that did not last a second** — 44 of 87, which is 87 minus
-the 43 above — so a duration rank in the middle of 87 is near the bottom
-of the spans that happened at all. **10 of 87 ran longer than four hours
-and the twenty-first is one of them**, which is the plainest thing to say
-about it: two restarts landed inside it.
+Read through the distribution: **30 of 88 ran longer than an hour** and
+**44 of 88 longer than a second**, so the seventeenth's 14 of 88 is rank
+14 of the 44 that lasted at all, the twenty-third's 19 of 88 is 19 of that
+same 44, and the twenty-first's **8 of 88 is 8 of it** — still the highest
+any of these nine has reached. **Half the record is spans that did not
+last a second** — 44 of 88, which is 88 minus the 44 above, so the two
+halves are now exactly equal at 44 each. *That is arithmetic and a
+coincidence of one row landing, not a property of anything; it will break
+at the next close and is written here only so a later reader does not
+take the symmetry for structure.* A duration rank in the middle of 88 is
+therefore near the bottom of the spans that happened at all. **10 of 88
+ran longer than four hours and the twenty-first is one of them**, which is
+the plainest thing to say about it: two restarts landed inside it.
 
-The seventeenth and eighteenth **tie on commit count at 19 of 87 while
+The seventeenth and eighteenth **tie on commit count at 20 of 88 while
 differing by 89 minutes on duration** — the same disagreement between the
 two rankings that the sixth span's entry already noted, not a new one.
 **The seventeenth's** two ranks agree far better than the fifteenth's do
-— 13 and 19 against 23 and 47 — and that is not a finding: the fifteenth
+— 14 and 20 against 26 and 50 — and that is not a finding: the fifteenth
 spent its time with almost nothing landing because a restart had just
 re-taken four long cubes, while the seventeenth and eighteenth each
 accumulated eight commits in the ordinary way.
+
+**THOSE FOUR NUMBERS HAD BEEN STALE SINCE N = 85, IN THE PARAGRAPH THAT
+PRAISES THE TABLE FOR BEING RECOMPUTED IN ONE RUN.** They read "13 and 19
+against 23 and 47", which is what the seventeenth and fifteenth ranked at
+when **85** spans had closed. That N was not guessed: the ranks were
+recomputed at every N from 78 to 88, and 85 is the **only** one at which
+both pairs match — the seventeenth reads (13, 19) from 82 through 85 but
+the fifteenth reads (23, 47) at 85 alone. The table beside them was
+recomputed at 86, at 87 and now at 88; the sentence was not, through three closes.
+**A recompute that covers the table and not the prose around it is not a
+recompute**, and "every rank below moved or was re-derived in the same
+run" was true only of the rows: *below* was doing work the sentence's
+author did not notice it was doing. The rule this note already carries
+about positional references in tables has the same root — the fix is the
+same too: when the population changes, every figure keyed to it gets
+recomputed, whether it sits in a cell or in a sentence.
 
 *A first draft of the fifteenth's paragraph called it "the sharpest rank
 disagreement yet" on the strength of comparing it to the sixth span and
@@ -794,10 +816,27 @@ Computed over all 97 traps its shortfall is **0.025654 pp, ranking 50 of
 97** — the middle of the pack, and in the **large** band of the
 small/large alternation, not the tight one; and it has not been landed on,
 the counter being at 971. The commit was unpushed, so the message was
-amended rather than corrected later. **The tally is now four for four:
-every superlative this file has written without computing it first has
-been wrong or has had to be refused.** The remedy has not changed —
-compute the whole range before writing the word — only the count has.
+amended rather than corrected later.
+
+**A FIFTH, one span later, inside the paragraph written to record the
+twenty-third span.** A first draft called its nine comparisons "the
+second-longest falsifying chain in the table after the fourteenth's
+thirteen". **False.** Span 7 carries **16**, and nine ranks **4th of the
+11** False chains — 16, 13, 10, 9, 8, 7, 7, 7, 7, 6, 6. The figure that
+refutes it was three lines up in the same table, in the same screenful,
+and the word was still written before looking. It never reached a commit,
+because the sentence was rewritten in the working tree; **the tally counts
+superlatives written, not superlatives shipped**, or it would reward
+nothing but luck about when the check happened to run.
+
+**The tally is now five for five: every superlative this file has written
+without computing it first has been wrong or has had to be refused.** The
+remedy has not changed — compute the whole range before writing the word —
+only the count has. What the fifth adds is that **proximity does not
+help**: the fourth needed a 97-element computation to refute, the fifth
+needed one glance at an adjacent row, and both were written anyway. The
+failure is not lack of access to the numbers. It is writing the ranking
+word before consulting them at all.
 
 **The fifth span's `True` is vacuous.** A one-commit span has a one-point
 hole trajectory, and a single number is non-increasing by definition —
@@ -819,7 +858,7 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**Nineteen** spans, and the verdict tally needs its COMPARISON COUNTS
+**Twenty-three** spans, and the verdict tally needs its COMPARISON COUNTS
 beside it or it reads as more evidence than it is. Every row below was read
 back out of `--spans all`, not recalled:
 
@@ -847,21 +886,27 @@ back out of `--spans all`, not recalled:
 | 20 | `ca5ce5a` | 2,1 | 1 | True |
 | 21 | `83cabc1` | 2,2,3,3,2,1,1 | 6 | False |
 | 22 | `31d9565` | 3,3,2,1 | 3 | **True** |
+| 23 | `b4d2068` | 3,2,2,1,2,1,1,1,1,1 | 9 | False |
 
-**Twelve True of twenty-two** — and the breakdown is where the weight
+**Twelve True of twenty-three** — and the breakdown is where the weight
 goes. **Three of the twelve contain zero comparisons and could not have
 come out False** (spans 5, 10 and 19); **six more rest on a single
 comparison** (3, 8, 11, 15, 16 and 20), which is one coin flip each;
 **three now carry more than one** — span 4 with two, span 6 with four,
 and **span 22 with three**. The
 seventeenth and eighteenth both came back **False** on seven comparisons
-each; the nineteenth came back True on **zero**. The partition is
+each; the nineteenth came back True on **zero**; the twenty-third came
+back **False on nine**, which is **4th of the 11 False chains** by
+comparison count (16, 13, 10, **9**, 8, 7, 7, 7, 7, 6, 6) — computed
+across all eleven, not eyeballed. The partition is
 produced by a script that asserts 3 + 6 + 3 = 12 against the True count,
 per the rule below. The same run **re-derived the comparison count and
 the monotone verdict from every chain in the table** and found **no
-mismatch** in the twenty-one it could check; span 7's chain is elided in
+mismatch** in the twenty-two it could check; span 7's chain is elided in
 the table with `…` and is not re-derivable from it, so it is kept as recorded
-rather than silently counted as verified.
+rather than silently counted as verified. Spans 15 through 23 were also
+checked **against `--spans all` itself**, chain string and verdict both,
+and agree.
 
 **THE NINETEENTH'S `True` IS VACUOUS AND MUST NOT BE READ AS AN
 OBSERVATION.** Its chain is `1`: one commit, one hole count, therefore
@@ -880,14 +925,16 @@ reached 15 in this record.
 **What that is worth, stated exactly.** The three members now carry 2, 4
 and 3 comparisons — **nine in total behind the whole "more than one"
 column**, and fifteen behind all twelve True verdicts together. Against
-that, the ten False verdicts rest on 87 comparisons. **One span moving
-the column after sixteen tries is the column doing its job, not the
+that, the **eleven** False verdicts rest on **96** comparisons. **One span
+moving the column after sixteen tries is the column doing its job, not the
 hypothesis gaining support**: the count that matters went from very small
 to slightly less small, and the falsifying evidence still outweighs it by
-nearly six to one. A count of Trues is not evidence of monotonicity, which
-is exactly why the partition is printed beside it.
+**more than six to one** — 96 against 15, having been 87 against 15 one
+span ago, because the twenty-third added nine comparisons and every one of
+them came back False. A count of Trues is not evidence of monotonicity,
+which is exactly why the partition is printed beside it.
 
-**Spans 15 through 22 were each added by recomputing the table, not by
+**Spans 15 through 23 were each added by recomputing the table, not by
 appending to it** — a table gains a row only by recomputing every row.
 The re-derivation result itself is stated once, in the partition paragraph
 above, and deliberately not repeated here: writing the same quantity twice
@@ -1802,6 +1849,13 @@ is reading the paragraph the new row lands in. **In a table, name the
 block. Never "the row above", "the last N rows", or "the ones above
 it".**
 
+**The same root, in figures rather than references:** the span-rank table
+was recomputed in one run at N = 86, 87 and 88 while four ranks in the
+prose *beside* it stayed at N = 85 through all three — written up in the
+spans section. A table and the sentences around it are one object for
+recomputation purposes, and a script that rewrites only the rows leaves
+the hardest-to-spot half untouched.
+
 **Never write an identifier you have not read from the tool** (`bce9af0`).
 Commit hashes, pids, indices and timestamps are **read**, never composed.
 If the identifier does not exist yet — because the commit has not been
@@ -2194,16 +2248,23 @@ Task outputs live at
   last. **Those are the states observed at banks, which is not the same
   thing as the chain.**
 
-  **No figures are written here yet.** Duration, commit count and hole
-  chain come from `checkpoint_audit.py --spans all`, run only after the
-  commit that closes the span exists, and every span rank already quoted
-  in this note has to be recomputed against the new N in that same pass —
-  a relabelled denominator is an error pattern this note already carries.
-  The chain especially is not for guessing: it is a property of the
-  **commit sequence**, and a first draft of the open-span prose offered
-  `3 → 1 → 2 → 1` from the bank-time states above. That guess was deleted
-  rather than recorded, it stays deleted, and the states listed above are
-  written as observations precisely so they cannot be read as the chain.
+  **Its figures, read from `--spans all` after `b4d2068` existed**:
+  opened after `d392f71`, closed by `b4d2068`, duration **2:17:22**
+  (2.2894 h), **10 broken commits**, hole counts
+  `3,2,2,1,2,1,1,1,1,1`, **monotone non-increasing FALSE on nine
+  comparisons**, most holes at once 3 at `ad6b635` `[967, 968, 969]`.
+  Ranks against **88 closed spans, every quoted rank in this file
+  recomputed in the same run**: **19 of 88 by duration** (69 shorter, no
+  tie) and **13 of 88 by commit count**, 4 tied at 10.
+
+  **THE REFUSED GUESS WAS WRONG, AND IT IS WORTH SAYING HOW WRONG.** The
+  open-span prose offered `3 → 1 → 2 → 1` and then deleted it rather than
+  record it. The chain is `3,2,2,1,2,1,1,1,1,1`: **ten entries, not four**,
+  and it goes 3 → **2**, not 3 → 1, at the very first step. The bank-time
+  states were not a coarse version of the chain, they were a different
+  object — the guess got the length wrong by a factor of two and a half
+  and the second entry wrong outright. Writing it down as a chain would
+  have put a fabricated sequence in the record with no marker saying so.
   bank.py's span guard caught the close: **seventh real firing, fourth in
   the close direction.**
 
@@ -2212,12 +2273,12 @@ Task outputs live at
   the ordinary consequence of a cost spread this block already shows —
   from 869.5 s to 12894.5 s — meeting four parallel slots. Nothing is
   claimed about whether wide openings are becoming more common; that
-  would need the opening width of all 87 closed spans, which is not in
+  would need the opening width of all 88 closed spans, which is not in
   hand and is not being computed to chase two observations.
 
   The twenty-second closed at `31d9565`, filled by
   idx 962: **1:57:02, 4 commits, chain `3,3,2,1`, monotone non-increasing
-  TRUE on three comparisons**, rank **20 of 87 by duration** and 37 of 87
+  TRUE on three comparisons**, rank **21 of 88 by duration** and 38 of 88
   by commit count with no tie. It opened at three holes at once when idx
   964 came in at 1073.4 s while 961, 962 and 963 were all still running,
   then closed 963 → 961 → 962. **It is the third member of the "more than
@@ -2227,20 +2288,28 @@ Task outputs live at
 
   The twenty-first closed at `83cabc1`, filled by idx 954: **5:05:31, 7
   commits, chain `2,2,3,3,2,1,1`, monotone non-increasing FALSE on six
-  comparisons**, rank **8 of 86 by duration** and 24 of 86 by commit
-  count. It opened when idx 956 landed above the frontier, widened to
-  three when idx 958 landed, then narrowed 955 → 957 → 954, with **two
-  restarts inside it**.
+  comparisons**, rank **8 of 88 by duration** and 25 of 88 by commit
+  count. *(This line read "8 of 86 / 24 of 86" until now. Both were right
+  when computed at N = 86 and both survived N = 87 unchanged, so the
+  twenty-second's close left a stale denominator that no figure
+  contradicted — checked at 86, 87 and 88 rather than assumed. At 88 the
+  duration rank still holds at 8 and the commit-count rank moves to 25.)*
+  It opened when idx 956 landed above the frontier, widened to three when
+  idx 958 landed, then narrowed 955 → 957 → 954, with **two restarts
+  inside it**.
 
   The twentieth closed at `ca5ce5a`, opened by idx 952 landing above the
   frontier and
   filled by idx 951: **2:19:09, 2 commits, chain `2,1`, monotone True on a
-  SINGLE comparison**, rank 18 of 87 by duration and 49 of 87 by commit
+  SINGLE comparison**, rank 18 of 88 by duration and 50 of 88 by commit
   count. **The same guard caught that close**, on its first real occasion,
   and then turned up two defects in itself — see the error patterns. The
-  fifteenth through **twenty-second** sit in one table above, **all eight
-  ranks recomputed together against the current 87**, none carried over
-  with a relabelled denominator.
+  fifteenth through **twenty-third** sit in one table above, **all nine
+  ranks recomputed together against the current 88**, none carried over
+  with a relabelled denominator. That recompute also caught four ranks
+  **in the prose beside that table** that had been stale since N = 85 —
+  written up in the spans section itself, next to the sentence that
+  carried them. Recomputing a table is not recomputing a section.
 - **978 of 1949 = 50.1796%**; **971 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
