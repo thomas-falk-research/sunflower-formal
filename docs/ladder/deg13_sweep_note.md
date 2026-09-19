@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T08:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T08:39Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -786,6 +786,18 @@ spread of the seven" (stated but refused as a ranking). The gap is not
 computed across all 80 and no superlative is claimed, because the quantity
 would be a post-hoc maximum of exactly the kind refused two sections
 above: some span has the widest gap, necessarily.*
+
+**A FOURTH UNCHECKED SUPERLATIVE, caught by computing it.** A commit
+message for idx 969 called the 50% trap at 974 = 49.9743% "the
+second-tightest of the nine landed on so far". **Both halves were false.**
+Computed over all 97 traps its shortfall is **0.025654 pp, ranking 50 of
+97** — the middle of the pack, and in the **large** band of the
+small/large alternation, not the tight one; and it has not been landed on,
+the counter being at 971. The commit was unpushed, so the message was
+amended rather than corrected later. **The tally is now four for four:
+every superlative this file has written without computing it first has
+been wrong or has had to be refused.** The remedy has not changed —
+compute the whole range before writing the word — only the count has.
 
 **The fifth span's `True` is vacuous.** A one-commit span has a one-point
 hole trajectory, and a single number is non-increasing by definition —
