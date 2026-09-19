@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T05:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T06:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1991,11 +1991,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1130 -> 1131 rows)
+## State as of the last refresh (1131 -> 1132 rows)
 
-- **1131 rows; 962 labels decided; 962 UNSAT; 0 SAT; 0 labels
+- **1132 rows; 963 labels decided; 963 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 962 decided plus 169 superseded
+  A row count is not a decision count: 963 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2013,7 +2013,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..960, highest decided 964, holes [961, 962, 963].**
+- **Frontier contiguous 0..960, highest decided 965, holes [961, 962, 963].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-second, and it opened at THREE holes.**
   idx 964 came in at 1073.4 s, rank 829 of 962 by cost, while its three
@@ -2039,7 +2039,7 @@ Task outputs live at
   fifteenth through **twenty-first** sit in one table above, **all seven
   ranks recomputed together against the current 86**, none carried over
   with a relabelled denominator.
-- **962 of 1949 = 49.3586%**; **987 undecided**. **49% IS CROSSED**, at
+- **963 of 1949 = 49.4100%**; **986 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2089,7 +2089,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **27 decided**, undecided 11 spanning 961..972
+  **28 decided**, undecided 10 spanning 961..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
