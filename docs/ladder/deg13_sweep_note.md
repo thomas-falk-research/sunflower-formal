@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T23:31Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T23:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3004,6 +3004,16 @@ exactly one bank.
   mechanism working normally and **says nothing about either neighbour's
   eventual cost**. It is not the block's cheapest: that is still idx
   1001 at 549.4 s.
+
+  **THE BLOCK'S ENTIRE REMAINING WORK IS IN FLIGHT.** At 23:41:41Z the
+  four solver slots hold idx **1017, 1018, 1020 and 1021** — exactly the
+  four members the census lists as undecided in `[13, 13, 11, 8]`. So
+  **no further cube from this block will be started**, and the two holes
+  are two of the four running. Elapsed then: 5151, 4131, 1948 and 718 s,
+  all far inside the 21600 s cap. *This is a statement about what is
+  running, not a forecast of when anything finishes or of what the next
+  block will be; the slice order is the driver's and is read from the
+  census, never predicted.*
 
   **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
   commit count and hole trajectory all come from `--spans all` run
