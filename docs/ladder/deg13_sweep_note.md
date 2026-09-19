@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T14:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T14:16Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2373,11 +2373,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1156 -> 1157 rows)
+## State as of the last refresh (1157 -> 1158 rows)
 
-- **1157 rows; 988 labels decided; 988 UNSAT; 0 SAT; 0 labels
+- **1158 rows; 989 labels decided; 989 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 988 decided plus 169 superseded
+  A row count is not a decision count: 989 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2395,7 +2395,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..987, highest decided 987, holes [].**
+- **Frontier contiguous 0..988, highest decided 988, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-SIXTH SPAN IS CLOSED**, filled by idx 986 at 8005.6 s.
   It opened when idx 987 came in at 7545.9 s while idx 986 was still
@@ -2404,41 +2404,59 @@ Task outputs live at
   in the table below, stated once.
 
   **BOTH CUBES WERE EXPENSIVE, AND THE FILLER WAS DEARER THAN THE
-  OPENER.** Against the same decided set of 988: idx 986 at 8005.6 s
-  ranks **182**, idx 987 at 7545.9 s ranks **196**. They are the **two
-  dearest cubes of the 15 decided so far in block `[13,13,11,9]`** —
-  checked against all fifteen, the next three being 5829.2, 4936.4 and
-  4805.9 — and they landed **7 minutes 32 seconds apart** (13:50:54Z and
-  13:58:26Z, read from the waiter logs) after running **2.2238 h** and
-  **2.0961 h** respectively. **That is a description of two cubes, not a
-  finding**: similar-cost cubes finishing close together is what four
-  parallel slots do, and the frontier broke only because the higher
-  index happened to land first.
+  OPENER.** idx 986 at 8005.6 s and idx 987 at 7545.9 s landed **7
+  minutes 32 seconds apart** (13:50:54Z and 13:58:26Z, read from the
+  waiter logs) after running **2.2238 h** and **2.0961 h**. **That is a
+  description of two cubes, not a finding**: similar-cost cubes
+  finishing close together is what four parallel slots do, and the
+  frontier broke only because the higher index happened to land first.
+
+  ***THE SUPERLATIVE THAT STOOD HERE LASTED ONE ROW.*** It read: "they
+  are the two dearest cubes of the 15 decided so far in block
+  `[13,13,11,9]`", computed against all fifteen and true when written.
+  **idx 988 then came in at 8039.0 s** — 33.4 s dearer than 986 — and
+  the block's three dearest are now 988, 986, 987. The phrase carried
+  its own scope ("of the 15 decided so far"), which is the only reason
+  it was not simply false; a bare "the two dearest in this block" would
+  have been. **A superlative over a growing set needs its N in the
+  sentence, and even then it is worth asking why the sentence is being
+  written at all.** Ranks against the current 989, which are the durable
+  form: idx 988 is **180**, idx 986 is **183**, idx 987 is **197**.
 
   **THE TWENTY-SIXTH OPENED ON AN EXPENSIVE CUBE, AND A DRAFT GOT THE
   CONTRAST WRONG.** That draft said the twenty-second through twenty-fourth "all
   opened when a *cheap* cube jumped the frontier". Computed instead of
-  asserted — every opener ranked against the same decided set, rank 1
-  being the most expensive. **Recomputed at 988 when idx 986 landed**,
-  one row after the table was first written at 987; every rank moved by
-  one except the twenty-sixth's, which moved from 195 to 196 because the
-  new row is dearer than it:
+  asserted — every opener against the same decided set, rank 1 being the
+  most expensive:
 
-  | span | opener | cost | rank of 988 | cheaper |
+  | span | opener | cost (s) | rank at N = 989 | % cheaper |
   |---|---|---|---|---|
-  | twenty-second | idx 964 | 1073.4 | 853 | 135 |
-  | twenty-third | idx 970 | 869.5 | 895 | 93 |
-  | twenty-fourth | idx 981 | 3954.3 | 488 | 500 |
-  | twenty-fifth | idx 984 | 2779.9 | 593 | 395 |
-  | twenty-sixth | idx 987 | 7545.9 | **196** | 792 |
+  | twenty-second | idx 964 | 1073.4 | 854 | 13.7% |
+  | twenty-third | idx 970 | 869.5 | 896 | 9.4% |
+  | twenty-fourth | idx 981 | 3954.3 | 489 | 50.6% |
+  | twenty-fifth | idx 984 | 2779.9 | 594 | 39.9% |
+  | twenty-sixth | idx 987 | 7545.9 | **197** | 80.1% |
+
+  **THE COST COLUMN IS PERMANENT AND THE RANK COLUMN DECAYS; THE HEADER
+  CARRIES ITS N FOR THAT REASON.** This table was written at N = 987,
+  recomputed at 988 one row later and at 989 the row after that, moving
+  every rank by one each time and the twenty-sixth's by two in total
+  (195 → 196 → 197, because both new rows are dearer than its opener).
+  **It is not recomputed on every bank from here on.** A rank against a
+  population that grows every twenty minutes is stale the moment it is
+  written, and chasing it would be a treadmill that adds nothing: the
+  claim this table supports is about the *costs*, which never move. The
+  rank and percentile are refreshed only when this paragraph is
+  revisited, and the header says which N they belong to so a reader is
+  never misled about how fresh they are.
 
   Only the twenty-second and twenty-third opened on genuinely cheap
-  cubes; the twenty-fourth opened **almost exactly at the median** (488 of
-  988) and the twenty-fifth below it. The draft was wrong about one of
-  the three it named and silently dropped the twenty-fifth, which sits
-  between them. **The twenty-sixth's opener is the most expensive of the
-  five** — that much survives, and it is a fact about five spans, not a
-  trend. A frontier breaks whenever any cube finishes before a
+  cubes; the twenty-fourth opened **almost exactly at the median**
+  (50.6% cheaper) and the twenty-fifth below it. The draft was wrong
+  about one of the three it named and silently dropped the twenty-fifth,
+  which sits between them. **The twenty-sixth's opener is the most
+  expensive of the five** — that much survives, and it is a fact about
+  five spans, not a trend. A frontier breaks whenever any cube finishes before a
   lower-indexed one, which says nothing about the finisher's absolute
   cost; the opening-cost census across all 91 closed spans is still not
   computed and still not worth computing to chase five.
@@ -2604,7 +2622,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **988 of 1949 = 50.6927%**; **961 undecided**. **50% IS CROSSED**, at
+- **989 of 1949 = 50.7440%**; **960 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2659,7 +2677,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **15 decided**, undecided 13 spanning 988..1000
+  **16 decided**, undecided 12 spanning 989..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
