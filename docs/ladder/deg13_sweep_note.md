@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T04:12Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T04:22Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -429,18 +429,18 @@ no single restart block shows it:
 
 | idx | #41 | #42 | total | state |
 |---|---|---|---|---|
-| 954 | 6853.6 | 3797.3 | **10650.9 s** (2.9586 h) | undecided |
+| 954 | 6853.6 | 3797.3 | **10650.9 s** (2.9586 h) | **decided at 9266.8 s** |
 | 955 | 5752.3 | 3797.3 | 9549.6 s (2.6527 h) | **decided at 6290.1 s** |
 | 957 | 5415.5 | 3797.3 | 9212.8 s (2.5591 h) | **decided at 7170.2 s** |
 | 958 | 215.7 | — | 215.7 s | decided at 3154.6 s |
-| 959 | — | 642.7 | 642.7 s | undecided |
+| 959 | — | 642.7 | 642.7 s | **decided at 8657.1 s** |
 
-30271.7 s = 8.4088 h **discarded** on five cubes, **three** of which are
-now decided (958, 955 and 957). **The
+30271.7 s = 8.4088 h **discarded** on five cubes, **all five of which are
+now decided**. **The
 21600 s cap is PER ATTEMPT, not cumulative**, so none of these is near a
-limit — a cube can be killed indefinitely without ever tripping it, and
-idx 954 at 2.96 h of discarded time across two kills is the current
-demonstration.
+limit — a cube can be killed indefinitely without ever tripping it. idx
+954 discarded 2.96 h across two kills and then completed on its third
+attempt, never once approaching the cap.
 
 ### What a twice-killed cube actually costs
 
@@ -451,19 +451,25 @@ attempt. Each attempt ran on a **different machine configuration**: A =
 
 | idx | A | B | C — completed | total spent | recorded | discarded |
 |---|---|---|---|---|---|---|
+| 954 | 6853.6 | 3797.3 | **9266.8** | 19917.7 s (5.5327 h) | 46.5% | 53.5% |
 | 955 | 5752.3 | 3797.3 | **6290.1** | 15839.7 s (4.3999 h) | 39.7% | 60.3% |
 | 957 | 5415.5 | 3797.3 | **7170.2** | 16383.0 s (4.5508 h) | 43.8% | 56.2% |
-| 954 | 6853.6 | 3797.3 | *still running* | ≥ 10650.9 s so far | — | — |
 
-**Across the two that landed: 32222.7 s spent, 13460.3 s recorded — 41.8%.**
+**All three have now landed: 52140.4 s = 14.4834 h spent on three cubes,
+22727.1 s recorded — 43.6%. 8.1704 CPU-hours discarded on three rows.**
+idx 954 alone took **19917.7 s = 5.5327 h** of machine time to produce one
+row.
 
 For contrast, **idx 959 was killed once**, at #42, after only 642.7 s, and
 completed at 8657.1 s on C: 9299.8 s spent, **93.1% recorded**. A single
-early kill costs almost nothing. What makes 955 and 957 expensive is that
-each was killed **twice**, and the second kill landed after each had
-already re-run for 3797.3 s. **Three data points do not establish a
+early kill costs almost nothing. What makes the other three expensive is
+that each was killed **twice**, with the second kill landing after each had
+already re-run for 3797.3 s. **Four data points do not establish a
 relationship between kill count and waste** — they illustrate the obvious
 arithmetic that discarded time accumulates and recorded time does not.
+**The three recorded-percentages span 39.7 to 46.5 and nothing is made of
+their order**: they are driven by how long each cube happened to run before
+two kills that were not timed with respect to it.
 
 **The checkpoint's costs are per-attempt, not per-cube**, and that is the
 right thing for them to be: a cost column that silently accumulated across
@@ -474,19 +480,31 @@ Nothing is being corrected; this is what the numbers mean.
 
 **The attempts are not comparable with each other**, different machine
 each time, so 5752.3 → 3797.3 → 6290.1 is **not** a cube getting slower or
-faster. Three measurements of different things. The same goes for 957, and
-**the fact that both landed cubes cost more on C than on A is not evidence
-that C is slower** — two cubes, three configurations, and the kill times
-on A and B are censored rather than completed runs.
+faster. Three measurements of different things. The same goes for 957 and
+954, and **the fact that all three landed cubes cost more on C than on A
+is not evidence that C is slower** — three cubes, three configurations,
+and the A and B figures are **censored kill times, not completed runs**, so
+they are lower bounds on what those attempts would have taken. Comparing a
+completed run against two censored ones is not a comparison.
 
-**SET TEN IS CONFOUNDED TWICE OVER, and is three-quarters landed.**
-Restart #42 killed idx **954, 955, 957, 959** and the relaunch re-took
-those four at launch + 61.7 s. It spans the #41 → #42 machine change
-**and** three of its four members carry a second kill. Its ratio will not
-join the eight-set series either. Raw seconds, recorded as data: 955 at
-6290.1, 957 at 7170.2, 959 at 8657.1, with **954 still running**. When it
-lands the set is complete and **still nothing will be divided** — that was
-settled at the opening, before any of these numbers existed.
+**SET TEN IS COMPLETE — AND NOTHING IS DIVIDED.** Restart #42 killed idx
+**954, 955, 957, 959** and the relaunch re-took those four at launch +
+61.7 s; all four have now landed. Raw seconds, recorded as data:
+
+| idx | discarded (cumulative) | completed |
+|---|---|---|
+| 954 | 10650.9 | 9266.8 |
+| 955 | 9549.6 | 6290.1 |
+| 957 | 9212.8 | 7170.2 |
+| 959 | 642.7 | 8657.1 |
+
+**No ratio, no median, no spread, and no entry in the eight-set series.**
+The set spans the #41 → #42 machine change and three of its four members
+carry a second kill, so `discarded / re-run` would mix lost work with a
+machine change and with a denominator that is not one run. That was
+settled **at the opening**, before any of these numbers existed — which is
+the only time such a decision is worth anything, because the numbers are
+in hand now and the temptation to divide them is real.
 
 Two things this costs, stated plainly: the eight-set series stops growing
 at eight for as long as the machine keeps changing, and **the one thing
@@ -1944,11 +1962,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1127 -> 1128 rows)
+## State as of the last refresh (1128 -> 1129 rows)
 
-- **1128 rows; 959 labels decided; 959 UNSAT; 0 SAT; 0 labels
+- **1129 rows; 960 labels decided; 960 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 959 decided plus 169 superseded
+  A row count is not a decision count: 960 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -1966,18 +1984,17 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..953, highest decided 959, holes [954].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-first.** It opened when idx 956 landed
-  above the frontier leaving 954 and 955 behind it, **widened to three**
-  when idx 958 landed, and has narrowed to **one** as 955 and then 957
-  filled theirs — only **954** remains. **No figures are claimed for it**
-  — duration, commit count and hole chain all come from `--spans all`
-  after it closes, and the hole count on the Frontier line above is the
-  file's **instantaneous state, not the chain**. A partial
-  reading of a chain from the commits visible mid-span was wrong once
-  already (the seventeenth). bank.py's span guard caught this opening,
-  its second real firing.
+- **Frontier contiguous 0..959, highest decided 959, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **No span is open. The twenty-first CLOSED with this row**, idx 954
+  filling the last hole. It opened when idx 956 landed above the frontier
+  leaving 954 and 955 behind it, widened to three when idx 958 landed, then
+  narrowed 955 → 957 → 954. **Its figures are NOT in this commit** —
+  `--spans all` reads the commit sequence and cannot see a span until the
+  commit closing it exists, so duration, commit count and hole chain, and
+  **every quoted span rank recomputed against the new N in one run**, go in
+  the next commit. **bank.py's span guard caught the close**, its third
+  real firing and its second in the close direction.
 
   The twentieth closed at `ca5ce5a`, opened by idx 952 landing above the
   frontier and
@@ -1988,7 +2005,7 @@ Task outputs live at
   fifteenth through twentieth sit in one table above, **all six ranks
   recomputed together against the current 85**, none carried over with a
   relabelled denominator.
-- **959 of 1949 = 49.2047%**; **990 undecided**. **49% IS CROSSED**, at
+- **960 of 1949 = 49.2560%**; **989 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2038,7 +2055,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **24 decided**, undecided 14 spanning 954..972
+  **25 decided**, undecided 13 spanning 960..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
