@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T09:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T09:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2069,11 +2069,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1143 -> 1144 rows)
+## State as of the last refresh (1144 -> 1145 rows)
 
-- **1144 rows; 975 labels decided; 975 UNSAT; 0 SAT; 0 labels
+- **1145 rows; 976 labels decided; 976 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 975 decided plus 169 superseded
+  A row count is not a decision count: 976 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2091,7 +2091,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 975, holes [968].**
+- **Frontier contiguous 0..967, highest decided 976, holes [968].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
   holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
@@ -2145,7 +2145,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **975 of 1949 = 50.0257%**; **974 undecided**. **50% IS CROSSED**, at
+- **976 of 1949 = 50.0770%**; **973 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2202,7 +2202,7 @@ Task outputs live at
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **37 decided**, undecided [968]
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **3 decided**, undecided 25 spanning 976..1000
+  **4 decided**, undecided 24 spanning 977..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
