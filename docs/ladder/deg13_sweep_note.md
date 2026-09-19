@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T22:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T22:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2824,6 +2824,32 @@ alongside it.**
   N = 80 / N = 81 figures, which do reproduce. The old figures are kept
   as the record of what was computed then, with the convention stated
   beside them; **what was fixed is the omission, not the numbers.**
+- **A `git add -A` AFTER bank.py SWEPT IN A ROW THAT LANDED IN BETWEEN,
+  AND THE COMMIT SUBJECT THEN DESCRIBED A TREE IT DID NOT HAVE.**
+  `380b306` says `idx 1013 UNSAT 6860.1 s -- 1013 of 1949 = 51.9754%`.
+  Its tree holds **two** new rows, idx 1013 **and idx 1015**, so the
+  decided count in that commit is **1014 = 52.0267%** and **52% was
+  crossed there**, in the commit that says it was not. Sequence: bank.py
+  staged at 1182 rows and reported `HEAD 1181 -> staged 1182`;
+  `checkpoint_audit.py` agreed at 1182; idx 1015 landed at 22:15:55Z;
+  I then made one more prose edit and re-ran `git add -A docs/ladder`,
+  which **re-staged the checkpoint at 1183**; the commit followed.
+  **The tree/staged comparison did not catch it** because by then tree
+  and staged agreed with each other — both were 1183. What disagreed was
+  bank.py's *earlier* report, and nothing re-read it.
+  **THE RULE: bank.py MUST BE THE LAST THING TO TOUCH THE INDEX BEFORE
+  THE COMMIT.** Any `git add` after bank.py invalidates its
+  `HEAD n -> staged m` line, which is the only figure that ties the
+  commit subject to the commit's contents. If a later edit needs
+  staging, **re-run bank.py afterwards** and take the subject from the
+  fresh output. The consequence here was not cosmetic: it cost the trap
+  at 1013 (see the percent bullet), it put a false "NOT crossed" in a
+  pushed subject, and it made a claim in that commit body — "this bank
+  makes ten" — false at the moment it was written.
+  *Why the commit is not rewritten:* the history is the authority, and
+  amending a pushed commit to match a later correction would destroy the
+  evidence that the error happened. The note carries the correction
+  instead.
 - **Two row waiters armed on the same base, and both fired on one row.**
   `buldn18uz` was re-armed at 1175 rows at 19:09:40Z; at 19:12:23Z I
   armed `btcko28zs` at the same 1175 without first running the
@@ -2877,6 +2903,14 @@ alongside it.**
 7. Read the diff, then commit **in the next invocation**. Commit with the
    heredoc **alone** — chaining a `for` loop after a heredoc mangles the
    parse and commits nothing.
+   **bank.py MUST BE THE LAST THING TO TOUCH THE INDEX.** Any `git add`
+   after it — including one run to stage a late prose edit — can sweep in
+   a row that landed in between and silently invalidates bank.py's
+   `HEAD n -> staged m` line, which is the only figure tying the subject
+   to the commit's contents. Re-run bank.py after any such `git add` and
+   take the subject from the fresh output. Tree == staged does **not**
+   detect this: after the stray `git add` they agree with each other and
+   only bank.py's earlier report disagrees (`380b306`).
 8. Push with `-u origin`, retrying 2s / 4s / 8s / 16s.
 9. **Tail-anchored** waiter check (0beb730):
    `tail -1 "$W" | grep -q '\[exited'` — never a whole-file grep.
@@ -2889,9 +2923,18 @@ Task outputs live at
 
 ## State as of the last refresh (1181 -> 1182 rows)
 
-- **1182 rows; 1013 labels decided; 1013 UNSAT; 0 SAT; 0 labels
+*The heading undercounts by one and is left as bank.py wrote it.* The
+rows actually went **1181 → 1183** in `380b306`; bank.py's refresh
+heading only advances when a run finds new rows, and by the time it ran
+here both rows were already at HEAD, so it reported `0 new row(s)` and
+left the heading alone. That is the tool behaving as designed on top of
+the staging error recorded in the error patterns, **not a second bug**,
+and the figure is bank.py's to fix on the next real bank rather than
+mine to type over.
+
+- **1183 rows; 1014 labels decided; 1014 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1013 decided plus 169 superseded
+  A row count is not a decision count: 1014 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2909,7 +2952,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1011, highest decided 1013, holes [1012].**
+- **Frontier contiguous 0..1011, highest decided 1015, holes [1012, 1014].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN.** It opened at **one hole** when idx 1013 came in at
   6860.1 s while **1012 was still running**; the frontier is contiguous
@@ -2924,7 +2967,12 @@ Task outputs live at
   guess for a span that opens at one hole is `1`, which is precisely the
   guess this note refuses to record in advance whether or not it has
   been right lately. It has been right the last two times; that changes
-  nothing.
+  nothing — **and it would already be wrong here**: the hole set has
+  **widened to two**, `[1012, 1014]`, with the highest decided index at
+  1015. That is a **bank-time observation of the file, not a chain
+  entry**; whether the commit sequence records one hole or two is
+  decided by what gets committed when, and the chain is read from
+  `--spans all` on close, never from this line.
 
   **THE FILE HELD A HOLE AT 1008 AND NO SPAN WILL EVER RECORD IT.** idx
   1009 landed at 20:16:00Z (3998.2 s) while 1008 was still running; idx
@@ -3284,7 +3332,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1013 of 1949 = 51.9754%**; **936 undecided**. **50% IS CROSSED**, at
+- **1014 of 1949 = 52.0267%**; **935 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3329,14 +3377,45 @@ Task outputs live at
   is k = 49 at 0.000513 pp and the loosest is k = 53 at 0.049769 pp, both
   computed across all 97 rather than recalled.
 
-  **NINE OF THE ELEVEN TRAP VALUES HAD BEEN CAUGHT BY A COMMIT SUBJECT;
-  THIS BANK MAKES TEN.** Checked by script over every commit subject in
-  the branch, counting a trap as caught if a subject carries **either**
-  the `N of 1949` form **or** the percentage form. Only **916 =
-  46.9985%** is missed, and it is missed in both forms — the counter
-  passed through it between commits. That is a fact about banking
-  cadence, not about the sweep, and it is the reason nothing was
-  predicted here about being *observed* on the trap.
+  **RETRACTED: "THIS BANK MAKES TEN" IS FALSE. IT IS STILL NINE OF
+  ELEVEN, AND 1013 JOINS 916 AS A MISS.** The claim was made in
+  `380b306` and is wrong, for a reason that also makes that commit's
+  subject wrong about its own tree — see the defect recorded below.
+
+  **The subject-text criterion was a proxy, and it has now been replaced
+  by the real one.** "Caught" should mean *a committed tree held that
+  decided count*, not *a commit subject mentioned it*. Computed over all
+  **997 commits that touch the checkpoint**, recounting the decided
+  labels in each blob:
+
+  | k | trap | a committed tree sat on it? |
+  |---|---|---|
+  | 41 | 799 | yes, `3cf034a` |
+  | 42 | 818 | yes, `fe83fc8` |
+  | 43 | 838 | yes, `6f5e62c` |
+  | 44 | 857 | yes, `98f48bd` |
+  | 45 | 877 | yes, `beb1841` |
+  | 46 | 896 | yes, `d6e6359` |
+  | 47 | 916 | **no** |
+  | 48 | 935 | yes, `e7f4f3a` |
+  | 49 | 955 | yes, `c48df64` |
+  | 50 | 974 | yes, `2c925ad` |
+  | 52 | 1013 | **no** |
+
+  **Nine of eleven.** Both misses share a shape — the counter passed
+  through the value between commits — but **not a cause, and the
+  difference matters.** 916 was ordinary banking cadence: two rows
+  landed close together and were banked once, which nothing was doing
+  wrong. **1013 was caused by my own stray `git add`**, which swept idx
+  1015 into the commit that was meant to hold idx 1013 alone. The first
+  is a fact about the sweep's rhythm; the second is an operator error
+  with a rule now written against it. Counting them together as "two
+  misses" is correct arithmetic and would be a misleading summary on its
+  own. **The proxy and the real
+  criterion disagree on exactly one case**, 1013, where a subject
+  carries the trap while the tree beneath it had already moved past it;
+  that is what makes the proxy worth discarding rather than merely
+  refining.
 
   **THE SCRIPT THAT CHECKED THIS WAS WRONG TWICE BEFORE IT WAS RIGHT, AND
   THE NOTE WAS RIGHT BOTH TIMES.** First pass used `git log --grep`,
@@ -3357,10 +3436,20 @@ Task outputs live at
   predicate that encodes only one of them is not a check of that
   definition.
 
-  Next after this: **52% still needs 1014 = 52.0267%**, and then **53%
-  needs `ceil(0.53 × 1949) = 1033` = 53.0015%, trap at 1032 =
-  52.9502%** — both from the script, written before the counter gets
-  there, which is bookkeeping and not a prediction.
+  **52% IS CROSSED** — and it was crossed inside `380b306`, the very
+  commit whose subject says it was not. That tree holds **1014 decided =
+  52.0267%**, which is above 52. The subject reads
+  `1013 of 1949 = 51.9754%`. **Both figures are in the record and only
+  the tree is true**; the subject is corrected here rather than by
+  rewriting a pushed commit, because the commit history is the
+  authority and falsifying it to match a later correction would be
+  worse than the error.
+
+  Next: **53% needs `ceil(0.53 × 1949) = 1033` = 53.0015%, trap at
+  1032 = 52.9502%** — from the script, written before the counter gets
+  there, which is bookkeeping and not a prediction. Whether a committed
+  tree will sit on 1032 is not predicted, and on the evidence of the
+  last two traps it is roughly a coin flip.
   **CROSSING HALF IS NOT HALF A RESULT**: deg(0)=13 is UNSAT only when
   **all 1949** are, and 975 UNSATs say nothing about the other 974.
   **COST FIGURES SPAN THREE MACHINE CONFIGURATIONS**, from restarts #41
@@ -3408,7 +3497,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **12 decided**, undecided 9 spanning 1012..1021
+  **13 decided**, undecided 8 spanning 1012..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
