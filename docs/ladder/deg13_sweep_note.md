@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T15:58Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T16:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -541,24 +541,27 @@ than "no machine change"**: `cpu MHz` is a nominal field, nothing here
 benchmarks the host, and six identical fields is what the eight readings
 before #41 also looked like.
 
-**TWO MEMBERS LANDED**, recorded as raw seconds with **no ratio**:
+**THREE MEMBERS LANDED**, recorded as raw seconds with **no ratio**:
 
-| idx | discarded | re-run |
-|---|---|---|
-| 991 | 2625.1 | 2486.8 |
-| 990 | 3079.4 | 4392.4 |
+| idx | discarded | re-run | re-run − discarded |
+|---|---|---|---|
+| 991 | 2625.1 | 2486.8 | **−138.3** |
+| 990 | 3079.4 | 4392.4 | **+1313.0** |
+| 989 | 7155.7 | 6754.0 | **−401.7** |
 
-**AND THE TWO GO OPPOSITE WAYS.** idx 991 re-ran faster than the work it
-lost; idx 990 re-ran **slower**, by 1313.0 s. Two members is not a
-direction, and the obvious reading — that a re-run should take about as
-long as the attempt it replaces, since it is the same cube from the same
-start — is already contradicted by one of the two observations in hand.
-Cube cost is not a fixed quantity a solver rediscovers; cryptominisat is
-randomised and its own run-to-run spread on identical input is not
-measured anywhere in this file. **Two members still running.** *(The
-numbers are right there and dividing them is one keystroke; that is
-exactly why the rule was written down before they existed rather than
-after — and the second member is why it was worth writing.)*
+**THEY DO NOT AGREE IN DIRECTION.** Two of the three re-ran faster than
+the work they lost and one re-ran **slower, by 1313.0 s — 42.6% above
+its discarded time**. The obvious reading, that a re-run should take
+about as long as the attempt it replaces since it is the same cube from
+the same start, is contradicted by one of the three observations in
+hand. Cube cost is not a fixed quantity a solver rediscovers:
+cryptominisat is randomised, and **its own run-to-run spread on
+identical input is not measured anywhere in this file**, so there is no
+baseline against which +1313.0 s is either ordinary or remarkable.
+**One member still running (idx 992).** *(The numbers are right there
+and dividing them is one keystroke; that is exactly why the rule was
+written down before they existed — and the second member is why it was
+worth writing.)*
 
 **SET TEN IS COMPLETE — AND NOTHING IS DIVIDED.** Restart #42 killed idx
 **954, 955, 957, 959** and the relaunch re-took those four at launch +
@@ -2446,11 +2449,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1159 -> 1160 rows)
+## State as of the last refresh (1160 -> 1161 rows)
 
-- **1160 rows; 991 labels decided; 991 UNSAT; 0 SAT; 0 labels
+- **1161 rows; 992 labels decided; 992 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 991 decided plus 169 superseded
+  A row count is not a decision count: 992 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2468,30 +2471,30 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..988, highest decided 991, holes [989].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-seventh, opened at TWO holes by a
-  re-run.** idx 991 came in at 2486.8 s, rank 639 of 990 by cost with 351
-  cheaper, while 989 and 990 were both still running; 992 was also
-  running but sits above 991 and was therefore never a hole. **idx 990
-  has since landed at 4392.4 s, leaving 989 alone.** *Those are the
-  states seen at two banks, not the chain — the chain is a property of
-  the commit sequence and comes from `--spans all` on close or not at
-  all.*
+- **Frontier contiguous 0..991, highest decided 991, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE TWENTY-SEVENTH SPAN IS CLOSED**, filled by idx 989 at 6754.0 s.
+  It opened at **two holes** when idx 991 came in at 2486.8 s while 989
+  and 990 were both still running; 992 was also running but sits above
+  991 and was therefore never a hole. idx 990 landed at 4392.4 s and
+  idx 989 last. *Those are the states seen at three banks, not the
+  chain — the chain is a property of the commit sequence and comes from
+  `--spans all`.*
 
-  **THIS IS THE FIRST TIME A RE-RUN HAS OPENED A SPAN.** All four of
-  989–992 were re-taken together at restart #43, launch + 60.7 s, CNFs
-  within 4.0 ms — so they started as near simultaneously as this driver
-  can manage, and the frontier broke purely on which finished first.
-  **That makes the opening width uninformative even by the low standard
-  the other openings are held to**: with three of four slots started at
-  the same instant, the number of holes at the open is a statement about
-  their relative finishing order and nothing else.
+  **IT WAS OPENED AND CLOSED ENTIRELY BY RE-RUNS**, the first span for
+  which that is true. All four of 989–992 were re-taken together at
+  restart #43, launch + 60.7 s with CNFs within 4.0 ms, so three of the
+  four slots started at the same instant and the frontier broke purely on
+  finishing order. **The opening width says nothing here**, even by the
+  low standard the other openings are held to: with simultaneous starts,
+  the hole count at the open is a statement about relative speed and
+  nothing else.
 
-  **No figures and no hole chain are claimed for it** — they come from
-  `--spans all` after it closes, with every quoted span rank recomputed
-  against the new N in the same pass. bank.py's span guard caught the
-  opening: **fourteenth real firing, seventh in the open direction.**
+  **No figures and no hole chain are written here yet** — they come from
+  `--spans all` run after the closing commit exists, with every quoted
+  span rank recomputed against the new N in the same pass. bank.py's span
+  guard caught the close: **fifteenth real firing, eighth in the close
+  direction.**
 
   **THE TWENTY-SIXTH SPAN IS CLOSED**, filled by idx 986 at 8005.6 s.
   It opened when idx 987 came in at 7545.9 s while idx 986 was still
@@ -2718,7 +2721,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **991 of 1949 = 50.8466%**; **958 undecided**. **50% IS CROSSED**, at
+- **992 of 1949 = 50.8979%**; **957 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2773,7 +2776,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **18 decided**, undecided 10 spanning 989..1000
+  **19 decided**, undecided 9 spanning 992..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
