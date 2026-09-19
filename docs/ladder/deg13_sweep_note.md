@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T09:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T10:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1301,34 +1301,89 @@ Registration discipline, learned the hard way:
   | `[13,13,12,1]` | 2 | 39.6 | 43.4 | 43.4 | 47.2 | 1.1919× |
   | `[13,13,12,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
   | `[13,13,11,11]` | 49 | 304.1 | 2698.5 | 3538.4 | 9372.4 | 30.8201× |
+  | `[13,13,11,10]` | 38 | 633.0 | 4490.8 | 5113.1 | 12894.5 | 20.3705× |
 
-  **`[13,13,11,11]` CLOSED 49/49** (idx 886..934, contiguity verified,
-  closed by idx 928 after it ran 7053.6 s). **Every row above was
-  recomputed from the checkpoint when this one was added** — all thirteen
-  `[13,13,12,*]` rows reproduced their recorded figures exactly, which is
-  the check, not a formality.
-  **THIS ROW IS NOT COMPARED WITH THE ONES ABOVE IT AND IS NOT ADDED TO
-  ANY MONOTONICITY LIST.** The thirteen rows above are one coordinate run;
-  this is the first row of a different one, and the note's standing rule is
-  that block statistics are descriptive and are not compared across blocks.
-  Its n = 49 happens to equal `[13,13,12,10]`'s, which makes the
-  temptation concrete and the refusal worth stating: two blocks with the
-  same member count are still two accidents of where `SEQ` put its
-  coordinate drops.
+  **`[13,13,11,10]` CLOSED 38/38** (idx 935..972, contiguity verified —
+  `max - min + 1 == len`, checked, not eyeballed — closed by idx 968 after
+  it ran 9079.9 s, the same row that closed the twenty-third span).
+  **Every row above was recomputed from the checkpoint when this one was
+  added**, and all fourteen reproduced their recorded figures exactly,
+  which is the check, not a formality. `[13,13,11,11]` before it closed
+  49/49 (idx 886..934, contiguity verified, closed by idx 928 after it ran
+  7053.6 s).
+
+  **THIS TABLE IS NOT THE LIST OF CLOSED BLOCKS AND NEVER HAS BEEN.** The
+  same recompute that produced `[13,13,11,10]` reports **29 closed blocks**
+  against the **15** tabled here, and the 14 missing are exactly the whole
+  `[13,13,13,*]` run, idx 0..558 — checked by set difference, not by
+  eye. They closed before this table was started at `[13,13,12,12]`, and
+  nothing since ever went back for them, so a heading that reads
+  "closed-block descriptive stats" has been describing half its subject.
+  That is recorded here as found, in the commit that found it; the 14 rows
+  are not being pasted in the same breath, because a complete second run
+  of the same shape is worth more than a longer table — it is an
+  INDEPENDENT sample against which the withdrawn "spreads fall, minima
+  rise" reading below can be tested, and that test deserves its own pass
+  rather than being smuggled in as a formatting fix.
+
+  **THE TWO `[13,13,11,*]` ROWS ARE NOT COMPARED WITH THE THIRTEEN ABOVE
+  THEM AND ARE NOT ADDED TO ANY MONOTONICITY LIST.** The thirteen
+  `[13,13,12,*]` rows are one coordinate run; `[13,13,11,11]` and
+  `[13,13,11,10]` are the first two rows of a different one, and the
+  note's standing rule is that block statistics are descriptive and are
+  not compared across blocks. The coincidences are the reason to say so
+  out loud rather than a reason to compare: `[13,13,11,11]`'s n = 49
+  equals `[13,13,12,10]`'s and `[13,13,11,10]`'s n = 38 equals
+  `[13,13,12,9]`'s — **both of them, in order, and the alignment is
+  forced.** Listing the block sizes of all **27** runs `[13,c1,c2,*]`
+  straight out of `SEQ` (no checkpoint involved — this is combinatorics,
+  not data) shows each run's sizes are a contiguous slice of the single
+  sequence
+
+      129, 104, 82, 65, 49, 38, 28, 21, 15, 11, 7, 5, 3, 2, 1, 1
+
+  and that dropping `c2` by one shifts the start by exactly **two**:
+  tested on all **21** adjacent same-prefix pairs, the earlier run's sizes
+  from position 2 onward agree with the later run's over the entire
+  overlap, **21 of 21**. So `[13,13,11,*]` starts two positions into
+  `[13,13,12,*]`, which starts two into `[13,13,13,*]`, and equal n across
+  runs is arithmetic. *(The slice claim is "consistent with", not a unique
+  decomposition: runs of length 1 or 2 at the tail are all `1`s or `2,1,1`
+  and match in more than one position, so the search reports the first
+  fit. The 21-of-21 shift result does not depend on that search.)*
+  **Matching n is the null, not a signal.** *(A first draft of this
+  sentence said only that two runs of the same shape "necessarily line up
+  in n" — true-sounding, unquantified, and wrong about the mechanism until
+  the shift was actually computed; the script's first predicate also
+  returned False on two pairs because it compared past the end of the
+  overlap, which was a bug in the check, not in the claim.)*
+
+  *(This paragraph opened "THIS ROW IS NOT COMPARED" and had gone stale
+  the moment a second row was added below it — the same deictic failure
+  the state section already bans, found here rather than there. Blocks
+  are named outright now, so adding a third row cannot silently
+  re-point it.)*
 
   **THE `[13,13,12,*]` RUN IS COMPLETE: all 13 blocks closed, idx 559..885,
   327 cubes.**
 
-  **THE LAST FIVE ROWS (n = 7, 5, 3, 2, 1) CARRY LITTLE OR NO INFORMATION
-  ABOUT SPREAD AND MUST NOT EXTEND THE SEQUENCES BELOW.** At n = 1 the min,
+  **`[13,13,12,4]`, `[13,13,12,3]`, `[13,13,12,2]`, `[13,13,12,1]` AND
+  `[13,13,12,0]` (n = 7, 5, 3, 2, 1) CARRY LITTLE OR NO INFORMATION ABOUT
+  SPREAD AND MUST NOT EXTEND THE SEQUENCES BELOW.** *(This read "THE LAST
+  FIVE ROWS" and had been stale since `[13,13,11,11]` was appended below
+  them — a third positional reference that a later row silently
+  re-pointed. The n list kept the meaning recoverable, which is why it
+  survived unnoticed; the blocks are named now.)* At n = 1 the min,
   median, mean and max are the same number and the spread is 1.0000× by
   construction; at n = 2 the median equals the mean; at n = 3 a "spread" is
   one ratio of two draws; n = 5 and n = 7 are barely better, and the
   pooled-draw control already says simulated spread falls steeply with n.
   They are tabled because the blocks closed, and fenced off because a
   monotonicity argument fed with them would be reading sample size. The
-  monotonicity lists below stop at `[13,13,12,5]`, the last block with
-  n ≥ 11.
+  monotonicity lists below stop at `[13,13,12,5]`, the last block **of the
+  `[13,13,12,*]` run** with n ≥ 11 — a qualifier the sentence needed the
+  moment blocks from another run joined the table, two of which have
+  n ≥ 11 themselves and still do not extend those lists.
 
   **EVERY CELL ABOVE IS RECOMPUTED FROM THE CHECKPOINT WHENEVER A ROW IS
   ADDED. THAT RULE EXISTS BECAUSE THE OLD TABLE'S MIDDLE COLUMN WAS A
@@ -1720,6 +1775,33 @@ diff rather than by re-reading the sentence. **Name the index or the
 commit hash** — the state section describes a moment, and only fixed
 identifiers survive being rewritten around.
 
+**THE SAME FAILURE LIVES IN THE TABLES, WHERE NOTHING REWRITES ANYTHING
+AND IT IS THEREFORE HARDER TO SEE.** A table row is appended by hand, and
+every sentence that pointed at the old last row keeps pointing at a
+position rather than at a block. Three were found together in the
+closed-block section when `[13,13,11,10]` was added — "THIS ROW IS NOT
+COMPARED WITH THE ONES ABOVE IT", "THE LAST FIVE ROWS (n = 7, 5, 3, 2,
+1)", and "`[13,13,12,5]`, the last block with n ≥ 11" — and **only the
+first of the three was fresh.** `git log -S` dates them, read from the
+tool and not recalled: "THE LAST FIVE ROWS" entered at `98e97be`, "the
+last block with" at `e5c0c73`, both **before** `faa424a` appended the
+`[13,13,11,11]` row that falsified them. So those two stood wrong across
+the **61** commits between `faa424a` and the commit that fixes them,
+**54** of which edited this very file. The third, "THIS ROW IS NOT
+COMPARED", entered at `faa424a` itself and described `[13,13,11,11]`
+correctly; it went stale when `[13,13,11,10]` was appended.
+
+They survived because each carried enough side information — an n list,
+a named block — to stay *recoverable* while being *false as written*,
+which is the worst of both: too correct to trip a reader, too positional
+to stay true. Note also what did **not** catch them: reading the staged
+diff catches the state section's deixis every time, because bank.py
+rewrites those lines and they appear in the diff. A table sentence that
+nobody touched appears in no diff at all, so the only thing that finds it
+is reading the paragraph the new row lands in. **In a table, name the
+block. Never "the row above", "the last N rows", or "the ones above
+it".**
+
 **Never write an identifier you have not read from the tool** (`bce9af0`).
 Commit hashes, pids, indices and timestamps are **read**, never composed.
 If the identifier does not exist yet — because the commit has not been
@@ -2079,11 +2161,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1145 -> 1146 rows)
+## State as of the last refresh (1146 -> 1147 rows)
 
-- **1146 rows; 977 labels decided; 977 UNSAT; 0 SAT; 0 labels
+- **1147 rows; 978 labels decided; 978 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 977 decided plus 169 superseded
+  A row count is not a decision count: 978 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2101,25 +2183,29 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 977, holes [968].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
-  holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
-  92 cheaper, while 967, 968 and 969 were still running, so once again one
-  cheap cube jumped the frontier and left three behind at once. **967 and
-  then 969 filled theirs, narrowing it to 968 alone; idx 973 landing above
-  the frontier WIDENED it back to two; and idx 972 has now filled its own,
-  leaving 968 alone again.** A span is not a shrinking thing; it is
-  whatever the commit sequence does, and this one has **widened as well as
-  narrowed, more than once, without closing**. *No sequence of hole counts
-  is written here on purpose: a first draft of this sentence offered
-  "3 → 1 → 2 → 1", which is the states I happened to observe at banks,
-  not the per-commit chain — the same partial reading that was wrong for
-  the seventeenth span. The chain comes from `--spans all`, on close, or
-  not at all.* **No
-  figures are claimed for it** — duration, commit count and hole chain
-  come from `--spans all` after it closes. bank.py's span guard caught the
-  opening: sixth real firing, third in the open direction.
+- **Frontier contiguous 0..977, highest decided 977, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE TWENTY-THIRD SPAN IS CLOSED**, filled by idx 968 — the same row
+  that closed block `[13, 13, 11, 10]` at 38 of 38. It opened at **three
+  holes at once**, when idx 970 came in at 869.5 s (rank 876 of 968 by
+  cost at the time, only 92 cheaper) while 967, 968 and 969 were all still
+  running; 967 and 969 then filled theirs, idx 973 landing above the
+  frontier widened it back to two, idx 972 filled its own, and 968 was
+  last. **Those are the states observed at banks, which is not the same
+  thing as the chain.**
+
+  **No figures are written here yet.** Duration, commit count and hole
+  chain come from `checkpoint_audit.py --spans all`, run only after the
+  commit that closes the span exists, and every span rank already quoted
+  in this note has to be recomputed against the new N in that same pass —
+  a relabelled denominator is an error pattern this note already carries.
+  The chain especially is not for guessing: it is a property of the
+  **commit sequence**, and a first draft of the open-span prose offered
+  `3 → 1 → 2 → 1` from the bank-time states above. That guess was deleted
+  rather than recorded, it stays deleted, and the states listed above are
+  written as observations precisely so they cannot be read as the chain.
+  bank.py's span guard caught the close: **seventh real firing, fourth in
+  the close direction.**
 
   **TWO CONSECUTIVE SPANS OPENING THE SAME WAY IS TWO, NOT A PATTERN.**
   The twenty-second opened identically, on idx 964 at 1073.4 s. Both are
@@ -2155,7 +2241,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **977 of 1949 = 50.1283%**; **972 undecided**. **50% IS CROSSED**, at
+- **978 of 1949 = 50.1796%**; **971 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2209,8 +2295,6 @@ Task outputs live at
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **37 decided**, undecided [968]
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
   **5 decided**, undecided 23 spanning 978..1000
 
