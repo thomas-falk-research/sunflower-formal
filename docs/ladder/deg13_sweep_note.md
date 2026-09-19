@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T23:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T23:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1097,6 +1097,19 @@ same failure operating one level down. So the remedy extends again —
 **a breakdown of a computed total must itself be computed, and must be
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
+
+**A TENTH — "TWO OF THREE" WHERE IT IS THREE OF THREE, FROM TWO
+CAUSES.** Writing up the thirty-first span's opening, a draft said "two
+of this span's three holes were opened by cubes in the cheap tail". All
+**three** were: idx 1019 opened two of them at the 18.47th percentile
+and idx 1021 opened the third at the 8.05th. The sentence conflated the
+count of **holes** with the count of **cubes that made them** —
+3 and 2 — and landed on neither. **Ten for ten.** It is the same failure
+as the ninth one bank earlier, a breakdown written from impression
+beside figures that were computed, and it says the remedy from that
+entry needs applying to *relationships between counts* and not only to
+totals: **when two different things are being counted in one sentence,
+name which is which.**
 
 **AN EIGHTH, IN THE SAME BANK, AND IT IS THE PLAINEST KIND YET.** A
 draft heading in the monotonicity section called the vacuous column
@@ -2956,7 +2969,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1186 -> 1187 rows)
+## State as of the last refresh (1187 -> 1188 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -2967,9 +2980,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1187 rows; 1018 labels decided; 1018 UNSAT; 0 SAT; 0 labels
+- **1188 rows; 1019 labels decided; 1019 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1018 decided plus 169 superseded
+  A row count is not a decision count: 1019 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2987,7 +3000,7 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1016, highest decided 1019, holes [1017, 1018].**
+- **Frontier contiguous 0..1016, highest decided 1021, holes [1017, 1018, 1020].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIRST, AND IT OPENED AT TWO HOLES AT
   ONCE.** idx 1019 came in at **1391.5 s** while **both 1017 and 1018
@@ -3005,15 +3018,32 @@ exactly one bank.
   eventual cost**. It is not the block's cheapest: that is still idx
   1001 at 549.4 s.
 
-  **THE BLOCK'S ENTIRE REMAINING WORK IS IN FLIGHT.** At 23:41:41Z the
-  four solver slots hold idx **1017, 1018, 1020 and 1021** — exactly the
-  four members the census lists as undecided in `[13, 13, 11, 8]`. So
-  **no further cube from this block will be started**, and the two holes
-  are two of the four running. Elapsed then: 5151, 4131, 1948 and 718 s,
-  all far inside the 21600 s cap. *This is a statement about what is
-  running, not a forecast of when anything finishes or of what the next
-  block will be; the slice order is the driver's and is read from the
-  census, never predicted.*
+  **THE SPAN HAS WIDENED TO THREE HOLES**, `[1017, 1018, 1020]`, after
+  idx 1021 landed at **775.7 s** and jumped over 1020 as well. Frontier
+  still contiguous 0..1016, highest decided index now 1021. A bank-time
+  observation of the file, not a chain entry.
+
+  **idx 1021 IS THE SECOND-CHEAPEST CUBE THE BLOCK HAS PRODUCED**, at
+  775.7 s behind idx 1001's 549.4 s, and the **8.05th percentile** of the
+  whole decided set — rank 937 of 1019, only 82 cheaper. **All three of
+  this span's holes were opened by two cheap cubes** — idx 1019 opened
+  1017 and 1018 at the 18.47th percentile, idx 1021 opened 1020 at the
+  8.05th — which is the mechanism, not a pattern: a frontier breaks when
+  *anything* finishes early, so cheap cubes do most of the breaking by
+  construction. *(A draft said "two of this span's three holes", which
+  miscounts both sides: three holes, two cubes, and none of the three
+  came from an expensive finisher. Logged as the tenth in the tally.)*
+
+  **THE BLOCK'S REMAINING WORK WAS ENTIRELY IN FLIGHT, AND THAT NOW
+  CHECKS OUT.** At 23:41:41Z the four solver slots held idx **1017,
+  1018, 1020 and 1021** — exactly the census's undecided set for
+  `[13, 13, 11, 8]` — and the note said **no further cube from this
+  block would be started**. idx 1021 finished at 23:42:43Z and the freed
+  slot took **idx 1022**, the first index past the block's 1001..1021.
+  *That was a checkable statement about what was running rather than a
+  forecast, and it is recorded as confirmed for the same reason it was
+  hedged: the slice order is the driver's, read from the census, never
+  predicted.*
 
   **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
   commit count and hole trajectory all come from `--spans all` run
@@ -3082,24 +3112,28 @@ exactly one bank.
   **8214.9 s** — idx 1014's 7948.8 s came within 266.1 s of it and did
   not displace it — against a block maximum of 6860.1 s before either.
   Both finished far inside the cap, at **0.3803** and **0.3680** of
-  21600 s. Ranks recomputed at **N = 1018**: idx 1012 is **179 of 1018**
-  (839 cheaper) and idx 1014 is **186 of 1018** (832 cheaper).
-  Block `[13, 13, 11, 8]` now has **17 of 21** decided, costs spanning
+  21600 s. Ranks recomputed at **N = 1019**: idx 1012 is **179 of 1019**
+  (840 cheaper) and idx 1014 is **186 of 1019** (833 cheaper).
+  Block `[13, 13, 11, 8]` now has **18 of 21** decided, costs spanning
   **549.4 to 8214.9 s** — a spread of **14.9525×**, unchanged across
-  four banks because neither endpoint has moved — with median
-  **3776.8 s** and mean **3742.9 s**.
+  five banks because neither endpoint has moved — with median
+  **3590.15 s** and mean **3578.0 s**.
 
-  ***THE MEDIAN WENT 3877.3 → 3977.8 → 3877.3 → 3776.8 IN FOUR ROWS, AND
-  THE MEAN 3634.6 → 3922.2 → 3889.8 → 3742.9.*** At 14 of 21 the median
-  read 3877.3; idx 1014 pushed it to 3977.8; idx 1016 at 3403.5 s pulled
-  it back to **exactly where it started**; idx 1019 at 1391.5 s moved it
-  down again to 3776.8. An even count's median is the midpoint of two
-  neighbours, so it oscillates as members arrive on either side, and the
-  return to 3877.3 was **parity, not settling** — which the very next row
-  demonstrated by leaving it. **A figure returning to a previous value is
-  not stability**, and this is the clearest available reason open-block
-  descriptive stats are kept out of the closed-block table: four banks,
-  four medians, one coincidence among them.
+  ***THE MEDIAN WENT 3877.3 → 3977.8 → 3877.3 → 3776.8 → 3590.15 ACROSS
+  FIVE ROWS, AND THE MEAN 3634.6 → 3922.2 → 3889.8 → 3742.9 → 3578.0.***
+  At 14 of 21 the median read 3877.3; idx 1014 pushed it to 3977.8; idx
+  1016 at 3403.5 s pulled it back to **exactly where it started**; idx
+  1019 at 1391.5 s moved it down to 3776.8; idx 1021 at 775.7 s took it
+  to 3590.15. An even count's median is the midpoint of two neighbours,
+  so it oscillates as members arrive on either side, and the return to
+  3877.3 was **parity, not settling** — which the next row demonstrated
+  by leaving it and the one after confirmed by leaving again. **A figure
+  returning to a previous value is not stability**, and this is the
+  clearest available reason open-block descriptive stats are kept out of
+  the closed-block table: five banks, five medians, one coincidence
+  among them. *The last three rows were all below the running median, so
+  the recent drift is downward — which is a description of three rows,
+  not a trend, and is written that way deliberately.*
 
   **These are descriptive of an OPEN block and
   will keep moving**; they are not comparable with the closed-block
@@ -3478,7 +3512,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1018 of 1949 = 52.2319%**; **931 undecided**. **50% IS CROSSED**, at
+- **1019 of 1949 = 52.2832%**; **930 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3643,7 +3677,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **17 decided**, undecided [1017, 1018, 1020, 1021]
+  **18 decided**, undecided [1017, 1018, 1020]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
