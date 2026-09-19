@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T14:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T15:27Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -540,6 +540,12 @@ the numbers then in hand, and **"no recorded machine change" is weaker
 than "no machine change"**: `cpu MHz` is a nominal field, nothing here
 benchmarks the host, and six identical fields is what the eight readings
 before #41 also looked like.
+
+**FIRST MEMBER LANDED: idx 991**, discarded 2625.1 s, re-run 2486.8 s.
+Recorded as raw seconds, **no ratio** — three members are still running,
+and a set is divided, if at all, at its close. *(The two numbers are
+right there and dividing them is one keystroke; that is exactly why the
+rule was written down before the numbers existed rather than after.)*
 
 **SET TEN IS COMPLETE — AND NOTHING IS DIVIDED.** Restart #42 killed idx
 **954, 955, 957, 959** and the relaunch re-took those four at launch +
@@ -2427,11 +2433,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1157 -> 1158 rows)
+## State as of the last refresh (1158 -> 1159 rows)
 
-- **1158 rows; 989 labels decided; 989 UNSAT; 0 SAT; 0 labels
+- **1159 rows; 990 labels decided; 990 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 989 decided plus 169 superseded
+  A row count is not a decision count: 990 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2449,8 +2455,29 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..988, highest decided 988, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..988, highest decided 991, holes [989, 990].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — the twenty-seventh, at TWO holes, and it was opened
+  by a re-run.** idx 991 came in at 2486.8 s, rank 639 of 990 by cost
+  with 351 cheaper, while 989 and 990 were both still running; 992 is
+  also running but sits above 991 and is therefore not a hole. `ps`
+  confirms 989, 990 and 992 in flight at 2520 s elapsed each, with 993
+  newly started.
+
+  **THIS IS THE FIRST TIME A RE-RUN HAS OPENED A SPAN.** All four of
+  989–992 were re-taken together at restart #43, launch + 60.7 s, CNFs
+  within 4.0 ms — so they started as near simultaneously as this driver
+  can manage, and the frontier broke purely on which finished first.
+  **That makes the opening width uninformative even by the low standard
+  the other openings are held to**: with three of four slots started at
+  the same instant, the number of holes at the open is a statement about
+  their relative finishing order and nothing else.
+
+  **No figures and no hole chain are claimed for it** — they come from
+  `--spans all` after it closes, with every quoted span rank recomputed
+  against the new N in the same pass. bank.py's span guard caught the
+  opening: **fourteenth real firing, seventh in the open direction.**
+
   **THE TWENTY-SIXTH SPAN IS CLOSED**, filled by idx 986 at 8005.6 s.
   It opened when idx 987 came in at 7545.9 s while idx 986 was still
   running; 986 was the only hole throughout, with 988, 989 and 990
@@ -2676,7 +2703,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **989 of 1949 = 50.7440%**; **960 undecided**. **50% IS CROSSED**, at
+- **990 of 1949 = 50.7953%**; **959 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2731,7 +2758,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **16 decided**, undecided 12 spanning 989..1000
+  **17 decided**, undecided 11 spanning 989..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
