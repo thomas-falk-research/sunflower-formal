@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T18:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T18:53Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1540,18 +1540,23 @@ Registration discipline, learned the hard way:
   | `[13,13,12,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
   | `[13,13,11,11]` | 49 | 304.1 | 2698.5 | 3538.4 | 9372.4 | 30.8201× |
   | `[13,13,11,10]` | 38 | 633.0 | 4490.8 | 5113.1 | 12894.5 | 20.3705× |
+  | `[13,13,11,9]` | 28 | 668.1 | 4243.7 | 4305.1 | 10427.2 | 15.6072× |
 
-  **`[13,13,11,10]` CLOSED 38/38** (idx 935..972, contiguity verified —
-  `max - min + 1 == len`, checked, not eyeballed — closed by idx 968 after
-  it ran 9079.9 s, the same row that closed the twenty-third span).
-  **Every row above was recomputed from the checkpoint when this one was
-  added**, and all fourteen that were already tabled reproduced their
-  recorded figures exactly, which is the check, not a formality.
-  `[13,13,11,11]` before it closed 49/49 (idx 886..934, contiguity
-  verified, closed by idx 928 after it ran 7053.6 s).
+  **`[13,13,11,9]` CLOSED 28/28** (idx 973..1000, contiguity verified —
+  `max - min + 1 == len`, checked, not eyeballed — closed by **idx 994
+  after it ran 10427.2 s**, the same row that closed the twenty-eighth
+  span). **Every row above was recomputed from the checkpoint when this
+  one was added**, and all **29** that were already tabled reproduced
+  their recorded figures exactly, which is the check, not a formality.
+  The table again holds every closed block: **30 closed, 30 tabled**,
+  asserted by set comparison rather than by counting rows.
+  Earlier in this run: `[13,13,11,10]` closed 38/38 (idx 935..972, by idx
+  968 at 9079.9 s) and `[13,13,11,11]` closed 49/49 (idx 886..934, by idx
+  928 at 7053.6 s).
 
-  **THE TABLE NOW HOLDS ALL 29 CLOSED BLOCKS. IT STARTED AT THE SECOND
-  RUN AND NEVER REACHED BACK — 172 COMMITS.** Recomputing it for
+  **THE TABLE HOLDS EVERY CLOSED BLOCK AND IS RE-CHECKED THAT WAY ON
+  EVERY ADDITION. IT STARTED AT THE SECOND RUN AND NEVER REACHED BACK —
+  172 COMMITS.** Recomputing it for
   `[13,13,11,10]` reported **29** closed blocks against the 14 tabled, and
   the 15 missing — checked by set difference, not by eye — were the whole
   `[13,13,13,*]` run, idx 0..558, plus the new row itself. The table was
@@ -1560,7 +1565,10 @@ Registration discipline, learned the hard way:
   went back for it, so a heading reading "closed-block descriptive stats"
   described half its subject from the day it was written. The 14 rows are
   now in, recomputed from the checkpoint in the same run as every other
-  row, each contiguity-verified by `max - min + 1 == len`. **What they
+  row, each contiguity-verified by `max - min + 1 == len`. **Since then
+  the check is a set comparison run at every addition**, not a count:
+  closed-block set against tabled-block set, which is what caught the gap
+  and is what would catch the next one. **What they
   cost by being absent is in the next section**: they are an independent
   sample of exactly the shape the withdrawn "spreads fall, minima rise"
   reading was read off, and they were complete in this very file before
@@ -2500,11 +2508,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1171 -> 1172 rows)
+## State as of the last refresh (1172 -> 1173 rows)
 
-- **1172 rows; 1003 labels decided; 1003 UNSAT; 0 SAT; 0 labels
+- **1173 rows; 1004 labels decided; 1004 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1003 decided plus 169 superseded
+  A row count is not a decision count: 1004 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2522,68 +2530,29 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..993, highest decided 1003, holes [994].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-eighth, opened at TWO holes AND IT HAS
-  SINCE WIDENED TO THREE.** idx 996 came in at **1371.5 s**, rank 812 of
-  995 by cost with only 183 cheaper, while 994 and 995 were both still
-  running; 997 and 998 were also running but sat above 996 and were not
-  holes then. idx 995 landed at 3317.7 s, leaving 994 alone — and then
-  **idx 999 came in at 668.1 s**, rank 927 of 997 with only 70 cheaper,
-  jumping over 997 and 998 and turning both of them into holes; idx 1000
-  then landed without changing the hole set, idx 997 filled its own at
-  4430.1 s, idx 1001 opened a second block without moving a hole either,
-  and **idx 998 landed at 5516.4 s, leaving 994 alone**. The states at
-  seven banks are **2, 1, 3, 3, 2, 2, 1**. *That is what was observed at
-  banks, not the chain; the chain comes from `--spans all` on close — and
-  note that **two** of those seven banks (idx 1000 and idx 1001) moved no
-  hole at all, so the observed list is not even the same length as the
-  commit chain will be.*
+- **Frontier contiguous 0..1003, highest decided 1003, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE TWENTY-EIGHTH SPAN IS CLOSED**, filled by **idx 994 at 10427.2
+  s** — the same row that closed block `[13,13,11,9]` at 28 of 28. It
+  opened at two holes when idx 996 came in at 1371.5 s while 994 and 995
+  were still running, **widened to three** when idx 999 came in at
+  668.1 s and jumped over 997 and 998, and then narrowed 997 → 998 →
+  994. *The states seen across eight banks were 2, 1, 3, 3, 2, 2, 1, 0,
+  and two of those banks (idx 1000 and idx 1001) moved no hole at all —
+  the chain comes from `--spans all`, not from that list.*
 
-  **A SPAN IS NOT A SHRINKING THING**, which this note has said before
-  and is worth seeing again: the frontier is held by whichever cube is
-  slowest, and any cheap cube landing above it converts every unfinished
-  lower index into a hole at once. 994 had been running **6377 s** when
-  999 finished in 668.1 s — a factor of about ten — and that is the
-  whole mechanism.
+  **idx 994 IS THE MOST EXPENSIVE CUBE ITS BLOCK HAD**, at 10427.2 s
+  against a previous block maximum of 8039.0 s, and **rank 82 of 1004**
+  across the whole decided set. It finished at **0.4827 of the 21600 s
+  cap**, so it was never close to being killed — which is stated because
+  the previous bank recorded that no prediction was being made about
+  whether it would finish inside the cap, and this is how that came out.
 
-  **THE SPAN'S HOLES AND THE BLOCK'S REMAINING MEMBERS ARE THE SAME
-  INDICES**, now 994 and 998, because idx 1000 — the last member
-  of `[13,13,11,9]` — has landed. **That is arithmetic, not a
-  coincidence**: the block runs 973..1000, its top index is decided, so
-  everything it still owes sits below the highest decided index and is
-  therefore a hole by definition. The consequence is only that the last
-  of them to land will close the block and the span in the same commit,
-  which has happened before (idx 968 closed both). **One is left: idx
-  994**, which at this bank had been running **9686 s** — 0.4484 of the
-  21600 s cap, with 11914 s still available before it would be killed
-  and written UNKNOWN. **No prediction is made about whether it finishes
-  inside that**; the block's decided costs run from 549.4 s to 8039.0 s
-  and 994 is already past all of them, which says only that it is the
-  most expensive member so far and nothing about where it stops.
-
-  **A SECOND BLOCK IS NOW OPEN ALONGSIDE IT** — `[13,13,11,8]`, idx
-  1001..1021, 21 members, opened by idx 1001 at 549.4 s while
-  `[13,13,11,9]` still owes 994 and 998. **That is ordinary and not a
-  first**: the note already records `[13,13,12,8]` opening before
-  `[13,13,12,9]` closed, ancestry checked with `git merge-base`. Its 21
-  members are what `SEQ` says they are — the `[13,13,11,*]` run reads 49,
-  38, 28, 21, … — so the size is arithmetic known before the sweep
-  started, not an observation.
-
-  **THIS IS THE FIRST OPENING SINCE THE RE-RUN SET CLEARED, AND IT IS
-  BACK TO THE ORDINARY SHAPE**: a cheap cube jumping a frontier held up
-  by expensive ones, with four independent start times rather than the
-  simultaneous launch that made the twenty-seventh's width meaningless.
-  **No width claim is made from that** — the opening-cost table above
-  covers five spans and says only that two of five openers were cheap;
-  this is a sixth observation and the census over all 92 closed spans is
-  still not computed.
-
-  **No figures and no hole chain are claimed for it** — they come from
-  `--spans all` after it closes, with every quoted span rank recomputed
-  against the new N in the same pass. bank.py's span guard caught the
-  opening: **sixteenth real firing, eighth in the open direction.**
+  **No figures and no hole chain are written here yet** — they come from
+  `--spans all` run after the closing commit exists, with every quoted
+  span rank recomputed against the new N in the same pass. bank.py's span
+  guard caught the close: **seventeenth real firing, ninth in the close
+  direction.**
 
   **THE TWENTY-SEVENTH SPAN IS CLOSED**, filled by idx 989 at 6754.0 s.
   It opened at **two holes** when idx 991 came in at 2486.8 s while 989
@@ -2846,7 +2815,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1003 of 1949 = 51.4623%**; **946 undecided**. **50% IS CROSSED**, at
+- **1004 of 1949 = 51.5136%**; **945 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2913,8 +2882,6 @@ Task outputs live at
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **27 decided**, undecided [994]
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
   **3 decided**, undecided 18 spanning 1004..1021
 
