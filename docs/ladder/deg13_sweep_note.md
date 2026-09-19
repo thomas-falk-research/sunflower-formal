@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T12:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T12:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2112,6 +2112,41 @@ alongside it.**
   the remedy rather than about diffs: the rule being on this page did not
   stop the habit. **The only reliable form is `git diff --cached` with NO
   PIPE AT ALL.**
+
+  **AND THE HAZARD IS NOT SPECIFIC TO DIFFS: PIPING A TOOL INTO `head` CAN
+  KILL IT BEFORE ITS SIDE EFFECT RUNS, SILENTLY.** Found on 09-19 by
+  noticing that `cnf_mtime_check.py` had appended **no** sample rows at
+  12:42:12Z although its output looked normal. It had been run as
+  `python3 docs/ladder/cnf_mtime_check.py 2>&1 | head -12`. The tool
+  prints a live table, then a pinned-reference block, and only **then**
+  appends to `cpu_ratio_samples.tsv` and prints that it did — the append
+  sits at **output line 20**. When `head` exits early the writer gets
+  `BrokenPipeError` on a later `print`; the traceback goes to stderr,
+  the append never runs, and **the pipeline still exits 0**, because bash
+  reports `head`'s status, not the tool's. Worse, the script's own
+  `!! sample NOT appended` warning is emitted by a `print` on the same
+  dead pipe, so **the guard cannot report the failure it detects**.
+
+  **A FIRST SWEEP OVER CUTOFFS LOOKED LIKE A CLEAN NARROW WINDOW AND WAS
+  NOISE.** Testing `head -10, -12, -14, -16, -18, -20, -25` once each,
+  only `-12` lost the sample, which reads as a tidy boundary effect.
+  Repeating `-11, -12, -13` three times apiece broke it: `-11` appended
+  in one rep and lost in two, `-12` lost twice and appended once. **It is
+  a race between the writer reaching the append and the reader closing
+  the pipe, not a line-count threshold.** Quantified rather than
+  characterised: **`head -12` lost 7 of 12**, **`head -20` lost 0 of 12**,
+  and an **unpiped control lost 0 of 6**. The cutoff matters only in that
+  a cutoff at or beyond the append's own line has already let the append
+  happen.
+
+  This is the same ban as the diff one, in a second guise: **a pipe is not
+  a neutral viewer.** `| grep` silently drops lines you needed to read;
+  `| head` can silently drop work the tool was going to do. **Run these
+  tools bare.** If the output is long, redirect it to a file and read the
+  file — `python3 docs/ladder/cnf_mtime_check.py > /tmp/x.txt 2>&1` then
+  `sed -n '1,12p' /tmp/x.txt` — which reads the same twelve lines without
+  ever putting a reader on the tool's stdout. At least one real sample was
+  lost to this before it was noticed.
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -2334,11 +2369,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1153 -> 1154 rows)
+## State as of the last refresh (1154 -> 1155 rows)
 
-- **1154 rows; 985 labels decided; 985 UNSAT; 0 SAT; 0 labels
+- **1155 rows; 986 labels decided; 986 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 985 decided plus 169 superseded
+  A row count is not a decision count: 986 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2356,7 +2391,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..984, highest decided 984, holes [].**
+- **Frontier contiguous 0..985, highest decided 985, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-FIFTH SPAN IS CLOSED**, filled by idx 983 at 3905.3 s.
   It opened when idx 984 came in at 2779.9 s while 982 and 983 were both
@@ -2495,7 +2530,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **985 of 1949 = 50.5387%**; **964 undecided**. **50% IS CROSSED**, at
+- **986 of 1949 = 50.5900%**; **963 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2550,7 +2585,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **12 decided**, undecided 16 spanning 985..1000
+  **13 decided**, undecided 15 spanning 986..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
