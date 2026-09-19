@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T03:47Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T04:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -457,6 +457,14 @@ attempt. Each attempt ran on a **different machine configuration**: A =
 
 **Across the two that landed: 32222.7 s spent, 13460.3 s recorded — 41.8%.**
 
+For contrast, **idx 959 was killed once**, at #42, after only 642.7 s, and
+completed at 8657.1 s on C: 9299.8 s spent, **93.1% recorded**. A single
+early kill costs almost nothing. What makes 955 and 957 expensive is that
+each was killed **twice**, and the second kill landed after each had
+already re-run for 3797.3 s. **Three data points do not establish a
+relationship between kill count and waste** — they illustrate the obvious
+arithmetic that discarded time accumulates and recorded time does not.
+
 **The checkpoint's costs are per-attempt, not per-cube**, and that is the
 right thing for them to be: a cost column that silently accumulated across
 kills would compare different quantities row to row. But it means **the
@@ -471,11 +479,14 @@ faster. Three measurements of different things. The same goes for 957, and
 that C is slower** — two cubes, three configurations, and the kill times
 on A and B are censored rather than completed runs.
 
-**SET TEN IS OPEN AND CONFOUNDED TWICE OVER.** Restart #42 killed idx
-**954, 955, 957, 959** and the relaunch re-took those four at launch +
-61.7 s. It spans the #41 → #42 machine change **and** three of its four
-members carry a second kill. Its ratio will not join the eight-set series
-either. Raw seconds recorded as data.
+**SET TEN IS CONFOUNDED TWICE OVER, and is three-quarters landed.**
+Restart #42 killed idx **954, 955, 957, 959** and the relaunch re-took
+those four at launch + 61.7 s. It spans the #41 → #42 machine change
+**and** three of its four members carry a second kill. Its ratio will not
+join the eight-set series either. Raw seconds, recorded as data: 955 at
+6290.1, 957 at 7170.2, 959 at 8657.1, with **954 still running**. When it
+lands the set is complete and **still nothing will be divided** — that was
+settled at the opening, before any of these numbers existed.
 
 Two things this costs, stated plainly: the eight-set series stops growing
 at eight for as long as the machine keeps changing, and **the one thing
@@ -1545,6 +1556,13 @@ Registration discipline, learned the hard way:
   has now happened twice in four crossings and failed twice, which is what
   a coincidence looks like from both sides. It is recorded only so nobody
   later reads a match as structure.
+  **A SIXTH collision, and it is not even at a crossing:** idx 959 landed
+  and took the decided count to **959**. The running list of count == index
+  events is 800, 858, 919, 926, 929 and now **959** — six of them, most
+  nowhere near a threshold. **Two unrelated quantities that both advance
+  through the integers will keep sharing a value**; that is arithmetic, not
+  structure, and the only reason to write these down is so that a later
+  reader who notices one does not think it was left out.
   **The 41% crossing carries a pure coincidence and it means nothing:** the
   cube whose landing took the decided count to 800 was itself **idx 800**.
   Four cubes were in flight and any of them would have made the count 800;
@@ -1926,11 +1944,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1126 -> 1127 rows)
+## State as of the last refresh (1127 -> 1128 rows)
 
-- **1127 rows; 958 labels decided; 958 UNSAT; 0 SAT; 0 labels
+- **1128 rows; 959 labels decided; 959 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 958 decided plus 169 superseded
+  A row count is not a decision count: 959 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -1948,7 +1966,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..953, highest decided 958, holes [954].**
+- **Frontier contiguous 0..953, highest decided 959, holes [954].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-first.** It opened when idx 956 landed
   above the frontier leaving 954 and 955 behind it, **widened to three**
@@ -1970,7 +1988,7 @@ Task outputs live at
   fifteenth through twentieth sit in one table above, **all six ranks
   recomputed together against the current 85**, none carried over with a
   relabelled denominator.
-- **958 of 1949 = 49.1534%**; **991 undecided**. **49% IS CROSSED**, at
+- **959 of 1949 = 49.2047%**; **990 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2020,7 +2038,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **23 decided**, undecided 15 spanning 954..972
+  **24 decided**, undecided 14 spanning 954..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
