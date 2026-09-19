@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T07:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T07:58Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2028,11 +2028,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1135 -> 1136 rows)
+## State as of the last refresh (1136 -> 1137 rows)
 
-- **1136 rows; 967 labels decided; 967 UNSAT; 0 SAT; 0 labels
+- **1137 rows; 968 labels decided; 968 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 967 decided plus 169 superseded
+  A row count is not a decision count: 968 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2050,9 +2050,25 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..966, highest decided 966, holes [].**
-  <!-- SPAN-STATE: closed -->
-  **No span is open.** The twenty-second closed at `31d9565`, filled by
+- **Frontier contiguous 0..966, highest decided 970, holes [967, 968, 969].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
+  holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
+  92 cheaper, while 967, 968 and 969 were still running, so once again one
+  cheap cube jumped the frontier and left three behind at once. **No
+  figures are claimed for it** — duration, commit count and hole chain
+  come from `--spans all` after it closes. bank.py's span guard caught the
+  opening: sixth real firing, third in the open direction.
+
+  **TWO CONSECUTIVE SPANS OPENING THE SAME WAY IS TWO, NOT A PATTERN.**
+  The twenty-second opened identically, on idx 964 at 1073.4 s. Both are
+  the ordinary consequence of a cost spread this block already shows —
+  from 869.5 s to 12894.5 s — meeting four parallel slots. Nothing is
+  claimed about whether wide openings are becoming more common; that
+  would need the opening width of all 87 closed spans, which is not in
+  hand and is not being computed to chase two observations.
+
+  The twenty-second closed at `31d9565`, filled by
   idx 962: **1:57:02, 4 commits, chain `3,3,2,1`, monotone non-increasing
   TRUE on three comparisons**, rank **20 of 87 by duration** and 37 of 87
   by commit count with no tie. It opened at three holes at once when idx
@@ -2078,7 +2094,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **967 of 1949 = 49.6152%**; **982 undecided**. **49% IS CROSSED**, at
+- **968 of 1949 = 49.6665%**; **981 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2128,7 +2144,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **32 decided**, undecided 6 spanning 967..972
+  **33 decided**, undecided [967, 968, 969, 971, 972]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
