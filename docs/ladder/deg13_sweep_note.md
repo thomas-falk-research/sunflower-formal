@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T18:10Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T18:16Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2500,11 +2500,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1167 -> 1168 rows)
+## State as of the last refresh (1168 -> 1169 rows)
 
-- **1168 rows; 999 labels decided; 999 UNSAT; 0 SAT; 0 labels
+- **1169 rows; 1000 labels decided; 1000 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 999 decided plus 169 superseded
+  A row count is not a decision count: 1000 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2522,7 +2522,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..993, highest decided 1000, holes [994, 998].**
+- **Frontier contiguous 0..993, highest decided 1001, holes [994, 998].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-eighth, opened at TWO holes AND IT HAS
   SINCE WIDENED TO THREE.** idx 996 came in at **1371.5 s**, rank 812 of
@@ -2554,6 +2554,15 @@ Task outputs live at
   of them to land will close the block and the span in the same commit,
   which has happened before (idx 968 closed both). **Two are left: 994
   and 998.**
+
+  **A SECOND BLOCK IS NOW OPEN ALONGSIDE IT** — `[13,13,11,8]`, idx
+  1001..1021, 21 members, opened by idx 1001 at 549.4 s while
+  `[13,13,11,9]` still owes 994 and 998. **That is ordinary and not a
+  first**: the note already records `[13,13,12,8]` opening before
+  `[13,13,12,9]` closed, ancestry checked with `git merge-base`. Its 21
+  members are what `SEQ` says they are — the `[13,13,11,*]` run reads 49,
+  38, 28, 21, … — so the size is arithmetic known before the sweep
+  started, not an observation.
 
   **THIS IS THE FIRST OPENING SINCE THE RE-RUN SET CLEARED, AND IT IS
   BACK TO THE ORDINARY SHAPE**: a cheap cube jumping a frontier held up
@@ -2830,7 +2839,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **999 of 1949 = 51.2571%**; **950 undecided**. **50% IS CROSSED**, at
+- **1000 of 1949 = 51.3084%**; **949 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2899,6 +2908,8 @@ Task outputs live at
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
   **26 decided**, undecided [994, 998]
+- `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
+  **1 decided**, undecided 20 spanning 1002..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
