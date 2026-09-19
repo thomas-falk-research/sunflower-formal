@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T17:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T17:33Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2500,11 +2500,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1163 -> 1164 rows)
+## State as of the last refresh (1164 -> 1165 rows)
 
-- **1164 rows; 995 labels decided; 995 UNSAT; 0 SAT; 0 labels
+- **1165 rows; 996 labels decided; 996 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 995 decided plus 169 superseded
+  A row count is not a decision count: 996 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2522,13 +2522,14 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..993, highest decided 996, holes [994, 995].**
+- **Frontier contiguous 0..993, highest decided 996, holes [994].**
   <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — the twenty-eighth, at TWO holes.** idx 996 came in
-  at **1371.5 s**, rank 812 of 995 by cost with only 183 cheaper, while
-  994 and 995 were both still running; 997 and 998 are also running but
-  sit above 996 and are therefore not holes. `ps` confirms all four in
-  flight: 994 at 4152 s, 995 at 1790 s, 997 at 692 s, 998 at 25 s.
+  **A SPAN IS OPEN — the twenty-eighth, opened at TWO holes.** idx 996
+  came in at **1371.5 s**, rank 812 of 995 by cost with only 183
+  cheaper, while 994 and 995 were both still running; 997 and 998 were
+  also running but sit above 996 and were never holes. **idx 995 has
+  since landed at 3317.7 s, leaving 994 alone.** *Those are the states
+  seen at two banks, not the chain.*
 
   **THIS IS THE FIRST OPENING SINCE THE RE-RUN SET CLEARED, AND IT IS
   BACK TO THE ORDINARY SHAPE**: a cheap cube jumping a frontier held up
@@ -2805,7 +2806,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **995 of 1949 = 51.0518%**; **954 undecided**. **50% IS CROSSED**, at
+- **996 of 1949 = 51.1031%**; **953 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2873,7 +2874,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **22 decided**, undecided 6 spanning 994..1000
+  **23 decided**, undecided [994, 997, 998, 999, 1000]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
