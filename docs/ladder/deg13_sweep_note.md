@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T19:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T19:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1957,6 +1957,32 @@ Registration discipline, learned the hard way:
   as a forward test, so this belongs in **neither** the forward-test series
   **nor** the pattern tally. And it still does **not** touch the restart
   case, which is what the method is actually used for.
+  **A SECOND END-TO-END CHECK, n = 2, AND IT IS THE WEAKER OF THE TWO.**
+  Cube **1006** was sampled at 19:41:18Z with `ps` ELAPSED **3390 s**; it
+  landed at **3977.8 s**. Predicted write instant = sample + (3977.8 −
+  3390) = **19:51:05.800Z**; the checkpoint's own mtime is
+  **19:51:05.811999Z**, a delta of **+0.012 s**. The uncertainty budget
+  was written down before the delta was read: the sample instant is
+  stored to the second (±0.5 s), ELAPSED is integer seconds (±0.5 s),
+  the cost carries one decimal (±0.05 s), so **±1.05 s** worst case.
+  **The result is "inside ±1.05 s", NOT "accurate to 12 ms"** — landing
+  that close with inputs quantised to a second is luck, and reading the
+  delta as a precision figure would be inventing three digits the inputs
+  never had. It is weaker than cube 839's check in the way that matters:
+  there, both `/proc` field 22 and the CNF mtime survived to be read at
+  sub-second resolution; here the solver had exited and **slot 22's CNF
+  had already been overwritten by idx 1010**, so the only surviving
+  reference was the banked sample row at 1 s granularity. The
+  non-independence caveat from cube 839 applies unchanged — one machine,
+  one clock, the driver's own accounting on both sides. **No prediction
+  was registered**, so again neither the forward-test series nor the
+  pattern tally.
+  *One quantity here is new and did not need the 1006 arithmetic at all:*
+  idx 1010's CNF (slot 22) closes at 19:51:05.847999Z, **+0.036 s after
+  the row write**. That is a directly measured **driver turnaround** —
+  row written, next cube's CNF closed — and it is the first number this
+  note has on the lag it has repeatedly flagged as "separately untested".
+  **One observation. It does not become a bound.**
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
@@ -2618,6 +2644,19 @@ alongside it.**
   N = 80 / N = 81 figures, which do reproduce. The old figures are kept
   as the record of what was computed then, with the convention stated
   beside them; **what was fixed is the omission, not the numbers.**
+- **Two row waiters armed on the same base, and both fired on one row.**
+  `buldn18uz` was re-armed at 1175 rows at 19:09:40Z; at 19:12:23Z I
+  armed `btcko28zs` at the same 1175 without first running the
+  tail-anchored check on the one already running. Both reported
+  `1175 -> 1176` on idx 1006, two seconds apart. **No harm followed** —
+  the row was banked once — which is exactly why it is worth writing
+  down: a duplicate that happens to be idempotent still means the
+  precondition was never checked, and the next one may not be. It is the
+  **same failure as the duplicate check-in trigger** logged below: create
+  first, look afterwards. **The rule is the same rule — check the
+  tail-anchored `[exited` marker on the existing waiter BEFORE arming
+  another, exactly as the procedure already says, and treat "the summary
+  told me to arm one" as no evidence about what is running.**
 - **A duplicate check-in created without listing what already existed —
   and the duplicate carried state numbers.** On 09-18, believing the
   check-in was a spent one-shot that needed re-arming, I created a second
@@ -2668,11 +2707,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1174 -> 1175 rows)
+## State as of the last refresh (1175 -> 1176 rows)
 
-- **1175 rows; 1006 labels decided; 1006 UNSAT; 0 SAT; 0 labels
+- **1176 rows; 1007 labels decided; 1007 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1006 decided plus 169 superseded
+  A row count is not a decision count: 1007 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2690,7 +2729,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1005, highest decided 1005, holes [].**
+- **Frontier contiguous 0..1006, highest decided 1006, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-NINTH SPAN IS CLOSED**, filled by idx 1004 at 1829.3 s.
   It opened at one hole when idx 1005 came in at 1599.3 s while 1004 was
@@ -3040,7 +3079,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1006 of 1949 = 51.6162%**; **943 undecided**. **50% IS CROSSED**, at
+- **1007 of 1949 = 51.6675%**; **942 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3108,7 +3147,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **5 decided**, undecided 16 spanning 1006..1021
+  **6 decided**, undecided 15 spanning 1007..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
