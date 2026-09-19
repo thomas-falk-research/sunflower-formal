@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T22:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T22:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2921,20 +2921,20 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1181 -> 1182 rows)
+## State as of the last refresh (1183 -> 1184 rows)
 
-*The heading undercounts by one and is left as bank.py wrote it.* The
-rows actually went **1181 → 1183** in `380b306`; bank.py's refresh
-heading only advances when a run finds new rows, and by the time it ran
-here both rows were already at HEAD, so it reported `0 new row(s)` and
-left the heading alone. That is the tool behaving as designed on top of
-the staging error recorded in the error patterns, **not a second bug**,
-and the figure is bank.py's to fix on the next real bank rather than
-mine to type over.
+*For one bank this heading read `1181 -> 1182` while the file held 1183
+rows*, because `380b306` swept in two rows and bank.py only advances the
+heading on a run that finds new ones. It was left alone rather than
+typed over, with the prediction that **bank.py would correct it on the
+next real bank**. It did, at this one. Recorded because the alternative
+— hand-editing a figure the tool owns — is the thing the note forbids,
+and this is the case that shows waiting costs a stale heading for
+exactly one bank.
 
-- **1183 rows; 1014 labels decided; 1014 UNSAT; 0 SAT; 0 labels
+- **1184 rows; 1015 labels decided; 1015 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1014 decided plus 169 superseded
+  A row count is not a decision count: 1015 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2952,7 +2952,7 @@ mine to type over.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1011, highest decided 1015, holes [1012, 1014].**
+- **Frontier contiguous 0..1013, highest decided 1015, holes [1014].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN.** It opened at **one hole** when idx 1013 came in at
   6860.1 s while **1012 was still running**; the frontier is contiguous
@@ -2967,12 +2967,39 @@ mine to type over.
   guess for a span that opens at one hole is `1`, which is precisely the
   guess this note refuses to record in advance whether or not it has
   been right lately. It has been right the last two times; that changes
-  nothing — **and it would already be wrong here**: the hole set has
-  **widened to two**, `[1012, 1014]`, with the highest decided index at
-  1015. That is a **bank-time observation of the file, not a chain
-  entry**; whether the commit sequence records one hole or two is
-  decided by what gets committed when, and the chain is read from
-  `--spans all` on close, never from this line.
+  nothing — **and it was already wrong here**: the hole set **widened to
+  two**, `[1012, 1014]`, before narrowing back to **one**, `[1014]`,
+  when idx 1012 landed at 8214.9 s. Highest decided index 1015, frontier
+  contiguous 0..1013. Those are **bank-time observations of the file,
+  not chain entries**; whether the commit sequence records one hole or
+  two is decided by what gets committed when, and the chain is read from
+  `--spans all` on close, never from this line. **No bank-time state
+  list is being kept**, per the rule added when the twenty-eighth
+  span's proved wrong about the banks — the two states above are
+  recorded as facts about the file at two named banks, not as a
+  sequence.
+
+  **idx 1012 IS THE DEAREST CUBE THE OPEN BLOCK HAS PRODUCED**, at
+  **8214.9 s** against a previous block maximum of 6860.1 s, and rank
+  **179 of 1015** across the whole decided set. It finished at **0.3803
+  of the 21600 s cap**, so it was never near being killed. Block
+  `[13, 13, 11, 8]` now has **14 of 21** decided, costs spanning
+  **549.4 to 8214.9 s** — a spread of **14.9525×** — with median
+  **3877.3 s** and mean **3634.6 s**. **These are descriptive of an open
+  block and will move**; they are not comparable with the closed-block
+  table, which is why they are written here and not added to it.
+
+  **THIS BLOCK, UNUSUALLY, DOES *NOT* MIX MACHINE CONFIGURATIONS — AND A
+  DRAFT OF THE LINE ABOVE SAID IT DID.** The file-wide caveat ("cost
+  figures span three machine configurations, from restarts #41 and #42")
+  is true of the whole decided set and **false of this block**: its first
+  member was committed at `aa1d7c0`, 2026-09-19 18:17:07Z, while restart
+  #43 relaunched at 14:43:51Z and the driver has been pid 2149 ever
+  since. **Every cube in `[13, 13, 11, 8]` ran on one configuration.**
+  The block's min, max, median, mean and spread are therefore on a common
+  basis — the rank **179 of 1015** is not, because that population does
+  span the changes. *A blanket caveat repeated onto a narrower set can be
+  wrong in the narrowing; checked here rather than pasted.*
 
   **THE FILE HELD A HOLE AT 1008 AND NO SPAN WILL EVER RECORD IT.** idx
   1009 landed at 20:16:00Z (3998.2 s) while 1008 was still running; idx
@@ -3332,7 +3359,7 @@ mine to type over.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1014 of 1949 = 52.0267%**; **935 undecided**. **50% IS CROSSED**, at
+- **1015 of 1949 = 52.0780%**; **934 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3497,7 +3524,7 @@ mine to type over.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **13 decided**, undecided 8 spanning 1012..1021
+  **14 decided**, undecided 7 spanning 1014..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
