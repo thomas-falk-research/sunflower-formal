@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T04:22Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T04:26Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -694,21 +694,43 @@ on the commit that absorbed restart #40, whose four re-taken cubes landed
 out of index order. Its `True` rests on a **single comparison**, 2 → 1,
 which is one coin flip; see the partition below.
 
-**ALL SIX SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 85** —
+**The twenty-first span, closed by `83cabc1`.** Duration **5:05:31**
+(5.0919 h), opened after `5b60d18`, **7 broken commits**, hole counts
+`2,2,3,3,2,1,1`, **monotone non-increasing FALSE** — it grew mid-span —
+most holes at once 3 at `d0d5605` `[954, 955, 957]`. It opened when idx 956
+landed above the frontier and closed when idx 954 filled the last hole,
+having been killed twice in between.
+
+**A SUSPICION ABOUT THIS CHAIN WAS CHECKED AND WAS WRONG.** Its flat steps
+(`2,2` and `3,3`) looked like they might be an artifact of the hourly
+sample-log commits I started making today — a process change of mine
+inflating a measured quantity. **It is not.** The walk is
+`git rev-list HEAD -- CHECKPOINT`, so it sees **only commits that touch the
+checkpoint**, and the sample-only commits do not. Verified commit by
+commit: the seven entries are five row banks plus `c48df64` and `a10b892`,
+the two **restart absorbs**, which append header blocks to the checkpoint
+and so enter the walk without banking a row. That has always been true of
+restart absorbs. **No measurement disturbance, and the flat steps are
+real.** Recorded because the check is the point — a worry that turns out
+unfounded is worth the same write-up as one that does not, or only the
+confirmed ones ever get written down.
+
+**ALL SEVEN SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT 86** —
 because a rank against a growing population goes stale each time the
-population grows, and these have now been restated six times for that
+population grows, and these have now been restated seven times for that
 reason alone. **Every rank below moved or was re-derived in the same run**;
 none was carried over with its denominator relabelled, which is the error
 this note recorded against itself at restart #40:
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 23 of 85 | 2 | 47 of 85 (18 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 31 of 85 | 2 | 47 of 85 (18 tied) |
-| seventeenth `75ff84b` | 2:36:20 | **13 of 85** | 8 | **19 of 85** (4 tied) |
-| eighteenth `faa424a` | 1:06:55 | 27 of 85 | 8 | 19 of 85 (4 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 37 of 85 | 1 | 66 of 85 (19 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 17 of 85 | 2 | 47 of 85 (18 tied) |
+| fifteenth `a5172c7` | 1:29:45 | 24 of 86 | 2 | 48 of 86 (18 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 32 of 86 | 2 | 48 of 86 (18 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 14 of 86 | 8 | **19 of 86** (4 tied) |
+| eighteenth `faa424a` | 1:06:55 | 28 of 86 | 8 | 19 of 86 (4 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 38 of 86 | 1 | 67 of 86 (19 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 18 of 86 | 2 | 48 of 86 (18 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 86** | 7 | 24 of 86 (6 tied) |
 
 **"(N tied)" means N OTHER spans share that commit count**, the span
 itself excluded. The previous table's tie figures were one higher for the
@@ -719,14 +741,17 @@ otherwise read a spurious movement, and because the whole point of
 recomputing in one run is that every number in the table is under the same
 definition.
 
-Read through the distribution: **27 of 85 ran longer than an hour** and
-**41 of 85 longer than a second**, so the seventeenth's rank 13 of 85 is
-rank 13 of the 41 that lasted at all, and the twentieth's 17 of 85 is 17
-of that same 41. **More than half the record is spans that did not last a
-second** — 44 of 85, which is 85 minus the 41 above — so a duration rank
-in the middle of 85 is near the bottom of the spans that happened at all.
+Read through the distribution: **28 of 86 ran longer than an hour** and
+**42 of 86 longer than a second**, so the seventeenth's 14 of 86 is rank
+14 of the 42 that lasted at all, and the twenty-first's **8 of 86 is 8 of
+that same 42** — the highest any of these seven has reached. **More than
+half the record is spans that did not last a second** — 44 of 86, which is
+86 minus the 42 above — so a duration rank in the middle of 86 is near the
+bottom of the spans that happened at all. **10 of 86 ran longer than four
+hours and the twenty-first is one of them**, which is the plainest thing
+to say about it: two restarts landed inside it.
 
-The seventeenth and eighteenth **tie on commit count at 19 of 85 while
+The seventeenth and eighteenth **tie on commit count at 19 of 86 while
 differing by 89 minutes on duration** — the same disagreement between the
 two rankings that the sixth span's entry already noted, not a new one.
 **The seventeenth's** two ranks agree far better than the fifteenth's do
@@ -790,8 +815,9 @@ back out of `--spans all`, not recalled:
 | 18 | `faa424a` | 3,2,2,2,1,2,2,1 | 7 | False |
 | 19 | `0362b4f` | 1 | **0** | True — vacuous |
 | 20 | `ca5ce5a` | 2,1 | 1 | True |
+| 21 | `83cabc1` | 2,2,3,3,2,1,1 | 6 | False |
 
-**Eleven True of twenty** — and the breakdown is where the weight goes.
+**Eleven True of twenty-one** — and the breakdown is where the weight goes.
 **Three of the eleven contain zero comparisons and could not have come
 out False** (spans 5, 10 and 19); **six more rest on a single
 comparison** (3, 8, 11, 15, 16 and **20**), which is one coin flip each;
@@ -801,7 +827,7 @@ each; the nineteenth came back True on **zero**. The partition is
 produced by a script that asserts 3 + 6 + 2 = 11 against the True count,
 per the rule below. The same run **re-derived the comparison count and
 the monotone verdict from every chain in the table** and found **no
-mismatch** in the eighteen it could check; span 7's chain is elided in the
+mismatch** in the twenty it could check; span 7's chain is elided in the
 table with `…` and is not re-derivable from it, so it is kept as recorded
 rather than silently counted as verified.
 
@@ -809,16 +835,19 @@ rather than silently counted as verified.
 OBSERVATION.** Its chain is `1`: one commit, one hole count, therefore
 zero comparisons. A single number is non-increasing by definition, so
 `True` there means only that the tool ran — exactly what this note
-already says about spans 5 and 10. The headline has now moved 9/18 →
-10/19 → **11/20** and **the evidence has not moved at all**: the "more
-than one comparison" column is still 2, where it has stood since span 6,
-now **fourteen consecutive spans**. The twentieth is the sixth True to
+already says about spans 5 and 10. The headline moved 9/18 → 10/19 →
+11/20 and has now **fallen back to 11 of 21**, because the twenty-first
+came out **False on six comparisons**. **The evidence has still not
+moved**: the "more than one comparison" column is 2, where it has stood
+since span 6, now **fifteen consecutive spans**. The twenty-first is the
+strongest single result in the table since the eighteenth — six
+comparisons, and it failed. The twentieth is the sixth True to
 rest on a single comparison. **A count of Trues is not evidence of
 monotonicity** and this is exactly why the partition is printed beside it:
 the headline climbs on vacuous and one-flip verdicts while the column that
-would carry weight has not gained a member in fourteen spans.
+would carry weight has not gained a member in fifteen spans.
 
-**Spans 15 through 20 were each added by recomputing the table, not by
+**Spans 15 through 21 were each added by recomputing the table, not by
 appending to it** — a table gains a row only by recomputing every row.
 The re-derivation result itself is stated once, in the partition paragraph
 above, and deliberately not repeated here: writing the same quantity twice
@@ -2002,9 +2031,9 @@ Task outputs live at
   SINGLE comparison**, rank 17 of 85 by duration and 47 of 85 by commit
   count. **The same guard caught that close**, on its first real occasion,
   and then turned up two defects in itself — see the error patterns. The
-  fifteenth through twentieth sit in one table above, **all six ranks
-  recomputed together against the current 85**, none carried over with a
-  relabelled denominator.
+  fifteenth through **twenty-first** sit in one table above, **all seven
+  ranks recomputed together against the current 86**, none carried over
+  with a relabelled denominator.
 - **960 of 1949 = 49.2560%**; **989 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
