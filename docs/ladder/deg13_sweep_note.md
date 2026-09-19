@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T07:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T07:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1670,6 +1670,15 @@ Compute a quantitative claim **before** writing it (78e5127). No "-ish"
 **Read the figure off the tool; do not recall it** (ba6ec65 / beaa0d3). A
 windowed `--spans` walk is not the record.
 
+**Never write "this row" or "this commit" in the state section.** That
+section is rewritten by bank.py on every bank, so a deictic reference
+silently re-points at whatever landed most recently. "The twenty-first
+CLOSED with this row" and then "the twenty-second CLOSED with this row"
+both went stale one row later, and both were caught by reading the staged
+diff rather than by re-reading the sentence. **Name the index or the
+commit hash** — the state section describes a moment, and only fixed
+identifiers survive being rewritten around.
+
 **Never write an identifier you have not read from the tool** (`bce9af0`).
 Commit hashes, pids, indices and timestamps are **read**, never composed.
 If the identifier does not exist yet — because the commit has not been
@@ -2019,11 +2028,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1134 -> 1135 rows)
+## State as of the last refresh (1135 -> 1136 rows)
 
-- **1135 rows; 966 labels decided; 966 UNSAT; 0 SAT; 0 labels
+- **1136 rows; 967 labels decided; 967 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 966 decided plus 169 superseded
+  A row count is not a decision count: 967 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2041,17 +2050,17 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..965, highest decided 965, holes [].**
+- **Frontier contiguous 0..966, highest decided 966, holes [].**
   <!-- SPAN-STATE: closed -->
-  **No span is open. The twenty-second CLOSED with this row**, idx 962
-  filling the last hole. It opened at **three holes at once** when idx
+  **No span is open.** The twenty-second closed at `31d9565`, filled by
+  idx 962: **1:57:02, 4 commits, chain `3,3,2,1`, monotone non-increasing
+  TRUE on three comparisons**, rank **20 of 87 by duration** and 37 of 87
+  by commit count with no tie. It opened at three holes at once when idx
   964 came in at 1073.4 s while 961, 962 and 963 were all still running,
-  then closed 963 → 961 → 962. **Its figures are NOT in this commit** —
-  `--spans all` reads the commit sequence and cannot see a span until the
-  commit closing it exists, so duration, commit count and hole chain, and
-  **every quoted span rank recomputed against the new N in one run**, go
-  in the next commit. bank.py's span guard caught the close: fifth real
-  firing, third in the close direction.
+  then closed 963 → 961 → 962. **It is the third member of the "more than
+  one comparison" column**, which had not moved since span 6. bank.py's
+  span guard caught the close: fifth real firing, third in the close
+  direction.
 
   The twenty-first closed at `83cabc1`, filled by idx 954: **5:05:31, 7
   commits, chain `2,2,3,3,2,1,1`, monotone non-increasing FALSE on six
@@ -2069,7 +2078,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **966 of 1949 = 49.5639%**; **983 undecided**. **49% IS CROSSED**, at
+- **967 of 1949 = 49.6152%**; **982 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -2119,7 +2128,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **31 decided**, undecided 7 spanning 966..972
+  **32 decided**, undecided 6 spanning 967..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
