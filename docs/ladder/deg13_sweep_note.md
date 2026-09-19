@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T16:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T16:46Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -335,7 +335,7 @@ integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **eight CLOSED**, **nine ABANDONED**, **ten COMPLETE**, **eleven OPEN**
+## Re-run sets — **nine CLOSED** (one–eight and eleven), **set nine ABANDONED**, **set ten COMPLETE but undivided**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -350,6 +350,7 @@ corrected at 060fb26 by checking it against published data).
 | six | idx-832 commit | 4 | 0.5678 | 4.6436× |
 | seven | idx-907/909 commit | 4 | 0.5962 | 2.0116× |
 | eight | idx-953 commit | 4 | 0.6766 | 4.3988× |
+| eleven | idx-992 commit | 4 | **0.87834** | 4.5244× |
 
 **SET SIX IS CLOSED**, by idx 832 — the same row that closed the eleventh
 span. It opened at restart #38 with idx **831, 832, 833, 834**, all four
@@ -541,27 +542,68 @@ than "no machine change"**: `cpu MHz` is a nominal field, nothing here
 benchmarks the host, and six identical fields is what the eight readings
 before #41 also looked like.
 
-**THREE MEMBERS LANDED**, recorded as raw seconds with **no ratio**:
+**SET ELEVEN IS CLOSED**, by the commit that banked idx 992 — all four
+members landed, the obstruction stated at the opening stayed absent, and
+the ratio is therefore computed, as the opening said the close would
+decide:
 
-| idx | discarded | re-run | re-run − discarded |
+| idx | discarded | re-run | ratio |
 |---|---|---|---|
-| 991 | 2625.1 | 2486.8 | **−138.3** |
-| 990 | 3079.4 | 4392.4 | **+1313.0** |
-| 989 | 7155.7 | 6754.0 | **−401.7** |
+| 989 | 7155.7 | 6754.0 | **1.0595** |
+| 990 | 3079.4 | 4392.4 | 0.7011 |
+| 991 | 2625.1 | 2486.8 | **1.0556** |
+| 992 | 1673.9 | 7148.3 | 0.2342 |
 
-**THEY DO NOT AGREE IN DIRECTION.** Two of the three re-ran faster than
-the work they lost and one re-ran **slower, by 1313.0 s — 42.6% above
-its discarded time**. The obvious reading, that a re-run should take
-about as long as the attempt it replaces since it is the same cube from
-the same start, is contradicted by one of the three observations in
-hand. Cube cost is not a fixed quantity a solver rediscovers:
-cryptominisat is randomised, and **its own run-to-run spread on
-identical input is not measured anywhere in this file**, so there is no
-baseline against which +1313.0 s is either ordinary or remarkable.
-**One member still running (idx 992).** *(The numbers are right there
-and dividing them is one keystroke; that is exactly why the rule was
-written down before they existed — and the second member is why it was
-worth writing.)*
+min 0.2342, **median 0.87834**, mean 0.7626, max 1.0595, spread 4.5244×.
+
+*The median is computed from the UNROUNDED ratios: 0.7010745833… and
+1.0556136400… give 0.878344…, which is 0.87834 to five places. The
+midpoint of the two **rounded** values printed above, 0.7011 and 1.0556,
+is 0.87835 — different in the fifth place. Set five's entry already
+quotes its median to five places because it "rounds ambiguously at
+four"; this one shows the neighbouring trap, where rounding the inputs
+first moves the answer. The table prints four places and the median is
+derived from full precision.*
+
+**TWO OF THE FOUR RATIOS EXCEED 1.0, AND THE EXPLANATION THIS NOTE HAS
+CARRIED FOR THAT SINCE SET FIVE DOES NOT WORK.** Set five's entry says of
+its 1.0805: *"No mechanism is proposed and none is needed: the ratio
+depends on when the kill lands relative to a cube's total cost, kills
+land uniformly in time."* **Kill timing cannot produce a ratio above 1.**
+If a cube had a fixed cost C, the discarded attempt was killed before
+finishing so it ran t < C, and the re-run takes exactly C, giving
+t/C < 1 **strictly, wherever the kill lands**. A ratio above 1 is
+therefore not a fact about kill timing at all — it is proof that **the
+same cube, same solver, same flags, same machine configuration, does not
+take the same time twice.**
+
+**And it gives a lower bound on how much it varies.** idx 989 ran
+**7155.7 s without finishing** and then completed in **6754.0 s**: the
+two runs differ by **at least 401.7 s, 5.9%** of the completed run. idx
+991 ran 2625.1 s without finishing and completed in 2486.8 s: **at least
+138.3 s, 5.6%**. Both are lower bounds, because the killed run's true
+cost is censored — it needed *more* than what it had spent.
+**cryptominisat's run-to-run spread on identical input was described in
+this file as "not measured anywhere"; it now has a floor of about 6% on
+two cubes.** That is two cubes, not a distribution, and no upper bound
+is available from censored data.
+
+**WHAT THAT COSTS THE RATIO.** `discarded / re-run` was read as the
+fraction of a cube's work that a restart threw away. Under a fixed cost
+that reading is exact. Under a cost that varies by at least 6%, the
+denominator is one draw rather than the quantity, so the ratio carries
+that noise on top of the kill-timing spread it was designed to show.
+**The nine medians are still comparable to each other** — every set is
+built the same way — but none of them is "the fraction lost" to better
+than the solver's own variance.
+
+**0.87834 is the highest of the nine medians** (0.3594, 0.4291, 0.5026,
+0.2125, 0.72115, 0.5678, 0.5962, 0.6766, 0.87834), displacing set five's
+0.72115. **That is worth nothing and the reason is already written in
+set five's entry**: a maximum exists in every list, and this one was
+singled out because it came out highest. Recorded only so the next
+reader does not find set five still labelled highest and think the
+figure was never revisited.
 
 **SET TEN IS COMPLETE — AND NOTHING IS DIVIDED.** Restart #42 killed idx
 **954, 955, 957, 959** and the relaunch re-took those four at launch +
@@ -2458,11 +2500,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1160 -> 1161 rows)
+## State as of the last refresh (1161 -> 1162 rows)
 
-- **1161 rows; 992 labels decided; 992 UNSAT; 0 SAT; 0 labels
+- **1162 rows; 993 labels decided; 993 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 992 decided plus 169 superseded
+  A row count is not a decision count: 993 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2480,7 +2522,7 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..991, highest decided 991, holes [].**
+- **Frontier contiguous 0..992, highest decided 992, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-SEVENTH SPAN IS CLOSED**, filled by idx 989 at 6754.0 s.
   It opened at **two holes** when idx 991 came in at 2486.8 s while 989
@@ -2743,7 +2785,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **992 of 1949 = 50.8979%**; **957 undecided**. **50% IS CROSSED**, at
+- **993 of 1949 = 50.9492%**; **956 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2798,7 +2840,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **19 decided**, undecided 9 spanning 992..1000
+  **20 decided**, undecided 8 spanning 993..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
