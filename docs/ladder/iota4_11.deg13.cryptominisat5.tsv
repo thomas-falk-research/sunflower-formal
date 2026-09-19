@@ -11382,3 +11382,76 @@ g=11 [13, 13, 11, 9, 13, 13, 13, 12, 12, 12, 7]	UNSAT	5829.2
 g=11 [13, 13, 11, 9, 13, 13, 13, 12, 12, 10, 9]	UNSAT	7545.9
 g=11 [13, 13, 11, 9, 13, 13, 13, 12, 12, 11, 8]	UNSAT	8005.6
 g=11 [13, 13, 11, 9, 13, 13, 13, 12, 11, 11, 9]	UNSAT	8039.0
+#
+# RESTART #43 -- container restarted 2026-09-19T14:42:02.098896742Z.
+#
+# btime UNCHANGED at 1789782298 (boot 2026-09-19T01:44:58Z), the same boot
+# that #42 left behind, so this is a CONTAINER TEARDOWN, NOT a host reboot
+# -- the first teardown since the two reboots at #41 and #42.  Only btime
+# distinguishes the two cases and it was read, not assumed.
+#
+# MACHINE SPEC RE-READ AND IDENTICAL TO #42 ON ALL SIX FIELDS: nproc 4,
+# "Intel(R) Xeon(R) Processor @ 2.10GHz", cpu MHz 2100.000, cache size
+# 266240 KB, MemTotal 16481980 kB, kernel 6.18.44-fc-v37.  This is the
+# FIRST REPEAT of the #42 configuration.  One repeat is one reading, not a
+# promise: eight identical readings preceded #41 and the ninth and tenth
+# both broke.  Costs still are NOT on a common basis across the series as
+# a whole, because #41 and #42 remain inside it; NO SPEED RATIO IS
+# ESTIMATED, in either direction.
+#
+# NO ROWS WERE LOST.  1158 real data rows before and after, tree == HEAD
+# == origin at 50104a2.
+#
+# BOTH [killed] MARKERS CARRY THE SAME NANOSECOND, difference 0 ns, read
+# by one script from the two task-output files.  8 agreements (#34, #35,
+# #37, #38, #39, #41, #42, #43) against 2 disagreements (#36, #40).  Note
+# both markers are written by the SAME restart handler, so this is not two
+# independent clocks agreeing and must not be read as one.
+#
+# DISCARDED WORK, CNF-mtime method, glob filtered by pid 388 AND requiring
+# "-seq-c" (184 CNFs in /tmp at the time; exactly 4 carried the dead pid;
+# no startup-class CNF appeared, as at #42 and unlike #41):
+#
+#   idx 989  started 12:42:46.382Z   7155.7 s  1.9877 h  0.3313 of cap  49.2% of loss
+#   idx 990  started 13:50:42.659Z   3079.4 s  0.8554 h  0.1426 of cap  21.2%
+#   idx 991  started 13:58:17.011Z   2625.1 s  0.7292 h  0.1215 of cap  18.1%
+#   idx 992  started 14:14:08.211Z   1673.9 s  0.4650 h  0.0775 of cap  11.5%
+#
+#   14534.1 s wall = 4.0373 h.
+#
+#   *** A POINT, NOT A BRACKET: 3.9984 CPU-HOURS, RANK 9 OF 20. ***  Every
+#   in-flight cube had a committed ratio sample, the second restart running
+#   for which that is true.  Ratios 0.9929, 0.9895, 0.9897, 0.9823 read
+#   from docs/ladder/cpu_ratio_samples.tsv at 14:16:01Z.  The rank is 9 at
+#   BOTH ends of the wall/CPU interval [3.9984, 4.0373], so it does not
+#   depend on the ratio correction at all.
+#
+#   SHARES 49.2, 21.2, 18.1, 11.5 -- spread 37.7 points, the widest of the
+#   SIX breakdowns in hand (#38 through #43; #41's 36.4 was the previous
+#   widest).  NO FLATNESS RANKING IS CLAIMED over the series: the
+#   breakdowns for the earlier thirteen restarts are not in hand.  A share
+#   is a description of where one kill landed relative to four independent
+#   start times -- here idx 989 had been running 1.99 h and idx 992 only
+#   0.47 h -- and is NOT a property of the cubes.
+#
+# RE-RUN SET ELEVEN OPENS with idx 989, 990, 991, 992, all four re-taken
+# at launch + 60.7 s with their CNFs written within 4.0 ms of each other,
+# so their re-run clocks are directly comparable.  UNLIKE SETS NINE AND
+# TEN, NO MACHINE CHANGE IS RECORDED INSIDE THIS SET: the spec reads
+# identical on both sides and btime did not move.  "No recorded change" is
+# weaker than "no change" -- cpu MHz is a nominal field and nothing here
+# benchmarks the host -- but the confound that abandoned set nine and
+# declined to divide set ten is absent.  None of the four carries a prior
+# kill, so the denominator would be one run each.  WHETHER A RATIO IS
+# COMPUTED IS DECIDED AT THE CLOSE, NOT NOW, and it is recorded here that
+# the obstruction which blocked it twice does not apply this time.
+#
+# RE-TAKE LAG 60.7 s.  Full series, nine observations: 41 (#35), 60.7
+# (#36), 61.0 (#37), 60.6 (#38), 60.7 (#39), 60.6 (#40), 60.9 (#41), 61.7
+# (#42), 60.7 (#43).  SEVEN sit inside 60.6-61.0 and TWO outside it, 41
+# and 61.7.  #43 landing back inside does not retract #42: a band a point
+# can leave and re-enter describes nine numbers and is not a law, which is
+# what this note said when it held six of seven.
+#
+# RELAUNCHED: driver pid 2149, launched 2026-09-19T14:43:51.120000Z, read
+# from /proc/2149/stat field 22 against btime in the same script.
