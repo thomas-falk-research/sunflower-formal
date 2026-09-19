@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T21:31Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T22:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2887,11 +2887,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1180 -> 1181 rows)
+## State as of the last refresh (1181 -> 1182 rows)
 
-- **1181 rows; 1012 labels decided; 1012 UNSAT; 0 SAT; 0 labels
+- **1182 rows; 1013 labels decided; 1013 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1012 decided plus 169 superseded
+  A row count is not a decision count: 1013 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2909,8 +2909,23 @@ Task outputs live at
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1011, highest decided 1011, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1011, highest decided 1013, holes [1012].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN.** It opened at **one hole** when idx 1013 came in at
+  6860.1 s while **1012 was still running**; the frontier is contiguous
+  0..1011 while the highest decided index is 1013. bank.py's span guard
+  caught the opening: **twentieth real firing, tenth in the open
+  direction** — derived from the last firing this note records
+  (nineteenth, tenth in the close direction), so 19 = 10 closes + 9
+  opens and this one makes 10 and 10; it is not an independent count.
+  **NO FIGURES ARE WRITTEN FOR IT AND NO CHAIN IS GUESSED** —
+  duration, rank, commit count and hole trajectory all come from
+  `--spans all` run *after* the closing commit exists, and the obvious
+  guess for a span that opens at one hole is `1`, which is precisely the
+  guess this note refuses to record in advance whether or not it has
+  been right lately. It has been right the last two times; that changes
+  nothing.
+
   **THE FILE HELD A HOLE AT 1008 AND NO SPAN WILL EVER RECORD IT.** idx
   1009 landed at 20:16:00Z (3998.2 s) while 1008 was still running; idx
   1008 landed at 20:18:21Z (4281.8 s); **both were banked in one
@@ -3269,7 +3284,7 @@ Task outputs live at
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1012 of 1949 = 51.9241%**; **937 undecided**. **50% IS CROSSED**, at
+- **1013 of 1949 = 51.9754%**; **936 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3297,8 +3312,55 @@ Task outputs live at
   was written at the 51% crossing. **Nothing is predicted about whether
   the counter will be observed sitting on 1013**: it stops there only if
   a commit happens to catch it, which is a fact about banking cadence,
-  and the seventh trap was missed for exactly that reason — no commit
-  ever carried "916 of 1949".
+  and the trap at 916 was missed for exactly that reason — no commit
+  subject ever carried it.
+
+  **52% — THE COUNTER LANDED EXACTLY ON THE TRAP, AND THIS TIME A COMMIT
+  CAUGHT IT.** idx 1013 took the decided count to **1013 = 51.9754%**,
+  which rounds to 52.0 while sitting **below** 52, so **52% is NOT
+  crossed**. It is the **eleventh rounds-up-but-below figure** the
+  counter has reached — 40.9954%, 41.9702%, 42.9964%, 43.9713%,
+  44.9974%, 45.9723%, 46.9985%, 47.9733%, 48.9995%, 49.9743%,
+  **51.9754%** — eleven and not twelve because **51% has no trap at
+  all**, one of the two exceptions (k = 2 and k = 51) that the
+  "every threshold" claim was corrected to at the sixth instance.
+  Shortfall **0.024628 pp**, **tightness rank 48 of 97** by shortfall —
+  the middle of the pack, not a tight one; the tightest in the whole run
+  is k = 49 at 0.000513 pp and the loosest is k = 53 at 0.049769 pp, both
+  computed across all 97 rather than recalled.
+
+  **NINE OF THE ELEVEN TRAP VALUES HAD BEEN CAUGHT BY A COMMIT SUBJECT;
+  THIS BANK MAKES TEN.** Checked by script over every commit subject in
+  the branch, counting a trap as caught if a subject carries **either**
+  the `N of 1949` form **or** the percentage form. Only **916 =
+  46.9985%** is missed, and it is missed in both forms — the counter
+  passed through it between commits. That is a fact about banking
+  cadence, not about the sweep, and it is the reason nothing was
+  predicted here about being *observed* on the trap.
+
+  **THE SCRIPT THAT CHECKED THIS WAS WRONG TWICE BEFORE IT WAS RIGHT, AND
+  THE NOTE WAS RIGHT BOTH TIMES.** First pass used `git log --grep`,
+  which matches the **whole message**, and reported two commits carrying
+  "916 of 1949" against the note's claim of none — both were bodies, one
+  of them written in this very session. Second pass restricted to
+  subjects and reported **896 uncaught**, against the note's record that
+  it was caught at `d6e6359`; that subject reads
+  `896 = 45.9723%, NOT crossed`, so the `N of 1949` pattern simply does
+  not match it. **Two different predicate errors, both of which would
+  have contradicted the note, and the note was correct in both.** These
+  are the **first two instances in this session** of the pattern the note
+  already names from the 99-of-99 percent-threshold case in an earlier
+  one; no running total across sessions is claimed here, because none
+  has been counted. The standing rule held: read the note's definition
+  before believing new output. The definition here was **"subject"**, in
+  whichever of two phrasings the subject happened to use — and a
+  predicate that encodes only one of them is not a check of that
+  definition.
+
+  Next after this: **52% still needs 1014 = 52.0267%**, and then **53%
+  needs `ceil(0.53 × 1949) = 1033` = 53.0015%, trap at 1032 =
+  52.9502%** — both from the script, written before the counter gets
+  there, which is bookkeeping and not a prediction.
   **CROSSING HALF IS NOT HALF A RESULT**: deg(0)=13 is UNSAT only when
   **all 1949** are, and 975 UNSATs say nothing about the other 974.
   **COST FIGURES SPAN THREE MACHINE CONFIGURATIONS**, from restarts #41
@@ -3346,7 +3408,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **11 decided**, undecided 10 spanning 1012..1021
+  **12 decided**, undecided 9 spanning 1012..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
