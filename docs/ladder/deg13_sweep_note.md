@@ -1557,13 +1557,13 @@ into a count containing successes.
 | `6ec69dc` | NULL | 0.1235 | — |
 | `73fcf31` | **MISS** | 0.0245 | idx 760 |
 | `aea7189` | **MISS** | 0.4130 | idx 765 |
-| *(open)* | **PENDING** | 0.00087 | the next row after idx 1007 |
+| `cb54e7a` | **PENDING** | 0.00087 | the next row after idx 1007 |
 
 **Four registered, zero hits, THREE RESOLVED — and one is open.** The
 0.5019 counter-caveat below is computed over the **three resolved** tests
 and does not move until the fourth resolves.
 
-**FT-4, registered here before the outcome exists.** *Prediction:* at the
+**FT-4, registered at `cb54e7a` before the outcome exists.** *Prediction:* at the
 next row landing, `(newest CNF st_mtime_ns) − (checkpoint st_mtime_ns)`
 will be within **±1000 ns of 36 000 002 ns**. *Operationally, so the
 test cannot be reinterpreted afterwards:* immediately after the waiter
