@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T10:13Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T10:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2288,11 +2288,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1146 -> 1147 rows)
+## State as of the last refresh (1147 -> 1148 rows)
 
-- **1147 rows; 978 labels decided; 978 UNSAT; 0 SAT; 0 labels
+- **1148 rows; 979 labels decided; 979 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 978 decided plus 169 superseded
+  A row count is not a decision count: 979 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2310,7 +2310,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..977, highest decided 977, holes [].**
+- **Frontier contiguous 0..978, highest decided 978, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE TWENTY-THIRD SPAN IS CLOSED**, filled by idx 968 — the same row
   that closed block `[13, 13, 11, 10]` at 38 of 38. It opened at **three
@@ -2383,7 +2383,7 @@ Task outputs live at
   **in the prose beside that table** that had been stale since N = 85 —
   written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **978 of 1949 = 50.1796%**; **971 undecided**. **50% IS CROSSED**, at
+- **979 of 1949 = 50.2309%**; **970 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2438,7 +2438,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **5 decided**, undecided 23 spanning 978..1000
+  **6 decided**, undecided 22 spanning 979..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
