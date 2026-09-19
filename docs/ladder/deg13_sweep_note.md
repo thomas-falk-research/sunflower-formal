@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T09:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T09:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1839,6 +1839,16 @@ alongside it.**
   matches nothing. **THE DIFF IS READ UNFILTERED.** The control that caught
   four stale figures was itself running blind to the lines those figures
   live on.
+  **The banned filter was typed a THIRD time on 09-19**, in the form
+  `git diff --cached | grep -E '^[+-]' | grep -v '^[+-][+-]'`. It dropped
+  exactly the lines it always drops: the rows/decided bullet and the
+  Frontier line, both of which begin `- **` and so match the exclusion.
+  Caught because the output was implausibly short for a bank, **not**
+  because the ban was remembered — the same way it was caught the second
+  time. Three instances now, each with a different pipeline, which is
+  the point: **the ban is on piping the staged diff AT ALL**, not on
+  any particular filter. `git diff --cached` alone.
+
   **The banned filter was typed again at `54b8d45`**, long after this entry
   was written. Its output did drop lines — the `1059 rows; 890 labels
   decided` bullet among them — and it was caught because the output looked
@@ -2069,11 +2079,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1144 -> 1145 rows)
+## State as of the last refresh (1145 -> 1146 rows)
 
-- **1145 rows; 976 labels decided; 976 UNSAT; 0 SAT; 0 labels
+- **1146 rows; 977 labels decided; 977 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 976 decided plus 169 superseded
+  A row count is not a decision count: 977 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -2091,7 +2101,7 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..967, highest decided 976, holes [968].**
+- **Frontier contiguous 0..967, highest decided 977, holes [968].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-third, and it also opened at THREE
   holes.** idx 970 came in at 869.5 s, rank 876 of 968 by cost with only
@@ -2145,7 +2155,7 @@ Task outputs live at
   fifteenth through **twenty-second** sit in one table above, **all eight
   ranks recomputed together against the current 87**, none carried over
   with a relabelled denominator.
-- **976 of 1949 = 50.0770%**; **973 undecided**. **50% IS CROSSED**, at
+- **977 of 1949 = 50.1283%**; **972 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -2202,7 +2212,7 @@ Task outputs live at
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
   **37 decided**, undecided [968]
 - `[13, 13, 11, 9]` idx 973..1000: **28 members**,
-  **4 decided**, undecided 24 spanning 977..1000
+  **5 decided**, undecided 23 spanning 978..1000
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
