@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T23:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T23:56Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2969,7 +2969,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1187 -> 1188 rows)
+## State as of the last refresh (1188 -> 1189 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -2980,9 +2980,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1188 rows; 1019 labels decided; 1019 UNSAT; 0 SAT; 0 labels
+- **1189 rows; 1020 labels decided; 1020 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1019 decided plus 169 superseded
+  A row count is not a decision count: 1020 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3000,7 +3000,7 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1016, highest decided 1021, holes [1017, 1018, 1020].**
+- **Frontier contiguous 0..1016, highest decided 1022, holes [1017, 1018, 1020].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIRST, AND IT OPENED AT TWO HOLES AT
   ONCE.** idx 1019 came in at **1391.5 s** while **both 1017 and 1018
@@ -3044,6 +3044,26 @@ exactly one bank.
   forecast, and it is recorded as confirmed for the same reason it was
   hedged: the slice order is the driver's, read from the census, never
   predicted.*
+
+  **A SECOND BLOCK IS NOW OPEN: `[13, 13, 11, 7]`, idx 1022..1036, 15
+  members, 1 decided.** idx 1022 took it at **731.2 s**, rank 941 of
+  1020 with 79 cheaper. Two blocks are open at once because
+  `[13, 13, 11, 8]` still has three cubes in flight; the census lists
+  both and **bank.py owns that region** — it went from one open block to
+  two without a hand edit.
+
+  **ITS SIZE WAS ALREADY DETERMINED, AND THE CHECK IS COMBINATORICS NOT
+  DATA.** The note's standing claim is that each `[13,c1,c2,*]` run's
+  block sizes are a contiguous slice of
+  `129, 104, 82, 65, 49, 38, 28, 21, 15, 11, 7, 5, 3, 2, 1, 1` and that
+  dropping `c2` by one shifts the start by exactly two. Recomputed from
+  `SEQ` at this bank: `[13,13,13,*]` is 14 blocks starting at position
+  **0**, `[13,13,12,*]` is 13 starting at **2**, `[13,13,11,*]` is 12
+  starting at **4** — `[49, 38, 28, 21, 15, 11, 7, 5, 3, 2, 1, 1]`. So
+  **15 is what follows 21**, and no observation was needed to know it.
+  *This is a structural claim confirming itself, not new evidence about
+  anything: the sizes come from the cube construction and would be the
+  same if no cube had ever been solved.*
 
   **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
   commit count and hole trajectory all come from `--spans all` run
@@ -3512,7 +3532,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1019 of 1949 = 52.2832%**; **930 undecided**. **50% IS CROSSED**, at
+- **1020 of 1949 = 52.3345%**; **929 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3678,6 +3698,8 @@ exactly one bank.
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
   **18 decided**, undecided [1017, 1018, 1020]
+- `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
+  **1 decided**, undecided 14 spanning 1023..1036
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
