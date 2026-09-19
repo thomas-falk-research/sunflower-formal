@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T22:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T23:08Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2921,7 +2921,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1183 -> 1184 rows)
+## State as of the last refresh (1184 -> 1185 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -2932,9 +2932,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1184 rows; 1015 labels decided; 1015 UNSAT; 0 SAT; 0 labels
+- **1185 rows; 1016 labels decided; 1016 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1015 decided plus 169 superseded
+  A row count is not a decision count: 1016 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -2952,41 +2952,51 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1013, highest decided 1015, holes [1014].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN.** It opened at **one hole** when idx 1013 came in at
-  6860.1 s while **1012 was still running**; the frontier is contiguous
-  0..1011 while the highest decided index is 1013. bank.py's span guard
-  caught the opening: **twentieth real firing, tenth in the open
-  direction** — derived from the last firing this note records
-  (nineteenth, tenth in the close direction), so 19 = 10 closes + 9
-  opens and this one makes 10 and 10; it is not an independent count.
-  **NO FIGURES ARE WRITTEN FOR IT AND NO CHAIN IS GUESSED** —
-  duration, rank, commit count and hole trajectory all come from
-  `--spans all` run *after* the closing commit exists, and the obvious
-  guess for a span that opens at one hole is `1`, which is precisely the
-  guess this note refuses to record in advance whether or not it has
-  been right lately. It has been right the last two times; that changes
-  nothing — **and it was already wrong here**: the hole set **widened to
-  two**, `[1012, 1014]`, before narrowing back to **one**, `[1014]`,
-  when idx 1012 landed at 8214.9 s. Highest decided index 1015, frontier
-  contiguous 0..1013. Those are **bank-time observations of the file,
-  not chain entries**; whether the commit sequence records one hole or
-  two is decided by what gets committed when, and the chain is read from
-  `--spans all` on close, never from this line. **No bank-time state
-  list is being kept**, per the rule added when the twenty-eighth
-  span's proved wrong about the banks — the two states above are
-  recorded as facts about the file at two named banks, not as a
-  sequence.
+- **Frontier contiguous 0..1015, highest decided 1015, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTIETH SPAN IS CLOSED**, filled by idx 1014 at 7948.8 s.
+  It opened at **one hole** when idx 1013 came in at 6860.1 s while 1012
+  was still running, **widened to two** when idx 1015 landed at 2678.0 s
+  and jumped over 1014, **narrowed back to one** when 1012 came in at
+  8214.9 s, and closed on 1014. From the opening row landing to the
+  closing row landing was **50 minutes 42 seconds** (0.8450 h), split
+  17 m 10 s then 33 m 32 s by the narrowing; 1014 cost **1088.7 s more**
+  than 1013. **Those are row-landing times as the waiters reported them,
+  with up to 20 s of poll lag each, and they are NOT the span's
+  duration** — that is measured between commit timestamps and comes from
+  `--spans all`.
 
-  **idx 1012 IS THE DEAREST CUBE THE OPEN BLOCK HAS PRODUCED**, at
-  **8214.9 s** against a previous block maximum of 6860.1 s, and rank
-  **179 of 1015** across the whole decided set. It finished at **0.3803
-  of the 21600 s cap**, so it was never near being killed. Block
-  `[13, 13, 11, 8]` now has **14 of 21** decided, costs spanning
-  **549.4 to 8214.9 s** — a spread of **14.9525×** — with median
-  **3877.3 s** and mean **3634.6 s**. **These are descriptive of an open
-  block and will move**; they are not comparable with the closed-block
+  **NO FIGURES AND NO HOLE CHAIN ARE WRITTEN HERE YET.** Duration, rank,
+  commit count and the chain come from `--spans all` run *after* the
+  closing commit exists, with every quoted span rank in this file
+  recomputed against the new N in the same pass. **No bank-time state
+  list is kept**, per the rule added when the twenty-eighth's proved
+  wrong about the banks — the widening and narrowing above are named
+  facts about the file at named banks, not a sequence and not the chain.
+  **The `1` guess this note refuses to write in advance is already known
+  to be wrong here, and that is verified rather than inferred**: walking
+  the commits that touch the checkpoint, `7e1d39c` had no hole,
+  `380b306` carried **two** (`[1012, 1014]`) and `8c262fb` carried one
+  (`[1014]`), so a two-hole state did reach the commit sequence and the
+  chain cannot be `1`. **The chain itself is still not written here** —
+  knowing one entry is not knowing the sequence, and `--spans all` is
+  the authority. First time in three spans the guess would have failed;
+  the refusal was worth the same when it would have succeeded.
+  bank.py's span guard caught the close: **twenty-first real firing,
+  eleventh in the close direction.**
+
+  **idx 1012 IS STILL THE DEAREST CUBE THE OPEN BLOCK HAS PRODUCED**, at
+  **8214.9 s** — idx 1014's 7948.8 s came within 266.1 s of it and did
+  not displace it — against a block maximum of 6860.1 s before either.
+  Both finished far inside the cap, at **0.3803** and **0.3680** of
+  21600 s. Ranks recomputed at **N = 1016**: idx 1012 is **179 of 1016**
+  (837 cheaper) and idx 1014 is **186 of 1016** (830 cheaper).
+  Block `[13, 13, 11, 8]` now has **15 of 21** decided, costs spanning
+  **549.4 to 8214.9 s** — a spread of **14.9525×**, unchanged because
+  neither endpoint moved — with median **3977.8 s** and mean
+  **3922.2 s**. *At 14 of 21 the median and mean read 3877.3 and 3634.6;
+  both moved on one row.* **These are descriptive of an OPEN block and
+  will keep moving**; they are not comparable with the closed-block
   table, which is why they are written here and not added to it.
 
   **THIS BLOCK, UNUSUALLY, DOES *NOT* MIX MACHINE CONFIGURATIONS — AND A
@@ -3359,7 +3369,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1015 of 1949 = 52.0780%**; **934 undecided**. **50% IS CROSSED**, at
+- **1016 of 1949 = 52.1293%**; **933 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3524,7 +3534,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **14 decided**, undecided 7 spanning 1014..1021
+  **15 decided**, undecided 6 spanning 1016..1021
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
