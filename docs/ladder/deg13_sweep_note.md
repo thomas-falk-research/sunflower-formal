@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T02:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T03:33Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -430,16 +430,41 @@ no single restart block shows it:
 | idx | #41 | #42 | total | state |
 |---|---|---|---|---|
 | 954 | 6853.6 | 3797.3 | **10650.9 s** (2.9586 h) | undecided |
-| 955 | 5752.3 | 3797.3 | 9549.6 s (2.6527 h) | undecided |
+| 955 | 5752.3 | 3797.3 | 9549.6 s (2.6527 h) | **decided at 6290.1 s** |
 | 957 | 5415.5 | 3797.3 | 9212.8 s (2.5591 h) | undecided |
 | 958 | 215.7 | — | 215.7 s | decided at 3154.6 s |
 | 959 | — | 642.7 | 642.7 s | undecided |
 
-30271.7 s = 8.4088 h spent on five cubes, one of which is decided. **The
+30271.7 s = 8.4088 h **discarded** on five cubes, **two** of which are now
+decided (958 and 955). **The
 21600 s cap is PER ATTEMPT, not cumulative**, so none of these is near a
 limit — a cube can be killed indefinitely without ever tripping it, and
 idx 954 at 2.96 h of discarded time across two kills is the current
 demonstration.
+
+**idx 955 HAS LANDED, AND IT IS WORTH LOOKING AT WHAT IT COST.** It ran
+three times, on three different machine configurations, and only the third
+produced a row:
+
+| attempt | driver | machine | seconds | outcome |
+|---|---|---|---|---|
+| 1 | pid 21172 | A — @2.10GHz, containers 1–8 | 5752.3 | discarded at #41 |
+| 2 | pid 389 | B — @2.80GHz | 3797.3 | discarded at #42 |
+| 3 | pid 388 | C — @2.10GHz, 266240 KB cache | **6290.1** | **completed** |
+
+**15839.7 s = 4.3999 h of machine time on one cube, of which the
+checkpoint records 6290.1 s — 39.7%.** 60.3% was discarded; the total
+spent is 2.5182× the figure the file carries. **The checkpoint's costs are
+per-attempt, not per-cube**, and that is the right thing for them to be —
+a cost column that silently accumulated across kills would be comparing
+different quantities row to row. But it means **the file understates what
+the sweep has spent, and by an amount that is not recoverable from the
+file itself**: only the restart blocks carry the discarded time. Nothing
+is being corrected here; this is what the numbers mean.
+
+**And the three attempts are not comparable with each other** — different
+machines each time — so 5752.3 → 3797.3 → 6290.1 is **not** a cube getting
+slower or faster. It is three measurements of different things.
 
 **SET TEN IS OPEN AND CONFOUNDED TWICE OVER.** Restart #42 killed idx
 **954, 955, 957, 959** and the relaunch re-took those four at launch +
@@ -1896,11 +1921,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1124 -> 1125 rows)
+## State as of the last refresh (1125 -> 1126 rows)
 
-- **1125 rows; 956 labels decided; 956 UNSAT; 0 SAT; 0 labels
+- **1126 rows; 957 labels decided; 957 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #42.
-  A row count is not a decision count: 956 decided plus 169 superseded
+  A row count is not a decision count: 957 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 388**, launched 2026-09-19T01:45:51.060000Z (read from
@@ -1918,11 +1943,12 @@ Task outputs live at
   at restart #41 and 389 → 388 at #42, each on the first bank after the
   relaunch. That is the same staleness that survived three commits at
   #40.
-- **Frontier contiguous 0..953, highest decided 958, holes [954, 955, 957].**
+- **Frontier contiguous 0..953, highest decided 958, holes [954, 957].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — the twenty-first.** It opened when idx 956 landed
-  above the frontier leaving 954 and 955 behind it, and has since
-  **widened to three holes** as idx 958 landed too. **No figures are
+  above the frontier leaving 954 and 955 behind it, **widened to three**
+  when idx 958 landed, and is back to **two** now that idx 955 has filled
+  one — 954 and 957 remain. **No figures are
   claimed for it** — duration, commit count and hole chain all come from
   `--spans all` after it closes, and the three holes on the Frontier line
   above are the file's **instantaneous state, not the chain**. A partial
@@ -1939,7 +1965,7 @@ Task outputs live at
   fifteenth through twentieth sit in one table above, **all six ranks
   recomputed together against the current 85**, none carried over with a
   relabelled denominator.
-- **956 of 1949 = 49.0508%**; **993 undecided**. **49% IS CROSSED**, at
+- **957 of 1949 = 49.1021%**; **992 undecided**. **49% IS CROSSED**, at
   cube index 958, one row after the counter sat on **955 = 48.9995%**,
   the tightest trap of all 99 thresholds. Next: **50% needs 975**, trap
   at **974 = 49.9743%**; and **51% has no trap at all**, being one of
@@ -1989,7 +2015,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **21 decided**, undecided 17 spanning 954..972
+  **22 decided**, undecided 16 spanning 954..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
