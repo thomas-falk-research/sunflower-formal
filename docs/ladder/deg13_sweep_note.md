@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-18T23:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T00:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1316,7 +1316,34 @@ Registration discipline, learned the hard way:
   second (0.001026) and k = 47 third (0.001539). k = 48's 0.0267 ranks
   only 52nd. So **49% needs `ceil(0.49 × 1949) = 956`, and 955 is the
   single most misleading figure this sweep will ever print** — recorded
-  now, 21 rows before the counter can reach it.
+  at `e7f4f3a`, when the decided count was 935.
+  **49% — THE TIGHTEST TRAP OF THE RUN IS REACHED.** idx 956 took the
+  decided count to **955 = 48.9995%**, which rounds to 49.0 and is
+  **below 49**. **Ninth rounds-up-but-below figure**: 40.9954%, 41.9702%,
+  42.9964%, 43.9713%, 44.9974%, 45.9723%, 46.9985%, 47.9733%,
+  **48.9995%**. Short of 49% by **0.000513 percentage points**, the
+  smallest shortfall of all 99 thresholds, recomputed here over the whole
+  range rather than recalled. 49% still needs **956**.
+  **THE PREDICTION WAS WRITTEN 20 ROWS AHEAD AND IT COST NOTHING TO BE
+  RIGHT.** `ceil` and 1949 determine every one of these figures; writing
+  one down in advance only means the crossing gets checked instead of
+  rounded into. Advance margins across all nine are 10, 18, 18, 18, 18,
+  18, 20, 18, 20 — this one **ties trap seven's 20 for the widest**, so
+  the earlier "widest of the seven, with no tie" is now a tie at nine and
+  is left as written because it records what was true of seven.
+  **A SCRIPT OF MINE CONTRADICTED THE NOTE HERE AND THE NOTE WAS RIGHT.**
+  Checking this trap, a first script counted **99 of 99** thresholds as
+  having a trap, against the note's recorded 97. The predicate was wrong,
+  not the note: it tested whether the predecessor rounds to the nearest
+  **integer** percent, where the note's claim is about rounding to the
+  same **tenth**. Under the note's predicate the count is 97, with k = 2
+  (1.9497% → 1.9) and k = 51 (50.9492% → 50.9) the exceptions, exactly as
+  recorded. **The discrepancy was resolved by reading the note's
+  definition before writing anything**, not by trusting the newer output.
+  The shortfall alternation now runs 0.0046, 0.0298, 0.0036, 0.0287,
+  0.0026, 0.0277, 0.0015, 0.0267, **0.0005** — computed, and **strictly
+  alternating small/large across all nine**, which is the `frac(k × 1949 /
+  100)` fact above and not a property of this sweep.
   **44% carries a numeral collision.** The decided count reached **858** on
   the landing of cube **index 858** — the same shape as 41%, where the count
   reached 800 on cube idx 800. At 43% the two did **not** match: the count
@@ -1705,11 +1732,11 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1122 -> 1123 rows)
+## State as of the last refresh (1123 -> 1124 rows)
 
-- **1123 rows; 954 labels decided; 954 UNSAT; 0 SAT; 0 labels
+- **1124 rows; 955 labels decided; 955 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37, #38, #39 or #40.
-  A row count is not a decision count: 954 decided plus 169 superseded
+  A row count is not a decision count: 955 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21172**, launched 2026-09-18T20:44:48.670000Z (read from
@@ -1724,18 +1751,23 @@ Task outputs live at
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
   are running.
-- **Frontier contiguous 0..953, highest decided 953, holes [].**
-  <!-- SPAN-STATE: closed -->
-  **No span is open.** The twentieth closed at `ca5ce5a`, opened by idx 952
-  landing above the frontier and filled by idx 951: **2:19:09, 2 commits,
-  chain `2,1`, monotone True on a SINGLE comparison**, rank 17 of 85 by
-  duration and 47 of 85 by commit count. **bank.py's span guard is what
-  caught the close**, on its first real occasion, and then turned up two
-  defects in itself — see the error patterns. The fifteenth through
+- **Frontier contiguous 0..953, highest decided 956, holes [954, 955].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — the twenty-first.** idx 956 landed above the frontier
+  and left 954 and 955 behind it. **No figures are claimed for it**:
+  duration, commit count and hole chain come from `--spans all` after it
+  closes, and a partial reading of a chain from the commits visible
+  mid-span was wrong once already (the seventeenth). bank.py's span guard
+  caught the opening on this bank, its second real firing. The twentieth
+  closed at `ca5ce5a`, opened by idx 952 landing above the frontier and
+  filled by idx 951: **2:19:09, 2 commits, chain `2,1`, monotone True on a
+  SINGLE comparison**, rank 17 of 85 by duration and 47 of 85 by commit
+  count. **The same guard caught that close**, on its first real occasion,
+  and then turned up two defects in itself — see the error patterns. The fifteenth through
   twentieth sit in one table above, **all six ranks recomputed together
   against the current 85**, none carried over with a relabelled
   denominator.
-- **954 of 1949 = 48.9482%**; **995 undecided**. **48% IS CROSSED**, at
+- **955 of 1949 = 48.9995%**; **994 undecided**. **48% IS CROSSED**, at
   cube index 928. Next: **49% needs `ceil(0.49 × 1949) = 956`** decided,
   and **955 = 48.9995% is the tightest trap of all 99 thresholds**.
   **A rounded milestone is not a crossed one** (b34fc2e, 85bb4d1). The
@@ -1779,7 +1811,7 @@ Task outputs live at
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 10]` idx 935..972: **38 members**,
-  **19 decided**, undecided 19 spanning 954..972
+  **20 decided**, undecided 18 spanning 954..972
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
