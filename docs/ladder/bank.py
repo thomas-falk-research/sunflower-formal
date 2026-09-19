@@ -157,6 +157,43 @@ else:
         print(f"driver line REWRITTEN from the live process: pid {dm.group(1)} -> {pid}, "
               f"launch {iso}")
 
+# ---- cpu/elapsed sample, appended every bank ------------------------------
+# The restart accounting weights each killed cube by its cpu/elapsed ratio,
+# taken from the LAST sample before teardown.  That sample used to be taken
+# only by the hourly check-in, so a cube started inside the final hour had no
+# ratio at all -- which happened at #40 (idx 953) and again at #41 (idx 958),
+# forcing both losses to be reported as brackets.  Banking happens whenever a
+# row lands, which is more often than hourly, so sampling here narrows the
+# gap.  IT DOES NOT CLOSE IT: a cube started after the last bank before a
+# teardown still has no sample, and the honest answer there is still a
+# bracket, never an invented ratio.
+SAMPLE='docs/ladder/cpu_ratio_samples.tsv'
+try:
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('cmc','docs/ladder/cnf_mtime_check.py')
+    cmc=importlib.util.module_from_spec(spec); spec.loader.exec_module(cmc)
+    solvers=cmc.running_solvers()
+    import time as _time, datetime as _dt
+    stamp=_dt.datetime.now(_dt.timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
+    lines=[]
+    for spid,(elapsed,cpu,pcpu) in sorted(solvers.items()):
+        c=cmc.cube_of(spid)
+        if c is None or elapsed<=0: continue
+        idx,dpid,_=c
+        lines.append(f"{stamp}\t{dpid}\t{spid}\t{idx}\t{elapsed}\t{cpu}\t{pcpu}\t{cpu/elapsed:.4f}")
+    if lines:
+        import os as _os
+        head = not _os.path.exists(SAMPLE)
+        with open(SAMPLE,'a') as fh:
+            if head: fh.write("# iso_utc\tdriver_pid\tsolver_pid\tidx\telapsed_s\tcpu_s\tpcpu\tratio\n")
+            fh.write("\n".join(lines)+"\n")
+        subprocess.run(['git','add',SAMPLE],check=True)
+        print(f"cpu/elapsed sample appended: {len(lines)} solver(s) at {stamp}")
+    else:
+        print("cpu/elapsed sample NOT appended: no live solver paired to a cube")
+except Exception as e:
+    print(f"!! cpu/elapsed sample NOT appended: {type(e).__name__}: {e}")
+
 open(p,'w').write(t)
 subprocess.run(['git','add',p],check=True)
 print(f"note state lines rewritten from the staged index; status {now}")

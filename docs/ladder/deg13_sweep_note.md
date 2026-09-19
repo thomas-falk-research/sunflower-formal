@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T00:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-19T00:47Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -62,7 +62,8 @@ and `pgrep` outranks both.
 | `checkpoint_audit.py --spans all` (~20 s) | span record, hole trajectories, **computed** monotonicity, ranking, duration distribution. An **open span refuses a duration by design**; a windowed walk left-truncates and refuses to rank. |
 | `cnf_mtime_check.py` | validates the CNF-mtime method and prints in-flight cube→pid pairings **with elapsed seconds**. This is what tells you whether a forward-test target is still unobserved. |
 | `forward_test.py` | pinned to `REV_AS_RUN = 9528aa9`. `IDX` is keyed on the **label string**, `SEQ` is the list, `cube_list` is the function. |
-| `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** |
+| `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** It also appends a cpu/elapsed sample to `cpu_ratio_samples.tsv` on every run. |
+| `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by `bank.py` at each bank. This is where a restart's weighting ratios come from. Read the LAST row per cube before the teardown instant; never a later one, and never an average. |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
 
 Reuse the helpers with:
@@ -146,7 +147,14 @@ landed relative to four independent start times. The 0.944 CPU-hours at
 01:31Z on 09-14 is **not** in this series — that was a stop I chose.
 
 **#40 AND #41 ARE THE FIRST RESTARTS WHOSE RATIO SAMPLE DID NOT COVER THE
-IN-FLIGHT SET**, and they are consecutive. At #41 the uncovered cube was
+IN-FLIGHT SET**, and they are consecutive. **The cause was the sampling
+cadence and it has been narrowed**: the ratio used to be sampled only by
+the hourly check-in, so a cube started inside the final hour had none at
+all. `bank.py` now appends a sample to `cpu_ratio_samples.tsv` on **every
+bank**, which is more often than hourly whenever rows are landing. **This
+narrows the gap and does not close it** — a cube started after the last
+bank before a teardown still has no sample, and the answer there is still
+a bracket, never an invented ratio. At #41 the uncovered cube was
 idx 958, started 00:35:28Z after the 23:41:47Z sample; its bracket is
 [5.0256, 5.0262] h, 1.96 s wide, and the rank is 5 of 18 at both ends.
 Twice running is not a pattern with a cause in hand, but it is enough to
@@ -174,8 +182,19 @@ the answer is a bracket, not a substituted number.
    (`/tmp` held 156 CNFs at #36; exactly 4 carried the dead pid). Never
    `/proc/stat btime` for this.
 5. Weight by each cube's cpu/elapsed ratio from the last sample before
-   teardown, and say that the processes are gone and it is not re-samplable.
-6. Re-read `nproc`, CPU model and `MemTotal` and **compare**.
+   teardown — **read it out of `docs/ladder/cpu_ratio_samples.tsv`**, which
+   `bank.py` appends to on every bank — and say that the processes are gone
+   and it is not re-samplable. **If a cube has no sample, DO NOT INVENT A
+   RATIO**: bracket the loss with 1.0 as the upper bound (a single-threaded
+   solver cannot exceed it) and the smallest ratio measured on its
+   siblings as the lower, and say the sample did not cover it.
+6. Re-read `nproc`, CPU model name, **`cpu MHz`, cache size**, `MemTotal`
+   and the kernel, and **compare**. **If any of them moved, say so loudly
+   and say that costs across that point are not on a common basis** — the
+   CPU changed at #41 after eight identical readings, and it would have
+   gone in silently if the spec were not re-read every time. Do NOT
+   estimate a speed ratio from the sweep's own timings; cube-cost variance
+   swamps it.
 7. Relaunch verbatim, get the new pid's exact launch from `/proc`, append a
    restart header block to the TSV, commit, push, re-check `origin/main` is
    still an ancestor.
