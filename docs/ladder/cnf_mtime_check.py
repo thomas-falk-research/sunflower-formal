@@ -191,6 +191,32 @@ def main():
     print(f"  over all pinned observations: max |delta| = {allworst} s, n = {alln}")
     print("  the live run above is a SEPARATE sample; it does not reproduce")
     print("  the pinned ones and is not expected to.")
+
+    # Append this sample to the same log bank.py writes, so there is ONE
+    # source for a restart's weighting ratios instead of two.  Before this,
+    # bank.py wrote the file and this script only printed, so the freshest
+    # ratio could exist solely in a terminal transcript -- which is exactly
+    # the archaeology the file was added to stop.  At #42 the two sources
+    # disagreed by 3.2 s of CPU across four cubes and gave the same rank, so
+    # nothing turned on it; the point is that it should not be possible.
+    try:
+        stamp = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now))
+        out = []
+        for pid, idx, dpid, et, ct, pc, _ in sorted(rows, key=lambda r: r[1]):
+            if et > 0:
+                out.append(f"{stamp}\t{dpid}\t{pid}\t{idx}\t{et}\t{ct}\t{pc}\t{ct/et:.4f}")
+        if out:
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                'cpu_ratio_samples.tsv')
+            head = not os.path.exists(path)
+            with open(path, 'a') as fh:
+                if head:
+                    fh.write("# iso_utc\tdriver_pid\tsolver_pid\tidx\telapsed_s"
+                             "\tcpu_s\tpcpu\tratio\n")
+                fh.write("\n".join(out) + "\n")
+            print(f"\nappended {len(out)} row(s) to cpu_ratio_samples.tsv at {stamp}")
+    except Exception as e:
+        print(f"\n!! sample NOT appended: {type(e).__name__}: {e}")
     return 0
 
 

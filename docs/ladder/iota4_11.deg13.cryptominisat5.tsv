@@ -11231,3 +11231,121 @@ g=11 [13, 13, 11, 10, 13, 13, 13, 11, 11, 11, 9]	UNSAT	5323.2
 # -- it is recorded now, before any number exists to be tempted by.
 # ---------------------------------------------------------------------
 g=11 [13, 13, 11, 10, 13, 13, 12, 12, 12, 12, 7]	UNSAT	3154.6
+# ---------------------------------------------------------------------
+# RESTART #42 -- 2026-09-19T01:44:55.774903979Z.  65.8 MINUTES AFTER #41.
+#
+# SECOND CONSECUTIVE HOST REBOOT.  btime 1789778349 -> 1789782298, uptime
+# 0 min.  The new btime is 2.2 s AFTER the teardown instant: the container
+# went down and the host came up almost immediately.  Before #41 the whole
+# series #34..#40 was container teardowns with btime unchanged; the last
+# two have both been reboots.
+#
+# *** THE MACHINE CHANGED AGAIN, AND IT DID NOT CHANGE BACK. ***  Re-read
+# at #42 as the previous block demanded.  This is a THIRD configuration,
+# not a return to the first:
+#
+#                    containers 1-8      #41            #42
+#   CPU model name   @ 2.10GHz           @ 2.80GHz      @ 2.10GHz
+#   cpu MHz          (not recorded)      2800.186       2100.000
+#   cache size       (not recorded)      33792 KB       266240 KB
+#   nproc            4                   4              4
+#   MemTotal         16482220 kB         16482220 kB    16481980 kB
+#   kernel           (not recorded)      6.18.44-fc-v33 6.18.44-fc-v37
+#
+# THE MODEL-NAME STRING MATCHES THE ORIGINAL AND THE OTHER FIELDS DO NOT.
+# MemTotal is 240 kB BELOW every one of the nine prior readings, the cache
+# is EIGHT TIMES #41's, and the kernel moved v33 -> v37.  So "it went back
+# to the old machine" is NOT supportable and is not claimed: a matching
+# model name is one field agreeing while three disagree.
+#
+# CONSEQUENCE, RESTATED AND WIDENED: costs are not on a common basis
+# ACROSS RESTARTS IN GENERAL, not merely across #41.  Three distinct
+# configurations in two restarts means every cost rank the checkpoint
+# prints spans an unknown mixture of hardware.  Those figures were always
+# descriptive and are now descriptive of a mixture whose composition is
+# not recorded per row.  NO SPEED RATIO IS ESTIMATED, in either direction.
+#
+# NO ROWS WERE LOST.  1125 real data rows before and after, tree == HEAD
+# == origin at d0d5605.
+#
+# BOTH [killed] MARKERS CARRY THE SAME NANOSECOND, difference 0 ns, read
+# by one script.  7 agreements (#34, #35, #37, #38, #39, #41, #42) against
+# 2 disagreements (#36, #40).
+#
+# DISCARDED WORK, CNF-mtime method, glob filtered by pid 389 AND requiring
+# "-seq-c" (180 CNFs in /tmp; exactly 4 carried the dead pid; no
+# startup-class CNF appeared this time, unlike #41):
+#
+#   idx 954  started 00:41:38.482Z   3797.3 s  1.0548 h  0.1758 of cap  31.6% of loss
+#   idx 955  started 00:41:38.490Z   3797.3 s  1.0548 h  0.1758 of cap  31.6%
+#   idx 957  started 00:41:38.486Z   3797.3 s  1.0548 h  0.1758 of cap  31.6%
+#   idx 959  started 01:34:13.038Z    642.7 s  0.1785 h  0.0298 of cap   5.3%
+#
+#   12034.6 s wall = 3.3429 h.  Three identical shares because 954, 955 and
+#   957 were re-taken within 8 ms of each other at #41 and so were killed at
+#   identical elapsed times; that is an artifact of simultaneous launch, not
+#   a property of the cubes.
+#
+#   *** A POINT, NOT A BRACKET: 3.3278 CPU-HOURS, RANK 12 OF 19. ***  The
+#   first restart since #39 whose ratio sample covered every in-flight cube.
+#   Ratios 0.9960, 0.9963, 0.9960, 0.9844 read from
+#   docs/ladder/cpu_ratio_samples.tsv at 01:36:21Z.
+#
+#   HONESTY ABOUT THE FIX: the per-bank sampler added after #41 is NOT what
+#   made this a point rather than a bracket.  idx 959 started at 01:34:13Z
+#   and the hourly check-in at 01:41:47Z would have sampled it anyway; the
+#   cube that had no sample at all was #41's idx 958, and nothing like it
+#   occurred here.  What the file changed is that the ratio now comes from a
+#   COMMITTED ARTIFACT instead of a terminal transcript.  The fix has not
+#   yet been the difference between a figure and a bracket, and saying it
+#   was would be claiming a rescue that did not happen.
+#
+#   TWO SOURCES DISAGREED AND THE GAP IS NOW CLOSED.  The file's freshest
+#   samples were 01:36:21Z; the check-in printed fresher ones at 01:41:47Z
+#   that were never written anywhere.  Computed both ways: 3.3278 h vs
+#   3.3287 h, a difference of 3.2 s, SAME RANK either way.  Nothing turned
+#   on it -- the point is that it should not be possible, so
+#   cnf_mtime_check.py now appends to the same log.  The FILE's values are
+#   used here, because a committed number beats a fresher uncommitted one.
+#
+#   Series now n = 19: median 3.5640, mean 3.8714, total 73.5559 CPU-hours.
+#   Shares 31.6, 31.6, 31.6, 5.3 percent, spread 26.2 points.
+#
+# RE-TAKE LAG 61.7 s, four CNFs within 4.0 ms.  Prior: 41 (#35), 60.7
+# (#36), 61.0 (#37), 60.6 (#38), 60.7 (#39), 60.6 (#40), 60.9 (#41).
+# *** 61.7 IS OUTSIDE THE 60.6-61.0 BAND.  THERE ARE NOW TWO POINTS
+# OUTSIDE IT, NOT ONE. ***  Eight observations: six inside a 0.4 s band,
+# one at 41 s and one at 61.7 s.  The cluster was never a law and is now
+# visibly leakier.  NO MECHANISM IS PROPOSED and the --slice 60 story
+# remains unsupported.
+#
+# *** RE-RUN SET NINE CANNOT BE COMPLETED AS DEFINED, AND IS ABANDONED
+# RATHER THAN CLOSED. ***  Its members 954, 955 and 957 were KILLED A
+# SECOND TIME, at #42, before finishing the re-run that #41 started.  A
+# "re-run time" for them is no longer a single completed run, so the
+# discarded/re-run ratio has no denominator to compute.  Only idx 958
+# completed (215.7 discarded, 3154.6 re-run) and its ratio was already
+# declared confounded at the opening.  Set nine therefore contributes
+# NOTHING to the eight-set series, and that was the right call to make at
+# its opening rather than now.
+#
+# CUMULATIVE DISCARD PER CUBE, across #41 and #42 -- recorded because no
+# single restart block shows it:
+#
+#   idx 954   6853.6 + 3797.3 = 10650.9 s (2.9586 h)  still UNDECIDED
+#   idx 955   5752.3 + 3797.3 =  9549.6 s (2.6527 h)  still UNDECIDED
+#   idx 957   5415.5 + 3797.3 =  9212.8 s (2.5591 h)  still UNDECIDED
+#   idx 958    215.7          =   215.7 s (0.0599 h)  DECIDED at 3154.6 s
+#   idx 959             642.7 =   642.7 s (0.1785 h)  still UNDECIDED
+#
+#   30271.7 s = 8.4088 h on five cubes, one of which is decided.  The
+#   21600 s cap is PER ATTEMPT, not cumulative, so none of these is near a
+#   limit; a cube can be killed indefinitely without ever tripping it.
+#
+# RE-RUN SET TEN OPENS: 954, 955, 957, 959, re-taken at launch + 61.7 s.
+# IT IS CONFOUNDED TOO, and doubly so -- it spans the #41->#42 machine
+# change AND three of its four members carry a second kill.  Its ratio will
+# not join the eight-set series either.  Raw seconds recorded as data.
+#
+# Relaunched verbatim as pid 388, exact launch 2026-09-19T01:45:51.060000Z.
+# ---------------------------------------------------------------------
