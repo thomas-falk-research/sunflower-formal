@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T21:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T22:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4522,7 +4522,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1292 -> 1293 rows)
+## State as of the last refresh (1293 -> 1294 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4533,7 +4533,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1293 rows; 1124 labels decided; 1124 UNSAT; 0 SAT; 0 labels
+- **1294 rows; 1125 labels decided; 1125 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4541,7 +4541,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1124 decided plus 169 superseded
+  A row count is not a decision count: 1125 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4560,10 +4560,52 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1123, highest decided 1123, holes [].**
-  <!-- SPAN-STATE: closed -->
-  ***THERE IS NO FORTY-SECOND SPAN, AND THE PROSE THAT SAID THERE WAS
-  DESCRIBED THE WORKING TREE RATHER THAN THE COMMIT SEQUENCE.*** One bank
+- **Frontier contiguous 0..1123, highest decided 1127, holes [1124, 1125, 1126].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND — THE ORDINAL RELEASED
+  TWO BANKS AGO, NOW GENUINELY CLAIMED.** idx 1127 landed at 2969.2 s
+  while **1124, 1125 and 1126** were all still running — an opening at
+  **three holes at once**. The frontier and hole set are on the bullet
+  line above, which bank.py owns; *this prose deliberately does not
+  repeat them.* **No duration, no rank, no monotonicity and no commit
+  count until it closes.**
+
+  The ordinal was derived before the outcome, as at the last six:
+  `--spans all` re-run after the holes appeared still ends at
+  **f558bb0**, **106 closed spans**, so this is walk position **107**
+  and, at the offset of 65, ordinal **forty-two**. *`9fef251` released
+  that ordinal when the previous claim to it turned out to describe a
+  working tree rather than a commit sequence. **This one is in the
+  commit record**: the holes are in the tree this bank commits, so the
+  walk will see the span whatever happens next.*
+
+  *The "three" describes the **opening**.* Over all **106** closed
+  chains the opening widths are **37 at one, 32 at two, 34 at three and
+  3 at four**, so three is the second-commonest and the maximum is four.
+  **The live hole set is on the bullet line; read it there.**
+
+  ***AND THE MAXIMUM-HOLES CASE HAPPENED WITHOUT SIMULTANEITY THIS
+  TIME.*** The fortieth's entry explains that when cubes start together,
+  the highest-indexed one finishing first opens one hole per
+  lower-indexed sibling — the maximum available. **These four did not
+  start together.** Earliest samples imply **21:17:59Z (1124), 21:19:57Z
+  (1125), 21:29:51Z (1126) and 21:46:05Z (1127)** — a **1686 s** spread.
+  *Starts have been measured at four openings and only four: **0 s** at
+  the fortieth's simultaneous restart re-take, **1603 s** at the
+  forty-first, **59 s** at the one that turned out not to be a span, and
+  **1686 s** here. This is the widest of those four — a population, not
+  a series, and the superlative is scoped to it because an unscoped one
+  was wrong two banks ago.* idx 1127 started **last, by 28 min 06 s**,
+  and still finished first, at 2969.2 s. *So the maximum-holes shape
+  does not require a simultaneous re-take; it requires the
+  highest-indexed slot to finish first, and a late start is no obstacle
+  to that.* **Nothing is inferred about the
+  cubes' difficulty, and nothing is claimed about when or how this span
+  closes.**
+
+  ***THERE WAS NO FORTY-SECOND SPAN BEFORE THIS ONE, AND THE PROSE THAT
+  SAID THERE WAS DESCRIBED THE WORKING TREE RATHER THAN THE COMMIT
+  SEQUENCE.*** One bank
   ago this block opened a span at **one hole** on idx 1121's landing,
   derived its ordinal from the walk, and wrote a mechanism paragraph for
   it. **The walk does not see it.** `--spans all` still reports **106
@@ -5942,7 +5984,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1124 of 1949 = 57.6706%**; **825 undecided**. **50% IS CROSSED**, at
+- **1125 of 1949 = 57.7219%**; **824 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6390,7 +6432,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 8]` idx 1116..1130: **15 members**,
-  **8 decided**, undecided 7 spanning 1124..1130
+  **9 decided**, undecided 6 spanning 1124..1130
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
