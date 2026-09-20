@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T21:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T21:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -282,16 +282,32 @@ the answer is a bracket, not a substituted number.
    slots, 7 of them with 3 or more (3 to 11 each)** — **none of the seven
    is monotone non-decreasing in elapsed**. The ratio climbs out of a real
    startup depression inside the first few hundred seconds and then
-   wobbles. *The band is quoted with its sample count because it grows:*
-   at 30 samples past 300 s it read **0.9844 to 0.9971** (spread
-   0.0127); at **71** samples it reads **0.9756 to 0.9971** (spread
-   **0.0215**), the lower end having moved down while the upper end
-   stayed put. **That is a noise band filling in, not a drift**, and it
-   makes the point harder rather than softer: there is no settled value
-   to wait for. The five samples at elapsed ≤ 70 s read **0.9403,
-   0.9697, 0.9722, 0.9756 and 1.0000** — and the 1.0000 is idx 1113 at
-   **27 s**, where a 1 s clock
-   gives the ratio only 27 steps, so it is **resolution, not a settled
+   wobbles. ***AND THE MIN-MAX RANGE THIS ENTRY ONCE QUOTED SHOULD NOT
+   BE QUOTED AT ALL — IT MEASURES THE SAMPLE SIZE, NOT THE QUANTITY.***
+   Three readings of the same band, in file order: at **30** samples
+   past 300 s, **0.9844 to 0.9971** (spread 0.0127); at **71**,
+   **0.9756 to 0.9971** (0.0215); at **146**, **0.9505 to 0.9971**
+   (0.0466). **The upper end has not moved once** — 0.9971 at all three
+   — **and the lower end has fallen at every reading**, which is what a
+   quantity capped near 1 with an occasional contention dip must do as
+   more of it is seen. *A range over a growing sample is not converging
+   and was never going to.*
+
+   **USE THE QUANTILES, WHICH ARE STABLE.** Over the 146: **p05 0.9814,
+   p25 0.9876, median 0.9908, p75 0.9928, p95 0.9957**, an **IQR of
+   0.0052**. Only **6 of 146** sit below the old 71-sample floor and
+   **12 of 146** below the old 30-sample floor, so the widening is a
+   handful of outliers being reached, not the bulk moving. *That is the
+   correction: the earlier text said "the band is quoted with its sample
+   count because it grows", which was right about the symptom and wrong
+   about the remedy — the fix is not to keep re-quoting a range, it is
+   to stop using one.* The original point stands unchanged and is now
+   better supported: **there is no settled value to wait for.**
+
+   The five samples at elapsed ≤ 70 s read **0.9403, 0.9697, 0.9722,
+   0.9756 and 1.0000** — and the 1.0000 is idx 1113 at **27 s**, where a
+   1 s clock gives the ratio only 27 steps, so it is **resolution, not a
+   settled
    cube**. So: distrust a sample from the first ~100 s and bracket, but
    **do not wait for a later one to be "more settled"** — past a few
    hundred seconds there is nothing left to settle, only noise.
