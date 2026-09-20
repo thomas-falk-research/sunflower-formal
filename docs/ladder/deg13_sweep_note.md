@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T06:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T06:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3661,7 +3661,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1220 -> 1221 rows)
+## State as of the last refresh (1221 -> 1222 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3672,9 +3672,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1221 rows; 1052 labels decided; 1052 UNSAT; 0 SAT; 0 labels
+- **1222 rows; 1053 labels decided; 1053 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1052 decided plus 169 superseded
+  A row count is not a decision count: 1053 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3693,22 +3693,22 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1050, highest decided 1052, holes [1051].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — THE THIRTY-FOURTH, AND IT OPENED AT ONE HOLE.**
-  idx 1052 came in at **2309.5 s** while **1051 was still running**, so
-  the frontier stands contiguous 0..1050 with the highest decided index
-  at 1052 and holes `[1051]`. **That breaks the run of three-hole
-  openings** — the thirty-second and thirty-third both opened at three,
-  and this one opens at the minimum a span can have.
+- **Frontier contiguous 0..1052, highest decided 1052, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-FOURTH SPAN IS CLOSED**, filled by **idx 1051 at
+  2715.2 s**. It opened at **one hole** — idx 1052 at 2309.5 s while
+  1051 was still running — which **broke the run of three-hole
+  openings** the thirty-second and thirty-third had set, and it closed
+  on the very next row. The frontier went contiguous 0..1050 →
+  **0..1052** and the hole set is empty. **This one did NOT also close
+  a block**, ending the run of three consecutive spans that did;
+  `[13,13,11,5]` is still open at 5 of 7.
 
-  **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
-  commit count and hole trajectory come from `--spans all` run *after*
-  the closing commit exists, and every quoted span rank in the file is
-  then recomputed against the new N together. **A one-hole opening does
-  not make the chain start at 1** any more than a three-hole opening
-  makes it start at 3 — the chain is a property of the commit sequence,
-  not of the file.
+  **NO DURATION, NO RANKS AND NO COMMIT COUNT ARE WRITTEN YET.** They
+  come from `--spans all` run **after this closing commit exists**, and
+  every quoted span rank across the file is then recomputed against the
+  new N **together, in one script**, after first reproducing the
+  previous N's ranks.
 
   ***THE THIRTY-THIRD SPAN IS CLOSED*** — filled by **idx 1045 at
   5508.0 s**, the same row that closed block `[13, 13, 11, 6]` at
@@ -4526,7 +4526,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1052 of 1949 = 53.9764%**; **897 undecided**. **50% IS CROSSED**, at
+- **1053 of 1949 = 54.0277%**; **896 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4645,6 +4645,47 @@ exactly one bank.
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
 
+  **54% IS CROSSED, AND ITS TRAP WAS CAUGHT.** idx 1051 took the decided
+  count to **1053 = 54.0277%**, which is `ceil(0.54 × 1949) = 1053`
+  exactly — the first value above 54. The predecessor **1052 =
+  53.9764%** rounds to 54.0 while sitting below it, and **a committed
+  tree held it**. Checked by the real criterion rather than the subject
+  text: `decided()` run over `b1708cd`'s blob returns **1052**, and over
+  `36a2550`'s blob returns 1052 as well, so **two committed trees** held
+  the trap value. *The subject of `b1708cd` also reads `1052 of 1949 =
+  53.9764%`, but that is not what makes it caught — the proxy criterion
+  was retracted at the 52% crossing precisely because a subject can
+  describe a tree it does not have.*
+
+  **That moves the caught/missed tally from 44 caught and 7 missed of 51
+  to 45 caught and 7 missed of 52.** Being caught is the common case and
+  this does not make the trap special.
+
+  Its shortfall is **0.023602 pp**, **tightness rank 46 of 97** by
+  shortfall, and it is the **52nd of the 97** traps in the whole run.
+  Middle of the pack in both senses; nothing about it is extreme. *For
+  contrast the 53% trap immediately before it was the loosest of all 97,
+  and the tightest anywhere in the run is k = 49 at 0.000513 pp.* It is
+  the **thirteenth** rounds-up-but-below figure in the `k = 41..54`
+  stretch this note narrates — thirteen and not fourteen because **51%
+  has no trap at all**, one of the two exceptions {2, 51}.
+
+  ***A FRESH SCRIPT SAID 95 OF 99 THRESHOLDS HAVE A TRAP, AGAINST THE
+  NOTE'S 97. THE NOTE WAS RIGHT AND THE SCRIPT WAS WRONG — FOR THE
+  SECOND TIME IN THIS FILE.*** The script tested whether the threshold
+  and its predecessor round to the same tenth. **That is not the
+  definition.** The trap is about the *predecessor* rounding up to k.0
+  while still being below k, and what the threshold itself rounds to is
+  irrelevant. At **k = 49 and k = 98** the threshold lands at 49.0508%
+  and 98.0503%, which round to 49.1 and 98.1, so the bad predicate
+  dropped exactly those two and returned 95. Re-run with the note's
+  definition: **97 of 99, exceptions exactly {2, 51}**, reproducing the
+  recorded figure. *This is the second time in one session that a fresh
+  script of mine contradicted an established figure and lost — the
+  first was the span-duration distribution, where a 4-decimal parse
+  turned 53 lasting spans into 74. The standing rule earned its place
+  twice over: **the newer output is not automatically the better one.***
+
   **53% — THE COUNTER LANDED EXACTLY ON THE TRAP, AND IT IS THE LOOSEST
   TRAP IN THE ENTIRE RUN.** idx 1030 took the decided count to
   **1032 = 52.9502%**, which rounds to 53.0 while sitting **below** 53,
@@ -4762,7 +4803,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 5]` idx 1048..1054: **7 members**,
-  **4 decided**, undecided [1051, 1053, 1054]
+  **5 decided**, undecided [1053, 1054]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
