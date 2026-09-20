@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T04:00Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T04:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3445,7 +3445,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1204 -> 1206 rows)
+## State as of the last refresh (1206 -> 1207 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3456,9 +3456,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1206 rows; 1037 labels decided; 1037 UNSAT; 0 SAT; 0 labels
+- **1207 rows; 1038 labels decided; 1038 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1037 decided plus 169 superseded
+  A row count is not a decision count: 1038 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3477,7 +3477,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1033, highest decided 1037, holes [1034].**
+- **Frontier contiguous 0..1033, highest decided 1040, holes [1034, 1038, 1039].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
@@ -3514,15 +3514,20 @@ exactly one bank.
   | idx 1035 | 1671.8 | `[1031, 1034]` | 2 |
   | idx 1031 | 6651.4 | `[1034]` | 1 |
   | idx 1037 | 695.5 | `[1034]` | 1 |
+  | idx 1040 | 1448.7 | `[1034, 1038, 1039]` | 3 |
 
-  **3 → 2 → 1 → 3 → 2 → 1 → 1**, read straight off the count column:
-  three holes reached **twice**, one hole reached **three times**, and —
-  stated with its convention, because the answer depends on it — a
-  longest **strictly decreasing** stretch of **3** (`3 → 2 → 1`) but a
-  longest **non-increasing** stretch of **4** (`3 → 2 → 1 → 1`), which is
-  the convention the chain verdicts use. *A draft said "no monotone
-  stretch longer than three" without naming which; under the note's own
-  non-increasing convention that is wrong. Seventeenth in the tally.*
+  **3 → 2 → 1 → 3 → 2 → 1 → 1 → 3**, read straight off the count column:
+  three holes reached **three times**, two holes **twice**, one hole
+  **three times**, and — stated with its convention, because the answer
+  depends on it — a longest **strictly decreasing** stretch of **3**
+  (`3 → 2 → 1`) and a longest **non-increasing** stretch of **4**
+  (`3 → 2 → 1 → 1`), which is the convention the chain verdicts use.
+  *Both stretch figures are unchanged by the eighth bank, because idx
+  1040 moved the count upward and so extends neither.*
+
+  *A draft said "no monotone stretch longer than three" without naming
+  which; under the note's own non-increasing convention that is wrong.
+  Seventeenth in the tally.*
   That is the clearest illustration
   this file has of why a hole count is not a progress bar — *and the
   sequence is quoted from the table rather than carried in prose,
@@ -4105,7 +4110,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1037 of 1949 = 53.2068%**; **912 undecided**. **50% IS CROSSED**, at
+- **1038 of 1949 = 53.2581%**; **911 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4343,7 +4348,7 @@ exactly one bank.
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
   **14 decided**, undecided [1034]
 - `[13, 13, 11, 6]` idx 1037..1047: **11 members**,
-  **1 decided**, undecided 10 spanning 1038..1047
+  **2 decided**, undecided 9 spanning 1038..1047
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
