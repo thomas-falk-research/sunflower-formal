@@ -1100,6 +1100,26 @@ same failure operating one level down. So the remedy extends again —
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
 
+**A FOURTEENTH — AND IT BREAKS THE RULE THE TWELFTH WROTE, AT THE FIRST
+OPPORTUNITY TO BREAK IT.** The commit `c637f52` says "four rows to the
+trap" with the decided count at 1029 and the trap at 1032. It is
+**three** rows to the trap; four is the distance to the *crossing* at
+1033. The figure was typed, not computed — **which is exactly what the
+twelfth entry's rule forbids**, two banks after that rule was written
+into the procedure.
+
+**What that says about the rule is the point of recording it.** The
+twelfth's remedy was "every quantity in a commit BODY must come from
+script output in the same turn"; it was followed for two banks and then
+not. A rule that depends on remembering it at the moment of writing is
+the weakest kind, and this file now has two data points on that exact
+rule. **No stronger mechanism is proposed here** — the honest position
+is that the control is weak and has been observed failing once, not that
+a better one has been designed. The commit is not amended; the history
+is the authority and the note carries the correction. *Second of the
+fourteen to reach a pushed commit, and the first to do so against an
+explicit rule.*
+
 **A THIRTEENTH, IN THE SAME BANK AS THE TWELFTH: "ABOVE ALL BUT ONE"
 FOR A VALUE WITH THREE ABOVE IT.** A draft of the median-trail paragraph
 said the eighth and last median "ended above all but one of them". Of
