@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:17Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3768,7 +3768,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1228 -> 1229 rows)
+## State as of the last refresh (1229 -> 1230 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3779,9 +3779,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1229 rows; 1060 labels decided; 1060 UNSAT; 0 SAT; 0 labels
+- **1230 rows; 1061 labels decided; 1061 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1060 decided plus 169 superseded
+  A row count is not a decision count: 1061 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3800,7 +3800,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1057, highest decided 1061, holes [1058, 1059].**
+- **Frontier contiguous 0..1057, highest decided 1063, holes [1058, 1059, 1062].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIFTH, AND IT OPENED AT ONE HOLE.**
   idx 1054 came in at **905.0 s** while **1053 was still running**, so
@@ -3996,6 +3996,19 @@ exactly one bank.
   **32.0 s** dearer than idx 1030's — the closest adjacent pair in this
   block. idx 1036's 315.5 s is the block's cheapest, and it is what
   widened the hole set back to three.*
+
+  **A SEVENTH BLOCK HAS OPENED: `[13, 13, 11, 2]`, idx 1063..1064, 2
+  members, 1 decided.** idx 1063 took it at **104.5 s**, rank 1049 of
+  1061 with only **12 cheaper** — by some distance the cheapest opener
+  in this run. Size recomputed from `SEQ`: **2 is what follows 3**.
+
+  ***THE `[13,13,11,*]` RUN IS NEARLY DONE.*** Its twelve blocks hold
+  **181 cubes** in total, idx 886..1066, and only `[13,13,11,1]` (idx
+  1065) and `[13,13,11,0]` (idx 1066) remain untouched — one cube each.
+  **The next run begins at idx 1067 with `[13,13,10,10]`**, read off
+  `SEQ` rather than predicted. *Blocks of 2 and 1 are why three are
+  open at once again: four solver slots now cover more blocks than
+  cubes in some of them.*
 
   **A SIXTH BLOCK HAS OPENED: `[13, 13, 11, 3]`, idx 1060..1062, 3
   members, 1 decided.** idx 1060 took it at **235.3 s**, rank 1034 of
@@ -4692,7 +4705,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1060 of 1949 = 54.3869%**; **889 undecided**. **50% IS CROSSED**, at
+- **1061 of 1949 = 54.4382%**; **888 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4972,6 +4985,8 @@ exactly one bank.
   **3 decided**, undecided [1058, 1059]
 - `[13, 13, 11, 3]` idx 1060..1062: **3 members**,
   **2 decided**, undecided [1062]
+- `[13, 13, 11, 2]` idx 1063..1064: **2 members**,
+  **1 decided**, undecided [1064]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
