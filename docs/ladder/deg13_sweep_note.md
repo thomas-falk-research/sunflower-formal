@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T12:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T12:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4135,7 +4135,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1259 -> 1260 rows)
+## State as of the last refresh (1260 -> 1261 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4146,9 +4146,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1260 rows; 1091 labels decided; 1091 UNSAT; 0 SAT; 0 labels
+- **1261 rows; 1092 labels decided; 1092 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1091 decided plus 169 superseded
+  A row count is not a decision count: 1092 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -4167,7 +4167,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1087, highest decided 1093, holes [1088, 1091, 1092].**
+- **Frontier contiguous 0..1087, highest decided 1094, holes [1088, 1091, 1092].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE THIRTY-EIGHTH.** idx 1089 landed at
   2471.9 s while **1086, 1087 and 1088 were all still running** — an
@@ -5310,7 +5310,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1091 of 1949 = 55.9774%**; **858 undecided**. **50% IS CROSSED**, at
+- **1092 of 1949 = 56.0287%**; **857 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5445,13 +5445,32 @@ exactly one bank.
   because **51% has no trap at all** — and the **54th of the 97** traps
   in the whole run.
 
-  **WHETHER IT IS CAUGHT IS NOT DECIDED HERE.** A trap is caught by a
-  committed TREE holding the value, verified with `decided()` over the
-  blob, not by a subject line that mentions the number. The crossing row
-  has not landed, so the tree that would settle it does not exist yet.
-  *The tally stays at **46 caught and 7 missed of 53** until it does* —
-  the same hedge the 55% paragraph made one threshold ago, which cost
-  nothing and is the whole discipline.
+  **56% IS NOW CROSSED, AND THE TRAP WAS CAUGHT.** idx 1094 took the
+  count to **1092 = 56.0287%**, the first value at or above 56. The
+  catch is verified by the real criterion rather than the subject text:
+  `decided()` over `9bda191`'s blob returns **1091** and over
+  `963b16a`'s returns **1090**, so **exactly one committed tree held the
+  trap value** — the commit that banked idx 1093, and nothing before it.
+  *The tally goes from 46 caught and 7 missed of 53 to **47 caught and
+  7 missed of 54**.*
+
+  *One bank ago this block said the catch "is not decided here" and
+  declined to move the tally because the tree that would settle it did
+  not exist. It exists now and the tally moves.* **The hedge cost
+  nothing again, and the commit whose subject line announced the trap is
+  not what settled it — its blob is.** That distinction is the whole
+  reason the criterion is a tree and not a subject: `9bda191`'s subject
+  reads `1091 of 1949 = 55.9774%`, and a subject can say anything.
+
+  ***AND A NEIGHBOURING VALUE WAS SKIPPED IN THE SAME STRETCH, WHICH IS
+  HOW TRAPS GET MISSED.*** Walking `decided()` back over the eight most
+  recent commits that touch the checkpoint gives 1091, 1090, 1089,
+  **1087**, 1086, 1085, 1084, 1083 — **the count 1088 was never held by
+  any tree**, because `5839b32` banked two rows at once and took the
+  counter straight from 1087 to 1089. *1088 is not a trap value, so
+  nothing is lost here; it is recorded because it is the exact mechanism
+  by which the seven missed traps were missed, observed in passing three
+  rows from one that was caught.*
 
   ***55% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND IT IS THE
   THIRD-LOOSEST OF ALL 97.*** idx 1070 took the decided count to
@@ -5643,7 +5662,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **24 decided**, undecided [1088, 1091, 1092, 1094]
+  **25 decided**, undecided [1088, 1091, 1092]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
