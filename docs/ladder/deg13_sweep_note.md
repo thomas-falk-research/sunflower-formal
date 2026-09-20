@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:04Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1374,6 +1374,35 @@ same failure operating one level down. So the remedy extends again —
 **a breakdown of a computed total must itself be computed, and must be
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
+
+***A PROCESS VIOLATION WITH A FAVOURABLE OUTCOME, RECORDED BECAUSE THAT
+IS THE CASE MOST LIKELY TO GO UNRECORDED. NOT A TALLY ENTRY — THE
+FIGURE WAS RIGHT.*** The commit body for idx 1057 (`f9a8f7d`) says idx
+1053 "has now been running longer than the last three rows took
+combined". **That was written before it was checked**, which breaks the
+rule the twelfth tally entry exists to enforce: *every quantity in a
+commit body must come from script output in the same turn.* Checked
+immediately afterwards: idx 1053 at **3242 s** against 905.0 + 941.9 +
+964.0 = **2810.9 s**, so the claim holds.
+
+*The tally counts wrong figures, and this one is not wrong, so it does
+not go in the tally.* What it goes in is here, because **the twelfth's
+rule has now been broken TWICE since it was written** — at `c637f52`
+(the fourteenth tally entry, where the figure was also wrong) and now
+at `f9a8f7d`, where it was not. *(The twelfth's own case, `8e1e048`,
+is what prompted the rule and predates it, so it is not one of the
+two.)* **A draft of this very sentence said "three times" and then
+named two** — the ninth entry's failure, a breakdown that does not
+match its own total, committed inside the paragraph complaining about
+unchecked figures. Counted on the second pass. The fourteenth already recorded that "a rule that depends on
+remembering it at the moment of writing is the weakest kind" and that
+**no stronger mechanism was proposed**. One was proposed later, at the
+twenty-second: *re-derive the whole paragraph in a script before
+committing it.* **That mechanism was not applied to this commit body**,
+and the reason is mundane and worth naming: the body was short and the
+claim felt like an observation rather than a figure. **A comparison of
+two numbers is a figure.** The mechanism does not fail when it is
+applied; it fails when a sentence does not look like it needs it.
 
 **A TWENTY-SECOND — AN ORDINAL IN THE SENTENCE THAT WAS FIXING THE
 TWENTIETH.** Correcting the re-take-lag series for #44, a draft called
