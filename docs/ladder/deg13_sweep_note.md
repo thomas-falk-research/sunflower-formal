@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T19:24Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T19:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -282,10 +282,15 @@ the answer is a bracket, not a substituted number.
    slots, 7 of them with 3 or more (3 to 11 each)** — **none of the seven
    is monotone non-decreasing in elapsed**. The ratio climbs out of a real
    startup depression inside the first few hundred seconds and then
-   wobbles: over the **30** samples past 300 s the whole range is
-   **0.9844 to 0.9971**, a spread of **0.0127**, with no trend. The five
-   samples at elapsed ≤ 70 s read **0.9403, 0.9697, 0.9722, 0.9756 and
-   1.0000** — and the 1.0000 is idx 1113 at **27 s**, where a 1 s clock
+   wobbles. *The band is quoted with its sample count because it grows:*
+   at 30 samples past 300 s it read **0.9844 to 0.9971** (spread
+   0.0127); at **71** samples it reads **0.9756 to 0.9971** (spread
+   **0.0215**), the lower end having moved down while the upper end
+   stayed put. **That is a noise band filling in, not a drift**, and it
+   makes the point harder rather than softer: there is no settled value
+   to wait for. The five samples at elapsed ≤ 70 s read **0.9403,
+   0.9697, 0.9722, 0.9756 and 1.0000** — and the 1.0000 is idx 1113 at
+   **27 s**, where a 1 s clock
    gives the ratio only 27 steps, so it is **resolution, not a settled
    cube**. So: distrust a sample from the first ~100 s and bracket, but
    **do not wait for a later one to be "more settled"** — past a few
