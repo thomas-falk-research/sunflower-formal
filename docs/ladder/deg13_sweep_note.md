@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T00:29Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T00:46Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1098,6 +1098,36 @@ same failure operating one level down. So the remedy extends again —
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
 
+**A THIRTEENTH, IN THE SAME BANK AS THE TWELFTH: "ABOVE ALL BUT ONE"
+FOR A VALUE WITH THREE ABOVE IT.** A draft of the median-trail paragraph
+said the eighth and last median "ended above all but one of them". Of
+the preceding seven it is above **four** and below **three**. **Thirteen
+for thirteen.** Same shape as the ninth, tenth and eleventh — a position
+inside a list described without counting the list — and it was caught
+the same way, by reading the staged diff. *The trail was on screen in the
+same paragraph; being adjacent to the data is not the same as reading
+it.*
+
+**A TWELFTH — AND THE FIRST OF THE TWELVE TO REACH A PUSHED COMMIT.**
+The check-in commit `8e1e048` says idx 1018, at 7726 s elapsed, "is
+already the **fourth**-dearest cube its block has produced". It is the
+**third**: only 8214.9 and 7948.8 stand above 7726 in
+`[13, 13, 11, 8]`. **Twelve for twelve**, and this one is different in
+kind from the other eleven — *they were caught by reading the staged
+diff; this one was never eligible for that check, because it lived only
+in the commit message.* The staged diff on a sample-only bank contains
+one TSV and no prose, so a quantity invented in the commit body passes
+through unreviewed.
+
+**THE RULE THAT CLOSES THE GAP: every quantity in a commit BODY must
+come from script output in the same turn, exactly as the four items in
+the subject already must.** A commit message is not a scratchpad — it is
+pushed, permanent and unreviewable after the fact. Where a figure is
+worth writing it belongs in the note first, where the staged-diff read
+will catch it, and the commit body can then quote it. *The commit is
+not amended: the history is the authority, and this note carries the
+correction.*
+
 **AN ELEVENTH, AND IT IS THE SMALLEST YET: OFF BY ONE ON A WINDOW.** A
 draft said the block's three dearest cubes "all landed within the last
 six rows"; in completion order they are 1st, 6th and **7th** from the
@@ -1810,6 +1840,27 @@ Registration discipline, learned the hard way:
   | `[13,13,11,11]` | 49 | 304.1 | 2698.5 | 3538.4 | 9372.4 | 30.8201× |
   | `[13,13,11,10]` | 38 | 633.0 | 4490.8 | 5113.1 | 12894.5 | 20.3705× |
   | `[13,13,11,9]` | 28 | 668.1 | 4243.7 | 4305.1 | 10427.2 | 15.6072× |
+  | `[13,13,11,8]` | 21 | 549.4 | 3828.7 | 3965.7 | 8214.9 | 14.9525× |
+
+  **`[13,13,11,8]` CLOSED 21/21** (idx 1001..1021, contiguity verified by
+  `max - min + 1 == len` rather than eyeballed — closed by **idx 1018
+  after it ran 7764.3 s**, the same row that closed the thirty-first
+  span). Its 21 cubes cost **83280.0 core-seconds = 23.1333 core-hours**
+  in total. **Every row above was recomputed from the checkpoint when
+  this one was added** and all **30** already tabled reproduced their
+  recorded figures, with the set comparison reporting **31 closed, 30
+  tabled, difference exactly `[13,13,11,8]`** — the check, not a
+  formality.
+
+  *The first pass of that check reported one mismatch, on
+  `[13,13,13,11]`, while printing identical numbers on both sides. The
+  fault was the comparison, not the data: that block's median is exactly
+  **4960.75** and the table records its correct 1-dp rounding, 4960.8, so
+  a strict `< 0.05` tolerance failed on the boundary. **Re-run with the
+  tolerance at half a unit in the last recorded place, inclusive: 30 of
+  30 reproduce, 0 mismatches.** Recorded because a check that fires
+  spuriously is worth as much attention as one that misses — the first
+  output would have read as a corrupted table.*
 
   **`[13,13,11,9]` CLOSED 28/28** (idx 973..1000, contiguity verified —
   `max - min + 1 == len`, checked, not eyeballed — closed by **idx 994
@@ -1817,7 +1868,7 @@ Registration discipline, learned the hard way:
   span). **Every row above was recomputed from the checkpoint when this
   one was added**, and all **29** that were already tabled reproduced
   their recorded figures exactly, which is the check, not a formality.
-  The table again holds every closed block: **30 closed, 30 tabled**,
+  The table again holds every closed block: **31 closed, 31 tabled**,
   asserted by set comparison rather than by counting rows.
   Earlier in this run: `[13,13,11,10]` closed 38/38 (idx 935..972, by idx
   968 at 9079.9 s) and `[13,13,11,11]` closed 49/49 (idx 886..934, by idx
@@ -2961,6 +3012,11 @@ alongside it.**
 7. Read the diff, then commit **in the next invocation**. Commit with the
    heredoc **alone** — chaining a `for` loop after a heredoc mangles the
    parse and commits nothing.
+   **Every quantity in the commit BODY must come from script output in
+   the same turn**, not only the four in the subject. The staged-diff
+   read cannot catch a figure that exists only in the message, which is
+   how the twelfth tally entry reached a pushed commit (`8e1e048`).
+   Put the figure in the note first, then quote it.
    **bank.py MUST BE THE LAST THING TO TOUCH THE INDEX.** Any `git add`
    after it — including one run to stage a late prose edit — can sweep in
    a row that landed in between and silently invalidates bank.py's
@@ -2979,7 +3035,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1191 -> 1192 rows)
+## State as of the last refresh (1192 -> 1194 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -2990,9 +3046,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1192 rows; 1023 labels decided; 1023 UNSAT; 0 SAT; 0 labels
+- **1194 rows; 1025 labels decided; 1025 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1023 decided plus 169 superseded
+  A row count is not a decision count: 1025 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3010,94 +3066,37 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1017, highest decided 1023, holes [1018].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — THE THIRTY-FIRST, AND IT OPENED AT TWO HOLES AT
-  ONCE.** idx 1019 came in at **1391.5 s** while **both 1017 and 1018
-  were still running**, so the frontier stands contiguous 0..1016 with
-  the highest decided index at 1019 and holes `[1017, 1018]`. bank.py's
-  span guard caught the opening: **twenty-second real firing, eleventh
-  in the open direction.**
+- **Frontier contiguous 0..1024, highest decided 1024, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-FIRST SPAN IS CLOSED**, filled by idx 1018 at 7764.3 s —
+  **the same row that closed block `[13, 13, 11, 8]` at 21 of 21.**
+  It opened at **two holes at once** when idx 1019 came in at 1391.5 s
+  while both 1017 and 1018 were still running, **widened to three** when
+  idx 1021 landed at 775.7 s and jumped 1020, then narrowed 1020 → 1017
+  → 1018. From the opening row to the closing row was **1 h 12 m 29 s**
+  (1.2081 h): the widening at +12 m 53 s, the narrowings at +43 m 15 s
+  and +47 m 25 s. The closer cost **5.5798× the opener** — 7764.3 s
+  against 1391.5 s, a difference of 6372.8 s. **Those are row-landing
+  times with up to 20 s of poll lag each and are NOT the span's
+  duration**, which is measured between commit timestamps.
 
-  **The opener is a cheap cube, which is the ordinary way a frontier
-  breaks.** At 1391.5 s it ranks **830 of 1018** by cost with **188
-  cheaper** — the **18.47th percentile**, computed rather than eyeballed.
-  A frontier breaks whenever any cube finishes before a lower-indexed
-  one, so a cheap finisher jumping two slower neighbours is the
-  mechanism working normally and **says nothing about either neighbour's
-  eventual cost**. It is not the block's cheapest: that is still idx
-  1001 at 549.4 s.
+  **NO FIGURES AND NO HOLE CHAIN ARE WRITTEN HERE YET.** Duration, ranks,
+  commit count and the chain come from `--spans all` run *after* the
+  closing commit exists, with every quoted span rank in this file
+  recomputed against the new N in the same pass. **No bank-time state
+  list is kept**, per the rule added when the twenty-eighth's proved
+  wrong about the banks — the widening and the two narrowings above are
+  named facts about named banks, not a sequence and **not the chain**.
+  The file reached three holes; whether the commit sequence did is a
+  separate question that only the tool answers.
 
-  **THE SPAN WIDENED TO THREE HOLES** — `[1017, 1018, 1020]`, after idx
-  1021 landed at 775.7 s and jumped over 1020 as well — **and has since
-  narrowed to two**, `[1017, 1018]`, when idx 1020 came in at
-  **3828.7 s**, **and to one**, `[1018]`, when idx 1017 came in at
-  **7282.7 s**. Frontier now contiguous 0..1017, highest decided index
-  1022; **idx 1018 is the block's last undecided member and the span's
-  only remaining hole**, so one row would close both — which is an
-  observation about the current state, **not a prediction that it
-  closes next**, since any of the other three slots can land first.
-
-  All three states above are **bank-time observations of the file, not
-  chain entries**: the commit sequence decides the chain, and they are
-  named facts about named banks.
-
-  **idx 1020 LANDED ALMOST EXACTLY ON THE DECIDED SET'S MEDIAN**, at
-  3828.7 s against a median of **3820.5 s** — rank **510 of 1021** with
-  **511 cheaper**, which is as close to the middle as an odd-sized
-  population allows. *That is a coincidence of one row and is recorded
-  as such; nothing follows from a cube being median-priced.*
-
-  **idx 1021 IS THE SECOND-CHEAPEST CUBE THE BLOCK HAS PRODUCED**, at
-  775.7 s behind idx 1001's 549.4 s, and the **8.05th percentile** of the
-  whole decided set — rank 937 of 1019, only 82 cheaper. **All three of
-  this span's holes were opened by two cheap cubes** — idx 1019 opened
-  1017 and 1018 at the 18.47th percentile, idx 1021 opened 1020 at the
-  8.05th — which is the mechanism, not a pattern: a frontier breaks when
-  *anything* finishes early, so cheap cubes do most of the breaking by
-  construction. *(A draft said "two of this span's three holes", which
-  miscounts both sides: three holes, two cubes, and none of the three
-  came from an expensive finisher. Logged as the tenth in the tally.)*
-
-  **THE BLOCK'S REMAINING WORK WAS ENTIRELY IN FLIGHT, AND THAT NOW
-  CHECKS OUT.** At 23:41:41Z the four solver slots held idx **1017,
-  1018, 1020 and 1021** — exactly the census's undecided set for
-  `[13, 13, 11, 8]` — and the note said **no further cube from this
-  block would be started**. idx 1021 finished at 23:42:43Z and the freed
-  slot took **idx 1022**, the first index past the block's 1001..1021.
-  *That was a checkable statement about what was running rather than a
-  forecast, and it is recorded as confirmed for the same reason it was
-  hedged: the slice order is the driver's, read from the census, never
-  predicted.*
-
-  **A SECOND BLOCK IS NOW OPEN: `[13, 13, 11, 7]`, idx 1022..1036, 15
-  members, 1 decided.** idx 1022 took it at **731.2 s**, rank 941 of
-  1020 with 79 cheaper. Two blocks are open at once because
-  `[13, 13, 11, 8]` still has three cubes in flight; the census lists
-  both and **bank.py owns that region** — it went from one open block to
-  two without a hand edit.
-
-  **ITS SIZE WAS ALREADY DETERMINED, AND THE CHECK IS COMBINATORICS NOT
-  DATA.** The note's standing claim is that each `[13,c1,c2,*]` run's
-  block sizes are a contiguous slice of
-  `129, 104, 82, 65, 49, 38, 28, 21, 15, 11, 7, 5, 3, 2, 1, 1` and that
-  dropping `c2` by one shifts the start by exactly two. Recomputed from
-  `SEQ` at this bank: `[13,13,13,*]` is 14 blocks starting at position
-  **0**, `[13,13,12,*]` is 13 starting at **2**, `[13,13,11,*]` is 12
-  starting at **4** — `[49, 38, 28, 21, 15, 11, 7, 5, 3, 2, 1, 1]`. So
-  **15 is what follows 21**, and no observation was needed to know it.
-  *This is a structural claim confirming itself, not new evidence about
-  anything: the sizes come from the cube construction and would be the
-  same if no cube had ever been solved.*
-
-  **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
-  commit count and hole trajectory all come from `--spans all` run
-  *after* the closing commit exists. **A two-hole opening does not make
-  the chain `2`** any more than a one-hole opening made it `1` — the
-  chain is a property of the commit sequence, and what reaches a commit
-  depends on banking cadence. The thirtieth's chain was `2,1` and its
-  file passed through states the commits never recorded; that is the
-  standing warning, not a template.
+  **THE SPAN AND THE BLOCK CLOSED ON THE SAME ROW, AND THAT IS NOT A
+  COINCIDENCE WORTH ANYTHING.** idx 1018 was simultaneously the block's
+  last undecided member and the span's only remaining hole, a state the
+  note recorded one bank earlier *without* predicting it would resolve
+  next. It did resolve next, but three other slots could have landed
+  first; the co-occurrence is forced by the two sets having shrunk to
+  the same single element, not by anything about the sweep.
 
   **THE THIRTIETH SPAN IS CLOSED**, filled by idx 1014 at 7948.8 s.
   It opened at **one hole** when idx 1013 came in at 6860.1 s while 1012
@@ -3153,64 +3152,48 @@ exactly one bank.
   bank.py's span guard caught the close: **twenty-first real firing,
   eleventh in the close direction.**
 
-  **idx 1012 IS STILL THE DEAREST CUBE THE OPEN BLOCK HAS PRODUCED**, at
-  **8214.9 s** — idx 1014's 7948.8 s came within 266.1 s of it and did
-  not displace it — against a block maximum of 6860.1 s before either.
-  Both finished far inside the cap, at **0.3803** and **0.3680** of
-  21600 s. Ranks recomputed at **N = 1022**: idx 1012 is **179 of 1022**
-  (843 cheaper) and idx 1014 is **186 of 1022** (836 cheaper); idx 1017,
-  at 7282.7 s, is **210 of 1022** (812 cheaper) and joins them as the
-  block's **three dearest — 7282.7, 7948.8, 8214.9**, all three landing
-  within the **last seven** rows of the block: read off the file in
-  completion order they sit at positions 20, 15 and 14 of 20, i.e. 1st,
-  6th and 7th from the end. *(A draft said "last six". Eleventh in the
-  tally; the file's row order is the record and it was read rather than
-  reconstructed.)*
-  Block `[13, 13, 11, 8]` now has **20 of 21** decided, costs spanning
-  **549.4 to 8214.9 s** — a spread of **14.9525×**, unchanged across
-  seven banks because neither endpoint has moved — with median
-  **3802.75 s** and mean **3775.8 s**.
+  **THE RUNNING STATS FOR `[13, 13, 11, 8]` ARE RETIRED: THE BLOCK IS
+  CLOSED AND ITS FINAL FIGURES ARE IN THE CLOSED-BLOCK TABLE** — n = 21,
+  min 549.4, median 3828.7, mean 3965.7, max 8214.9, spread 14.9525×.
+  The per-bank running versions were **descriptive of an open block and
+  said so**; they are removed rather than left behind, because a stale
+  "now has 20 of 21" is exactly the kind of figure this file keeps
+  finding months later. What is kept is the one thing they were written
+  to demonstrate:
 
-  ***THE MEDIAN WENT 3877.3 → 3977.8 → 3877.3 → 3776.8 → 3590.15 →
-  3776.8 → 3802.75 ACROSS SEVEN ROWS, AND THE MEAN 3634.6 → 3922.2 →
-  3889.8 → 3742.9 → 3578.0 → 3591.2 → 3775.8.*** **The median returned
-  to a previous value twice** — 3877.3 at rows one and three, 3776.8 at
-  rows four and six — which is the parity effect repeating, not the
-  figure settling; the seventh row moved it again, to a value it has not
-  held before.
-  At 14 of 21 the median read 3877.3; idx 1014 pushed it to 3977.8; idx
-  1016 at 3403.5 s pulled it back to **exactly where it started**; idx
-  1019 at 1391.5 s moved it down to 3776.8; idx 1021 at 775.7 s took it
-  to 3590.15; **idx 1020 at 3828.7 s put it back to 3776.8**, a value it
-  had already held two rows earlier. An even count's median is the
-  midpoint of two neighbours, so it oscillates as members arrive on
-  either side, and the return to
-  3877.3 was **parity, not settling** — which the next row demonstrated
-  by leaving it, the one after confirmed by leaving again, and the sixth
-  row restated by returning to a *different* old value. **A figure
-  returning to a previous value is not stability**, and this is the
-  clearest available reason open-block descriptive stats are kept out of
-  the closed-block table: **seven banks, seven medians, five distinct
-  values**. *At five rows this paragraph said the last three were all
-  below the running median and called that "a description of three rows,
-  not a trend". The sixth row went back up. **The hedge was the right
-  call and is left standing as written**, because a hedge that holds is
-  the only evidence that hedging was worth anything.*
+  ***THE MEDIAN TRAIL ACROSS THE BLOCK'S LAST EIGHT ROWS WAS
+  3877.3 → 3977.8 → 3877.3 → 3776.8 → 3590.15 → 3776.8 → 3802.75 →
+  3828.7*** — eight banks, **six distinct values**, with **two separate
+  returns to a figure it had already held**. An even count's median is
+  the midpoint of two neighbours, so it oscillates as members arrive on
+  either side; **a figure returning to a previous value is not
+  stability**, and this is the clearest available reason open-block
+  descriptive statistics are kept out of the closed-block table until the
+  block closes. *At five rows the note said the last three sat below the
+  running median and called that "a description of three rows, not a
+  trend". The sixth row went back up, and the eighth finished **above
+  four of the preceding seven and below three** — neither a continuation
+  of the drift nor a reversal of it. The hedge is left standing as
+  written, because a hedge that holds is the only evidence that hedging
+  was worth anything.*
 
-  **These are descriptive of an OPEN block and
-  will keep moving**; they are not comparable with the closed-block
-  table, which is why they are written here and not added to it.
+  **idx 1012 ENDED AS THE BLOCK'S DEAREST CUBE**, at 8214.9 s, ahead of
+  idx 1014 at 7948.8 and idx 1018 at 7764.3 — the three of them within
+  the last eight rows in completion order. *(A check-in commit,
+  `8e1e048`, called idx 1018 the block's **fourth**-dearest while it was
+  still running at 7726 s elapsed; it was third then and is third now.
+  Twelfth in the tally.)*
 
-  **THIS BLOCK, UNUSUALLY, DOES *NOT* MIX MACHINE CONFIGURATIONS — AND A
-  DRAFT OF THE LINE ABOVE SAID IT DID.** The file-wide caveat ("cost
+  **THIS BLOCK, UNUSUALLY, DID *NOT* MIX MACHINE CONFIGURATIONS — AND A
+  DRAFT ONCE SAID IT DID.** The file-wide caveat ("cost
   figures span three machine configurations, from restarts #41 and #42")
   is true of the whole decided set and **false of this block**: its first
   member was committed at `aa1d7c0`, 2026-09-19 18:17:07Z, while restart
   #43 relaunched at 14:43:51Z and the driver has been pid 2149 ever
   since. **Every cube in `[13, 13, 11, 8]` ran on one configuration.**
   The block's min, max, median, mean and spread are therefore on a common
-  basis — the rank **179 of 1015** is not, because that population does
-  span the changes. *A blanket caveat repeated onto a narrower set can be
+  basis — the cost ranks quoted for its members are not, because the
+  decided set does span the changes. *A blanket caveat repeated onto a narrower set can be
   wrong in the narrowing; checked here rather than pasted.*
 
   **THE FILE HELD A HOLE AT 1008 AND NO SPAN WILL EVER RECORD IT.** idx
@@ -3574,7 +3557,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1023 of 1949 = 52.4885%**; **926 undecided**. **50% IS CROSSED**, at
+- **1025 of 1949 = 52.5911%**; **924 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3738,10 +3721,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **20 decided**, undecided [1018]
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **2 decided**, undecided 13 spanning 1024..1036
+  **3 decided**, undecided 12 spanning 1025..1036
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
