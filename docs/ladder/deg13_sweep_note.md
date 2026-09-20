@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T05:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T05:19Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2175,6 +2175,36 @@ Registration discipline, learned the hard way:
   | `[13,13,11,10]` | 38 | 633.0 | 4490.8 | 5113.1 | 12894.5 | 20.3705× |
   | `[13,13,11,9]` | 28 | 668.1 | 4243.7 | 4305.1 | 10427.2 | 15.6072× |
   | `[13,13,11,8]` | 21 | 549.4 | 3828.7 | 3965.7 | 8214.9 | 14.9525× |
+  | `[13,13,11,7]` | 15 | 315.5 | 3405.4 | 3232.8 | 6651.4 | 21.0821× |
+
+  **`[13,13,11,7]` CLOSED 15/15** (idx 1022..1036, contiguity verified by
+  `max - min + 1 == len` rather than eyeballed — closed by **idx 1034
+  after it ran 5561.3 s**, the same row that closed the thirty-second
+  span). Its 15 cubes cost **48492.7 core-seconds = 13.4702 core-hours**
+  in total. **Every row above was recomputed from the staged checkpoint
+  when this one was added** and all **31** already tabled reproduced
+  their recorded figures, with the set comparison reporting **32 closed,
+  32 tabled after the addition, and exactly one partially-decided block
+  left** — `[13,13,11,6]` at 7 of 11.
+
+  ***ITS MEAN IS BELOW ITS MEDIAN, AND THAT IS RARE IN THIS TABLE, NOT
+  MERELY UNUSUAL.*** mean **3232.8** against median **3405.4**. Counted
+  over the 31 rows above it: **27 have the mean ABOVE the median, 3 have
+  them equal, and exactly ONE has the mean below** — `[13,13,12,6]`. So
+  `[13,13,11,7]` is the **second block out of 32** to lean cheap this
+  way. *A first draft of this line called the ordering "not the usual
+  one", which is true and useless; 1 in 31 is the figure, and it was
+  counted rather than characterised.*
+
+  **Its spread, 21.0821×, is wider than the three closed blocks below it
+  in the `[13,13,11,*]` run** — 11,8 at 14.9525×, 11,9 at 15.6072×,
+  11,10 at 20.3705× — **but NOT wider than 11,11's 30.8201×**, so it is
+  not a run maximum and is not called one. The width comes from the
+  cheap end: idx 1036 at **315.5 s** is cheaper than any cube in 11,8
+  (min 549.4) or 11,9 (min 668.1), while this block's dearest, 6651.4,
+  sits below both of their maxima (8214.9 and 10427.2). *No trend is
+  claimed across the run — four closed blocks is four blocks, and
+  `[13,13,11,6]` is still open at 7 of 11.*
 
   **`[13,13,11,8]` CLOSED 21/21** (idx 1001..1021, contiguity verified by
   `max - min + 1 == len` rather than eyeballed — closed by **idx 1018
@@ -3445,7 +3475,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1211 -> 1212 rows)
+## State as of the last refresh (1212 -> 1213 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3456,9 +3486,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1212 rows; 1043 labels decided; 1043 UNSAT; 0 SAT; 0 labels
+- **1213 rows; 1044 labels decided; 1044 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1043 decided plus 169 superseded
+  A row count is not a decision count: 1044 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3477,14 +3507,29 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1033, highest decided 1043, holes [1034].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
-  ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
-  were all still running**, so the frontier stands contiguous 0..1029
-  with the highest decided index at 1033 and holes `[1030, 1031, 1032]`.
-  That is the **widest opening since the twenty-third**, which also
-  opened at three.
+- **Frontier contiguous 0..1043, highest decided 1043, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-SECOND SPAN IS CLOSED**, filled by **idx 1034 at
+  5561.3 s** — the same row that closed block `[13, 13, 11, 7]` at
+  15 of 15. The frontier jumped from contiguous 0..1033 to contiguous
+  **0..1043** in one row, a **ten-index advance**, and the hole set is
+  now empty.
+
+  **CARRIED FORWARD FROM THE OPEN PROSE, because that prose was its only
+  record:** the span **opened at THREE holes at once** — idx 1033 came in
+  at **2730.1 s** while **1030, 1031 and 1032 were all still running** —
+  which was the **widest opening since the twenty-third**, itself also
+  three. *The file's own lesson from span 31 is that replacing open prose
+  wholesale loses whatever only it recorded; the opening width and the
+  comparison to the twenty-third are that, here.*
+
+  **NO DURATION, NO RANKS AND NO COMMIT COUNT ARE WRITTEN YET.** They
+  come from `--spans all` run **after this closing commit exists**, and
+  every quoted span rank across the file is recomputed against the new N
+  **together, in one script**, after first reproducing the previous N's
+  ranks. **A three-hole opening does not make the chain start at 3** —
+  the chain is a property of the commit sequence, not of the file, and
+  this span's file-side table below is explicitly not the chain.
 
   **A BANK-TIME STATE LIST IS BANNED BY THIS FILE, AND ONE IS KEPT HERE
   ANYWAY — WITH THE CHECK THE BANNED ONE LACKED.** The twenty-eighth
@@ -3520,21 +3565,33 @@ exactly one bank.
   | idx 1043 | 2323.8 | `[1034, 1041, 1042]` | 3 |
   | idx 1041 | 3269.0 | `[1034, 1042]` | 2 |
   | idx 1042 | 3390.3 | `[1034]` | 1 |
+  | idx 1034 (closer) | 5561.3 | `[]` | 0 |
 
-  **3 → 2 → 1 → 3 → 2 → 1 → 1 → 3 → 2 → 1 → 3 → 2 → 1**, read straight
-  off the count column: one hole **five times**, two holes **four
-  times**, three holes **four times**, and — stated with its convention,
-  because the answer depends on it — a longest **strictly decreasing**
-  stretch of **3** (`3 → 2 → 1`) and a longest **non-increasing** stretch
-  of **4** (`3 → 2 → 1 → 1`), which is the convention the chain verdicts
-  use. Neither stretch figure has moved since the seventh row.
+  **3 → 2 → 1 → 3 → 2 → 1 → 1 → 3 → 2 → 1 → 3 → 2 → 1 → 0**, read
+  straight off the count column: three holes **four times**, two holes
+  **four times**, one hole **five times**, zero holes **once**, which is
+  the close.
 
-  ***THE CHAIN IS FOUR COMPLETE `3 → 2 → 1` DESCENTS WITH ONE EXTRA `1`
-  IN THE MIDDLE. REPORTED AS A SHAPE, NOT A LAW.*** Strictly-decreasing
-  decomposition `(0,3) (3,3) (6,1) (7,3) (10,3)`, maximal runs at rows
-  **0, 3, 7 and 10** — computed, not eyeballed. It is tempting to read
-  this as a cycle; **it is not offered as one.** Thirteen rows is
-  thirteen rows, the span is still open, and this file has a whole
+  ***THE CLOSING ROW MOVED A STRETCH FIGURE THAT HAD NOT MOVED SINCE THE
+  SEVENTH, AND IT MADE THE TWO CONVENTIONS AGREE FOR THE FIRST TIME.***
+  Through thirteen rows the longest **strictly decreasing** stretch was
+  **3** and the longest **non-increasing** stretch was **4** — the
+  disagreement that the seventeenth tally entry was written about. The
+  final descent runs `3 → 2 → 1 → 0`, four steps and strictly
+  decreasing, so **both conventions now read 4**: strict decomposition
+  `(0,3) (3,3) (6,1) (7,3) (10,4)` with its maximum at row 10,
+  non-increasing `(0,3) (3,4) (7,3) (10,4)` with maxima at rows 3 **and**
+  10. *The agreement is an artifact of the span ending, not a finding:
+  a closing row always drives the count to zero, so the last descent gets
+  one extra step for free. Recorded with that caveat attached rather
+  than as a convergence.*
+
+  ***THE FILE-SIDE SEQUENCE ENDED AS FOUR `3 → 2 → 1` DESCENTS WITH ONE
+  EXTRA `1`, THE LAST ONE RUNNING ON TO `0`. REPORTED AS A SHAPE, NOT A
+  LAW.*** Descent starts at rows **0, 3, 7 and 10** — computed, not
+  eyeballed. It was tempting to read this as a cycle; **it was never
+  offered as one, and the span closed before any row tested it.**
+  Fourteen rows is fourteen rows, and this file has a whole
   section on mechanisms invented to fit the data they post-date. *What
   can be said without inventing anything: the driver has four slots, and
   after restart #44 all four in-flight cubes were launched at the same
@@ -3544,16 +3601,16 @@ exactly one bank.
   read off this chain; whether it explains the shape is **NOT
   established**.
 
-  ***ROWS THAT COULD HAVE BROKEN THE SHAPE AND DID NOT ARE NOT NARRATED
-  HERE ONE BY ONE.*** **This paragraph does not grow by one sentence per
-  agreeing row**, which is how the prose beside a recomputed table goes
-  stale in this file; the count of agreeing rows is readable off the
-  table and is not carried here. The figures above *are* kept current,
-  because a stale computed figure is a different failure from an
-  un-narrated observation. *An agreeing observation is the cheapest kind
-  of corroboration and the one least able to validate* — the same
-  standard applied to the re-take-lag band, which has agreed eight times
-  in ten and is still refused as a law. **Only a break gets written up.**
+  ***THE SHAPE WAS NEVER TESTED, AND THAT IS THE HONEST VERDICT ON IT.***
+  The rule adopted mid-span was "only a break gets written up"; no break
+  came, and the span then ended. So the sequence is left as a
+  description of fourteen rows and **nothing is concluded from it** —
+  not a cycle, not a period, not a mechanism. *An agreeing observation is
+  the cheapest kind of corroboration and the one least able to validate*
+  — the same standard applied to the re-take-lag band, which has agreed
+  eight times in ten and is still refused as a law. **A pattern that ran
+  out of data before it could be falsified is weaker than one that was
+  falsified**, because the second at least told you something.
 
   *A draft said "no monotone stretch longer than three" without naming
   which; under the note's own non-increasing convention that is wrong.
@@ -4152,7 +4209,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1043 of 1949 = 53.5146%**; **906 undecided**. **50% IS CROSSED**, at
+- **1044 of 1949 = 53.5659%**; **905 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4387,8 +4444,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **14 decided**, undecided [1034]
 - `[13, 13, 11, 6]` idx 1037..1047: **11 members**,
   **7 decided**, undecided [1044, 1045, 1046, 1047]
 
