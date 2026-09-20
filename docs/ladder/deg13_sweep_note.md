@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3863,7 +3863,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1237 -> 1239 rows)
+## State as of the last refresh (1239 -> 1240 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3874,9 +3874,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1239 rows; 1070 labels decided; 1070 UNSAT; 0 SAT; 0 labels
+- **1240 rows; 1071 labels decided; 1071 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1070 decided plus 169 superseded
+  A row count is not a decision count: 1071 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3895,10 +3895,12 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1069, highest decided 1069, holes [].**
+- **Frontier contiguous 0..1070, highest decided 1070, holes [].**
   <!-- SPAN-STATE: closed -->
-  **NO SPAN IS OPEN.** The frontier is contiguous **0..1069** and the
-  hole set is empty.
+  **NO SPAN IS OPEN.** The frontier and hole set are on the bullet line
+  above, which bank.py owns; *this prose deliberately does not repeat
+  them, because a figure duplicated beside the one that gets rewritten
+  is exactly how this file has gone stale before.*
 
   ***THE FILE HELD A HOLE AT `[1068]` FOR 51 SECONDS AND NO SPAN WILL
   EVER RECORD IT — THE SECOND SUCH CASE, AFTER `[1008]`.*** idx 1069
@@ -4895,7 +4897,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1070 of 1949 = 54.8999%**; **879 undecided**. **50% IS CROSSED**, at
+- **1071 of 1949 = 54.9513%**; **878 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5013,6 +5015,29 @@ exactly one bank.
   there, which is bookkeeping and not a prediction. **It was reached**;
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
+
+  ***55% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND IT IS THE
+  THIRD-LOOSEST OF ALL 97.*** idx 1070 took the decided count to
+  **1071 = 54.9513%**, which rounds to 55.0 while sitting **below** 55,
+  so **55% is NOT crossed**: `ceil(0.55 × 1949) = 1072 = 55.0026%` is
+  the first value above it. Shortfall **0.048743 pp**, **tightness rank
+  95 of 97** — only k = 53 (0.049769) and k = 4 (0.049256) are looser,
+  and the 53% trap was the loosest of all. *Two of the three loosest
+  traps in the whole run fall inside this fourteen-threshold stretch,
+  which is a fact about where 1949's divisors sit and not about the
+  sweep.*
+
+  It is the **fourteenth** rounds-up-but-below figure in the
+  `k = 41..55` stretch this note narrates — fourteen and not fifteen
+  because **51% has no trap at all** — and the **53rd of the 97** traps
+  in the whole run.
+
+  **WHETHER THIS ONE IS CAUGHT DEPENDS ON THE COMMIT THAT CARRIES IT**,
+  and this commit carries it: the tree banked here holds decided = 1071.
+  *That is stated as what the commit does, not as a prediction — the
+  criterion is a committed tree holding the value, and the proxy of a
+  subject mentioning it was retracted at the 52% crossing.* The
+  caught/missed tally moves once the crossing row lands and not before.
 
   **54% IS CROSSED, AND ITS TRAP WAS CAUGHT.** idx 1051 took the decided
   count to **1053 = 54.0277%**, which is `ceil(0.54 × 1949) = 1053`
@@ -5172,7 +5197,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **3 decided**, undecided 25 spanning 1070..1094
+  **4 decided**, undecided 24 spanning 1071..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
