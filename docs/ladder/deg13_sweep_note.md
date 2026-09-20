@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T01:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T02:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1099,6 +1099,25 @@ same failure operating one level down. So the remedy extends again —
 **a breakdown of a computed total must itself be computed, and must be
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
+
+**A FIFTEENTH — TWO WRONG NUMBERS AND AN UNSTATED SCOPE IN ONE CLAUSE,
+AND FIXING IT PRODUCED THE BEST RESULT OF THE BANK.** A draft said
+"two of the twelve trap values so far were passed through between
+commits". The counter has passed **50** trap values, not twelve, and
+the "two" came from a check that had only ever been run over
+k = 41..52 — a scope the sentence did not state. Running it over the
+whole history gives **43 caught, 7 missed**. **Fifteen for fifteen**,
+caught by computing before the commit.
+
+**What makes this one different is that the correct figure was worth
+having.** Against an overall skip rate of **13.22%** — 136 of 1029
+committed decided-count values never held by any tree — the trap skip
+rate of **14.00%** differs by **0.78 percentage points**. So missing a
+trap is not a special event at all; it happens at essentially the rate
+any counter value goes unobserved. *The error forced a computation that
+turned an anecdote into a base rate, and the base rate says the anecdote
+meant nothing. That is luck, not method: the same sloppiness would
+usually just be wrong.*
 
 **A FOURTEENTH — AND IT BREAKS THE RULE THE TWELFTH WROTE, AT THE FIRST
 OPPORTUNITY TO BREAK IT.** The commit `c637f52` says "four rows to the
@@ -3062,7 +3081,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1198 -> 1199 rows)
+## State as of the last refresh (1199 -> 1200 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3073,9 +3092,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1199 rows; 1030 labels decided; 1030 UNSAT; 0 SAT; 0 labels
+- **1200 rows; 1031 labels decided; 1031 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1030 decided plus 169 superseded
+  A row count is not a decision count: 1031 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3093,8 +3112,36 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1029, highest decided 1029, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1029, highest decided 1033, holes [1030, 1031, 1032].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
+  ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
+  were all still running**, so the frontier stands contiguous 0..1029
+  with the highest decided index at 1033 and holes `[1030, 1031, 1032]`.
+  That is the **widest opening since the twenty-third**, which also
+  opened at three.
+
+  **The guard firing count had to be reconstructed, and the reason is a
+  defect worth naming.** bank.py's span guard caught this opening as the
+  **twenty-fourth real firing, twelfth in the open direction** — derived,
+  not read: the last firing this file records is the **twenty-first**
+  (span 30's close, eleventh close), and the two since — span 31's open
+  and close — **are not in the file at all**. Span 31's open prose did
+  carry its count, and **that prose was replaced wholesale by the close
+  prose**, taking the line with it. So 21 = 11 closes + 10 opens, then
+  22 (open), 23 (close), 24 (this open) = 12 and 12. *The lesson is
+  narrow and concrete: **when open prose is replaced by close prose,
+  carry forward anything the open prose was the only record of.** The
+  guard count is the one thing in that block that does not appear
+  anywhere else.*
+
+  **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
+  commit count and hole trajectory come from `--spans all` run *after*
+  the closing commit exists. **A three-hole opening does not make the
+  chain start at 3**, any more than the thirty-first's two-hole opening
+  made it start at 2 — though that one did, which is a coincidence and
+  not a rule. The chain is a property of the commit sequence.
+
   **THE THIRTY-FIRST SPAN IS CLOSED**, filled by idx 1018 at 7764.3 s —
   **the same row that closed block `[13, 13, 11, 8]` at 21 of 21.**
   It opened at **two holes at once** when idx 1019 came in at 1391.5 s
@@ -3126,6 +3173,10 @@ exactly one bank.
   twenty-eighth's proved wrong about the banks; the widening and the two
   narrowings recorded above are named facts about named banks, and they
   are **not** what produced this chain.
+
+  bank.py's span guard caught that close: **twenty-third real firing,
+  twelfth in the close direction** — a figure restored here, having been
+  lost when this block's open prose was overwritten.
 
   **IT IS THE THIRTEENTH False VERDICT AND THE WEAKEST OF THEM.** Five
   comparisons puts it **last of the thirteen** by comparison count —
@@ -3601,7 +3652,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1030 of 1949 = 52.8476%**; **919 undecided**. **50% IS CROSSED**, at
+- **1031 of 1949 = 52.8989%**; **918 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3622,8 +3673,8 @@ exactly one bank.
   news. **Next: 52% needs 1014 (52.0267%), and it DOES have a trap** —
   predecessor 1013 = 51.9754%, short by 0.024628 pp, which rounds to
   52.0 without reaching it.
-  **THE COUNTER IS NOW ONE ROW BELOW THAT TRAP**, at 1012 = 51.9241%,
-  recomputed at this bank rather than carried: 1012 → 51.9241% (rounds
+  **AT 1012 THE COUNTER SAT ONE ROW BELOW THAT TRAP**, at 51.9241%,
+  recomputed at that bank rather than carried: 1012 → 51.9241% (rounds
   to 51.9), 1013 → 51.9754% (rounds to 52.0, **not above 52**), 1014 →
   52.0267% (above). `ceil(0.52 × 1949) = 1014` by script, matching what
   was written at the 51% crossing. **Nothing is predicted about whether
@@ -3716,9 +3767,52 @@ exactly one bank.
 
   Next: **53% needs `ceil(0.53 × 1949) = 1033` = 53.0015%, trap at
   1032 = 52.9502%** — from the script, written before the counter gets
-  there, which is bookkeeping and not a prediction. Whether a committed
-  tree will sit on 1032 is not predicted, and on the evidence of the
-  last two traps it is roughly a coin flip.
+  there, which is bookkeeping and not a prediction.
+
+  **THE COUNTER IS NOW ONE ROW BELOW THE 53% TRAP**, at 1031 = 52.8989%,
+  computed at this bank: 1032 − 1031 = **1** row to the trap and
+  1033 − 1031 = **2** to the crossing. *That arithmetic is trivial and is
+  run anyway, because a previous bank's commit body got the same
+  quantity wrong by typing it — the fourteenth tally entry.* Whether a
+  committed tree will be observed sitting on 1032 is **not predicted**,
+  and this bank finally measured why that refusal is right.
+
+  **THE TRAP-MISS RATE IS THE ORDINARY SKIP RATE, MEASURED OVER THE WHOLE
+  RUN.** A draft here said "two of the twelve trap values so far were
+  passed through between commits". **Both numbers were wrong and the
+  scope was unstated**: the counter has passed **50** trap values, not
+  twelve, and the two-miss figure came from a check run only over
+  k = 41..52. Computed properly, over all **1012 commits that touch the
+  checkpoint**, recomputing the decided count in each blob:
+
+  - committed decided counts span **2..1030**, i.e. 1029 integer values;
+  - **893** of them were held by some committed tree, so **136 were
+    passed through between commits — an overall skip rate of 13.22%**;
+  - of the **50** trap values in that range, **43 were caught and 7
+    missed** — `19, 58, 77, 97, 116, 916, 1013` — a **trap skip rate of
+    14.00%**.
+
+  **The two rates differ by 0.78 percentage points.** Missing a trap is
+  therefore not a special event and carries no information about the
+  sweep: it happens at very close to the rate at which *any* counter
+  value goes unobserved, which is set by banking cadence alone. **Five
+  of the seven misses are from the first 120 rows**, when banking was
+  coarse. *This replaces an anecdote with a base rate, and the base rate
+  says the anecdote meant nothing.* Fifteenth in the tally, caught by
+  computing before the commit.
+
+  **AND IT KILLS A SECOND CLAIM THAT WAS SITTING RIGHT NEXT TO IT.** The
+  sentence this block displaced read: "whether a committed tree will sit
+  on 1032 is not predicted, and on the evidence of the last two traps it
+  is **roughly a coin flip**". Two of the last two is a 100% miss rate
+  and two of eleven is 18%; neither is a coin flip, and the measured
+  figure over the whole run is **14.00%**. **The phrase was an
+  impression formed from the two most recent cases**, which were the two
+  the note happened to have written up. It is deleted, not softened —
+  and it is the clearest instance yet of the failure this tally keeps
+  recording: *a quantity inferred from the handful of cases in view
+  rather than from the range.*
+
   **CROSSING HALF IS NOT HALF A RESULT**: deg(0)=13 is UNSAT only when
   **all 1949** are, and 975 UNSATs say nothing about the other 974.
   **COST FIGURES SPAN THREE MACHINE CONFIGURATIONS**, from restarts #41
@@ -3766,7 +3860,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **8 decided**, undecided 7 spanning 1030..1036
+  **9 decided**, undecided 6 spanning 1030..1036
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
