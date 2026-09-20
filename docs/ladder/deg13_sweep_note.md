@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T03:16Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T03:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1099,6 +1099,15 @@ same failure operating one level down. So the remedy extends again —
 **a breakdown of a computed total must itself be computed, and must be
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
+
+**A SIXTEENTH, AND THE SMALLEST POSSIBLE: ONE DIGIT IN A RATIO.** A
+draft said block `[13,13,11,7]`'s spread had been **7.5744×** before idx
+1036; `5538.8 / 731.2 = 7.5749`. The figure was typed from the shape of
+a number rather than divided. **Sixteen for sixteen.** It changes
+nothing about the block and would have misled nobody — and it is logged
+anyway, because the tally only measures the rate if the trivial ones go
+in too, and because this is the same hand that produced the fourteenth
+by typing a subtraction.
 
 **A FIFTEENTH — TWO WRONG NUMBERS AND AN UNSTATED SCOPE IN ONE CLAUSE,
 AND FIXING IT PRODUCED THE BEST RESULT OF THE BANK.** A draft said
@@ -3081,7 +3090,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1201 -> 1202 rows)
+## State as of the last refresh (1202 -> 1203 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3092,9 +3101,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1202 rows; 1033 labels decided; 1033 UNSAT; 0 SAT; 0 labels
+- **1203 rows; 1034 labels decided; 1034 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1033 decided plus 169 superseded
+  A row count is not a decision count: 1034 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3112,7 +3121,7 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1030, highest decided 1033, holes [1031].**
+- **Frontier contiguous 0..1030, highest decided 1036, holes [1031, 1034, 1035].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
@@ -3122,8 +3131,25 @@ exactly one bank.
   opened at three. **It has since narrowed to two**, `[1031, 1032]`, when
   idx 1030 came in at **5506.8 s**, **and to one**, `[1031]`, when idx
   1032 came in at **5538.8 s** — 32.0 s dearer than its neighbour, which
-  is as close as any two costs in this block have come. Bank-time
-  observations of the file, **not chain entries**.
+  is as close as any two costs in this block have come — **and back out
+  to three**, `[1031, 1034, 1035]`, when idx 1036 came in at **315.5 s**
+  and jumped both 1034 and 1035. Bank-time observations of the file,
+  **not chain entries**.
+
+  **THE SPAN HAS NOW BEEN AT THREE HOLES TWICE, WITH A ONE-HOLE STATE IN
+  BETWEEN**, which is the clearest illustration this file has of why a
+  hole count is not a progress bar: 3 → 2 → 1 → 3 in the file, and the
+  commit sequence will report whatever subset of that reached a commit.
+  **The chain is still not written.**
+
+  **idx 1036 IS THE CHEAPEST CUBE ITS BLOCK HAS PRODUCED**, at 315.5 s
+  against a previous block minimum of 731.2 s, and the **3.09th
+  percentile** of the whole decided set — rank 1002 of 1034, only 32
+  cheaper. It widened the block's spread from **7.5749×** to
+  **17.5556×** in one row, which is what a new minimum does to a ratio
+  and is not a statement about the block's difficulty. *(The first
+  figure was typed as 7.5744 and corrected to 7.5749 by computing
+  5538.8 / 731.2 — sixteenth in the tally.)*
 
   **The guard firing count had to be reconstructed, and the reason is a
   defect worth naming.** bank.py's span guard caught this opening as the
@@ -3656,7 +3682,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1033 of 1949 = 53.0015%**; **916 undecided**. **50% IS CROSSED**, at
+- **1034 of 1949 = 53.0528%**; **915 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3892,7 +3918,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **11 decided**, undecided [1031, 1034, 1035, 1036]
+  **12 decided**, undecided [1031, 1034, 1035]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
