@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T03:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T03:30Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3090,7 +3090,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1202 -> 1203 rows)
+## State as of the last refresh (1203 -> 1204 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3101,9 +3101,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1203 rows; 1034 labels decided; 1034 UNSAT; 0 SAT; 0 labels
+- **1204 rows; 1035 labels decided; 1035 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1034 decided plus 169 superseded
+  A row count is not a decision count: 1035 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3121,26 +3121,58 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1030, highest decided 1036, holes [1031, 1034, 1035].**
+- **Frontier contiguous 0..1030, highest decided 1036, holes [1031, 1034].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
   were all still running**, so the frontier stands contiguous 0..1029
   with the highest decided index at 1033 and holes `[1030, 1031, 1032]`.
   That is the **widest opening since the twenty-third**, which also
-  opened at three. **It has since narrowed to two**, `[1031, 1032]`, when
-  idx 1030 came in at **5506.8 s**, **and to one**, `[1031]`, when idx
-  1032 came in at **5538.8 s** — 32.0 s dearer than its neighbour, which
-  is as close as any two costs in this block have come — **and back out
-  to three**, `[1031, 1034, 1035]`, when idx 1036 came in at **315.5 s**
-  and jumped both 1034 and 1035. Bank-time observations of the file,
-  **not chain entries**.
+  opened at three.
 
-  **THE SPAN HAS NOW BEEN AT THREE HOLES TWICE, WITH A ONE-HOLE STATE IN
-  BETWEEN**, which is the clearest illustration this file has of why a
-  hole count is not a progress bar: 3 → 2 → 1 → 3 in the file, and the
-  commit sequence will report whatever subset of that reached a commit.
-  **The chain is still not written.**
+  **A BANK-TIME STATE LIST IS BANNED BY THIS FILE, AND ONE IS KEPT HERE
+  ANYWAY — WITH THE CHECK THE BANNED ONE LACKED.** The twenty-eighth
+  span's list was retired because it was *both* a different object from
+  the chain *and* **an incomplete record of the banks**: it named eight
+  where there were ten, and nothing caught it. The rule that followed was
+  "no bank-time state list". This table breaks that rule deliberately,
+  and earns it by being **verified against `git log -- CHECKPOINT`**:
+  every commit touching the checkpoint since the opener was re-read and
+  its hole set recomputed from the blob. The committed sequence is
+  `0333cf3` → `[1030,1031,1032]`, `a2c6669` → `[1031,1032]`, `7f1e782` →
+  `[1031]`, `8c60ecc` → `[1031,1034,1035]` — **exactly the first four
+  rows below, with no commit missing and none extra.** *The check, not
+  the table, is the thing that makes this admissible; if it ever fails,
+  the table goes.*
+
+  **THE FILE'S HOLE STATES SO FAR, ONE LINE PER BANK** — *a record of the
+  FILE, kept as a table so it does not grow by accretion, and **not** the
+  chain*:
+
+  | bank's row | cost (s) | holes after it | count |
+  |---|---|---|---|
+  | idx 1033 (opener) | 2730.1 | `[1030, 1031, 1032]` | 3 |
+  | idx 1030 | 5506.8 | `[1031, 1032]` | 2 |
+  | idx 1032 | 5538.8 | `[1031]` | 1 |
+  | idx 1036 | 315.5 | `[1031, 1034, 1035]` | 3 |
+  | idx 1035 | 1671.8 | `[1031, 1034]` | 2 |
+
+  **3 → 2 → 1 → 3 → 2, with three holes reached twice and a one-hole
+  state in between.** That is the clearest illustration this file has of
+  why a hole count is not a progress bar.
+
+  **FOR THIS SPAN THE TWO OBJECTS HAPPEN TO COINCIDE SO FAR, AND THAT IS
+  A FACT ABOUT BANKING CADENCE, NOT A LICENCE.** Every row above was
+  banked in its own commit, so each file state also reached a commit —
+  which is why the git check matched row for row. **The chain is still
+  not written**, because the span is open and the next bank may combine
+  rows, exactly as the twenty-fifth's did; `--spans all` after the
+  closing commit remains the only authority.
+
+  *Two costs in the table are worth a line each. idx 1032's 5538.8 s is
+  **32.0 s** dearer than idx 1030's — the closest adjacent pair in this
+  block. idx 1036's 315.5 s is the block's cheapest, and it is what
+  widened the hole set back to three.*
 
   **idx 1036 IS THE CHEAPEST CUBE ITS BLOCK HAS PRODUCED**, at 315.5 s
   against a previous block minimum of 731.2 s, and the **3.09th
@@ -3682,7 +3714,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1034 of 1949 = 53.0528%**; **915 undecided**. **50% IS CROSSED**, at
+- **1035 of 1949 = 53.1042%**; **914 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3918,7 +3950,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **12 decided**, undecided [1031, 1034, 1035]
+  **13 decided**, undecided [1031, 1034]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
