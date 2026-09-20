@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T20:50Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T20:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1190,16 +1190,16 @@ later and the walk put it at exactly that — so the rule was stated
 before the case that tested it, which is the only order in which a rule
 is worth anything.*
 
-**It has now held five times**: ordinals **thirty-seven**,
-**thirty-eight**, **thirty-nine** and **forty** were derived at
-`fe66c20`, `52281b2`, `c3912ca` and at the fortieth's opening, each when
-that span OPENED and before any of its figures existed, and the walks
-run after `ae0b64e`, `ff5f073`, `7440e6b` and `39bb186` returned walk
-positions **102**, **103**, **104** and **105**. *Five is not a
-validation either, and is not offered as one — the offset is arithmetic
-over a list, not a hypothesis. What the repeats add is only that the
-derivation was made ahead of the outcome each time rather than after
-it.*
+**It has now held six times**: ordinals **thirty-seven** through
+**forty-one** were each derived when that span OPENED and before any of
+its figures existed, and the walks run after `ae0b64e`, `ff5f073`,
+`7440e6b`, `39bb186` and `f558bb0` returned walk positions **102**,
+**103**, **104**, **105** and **106**. *Six is not a validation either,
+and is not offered as one — the offset is arithmetic over a list, not a
+hypothesis. What the repeats add is only that the derivation was made
+ahead of the outcome each time rather than after it. The count of
+repeats is deliberately the only number here that moves; the per-ordinal
+commit list was dropped when it outgrew its usefulness.*
 
 A draft had been ready to call the thirty-sixth by that number merely
 because thirty-five came before it: the right answer by the wrong
@@ -1209,32 +1209,94 @@ at the thirty-fifth.
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 33 of 105 | 2 | 57 of 105 (21 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 44 of 105 | 2 | 57 of 105 (21 tied) |
-| seventeenth `75ff84b` | 2:36:20 | 15 of 105 | 8 | 22 of 105 (6 tied) |
-| eighteenth `faa424a` | 1:06:55 | 39 of 105 | 8 | 22 of 105 (6 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 54 of 105 | 1 | 79 of 105 (26 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 19 of 105 | 2 | 57 of 105 (21 tied) |
-| twenty-first `83cabc1` | **5:05:31** | **8 of 105** | 7 | 29 of 105 (6 tied) |
-| twenty-second `31d9565` | 1:57:02 | 24 of 105 | 4 | 44 of 105 (**1 tied**) |
-| twenty-third `b4d2068` | 2:17:22 | 20 of 105 | 10 | 14 of 105 (4 tied) |
-| twenty-fourth `e2e3d5f` | 0:10:42 | 57 of 105 | 1 | 79 of 105 (26 tied) |
-| twenty-fifth `741b900` | 0:54:37 | 42 of 105 | 1 | 79 of 105 (26 tied) |
-| twenty-sixth `b7f8c36` | 1:14:19 | 38 of 105 | 1 | 79 of 105 (26 tied) |
-| twenty-seventh `d322a9d` | 1:49:26 | 29 of 105 | 2 | 57 of 105 (21 tied) |
-| twenty-eighth `6f6d668` | 1:56:29 | 25 of 105 | **9** | **19 of 105** (2 tied) |
-| twenty-ninth `69a8a16` | 0:18:42 | 55 of 105 | 1 | 79 of 105 (26 tied) |
-| thirtieth `3db5927` | 1:36:10 | 31 of 105 | 2 | 57 of 105 (21 tied) |
-| thirty-first `43f2ddb` | 1:31:53 | 32 of 105 | 6 | 36 of 105 (2 tied) |
-| thirty-second `5cde733` | **3:33:32** | **12 of 105** | **11** | **11 of 105** (2 tied) |
-| thirty-third `743c24d` | 1:15:56 | 35 of 105 | 6 | 36 of 105 (2 tied) |
-| thirty-fourth `4e27c14` | **0:09:49** | **58 of 105** | 1 | 79 of 105 (26 tied) |
-| thirty-fifth `bb28ab9` | 0:39:00 | 47 of 105 | **8** | **22 of 105** (6 tied) |
-| thirty-sixth `b393f25` | 0:37:35 | 48 of 105 | 2 | 57 of 105 (21 tied) |
-| thirty-seventh `ae0b64e` | 0:20:34 | 53 of 105 | 1 | 79 of 105 (26 tied) |
-| thirty-eighth `ff5f073` | **2:03:16** | 22 of 105 | **8** | 22 of 105 (6 tied) |
-| thirty-ninth `7440e6b` | 0:47:02 | 45 of 105 | 1 | 79 of 105 (26 tied) |
-| fortieth `39bb186` | **2:06:48** | 21 of 105 | 4 | 44 of 105 (**1 tied**) |
+| fifteenth `a5172c7` | 1:29:45 | 34 of 106 | 2 | 58 of 106 (21 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 45 of 106 | 2 | 58 of 106 (21 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 15 of 106 | 8 | 22 of 106 (7 tied) |
+| eighteenth `faa424a` | 1:06:55 | 40 of 106 | 8 | 22 of 106 (7 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 55 of 106 | 1 | 80 of 106 (26 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 19 of 106 | 2 | 58 of 106 (21 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 106** | 7 | 30 of 106 (6 tied) |
+| twenty-second `31d9565` | 1:57:02 | 25 of 106 | 4 | 45 of 106 (1 tied) |
+| twenty-third `b4d2068` | 2:17:22 | 20 of 106 | 10 | 14 of 106 (4 tied) |
+| twenty-fourth `e2e3d5f` | 0:10:42 | 58 of 106 | 1 | 80 of 106 (26 tied) |
+| twenty-fifth `741b900` | 0:54:37 | 43 of 106 | 1 | 80 of 106 (26 tied) |
+| twenty-sixth `b7f8c36` | 1:14:19 | 39 of 106 | 1 | 80 of 106 (26 tied) |
+| twenty-seventh `d322a9d` | 1:49:26 | 30 of 106 | 2 | 58 of 106 (21 tied) |
+| twenty-eighth `6f6d668` | 1:56:29 | 26 of 106 | **9** | **19 of 106** (2 tied) |
+| twenty-ninth `69a8a16` | 0:18:42 | 56 of 106 | 1 | 80 of 106 (26 tied) |
+| thirtieth `3db5927` | 1:36:10 | 32 of 106 | 2 | 58 of 106 (21 tied) |
+| thirty-first `43f2ddb` | 1:31:53 | 33 of 106 | 6 | 37 of 106 (2 tied) |
+| thirty-second `5cde733` | **3:33:32** | **12 of 106** | **11** | **11 of 106** (2 tied) |
+| thirty-third `743c24d` | 1:15:56 | 36 of 106 | 6 | 37 of 106 (2 tied) |
+| thirty-fourth `4e27c14` | **0:09:49** | **59 of 106** | 1 | 80 of 106 (26 tied) |
+| thirty-fifth `bb28ab9` | 0:39:00 | 48 of 106 | **8** | **22 of 106** (7 tied) |
+| thirty-sixth `b393f25` | 0:37:35 | 49 of 106 | 2 | 58 of 106 (21 tied) |
+| thirty-seventh `ae0b64e` | 0:20:34 | 54 of 106 | 1 | 80 of 106 (26 tied) |
+| thirty-eighth `ff5f073` | **2:03:16** | 22 of 106 | **8** | 22 of 106 (7 tied) |
+| thirty-ninth `7440e6b` | 0:47:02 | 46 of 106 | 1 | 80 of 106 (26 tied) |
+| fortieth `39bb186` | 2:06:48 | 21 of 106 | 4 | 45 of 106 (1 tied) |
+| forty-first `f558bb0` | 1:59:51 | 23 of 106 | **8** | 22 of 106 (**7 tied**) |
+
+***THE FORTY-FIRST MOVED FORTY-TWO FIGURES — 19 duration ranks, 19
+commit ranks and 4 tie counts***, asserted as 19 + 19 + 4 = 42 and
+summed by script over the twenty-six rows carried across. **Only 2 of
+the 26 came through untouched.** It is **the largest movement any close
+has produced**, ahead of the thirty-eighth's 38, which had held the
+record since it was set.
+
+**AND THE RECORD IS NOT AN ARTEFACT OF THE TABLE HAVING GROWN.** One row
+— the fortieth — has been added since the previous close, so the obvious
+objection is that 42 beats 38 because there is more table to move.
+Recomputed over the 25 rows excluding the fortieth, this close still
+moves **41**: the new row contributes **1** of the 42. *No footing
+comparison with the thirty-eighth itself is offered, because it faced a
+smaller table again — the table gains one row per close, and the
+thirty-eighth's 38 was measured over 23.*
+
+**IT IS THE FIRST CLOSE TO MOVE BOTH COLUMNS IN BULK.** At **8 broken
+commits** it ties the largest tie group in the table and outranks
+everything below it on the commit side; at **1:59:51** it sits at 23 of
+106 by duration, high but not extreme. Four set equalities, each
+computed as a set and not inferred from a matching count:
+
+- the **19** commit ranks that moved are exactly the tabled rows with
+  **fewer than 8** commits;
+- the **4** tie counts that moved are exactly the tabled rows with
+  **exactly 8** commits — the seventeenth, eighteenth, thirty-fifth and
+  thirty-eighth, whose group goes 6 → 7;
+- the **19** duration ranks that moved are exactly the tabled rows
+  **shorter than 1:59:51**;
+- the **2** untouched rows, the twenty-third and thirty-second, are
+  exactly those beating it on **both** axes.
+
+*The thirty-eighth's entry below explains why a span near the top of
+both orderings displaces almost everything. This one is the same
+mechanism with the duration rank three places lower and one more row to
+displace.*
+
+**Its own figures, read from `--spans all` after `f558bb0` existed**:
+opened after `39bb186` at 18:50:54Z, closed by `f558bb0` at 20:50:45Z,
+duration **1:59:51** (1.9975 h) by committer timestamps, **8 broken
+commits**, hole counts `2,3,3,2,2,2,1,1`, monotone non-increasing
+**FALSE — it grew mid-span**, most holes at once **3 at `ade7ccf`**
+`[1111, 1112, 1114]`. *The open prose refused to name a chain and said
+its "two" described the opening only. The chain opens at 2 and reaches
+3, so the refusal was not ceremony.* **AND THE RATE IS WORTH THE LINE,
+BECAUSE IT CUTS AGAINST THE HEDGE AS OFTEN AS FOR IT.** Counted over the
+opening entry and the maximum of all **106** closed chains: **90 have
+their maximum at the opening and only 16 do not**, and among the four
+most recent closes — `3,1,1,3,3,2,2,1`, `1`, `3,3,2,1` and this one —
+the forty-first is **the only one** where the opening understated the
+maximum. *So quoting the opening as the width would have been right
+about 85% of the time. That is the argument for the discipline, not
+against it: a claim that is usually right is still a claim nobody
+measured, and this is the close where it would have been wrong.* *(A
+draft of this paragraph said "for the second time in four closes",
+which the chains contradict — it is the first of the four.)*
+
+**EIGHTEEN CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17,
+19, 33, 19, 5, 21, 15, 10, 38, 14, 35 AND 42 FIGURES — 321 IN TOTAL**,
+summed by script. The order of the top four is now 42, 38, 35, 33.
 
 ***THE FORTIETH MOVED THIRTY-FIVE FIGURES — 20 duration ranks, 14
 commit ranks and 1 tie count***, asserted as 20 + 14 + 1 = 35 and summed
@@ -1293,10 +1355,11 @@ which is not what its chain says**; it was corrected by reading the
 entry rather than recalling it, which is the recalled-instead-of-read
 pattern caught inside the paragraph that cites it.
 
-**SEVENTEEN CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17,
-19, 33, 19, 5, 21, 15, 10, 38, 14 AND 35 FIGURES — 279 IN TOTAL**,
-summed by script. The 38 is still the largest of the series and the 35
-is now second.
+**SEVENTEEN CONSECUTIVE CLOSES HAD MOVED 1, 5, 8, 14, 20, 5, 17, 19,
+33, 19, 5, 21, 15, 10, 38, 14 AND 35 FIGURES — 279 IN TOTAL**, summed by
+script *as of this close; the running figure is carried at the
+forty-first's entry above and deliberately not restated here.* The 38
+was then the largest of the series and the 35 second.
 
 ***THE THIRTY-NINTH MOVED FOURTEEN FIGURES — 7 duration ranks, 7 tie
 counts, and NOT ONE COMMIT RANK***, asserted as 7 + 7 + 0 = 14 and
@@ -1313,8 +1376,11 @@ decides whether a close disturbs the table or barely touches it.*
 
 ***THE THIRTY-EIGHTH MOVED THIRTY-EIGHT FIGURES — 18 duration ranks,
 17 commit ranks and 3 tie counts***, asserted as 18 + 17 + 3 = 38 and
-summed by script. **It is the largest movement any close has produced**,
-ahead of the 33 that held the record, and the reason is that this span
+summed by script. **It was the largest movement any close had
+produced**, ahead of the 33 that held the record before it — *superseded
+by the forty-first's 42, which is annotated here rather than rewritten
+because this entry is the record of what was computed at its own close* —
+and the reason is that this span
 is *both* long and heavily committed: at **2:03:16** it outranks all but
 20 of the 103, and with **8 broken commits** it ties the second-most
 common high value. A span that sorts near the top of one ordering
@@ -4449,21 +4515,29 @@ exactly one bank.
   has now been caught mechanically four times running.
 - **Frontier contiguous 0..1119, highest decided 1119, holes [].**
   <!-- SPAN-STATE: closed -->
-  **THE FORTY-FIRST SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
-  COMMIT.** It opened at **two holes at once** when idx 1113 landed at
+  **THE FORTY-FIRST SPAN IS CLOSED.** *The heading read "AND ITS FIGURES
+  ARE NOT IN THIS COMMIT" for exactly one commit — the bank that closed
+  it — which is what the two-commit procedure is for; they are below
+  now.* It opened at **two holes at once** when idx 1113 landed at
   1552.5 s while 1111 and 1112 were still running, widened to three when
   idx 1115 landed, narrowed back to two and then to one, and was filled
   by **idx 1112 at 8346.1 s**, the row banked here. The frontier and
   hole set are on the bullet line above, which bank.py owns; *this prose
   deliberately does not repeat them.*
 
-  **Its duration, ranks, hole-count chain and monotonicity are absent
-  deliberately: they do not exist yet.** `--spans all` walks
-  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
-  before the tool can see the span. They arrive in the next commit, with
-  **every rank in the spans table recomputed together at the new N**,
-  the twenty-six carried rows first reproduced at the old N in the same
-  script.
+  **Its figures, read from `--spans all` after `f558bb0` existed**:
+  opened after `39bb186`, closed by `f558bb0`, duration **1:59:51**
+  (1.9975 h), **8 broken commits**, hole counts `2,3,3,2,2,2,1,1`,
+  monotone non-increasing **FALSE — it grew mid-span**, most holes at
+  once 3 at `ade7ccf` `[1111, 1112, 1114]`. Ranks against **106 closed
+  spans, every quoted rank in this file recomputed in the same run**
+  with all 26 carried rows first reproduced at N = 105 (**0
+  mismatches**): **23 of 106 by duration**, **22 of 106 by commit
+  count** with **7 tied**. It moved **42 figures — the largest any close
+  has produced**, past the thirty-eighth's 38; the full account, with
+  the four set equalities behind that number and the check that the
+  record is not an artefact of the table having grown, is in the spans
+  section and **not repeated here**.
 
   *That the width went 2 → 3 → 2 → 1 is stated here as landings, not as
   the chain: the chain is one entry per broken commit and comes from the
