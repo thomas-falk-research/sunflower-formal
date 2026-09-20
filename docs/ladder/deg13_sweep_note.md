@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T23:02Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T23:08Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4522,7 +4522,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1295 -> 1296 rows)
+## State as of the last refresh (1296 -> 1298 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4533,7 +4533,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1296 rows; 1127 labels decided; 1127 UNSAT; 0 SAT; 0 labels
+- **1298 rows; 1129 labels decided; 1129 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4541,7 +4541,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1127 decided plus 169 superseded
+  A row count is not a decision count: 1129 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4560,7 +4560,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1124, highest decided 1127, holes [1125].**
+- **Frontier contiguous 0..1127, highest decided 1130, holes [1128, 1129].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND — THE ORDINAL RELEASED
   TWO BANKS AGO, NOW GENUINELY CLAIMED.** idx 1127 landed at 2969.2 s
@@ -4583,6 +4583,28 @@ exactly one bank.
   chains the opening widths are **37 at one, 32 at two, 34 at three and
   3 at four**, so three is the second-commonest and the maximum is four.
   **The live hole set is on the bullet line; read it there.**
+
+  ***AND ITS HOLE SET HAS TURNED OVER COMPLETELY WITHOUT THE SPAN
+  CLOSING — A SPAN IS A RUN OF COMMITS, NOT A SET OF HOLES.*** The
+  opening three, 1124, 1125 and 1126, are all filled. The span is
+  nonetheless **still open**, at 1128 and 1129, because `--spans all`
+  defines a span as a **maximal run of consecutive checkpoint-touching
+  commits whose tree has a non-empty hole set** — read out of the tool,
+  not assumed — and that run never broke: `24ea741` held `[1125]` and
+  the very next checkpoint commit holds `[1128, 1129]`. **The two sets
+  are disjoint and the span continues anyway.** *This is the sharper
+  form of the rule the retraction below states. That one said a span
+  lives in the commit sequence rather than the file; this one says the
+  holes themselves are not the span's identity — they may all be
+  replaced mid-span and the tool will neither notice nor care.*
+
+  **IT HAS HAPPENED ONCE BEFORE IN THE WHOLE COMMITTED HISTORY.**
+  Walking all **1099** checkpoint-touching commits and comparing hole
+  **sets** rather than counts across every consecutive pair inside a
+  run: there are **107** runs and exactly **one** prior disjoint
+  transition, `a5a0d3a` `[283]` → `164a30a` `[289]`. This is the
+  **second**. *Computed over the whole history rather than noticed,
+  because "I do not remember seeing this" is not a rate.*
 
   ***AND THE MAXIMUM-HOLES CASE HAPPENED WITHOUT SIMULTANEITY THIS
   TIME.*** The fortieth's entry explains that when cubes start together,
@@ -5998,7 +6020,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1127 of 1949 = 57.8245%**; **822 undecided**. **50% IS CROSSED**, at
+- **1129 of 1949 = 57.9271%**; **820 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6446,7 +6468,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 8]` idx 1116..1130: **15 members**,
-  **11 decided**, undecided [1125, 1128, 1129, 1130]
+  **13 decided**, undecided [1128, 1129]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
