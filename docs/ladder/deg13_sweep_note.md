@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T18:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T18:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -277,6 +277,25 @@ the answer is a bracket, not a substituted number.
    RATIO**: bracket the loss with 1.0 as the upper bound (a single-threaded
    solver cannot exceed it) and the smallest ratio measured on its
    siblings as the lower, and say the sample did not cover it.
+   *A **YOUNG** SAMPLE IS THE PROBLEM, NOT AN "UNSETTLED" ONE.* Measured
+   over restart #45's slots at 2026-09-20T18:41:56Z — **44 samples over 8
+   slots, 7 of them with 3 or more (3 to 11 each)** — **none of the seven
+   is monotone non-decreasing in elapsed**. The ratio climbs out of a real
+   startup depression inside the first few hundred seconds and then
+   wobbles: over the **30** samples past 300 s the whole range is
+   **0.9844 to 0.9971**, a spread of **0.0127**, with no trend. The five
+   samples at elapsed ≤ 70 s read **0.9403, 0.9697, 0.9722, 0.9756 and
+   1.0000** — and the 1.0000 is idx 1113 at **27 s**, where a 1 s clock
+   gives the ratio only 27 steps, so it is **resolution, not a settled
+   cube**. So: distrust a sample from the first ~100 s and bracket, but
+   **do not wait for a later one to be "more settled"** — past a few
+   hundred seconds there is nothing left to settle, only noise.
+   *This qualifies `af67502`, whose body called the settling effect
+   "confirmed on the same slots" on the strength of **two** time points
+   per slot; with 3 to 11 points it is a rise followed by noise, not a
+   climb. It does **not** move the #45 loss bracket
+   [5.3799, 5.4319] CPU-h, which was bracketed rather than
+   point-estimated for exactly this reason — it is why that was right.*
 6. Re-read `nproc`, CPU model name, **`cpu MHz`, cache size**, `MemTotal`
    and the kernel, and **compare**. **If any of them moved, say so loudly
    and say that costs across that point are not on a common basis** — the
