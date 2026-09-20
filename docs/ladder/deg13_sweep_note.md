@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T03:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T03:33Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1099,6 +1099,22 @@ same failure operating one level down. So the remedy extends again —
 **a breakdown of a computed total must itself be computed, and must be
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
+
+**A SEVENTEENTH — A "MONOTONE" CLAIM WITH THE CONVENTION LEFT OUT, IN A
+FILE WHOSE WHOLE MONOTONICITY SECTION TURNS ON THAT CONVENTION.** A
+draft said the thirty-second span's hole counts `3, 2, 1, 3, 2, 1, 1`
+had "no monotone stretch longer than three". Under **strictly
+decreasing** that is right (`3 → 2 → 1`); under **non-increasing** — the
+convention every chain verdict in this file uses — the tail
+`3 → 2 → 1 → 1` runs to **four**. **Seventeen for seventeen.**
+
+**This one is not a slip of arithmetic but of vocabulary**, and it is the
+more dangerous kind here: the file spends a whole section distinguishing
+a vacuous `True` from a real one precisely because "monotone" means
+non-increasing and a flat step counts. Writing "monotone" without the
+qualifier in a note that has litigated the qualifier is how a reader
+ends up applying the wrong one. The fix states **both** numbers with
+their conventions named, which is also what the monotonicity table does.
 
 **A SIXTEENTH, AND THE SMALLEST POSSIBLE: ONE DIGIT IN A RATIO.** A
 draft said block `[13,13,11,7]`'s spread had been **7.5744×** before idx
@@ -3090,7 +3106,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1203 -> 1204 rows)
+## State as of the last refresh (1204 -> 1206 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3101,9 +3117,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1204 rows; 1035 labels decided; 1035 UNSAT; 0 SAT; 0 labels
+- **1206 rows; 1037 labels decided; 1037 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1035 decided plus 169 superseded
+  A row count is not a decision count: 1037 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3121,7 +3137,7 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1030, highest decided 1036, holes [1031, 1034].**
+- **Frontier contiguous 0..1033, highest decided 1037, holes [1034].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
@@ -3156,23 +3172,58 @@ exactly one bank.
   | idx 1032 | 5538.8 | `[1031]` | 1 |
   | idx 1036 | 315.5 | `[1031, 1034, 1035]` | 3 |
   | idx 1035 | 1671.8 | `[1031, 1034]` | 2 |
+  | idx 1031 | 6651.4 | `[1034]` | 1 |
+  | idx 1037 | 695.5 | `[1034]` | 1 |
 
-  **3 → 2 → 1 → 3 → 2, with three holes reached twice and a one-hole
-  state in between.** That is the clearest illustration this file has of
-  why a hole count is not a progress bar.
+  **3 → 2 → 1 → 3 → 2 → 1 → 1**, read straight off the count column:
+  three holes reached **twice**, one hole reached **three times**, and —
+  stated with its convention, because the answer depends on it — a
+  longest **strictly decreasing** stretch of **3** (`3 → 2 → 1`) but a
+  longest **non-increasing** stretch of **4** (`3 → 2 → 1 → 1`), which is
+  the convention the chain verdicts use. *A draft said "no monotone
+  stretch longer than three" without naming which; under the note's own
+  non-increasing convention that is wrong. Seventeenth in the tally.*
+  That is the clearest illustration
+  this file has of why a hole count is not a progress bar — *and the
+  sequence is quoted from the table rather than carried in prose,
+  because the prose version went stale within one bank the last time it
+  was written out.*
 
-  **FOR THIS SPAN THE TWO OBJECTS HAPPEN TO COINCIDE SO FAR, AND THAT IS
-  A FACT ABOUT BANKING CADENCE, NOT A LICENCE.** Every row above was
-  banked in its own commit, so each file state also reached a commit —
-  which is why the git check matched row for row. **The chain is still
-  not written**, because the span is open and the next bank may combine
-  rows, exactly as the twenty-fifth's did; `--spans all` after the
-  closing commit remains the only authority.
+  **THE CORRESPONDENCE BROKE AT THE VERY NEXT BANK.** The five-row
+  version of this table said the file states and the committed states
+  coincided "so far", hedged with *"the span is open and the next bank
+  may combine rows, exactly as the twenty-fifth's did"*. **The next bank
+  combined rows.** idx 1031 and idx 1037 landed within eleven seconds of
+  each other and were banked in one commit, so the table's last two rows
+  map to **one** commit and the row-for-row match no longer holds.
+
+  **What is lost here is nothing, and that is luck.** Both rows leave the
+  hole set at `[1034]` — idx 1031 filled its own hole, idx 1037 landed
+  above the frontier without opening one — so the intermediate state the
+  commit sequence misses is *identical* to the one it records. Had idx
+  1037 arrived first, the file would have passed through
+  `[1031, 1034]` → `[1031, 1034]` → `[1034]` and the commits would still
+  have shown one step; had it jumped a gap, a distinct state would have
+  vanished unrecorded. **The table stays a record of BANKS; the check
+  becomes "every commit is covered by one or more consecutive rows",
+  which is weaker than row-for-row and is stated as such.**
+
+  **The chain is still not written**, and this is exactly why:
+  `--spans all` walks commits, and the commits no longer enumerate the
+  banks.
 
   *Two costs in the table are worth a line each. idx 1032's 5538.8 s is
   **32.0 s** dearer than idx 1030's — the closest adjacent pair in this
   block. idx 1036's 315.5 s is the block's cheapest, and it is what
   widened the hole set back to three.*
+
+  **A THIRD BLOCK HAS OPENED: `[13, 13, 11, 6]`, idx 1037..1047, 11
+  members, 1 decided.** idx 1037 took it at **695.5 s**, rank 962 of 1037
+  with 75 cheaper. **Its size was determined before any cube ran**: the
+  `[13,13,11,*]` run's sizes are `[49, 38, 28, 21, 15, 11, 7, 5, 3, 2,
+  1, 1]`, a contiguous slice of the reference sequence from position 4,
+  so **11 is simply what follows 15** — recomputed from `SEQ` at this
+  bank, not recalled. Combinatorics, not data.
 
   **idx 1036 IS THE CHEAPEST CUBE ITS BLOCK HAS PRODUCED**, at 315.5 s
   against a previous block minimum of 731.2 s, and the **3.09th
@@ -3714,7 +3765,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1035 of 1949 = 53.1042%**; **914 undecided**. **50% IS CROSSED**, at
+- **1037 of 1949 = 53.2068%**; **912 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3950,7 +4001,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **13 decided**, undecided [1031, 1034]
+  **14 decided**, undecided [1034]
+- `[13, 13, 11, 6]` idx 1037..1047: **11 members**,
+  **1 decided**, undecided 10 spanning 1038..1047
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
