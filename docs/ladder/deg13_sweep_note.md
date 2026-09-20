@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T23:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T23:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2171,43 +2171,26 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-**THIS TABLE STOPS AT ORDINAL 31 WHILE THE SPAN RECORD NOW REACHES 39 —
-EIGHT ROWS ARE MISSING.** Measured rather than estimated: the table's
-ordinals 1–31 are walk positions 66–96, and the walk now holds 104.
-**Everything already in it reproduces.** Re-derived from `--spans all`,
-ordinals 1–31 give **18 True and 13 False**; the zero-comparison set is
-exactly {5, 10, 19, 24, 25, 26, 29}; the single-comparison set exactly
-{3, 8, 11, 15, 16, 20, 27, 30}; the True-on-more-than-one set exactly
-{4, 6, 22} — every one matching the prose below to the element. *The
-table is behind, not wrong.*
+***THE MERGE IS DONE. ONE TABLE, ORDINALS 1–41, EVERY ROW READ BACK OUT
+OF `--spans all`.*** It was named as outstanding at `05f04cb`, the
+thirty-sixth span's close — found with `git log -S`, not recalled — and
+carried unmerged through **five** closes since (the thirty-seventh
+through the forty-first) rather than half-done. This is where it was
+worth doing: the two
+tables and the "eight rows are missing" warning are gone, and the three
+dependent lists below were recomputed **in the same script run** that
+built the table. **The 39 rows that were already published reproduce
+with 0 mismatches** — chain string, comparison count and verdict, each
+checked element by element — so the merge adds rows 40 and 41 and
+changes nothing that was there.
 
-What is absent, read straight from the walk:
-
-| # | closed by | hole counts | comparisons | monotone |
-|---|---|---|---|---|
-| 32 | `5cde733` | 3,2,1,3,2,1,3,1,3,2,1 | 10 | False |
-| 33 | `743c24d` | 3,3,2,2,1,1 | 5 | True |
-| 34 | `4e27c14` | 1 | **0** | True — vacuous |
-| 35 | `bb28ab9` | 1,1,1,3,2,2,3,1 | 7 | False |
-| 36 | `b393f25` | 2,1 | 1 | True |
-| 37 | `ae0b64e` | 1 | **0** | True — vacuous |
-| 38 | `ff5f073` | 3,1,1,3,3,2,2,1 | 7 | False |
-| 39 | `7440e6b` | 1 | **0** | True — vacuous |
-
-Merged, the verdict tally would read **23 True and 16 False of 39**
-rather than eighteen of thirty-one. **They are listed separately, and the tally
-below is left exactly as it stands, because merging them means
-recomputing every sentence that follows the table** — the
-zero-comparison list, the single-comparison list and the False-chain
-ranking by comparison count all move together. *Half-merging a table is
-precisely how prose goes stale beside rows that look current*, which is
-the failure this file recorded when four ranks sat stale at N = 85 next
-to a freshly recomputed table. **The merge is named here as outstanding
-rather than quietly half-done.**
-
-**Thirty-one** spans, and the verdict tally needs its COMPARISON COUNTS
-beside it or it reads as more evidence than it is. Every row below was read
-back out of `--spans all`, not recalled:
+*The ordinal is the span ordinal: table row `n` is walk position
+`n + 65`, the same offset the spans section uses.* Row 7's chain is
+elided with `…` exactly as it always was and is **not** re-derivable
+from the table; it is carried as recorded. **The comparison count is
+`len(chain) − 1`** and the verdict is non-increasing over those
+comparisons — both stated here because two criteria for "non-trivial"
+were once in use at once and the label was retired for it.
 
 | # | closed by | hole counts | comparisons | monotone |
 |---|---|---|---|---|
@@ -2242,8 +2225,50 @@ back out of `--spans all`, not recalled:
 | 29 | `69a8a16` | 1 | **0** | True — vacuous |
 | 30 | `3db5927` | 2,1 | 1 | True |
 | 31 | `43f2ddb` | 2,3,3,2,1,1 | 5 | False |
+| 32 | `5cde733` | 3,2,1,3,2,1,3,1,3,2,1 | 10 | False |
+| 33 | `743c24d` | 3,3,2,2,1,1 | 5 | True |
+| 34 | `4e27c14` | 1 | **0** | True — vacuous |
+| 35 | `bb28ab9` | 1,1,1,3,2,2,3,1 | 7 | False |
+| 36 | `b393f25` | 2,1 | 1 | True |
+| 37 | `ae0b64e` | 1 | **0** | True — vacuous |
+| 38 | `ff5f073` | 3,1,1,3,3,2,2,1 | 7 | False |
+| 39 | `7440e6b` | 1 | **0** | True — vacuous |
+| 40 | `39bb186` | 3,3,2,1 | 3 | True |
+| 41 | `f558bb0` | 2,3,3,2,2,2,1,1 | 7 | False |
 
-**Eighteen True of thirty-one** — and the breakdown is where the weight
+**Twenty-four True of forty-one** — and the breakdown is where the
+weight goes, recomputed whole rather than incremented.
+
+- **Ten of the twenty-four contain zero comparisons and could not have
+  come out False**: ordinals **5, 10, 19, 24, 25, 26, 29, 34, 37, 39**.
+- **Nine more rest on a single comparison** — one coin flip each, the
+  shape this note has flagged as weak since span 3: **3, 8, 11, 15, 16,
+  20, 27, 30, 36**.
+- **Five carry more than one**: **4** with two, **22** with three,
+  **40** with three, **6** with four and **33** with five.
+
+Asserted as 10 + 9 + 5 = 24 by the script that produced the lists, not
+by counting the table by eye. *That breakdown is the whole reason the
+column exists: **a True verdict on zero comparisons is not evidence**,
+ten of the twenty-four are exactly that, and nine more are one coin
+flip. Forty-one verdicts are not forty-one facts.*
+
+**The seventeen False chains, by comparison count**: 16, 13, 10, 10, 9,
+8, 8, 7, 7, 7, 7, 7, 7, 7, 6, 6, 5 — ordinals 7, 14, 32, 13, 23, 28, 9,
+41, 38, 35, 18, 17, 12, 2, 21, 1, 31 in that order. **Seven is now the
+most crowded value with seven members**, and the new row 41 joins it.
+*The twenty-third's nine is 5th of the seventeen, unchanged in position
+by the two additions; the thirty-first's five is still the weakest False
+chain in the record.*
+
+*The paragraphs below this point were written at individual closes and
+state the tally AS OF THOSE CLOSES. They are left exactly as they were:
+they are the record of what was computed when, and the merged figures
+above supersede them without erasing them.*
+
+**Eighteen True of thirty-one** *(as of ordinal 31 — superseded by the
+merged table above, and kept because it is what was computed then)* —
+and the breakdown is where the weight
 goes. **Seven of the eighteen contain zero comparisons and could not have
 come out False** (spans 5, 10, 19, 24, 25, 26 and 29); **eight more rest on a single
 comparison** (3, 8, 11, 15, 16, 20, 27 and **30**), which is one coin flip each
@@ -4522,7 +4547,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1301 -> 1302 rows)
+## State as of the last refresh (1302 -> 1303 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4533,7 +4558,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1302 rows; 1133 labels decided; 1133 UNSAT; 0 SAT; 0 labels
+- **1303 rows; 1134 labels decided; 1134 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4541,7 +4566,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1133 decided plus 169 superseded
+  A row count is not a decision count: 1134 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4560,7 +4585,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1127, highest decided 1133, holes [1128].**
+- **Frontier contiguous 0..1127, highest decided 1134, holes [1128].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND — THE ORDINAL RELEASED
   TWO BANKS AGO, NOW GENUINELY CLAIMED.** idx 1127 landed at 2969.2 s
@@ -6020,7 +6045,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1133 of 1949 = 58.1324%**; **816 undecided**. **50% IS CROSSED**, at
+- **1134 of 1949 = 58.1837%**; **815 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6510,7 +6535,7 @@ exactly one bank.
 - `[13, 13, 10, 8]` idx 1116..1130: **15 members**,
   **14 decided**, undecided [1128]
 - `[13, 13, 10, 7]` idx 1131..1141: **11 members**,
-  **3 decided**, undecided 8 spanning 1134..1141
+  **4 decided**, undecided 7 spanning 1135..1141
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
