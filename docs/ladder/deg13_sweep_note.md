@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T06:10Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T06:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2284,6 +2284,31 @@ Registration discipline, learned the hard way:
   | `[13,13,11,9]` | 28 | 668.1 | 4243.7 | 4305.1 | 10427.2 | 15.6072× |
   | `[13,13,11,8]` | 21 | 549.4 | 3828.7 | 3965.7 | 8214.9 | 14.9525× |
   | `[13,13,11,7]` | 15 | 315.5 | 3405.4 | 3232.8 | 6651.4 | 21.0821× |
+  | `[13,13,11,6]` | 11 | 539.8 | 2323.8 | 2475.1 | 5508.0 | 10.2038× |
+
+  **`[13,13,11,6]` CLOSED 11/11** (idx 1037..1047, contiguity verified by
+  `max - min + 1 == len` rather than eyeballed — closed by **idx 1045
+  after it ran 5508.0 s**, the same row that closed the thirty-third
+  span). Its 11 cubes cost **27226.0 core-seconds = 7.5628 core-hours**
+  in total. **Every row above was recomputed from the staged checkpoint
+  when this one was added** and all **32** already tabled reproduced
+  their recorded figures, with the set comparison reporting **33 closed,
+  33 tabled after the addition, and exactly one partially-decided block
+  left** — `[13,13,11,5]` at 3 of 7.
+
+  **Its spread, 10.2038×, is the NARROWEST of the SIX closed blocks in
+  the `[13,13,11,*]` run** — the six are 11,11 through 11,6, counted off
+  the sequence rather than recalled, and their spreads read **30.8201,
+  20.3705, 15.6072, 14.9525, 21.0821, 10.2038** by descending fourth
+  index. It is the only one of the six below 11×. *No trend is claimed:
+  that sequence goes down, down, down, **up**, down. A draft of this
+  line said "the four closed blocks" and listed only four; the run has
+  six closed and the count was taken from the sequence on the second
+  pass.*
+
+  Its mean 2475.1 sits **above** its median 2323.8, the ordinary
+  arrangement in this table, so `[13,13,11,7]` remains the second of
+  thirty-three to lean the other way.
 
   **`[13,13,11,7]` CLOSED 15/15** (idx 1022..1036, contiguity verified by
   `max - min + 1 == len` rather than eyeballed — closed by **idx 1034
@@ -3583,7 +3608,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1218 -> 1219 rows)
+## State as of the last refresh (1219 -> 1220 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3594,9 +3619,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1219 rows; 1050 labels decided; 1050 UNSAT; 0 SAT; 0 labels
+- **1220 rows; 1051 labels decided; 1051 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1050 decided plus 169 superseded
+  A row count is not a decision count: 1051 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3615,22 +3640,38 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1044, highest decided 1050, holes [1045].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — THE THIRTY-THIRD, AND IT OPENED AT THREE HOLES AT
-  ONCE.** idx 1047 came in at **539.8 s** while **1044, 1045 and 1046
-  were all still running**, so the frontier stands contiguous 0..1043
-  with the highest decided index at 1047 and holes `[1044, 1045, 1046]`.
-  **That is the second three-hole opening in a row** — the thirty-second
-  opened the same way — and the opener is **cheap**: 539.8 s, rank 983
-  of 1045 decided, against the thirty-second's opener at 2730.1 s.
+- **Frontier contiguous 0..1050, highest decided 1050, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-THIRD SPAN IS CLOSED**, filled by **idx 1045 at
+  5508.0 s** — the same row that closed block `[13, 13, 11, 6]` at
+  11 of 11. The frontier jumped from contiguous 0..1044 to
+  **0..1050**, a six-index advance, and the hole set is empty.
 
-  **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
-  commit count and hole trajectory come from `--spans all` run *after*
-  the closing commit exists, and every quoted span rank in the file is
-  then recomputed against the new N together. **A three-hole opening
-  does not make the chain start at 3** — the chain is a property of the
-  commit sequence, not of the file.
+  **CARRIED FORWARD FROM THE OPEN PROSE, because that prose was its only
+  record:** the span **opened at THREE holes at once** — idx 1047 came in
+  at **539.8 s** while **1044, 1045 and 1046 were all still running** —
+  which was the **second three-hole opening in a row**, the thirty-second
+  having opened the same way, and its opener was **cheap**: 539.8 s,
+  rank 983 of 1045 decided at the time, against the thirty-second's
+  2730.1 s.
+
+  **NO DURATION, NO RANKS AND NO COMMIT COUNT ARE WRITTEN YET.** They
+  come from `--spans all` run **after this closing commit exists**, and
+  every quoted span rank across the file is then recomputed against the
+  new N **together, in one script**, after first reproducing the previous
+  N's ranks. **A three-hole opening does not make the chain start at 3**
+  — the chain is a property of the commit sequence, not of the file.
+
+  ***THREE CONSECUTIVE SPANS HAVE NOW BEEN CLOSED BY A ROW THAT ALSO
+  CLOSED A BLOCK*** — the thirty-first with `[13,13,11,8]`, the
+  thirty-second with `[13,13,11,7]`, the thirty-third with
+  `[13,13,11,6]`. **The structural reason was written down at the
+  thirty-second, before this third instance existed**: the last hole of a
+  span is usually the longest-running cube, and a block's longest-running
+  cube is usually the last one it needs. *That makes this third case a
+  confirmation of a claim that predates it, which is the only kind worth
+  anything here — and it is still three cases, so it is recorded as
+  three cases and not as a rule.*
 
   ***THE THIRTY-SECOND SPAN IS CLOSED*** — filled by **idx 1034 at
   5561.3 s**, the same row that closed block `[13, 13, 11, 7]` at
@@ -4382,7 +4423,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1050 of 1949 = 53.8738%**; **899 undecided**. **50% IS CROSSED**, at
+- **1051 of 1949 = 53.9251%**; **898 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4617,8 +4658,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 6]` idx 1037..1047: **11 members**,
-  **10 decided**, undecided [1045]
 - `[13, 13, 11, 5]` idx 1048..1054: **7 members**,
   **3 decided**, undecided [1051, 1052, 1053, 1054]
 
