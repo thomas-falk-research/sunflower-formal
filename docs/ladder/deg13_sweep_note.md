@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T03:33Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T03:57Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -104,18 +104,44 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Twenty** involuntary restarts, CPU-hours discarded:
+**Twenty-one** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
     #40 in [4.9648, 4.9688]   #41 in [5.0256, 5.0262]
-    #42 = 3.3278   #43 = 3.9984
+    #42 = 3.3278   #43 = 3.9984   #44 in [1.5889, 1.6040]
 
-median **3.5790**, mean **3.8778**, **total 77.5556**. **#40 and #41 are
-both carried as brackets, not points**, because each one's ratio sample
-covered only three of its four cubes; see below. The median, mean and
-total are quoted at the bracket midpoints, and the spread between the
-bracket ends changes none of them before the fourth decimal.
+median **3.5640**, mean **3.7688–3.7695**, **total 79.1445–79.1596** —
+the mean and total are given as ranges because **#44 is carried as a
+bracket**, and the median is identical at both ends. *The median moved
+3.5790 → 3.5640 because a 21st value below it shifts which element is
+central; the mean fell because #44 is the third-smallest loss on
+record.*
+
+**The range sweeps #44's bracket ONLY, with #40 and #41 held at their
+midpoints** (4.9668 and 5.0259). That is the convention the n = 20
+figures used, and holding to it is what makes the previous line's
+3.5790 / 3.8778 / 77.5556 reproduce exactly from this same list.
+*Sweeping all three brackets together instead gives 3.7687–3.7696 and
+79.1422–79.1619 — immaterial to every claim here, but not the same
+number, so the convention is written down rather than left to be
+guessed.*
+
+**#40 and #41 are both carried as brackets, not points**, because each
+one's ratio sample covered only three of its four cubes; see below. They
+are quoted at their midpoints above.
+
+***A CLAIM THAT STOOD ON THIS LINE WAS FALSE FOR ONE OF ITS THREE
+SUBJECTS, AND HAD BEEN SINCE IT WAS WRITTEN.*** It read that the spread
+between #40's and #41's bracket ends "changes none of them before the
+fourth decimal". Evaluated at all four corner combinations: the
+**median is exactly unchanged**, the **mean moves 0.000219** — both as
+claimed — and the **total moves 0.0046**, which is the *third* decimal
+(79.1498–79.1544 here at n = 21, and 77.5533–77.5579 at n = 20, so it
+was already false when written). No figure quoted anywhere in this note
+changes; what was wrong was the statement of how little they could
+move, which is exactly the kind of claim that survives because nobody
+re-derives an assurance. **Nineteenth in the tally.**
 
 ***THE PREVIOUSLY RECORDED n = 19 TOTAL, 73.5559, IS NOT REPRODUCIBLE AND
 HAS BEEN REPLACED.*** Summing the listed values gives **73.5549** at both
@@ -128,17 +154,32 @@ quietly corrected, because "not reproducible" is the only honest thing to
 say about a figure presented as computed. The new total is from the same
 script that produced the ranks below.
 
-**All seven quoted ranks were recomputed against n = 20 together**, in
-one script that first reproduced all six of the n = 19 ranks exactly as a
-check on the reconstruction: #37 **4 of 20** (idx 788 alone was 57.1% of
-that loss), #38 **12 of 20**, #39 **15 of 20**, #40 **6 of 20**, #41 **5
-of 20**, #42 **13 of 20**, **#43 9 of 20**. Three moved on their merits —
-#38 11 → 12, #39 14 → 15, #42 12 → 13, all pushed down by #43's 3.9984
-sorting above them — and #37, #40 and #41 held.
+**All eight quoted ranks were recomputed against n = 21 together**, in
+one script that first reproduced all seven of the n = 20 ranks exactly as
+a check on the reconstruction: #37 **4 of 21** (idx 788 alone was 57.1%
+of that loss), #38 **12 of 21**, #39 **15 of 21**, #40 **6 of 21**, #41
+**5 of 21**, #42 **13 of 21**, **#43 9 of 21**, **#44 19 of 21**.
+
+**NOT ONE RANK MOVED, AND ONLY THE DENOMINATOR DID** — because #44's
+loss is smaller than every one of the seven, so it sorts *below* them all
+and cannot change how many values stand above any of them. *That is the
+first time a restart has been added without moving a single rank, and it
+is exactly the case the note's own rule warns about: a denominator is not
+a rank, so 20 → 21 had to be recomputed rather than relabelled even
+though the answer turned out to be "no change".* At the close of #43,
+three ranks had moved on their merits (#38 11 → 12, #39 14 → 15, #42
+12 → 13); this time none did, and the check is what distinguishes the
+two situations.
+
 **#42 AND #43 ARE POINTS, NOT BRACKETS**, each the restart whose ratio
 sample covered every in-flight cube. **#43's rank is 9 at both ends of
 its wall/CPU interval [3.9984, 4.0373]**, so it does not depend on the
-ratio correction at all.
+ratio correction at all. **#44 is a bracket even though its sample
+covered every cube too** — all four killed cubes had `cpu/elapsed`
+observations, so no ratio was invented — and it is carried as
+[1.5889, 1.6040] because the weighted and unweighted ends differ by
+0.0151 CPU-h and neither is more authoritative than the other. **Its
+rank is 19 at both ends.**
 
 An earlier draft of this line did relabel instead of recompute — it
 carried "#38 rank 9" and "#39 rank 11" straight over from n = 16 and left
@@ -246,21 +287,22 @@ unchanged) **and #42, 65.8 minutes later, was the second** (→ 1789782298,
 its boot instant 2.2 s *after* the teardown). **Three distinct machine
 configurations in two restarts:**
 
-| | containers 1–8 | #41 | #42 | #43 |
-|---|---|---|---|---|
-| CPU model name | @ 2.10GHz | **@ 2.80GHz** | @ 2.10GHz | @ 2.10GHz |
-| `cpu MHz` | not recorded | 2800.186 | **2100.000** | 2100.000 |
-| cache size | not recorded | 33792 KB | **266240 KB** | 266240 KB |
-| `nproc` | 4 | 4 | 4 | 4 |
-| MemTotal | 16482220 kB | 16482220 kB | **16481980 kB** | 16481980 kB |
-| kernel | not recorded | 6.18.44-fc-v33 | **6.18.44-fc-v37** | 6.18.44-fc-v37 |
+| | containers 1–8 | #41 | #42 | #43 | #44 |
+|---|---|---|---|---|---|
+| CPU model name | @ 2.10GHz | **@ 2.80GHz** | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz |
+| `cpu MHz` | not recorded | 2800.186 | **2100.000** | 2100.000 | 2100.000 |
+| cache size | not recorded | 33792 KB | **266240 KB** | 266240 KB | 266240 KB |
+| `nproc` | 4 | 4 | 4 | 4 | 4 |
+| MemTotal | 16482220 kB | 16482220 kB | **16481980 kB** | 16481980 kB | 16481980 kB |
+| kernel | not recorded | 6.18.44-fc-v33 | **6.18.44-fc-v37** | 6.18.44-fc-v37 | 6.18.44-fc-v37 |
 
-**#43 IS THE FIRST REPEAT: all six fields identical to #42, and `btime`
-did not move** (1789782298, the boot #42 left behind), so #43 was a
-container teardown on the same host boot rather than a third reboot.
-**One repeat is one reading, not a promise** — eight identical readings
-preceded #41, and the ninth and tenth both broke. The series as a whole
-still spans three configurations, so costs remain off a common basis.
+**#43 WAS THE FIRST REPEAT AND #44 IS THE SECOND: all six fields
+identical to #42, and `btime` did not move** at either — still
+1789782298, the boot #42 left behind — so both were container teardowns
+on the same host boot rather than further reboots. **Two repeats are two
+readings, not a promise** — eight identical readings preceded #41, and
+the ninth and tenth both broke. The series as a whole still spans three
+configurations, so costs remain off a common basis.
 
 **#42 DID NOT GO BACK TO THE ORIGINAL MACHINE, and that is not claimed.**
 Its model-name string matches the original while three other fields do
@@ -284,20 +326,24 @@ variance running 0.018 to 1.08 across the recorded ratios.
 
 The spec is re-read at every restart precisely so this is caught rather
 than silently absorbed — **eight identical readings were eight, not a
-promise, and the ninth and tenth both broke.** Re-read it at #43, and
-record `cpu MHz`, cache size and kernel as well as the model name: at #42
-the model name was the one field that did **not** move.
+promise, and the ninth and tenth both broke.** Re-read it at every
+restart — done at #43 and #44, both unchanged — and record `cpu MHz`,
+cache size and kernel as well as the model name: at #42 the model name
+was the one field that did **not** move.
 
 **Re-take lag** after a relaunch: 41 s (#35), 60.7 s (#36), 61.0 s (#37),
 60.6 s (#38), 60.7 s (#39), 60.6 s (#40), 60.9 s (#41), **61.7 s (#42)**,
-**60.7 s (#43)** — both #42 and #43 with their four CNFs written inside
-4.0 ms. **Nine observations, not a law.** Two sit outside 60.6–61.0 —
-41 s and 61.7 s — with **seven** inside it. The cluster was refused as a
-law when it held six of seven, it then leaked at #42, and #43 landed back
-inside; **that is the refusal being vindicated twice over, not a finding
+**60.7 s (#43)**, **60.8 s (#44)** — #42, #43 and #44 each with their
+four CNFs written inside 4.0 ms. **Ten observations, not a law.** Two sit
+outside 60.6–61.0 — 41 s and 61.7 s — with **eight** inside it. The
+cluster was refused as a law when it held six of seven, it then leaked at
+#42, and #43 landed back inside; **that is the refusal being vindicated twice over, not a finding
 in either direction.** A band that a new point can leave and re-enter is
-a description of nine numbers, and nothing about #43 makes #42 less
-real.
+a description of ten numbers, and nothing about #43 or #44 makes #42 less
+real. **#44 landed inside it too, which makes it the eighth agreeing
+observation of ten and adds no new information**: agreeing points are the
+cheapest kind, and the band was already refused as a law when it held six
+of seven.
 #41 and #42 are the first two observations after the machine started
 changing and the lag moved by 0.8 s across them, which is **not** offered
 as evidence either way about whether the lag is CPU-bound; #43 is the
@@ -312,30 +358,61 @@ the cheapest kind of corroboration and the one least able to validate —
 and now a point outside it has arrived, which is what the refusal was
 always allowing for. **No mechanism is proposed**: a mechanism may only
 explain data it predates (1e409e8, f0866f6), and one invented now to fit
-eight points, two of them outliers, would be fitted to the very data it
+ten points, two of them outliers, would be fitted to the very data it
 claims to explain.
 
-The two `[killed]` markers carried the **same nanosecond** at #34, #35, #37,
-#38, #39, #41 and **#42**, and **disagreed at #36 and #40** — 7
-agreements against 2 disagreements. **The disagreements are still the
-informative ones**: they prove the markers are not guaranteed to agree,
-so the agreements corroborate and DO NOT validate. From #38 onward the two
-mtimes have been read in one script rather than transcribed, which is how
-each difference was established exactly.
+***THIS CENSUS WAS RUN OVER RESTARTS #34 ONWARD AND WAS PRESENTED
+WITHOUT SAYING SO. IT HAS BEEN RE-RUN OVER EVERYTHING ON DISK.*** The
+previous figures — same nanosecond at #34, #35, #37, #38, #39, #41 and
+#42, disagreement at #36 and #40, "7 against 2" — were right for the
+restarts they covered, omitted #43 from both lists, and were a **subset
+of data that was already there when they were written**. **Twenty-first
+in the tally, and a repeat of the fifteenth's exact pattern.**
 
-**The two disagreements are both ~4 ms and they differ from each other by
-1 ns** — #36 was exactly 4.000000 ms, #40 is 4.000001 ms. **That is
-recorded and nothing is concluded from it.** Two observations cannot
-establish a 4 ms quantum in the teardown path, and a mechanism proposed
-now would be fitted to the only two points that exist (1e409e8, f0866f6).
+**The full census.** Every task output under the session's `tasks/`
+directory ending in `[killed]`, grouped into teardowns by mtime: **87
+such files, 48 clusters, 39 of them containing exactly two files** (the
+driver's marker and the waiter's). The clustering is not a judgement
+call — the largest gap *inside* any cluster is 4.000001 ms and the
+smallest gap *between* clusters is 153.9 s, so the grouping is identical
+for any threshold across nearly five orders of magnitude. Of the 39
+pairs:
+
+**35 agree to the nanosecond; 4 disagree** — 2026-09-04T03:53:31Z,
+2026-09-09T13:23:50Z, 2026-09-16T16:54:30Z and 2026-09-18T20:40:41Z. The
+39 pairs span more restarts than the 21 in the loss table above, which
+numbers only those whose discarded CPU was measured.
+
+**The disagreements are still the informative ones**: they prove the
+markers are not guaranteed to agree, so the 35 agreements corroborate and
+DO NOT validate. From #38 onward the two mtimes have been read in one
+script rather than transcribed, which is how each difference was
+established exactly; the four above are read by `stat` in integer
+nanoseconds, in one pass, from the files as they sit.
+
+***ALL FOUR DISAGREEMENTS ARE ~4 ms, AND THREE OF THEM ARE BIT-IDENTICAL
+AT EXACTLY 4000000 ns; THE FOURTH IS 4000001 ns.*** The previous text
+refused a mechanism on the ground that "two observations cannot establish
+a 4 ms quantum... fitted to the only two points that exist". **That
+ground no longer states the position accurately: there are four points,
+not two.** The refusal itself stands — four observations do not establish
+a mechanism either, and the note's rule is that a mechanism may only
+explain data it predates (1e409e8, f0866f6), which nothing proposed today
+could. **But the reason must be the true one.** What changed is not the
+evidence, which was on disk the whole time; it is that the census was
+finally run over all of it. *Two points at 4 ms is a coincidence worth
+recording. Four points at 4 ms, three of them equal to the nanosecond, is
+a regularity worth recording — and it is still not a mechanism, and none
+is proposed here.*
+
 A caution on the arithmetic: parsing those timestamps through Python's
-microsecond-resolution `datetime` prints the gap as 3.999949 ms. That is a
-parsing artifact, not a measurement; the 4000001 ns figure comes from the
-integer nanoseconds `stat` reports.
+microsecond-resolution `datetime` prints a 4000001 ns gap as 3.999949 ms.
+That is a parsing artifact, not a measurement; every figure above comes
+from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **nine CLOSED** (one–eight and eleven), **set nine ABANDONED**, **set ten COMPLETE but undivided**
+## Re-run sets — **nine CLOSED** (one–eight and eleven), **set nine ABANDONED**, **set ten COMPLETE but undivided**, **SET TWELVE OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -520,6 +597,63 @@ is not evidence that C is slower** — three cubes, three configurations,
 and the A and B figures are **censored kill times, not completed runs**, so
 they are lower bounds on what those attempts would have taken. Comparing a
 completed run against two censored ones is not a comparison.
+
+**RESTART #44 — CONTAINER TEARDOWN, NO ROWS LOST, AND THE SMALLEST LOSS
+IN SIXTEEN RESTARTS.** The container was restarted at
+**2026-09-20T03:39:37.585670Z**, read from the mtime of the two
+`[killed]` markers, which agree **to the nanosecond**
+(1789875577.585670163 on both), so the note's rule to take the earlier of
+them had nothing to choose between. *A draft called that agreement the
+first in the series. It is not — it is the common case, 35 of the 39
+paired teardowns on disk; see the corrected census below. **Twentieth in
+the tally.***
+
+`btime` was **unchanged at 1789782298**, so this was a container
+teardown, not a host reboot. The checkpoint held **1206 rows before and
+after** and the driver's own output ends on idx 1037 at 695.5 s, the
+checkpoint's last row: **nothing was lost but solver time.**
+
+**The loss is a BRACKET, [1.5889, 1.6040] CPU-h**, over four cubes killed
+at 4132.1, 675.1, 488.7 and 478.5 s elapsed — 5774.4 s of wall time in
+total. The upper end is the elapsed itself, since a single-threaded
+solver cannot exceed a ratio of 1.0; the lower end weights each cube by
+its **own last observed `cpu/elapsed`** (0.9936, 0.9873, 0.9767, 0.9832).
+**All four were covered by samples**, so no ratio had to be invented.
+It ranks **19 of 21 at both ends** — the **third-smallest** loss on
+record, behind 1.190 and 1.330 — because three of the four cubes had run
+only 7.97, 8.14 and 11.25 minutes when the kill landed.
+
+**Relaunched as pid 2331 at 2026-09-20T03:41:35.200000Z**, read from
+`/proc/2331/stat` field 22 against `btime`, **117.614 s after the kill**.
+The relaunch re-took **exactly the four killed cubes** at launch +
+**60.805680768 s**, with the four CNFs landing on two mtimes exactly
+**4000001 ns apart** — not "within 4 ms", but 4 ms **plus one
+nanosecond**, read in integer nanoseconds from `stat`. That re-take lag
+is the **tenth observation** and sits inside the 60.6–61.0 band that
+holds seven of the previous nine. *The 4000001 ns is not incidental; see
+the cross-path note below.*
+
+**SET TWELVE IS OPEN, AND THE OBSTRUCTION IS AGAIN ABSENT — WITH ONE NEW
+QUALIFICATION.** Restart #44 killed idx **1034, 1038, 1039, 1040** and
+all four were re-taken together. As at set eleven: **no machine change is
+recorded inside the set** (six identical fields, `btime` unmoved), and
+**none of the four carries a prior kill** — each has *zero* prior rows in
+the checkpoint, checked rather than assumed, so a denominator would be
+one run each.
+
+**What is different, and is stated now rather than at the close:** set
+eleven's four were killed at genuinely spread elapsed times, 1.99 h down
+to 0.47 h. **Set twelve's are not.** Three of the four were killed within
+**196.6 s of each other** (478.5, 488.7, 675.1 s) because they had all
+been launched in the eleven minutes before the teardown; only idx 1034,
+at 4132.1 s, stands apart. The overall spread is 8.6355×, but it is
+carried by one member. **A discarded time is set by when the kill landed,
+not by the cube**, and for three of these four it is very nearly the same
+arbitrary number — so any `discarded / re-run` ratio computed at the
+close will have three members whose numerators are near-interchangeable.
+*That is recorded at the opening, before any re-run figure exists, which
+is the only moment such a statement is worth anything.* Whether the ratio
+gets computed is settled at the close.
 
 **SET ELEVEN IS OPEN, AND FOR THE FIRST TIME SINCE SET EIGHT THE
 OBSTRUCTION IS ABSENT.** Restart #43 killed idx **989, 990, 991, 992**
@@ -1099,6 +1233,135 @@ same failure operating one level down. So the remedy extends again —
 **a breakdown of a computed total must itself be computed, and must be
 asserted to sum to that total**; the script now prints the split and the
 sum together, and 8 + 5 + 4 = 17 is written next to it in the text.
+
+**A TWENTY-SECOND — AN ORDINAL IN THE SENTENCE THAT WAS FIXING THE
+TWENTIETH.** Correcting the re-take-lag series for #44, a draft called
+it "a ninth agreeing observation". The band holds **eight** of the ten:
+60.7, 61.0, 60.6, 60.7, 60.6, 60.9, 60.7 and 60.8, against 41 and 61.7
+outside. #44 is the **eighth**. **Twenty-two for twenty-two.**
+
+*It is logged because the tally only measures a rate if the trivial ones
+go in*, and because of where it happened: inside a repair. The same hand
+that had just widened a census to 39 pairs wrote an ordinal without
+counting a ten-element list two lines above it.
+
+**WHAT THE FOUR ENTRIES ADDED IN ONE SITTING ACTUALLY SHOW — STATED
+CASE BY CASE, BECAUSE THE AGGREGATE VERSION OF THIS WAS OVERSTATED IN
+DRAFT.** A first version of this paragraph said "three of the four were
+caught by a script, not by remembering to look". That is not what
+happened. Case by case:
+
+  - **Eighteenth** — script first. A re-derivation of the restart
+    paragraph printed "smallest of the last 16" beside a heading saying
+    nineteen. Nothing prompted it; the output contradicted the prose.
+  - **Twenty-second** — script first, same way: the band count printed 8
+    beside a sentence saying ninth.
+  - **Nineteenth** — *reading* first. The sentence looked like an
+    assurance rather than a result, and only then was it computed.
+  - **Twentieth** — *reading* first, in the same way, then confirmed by
+    the census.
+
+**So it is two caught mechanically and two caught by suspicion, not
+three and one.** The distinction matters because the fourteenth entry's
+complaint was precisely that a recall-based control is weak, and half of
+this sitting's catches were recall-based. *A mechanism is still worth
+proposing, and it is dull:* **before committing a paragraph of figures,
+re-derive the whole paragraph in one script and read its output against
+the prose** — that is what caught two of these. But it did not catch the
+other two, and no script would have: "this reads like an assurance"
+is not a computation. **Four entries in one sitting is not a reassuring
+number**, and the nineteenth had survived commits under the old regime.
+
+*One caveat on this whole paragraph, since it is the kind that flatters
+the author: the four-way split above is a judgement about how the
+catches happened, not a measurement, and it cannot be re-derived by
+anyone — including a later reader of this file. It is recorded for what
+it is worth, which is less than any figure in the tally entries
+themselves.*
+
+**A TWENTY-FIRST — A CENSUS RUN OVER PART OF THE DATA AND WRITTEN AS IF
+IT COVERED ALL OF IT. THIS IS THE FIFTEENTH'S PATTERN, REPEATED.** The
+`[killed]`-marker agreement figures read "7 agreements against 2
+disagreements", listing restarts #34 through #42. Every number in it was
+right. **Its scope was not stated, and the scope was a subset** — 39
+paired teardowns sit on disk, and the census touched nine of them. Re-run
+over all of them: **35 agreements, 4 disagreements.** It also silently
+dropped #43, which is in neither list. **Twenty-one for twenty-one.**
+
+*This one matters more than the count suggests, and not because of the
+census.* The old text refused a 4 ms mechanism on the stated ground that
+only two such points existed. **Four exist, and three are bit-identical
+at 4000000 ns** — all four already on disk when the sentence was
+written. The refusal survives, because four points do not establish a
+mechanism either; **the reason given for it did not**, and a correct
+conclusion resting on a false premise is still something to fix. The
+fifteenth's remedy was "state the scope of every check in the sentence
+that reports it". That remedy was written down and then not applied
+here, which is the honest finding: **the tally now contains a rule that
+its own file has since broken.** What is added is narrower and, being a
+mechanism rather than a resolution, worth more: *a census over files is
+cheap to widen to everything available, so widen it by default and say
+what "everything" was* — here, one glob and a sort, which is what
+produced 39 from 9.
+
+**A TWENTIETH — "FIRST IN THE SERIES", WRITTEN ABOUT THE SERIES'
+COMMONEST OUTCOME.** The restart #44 write-up said its two `[killed]`
+markers carrying the same timestamp was "for the first time in the
+series". The file's own list three hundred lines away already recorded
+same-nanosecond agreement at seven earlier restarts, and the full census
+puts it at **35 of 39**. So the draft called the **modal** outcome a
+first. **Twenty for twenty.**
+
+*What this adds is that the refuting evidence was in the same file*, as
+it was for the fifth — but this time not three lines up in the same
+screenful; it was in a different section, which is the ordinary case and
+therefore the one worth having a remedy for. It is the same reach for a
+compact word, and the same failure to look, with the distance between
+claim and refutation being the only thing that varied. **A superlative
+about a series requires the series**, and in a file this size that means
+grepping for it before writing the word, not recalling whether it felt
+novel.
+
+**A NINETEENTH — AN ASSURANCE OF INVARIANCE, FALSE FOR ONE OF THE THREE
+QUANTITIES IT COVERED, SHIPPED AND CARRIED.** The restart-accounting
+paragraph asserted that sweeping #40's and #41's brackets "changes none
+of them before the fourth decimal", of the median, mean and total. Over
+the four corners it holds for the median (exactly unchanged) and the
+mean (0.000219), and **fails for the total, which moves 0.0046 — the
+third decimal**. It was false at n = 20 as well, so unlike the
+eighteenth this one **reached commits and was carried**.
+**Nineteen for nineteen.**
+
+*What this one adds is a category the tally had not yet named.* The
+previous eighteen were all quantities — a rank, a ratio, a count, a
+window. This is an **assurance about quantities**: a statement that
+some spread is too small to matter. Such a claim is written precisely
+when the author has decided not to look, and it reads as the *result*
+of having looked, so it is the least likely sentence in a paragraph to
+be re-derived. The remedy is the standing one with the scope widened
+once more — **an invariance claim is a computation, so compute it**;
+the check is four corner evaluations and it separates the two
+quantities the claim covered correctly from the one it did not.
+
+**AN EIGHTEENTH — A SUPERLATIVE WITH THE WRONG WINDOW, IN THE HEADING OF
+THE VERY BLOCK WHOSE RANK HAD JUST BEEN COMPUTED CORRECTLY.** The draft
+heading for restart #44 read "THE SMALLEST LOSS IN **NINETEEN**
+RESTARTS". The rank underneath it — **19 of 21**, third-smallest on
+record behind 1.190 and 1.330 — was computed and is right. The window in
+the heading was not: the last restart smaller than #44 is the **fifth**
+in the series (1.330), so #44 is the smallest of the last **SIXTEEN**,
+and "nineteen" would have needed everything from the third onward to be
+larger, which 1.330 refutes. **Eighteen for eighteen.**
+
+*This one was caught by a script written to re-derive the whole restart
+paragraph before committing it*, and what it adds to the tally is narrow
+but worth having: **a correct rank does not license a window.** "19 of
+21" and "smallest in the last N" are different quantities computed from
+different scans of the same list, and having the first in hand is
+exactly the circumstance in which the second gets written from
+impression. The remedy is the standing one, applied to a case that
+looked like it was already covered — **the window is its own count, so
+count it too.**
 
 **A SEVENTEENTH — A "MONOTONE" CLAIM WITH THE CONVENTION LEFT OUT, IN A
 FILE WHOSE WHOLE MONOTONICITY SECTION TURNS ON THAT CONVENTION.** A
@@ -2343,6 +2606,39 @@ Registration discipline, learned the hard way:
   continued. If it ever matters, it matters for the CNF-mtime method's
   resolution at restarts — and that method is used at 1 s tolerance,
   four thousand times coarser than the effect.
+
+  ***THE 4 ms QUANTUM IS NOT SPECIFIC TO THIS INTERVAL. IT APPEARS IN
+  TWO OTHER PATHS, AND THAT IS RECORDED AS DATA, NOT AS A REOPENING.***
+  Collecting every gap in this file measured in **integer nanoseconds**
+  — not the "within 4 ms" and "within 8 ms" figures, which are bounds
+  and are excluded — gives **nine** observations in **three unrelated
+  code paths**:
+
+  | path | gap (ns) | k | residue |
+  |---|---|---|---|
+  | row flush → next CNF write | 36 000 002 (×3), 40 000 002 | 9, 9, 9, 10 | 2 |
+  | teardown `[killed]` markers | 4 000 000 (×3), 4 000 001 | 1, 1, 1, 1 | 0, 0, 0, 1 |
+  | four CNFs of one relaunch (#44) | 4 000 001 | 1 | 1 |
+
+  **Every one is `4 ms × k` plus a residue of 0, 1 or 2 ns.** The
+  teardown markers are two small appends to task-output files, with no
+  solver, no `to_dimacs()` and no 5 874 272-byte write anywhere in the
+  interval; the relaunch CNFs are four writes at one instant. **So the
+  quantum is not a property of the work this sweep does**, which is what
+  the row-flush interval alone might have suggested — it is a property of
+  how this environment stamps files.
+
+  *This does not reopen the hunt, and it is not a mechanism.* It cuts the
+  other way: an effect that shows up identically in a path with none of
+  the sweep's code in it is **further** reason to believe it cannot touch
+  `ι(4)`, the bracket, or any cost figure here — which is exactly what
+  the closure said. **What is still not established is unchanged**: what
+  produces the 4 ms, and what produces the 0–2 ns residue. The residue is
+  **not** constant across paths — 2 in the first, 0 or 1 in the others —
+  so "`+ 2 ns`" was a description of four observations in one path and
+  must not be carried as a law of the quantum. The `k` values observed
+  are 1, 9 and 10, with nothing between — also unexplained, also not
+  chased.
 - Percent arithmetic — not a result, not in the tally: 36% at idx 702
   (`c235cb5`), 37% at 718 (`cd2ad61`), 38% at 738 (`e33ce40`), 39% at 760
   (`3f7c27c`), 40% at 779 (`86562d4`), 41% at idx 800, **42% at idx 817**
@@ -2642,9 +2938,15 @@ than no hash: a missing one is obviously missing, a wrong one is not.
 **Two agreements are two draws, not a property** (4083af8). At restarts #34
 and #35 the driver's and waiter's `[killed]` markers carried the *same
 nanosecond*; at #36 they differed by exactly 4.000000 ms. The observation
-did not reproduce. This is **not** an error-pattern instance — both earlier
-records explicitly called it corroboration and *not* validation and left the
-gap open, which is exactly why the third sample cost nothing.
+did not reproduce. *That was the right call for the right reason, and it
+is now settled by the full census — 35 agreements to 4 disagreements
+over all 39 paired teardowns on disk, so agreement is the rule and the
+draws were drawn from a heavily weighted deck. Neither the entry nor its
+conclusion changes; the census is where to look, not this line.*
+
+This is **not** an error-pattern instance — both earlier records
+explicitly called it corroboration and *not* validation and left the gap
+open, which is exactly why the third sample cost nothing.
 
 **An observation whose outcome was already determined when it was written
 earns nothing from that outcome** (aea7189). Reconstruct the row's start
@@ -3118,12 +3420,12 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1206 rows; 1037 labels decided; 1037 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through #43.
+  undecided-only.** No rows were lost across restarts #37 through #44.
   A row count is not a decision count: 1037 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
-  `/proc/2149/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
+  `/proc/2331/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -3133,10 +3435,11 @@ exactly one bank.
   not; **it does now** — bank.py reads `pgrep -x iota_sym` and computes the
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
-  are running. **It has fired for real three times**, rewriting pid 21172
-  → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
-  on the first bank after the relaunch. That is the same staleness that
-  survived three commits at #40.
+  are running. **It has fired for real four times**, rewriting pid 21172
+  → 389 at restart #41, 389 → 388 at #42, 388 → 2149 at #43 and
+  **2149 → 2331 at #44**, each on the first bank after the relaunch.
+  That is the same staleness that survived three commits at #40, and it
+  has now been caught mechanically four times running.
 - **Frontier contiguous 0..1033, highest decided 1037, holes [1034].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
