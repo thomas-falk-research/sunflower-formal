@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T10:16Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T10:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3576,6 +3576,26 @@ ratio bound; the spans and their ranking; closed-block and closed-group
 statistics; the whole-frontier run length; restart ranks, uptimes and
 re-take lags; declining to guess.
 
+**WHY BLOCK-RECORD RESETS HEAD THAT LIST — NOW WITH A NUMBER BEHIND
+IT.** The landing order inside a block is close to cost order, because
+four cubes run at once and the cheap ones finish first, so a late
+landing row is *expected* to be expensive. Measured on the open block
+`[13, 13, 10, 10]` at fifteen decided members: **the running maximum
+has been raised nine times**. Under a uniformly random landing order
+the expected number of running maxima is **H₁₅ = 3.3182**, the single
+most likely count is **3**, and **P(at least 9) = 0.000312** —
+computed exactly from the unsigned Stirling numbers of the first kind,
+not simulated.
+
+**That measures the scheduler, not the cubes.** All it establishes is
+that the landing order is strongly cost-ordered, which was already true
+by construction. The useful consequence is the negative one: **"the
+newest row is a block maximum" carries almost no information**, because
+nine records in fifteen is simply what this ordering produces. *It is
+not evidence that a block is getting harder, and the two consecutive
+maxima at idx 1080 and 1081 are not a trend.* The entry was in the
+not-hits list on judgement before; it is there on a measurement now.
+
 ### Pattern tally
 
 **Thirteen registered, twelve holding, one failing**, with two permanent
@@ -4044,7 +4064,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1249 -> 1250 rows)
+## State as of the last refresh (1250 -> 1251 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4055,9 +4075,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1250 rows; 1081 labels decided; 1081 UNSAT; 0 SAT; 0 labels
+- **1251 rows; 1082 labels decided; 1082 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1081 decided plus 169 superseded
+  A row count is not a decision count: 1082 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -4076,7 +4096,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1080, highest decided 1080, holes [].**
+- **Frontier contiguous 0..1081, highest decided 1081, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE THIRTY-SIXTH SPAN IS CLOSED**, filled by **idx 1077 at
   2593.9 s**. It opened at **two holes at once** — idx 1078 came in at
@@ -5130,7 +5150,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1081 of 1949 = 55.4643%**; **868 undecided**. **50% IS CROSSED**, at
+- **1082 of 1949 = 55.5156%**; **867 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5439,7 +5459,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **14 decided**, undecided 14 spanning 1081..1094
+  **15 decided**, undecided 13 spanning 1082..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
