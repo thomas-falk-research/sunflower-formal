@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:11Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2415,6 +2415,36 @@ Registration discipline, learned the hard way:
   | `[13,13,11,8]` | 21 | 549.4 | 3828.7 | 3965.7 | 8214.9 | 14.9525× |
   | `[13,13,11,7]` | 15 | 315.5 | 3405.4 | 3232.8 | 6651.4 | 21.0821× |
   | `[13,13,11,6]` | 11 | 539.8 | 2323.8 | 2475.1 | 5508.0 | 10.2038× |
+  | `[13,13,11,5]` | 7 | 558.1 | 1417.4 | 1842.2 | 3590.3 | 6.4331× |
+
+  **`[13,13,11,5]` CLOSED 7/7** (idx 1048..1054, contiguity verified by
+  `max - min + 1 == len` rather than eyeballed — closed by **idx 1053
+  after it ran 3590.3 s**). Its 7 cubes cost **12895.5 core-seconds =
+  3.5821 core-hours** in total. **Every row above was recomputed from
+  the staged checkpoint when this one was added** and all **33** already
+  tabled reproduced their recorded figures, with the set comparison
+  reporting **34 closed, 34 tabled after the addition, and two
+  partially-decided blocks left** — `[13,13,11,4]` at 3 of 5 and
+  `[13,13,11,3]` at 1 of 3.
+
+  ***ITS CLOSING ROW DID NOT CLOSE THE SPAN, BREAKING A RUN OF THREE.***
+  The thirty-first, thirty-second and thirty-third were each closed by
+  the row that closed a block; here idx 1053 closed the block and the
+  span stayed open on `[1058, 1059]`. *The structural reason given at
+  the thirty-second still stands — a span's last hole is usually a
+  block's last cube — but "usually" is doing the work, and this is the
+  case where it does not hold.* **The frontier still jumped five
+  indices**, 0..1052 → 0..1057, because 1053 was the lowest hole and
+  1054..1057 were already decided behind it.
+
+  **Its spread, 6.4331×, is the narrowest of the seven closed blocks in
+  the `[13,13,11,*]` run**, whose spreads now read **30.8201, 20.3705,
+  15.6072, 14.9525, 21.0821, 10.2038, 6.4331** by descending fourth
+  index. *That is two successive narrowings after the 11,7 spike, and it
+  is still not a trend: the sequence goes down, down, down, **up**,
+  down, down, and a run with one reversal in six steps is a description
+  of seven blocks.* Mean 1842.2 sits above median 1417.4, the ordinary
+  arrangement.
 
   **`[13,13,11,6]` CLOSED 11/11** (idx 1037..1047, contiguity verified by
   `max - min + 1 == len` rather than eyeballed — closed by **idx 1045
@@ -3738,7 +3768,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1226 -> 1227 rows)
+## State as of the last refresh (1227 -> 1228 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3749,9 +3779,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1227 rows; 1058 labels decided; 1058 UNSAT; 0 SAT; 0 labels
+- **1228 rows; 1059 labels decided; 1059 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1058 decided plus 169 superseded
+  A row count is not a decision count: 1059 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3770,7 +3800,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1052, highest decided 1060, holes [1053, 1058, 1059].**
+- **Frontier contiguous 0..1057, highest decided 1060, holes [1058, 1059].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIFTH, AND IT OPENED AT ONE HOLE.**
   idx 1054 came in at **905.0 s** while **1053 was still running**, so
@@ -3974,11 +4004,14 @@ exactly one bank.
   7, 5, 3, 2, 1, 1`, so **3 is what follows 5**. Combinatorics, not
   data.
 
-  ***THREE BLOCKS ARE OPEN AT ONCE*** — `[13,13,11,5]` at 6 of 7,
-  `[13,13,11,4]` at 3 of 5, `[13,13,11,3]` at 1 of 3. *That is a
-  consequence of block size, not of anything about these cubes: the
+  ***THREE BLOCKS WERE OPEN AT ONCE*** — `[13,13,11,5]` at 6 of 7,
+  `[13,13,11,4]` at 3 of 5, `[13,13,11,3]` at 1 of 3; **it lasted one
+  bank**, idx 1053 closing the first of them on the very next row.
+
+  *That is a consequence of block size, not of anything about these
+  cubes: the
   three of them span idx 1048..1062, **fifteen indices**, and the driver
-  holds only **four** slots, so the in-flight window now straddles three
+  holds only **four** slots, so the in-flight window straddles several
   blocks where earlier in the sweep a single block of 129 or 104 members
   swallowed it whole.* **No claim is made that this is the first time**
   — establishing that would mean walking the census across a thousand
@@ -4659,7 +4692,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1058 of 1949 = 54.2842%**; **891 undecided**. **50% IS CROSSED**, at
+- **1059 of 1949 = 54.3356%**; **890 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4935,8 +4968,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 5]` idx 1048..1054: **7 members**,
-  **6 decided**, undecided [1053]
 - `[13, 13, 11, 4]` idx 1055..1059: **5 members**,
   **3 decided**, undecided [1058, 1059]
 - `[13, 13, 11, 3]` idx 1060..1062: **3 members**,
