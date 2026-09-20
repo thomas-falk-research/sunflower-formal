@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T10:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T11:09Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4075,7 +4075,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1253 -> 1254 rows)
+## State as of the last refresh (1254 -> 1255 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4086,9 +4086,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1254 rows; 1085 labels decided; 1085 UNSAT; 0 SAT; 0 labels
+- **1255 rows; 1086 labels decided; 1086 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1085 decided plus 169 superseded
+  A row count is not a decision count: 1086 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -4107,22 +4107,30 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1083, highest decided 1085, holes [1084].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE THIRTY-SEVENTH.** idx 1085 landed at
-  2150.1 s while 1084 was still running. The frontier and hole set are
-  on the bullet line above, which bank.py owns; *this prose deliberately
-  does not repeat them.* **No duration, no rank, no monotonicity and no
-  commit count until it closes** — the spans section's standing rule,
-  and the reason a close in this file costs two commits.
+- **Frontier contiguous 0..1085, highest decided 1085, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-SEVENTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It opened when idx 1085 landed at 2150.1 s while 1084 was
+  still running, and was filled by **idx 1084 at 3169.8 s**, the row
+  banked here. The frontier and hole set are on the bullet line above,
+  which bank.py owns; *this prose deliberately does not repeat them.*
 
-  The ordinal was derived, not assumed: `--spans all` re-run after the
-  hole appeared still ends at **b393f25**, **101 closed spans**, so the
-  next is walk position **102**, and the offset of 65 verified across
-  all twenty-two tabled rows puts that at ordinal **thirty-seven**.
-  *The walk was re-run rather than reasoned about — four commits had
-  landed since the last close, all with an empty hole set, and "they
-  cannot have added a span" is a prediction like any other.*
+  **Its duration, ranks, hole-count chain and monotonicity are absent
+  deliberately: they do not exist yet.** `--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
+  before the tool can see the span at all — which is why a close in this
+  file costs two commits. They arrive in the next commit, with **every
+  rank in the spans table recomputed together at the new N**, the
+  twenty-two carried rows first reproduced at the old N in the same
+  script.
+
+  *The ordinal was derived and checked when the span OPENED, at
+  `fe66c20`: the walk then ended at `b393f25` with **101 closed spans**,
+  so this is walk position **102** and, at the offset of 65 verified
+  across all twenty-two tabled rows, ordinal **thirty-seven**. That
+  derivation is deliberately not repeated here — it was made before the
+  outcome was known, and it stands or falls on the walk the next commit
+  reads.*
 
   **THE THIRTY-SIXTH SPAN IS CLOSED**, filled by **idx 1077 at
   2593.9 s**. It opened at **two holes at once** — idx 1078 came in at
@@ -5176,7 +5184,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1085 of 1949 = 55.6696%**; **864 undecided**. **50% IS CROSSED**, at
+- **1086 of 1949 = 55.7209%**; **863 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5485,7 +5493,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **18 decided**, undecided 10 spanning 1084..1094
+  **19 decided**, undecided 9 spanning 1086..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
