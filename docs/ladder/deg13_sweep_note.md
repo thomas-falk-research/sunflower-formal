@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T04:12Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T04:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3445,7 +3445,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1207 -> 1209 rows)
+## State as of the last refresh (1209 -> 1210 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3456,9 +3456,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1209 rows; 1040 labels decided; 1040 UNSAT; 0 SAT; 0 labels
+- **1210 rows; 1041 labels decided; 1041 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1040 decided plus 169 superseded
+  A row count is not a decision count: 1041 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3477,7 +3477,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1033, highest decided 1040, holes [1034].**
+- **Frontier contiguous 0..1033, highest decided 1043, holes [1034, 1041, 1042].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
@@ -3517,29 +3517,42 @@ exactly one bank.
   | idx 1040 | 1448.7 | `[1034, 1038, 1039]` | 3 |
   | idx 1038 | 1661.3 | `[1034, 1039]` | 2 |
   | idx 1039 | 1694.9 | `[1034]` | 1 |
+  | idx 1043 | 2323.8 | `[1034, 1041, 1042]` | 3 |
 
-  **3 → 2 → 1 → 3 → 2 → 1 → 1 → 3 → 2 → 1**, read straight off the count
-  column: one hole reached **four times**, two holes **three times**,
-  three holes **three times**, and — stated with its convention, because
-  the answer depends on it — a longest **strictly decreasing** stretch of
-  **3** (`3 → 2 → 1`) and a longest **non-increasing** stretch of **4**
-  (`3 → 2 → 1 → 1`), which is the convention the chain verdicts use.
-  Neither stretch figure has moved since the seventh row.
+  **3 → 2 → 1 → 3 → 2 → 1 → 1 → 3 → 2 → 1 → 3**, read straight off the
+  count column: one hole reached **four times**, two holes **three
+  times**, three holes **four times**, and — stated with its convention,
+  because the answer depends on it — a longest **strictly decreasing**
+  stretch of **3** (`3 → 2 → 1`) and a longest **non-increasing** stretch
+  of **4** (`3 → 2 → 1 → 1`), which is the convention the chain verdicts
+  use. Neither stretch figure has moved since the seventh row.
 
-  ***THE CHAIN IS NOW THREE COMPLETE `3 → 2 → 1` DESCENTS WITH ONE EXTRA
-  `1` IN THE MIDDLE, AND THAT IS REPORTED AS A SHAPE, NOT A LAW.*** The
-  maximal strictly-decreasing runs start at rows **0, 3 and 7** —
-  computed, not eyeballed. It is tempting to read this as a cycle; **it
-  is not offered as one.** Ten rows is ten rows, the span is still open,
-  and this file has a whole section on mechanisms invented to fit the
-  data they post-date. *What can be said without inventing anything: the
-  driver has four slots, and after restart #44 all four in-flight cubes
-  were launched at the same instant — so cubes finish in clusters, and a
-  cluster is what pushes the frontier forward and then lets the fill-ins
-  catch up.* That is a structural fact about the driver, recorded at
-  #44's opening rather than read off this chain; whether it explains the
-  shape is **NOT established**, and the next rows will disturb it or
-  they will not.
+  ***THE CHAIN IS THREE COMPLETE `3 → 2 → 1` DESCENTS WITH ONE EXTRA `1`
+  IN THE MIDDLE, AND A FOURTH DESCENT NOW STARTED. THAT IS REPORTED AS A
+  SHAPE, NOT A LAW.*** The maximal strictly-decreasing runs start at rows
+  **0, 3 and 7**, each of length 3; the full run decomposition is
+  `(0,3) (3,3) (6,1) (7,3) (10,1)` — computed, not eyeballed. It is
+  tempting to read this as a cycle; **it is not offered as one.** Eleven
+  rows is eleven rows, the span is still open, and this file has a whole
+  section on mechanisms invented to fit the data they post-date. *What
+  can be said without inventing anything: the driver has four slots, and
+  after restart #44 all four in-flight cubes were launched at the same
+  instant — so cubes finish in clusters, and a cluster is what pushes the
+  frontier forward and then lets the fill-ins catch up.* That is a
+  structural fact about the driver, recorded at #44's opening rather than
+  read off this chain; whether it explains the shape is **NOT
+  established**.
+
+  ***THE PREVIOUS ROW SAID "the next rows will disturb it or they will
+  not". THE NEXT ROW DID NOT DISTURB IT*** — idx 1043 opened a fourth
+  descent at `3`, exactly where a cycle would put one. **This is worth
+  almost nothing and is logged anyway.** An agreeing observation is the
+  cheapest kind of corroboration and the one least able to validate; the
+  same sentence is written in this file about the re-take-lag band, which
+  has now agreed eight times in ten and is still refused as a law. *A
+  prediction that survives one confirmation has survived one
+  confirmation.* The row that matters is the one that breaks it, and it
+  has not arrived.
 
   *A draft said "no monotone stretch longer than three" without naming
   which; under the note's own non-increasing convention that is wrong.
@@ -4138,7 +4151,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1040 of 1949 = 53.3607%**; **909 undecided**. **50% IS CROSSED**, at
+- **1041 of 1949 = 53.4120%**; **908 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4376,7 +4389,7 @@ exactly one bank.
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
   **14 decided**, undecided [1034]
 - `[13, 13, 11, 6]` idx 1037..1047: **11 members**,
-  **4 decided**, undecided 7 spanning 1041..1047
+  **5 decided**, undecided 6 spanning 1041..1047
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
