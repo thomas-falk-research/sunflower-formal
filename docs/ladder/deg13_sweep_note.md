@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T06:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T06:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3661,7 +3661,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1219 -> 1220 rows)
+## State as of the last refresh (1220 -> 1221 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3672,9 +3672,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1220 rows; 1051 labels decided; 1051 UNSAT; 0 SAT; 0 labels
+- **1221 rows; 1052 labels decided; 1052 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1051 decided plus 169 superseded
+  A row count is not a decision count: 1052 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3693,12 +3693,29 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1050, highest decided 1050, holes [].**
-  <!-- SPAN-STATE: closed -->
-  **THE THIRTY-THIRD SPAN IS CLOSED**, filled by **idx 1045 at
-  5508.0 s** — the same row that closed block `[13, 13, 11, 6]` at
-  11 of 11. The frontier jumped from contiguous 0..1044 to
-  **0..1050**, a six-index advance, and the hole set is empty.
+- **Frontier contiguous 0..1050, highest decided 1052, holes [1051].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN — THE THIRTY-FOURTH, AND IT OPENED AT ONE HOLE.**
+  idx 1052 came in at **2309.5 s** while **1051 was still running**, so
+  the frontier stands contiguous 0..1050 with the highest decided index
+  at 1052 and holes `[1051]`. **That breaks the run of three-hole
+  openings** — the thirty-second and thirty-third both opened at three,
+  and this one opens at the minimum a span can have.
+
+  **NO FIGURES AND NO CHAIN ARE WRITTEN FOR IT.** Duration, ranks,
+  commit count and hole trajectory come from `--spans all` run *after*
+  the closing commit exists, and every quoted span rank in the file is
+  then recomputed against the new N together. **A one-hole opening does
+  not make the chain start at 1** any more than a three-hole opening
+  makes it start at 3 — the chain is a property of the commit sequence,
+  not of the file.
+
+  ***THE THIRTY-THIRD SPAN IS CLOSED*** — filled by **idx 1045 at
+  5508.0 s**, the same row that closed block `[13, 13, 11, 6]` at
+  11 of 11, with the frontier jumping from contiguous 0..1044 to
+  **0..1050**. **Its ranks, duration and commit chain are in the spans
+  section above**, written once the closing commit existed; its verdict
+  was **TRUE on five comparisons**, the strongest True in the record.
 
   **CARRIED FORWARD FROM THE OPEN PROSE, because that prose was its only
   record:** the span **opened at THREE holes at once** — idx 1047 came in
@@ -3708,12 +3725,12 @@ exactly one bank.
   rank 983 of 1045 decided at the time, against the thirty-second's
   2730.1 s.
 
-  **NO DURATION, NO RANKS AND NO COMMIT COUNT ARE WRITTEN YET.** They
-  come from `--spans all` run **after this closing commit exists**, and
-  every quoted span rank across the file is then recomputed against the
-  new N **together, in one script**, after first reproducing the previous
-  N's ranks. **A three-hole opening does not make the chain start at 3**
-  — the chain is a property of the commit sequence, not of the file.
+  *That deferral notice — "no duration, no ranks, no commit count are
+  written yet" — stood here for exactly one commit and is removed now
+  that `--spans all` has been run and the figures are in the spans
+  section. **A notice that a figure is pending is itself a figure that
+  goes stale**, and leaving it in place after the pending thing arrives
+  is the same failure as leaving a rank against an old N.*
 
   ***THREE CONSECUTIVE SPANS HAVE NOW BEEN CLOSED BY A ROW THAT ALSO
   CLOSED A BLOCK*** — the thirty-first with `[13,13,11,8]`, the
@@ -4509,7 +4526,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1051 of 1949 = 53.9251%**; **898 undecided**. **50% IS CROSSED**, at
+- **1052 of 1949 = 53.9764%**; **897 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4745,7 +4762,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 5]` idx 1048..1054: **7 members**,
-  **3 decided**, undecided [1051, 1052, 1053, 1054]
+  **4 decided**, undecided [1051, 1053, 1054]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
