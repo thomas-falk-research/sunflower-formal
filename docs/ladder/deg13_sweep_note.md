@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T18:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T18:36Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4213,7 +4213,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1277 -> 1278 rows)
+## State as of the last refresh (1278 -> 1279 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4224,9 +4224,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1278 rows; 1109 labels decided; 1109 UNSAT; 0 SAT; 0 labels
+- **1279 rows; 1110 labels decided; 1110 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1109 decided plus 169 superseded
+  A row count is not a decision count: 1110 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4245,7 +4245,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1106, highest decided 1110, holes [1107, 1108].**
+- **Frontier contiguous 0..1107, highest decided 1110, holes [1108].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTIETH.** idx 1109 landed at
   2679.5 s while 1106, 1107 and 1108 were all still running — an opening
@@ -5485,7 +5485,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1109 of 1949 = 56.9010%**; **840 undecided**. **50% IS CROSSED**, at
+- **1110 of 1949 = 56.9523%**; **839 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5603,6 +5603,84 @@ exactly one bank.
   there, which is bookkeeping and not a prediction. **It was reached**;
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
+
+  ***57% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND THE SHORTFALL
+  TURNS OUT TO HAVE A CLOSED FORM.*** idx 1107 took the decided count to
+  **1110 = 56.9523%**, which rounds to 57.0 while sitting **below** 57,
+  so **57% is NOT crossed**: `ceil(0.57 × 1949) = 1111 = 57.0036%` is the
+  first value at or above it. Shortfall **0.047717 pp**, **tightness rank
+  93 of 97** — the **fifth-loosest** of all 97. It is the **sixteenth**
+  rounds-up-but-below figure in the `k = 41..57` stretch this note
+  narrates — sixteen and not seventeen because **51% has no trap at
+  all** — and the **55th of the 97** traps in the whole run.
+
+  *A draft of this paragraph called it **the loosest of all 97**. It is
+  not. The four that are looser are k = 53 (0.049769), 4 (0.049256), 55
+  (0.048743) and 6 (0.048230) — and the 56% block had already printed
+  that exact five-element list, `53, 4, 55, 6, 57`, so the correct answer
+  was sitting in this same note. The error came from reading a
+  loosest-five list that had been printed **loosest-first** and taking
+  the head of the list for the head of the ranking. It was caught by
+  recomputing the rank before writing it down, which is the only reason
+  this block is right; the wrong sentence was already drafted.*
+
+  ***AND WHY 51% HAS NO TRAP IS NOW DERIVED RATHER THAN OBSERVED.*** The
+  note has carried "the exceptions are {2, 51}" as a measured fact since
+  the traps were first enumerated. It is arithmetic. Write
+  `r = 49k mod 100`; since `1949 ≡ 49 (mod 100)`, the trap's shortfall is
+  **exactly `r / 1949` pp** whenever `r ≠ 0`, and a trap exists exactly
+  when that is under 0.05 pp — that is, when **`r ≤ 97`**. So `k` has no
+  trap precisely when `r ∈ {0, 98, 99}`, and in `1..99` that is **k = 2**
+  (`49·2 = 98`) and **k = 51** (`49·51 = 2499`, `r = 99`) and nothing
+  else. *Checked against the brute-force enumeration for all 99 values of
+  `k`: **zero mismatches** in membership and zero in the shortfall value.*
+  For `k = 57`: `49 · 57 = 2793`, `r = 93`, shortfall `93/1949 =
+  0.047717 pp` — the same number the search produced, now with a reason
+  attached. **This explains the ranking the note has been quoting for
+  several thresholds and never accounted for**: tightness order is just
+  `r` descending, which is why the loosest ten come out as the
+  interleaved runs **53, 4, 55, 6, 57, 8, 59, 10, 61, 12** rather than in
+  any order that has to do with the sweep. *This is a fact about 1949 and
+  100. It says nothing whatever about deg(0) = 13, and it is recorded
+  here only because the note had been quoting the consequence without
+  the cause.*
+
+  **WHETHER THIS TRAP IS CAUGHT IS NOT DECIDED HERE, AND THE TALLY DOES
+  NOT MOVE.** It stays at **47 caught and 7 missed of 54**. The
+  denominator counts traps the counter has **passed**, and 57% is not
+  crossed — 1111 has not landed. What *can* be said now, and is checked
+  rather than assumed: the **staged blob** this bank is committing holds
+  `decided() = 1110`, verified by the walk over the blob and not by the
+  subject line, which is the same distinction that settled 56%. So the
+  tree that would settle this catch is the one **this commit creates**,
+  unlike 56%, where the settling tree did not yet exist when the trap
+  block was first written. That still does not move the tally: a tree
+  holding the value and the trap being *counted* as caught are two
+  different events, and only the crossing licenses the second.
+
+  *Three of the five loosest traps in the whole run — k = 53, 55, 57 —
+  fall inside this one stretch, and they are consecutive odd thresholds.
+  The 55% block noted two of the three loosest landing here and called
+  it "a fact about where 1949's divisors sit". **That reason was wrong:
+  1949 is prime** — checked, no divisor in `2..43`, and
+  `43² = 1849 < 1949 < 2209 = 47²` bounds the search — **so it has no
+  divisors to sit anywhere.** The closed form gives the real reason:
+  `r = 49k mod 100` advances by **exactly 49 for every step of 1 in `k`**
+  (checked across all 98 steps — one distinct value), hence by
+  **98 ≡ −2 (mod 100)** for every step of 2, so the largest `r` values
+  march down the **odd** thresholds two at a time — `r = 97, 95, 93, 91,
+  89` at `k = 53, 55, 57, 59, 61` — while the even ones do the same one
+  behind, `r = 96, 94, 92, 90, 88` at `k = 4, 6, 8, 10, 12`. That is the
+  whole of the interleaved ten listed above, and none of it is about the
+  sweep. *The old sentence was not merely imprecise; it named a property
+  1949 does not have, and it stood unchallenged through the 56% block
+  that followed it.*
+
+  Next: **58% needs `ceil(0.58 × 1949) = 1131` = 58.0298%, trap at
+  1130 = 57.9785%**, shortfall `42/1949 = 0.021550 pp`, **tightness rank
+  42 of 97** — an ordinary one, and the **56th of the 97**. That is
+  **19 rows** past the 57% crossing at 1111, computed. Nothing is
+  predicted about whether a committed tree will sit on 1130.
 
   ***56% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND THIS ONE IS
   MID-PACK.*** idx 1093 took the decided count to **1091 = 55.9774%**,
@@ -5837,7 +5915,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 9]` idx 1095..1115: **21 members**,
-  **14 decided**, undecided 7 spanning 1107..1115
+  **15 decided**, undecided 6 spanning 1108..1115
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
