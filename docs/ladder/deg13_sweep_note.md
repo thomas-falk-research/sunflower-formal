@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T15:27Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T15:58Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4175,7 +4175,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1273 -> 1274 rows)
+## State as of the last refresh (1274 -> 1275 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4186,9 +4186,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1274 rows; 1105 labels decided; 1105 UNSAT; 0 SAT; 0 labels
+- **1275 rows; 1106 labels decided; 1106 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1105 decided plus 169 superseded
+  A row count is not a decision count: 1106 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -4207,7 +4207,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1104, highest decided 1104, holes [].**
+- **Frontier contiguous 0..1105, highest decided 1105, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE THIRTY-NINTH SPAN IS CLOSED**, filled by **idx 1100 at
   4128.7 s**. It opened at **one hole** — idx 1101 came in at 3889.8 s
@@ -5423,7 +5423,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1105 of 1949 = 56.6957%**; **844 undecided**. **50% IS CROSSED**, at
+- **1106 of 1949 = 56.7470%**; **843 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5775,7 +5775,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 9]` idx 1095..1115: **21 members**,
-  **10 decided**, undecided 11 spanning 1105..1115
+  **11 decided**, undecided 10 spanning 1106..1115
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
