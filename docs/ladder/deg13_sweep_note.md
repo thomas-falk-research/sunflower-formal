@@ -1019,24 +1019,37 @@ could have gone up, so all three
 comparisons are genuine chances to falsify. The worry is recorded with its
 refutation because it would have deflated the one result below.
 
-**ALL TWENTY-ONE SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT
-100** — because a rank against a growing population goes stale each
-time the population grows, and these have now been restated twenty-one
-times for that reason alone. **All twenty carried rows were first
-reproduced exactly at N = 99 in the same script** (20 of 20, zero
-mismatches) before anything was recomputed at 100; none was carried
-over with its denominator relabelled, which is the error this note
-recorded against itself at restart #40. *The denominator is a round
-100 by coincidence of arithmetic and means nothing.*
+**ALL TWENTY-TWO SPANS' RANKS, RECOMPUTED TOGETHER AGAINST THE CURRENT
+101** — because a rank against a growing population goes stale each
+time the population grows, which is why this table is restated at every
+close. **All twenty-one carried rows were first reproduced exactly at
+N = 100 in the same script** (21 of 21, zero mismatches) before anything
+was recomputed at 101; none was carried over with its denominator
+relabelled, which is the error this note recorded against itself at
+restart #40. **The same reproduction was run over the PROSE ranks
+too** — 65 figures across 16 narrative blocks, every one reproducing at
+N = 100 before being rewritten at 101 — *because "recomputing a table is
+not recomputing a section" is a lesson this file has already had to
+learn once.*
+
+*The previous version of this paragraph said the ranks "have now been
+restated twenty-one times", and that count was dropped rather than
+incremented. Its referent is not recoverable: it equalled the number of
+tabled spans exactly, so it may only have been the span count wearing a
+verb.* **A number you cannot say how to re-derive is not a figure**, and
+incrementing one is how a wrong count survives the very edit that
+touches its line. *The denominator also stopped being a round 100 at
+this close, which was the only thing ever interesting about it.*
 
 **AND A THIRD CONVENTION THIS SECTION HAS NEVER STATED: THE ORDINALS AND
 THE DENOMINATOR COUNT DIFFERENT POPULATIONS.** The rows below are
-numbered *fifteenth* through *thirty-fifth* and ranked *of 100*, and
+numbered *fifteenth* through *thirty-sixth* and ranked *of 101*, and
 those are not the same series. Every tabled span's closing commit was
 located inside the `--spans all` walk, which runs oldest-first: the
 fifteenth is walk position **80**, the twenty-first **86**, the
-thirty-fifth **100** — and over **all twenty-one rows the gap is exactly
-65**, no exception, every closer uniquely matched. So **the ordinal is
+thirty-fifth **100**, the thirty-sixth **101** — and over **all
+twenty-two rows the gap is exactly 65**, no exception, every closer
+uniquely matched. So **the ordinal is
 the walk position minus 65**: **sixty-five closed spans predate the
 ordinal numbering**, are counted in every denominator on this page, and
 are numbered nowhere. *Nothing above said so.*
@@ -1049,36 +1062,66 @@ would break more than it fixes. **What was missing was the sentence
 saying they differ.**
 
 *The practical consequence, and the reason it was checked at all: the
-next span to close is walk position **101** and ordinal **thirty-six**.
-Both had to be derived. A draft was ready to call it the thirty-sixth
-because thirty-five came before it, which is the right answer reached
-by the wrong route — the ordinal follows from the offset, not from the
-table's last row, and the two only agree because the walk ends at the
-thirty-fifth.*
+offset predicted that the next span to close would be walk position
+**101** and ordinal **thirty-six**. It closed at `b393f25` a few minutes
+later and the walk put it at exactly that — so the rule was stated
+before the case that tested it, which is the only order in which a rule
+is worth anything.* A draft had been ready to call it the thirty-sixth
+merely because thirty-five came before it: the right answer by the
+wrong route. **The ordinal follows from the offset, not from the
+table's last row**, and the two agree here only because the walk ended
+at the thirty-fifth.
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 31 of 100 | 2 | 55 of 100 (20 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 42 of 100 | 2 | 55 of 100 (20 tied) |
-| seventeenth `75ff84b` | 2:36:20 | 15 of 100 | 8 | 22 of 100 (5 tied) |
-| eighteenth `faa424a` | 1:06:55 | 37 of 100 | 8 | 22 of 100 (5 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 49 of 100 | 1 | 76 of 100 (24 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 19 of 100 | 2 | 55 of 100 (20 tied) |
-| twenty-first `83cabc1` | **5:05:31** | **8 of 100** | 7 | 28 of 100 (6 tied) |
-| twenty-second `31d9565` | 1:57:02 | 22 of 100 | 4 | 43 of 100 (**0 tied**) |
-| twenty-third `b4d2068` | 2:17:22 | 20 of 100 | 10 | 14 of 100 (4 tied) |
-| twenty-fourth `e2e3d5f` | 0:10:42 | 52 of 100 | 1 | 76 of 100 (24 tied) |
-| twenty-fifth `741b900` | 0:54:37 | 40 of 100 | 1 | 76 of 100 (24 tied) |
-| twenty-sixth `b7f8c36` | 1:14:19 | 36 of 100 | 1 | 76 of 100 (24 tied) |
-| twenty-seventh `d322a9d` | 1:49:26 | 27 of 100 | 2 | 55 of 100 (20 tied) |
-| twenty-eighth `6f6d668` | 1:56:29 | 23 of 100 | **9** | **19 of 100** (2 tied) |
-| twenty-ninth `69a8a16` | 0:18:42 | 50 of 100 | 1 | 76 of 100 (24 tied) |
-| thirtieth `3db5927` | 1:36:10 | 29 of 100 | 2 | 55 of 100 (20 tied) |
-| thirty-first `43f2ddb` | 1:31:53 | 30 of 100 | 6 | 35 of 100 (2 tied) |
-| thirty-second `5cde733` | **3:33:32** | **12 of 100** | **11** | **11 of 100** (2 tied) |
-| thirty-third `743c24d` | 1:15:56 | 33 of 100 | 6 | 35 of 100 (2 tied) |
-| thirty-fourth `4e27c14` | **0:09:49** | **53 of 100** | 1 | 76 of 100 (24 tied) |
-| thirty-fifth `bb28ab9` | 0:39:00 | 44 of 100 | **8** | **22 of 100** (5 tied) |
+| fifteenth `a5172c7` | 1:29:45 | 31 of 101 | 2 | 55 of 101 (21 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 42 of 101 | 2 | 55 of 101 (21 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 15 of 101 | 8 | 22 of 101 (5 tied) |
+| eighteenth `faa424a` | 1:06:55 | 37 of 101 | 8 | 22 of 101 (5 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 50 of 101 | 1 | 77 of 101 (24 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 19 of 101 | 2 | 55 of 101 (21 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 101** | 7 | 28 of 101 (6 tied) |
+| twenty-second `31d9565` | 1:57:02 | 22 of 101 | 4 | 43 of 101 (**0 tied**) |
+| twenty-third `b4d2068` | 2:17:22 | 20 of 101 | 10 | 14 of 101 (4 tied) |
+| twenty-fourth `e2e3d5f` | 0:10:42 | 53 of 101 | 1 | 77 of 101 (24 tied) |
+| twenty-fifth `741b900` | 0:54:37 | 40 of 101 | 1 | 77 of 101 (24 tied) |
+| twenty-sixth `b7f8c36` | 1:14:19 | 36 of 101 | 1 | 77 of 101 (24 tied) |
+| twenty-seventh `d322a9d` | 1:49:26 | 27 of 101 | 2 | 55 of 101 (21 tied) |
+| twenty-eighth `6f6d668` | 1:56:29 | 23 of 101 | **9** | **19 of 101** (2 tied) |
+| twenty-ninth `69a8a16` | 0:18:42 | 51 of 101 | 1 | 77 of 101 (24 tied) |
+| thirtieth `3db5927` | 1:36:10 | 29 of 101 | 2 | 55 of 101 (21 tied) |
+| thirty-first `43f2ddb` | 1:31:53 | 30 of 101 | 6 | 35 of 101 (2 tied) |
+| thirty-second `5cde733` | **3:33:32** | **12 of 101** | **11** | **11 of 101** (2 tied) |
+| thirty-third `743c24d` | 1:15:56 | 33 of 101 | 6 | 35 of 101 (2 tied) |
+| thirty-fourth `4e27c14` | **0:09:49** | **54 of 101** | 1 | 77 of 101 (24 tied) |
+| thirty-fifth `bb28ab9` | 0:39:00 | 44 of 101 | **8** | **22 of 101** (5 tied) |
+| thirty-sixth `b393f25` | 0:37:35 | 45 of 101 | 2 | 55 of 101 (21 tied) |
+
+***THE THIRTY-SIXTH MOVED FIFTEEN FIGURES — 4 duration ranks, 6 commit
+ranks and 5 tie counts***, asserted as 4 + 6 + 5 = 15 and summed by
+script, spread over **11 of the 21 carried rows** with **10 rows
+untouched**. Every one of them follows from where a 0:37:35, two-commit
+span has to sort: the four duration ranks are the four tabled spans
+shorter than it, each pushed down one; the six commit ranks are the six
+tabled 1-commit spans, which any 2-commit span outranks, 76 → 77; the
+five tie counts are the five other tabled 2-commit spans, whose tie
+group gained the newcomer, 20 → 21.
+
+**THE THREE GROUPS ARE NOT DISJOINT, AND A DRAFT SAID THEY WERE.** The
+four shorter spans are the nineteenth, twenty-fourth, twenty-ninth and
+thirty-fourth — and **all four are 1-commit spans**, so the shorter set
+is *wholly contained* in the commit-rank set rather than sitting beside
+it. Those four rows each moved twice; the twenty-fifth and twenty-sixth
+moved once only. **15 figures over 11 rows is not 15 rows**, and the
+draft was caught by counting the union rather than asserting it.
+
+***AND IT SORTED IMMEDIATELY BELOW THE THIRTY-FIFTH.*** At 0:37:35
+against 0:39:00 it takes rank **45** where the thirty-fifth holds
+**44**, with **nothing between them** — the two most recent closes are
+adjacent in the duration ordering, **85 seconds apart**. *That is a
+coincidence of when two cubes happened to finish and is recorded as
+one. It is not a tendency, and this file has been wrong before by
+reading exactly this kind of adjacency as a pattern.*
 
 ***THE THIRTY-FIFTH MOVED TWENTY-ONE FIGURES — 4 duration ranks, 15
 commit ranks and 2 tie counts***, asserted as 4 + 15 + 2 = 21 over the
@@ -1088,11 +1131,11 @@ twenty rows carried across. **The commit side dominates again**: with
 eighteenth at 8 commits**, taking their tie counts 4 → 5, and those two
 are the only tie counts that moved.
 
-**TWELVE CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17, 19,
-33, 19, 5 AND 21 FIGURES — 167 IN TOTAL**, summed by script. *The three
-most recent are 5, 21 and — before them — 19, which is the spread this
-file keeps pointing at: nothing about the table changed between those
-closes except where each new span happened to sort.*
+**THIRTEEN CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17,
+19, 33, 19, 5, 21 AND 15 FIGURES — 182 IN TOTAL**, summed by script.
+*The three most recent are 21, 15 and — before them — 5, which is the
+spread this file keeps pointing at: nothing about the table changed
+between those closes except where each new span happened to sort.*
 
 ***THE THIRTY-FOURTH MOVED FIVE FIGURES AND EVERY ONE OF THEM IS A TIE
 COUNT. NOT ONE RANK MOVED.*** At 0:09:49 it is **shorter than every
@@ -1114,7 +1157,7 @@ by script.
 
 ***IT IS THE SHORTEST SPAN IN THE TABLE AND THE FIRST THAT DOES NOT
 LAST TEN MINUTES.*** 0:09:49 is **589 seconds**, under the
-ten-minute line that 52 of 100 spans clear, and it takes the
+ten-minute line that 53 of 101 spans clear, and it takes the
 shortest-tabled position from the twenty-fourth's 0:10:42. *Before it,
 every one of the nineteen tabled spans lasted at least ten minutes —
 checked across all nineteen, not assumed from the two shortest.*
@@ -1137,7 +1180,7 @@ than the duration side** because 6 commits ties or beats more of the
 table than 1:15:56 does.
 
 *That is a middling correction from a span that sorts mid-table: 33 of
-100 by duration and 35 of 100 by commits, so it pushes down only the rows
+101 by duration and 35 of 101 by commits, so it pushes down only the rows
 below it in each ordering rather than almost all of them.*
 
 **TEN CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17, 19, 33
@@ -1246,33 +1289,53 @@ successive tables, three different reasons for that column, and two
 closes running where the reason is "none"** — which is why each movement
 is labelled where it happens rather than left for a reader to infer.
 
-Read through the distribution, **recomputed at N = 100**: **37 of 100
-ran longer than an hour** and **56 of 100 longer than a second**. Every
+Read through the distribution, **recomputed at N = 101**: **37 of 101
+ran longer than an hour** and **57 of 101 longer than a second**. Every
 tabled span is far above a second, so each one's rank among the lasting
 set is the same number as its overall rank, and only the denominator
-changes. The twenty-first's **8 of 100 is 8 of it** with 48 shorter,
-still the highest any of these twenty-one has reached; the
-thirty-second's 12 is 12 of 56 with 44 shorter; the seventeenth's 15
-with 41; the twentieth's 19 with 37; the twenty-third's 20 with 36; the
-twenty-second's 22 with 34; the twenty-eighth's 23 with 33; the
-twenty-seventh's 27 with 29; the thirtieth's 29 with 27; the
-thirty-first's 30 with 26; the fifteenth's 31 with 25; the
-thirty-third's 33 with 23; the twenty-sixth's 36 with 20; the
-eighteenth's 37 with 19; the twenty-fifth's 40 with 16; the sixteenth's
-42 with 14; **the thirty-fifth's 44 with 12**; the nineteenth's 49 with
-7; the twenty-ninth's 50 with 6; the twenty-fourth's 52 with 4; and
-**the thirty-fourth's 53 of 100 is 53 of 56 — only three of the spans
-that lasted at all were shorter**. **44 of 100 did not last a second**,
-so a duration rank in the middle of 100 is near the bottom of the spans
-that happened at all. **10 of 100 ran longer than four hours; the
+changes. The twenty-first's **8 of 101 is 8 of it** with 49 shorter,
+still the highest any of these twenty-two has reached; the
+thirty-second's 12 is 12 of 57 with 45 shorter; the seventeenth's 15
+with 42; the twentieth's 19 with 38; the twenty-third's 20 with 37; the
+twenty-second's 22 with 35; the twenty-eighth's 23 with 34; the
+twenty-seventh's 27 with 30; the thirtieth's 29 with 28; the
+thirty-first's 30 with 27; the fifteenth's 31 with 26; the
+thirty-third's 33 with 24; the twenty-sixth's 36 with 21; the
+eighteenth's 37 with 20; the twenty-fifth's 40 with 17; the sixteenth's
+42 with 15; the thirty-fifth's 44 with 13; **the thirty-sixth's 45 with
+12**; the nineteenth's 50 with 7; the twenty-ninth's 51 with 6; the
+twenty-fourth's 53 with 4; and
+**the thirty-fourth's 54 of 101 is 54 of 57 — only three of the spans
+that lasted at all were shorter**. **44 of 101 did not last a second**,
+so a duration rank in the middle of 101 is near the bottom of the spans
+that happened at all. **10 of 101 ran longer than four hours; the
 twenty-first is one of them and the thirty-second, at 3:33:32, is
 NOT** — it misses by 26 minutes 28 seconds, which is worth stating
 because "second-longest tabled span" and "in the top ten by duration"
 are different claims and only the first is true of it.
 
+***EVERY ENTRY IN THAT LIST MOVED, AND IN ONE OF EXACTLY TWO WAYS.*** A
+span inserted at rank 45 lifts the lasting set from 56 to 57. **The
+seventeen entries above it keep their rank and gain one shorter**; **the
+four below it gain one rank and keep their shorter-count**, because for
+those the rank and the total moved together. The four below are the
+nineteenth, twenty-ninth, twenty-fourth and thirty-fourth — the same
+four that the table's duration ranks moved, for the same reason. *Not
+one of the twenty-one was left alone.*
+
+**AND THIS LIST WAS VERY NEARLY SHIPPED UNCHANGED.** The mechanical pass
+that recomputed every other rank in the file keyed on the string
+`of 100`; these entries are bare numerals — "the seventeenth's 15 with
+41" — so **not one of them matched, and the pass reported success**. It
+was caught by reading the staged diff before committing. *A script that
+finds nothing reports the same silence whether there is nothing to find
+or its pattern is wrong*, which is why the diff is read and not just the
+tool's summary — the same lesson as instance #26, one close earlier.
+
 ***MY OWN PARSE OF THAT DISTRIBUTION DISAGREED WITH THE TOOL, AND THE
 TOOL WAS RIGHT.*** A script written to re-derive these figures reported
-**74** spans longer than a second where `--spans all` reports **53**.
+**74** spans longer than a second where `--spans all` reported **53**
+at the N in force for that check.
 The fault was the parse: it reconstructed each duration from the
 tool's parenthesised hours, which are printed to four decimals, so the
 smallest representable step is 0.36 s and sub-second spans round up
@@ -1289,9 +1352,9 @@ thirty-fourth's 0:09:49 slotted in below both it and the twenty-fourth,
 so the ordering at the bottom is 34th, 24th, 29th — recomputed at this
 close rather than carried, which is exactly what the previous wording
 ("still the second-shortest") would have gotten wrong.* At
-0:18:42 it is 50 of 100 overall — **49 longer, 50 shorter, no tie**,
+0:18:42 it is 51 of 101 overall — **50 longer, 50 shorter, no tie**,
 just below the median. But 44 of those 50 shorter spans did not last a
-second, so among the **56 that lasted at all it is 50 of 56, with only
+second, so among the **57 that lasted at all it is 51 of 57, with only
 six shorter**: near the median of the whole population and near the
 bottom of the population that happened. Both readings are of the same number,
 and either one quoted alone misleads in the opposite direction from the
@@ -1313,7 +1376,7 @@ when it comes true — and because "it broke" is the boring outcome that
 would never have been written down if the symmetry had been left to
 speak for itself.*
 
-The seventeenth and eighteenth **tie on commit count at 22 of 100 while
+The seventeenth and eighteenth **tie on commit count at 22 of 101 while
 differing by 89 minutes on duration** — the same disagreement between the
 two rankings that the sixth span's entry already noted, not a new one.
 **The seventeenth's** two ranks agree far better than the fifteenth's do
@@ -1740,6 +1803,37 @@ and did not — but the table below counts COMPARISONS, and by that plainer
 reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
+
+**THIS TABLE STOPS AT ORDINAL 31 WHILE THE SPAN RECORD NOW REACHES 36 —
+FIVE ROWS ARE MISSING.** Measured rather than estimated: the table's
+ordinals 1–31 are walk positions 66–96, and the walk now holds 101.
+**Everything already in it reproduces.** Re-derived from `--spans all`,
+ordinals 1–31 give **18 True and 13 False**; the zero-comparison set is
+exactly {5, 10, 19, 24, 25, 26, 29}; the single-comparison set exactly
+{3, 8, 11, 15, 16, 20, 27, 30}; the True-on-more-than-one set exactly
+{4, 6, 22} — every one matching the prose below to the element. *The
+table is behind, not wrong.*
+
+What is absent, read straight from the walk:
+
+| # | closed by | hole counts | comparisons | monotone |
+|---|---|---|---|---|
+| 32 | `5cde733` | 3,2,1,3,2,1,3,1,3,2,1 | 10 | False |
+| 33 | `743c24d` | 3,3,2,2,1,1 | 5 | True |
+| 34 | `4e27c14` | 1 | **0** | True — vacuous |
+| 35 | `bb28ab9` | 1,1,1,3,2,2,3,1 | 7 | False |
+| 36 | `b393f25` | 2,1 | 1 | True |
+
+Merged, the verdict tally would read **21 True of 36** rather than
+eighteen of thirty-one. **They are listed separately, and the tally
+below is left exactly as it stands, because merging them means
+recomputing every sentence that follows the table** — the
+zero-comparison list, the single-comparison list and the False-chain
+ranking by comparison count all move together. *Half-merging a table is
+precisely how prose goes stale beside rows that look current*, which is
+the failure this file recorded when four ranks sat stale at N = 85 next
+to a freshly recomputed table. **The merge is named here as outstanding
+rather than quietly half-done.**
 
 **Thirty-one** spans, and the verdict tally needs its COMPARISON COUNTS
 beside it or it reads as more evidence than it is. Every row below was read
@@ -3984,26 +4078,39 @@ exactly one bank.
   has now been caught mechanically four times running.
 - **Frontier contiguous 0..1078, highest decided 1078, holes [].**
   <!-- SPAN-STATE: closed -->
-  **THE THIRTY-SIXTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
-  COMMIT.** It was filled by **idx 1077 at 2593.9 s**, the row banked
-  here. The frontier and hole set are on the bullet line above, which
-  bank.py owns; *this prose deliberately does not repeat them, because a
-  figure duplicated beside the one that gets rewritten is exactly how
-  this file has gone stale before.*
+  **THE THIRTY-SIXTH SPAN IS CLOSED**, filled by **idx 1077 at
+  2593.9 s**. It opened at **two holes at once** — idx 1078 came in at
+  1765.5 s while both 1076 and 1077 were still running — and closed
+  1076 → 1077. **It closed no block**: `[13,13,10,10]` ran 10 → 12 of 28
+  across it and is still open. The frontier and hole set are on the
+  bullet line above, which bank.py owns; *this prose deliberately does
+  not repeat them, because a figure duplicated beside the one that gets
+  rewritten is exactly how this file has gone stale before.*
 
-  **Its duration, ranks, hole-count chain and monotonicity are absent
-  deliberately: they do not exist yet.** `--spans all` walks
-  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
-  before the tool can see the span at all — which is why every span
-  close in this file takes two commits, and why a figure written into
-  this one would have to be invented. They arrive in the next commit,
-  with **every rank in the spans table recomputed together at the new
-  N**, the twenty-one carried rows first reproduced at the old N in the
-  same script. *The walk held **100** closed spans before this one, so
-  the new N should be 101 — but that is read from the tool in the next
-  commit, not carried from this sentence.* Relabelling a denominator
-  while keeping a rank is the error this file recorded against itself at
-  restart #40.
+  **Its figures, read from `--spans all` after `b393f25` existed**:
+  opened after `462f68b`, closed by `b393f25`, duration **0:37:35**
+  (0.6264 h), **2 broken commits**, hole counts `2,1`, monotone
+  non-increasing **TRUE on a SINGLE comparison**, most holes at once 2
+  at `631ec76` `[1076, 1077]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **45 of 101 by
+  duration** (56 shorter, no tie) and **55 of 101 by commit count**, 21
+  tied at 2. Among the 57 spans that lasted longer than a second, 12
+  were shorter.
+
+  ***ITS "TRUE" IS THE WEAK KIND, AND THE CHAIN SAYS SO.*** A two-commit
+  span offers **exactly one comparison**, so it has a single chance to
+  rise and can come back False in no other way — the shape this note has
+  flagged as weak since span 3. It is a *real* True rather than a
+  vacuous one: `2 → 1` is a genuine step and a strict decrease, so it
+  reads True under **both** conventions this section carries. But one
+  comparison is one coin flip, and it joins the crowded single-comparison
+  group rather than the few chains that rest on more than one.
+
+  **THE TWO-COMMIT PROCEDURE RAN AS WRITTEN.** `b393f25` banked the
+  closing row and said in terms that its figures did not exist yet; the
+  commit after it added them from the walk. *Nothing above was written
+  before the tool produced it*, which is the entire reason a close costs
+  two commits instead of one.
 
   ***THE FILE HELD A HOLE AT `[1068]` FOR 51 SECONDS AND NO SPAN WILL
   EVER RECORD IT — THE SECOND SUCH CASE, AFTER `[1008]`.*** idx 1069
@@ -4364,10 +4471,10 @@ exactly one bank.
   (0.6500 h), **8 broken commits**, hole counts `1,1,1,3,2,2,3,1`,
   monotone non-increasing **FALSE on seven comparisons — it grew
   twice**, most holes at once 3 at `3f071ac` `[1053, 1058, 1059]`.
-  Ranks against **100 closed spans, every quoted rank in this file
-  recomputed in the same run**: **44 of 100 by duration** (56 shorter,
-  no tie) and **22 of 100 by commit count**, 5 tied at 8. Among the 56
-  spans that lasted longer than a second, 12 were shorter.
+  Ranks against **101 closed spans, every quoted rank in this file
+  recomputed in the same run**: **44 of 101 by duration** (57 shorter,
+  no tie) and **22 of 101 by commit count**, 5 tied at 8. Among the 57
+  spans that lasted longer than a second, 13 were shorter.
 
   ***THREE OF ITS SEVEN COMPARISONS ARE FLAT*** — counted by type, the
   chain is **3 flat, 2 up, 2 down**. The opening `1 → 1 → 1` is two of
@@ -4391,10 +4498,10 @@ exactly one bank.
   opened after `743c24d`, closed by `4e27c14`, duration **0:09:49**
   (0.1636 h), **1 broken commit**, hole counts `1`, monotone
   non-increasing **True on ZERO comparisons — vacuous**, most holes at
-  once 1 at `b1708cd` `[1051]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **53 of 100 by
-  duration** (47 shorter, no tie) and **76 of 100 by commit count**,
-  24 tied at 1. Among the 56 spans that lasted longer than a second,
+  once 1 at `b1708cd` `[1051]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **54 of 101 by
+  duration** (47 shorter, no tie) and **77 of 101 by commit count**,
+  24 tied at 1. Among the 57 spans that lasted longer than a second,
   only three were shorter.
 
   ***IT IS THE SHORTEST SPAN IN THE TABLE AND THE FIRST THAT DOES NOT
@@ -4424,11 +4531,11 @@ exactly one bank.
   opened after `5cde733`, closed by `743c24d`, duration **1:15:56**
   (1.2656 h), **6 broken commits**, hole counts `3,3,2,2,1,1`, monotone
   non-increasing **TRUE on five comparisons**, most holes at once 3 at
-  `fb19515` `[1044, 1045, 1046]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **33 of 100 by
-  duration** (67 shorter, no tie) and **35 of 100 by commit count**,
-  2 tied at 6. Among the 56 spans that lasted longer than a second,
-  23 were shorter.
+  `fb19515` `[1044, 1045, 1046]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **33 of 101 by
+  duration** (68 shorter, no tie) and **35 of 101 by commit count**,
+  2 tied at 6. Among the 57 spans that lasted longer than a second,
+  24 were shorter.
 
   ***THIS IS THE STRONGEST TRUE IN THE RECORD.*** Five comparisons, none
   of them an increase, against span 6's four which had held the position
@@ -4461,16 +4568,16 @@ exactly one bank.
   (3.5589 h), **11 broken commits**, hole counts `3,2,1,3,2,1,3,1,3,2,1`,
   monotone non-increasing **FALSE on ten comparisons — it grew three
   separate times**, most holes at once 3 at `0333cf3`
-  `[1030, 1031, 1032]`. Ranks against **100 closed spans, every quoted
-  rank in this file recomputed in the same run**: **12 of 100 by
-  duration** (88 shorter, no tie) and **11 of 100 by commit count**,
-  2 tied at 11. Among the 56 spans that lasted longer than a second,
-  44 were shorter.
+  `[1030, 1031, 1032]`. Ranks against **101 closed spans, every quoted
+  rank in this file recomputed in the same run**: **12 of 101 by
+  duration** (89 shorter, no tie) and **11 of 101 by commit count**,
+  2 tied at 11. Among the 57 spans that lasted longer than a second,
+  45 were shorter.
 
   **IT IS THE MOST-COMMITTED SPAN IN THE TABLE AND THE SECOND-LONGEST**,
   taking the commit record from the twenty-third's 10 and sitting behind
   only the twenty-first's 5:05:31. **It is NOT in the top ten by
-  duration** — 10 of 100 ran longer than four hours and this one missed
+  duration** — 10 of 101 ran longer than four hours and this one missed
   that line by 26 m 28 s — which is stated because "second-longest
   tabled span" and "top ten overall" are different claims and only the
   first holds.
@@ -4504,10 +4611,10 @@ exactly one bank.
   (1.5314 h), **6 broken commits**, hole counts `2,3,3,2,1,1`, monotone
   non-increasing **FALSE on five comparisons — it grew mid-span**, most
   holes at once 3 at `b9ae93c` `[1017, 1018, 1020]`. Ranks against
-  **100 closed spans, every quoted rank in this file recomputed in the
-  same run**: **30 of 100 by duration** (70 shorter, no tie) and **35
-  of 100 by commit count**, 2 tied at 6. Among the 56 spans that lasted
-  longer than a second, 26 were shorter.
+  **101 closed spans, every quoted rank in this file recomputed in the
+  same run**: **30 of 101 by duration** (71 shorter, no tie) and **35
+  of 101 by commit count**, 2 tied at 6. Among the 57 spans that lasted
+  longer than a second, 27 were shorter.
 
   **THE COMMIT SEQUENCE DID RECORD THE THREE-HOLE STATE, AND THE QUESTION
   WAS LEFT OPEN UNTIL THE TOOL ANSWERED IT.** The open-span prose said
@@ -4555,10 +4662,10 @@ exactly one bank.
   opened after `7e1d39c`, closed by `3db5927`, duration **1:36:10**
   (1.6028 h), **2 broken commits**, hole counts `2,1`, monotone
   non-increasing **True on ONE comparison**, most holes at once 2 at
-  `380b306` `[1012, 1014]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **29 of 100 by
-  duration** (71 shorter, no tie) and **55 of 100 by commit count**, 20
-  tied at 2. Among the 56 spans that lasted longer than a second, 27
+  `380b306` `[1012, 1014]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **29 of 101 by
+  duration** (72 shorter, no tie) and **55 of 101 by commit count**, 21
+  tied at 2. Among the 57 spans that lasted longer than a second, 28
   were shorter.
 
   **THE CHAIN IS `2,1`, AND THE COMMITTED HOLE STATES PREDICTED IT
@@ -4671,10 +4778,10 @@ exactly one bank.
   opened after `6f6d668`, closed by `69a8a16`, duration **0:18:42**
   (0.3117 h), **1 broken commit**, hole counts `1`, monotone
   non-increasing **True on ZERO comparisons — vacuous**, most holes at
-  once 1 at `e825363` `[1004]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **50 of 100 by
-  duration** (50 shorter, no tie) and **76 of 100 by commit count**, 24
-  tied at 1. Among the 56 spans that lasted longer than a second, **only
+  once 1 at `e825363` `[1004]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **51 of 101 by
+  duration** (50 shorter, no tie) and **77 of 101 by commit count**, 24
+  tied at 1. Among the 57 spans that lasted longer than a second, **only
   six were shorter**.
 
   **THE OBVIOUS GUESS WOULD HAVE BEEN RIGHT AGAIN, AND IT STILL WAS NOT
@@ -4719,10 +4826,10 @@ exactly one bank.
   (1.9414 h), **9 broken commits**, hole counts
   `2,1,3,3,2,2,1,1,1`, **monotone non-increasing FALSE on eight
   comparisons**, most holes at once 3 at `81e3c8a` `[994, 997, 998]`.
-  Ranks against **100 closed spans, every quoted rank in this file
-  recomputed in the same run**: **23 of 100 by duration** (77 shorter,
-  no tie) and **19 of 100 by commit count**, 2 tied at 9. Among the 56
-  spans that lasted longer than a second, 33 were shorter.
+  Ranks against **101 closed spans, every quoted rank in this file
+  recomputed in the same run**: **23 of 101 by duration** (78 shorter,
+  no tie) and **19 of 101 by commit count**, 2 tied at 9. Among the 57
+  spans that lasted longer than a second, 34 were shorter.
 
   **THE BANK-TIME LIST WAS NOT MERELY A DIFFERENT OBJECT FROM THE CHAIN —
   IT WAS AN INCOMPLETE RECORD OF THE BANKS.** The prose above said the
@@ -4758,10 +4865,10 @@ exactly one bank.
   opened after `b40f3d8`, closed by `d322a9d`, duration **1:49:26**
   (1.8239 h), **2 broken commits**, hole counts `2,1`, monotone
   non-increasing **True on ONE comparison**, most holes at once 2 at
-  `b93adb6` `[989, 990]`. Ranks against **100 closed spans, every quoted
-  rank in this file recomputed in the same run**: **27 of 100 by
-  duration** (73 shorter, no tie) and **55 of 100 by commit count**, 20
-  tied at 2. Among the 56 spans that lasted longer than a second, 29
+  `b93adb6` `[989, 990]`. Ranks against **101 closed spans, every quoted
+  rank in this file recomputed in the same run**: **27 of 101 by
+  duration** (74 shorter, no tie) and **55 of 101 by commit count**, 21
+  tied at 2. Among the 57 spans that lasted longer than a second, 30
   were shorter. bank.py's span guard caught the close: **fifteenth real
   firing, eighth in the close direction.**
 
@@ -4834,17 +4941,17 @@ exactly one bank.
   expensive of the five** — that much survives, and it is a fact about
   five spans, not a trend. A frontier breaks whenever any cube finishes before a
   lower-indexed one, which says nothing about the finisher's absolute
-  cost; the opening-cost census across all 100 closed spans is still not
+  cost; the opening-cost census across all 101 closed spans is still not
   computed and still not worth computing to chase five.
 
   **Its figures, read from `--spans all` after `b7f8c36` existed**:
   opened after `751c3a8`, closed by `b7f8c36`, duration **1:14:19**
   (1.2386 h), **1 broken commit**, hole counts `1`, monotone
   non-increasing **True on ZERO comparisons — vacuous**, most holes at
-  once 1 at `a32d6b3` `[986]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **36 of 100 by
-  duration** (64 shorter, no tie) and **76 of 100 by commit count**, 24
-  tied at 1. Among the 56 spans that lasted longer than a second, 20
+  once 1 at `a32d6b3` `[986]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **36 of 101 by
+  duration** (65 shorter, no tie) and **77 of 101 by commit count**, 24
+  tied at 1. Among the 57 spans that lasted longer than a second, 21
   were shorter. bank.py's span guard caught the close: **thirteenth real
   firing, seventh in the close direction.**
 
@@ -4865,7 +4972,7 @@ exactly one bank.
   before the next bank — which depends on how promptly rows are
   committed, not on anything the solver did. **The run is therefore not
   evidence of narrower spans**, and the duration ranks say nothing
-  either: 52, 40 and 36 of 100 for those three, which is not a trend in
+  either: 53, 40 and 36 of 101 for those three, which is not a trend in
   either direction.
 
   **THE TWENTY-FIFTH SPAN IS CLOSED**, filled by idx 983 at 3905.3 s.
@@ -4887,9 +4994,9 @@ exactly one bank.
   opened after `e2e3d5f`, closed by `741b900`, duration **0:54:37**
   (0.9103 h), **1 broken commit**, hole counts `1`, monotone
   non-increasing **True on ZERO comparisons — vacuous**, most holes at
-  once 1 at `afa51c3` `[983]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **40 of 100 by
-  duration** (60 shorter, no tie) and **76 of 100 by commit count**, 24
+  once 1 at `afa51c3` `[983]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **40 of 101 by
+  duration** (61 shorter, no tie) and **77 of 101 by commit count**, 24
   tied at 1.
 
   **THE TOOL CONFIRMS THE TWO-HOLE STATE NEVER REACHED A COMMIT.** The
@@ -4912,16 +5019,25 @@ exactly one bank.
   opened after `83c1ffb`, closed by `e2e3d5f`, duration **0:10:42**
   (0.1783 h), **1 broken commit**, hole counts `1`, monotone
   non-increasing **True on ZERO comparisons — vacuous**, most holes at
-  once 1 at `c6e30e5` `[980]`. Ranks against **100 closed spans, every
-  quoted rank in this file recomputed in the same run**: **52 of 100 by
-  duration** (48 shorter, no tie) and **76 of 100 by commit count**, 24
+  once 1 at `c6e30e5` `[980]`. Ranks against **101 closed spans, every
+  quoted rank in this file recomputed in the same run**: **53 of 101 by
+  duration** (48 shorter, no tie) and **77 of 101 by commit count**, 24
   tied at 1. It is still the **shortest span of the last seventeen** —
   nothing since has displaced it — and, among
-  the 56 spans that lasted longer than a second, only four were
-  shorter. **Its duration rank has moved on each of the last two
-  closes**, 46 → 47 → 48, while its "47 shorter" has not moved at all:
-  both new spans sorted above it, so the count of spans below it is
-  unchanged and only the count above it grew.
+  the 57 spans that lasted longer than a second, only four were
+  shorter. **Its duration rank moved again at this close**, 52 → 53,
+  while its "48 shorter" did not move at all: the new span sorted above
+  it, so the count of spans below it is unchanged and only the count
+  above it grew.
+
+  *The previous version of that sentence read "46 → 47 → 48" with
+  "47 shorter" — a chain describing the two closes current when it was
+  written, left standing while the rank went on to 53 and the
+  shorter-count to 48. It sat two lines under this block's own
+  "53 of 101 by duration (48 shorter)" and contradicted it outright.*
+  **A sentence about how a figure is moving goes stale faster than the
+  figure**, because the figure gets recomputed by the pass and the
+  sentence does not. Only the step this close can verify is kept.
 
   **THE REFUSED GUESS WOULD HAVE BEEN RIGHT THIS TIME, AND THAT CHANGES
   NOTHING.** Before the commit existed, the obvious guess for a span that
@@ -4949,9 +5065,9 @@ exactly one bank.
   (2.2894 h), **10 broken commits**, hole counts
   `3,2,2,1,2,1,1,1,1,1`, **monotone non-increasing FALSE on nine
   comparisons**, most holes at once 3 at `ad6b635` `[967, 968, 969]`.
-  Ranks against **100 closed spans, every quoted rank in this file
-  recomputed in the same run**: **20 of 100 by duration** (80 shorter,
-  no tie) and **14 of 100 by commit count**, 4 tied at 10.
+  Ranks against **101 closed spans, every quoted rank in this file
+  recomputed in the same run**: **20 of 101 by duration** (81 shorter,
+  no tie) and **14 of 101 by commit count**, 4 tied at 10.
 
   **THE REFUSED GUESS WAS WRONG, AND IT IS WORTH SAYING HOW WRONG.** The
   open-span prose offered `3 → 1 → 2 → 1` and then deleted it rather than
@@ -4970,24 +5086,27 @@ exactly one bank.
   of a cost spread that block already shows — from 869.5 s to 12894.5 s —
   meeting four parallel slots. Nothing was claimed about whether wide
   openings are becoming more common, because that would need the opening
-  width of all 100 closed spans, which is not in hand and was not going to
+  width of all 101 closed spans, which is not in hand and was not going to
   be computed to chase two observations. **The twenty-fourth then opened
   at one hole**, which is recorded here as the outcome of the refusal, in
   the paragraph that made it.
 
   The twenty-second closed at `31d9565`, filled by
   idx 962: **1:57:02, 4 commits, chain `3,3,2,1`, monotone non-increasing
-  TRUE on three comparisons**, rank **22 of 100 by duration** and 43 of 100
+  TRUE on three comparisons**, rank **22 of 101 by duration** and 43 of 101
   by commit count with no tie. It opened at three holes at once when idx
   964 came in at 1073.4 s while 961, 962 and 963 were all still running,
-  then closed 963 → 961 → 962. **It is the third member of the "more than
-  one comparison" column**, which had not moved since span 6. bank.py's
+  then closed 963 → 961 → 962. **It was the third member of the "more
+  than one comparison" column** when it closed, a column that had not
+  moved since span 6. *It has moved once since: span 33 came back True
+  on five comparisons, making four — see the gap flagged above the
+  monotonicity table, which that merge is part of.* bank.py's
   span guard caught the close: fifth real firing, third in the close
   direction.
 
   The twenty-first closed at `83cabc1`, filled by idx 954: **5:05:31, 7
   commits, chain `2,2,3,3,2,1,1`, monotone non-increasing FALSE on six
-  comparisons**, rank **8 of 100 by duration** and 28 of 100 by commit
+  comparisons**, rank **8 of 101 by duration** and 28 of 101 by commit
   count. *(This line read "8 of 86 / 24 of 86" until now. Both were right
   when computed at N = 86 and both survived N = 87 unchanged, so the
   twenty-second's close left a stale denominator that no figure
@@ -5000,12 +5119,14 @@ exactly one bank.
   The twentieth closed at `ca5ce5a`, opened by idx 952 landing above the
   frontier and
   filled by idx 951: **2:19:09, 2 commits, chain `2,1`, monotone True on a
-  SINGLE comparison**, rank 19 of 100 by duration and 55 of 100 by commit
+  SINGLE comparison**, rank 19 of 101 by duration and 55 of 101 by commit
   count. **The same guard caught that close**, on its first real occasion,
   and then turned up two defects in itself — see the error patterns. The
-  fifteenth through **thirty-first** sit in one table above, **all
-  seventeen ranks recomputed together against the current 96**, none
-  carried over with a relabelled denominator. That recompute also caught
+  fifteenth through **thirty-sixth** sit in one table above — *that
+  range read "thirty-first" until this close, having been left standing
+  through five of them.* The recompute described here was **all
+  seventeen ranks together against the then-current 96**, none carried
+  over with a relabelled denominator. That recompute also caught
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
