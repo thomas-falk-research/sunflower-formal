@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:29Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3863,7 +3863,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1236 -> 1237 rows)
+## State as of the last refresh (1237 -> 1239 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3874,9 +3874,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1237 rows; 1068 labels decided; 1068 UNSAT; 0 SAT; 0 labels
+- **1239 rows; 1070 labels decided; 1070 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1068 decided plus 169 superseded
+  A row count is not a decision count: 1070 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3895,17 +3895,38 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1067, highest decided 1067, holes [].**
+- **Frontier contiguous 0..1069, highest decided 1069, holes [].**
   <!-- SPAN-STATE: closed -->
-  **THE THIRTY-FIFTH SPAN IS CLOSED**, filled by **idx 1062 at
-  736.5 s** — the same row that closed block `[13,13,11,3]` at 3/3 and
-  with it **the entire `[13,13,11,*]` run**. The frontier went
-  contiguous 0..1061 → **0..1066** and the hole set is empty.
+  **NO SPAN IS OPEN.** The frontier is contiguous **0..1069** and the
+  hole set is empty.
 
-  ***THERE IS NO OPEN BLOCK.*** The census region below is empty for
-  the first time in a long while: every block the sweep has touched is
-  fully closed, and the frontier sits exactly at the last index of the
-  completed run. The next cube, idx 1067, opens `[13,13,10,10]`.
+  ***THE FILE HELD A HOLE AT `[1068]` FOR 51 SECONDS AND NO SPAN WILL
+  EVER RECORD IT — THE SECOND SUCH CASE, AFTER `[1008]`.*** idx 1069
+  landed at 07:39:34Z (1129.0 s) while 1068 was still running; idx 1068
+  landed at 07:40:25Z (1220.5 s). **Both were banked in the same
+  commit**, so the hole existed in the checkpoint for 51 s and never
+  reached the commit sequence. `--spans all` walks commits, so it will
+  show nothing here, and **that is correct rather than a gap**: a span
+  is a property of the commit sequence, which is the whole reason this
+  file keeps saying so.
+
+  *A draft of this block had already been written as "A SPAN IS OPEN —
+  THE THIRTY-SIXTH" before idx 1068 landed. It is withdrawn rather than
+  committed: **there is no thirty-sixth span**, and the next one to
+  reach a commit will take that number.* The numbering counts spans the
+  tool reports, not holes the file passed through.
+
+  ***THE THIRTY-FIFTH SPAN IS CLOSED*** — filled by **idx 1062 at
+  736.5 s**, the same row that closed block `[13,13,11,3]` at 3/3 and
+  with it **the entire `[13,13,11,*]` run**, leaving the census empty
+  across **two commits and zero rows** — `bb28ab9` and `81dd9cb` both
+  hold 1236 rows and 1067 decided, and the very next row, idx 1067 at
+  `1c73df7`, opened `[13,13,10,10]`. *A draft said "two rows"; it was
+  two commits, the second of which banked no row at all because it
+  carried span figures. Checked against the three blobs rather than
+  inferred.* **Its ranks, duration and commit chain are in
+  the spans section above**: 0:39:00 over 8 commits, chain
+  `1,1,1,3,2,2,3,1`, **FALSE on seven comparisons**.
 
   **CARRIED FORWARD FROM THE OPEN PROSE:** the span **opened at one
   hole** — idx 1054 at 905.0 s while 1053 was still running — the
@@ -4512,6 +4533,18 @@ exactly one bank.
   time: **a hole trajectory is a property of the commit sequence, never
   of the file.** Written down as a fact about the file precisely so it
   can never be read back as a span or as a chain entry.
+
+  ***IT HAPPENED AGAIN AT `[1068]`, AND THE SECOND CASE IS SHORTER THAN
+  THE FIRST.*** idx 1069 landed at 07:39:34Z (1129.0 s) while 1068 was
+  still running; idx 1068 landed at 07:40:25Z (1220.5 s), **51 seconds**
+  later against this one's 2 m 21 s. Both banked in one commit, so again
+  no span records it. *What the second case adds: a draft had already
+  written "A SPAN IS OPEN — THE THIRTY-SIXTH" into the state block
+  before the filling row arrived, and it was withdrawn rather than
+  committed. **There is no thirty-sixth span**, and the next span to
+  reach a commit takes that number.* The numbering counts what the tool
+  reports, not what the file passed through.
+
   **THE TWENTY-NINTH SPAN IS CLOSED**, filled by idx 1004 at 1829.3 s.
   It opened at one hole when idx 1005 came in at 1599.3 s while 1004 was
   still running, and closed on the next row — 1004 landed **2 minutes 32
@@ -4862,7 +4895,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1068 of 1949 = 54.7973%**; **881 undecided**. **50% IS CROSSED**, at
+- **1070 of 1949 = 54.8999%**; **879 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5139,7 +5172,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **1 decided**, undecided 27 spanning 1068..1094
+  **3 decided**, undecided 25 spanning 1070..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
