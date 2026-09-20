@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3738,7 +3738,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1225 -> 1226 rows)
+## State as of the last refresh (1226 -> 1227 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3749,9 +3749,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1226 rows; 1057 labels decided; 1057 UNSAT; 0 SAT; 0 labels
+- **1227 rows; 1058 labels decided; 1058 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1057 decided plus 169 superseded
+  A row count is not a decision count: 1058 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3770,7 +3770,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1052, highest decided 1057, holes [1053].**
+- **Frontier contiguous 0..1052, highest decided 1060, holes [1053, 1058, 1059].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIFTH, AND IT OPENED AT ONE HOLE.**
   idx 1054 came in at **905.0 s** while **1053 was still running**, so
@@ -3966,6 +3966,24 @@ exactly one bank.
   **32.0 s** dearer than idx 1030's — the closest adjacent pair in this
   block. idx 1036's 315.5 s is the block's cheapest, and it is what
   widened the hole set back to three.*
+
+  **A SIXTH BLOCK HAS OPENED: `[13, 13, 11, 3]`, idx 1060..1062, 3
+  members, 1 decided.** idx 1060 took it at **235.3 s**, rank 1034 of
+  1058 with only 24 cheaper. **Its size was recomputed from `SEQ` at
+  this bank**: the `[13,13,11,*]` sizes descend `49, 38, 28, 21, 15, 11,
+  7, 5, 3, 2, 1, 1`, so **3 is what follows 5**. Combinatorics, not
+  data.
+
+  ***THREE BLOCKS ARE OPEN AT ONCE*** — `[13,13,11,5]` at 6 of 7,
+  `[13,13,11,4]` at 3 of 5, `[13,13,11,3]` at 1 of 3. *That is a
+  consequence of block size, not of anything about these cubes: the
+  three of them span idx 1048..1062, **fifteen indices**, and the driver
+  holds only **four** slots, so the in-flight window now straddles three
+  blocks where earlier in the sweep a single block of 129 or 104 members
+  swallowed it whole.* **No claim is made that this is the first time**
+  — establishing that would mean walking the census across a thousand
+  commits, which is not worth the tokens for a fact about bookkeeping
+  rather than about `ι(4)`.
 
   **A FIFTH BLOCK HAS OPENED: `[13, 13, 11, 4]`, idx 1055..1059, 5
   members, 1 decided.** idx 1055 took it at **436.0 s**, rank 1005 of
@@ -4641,7 +4659,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1057 of 1949 = 54.2329%**; **892 undecided**. **50% IS CROSSED**, at
+- **1058 of 1949 = 54.2842%**; **891 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4921,6 +4939,8 @@ exactly one bank.
   **6 decided**, undecided [1053]
 - `[13, 13, 11, 4]` idx 1055..1059: **5 members**,
   **3 decided**, undecided [1058, 1059]
+- `[13, 13, 11, 3]` idx 1060..1062: **3 members**,
+  **1 decided**, undecided [1061, 1062]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
