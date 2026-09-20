@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T06:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T06:10Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3583,7 +3583,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1217 -> 1218 rows)
+## State as of the last refresh (1218 -> 1219 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3594,9 +3594,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1218 rows; 1049 labels decided; 1049 UNSAT; 0 SAT; 0 labels
+- **1219 rows; 1050 labels decided; 1050 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1049 decided plus 169 superseded
+  A row count is not a decision count: 1050 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3615,7 +3615,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1044, highest decided 1049, holes [1045].**
+- **Frontier contiguous 0..1044, highest decided 1050, holes [1045].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-THIRD, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1047 came in at **539.8 s** while **1044, 1045 and 1046
@@ -4382,7 +4382,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1049 of 1949 = 53.8225%**; **900 undecided**. **50% IS CROSSED**, at
+- **1050 of 1949 = 53.8738%**; **899 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4620,7 +4620,7 @@ exactly one bank.
 - `[13, 13, 11, 6]` idx 1037..1047: **11 members**,
   **10 decided**, undecided [1045]
 - `[13, 13, 11, 5]` idx 1048..1054: **7 members**,
-  **2 decided**, undecided [1050, 1051, 1052, 1053, 1054]
+  **3 decided**, undecided [1051, 1052, 1053, 1054]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
