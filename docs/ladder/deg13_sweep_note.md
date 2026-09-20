@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T20:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T21:20Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4475,7 +4475,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1288 -> 1289 rows)
+## State as of the last refresh (1289 -> 1291 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4486,7 +4486,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1289 rows; 1120 labels decided; 1120 UNSAT; 0 SAT; 0 labels
+- **1291 rows; 1122 labels decided; 1122 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4494,7 +4494,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1120 decided plus 169 superseded
+  A row count is not a decision count: 1122 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4513,8 +4513,45 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1119, highest decided 1119, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1121, highest decided 1121, holes [].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND.** idx 1121 landed at
+  3429.0 s while **1120** was still running — an opening at **one hole**.
+  The frontier and hole set are on the bullet line above, which bank.py
+  owns; *this prose deliberately does not repeat them.* **No duration,
+  no rank, no monotonicity and no commit count until it closes.**
+
+  The ordinal was derived before the outcome, as at the last six:
+  `--spans all` re-run after the hole appeared still ends at
+  **f558bb0**, **106 closed spans**, so this is walk position **107**
+  and, at the offset of 65, ordinal **forty-two**.
+
+  *The "one" above describes the **opening**, and the close one bank ago
+  is the reason that is now said every time.* Counted over all **106**
+  closed chains: **37 opened at one hole**, and of those **32 never
+  widened while 5 did**. So a one-hole span usually stays at one — and
+  "usually" is exactly the word the forty-first's entry warns about,
+  since its opening of two reached three. **The live hole set is on the
+  bullet line; read it there.**
+
+  ***THE STAGGER IS 59 s, AND THE SUPERLATIVE THAT WANTED WRITING IS
+  FALSE.*** Earliest samples under this driver imply starts of
+  **20:19:51Z (idx 1120)** and **20:20:50Z (idx 1121)** — **59 s
+  apart**, against the **100 s** that separated 1112 and 1113 at the
+  forty-first's opening and the **0 s** of the fortieth's simultaneous
+  restart re-take. *A draft called this "the narrowest stagger yet
+  measured"; the fortieth's was zero, so it is not.* The accurate
+  statement is narrow and dull: **this is the narrowest NON-ZERO stagger
+  among the three openings whose starts have been measured** — and three
+  is a population, not a series, so no trend is offered. idx 1121
+  finished at
+  3429.0 s; idx 1120 read **3527 s** elapsed at 21:18:38Z and is still
+  running, so it has already spent 98 s more than 1121 took in total.
+  *A later start overtaking an earlier one is the same event as at the
+  forty-first; the margin being under a minute is a fact about when
+  slots freed, not about the cubes.* **Nothing is claimed about when or
+  how this span closes.**
+
   **THE FORTY-FIRST SPAN IS CLOSED.** *The heading read "AND ITS FIGURES
   ARE NOT IN THIS COMMIT" for exactly one commit — the bank that closed
   it — which is what the two-commit procedure is for; they are below
@@ -5848,7 +5885,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1120 of 1949 = 57.4654%**; **829 undecided**. **50% IS CROSSED**, at
+- **1122 of 1949 = 57.5680%**; **827 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6296,7 +6333,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 8]` idx 1116..1130: **15 members**,
-  **4 decided**, undecided 11 spanning 1120..1130
+  **6 decided**, undecided 9 spanning 1122..1130
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
