@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3863,7 +3863,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1239 -> 1240 rows)
+## State as of the last refresh (1240 -> 1241 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3874,9 +3874,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1240 rows; 1071 labels decided; 1071 UNSAT; 0 SAT; 0 labels
+- **1241 rows; 1072 labels decided; 1072 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1071 decided plus 169 superseded
+  A row count is not a decision count: 1072 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3895,7 +3895,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1070, highest decided 1070, holes [].**
+- **Frontier contiguous 0..1071, highest decided 1071, holes [].**
   <!-- SPAN-STATE: closed -->
   **NO SPAN IS OPEN.** The frontier and hole set are on the bullet line
   above, which bank.py owns; *this prose deliberately does not repeat
@@ -4897,7 +4897,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1071 of 1949 = 54.9513%**; **878 undecided**. **50% IS CROSSED**, at
+- **1072 of 1949 = 55.0026%**; **877 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5032,12 +5032,21 @@ exactly one bank.
   because **51% has no trap at all** — and the **53rd of the 97** traps
   in the whole run.
 
-  **WHETHER THIS ONE IS CAUGHT DEPENDS ON THE COMMIT THAT CARRIES IT**,
-  and this commit carries it: the tree banked here holds decided = 1071.
-  *That is stated as what the commit does, not as a prediction — the
-  criterion is a committed tree holding the value, and the proxy of a
-  subject mentioning it was retracted at the 52% crossing.* The
-  caught/missed tally moves once the crossing row lands and not before.
+  **55% IS NOW CROSSED, AND THE TRAP WAS CAUGHT.** idx 1071 took the
+  count to **1072 = 55.0026%**, the first value above 55. The catch is
+  verified by the real criterion rather than the subject text:
+  `decided()` over `5bcb096`'s blob returns **1071**, and over
+  `0ad0ebc`'s returns 1070, so **exactly one committed tree held the
+  trap value** — the commit that banked idx 1070 and nothing before it.
+  *The tally goes from 45 caught and 7 missed of 52 to **46 caught and
+  7 missed of 53**.*
+
+  *One bank ago this paragraph said "whether this one is caught depends
+  on the commit that carries it" and declined to move the tally until
+  the crossing row landed. It has landed, and the tally moves now.
+  **The hedge cost nothing and the discipline is the point**: a trap is
+  caught by a tree, and the tree in question did not exist when the
+  sentence was written.*
 
   **54% IS CROSSED, AND ITS TRAP WAS CAUGHT.** idx 1051 took the decided
   count to **1053 = 54.0277%**, which is `ceil(0.54 × 1949) = 1053`
@@ -5197,7 +5206,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **4 decided**, undecided 24 spanning 1071..1094
+  **5 decided**, undecided 23 spanning 1072..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
