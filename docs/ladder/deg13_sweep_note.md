@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T21:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T21:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4399,6 +4399,37 @@ alongside it.**
   amending a pushed commit to match a later correction would destroy the
   evidence that the error happened. The note carries the correction
   instead.
+
+  ***SECOND INSTANCE AT `3a008b2`, WITH THE RULE ABOVE OBEYED AND THE
+  REMEDY IGNORED.*** Its subject says
+  `idx 1121 UNSAT 3429.0 s -- 1121 of 1949 = 57.5167%`; its tree holds
+  **two** new rows, idx 1121 at 3429.0 s **and idx 1120 at 3604.9 s**,
+  so the decided count in that commit is **1122 = 57.5680%**. **bank.py
+  WAS the last thing to touch the index** — there was no `git add` after
+  it — so the rule as written held. What failed is the sentence right
+  after it: *"re-run bank.py afterwards and **take the subject from the
+  fresh output**"*. bank.py was re-run; its output was truncated to
+  `tail -2`, so its `HEAD n -> staged m` line and its span guard line
+  were **never seen**, and the subject was carried over from the
+  previous run. **A rule that is obeyed while its remedy is skipped
+  fails exactly as if it had not been written.**
+
+  **AND THE WAITER'S TIMESTAMP IS AN UPPER BOUND, NOT AN INSTANT.** The
+  waiter polls every **20 s**, so `ROW LANDED at 21:20:10Z` means only
+  that the row existed by then. idx 1120's row was already in the file
+  when bank.py's `git add` ran at ~21:20:07Z, which is why the sweep was
+  invisible from the timestamps alone. *Treating a poll time as a write
+  time is what made the two-row sweep look impossible for a few minutes
+  of reasoning.*
+
+  **THE SHARPER HALF: that commit's prose declares a span open that its
+  own tree shows closed.** See the state section — there is no
+  forty-second span, because the hole opened and filled inside one
+  commit interval and `--spans all` walks commits. **The fix is one
+  word in the standing rule: read the staged diff before committing,
+  AFTER the last bank.py run**, and never truncate bank.py's output on
+  a run whose figures will be quoted.
+  *Why this commit is not rewritten either:* same reason as above.
 - **Two row waiters armed on the same base, and both fired on one row.**
   `buldn18uz` was re-armed at 1175 rows at 19:09:40Z; at 19:12:23Z I
   armed `btcko28zs` at the same 1175 without first running the
@@ -4514,43 +4545,53 @@ exactly one bank.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
 - **Frontier contiguous 0..1121, highest decided 1121, holes [].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND.** idx 1121 landed at
-  3429.0 s while **1120** was still running — an opening at **one hole**.
-  The frontier and hole set are on the bullet line above, which bank.py
-  owns; *this prose deliberately does not repeat them.* **No duration,
-  no rank, no monotonicity and no commit count until it closes.**
+  <!-- SPAN-STATE: closed -->
+  ***THERE IS NO FORTY-SECOND SPAN, AND THE PROSE THAT SAID THERE WAS
+  DESCRIBED THE WORKING TREE RATHER THAN THE COMMIT SEQUENCE.*** One bank
+  ago this block opened a span at **one hole** on idx 1121's landing,
+  derived its ordinal from the walk, and wrote a mechanism paragraph for
+  it. **The walk does not see it.** `--spans all` still reports **106
+  closed spans** and none opened after `f558bb0`, because *a span is a
+  property of the COMMIT SEQUENCE and not of the file* — the note's own
+  definition — and **no committed tree ever held the hole**: `22d17f1`
+  holds 1289 rows and 1120 decided, `3a008b2` holds **1291 rows and 1122
+  decided**, and there is nothing between them. The hole at idx 1120
+  opened and filled inside a single commit interval.
 
-  The ordinal was derived before the outcome, as at the last six:
-  `--spans all` re-run after the hole appeared still ends at
-  **f558bb0**, **106 closed spans**, so this is walk position **107**
-  and, at the offset of 65, ordinal **forty-two**.
+  **WHAT ACTUALLY HAPPENED, AND IT IS `380b306` AGAIN.** `3a008b2` swept
+  **two** rows — idx 1121 at 3429.0 s and idx 1120 at 3604.9 s — while
+  its subject names one and reads `1121 of 1949 = 57.5167%`. **Its tree
+  holds 1122 = 57.5680%.** As at `380b306`, the subject is corrected here
+  and the commit is not rewritten: the history is the authority, and
+  falsifying it to match a later correction would be worse than the
+  error. *The same commit's prose declares a span open that its own tree
+  shows closed, which is the sharper half of the mistake.*
 
-  *The "one" above describes the **opening**, and the close one bank ago
-  is the reason that is now said every time.* Counted over all **106**
-  closed chains: **37 opened at one hole**, and of those **32 never
-  widened while 5 did**. So a one-hole span usually stays at one — and
-  "usually" is exactly the word the forty-first's entry warns about,
-  since its opening of two reached three. **The live hole set is on the
-  bullet line; read it there.**
+  **THE MECHANISM IS THE WAITER'S POLLING GRANULARITY PLUS ONE SKIPPED
+  CHECK.** The waiter sleeps **20 s** between counts, so its
+  `ROW LANDED at 21:20:10Z` is an **upper bound** on when the row was
+  written, not the write instant; idx 1120's row was already in the file
+  when bank.py's `git add` ran. That alone is harmless — bank.py would
+  have reported the extra row and its span guard would have fired. **The
+  harm came from me:** the staged diff was read, then the prose was
+  edited, then bank.py was re-run, and the commit went out **without
+  re-reading the diff after that last run**, with bank.py's output
+  truncated to `tail -2` so its row-count and guard lines were never
+  seen. *The standing rule is "read the staged diff before committing".
+  The rule needed one more word: **after the last bank.py run**, because
+  a re-run can change what is staged.*
 
-  ***THE STAGGER IS 59 s, AND THE SUPERLATIVE THAT WANTED WRITING IS
-  FALSE.*** Earliest samples under this driver imply starts of
-  **20:19:51Z (idx 1120)** and **20:20:50Z (idx 1121)** — **59 s
-  apart**, against the **100 s** that separated 1112 and 1113 at the
-  forty-first's opening and the **0 s** of the fortieth's simultaneous
-  restart re-take. *A draft called this "the narrowest stagger yet
-  measured"; the fortieth's was zero, so it is not.* The accurate
-  statement is narrow and dull: **this is the narrowest NON-ZERO stagger
-  among the three openings whose starts have been measured** — and three
-  is a population, not a series, so no trend is offered. idx 1121
-  finished at
-  3429.0 s; idx 1120 read **3527 s** elapsed at 21:18:38Z and is still
-  running, so it has already spent 98 s more than 1121 took in total.
-  *A later start overtaking an earlier one is the same event as at the
-  forty-first; the margin being under a minute is a fact about when
-  slots freed, not about the cubes.* **Nothing is claimed about when or
-  how this span closes.**
+  **WHAT SURVIVES FROM THAT PROSE AND WHAT DOES NOT.** The measurements
+  were of real cubes and stand as observations of the working tree: idx
+  1121 finished at 3429.0 s while idx 1120 was still running; their
+  starts, from earliest samples, were **20:19:51Z** and **20:20:50Z**,
+  **59 s** apart. *What does not stand is calling that a span.* The
+  ordinal is also released: **forty-two is unused**, and the next span
+  that actually opens in the commit record takes walk position **107**
+  and that ordinal. *The ordinal derivation itself was correct under the
+  procedure — the walk did end at `f558bb0` with 106 — which is exactly
+  why it is worth recording that a correct derivation applied to the
+  wrong object still produces a wrong claim.*
 
   **THE FORTY-FIRST SPAN IS CLOSED.** *The heading read "AND ITS FIGURES
   ARE NOT IN THIS COMMIT" for exactly one commit — the bank that closed
