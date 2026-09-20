@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-19T23:56Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T00:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2969,7 +2969,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1188 -> 1189 rows)
+## State as of the last refresh (1189 -> 1190 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -2980,9 +2980,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1189 rows; 1020 labels decided; 1020 UNSAT; 0 SAT; 0 labels
+- **1190 rows; 1021 labels decided; 1021 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1020 decided plus 169 superseded
+  A row count is not a decision count: 1021 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3000,7 +3000,7 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1016, highest decided 1022, holes [1017, 1018, 1020].**
+- **Frontier contiguous 0..1016, highest decided 1022, holes [1017, 1018].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIRST, AND IT OPENED AT TWO HOLES AT
   ONCE.** idx 1019 came in at **1391.5 s** while **both 1017 and 1018
@@ -3018,10 +3018,19 @@ exactly one bank.
   eventual cost**. It is not the block's cheapest: that is still idx
   1001 at 549.4 s.
 
-  **THE SPAN HAS WIDENED TO THREE HOLES**, `[1017, 1018, 1020]`, after
-  idx 1021 landed at **775.7 s** and jumped over 1020 as well. Frontier
-  still contiguous 0..1016, highest decided index now 1021. A bank-time
-  observation of the file, not a chain entry.
+  **THE SPAN WIDENED TO THREE HOLES** — `[1017, 1018, 1020]`, after idx
+  1021 landed at 775.7 s and jumped over 1020 as well — **and has since
+  narrowed to two**, `[1017, 1018]`, when idx 1020 came in at
+  **3828.7 s**. Frontier still contiguous 0..1016, highest decided index
+  1022. Bank-time observations of the file, **not chain entries**: the
+  commit sequence decides the chain, and these two states are named
+  facts about two named banks.
+
+  **idx 1020 LANDED ALMOST EXACTLY ON THE DECIDED SET'S MEDIAN**, at
+  3828.7 s against a median of **3820.5 s** — rank **510 of 1021** with
+  **511 cheaper**, which is as close to the middle as an odd-sized
+  population allows. *That is a coincidence of one row and is recorded
+  as such; nothing follows from a cube being median-priced.*
 
   **idx 1021 IS THE SECOND-CHEAPEST CUBE THE BLOCK HAS PRODUCED**, at
   775.7 s behind idx 1001's 549.4 s, and the **8.05th percentile** of the
@@ -3132,28 +3141,37 @@ exactly one bank.
   **8214.9 s** — idx 1014's 7948.8 s came within 266.1 s of it and did
   not displace it — against a block maximum of 6860.1 s before either.
   Both finished far inside the cap, at **0.3803** and **0.3680** of
-  21600 s. Ranks recomputed at **N = 1019**: idx 1012 is **179 of 1019**
-  (840 cheaper) and idx 1014 is **186 of 1019** (833 cheaper).
-  Block `[13, 13, 11, 8]` now has **18 of 21** decided, costs spanning
+  21600 s. Ranks recomputed at **N = 1021**: idx 1012 is **179 of 1021**
+  (842 cheaper) and idx 1014 is **186 of 1021** (835 cheaper).
+  Block `[13, 13, 11, 8]` now has **19 of 21** decided, costs spanning
   **549.4 to 8214.9 s** — a spread of **14.9525×**, unchanged across
-  five banks because neither endpoint has moved — with median
-  **3590.15 s** and mean **3578.0 s**.
+  six banks because neither endpoint has moved — with median
+  **3776.8 s** and mean **3591.2 s**.
 
-  ***THE MEDIAN WENT 3877.3 → 3977.8 → 3877.3 → 3776.8 → 3590.15 ACROSS
-  FIVE ROWS, AND THE MEAN 3634.6 → 3922.2 → 3889.8 → 3742.9 → 3578.0.***
+  ***THE MEDIAN WENT 3877.3 → 3977.8 → 3877.3 → 3776.8 → 3590.15 →
+  3776.8 ACROSS SIX ROWS, AND THE MEAN 3634.6 → 3922.2 → 3889.8 →
+  3742.9 → 3578.0 → 3591.2.*** **The median has now returned to a
+  previous value twice** — 3877.3 at rows one and three, 3776.8 at rows
+  four and six — which is the parity effect repeating, not the figure
+  settling.
   At 14 of 21 the median read 3877.3; idx 1014 pushed it to 3977.8; idx
   1016 at 3403.5 s pulled it back to **exactly where it started**; idx
   1019 at 1391.5 s moved it down to 3776.8; idx 1021 at 775.7 s took it
-  to 3590.15. An even count's median is the midpoint of two neighbours,
-  so it oscillates as members arrive on either side, and the return to
+  to 3590.15; **idx 1020 at 3828.7 s put it back to 3776.8**, a value it
+  had already held two rows earlier. An even count's median is the
+  midpoint of two neighbours, so it oscillates as members arrive on
+  either side, and the return to
   3877.3 was **parity, not settling** — which the next row demonstrated
-  by leaving it and the one after confirmed by leaving again. **A figure
+  by leaving it, the one after confirmed by leaving again, and the sixth
+  row restated by returning to a *different* old value. **A figure
   returning to a previous value is not stability**, and this is the
   clearest available reason open-block descriptive stats are kept out of
-  the closed-block table: five banks, five medians, one coincidence
-  among them. *The last three rows were all below the running median, so
-  the recent drift is downward — which is a description of three rows,
-  not a trend, and is written that way deliberately.*
+  the closed-block table: **six banks, six medians, four distinct
+  values**. *At five rows this paragraph said the last three were all
+  below the running median and called that "a description of three rows,
+  not a trend". The sixth row went back up. **The hedge was the right
+  call and is left standing as written**, because a hedge that holds is
+  the only evidence that hedging was worth anything.*
 
   **These are descriptive of an OPEN block and
   will keep moving**; they are not comparable with the closed-block
@@ -3532,7 +3550,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1020 of 1949 = 52.3345%**; **929 undecided**. **50% IS CROSSED**, at
+- **1021 of 1949 = 52.3858%**; **928 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3697,7 +3715,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 8]` idx 1001..1021: **21 members**,
-  **18 decided**, undecided [1017, 1018, 1020]
+  **19 decided**, undecided [1017, 1018]
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
   **1 decided**, undecided 14 spanning 1023..1036
 
