@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:22Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2417,12 +2417,43 @@ Registration discipline, learned the hard way:
   | `[13,13,11,6]` | 11 | 539.8 | 2323.8 | 2475.1 | 5508.0 | 10.2038× |
   | `[13,13,11,5]` | 7 | 558.1 | 1417.4 | 1842.2 | 3590.3 | 6.4331× |
   | `[13,13,11,4]` | 5 | 436.0 | 964.0 | 1120.8 | 1909.0 | 4.3784× |
+  | `[13,13,11,3]` | 3 | 235.3 | 469.1 | 480.3 | 736.5 | 3.1300× |
   | `[13,13,11,2]` | 2 | 104.5 | 133.2 | 133.2 | 161.9 | 1.5493× |
   | `[13,13,11,1]` | 1 | 34.6 | 34.6 | 34.6 | 34.6 | 1.0000× |
   | `[13,13,11,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
 
-  ***FOUR BLOCKS CLOSED IN ONE BANK — `[13,13,11,4]`, `[13,13,11,2]`,
-  `[13,13,11,1]` AND `[13,13,11,0]`*** — 5, 2, 1 and 1 members, closed
+  ***THE `[13,13,11,*]` RUN IS COMPLETE — 181 OF 181 CUBES — AND THERE
+  IS NO OPEN BLOCK AT ALL.*** idx 1062 at **736.5 s** closed
+  `[13,13,11,3]` at 3/3 and with it the whole run, and the frontier now
+  sits contiguous **0..1066**, exactly at the run's last index, with an
+  empty hole set. **The set comparison reports 39 closed and 39 tabled,
+  and ZERO partially-decided blocks** — the census region is empty.
+
+  *A draft called that "the first time in this sweep". **It is not
+  claimed**: the same thing could have happened at the end of
+  `[13,13,13,*]` (idx 558) or `[13,13,12,*]` (idx 885), and checking
+  would mean walking the census across a thousand commits. What is
+  certain is only that it is true now, and that it is a transient — the
+  next row to land opens `[13,13,10,10]`.*
+
+  **The run cost 667465.5 core-seconds = 185.4071 core-hours** over its
+  181 cubes. *Set beside the two runs before it, computed in the same
+  pass rather than recalled:* `[13,13,13,*]` **559 cubes, 704.6962
+  core-hours**; `[13,13,12,*]` **327 cubes, 464.7163 core-hours**;
+  `[13,13,11,*]` **181 cubes, 185.4071 core-hours**. **No rate is
+  derived from those three.** The cube counts fall by roughly a factor
+  of 1.7 each time and the hours by rather more, but the sweep has been
+  through three machine configurations and 44 restarts, so a
+  cost-per-cube trend across runs would be measuring the hardware as
+  much as the mathematics. *The figures are recorded; the ratio is not.*
+
+  **`[13,13,11,3]`'s spread is 3.1300×**, and `[13,13,11,4]`'s 4.3784×
+  is no longer the narrowest of the multi-member blocks in the run.
+  *That sentence was written one bank ago and is corrected here rather
+  than left standing — a superlative over a set that was still growing.*
+
+  ***FOUR BLOCKS CLOSED IN THE BANK BEFORE THIS ONE — `[13,13,11,4]`,
+  `[13,13,11,2]`, `[13,13,11,1]` AND `[13,13,11,0]`*** — 5, 2, 1 and 1 members, closed
   by idx 1059 (1353.3 s), idx 1064 (161.9 s), idx 1065 (34.6 s) and idx
   1066 (**0.1 s**). Contiguity verified by `max - min + 1 == len` on
   each. Their totals are 5604.2, 266.4, 34.6 and 0.1 core-seconds.
@@ -2430,14 +2461,14 @@ Registration discipline, learned the hard way:
   addition, with exactly ONE partially-decided block left** —
   `[13,13,11,3]` at 2 of 3.
 
-  **`[13,13,11,4]`'s spread, 4.3784×, is the narrowest of the eight
-  closed blocks with more than two members in this run**, whose spreads
-  read **30.8201, 20.3705, 15.6072, 14.9525, 21.0821, 10.2038, 6.4331,
-  4.3784** by descending fourth index — *three successive narrowings
-  after the 11,7 spike. Still not a trend: one reversal in seven steps
-  describes eight blocks, and the blocks are shrinking, so a narrowing
-  spread is what fewer samples look like.* Mean 1120.8 above median
-  964.0, the ordinary arrangement.
+  **The multi-member spreads across the completed run** read **30.8201,
+  20.3705, 15.6072, 14.9525, 21.0821, 10.2038, 6.4331, 4.3784, 3.1300**
+  by descending fourth index (11,11 down to 11,3) — *one reversal in
+  eight steps, at 11,7. Still not called a trend, and now with a second
+  reason: the blocks shrink from 49 members to 3 across that list, so a
+  narrowing spread is substantially what fewer samples look like.*
+  `[13,13,11,4]`'s mean 1120.8 sits above its median 964.0 and
+  `[13,13,11,3]`'s 480.3 above 469.1, both the ordinary arrangement.
 
   *A one-member block's median equals its mean equals its only cost, and
   its spread is exactly 1.0000× by construction.* **Those rows carry no
@@ -3798,7 +3829,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1230 -> 1235 rows)
+## State as of the last refresh (1235 -> 1236 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3809,9 +3840,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1235 rows; 1066 labels decided; 1066 UNSAT; 0 SAT; 0 labels
+- **1236 rows; 1067 labels decided; 1067 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1066 decided plus 169 superseded
+  A row count is not a decision count: 1067 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3830,15 +3861,30 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1061, highest decided 1066, holes [1062].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN — THE THIRTY-FIFTH, AND IT OPENED AT ONE HOLE.**
-  idx 1054 came in at **905.0 s** while **1053 was still running**, so
-  the frontier stands contiguous 0..1052 with the highest decided index
-  at 1055 and holes `[1053]`. **That is the second one-hole opening in
-  a row** — the thirty-fourth opened the same way and closed on its very
-  next row. No figures are claimed for it; they come from `--spans all`
-  after the closing commit exists.
+- **Frontier contiguous 0..1066, highest decided 1066, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-FIFTH SPAN IS CLOSED**, filled by **idx 1062 at
+  736.5 s** — the same row that closed block `[13,13,11,3]` at 3/3 and
+  with it **the entire `[13,13,11,*]` run**. The frontier went
+  contiguous 0..1061 → **0..1066** and the hole set is empty.
+
+  ***THERE IS NO OPEN BLOCK.*** The census region below is empty for
+  the first time in a long while: every block the sweep has touched is
+  fully closed, and the frontier sits exactly at the last index of the
+  completed run. The next cube, idx 1067, opens `[13,13,10,10]`.
+
+  **CARRIED FORWARD FROM THE OPEN PROSE:** the span **opened at one
+  hole** — idx 1054 at 905.0 s while 1053 was still running — the
+  **second one-hole opening in a row**, the thirty-fourth having opened
+  the same way and closed on its very next row. *This one did not: it
+  ran long enough to widen to three holes twice and to see four blocks
+  close inside it.*
+
+  **NO DURATION, NO RANKS AND NO COMMIT COUNT ARE WRITTEN YET.** They
+  come from `--spans all` run **after this closing commit exists**, and
+  every quoted span rank across the file is then recomputed against the
+  new N **together, in one script**, after first reproducing the
+  previous N's ranks.
 
   ***THE THIRTY-FOURTH SPAN IS CLOSED*** — filled by **idx 1051 at
   2715.2 s**, frontier contiguous 0..1050 → **0..1052**. **Its ranks,
@@ -4032,12 +4078,10 @@ exactly one bank.
   1061 with only **12 cheaper** — by some distance the cheapest opener
   in this run. Size recomputed from `SEQ`: **2 is what follows 3**.
 
-  ***THE `[13,13,11,*]` RUN IS DOWN TO ONE CUBE.*** Its twelve blocks
-  hold **181 cubes** in total, idx 886..1066; **180 are decided**, at
-  **666729.0 core-seconds = 185.2025 core-hours**, and the only one left
-  is **idx 1062** in `[13,13,11,3]` — the open span's only hole. **The
-  next run begins at idx 1067 with `[13,13,10,10]`**, read off `SEQ`
-  rather than predicted.
+  ***THE `[13,13,11,*]` RUN IS COMPLETE.*** Its twelve blocks hold
+  **181 cubes**, idx 886..1066, **all decided**, at **667465.5
+  core-seconds = 185.4071 core-hours**. **The next run begins at idx
+  1067 with `[13,13,10,10]`**, read off `SEQ` rather than predicted.
   *Blocks of 2 and 1 are why three were open at once: four solver slots
   cover more blocks than some of them have cubes.*
 
@@ -4736,7 +4780,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1066 of 1949 = 54.6947%**; **883 undecided**. **50% IS CROSSED**, at
+- **1067 of 1949 = 54.7460%**; **882 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5012,8 +5056,7 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 3]` idx 1060..1062: **3 members**,
-  **2 decided**, undecided [1062]
+*No block is open: every block with any decided member is complete.*
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
