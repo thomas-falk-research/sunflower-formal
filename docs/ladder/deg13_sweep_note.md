@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T03:57Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T04:00Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3033,6 +3033,43 @@ base rates — **never quote 5-for-5 without the 0.675**; and p=4 was a
 alongside it.**
 
 ### Error patterns
+
+- **A rule that lives only where it cannot be read in time — the
+  duplicate-check-in mistake, now TWICE (09-18 and 09-20).** The
+  recurring check-in prompt (`41 * * * *`) says in capitals: *"THIS IS
+  THE ONLY CHECK-IN... IT DOES NOT NEED RE-ARMING. Before creating any
+  check-in, call list_triggers."* It says so because a
+  duplicate was created with `send_later` on 09-18. **On 09-20 a second
+  duplicate was created with `send_later`, before that prompt had been
+  read in the session** — armed at 04:59Z against the real cron's 04:41Z,
+  and, like the 09-18 one, **carrying state numbers** (row count, decided
+  count, percentage, driver pid, waiter id) that the recurring prompt
+  deliberately omits precisely because they go stale. Deleted as
+  `trig_012XQodVewxgNyrg78rY6Tqb` once read.
+
+  ***AND THE ORDERING IS WORSE THAN "THE WARNING ARRIVED LATE", WHICH IS
+  WHAT A FIRST DRAFT OF THIS ENTRY SAID.*** The cron fired at
+  **03:41:28.330754Z**. The duplicate was created at **03:58:24.008908Z**
+  — **1015.7 s, almost seventeen minutes, AFTER** it fired. The warning
+  was not undelivered — it was **sitting in the notification queue,
+  unread, at the moment the duplicate was created**.
+
+  ***A SECOND DRAFT OVERSTATED THIS TOO, AND IT IS WORTH SAYING WHICH
+  WAY.*** That draft added that "the session notice announcing it was
+  pending had already been shown", making this a case of ignoring a
+  visible warning. **It had not been shown.** The pending-notification
+  notice arrived at the start of the *following* turn, which is also when
+  the queue was read and the duplicate found. So there was no visible
+  signal to override, and the lesson is **not** "you ignored a notice".
+
+  *That is what makes the remedy clear rather than moralistic.* At the
+  moment of decision the rule was in two places, **both unreadable**: the
+  trigger prompt, which is delivered only when it fires, and the
+  notification queue, which had not yet been surfaced. Writing it more
+  loudly in either changes nothing. **So it is recorded here, in the file
+  that is read before work starts:** *the recurring check-in
+  (`41 * * * *`) exists, it re-arms itself and needs no `send_later`, and
+  `list_triggers` comes before any `send_later` or `create_trigger`.*
 
 - **A script whose output asserts what its code does not do — 25 instances**
   (#17 waiter false-positive, #18 61aebeb, #19 78e5127, #20 4be4958,
