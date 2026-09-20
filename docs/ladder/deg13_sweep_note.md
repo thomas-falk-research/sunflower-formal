@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T13:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T14:27Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4159,7 +4159,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1268 -> 1269 rows)
+## State as of the last refresh (1269 -> 1270 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4170,9 +4170,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1269 rows; 1100 labels decided; 1100 UNSAT; 0 SAT; 0 labels
+- **1270 rows; 1101 labels decided; 1101 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1100 decided plus 169 superseded
+  A row count is not a decision count: 1101 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -4191,8 +4191,21 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1099, highest decided 1099, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1099, highest decided 1101, holes [1100].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE THIRTY-NINTH.** idx 1101 landed at
+  3889.8 s while 1100 was still running — an opening at **one hole**,
+  the commonest width in the record (36 of the 103 closed chains open
+  at 1). The frontier and hole set are on the bullet line above, which
+  bank.py owns; *this prose deliberately does not repeat them.* **No
+  duration, no rank, no monotonicity and no commit count until it
+  closes.**
+
+  The ordinal was derived before the outcome, as at the last three:
+  `--spans all` re-run after the hole appeared still ends at
+  **ff5f073**, **103 closed spans**, so this is walk position **104**
+  and, at the offset of 65, ordinal **thirty-nine**.
+
   **THE THIRTY-EIGHTH SPAN IS CLOSED**, filled by **idx 1088 at
   8033.5 s** — the same cube that had been the only one left from the
   three that opened it. **The same row closed block `[13,13,10,10]` at
@@ -5374,7 +5387,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1100 of 1949 = 56.4392%**; **849 undecided**. **50% IS CROSSED**, at
+- **1101 of 1949 = 56.4905%**; **848 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5726,7 +5739,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 9]` idx 1095..1115: **21 members**,
-  **5 decided**, undecided 16 spanning 1100..1115
+  **6 decided**, undecided 15 spanning 1100..1115
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
