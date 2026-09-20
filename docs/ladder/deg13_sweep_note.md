@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:22Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -2416,6 +2416,36 @@ Registration discipline, learned the hard way:
   | `[13,13,11,7]` | 15 | 315.5 | 3405.4 | 3232.8 | 6651.4 | 21.0821× |
   | `[13,13,11,6]` | 11 | 539.8 | 2323.8 | 2475.1 | 5508.0 | 10.2038× |
   | `[13,13,11,5]` | 7 | 558.1 | 1417.4 | 1842.2 | 3590.3 | 6.4331× |
+  | `[13,13,11,4]` | 5 | 436.0 | 964.0 | 1120.8 | 1909.0 | 4.3784× |
+  | `[13,13,11,2]` | 2 | 104.5 | 133.2 | 133.2 | 161.9 | 1.5493× |
+  | `[13,13,11,1]` | 1 | 34.6 | 34.6 | 34.6 | 34.6 | 1.0000× |
+  | `[13,13,11,0]` | 1 | 0.1 | 0.1 | 0.1 | 0.1 | 1.0000× |
+
+  ***FOUR BLOCKS CLOSED IN ONE BANK — `[13,13,11,4]`, `[13,13,11,2]`,
+  `[13,13,11,1]` AND `[13,13,11,0]`*** — 5, 2, 1 and 1 members, closed
+  by idx 1059 (1353.3 s), idx 1064 (161.9 s), idx 1065 (34.6 s) and idx
+  1066 (**0.1 s**). Contiguity verified by `max - min + 1 == len` on
+  each. Their totals are 5604.2, 266.4, 34.6 and 0.1 core-seconds.
+  **The set comparison reports 38 closed and 38 tabled after the
+  addition, with exactly ONE partially-decided block left** —
+  `[13,13,11,3]` at 2 of 3.
+
+  **`[13,13,11,4]`'s spread, 4.3784×, is the narrowest of the eight
+  closed blocks with more than two members in this run**, whose spreads
+  read **30.8201, 20.3705, 15.6072, 14.9525, 21.0821, 10.2038, 6.4331,
+  4.3784** by descending fourth index — *three successive narrowings
+  after the 11,7 spike. Still not a trend: one reversal in seven steps
+  describes eight blocks, and the blocks are shrinking, so a narrowing
+  spread is what fewer samples look like.* Mean 1120.8 above median
+  964.0, the ordinary arrangement.
+
+  *A one-member block's median equals its mean equals its only cost, and
+  its spread is exactly 1.0000× by construction.* **Those rows carry no
+  information about difficulty** and are tabled only so the closed set
+  and the tabled set stay equal — the check that has caught a missing
+  row before. **idx 1066 at 0.1 s is the terminal cube of its run**,
+  `[13,13,11,0]`, where every remaining coordinate is pinned; it is not
+  a fast solve so much as an absent one.
 
   **`[13,13,11,5]` CLOSED 7/7** (idx 1048..1054, contiguity verified by
   `max - min + 1 == len` rather than eyeballed — closed by **idx 1053
@@ -3768,7 +3798,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1229 -> 1230 rows)
+## State as of the last refresh (1230 -> 1235 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3779,9 +3809,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1230 rows; 1061 labels decided; 1061 UNSAT; 0 SAT; 0 labels
+- **1235 rows; 1066 labels decided; 1066 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1061 decided plus 169 superseded
+  A row count is not a decision count: 1066 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3800,7 +3830,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1057, highest decided 1063, holes [1058, 1059, 1062].**
+- **Frontier contiguous 0..1061, highest decided 1066, holes [1062].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-FIFTH, AND IT OPENED AT ONE HOLE.**
   idx 1054 came in at **905.0 s** while **1053 was still running**, so
@@ -4002,13 +4032,14 @@ exactly one bank.
   1061 with only **12 cheaper** — by some distance the cheapest opener
   in this run. Size recomputed from `SEQ`: **2 is what follows 3**.
 
-  ***THE `[13,13,11,*]` RUN IS NEARLY DONE.*** Its twelve blocks hold
-  **181 cubes** in total, idx 886..1066, and only `[13,13,11,1]` (idx
-  1065) and `[13,13,11,0]` (idx 1066) remain untouched — one cube each.
-  **The next run begins at idx 1067 with `[13,13,10,10]`**, read off
-  `SEQ` rather than predicted. *Blocks of 2 and 1 are why three are
-  open at once again: four solver slots now cover more blocks than
-  cubes in some of them.*
+  ***THE `[13,13,11,*]` RUN IS DOWN TO ONE CUBE.*** Its twelve blocks
+  hold **181 cubes** in total, idx 886..1066; **180 are decided**, at
+  **666729.0 core-seconds = 185.2025 core-hours**, and the only one left
+  is **idx 1062** in `[13,13,11,3]` — the open span's only hole. **The
+  next run begins at idx 1067 with `[13,13,10,10]`**, read off `SEQ`
+  rather than predicted.
+  *Blocks of 2 and 1 are why three were open at once: four solver slots
+  cover more blocks than some of them have cubes.*
 
   **A SIXTH BLOCK HAS OPENED: `[13, 13, 11, 3]`, idx 1060..1062, 3
   members, 1 decided.** idx 1060 took it at **235.3 s**, rank 1034 of
@@ -4705,7 +4736,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1061 of 1949 = 54.4382%**; **888 undecided**. **50% IS CROSSED**, at
+- **1066 of 1949 = 54.6947%**; **883 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -4981,12 +5012,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 11, 4]` idx 1055..1059: **5 members**,
-  **3 decided**, undecided [1058, 1059]
 - `[13, 13, 11, 3]` idx 1060..1062: **3 members**,
   **2 decided**, undecided [1062]
-- `[13, 13, 11, 2]` idx 1063..1064: **2 members**,
-  **1 decided**, undecided [1064]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
