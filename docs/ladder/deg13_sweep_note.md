@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T23:09Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T23:19Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4522,7 +4522,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1298 -> 1299 rows)
+## State as of the last refresh (1299 -> 1300 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4533,7 +4533,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1299 rows; 1130 labels decided; 1130 UNSAT; 0 SAT; 0 labels
+- **1300 rows; 1131 labels decided; 1131 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4541,7 +4541,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1130 decided plus 169 superseded
+  A row count is not a decision count: 1131 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4560,7 +4560,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1127, highest decided 1130, holes [1128].**
+- **Frontier contiguous 0..1127, highest decided 1131, holes [1128].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND — THE ORDINAL RELEASED
   TWO BANKS AGO, NOW GENUINELY CLAIMED.** idx 1127 landed at 2969.2 s
@@ -6020,7 +6020,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1130 of 1949 = 57.9785%**; **819 undecided**. **50% IS CROSSED**, at
+- **1131 of 1949 = 58.0298%**; **818 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6138,6 +6138,46 @@ exactly one bank.
   there, which is bookkeeping and not a prediction. **It was reached**;
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
+
+  ***58% IS CROSSED, THE TRAP WAS CAUGHT, AND I DID NOT NOTICE IT AT
+  THE TIME — WHICH IS PRECISELY WHY THE CRITERION IS A TREE.*** idx 1131
+  took the decided count to **1131 = 58.0298%**, the first value at or
+  above 58. One bank earlier idx 1129 had taken it to **1130 =
+  57.9785%**, which **is** the 58% trap — and that bank's commit body
+  says nothing about it. **The catch stands anyway**, because the
+  criterion is a committed tree holding the value, verified with
+  `decided()` over the blob: the walk back over the eight most recent
+  checkpoint commits gives 1130, 1129, 1127, 1126, 1125, 1124, 1123,
+  1122, and **exactly one tree holds 1130** — `f4d5fef`. *A criterion
+  that depended on my having noticed would have lost this one. That is
+  the whole reason it was written as a tree and not as a subject line,
+  and it has now paid for itself.* **The tally goes from 48 caught and
+  7 missed of 55 to 49 caught and 7 missed of 56.**
+
+  **AND 1128 WAS NEVER HELD BY ANY TREE**, because `242dcb0` banked two
+  rows at once and took the counter straight from 1127 to 1129. *1128 is
+  not a trap value, so nothing is lost — it is recorded because it is
+  the same mechanism that produced the seven misses, seen twice now
+  within thirty rows: the other was 1088 at the 56% crossing.*
+
+  **THE FORWARD-WRITTEN FIGURES ALL HELD.** The 57% block below says
+  *"58% needs `ceil(0.58 × 1949) = 1131` = 58.0298%, trap at 1130 =
+  57.9785%, shortfall `42/1949 = 0.021550 pp`, tightness rank 42 of
+  97 — an ordinary one, and the 56th of the 97 ... 19 rows past the 57%
+  crossing at 1111"*. Every figure is confirmed by the outcome, and
+  1130 − 1111 = 19. It is also the **17th of 17** rounds-up-but-below
+  figures in the `k = 41..58` stretch — seventeen and not eighteen
+  because **51% has no trap at all**. *That was bookkeeping written
+  ahead of the counter, not a prediction, and the one thing it
+  explicitly refused to predict — whether a tree would sit on 1130 — is
+  the one thing that had to be checked afterwards.*
+
+  Next: **59% needs `ceil(0.59 × 1949) = 1150` = 59.0046%, trap at
+  1149 = 58.9533%**, shortfall `91/1949 = 0.046691 pp`, **tightness
+  rank 91 of 97** — loose, though not among the five loosest, which
+  remain k = 53, 4, 55, 6, 57 — and the **57th of the 97**. That is
+  **18 rows** past the 58% crossing at 1131, computed. Nothing is
+  predicted about whether a committed tree will sit on 1149.
 
   ***57% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND THE SHORTFALL
   TURNS OUT TO HAVE A CLOSED FORM.*** idx 1107 took the decided count to
@@ -6469,6 +6509,8 @@ exactly one bank.
 
 - `[13, 13, 10, 8]` idx 1116..1130: **15 members**,
   **14 decided**, undecided [1128]
+- `[13, 13, 10, 7]` idx 1131..1141: **11 members**,
+  **1 decided**, undecided 10 spanning 1132..1141
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
