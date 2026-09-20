@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T11:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T11:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4135,7 +4135,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1254 -> 1255 rows)
+## State as of the last refresh (1255 -> 1256 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4146,9 +4146,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1255 rows; 1086 labels decided; 1086 UNSAT; 0 SAT; 0 labels
+- **1256 rows; 1087 labels decided; 1087 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1086 decided plus 169 superseded
+  A row count is not a decision count: 1087 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -4167,8 +4167,47 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1085, highest decided 1085, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1085, highest decided 1089, holes [1086, 1087, 1088].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE THIRTY-EIGHTH.** idx 1089 landed at
+  2471.9 s while **1086, 1087 and 1088 were all still running** — an
+  opening at **three holes at once**. The frontier and hole set are on
+  the bullet line above, which bank.py owns; *this prose deliberately
+  does not repeat them.* **No duration, no rank, no monotonicity and no
+  commit count until it closes.**
+
+  ***A DRAFT OF THAT SENTENCE CALLED THREE "THE WIDEST OPENING THIS
+  FILE'S RECORD HAS EVER SHOWN". IT IS NOT, AND IT IS NOT EVEN RARE.***
+  Counted over the opening entry of all **102** closed chains rather
+  than recalled: **36 opened at 1, 31 at 2, 32 at 3, and 3 at 4** — so
+  the maximum is **four**, reached three times, and an opening at three
+  is the **second-widest and the second-commonest**, shared with about a
+  third of the record. *The claim was caught by computing it before
+  committing, which is the only reason it is a note rather than an
+  erratum.* **The distinct figure — the largest hole count reached at
+  any point DURING a span — is 15**, and conflating that with the
+  opening width is how the draft went wrong.
+
+  The ordinal was derived before the outcome, as at the last two:
+  `--spans all` re-run after the holes appeared still ends at
+  **ae0b64e**, **102 closed spans**, so this is walk position **103**
+  and, at the offset of 65, ordinal **thirty-eight**.
+
+  ***AND IT EXPLAINS THE QUIET STRETCH `5954535` RECORDED.*** That
+  check-in noted no row for 32 minutes with all four slots busy and
+  refused to draw anything from it, saying only that four cubes costing
+  more than the last few is not a stall. **That is exactly what this
+  is**: 1086, 1087 and 1088 were the three at 4217, 3183 and 2611
+  seconds in that sample, and idx 1089 — the one that started *last* —
+  finished first at 2471.9 s and broke the frontier. **The full gap
+  between rows was 41 m 13 s**, 11:09:13Z to 11:50:26Z; the check-in sat
+  **32 m 26 s** into it and the row came **8 m 47 s** after — computed
+  from the three timestamps, not paced off. *The refusal to guess is
+  recorded next to the answer because the answer could not have been had
+  any sooner than it was: nothing visible at the check-in distinguished
+  three slow cubes from a stall except that all four were burning a
+  core, which is exactly what the check-in said and all it said.*
+
   **THE THIRTY-SEVENTH SPAN IS CLOSED**, filled by **idx 1084 at
   3169.8 s**. It opened at **one hole** — idx 1085 came in at 2150.1 s
   while 1084 was still running — and closed on the very next row. **It
@@ -5271,7 +5310,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1086 of 1949 = 55.7209%**; **863 undecided**. **50% IS CROSSED**, at
+- **1087 of 1949 = 55.7722%**; **862 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5580,7 +5619,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **19 decided**, undecided 9 spanning 1086..1094
+  **20 decided**, undecided 8 spanning 1086..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
