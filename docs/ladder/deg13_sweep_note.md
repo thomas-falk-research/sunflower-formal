@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T08:24Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T08:30Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3503,7 +3503,7 @@ alongside it.**
   (`41 * * * *`) exists, it re-arms itself and needs no `send_later`, and
   `list_triggers` comes before any `send_later` or `create_trigger`.*
 
-- **A script whose output asserts what its code does not do — 25 instances**
+- **A script whose output asserts what its code does not do — 26 instances**
   (#17 waiter false-positive, #18 61aebeb, #19 78e5127, #20 4be4958,
   #21 99fd566, #22 cf2bccc, #23 068b963, #24 a rank helper that printed a
   hardcoded "25 of 70" beside the tool's actual 26, self-flagged in the
@@ -3574,6 +3574,52 @@ alongside it.**
   `sed -n '1,12p' /tmp/x.txt` — which reads the same twelve lines without
   ever putting a reader on the tool's stdout. At least one real sample was
   lost to this before it was noticed.
+
+  **#26 — A CORRECT NUMBER BEHIND A LOCATOR THAT POINTS AT THE WRONG
+  ROW.** `checkpoint_audit.py` printed `last UNKNOWN row is at file row
+  {last_unk}`, where `last_unk` comes from `enumerate(rows)` and `rows`
+  is the checkpoint with comment and blank lines stripped. It is
+  therefore a **0-based index into the parsed data rows** — neither a
+  file line nor an ordinal. The last UNKNOWN printed as "file row 423".
+  It is real data row **424**, and its actual line in the checkpoint is
+  **9395**, because the file carries **10299** comment and blank lines
+  against its data. So the label was off by **one** read as an ordinal
+  and off by **8971** read as a file line, and a reader who ran
+  `sed -n '423p'` would get the wrong row under either reading. *The
+  quantity the sentence introduces — rows landed since the last UNKNOWN,
+  `len(rows)-1-last_unk` — is CORRECT*, checked against an independent
+  count before anything was changed.
+
+  **That is why it is here and not in the tally: the tally counts wrong
+  figures, and this figure is right.** What was wrong was the pointer,
+  and the pointer is the part a reader uses to check the figure. **A
+  locator is a quantity too.** The same mislabelling ran in the
+  cap-history table's `file rows` column, whose cluster ranges are
+  0-based data-row indices in exactly the same way; `a252d3e`'s commit
+  body carries that table under the old header, and history is not
+  rewritten.
+
+  Fixed in the printed labels only — **the computation was not touched**,
+  and the check that it wasn't is that the trailing count came out
+  identical across the fix. *That count is deliberately not quoted here:
+  it grows with every row, and it grew during the derivation of this very
+  entry* — **1244** data rows when the check began, **1245** when it
+  ended, the figure moving **820 → 821** mid-paragraph. Only the stable
+  quantities are recorded above; for the live one, run the tool.
+
+  **AND THE COUNT IN THIS BULLET'S HEADING IS NOT RE-DERIVABLE FROM THIS
+  FILE.** The bullet enumerates **#17 through #25 — nine members** —
+  while its heading claims twenty-five. Searched: `#1` through `#16`
+  appear **nowhere** in this note, and `git log -S` over the note's own
+  history finds no `"22 instances"` and first finds the counter already
+  reading **`"23 instances"`**. Sixteen of the members were never written
+  down here; the count was **inherited, not built**. It is incremented to
+  26 because it is the established counter and renumbering would break
+  the references that do exist — but it is **carried, not verified**, and
+  saying so is the twenty-first tally entry's remedy (*state the scope in
+  the sentence that reports it*) applied to a counter instead of a
+  census.
+
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -3877,7 +3923,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1242 -> 1244 rows)
+## State as of the last refresh (1244 -> 1245 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3888,9 +3934,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1244 rows; 1075 labels decided; 1075 UNSAT; 0 SAT; 0 labels
+- **1245 rows; 1076 labels decided; 1076 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1075 decided plus 169 superseded
+  A row count is not a decision count: 1076 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3909,7 +3955,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1074, highest decided 1074, holes [].**
+- **Frontier contiguous 0..1075, highest decided 1075, holes [].**
   <!-- SPAN-STATE: closed -->
   **NO SPAN IS OPEN.** The frontier and hole set are on the bullet line
   above, which bank.py owns; *this prose deliberately does not repeat
@@ -4911,7 +4957,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1075 of 1949 = 55.1565%**; **874 undecided**. **50% IS CROSSED**, at
+- **1076 of 1949 = 55.2078%**; **873 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5220,7 +5266,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **8 decided**, undecided 20 spanning 1075..1094
+  **9 decided**, undecided 19 spanning 1076..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

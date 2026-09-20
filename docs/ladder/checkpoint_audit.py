@@ -334,7 +334,7 @@ def main(rev=None):
         print("\ncap history recovered from UNKNOWN rows (diagnostic, not an invariant).")
         print("An UNKNOWN row is written when the per-cube budget runs out, so each")
         print("tight cluster marks a cap that was in force for part of the sweep:")
-        print(f"   {'n':>4} {'cost min':>10} {'cost max':>10} {'file rows':>14}  cluster")
+        print(f"   {'n':>4} {'cost min':>10} {'cost max':>10} {'0-based rows':>14}  cluster")
         for g in groups:
             lo, hi = g[0][0], g[-1][0]
             pos = [n for _, n in g]
@@ -347,8 +347,9 @@ def main(rev=None):
         print(f"the budget is a deadline checked periodically and overshot by the lag.")
         print(f"A decided cost slightly above the nominal cap is therefore NOT an anomaly:")
         print(f"it is a cube that finished inside that lag, before the check killed it.")
-        print(f"\nlast UNKNOWN row is at file row {last_unk}; {len(rows)-1-last_unk} rows have")
-        print(f"landed since, none of them capped.")
+        print(f"\nlast UNKNOWN is real data row {last_unk+1} of {len(rows)} (0-based index")
+        print(f"{last_unk}, NOT a file line -- the file also holds comment lines);")
+        print(f"{len(rows)-1-last_unk} rows have landed since, none of them capped.")
 
     got = dict(rows=len(rows), decided=len(mine), total=len(SEQ), contig_top=contig,
                highest=highest, holes=holes, undecided_only=len(undec), sat=len(sats),
