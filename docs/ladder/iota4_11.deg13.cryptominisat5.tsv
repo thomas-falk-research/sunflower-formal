@@ -11572,3 +11572,96 @@ g=11 [13, 13, 10, 9, 13, 13, 13, 13, 12, 10, 9]	UNSAT	4149.1
 g=11 [13, 13, 10, 9, 13, 13, 13, 13, 11, 11, 9]	UNSAT	4157.4
 g=11 [13, 13, 10, 9, 13, 13, 13, 13, 11, 10, 10]	UNSAT	3625.3
 g=11 [13, 13, 10, 9, 13, 13, 13, 12, 12, 12, 8]	UNSAT	5384.7
+# ---------------------------------------------------------------------
+# RESTART #45 -- container restarted 2026-09-20T16:36:50.736442Z.  THE
+# THIRD-LARGEST LOSS ON RECORD, AND THE FIRST RESTART BLOCK WRITTEN INTO
+# THIS FILE SINCE #43 -- see the gap note at the end of this block.
+#
+# Teardown instant read from the [killed] markers at the end of the
+# driver's and the waiter's task outputs.  BOTH CARRY THE IDENTICAL
+# mtime, 1789922210736442175 ns, so the rule to take the earlier of them
+# again had nothing to choose between; that is the common case, not a
+# first.  btime was UNCHANGED at 1789782298, so this was a container
+# teardown and not a host reboot.  The checkpoint held 1275 rows before
+# and after, and the waiter -- armed at 1275 -- never reported a landing,
+# so NOTHING WAS LOST BUT SOLVER TIME.
+#
+# MACHINE SPEC RE-READ AND COMPARED, ALL SIX FIELDS UNCHANGED: nproc 4,
+# model name Intel(R) Xeon(R) Processor @ 2.10GHz, cpu MHz 2100.000,
+# cache size 266240 KB, MemTotal 16481980 kB, kernel 6.18.44-fc-v37.
+# "No recorded change" remains weaker than "no change" -- cpu MHz is a
+# nominal field and nothing here benchmarks the host -- but the confound
+# that abandoned set nine and declined to divide set ten is absent.
+#
+# FOUR CUBES KILLED, measured by the CNF-mtime method with the glob
+# filtered by the dead driver pid 2331 AND requiring "-seq-c".  /tmp held
+# 192 CNFs; exactly 4 carried the dead pid, matching the four slots:
+#
+#     idx   elapsed s   cpu/elapsed   weighted s   sampled at
+#    1106    6601.424        0.9937     6559.835     4283 s
+#    1107    6397.132        0.9934     6354.911     4078 s
+#    1108    4208.884        0.9947     4186.577     1890 s
+#    1109    2347.468        0.9655     2266.480       29 s
+#
+# ALL FOUR WERE COVERED BY SAMPLES from 2026-09-20T15:58:12Z, so no ratio
+# had to be invented.  THE LOSS IS A BRACKET, [5.3799, 5.4319] CPU-h,
+# over 19554.908 s of wall time.  The upper end is the elapsed itself,
+# since a single-threaded solver cannot exceed a ratio of 1.0.
+#
+# ONE QUALIFICATION ON THE LOWER END: idx 1109's ratio of 0.9655 was
+# sampled when it had run only 29 s, and young cubes read low because
+# startup is in the denominator -- its three siblings all sit near 0.994
+# once settled.  Weighting 1109 at a settled sibling's 0.9937 instead
+# would move the total by 0.0184 CPU-h, which is inside the bracket
+# already given.  The sampled value is kept because that is the rule; the
+# sensitivity is recorded because the rule's input was unrepresentative.
+#
+# IT RANKS 3 OF 22 BY SIZE AT BOTH ENDS -- the third-largest loss in the
+# series, behind only 7.204 and 7.033.  With #40, #41 and #44 held at
+# their bracket midpoints and #45's bracket swept (the established
+# convention, verified by reproducing the n = 21 line exactly: median
+# 3.5640, mean 3.7688-3.7695, total 79.1445-79.1596), the series now
+# gives median 3.5790, mean 3.8424-3.8447, total 84.5320-84.5840.
+# THE MEDIAN HAS MOVED BACK TO 3.5790, the value it held at n = 20: a
+# 21st value below it shifted the centre down, and a 22nd value above it
+# has shifted it back.  That is arithmetic about which element is
+# central, not a fact about restarts.
+#
+# RELAUNCHED: driver pid 28574, launched 2026-09-20T16:39:13.770000Z,
+# read from /proc/28574/stat field 22 against btime in the same script,
+# 143.033558 s after the kill.
+#
+# THE RELAUNCH RE-TOOK EXACTLY THE FOUR KILLED CUBES at launch +
+# 60.778454304 s for idx 1107, 1108 and 1109 and + 60.782454491 s for
+# idx 1106.  That lag is the ELEVENTH observation; the full series is 41
+# (#35), 60.7 (#36), 61.0 (#37), 60.6 (#38), 60.7 (#39), 60.6 (#40),
+# 60.9 (#41), 61.7 (#42), 60.7 (#43), 60.8057 (#44), 60.7785 (#45).
+# NINE of the eleven sit inside 60.6-61.0 and TWO outside it, 41 and
+# 61.7.  A band a point can leave and re-enter describes eleven numbers
+# and is not a law.
+#
+# THE FOUR CNFs LANDED ON TWO mtimes EXACTLY 4000001 ns APART -- 4 ms
+# plus one nanosecond, read in integer nanoseconds from stat.  THAT IS
+# THE SAME SPREAD, TO THE NANOSECOND, AS AT #44.  It is recorded as a
+# repeated exact measurement and nothing more: the 4 ms quantum already
+# noted in three code paths contains none of this sweep's own code, and
+# a second identical reading does not make it touch iota(4).
+#
+# RE-RUN SET THIRTEEN OPENS with idx 1106, 1107, 1108, 1109, all four
+# re-taken together with their CNFs within 4000001 ns, so their re-run
+# clocks are directly comparable.  No machine change is recorded inside
+# the set.  WHETHER A RATIO IS COMPUTED IS DECIDED AT THE CLOSE, NOT NOW.
+#
+# THE GAP: RESTART #44 HAS NO HEADER BLOCK IN THIS FILE.  The last one
+# before this is #43.  Step 7 of the absorb procedure says to append a
+# block to the TSV and at #44 that step was not carried out -- verified
+# with `git log -S "RESTART #44"` over this file, which returns nothing,
+# so it was never added and later lost.  #44's measurements are not lost:
+# the working note carries them in full (teardown 1789875577.585670163,
+# btime unmoved, 1206 rows both sides, loss [1.5889, 1.6040] CPU-h, pid
+# 2149 -> 2331 at 2026-09-20T03:41:35.200000Z, re-take + 60.805680768 s).
+# They are NOT transcribed here as though they had been written then.
+# The omission was found only because #45 went looking for #44's block to
+# use as a model, which is the whole argument for the two records being
+# kept side by side rather than one of them being trusted alone.
+# ---------------------------------------------------------------------

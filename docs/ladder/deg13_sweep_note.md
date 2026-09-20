@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T15:58Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T16:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -104,24 +104,34 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Twenty-one** involuntary restarts, CPU-hours discarded:
+**Twenty-two** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
     #40 in [4.9648, 4.9688]   #41 in [5.0256, 5.0262]
     #42 = 3.3278   #43 = 3.9984   #44 in [1.5889, 1.6040]
+    #45 in [5.3799, 5.4319]
 
-median **3.5640**, mean **3.7688–3.7695**, **total 79.1445–79.1596** —
-the mean and total are given as ranges because **#44 is carried as a
-bracket**, and the median is identical at both ends. *The median moved
-3.5790 → 3.5640 because a 21st value below it shifts which element is
-central; the mean fell because #44 is the third-smallest loss on
-record.*
+median **3.5790**, mean **3.8424–3.8447**, **total 84.5320–84.5840** —
+the mean and total are ranges because **#45 is carried as a bracket**,
+and the median is identical at both ends. ***THE MEDIAN HAS MOVED BACK
+TO 3.5790, the value it held at n = 20.*** A 21st value below it shifted
+the centre down to 3.5640; a 22nd value above it has shifted it back.
+*That is arithmetic about which element is central and not a fact about
+restarts — the same caution the previous move carried, now demonstrated
+by the move reversing.*
 
-**The range sweeps #44's bracket ONLY, with #40 and #41 held at their
-midpoints** (4.9668 and 5.0259). That is the convention the n = 20
-figures used, and holding to it is what makes the previous line's
-3.5790 / 3.8778 / 77.5556 reproduce exactly from this same list.
+**#45 ranks 3 of 22 by size at both ends** — the third-largest loss on
+record, behind only 7.204 and 7.033 — because two of its four cubes had
+run 1.83 and 1.78 hours when the kill landed.
+
+**The range sweeps #45's bracket ONLY, with #40, #41 and #44 held at
+their midpoints** (4.9668, 5.0259 and 1.59645). That is the convention
+the earlier figures used — hold every older bracket at its midpoint,
+sweep only the newest — and holding to it **reproduces the n = 21 line
+exactly** (median 3.5640, mean 3.7688–3.7695, total 79.1445–79.1596),
+which is how the convention was confirmed before being extended rather
+than after.
 *Sweeping all three brackets together instead gives 3.7687–3.7696 and
 79.1422–79.1619 — immaterial to every claim here, but not the same
 number, so the convention is written down rather than left to be
@@ -412,7 +422,7 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **nine CLOSED** (one–eight and eleven), **set nine ABANDONED**, **set ten COMPLETE but undivided**, **SET TWELVE OPEN**
+## Re-run sets — **nine CLOSED** (one–eight and eleven), **set nine ABANDONED**, **set ten COMPLETE but undivided**, **SETS TWELVE AND THIRTEEN OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -632,6 +642,34 @@ nanosecond**, read in integer nanoseconds from `stat`. That re-take lag
 is the **tenth observation** and sits inside the 60.6–61.0 band that
 holds seven of the previous nine. *The 4000001 ns is not incidental; see
 the cross-path note below.*
+
+**SET THIRTEEN OPENS AT RESTART #45** with idx **1106, 1107, 1108 and
+1109**, all four re-taken together at launch + 60.778454304 s (60.782454491 s
+for idx 1106), their CNFs landing within **4000001 ns**, so their re-run
+clocks are directly comparable. **No machine change is recorded inside
+the set**: all six spec fields read identical across the teardown and
+`btime` did not move.
+
+**None of the four carries a prior kill**, so a denominator would be one
+run each. *That is derived, not assumed:* the audit reports
+**`undecided-only indices: 0`**, meaning no index in the checkpoint holds
+an UNKNOWN row without a decided one. Since 1106–1109 are undecided,
+they can hold no rows at all.
+
+**The spread is stated at the OPENING, as the procedure requires.** The
+four were killed at **6601.4, 6397.1, 4208.9 and 2347.5 s** elapsed —
+1.83 h down to 0.65 h, a spread of **2.8121×**. That is wider than set
+twelve's clustering and closer to set eleven's, but *a discarded time is
+set by when the kill landed relative to four independent start times and
+is NOT a property of the cubes.* **Whether a ratio is computed is
+decided at the close, not now.**
+
+***AND SET TWELVE IS STILL OPEN, WHICH IS NOW WORTH SAYING OUT LOUD.***
+Its four members — idx 1034, 1038, 1039, 1040 — decided long ago, so
+nothing blocks its close except that no close has been performed. It has
+been carried as "open" through every bank since. **Recorded here rather
+than quietly closed in passing**: closing a set is a decision about
+whether its ratio means anything, and that decision has not been made.
 
 **SET TWELVE IS OPEN, AND THE OBSTRUCTION IS AGAIN ABSENT — WITH ONE NEW
 QUALIFICATION.** Restart #44 killed idx **1034, 1038, 1039, 1040** and
@@ -4191,8 +4229,8 @@ exactly one bank.
   A row count is not a decision count: 1106 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
-  `/proc/2331/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
+  `/proc/28574/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
