@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T08:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T09:09Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3950,7 +3950,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1246 -> 1247 rows)
+## State as of the last refresh (1247 -> 1248 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3961,9 +3961,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1247 rows; 1078 labels decided; 1078 UNSAT; 0 SAT; 0 labels
+- **1248 rows; 1079 labels decided; 1079 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1078 decided plus 169 superseded
+  A row count is not a decision count: 1079 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3982,19 +3982,28 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1076, highest decided 1078, holes [1077].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE THIRTY-SIXTH.** The frontier and hole
-  set are on the bullet line above, which bank.py owns; *this prose
-  deliberately does not repeat them, because a figure duplicated beside
-  the one that gets rewritten is exactly how this file has gone stale
-  before.* **No duration, no rank, no monotonicity and no commit count
-  until it closes** — the spans section's standing rule. The ordinal is
-  the one figure quoted here, and it was derived rather than assumed:
-  the thirty-fifth is walk position 100, the walk holds no span after
-  it, and the ordinal sits 65 below the walk position on all twenty-one
-  tabled rows, so the next one is position 101 and ordinal thirty-six.
-  *See the spans section for that offset and why it had to be checked.*
+- **Frontier contiguous 0..1078, highest decided 1078, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE THIRTY-SIXTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It was filled by **idx 1077 at 2593.9 s**, the row banked
+  here. The frontier and hole set are on the bullet line above, which
+  bank.py owns; *this prose deliberately does not repeat them, because a
+  figure duplicated beside the one that gets rewritten is exactly how
+  this file has gone stale before.*
+
+  **Its duration, ranks, hole-count chain and monotonicity are absent
+  deliberately: they do not exist yet.** `--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
+  before the tool can see the span at all — which is why every span
+  close in this file takes two commits, and why a figure written into
+  this one would have to be invented. They arrive in the next commit,
+  with **every rank in the spans table recomputed together at the new
+  N**, the twenty-one carried rows first reproduced at the old N in the
+  same script. *The walk held **100** closed spans before this one, so
+  the new N should be 101 — but that is read from the tool in the next
+  commit, not carried from this sentence.* Relabelling a denominator
+  while keeping a rank is the error this file recorded against itself at
+  restart #40.
 
   ***THE FILE HELD A HOLE AT `[1068]` FOR 51 SECONDS AND NO SPAN WILL
   EVER RECORD IT — THE SECOND SUCH CASE, AFTER `[1008]`.*** idx 1069
@@ -4012,14 +4021,14 @@ exactly one bank.
   reach a commit would take that number.* The numbering counts spans the
   tool reports, not holes the file passed through.
 
-  ***AND THE NEXT ONE HAS NOW ARRIVED*** — this bank, with holes
-  `[1076, 1077]` reaching the commit sequence. The withdrawn sentence
-  therefore reads true one span later than it was written. **That does
-  not retroactively make withdrawing it wrong.** It was written about a
-  hole that never reached a commit and so never was a span; a claim that
-  turns out to be reusable later was still false when it was made, which
-  is the ninth tally entry's rule applied to a sentence instead of a
-  figure.
+  ***AND THE NEXT ONE HAS NOW ARRIVED*** — at `631ec76`, whose holes
+  `[1076, 1077]` reached the commit sequence and so became a span. The
+  withdrawn sentence therefore reads true one span later than it was
+  written. **That does not retroactively make withdrawing it wrong.** It
+  was written about a hole that never reached a commit and so never was
+  a span; a claim that turns out to be reusable later was still false
+  when it was made, which is the ninth tally entry's rule applied to a
+  sentence instead of a figure.
 
   ***THE THIRTY-FIFTH SPAN IS CLOSED*** — filled by **idx 1062 at
   736.5 s**, the same row that closed block `[13,13,11,3]` at 3/3 and
@@ -5000,7 +5009,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1078 of 1949 = 55.3104%**; **871 undecided**. **50% IS CROSSED**, at
+- **1079 of 1949 = 55.3617%**; **870 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5309,7 +5318,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
-  **11 decided**, undecided 17 spanning 1077..1094
+  **12 decided**, undecided 16 spanning 1079..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
