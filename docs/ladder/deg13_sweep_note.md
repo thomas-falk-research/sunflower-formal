@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T18:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T18:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -441,7 +441,7 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **nine CLOSED** (one–eight and eleven), **set nine ABANDONED**, **set ten COMPLETE but undivided**, **SETS TWELVE AND THIRTEEN OPEN**
+## Re-run sets — **ten CLOSED** (one–eight, eleven and thirteen), **set nine ABANDONED**, **set ten COMPLETE but undivided**, **SET TWELVE OPEN**
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -457,6 +457,7 @@ corrected at 060fb26 by checking it against published data).
 | seven | idx-907/909 commit | 4 | 0.5962 | 2.0116× |
 | eight | idx-953 commit | 4 | 0.6766 | 4.3988× |
 | eleven | idx-992 commit | 4 | **0.87834** | 4.5244× |
+| thirteen | idx-1108 commit | 4 | **0.91910** | 1.7810× |
 
 **SET SIX IS CLOSED**, by idx 832 — the same row that closed the eleventh
 span. It opened at restart #38 with idx **831, 832, 833, 834**, all four
@@ -683,6 +684,52 @@ set by when the kill landed relative to four independent start times and
 is NOT a property of the cubes.* **Whether a ratio is computed is
 decided at the close, not now.**
 
+**SET THIRTEEN IS CLOSED**, by the commit that banked **idx 1108** —
+the same row that closed the fortieth span. All four members landed, the
+obstruction stated at the opening stayed absent, and the ratio is
+therefore computed, as the opening said the close would decide:
+
+| idx | discarded | re-run | ratio |
+|---|---|---|---|
+| 1106 | 6601.424 | 6549.6 | **1.0079** |
+| 1107 | 6397.132 | 6649.0 | 0.9621 |
+| 1108 | 4208.884 | 7437.1 | 0.5659 |
+| 1109 | 2347.468 | 2679.5 | 0.8761 |
+
+min 0.5659, **median 0.91910**, mean 0.8530, max 1.0079, spread
+**1.7810×**. *The median is again computed from the UNROUNDED ratios;
+here, unlike set eleven, the median of the four **rounded** values comes
+out the same to four places, so the trap set eleven fell into does not
+bite this time — checked rather than assumed, because "it did not bite
+last time" is not a reason.*
+
+**THIS SET IS AN EXTREME AT BOTH ENDS OF THE TABLE, AND THE TWO ARE THE
+SAME FACT.** Its median 0.91910 is the **highest of the ten**, above set
+eleven's 0.87834; its spread 1.7810× is the **tightest of the ten**,
+below set seven's 2.0116×. Both follow from the four ratios sitting high
+and close together — three of them between 0.8761 and 1.0079 — rather
+than from two independent properties of the set.
+
+**A THIRD RATIO ABOVE 1.0, AND A THIRD CENSORED MEASUREMENT OF THE
+SOLVER'S RUN-TO-RUN SPREAD.** idx 1106 ran **6601.424 s without
+finishing** and then completed in **6549.6 s**, so the two runs differ by
+**at least 51.824 s — 0.79% of the completed run**. That is the same
+argument set eleven's entry makes below, and it adds a third cube to the
+two it had. *It also widens the picture rather than confirming it:* the
+three lower bounds are **5.95% (idx 989), 5.56% (idx 991) and 0.79%
+(idx 1106)**, so the note's "a floor of about 6% on two cubes" was two
+cubes that happened to agree, not a level. **The honest statement is now
+three censored lower bounds spanning 0.79% to 5.95%, still with no upper
+bound, and still not a distribution.**
+
+**WHAT DOES NOT FOLLOW FROM THE TIGHT SPREAD.** A 1.7810× spread is not
+evidence that this restart lost a more uniform fraction of work than the
+others. Three of the four were killed at genuinely different elapsed
+times (2.8121× apart, stated at the opening), and the ratios came out
+close anyway, because the denominator is a fresh draw of a quantity that
+varies. *Set thirteen's ratios being close is a fact about four
+numbers; it is not a measurement of uniformity.*
+
 ***AND SET TWELVE IS STILL OPEN, WHICH IS NOW WORTH SAYING OUT LOUD.***
 Its four members — idx 1034, 1038, 1039, 1040 — decided long ago, so
 nothing blocks its close except that no close has been performed. It has
@@ -777,7 +824,12 @@ cost is censored — it needed *more* than what it had spent.
 **cryptominisat's run-to-run spread on identical input was described in
 this file as "not measured anywhere"; it now has a floor of about 6% on
 two cubes.** That is two cubes, not a distribution, and no upper bound
-is available from censored data.
+is available from censored data. ***A THIRD CUBE ARRIVED AT SET
+THIRTEEN AND IT DOES NOT AGREE WITH THESE TWO***: idx 1106's bound is
+**0.79%**, against 5.95% and 5.56% here. *So "about 6%" was two cubes
+that happened to land near each other, and this sentence was a level
+read off a pair.* The standing statement is three censored lower bounds
+spanning **0.79% to 5.95%** — see set thirteen's entry above.
 
 **WHAT THAT COSTS THE RATIO.** `discarded / re-run` was read as the
 fraction of a cube's work that a restart threw away. Under a fixed cost
@@ -3812,7 +3864,7 @@ alongside it.**
   (`41 * * * *`) exists, it re-arms itself and needs no `send_later`, and
   `list_triggers` comes before any `send_later` or `create_trigger`.*
 
-- **A script whose output asserts what its code does not do — 26 instances**
+- **A script whose output asserts what its code does not do — 27 instances**
   (#17 waiter false-positive, #18 61aebeb, #19 78e5127, #20 4be4958,
   #21 99fd566, #22 cf2bccc, #23 068b963, #24 a rank helper that printed a
   hardcoded "25 of 70" beside the tool's actual 26, self-flagged in the
@@ -3922,12 +3974,41 @@ alongside it.**
   appear **nowhere** in this note, and `git log -S` over the note's own
   history finds no `"22 instances"` and first finds the counter already
   reading **`"23 instances"`**. Sixteen of the members were never written
-  down here; the count was **inherited, not built**. It is incremented to
-  26 because it is the established counter and renumbering would break
-  the references that do exist — but it is **carried, not verified**, and
-  saying so is the twenty-first tally entry's remedy (*state the scope in
-  the sentence that reports it*) applied to a counter instead of a
-  census.
+  down here; the count was **inherited, not built**. It is incremented
+  with each new member — **27 at this writing** — because it is the
+  established counter and renumbering would break the references that do
+  exist; *the figure in the heading is deliberately not restated here, so
+  that adding a member touches one number and not two.* It is **carried,
+  not verified**, and saying so is the twenty-first tally entry's remedy
+  (*state the scope in the sentence that reports it*) applied to a
+  counter instead of a census.
+
+  **#27 — A BOUND SUBTRACTED FROM THE OLD POPULATION AND PRINTED WITH
+  THE NEW ONE.** While idx 1108 was still running at 7302 s, a script
+  counted the decided costs below it — **900 of the then 1110** — and
+  printed `len(costs)-lower`, which is **1110 − 900 = 210**. The
+  sentence that used it in `fb07d3e` read *"its eventual rank is at best
+  210 of 1111"*. **The subtraction is against 1110 and the denominator
+  printed beside it is 1111**; the correct bound is **1111 − 900 = 211**.
+  The code computed a rank in the population that existed *before* the
+  cube landed, and the label named the population that would exist
+  *after* it did.
+
+  **The claim was not falsified — and that is the point.** idx 1108 came
+  in at 7437.1 s with **902 cheaper, rank 209 of 1111**, so 209 ≤ 210
+  held and nothing downstream broke. *An off-by-one that the outcome
+  happens to satisfy is still an off-by-one, and it is more dangerous
+  than one that fails loudly, because nothing calls it.* It is caught
+  here only because the outcome was compared against the bound rather
+  than merely noted as consistent with it.
+
+  **This is the note's own standing warning, applied to myself one bank
+  after quoting it.** The rule is *"a denominator is not a rank"* and
+  *"recompute every quoted rank against the new N"*; the check-in prompt
+  carries both. **Writing the rule down did not prevent it** — the same
+  finding as the superlative bullet's fourth instance. What would have
+  prevented it is computing the bound and the denominator **in one
+  expression** instead of two.
 
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
@@ -3943,7 +4024,10 @@ alongside it.**
   general one: **a figure in this file is either re-derived in the commit
   that writes it, or it names a commit that a grep can find.**
 - A tally quoted without its base rate (4e5e443).
-- A bound quoted as a rank (8263cab).
+- A bound quoted as a rank (8263cab) — **second instance at `fb07d3e`**,
+  where a bound on idx 1108's eventual cost rank was printed with the
+  *new* denominator and the *old* subtraction; see **#27** below, which
+  is the same defect classified by where it came from.
 - **The pattern I am most tempted to register is the one about to break**
   (5682de6) — two instances, 73fcf31 and aea7189.
 - Rounding one measurement into a law (36ce276 / 0cf3b8d, cd03f27).
@@ -4232,7 +4316,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1278 -> 1279 rows)
+## State as of the last refresh (1279 -> 1280 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4243,9 +4327,15 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1279 rows; 1110 labels decided; 1110 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1110 decided plus 169 superseded
+- **1280 rows; 1111 labels decided; 1111 UNSAT; 0 SAT; 0 labels
+  undecided-only.** No rows were lost across restarts #37 through **#45**
+  — extended from #44 here, against the #45 header block in the
+  checkpoint, which records **1275 rows on both sides** of the teardown
+  and says "NOTHING WAS LOST BUT SOLVER TIME". *It had been carried at
+  "#37 through #44" for every bank since #45 was absorbed, which is the
+  standing-claim-never-re-checked pattern in its mildest form: the claim
+  was true, and its range was stale.*
+  A row count is not a decision count: 1111 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4264,31 +4354,43 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1107, highest decided 1110, holes [1108].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTIETH.** idx 1109 landed at
-  2679.5 s while 1106, 1107 and 1108 were all still running — an opening
-  at **three holes at once**. The frontier and hole set are on the
-  bullet line above, which bank.py owns; *this prose deliberately does
-  not repeat them.* **No duration, no rank, no monotonicity and no
-  commit count until it closes.**
+- **Frontier contiguous 0..1110, highest decided 1110, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FORTIETH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It opened at **three holes at once** when idx 1109 landed at
+  2679.5 s while 1106, 1107 and 1108 were all still running, and was
+  filled by **idx 1108 at 7437.1 s**, the row banked here. The frontier
+  and hole set are on the bullet line above, which bank.py owns; *this
+  prose deliberately does not repeat them.*
 
-  The ordinal was derived before the outcome, as at the last four:
-  `--spans all` re-run after the holes appeared still ends at
-  **7440e6b**, **104 closed spans**, so this is walk position **105**
-  and, at the offset of 65, ordinal **forty**.
+  **Its duration, ranks, hole-count chain and monotonicity are absent
+  deliberately: they do not exist yet.** `--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
+  before the tool can see the span. They arrive in the next commit, with
+  **every rank in the spans table recomputed together at the new N**,
+  the twenty-five carried rows first reproduced at the old N in the same
+  script.
 
-  ***AND THE THREE-HOLE OPENING FOLLOWS FROM THE RESTART, NOT FROM THE
-  CUBES.*** These four — 1106, 1107, 1108, 1109 — are exactly re-run set
-  thirteen, re-taken together after restart #45 at the same instant, as
-  the 16:44:45Z sample showed by reading 271 s elapsed on all four
-  slots. **When four cubes start simultaneously, the first to finish
-  opens one hole for every lower-indexed sibling still running.** idx
-  1109 is the highest of the four, so its finishing first opened the
-  maximum available, three. *Had 1106 finished first the frontier would
-  not have broken at all.* This is a property of the restart's
-  simultaneous re-take, and nothing is inferred from it about the cubes'
-  difficulty.
+  *The ordinal was derived at the opening: the walk then ended at
+  `7440e6b` with **104 closed spans**, so this is walk position **105**
+  and, at the offset of 65, ordinal **forty**. Not repeated here — it
+  was made before the outcome was known.*
+
+  ***THE THREE-HOLE OPENING FOLLOWED FROM THE RESTART, NOT FROM THE
+  CUBES — AND THE FILL ORDER IS NOW IN.*** These four — 1106, 1107,
+  1108, 1109 — are exactly re-run set thirteen, re-taken together after
+  restart #45 at the same instant, as the 16:44:45Z sample showed by
+  reading 271 s elapsed on all four slots. **When four cubes start
+  simultaneously, the first to finish opens one hole for every
+  lower-indexed sibling still running.** idx 1109 is the highest of the
+  four, so its finishing first opened the maximum available, three.
+  *Had 1106 finished first the frontier would not have broken at all.*
+  The holes then filled **in ascending index order — 1106 at 6549.6 s,
+  1107 at 6649.0 s, 1108 at 7437.1 s** — which is the frontier advancing
+  one step per landing and is **not** a fact about difficulty: the order
+  is forced by what "contiguous frontier" means, and the costs happen to
+  rise along it. *The one thing the opening could not have predicted is
+  that the last hole would also be the set's dearest member.*
 
   **THE THIRTY-NINTH SPAN IS CLOSED**, filled by **idx 1100 at
   4128.7 s**. It opened at **one hole** — idx 1101 came in at 3889.8 s
@@ -5504,7 +5606,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1110 of 1949 = 56.9523%**; **839 undecided**. **50% IS CROSSED**, at
+- **1111 of 1949 = 57.0036%**; **838 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5676,6 +5778,24 @@ exactly one bank.
   block was first written. That still does not move the tally: a tree
   holding the value and the trap being *counted* as caught are two
   different events, and only the crossing licenses the second.
+
+  **57% IS NOW CROSSED, AND THE TRAP WAS CAUGHT.** idx 1108 took the
+  count to **1111 = 57.0036%**, the first value at or above 57. The
+  catch is verified by the real criterion rather than the subject text:
+  the `decided()` walk back over the seven most recent commits that
+  touch the checkpoint gives 1110, 1109, 1108, 1107, 1106, 1106, 1105 —
+  **exactly one committed tree holds 1110**, `ee4a0ab`, and **no count
+  is skipped anywhere in that walk**, unlike the 56% stretch where 1088
+  was never held by any tree. *The tally goes from 47 caught and 7
+  missed of 54 to **48 caught and 7 missed of 55**.*
+
+  *One bank ago this block said the catch "is not decided here" and
+  declined to move the tally, while noting that the settling tree would
+  be the one that commit created. Both halves held: `ee4a0ab` is that
+  tree, and the tally moved only now, at the crossing.* **The hedge cost
+  nothing for the second threshold running.** The 1106 appearing twice
+  in the walk is `2aaf608`, the restart-#45 absorb, which changes no
+  decision — a repeated count is not a skipped one.
 
   *Three of the five loosest traps in the whole run — k = 53, 55, 57 —
   fall inside this one stretch, and they are consecutive odd thresholds.
@@ -5934,7 +6054,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 9]` idx 1095..1115: **21 members**,
-  **15 decided**, undecided 6 spanning 1108..1115
+  **16 decided**, undecided [1111, 1112, 1113, 1114, 1115]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
