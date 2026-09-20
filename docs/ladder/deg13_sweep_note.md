@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T02:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T03:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3081,7 +3081,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1199 -> 1200 rows)
+## State as of the last refresh (1200 -> 1201 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3092,9 +3092,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1200 rows; 1031 labels decided; 1031 UNSAT; 0 SAT; 0 labels
+- **1201 rows; 1032 labels decided; 1032 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #43.
-  A row count is not a decision count: 1031 decided plus 169 superseded
+  A row count is not a decision count: 1032 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2149**, launched 2026-09-19T14:43:51.120000Z (read from
@@ -3112,14 +3112,16 @@ exactly one bank.
   → 389 at restart #41, 389 → 388 at #42 and **388 → 2149 at #43**, each
   on the first bank after the relaunch. That is the same staleness that
   survived three commits at #40.
-- **Frontier contiguous 0..1029, highest decided 1033, holes [1030, 1031, 1032].**
+- **Frontier contiguous 0..1030, highest decided 1033, holes [1031, 1032].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN — THE THIRTY-SECOND, AND IT OPENED AT THREE HOLES AT
   ONCE.** idx 1033 came in at **2730.1 s** while **1030, 1031 and 1032
   were all still running**, so the frontier stands contiguous 0..1029
   with the highest decided index at 1033 and holes `[1030, 1031, 1032]`.
   That is the **widest opening since the twenty-third**, which also
-  opened at three.
+  opened at three. **It has since narrowed to two**, `[1031, 1032]`,
+  when idx 1030 came in at **5506.8 s** — a bank-time observation of the
+  file, not a chain entry.
 
   **The guard firing count had to be reconstructed, and the reason is a
   defect worth naming.** bank.py's span guard caught this opening as the
@@ -3652,7 +3654,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1031 of 1949 = 52.8989%**; **918 undecided**. **50% IS CROSSED**, at
+- **1032 of 1949 = 52.9502%**; **917 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -3766,16 +3768,31 @@ exactly one bank.
   worse than the error.
 
   Next: **53% needs `ceil(0.53 × 1949) = 1033` = 53.0015%, trap at
-  1032 = 52.9502%** — from the script, written before the counter gets
-  there, which is bookkeeping and not a prediction.
+  1032 = 52.9502%** — from the script, written before the counter got
+  there, which is bookkeeping and not a prediction. **It was reached**;
+  see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
+  54.0277%, trap at 1052 = 53.9764%**, also from the script.
 
-  **THE COUNTER IS NOW ONE ROW BELOW THE 53% TRAP**, at 1031 = 52.8989%,
-  computed at this bank: 1032 − 1031 = **1** row to the trap and
-  1033 − 1031 = **2** to the crossing. *That arithmetic is trivial and is
-  run anyway, because a previous bank's commit body got the same
-  quantity wrong by typing it — the fourteenth tally entry.* Whether a
-  committed tree will be observed sitting on 1032 is **not predicted**,
-  and this bank finally measured why that refusal is right.
+  **53% — THE COUNTER LANDED EXACTLY ON THE TRAP, AND IT IS THE LOOSEST
+  TRAP IN THE ENTIRE RUN.** idx 1030 took the decided count to
+  **1032 = 52.9502%**, which rounds to 53.0 while sitting **below** 53,
+  so **53% is NOT crossed**: 1033 = 53.0015% is the first value above it.
+  Its shortfall is **0.049769 pp**, which is **tightness rank 97 of 97** —
+  computed across all 97 traps, not noticed. *Every other trap in the run
+  is tighter than this one.* It is the **twelfth** rounds-up-but-below
+  figure in the `k = 41..53` stretch this note narrates — twelve and not
+  thirteen because **51% has no trap at all** — and the **51st of the 97**
+  in the whole run.
+
+  **A COMMIT IS CATCHING IT**, so the caught/missed tally computed one
+  bank ago moves from 43 caught and 7 missed of 50 to **44 caught and 7
+  missed of 51**. That does not make this trap special: the measured trap
+  skip rate sits within a percentage point of the overall skip rate, as
+  the paragraph below sets out, and being caught is the common case.
+
+  *One bank ago the distance was computed rather than typed — 1032 − 1031
+  = 1 to the trap, 1033 − 1031 = 2 to the crossing — because the bank
+  before that got the same quantity wrong by typing it. Both figures held.*
 
   **THE TRAP-MISS RATE IS THE ORDINARY SKIP RATE, MEASURED OVER THE WHOLE
   RUN.** A draft here said "two of the twelve trap values so far were
@@ -3860,7 +3877,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 11, 7]` idx 1022..1036: **15 members**,
-  **9 decided**, undecided 6 spanning 1030..1036
+  **10 decided**, undecided [1031, 1032, 1034, 1035, 1036]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
