@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T08:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T08:22Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1402,14 +1402,28 @@ immediately afterwards: idx 1053 at **3242 s** against 905.0 + 941.9 +
 
 *The tally counts wrong figures, and this one is not wrong, so it does
 not go in the tally.* What it goes in is here, because **the twelfth's
-rule has now been broken TWICE since it was written** — at `c637f52`
-(the fourteenth tally entry, where the figure was also wrong) and now
-at `f9a8f7d`, where it was not. *(The twelfth's own case, `8e1e048`,
-is what prompted the rule and predates it, so it is not one of the
-two.)* **A draft of this very sentence said "three times" and then
-named two** — the ninth entry's failure, a breakdown that does not
-match its own total, committed inside the paragraph complaining about
-unchecked figures. Counted on the second pass. The fourteenth already recorded that "a rule that depends on
+rule has now been broken THREE TIMES since it was written** — at
+`c637f52` (the fourteenth tally entry, where the figure was also
+wrong), at `f9a8f7d`, and at `67af9ee`, whose body asserted
+`ceil(0.56 × 1949) = 1092` before computing it. **Both of the latter
+two came out right when checked immediately afterwards**, 1092 being
+correct and the 3242 s comparison holding. *This count read "TWICE"
+across **thirteen commits**, from `a236cd6` to `67af9ee`, before the
+third break made it stale — counted with `git log a236cd6..`, not
+guessed. **A count of rule-breaks is a figure like any other and goes
+stale the same way**, which is why it names its three commits rather
+than just its total.* *(The twelfth's own case, `8e1e048`, is what
+prompted the rule and predates it, so it is not one of the three.)*
+
+**A draft of the original version of this sentence said "three times"
+and then named two** — the ninth entry's failure, a breakdown not
+matching its own total, committed inside the paragraph complaining
+about unchecked figures. It was corrected to "twice" on a second pass.
+*That the true figure has since become three is a coincidence of
+timing and does not retrospectively make the draft right: it was wrong
+when written, for the reason the ninth entry gives.*
+
+The fourteenth already recorded that "a rule that depends on
 remembering it at the moment of writing is the weakest kind" and that
 **no stronger mechanism was proposed**. One was proposed later, at the
 twenty-second: *re-derive the whole paragraph in a script before
