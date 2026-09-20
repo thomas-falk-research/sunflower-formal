@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T22:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T22:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4599,7 +4599,21 @@ exactly one bank.
   and still finished first, at 2969.2 s. *So the maximum-holes shape
   does not require a simultaneous re-take; it requires the
   highest-indexed slot to finish first, and a late start is no obstacle
-  to that.* **Nothing is inferred about the
+  to that.*
+
+  ***AND THE START-TIME RECONSTRUCTION HAS NOW BEEN CROSS-CHECKED,
+  WHICH IT NEVER HAD BEEN.*** Every stagger figure in this note comes
+  from `sample timestamp − elapsed` on each slot's **earliest** sample,
+  and those samples are at different instants, so the method had no
+  internal check. It has one now: at **22:41:37Z** the three holes were
+  sampled **together**, so their elapsed differences must equal their
+  start differences. They do — `1124 vs 1125`: elapsed 117 s against
+  start 118 s; `1125 vs 1126`: 595 against 594; `1124 vs 1126`: 712
+  against 712. **Agreement to 1 s, which is the clock resolution**, on
+  three pairs whose starts were each reconstructed from a different
+  earliest sample. *That is a check of the method, not of the 1686 s
+  figure itself, and it is the first one this file has been able to
+  make.* **Nothing is inferred about the
   cubes' difficulty, and nothing is claimed about when or how this span
   closes.**
 
