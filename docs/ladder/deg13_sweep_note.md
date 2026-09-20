@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T07:27Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T07:29Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -3863,7 +3863,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1235 -> 1236 rows)
+## State as of the last refresh (1236 -> 1237 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -3874,9 +3874,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1236 rows; 1067 labels decided; 1067 UNSAT; 0 SAT; 0 labels
+- **1237 rows; 1068 labels decided; 1068 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1067 decided plus 169 superseded
+  A row count is not a decision count: 1068 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 2331**, launched 2026-09-20T03:41:35.200000Z (read from
@@ -3895,7 +3895,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1066, highest decided 1066, holes [].**
+- **Frontier contiguous 0..1067, highest decided 1067, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE THIRTY-FIFTH SPAN IS CLOSED**, filled by **idx 1062 at
   736.5 s** — the same row that closed block `[13,13,11,3]` at 3/3 and
@@ -4106,6 +4106,24 @@ exactly one bank.
   **32.0 s** dearer than idx 1030's — the closest adjacent pair in this
   block. idx 1036's 315.5 s is the block's cheapest, and it is what
   widened the hole set back to three.*
+
+  ***A NEW RUN HAS OPENED: `[13,13,10,*]`, idx 1067..1160.*** idx 1067
+  took its first block `[13,13,10,10]` at **473.6 s**, rank 1005 of 1068
+  with 63 cheaper. **The run's shape, read off `SEQ` rather than
+  predicted:** ten blocks of **28, 21, 15, 11, 7, 5, 3, 2, 1, 1**
+  members — **94 cubes in total**, against 181 for `[13,13,11,*]`, 327
+  for `[13,13,12,*]` and 559 for `[13,13,13,*]`.
+
+  *The first block alone, at 28 members, outweighs the last **six**
+  blocks of the previous run put together — 7 + 5 + 3 + 2 + 1 + 1 = 19 —
+  though not the last seven, which come to 30. **A draft said "seven"
+  and was wrong by two members**; the suffix sums were computed rather
+  than eyeballed.*
+
+  So the pattern of three open blocks at once will not recur for a
+  while: four solver slots inside a 28-member block stay inside it.
+  **When this run ends at idx 1160, 788 cubes will remain** — computed
+  as 1949 − 1161, not estimated.
 
   **A SEVENTH BLOCK HAS OPENED: `[13, 13, 11, 2]`, idx 1063..1064, 2
   members, 1 decided.** idx 1063 took it at **104.5 s**, rank 1049 of
@@ -4844,7 +4862,7 @@ exactly one bank.
   four ranks **in the prose beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1067 of 1949 = 54.7460%**; **882 undecided**. **50% IS CROSSED**, at
+- **1068 of 1949 = 54.7973%**; **881 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5120,7 +5138,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-*No block is open: every block with any decided member is complete.*
+- `[13, 13, 10, 10]` idx 1067..1094: **28 members**,
+  **1 decided**, undecided 27 spanning 1068..1094
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
