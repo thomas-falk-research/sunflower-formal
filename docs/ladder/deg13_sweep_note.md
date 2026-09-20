@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T16:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-20T17:26Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4213,7 +4213,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1274 -> 1275 rows)
+## State as of the last refresh (1275 -> 1276 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4224,9 +4224,9 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1275 rows; 1106 labels decided; 1106 UNSAT; 0 SAT; 0 labels
+- **1276 rows; 1107 labels decided; 1107 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through #44.
-  A row count is not a decision count: 1106 decided plus 169 superseded
+  A row count is not a decision count: 1107 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4245,8 +4245,32 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1105, highest decided 1105, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1105, highest decided 1109, holes [1106, 1107, 1108].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE FORTIETH.** idx 1109 landed at
+  2679.5 s while 1106, 1107 and 1108 were all still running — an opening
+  at **three holes at once**. The frontier and hole set are on the
+  bullet line above, which bank.py owns; *this prose deliberately does
+  not repeat them.* **No duration, no rank, no monotonicity and no
+  commit count until it closes.**
+
+  The ordinal was derived before the outcome, as at the last four:
+  `--spans all` re-run after the holes appeared still ends at
+  **7440e6b**, **104 closed spans**, so this is walk position **105**
+  and, at the offset of 65, ordinal **forty**.
+
+  ***AND THE THREE-HOLE OPENING FOLLOWS FROM THE RESTART, NOT FROM THE
+  CUBES.*** These four — 1106, 1107, 1108, 1109 — are exactly re-run set
+  thirteen, re-taken together after restart #45 at the same instant, as
+  the 16:44:45Z sample showed by reading 271 s elapsed on all four
+  slots. **When four cubes start simultaneously, the first to finish
+  opens one hole for every lower-indexed sibling still running.** idx
+  1109 is the highest of the four, so its finishing first opened the
+  maximum available, three. *Had 1106 finished first the frontier would
+  not have broken at all.* This is a property of the restart's
+  simultaneous re-take, and nothing is inferred from it about the cubes'
+  difficulty.
+
   **THE THIRTY-NINTH SPAN IS CLOSED**, filled by **idx 1100 at
   4128.7 s**. It opened at **one hole** — idx 1101 came in at 3889.8 s
   while 1100 was still running — and closed on the very next row. **It
@@ -5461,7 +5485,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1106 of 1949 = 56.7470%**; **843 undecided**. **50% IS CROSSED**, at
+- **1107 of 1949 = 56.7984%**; **842 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -5813,7 +5837,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 9]` idx 1095..1115: **21 members**,
-  **11 decided**, undecided 10 spanning 1106..1115
+  **12 decided**, undecided 9 spanning 1106..1115
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
