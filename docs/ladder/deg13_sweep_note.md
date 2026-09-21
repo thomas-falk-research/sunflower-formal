@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T16:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T16:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6016,6 +6016,32 @@ exactly one bank.
   *the violation is disclosed rather than quietly re-run, which is the
   third time this session a pipe has been put on that output and the
   first in which the filtered run happened to hide nothing.*
+
+  ***AND THE STAGED DIFF WAS PUT THROUGH A PIPE TWICE IN THE SAME
+  TURN.*** The standing procedure bans a filter on `git diff --cached`
+  for the reason it bans one on bank.py's output. *Two inspections of
+  the delta between note edits went through `grep -n`, and several
+  others through a path filter.* **The whole diff was read unfiltered
+  and with no path filter immediately before each of the two commits**,
+  so no figure in `f2212b1` or `fd89b96` came through a filtered read —
+  *but the filtered reads happened, and the rule is about what was run,
+  not about what the run happened to cost.* **Two outputs, two rules,
+  one turn**, recorded together rather than each excused by the other.
+
+  ***THE 16:41Z CHECK-IN'S FIVE CHECKS ALL PASSED, WITH NOTHING
+  CHANGED.*** `checkpoint_audit.py` reads 1436 rows, 1267 decided,
+  contiguous 0..1265, highest 1267, holes `[1266]`, 0 SAT, all
+  invariants holding; `pgrep -x iota_sym` returns the single pid
+  **32389**; the waiter armed at 16:43:08Z is still running; the tree
+  is clean and local HEAD equals
+  `origin/claude/sunflower-deg13-p3-bhbe9w`. **`cnf_mtime_check.py`
+  puts four cubes in flight** — idx **1266** at 2039 s, idx 1268 at
+  918 s, idx 1269 at 900 s and idx 1270 at 336 s, with
+  `max |now-mtime − ps ELAPSED| = 1 s` over the sample. *idx 1266 is
+  the span's remaining hole and had been running about thirty-four
+  minutes at that sample;* **how long it takes is not predicted and no
+  cost is estimated from its elapsed time** — a cube that has run
+  2039 s has run 2039 s and nothing more is known.
 
   **Close condition, restated at one hole:** filling **1266** closes it
   **iff the committing tree leaves no undecided index below its highest
