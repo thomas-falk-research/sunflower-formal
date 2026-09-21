@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T06:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T06:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5223,7 +5223,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1349 -> 1350 rows)
+## State as of the last refresh (1350 -> 1351 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5234,7 +5234,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1350 rows; 1181 labels decided; 1181 UNSAT; 0 SAT; 0 labels
+- **1351 rows; 1182 labels decided; 1182 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5246,7 +5246,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1181 decided plus 169 superseded
+  A row count is not a decision count: 1182 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5265,7 +5265,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1179, highest decided 1182, holes [1180, 1181].**
+- **Frontier contiguous 0..1180, highest decided 1182, holes [1181].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-EIGHTH.** idx 1182 landed at
   2538.7 s while **1180 and 1181** were both still running — an opening
@@ -5285,6 +5285,13 @@ exactly one bank.
   undecided but above it, the failure mode is a row at **1184 or
   above** riding in the same bank while 1183 is still out. Neither
   branch is predicted and when it lands is not claimed.*
+
+  ***idx 1180 HAS SINCE LANDED AT 3304.6 s, SO IT IS ONE HOLE.*** The
+  block is at **6 of 11** and the hole set is `[1181]`. *The condition
+  above carries over unchanged in form — filling 1181 closes the span
+  unless a row at 1184 or above rides in while 1183 is out — which is
+  the point of stating it as a rule rather than as a list of indices:
+  the list shrank and the rule did not have to be rewritten.*
 
   **THE FORTY-SEVENTH SPAN IS CLOSED.** It was filled by **idx 1173 at
   3673.8 s**, banked at `a4534da`. **Its figures, read from `--spans
@@ -7460,7 +7467,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1181 of 1949 = 60.5952%**; **768 undecided**. **50% IS CROSSED**, at
+- **1182 of 1949 = 60.6465%**; **767 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8174,7 +8181,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
-  **5 decided**, undecided 6 spanning 1180..1186
+  **6 decided**, undecided [1181, 1183, 1184, 1185, 1186]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
