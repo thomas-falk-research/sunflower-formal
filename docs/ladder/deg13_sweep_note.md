@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T04:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T04:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7301,6 +7301,44 @@ exactly one bank.
   not true now**: the number shrinks by one with every single-row bank,
   and it is three today. A constraint stated once and carried is the
   `#27` shape — re-derived here instead.*
+
+  ***THE TRAP IS CAUGHT, AND TWO THINGS ABOUT THE STATE IT LEAVES ARE
+  WORTH SAYING PLAINLY.***
+
+  **First, the counter 1169 and the cube index 1169 are different things
+  that happen to share a number right now.** The counter is at 1169
+  because **1169 indices are decided**; **idx 1169 itself is still
+  running** — 2736 s elapsed at the **04:42:05Z** sample. *They coincide
+  only because the frontier sits close to the counter in this stretch,
+  and the coincidence will end at the next decision. Written down
+  because every other trap in this file was discussed when the two
+  numbers were far apart, and a reader skimming "1169" could take the
+  cube for the counter.*
+
+  **Second, the next single decision crosses 60%** — counter **1170 =
+  60.0308%**, the first value at or above. *A draft of this clause
+  quoted the next trap from memory; computed instead:* **61% needs
+  `ceil(0.61 × 1949) = 1189` = 61.0056%, trap 1188 = 60.9543%**,
+  shortfall `89/1949 = 0.045664 pp`, **tightness rank 89 of 97** —
+  loose, and the **59th of the 97**. That is **18 decisions** past the
+  60% crossing at 1170, and **no threshold or trap lies between them**.
+  *So the trap-arithmetic-before-every-bank discipline can stand down
+  after 1170 and resume as 1188 approaches. Nothing is predicted about
+  when any of it lands.*
+
+  ***AND THE WAITER WAS LEFT UN-ARMED FOR ABOUT TWENTY-SEVEN MINUTES,
+  WHICH COST NOTHING AND IS RECORDED ANYWAY.*** It fired at **04:14:45Z**
+  and was not re-armed until **04:41:57Z**, because the turn that should
+  have re-armed it went to committing the trap tree instead. *The
+  priority was right — the trap is unrecoverable once stepped over and
+  the waiter is not — but the re-arm should have followed the push in
+  the same turn.* **No rows were lost, and the reason is structural:
+  the waiter is a notification mechanism, not a data path.** The driver
+  appends to the checkpoint whether or not anything is watching, and the
+  count was still **1338** when the gap was noticed, so nothing had
+  landed in it. *The cost of a missing waiter is banking latency, never
+  data — but latency is exactly what loses a trap value, so it is not a
+  free lapse.*
 
   ***AND THE SAME ARRANGEMENT BOUNDS THE NEXT SPAN OPENING, AS IT DID AT
   THE FORTY-FOURTH.*** Four consecutive in flight from frontier + 1
