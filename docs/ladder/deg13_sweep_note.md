@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T01:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T01:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -63,6 +63,7 @@ and `pgrep` outranks both.
 | `cnf_mtime_check.py` | validates the CNF-mtime method and prints in-flight cube→pid pairings **with elapsed seconds**. This is what tells you whether a forward-test target is still unobserved. |
 | `forward_test.py` | pinned to `REV_AS_RUN = 9528aa9`. `IDX` is keyed on the **label string**, `SEQ` is the list, `cube_list` is the function. |
 | `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** It also appends a cpu/elapsed sample to `cpu_ratio_samples.tsv` on every run. |
+| `span_audit.py` | checks **every span figure written in this note** against `--spans all`: the spans table's duration, both ranks, both denominators and the tie count; the monotonicity table's sha, chain, comparison count and verdict. It **prints how many figures it checked** and **asserts contiguity** of both tables' ordinals, so a pattern that misses a row fails instead of passing quietly. Durations are parsed from `H:MM:SS`, never from the four-decimal hours. Takes an optional note path so it can be run against a mutated copy — *proved to fail on a wrong rank, a flipped verdict and a deleted row.* |
 | `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by **both** `bank.py` (each bank) and `cnf_mtime_check.py` (each run), so there is one source rather than two. Read the LAST row per cube before the teardown instant; never a later one, and never an average. **COMMIT IT** — see below. |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
 
@@ -1802,16 +1803,40 @@ the hazard.** That is the fourteenth entry's complaint in its purest
 form: a warning is a recall-based control, and recall failed here one
 close after the warning was written by the same hand.
 
-**The durable fix is not another warning, and it has NOT been made.**
-The recomputation pass is a scratchpad script rewritten from scratch at
-every close, so each close re-invents its patterns and re-inherits this
-blind spot; what would actually fix it is a **committed tool** that
-walks every span figure in this file — table rows, block figures and
-this enumeration alike — against `--spans all`, the way `bank.py` owns
-the state lines. *Named here as outstanding rather than quietly worked
-around, on the same terms as the monotonicity merge.* Until it exists,
-**the staged diff is the only control that has ever caught this**, and
-it has now caught it twice.
+**The durable fix is not another warning, and it has NOW BEEN MADE:
+`docs/ladder/span_audit.py`.** It walks `--spans all` and checks every
+span figure written in this file — the spans table's durations, both
+ranks, both denominators and the tie count, and the monotonicity
+table's sha, chain, comparison count and verdict — reporting **how many
+figures it checked** so that "found nothing" can never be confused with
+"checked nothing".
+
+**THREE DESIGN DECISIONS COME STRAIGHT OUT OF THE FAILURES ABOVE.**
+*(1)* It **asserts contiguity**, not just a floor: the monotonicity
+ordinals must be exactly `1..max` and the spans-table rows must run
+unbroken to the newest close, so a pattern that silently misses a row
+leaves a gap and the run **fails** instead of reporting a smaller
+success. *(2)* Durations are parsed from the **`H:MM:SS` string, never
+from the parenthesised hours** — those print to four decimals, the
+smallest step is 0.36 s, and that is exactly the rounding that once put
+74 spans over the one-second line against the tool's 53. *(3)* It takes
+an **optional path**, so it can be run against a deliberately mutated
+copy of this note; *a checker that has never failed is not known to
+work.*
+
+***IT CAUGHT ITSELF ON ITS FIRST RUN.*** The verdict pattern did not
+allow the bold in row 22's `**True**`, so the first run parsed **42**
+rows of 43 and would have reported a clean pass over a table it had
+not fully read — the very failure this paragraph exists to describe,
+reproduced by the tool written to prevent it. The contiguity check was
+added because of it, and **it is what turns that silence into an
+error**. *Proved on three mutated copies: a wrong duration rank, a
+flipped monotone verdict and a deleted row each exit non-zero with the
+fault named.*
+
+*The staged diff remains the control that caught the original two
+instances, and stays in the procedure. This tool does not replace it;
+it removes the one job the diff was doing by accident.*
 
 ***MY OWN PARSE OF THAT DISTRIBUTION DISAGREED WITH THE TOOL, AND THE
 TOOL WAS RIGHT.*** A script written to re-derive these figures reported
@@ -4672,7 +4697,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1311 -> 1312 rows)
+## State as of the last refresh (1312 -> 1313 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4683,7 +4708,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1312 rows; 1143 labels decided; 1143 UNSAT; 0 SAT; 0 labels
+- **1313 rows; 1144 labels decided; 1144 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4691,7 +4716,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1143 decided plus 169 superseded
+  A row count is not a decision count: 1144 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4710,7 +4735,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1138, highest decided 1143, holes [1139].**
+- **Frontier contiguous 0..1138, highest decided 1144, holes [1139].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-FOURTH.** idx 1141 landed at
   580.9 s while **1138, 1139 and 1140** were all still running — an
@@ -6291,7 +6316,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1143 of 1949 = 58.6455%**; **806 undecided**. **50% IS CROSSED**, at
+- **1144 of 1949 = 58.6968%**; **805 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6781,7 +6806,7 @@ exactly one bank.
 - `[13, 13, 10, 7]` idx 1131..1141: **11 members**,
   **10 decided**, undecided [1139]
 - `[13, 13, 10, 6]` idx 1142..1148: **7 members**,
-  **2 decided**, undecided [1144, 1145, 1146, 1147, 1148]
+  **3 decided**, undecided [1145, 1146, 1147, 1148]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
