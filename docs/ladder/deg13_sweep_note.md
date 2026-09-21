@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T02:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T02:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4764,7 +4764,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1313 -> 1315 rows)
+## State as of the last refresh (1315 -> 1318 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4775,7 +4775,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1315 rows; 1146 labels decided; 1146 UNSAT; 0 SAT; 0 labels
+- **1318 rows; 1149 labels decided; 1149 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4783,7 +4783,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1146 decided plus 169 superseded
+  A row count is not a decision count: 1149 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4802,8 +4802,61 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1145, highest decided 1145, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1146, highest decided 1149, holes [1147].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE FORTY-FIFTH.** idx 1149 landed at
+  635.1 s while **1147** was still running — an opening at **one hole**.
+  The frontier and hole set are on the bullet line above, which bank.py
+  owns; *this prose deliberately does not repeat them.* **No duration,
+  no rank, no monotonicity and no commit count until it closes.**
+
+  The ordinal was derived before the outcome, as at the last nine:
+  `--spans all` re-run after the hole appeared still ends at
+  **16f864c**, **109 closed spans**, so this is walk position **110**
+  and, at the offset of 65, ordinal **forty-five**.
+
+  *One is the commonest opening width on record: over the **109** closed
+  chains the openings run **37 at one, 33 at two, 36 at three and 3 at
+  four** — recomputed at the new N, not carried from the last close.*
+
+  ***AND THE FILE BRIEFLY HELD THREE HOLES WHERE THE COMMIT SEQUENCE
+  HOLDS ONE — THE SAME BANK THAT CAUGHT THE TRAP COLLAPSED THE
+  OPENING.*** In landing order the three rows were **1149 at 02:27:24Z,
+  1146 at 02:29:09Z, 1148 at 02:30:28Z**. At the instant 1149 landed the
+  working file had holes **[1146, 1147, 1148]**; by the time any commit
+  existed, two were filled. **A span is a property of the commit
+  sequence, not of the file**, so the opening is one and the three never
+  happened as far as `--spans all` is concerned. *Recorded because it is
+  the same multi-row mechanism that loses trap values, seen here doing
+  something harmless — and because a reader comparing the waiter log
+  against the span chain would otherwise find them irreconcilable.*
+
+  **Starts, reconstructed from earliest samples: 01:45:31Z (1147) and
+  02:16:40Z (1149)** — a **1869 s** stagger, and idx 1149 started
+  **last** of the four in flight and still finished first. *Seven
+  openings now have measured starts: 0 s, 59 s, 522 s, 804 s, 1603 s,
+  1686 s and **1869 s — the widest of the seven**. A population, not a
+  series.*
+
+  ***AND THE RECONSTRUCTION WAS CROSS-CHECKED AGAINST SOMETHING THAT
+  DID NOT COME FROM THE SAMPLER, FOR THE SECOND TIME.*** idx 1149's
+  reconstructed start of 02:16:40Z plus its **635.1 s** cost puts its
+  finish at **02:27:15Z**; the waiter, which reads only the row count,
+  observed the row land at **02:27:24Z** on a 20 s poll. **8 s apart —
+  inside the polling granularity.** *The reconstruction is sample time
+  minus elapsed seconds and inherits the sampler's granularity, so a
+  check against the sampler proves nothing; this is the second time it
+  has been checked against something independent, and it held both
+  times.*
+
+  ***AND idx 1147 IS THE LAST UNDECIDED MEMBER OF `[13,13,10,6]`, SO
+  THE CONDITIONAL FROM THE LAST CLOSE APPLIES AGAIN.*** The block stands
+  at **6 of 7**. Whichever bank lands idx 1147 closes that block at 7 of
+  7 **and** the forty-fifth span in the same row. *That is arithmetic
+  already on the page — 1147 is the block's only undecided index and the
+  span's only hole — not a forecast about when it lands, which is not
+  claimed.*
+
   **THE FORTY-FOURTH SPAN IS CLOSED.** It opened at **three holes at
   once** when idx 1141 landed at 580.9 s while **1138, 1139 and 1140**
   were all still running, and was filled by **idx 1139 at 6441.8 s**,
@@ -6444,7 +6497,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1146 of 1949 = 58.7994%**; **803 undecided**. **50% IS CROSSED**, at
+- **1149 of 1949 = 58.9533%**; **800 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6562,6 +6615,44 @@ exactly one bank.
   there, which is bookkeeping and not a prediction. **It was reached**;
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
+
+  ***59% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND THIS TIME
+  THE CHECK WAS RUN BEFORE THE BANK RATHER THAN AFTER.*** The decided
+  count reached **1149 = 58.9533%**, which is the 59% trap: it rounds to
+  59.0 while sitting **below** 59, and `ceil(0.59 × 1949) = 1150 =
+  59.0046%` is the first value at or above. **So 59% is NOT crossed.**
+
+  ***AND THE CATCH WAS NOT LUCK — IT WAS ONE ROW FROM BEING LOST.***
+  Three rows were waiting unbanked when the trap arithmetic was run, and
+  they take the counter **1146 → 1149**, landing on the trap exactly. A
+  **fourth** row landing before the bank would have taken it **1146 →
+  1150** and no tree would ever have held 1149 — which is precisely how
+  **1088** and **1128** were lost, twice within thirty rows. *The check
+  was run first and the bank was made immediately because of what it
+  said. The criterion is still a committed tree, not an intention: the
+  tree at the bank below holds 1149, verified from the staged index in
+  the same run that wrote this.* **The tally goes from 49 caught and 7
+  missed of 56 to 50 caught and 7 missed of 57.**
+
+  **THE FORWARD-WRITTEN FIGURES ALL HELD.** The 58% block below says
+  *"59% needs `ceil(0.59 × 1949) = 1150` = 59.0046%, trap at 1149 =
+  58.9533%, shortfall `91/1949 = 0.046691 pp`, tightness rank 91 of
+  97 — loose, though not among the five loosest ... and the 57th of the
+  97. That is 18 rows past the 58% crossing at 1131"*. Every figure is
+  confirmed, and **1149 − 1131 = 18**. It is also the **18th of 18**
+  rounds-up-but-below figures in the `k = 41..59` stretch. *That was
+  bookkeeping written ahead of the counter, and the one thing it
+  explicitly refused to predict — whether a tree would sit on 1149 — is
+  the one thing that had to be arranged rather than merely observed.*
+
+  Next: **60% needs `ceil(0.60 × 1949) = 1170` = 60.0308%, trap at
+  1169 = 59.9795%**, shortfall `40/1949 = 0.020523 pp`, **tightness
+  rank 40 of 97** — an ordinary one — and the **58th of the 97**. That
+  is **19 rows** past the 59% crossing at 1150, computed. It is the
+  **19th** rounds-up-but-below figure in the `k = 41..60` stretch.
+  Nothing is predicted about whether a committed tree will sit on 1169;
+  what *is* now on the page is that **a three-or-more-row bank spanning
+  1169 would lose it**, which is checkable in advance and was.
 
   ***58% IS CROSSED, THE TRAP WAS CAUGHT, AND I DID NOT NOTICE IT AT
   THE TIME — WHICH IS PRECISELY WHY THE CRITERION IS A TREE.*** idx 1131
@@ -6932,7 +7023,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 10, 6]` idx 1142..1148: **7 members**,
-  **4 decided**, undecided [1146, 1147, 1148]
+  **6 decided**, undecided [1147]
+- `[13, 13, 10, 5]` idx 1149..1153: **5 members**,
+  **1 decided**, undecided [1150, 1151, 1152, 1153]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
