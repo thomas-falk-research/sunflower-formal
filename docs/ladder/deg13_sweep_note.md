@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T08:02Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T08:03Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5586,16 +5586,40 @@ exactly one bank.
   It resumed at the previous bank, one decision out.*
 
   **THE TALLY GOES FROM 51 CAUGHT AND 7 MISSED OF 58 TO 52 CAUGHT AND 7
-  MISSED OF 59.** *Claimed here from the STAGED blob, which is what this
-  commit's tree will be; the standing criterion is `decided()` walked
-  over the committed blobs, and that walk is run after the commit
-  exists — a commit cannot verify itself.*
+  MISSED OF 59.** *Claimed from the STAGED blob at the banking commit,
+  because a commit cannot verify itself; the standing criterion is
+  `decided()` walked over the COMMITTED blobs.*
+
+  ***THAT WALK HAS NOW BEEN RUN, AND IT CONFIRMS THE CATCH.***
+  `decided()` over the **eight most recent checkpoint commits** gives
+  **1181, 1182, 1183, 1184, 1185, 1186, 1187, 1188** — *exactly one tree
+  gives 1188, and it is `6360854`*. **And the eight are consecutive**:
+  every counter value from 1181 to 1188 is held by its own tree, with
+  none stepped over. *That is the condition that makes a trap catchable
+  at all — the 7 misses on the tally are all values the counter jumped,
+  and a one-row bank cannot jump one.*
 
   ***AND THE HOLE SET IS DOWN TO ONE.*** idx 1183 was one of the two,
   so the frontier is now contiguous **0..1183** and the span stands at
   `[1184]`. **Close condition, carried over unchanged in form for the
   fifth bank running:** filling **1184** closes it unless a row at
   **1190 or above** rides in while **1189** is still out.
+
+  ***AND THE SHAPE HAS CHANGED: ONE STUCK CUBE AGAINST THREE LEADERS.***
+  The 08:03:31Z sample shows the four solvers on **idx 1184, 1189, 1190
+  and 1191** — the first time in this span that **more than one** index
+  above the frontier is in flight while the window is open. *Every
+  earlier bank had two stuck cubes and one or two leaders; this one has
+  one and three.* **That widens the failure mode without changing its
+  form**: it fires if **1190 or 1191** finishes while 1189 is out, or if
+  **1191** finishes while 1190 is out, instead of the single pairing
+  there was before. *Counted over which of the three
+  finishes first: **1189 first opens nothing** (holes stay `[1184]`),
+  **1190 first opens one** (`[1184, 1189]`), **1191 first opens two**
+  (`[1184, 1189, 1190]`). So two of the three cases add a hole and one
+  does not — which is a count over cases, **not a probability**, since
+  nothing here says the three are equally likely. Which finishes first
+  is not predicted.*
 
   **PREVIOUSLY: THE FORTY-EIGHTH SPAN IS CLOSED, AND ITS FIGURES ARE IN
   `76c364c`** — in the spans section, not repeated here. It opened at **two
