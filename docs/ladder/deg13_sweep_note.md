@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-20T23:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T00:25Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4547,7 +4547,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1302 -> 1303 rows)
+## State as of the last refresh (1303 -> 1304 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4558,7 +4558,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1303 rows; 1134 labels decided; 1134 UNSAT; 0 SAT; 0 labels
+- **1304 rows; 1135 labels decided; 1135 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4566,7 +4566,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1134 decided plus 169 superseded
+  A row count is not a decision count: 1135 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4585,15 +4585,50 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1127, highest decided 1134, holes [1128].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTY-SECOND — THE ORDINAL RELEASED
-  TWO BANKS AGO, NOW GENUINELY CLAIMED.** idx 1127 landed at 2969.2 s
-  while **1124, 1125 and 1126** were all still running — an opening at
-  **three holes at once**. The frontier and hole set are on the bullet
-  line above, which bank.py owns; *this prose deliberately does not
-  repeat them.* **No duration, no rank, no monotonicity and no commit
-  count until it closes.**
+- **Frontier contiguous 0..1134, highest decided 1134, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FORTY-SECOND SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It opened at **three holes at once** when idx 1127 landed at
+  2969.2 s while 1124, 1125 and 1126 were all still running, turned its
+  hole set over completely mid-span, and was filled by **idx 1128 at
+  6525.7 s**, the row banked here. The frontier and hole set are on the
+  bullet line above, which bank.py owns; *this prose deliberately does
+  not repeat them.*
+
+  **Its duration, ranks, hole-count chain and monotonicity are absent
+  deliberately: they do not exist yet.** `--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
+  before the tool can see the span. They arrive in the next commit, with
+  **every rank in the spans table recomputed together at the new N**,
+  the twenty-seven carried rows first reproduced at the old N in the
+  same script — *and this time the merged monotonicity table takes a
+  row 42 in the same run, which is the merge paying for itself: one
+  table to extend instead of two plus a warning.*
+
+  ***THE SAME ROW CLOSED BLOCK `[13,13,10,8]` AT 15 OF 15.*** **The
+  block, 15 members:** total **49051.0 s = 13.6253 core-hours**, median
+  **3429.0 s**, mean **3270.1 s**, cheapest **271.2 s**, dearest
+  **6525.7 s** — a spread of **24.0623×**, and the dearest is the
+  closing row itself. **The running maximum was raised 9 times across
+  the 15**, against **H₁₅ = 3.3182** under a uniformly random landing
+  order, with **P(at least 9) = 0.00031248** from the Stirling numbers
+  of the first kind — *the same scheduler effect the not-hits list
+  quantifies, for the third block running, and not a fact about these
+  cubes.*
+
+  ***TWO THINGS THAT LOOKED NOTABLE AND ARE NOT, BOTH MEASURED BEFORE
+  BEING WRITTEN.*** (1) This is the **third consecutive block to close
+  on its dearest member** — `[13,13,10,10]`, `[13,13,10,9]` and now
+  `[13,13,10,8]` — which reads as striking until the base rate is
+  computed: across the **40** four-coordinate prefixes holding two or
+  more decided rows, **the last landing is the maximum in 19 of them,
+  47.5%**. At that rate three in a row is unremarkable, and the rate
+  itself *is* the scheduler effect rather than evidence for it. (2) The
+  **24.0623×** spread is the widest of the four `[13,13,10,*]` blocks so
+  far, but only **rank 10 of the 27** prefixes with ten or more members;
+  the widest on record is `[13,13,12,12]` at **237.1774×**. *Neither
+  sentence survived its own check, which is why both are stated with the
+  check attached.*
 
   The ordinal was derived before the outcome, as at the last six:
   `--spans all` re-run after the holes appeared still ends at
@@ -6045,7 +6080,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1134 of 1949 = 58.1837%**; **815 undecided**. **50% IS CROSSED**, at
+- **1135 of 1949 = 58.2350%**; **814 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6532,8 +6567,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 10, 8]` idx 1116..1130: **15 members**,
-  **14 decided**, undecided [1128]
 - `[13, 13, 10, 7]` idx 1131..1141: **11 members**,
   **4 decided**, undecided 7 spanning 1135..1141
 
