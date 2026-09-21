@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T08:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T08:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5045,6 +5045,21 @@ alongside it.**
   prose. It is now the clearest candidate for what that tool should
   learn to read next, and that is named as an outstanding gap rather
   than presented as fixed.*
+- ***A STATISTIC COMPUTED OVER A POPULATION THAT WAS NOT YET COMPLETE,
+  AND LABELLED AS IF IT WERE*** (`f4bebe4`) — first instance, found at
+  the forty-ninth close. The `[13,13,10,*]` per-block medians were
+  published as *"per-block medians"* with three of the ten computed over
+  4-of-5, 2-of-3 and 1-of-2 members. **The rows that completed all three
+  blocks were in the same commit's own diff.** Wrong through **34
+  commits**. *This is NOT the standing-claim-never-re-checked pattern:
+  that one is a correct figure whose population later grew, and this one
+  was never correct. The remedy is different too — a staleness check
+  would not have flagged it, because nothing about it changed. What
+  would have caught it is refusing to compute a block statistic until
+  the block census says the block is closed, which is a rule the census
+  already has the information to enforce and does not.* **The claim
+  built on the figures — decreasing at 8 of the 9 steps — survives the
+  correction unchanged, and that is luck rather than method.**
 - A zero quoted from one sample as exactness (07b8a61, 948005d).
 - A published figure compressed until it meant something else (8b557b5,
   cd03f27, 45aacf6).
@@ -5358,7 +5373,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1357 -> 1358 rows)
+## State as of the last refresh (1358 -> 1359 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5369,7 +5384,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1358 rows; 1189 labels decided; 1189 UNSAT; 0 SAT; 0 labels
+- **1359 rows; 1190 labels decided; 1190 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5381,7 +5396,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1189 decided plus 169 superseded
+  A row count is not a decision count: 1190 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5400,9 +5415,30 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1183, highest decided 1189, holes [1184].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTY-NINTH.** idx 1186 landed at
+- **Frontier contiguous 0..1189, highest decided 1189, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FORTY-NINTH SPAN IS CLOSED. ITS FIGURES ARE NOT IN THIS COMMIT
+  — THEY ARRIVE IN THE NEXT ONE, AND THIS SENTENCE IS DUE FOR RETIREMENT
+  THERE.** It was filled by **idx 1184 at 6218.2 s** — **the dearest of
+  the seven rows banked while it was open**, ahead of idx 1183's
+  4921.4 s. *`--spans all` walks `git rev-list HEAD --
+  CHECKPOINT`, so the closing commit must exist before the tool can see
+  the run end.* **The wording above is correct for exactly one commit;
+  it was honoured on schedule at the forty-eighth and the reminder is
+  written into the heading again rather than left to be noticed.**
+
+  **AND THE BLOCK-COMPLETION PREDICTION HELD EXACTLY.** The span's
+  opening paragraph said *"the three rows that close this span are also
+  the three that finish the block"*, with the separating failure mode
+  named. **`[13, 13, 9, 8]` is now complete at 11 of 11 and the span is
+  closed, on the same row.** *The hole set and the block's undecided set
+  were identical at every bank while the span was open, and **the
+  separating failure mode never fired** — no row from above ever rode in
+  leaving a gap beneath it. The hole chain itself is a span figure and
+  is therefore not quoted here; it comes from `--spans all` in the next
+  commit with the rest.*
+
+  **PREVIOUSLY, WHILE IT WAS OPEN.** idx 1186 landed at
   **632.7 s** while **1183, 1184 and 1185** were all still running — an
   opening at **three holes**. The frontier and hole set are on the
   bullet line above, which bank.py owns; *this prose deliberately does
@@ -5466,15 +5502,31 @@ exactly one bank.
   blobs. *So this state is the second most common of the four and is not
   written up as a novelty.*
 
-  **THE COST-TAIL TEST STILL CANNOT BE RUN.** `[13,13,9,*]`'s 15-block
-  is complete, but the 11-block is **9 of 11** — *it read 8 of 11 when
-  this paragraph was written and idx 1185 landed one bank later; the
-  figure is corrected here rather than carried, which is the whole point
-  of the two stale counters caught at the forty-eighth close* — and no
-  median over 9 of 11 is that block's median. *The test named when this
-  group opened — whether per-block median cost falls down this tail as
-  it did down `[13,13,10,*]`'s — waits on **1183 and 1184**, the same
-  rows the span waits on. No partial figure is quoted for it here.*
+  **THE COST-TAIL TEST COULD NOT BE RUN WHILE THIS SPAN WAS OPEN**, and
+  the paragraph said so at 8 of 11 and again, corrected, at 9 of 11.
+  ***IT CAN BE RUN NOW, FOR EXACTLY ONE STEP, AND THAT STEP GOES THE
+  OTHER WAY.***
+
+  `[13,13,9,*]`'s sizes are **15, 11, 7, 5, 3, 2, 1, 1** — precisely the
+  suffix of `[13,13,10,*]`'s **28, 21, 15, 11, 7, 5, 3, 2, 1, 1** from
+  15 onward, which is why the note called it *"the same 15 → 1
+  descent"*. **Aligned by block size**, the two complete blocks give:
+
+  | size | `[13,13,10,*]` median | `[13,13,9,*]` median |
+  |---|---|---|
+  | 15 | 3429.0 s | **1974.0 s** |
+  | 11 | 2646.0 s | **2538.7 s** |
+
+  **The reference falls across that step; this tail rises.** *One step is
+  one comparison, which this note has called a coin flip since span 3,
+  and it is entered as exactly that — not as a refutation. **Six of the
+  eight blocks are still incomplete**, and the reference tail itself
+  rose at its own first step before falling eight times running.* **No
+  partial-block median is quoted here**, which is the whole point of the
+  correction recorded further down: the previous tail's figures were
+  published over incomplete blocks and stood wrong through **34
+  commits**, `f4bebe4` to `5879255`, counted by grepping each one's
+  blob.
 
   ***THE HOLE COUNT IS AT THE FOUR-THREAD CEILING, AND THE CEILING IS
   STRUCTURAL.*** Read from `cnf_mtime_check.py` at 07:41:27Z, the four
@@ -6113,11 +6165,46 @@ exactly one bank.
   `[13,13,10,k]` tail the blocks shrink — **28, 21, 15, 11, 7, 5, 3, 2,
   1, 1 members** for k = 10 down to 1, read off `SEQ` — and the cubes
   get **dramatically cheaper**. Per-block medians, k descending:
-  **2486.6, 3833.0, 3429.0, 2646.0, 1699.4, 1243.9, 621.8, 235.0, 102.0,
+  **2486.6, 3833.0, 3429.0, 2646.0, 1699.4, 1245.1, 826.7, 332.2, 102.0,
   23.8 s** — **decreasing at 8 of the 9 steps**, the sole exception
-  being 10 → 9. *So a cube launched later is systematically cheaper,
-  finishes first, and opens a hole behind the expensive one still
-  running. That is the whole mechanism.*
+  being 10 → 9.
+
+  ***THREE OF THOSE TEN WERE WRONG UNTIL NOW, AND THE COMMIT THAT WROTE
+  THEM IS THE COMMIT THAT MADE THEM WRONG.*** The line as published read
+  *"… 1699.4, **1243.9, 621.8, 235.0**, 102.0, 23.8"*. Each of those
+  three was a median over an **incomplete block**, presented as a
+  per-block median:
+
+  - `[13,13,10,5]` has **5** members; the figure 1243.9 is the median of
+    **4** of them — `(1242.8 + 1245.1) / 2` — with idx 1153 undecided.
+    Complete, it is **1245.1**.
+  - `[13,13,10,4]` has **3**; 621.8 is the median of **2** —
+    `(416.9 + 826.7) / 2` — with idx 1156 undecided. Complete: **826.7**.
+  - `[13,13,10,3]` has **2**; 235.0 is the median of **1**, with idx
+    1158 undecided. Complete: **332.2**.
+
+  ***AND THE THREE MISSING ROWS WERE IN THAT VERY COMMIT'S OWN DIFF.***
+  `f4bebe4` is the commit that introduced the medians line, and it is
+  the same commit that first decided **1153, 1156 and 1158** — a
+  five-row bank. *So this is not a figure that went stale afterwards; it
+  is a figure computed from a state the commit itself superseded, and
+  the completing rows were sitting in the staged diff while the
+  paragraph was being written.* **Reading the staged diff would have
+  shown those rows and would not have shown that the medians were
+  computed without them** — which is the limit of that check, stated
+  here rather than pretended away.
+
+  ***THE CONCLUSION IS UNCHANGED, AND THAT IS LUCK RATHER THAN METHOD.***
+  Under the corrected figures the series still falls at **8 of the 9
+  steps** with the sole exception 10 → 9 — verified by differencing the
+  ten values, not by eye. *Had any of the three corrections crossed a
+  neighbour, the sentence built on them would have been wrong for the
+  whole time it stood. The figures were wrong and the claim survived;
+  nothing about the procedure earned that.*
+
+  *So a cube launched later is systematically cheaper, finishes first,
+  and opens a hole behind the expensive one still running. That is the
+  whole mechanism.*
 
   **The strength of that, measured rather than asserted, and it is not
   uniform.** Spearman rank correlation between index and decided cost:
@@ -7917,7 +8004,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1189 of 1949 = 61.0056%**; **760 undecided**. **50% IS CROSSED**, at
+- **1190 of 1949 = 61.0570%**; **759 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8630,8 +8717,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
-  **10 decided**, undecided [1184]
 - `[13, 13, 9, 7]` idx 1187..1193: **7 members**,
   **3 decided**, undecided [1190, 1191, 1192, 1193]
 
