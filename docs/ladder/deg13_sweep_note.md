@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T03:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T03:22Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4499,6 +4499,39 @@ alongside it.**
   about holes is not a claim about spans, and the word "and" joining a
   block close to a span close hid the difference.*
 
+  **#30 — A CONSECUTIVE RUN COUNTED OVER THE SUBSET IN VIEW INSTEAD OF
+  THE ORDERED POPULATION.** Three closes running, this file reported the
+  streak of blocks closing on their dearest member as **"fourth"**,
+  **"fifth"** and **"sixth" consecutive**. *All three were short by one.*
+  Walked over **every** closed block in closing order, the run is
+  `[13,13,11,3]`, `[13,13,10,10]`, `[13,13,10,9]`, `[13,13,10,8]`,
+  `[13,13,10,7]`, `[13,13,10,6]`, `[13,13,10,4]` — **seven**.
+  `[13,13,11,3]` closed on its dearest immediately before the
+  `[13,13,10,*]` series began and **was never counted**, because each
+  claim was assembled by listing the family that happened to be on
+  screen rather than by walking the sequence.
+
+  **The base rate beside it was computed correctly the whole time**,
+  over all prefixes, by script. *That is what makes this its own
+  defect rather than an instance of `#27`: the denominator was
+  script-computed and the numerator was eyeballed, in the same
+  sentence.* **A run is an ordered-population statistic exactly like a
+  rank**, and the note's own standing rule for ranks — *recompute
+  against the whole population, in one script* — applies to it verbatim
+  and was not applied.
+
+  **The probabilities quoted alongside the wrong lengths (6.9%, 3.5%,
+  2.07%) were correspondingly too large.** They are **superseded, not
+  repaired**: the run ended at seven when `[13,13,10,5]` closed on idx
+  1153 at 1878.3 s against a block maximum of 2547.9 s. *Against a base
+  rate near one half a run of seven is unremarkable, which is what every
+  one of those paragraphs said in its caveats — so the caveats were
+  doing the work and the headline number never was.*
+
+  **Remedy: any "Nth consecutive" claim is computed by walking the full
+  ordered population in the same script that computes its base rate**,
+  and never by enumerating the members currently in view.
+
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -4836,7 +4869,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1324 -> 1325 rows)
+## State as of the last refresh (1325 -> 1330 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4847,7 +4880,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1325 rows; 1156 labels decided; 1156 UNSAT; 0 SAT; 0 labels
+- **1330 rows; 1161 labels decided; 1161 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4855,7 +4888,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1156 decided plus 169 superseded
+  A row count is not a decision count: 1161 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4874,13 +4907,24 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1152, highest decided 1157, holes [1153, 1156].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTY-FIFTH.** idx 1149 landed at
-  635.1 s while **1147** was still running — an opening at **one hole**.
-  The frontier and hole set are on the bullet line above, which bank.py
-  owns; *this prose deliberately does not repeat them.* **No duration,
-  no rank, no monotonicity and no commit count until it closes.**
+- **Frontier contiguous 0..1160, highest decided 1160, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FORTY-FIFTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It opened at **one hole** when idx 1149 landed at 635.1 s
+  while **1147** was still running, re-opened twice more as cheap
+  high-index rows outran expensive low-index ones, and was filled by
+  **idx 1158 at 429.4 s**. The frontier and hole set are on the bullet
+  line above, which bank.py owns; *this prose deliberately does not
+  repeat them.*
+
+  **Its duration, ranks, hole-count chain and monotonicity are absent
+  deliberately: they do not exist yet.** `--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
+  before the tool can see the run end. They arrive in the next commit,
+  with **every rank in the spans table recomputed together at the new
+  N**, the thirty carried rows first reproduced at the old N in the same
+  script, and **the merged monotonicity table taking its row 45 in that
+  same run**.
 
   The ordinal was derived before the outcome, as at the last nine:
   `--spans all` re-run after the hole appeared still ends at
@@ -4997,6 +5041,124 @@ exactly one bank.
   bank**. *`[13,13,10,3]` is idx 1157..1158 and stands at 1 of 2, so
   1158 is the next index that can become a hole. When any of this lands
   is not claimed.*
+
+  ***AND IT FIRED A SECOND TIME, SO THIS IS NOT LUCK — THE SPAN KEEPS
+  RE-OPENING FOR A STRUCTURAL REASON, AND THE REASON IS COMPUTABLE.***
+  **idx 1159 landed at 102.0 s and idx 1160 at 23.8 s**, both while 1158
+  was still running, so 1158 became a hole.
+
+  *A draft said "a third time" and "three consecutive banks". **Both are
+  wrong and the walk says so.*** The `#29`-form clause has been written
+  twice and **fired twice** — at `503c050` (idx 1157 opening 1156) and
+  here (idx 1159 opening 1158). And reading new holes off the
+  **committed trees** rather than off the banks I happened to notice:
+  **four of the last eight checkpoint commits opened one** —
+  `ce1e307` (1147), `108143c` (1152 and 1153), `503c050` (1156) and this
+  bank (1158) — **and only the last two are consecutive.** *Four in
+  eight is still enough to stop calling it the scheduler and go look;
+  it just is not the number the draft claimed, and the difference was
+  found by walking `git rev-list` over the checkpoint instead of
+  recalling the sequence.*
+
+  ***AND THE HOLE COUNT NEVER REACHED THREE IN A COMMIT, WHICH A DRAFT
+  OF THIS PARAGRAPH CLAIMED IT DID.*** That draft wrote the sequence as
+  `[1153]` → `[1153, 1156]` → `[1153, 1156, 1158]`. **The committed
+  sequence is `[1153]` → `[1153, 1156]` → `[1153, 1158]`**: idx 1156
+  came in at **1252.3 s** while this bank was being prepared, so the
+  same commit that opened 1158 closed 1156. *The three-hole state was
+  real in the working file, between 1159's landing and 1156's, and was
+  never in any tree.* **Third time this session I have had to separate a
+  file state from a commit state** — after the three-hole collapse at
+  the forty-fifth's opening and after `#29` itself. *The distinction is
+  not subtle and I keep reaching for the wrong one; that it was caught
+  before the commit rather than after is the only thing that improved.*
+
+  **The cause is the sweep order, not the scheduler.** Down the
+  `[13,13,10,k]` tail the blocks shrink — **28, 21, 15, 11, 7, 5, 3, 2,
+  1, 1 members** for k = 10 down to 1, read off `SEQ` — and the cubes
+  get **dramatically cheaper**. Per-block medians, k descending:
+  **2486.6, 3833.0, 3429.0, 2646.0, 1699.4, 1243.9, 621.8, 235.0, 102.0,
+  23.8 s** — **decreasing at 8 of the 9 steps**, the sole exception
+  being 10 → 9. *So a cube launched later is systematically cheaper,
+  finishes first, and opens a hole behind the expensive one still
+  running. That is the whole mechanism.*
+
+  **The strength of that, measured rather than asserted, and it is not
+  uniform.** Spearman rank correlation between index and decided cost:
+  **−0.6265** over idx 1142..1160 (n = 16), **−0.5311** over 1131..1160
+  (n = 27), but only **−0.1944** over the whole `[13,13,10,*]` region,
+  idx 1067..1160 (n = 91). *The trend is a property of the tail. Across
+  the big blocks the within-block spread — up to 24× — swamps it
+  completely, which is why the region-wide figure is near zero and why
+  quoting only the tail number would overstate the case.*
+
+  ***THREE CAVEATS, NONE OF WHICH THE NUMBERS SURVIVE WITHOUT.*** (1)
+  The last three blocks contribute **one decided cube each**, so their
+  "medians" are single observations and the clean end of that sequence
+  is nearly an artefact of block size. (2) **n = 16** is small. (3) This
+  describes **the region the sweep is currently in**; it is not a law
+  about the sweep.
+
+  **What *is* structural, and checkable now rather than later: the block
+  sizes repeat.** The 4-prefix sizes in sweep order run **129, 104, 82,
+  65, 49, 38, 28, 21, 15, 11, 7, 5, 3, 2**, then restart at **82, 65,
+  49, …** — so every prefix group ends in a tail of tiny blocks.
+  *That much is arithmetic from `SEQ` and needs no data.* **Whether
+  costs also fall down each of those tails is an empirical claim
+  supported here by exactly one tail**, and it is written down now so
+  that the next tail either confirms it or does not. *No prediction is
+  made about the next one.*
+
+  ***AND `[13,13,10,4]` CLOSED AT 3 OF 3, ON ITS DEAREST — THE SEVENTH
+  CONSECUTIVE, AND THE LAST.*** Landing order **1154 at 416.9 s, 1155 at
+  826.7 s, 1156 at 1252.3 s** — total **2495.9 s**, spread **3.0038×**,
+  and the last landing is the maximum. *This paragraph first called it
+  "six consecutive"; **`#30` below is the entry for why that was one
+  short**, and the number here is the corrected one.* **A three-member
+  block is monotone by chance one time in six**, so it carries little
+  weight on its own.
+
+  ***AND THE RUN IS OVER — IT BROKE ON THE NEXT BLOCK, AND IT WAS NEVER
+  THE LENGTH THIS FILE KEPT CLAIMING.*** `[13,13,10,5]` closed at 5 of 5
+  with its last landing **idx 1153 at 1878.3 s** against a block maximum
+  of **2547.9 s** (idx 1152). **Not its dearest. The run ends.**
+
+  ***AND THE RUN WAS SEVEN, NOT SIX — EVERY COUNT THIS FILE GAVE FOR IT
+  WAS ONE SHORT.*** Computed over **all** closed blocks in closing
+  order, rather than over the `[13,13,10,*]` family I happened to be
+  looking at, the run is `[13,13,11,3]`, `[13,13,10,10]`, `[13,13,10,9]`,
+  `[13,13,10,8]`, `[13,13,10,7]`, `[13,13,10,6]`, `[13,13,10,4]` —
+  **seven**, ended by `[13,13,10,5]`. *The three previous claims —
+  "fourth", "fifth", "sixth" consecutive — were each short by one,
+  because each was assembled by listing the family in view instead of
+  walking the closing sequence. `[13,13,11,3]` closed on its dearest
+  immediately before `[13,13,10,10]` and was never counted.* **The
+  probabilities quoted alongside them (6.9%, 3.5%, 2.07%) were
+  correspondingly too large**, and are superseded rather than repaired,
+  since the run is finished.
+
+  **`[13,13,10,3]` then closed at 2 of 2 on its dearest**, 235.0 s then
+  429.4 s, starting a new run of **one**. *A two-member block is
+  monotone by chance half the time; it is recorded for completeness and
+  carries no weight.*
+
+  **Base rate over closed blocks, recomputed**: **23 of 44 = 52.3%**.
+  *The run broke at seven against a rate near one half — which is
+  unremarkable, and is exactly what this file said repeatedly the run
+  would turn out to be.* **The caveats were doing real work and the
+  outcome vindicated them, not the run.**
+
+  ***AND THAT PARAGRAPH'S EXPLANATION WAS WRONG, WHICH THE VERY NEXT
+  BLOCK SHOWED.*** It said the tail blocks close on their dearest
+  because of *"cost rising with position inside a small block"*. **That
+  was asserted, not computed.** Computed now over the eight
+  `[13,13,10,k]` blocks with two or more decided members, costs rise
+  monotonically with index in **2 of 8** — and the two are the
+  **3-member and 2-member** blocks, where a random order is monotone
+  with probability 1/6 and 1/2. *There is no within-block trend. The
+  across-block trend documented above is real and is a different claim;
+  I extended one into the other without checking, which is the same
+  move `#27` and `#29` both punish.*
 
   ***HALF OF A CONDITIONAL I WROTE ONE BANK AGO IS FALSIFIED, AND IT WAS
   FALSIFIED BY SOMETHING I HAD ALREADY WRITTEN DOWN.*** `ce1e307` said,
@@ -6704,7 +6866,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1156 of 1949 = 59.3125%**; **793 undecided**. **50% IS CROSSED**, at
+- **1161 of 1949 = 59.5690%**; **788 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7252,12 +7414,7 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 10, 5]` idx 1149..1153: **5 members**,
-  **4 decided**, undecided [1153]
-- `[13, 13, 10, 4]` idx 1154..1156: **3 members**,
-  **2 decided**, undecided [1156]
-- `[13, 13, 10, 3]` idx 1157..1158: **2 members**,
-  **1 decided**, undecided [1158]
+*No block is open: every block with any decided member is complete.*
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
