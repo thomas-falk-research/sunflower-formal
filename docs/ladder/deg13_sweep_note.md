@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T02:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T02:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4427,6 +4427,35 @@ alongside it.**
   prevented it is computing the bound and the denominator **in one
   expression** instead of two.
 
+  **#28 — A PROCEDURE PARAGRAPH THAT NAMED A CHECK BEFORE THE CHECK WAS
+  RUN.** `94802a2`'s body says *"checkpoint_audit.py agrees: 1319 rows,
+  1150 decided, 169 historical UNKNOWN rows all superseded,
+  undecided-only 0, all six invariants hold"*. **The audit had not been
+  run since that bank when the sentence was written.** It was run
+  immediately afterwards and agreed on every figure, so the commit is
+  accurate — *and that is exactly what makes this worth registering.*
+
+  **A true claim written from expectation is indistinguishable in the
+  record from one written from observation.** The whole function of a
+  procedure paragraph is to say which checks were actually performed;
+  one drafted ahead of its check converts the paragraph from a record
+  into a forecast, and the commit exists before the forecast can be
+  falsified. Had the audit disagreed, the wrong figures would already
+  have been pushed. *The outcome being right is luck, not method, and
+  the note already holds the same finding at `#27`: an error the
+  outcome happens to satisfy is more dangerous than one that fails
+  loudly, because nothing calls it.*
+
+  **Remedy, which is the subject line's rule extended to the body**: the
+  four figures in a subject are copied from tool output in the same
+  turn, and the procedure paragraph is now held to the same standard —
+  **written last, from runs whose output has been read, and naming no
+  check that has not yet been run.** If a check is outstanding when the
+  body is drafted, the body does not mention it. *This is the same shape
+  as the `3a008b2` failure, where a subject carried figures from a
+  previous bank.py run: in both, a commit message reported something
+  that had not been observed in that turn.*
+
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -4764,7 +4793,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1318 -> 1319 rows)
+## State as of the last refresh (1319 -> 1320 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4775,7 +4804,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1319 rows; 1150 labels decided; 1150 UNSAT; 0 SAT; 0 labels
+- **1320 rows; 1151 labels decided; 1151 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4783,7 +4812,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1150 decided plus 169 superseded
+  A row count is not a decision count: 1151 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4802,7 +4831,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1146, highest decided 1150, holes [1147].**
+- **Frontier contiguous 0..1146, highest decided 1151, holes [1147].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-FIFTH.** idx 1149 landed at
   635.1 s while **1147** was still running — an opening at **one hole**.
@@ -6526,7 +6555,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1150 of 1949 = 59.0046%**; **799 undecided**. **50% IS CROSSED**, at
+- **1151 of 1949 = 59.0559%**; **798 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7077,7 +7106,7 @@ exactly one bank.
 - `[13, 13, 10, 6]` idx 1142..1148: **7 members**,
   **6 decided**, undecided [1147]
 - `[13, 13, 10, 5]` idx 1149..1153: **5 members**,
-  **2 decided**, undecided [1151, 1152, 1153]
+  **3 decided**, undecided [1152, 1153]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
