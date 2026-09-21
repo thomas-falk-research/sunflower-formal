@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T11:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T11:55Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5606,7 +5606,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1389 -> 1390 rows)
+## State as of the last refresh (1390 -> 1396 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5617,7 +5617,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1390 rows; 1221 labels decided; 1221 UNSAT; 0 SAT; 0 labels
+- **1396 rows; 1227 labels decided; 1227 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5629,7 +5629,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1221 decided plus 169 superseded
+  A row count is not a decision count: 1227 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5648,9 +5648,26 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1219, highest decided 1221, holes [1220].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FIFTY-SECOND.** idx 1218 landed at
+- **Frontier contiguous 0..1226, highest decided 1226, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FIFTY-SECOND SPAN IS CLOSED. ITS FIGURES ARE NOT IN THIS COMMIT
+  — THEY ARRIVE IN THE NEXT ONE, AND THIS SENTENCE IS DUE FOR RETIREMENT
+  THERE.** It was filled by **idx 1220 at 2400.7 s**, in a bank that
+  carried **six** rows. *`--spans all` walks `git rev-list HEAD --
+  CHECKPOINT`, so the closing commit must exist before the tool can see
+  the run end.* **The wording is correct for exactly one commit; it has
+  been struck on schedule four times running.**
+
+  ***THE FAILURE MODE DID NOT FIRE, AND THE BLOCK AND THE WHOLE FAMILY
+  CLOSED ON THE SAME ROW.*** The condition needed a row at **1227 or
+  above** in the same bank while 1226 was out; **the highest row this
+  bank carried is 1226 itself**, which extends the frontier instead of
+  standing above a hole, so it closed. *And idx 1220 was the last
+  undecided member of `[13,13,8,6]`, which was the last open block of
+  `[13,13,8,*]`, so the block completed, the family completed at
+  **19 of 19** (idx 1206..1224), and the span closed on one event.*
+
+  **PREVIOUSLY, WHILE IT WAS OPEN.** idx 1218 landed at
   **709.0 s** while **1216 and 1217** were both still running — an
   opening at **two holes**. The frontier and hole set are on the bullet
   line above, which bank.py owns; *this prose deliberately does not
@@ -5671,6 +5688,7 @@ exactly one bank.
   | 3rd | idx 1216 | 3010.5 s | `[1217]` | 1221+ while 1220 out |
   | 4th | idx 1221 | 576.3 s | `[1217, 1220]` | 1223+ while 1222 out |
   | 5th | idx 1217 | 2469.3 s | `[1220]` | 1223+ while 1222 out |
+  | 6th | idx 1224, 1223, 1225, 1222, 1220, 1226 | 120.1, 425.1, 412.1, 1250.6, 2400.7, 848.8 s | `[]` | **CLOSED** |
 
   ***THE FOURTH BANK GREW THE SET, AND IT IS THE CASE THE THIRD BANK'S
   CONDITION NAMED.*** idx 1221 landed at **576.3 s** while **1220** was
@@ -5683,10 +5701,13 @@ exactly one bank.
   **both** 1217 and 1220 closes it unless a row at **1223 or above**
   rides in the same bank while **1222** is still out.
 
-  **Three blocks are open again** — `[13,13,8,7]` at 4 of 5,
+  **At that bank three blocks were open** — `[13,13,8,7]` at 4 of 5,
   `[13,13,8,6]` at 2 of 3, `[13,13,8,5]` at 1 of 2 — *the rarest
   non-empty census state on the recent record, and the second time this
-  session it has appeared.*
+  session it had appeared.* **Read the live count off the census region
+  above, which bank.py owns.** *This sentence was written in the present
+  tense and was stale two banks later; the fix is the tense, not the
+  numbers, which were right for the bank they describe.*
 
   ***AND THE FIFTH BANK GAVE THE THIRD TAIL ITS FIRST STEP — WHICH IS A
   RISE, EXACTLY AS THE OTHER TWO TAILS DID.*** idx 1217 completed
@@ -5707,18 +5728,206 @@ exactly one bank.
   ***SO THE FIRST HALF OF THE SHAPE HAS A THIRD INSTANCE AND THE SECOND
   HALF IS UNTESTED.*** *The claim is "rise once at step 1, then fall";
   this tail has delivered the rise and has not yet been asked about the
-  falls. Four blocks of its six remain open. **Three rises at three step
-  ones is not the shape confirmed** — it is the cheap half of it, and
-  the expensive half arrives with the 3-block.*
+  falls. Four of its six blocks were open then. **Three rises at three
+  step ones is not the shape confirmed** — it is the cheap half of it,
+  and the expensive half arrives with the 3-block.*
 
-  **Close condition, in the rule form:** filling **both** 1216 and 1217
-  closes it **iff the committing tree leaves no undecided index below
-  its highest decided**. *`[13,13,8,6]` runs idx 1218..1220, so the
-  failure mode is a row at **1220 or above** riding in the same bank
-  while **1219** is still out.* ***With the `#29` rider***, which fired
-  twice in the last two spans — once shrinking a committed opening and
-  once erasing one — *that is the width in the file, and the committed
-  width is smaller by however many holes a row in the same bank fills.*
+  ***THE SIXTH BANK CARRIED SIX ROWS AND CLOSED THE SPAN, AND ON THE
+  WAY IT WAS THE CASE THE FIFTH BANK'S CONDITION NAMED.*** In completion
+  order, read off the checkpoint's row order and confirmed by six
+  separate waiter arms: **idx 1224 at 120.1 s (11:36:36Z), idx 1223 at
+  425.1 s (11:37:08Z), idx 1225 at 412.1 s (11:43:29Z), idx 1222 at
+  1250.6 s (11:47:30Z), idx 1220 at 2400.7 s (11:48:56Z), idx 1226 at
+  848.8 s (11:51:23Z)**. The first
+  two landed while **1222** was still out — *precisely "a row at 1223 or
+  above while 1222 is out"*, which the running table had carried for two
+  banks. *The third bank's condition fired at the fourth and the fifth
+  bank's fired at the sixth: **two verbatim fires inside one span**.*
+
+  ***THREE OF THE SIX ROWS WERE CAUGHT ONLY BY THE RULE THAT bank.py IS
+  THE LAST THING TO TOUCH THE INDEX, READ WHOLE.*** A draft naming
+  **three** rows was written and was correct when written; the next
+  bank.py run, **seven seconds** after the one before it, returned
+  **four** — idx 1222 had landed in between. *That run's predecessor had
+  been read through `sed -n '1,20p'`, a filter that happened to lose
+  nothing because the output was fourteen lines; the unfiltered re-run
+  is what surfaced the row.* A draft naming four was then written, and
+  idx 1220 landed a minute later, taking it to **five** and closing the
+  span — and a sixth, idx 1226, landed while that draft was being
+  written. **This is `#31`'s territory and the second time this session
+  the whole-output rule has paid**; the first cost three drafts naming
+  wrong row sets. *Four successive drafts of this one section named
+  three, four, five and six rows. The rule is not that the draft is
+  wrong; it is that **the last bank.py run decides what the draft says**,
+  and nothing is committed until a draft survives one.*
+
+  ***THE FILE'S HOLE SET MADE AN EXCURSION THAT NO COMMIT WILL SHOW.***
+  In the file it went **`[1220]` → `[1220, 1222, 1223]` →
+  `[1220, 1222]` → `[1220]` → `[]`**, and idx 1226 then extended the
+  frontier without reopening one; the commit shows **`[]`**.
+  **The width reached three in the working tree and never in a commit**,
+  so it cannot appear in the hole chain `--spans all` builds, which
+  walks commits. *It is NOT a `#29` rider firing — the rider is about
+  **opening** widths and this span opened five banks earlier; the
+  rider's count stays at two.* **No chain is predicted here**; a first
+  draft of this paragraph named one, and the chain is exactly the kind
+  of figure this page takes from the tool in the next commit rather than
+  from arithmetic in this one.
+
+  ***THE THIRD TAIL IS COMPLETE, AND ITS SHAPE IS THE SAME SHAPE.***
+  idx 1223 and idx 1224 are the whole of `[13,13,8,4]` and `[13,13,8,3]`,
+  both size-1 blocks, so **both completed on the row that opened them**;
+  idx 1222 completed `[13,13,8,5]` at 2 of 2, median **913.45 s** of
+  576.3 and 1250.6; idx 1220 completed `[13,13,8,6]` at 3 of 3, median
+  **1296.8 s** of 709.0, 1296.8 and 2400.7. idx 1224 is the **last index
+  of the entire `[13,13,8,*]` family** (idx 1206..1224); `[13,13,7,*]`
+  starts at 1225, which is where idx 1225 comes from.
+
+  Each tail's block sizes are a **suffix of the block-size master
+  sequence** — a result already on this page, re-checked here for all
+  five tails from `[13,13,10,*]` down to `[13,13,6,*]` — so *position
+  from the end* labels every block unambiguously, **including the two
+  that tie at size 1**, which the size column alone cannot do:
+
+  | position | size | `[13,13,10,*]` | `[13,13,9,*]` | `[13,13,8,*]` |
+  |---|---|---|---|---|
+  | 6th-last | 7 | 1699.4 s | 1630.7 s | 989.2 s |
+  | 5th-last | 5 | 1245.1 s | 1511.0 s | **1723.5 s** |
+  | 4th-last | 3 | 826.7 s | 1237.5 s | **1296.8 s** |
+  | 3rd-last | 2 | 332.2 s | 589.7 s | **913.45 s** |
+  | 2nd-last | 1 | 102.0 s | 239.5 s | **425.1 s** |
+  | last | 1 | 23.8 s | 61.6 s | **120.1 s** |
+
+  *A first pass at this table sorted each tail by block size and let the
+  two size-1 blocks tie.* **The arbitrary tie-break invented a final
+  "rise" in both completed tails** and would have contradicted the shape
+  this page has carried for thirty-odd commits. It was caught by
+  checking the sizes against the master window, which fixes the order.
+  **Registered as a pattern: a sort key that ties is a sort key that
+  fabricates** — and the fabricated value was a *direction*, not a
+  number, so no staleness check would have flagged it.
+
+  **Down the third column, all five steps are settled: rise, fall, fall,
+  fall, fall.** 989.2 → **1723.5** → 1296.8 → 913.45 → 425.1 → 120.1.
+  ***That is a third complete instance of "one rise at the series' own
+  step 1, then falls everywhere after" — three for three, on tails of
+  ten, eight and six blocks.*** *What it is not is an explanation.* The
+  page has no mechanism for why the second block of a tail is dearer
+  than the first, and **three agreeing instances of an unexplained shape
+  is three instances**, not a law; `[13,13,7,*]` and `[13,13,6,*]` are
+  next and are addressed below.
+
+  ***THE PREDICTION ABOVE NAMED THE WRONG BLOCK, AND THE ONE BELOW IT
+  WAS NEVER COMMITTED — NEITHER IS SCORED.*** The earlier paragraph said
+  "the expensive half arrives with the 3-block"; *the expensive half
+  actually arrived from the far end first, on the two size-1 blocks, and
+  the 3-block came last.* **The claim it tested was right and the route
+  it named was wrong.** And a draft of this section, written at
+  **11:47Z**, said idx 1220 would close the span, complete the block,
+  complete the family and settle both remaining steps at once — *it did
+  all four, and idx 1220 landed at **11:48:56Z**, about a minute later
+  and **before any commit carried the prediction**.* **A prediction that
+  exists only in the working tree when its outcome lands is not a
+  pre-registration on this page's own standard**, which is the standard
+  the `#29` rider states for widths: *it is measured at a commit.* It is
+  written down as a near miss and **not counted**.
+
+  ***AND THE FOURTH TAIL IS THE EXPERIMENT THAT SEPARATES TWO READINGS —
+  REGISTERED HERE, IN THIS COMMIT, BEFORE ITS ROWS EXIST.*** There are
+  two ways to read "rise once, then fall", and all three complete tails
+  are consistent with both:
+
+  - **own-step-1**: the rise sits at each series' *first* step, whatever
+    sizes that step joins;
+  - **position**: the direction is fixed by *where in the master window*
+    the step sits, and the 28→21, 15→11 and 7→5 joins happen to be the
+    ones that rise.
+
+  `[13,13,7,*]` is **idx 1225..1231** with sizes **3, 2, 1, 1**, so **its
+  own step 1 is the 4th-last → 3rd-last join** — and that join is a
+  **fall in all three complete tails** (826.7 → 332.2, 1237.5 → 589.7
+  and now 1296.8 → 913.45). **own-step-1 predicts a RISE there;
+  position predicts a FALL; they cannot both be right.** `[13,13,6,*]`
+  is **idx 1232..1233** with sizes **1, 1**, so its own step 1 is the
+  2nd-last → last join, a fall in all three (102.0 → 23.8,
+  239.5 → 61.6, 425.1 → 120.1) — **a second separator, and a two-row
+  one.** *`[13,13,8,*]` could not settle this: its own step 1 is the
+  6th-last → 5th-last join, where the two readings agree — which is why
+  its completion is a third instance and not a decision.* **As this
+  commit is written the experiment is genuinely undecided**: its first
+  block `[13,13,7,7]` is **2 of 3** — idx 1227 is still out, so the
+  block has no median — and its other three blocks, idx 1228..1231,
+  have **no decided member at all**. *The separating step needs
+  `[13,13,7,7]` and `[13,13,7,6]` both complete, which is three more
+  rows.*
+
+  ***AND THE SIXTH ROW PUT THE COUNTER EXACTLY ON THE 63% TRAP.***
+  Decided is **1227 = 62.9554%**, and the arithmetic, recomputed here
+  rather than recalled: `r = 49·63 mod 100 = 87`, so the trap value is
+  `(1949·63 − 87)/100 = 1227` and the threshold is
+  `ceil(1949·63/100) = 1228`. **The trap exists because 87 ≤ 97**; its
+  tightness rank is **87** and the shortfall is **87/1949 = 0.0446 pp**,
+  which is what makes it a trap — *1227 of 1949 reads 62.9554% and is
+  NOT 63%*. It is the **61st of the 97** (`63 − |{2,51} ∩ [1,63]|`).
+  **This commit's tree holds 1227, so the trap is caught by it** —
+  *"caught" means a committed tree holds the trap value, and the
+  `decided()` check over the committed blob is run once this commit
+  exists, exactly as the span figures are.* Counts 1222 through 1226
+  were all ordinary. ***And the count 1227 is not the index 1227***,
+  which is still undecided, is the last member of `[13,13,7,7]`, and was
+  named in this bank's own failure mode. *The collision is arithmetic
+  coincidence and is written down so it is not read as anything.* **The
+  next decision, 1228, is the 63% threshold**; the next *trap* is
+  **1247** (k = 64, r = 36), twenty decisions away with that threshold
+  the only marked count in between.
+
+  ***THE TIE DETECTOR FIRED ONCE IN SIX.*** Against N = 1227: idx 1220
+  at 2400.7 s → **rank 750**, 477 cheaper, and `1227 − 477 = 750`
+  agrees; idx 1222 at 1250.6 s → **rank 991**, 236 cheaper, agrees; idx
+  1226 at 848.8 s → **rank 1084**, 143 cheaper, agrees; idx 1223 at
+  425.1 s → **rank 1163**, 64 cheaper, agrees; idx 1224 at 120.1 s →
+  **rank 1207**, 20 cheaper, agrees. **idx 1225 at 412.1 s → rank 1168,
+  58 cheaper, and `1227 − 58 = 1169` does NOT**: the cost is shared with
+  **idx 515**, also 412.1 s. *The subtraction is a tie-detector, not a
+  rank formula.*
+
+  **How often that happens, counted rather than guessed.** Walking the
+  checkpoint's decided rows in completion order and asking of each
+  whether its cost was already held: **12 of 1227** were, and idx 1225
+  is the **twelfth**. idx 1199 at 553.4 s against idx 874 was the
+  eleventh, so the last two are consecutive in that list — *coincidence
+  at a rate of twelve in twelve hundred, not a cluster.* Ten cost values
+  carry more than one index; **three of the twelve are the 0.1 s floor**
+  (idx 558, 885 and 1066, all against idx 557), where a tie is the
+  timer's resolution rather than a coincidence of search. *This census
+  is over rows, not over banks: it says a tie existed when the row was
+  banked, not that anything caught it — the detector rule is recent and
+  most of these predate it.*
+
+  **The close condition, as it stood at the end.** Filling **1220** —
+  by then the only hole — closed it, *iff the committing tree left no
+  undecided index below its highest decided*. **When the condition was
+  last restated the highest decided was 1225**, the first member of
+  `[13,13,7,7]` (idx 1225..1227), so the failure mode was a row at
+  **1227 or above** in the same bank while **1226** was out. *It did not
+  fire: idx 1226 itself landed in the same bank, which moves the
+  frontier up rather than leaving a hole under a higher row, and the
+  committed tree's highest decided is 1226.* **This paragraph named 1216
+  and 1217 long after both were decided** — written at the first bank
+  and read as current ever after, while the per-bank restatements in
+  the running table above stayed right. *Counted exactly, because a
+  first draft of this correction said "five banks" and the banks do
+  not say that:* it was right at banks **1 and 2**, half-wrong at **3
+  and 4** (the third bank decided 1216), wholly wrong at **5** (which
+  decided 1217), and is rewritten at **6**. **Two places carrying the
+  same fact is how one of them goes stale**; the table is the copy
+  bank.py's frontier line can be checked against, so this paragraph is
+  the derived one and moves with it from here on. ***With the `#29`
+  rider***, which has fired twice for real, both in the two spans
+  before this one — once shrinking a committed opening from three to
+  two and once erasing one outright — *that is the width in the file,
+  and the committed width is smaller by however many holes a row in
+  the same bank fills.*
 
   **An opening at two is the least common of the three ordinary widths**:
   over the 116 closed spans the opening hole count is **1 in 39 cases,
@@ -8885,7 +9094,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1221 of 1949 = 62.6475%**; **728 undecided**. **50% IS CROSSED**, at
+- **1227 of 1949 = 62.9554%**; **722 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -9598,10 +9807,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 8, 6]` idx 1218..1220: **3 members**,
-  **2 decided**, undecided [1220]
-- `[13, 13, 8, 5]` idx 1221..1222: **2 members**,
-  **1 decided**, undecided [1222]
+- `[13, 13, 7, 7]` idx 1225..1227: **3 members**,
+  **2 decided**, undecided [1227]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
