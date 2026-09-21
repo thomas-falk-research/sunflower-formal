@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T10:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T10:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5668,6 +5668,26 @@ exactly one bank.
   — the span-figures work, mutation runs, whole-history `decided()`
   scans — are worth batching into one pass per close rather than
   spreading them across a close's worth of banks.*
+
+  ***AND THE RATIO RECOVERED WHEN THE WALKS STOPPED, WHICH IS THE
+  NEAREST THING TO A CONTROL AVAILABLE WITHOUT IDLING ON PURPOSE.***
+  Computing each solver's window ratio as `Δcpu / Δelapsed` between its
+  first and last sample in the window:
+
+  | window | solvers | Δelapsed | Δcpu | ratio |
+  |---|---|---|---|---|
+  | **heavy**, 09:59–10:08 | 4 | 1535 s | 1396 s | **0.9094** |
+  | **quiet**, 10:26–10:42 | 7 | 3258 s | 3211 s | **0.9856** |
+
+  *The quiet window is the stretch after the batching rule was adopted:
+  the banks in it run one combined check script each and no
+  whole-history walk.* ***IT IS STILL NOT A CONTROLLED EXPERIMENT.***
+  *Different solvers, different cubes, a different number of them, and
+  tooling did run in the quiet window — just less of it. **What it rules
+  out is only the most boring alternative**, that the depression was a
+  property of those four particular cubes and would have persisted
+  regardless.* **The open question about the cost column is still
+  open**, and nothing here touches it.
 
   ***THE 62% TRAP WAS NAMED ONE COMMIT AHEAD AND THIS TREE HOLDS IT.***
   `63c0321`, banking at counter 1207, wrote: *"the next decision takes
