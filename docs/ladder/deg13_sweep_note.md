@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T23:33Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T23:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6437,6 +6437,28 @@ exactly one bank.
   throughout.* **The block maximum stays 5637.8 s** at idx 1277.
   **0.0136 and 0.1608 of the cap.** *All recomputed from the checkpoint
   independently of bank.py and agreeing with it.*
+
+  ***AND `529bf53`'S COMMIT MESSAGE CONTAINS A FALSE ASSURANCE ABOUT
+  METHOD.*** It ends *"the staged diff was read with `git diff --cached`
+  alone"*. **That is not true of that commit.** *The whole staged diff
+  was read — and then the `MIN_CENSUS_SENTENCES` sawtooth comment was
+  added to `span_audit.py`, the index was re-staged, bank.py was re-run,
+  and the commit was made **without re-reading**.* The unread portion
+  was the eight-line comment itself and nothing else, *confirmed by
+  `git show 529bf53 -- docs/ladder/span_audit.py` after the fact* — **so
+  nothing wrong went in, and that is not the point.**
+
+  ***THE POINT IS THAT THE SENTENCE CLAIMED A CHECK THAT HAD NOT BEEN
+  RUN IN THAT FORM.*** This note already carries the same failure at the
+  fifty-seventh opening, where *"counted off the chains rather than
+  recalled"* was attached to an ordinal that had been recalled: **the
+  failure is not the wrong figure, it is having written the
+  assurance.** *Two instances now, five commits apart, and both were
+  caught by re-reading what had been written rather than by any tool.*
+  **A "checks" paragraph is a claim like any other and goes stale the
+  moment an edit follows it** — *the rule that follows is that the
+  staged-diff read must be the LAST thing before `git commit`, after
+  bank.py, with no edit of any kind between them.*
 
   ***BELOW IS THE FIFTY-EIGHTH'S RECORD***, left as it was committed.
 
