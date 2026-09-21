@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T18:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T18:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6122,6 +6122,18 @@ exactly one bank.
   after the teardown as pid **3269**, which resumed reporting
   "checkpoint: 1272 of 1949 cubes already decided" — the same count the
   last bank committed.*
+
+  ***THE 18:41Z CHECK-IN'S FIVE CHECKS ALL PASSED, THE FIRST SINCE THE
+  RELAUNCH.*** 1441 rows, 1272 decided, contiguous 0..1271, holes `[]`,
+  0 SAT, all invariants holding; `pgrep -x iota_sym` returns the single
+  pid **3269**; the waiter armed at 18:33:43Z still running; tree clean
+  with local HEAD equal to `origin/claude/sunflower-deg13-p3-bhbe9w`.
+  **`cnf_mtime_check.py` puts the four re-taken cubes in flight at
+  495 s of elapsed — all four the same to the second**, which is set
+  fifteen's comparability claim showing up in the first live reading
+  after it was made. *The claim was about an 8 ms spread in the CNF
+  writes and this is a 1 s-resolution check, so it is consistent with
+  it and does not test it.*
 
   ***THE BRACKET'S WIDTH IS ONE CUBE'S YOUNG SAMPLE, AND IT STILL DOES
   NOT PIN THE RANK.*** Three of the four ratios are mature readings
