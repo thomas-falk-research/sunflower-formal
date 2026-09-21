@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T06:06Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T06:40Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -850,6 +850,25 @@ anything about the re-take; it is evidence that a base rate computed
 over the wrong population will make an ordinary observation look
 extraordinary, which is the same failure `#30` records for a run length
 and the closed-block rate records for a streak.*
+
+***SET FOURTEEN IS COMPLETE, AND ITS FOURTH MEMBER BREAKS THE
+TIGHTNESS EXACTLY AS THE BLOCK READING SAID IT SHOULD.*** **idx 1173
+re-ran in 3673.8 s**, having reached **[2289.844, 2857.051] s**
+unfinished — consistent, like the other three, and one-sided for the
+same reason. The four re-runs are **1558.7, 1606.7, 1650.0 and
+3673.8 s**: a spread of **2.3570×** over **2115.1 s**, against the
+trio's 1.0586× over 91.3 s.
+
+***THAT IS THE BLOCK EFFECT ARRIVING ON SCHEDULE, NOT A NEW FINDING.***
+The tight three are all in `[13,13,9,8]`; **idx 1173 is in
+`[13,13,9,9]`**, a different block, and it is more than twice the cost
+of any of them. *One bank ago this file argued that the trio's
+1.0586× was structural rather than remarkable, and reported that
+matching the null to the structure moved the headline from 0.106% to
+4.91%. The fourth member, drawn from outside that block, widens the set
+to 2.3570×.* **That is the argument confirmed by its own next data
+point**, which is worth more than the 4.91% was: the correction was made
+before this row existed and the row went the way the correction implied.
 
 ***AND THE SIMULTANEOUS RE-TAKE IS CONFIRMED FROM A SECOND DIRECTION.***
 The **05:42:36Z** sample shows all four of set fourteen at **295 s
@@ -5151,7 +5170,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1345 -> 1348 rows)
+## State as of the last refresh (1348 -> 1349 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5162,7 +5181,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1348 rows; 1179 labels decided; 1179 UNSAT; 0 SAT; 0 labels
+- **1349 rows; 1180 labels decided; 1180 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5174,7 +5193,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1179 decided plus 169 superseded
+  A row count is not a decision count: 1180 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5193,9 +5212,30 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1172, highest decided 1179, holes [1173].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTY-SEVENTH.** idx 1172 landed at
+- **Frontier contiguous 0..1179, highest decided 1179, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FORTY-SEVENTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It was filled by **idx 1173 at 3673.8 s**. *Its duration,
+  ranks, hole-count chain and monotonicity are absent deliberately:
+  `--spans all` walks `git rev-list HEAD -- CHECKPOINT`, so the closing
+  commit must EXIST before the tool can see the run end. They arrive in
+  the next commit, with every rank in the spans table recomputed
+  together at the new N, the thirty-two carried rows first reproduced at
+  the old N in the same script, and the merged monotonicity table taking
+  its row 47 in that same run.*
+
+  ***AND THE CLOSE CONDITION STATED BY THE RULE CAME OUT TRUE.***
+  `52c8c85` wrote that filling 1173 would close the span *"iff the
+  committing tree leaves no undecided index below its highest decided"*,
+  and that the only way it fails is **a row at 1178 or above riding in
+  the same bank while 1177 is still undecided**. By the time 1173
+  landed, 1177, 1178 and 1179 were all decided, so nothing could leave a
+  gap — and this bank carried one row. *The rule form named the
+  condition precisely enough that its failure mode had already been
+  ruled out before the row arrived, which the retired proxy form could
+  not have done.*
+
+  **PREVIOUSLY, WHILE IT WAS OPEN:** idx 1172 landed at
   1870.9 s while **1169, 1170 and 1171** were all still running, and
   **idx 1169 landed at 3009.9 s before this bank was made**, so the
   committed opening is at **two holes**. The frontier and hole set are
@@ -5291,6 +5331,17 @@ exactly one bank.
 
   *Neither is predicted, and when any of it lands is not claimed. The
   clause now carries the rider it was missing three closes ago.*
+
+  ***AND `[13,13,9,9]` HAS SINCE CLOSED AT 15 OF 15 — NOT ON ITS
+  DEAREST, WHICH ENDS THE RUN AT ZERO.*** Its last landing was **idx
+  1173 at 3673.8 s** against a block maximum of **4277.6 s** (idx 1170).
+  **The block, 15 members:** total **29922.0 s = 8.3117 core-hours**,
+  median **1974.0 s**, spread **19.9701×**. *The closed-block base rate,
+  recomputed over the corrected population, is **23 of 45 = 51.1%**, and
+  the consecutive closes-on-dearest run now stands at **zero**.* **A
+  rate near one half produces runs and ends them**, which is what the
+  seven-long run's caveats said would happen and what has now happened
+  twice.
 
   ***AND idx 1170 HAS SINCE LANDED AT 4277.6 s, LEAVING ONE HOLE —
   STATED WITH THE RULE, NOT THE PROXY.*** The block is at **14 of 15**,
@@ -7334,7 +7385,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1179 of 1949 = 60.4926%**; **770 undecided**. **50% IS CROSSED**, at
+- **1180 of 1949 = 60.5439%**; **769 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8047,8 +8098,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 9, 9]` idx 1161..1175: **15 members**,
-  **14 decided**, undecided [1173]
 - `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
   **4 decided**, undecided 7 spanning 1180..1186
 
