@@ -35,6 +35,7 @@ CONVENTIONS, matching the note
 * the tie count is EXCLUSIVE: members sharing the value, minus itself.
 * table ordinal n is walk position n + 65 (OFFSET below).
 """
+import collections
 import re
 import subprocess
 import sys
@@ -60,6 +61,17 @@ MIN_MONO_ROWS  = 56
 # are correctly absent and their absence is not a failure.
 MIN_CENSUS_SENTENCES = 4
 MIN_CENSUS_LIVE      = 4
+# The monotonicity prose -- the True partition, the False-chain column and
+# the rank sentence beside them -- is the OTHER half of the gap the note
+# named: "the remedy would have to be mechanical, and it is not one yet".
+# It has gone stale three times on record (a headline stuck at 31 of 53 for
+# a close, a False-chain list missing row 52's 4, "fifty-one verdicts" stale
+# for three closes).  It is checked here.  FROZEN paragraphs are NOT: the
+# one headed "as of ordinal 31" states its True partition at 31 and its
+# False-chain list at 32, and naming its own vintage is exactly what makes
+# it honest -- a checker keyed to the headline ordinal would fail correct
+# prose.  Only the CURRENT bullets are checked.
+MIN_MONO_PROSE       = 13
 
 SPAN_OPEN = "<!-- SPAN-STATE: open -->"
 
@@ -76,8 +88,16 @@ for _t, (_c, _o) in enumerate(zip(_TENS_C, _TENS_O)):
     WORDS[_o] = (_t + 2) * 10
     for _u, _w in enumerate(_ONES[:9]):
         WORDS[f'{_c}-{_w}'] = (_t + 2) * 10 + _u + 1
-CARDS = {w: i + 1 for i, w in enumerate(
-    'one two three four five six seven eight nine ten'.split())}
+# Cardinals to ninety-nine, built the same way and for the same reason: the
+# monotonicity prose counts things in words ("Fourteen of the thirty-four
+# Trues"), and a word is a figure like any other.
+_C1 = ('one two three four five six seven eight nine ten eleven twelve '
+       'thirteen fourteen fifteen sixteen seventeen eighteen nineteen').split()
+CARDS = {w: i + 1 for i, w in enumerate(_C1)}
+for _t, _c in enumerate(_TENS_C):
+    CARDS[_c] = (_t + 2) * 10
+    for _u, _w in enumerate(_C1[:9]):
+        CARDS[f'{_c}-{_w}'] = (_t + 2) * 10 + _u + 1
 
 
 def secs(d):
@@ -220,6 +240,115 @@ def census(note, spans):
     return len(sentences), checked, live, bad
 
 
+def mono_prose(note, spans):
+    """Check the CURRENT monotonicity prose against the walk.
+
+    The two tables are already covered; this is the prose beside them --
+    the True partition, the False-chain column and the rank sentence --
+    which is where the stale figure has actually lived.  On record: a
+    headline stuck at "31 of 53" for a close, a False-chain list missing
+    row 52's 4, and "fifty-one verdicts" stale for three closes.
+
+    FROZEN paragraphs are deliberately out of scope.  The superseded one
+    headed "as of ordinal 31" gives its True partition at 31 and its
+    False-chain list at 32, and says so itself ("until the thirty-second's
+    10 was inserted above it").  Checked against its headline ordinal it
+    reads 13 chains where it says 14 -- and the first pass through this
+    work took that for an error in the note.  It is not one.  A checker
+    keyed to a frozen paragraph's headline fails correct prose and invites
+    a "fix" to it, which is worse than not checking it at all.
+
+    Count-words are figures too: "Fourteen of the thirty-four Trues" is
+    two numbers spelled out, and both are checked.
+    """
+    bad, checked = [], 0
+    flat = re.sub(r'\s+', ' ', note)
+    tbl = {i + 1 - OFFSET: s for i, s in enumerate(spans) if i + 1 - OFFSET >= 1}
+    T = {o: s for o, s in tbl.items() if s['mono']}
+    F = {o: s for o, s in tbl.items() if not s['mono']}
+    def nums(s): return [int(x) for x in re.findall(r'\d+', s)]
+
+    def bullet(name, pat, want_ords):
+        nonlocal checked
+        m = re.search(pat, flat)
+        if not m:
+            bad.append(('mono prose', name, 'NOT FOUND -- pattern or prose changed')); return
+        checked += 2
+        said_n, said = CARDS.get(m.group(1).lower()), nums(m.group(m.lastindex))
+        if said_n != len(want_ords):
+            bad.append(('mono prose', f'{name} count', f'note {m.group(1)} ({said_n}) vs walk {len(want_ords)}'))
+        if said != want_ords:
+            bad.append(('mono prose', f'{name} ordinals', f'note {said} vs walk {want_ords}'))
+        return m
+
+    m = bullet('zero-comparison Trues',
+        r'\*\*([\w-]+) of the ([\w-]+) Trues contain zero comparisons and could not '
+        r'have come out False\*\*: ordinals \*\*([\d, ]+)\*\*',
+        sorted(o for o, s in T.items() if s['comps'] == 0))
+    if m:
+        checked += 1
+        if CARDS.get(m.group(2).lower()) != len(T):
+            bad.append(('mono prose', 'True total', f'note {m.group(2)} vs walk {len(T)}'))
+    bullet('one-comparison Trues',
+        r'\*\*([\w-]+) more rest on a single comparison\*\*.{0,120}?: \*\*([\d, ]+)\*\*',
+        sorted(o for o, s in T.items() if s['comps'] == 1))
+
+    m = re.search(r'\*\*([\w-]+) carry more than one\*\*: (.+?)\.', flat)
+    if not m:
+        bad.append(('mono prose', 'many-comparison Trues', 'NOT FOUND'))
+    else:
+        checked += 2
+        want = {o: s['comps'] for o, s in T.items() if s['comps'] > 1}
+        if CARDS.get(m.group(1).lower()) != len(want):
+            bad.append(('mono prose', 'many count', f'note {m.group(1)} vs walk {len(want)}'))
+        got = {}
+        for grp, word in re.findall(r'((?:\*\*\d+\*\*(?:,| and)? ?)+)with ([a-z]+)', m.group(2)):
+            for o in nums(grp):
+                got[o] = CARDS.get(word)
+        if got != want:
+            bad.append(('mono prose', 'many breakdown', f'note {got} vs walk {want}'))
+
+    m = re.search(r'\*\*The ([\w-]+) False chains, by comparison count\*\*: ([\d, \*]+) —', flat)
+    if not m:
+        bad.append(('mono prose', 'False chain list', 'NOT FOUND'))
+    else:
+        checked += 2
+        want = sorted((s['comps'] for s in F.values()), reverse=True)
+        if CARDS.get(m.group(1).lower()) != len(F):
+            bad.append(('mono prose', 'False count', f'note {m.group(1)} vs walk {len(F)}'))
+        if nums(m.group(2)) != want:
+            bad.append(('mono prose', 'False chains', f'note {nums(m.group(2))} vs walk {want}'))
+
+    m = re.search(r'The column holds (.+?) — summing to (\d+)', flat)
+    if not m:
+        bad.append(('mono prose', 'value tally', 'NOT FOUND'))
+    else:
+        checked += 2
+        want = collections.Counter(s['comps'] for s in F.values())
+        got = collections.Counter()
+        for cnt, val in re.findall(r'([a-z]+) (\d+)s?\b', m.group(1)):
+            if cnt in CARDS: got[int(val)] = CARDS[cnt]
+        if got != want:
+            bad.append(('mono prose', 'tally', f'note {dict(got)} vs walk {dict(want)}'))
+        if int(m.group(2)) != len(F):
+            bad.append(('mono prose', 'tally total', f'note {m.group(2)} vs walk {len(F)}'))
+
+    m = re.search(r"\*The ([\w-]+)'s nine is (\d+)(?:st|nd|rd|th), unchanged\.\*", flat)
+    if not m:
+        bad.append(('mono prose', 'nine-rank sentence', 'NOT FOUND'))
+    else:
+        checked += 2
+        o = WORDS.get(m.group(1))
+        if o not in F or F[o]['comps'] != 9:
+            bad.append(('mono prose', 'nine row', f'note row {o} vs walk comps '
+                        f'{F[o]["comps"] if o in F else "not False"}'))
+        else:
+            rank = 1 + sum(1 for s in F.values() if s['comps'] > 9)
+            if int(m.group(2)) != rank:
+                bad.append(('mono prose', 'nine rank', f'note {m.group(2)} vs walk {rank}'))
+    return checked, bad
+
+
 def main(note_path=NOTE):
     spans, declared = walk()
     n = len(spans)
@@ -313,7 +442,16 @@ def main(note_path=NOTE):
               f' floor is {MIN_CENSUS_LIVE}')
         return 1
 
-    checked = len(rows) * 7 + len(mono) * 4 + cchecked + live
+    mchecked, mbad = mono_prose(note, spans)
+    bad += mbad
+    print(f'monotonicity-prose figures parsed: {mchecked}')
+    if mchecked < MIN_MONO_PROSE:
+        print(f'!! only {mchecked} monotonicity-prose figures parsed, floor is'
+              f' {MIN_MONO_PROSE} -- the pattern is broken, it is not that the'
+              f' note is clean')
+        return 1
+
+    checked = len(rows) * 7 + len(mono) * 4 + cchecked + live + mchecked
     print(f'figures checked: {checked}')
     if bad:
         print(f'\n!! {len(bad)} MISMATCH(ES):')

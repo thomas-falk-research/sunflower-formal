@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T21:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T22:03Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -63,7 +63,7 @@ and `pgrep` outranks both.
 | `cnf_mtime_check.py` | validates the CNF-mtime method and prints in-flight cube→pid pairings **with elapsed seconds**. This is what tells you whether a forward-test target is still unobserved. |
 | `forward_test.py` | pinned to `REV_AS_RUN = 9528aa9`. `IDX` is keyed on the **label string**, `SEQ` is the list, `cube_list` is the function. |
 | `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** It also appends a cpu/elapsed sample to `cpu_ratio_samples.tsv` on every run. |
-| `span_audit.py` | checks **every span figure written in this note** against `--spans all`: the spans table's duration, both ranks, both denominators and the tie count; the monotonicity table's sha, chain, comparison count and verdict. It **prints how many figures it checked** and **asserts contiguity** of both tables' ordinals, so a pattern that misses a row fails instead of passing quietly. Durations are parsed from `H:MM:SS`, never from the four-decimal hours. Takes an optional note path so it can be run against a mutated copy — *proved to fail on a wrong rank, a flipped verdict, a mutated hole chain and a deleted row — all four re-run at the forty-eighth close against the raised floors, each exiting non-zero with the right message.* **It now also checks the OPENING-WIDTH CENSUS**, which is prose and was therefore never covered by either table: every `Over the **N** closed chains…` sentence is re-derived from the walk's **first N** spans, so the archived close writeups are each audited against **their own N** rather than today's; and while a span is open the live entry's *"since the Nth"*, *"M of the N"* and last-five-ordinals figures are read **only from the text at and after the `SPAN-STATE: open` marker**, because the archived writeups use the same words about different spans. *Proved to fail on twelve mutations — seven live, five archived — each one verified to have actually changed the file before its run was scored.* |
+| `span_audit.py` | checks **every span figure written in this note** against `--spans all`: the spans table's duration, both ranks, both denominators and the tie count; the monotonicity table's sha, chain, comparison count and verdict. It **prints how many figures it checked** and **asserts contiguity** of both tables' ordinals, so a pattern that misses a row fails instead of passing quietly. Durations are parsed from `H:MM:SS`, never from the four-decimal hours. Takes an optional note path so it can be run against a mutated copy — *proved to fail on a wrong rank, a flipped verdict, a mutated hole chain and a deleted row — all four re-run at the forty-eighth close against the raised floors, each exiting non-zero with the right message.* **It now also checks the OPENING-WIDTH CENSUS**, which is prose and was therefore never covered by either table: every `Over the **N** closed chains…` sentence is re-derived from the walk's **first N** spans, so the archived close writeups are each audited against **their own N** rather than today's; and while a span is open the live entry's *"since the Nth"*, *"M of the N"* and last-five-ordinals figures are read **only from the text at and after the `SPAN-STATE: open` marker**, because the archived writeups use the same words about different spans. *Proved to fail on twelve mutations — seven live, five archived — each one verified to have actually changed the file before its run was scored.* **And the MONOTONICITY PROSE** — the True partition's count-words, ordinal lists and comparison-count breakdown, the False-chain column with its value tally, and the rank sentence — *13 figures, proved to fail on fifteen mutations with the unmutated note as control.* **FROZEN paragraphs are deliberately excluded**: the one headed *"as of ordinal 31"* states its True partition at 31 and its False-chain list at 32, names both vintages itself, and a checker keyed to its headline would fail correct prose. |
 | `refig.py <spans-file> <sha7> <ordinal>` | refigures the spans table at a close: reproduces every carried row at the OLD N first, then rewrites all of them at the new one, emits the new spans and monotonicity rows, checks the three set equalities and prints the globals. **Both N values are derived from the walk, never typed**, and it asserts that the parsed row count matches what the walk implies. *It is PARAMETERISED precisely because the two alternatives both failed: a `sed`-patched copy of the previous close's script left a bare old N in an expected-value tuple and reported 39 spurious mismatches, and the "write it fresh each time" remedy that replaced it produces an unchecked script every close — one of those matched zero rows on its first run.* **Committed at the fifty-sixth close, after living in the scratchpad for five.** |
 | `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by **both** `bank.py` (each bank) and `cnf_mtime_check.py` (each run), so there is one source rather than two. Read the LAST row per cube before the teardown instant; never a later one, and never an average. **COMMIT IT** — see below. |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
@@ -3665,7 +3665,11 @@ recomputation as text can get and was stepped over three times anyway,
 so a resolution to look harder is not a remedy. **The remedy would have
 to be mechanical, and it is not one yet** — `span_audit.py` reads the
 two tables and this line is prose. *That gap is named in the tally
-below, not claimed closed.*
+below, not claimed closed.* ***AND IT IS CLOSED AS OF THE THIRD BANK OF
+THE FIFTY-SEVENTH SPAN***, where `span_audit.py` grew `mono_prose()`
+and began checking these bullets against the walk. *The sentence above
+is left as it was written, because it was true for every commit it
+stood in; this is the strike, not a rewrite.*
 
 **The forty-eighth adds nothing to this population** — one comparison is
 below the threshold — **so the correction is entirely a debt being paid,
@@ -3682,7 +3686,10 @@ three closes***, which is the device working exactly as designed and
 being read by nobody until now; **loudly is only useful if something
 reads it, and the thing that reads it is `span_audit.py`, which covers
 the two tables and not this prose.** *That gap is named again here and
-is still not closed.*
+is still not closed.* ***STRUCK AT THE THIRD BANK OF THE FIFTY-SEVENTH
+SPAN:*** `span_audit.py` now reads this prose too, so the device that
+goes stale loudly is finally read by something. **The count in that
+sentence is checked against the walk at every run.**
 
 **The twenty-two False chains, by comparison count**: 16, 13, 10, 10,
 9, **8**, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 5, **4** — and the
@@ -6183,7 +6190,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1446 -> 1447 rows)
+## State as of the last refresh (1447 -> 1449 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6194,7 +6201,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1447 rows; 1278 labels decided; 1278 UNSAT; 0 SAT; 0 labels
+- **1449 rows; 1280 labels decided; 1280 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6208,7 +6215,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1278 decided plus 169 superseded
+  A row count is not a decision count: 1280 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6242,7 +6249,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1276, highest decided 1279, holes [1277, 1278].**
+- **Frontier contiguous 0..1276, highest decided 1281, holes [1277, 1280].**
   <!-- SPAN-STATE: open -->
   ***BANK idx 1279, ONE ROW — THE FIFTY-SEVENTH SPAN IS OPEN, AT
   THREE HOLES.*** It landed at **1137.7 s** at 21:26:39Z while
@@ -6339,6 +6346,47 @@ exactly one bank.
   prose, both have gone stale before, and the census check does not
   touch them.* **That gap stays named and stays open.**
 
+  ***AND THAT PARAGRAPH WAS SUPERSEDED ONE COMMIT LATER, BY THE SAME
+  HAND THAT WROTE IT.*** It went into `9bb9ec0` saying the gap **stays
+  open**; the monotonicity prose is checked as of this commit. *The
+  sentence is left standing rather than rewritten, because "stays open"
+  was true when it was committed and the note's record of what it
+  believed is worth more than a tidy paragraph.* **What is now
+  mechanical**, in `mono_prose()`: the **True partition** (its three
+  count-words, its two explicit ordinal lists, and the
+  ordinal→comparison-count breakdown of the nine that carry more than
+  one), the **False-chain column** (its count-word, the full descending
+  list, and the value tally that must sum to it) and the **rank
+  sentence** beside them — **13 figures**, taking the tool from **538 to
+  551**.
+
+  ***FROZEN PARAGRAPHS ARE DELIBERATELY NOT CHECKED, AND THE REASON IS
+  A NEAR-MISS.*** The superseded partition headed *"as of ordinal 31"*
+  states its True breakdown at **31** and its False-chain list at
+  **32** — *it says so itself, in the clause "until the thirty-second's
+  10 was inserted above it"*. Reading it against its headline ordinal
+  gives **13 chains where it says 14**, and the first pass through this
+  work **took that for an error in the note**. **It is not an error; it
+  is a mixed vintage that names both of its vintages**, and a checker
+  keyed to the headline would have failed correct prose and invited a
+  "fix" to it. *So `mono_prose()` checks the CURRENT bullets only, and
+  the reason is written into the tool beside the floor.* **The walk was
+  the arbiter, not the impression** — 31 and 32 were both computed, and
+  the paragraph matched at the vintage it named.
+
+  ***PROVED TO FAIL, TWICE OVER.*** Fifteen mutations against the
+  function — every count-word, both ordinal lists, the breakdown, the
+  chain list, the tally, the tally total, the rank and the row it names,
+  plus a reworded sentence — **fifteen caught, none missed**, each one
+  verified to have changed the file before its run was scored, with the
+  unmutated note as control. *Three of the fifteen were then re-run
+  through the committed tool itself* — a figure mismatch, a
+  count-word mismatch and the reworded sentence — *because a function
+  that passes its own harness is not the thing that ships; the CLI is.*
+  **Two more anchors in that harness matched nothing and the assertion
+  refused them**, both for the same reason as before: *the sentence
+  wraps in the file where it does not wrap in the sentence.*
+
   **Close condition, in the rule form:** filling **all three** of 1276,
   1277 and 1278 closes it **iff the committing tree leaves no undecided
   index below its highest decided**. *The highest decided is 1279, so
@@ -6347,9 +6395,11 @@ exactly one bank.
   committed opening width is three**, and the file's width at any
   instant is not the record. *Neither branch is predicted.*
   ***THIS PARAGRAPH WAS WRITTEN AT THE OPENING AND SAYS "ALL THREE".***
-  *The second bank filled 1276; two remain. It is left standing as the
-  opening statement rather than quietly rewritten — the running table
-  below and the second bank's entry carry the current state.*
+  *It is left standing as the opening statement rather than quietly
+  rewritten.* **The running table below is the current state and the
+  latest bank's entry is the current close condition** — *and this
+  pointer said "the second bank's entry" until the third bank made that
+  wrong too, which is what a pointer to a specific entry does.*
 
   **RUNNING TABLE FOR THIS SPAN**, terse from the first bank:
 
@@ -6357,6 +6407,7 @@ exactly one bank.
   |---|---|---|---|---|
   | 1st | idx 1279 | 1137.7 s | `[1276, 1277, 1278]` | 1281+ while 1280 out |
   | 2nd | idx 1276 | 3415.5 s | `[1277, 1278]` | 1281+ while 1280 out |
+  | 3rd | idx 1281, 1278 | 717.2 s, 4008.4 s | `[1277, 1280]` | 1283+ while 1282 out |
 
   **The bank's own figures, against N = 1277**: **rank 1047**, 230
   cheaper, and `1277 − 230 = 1047` reproduces it, so no tie; the
@@ -6399,6 +6450,66 @@ exactly one bank.
   *Rank, tie census and block position were each recomputed from the
   checkpoint independently of bank.py and agree with it on every
   figure.*
+
+  **THIRD BANK — TWO ROWS IN ONE COMMIT: idx 1281 at 717.2 s** (landed
+  21:57:41Z) **and idx 1278 at 4008.4 s** (landed 21:59:04Z). *The
+  frontier does not move — 1277 is still out — but the highest decided
+  jumps 1279 → 1281 and the holes become `[1277, 1280]`.* **The close
+  condition moves with it**: filling both closes the span, and the
+  failure mode is now a row at **1283 or above** while **1282** is out.
+
+  ***THE BRANCH THIS SPAN NAMED AT ITS OPENING IS THE ONE THAT
+  HAPPENED.*** The opening entry wrote the failure mode as *"a row at
+  1281 or above riding in the same bank while 1280 is out"*, and **idx
+  1281 is exactly that row.** *No prediction was made and none is
+  claimed — the entry said "neither branch is predicted" and meant it.*
+  **Writing the condition down did not foresee it; it made the outcome
+  recognisable when it arrived**, which is the whole of what a written
+  condition buys.
+
+  ***AND HERE IS THE PART THAT WAS NEARLY WRITTEN WRONG.*** When idx
+  1281 was banked alone, the file's hole count went **3 → 2 → 3**, and
+  the draft of this entry said the span's monotonicity verdict was
+  **already determined False** — a chain that has once increased can
+  never be non-increasing again, so "determined" was the right word for
+  the claim being made. **It was the wrong claim.** *The hole chain is
+  measured **per commit**, not per row* — the `#29` rider again — and
+  **idx 1278 landed 83 seconds after idx 1281, before any commit was
+  made.** So the committed chain is **3, 2, 2**, which is
+  **non-increasing**, and the widening to three exists only in the file
+  and in `bank.py`'s 21:58:17Z staging output. ***THE VERDICT IS NOT
+  DETERMINED FALSE; IT IS NOT DETERMINED AT ALL.***
+
+  **State that limitation plainly rather than enjoying the escape.**
+  Had the idx 1281 bank been committed in that 83-second window — and
+  it was staged, with its entry half-written, inside it — *this span's
+  monotonicity verdict would have been permanently False on a
+  comparison count of three.* **The monotonicity statistic is therefore
+  sensitive to commit timing, not only to solver behaviour**, and the
+  twenty-two False chains in the record are twenty-two *as committed*,
+  which is the only sense the note has ever claimed for them. *It is
+  not a defect being disclosed for the first time — the `#29` rider has
+  always said the commit is the measurement — but this is the sharpest
+  instance of it in the record, and it is recorded because the
+  alternative was a "determined" claim that a ninety-second race would
+  have decided.*
+
+  **The two banks' figures, both against N = 1280.** *Both ranks are
+  quoted at the SAME N, which is the point: idx 1281 was first computed
+  at **rank 1158 of 1279** while it was the only new row, and the
+  second row moved it to **1159 of 1280** before anything was
+  committed. **A denominator is not a rank** and a rank does not
+  survive its population growing.*
+  **idx 1281 — rank 1159**, 121 cheaper, `1280 − 121 = 1159`, no tie;
+  **42nd dearest of the 46** in `[13,12,12,12]`; **0.0332 of the cap**.
+  **idx 1278 — rank 541**, 739 cheaper, `1280 − 739 = 541`, no tie;
+  **6th dearest of the 46**; **0.1856 of the cap**. *The whole-sweep tie
+  census holds at **13 of 1280**.* **Count 1280 = 65.6747%**, neither
+  trap nor threshold — *computed, not recalled: at k = 65 the trap is
+  1266 and the threshold 1267, at k = 66 they are 1286 and 1287* — so
+  the 66% trap at **1286** is **six** away. `[13,12,12,12]` at **46 of
+  65**, **19** short. **The block maximum stays 5504.5 s** at idx 1273
+  for a third bank running, and the block median is **1741.1 s**.
 
   ***AND THAT MEDIAN READ 1778.5 s UNTIL IT WAS CHECKED.*** The
   scratchpad took `sorted(costs)[n // 2]`, which on an **even** count is
@@ -11531,7 +11642,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1278 of 1949 = 65.5721%**; **671 undecided**. **50% IS CROSSED**, at
+- **1280 of 1949 = 65.6747%**; **669 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -12245,7 +12356,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **44 decided**, undecided 21 spanning 1277..1298
+  **46 decided**, undecided 19 spanning 1277..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
