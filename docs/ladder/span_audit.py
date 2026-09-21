@@ -48,8 +48,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 42
-MIN_MONO_ROWS  = 56
+MIN_TABLE_ROWS = 43
+MIN_MONO_ROWS  = 57
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -59,7 +59,7 @@ MIN_MONO_ROWS  = 56
 # written.  Nothing here could have caught that.  Now the census is parsed
 # too -- ONLY while a span is open, because when none is open the sentences
 # are correctly absent and their absence is not a failure.
-MIN_CENSUS_SENTENCES = 4
+MIN_CENSUS_SENTENCES = 5
 MIN_CENSUS_LIVE      = 4
 # The monotonicity prose -- the True partition, the False-chain column and
 # the rank sentence beside them -- is the OTHER half of the gap the note
@@ -71,7 +71,7 @@ MIN_CENSUS_LIVE      = 4
 # False-chain list at 32, and naming its own vintage is exactly what makes
 # it honest -- a checker keyed to the headline ordinal would fail correct
 # prose.  Only the CURRENT bullets are checked.
-MIN_MONO_PROSE       = 13
+MIN_MONO_PROSE       = 15
 
 SPAN_OPEN = "<!-- SPAN-STATE: open -->"
 
@@ -292,6 +292,21 @@ def mono_prose(note, spans):
     bullet('one-comparison Trues',
         r'\*\*([\w-]+) more rest on a single comparison\*\*.{0,120}?: \*\*([\d, ]+)\*\*',
         sorted(o for o, s in T.items() if s['comps'] == 1))
+
+    # The standalone headline above the bullets.  It was stale at the
+    # fifty-seventh close ("Thirty-four True of fifty-six") and the first
+    # version of this function did NOT catch it -- it read the bullets'
+    # count-words and not this sentence.  Enumerate the sentences; do not
+    # claim "the prose" as a class.
+    m = re.search(r'\*\*([\w-]+) True of ([\w-]+)\*\* — and the breakdown', flat)
+    if not m:
+        bad.append(('mono prose', 'True/total headline', 'NOT FOUND'))
+    else:
+        checked += 2
+        if CARDS.get(m.group(1).lower()) != len(T):
+            bad.append(('mono prose', 'headline True', f'note {m.group(1)} vs walk {len(T)}'))
+        if CARDS.get(m.group(2).lower()) != len(tbl):
+            bad.append(('mono prose', 'headline total', f'note {m.group(2)} vs walk {len(tbl)}'))
 
     m = re.search(r'\*\*([\w-]+) carry more than one\*\*: (.+?)\.', flat)
     if not m:
