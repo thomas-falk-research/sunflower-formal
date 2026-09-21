@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T09:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T09:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5141,6 +5141,21 @@ alongside it.**
   already has the information to enforce and does not.* **The claim
   built on the figures — decreasing at 8 of the 9 steps — survives the
   correction unchanged, and that is luck rather than method.**
+- ***A PIPE THAT ATE THE LINE THAT MATTERED*** — **second instance of
+  the `#31` defect, and the first on `tail` rather than `head`.** At the
+  fiftieth span's tenth bank I ran `bank.py | tail -n 3`, which
+  discarded the `HEAD → staged: N new row(s)` line — the one line that
+  says what is about to be committed. *Three drafts of that entry named
+  the wrong row set, each correct for the moment it was written.* **No
+  commit carried any of them**, because a verification script's block
+  census disagreed with bank.py's reported highest-decided index and the
+  disagreement was believed. *The remedy is mechanical and narrow:
+  **bank.py's output is read whole, never through any filter**, and the
+  `HEAD → staged` line is read before a word is written from that run.
+  The same already applies to `cnf_mtime_check.py` for the SIGPIPE
+  reason; it now applies to bank.py for a different one, and the two are
+  worth keeping distinct — `#31` was output never produced, this was
+  output produced and thrown away.*
 - A zero quoted from one sample as exactness (07b8a61, 948005d).
 - A published figure compressed until it meant something else (8b557b5,
   cd03f27, 45aacf6).
@@ -5454,7 +5469,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1369 -> 1370 rows)
+## State as of the last refresh (1370 -> 1375 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5465,7 +5480,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1370 rows; 1201 labels decided; 1201 UNSAT; 0 SAT; 0 labels
+- **1375 rows; 1206 labels decided; 1206 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5477,7 +5492,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1201 decided plus 169 superseded
+  A row count is not a decision count: 1206 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5496,10 +5511,19 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1197, highest decided 1202, holes [1198, 1201].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FIFTIETH.** ***AND THE `#29` RIDER
-  FIRED ON THE VERY FIRST CLAUSE THAT WAS WRITTEN WITH IT.***
+- **Frontier contiguous 0..1205, highest decided 1205, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FIFTIETH SPAN IS CLOSED. ITS FIGURES ARE NOT IN THIS COMMIT —
+  THEY ARRIVE IN THE NEXT ONE, AND THIS SENTENCE IS DUE FOR RETIREMENT
+  THERE.** It was filled by **idx 1201 at 1971.9 s**, in a bank that
+  carried **five** rows. *`--spans all` walks `git rev-list HEAD --
+  CHECKPOINT`, so the closing commit must exist before the tool can see
+  the run end.* **The wording above is correct for exactly one commit;
+  it has been honoured on schedule twice and the reminder is written
+  into the heading again rather than left to be noticed.**
+
+  ***AND THE `#29` RIDER FIRED ON THE VERY FIRST CLAUSE THAT WAS WRITTEN
+  WITH IT.***
 
   `d0c9c23` wrote the whole conditional one commit ahead: *1193 first
   opens three, the four-thread ceiling — **iff** 1193 finishes first
@@ -5599,6 +5623,111 @@ exactly one bank.
   | 7th | idx 1192 | 4300.2 s | `[1197, 1198]` | 1201+ while 1200 out |
   | 8th | idx 1197 **and** idx 1200 | 2683.5 s, 1237.5 s | `[1198]` | 1202+ while 1201 out |
   | 9th | idx 1202 | 423.1 s | `[1198, 1201]` | 1204+ while 1203 out |
+  | 10th | **five rows** — idx 1198, 1205, 1204, 1203, 1201 | 2336.2, 61.6, 239.5, 756.3, 1971.9 s | `[]` — **CLOSED** | — |
+
+  ***THE TENTH BANK CARRIED FIVE ROWS, CLOSED THE SPAN, AND FOUR DRAFTS
+  OF THIS PARAGRAPH GOT IT WRONG — THE FIRST BECAUSE I READ bank.py
+  THROUGH `tail`, THE REST BECAUSE THE ROWS OUTRAN THE WRITING.*** idx
+  1198 at **2336.2 s**, idx 1205 at **61.6 s**, idx 1204 at **239.5 s**,
+  idx 1203 at **756.3 s**, idx 1201 at **1971.9 s** — *five rows inside
+  six minutes, the fastest stretch this sweep has recorded in a single
+  bank.* **Each draft named the row set correctly for the moment it was
+  written and was overtaken before it could be committed**: one row and
+  `[1201]`, then two and `[1201, 1203, 1204]`, then three and
+  `[1201, 1203]`, then four and `[1201]`. *The committed set is empty:
+  **the span closed.***
+
+  **The lesson is not "write faster".** *The `tail` pipe was a real
+  defect and is registered below; the other three drafts were not
+  defects at all, just a file moving faster than prose. **The row list
+  belongs in the commit message, written last from a final unfiltered
+  bank.py run**, and this note's prose should describe what does not
+  move.*
+
+  ***THE CAUSE WAS A PIPE, AND IT IS THE SAME DEFECT AS `#31`.*** I ran
+  `bank.py | tail -n 3`, which cut off the
+  `HEAD 1370 -> staged 1373: 3 new row(s)` line — **the one line that
+  says what is being committed.** *`#31` was written about `head`
+  sending SIGPIPE and killing a script before its append; this is the
+  same defect with `tail` discarding the head of the output instead.*
+  **The rule tightens to what it should always have been: bank.py's
+  output is read WHOLE, never through any filter, and the
+  `HEAD → staged` line is read before a word is written from that run.**
+
+  ***WHAT CAUGHT IT WAS A DISAGREEMENT, NOT A RE-READING.*** A
+  verification script computing the block census from the staged blob
+  reported `[13,13,9,2]` **complete**, which is impossible if the
+  highest decided index is 1202. *bank.py and my own script disagreeing
+  is the detector the fiftieth's opening already records; it fired again
+  here, on my filtering rather than on a race.* **The first draft died
+  to it and no commit did**, which is the only part of this worth
+  keeping.
+
+  ***AND THE FIVE ROWS FINISHED THE WHOLE `[13,13,9,*]` GROUP.*** idx
+  1198 completed the 5-block, 1204 and 1205 are each a one-member block
+  on their own, 1203 completed the 2-block and 1201 the 3-block — **so
+  all eight blocks of the tail are in and the census has no open block
+  at all.** The suffix-aligned comparison, complete on both sides:
+
+  | size | `[13,13,10,*]` median | `[13,13,9,*]` median | same direction? |
+  |---|---|---|---|
+  | 15 | 3429.0 s | 1974.0 s | — |
+  | 11 | 2646.0 s (fall) | 2538.7 s (**rise**) | **no** |
+  | 7 | 1699.4 s (fall) | 1630.7 s (**fall**) | **yes** |
+  | 5 | 1245.1 s (fall) | 1511.0 s (**fall**) | **yes** |
+  | 3 | 826.7 s (fall) | **1237.5 s** (**fall**) | **yes** |
+  | 2 | 332.2 s (fall) | **589.7 s** (**fall**) | **yes** |
+  | 1 | 102.0 s (fall) | **239.5 s** (**fall**) | **yes** |
+  | 1 | 23.8 s (fall) | **61.6 s** (**fall**) | **yes** |
+
+  ***THE TEST IS COMPLETE: ALL EIGHT BLOCKS ARE IN, AND SIX OF THE SEVEN
+  STEPS AGREE.*** The only disagreement is the **first** step, 15 → 11,
+  where the reference falls and this tail rises.
+
+  ***AND THE TWO TAILS HAVE THE SAME SHAPE, WHICH IS MORE THAN THE TEST
+  ASKED FOR.*** Over its **full** ten-block series the reference runs
+  `2486.6, 3833.0, 3429.0, 2646.0, 1699.4, 1245.1, 826.7, 332.2, 102.0,
+  23.8` — **one rise, at step 1, then eight falls**. Over its full
+  eight-block series this tail runs `1974.0, 2538.7, 1630.7, 1511.0,
+  1237.5, 589.7, 239.5, 61.6` — **one rise, at step 1, then six falls**.
+  *Same count of rises, same position, in both. Computed by differencing
+  each full series, not read off the aligned window, which is why the
+  aligned table shows the rise and the original `[13,13,10,*]` entry did
+  too.*
+
+  **So the cost half of the claim has its second independent tail**, and
+  what it reproduced is not just "falls" but "falls after exactly one
+  rise at the second block". ***TWO TAILS IS TWO TAILS.*** *It is not
+  a law, no mechanism is offered, and the `[13,13,8,*]` group starting
+  at idx 1206 is the next place it can fail. The levels differ: this
+  tail sits **below** the reference at sizes 15, 11 and 7 and **above**
+  at 5, 3, 2, 1 and 1 — the crossing is between 7 and 5, and no claim
+  is made about it.*
+
+  ***AND THE "RESTART VALUE VARIES" OBSERVATION NOW HAS A DETERMINED
+  FORM, WHICH IS WORTH HAVING BECAUSE THAT LINE HAS ALREADY BEEN WRONG
+  ONCE.*** idx 1205 is the last cube of `[13,13,9,*]`; **idx 1206 opens
+  `[13,13,8,*]`, whose sizes are `7, 5, 3, 2, 1, 1` — a restart at 7**,
+  after 82 at the first restart and 15 at `[13,13,9,*]`. *Three
+  different values, exactly as the note said. But they are not
+  arbitrary.* **Every `[13,13,k,*]` group's size series is a window of
+  one master sequence**
+
+  `129, 104, 82, 65, 49, 38, 28, 21, 15, 11, 7, 5, 3, 2, 1, 1`
+
+  **starting at offset `2 × (13 − k)`** — checked for all eight groups
+  k = 13 down to 6, all eight match. *So the restart values are the
+  master sequence's **even-offset entries**: 129, 82, 49, 28, 15, 7, 3,
+  1 — and 7 is simply the next one. The variation is complete
+  arithmetic over `SEQ`, not a surprise.*
+
+  ***AND THE PATTERN DOES NOT CARRY ACROSS A CHANGE IN THE SECOND
+  COORDINATE, WHICH WAS CHECKED RATHER THAN ASSUMED.*** A draft said
+  "every group is the previous one with its first two entries dropped".
+  **Run over all 27 groups in `SEQ`, that fails seven times** — at every
+  boundary where the second coordinate drops, and twice at the top of
+  the `[13,13,*]` family where a trailing `1` is gained as well. *The
+  window rule above is stated only for the family it was checked on.*
 
   ***AND AT THE NINTH THE HOLE SET GREW AGAIN, FOR THE SECOND TIME IN
   THIS SPAN.*** idx 1202 landed at **423.1 s** while **1201** was still
@@ -8332,7 +8461,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1201 of 1949 = 61.6213%**; **748 undecided**. **50% IS CROSSED**, at
+- **1206 of 1949 = 61.8779%**; **743 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -9045,12 +9174,7 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 9, 6]` idx 1194..1198: **5 members**,
-  **4 decided**, undecided [1198]
-- `[13, 13, 9, 5]` idx 1199..1201: **3 members**,
-  **2 decided**, undecided [1201]
-- `[13, 13, 9, 4]` idx 1202..1203: **2 members**,
-  **1 decided**, undecided [1203]
+*No block is open: every block with any decided member is complete.*
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
