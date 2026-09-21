@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T03:57Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T04:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5005,7 +5005,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1334 -> 1335 rows)
+## State as of the last refresh (1335 -> 1336 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5016,7 +5016,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1335 rows; 1166 labels decided; 1166 UNSAT; 0 SAT; 0 labels
+- **1336 rows; 1167 labels decided; 1167 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -5024,7 +5024,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1166 decided plus 169 superseded
+  A row count is not a decision count: 1167 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -5043,7 +5043,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1165, highest decided 1165, holes [].**
+- **Frontier contiguous 0..1166, highest decided 1166, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE FORTY-SIXTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
   COMMIT.** It opened at **one hole** when idx 1164 landed at 1109.2 s
@@ -7064,7 +7064,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1166 of 1949 = 59.8256%**; **783 undecided**. **50% IS CROSSED**, at
+- **1167 of 1949 = 59.8769%**; **782 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7278,10 +7278,29 @@ exactly one bank.
 
   **What actually protects it is banking promptly, not vigilance.**
   Every waiter firing is banked before the next is armed, so losing the
-  trap requires **four rows landing inside one bank cycle**. *That is
-  not impossible — this session has banked five at once — so the
-  arithmetic is re-run before every bank until the counter is past
-  1170. No claim is made about when these four land or in what order.*
+  trap requires several rows landing inside one bank cycle. *That is not
+  impossible — this session has banked five at once — so the arithmetic
+  is re-run before every bank until the counter is past 1170. No claim
+  is made about when these land or in what order.*
+
+  ***AND THE MARGIN HAS NARROWED TWICE SINCE, SO THE CONSTRAINT IS
+  RESTATED RATHER THAN CARRIED.*** idx 1165 and idx 1166 landed and were
+  banked one at a time, taking the counter to **1167**; idx 1170 is now
+  in flight too, so the set is **1167, 1168, 1169, 1170** — *four
+  consecutive from frontier + 1 for the third refresh running*. From
+  1167 the landmarks are **two decisions to the trap at 1169** and
+  **three to the threshold at 1170**. So, exactly:
+
+  - **a bank of one, then another of one — caught**;
+  - **a single bank of exactly two — caught**;
+  - **a single bank of three or more from here — 1167 → 1170, and the
+    trap is lost.**
+
+  *The earlier version of this paragraph said the loss needed "four rows
+  in one bank cycle". **That was true when the counter was 1165 and is
+  not true now**: the number shrinks by one with every single-row bank,
+  and it is three today. A constraint stated once and carried is the
+  `#27` shape — re-derived here instead.*
 
   ***AND THE SAME ARRANGEMENT BOUNDS THE NEXT SPAN OPENING, AS IT DID AT
   THE FORTY-FOURTH.*** Four consecutive in flight from frontier + 1
@@ -7668,7 +7687,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 9, 9]` idx 1161..1175: **15 members**,
-  **5 decided**, undecided 10 spanning 1166..1175
+  **6 decided**, undecided 9 spanning 1167..1175
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
