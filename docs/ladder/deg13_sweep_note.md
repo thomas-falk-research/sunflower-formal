@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T01:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T02:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4697,7 +4697,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1312 -> 1313 rows)
+## State as of the last refresh (1313 -> 1315 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4708,7 +4708,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1313 rows; 1144 labels decided; 1144 UNSAT; 0 SAT; 0 labels
+- **1315 rows; 1146 labels decided; 1146 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4716,7 +4716,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1144 decided plus 169 superseded
+  A row count is not a decision count: 1146 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4735,14 +4735,23 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1138, highest decided 1144, holes [1139].**
-  <!-- SPAN-STATE: open -->
-  **A SPAN IS OPEN, AND IT IS THE FORTY-FOURTH.** idx 1141 landed at
-  580.9 s while **1138, 1139 and 1140** were all still running — an
-  opening at **three holes at once**. The frontier and hole set are on
+- **Frontier contiguous 0..1145, highest decided 1145, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FORTY-FOURTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.** It opened at **three holes at once** when idx 1141 landed at
+  580.9 s while **1138, 1139 and 1140** were all still running, and was
+  filled by **idx 1139 at 6441.8 s**. The frontier and hole set are on
   the bullet line above, which bank.py owns; *this prose deliberately
-  does not repeat them.* **No duration, no rank, no monotonicity and no
-  commit count until it closes.**
+  does not repeat them.*
+
+  **Its duration, ranks, hole-count chain and monotonicity are absent
+  deliberately: they do not exist yet.** `--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must EXIST
+  before the tool can see the run end. They arrive in the next commit,
+  with **every rank in the spans table recomputed together at the new
+  N**, the twenty-nine carried rows first reproduced at the old N in the
+  same script, and **the merged monotonicity table taking its row 44 in
+  that same run**.
 
   The ordinal was derived before the outcome, as at the last eight:
   `--spans all` re-run after the holes appeared still ends at
@@ -4766,6 +4775,49 @@ exactly one bank.
   spread, and idx 1141 started **last** and still finished first, as at
   the forty-second. *Six openings now have measured starts: 0 s, 59 s,
   522 s, 804 s, 1603 s and 1686 s. A population, not a series.*
+
+  ***AND IT CLOSED A BLOCK, WHICH THREE BANKS RUNNING SAID
+  CONDITIONALLY AND IS NOW SETTLED.*** `19f4e66` wrote: *"Whichever bank
+  lands it closes [13, 13, 10, 7] at 11 of 11 and the forty-fourth span
+  in the same row; that conditional is arithmetic already on the page,
+  and when it lands is not claimed."* It landed, and both closed on the
+  same row. *That is a conditional about membership already on the page
+  — 1139 was the block's last undecided index — not a forecast about
+  which cube would finish when, which is the only kind of forward
+  statement this file makes.* It ends the one-close gap opened by the
+  forty-third, which took no block with it.
+
+  **The block, 11 members:** total **29928.6 s = 8.3135 core-hours**,
+  median **2646.0 s**, mean **2720.8 s**, cheapest **580.9 s** (idx
+  1141), dearest **6441.8 s** (idx 1139) — a spread of **11.0893×**, and
+  the dearest is the closing row itself. **The running maximum was
+  raised 7 times across the 11**, against **H₁₁ = 3.0199** under a
+  uniformly random landing order, with **P(at least 7) = 0.0044417**
+  from the Stirling numbers of the first kind — *the same scheduler
+  effect the not-hits list quantifies, for the fourth block running, and
+  not a fact about these cubes.*
+
+  ***THE FOURTH CONSECUTIVE BLOCK TO CLOSE ON ITS DEAREST MEMBER — AND
+  THE BASE RATE MOVED WHEN IT WAS RECOMPUTED, SO THE OLD ONE IS NOT
+  REUSED.*** `[13,13,10,10]`, `[13,13,10,9]`, `[13,13,10,8]` and now
+  `[13,13,10,7]`. One block ago this file put the rate at **19 of 40**
+  four-coordinate prefixes holding two or more decided rows, **47.5%**;
+  recomputed over the current tree it is **21 of 41, 51.2%** — the
+  denominator grew because `[13,13,10,6]` reached two decided rows, and
+  the numerator grew by two. *The four are among the 41, so the rate is
+  not independent of the run it is being used to judge.* At 51.2% a run
+  of four is **6.9%**, which is neither nothing nor evidence: the run
+  was noticed after it happened, and the rate **is** the scheduler
+  effect rather than a test of it.
+
+  ***AND ITS SPREAD IS NARROW, WHICH IS THE OPPOSITE OF THE LAST
+  BLOCK'S AND WAS CHECKED FOR THAT REASON.*** **11.0893×** is **rank 24
+  of the 28** prefixes with ten or more decided members, where
+  `[13,13,10,8]` was rank 10 of 27. Among the four closed `[13,13,10,*]`
+  blocks it is the **narrowest**: 11.0893× against 11.6047×, 16.9626×
+  and 24.0623×. *The previous block's spread sentence had to be walked
+  back from "widest" to "rank 10 of 27"; this one was ranked before it
+  was described.*
 
   **THE FORTY-THIRD SPAN IS CLOSED.** It opened at **two holes** when
   idx 1137 landed at 2646.0 s while 1135 and 1136 were still running,
@@ -6316,7 +6368,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1144 of 1949 = 58.6968%**; **805 undecided**. **50% IS CROSSED**, at
+- **1146 of 1949 = 58.7994%**; **803 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6803,10 +6855,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 10, 7]` idx 1131..1141: **11 members**,
-  **10 decided**, undecided [1139]
 - `[13, 13, 10, 6]` idx 1142..1148: **7 members**,
-  **3 decided**, undecided [1145, 1146, 1147, 1148]
+  **4 decided**, undecided [1146, 1147, 1148]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
