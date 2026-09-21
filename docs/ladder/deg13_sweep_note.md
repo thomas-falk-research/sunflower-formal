@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T17:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T18:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -105,20 +105,30 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Twenty-three** involuntary restarts, CPU-hours discarded:
+**Twenty-four** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
     #40 in [4.9648, 4.9688]   #41 in [5.0256, 5.0262]
     #42 = 3.3278   #43 = 3.9984   #44 in [1.5889, 1.6040]
     #45 in [5.3799, 5.4319]   #46 in [0.8908, 1.5291]
+    #47 in [3.9879, 4.0319]
 
-median **3.5640 at both ends**, mean **3.7152–3.7429**, **total
-85.4488–86.0871**. ***THE MEDIAN HAS MOVED BACK DOWN TO 3.5640, the
-value it held at n = 21*** — it has now run 3.5640 → 3.5790 → 3.5640
-across three restarts. *That is arithmetic about which element is
-central and not a fact about restarts; the oscillation reversing a
-second time is the third demonstration of the same caution.*
+median **3.5790 at both ends**, mean **3.7398–3.7417**, **total
+89.7558–89.7998**. ***THE MEDIAN HAS MOVED BACK UP TO 3.5790*** — it
+has now run 3.5640 → 3.5790 → 3.5640 → 3.5790 across four restarts.
+*That is arithmetic about which element is central and not a fact about
+restarts; the oscillation reversing a third time is the fourth
+demonstration of the same caution.*
+
+***AND THE CONVENTION WAS CONFIRMED BEFORE IT WAS EXTENDED, AGAIN.***
+Holding every older bracket at its midpoint and sweeping only **#46**
+reproduces the n = 23 line exactly — mean **3.7152–3.7429**, total
+**85.4488–86.0871**, the figures recorded for it — and the all-midpoint
+reading of those 23 is median 3.5640, mean 3.7290, total 85.7679, which
+sits inside them. *Only then was #47's bracket swept.* **The previous
+line's figures are reproduced, not trusted, and that is what makes
+extending it worth anything.**
 
 ***#46 IS THE FIRST RESTART WHOSE RANK THE MEASUREMENT DOES NOT PIN.***
 It ranks **23 of 23 at its lower end and 21 of 23 at its upper**,
@@ -128,7 +138,20 @@ the note says so explicitly of **#43 (9 at both ends)** and **#45 (3 at
 both ends)**. *At its lower end #46 is the **smallest loss on record**,
 below the 1.190 that had held that place.*
 
-***AND ITS BRACKET IS A DIFFERENT KIND OF OBJECT FROM EVERY OTHER ONE
+***AND #47 IS THE SECOND, BY THE OPPOSITE MECHANISM.*** It ranks **11
+of 24 at its lower end and 10 of 24 at its upper**, because one
+recorded loss — **#43's 3.9984** — falls inside its bracket. *But #47's
+teardown instant is known to the nanosecond, from two `[killed]` markers
+that agree exactly; its width is an ordinary **ratio** bracket, and the
+whole 0.0439 CPU-h of it is one cube whose only sample sits at 67 s of
+elapsed, inside the startup depression.* **So a rank can fail to be
+pinned by a missing instant or by a young sample**, and the two
+instances on record are one of each. *Two instances by two mechanisms
+is not a rate; what it establishes is only that the earlier
+generalisation — that brackets here rank the same at both ends — was
+already wrong twice.*
+
+***AND #46'S BRACKET IS A DIFFERENT KIND OF OBJECT FROM EVERY OTHER ONE
 HERE.*** The older brackets are **ratio** brackets around a **known**
 kill instant. **#46's width is kill-time uncertainty**: the container
 went down with the driver, no `[killed]` marker was ever written, and
@@ -389,14 +412,14 @@ unchanged) **and #42, 65.8 minutes later, was the second** (→ 1789782298,
 its boot instant 2.2 s *after* the teardown). **Three distinct machine
 configurations in two restarts:**
 
-| | containers 1–8 | #41 | #42 | #43 | #44 | #45 | #46 |
-|---|---|---|---|---|---|---|---|
-| CPU model name | @ 2.10GHz | **@ 2.80GHz** | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz |
-| `cpu MHz` | not recorded | 2800.186 | **2100.000** | 2100.000 | 2100.000 | 2100.000 | 2100.000 |
-| cache size | not recorded | 33792 KB | **266240 KB** | 266240 KB | 266240 KB | 266240 KB | 266240 KB |
-| `nproc` | 4 | 4 | 4 | 4 | 4 | 4 | 4 |
-| MemTotal | 16482220 kB | 16482220 kB | **16481980 kB** | 16481980 kB | 16481980 kB | 16481980 kB | 16481980 kB |
-| kernel | not recorded | 6.18.44-fc-v33 | **6.18.44-fc-v37** | 6.18.44-fc-v37 | 6.18.44-fc-v37 | 6.18.44-fc-v37 | 6.18.44-fc-v37 |
+| | containers 1–8 | #41 | #42 | #43 | #44 | #45 | #46 | #47 |
+|---|---|---|---|---|---|---|---|---|
+| CPU model name | @ 2.10GHz | **@ 2.80GHz** | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz |
+| `cpu MHz` | not recorded | 2800.186 | **2100.000** | 2100.000 | 2100.000 | 2100.000 | 2100.000 | 2100.000 |
+| cache size | not recorded | 33792 KB | **266240 KB** | 266240 KB | 266240 KB | 266240 KB | 266240 KB | 266240 KB |
+| `nproc` | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |
+| MemTotal | 16482220 kB | 16482220 kB | **16481980 kB** | 16481980 kB | 16481980 kB | 16481980 kB | 16481980 kB | 16481980 kB |
+| kernel | not recorded | 6.18.44-fc-v33 | **6.18.44-fc-v37** | 6.18.44-fc-v37 | 6.18.44-fc-v37 | 6.18.44-fc-v37 | 6.18.44-fc-v37 | 6.18.44-fc-v37 |
 
 ***THE #45 AND #46 COLUMNS WERE ADDED AT #46, AND #45's HAD BEEN
 MISSING.*** #45's spec was read and recorded at the time — it is in that
@@ -407,13 +430,16 @@ the same divergence #45's own block records finding for #44, and it has
 now happened in the other direction: the checkpoint had the reading and
 the note did not.* **Both columns are transcribed from the readings
 taken at their own restarts, not re-derived**, and #46's was re-read
-live before the relaunch.
+live before the relaunch. ***#47's COLUMN WAS ADDED AT #47***, from a
+reading taken before the relaunch and in the same commit as its header
+block — *on schedule, which is worth one clause only because the two
+columns before it were not.*
 
-**#43 WAS THE FIRST REPEAT, AND #44, #45 AND #46 FOLLOWED: all six
-fields identical to #42 at each, and `btime` did not move** at any of
-them — still 1789782298, the boot #42 left behind — so all four were
+**#43 WAS THE FIRST REPEAT, AND #44, #45, #46 AND #47 FOLLOWED: all
+six fields identical to #42 at each, and `btime` did not move** at any
+of them — still 1789782298, the boot #42 left behind — so all five were
 container teardowns on the same host boot rather than further reboots.
-**Four repeats are four readings, not a promise** — eight identical
+**Five repeats are five readings, not a promise** — eight identical
 readings preceded #41, and the ninth and tenth both broke. The series as a whole still spans three
 configurations, so costs remain off a common basis.
 
@@ -6034,22 +6060,24 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1441 rows; 1272 labels decided; 1272 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#46**
-  — extended from #45 here, against the **#46** header block in the
-  checkpoint, which records **1345 rows on both sides** of the teardown
+  undecided-only.** No rows were lost across restarts #37 through **#47**
+  — extended from #46 here, against the **#47** header block in the
+  checkpoint, which records **1441 rows on both sides** of the teardown
   and says "NOTHING WAS LOST BUT SOLVER TIME". *The waiter was armed at
-  1345 and never reported a landing, which is the independent half of
-  that check: the row count agreeing with itself either side of a
-  teardown would also be what a lost row looks like if the waiter had
-  missed it.* **The range was previously extended from #44 to #45 one
-  restart late**, which is the standing-claim-never-re-checked pattern
+  1441 and its output ends in `[killed]` with no landing line, which is
+  the independent half of that check: the row count agreeing with itself
+  either side of a teardown would also be what a lost row looks like if
+  the waiter had missed it.* **At #46 the same pair of facts read 1345
+  and 1345**, and the check is the same one applied twice, not a
+  stronger one for having held. **The range was previously extended
+  from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
   A row count is not a decision count: 1272 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
-  `/proc/32389/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 3269**, launched 2026-09-21T18:32:11.450000Z (read from
+  `/proc/3269/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -6059,14 +6087,69 @@ exactly one bank.
   not; **it does now** — bank.py reads `pgrep -x iota_sym` and computes the
   launch instant from `/proc/<pid>/stat` field 22 against `btime` in the
   same run, refusing loudly rather than guessing when zero or several pids
-  are running. **It has fired for real four times**, rewriting pid 21172
-  → 389 at restart #41, 389 → 388 at #42, 388 → 2149 at #43 and
-  **2149 → 2331 at #44**, each on the first bank after the relaunch.
+  are running. **It has fired for real seven times**, rewriting pid
+  21172 → 389 at restart #41, 389 → 388 at #42, 388 → 2149 at #43,
+  2149 → 2331 at #44, 2331 → 28574 at #45, 28574 → 32389 at #46 and
+  **32389 → 3269 at #47**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
-  has now been caught mechanically four times running.
+  has now been caught mechanically seven times running.
+
+  ***AND THIS COUNT WAS ITSELF STALE, BY TWO, IN THE SENTENCE THAT
+  EXISTS TO RECORD A GUARD AGAINST STALENESS.*** It read *"four times"*
+  and listed #41 through #44, and stayed at four across the **#45** and
+  **#46** absorbs, both of which edited this very bullet — the driver
+  line above it was rewritten at each. *Dated by `git log -S` on the
+  note for each pid in turn: `2aaf608` introduced 28574 and `31a55c7`
+  introduced 32389, so the guard demonstrably fired at both while the
+  tally beside it did not move.* **Fourth live instance of the
+  standing-claim-never-re-checked pattern**, beside the 41/14.6% line,
+  the monotonicity bullets and the "still the weakest False chain"
+  sentence. *The guard is mechanical and the count of its firings is
+  prose, which is the whole difference.*
 - **Frontier contiguous 0..1271, highest decided 1271, holes [].**
   <!-- SPAN-STATE: closed -->
-  ***BANK idx 1271, ONE ROW — FRONTIER EXTENDED, NO HOLE, NO SPAN.***
+  ***RESTART #47 — THE CONTAINER WENT DOWN AT 18:29:53.781981Z AND THE
+  DRIVER WITH IT. NOTHING WAS LOST BUT SOLVER TIME.*** The full
+  accounting is in the **#47 header block** appended to the checkpoint
+  in this commit and is not repeated here. **Headline**: both `[killed]`
+  markers were written and **agree to the nanosecond**; `btime` is
+  unchanged at 1789782298, so this was a container teardown and not a
+  host reboot; all six machine-spec fields read identical, the **fifth**
+  consecutive repeat; the checkpoint held **1441 rows on both sides**
+  and the waiter armed at 1441 ends in `[killed]` with no landing line.
+  **Four cubes were killed** — idx 1272, 1273, 1274 and 1275 — and the
+  loss is **[3.9879, 4.0319] CPU-h**. *Relaunched verbatim 137.67 s
+  after the teardown as pid **3269**, which resumed reporting
+  "checkpoint: 1272 of 1949 cubes already decided" — the same count the
+  last bank committed.*
+
+  ***THE BRACKET'S WIDTH IS ONE CUBE'S YOUNG SAMPLE, AND IT STILL DOES
+  NOT PIN THE RANK.*** Three of the four ratios are mature readings
+  (2395, 1209 and 771 s of elapsed); **idx 1275's only sample before
+  teardown sits at 67 s**, inside the startup depression this note's
+  own procedure says to distrust, so its ratio is bracketed
+  **[0.9403, 1.0000]** rather than used as a point — *the whole 0.0439
+  CPU-h of width is that one cube.* **It ranks 11 of 24 at the lower
+  end and 10 of 24 at the upper**, because **#43's 3.9984** falls inside
+  the bracket. ***#46 was the first restart whose rank the measurement
+  did not pin, and its width was kill-time uncertainty from a missing
+  marker; this one's is an ordinary ratio bracket around a teardown
+  known to the nanosecond, and it fails to pin the rank anyway*** —
+  the first time that has happened. *Two instances of a rank not being
+  pinned, by two different mechanisms, is not a rate and no rate is
+  claimed.*
+
+  **SET FIFTEEN OPENS**, with idx 1272, 1273, 1274 and 1275 re-taken
+  together. *Their new CNFs landed on **three** distinct mtimes spanning
+  **8000001 ns**, read as integer nanoseconds from `os.stat`
+  `st_mtime_ns`.* **#44 and #45 recorded 4000001 ns and #46 recorded
+  4000000 ns, so this is the first spread in the series that is not
+  about 4 ms** — it is twice that, and it carries the same trailing 1 ns.
+  *Eight milliseconds still leaves the four re-run clocks directly
+  comparable, and the set is opened with its spread stated.*
+
+  ***PREVIOUSLY: BANK idx 1271, ONE ROW — FRONTIER EXTENDED, NO HOLE,
+  NO SPAN.***
   It landed at **3315.4 s** at 17:45:50Z. **Rank 610 of 1272**, 662
   cheaper, and `1272 − 662 = 610` reproduces it, so no tie; the
   whole-sweep tie census holds at **13 of 1272**. *Count

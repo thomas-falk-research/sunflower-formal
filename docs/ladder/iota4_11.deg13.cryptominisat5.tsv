@@ -11938,3 +11938,94 @@ g=11 [13, 12, 12, 12, 13, 13, 13, 11, 10, 10, 9]	UNSAT	3423.7
 g=11 [13, 12, 12, 12, 13, 13, 12, 12, 12, 11, 6]	UNSAT	3471.0
 g=11 [13, 12, 12, 12, 13, 13, 12, 12, 12, 10, 7]	UNSAT	3344.3
 g=11 [13, 12, 12, 12, 13, 13, 12, 12, 12, 9, 8]	UNSAT	3315.4
+# ---------------------------------------------------------------------
+# RESTART #47 -- container restarted 2026-09-21T18:29:53.781981Z.  THE
+# FIRST RESTART IN THIS SERIES WHOSE TWO [killed] MARKERS AGREE TO THE
+# NANOSECOND, AND THE FIRST WHOSE *RATIO* BRACKET FAILS TO PIN ITS RANK.
+#
+# TEARDOWN INSTANT.  Both markers were written and both read
+# 1790015393.781981252 = 2026-09-21T18:29:53.781981Z -- the driver's
+# task output and the waiter's, identical to the nanosecond, because one
+# teardown touched both files.  The standing caution (4083af8) is that
+# they are NOT guaranteed to agree, and it stands: this is one
+# observation of agreement, not a property.  The last running tally in
+# this file is at #43 -- 8 agreements against 2 disagreements -- and it
+# is NOT restated here, because #44 has no header block and #46 had no
+# markers at all, so the denominator is not the restart count.
+#
+# btime UNCHANGED at 1789782298, so this was a container teardown on the
+# same host boot and not a reboot.  The checkpoint held 1441 rows before
+# and after; the waiter was armed at 1441 and its output ends in
+# [killed] with no landing line, so NOTHING WAS LOST BUT SOLVER TIME.
+#
+# MACHINE SPEC RE-READ AND COMPARED, ALL SIX FIELDS UNCHANGED: nproc 4,
+# model name Intel(R) Xeon(R) Processor @ 2.10GHz, cpu MHz 2100.000,
+# cache size 266240 KB, MemTotal 16481980 kB, kernel 6.18.44-fc-v37.
+# That is the fifth consecutive repeat (#43, #44, #45, #46, #47).  Five
+# repeats are five readings, not a promise -- eight identical readings
+# preceded #41 and the ninth and tenth both broke.
+#
+# FOUR CUBES KILLED, measured by the CNF-mtime method with the glob
+# filtered by the dead driver pid 32389 AND requiring "-seq-c".  /tmp
+# held 200 sf-sym CNFs; exactly 4 carried that pid.  Start instants are
+# the CNF mtimes:
+#
+#     idx   start (epoch s)        elapsed at    cpu/elapsed
+#                                  teardown
+#    1272   1790010416.425685383    4977.4        0.9758
+#    1273   1790011602.525755888    3791.3        0.9777
+#    1274   1790012040.125781900    3353.7        0.9844
+#    1275   1790012744.197823752    2649.6        bracketed, see below
+#
+# THREE OF THE FOUR RATIOS ARE MATURE SAMPLES, ONE IS NOT.  All four
+# cubes were sampled at 2026-09-21T17:46:51Z, so no ratio had to be
+# invented -- but idx 1275's only reading before teardown sits at 67 s
+# of elapsed, inside the startup depression this file's procedure says
+# to distrust.  Its ratio is therefore BRACKETED [0.9403, 1.0000]: the
+# lower end is its own depressed reading, the upper is 1.0 because a
+# single-threaded solver cannot exceed it.  The other three were
+# sampled at 2395, 1209 and 771 s and are used as points.
+#
+# THE LOSS IS A BRACKET, [3.9879, 4.0319] CPU-h, over 14772.0 s
+# = 4.1033 h of elapsed.  The whole 0.0439 CPU-h of width is idx 1275:
+# 0.6921 to 0.7360 CPU-h on that cube alone, against 1.3492, 1.0297 and
+# 0.9171 fixed on the other three.
+#
+# AND THE BRACKET DOES NOT PIN THE RANK, WHICH HAS HAPPENED ONCE BEFORE
+# AND NEVER THIS WAY.  It ranks 11 OF 24 AT THE LOWER END AND 10 OF 24
+# AT THE UPPER, because one recorded loss -- #43's 3.9984 -- falls
+# inside the bracket.  #46 was the first restart whose rank the
+# measurement did not pin, but #46's width was KILL-TIME uncertainty
+# from a missing marker.  This one's width is an ordinary RATIO
+# bracket around a teardown instant known to the nanosecond, and it
+# still fails to pin the rank -- the first time that has happened.
+#
+# THE LINE, RECOMPUTED WHOLE UNDER THE STATED CONVENTION (hold every
+# older bracket at its midpoint, sweep only the newest).  The n = 23
+# line was reproduced first: midpoints give median 3.5640, mean 3.7290,
+# total 85.7679, and sweeping #46 alone gives mean 3.7152-3.7429 and
+# total 85.4488-86.0871, which is exactly what the note records.  At
+# n = 24, sweeping #47 alone: median 3.5790 at both ends, mean
+# 3.7398-3.7417, total 89.7558-89.7998.  The median has now run
+# 3.5640 -> 3.5790 -> 3.5640 -> 3.5790 across four restarts; that is
+# arithmetic about which element is central, not a fact about restarts,
+# and the oscillation reversing a third time is the fourth
+# demonstration of the same caution.
+#
+# RELAUNCHED VERBATIM 137.67 s after the teardown.  New driver pid 3269,
+# launch 1790015531.45 = 2026-09-21T18:32:11.450000Z, read from
+# /proc/3269/stat field 22 against btime in one script run.  It resumed
+# reporting "checkpoint: 1272 of 1949 cubes already decided", which
+# matches the decided count the last bank committed.
+#
+# SET FIFTEEN OPENS AT RESTART #47 with idx 1272, 1273, 1274 and 1275,
+# all four re-taken together.  Their new CNFs landed on THREE distinct
+# mtimes spanning 8000001 ns = 8.000001 ms, read as integer nanoseconds
+# from os.stat st_mtime_ns.  #44 and #45 recorded 4000001 ns and #46
+# recorded 4000000 ns, so this is the first spread in the series that is
+# not about 4 ms -- it is twice that, and it carries the same trailing
+# 1 ns.  Eight milliseconds still makes the four re-run clocks directly
+# comparable.  No machine change is recorded inside the set: all six
+# spec fields read identical across the teardown and btime did not move.
+# THE SET IS OPENED WITH ITS SPREAD STATED, as the procedure requires.
+# ---------------------------------------------------------------------
