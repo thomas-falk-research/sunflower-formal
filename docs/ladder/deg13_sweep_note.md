@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T12:31Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T12:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5687,7 +5687,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1409 -> 1410 rows)
+## State as of the last refresh (1410 -> 1411 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5698,7 +5698,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1410 rows; 1241 labels decided; 1241 UNSAT; 0 SAT; 0 labels
+- **1411 rows; 1242 labels decided; 1242 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5710,7 +5710,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1241 decided plus 169 superseded
+  A row count is not a decision count: 1242 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5729,8 +5729,39 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1240, highest decided 1240, holes [].**
+- **Frontier contiguous 0..1241, highest decided 1241, holes [].**
   <!-- SPAN-STATE: closed -->
+  ***BANK idx 1241, ONE ROW — Q1 IS TRUE.*** It landed at **1078.4 s**
+  at 12:37:17Z, extending the frontier and opening no hole. **Rank 1032
+  of 1242**, 210 cheaper, and `1242 − 210 = 1032` reproduces it, so no
+  tie; the census holds at **13 of 1242**. *The count **1242 =
+  63.7250%** is neither a trap nor a threshold; the next trap is
+  **1247**, five decisions away with nothing marked between.*
+
+  ***Q1 HOLDS.*** `82297a5` registered *"idx 1241 costs MORE than
+  776.1 s"*, the first sub-run's maximum, on a base rate of **2 of 2**.
+  **1078.4 > 776.1, by 302.3 s.** *Registered before the row existed.*
+  **The 2-of-2 base rate that failed at P1 held here** — which is what
+  two instances are worth: sometimes.
+
+  **The three opener-to-previous-maximum ratios are 1.458, 1.569 and
+  1.390.** *Three numbers within 0.18 of each other.* ***No constant is
+  claimed***: n = 3, no mechanism, and the inequality — not the ratio —
+  is what was registered and what held. *The ratios are written down so
+  a later bank cannot present a fourth one as confirmation of a
+  constant that was never asserted.*
+
+  **Q2 is still open** — *idx **1244**, the (9,6) member, is the
+  dearest of idx 1241..1245* — with **idx 1242, 1243, 1244 and 1245 all
+  undecided**. The claim stands exactly as registered.
+
+  *This row took **7 minutes 20 seconds** of wall time to land against
+  the ~2-minute cadence of the previous six, which is what the second
+  sub-run opening 302 s above the first's peak looks like from the
+  waiter's side. **That is one observation of one row**, and the
+  landing interval is not the cube's cost: four threads run at once and
+  the gaps interleave.*
+
   ***BANK idx 1240, ONE ROW — P2 IS TRUE, THE FIRST SUB-RUN IS
   COMPLETE, AND TWO NEW PREDICTIONS ARE REGISTERED.*** It landed at
   **713.6 s** at 12:29:50Z, extending the frontier and opening no hole.
@@ -9552,7 +9583,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1241 of 1949 = 63.6737%**; **708 undecided**. **50% IS CROSSED**, at
+- **1242 of 1949 = 63.7250%**; **707 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -10266,7 +10297,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **7 decided**, undecided 58 spanning 1241..1298
+  **8 decided**, undecided 57 spanning 1242..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
