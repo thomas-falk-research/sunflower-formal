@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T21:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T21:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6183,7 +6183,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1444 -> 1445 rows)
+## State as of the last refresh (1445 -> 1446 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6194,7 +6194,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1445 rows; 1276 labels decided; 1276 UNSAT; 0 SAT; 0 labels
+- **1446 rows; 1277 labels decided; 1277 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6208,7 +6208,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1276 decided plus 169 superseded
+  A row count is not a decision count: 1277 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6242,9 +6242,69 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1275, highest decided 1275, holes [].**
-  <!-- SPAN-STATE: closed -->
-  ***THE RETIREMENT SENTENCE WAS HONOURED ON SCHEDULE A NINTH TIME.***
+- **Frontier contiguous 0..1275, highest decided 1279, holes [1276, 1277, 1278].**
+  <!-- SPAN-STATE: open -->
+  ***BANK idx 1279, ONE ROW — THE FIFTY-SEVENTH SPAN IS OPEN, AT
+  THREE HOLES.*** It landed at **1137.7 s** at 21:26:39Z while
+  **1276, 1277 and 1278** were all still running. *The frontier and
+  hole set are on the bullet line above, which bank.py owns; this prose
+  does not repeat them.* **No duration, no rank, no monotonicity, no
+  commit count and no hole chain until it closes.**
+
+  The ordinal was derived before the outcome: `--spans all`, re-run
+  after the holes appeared, still reports **121 closed spans** ending
+  at **`6e35abc`**, and its span list is **byte-identical** to the run
+  made before the holes existed — *diffed with the tool's own leading
+  commit-counter line excluded, because that line moves on every commit
+  and is not part of the span record.* **So this is walk position 122
+  and, at the offset of 65, ordinal fifty-seven.**
+
+  ***AN OPENING AT THREE IS NOT RARE AND IS NOT OFFERED AS ONE.*** Over
+  the **121** closed chains the opening hole count is **1 in 41 cases,
+  2 in 39, 3 in 38 and 4 in 3**, so three is **31.4%** — *the least
+  common of the three ordinary widths by two cases, which is a
+  three-case spread across 41/39/38 and not a pattern.* **It is the
+  first opening at three since the fifty-first**, and the closed spans
+  that opened at three are **38** of the 121, the last five of them
+  ordinals **40, 42, 44, 49 and 51**.
+
+  ***AND THAT SENTENCE SAID "SINCE THE FORTY-SECOND" UNTIL IT WAS
+  CHECKED.*** It was written from impression, with the words *"counted
+  off the chains rather than recalled"* attached to it — **a claim of
+  method that was itself false when written.** *The count was then run:
+  the answer is the fifty-first, six ordinals later than the guess, and
+  ordinals 44 and 49 both sat between them.* **The failure is not the
+  wrong ordinal, it is having written the assurance**; a sentence that
+  says how a figure was obtained has to be true about that too, and
+  this one was caught only because the assurance prompted the check it
+  was claiming to describe.
+
+  **Close condition, in the rule form:** filling **all three** of 1276,
+  1277 and 1278 closes it **iff the committing tree leaves no undecided
+  index below its highest decided**. *The highest decided is 1279, so
+  the failure mode is a row at **1281 or above** riding in the same
+  bank while **1280** is still out.* ***With the `#29` rider***: **the
+  committed opening width is three**, and the file's width at any
+  instant is not the record. *Neither branch is predicted.*
+
+  **RUNNING TABLE FOR THIS SPAN**, terse from the first bank:
+
+  | bank | row(s) | cost | holes after | condition becomes |
+  |---|---|---|---|---|
+  | 1st | idx 1279 | 1137.7 s | `[1276, 1277, 1278]` | 1281+ while 1280 out |
+
+  **The bank's own figures, against N = 1277**: **rank 1047**, 230
+  cheaper, and `1277 − 230 = 1047` reproduces it, so no tie; the
+  whole-sweep tie census holds at **13 of 1277**. *Count
+  **1277 = 65.5208%**, neither trap nor threshold; the next marked
+  count is the 66% trap at **1286**, **nine** away, with nothing marked
+  strictly between.* `[13,12,12,12]` at **43 of 65**, **22** short of
+  complete; **the block maximum stays at 5504.5 s** at idx 1273 and
+  this row is **33rd dearest of the 43** — *the first row since the
+  machine changed that is nowhere near the top, and the first in five
+  banks that does not move the maximum.* **0.0527 of the cap.**
+
+  ***PREVIOUSLY: THE RETIREMENT SENTENCE WAS HONOURED ON SCHEDULE A NINTH TIME.***
   The *"figures are not in this commit"* wording stood for exactly one
   commit — `6e35abc` — and this edit is the striking. **Nine for nine
   since the reminder was moved into the heading.**
@@ -11364,7 +11424,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1276 of 1949 = 65.4695%**; **673 undecided**. **50% IS CROSSED**, at
+- **1277 of 1949 = 65.5208%**; **672 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -12078,7 +12138,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **42 decided**, undecided 23 spanning 1276..1298
+  **43 decided**, undecided 22 spanning 1276..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
