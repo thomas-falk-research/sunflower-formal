@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T12:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T12:58Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5687,7 +5687,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1412 -> 1413 rows)
+## State as of the last refresh (1413 -> 1414 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5698,7 +5698,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1413 rows; 1244 labels decided; 1244 UNSAT; 0 SAT; 0 labels
+- **1414 rows; 1245 labels decided; 1245 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5710,7 +5710,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1244 decided plus 169 superseded
+  A row count is not a decision count: 1245 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5729,8 +5729,44 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1243, highest decided 1243, holes [].**
+- **Frontier contiguous 0..1244, highest decided 1244, holes [].**
   <!-- SPAN-STATE: closed -->
+  ***BANK idx 1244, ONE ROW — THE STEP-DECAY READING WAS WRONG AND Q2
+  IS ONE ROW FROM RESOLVING.*** It landed at **1649.9 s** at 12:57:18Z,
+  extending the frontier and opening no hole. **Rank 927 of 1245**, 318
+  cheaper, and `1245 − 318 = 927` reproduces it, so no tie; the census
+  holds at **13 of 1245**. *The count **1245 = 63.8789%** is neither a
+  trap nor a threshold; the next trap is **1247**, **two** decisions
+  away with nothing marked between.*
+
+  ***THE PARAGRAPH ONE BANK AGO SAID "IF THE DECAY KEEPS ITS SHAPE,
+  STEP 3 IS AT MOST 5.4 AND COULD BE NEGATIVE". STEP 3 IS +216.1.***
+  The three second sub-runs' steps:
+
+  | second sub-run | steps | first three strictly decaying? |
+  |---|---|---|
+  | `[13,13,13,10]` | +517.6, +128.9, +39.5, −56.0 | **yes** |
+  | `[13,13,12,11]` | +771.8, +597.7, +308.1, −98.9 | **yes** |
+  | `[13,12,12,12]` | +350.0, **+5.4**, **+216.1**, ? | **no** |
+
+  **So the step sizes do not decay monotonically here**, and the
+  2-of-2 decay that both precedents showed is broken at the third
+  instance. *That reading was **not** a registered prediction — it was
+  written as a conditional, "if the decay keeps its shape" — so it is
+  **not scored**.* ***But it was a wrong expectation stated in the note
+  and it is flagged as one***, because a conditional that reads as a
+  forecast does the same damage to a later reader as a forecast. **The
+  registered claim it was discussing, Q2, was explicitly not adjusted
+  in that bank — and that is exactly why it is still available to be
+  scored now.**
+
+  ***Q2 IS ONE ROW FROM RESOLVING, AND idx 1244 NOW LEADS.*** The five
+  are **1078.4, 1428.4, 1433.8, 1649.9** and idx 1245 undecided. *idx
+  1244 is the dearest of the four that are in.* **Q2 resolves TRUE iff
+  idx 1245 comes in below 1649.9 s**, and both precedents fall at that
+  last step (−56.0 and −98.9). *Two of two — which is the base rate
+  that held at Q1 and failed at P1.*
+
   ***BANK idx 1243, ONE ROW — AND Q2 IS NOW IN TROUBLE.*** It landed
   at **1433.8 s** at 12:50:52Z, extending the frontier and opening no
   hole. **Rank 958 of 1244**, 286 cheaper, and `1244 − 286 = 958`
@@ -9635,7 +9671,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1244 of 1949 = 63.8276%**; **705 undecided**. **50% IS CROSSED**, at
+- **1245 of 1949 = 63.8789%**; **704 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -10349,7 +10385,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **10 decided**, undecided 55 spanning 1244..1298
+  **11 decided**, undecided 54 spanning 1245..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
