@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T02:50Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T03:00Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4456,6 +4456,49 @@ alongside it.**
   previous bank.py run: in both, a commit message reported something
   that had not been observed in that turn.*
 
+  **#29 — A CONDITIONAL LABELLED "ARITHMETIC ALREADY ON THE PAGE" THAT
+  SILENTLY ASSUMED THE SHAPE OF THE NEXT BANK.** `ce1e307`'s body, and
+  the note block that commit added, wrote: *"Whichever bank lands idx
+  1147 closes `[13, 13, 10, 6]` at 7 of 7 **and** the forty-fifth span
+  in the same row"*, and called it **arithmetic already on the page** as
+  against a forecast about cubes. *A draft of this entry said "three
+  commit bodies, `19f4e66`'s successor chain through `94802a2`". **That
+  is wrong and was caught by grepping the bodies instead of recalling
+  them**: `19f4e66`'s conditional is the `[13,13,10,7]` one, which
+  held, and the later bodies repeat only the block half. **One body
+  carried the joint claim**, and the note carried it through **four
+  further commits** — `26831c7`, `f3d87a9`, `94802a2`, `95e5057` —
+  which is the provenance, read from the history rather than assumed.* **The block
+  half held. The span half was falsified on the very next bank.**
+
+  **The two halves are not the same kind of claim, and calling them one
+  thing is the defect.** Block membership is fixed and printed in the
+  census: filling the block's last undecided index closes it, full stop.
+  A span closes when a **COMMIT** has an empty hole set — so whether
+  filling the last hole closes it depends on **what else that commit
+  carries**. idx 1154 landed between the waiter arming and bank.py
+  running; the bank took two rows; the committed tree holds
+  `[1152, 1153]`; the span stayed open. *None of that is on the page —
+  it is timing.*
+
+  **What makes this one worse than a miscalculation is that the
+  governing rule was written by me, four banks earlier, in the section
+  the claim sits in.** That paragraph says **"a span is a property of
+  the commit sequence, not of the file"**, and was written precisely
+  because a three-hole opening in the file had shown up as a one-hole
+  opening in the walk. *The rule was on the page. The claim that
+  contradicted it was written anyway, and rode the note through four
+  further commits unchallenged — which is the `#27` finding again: **writing the rule
+  down did not prevent it**.*
+
+  **Remedy: any claim that a span will close must be stated as a claim
+  about a COMMIT, with the condition made explicit.** The defensible
+  form here was *"filling 1147 empties the file's hole set; the span
+  closes only if the commit that banks it carries no row above the
+  frontier"* — which is checkable, and false as it turned out. *A claim
+  about holes is not a claim about spans, and the word "and" joining a
+  block close to a span close hid the difference.*
+
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -4793,7 +4836,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1319 -> 1320 rows)
+## State as of the last refresh (1320 -> 1322 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4804,7 +4847,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1320 rows; 1151 labels decided; 1151 UNSAT; 0 SAT; 0 labels
+- **1322 rows; 1153 labels decided; 1153 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4812,7 +4855,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1151 decided plus 169 superseded
+  A row count is not a decision count: 1153 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4831,7 +4874,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1146, highest decided 1151, holes [1147].**
+- **Frontier contiguous 0..1151, highest decided 1154, holes [1152, 1153].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-FIFTH.** idx 1149 landed at
   635.1 s while **1147** was still running — an opening at **one hole**.
@@ -4883,37 +4926,79 @@ exactly one bank.
   together. **Second cross-check, first independent one** — and the
   distinction is the whole value of it.*
 
-  ***AND idx 1147 IS THE LAST UNDECIDED MEMBER OF `[13,13,10,6]`, SO
-  THE CONDITIONAL FROM THE LAST CLOSE APPLIES AGAIN.*** The block stands
-  at **6 of 7**. Whichever bank lands idx 1147 closes that block at 7 of
-  7 **and** the forty-fifth span in the same row. *That is arithmetic
-  already on the page — 1147 is the block's only undecided index and the
-  span's only hole — not a forecast about when it lands, which is not
-  claimed.*
+  ***AND ITS HOLE SET HAS TURNED OVER COMPLETELY WITHOUT THE SPAN
+  CLOSING — THE SECOND TIME THIS FILE HAS RECORDED THAT, AND THE FIRST
+  TIME IT COST ME A STATED CONDITIONAL.*** idx 1147, the opening hole,
+  **is filled**. The span is still open, at **[1152, 1153]**, because
+  the same bank carried **idx 1154** and that row sits above the
+  frontier. *The holes are not the span's identity; the run of commits
+  is.*
 
-  ***AND THE BLOCK WILL CLOSE ON ITS DEAREST MEMBER — THIS ONE IS
-  SETTLED IN ADVANCE, WHICH THE PREVIOUS FOUR WERE NOT.*** At the
-  02:42:15Z sample idx 1147 read **3404 s elapsed**, and the block's six
-  decided costs are **630.8, 958.8, 1480.5, 1699.4, 2886.1 and
-  2971.6 s**. It has **already exceeded all six**, so whatever it
-  finishes at, it is the block's dearest. *This is not a forecast: a
-  running cube's cost only grows, so the comparison is decided now. The
-  one thing left open is whether it is decided at all — a cube killed at
-  the cap writes UNKNOWN and closes nothing — so the claim is **if the
-  block closes, it closes on its dearest**, and when it lands is not
-  claimed.*
+  ***HALF OF A CONDITIONAL I WROTE ONE BANK AGO IS FALSIFIED, AND IT WAS
+  FALSIFIED BY SOMETHING I HAD ALREADY WRITTEN DOWN.*** `ce1e307` said,
+  in its body and here: *"Whichever bank lands idx 1147 closes
+  [13, 13, 10, 6] at 7 of 7 **and** the forty-fifth span in the same
+  row"*, called **"arithmetic already on the page"**. **The block half
+  held. The span half did not.** Filling the last hole empties the hole
+  set *of the file*; a span closes only when a **commit** has an empty
+  hole set, and this bank's commit does not, because idx 1154 landed
+  between the waiter arming and bank.py running. *The conditional was
+  not arithmetic already on the page: it silently assumed the bank would
+  carry **exactly one row**, which is a fact about timing, not about the
+  frontier.* **I wrote the governing rule myself, four banks earlier, in
+  the paragraph above about the three-hole collapse** — "a span is a
+  property of the commit sequence, not of the file" — *and then made a
+  claim that ignored it. Registered as error pattern #29.*
 
-  *That would be the **fifth** consecutive block to do so. At the
-  recomputed base rate of **21 of 41 = 51.2%** a run of five is
-  **3.5%**, against 6.9% for the four already on the page. **The same
-  two caveats still apply and are not weakened by the run getting
-  longer**: the blocks in the run are themselves among the 41, and the
-  run was noticed after it began. A 3.5% figure computed from a rate
-  that the run helped set is not a p-value, and is not offered as one.*
+  ***THE BLOCK HALF HELD EXACTLY, INCLUDING THE PART THAT WAS SETTLED IN
+  ADVANCE.*** `[13, 13, 10, 6]` closed at **7 of 7** and idx 1147 came in
+  at **4241.9 s**, above every other member, so it **is** the block's
+  dearest — which the previous bank established could not go otherwise,
+  since at the 02:42:15Z sample it already read 3404 s against a block
+  maximum of 2971.6 s. *That part was a comparison that could not
+  reverse, and it did not. The part that failed was the part that looked
+  like arithmetic and was not.*
 
-  *Bound for the hole, denominator and bound in one expression:* **565**
-  of the 1149 decided costs are below 3404 s, so idx 1147's eventual
-  rank is **at most 585 of 1150**.
+  **The block, 7 members:** total **14869.1 s = 4.1303 core-hours**,
+  median **1699.4 s**, mean **2124.2 s**, cheapest **630.8 s** (idx
+  1142), dearest **4241.9 s** (idx 1147) — a spread of **6.7246×**, and
+  the dearest is the closing row. **The running maximum was raised 5
+  times across the 7**, against **H₇ = 2.5929**, with **P(at least 5) =
+  0.0390873** from the Stirling numbers of the first kind. Its spread is
+  **rank 29 of the 32** prefixes with seven or more decided members —
+  **narrow**, and narrower than `[13,13,10,7]`'s 11.0893×, continuing
+  down the `[13,13,10,*]` series: 24.0623, 11.6047, 16.9626, 11.0893,
+  now 6.7246. *No trend is claimed from five numbers that do not
+  decrease monotonically.*
+
+  ***THE FIFTH CONSECUTIVE BLOCK TO CLOSE ON ITS DEAREST — AND THE BASE
+  RATE'S POPULATION WAS WRONG, WHICH I FOUND BY RECOMPUTING IT RATHER
+  THAN CARRYING IT.*** The rate quoted at the last two closes was over
+  **all prefixes with two or more decided rows**, which includes **open
+  blocks**, and an open block's status **flickers**: `[13,13,10,6]`
+  itself counted as a hit at 4 decided, **not** at 6, and as a hit again
+  at 7. A rate used to judge *blocks that close on their dearest* should
+  be computed over **closed blocks only**. Recomputed on that
+  population: **21 of 41 = 51.2%**, against **21 of 42 = 50.0%** on the
+  old one. *The two are close enough that nothing downstream changes,
+  and the run of five stands at **3.5%** either way — but the figure is
+  now measuring what the sentence says it measures.* **A coincidence
+  worth flagging so it is not read as "nothing changed": the corrected
+  figure is also 21 of 41**, the same numerals the old population gave
+  at N = 1146, over a different population at a different N.
+
+  *Both standing caveats survive the correction and are not weakened by
+  the run getting longer*: the five blocks are themselves among the 41,
+  and the run was noticed after it began. **3.5% computed from a rate
+  the run helped set is not a p-value and is not offered as one.**
+
+  **The bound held.** idx 1147 was bounded at the 02:50:48Z sample as
+  *"615 of the 1151 decided costs below 3917 s, so at most 537 of
+  1152"*. N is now 1153, so the same bound re-expressed is
+  **1153 − 615 = 538**; the outcome, **rank 507 of 1153**, respects it.
+  *Fifth time this session a bound's denominator moved between writing
+  and outcome; re-expressing rather than reusing is what keeps the
+  comparison honest.*
 
   **THE FORTY-FOURTH SPAN IS CLOSED.** It opened at **three holes at
   once** when idx 1141 landed at 580.9 s while **1138, 1139 and 1140**
@@ -6555,7 +6640,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1151 of 1949 = 59.0559%**; **798 undecided**. **50% IS CROSSED**, at
+- **1153 of 1949 = 59.1585%**; **796 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7103,10 +7188,10 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 10, 6]` idx 1142..1148: **7 members**,
-  **6 decided**, undecided [1147]
 - `[13, 13, 10, 5]` idx 1149..1153: **5 members**,
   **3 decided**, undecided [1152, 1153]
+- `[13, 13, 10, 4]` idx 1154..1156: **3 members**,
+  **1 decided**, undecided [1155, 1156]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
