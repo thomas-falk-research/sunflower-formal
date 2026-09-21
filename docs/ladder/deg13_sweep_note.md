@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T04:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T04:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5005,7 +5005,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1336 -> 1338 rows)
+## State as of the last refresh (1338 -> 1340 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5016,7 +5016,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1338 rows; 1169 labels decided; 1169 UNSAT; 0 SAT; 0 labels
+- **1340 rows; 1171 labels decided; 1171 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -5024,7 +5024,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1169 decided plus 169 superseded
+  A row count is not a decision count: 1171 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -5043,8 +5043,52 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1168, highest decided 1168, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1169, highest decided 1172, holes [1170, 1171].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE FORTY-SEVENTH.** idx 1172 landed at
+  1870.9 s while **1169, 1170 and 1171** were all still running, and
+  **idx 1169 landed at 3009.9 s before this bank was made**, so the
+  committed opening is at **two holes**. The frontier and hole set are
+  on the bullet line above, which bank.py owns; *this prose deliberately
+  does not repeat them.* **No duration, no rank, no monotonicity and no
+  commit count until it closes.**
+
+  The ordinal was derived before the outcome, as at the last eleven:
+  `--spans all` re-run after the holes appeared still ends at
+  **6b218fa**, **111 closed spans**, so this is walk position **112**
+  and, at the offset of 65, ordinal **forty-seven**.
+
+  ***AND THE MAX-OPENING CONDITIONAL CAME OUT TRUE OF THE FILE AND FALSE
+  OF THE COMMIT, WHICH IS A GAP IN THE CONDITIONAL, NOT A SURPRISE IN
+  THE DATA.*** `87cac8c` recorded the in-flight set as **1169, 1170,
+  1171, 1172 — four consecutive from frontier + 1**, and the standing
+  clause reads: *the maximum available opening is three, and it is
+  reached **iff the highest-indexed of them finishes first***. **idx
+  1172 did finish first.** In the working file the hole set duly went to
+  **three** — `[1169, 1170, 1171]`, between 04:45:57Z and 04:46:50Z.
+  **The commit shows two**, because idx 1169 landed inside the same bank
+  cycle and filled one of them before any tree existed.
+
+  ***SO THE CLAUSE NEEDS THE `#29` RIDER AND NEVER HAD IT.*** An opening
+  width is measured **at a commit**, so "the maximum is reached iff the
+  highest-indexed finishes first" is only half the condition. The whole
+  of it is: *iff the highest-indexed finishes first **and** the bank
+  that commits it carries no row filling one of the holes.* **That
+  second half has been missing every time the clause was written**, and
+  it went unnoticed twice because those banks happened to carry one row.
+  *This is the fourth time in this session the file/commit distinction
+  has cost a statement — `#29`, the three-hole collapse at the
+  forty-fifth's opening, the hole-count draft at `f4bebe4`, and now a
+  clause I had been treating as settled.*
+
+  **The three times the clause has been written, named rather than
+  counted**: at the forty-fourth's opening for idx 1138..1141, where the
+  maximum **was** reached in the commit — a one-row bank; at `50dfb0c`
+  for idx 1165..1168, where it **was not**, because idx 1165 was
+  frontier + 1 and advanced the edge with no hole; and here, where it
+  was reached **in the file and not in the commit**. *One of three by
+  the measure that counts.*
+
   **THE FORTY-SIXTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
   COMMIT.** It opened at **one hole** when idx 1164 landed at 1109.2 s
   while **1163** was still running, and was filled by **idx 1163 at
@@ -7064,7 +7108,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1169 of 1949 = 59.9795%**; **780 undecided**. **50% IS CROSSED**, at
+- **1171 of 1949 = 60.0821%**; **778 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7182,6 +7226,59 @@ exactly one bank.
   there, which is bookkeeping and not a prediction. **It was reached**;
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
+
+  ***60% IS CROSSED, THE TRAP WAS CAUGHT ONE BANK EARLIER BY
+  ARRANGEMENT, AND THE THRESHOLD VALUE ITSELF WAS STEPPED OVER.*** This
+  bank carried **two** rows — idx 1172 at 1870.9 s and idx 1169 at
+  3009.9 s — taking the decided count **1169 → 1171 = 60.0821%**. The
+  first value at or above 60 is **1170 = 60.0308%**, so **60% is
+  crossed**; but **no tree holds 1170**, because the counter stepped
+  past it. *That costs nothing — **1170 is the threshold, not the
+  trap**. The trap is **1169 = 59.9795%**, and **`3ddca3b` holds it**,
+  verified by walking `decided()` over the six most recent checkpoint
+  commits, where exactly one tree gives 1169.* **The tally goes from 50
+  caught and 7 missed of 57 to 51 caught and 7 missed of 58.**
+
+  ***AND THE ORDER OF THOSE TWO FACTS IS THE WHOLE ARGUMENT FOR BANKING
+  AT THE TRAP RATHER THAN AFTER IT.*** Had 1169 not been banked on its
+  own one commit earlier, **this same two-row bank would have carried
+  the counter 1169 → 1171 with the trap unheld**, exactly as `242dcb0`
+  did to 1128 and as the 56% bank did to 1088. *The bank that caught it
+  was not a careful bank; it was an ordinary two-row bank that happened
+  to land on the value because the previous one had been made
+  immediately. **The discipline is the timing, not the care.***
+
+  ***WHAT IS NEW HERE IS NOT THE CATCH BUT THE MARGIN BEING TRACKED
+  DOWN TO ONE.*** At 59% the arithmetic was run once, three rows were
+  waiting, and the bank was made at once. **Here the margin was
+  re-derived across four commits, named rather than counted**:
+  `50dfb0c` stated it while idx 1169 was not yet launched (**four rows
+  in one bank cycle would lose it**); `6b60f6e` restated it when idx
+  1169 went into flight; `8b38f49` narrowed it to **three** from the
+  counter at 1167; and `3ddca3b` caught it on a **two**-row bank that
+  `8b38f49`'s table had already named as safe. *A draft of this
+  paragraph said "six banks running"; the commits say four, and they
+  are listed here so the number is checkable rather than asserted.* *A constraint carried rather than re-derived would have still
+  said "four rows" when the true figure was two.* **That is the whole
+  difference between this catch and the 58% one, which stood only
+  because the criterion is a tree.**
+
+  **THE FORWARD-WRITTEN FIGURES ALL HELD.** The 59% block below says
+  *"60% needs `ceil(0.60 × 1949) = 1170` = 60.0308%, trap at 1169 =
+  59.9795%, shortfall `40/1949 = 0.020523 pp`, tightness rank 40 of
+  97 — an ordinary one — and the 58th of the 97 ... 19 rows past the
+  59% crossing at 1150"*. Every figure is confirmed, and
+  **1169 − 1150 = 19**. *That was bookkeeping written ahead of the
+  counter, and the one thing it refused to predict — whether a tree
+  would sit on 1169 — is the one thing that had to be arranged.*
+
+  Next: **61% needs `ceil(0.61 × 1949) = 1189` = 61.0056%, trap at
+  1188 = 60.9543%**, shortfall `89/1949 = 0.045664 pp`, **tightness
+  rank 89 of 97** — loose — and the **59th of the 97**. That is **18
+  rows** past the 60% crossing at 1170, with **no threshold or trap
+  between them**, computed. *So the trap arithmetic stands down until
+  1188 is in reach. Nothing is predicted about whether a committed tree
+  will sit on 1188.*
 
   ***59% IS CROSSED, AND THE TRAP WAS CAUGHT ONE BANK EARLIER BY
   ARRANGEMENT RATHER THAN BY LUCK.*** idx 1150 took the decided count to
@@ -7725,7 +7822,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 9, 9]` idx 1161..1175: **15 members**,
-  **8 decided**, undecided 7 spanning 1169..1175
+  **10 decided**, undecided [1170, 1171, 1173, 1174, 1175]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
