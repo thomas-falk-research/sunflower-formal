@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T09:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T10:09Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5532,7 +5532,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1370 -> 1375 rows)
+## State as of the last refresh (1375 -> 1376 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5543,7 +5543,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1375 rows; 1206 labels decided; 1206 UNSAT; 0 SAT; 0 labels
+- **1376 rows; 1207 labels decided; 1207 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5555,7 +5555,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1206 decided plus 169 superseded
+  A row count is not a decision count: 1207 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5574,13 +5574,57 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1205, highest decided 1205, holes [].**
+- **Frontier contiguous 0..1206, highest decided 1206, holes [].**
   <!-- SPAN-STATE: closed -->
   **THE FIFTIETH SPAN IS CLOSED, AND ITS FIGURES ARE IN THIS COMMIT** —
   in the spans section, not repeated here. It was filled by **idx 1201
   at 1971.9 s**, in a bank that carried **five** rows. *`--spans all`
   walks `git rev-list HEAD -- CHECKPOINT`, so the closing commit had to
   exist before the tool could see the run end.*
+
+  ***AND MY OWN TOOLING IS MEASURABLY SLOWING THE SWEEP IT MEASURES.***
+  Over **09:59:34Z → 10:07:58Z** the four solvers ran at a cpu/elapsed
+  of **0.9087, 0.9127, 0.9048** and **0.9565** — against **~0.984** in
+  every sample before it. **Summed across the four: elapsed +1535 s, CPU
+  +1396 s, ratio 0.9094 — 139 CPU-seconds not delivered, 2.32 core
+  minutes.**
+
+  **The mechanism is not inferred from the ratio alone.** `nproc` is
+  **4**, the load average read **4.28**, and at the instant sampled the
+  only non-solver CPU on the box was **my own session** — a `bash` at
+  16.6% and `claude` at 2.7% — against four solvers at 88.8–93.7%.
+  *That window is exactly when the fiftieth span's figures were
+  computed: `--spans all` walked twice, four `span_audit.py` mutation
+  runs, the claim-extraction script, and a `decided()` walk over **1148
+  commits** — each of them reading the whole checkpoint out of git.*
+
+  ***THIS IS A CORRELATION OVER ONE WINDOW WITH A PLAUSIBLE MECHANISM,
+  NOT A CONTROLLED MEASUREMENT.*** *The load was sampled at one instant,
+  not integrated; no run was repeated with the tooling idle; and the
+  note already records that the ratio **wobbles** and is not monotone in
+  elapsed, so a drop is not by itself anomalous. What is new is the
+  size — 0.98 to 0.91 sustained for eight minutes — and a named cause
+  sitting on the same four cores.* **What it does NOT establish is
+  whether the checkpoint's cost column is affected**, because that
+  column's units are not settled here; *`3352` records that wall-clock
+  between commits is "not solver effort", which is a different
+  quantity.* **The open question is named rather than answered.**
+
+  *The practical consequence is cheap and is taken: heavy history walks
+  — the span-figures work, mutation runs, whole-history `decided()`
+  scans — are worth batching into one pass per close rather than
+  spreading them across a close's worth of banks.*
+
+  ***AND THE NEXT DECISION IS THE TRAP. THIS IS WRITTEN BEFORE IT
+  LANDS.*** idx 1206 has since been banked at **483.0 s**, the first
+  cube of the new `[13,13,8,*]` group, taking the decided count to
+  **1207**. **The next decision takes it to 1208, which is
+  `1208 of 1949 = 61.9805%` — NOT 62%.** The shortfall is exactly
+  **`38/1949 = 0.019497 pp`**, **tightness rank 38 of 97** — tight —
+  and the **60th of the 97**. **The 62% threshold is 1209**, one
+  decision further. *`87cac8c`'s discipline resumes here, one decision
+  out, exactly as it did before the 61% trap; every miss on the catch
+  tally was a percentage computed after the fact.*
 
   ***THE RETIREMENT SENTENCE WAS HONOURED ON SCHEDULE A THIRD TIME.***
   The *"figures are not in this commit"* wording stood for exactly one
@@ -8536,7 +8580,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1206 of 1949 = 61.8779%**; **743 undecided**. **50% IS CROSSED**, at
+- **1207 of 1949 = 61.9292%**; **742 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -9249,7 +9293,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-*No block is open: every block with any decided member is complete.*
+- `[13, 13, 8, 8]` idx 1206..1212: **7 members**,
+  **1 decided**, undecided 6 spanning 1207..1212
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
