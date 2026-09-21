@@ -47,8 +47,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 34
-MIN_MONO_ROWS  = 48
+MIN_TABLE_ROWS = 35
+MIN_MONO_ROWS  = 49
 
 
 def secs(d):
