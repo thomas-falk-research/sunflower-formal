@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T15:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T15:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5752,7 +5752,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1428 -> 1429 rows)
+## State as of the last refresh (1429 -> 1431 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5763,7 +5763,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1429 rows; 1260 labels decided; 1260 UNSAT; 0 SAT; 0 labels
+- **1431 rows; 1262 labels decided; 1262 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5775,7 +5775,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1260 decided plus 169 superseded
+  A row count is not a decision count: 1262 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5794,9 +5794,23 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1258, highest decided 1261, holes [1259, 1260].**
-  <!-- SPAN-STATE: open -->
-  ***A SPAN IS OPEN, AND IT IS THE FIFTY-FOURTH.*** idx 1261 landed at
+- **Frontier contiguous 0..1261, highest decided 1261, holes [].**
+  <!-- SPAN-STATE: closed -->
+  **THE FIFTY-FOURTH SPAN IS CLOSED. ITS FIGURES ARE NOT IN THIS COMMIT
+  — THEY ARRIVE IN THE NEXT ONE, AND THIS SENTENCE IS DUE FOR
+  RETIREMENT THERE.** It was filled by **idx 1259 at 4029.9 s** at
+  15:43:01Z, in a bank that carried **two** rows. *`--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must exist
+  before the tool can see the run end.* **The wording is correct for
+  exactly one commit; it has been struck on schedule six times
+  running.**
+
+  ***THE FAILURE MODE DID NOT FIRE.*** The condition needed a row at
+  **1263 or above** in the same bank while 1262 was out; **this bank's
+  highest row is idx 1261, which was already decided**, so nothing sat
+  above the frontier and it closed.
+
+  **PREVIOUSLY, WHILE IT WAS OPEN.** idx 1261 landed at
   **3247.0 s** at 15:38:07Z while **1259 and 1260** were both still
   running — an opening at **two holes**. The frontier and hole set are
   on the bullet line above, which bank.py owns; *this prose
@@ -5815,6 +5829,42 @@ exactly one bank.
   **1262** is still out.* ***With the `#29` rider***, which has fired
   three times for real: **the committed opening width is two**, and the
   file's width at any instant is not the record.
+
+  **RUNNING TABLE FOR THIS SPAN**, terse from the first bank:
+
+  | bank | row(s) | cost | holes after | condition becomes |
+  |---|---|---|---|---|
+  | 1st | idx 1261 | 3247.0 s | `[1259, 1260]` | 1263+ while 1262 out |
+  | 2nd | idx 1260 **then** 1259 | 3763.9 s, 4029.9 s | `[]` | **CLOSED** |
+
+  ***BANK idx 1260 AND idx 1259, TWO ROWS — TWO SUCCESSIVE BLOCK
+  MAXIMA, AND THE SPAN CLOSES.*** idx 1260 landed at **3763.9 s** at
+  15:42:14Z and idx 1259 at **4029.9 s** at 15:43:01Z, forty-seven
+  seconds later; *the hole set went two → one → none inside the one
+  bank, so the commit shows `[]` and the **1** never reached a commit
+  — the file-versus-commit distinction again, and `--spans all` will
+  report a hole chain with no 1 in it.*
+
+  ***AND A SAMPLES-ONLY COMMIT IS INVISIBLE TO THE SPAN WALK.***
+  `b9be70a` was committed while this span was open and carried holes
+  `[1259, 1260]` in its message — *but it touched only
+  `cpu_ratio_samples.tsv` and the note, **not the checkpoint**, and
+  `--spans all` walks `git rev-list HEAD -- CHECKPOINT`.* **So it is
+  not a broken commit and cannot pad this span's commit count**;
+  `git rev-list` over the checkpoint shows the only such commit inside
+  the window is `ef06d04`. *Checked rather than assumed, because the
+  hourly check-in now produces one of these commits most hours and they
+  would otherwise look like span commits in the history.*
+
+  **The bank's own figures, against N = 1262**: idx 1260 → **rank 555**,
+  707 cheaper, and `1262 − 707 = 555` reproduces it; idx 1259 → **rank
+  534**, 728 cheaper, and `1262 − 728 = 534` reproduces it. *No tie
+  either side; census **13 of 1262**.* **Count 1262 = 64.7512%**,
+  neither trap nor threshold; *next trap **1266**, **four** away,
+  nothing marked between.* `[13,12,12,12]` at **28 of 65**, maximum now
+  **4029.9 s** at idx 1259 against 3763.9 at idx 1260 and 3291.5 before
+  that — *three maxima in three banks, census and not shape.* **idx
+  1259 is 0.1866 of the cap.**
 
   ***BANK idx 1261, ONE ROW.*** **Rank 620 of 1260**, 640 cheaper, and
   `1260 − 640 = 620` reproduces it, so no tie; census **13 of 1260**.
@@ -10086,7 +10136,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1260 of 1949 = 64.6485%**; **689 undecided**. **50% IS CROSSED**, at
+- **1262 of 1949 = 64.7512%**; **687 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -10800,7 +10850,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **26 decided**, undecided 39 spanning 1259..1298
+  **28 decided**, undecided 37 spanning 1262..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
