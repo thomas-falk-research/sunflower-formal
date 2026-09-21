@@ -59,7 +59,7 @@ MIN_MONO_ROWS  = 57
 # written.  Nothing here could have caught that.  Now the census is parsed
 # too -- ONLY while a span is open, because when none is open the sentences
 # are correctly absent and their absence is not a failure.
-MIN_CENSUS_SENTENCES = 5
+MIN_CENSUS_SENTENCES = 6
 MIN_CENSUS_LIVE      = 4
 # The monotonicity prose -- the True partition, the False-chain column and
 # the rank sentence beside them -- is the OTHER half of the gap the note
