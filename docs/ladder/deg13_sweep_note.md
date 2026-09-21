@@ -4838,16 +4838,21 @@ exactly one bank.
   1686 s and **1869 s — the widest of the seven**. A population, not a
   series.*
 
-  ***AND THE RECONSTRUCTION WAS CROSS-CHECKED AGAINST SOMETHING THAT
-  DID NOT COME FROM THE SAMPLER, FOR THE SECOND TIME.*** idx 1149's
+  ***AND THE RECONSTRUCTION WAS CROSS-CHECKED AGAINST A SOURCE OUTSIDE
+  THE SAMPLER — THE FIRST TIME THAT HAS BEEN POSSIBLE.*** idx 1149's
   reconstructed start of 02:16:40Z plus its **635.1 s** cost puts its
-  finish at **02:27:15Z**; the waiter, which reads only the row count,
-  observed the row land at **02:27:24Z** on a 20 s poll. **8 s apart —
-  inside the polling granularity.** *The reconstruction is sample time
-  minus elapsed seconds and inherits the sampler's granularity, so a
-  check against the sampler proves nothing; this is the second time it
-  has been checked against something independent, and it held both
-  times.*
+  finish at **02:27:15Z**; the waiter, which reads only the row count
+  and the wall clock, observed the row land at **02:27:24Z** on a 20 s
+  poll. **8 s apart — inside the polling granularity.** *A draft of this
+  paragraph said "for the second time", counting the check written up at
+  the forty-second. **That one was internal to the sampler**: three
+  holes sampled at the same instant, so their elapsed differences had to
+  equal their start differences. The note says as much itself — "a check
+  of the method, not of the 1686 s figure". It could not have detected a
+  constant offset in the sampler; this one can, because the waiter's
+  clock and the sampler's are only both wrong if they are wrong
+  together. **Second cross-check, first independent one** — and the
+  distinction is the whole value of it.*
 
   ***AND idx 1147 IS THE LAST UNDECIDED MEMBER OF `[13,13,10,6]`, SO
   THE CONDITIONAL FROM THE LAST CLOSE APPLIES AGAIN.*** The block stands
@@ -6633,6 +6638,15 @@ exactly one bank.
   tree at the bank below holds 1149, verified from the staged index in
   the same run that wrote this.* **The tally goes from 49 caught and 7
   missed of 56 to 50 caught and 7 missed of 57.**
+
+  **AND 1147 AND 1148 WERE NEVER HELD BY ANY TREE**, because this bank
+  took the counter straight from 1146 to 1149. *Neither is a trap value
+  — the only threshold anywhere near is 59% at 1150 — so nothing is
+  lost. It is recorded because it is the same mechanism that produced
+  the seven misses, now seen three times inside sixty rows: **1088** at
+  the 56% crossing, **1128** at the 58%, and this pair. The difference
+  is that this time the mechanism was measured **before** it ran, and
+  the bank was placed so that the one value that mattered survived it.*
 
   **THE FORWARD-WRITTEN FIGURES ALL HELD.** The 58% block below says
   *"59% needs `ceil(0.59 × 1949) = 1150` = 59.0046%, trap at 1149 =
