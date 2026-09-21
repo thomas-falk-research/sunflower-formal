@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T19:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T19:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6156,6 +6156,31 @@ exactly one bank.
   **7.730 s after** the teardown marker.* **This is a FOURTH distinct
   configuration and not a return to #41's** — it pairs the fast CPU
   with #42's memory size and kernel, which no earlier restart did.
+
+  ***THE 19:41Z CHECK-IN'S FIVE CHECKS ALL PASSED, AND IT RAISED ONE
+  QUESTION THE NEW MACHINE MAKES ASKABLE.*** 1441 rows, 1272 decided,
+  contiguous 0..1271, holes `[]`, 0 SAT, all invariants holding; pid
+  **419** single and live; the waiter armed at 19:35:07Z still running;
+  tree clean with local HEAD equal to origin. **`cnf_mtime_check.py`
+  puts the four re-taken cubes at 366 s of elapsed, all four the same
+  to the second**, with `max |now-mtime − ps ELAPSED| = 0 s`.
+
+  ***AND THEIR cpu/elapsed RATIOS SIT BELOW THE OLD MACHINE'S p25 —
+  WHICH IS ONE OBSERVATION, NOT FOUR.*** Past 300 s of elapsed, the
+  2.10GHz machine has **1093** samples with p25 **0.9722**, median
+  **0.9871** and p75 **0.9911**. The check-in's instant on the 2.80GHz
+  machine read **0.9454, 0.9508, 0.9508 and 0.9536** — *all four below
+  that p25* — and bank.py's own run 52 s later read **0.9424, 0.9472,
+  0.9496 and 0.9520**, four more in the same band. **But that is two
+  sample instants, not eight independent readings**, and this note's
+  own contention analysis is built on the observation that low readings
+  would cluster *by instant* if they cluster at all. *So it is n = 2
+  instants with four correlated slots each;* **no quantile is quoted
+  for the new machine and no difference is claimed.** *It is
+  written down so that it can be checked against a real sample later,
+  and it is the first quantitative question the machine change makes
+  askable — the ratio is a **scheduling** quantity, not a speed one, so
+  it is a different question from the costs-off-a-common-basis one.*
 
   ***AND THE FIVE-REPEAT STREAK BROKE AT THE SIXTH READING, EXACTLY AS
   THE CAUTION BESIDE IT SAID IT COULD.*** Every one of #43 through #47
