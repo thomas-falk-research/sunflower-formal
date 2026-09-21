@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T16:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T16:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5910,7 +5910,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1435 -> 1436 rows)
+## State as of the last refresh (1436 -> 1437 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5921,7 +5921,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1436 rows; 1267 labels decided; 1267 UNSAT; 0 SAT; 0 labels
+- **1437 rows; 1268 labels decided; 1268 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5933,7 +5933,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1267 decided plus 169 superseded
+  A row count is not a decision count: 1268 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5952,11 +5952,39 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1265, highest decided 1267, holes [1266].**
+- **Frontier contiguous 0..1265, highest decided 1268, holes [1266].**
   <!-- SPAN-STATE: open -->
-  ***BANK idx 1264, ONE ROW — 65% IS CROSSED, THE THRESHOLD IS HELD ON
-  THE COMMIT AFTER THE TRAP, AND THE FIFTY-FIFTH NARROWS TO ONE
-  HOLE.*** It landed at **3367.1 s** at 16:38:35Z, filling the lower of
+  ***BANK idx 1268, ONE ROW — THE TOP OF THE FRONTIER RISES, THE HOLE
+  STAYS, AND THE CLOSE CONDITION MOVES UP BY ONE.*** It landed at
+  **1315.0 s** at 16:50:29Z. **The highest decided goes 1267 → 1268
+  while the hole set is unchanged at `[1266]`**, so the fifty-fifth is
+  still open and its hole chain gains another **1**.
+
+  ***THE FAILURE MODE DID NOT FIRE, AND THIS ROW IS THE ONE INDEX THAT
+  COULD NOT HAVE MADE IT FIRE.*** The condition named a row at **1269
+  or above** riding in the same bank while 1268 was out; **this row is
+  idx 1268 itself** — the index the condition was waiting on, not one
+  above it — so it extended the top of the frontier and opened nothing.
+  *Restated at the new frontier: the failure mode is now a row at
+  **1270 or above** riding in the same bank while **1269** is still
+  out.* **Each row like this pushes that boundary up by one without
+  touching the hole.** *The condition's form is fixed and its two
+  numbers are read off the frontier at every bank, which is why it is
+  restated rather than carried — a carried close condition is the same
+  defect as a carried rank.*
+
+  **The bank's own figures, against N = 1268**: **rank 1004**, 264
+  cheaper, and `1268 − 264 = 1004` reproduces it, so no tie; the
+  whole-sweep tie census holds at **13 of 1268**. **Count
+  1268 = 65.0590%**, neither trap nor threshold; *the next marked count
+  is the 66% trap at **1286**, **eighteen** away, with nothing marked
+  strictly between.* `[13,12,12,12]` at **34 of 65**; **the block
+  maximum stays at 4029.9 s** at idx 1259, and this row is the **24th
+  dearest** of the block's 34 decided members. **0.0609 of the cap.**
+
+  ***PREVIOUSLY: BANK idx 1264, ONE ROW — 65% IS CROSSED, THE
+  THRESHOLD IS HELD ON THE COMMIT AFTER THE TRAP, AND THE FIFTY-FIFTH
+  NARROWS TO ONE HOLE.*** It landed at **3367.1 s** at 16:38:35Z, filling the lower of
   the two holes. **The count is 1267 = 65.0077%**, which is the **65%
   threshold** — `⌈1949·65/100⌉` — *the first count this sweep has held
   at or above 65%.*
@@ -6043,12 +6071,13 @@ exactly one bank.
   cost is estimated from its elapsed time** — a cube that has run
   2039 s has run 2039 s and nothing more is known.
 
-  **Close condition, restated at one hole:** filling **1266** closes it
-  **iff the committing tree leaves no undecided index below its highest
-  decided**. *The highest decided is still 1267, so the failure mode is
-  unchanged — a row at **1269 or above** riding in the same bank while
-  **1268** is still out.* **No duration, no rank, no monotonicity, no
-  commit count and no hole chain until it closes.**
+  **Close condition as it stood at one hole with 1267 the highest
+  decided, superseded by the restatement above:** filling **1266**
+  closes it **iff the committing tree leaves no undecided index below
+  its highest decided**. *The highest decided was still 1267 then, so
+  the failure mode was a row at **1269 or above** riding in the same
+  bank while **1268** was still out.* **No duration, no rank, no
+  monotonicity, no commit count and no hole chain until it closes.**
 
   ***PREVIOUSLY: BANK idx 1263, idx 1262, idx 1265 AND idx 1267 — FOUR
   ROWS, THE 65% TRAP IS HELD, AND THE FIFTY-FIFTH SPAN IS OPEN.***
@@ -6167,6 +6196,7 @@ exactly one bank.
   |---|---|---|---|---|
   | 1st | idx 1263, 1262, 1265, 1267 | 1908.2, 3039.6, 2751.2, 983.4 s | `[1264, 1266]` | 1269+ while 1268 out |
   | 2nd | idx 1264 | 3367.1 s | `[1266]` | 1269+ while 1268 out |
+  | 3rd | idx 1268 | 1315.0 s | `[1266]` | **1270+ while 1269 out** |
 
   **The bank's own figures, against N = 1266**: idx 1263 → **rank
   890**, 376 cheaper; idx 1262 → **rank 655**, 611 cheaper; idx 1265 →
@@ -10543,7 +10573,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1267 of 1949 = 65.0077%**; **682 undecided**. **50% IS CROSSED**, at
+- **1268 of 1949 = 65.0590%**; **681 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -11257,7 +11287,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **33 decided**, undecided 32 spanning 1266..1298
+  **34 decided**, undecided 31 spanning 1266..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
