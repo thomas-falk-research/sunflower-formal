@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T07:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T07:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5358,7 +5358,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1353 -> 1354 rows)
+## State as of the last refresh (1354 -> 1355 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5369,7 +5369,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1354 rows; 1185 labels decided; 1185 UNSAT; 0 SAT; 0 labels
+- **1355 rows; 1186 labels decided; 1186 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5381,7 +5381,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1185 decided plus 169 superseded
+  A row count is not a decision count: 1186 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5400,7 +5400,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1182, highest decided 1187, holes [1183, 1184, 1185].**
+- **Frontier contiguous 0..1182, highest decided 1187, holes [1183, 1184].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-NINTH.** idx 1186 landed at
   **632.7 s** while **1183, 1184 and 1185** were all still running — an
@@ -5467,11 +5467,14 @@ exactly one bank.
   written up as a novelty.*
 
   **THE COST-TAIL TEST STILL CANNOT BE RUN.** `[13,13,9,*]`'s 15-block
-  is complete, but the 11-block is **8 of 11** and no median over 8 of
-  11 is that block's median. *The test named when this group opened —
-  whether per-block median cost falls down this tail as it did down
-  `[13,13,10,*]`'s — waits on 1183, 1184 and 1185, the same three rows
-  the span waits on. No partial figure is quoted for it here.*
+  is complete, but the 11-block is **9 of 11** — *it read 8 of 11 when
+  this paragraph was written and idx 1185 landed one bank later; the
+  figure is corrected here rather than carried, which is the whole point
+  of the two stale counters caught at the forty-eighth close* — and no
+  median over 9 of 11 is that block's median. *The test named when this
+  group opened — whether per-block median cost falls down this tail as
+  it did down `[13,13,10,*]`'s — waits on **1183 and 1184**, the same
+  rows the span waits on. No partial figure is quoted for it here.*
 
   ***THE HOLE COUNT IS AT THE FOUR-THREAD CEILING, AND THE CEILING IS
   STRUCTURAL.*** Read from `cnf_mtime_check.py` at 07:41:27Z, the four
@@ -5509,6 +5512,34 @@ exactly one bank.
   the count is 1185, and 1188 landing would take it to **1186**, not to
   1188. *Written out because the coincidence is the kind that reads as a
   finding at a glance and is nothing but two uses of one integer.*
+
+  ***idx 1185 HAS SINCE LANDED AT 2988.1 s, SO IT IS TWO HOLES*** —
+  `[1183, 1184]`, and the count is off the four-thread ceiling one bank
+  after reaching it. *The bound itself is unchanged; a span sits on it
+  only while three cubes are stuck at once.*
+
+  ***AND THE FAILURE MODE WENT LIVE EXACTLY AS THE PARAGRAPH ABOVE SAID
+  IT WOULD.*** That paragraph said the mode *"becomes available only
+  once a thread frees and takes 1189"*. The thread freed when 1185
+  landed, and the 07:49:04Z sample shows the four solvers on **idx 1183,
+  1184, 1188 and 1189**. **So 1189 is now running against 1188, and if
+  it finishes first the span stays open on `[1183, 1184, 1188]` even
+  after both current holes fill.** *Which of the two finishes first is
+  not predicted, and nothing is claimed about when.*
+
+  **Close condition, carried over unchanged in form again:** filling
+  **both** 1183 and 1184 closes the span **iff the committing tree
+  leaves no undecided index below its highest decided** — so it closes
+  unless a row at **1189 or above** rides in while 1188 is still out.
+  *Third bank in a row where the index list moved and the rule did not
+  have to be rewritten.*
+
+  ***AND 1188 IS NOW THREE USES OF ONE INTEGER, NOT TWO.*** At the
+  07:49:04Z sample the solver on **cube index 1188** read
+  **1188 seconds** of elapsed time. *That is a coincidence of the
+  sampling instant and nothing else — the reading moves every second —
+  and it is written down only because the paragraph above had already
+  said this number invites being read as a finding.*
 
   **PREVIOUSLY: THE FORTY-EIGHTH SPAN IS CLOSED, AND ITS FIGURES ARE IN
   `76c364c`** — in the spans section, not repeated here. It opened at **two
@@ -7751,7 +7782,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1185 of 1949 = 60.8004%**; **764 undecided**. **50% IS CROSSED**, at
+- **1186 of 1949 = 60.8517%**; **763 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8465,7 +8496,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
-  **8 decided**, undecided [1183, 1184, 1185]
+  **9 decided**, undecided [1183, 1184]
 - `[13, 13, 9, 7]` idx 1187..1193: **7 members**,
   **1 decided**, undecided 6 spanning 1188..1193
 
