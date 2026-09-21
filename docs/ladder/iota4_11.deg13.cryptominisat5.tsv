@@ -12029,3 +12029,99 @@ g=11 [13, 12, 12, 12, 13, 13, 12, 12, 12, 9, 8]	UNSAT	3315.4
 # spec fields read identical across the teardown and btime did not move.
 # THE SET IS OPENED WITH ITS SPREAD STATED, as the procedure requires.
 # ---------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# RESTART #48 -- HOST REBOOT 2026-09-21T19:32:29.270204Z.  THE MACHINE
+# CHANGED.  COSTS ACROSS THIS POINT ARE NOT ON A COMMON BASIS.
+#
+# THE SPEC MOVED, AND IT MOVED BACK TO THE FAST CPU.  Re-read live
+# before the relaunch and compared field by field:
+#
+#     field          #42-#47            #48
+#     CPU model      @ 2.10GHz          @ 2.80GHz      CHANGED
+#     cpu MHz        2100.000           2799.998       CHANGED
+#     cache size     266240 KB          33792 KB       CHANGED
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# THIS IS A FOURTH DISTINCT CONFIGURATION, NOT A RETURN TO #41's.  #41
+# also ran at 2.80GHz with 33792 KB of cache, but on MemTotal
+# 16482220 kB and kernel 6.18.44-fc-v33.  #48 pairs the fast CPU with
+# #42's memory size and kernel, which no earlier restart did.
+#
+# AND THE REPEAT STREAK BROKE EXACTLY THE WAY THIS FILE SAID IT COULD.
+# #43 through #47 were five identical readings, and every block that
+# recorded one said "N repeats are N readings, not a promise -- eight
+# identical readings preceded #41 and the ninth and tenth both broke."
+# The sixth broke.  That sentence was written five times before it paid
+# off, which is the only reason the change was caught rather than
+# assumed away.
+#
+# btime MOVED, 1789782298 -> 1790019157, so this is a HOST REBOOT and
+# the series' THIRD (after #41 and #42).  The boot instant is 7.730 s
+# AFTER the teardown marker.
+#
+# TEARDOWN INSTANT.  Both [killed] markers were written and both read
+# 1790019149.270204489 = 2026-09-21T19:32:29.270204Z -- identical to
+# the nanosecond, the SECOND CONSECUTIVE exact agreement after #47's.
+# Two agreements are two observations; the standing caution that they
+# are not guaranteed to agree still stands.
+#
+# NOTHING WAS LOST BUT SOLVER TIME.  The checkpoint held 1441 rows
+# before and after; the waiter was armed at 1441 and its output ends in
+# [killed] with no landing line.  Decided count unchanged at 1272.
+#
+# FOUR CUBES KILLED, measured by the CNF-mtime method with the glob
+# filtered by the dead driver pid 3269 AND requiring "-seq-c".  /tmp
+# held 204 sf-sym CNFs; exactly 4 carried that pid.  All four had been
+# started together by #47's relaunch, so all four show the SAME elapsed:
+#
+#     idx   start (epoch s)        elapsed at    cpu/elapsed
+#                                  teardown
+#    1272   1790015592.197993046    3557.1        0.9693
+#    1273   1790015592.205993047    3557.1        0.9636
+#    1274   1790015592.201993046    3557.1        0.9693
+#    1275   1790015592.201993046    3557.1        0.9655
+#
+# ALL FOUR RATIOS ARE MATURE SAMPLES, from 2026-09-21T18:41:54Z at 522 s
+# of elapsed -- past the startup depression -- so nothing had to be
+# bracketed and nothing was invented.  THE LOSS IS A POINT, 3.8216
+# CPU-h, over 14228.3 s = 3.9523 h of elapsed.  The processes are gone
+# and the ratios are not re-samplable.
+#
+# IT RANKS 12 OF 25, tied with nothing, straddled by 3.594 below and
+# #43's 3.9984 above.  THE LINE, RECOMPUTED WHOLE UNDER THE STATED
+# CONVENTION: the n = 24 line was reproduced first -- sweeping #47's
+# bracket alone gives median 3.5790 at both ends, mean 3.7398-3.7417
+# and total 89.7558-89.7998, exactly what the note records.  At n = 25,
+# with #48 a point and every older bracket at its midpoint: median
+# 3.5940, mean 3.7440, total 93.5994.
+#
+# RELAUNCHED VERBATIM 127.10 s after the teardown, which is 119.37 s
+# after the boot.  New driver pid 419, launch 1790019276.37 =
+# 2026-09-21T19:34:36.370000Z, read from /proc/419/stat field 22
+# against the NEW btime in one script run.  It resumed reporting
+# "checkpoint: 1272 of 1949 cubes already decided".
+#
+# SET FIFTEEN DIED WITHOUT A SINGLE COMPLETION.  It opened at #47 with
+# idx 1272, 1273, 1274 and 1275 and all four were killed again here
+# after 3557.1 s apiece, so it produced no re-run clock at all.  It is
+# recorded as opened and closed empty, not as a set with results.
+#
+# SET SIXTEEN OPENS AT RESTART #48 with the same four indices, and IT
+# IS CONFOUNDED.  Said at the opening, as the procedure requires: the
+# original runs of these cubes were on the 2.10GHz machine and this
+# re-run is on the 2.80GHz one, so their re-run clocks are NOT
+# comparable with anything recorded before this point.  No speed ratio
+# is estimated from the sweep's own timings; cube-cost variance swamps
+# it.  Their new CNFs landed on FOUR distinct mtimes spanning 47999999
+# ns = 47.999999 ms, read as integer nanoseconds from os.stat
+# st_mtime_ns.  It is six times #47's 8000001 TO WITHIN 7 ns and twelve
+# times #46's 4000000 TO WITHIN 1 ns -- stated as multiples-to-within
+# because 6 x 8000001 = 48000006 and 12 x 4000000 = 48000000, and
+# neither is the measured figure.  It is also the first spread in the
+# series that falls SHORT of a round figure rather than over it: #44 and
+# #45 read 4000001, #46 read 4000000 exactly, #47 read 8000001, and this
+# one is 48000000 minus one.  The four re-run clocks remain comparable
+# WITH EACH OTHER to 48 ms.
+# ---------------------------------------------------------------------
