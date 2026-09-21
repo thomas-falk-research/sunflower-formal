@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T20:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T20:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6105,7 +6105,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1440 -> 1441 rows)
+## State as of the last refresh (1441 -> 1442 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6116,7 +6116,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1441 rows; 1272 labels decided; 1272 UNSAT; 0 SAT; 0 labels
+- **1442 rows; 1273 labels decided; 1273 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6130,7 +6130,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1272 decided plus 169 superseded
+  A row count is not a decision count: 1273 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6164,10 +6164,43 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1271, highest decided 1271, holes [].**
+- **Frontier contiguous 0..1272, highest decided 1272, holes [].**
   <!-- SPAN-STATE: closed -->
-  ***RESTART #48 — THE HOST REBOOTED AT 19:32:29.270204Z, AND THE
-  MACHINE CHANGED. COSTS ACROSS THIS POINT ARE NOT ON A COMMON
+  ***BANK idx 1272, ONE ROW — THE FIRST ROW ON THE NEW MACHINE, THE
+  FIRST OF SET SIXTEEN TO FINISH, AND THE BLOCK'S NEW MAXIMUM.*** It
+  landed at **4388.5 s**, detected at 20:48:49Z. **Rank 495 of 1273**,
+  778 cheaper, and `1273 − 778 = 495` reproduces it, so no tie; the
+  whole-sweep tie census holds at **13 of 1273**. *Count
+  **1273 = 65.3155%**, neither trap nor threshold; the next marked
+  count is the 66% trap at **1286**, **thirteen** away, with nothing
+  marked strictly between.* `[13,12,12,12]` at **39 of 65**, **26**
+  short of complete, and **the block maximum moves from 4029.9 s at
+  idx 1259 to 4388.5 s here**, by **358.6 s**. **0.2032 of the cap.**
+
+  ***AND ITS THREE ATTEMPTS INVITE A SPEED COMPARISON THAT IS NOT
+  MADE.*** This cube was killed twice before it finished: it ran
+  **4977.4 s without finishing** on the 2.10GHz machine (killed at
+  #47), **3557.1 s without finishing** on the same machine (killed at
+  #48), and **finished at 4388.5 s** on the 2.80GHz one. *So the third
+  attempt completed in **588.9 s less wall-clock** than the first
+  attempt had already spent without completing.* **That is one cube,
+  and no speed ratio is estimated from it** — the standing rule is that
+  cube-cost variance swamps any such estimate, and a single cube is the
+  worst possible case for it. *The two killed clocks are in the restart
+  accounting, not in this row: **the checkpoint records only the
+  attempt that finished**, which is why the restart losses are tracked
+  separately at all.*
+
+  ***AND THE ROW ITSELF IS CONFOUNDED FOR COST PURPOSES, AS SET
+  SIXTEEN'S OPENING SAID IT WOULD BE.*** 4388.5 s was measured on the
+  2.80GHz machine and **every other cost in this block was measured on
+  the 2.10GHz one**. *So the new block maximum is a maximum over
+  figures that are not on a common basis*, and it is recorded as the
+  census fact it is rather than as a statement about the cube. **This
+  is the first row in the sweep to carry that qualification.**
+
+  ***PREVIOUSLY: RESTART #48 — THE HOST REBOOTED AT 19:32:29.270204Z,
+  AND THE MACHINE CHANGED. COSTS ACROSS THIS POINT ARE NOT ON A COMMON
   BASIS.*** The full accounting is in the **#48 header block** appended
   to the checkpoint in this commit. **Three of the six spec fields
   moved**: CPU **@ 2.10GHz → @ 2.80GHz**, `cpu MHz` **2100.000 →
@@ -11125,7 +11158,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1272 of 1949 = 65.2642%**; **677 undecided**. **50% IS CROSSED**, at
+- **1273 of 1949 = 65.3155%**; **676 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -11839,7 +11872,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **38 decided**, undecided 27 spanning 1272..1298
+  **39 decided**, undecided 26 spanning 1273..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
