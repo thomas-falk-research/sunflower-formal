@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T09:26Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T09:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5644,6 +5644,16 @@ exactly one bank.
   2646.0 and 1630.7 against 1699.4 — while at size 15 they are not,
   1974.0 against 3429.0. **That is a description of three numbers, not
   a finding**, and no test has been run on it.*
+
+  ***AND THE NAMED FAILURE MODE IS LIVE, WITH BOTH OF ITS INDICES
+  RUNNING.*** The 09:41:28Z sample shows the four solvers on **idx 1197,
+  1198, 1200 and 1201** — *the four lowest undecided indices, so the two
+  holes and the two leaders are the whole of what is outstanding below
+  1202.* **1201 is running against 1200**, which is exactly the pairing
+  the close condition names: filling both 1197 and 1198 closes the span
+  unless a row at **1201 or above** rides in the same bank while 1200 is
+  still out. *Whether it fires is not predicted, and the `#29` rider
+  applies as always — the width that counts is the one at a commit.*
 
   ***THREE BLOCKS WERE OPEN AT THE SIXTH BANK, THE RAREST NON-EMPTY
   CENSUS STATE ON THE RECENT RECORD — AND IT LASTED EXACTLY ONE
