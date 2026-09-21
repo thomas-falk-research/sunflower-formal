@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T08:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T08:47Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5523,6 +5523,32 @@ exactly one bank.
   count** with **4 tied**; it moved **39 figures**, entering the
   movement series' top five at fourth, and left **9 of the 34** carried
   rows untouched. **No restart falls inside its window.**
+
+  ***AND NO SPAN IS OPEN, WITH THE WHOLE REMAINDER OF ONE BLOCK IN
+  FLIGHT AT ONCE.*** The 08:46:12Z sample shows the four solvers on
+  **idx 1190, 1191, 1192 and 1193** — *exactly the four undecided
+  members of `[13, 13, 9, 7]`, contiguous from a frontier that runs
+  0..1189 with no holes.* **Nothing is stuck behind the frontier.** *A
+  draft added "for the first time in several banks"; that is wrong — the
+  hole set was already empty one commit ago at `2321b43`, which is what
+  closing the span means. The empty hole set is not the notable part.
+  What is notable is that the four in flight are **exactly one block's
+  entire remainder**, so the block's completion and the next span's
+  opening are decided by the same four finishing orders. No claim is
+  made about how often that arrangement has occurred; it was not
+  counted.*
+
+  **SO THE NEXT OPENING IS DETERMINED BY WHICH OF THE FOUR LANDS
+  FIRST, AND THE WHOLE CONDITIONAL IS WRITTEN HERE BEFORE IT DOES.**
+  1190 first opens **nothing**; 1191 first opens **one** (`[1190]`);
+  1192 first opens **two** (`[1190, 1191]`); 1193 first opens **three**
+  (`[1190, 1191, 1192]`), which is the four-thread ceiling. ***With the
+  `#29` rider, which this clause has been written without before:*** an
+  opening width is measured **at a commit**, so the maximum is reached
+  *iff 1193 finishes first **and** the bank that commits it carries no
+  row filling one of the holes*. **Both halves, stated together, before
+  the outcome.** *Which lands first is not predicted, and the four are
+  not claimed to be exchangeable.*
 
   **AND THE BLOCK-COMPLETION PREDICTION HELD EXACTLY.** The span's
   opening paragraph said *"the three rows that close this span are also
