@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T03:13Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T03:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4836,7 +4836,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1323 -> 1324 rows)
+## State as of the last refresh (1324 -> 1325 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4847,7 +4847,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1324 rows; 1155 labels decided; 1155 UNSAT; 0 SAT; 0 labels
+- **1325 rows; 1156 labels decided; 1156 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4855,7 +4855,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1155 decided plus 169 superseded
+  A row count is not a decision count: 1156 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4874,7 +4874,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1152, highest decided 1155, holes [1153].**
+- **Frontier contiguous 0..1152, highest decided 1157, holes [1153, 1156].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-FIFTH.** idx 1149 landed at
   635.1 s while **1147** was still running — an opening at **one hole**.
@@ -4965,6 +4965,38 @@ exactly one bank.
   in the same bank**. *Neither condition is predicted. They are written
   down so that whichever way it goes, the record says what was claimed
   before it happened.*
+
+  ***AND THE CONDITION FIRED ON THE VERY NEXT BANK.*** *A draft called
+  this "the first time this file has watched a condition fire", which is
+  not defensible — the forty-fourth's three-hole opening was described
+  in advance by a check-in and then observed, and there are others. What
+  **is** narrow enough to say is that this is the first condition
+  written in the `#29` form, that form being two banks old.* The clause
+  was *"no row at
+  1157 or above may ride in the same bank"* while idx 1156 is
+  undecided. **idx 1157 landed at 235.0 s**, 1156 was still running, and
+  the hole set went **`[1153]` → `[1153, 1156]`**. *The span widened
+  instead of closing.* **This is the same mechanism that falsified the
+  idx 1147 conditional at `#29`** — a row above the frontier arriving
+  before the hole below it — *except that this time it was written down
+  first, and so it is an observation rather than a correction.*
+
+  **What that buys is small and worth being exact about.** Nothing was
+  predicted: the clause said *if* such a row rides along, not that one
+  would. **The gain is that the outcome was already classified when it
+  arrived**, so no sentence had to be retracted and no ordinal had to be
+  released. *Compare `#29`, where the same event cost a stated claim and
+  an error-pattern entry.*
+
+  **The two claims carry over again, and there are now two holes and
+  three open blocks.** Filling **1153** closes `[13,13,10,5]` at 5 of 5;
+  filling **1156** closes `[13,13,10,4]` at 3 of 3 — *both membership,
+  both unchanged.* The span closes only at a **commit** whose tree holds
+  neither hole **and** no new one, which today means **idx 1158 must be
+  decided by then, or else no row at 1159 or above may ride in that same
+  bank**. *`[13,13,10,3]` is idx 1157..1158 and stands at 1 of 2, so
+  1158 is the next index that can become a hole. When any of this lands
+  is not claimed.*
 
   ***HALF OF A CONDITIONAL I WROTE ONE BANK AGO IS FALSIFIED, AND IT WAS
   FALSIFIED BY SOMETHING I HAD ALREADY WRITTEN DOWN.*** `ce1e307` said,
@@ -6672,7 +6704,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1155 of 1949 = 59.2612%**; **794 undecided**. **50% IS CROSSED**, at
+- **1156 of 1949 = 59.3125%**; **793 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7224,6 +7256,8 @@ exactly one bank.
   **4 decided**, undecided [1153]
 - `[13, 13, 10, 4]` idx 1154..1156: **3 members**,
   **2 decided**, undecided [1156]
+- `[13, 13, 10, 3]` idx 1157..1158: **2 members**,
+  **1 decided**, undecided [1158]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
