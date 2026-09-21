@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T07:31Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T07:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5472,6 +5472,43 @@ exactly one bank.
   whether per-block median cost falls down this tail as it did down
   `[13,13,10,*]`'s — waits on 1183, 1184 and 1185, the same three rows
   the span waits on. No partial figure is quoted for it here.*
+
+  ***THE HOLE COUNT IS AT THE FOUR-THREAD CEILING, AND THE CEILING IS
+  STRUCTURAL.*** Read from `cnf_mtime_check.py` at 07:41:27Z, the four
+  live solvers hold **idx 1183, 1184, 1185 and 1188** — *exactly the
+  three holes plus one leading cube*. **Three is the most holes four
+  threads can produce.** Cubes are taken in increasing index order, so
+  every undecided index below the highest decided one has been taken and
+  is still running; a decided index above **all four** in-flight cubes
+  would have needed a **fifth concurrent slot**, which the driver does
+  not have. *So `threads − 1` bounds the hole count, and this span is
+  sitting on that bound.*
+
+  **THE EXCEPTION IS A CAPPED CUBE, AND THE RECORD SHOWS EXACTLY THAT.**
+  An UNKNOWN row is **not a decision**, so the sweep moves past a capped
+  cube and the hole outlives the thread that made it. **Six spans in the
+  whole walk ever exceeded three holes** — walk positions **1, 2, 3, 4,
+  6 and 9**, reaching **4, 15, 6, 13, 12 and 7** — *and all six closed
+  at commits holding between 24 and 436 rows*. The last of them,
+  `63dcb8a`, is the **first commit carrying the terminal 169 UNKNOWN
+  rows**; the last cube to cap is real data row 424 and **930 rows have
+  landed since without one**. **Every one of the 104 spans since has
+  capped at three or below.** *Checked by walking every span's chain and
+  reading the UNKNOWN count out of each of those six closing blobs, not
+  inferred from the dates.*
+
+  ***AND THE NAMED FAILURE MODE CANNOT FIRE FROM THIS SET.*** It needs a
+  row at **1189 or above** while 1188 is out, and **no thread holds 1189
+  or above** — 1188 is itself the leading cube. *The mode becomes
+  available only once a thread frees and takes 1189, which is a
+  statement about right now and not a prediction about when.*
+
+  ***1188 IS TWO DIFFERENT NUMBERS ON THIS PAGE AND THEY ARE NOT THE
+  SAME THING.*** The **cube index** 1188 is in flight. The **next trap**
+  is a **decided count** of 1188, which is **three decisions away** —
+  the count is 1185, and 1188 landing would take it to **1186**, not to
+  1188. *Written out because the coincidence is the kind that reads as a
+  finding at a glance and is nothing but two uses of one integer.*
 
   **PREVIOUSLY: THE FORTY-EIGHTH SPAN IS CLOSED, AND ITS FIGURES ARE IN
   `76c364c`** — in the spans section, not repeated here. It opened at **two
