@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T09:25Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T09:26Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5454,7 +5454,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1365 -> 1366 rows)
+## State as of the last refresh (1366 -> 1367 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5465,7 +5465,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1366 rows; 1197 labels decided; 1197 UNSAT; 0 SAT; 0 labels
+- **1367 rows; 1198 labels decided; 1198 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5477,7 +5477,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1197 decided plus 169 superseded
+  A row count is not a decision count: 1198 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5496,7 +5496,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1191, highest decided 1199, holes [1192, 1197, 1198].**
+- **Frontier contiguous 0..1196, highest decided 1199, holes [1197, 1198].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FIFTIETH.** ***AND THE `#29` RIDER
   FIRED ON THE VERY FIRST CLAUSE THAT WAS WRITTEN WITH IT.***
@@ -5596,6 +5596,7 @@ exactly one bank.
   | 4th | idx 1195 | 1511.0 s | `[1192]` | 1197+ while 1196 out |
   | 5th | idx 1196 | 1413.1 s | `[1192]` | 1198+ while 1197 out |
   | 6th | idx 1199 | 553.4 s | `[1192, 1197, 1198]` | 1201+ while 1200 out |
+  | 7th | idx 1192 | 4300.2 s | `[1197, 1198]` | 1201+ while 1200 out |
 
   *Three leaders in a row landed in index order — the case that adds
   nothing — and the fourth did not.* ***THE QUIET RUN ENDED AT THE
@@ -5618,9 +5619,38 @@ exactly one bank.
   closes it unless a row at **1201 or above** rides in the same bank
   while 1200 is still out.*
 
-  ***AND THREE BLOCKS ARE OPEN, WHICH IS THE RAREST NON-EMPTY CENSUS
-  STATE ON THE RECENT RECORD.*** `[13,13,9,7]` at 6 of 7, `[13,13,9,6]`
-  at 3 of 5, `[13,13,9,5]` at 1 of 3. *Over the last **200** commits
+  ***AND idx 1192 HAS SINCE LANDED AT 4300.2 s, WHICH FINISHES THE
+  7-BLOCK AND GIVES THE COST-TAIL TEST ITS THIRD POINT.*** The hole set
+  drops to `[1197, 1198]` and the frontier jumps to contiguous 0..1196.
+  At **4300.2 s** it is **the dearest of the seven** members of
+  `[13, 13, 9, 7]`, which is why it was the last to land.
+
+  **THE SECOND STEP AGREES WITH THE REFERENCE AND THE FIRST STILL DOES
+  NOT.** Aligned by block size, complete blocks only:
+
+  | size | `[13,13,10,*]` median | `[13,13,9,*]` median | same direction? |
+  |---|---|---|---|
+  | 15 | 3429.0 s | 1974.0 s | — |
+  | 11 | 2646.0 s (fall) | 2538.7 s (**rise**) | **no** |
+  | 7 | 1699.4 s (fall) | 1630.7 s (**fall**) | **yes** |
+
+  ***SO IT IS ONE STEP EACH WAY, WHICH IS NOT A TREND IN EITHER
+  DIRECTION AND IS NOT OFFERED AS ONE.*** *Two comparisons, one
+  agreeing and one not — the note has called a single comparison a coin
+  flip since span 3, and two coin flips that disagree are not evidence
+  for anything. **Five of the eight blocks in this tail are still
+  incomplete.*** *What is worth noting and is not a trend claim: at
+  sizes 11 and 7 the two tails' medians are close — 2538.7 against
+  2646.0 and 1630.7 against 1699.4 — while at size 15 they are not,
+  1974.0 against 3429.0. **That is a description of three numbers, not
+  a finding**, and no test has been run on it.*
+
+  ***THREE BLOCKS WERE OPEN AT THE SIXTH BANK, THE RAREST NON-EMPTY
+  CENSUS STATE ON THE RECENT RECORD — AND IT LASTED EXACTLY ONE
+  COMMIT.*** `[13,13,9,7]` at 6 of 7, `[13,13,9,6]` at 3 of 5,
+  `[13,13,9,5]` at 1 of 3. *idx 1192 completed the 7-block at the very
+  next bank and the census is back to two. The count below is left as it
+  was computed, at the commit where three were open.* *Over the last **200** commits
   that touch this file the census showed **1 open block 128 times, 2
   open blocks 66 times, 3 three times and 0 three times** — recounted
   here rather than carried from the forty-ninth's entry, where the same
@@ -8257,7 +8287,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1197 of 1949 = 61.4161%**; **752 undecided**. **50% IS CROSSED**, at
+- **1198 of 1949 = 61.4674%**; **751 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8970,8 +9000,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 9, 7]` idx 1187..1193: **7 members**,
-  **6 decided**, undecided [1192]
 - `[13, 13, 9, 6]` idx 1194..1198: **5 members**,
   **3 decided**, undecided [1197, 1198]
 - `[13, 13, 9, 5]` idx 1199..1201: **3 members**,
