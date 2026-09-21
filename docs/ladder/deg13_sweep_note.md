@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T17:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T17:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6078,6 +6078,19 @@ exactly one bank.
   banks taking third place ends here.* **That run was written down as a
   census fact and not as a shape**, which is why its ending costs
   nothing and is recorded in one clause. **0.1548 of the cap.**
+
+  ***THE 17:41Z CHECK-IN'S FIVE CHECKS ALL PASSED, WITH NOTHING
+  CHANGED.*** 1440 rows, 1271 decided, contiguous 0..1270, holes `[]`,
+  0 SAT, all invariants holding; pid **32389** single and live; the
+  waiter armed at 17:34:10Z still running; tree clean with local HEAD
+  equal to `origin/claude/sunflower-deg13-p3-bhbe9w`.
+  **`cnf_mtime_check.py` puts four cubes in flight** — idx 1271 at
+  3076 s, 1272 at 2088 s, 1273 at 902 s and 1274 at 464 s, with
+  `max |now-mtime − ps ELAPSED| = 1 s`. *Three of the four deltas are
+  **0 s**, which bounds launch latency below one second and does not
+  show it is zero — the tool says so itself and the distinction is
+  kept.* **This commit carries only the samples those runs appended and
+  this paragraph.**
 
   ***PREVIOUSLY: BANK idx 1269, ONE ROW — FRONTIER EXTENDED, NO HOLE,
   NO SPAN.***
