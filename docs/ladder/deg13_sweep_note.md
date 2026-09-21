@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T00:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T00:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -293,16 +293,45 @@ the answer is a bracket, not a substituted number.
    more of it is seen. *A range over a growing sample is not converging
    and was never going to.*
 
-   **USE THE QUANTILES, WHICH ARE STABLE.** Over the 146: **p05 0.9814,
-   p25 0.9876, median 0.9908, p75 0.9928, p95 0.9957**, an **IQR of
-   0.0052**. Only **6 of 146** sit below the old 71-sample floor and
-   **12 of 146** below the old 30-sample floor, so the widening is a
-   handful of outliers being reached, not the bulk moving. *That is the
-   correction: the earlier text said "the band is quoted with its sample
-   count because it grows", which was right about the symptom and wrong
-   about the remedy — the fix is not to keep re-quoting a range, it is
-   to stop using one.* The original point stands unchanged and is now
-   better supported: **there is no settled value to wait for.**
+   **USE THE CORE QUANTILES — AND "CORE" IS NOT DECORATION, IT IS WHERE
+   THE STABILITY ACTUALLY IS.** Two readings, 100 samples apart:
+
+   | | p05 | p25 | median | p75 | p95 | IQR |
+   |---|---|---|---|---|---|---|
+   | 146 samples | 0.9814 | 0.9876 | 0.9908 | 0.9928 | 0.9957 | 0.0052 |
+   | 246 samples | **0.9747** | 0.9876 | 0.9904 | 0.9927 | 0.9955 | 0.0051 |
+
+   **p25, the median and p75 moved by at most 0.0004; the IQR moved by
+   0.0001; p05 moved by 0.0067** — more than the whole interquartile
+   range. *So "use the quantiles, which are stable", written here at the
+   146-sample reading, was right about the remedy and loose about which
+   ones: a 5th percentile is a tail statistic and drifts down for the
+   same reason the minimum does, only more slowly.* **The core is what
+   to quote.** At the 146-sample reading, only **6** sat below the old
+   71-sample floor and **12** below the old 30-sample floor, so the
+   widening was a handful of outliers being reached and not the bulk
+   moving — which the two-row table above now shows directly.
+
+   ***AND THE CONTENTION STORY THIS ENTRY TELLS HAS BEEN TESTED, WITH A
+   RESULT THAT MAINLY INDICTS THE TEST.*** The explanation offered for
+   the low tail is "an occasional contention dip", which predicts that
+   low readings cluster **by sample instant** — several slots depressed
+   together — rather than scattering across slots. Checked over the 246
+   post-300 s samples: **78 instants have two or more slots sampled, 13
+   samples sit below p05, and in ZERO instants do two or more of them
+   fall below it together.** *But the expected count under independence
+   is **0.73 instants**, so observing zero distinguishes nothing.*
+   **The test has essentially no power at this sample size and is
+   recorded as such, not as evidence against contention.** Settling it
+   would need a deliberately dense sampling burst, and the question does
+   not touch the bracket.
+
+   *The correction that started this entry stands: the earliest text
+   here said "the band is quoted with its sample count because it
+   grows", which was right about the symptom and wrong about the remedy
+   — the fix is not to keep re-quoting a range, it is to stop using
+   one.* The original point stands unchanged and is now better
+   supported: **there is no settled value to wait for.**
 
    The five samples at elapsed ≤ 70 s read **0.9403, 0.9697, 0.9722,
    0.9756 and 1.0000** — and the 1.0000 is idx 1113 at **27 s**, where a
