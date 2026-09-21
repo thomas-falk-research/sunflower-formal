@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T12:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T12:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5687,7 +5687,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1396 -> 1405 rows)
+## State as of the last refresh (1405 -> 1406 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5698,7 +5698,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1405 rows; 1236 labels decided; 1236 UNSAT; 0 SAT; 0 labels
+- **1406 rows; 1237 labels decided; 1237 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5710,7 +5710,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1236 decided plus 169 superseded
+  A row count is not a decision count: 1237 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5729,12 +5729,24 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1235, highest decided 1235, holes [].**
+- **Frontier contiguous 0..1236, highest decided 1236, holes [].**
   <!-- SPAN-STATE: closed -->
+  ***THIS BANK CARRIED ONE ROW AND NOTHING TURNS ON IT.*** idx 1236
+  landed at **702.3 s** at 12:17:51Z, extending the frontier and
+  opening no hole. **Rank 1120 of 1237**, 117 cheaper, and
+  `1237 − 117 = 1120` reproduces it, so there is no tie; the census
+  stays at **13 of 1237**. *The count **1237 = 63.4684%** is neither a
+  trap nor a threshold, and the next trap is **1247** — ten decisions
+  away with nothing marked between.* `[13,12,12,12]` goes to **3 of
+  65**, with 75.9, 582.6 and 702.3 s in so far. ***A running median of
+  an open block is not a block median and none is quoted here***: the
+  cross-tail table gains nothing until all 65 members are in, which on
+  this block's evidence so far is a long way off.
+
   ***NO SPAN IS OPEN, AND A WHOLE SPAN JUST EXISTED IN THE FILE AND IN
   NO COMMIT — THE `#29` RIDER IN ITS PUREST FORM, FOR THE SECOND
-  TIME.*** This bank carried **nine** rows, and in the file the hole
-  set walked
+  TIME.*** **The bank before this one** carried **nine** rows, and in
+  the file the hole set walked
 
   `[1227]` → `[1227, 1229]` → `[1227, 1229]` → `[1229]` →
   `[1229, 1232, 1233]` → `[1229, 1232]` → `[1229]` → `[]` → `[]`
@@ -9334,7 +9346,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1236 of 1949 = 63.4171%**; **713 undecided**. **50% IS CROSSED**, at
+- **1237 of 1949 = 63.4684%**; **712 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -10048,7 +10060,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **2 decided**, undecided 63 spanning 1236..1298
+  **3 decided**, undecided 62 spanning 1237..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
