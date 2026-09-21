@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T03:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T03:47Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4639,6 +4639,35 @@ alongside it.**
   ordered population in the same script that computes its base rate**,
   and never by enumerating the members currently in view.
 
+  **#31 — PIPING A TOOL THROUGH `head` KILLED IT BEFORE ITS SIDE
+  EFFECT, AND THE NOTE NEARLY CITED A SAMPLE THAT WAS NEVER WRITTEN.**
+  `cnf_mtime_check.py` prints its table and **then appends the sample
+  rows to `cpu_ratio_samples.tsv`**. Run as
+  `python3 docs/ladder/cnf_mtime_check.py | head -n 12`, `head` exits
+  after twelve lines, the write to the closed pipe raises **SIGPIPE**,
+  and **the process dies before the append**. The table was printed and
+  looked complete; **no rows were written**.
+
+  ***THIS IS WORSE THAN THE TRUNCATION THE STANDING RULE ALREADY
+  BANS.*** That rule exists because a filtered view can hide a line —
+  a guard, a count, the "appended N row(s)" confirmation. **Here the
+  filter did not hide the write; it prevented it.** *A draft of the
+  paragraph above cited "the four cubes in flight at 03:45:51Z" from
+  that printed table. That timestamp is in no committed file and never
+  will be.* **It would have been an unverifiable citation of the exact
+  kind `bce9af0` bans** — an identifier that looks read but is not in
+  any artefact — and it was caught only because `git status` showed the
+  sample file unmodified when it should not have been.
+
+  **Remedy: never pipe a repo tool through `head`, `tail` or `grep`.**
+  The standing ban on filtered diffs now reads as a ban on filtered
+  **tool output generally**, for the stronger reason that some of these
+  tools write files. *If the output is long, read it in full; the cost
+  of that is lines, and the cost of this was a near-fabricated
+  timestamp.* **The figure in the note is now cited from the 03:46:46Z
+  sample, which is in the file**, and the four in-flight indices are the
+  same, so the claim itself stands.
+
 - A definition carried inverted in my own note (060fb26).
 - A figure recalled instead of read (ba6ec65) — **second instance**, caught
   in the commit that banked idx 832/835 and never published. The throughput
@@ -7214,6 +7243,31 @@ exactly one bank.
   Nothing is predicted about whether a committed tree will sit on 1169;
   what *is* now on the page is that **a three-or-more-row bank spanning
   1169 would lose it**, which is checkable in advance and was.
+
+  ***AND THE FOUR CUBES IN FLIGHT AT 03:46:46Z ARE EXACTLY THE FOUR THAT
+  CARRY THE COUNTER TO THE TRAP.*** The sample shows **idx 1165, 1166,
+  1167 and 1168** running — **consecutive from frontier + 1**, with the
+  counter at **1165**. Four decisions take it to **1169**, which is the
+  60% trap. *That is arithmetic about the in-flight set, not a forecast
+  about cubes: it says where the counter lands if these four land, and
+  says nothing about when or in what order.*
+
+  **So the way the trap is LOST is now nameable in advance**: idx 1169's
+  cube is **not yet launched** — four threads, four cubes — and can only
+  start once one of these finishes. **The trap is lost only if a single
+  bank carries all four of these AND idx 1169**, taking the counter
+  1165 → 1170 with no tree on 1169. *Any bank that stops at 1169, or any
+  split of these four across two banks, catches it.* **The remedy is the
+  one that worked at 59%: run the arithmetic before each bank and bank
+  at once when the counter would land on 1169.**
+
+  ***AND THE SAME ARRANGEMENT BOUNDS THE NEXT SPAN OPENING, AS IT DID AT
+  THE FORTY-FOURTH.*** Four consecutive in flight from frontier + 1
+  means the **maximum available opening is three**, and it is reached
+  **iff the highest-indexed of them, idx 1168, finishes first**. *The
+  conditional structure follows from the frontier and the in-flight set;
+  which cube finishes first does not follow from anything on the page
+  and is not claimed.*
 
   ***AND BOTH 1169 AND 1170 SIT INSIDE A SINGLE 15-MEMBER BLOCK***,
   `[13,13,9,9]` at idx **1161..1175**. *That matters operationally: a
