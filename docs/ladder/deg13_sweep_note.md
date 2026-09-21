@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T11:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T11:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5606,7 +5606,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1388 -> 1389 rows)
+## State as of the last refresh (1389 -> 1390 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5617,7 +5617,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1389 rows; 1220 labels decided; 1220 UNSAT; 0 SAT; 0 labels
+- **1390 rows; 1221 labels decided; 1221 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5629,7 +5629,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1220 decided plus 169 superseded
+  A row count is not a decision count: 1221 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5648,7 +5648,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1216, highest decided 1221, holes [1217, 1220].**
+- **Frontier contiguous 0..1219, highest decided 1221, holes [1220].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FIFTY-SECOND.** idx 1218 landed at
   **709.0 s** while **1216 and 1217** were both still running — an
@@ -5670,6 +5670,7 @@ exactly one bank.
   | 2nd | idx 1219 | 1296.8 s | `[1216, 1217]` | 1221+ while 1220 out |
   | 3rd | idx 1216 | 3010.5 s | `[1217]` | 1221+ while 1220 out |
   | 4th | idx 1221 | 576.3 s | `[1217, 1220]` | 1223+ while 1222 out |
+  | 5th | idx 1217 | 2469.3 s | `[1220]` | 1223+ while 1222 out |
 
   ***THE FOURTH BANK GREW THE SET, AND IT IS THE CASE THE THIRD BANK'S
   CONDITION NAMED.*** idx 1221 landed at **576.3 s** while **1220** was
@@ -5686,6 +5687,29 @@ exactly one bank.
   `[13,13,8,6]` at 2 of 3, `[13,13,8,5]` at 1 of 2 — *the rarest
   non-empty census state on the recent record, and the second time this
   session it has appeared.*
+
+  ***AND THE FIFTH BANK GAVE THE THIRD TAIL ITS FIRST STEP — WHICH IS A
+  RISE, EXACTLY AS THE OTHER TWO TAILS DID.*** idx 1217 completed
+  `[13,13,8,7]` at 5 of 5. The three tails, complete blocks only, at the
+  two sizes all three now share:
+
+  | size | `[13,13,10,*]` | `[13,13,9,*]` | `[13,13,8,*]` |
+  |---|---|---|---|
+  | 7 | 1699.4 s | 1630.7 s | **989.2 s** |
+  | 5 | 1245.1 s (fall) | 1511.0 s (fall) | **1723.5 s (RISE)** |
+
+  *Careful about what that row compares.* **The 7 → 5 step is the first
+  step of `[13,13,8,*]`'s own series but the third step of the other
+  two**, and the shape those two established was *one rise at each
+  series' **own** step 1, then falls everywhere after*. **`[13,13,8,*]`
+  has now produced that rise at its own step 1** — 989.2 → 1723.5.
+
+  ***SO THE FIRST HALF OF THE SHAPE HAS A THIRD INSTANCE AND THE SECOND
+  HALF IS UNTESTED.*** *The claim is "rise once at step 1, then fall";
+  this tail has delivered the rise and has not yet been asked about the
+  falls. Four blocks of its six remain open. **Three rises at three step
+  ones is not the shape confirmed** — it is the cheap half of it, and
+  the expensive half arrives with the 3-block.*
 
   **Close condition, in the rule form:** filling **both** 1216 and 1217
   closes it **iff the committing tree leaves no undecided index below
@@ -8861,7 +8885,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1220 of 1949 = 62.5962%**; **729 undecided**. **50% IS CROSSED**, at
+- **1221 of 1949 = 62.6475%**; **728 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -9574,8 +9598,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 13, 8, 7]` idx 1213..1217: **5 members**,
-  **4 decided**, undecided [1217]
 - `[13, 13, 8, 6]` idx 1218..1220: **3 members**,
   **2 decided**, undecided [1220]
 - `[13, 13, 8, 5]` idx 1221..1222: **2 members**,
