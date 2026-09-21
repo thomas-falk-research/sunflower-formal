@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T23:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T23:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6316,7 +6316,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1457 -> 1459 rows)
+## State as of the last refresh (1459 -> 1460 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6327,7 +6327,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1459 rows; 1290 labels decided; 1290 UNSAT; 0 SAT; 0 labels
+- **1460 rows; 1291 labels decided; 1291 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6341,7 +6341,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1290 decided plus 169 superseded
+  A row count is not a decision count: 1291 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6375,7 +6375,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1288, highest decided 1291, holes [1289, 1290].**
+- **Frontier contiguous 0..1288, highest decided 1292, holes [1289, 1290].**
   <!-- SPAN-STATE: open -->
   ***BANK idx 1291 AND idx 1288, TWO ROWS — THE FIFTY-NINTH SPAN IS
   OPEN, AT TWO HOLES.*** idx 1291 landed at **294.7 s** at 23:31:06Z
@@ -6423,6 +6423,7 @@ exactly one bank.
   | bank | row(s) | cost | holes after | condition becomes |
   |---|---|---|---|---|
   | 1st | idx 1291, 1288 | 294.7 s, 3473.6 s | `[1289, 1290]` | 1293+ while 1292 out |
+  | 2nd | idx 1292 | 295.5 s | `[1289, 1290]` | 1294+ while 1293 out |
 
   **The bank's own figures, both against N = 1290**: **idx 1291 rank
   1246**, 44 cheaper; **idx 1288 rank 591**, 699 cheaper. *Each
@@ -6436,6 +6437,43 @@ exactly one bank.
   10th dearest of the same 56, which is the spread this block has shown
   throughout.* **The block maximum stays 5637.8 s** at idx 1277.
   **0.0136 and 0.1608 of the cap.** *All recomputed from the checkpoint
+  independently of bank.py and agreeing with it.*
+
+  **SECOND BANK — idx 1292 at 295.5 s**, landed 23:35:51Z. *The holes
+  do not move — 1289 and 1290 are both still running — but the highest
+  decided goes 1291 → 1292.* **Nothing about the span's width changes**:
+  the hole set is the same two indices, and this commit's chain entry is
+  `2` again, as the first commit's was — **the committed chain is
+  `2, 2`**. *What moves is the index the close condition is measured
+  against, and the span's commit count.* **So the condition moves too**:
+  filling 1289 and 1290 still closes the span, and the failure mode is
+  now a row at **1294 or above** while **1293** is out.
+
+  ***AND THE PREVIOUS BANK'S RANK HAS ALREADY MOVED.*** The entry above
+  records **idx 1291 at rank 1246 of 1290**, and that is still what it
+  was at that N — *but at **N = 1291** idx 1291 is **rank 1247**,
+  because this bank's row is cheaper than it and displaced it by one.*
+  **A rank quoted without its N is worthless and a rank quoted with the
+  wrong N is worse**; *both entries carry theirs, which is the only
+  reason the two can sit on the same page without contradicting each
+  other.*
+
+  ***THE TWO COSTS ARE 0.8 SECONDS APART AND ARE NOT A TIE.*** idx 1291
+  ran **294.7 s** and idx 1292 ran **295.5 s** — *adjacent in the
+  block's ordering with nothing between them, and distinct*, so the
+  whole-sweep tie census holds at **13 of 1291**. **And idx 1292's rank
+  at N = 1291 is 1246, the same NUMBER idx 1291 carried at N = 1290** —
+  *a coincidence of two populations differing by one, not a shared
+  value; the costs differ and neither row is tied with anything.*
+
+  **The second bank's figures, against N = 1291**: **rank 1246**, 45
+  cheaper, `1291 − 45 = 1246` reproduces it, so no tie. *Count **1291 =
+  66.2391%**, neither trap nor threshold; the k = 67 trap at **1305**
+  is **fourteen** away.* `[13,12,12,12]` at **57 of 65**, **8** short;
+  **55th dearest of the 57** — *the block's three cheapest rows are now
+  75.9, 294.7 and 295.5 s, and two of those three arrived in
+  consecutive banks.* **The block maximum stays 5637.8 s** at idx 1277.
+  **0.0137 of the cap.** *All recomputed from the checkpoint
   independently of bank.py and agreeing with it.*
 
   ***AND `529bf53`'S COMMIT MESSAGE CONTAINS A FALSE ASSURANCE ABOUT
@@ -12128,7 +12166,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1290 of 1949 = 66.1878%**; **659 undecided**. **50% IS CROSSED**, at
+- **1291 of 1949 = 66.2391%**; **658 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -12842,7 +12880,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **56 decided**, undecided 9 spanning 1289..1298
+  **57 decided**, undecided 8 spanning 1289..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
