@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T00:25Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T00:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1225,40 +1225,80 @@ at the thirty-fifth.
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 34 of 106 | 2 | 58 of 106 (21 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 45 of 106 | 2 | 58 of 106 (21 tied) |
-| seventeenth `75ff84b` | 2:36:20 | 15 of 106 | 8 | 22 of 106 (7 tied) |
-| eighteenth `faa424a` | 1:06:55 | 40 of 106 | 8 | 22 of 106 (7 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 55 of 106 | 1 | 80 of 106 (26 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 19 of 106 | 2 | 58 of 106 (21 tied) |
-| twenty-first `83cabc1` | **5:05:31** | **8 of 106** | 7 | 30 of 106 (6 tied) |
-| twenty-second `31d9565` | 1:57:02 | 25 of 106 | 4 | 45 of 106 (1 tied) |
-| twenty-third `b4d2068` | 2:17:22 | 20 of 106 | 10 | 14 of 106 (4 tied) |
-| twenty-fourth `e2e3d5f` | 0:10:42 | 58 of 106 | 1 | 80 of 106 (26 tied) |
-| twenty-fifth `741b900` | 0:54:37 | 43 of 106 | 1 | 80 of 106 (26 tied) |
-| twenty-sixth `b7f8c36` | 1:14:19 | 39 of 106 | 1 | 80 of 106 (26 tied) |
-| twenty-seventh `d322a9d` | 1:49:26 | 30 of 106 | 2 | 58 of 106 (21 tied) |
-| twenty-eighth `6f6d668` | 1:56:29 | 26 of 106 | **9** | **19 of 106** (2 tied) |
-| twenty-ninth `69a8a16` | 0:18:42 | 56 of 106 | 1 | 80 of 106 (26 tied) |
-| thirtieth `3db5927` | 1:36:10 | 32 of 106 | 2 | 58 of 106 (21 tied) |
-| thirty-first `43f2ddb` | 1:31:53 | 33 of 106 | 6 | 37 of 106 (2 tied) |
-| thirty-second `5cde733` | **3:33:32** | **12 of 106** | **11** | **11 of 106** (2 tied) |
-| thirty-third `743c24d` | 1:15:56 | 36 of 106 | 6 | 37 of 106 (2 tied) |
-| thirty-fourth `4e27c14` | **0:09:49** | **59 of 106** | 1 | 80 of 106 (26 tied) |
-| thirty-fifth `bb28ab9` | 0:39:00 | 48 of 106 | **8** | **22 of 106** (7 tied) |
-| thirty-sixth `b393f25` | 0:37:35 | 49 of 106 | 2 | 58 of 106 (21 tied) |
-| thirty-seventh `ae0b64e` | 0:20:34 | 54 of 106 | 1 | 80 of 106 (26 tied) |
-| thirty-eighth `ff5f073` | **2:03:16** | 22 of 106 | **8** | 22 of 106 (7 tied) |
-| thirty-ninth `7440e6b` | 0:47:02 | 46 of 106 | 1 | 80 of 106 (26 tied) |
-| fortieth `39bb186` | 2:06:48 | 21 of 106 | 4 | 45 of 106 (1 tied) |
-| forty-first `f558bb0` | 1:59:51 | 23 of 106 | **8** | 22 of 106 (**7 tied**) |
+| fifteenth `a5172c7` | 1:29:45 | 35 of 107 | 2 | 59 of 107 (21 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 46 of 107 | 2 | 59 of 107 (21 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 16 of 107 | 8 | 23 of 107 (7 tied) |
+| eighteenth `faa424a` | 1:06:55 | 41 of 107 | 8 | 23 of 107 (7 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 56 of 107 | 1 | 81 of 107 (26 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 20 of 107 | 2 | 59 of 107 (21 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 107** | 7 | 31 of 107 (6 tied) |
+| twenty-second `31d9565` | 1:57:02 | 26 of 107 | 4 | 46 of 107 (1 tied) |
+| twenty-third `b4d2068` | 2:17:22 | 21 of 107 | 10 | 14 of 107 (4 tied) |
+| twenty-fourth `e2e3d5f` | 0:10:42 | 59 of 107 | 1 | 81 of 107 (26 tied) |
+| twenty-fifth `741b900` | 0:54:37 | 44 of 107 | 1 | 81 of 107 (26 tied) |
+| twenty-sixth `b7f8c36` | 1:14:19 | 40 of 107 | 1 | 81 of 107 (26 tied) |
+| twenty-seventh `d322a9d` | 1:49:26 | 31 of 107 | 2 | 59 of 107 (21 tied) |
+| twenty-eighth `6f6d668` | 1:56:29 | 27 of 107 | **9** | **19 of 107** (**3 tied**) |
+| twenty-ninth `69a8a16` | 0:18:42 | 57 of 107 | 1 | 81 of 107 (26 tied) |
+| thirtieth `3db5927` | 1:36:10 | 33 of 107 | 2 | 59 of 107 (21 tied) |
+| thirty-first `43f2ddb` | 1:31:53 | 34 of 107 | 6 | 38 of 107 (2 tied) |
+| thirty-second `5cde733` | **3:33:32** | **12 of 107** | **11** | **11 of 107** (2 tied) |
+| thirty-third `743c24d` | 1:15:56 | 37 of 107 | 6 | 38 of 107 (2 tied) |
+| thirty-fourth `4e27c14` | **0:09:49** | **60 of 107** | 1 | 81 of 107 (26 tied) |
+| thirty-fifth `bb28ab9` | 0:39:00 | 49 of 107 | **8** | **23 of 107** (7 tied) |
+| thirty-sixth `b393f25` | 0:37:35 | 50 of 107 | 2 | 59 of 107 (21 tied) |
+| thirty-seventh `ae0b64e` | 0:20:34 | 55 of 107 | 1 | 81 of 107 (26 tied) |
+| thirty-eighth `ff5f073` | **2:03:16** | 23 of 107 | **8** | 23 of 107 (7 tied) |
+| thirty-ninth `7440e6b` | 0:47:02 | 47 of 107 | 1 | 81 of 107 (26 tied) |
+| fortieth `39bb186` | 2:06:48 | 22 of 107 | 4 | 46 of 107 (1 tied) |
+| forty-first `f558bb0` | 1:59:51 | 24 of 107 | **8** | 23 of 107 (7 tied) |
+| forty-second `87f9b19` | **2:39:11** | **15 of 107** | **9** | **19 of 107** (**3 tied**) |
+
+***THE FORTY-SECOND MOVED FIFTY FIGURES — 25 duration ranks, 24 commit
+ranks and 1 tie count***, asserted as 25 + 24 + 1 = 50 and summed by
+script over the twenty-seven rows carried across. **Only 1 of the 27
+came through untouched.** It is **the largest movement any close has
+produced**, past the forty-first's 42, which had held the record for
+exactly one close.
+
+**IT IS THE FIRST CLOSE TO SIT HIGH IN BOTH ORDERINGS AT ONCE.** At
+**2:39:11** it is **15 of 107** by duration and at **9 broken commits**
+it is **19 of 107**, tying the twenty-eighth and taking that group from
+2 to 3. The thirty-eighth's entry describes exactly this shape and
+called it the reason a close can displace almost everything; this one
+is further up the duration ordering than the thirty-eighth was, and
+the table is four rows longer. Three set equalities, computed as sets:
+
+- the **24** commit ranks that moved are exactly the tabled rows with
+  **fewer than 9** commits;
+- the **25** duration ranks that moved are exactly the tabled rows
+  **shorter than 2:39:11**;
+- the **1** untouched row, the thirty-second, is the only one beating
+  it on **both** axes — 11 commits and 3:33:32.
+
+*The tie column barely moved for the opposite reason to the
+forty-first's: 9 commits is a sparse value, so joining it changes one
+group of two into one of three and nothing else.*
+
+**Its own figures, read from `--spans all` after `87f9b19` existed**:
+opened after `ce71ce4` at 21:47:16Z, closed by `87f9b19` at 00:26:27Z,
+duration **2:39:11** (2.6531 h) by committer timestamps, **9 broken
+commits**, hole counts `3,2,1,2,1,1,1,1,1`, monotone non-increasing
+**FALSE — it grew mid-span**, most holes at once **3 at `dbc3952`**
+`[1124, 1125, 1126]`. *The chain reaches 1 at its third entry and rises
+back to 2 — that is the hole-set turnover `242dcb0` recorded, visible
+in the chain as a single step up.*
+
+**NINETEEN CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17,
+19, 33, 19, 5, 21, 15, 10, 38, 14, 35, 42 AND 50 FIGURES — 371 IN
+TOTAL**, summed by script. The top five are 50, 42, 38, 35, 33.
 
 ***THE FORTY-FIRST MOVED FORTY-TWO FIGURES — 19 duration ranks, 19
 commit ranks and 4 tie counts***, asserted as 19 + 19 + 4 = 42 and
 summed by script over the twenty-six rows carried across. **Only 2 of
-the 26 came through untouched.** It is **the largest movement any close
-has produced**, ahead of the thirty-eighth's 38, which had held the
-record since it was set.
+the 26 came through untouched.** It **was the largest movement any close had
+produced**, ahead of the thirty-eighth's 38 — *superseded one close
+later by the forty-second's 50, annotated here rather than rewritten.*
 
 **AND THE RECORD IS NOT AN ARTEFACT OF THE TABLE HAVING GROWN.** One row
 — the fortieth — has been added since the previous close, so the obvious
@@ -1310,9 +1350,10 @@ measured, and this is the close where it would have been wrong.* *(A
 draft of this paragraph said "for the second time in four closes",
 which the chains contradict — it is the first of the four.)*
 
-**EIGHTEEN CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17,
-19, 33, 19, 5, 21, 15, 10, 38, 14, 35 AND 42 FIGURES — 321 IN TOTAL**,
-summed by script. The order of the top four is now 42, 38, 35, 33.
+**EIGHTEEN CONSECUTIVE CLOSES HAD MOVED 1, 5, 8, 14, 20, 5, 17, 19, 33,
+19, 5, 21, 15, 10, 38, 14, 35 AND 42 FIGURES — 321 IN TOTAL**, summed by
+script *as of this close; the running figure is carried at the
+forty-second's entry above.* The top four were then 42, 38, 35, 33.
 
 ***THE FORTIETH MOVED THIRTY-FIVE FIGURES — 20 duration ranks, 14
 commit ranks and 1 tie count***, asserted as 20 + 14 + 1 = 35 and summed
@@ -2171,7 +2212,7 @@ reading the fourth span already had two. Two criteria for "non-trivial"
 were in use at once and the label meant different things in each. It is
 dropped; the comparison count is stated instead and speaks for itself.
 
-***THE MERGE IS DONE. ONE TABLE, ORDINALS 1–41, EVERY ROW READ BACK OUT
+***THE MERGE IS DONE. ONE TABLE, ORDINALS 1–42, EVERY ROW READ BACK OUT
 OF `--spans all`.*** It was named as outstanding at `05f04cb`, the
 thirty-sixth span's close — found with `git log -S`, not recalled — and
 carried unmerged through **five** closes since (the thirty-seventh
@@ -2235,9 +2276,12 @@ were once in use at once and the label was retired for it.
 | 39 | `7440e6b` | 1 | **0** | True — vacuous |
 | 40 | `39bb186` | 3,3,2,1 | 3 | True |
 | 41 | `f558bb0` | 2,3,3,2,2,2,1,1 | 7 | False |
+| 42 | `87f9b19` | 3,2,1,2,1,1,1,1,1 | 8 | False |
 
-**Twenty-four True of forty-one** — and the breakdown is where the
-weight goes, recomputed whole rather than incremented.
+**Twenty-four True of forty-two** — and the breakdown is where the
+weight goes, recomputed whole rather than incremented. *Row 42 arrived
+one close after the merge and cost one script run to fold in, against
+the two tables and a warning paragraph it would have cost before.*
 
 - **Ten of the twenty-four contain zero comparisons and could not have
   come out False**: ordinals **5, 10, 19, 24, 25, 26, 29, 34, 37, 39**.
@@ -2251,15 +2295,19 @@ Asserted as 10 + 9 + 5 = 24 by the script that produced the lists, not
 by counting the table by eye. *That breakdown is the whole reason the
 column exists: **a True verdict on zero comparisons is not evidence**,
 ten of the twenty-four are exactly that, and nine more are one coin
-flip. Forty-one verdicts are not forty-one facts.*
+flip. **Forty-two verdicts are not forty-two facts** — and the count in
+that sentence is deliberately tied to the table's length, so it goes
+stale loudly rather than quietly.*
 
-**The seventeen False chains, by comparison count**: 16, 13, 10, 10, 9,
-8, 8, 7, 7, 7, 7, 7, 7, 7, 6, 6, 5 — ordinals 7, 14, 32, 13, 23, 28, 9,
-41, 38, 35, 18, 17, 12, 2, 21, 1, 31 in that order. **Seven is now the
-most crowded value with seven members**, and the new row 41 joins it.
-*The twenty-third's nine is 5th of the seventeen, unchanged in position
-by the two additions; the thirty-first's five is still the weakest False
-chain in the record.*
+**The eighteen False chains, by comparison count**: 16, 13, 10, 10, 9,
+8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 6, 6, 5 — ordinals 7, 14, 32, 13, 23,
+**42**, 28, 9, 41, 38, 35, 18, 17, 12, 2, 21, 1, 31 in that order.
+**Seven remains the most crowded value with seven members**; row 42's
+eight joins a group of two and makes it three, and it enters at **6th
+of the eighteen**. *The twenty-third's nine is 5th, unchanged; the
+thirty-first's five is still the weakest False chain in the record.*
+**The True side does not move at all** — 24, with the same ten vacuous,
+nine single-comparison and five multiple — because row 42 is False.
 
 *The paragraphs below this point were written at individual closes and
 state the tally AS OF THOSE CLOSES. They are left exactly as they were:
