@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T07:28Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T07:31Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5358,7 +5358,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1352 -> 1353 rows)
+## State as of the last refresh (1353 -> 1354 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5369,7 +5369,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1353 rows; 1184 labels decided; 1184 UNSAT; 0 SAT; 0 labels
+- **1354 rows; 1185 labels decided; 1185 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5381,7 +5381,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1184 decided plus 169 superseded
+  A row count is not a decision count: 1185 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5400,7 +5400,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1182, highest decided 1186, holes [1183, 1184, 1185].**
+- **Frontier contiguous 0..1182, highest decided 1187, holes [1183, 1184, 1185].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-NINTH.** idx 1186 landed at
   **632.7 s** while **1183, 1184 and 1185** were all still running — an
@@ -5433,7 +5433,45 @@ exactly one bank.
   out, so the three rows that close this span are also the three that
   finish the block — *the same failure mode separates them: a row at
   1188 or above arriving while 1187 is still undecided would complete
-  the block and leave the span open.*
+  the block and leave the span open.* **That clause was superseded one
+  bank later**, by the paragraph below: 1187 landed, so the surviving
+  form names 1189 and 1188. *It is left standing rather than edited into
+  agreement, because it is the record of what the rule said before the
+  row arrived, and the whole claim being made for the rule form is that
+  it survives the indices moving.*
+
+  ***idx 1187 HAS SINCE LANDED AT 769.7 s, WHICH RETIRES THAT FAILURE
+  MODE AND DOES NOT CLOSE THE SPAN.*** The mode named above required
+  **1187 to still be out**; it is now decided, and it arrived alone
+  rather than beside a row above it, so nothing was added below the
+  frontier. **The hole set has not moved: still `[1183, 1184, 1185]`,
+  still three.** *The condition carries over unchanged in form — filling
+  all three closes the span unless a row at **1189 or above** rides in
+  while 1188 is still out. The indices stepped up by one and the rule
+  did not have to be rewritten, which is the whole reason it is stated
+  as a rule and not as a list.*
+
+  **AND IT OPENED THE NEXT BLOCK, AT THE SIZE `SEQ` ALREADY PREDICTED.**
+  `[13, 13, 9, 7]` runs idx **1187..1193** with **7 members**, which is
+  the third entry of the `15, 11, 7, 5, 3, 2, 1, 1` descent this note
+  wrote down for `[13,13,9,*]` before any of it had landed. *So the
+  prediction is confirmed for one more block — and it is arithmetic over
+  `SEQ`, not a finding about the solver, exactly as it was labelled when
+  it was written.*
+
+  ***TWO BLOCKS ARE OPEN AT ONCE, AND THAT IS ORDINARY.*** Over the last
+  **200** commits that touch this file the census showed **1 open block
+  134 times, 2 open blocks 60 times, 3 three times and 0 three times** —
+  counted by re-reading the census region out of each of those 200
+  blobs. *So this state is the second most common of the four and is not
+  written up as a novelty.*
+
+  **THE COST-TAIL TEST STILL CANNOT BE RUN.** `[13,13,9,*]`'s 15-block
+  is complete, but the 11-block is **8 of 11** and no median over 8 of
+  11 is that block's median. *The test named when this group opened —
+  whether per-block median cost falls down this tail as it did down
+  `[13,13,10,*]`'s — waits on 1183, 1184 and 1185, the same three rows
+  the span waits on. No partial figure is quoted for it here.*
 
   **PREVIOUSLY: THE FORTY-EIGHTH SPAN IS CLOSED, AND ITS FIGURES ARE IN
   `76c364c`** — in the spans section, not repeated here. It opened at **two
@@ -7676,7 +7714,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1184 of 1949 = 60.7491%**; **765 undecided**. **50% IS CROSSED**, at
+- **1185 of 1949 = 60.8004%**; **764 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8391,6 +8429,8 @@ exactly one bank.
 
 - `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
   **8 decided**, undecided [1183, 1184, 1185]
+- `[13, 13, 9, 7]` idx 1187..1193: **7 members**,
+  **1 decided**, undecided 6 spanning 1188..1193
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
