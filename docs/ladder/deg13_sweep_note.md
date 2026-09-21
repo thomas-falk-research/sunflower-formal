@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T15:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T16:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1447,45 +1447,147 @@ at the thirty-fifth.
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 37 of 118 | 2 | 66 of 118 (23 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 52 of 118 | 2 | 66 of 118 (23 tied) |
-| seventeenth `75ff84b` | 2:36:20 | 16 of 118 | 8 | 24 of 118 (8 tied) |
-| eighteenth `faa424a` | 1:06:55 | 45 of 118 | 8 | 24 of 118 (8 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 64 of 118 | 1 | 90 of 118 (28 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 21 of 118 | 2 | 66 of 118 (23 tied) |
-| twenty-first `83cabc1` | **5:05:31** | **8 of 118** | 7 | 33 of 118 (7 tied) |
-| twenty-second `31d9565` | 1:57:02 | 27 of 118 | 4 | 52 of 118 (2 tied) |
-| twenty-third `b4d2068` | 2:17:22 | 22 of 118 | 10 | 14 of 118 (4 tied) |
-| twenty-fourth `e2e3d5f` | 0:10:42 | 68 of 118 | 1 | 90 of 118 (28 tied) |
-| twenty-fifth `741b900` | 0:54:37 | 49 of 118 | 1 | 90 of 118 (28 tied) |
-| twenty-sixth `b7f8c36` | 1:14:19 | 44 of 118 | 1 | 90 of 118 (28 tied) |
-| twenty-seventh `d322a9d` | 1:49:26 | 32 of 118 | 2 | 66 of 118 (23 tied) |
-| twenty-eighth `6f6d668` | 1:56:29 | 28 of 118 | **9** | **19 of 118** (4 tied) |
-| twenty-ninth `69a8a16` | 0:18:42 | 65 of 118 | 1 | 90 of 118 (28 tied) |
-| thirtieth `3db5927` | 1:36:10 | 35 of 118 | 2 | 66 of 118 (23 tied) |
-| thirty-first `43f2ddb` | 1:31:53 | 36 of 118 | 6 | 41 of 118 (4 tied) |
-| thirty-second `5cde733` | **3:33:32** | **12 of 118** | **11** | **11 of 118** (2 tied) |
-| thirty-third `743c24d` | 1:15:56 | 41 of 118 | 6 | 41 of 118 (4 tied) |
-| thirty-fourth `4e27c14` | **0:09:49** | **70 of 118** | 1 | 90 of 118 (28 tied) |
-| thirty-fifth `bb28ab9` | 0:39:00 | 56 of 118 | **8** | **24 of 118** (8 tied) |
-| thirty-sixth `b393f25` | 0:37:35 | 57 of 118 | 2 | 66 of 118 (23 tied) |
-| thirty-seventh `ae0b64e` | 0:20:34 | 63 of 118 | 1 | 90 of 118 (28 tied) |
-| thirty-eighth `ff5f073` | **2:03:16** | 24 of 118 | **8** | 24 of 118 (8 tied) |
-| thirty-ninth `7440e6b` | 0:47:02 | 53 of 118 | 1 | 90 of 118 (28 tied) |
-| fortieth `39bb186` | 2:06:48 | 23 of 118 | 4 | 52 of 118 (2 tied) |
-| forty-first `f558bb0` | 1:59:51 | 25 of 118 | **8** | 24 of 118 (8 tied) |
-| forty-second `87f9b19` | **2:39:11** | **15 of 118** | **9** | **19 of 118** (4 tied) |
-| forty-third `e2b41d5` | **0:12:20** | 67 of 118 | 2 | **66 of 118** (23 tied) |
-| forty-fourth `16f864c` | 1:43:13 | 34 of 118 | 6 | 41 of 118 (4 tied) |
-| forty-fifth `f4bebe4` | 1:01:06 | 46 of 118 | 7 | 33 of 118 (7 tied) |
-| forty-sixth `6b218fa` | 0:03:36 | 72 of 118 | 1 | 90 of 118 (28 tied) |
-| forty-seventh `a4534da` | 2:25:44 | 17 of 118 | 8 | 24 of 118 (8 tied) |
-| forty-eighth `193d35b` | 0:28:32 | 60 of 118 | 2 | 66 of 118 (23 tied) |
-| forty-ninth `2321b43` | 1:26:34 | 39 of 118 | 6 | 41 of 118 (4 tied) |
-| fiftieth `f0a53f8` | 1:24:29 | 40 of 118 | **9** | **19 of 118** (4 tied) |
-| fifty-first `faa53ca` | 0:39:47 | 55 of 118 | 4 | 52 of 118 (2 tied) |
-| fifty-second `7c62056` | 0:54:17 | 50 of 118 | 5 | 46 of 118 (5 tied) |
-| fifty-third `e2bc312` | 0:10:23 | 69 of 118 | 1 | 90 of 118 (28 tied) |
+| fifteenth `a5172c7` | 1:29:45 | 37 of 119 | 2 | 66 of 119 (23 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 52 of 119 | 2 | 66 of 119 (23 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 16 of 119 | 8 | 24 of 119 (8 tied) |
+| eighteenth `faa424a` | 1:06:55 | 45 of 119 | 8 | 24 of 119 (8 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 65 of 119 | 1 | 90 of 119 (29 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 21 of 119 | 2 | 66 of 119 (23 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 119** | 7 | 33 of 119 (7 tied) |
+| twenty-second `31d9565` | 1:57:02 | 27 of 119 | 4 | 52 of 119 (2 tied) |
+| twenty-third `b4d2068` | 2:17:22 | 22 of 119 | 10 | 14 of 119 (4 tied) |
+| twenty-fourth `e2e3d5f` | 0:10:42 | 69 of 119 | 1 | 90 of 119 (29 tied) |
+| twenty-fifth `741b900` | 0:54:37 | 49 of 119 | 1 | 90 of 119 (29 tied) |
+| twenty-sixth `b7f8c36` | 1:14:19 | 44 of 119 | 1 | 90 of 119 (29 tied) |
+| twenty-seventh `d322a9d` | 1:49:26 | 32 of 119 | 2 | 66 of 119 (23 tied) |
+| twenty-eighth `6f6d668` | 1:56:29 | 28 of 119 | **9** | **19 of 119** (4 tied) |
+| twenty-ninth `69a8a16` | 0:18:42 | 66 of 119 | 1 | 90 of 119 (29 tied) |
+| thirtieth `3db5927` | 1:36:10 | 35 of 119 | 2 | 66 of 119 (23 tied) |
+| thirty-first `43f2ddb` | 1:31:53 | 36 of 119 | 6 | 41 of 119 (4 tied) |
+| thirty-second `5cde733` | **3:33:32** | **12 of 119** | **11** | **11 of 119** (2 tied) |
+| thirty-third `743c24d` | 1:15:56 | 41 of 119 | 6 | 41 of 119 (4 tied) |
+| thirty-fourth `4e27c14` | **0:09:49** | **71 of 119** | 1 | 90 of 119 (29 tied) |
+| thirty-fifth `bb28ab9` | 0:39:00 | 56 of 119 | **8** | **24 of 119** (8 tied) |
+| thirty-sixth `b393f25` | 0:37:35 | 57 of 119 | 2 | 66 of 119 (23 tied) |
+| thirty-seventh `ae0b64e` | 0:20:34 | 64 of 119 | 1 | 90 of 119 (29 tied) |
+| thirty-eighth `ff5f073` | **2:03:16** | 24 of 119 | **8** | 24 of 119 (8 tied) |
+| thirty-ninth `7440e6b` | 0:47:02 | 53 of 119 | 1 | 90 of 119 (29 tied) |
+| fortieth `39bb186` | 2:06:48 | 23 of 119 | 4 | 52 of 119 (2 tied) |
+| forty-first `f558bb0` | 1:59:51 | 25 of 119 | **8** | 24 of 119 (8 tied) |
+| forty-second `87f9b19` | **2:39:11** | **15 of 119** | **9** | **19 of 119** (4 tied) |
+| forty-third `e2b41d5` | **0:12:20** | 68 of 119 | 2 | **66 of 119** (23 tied) |
+| forty-fourth `16f864c` | 1:43:13 | 34 of 119 | 6 | 41 of 119 (4 tied) |
+| forty-fifth `f4bebe4` | 1:01:06 | 46 of 119 | 7 | 33 of 119 (7 tied) |
+| forty-sixth `6b218fa` | 0:03:36 | 73 of 119 | 1 | 90 of 119 (29 tied) |
+| forty-seventh `a4534da` | 2:25:44 | 17 of 119 | 8 | 24 of 119 (8 tied) |
+| forty-eighth `193d35b` | 0:28:32 | 60 of 119 | 2 | 66 of 119 (23 tied) |
+| forty-ninth `2321b43` | 1:26:34 | 39 of 119 | 6 | 41 of 119 (4 tied) |
+| fiftieth `f0a53f8` | 1:24:29 | 40 of 119 | **9** | **19 of 119** (4 tied) |
+| fifty-first `faa53ca` | 0:39:47 | 55 of 119 | 4 | 52 of 119 (2 tied) |
+| fifty-second `7c62056` | 0:54:17 | 50 of 119 | 5 | 46 of 119 (5 tied) |
+| fifty-third `e2bc312` | 0:10:23 | 70 of 119 | 1 | 90 of 119 (29 tied) |
+| fifty-fourth `a0483cd` | 0:21:49 | 61 of 119 | 1 | 90 of 119 (29 tied) |
+
+***THE FIFTY-FOURTH MOVED EIGHTEEN FIGURES — 8 duration ranks, 0
+commit ranks and 10 tie counts***, asserted as 8 + 0 + 10 = 18 and
+summed by script over the thirty-nine rows carried across. **28 of the
+39 came through untouched** — *against 2 of 35 at the fiftieth, 16 of
+36 at the fifty-first, 16 of 37 at the fifty-second and 29 of 38 at the
+fifty-third, which are the only untouched shares this page records; no
+claim is made about the closes before them.* *All 39 were first
+reproduced at the OLD N = 118 in the same script run, 0 mismatches,
+before anything was recomputed at 119.*
+
+***THE COMMIT COLUMN CONTRIBUTED NOTHING AGAIN, FOR THE SAME REASON AS
+LAST TIME AND NOT FOR A NEW ONE.*** This close carries **1 broken
+commit**, and **1 is the floor of that ordering** — a closed span has
+at least one broken commit by construction — so there is no tabled row
+with fewer, and **a 1-commit close can never move a commit rank**. *The
+fifty-third's entry below states the same arithmetic; it is repeated
+here because the figure is identical and a reader who saw only this
+block would otherwise have to guess why.* The ten tie counts that moved
+are exactly the ten tabled rows with **exactly 1** commit — *ten and
+not nine, because the fifty-third joined that group at the previous
+close.* Three set equalities, computed as sets and all three True:
+
+- the **8** duration ranks that moved are exactly the tabled rows
+  **shorter than 0:21:49**;
+- the **0** commit ranks that moved are exactly the tabled rows with
+  **fewer than 1** commit — the empty set on both sides;
+- the **10** tie counts that moved are exactly the tabled rows with
+  **exactly 1** commit.
+
+***AND BOTH SCRIPTS BEHIND THOSE FIGURES WERE WRITTEN FRESH, BECAUSE
+THE ONE THAT WAS NOT HAD BEEN WRONG.*** The refiguring script for this
+close was first produced by `sed`-patching the fifty-third's: the pass
+replaced `117` where it appeared as a comparison and as an assignment
+but left one bare `117` inside the expected-value tuple, so the
+reproduce check ran the new labels against the old N and reported
+**39 spurious mismatches**, and it mislabelled the new row. *It was
+rewritten from scratch, and the clean run — 39 of 39 reproduced at
+N = 118, 0 mismatches — is the one quoted above.* **A script adapted by
+substitution is not a script that was checked.** The table emitter was
+then written fresh for the same reason, and it caught its own first
+version too: *it numbered its regex backreferences by hand, got them
+off by one, and matched **zero** of the 39 rows — which its row-count
+assertion refused rather than silently emitting an empty table.*
+**Both defects were found by an assertion, not by reading the output**,
+which is the only part of this worth carrying forward.
+
+**THIRTY-ONE CONSECUTIVE CLOSES HAVE NOW MOVED 1, 5, 8, 14, 20, 5, 17,
+19, 33, 19, 5, 21, 15, 10, 38, 14, 35, 42, 50, 16, 36, 32, 8, 56, 23,
+39, 50, 29, 33, 11 AND 18 FIGURES — 722 IN TOTAL**, summed by script.
+*The top five is unchanged at **56, 50, 50, 42, 39**, and 18 ranks **18
+of the 31**, tied with none.*
+
+**Its own figures, read from `--spans all` after `a0483cd` existed**:
+opened after `ff86447` at 15:22:42Z, closed by `a0483cd` at 15:44:31Z,
+duration **0:21:49** (0.3636 h) by committer timestamps, **1 broken
+commit**, hole counts `2`, monotone non-increasing **True on ZERO
+comparisons**, most holes at once **2 at `ef06d04`** `[1259, 1260]`.
+
+***ITS MONOTONE TRUE IS THE VACUOUS ONE AND IS WORTH NOTHING.*** A
+single-entry chain has no successive pair to compare, so
+*"non-increasing"* is true of it the way it is true of an empty list.
+**30 of the 119 spans have a single-entry chain and all 30 are True** —
+*which is not a finding about spans, it is the definition applied 30
+times.* **Row 54 moves both the numerator and the denominator of the
+monotonicity table and adds no evidence at all**, exactly as rows 46
+and 53 did.
+
+**At 0:21:49 it is 61 of 119 by duration, sharing that duration with
+nothing; at 1 broken commit it is 90 of 119, in a tie group of 29.**
+Read the rank through the distribution: **46 of 119 spans ran longer
+than an hour and this one did not**; **70 of 119 ran longer than ten
+minutes and this one did**, and 73 of 119 ran longer than a minute.
+*Among the 75 that lasted longer than a second, **14** were shorter
+than this one.*
+
+***THE OPENING WAS AT TWO, AND THE WIDTH CENSUS MOVES WITH IT.*** Over
+the **119** closed chains the opening hole count is **1 in 40 cases, 2
+in 38, 3 in 38 and 4 in 3**, so two is **31.9%**. *It read 40/37/38/3
+at 118 and this span's own opening is the row that moved it;* **two and
+three are now level at 38 apiece**, *which is a tie in a four-valued
+census and is not offered as a finding.* **The committed width is the
+one that counts** — the `#29` rider — *and here the file and the commit
+agree, because `ef06d04` holds both holes.*
+
+***NO RESTART FALLS INSIDE ITS WINDOW*** — pid 32389 has been the live
+driver since 05:36:39Z, matched by bank.py's driver-pid guard at every
+bank in **15:22:42Z–15:44:31Z**, and `git diff` over the checkpoint
+across that window adds **no comment line**, so no restart wrote a
+header into it either. *Checked both ways rather than inferred from the
+pid alone.*
+
+***AND THE SAMPLES-ONLY COMMIT IS ABSENT FROM THE WALK, AS THE PREVIOUS
+COMMIT PREDICTED IT WOULD BE.*** `b9be70a` was committed at 15:33Z,
+inside this window, and carried the hole set in its message — *but
+`git log ff86447..a0483cd -- CHECKPOINT` lists exactly **`ef06d04` and
+`a0483cd`** and not it.* **So the 1 broken commit is `ef06d04` alone**,
+and a samples-only commit cannot pad a span's commit count. *That was
+written as a claim before the tool could confirm it and the tool
+confirms it; it is a claim about `git rev-list`, not about spans, and
+is worth exactly that much.*
 
 ***THE FIFTY-THIRD MOVED ELEVEN FIGURES — 2 duration ranks, 0 commit
 ranks and 9 tie counts***, asserted as 2 + 0 + 9 = 11 and summed by
@@ -3162,15 +3264,43 @@ were once in use at once and the label was retired for it.
 | 50 | `f0a53f8` | 2,1,1,1,1,3,2,1,2 | **8** | False |
 | 51 | `faa53ca` | 3,2,1,1 | 3 | True |
 | 52 | `7c62056` | 2,2,1,2,1 | 4 | False |
-| 53 | `e2bc312` | 1 | 0 | True |
+| 53 | `e2bc312` | 1 | **0** | True — vacuous |
+| 54 | `a0483cd` | 2 | **0** | True — vacuous |
 
-**Thirty-one True of fifty-three** — and the breakdown is where the
-weight goes, recomputed whole rather than incremented. ***Row 52 is
-False on four comparisons and moves the denominator only***, so the
-True breakdown below is carried across this close unchanged, exactly as
-it was across row 50; the numerator did not move at row 52. ***Row 53
-is True on ZERO comparisons — the vacuous kind*** — so it moves both
-and adds nothing, exactly as row 46 did. *Row 45 was False
+**Thirty-two True of fifty-four** — and the breakdown is where the
+weight goes, recomputed whole rather than incremented.
+
+***AND "RECOMPUTED WHOLE RATHER THAN INCREMENTED" WAS FALSE OF BOTH
+LISTS BELOW, EACH BY A DIFFERENT AMOUNT, AND EACH FOUND BY RECOMPUTING
+IT RATHER THAN READING IT.*** The three True bullets asserted
+**11 + 11 + 8 = 30** while the headline above them said thirty-one of
+fifty-three; *both cannot be right.* **The bullets were last exact at a
+table length of 52** — row 52 is False and does not touch the True
+breakdown, so they survived that close untouched — *and they went wrong
+at **row 53**, a zero-comparison True, which should have taken the
+first column 11 → 12 and the total 30 → 31.* **The prose narrated that
+movement in the very next sentence and the list did not follow it**,
+which is the same failure as the 41/14.6% line this section already
+records: a number described in words beside a number left alone.
+**The False list went wrong one close earlier and is two behind**: it
+was last exact at a table length of **51**, and **row 52 is False on
+four comparisons**, so twenty-one chains should have become twenty-two
+at that close. *Dated by walking every prefix of the table for the last
+length at which each list is exact, not by remembering when it was
+written.* **Both are rewritten below at 54 and both sums are asserted
+by the script that produced them.**
+
+***Row 52 is False on four comparisons and moves the denominator
+only***, so the True breakdown was correctly carried across that close;
+the numerator did not move at row 52. ***Row 53 is True on ZERO
+comparisons — the vacuous kind*** — so it moves both and adds nothing,
+exactly as row 46 did; **that is the movement the True bullets
+missed.** ***Row 54 is True on ZERO comparisons as well***, a second
+vacuous verdict in two closes, so it moves both and adds nothing
+either. *Two consecutive vacuous Trues is what a run of single-commit
+spans with short hole chains produces; it is not a trend, nothing was
+filed about it in advance, and nothing is claimed now.* *Row 45 was
+False
 and moved only the denominator; **row 46 is the weakest True the table
 can hold** — a single-entry chain, zero comparisons, vacuous — so it
 moves both and adds no evidence at all. Row 47 was False and moved the
@@ -3188,9 +3318,9 @@ script run to fold in,
 against the two tables and a warning paragraph they would have cost
 before.*
 
-- **Eleven of the thirty Trues contain zero comparisons and could not
-  have come out False**: ordinals **5, 10, 19, 24, 25, 26, 29, 34, 37,
-  39, 46**.
+- **Thirteen of the thirty-two Trues contain zero comparisons and
+  could not have come out False**: ordinals **5, 10, 19, 24, 25, 26,
+  29, 34, 37, 39, 46, 53, 54**.
 - **Eleven more rest on a single comparison** — one coin flip each, the
   shape this note has flagged as weak since span 3: **3, 8, 11, 15, 16,
   20, 27, 30, 36, 43, 48**.
@@ -3198,8 +3328,11 @@ before.*
   **51** with three, **6** with four, and **33**, **44** and **49**
   with five each.
 
-Asserted as 11 + 11 + 8 = 30 by the script that produced the lists, not
-by counting the table by eye. ***ROW 44 IS THE FIRST ADDITION TO THE
+Asserted as 13 + 11 + 8 = 32 by the script that produced the lists, not
+by counting the table by eye. *The first column moved by two while the
+other two did not move at all, which is how the stale version hid: a
+list that is two short and a list that is current look identical when
+every close that passed was vacuous.* ***ROW 44 IS THE FIRST ADDITION TO THE
 STRONGEST COLUMN IN FOUR CLOSES, AND IT TIES THE TABLE'S BEST.*** *A
 draft of this sentence said "in six closes" and was wrong: rows 41 and
 42 are False and row 43 is one coin flip, but **row 40 carries three
@@ -3211,8 +3344,11 @@ NOTHING**: rows 45 and 47 are False, row 46 is vacuous, row 48 is one
 comparison, and **row 49 carries five and comes out True** — so **three
 rows tie at five** for the most of any True here. ***AND ROW 51 ADDS TO
 THAT COLUMN AGAIN, TWO CLOSES LATER***, at three comparisons, joining
-rows 22 and 40. **The two weakest columns hold 22 of the 30**, unchanged
-in count because both additions landed outside them.
+rows 22 and 40. **The two weakest columns now hold 24 of the 32.**
+*They held 22 of the 30 when rows 49 and 51 landed outside them —
+which is what the sentence here used to say — and rows 53 and 54 both
+landed in the weakest column of all, so the share rose from 73.3% to
+75.0% by adding nothing that could have come out False.*
 
 ***Across the whole walk that shape is rare — and the figure that said
 so had gone stale, which is why it is recomputed here rather than
@@ -3264,27 +3400,49 @@ not a movement being reported.** *Third instance of the
 standing-claim-never-re-checked pattern, registered in the tally below.*
 
 *That breakdown is the whole reason the column exists: **a True verdict
-on zero comparisons is not evidence**, eleven of the thirty are
-exactly that, and eleven more are one coin flip. **Fifty-one verdicts
-are not fifty-one facts** — and the count in that sentence is
+on zero comparisons is not evidence**, thirteen of the thirty-two are
+exactly that, and eleven more are one coin flip. **Fifty-four verdicts
+are not fifty-four facts** — and the count in that sentence is
 deliberately tied to the table's length, so it goes stale loudly rather
-than quietly.*
+than quietly.* ***It had gone stale at fifty-one and stayed there for
+three closes***, which is the device working exactly as designed and
+being read by nobody until now; **loudly is only useful if something
+reads it, and the thing that reads it is `span_audit.py`, which covers
+the two tables and not this prose.** *That gap is named again here and
+is still not closed.*
 
-**The twenty-one False chains, by comparison count**: 16, 13, 10, 10,
-9, **8**, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 5 — **row 50's eight
-takes that value from three members to four**, while row 47's seven had
-taken the most crowded value from seven to eight. *The column holds one
-16, one 13, two 10s, one 9, four 8s, eight 7s, three 6s and one 5 —
-summing to 21, counted by script.* *Row 45's six had joined the group of two
-and made it three one close earlier.* *The twenty-third's nine is 5th, unchanged;
-the thirty-first's five is still the weakest False chain in the record.*
+**The twenty-two False chains, by comparison count**: 16, 13, 10, 10,
+9, **8**, 8, 8, 8, 7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 5, **4** — and the
+**4** is the entry this list was missing. *Row 50's eight had taken that
+value from three members to four, row 47's seven had taken the most
+crowded value from seven to eight, and row 45's six had joined the group
+of two and made it three one close before that.* *The column holds one
+16, one 13, two 10s, one 9, four 8s, eight 7s, three 6s, one 5 and one
+4 — summing to 22, counted by script.* *The twenty-third's nine is 5th,
+unchanged.*
+
+***AND THE SENTENCE THAT USED TO END THIS PARAGRAPH WAS WRONG.*** It
+read *"the thirty-first's five is still the weakest False chain in the
+record"*, and **row 52's four has been weaker since row 52 closed** —
+two closes ago. *The word doing the damage is "still": it makes a
+claim about every future close while being checked at none of them.*
+**Registered with the 41/14.6% line and the True bullets above as one
+pattern with three live instances**, not as three coincidences.
 **The False side did not move at row 43 or 44** — both True — and moved
 at row 47 for the first time in three additions. ***IT MOVED AT NEITHER
 ROW 48 NOR ROW 49*** — both True — **and it moves again at row 50**,
 which is False on eight. *So the False side stood still for two closes
 and then gained its twenty-first chain.* ***IT STANDS STILL AGAIN AT ROW
-51***, which is True, so the twenty-one chains above are reproduced at
-this close rather than recomputed.
+51***, which is True, so the list stood at **twenty-one** through that
+close and was reproduced rather than recomputed there. ***AND THAT
+SENTENCE IS EXACTLY WHERE THE LIST STOPPED BEING RECOMPUTED*** — the
+next close, row 52, is False on four and should have taken it to
+twenty-two; *the list above is now written at twenty-two and this
+sentence is left describing row 51, which is the close it was written
+at.* **A back-reference to "the chains above" is a pointer, not a
+number**, and correcting the list is what turned this one stale — *so
+it is rewritten in the same edit rather than left for a later reading
+to trip over.*
 
 *The paragraphs below this point were written at individual closes and
 state the tally AS OF THOSE CLOSES. They are left exactly as they were:
@@ -5752,7 +5910,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1429 -> 1431 rows)
+## State as of the last refresh (1431 -> 1435 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5763,7 +5921,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1431 rows; 1262 labels decided; 1262 UNSAT; 0 SAT; 0 labels
+- **1435 rows; 1266 labels decided; 1266 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5775,7 +5933,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1262 decided plus 169 superseded
+  A row count is not a decision count: 1266 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5794,30 +5952,180 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1261, highest decided 1261, holes [].**
-  <!-- SPAN-STATE: closed -->
-  **THE FIFTY-FOURTH SPAN IS CLOSED. ITS FIGURES ARE NOT IN THIS COMMIT
-  — THEY ARRIVE IN THE NEXT ONE, AND THIS SENTENCE IS DUE FOR
-  RETIREMENT THERE.** It was filled by **idx 1259 at 4029.9 s** at
-  15:43:01Z, in a bank that carried **two** rows. *`--spans all` walks
-  `git rev-list HEAD -- CHECKPOINT`, so the closing commit must exist
-  before the tool can see the run end.* **The wording is correct for
-  exactly one commit; it has been struck on schedule six times
-  running.**
+- **Frontier contiguous 0..1263, highest decided 1267, holes [1264, 1266].**
+  <!-- SPAN-STATE: open -->
+  ***BANK idx 1263, idx 1262, idx 1265 AND idx 1267 — FOUR ROWS, THE
+  65% TRAP IS HELD, AND THE FIFTY-FIFTH SPAN IS OPEN.*** They landed in
+  that order: **1908.2 s** at 16:09:58Z, **3039.6 s** at 16:12:35Z,
+  **2751.2 s** at 16:28:42Z, and **983.4 s** somewhere in
+  **16:28:42Z–16:29:37Z** — *that last is a bound and not a timestamp,
+  because the waiter watching for it had already fired on idx 1265 and
+  the next one armed at 16:29:37Z with the row already in the file.*
+  **A bound is written as a bound here**; the other three are the
+  waiters' own landing lines.
 
-  ***THE FAILURE MODE DID NOT FIRE.*** The condition needed a row at
-  **1263 or above** in the same bank while 1262 was out; **this bank's
-  highest row is idx 1261, which was already decided**, so nothing sat
-  above the frontier and it closed.
+  ***THE 65% TRAP IS HELD BY THIS COMMIT'S TREE.*** The count is
+  **1266**, and 1266 is the trap for k = 65: `r = 49·65 mod 100 = 85`,
+  `trap = (1949·65 − 85)/100 = 1266`, `threshold = ⌈1949·65/100⌉ =
+  1267`. *So 1266 of 1949 is **64.9564%**, short of 65% by a shortfall
+  of `85/1949 = 0.043612 pp`, **tightness rank 85 of 97** — **84 traps
+  on the scale are tighter and 12 are looser**, the rank being `r`
+  itself because `k ↦ 49k mod 100` is a bijection and the 97 surviving
+  remainders are exactly 1 through 97.* **It is the 63rd trap in k
+  order**, the 97 being k in 1..99 less the two values, **2 and 51**,
+  whose remainder exceeds 97 — *computed over the whole k-range in the
+  same run, not read off a neighbouring entry.* **The threshold 1267 is one
+  decision away and no tree has held it**, so the crossing is
+  **trap-held, threshold pending**, and the running tally of caught and
+  missed crossings is NOT updated here: *it moves when the crossing
+  resolves, not when half of it does.*
 
-  **PREVIOUSLY, WHILE IT WAS OPEN.** idx 1261 landed at
+  ***AND A WHOLE SPAN EXISTED IN THE FILE AND IN NO COMMIT EARLIER IN
+  THIS SAME BANK, WHICH IS THE `#29` RIDER IN ITS PUREST FORM FOR THE
+  THIRD TIME.*** idx 1263 landed while **1262** was still running, and
+  idx 1262 landed **two minutes and thirty-seven seconds later**; *in
+  the file there was a hole at `[1262]` for exactly that long.* **No
+  commit was made in between** — `a0483cd` shows `holes []`, and in
+  this commit's tree **1262 is decided** — so no committed tree ever
+  held it as a hole. *`--spans all` walks
+  `git rev-list HEAD -- CHECKPOINT` and will never see it;* **that
+  vanished opening consumed no ordinal.**
+
+  ***THE ORDINAL WENT TO THE SPAN THAT SURVIVED TO A COMMIT, WHICH IS
+  THE WHOLE POINT OF THE RIDER.*** `--spans all`, re-run after idx 1262
+  landed and again after idx 1267 landed, still reports **119 closed
+  spans** and still ends at **`a0483cd`** — *diffed against the run
+  made while the 1262 hole was open and byte-identical to it, three
+  runs in all.* **So the span this commit opens is walk position 120
+  and, at the offset of 65, ordinal fifty-five** — the ordinal the
+  vanished opening did not take. *Derived before the outcome — which
+  the page has checked against the walk by `git log -S` for **thirteen**
+  earlier ordinals and has not checked for the rest, so "as every one
+  of these has been" is a sentence this entry declines to write.*
+
+  ***AND THE "AS AT THE LAST N" COUNTER IS NOT EXTENDED HERE, BECAUSE
+  IT DOES NOT FIT ITS OWN ARITHMETIC.*** The note carries that counter
+  in fourteen span entries, and reading each one's ordinal off the same
+  paragraph gives: thirty-eight → two, forty-two → six, forty-three →
+  seven, forty-four → eight, forty-five → nine, forty-six → ten,
+  forty-seven → eleven, forty-eight → twelve, forty-nine → thirteen,
+  fifty → fourteen, fifty-one → fifteen, fifty-two → sixteen,
+  **fifty-three → eighteen**, **fifty-four → nineteen**. *`ordinal − 36`
+  reproduces the first twelve exactly and is **one short** on the last
+  two;* **the counter skipped seventeen.** The jump falls exactly at
+  the span after the **second** purest-form `#29` firing, whose
+  retracted draft had derived an ordinal of its own — *so the skip is
+  consistent with that derivation having been counted, and the note
+  nowhere says it was.* **Two readings, no evidence between them**, so
+  the value is not propagated: *this entry records the derivation in
+  advance and leaves the counter alone.* ***And the page's own claim
+  that "the state block's own counter never stuck" survives intact
+  and is beside the point*** — *it did not stick, it jumped, which no
+  check for stickiness would have caught.*
+
+  ***AND THE GUARD FIRED TWICE IN ONE BANK, ONCE ON AN OPENING THAT
+  THEN CEASED TO EXIST AND ONCE ON ONE THAT DID NOT.*** The 16:09
+  bank.py run refused against holes `[1262]` under a note that still
+  carried the closed marker; *by the time the prose that refusal
+  demands could be written, idx 1262 had landed and the hole was gone.*
+  **The 16:29 run refused again, against holes `[1264, 1266]`**, and
+  that one is real and is answered below. *At the second instance of
+  the vanishing kind the event cost a drafted section that had to be
+  retracted; here the ordinal and the walk position were derived in a
+  working note and **nothing reached the file**, so it cost nothing.*
+  **That is not a procedure improvement and is not offered as one** —
+  the row simply landed faster than the paragraph, which is the
+  operating fact registered at `e2d5443` showing its harmless side for
+  once. *Three instances is not a rate and no rate is claimed.*
+
+  ***THE FIFTY-FIFTH SPAN IS OPEN, AT TWO HOLES THAT ARE NOT
+  ADJACENT.*** idx 1267 landed while **1264 and 1266** were both still
+  running, with **1265 decided between them** — so the opening hole set
+  is `[1264, 1266]` with a decided index inside its own range. *The
+  frontier and hole set are on the bullet line above, which bank.py
+  owns; this prose deliberately does not repeat them.* **No duration,
+  no rank, no monotonicity, no commit count and no hole chain until it
+  closes.** *The chain the walk records counts holes and does not say
+  which ones, so the gap in the middle will not show in the chain;* **the
+  tool's `most holes at once` line does print the hole list, so it will
+  show `[1264, 1266]` if two stays this span's maximum** — *checked
+  against the tool's own output for the fifty-fourth, which prints
+  `[1259, 1260]` beside its 2, rather than assumed from the chain
+  alone.*
+
+  **Close condition, in the rule form:** filling **both** 1264 and 1266
+  closes it **iff the committing tree leaves no undecided index below
+  its highest decided**. *The highest decided is 1267, so the failure
+  mode is a row at **1269 or above** riding in the same bank while
+  **1268** is still out.* ***With the `#29` rider***, which has now
+  fired four times for real and three of those in its purest form:
+  **the committed opening width is two**, and the file's width at any
+  instant is not the record. *Neither branch is predicted and when it
+  lands is not claimed.*
+
+  **RUNNING TABLE FOR THIS SPAN**, terse from the first bank:
+
+  | bank | row(s) | cost | holes after | condition becomes |
+  |---|---|---|---|---|
+  | 1st | idx 1263, 1262, 1265, 1267 | 1908.2, 3039.6, 2751.2, 983.4 s | `[1264, 1266]` | 1269+ while 1268 out |
+
+  **The bank's own figures, against N = 1266**: idx 1263 → **rank
+  890**, 376 cheaper; idx 1262 → **rank 655**, 611 cheaper; idx 1265 →
+  **rank 694**, 572 cheaper; idx 1267 → **rank 1078**, 188 cheaper —
+  *and `1266 − cheaper` reproduces all four, so there is no tie on any
+  of them and the whole-sweep tie census holds at **13 of 1266**.*
+  **The subtraction is the tie detector and not the rank formula**; it
+  fired for real once in nine at `e2d5443` and has not fired since.
+  `[13,12,12,12]` at **32 of 65**; **the block maximum stays at
+  4029.9 s** at idx 1259, which the dearest of these four misses by
+  **990.3 s** — *so the run of three successive block maxima recorded
+  one bank ago ends here.* **Cap fractions: 0.0883, 0.1407, 0.1274 and
+  0.0455.**
+
+  ***AND THE WAITER'S OWN LABEL WAS OFF BY ONE.*** The waiters armed
+  in this session count tab-bearing lines, so one printed *"armed at
+  1434 real data rows"* while the file held **1433**: exactly one
+  comment header — the `sub-cube / verdict / seconds` line a restart
+  writes — carries tabs and is counted with the data. *The counter is
+  only ever compared against itself, so it detects a landing correctly,
+  and **no figure in this note came through it**; every count here is
+  bank.py's, read from the staged blob.* **The defect was the label**,
+  found by reconciling the two counts rather than by trusting either;
+  **the waiter armed after this bank counts `^g=` lines and its
+  startup figure now matches the file.** *It is recorded rather than
+  quietly corrected because "real data rows" is exactly the kind of
+  phrase a later reading would take at face value, and three earlier
+  waiter lines in this session's task outputs still carry it.*
+
+  ***THE RETIREMENT SENTENCE WAS HONOURED ON SCHEDULE A SEVENTH
+  TIME.*** The *"figures are not in this commit"* wording stood for
+  exactly one commit — `a0483cd` — and this edit is the striking.
+  **Seven for seven since the reminder was moved into the heading.**
+
+  **Headline figures, quoted from the spans section rather than
+  recomputed here**: duration **0:21:49**, **1 broken commit**, hole
+  counts `2`, monotone non-increasing **True on ZERO comparisons — the
+  vacuous kind**, **61 of 119 by duration** and **90 of 119 by commit
+  count** with **29 tied**; it moved **18 figures** and left **28 of
+  the 39** carried rows untouched. **No restart falls inside its
+  window.**
+
+  ***THE FIFTY-FOURTH'S FAILURE MODE DID NOT FIRE.*** The condition
+  needed a row at **1263 or above** in the same bank while 1262 was
+  out; **that bank's highest row was idx 1261, already decided**, so
+  nothing sat above the frontier and it closed.
+
+  **PREVIOUSLY, WHILE THE FIFTY-FOURTH WAS OPEN.** idx 1261 landed at
   **3247.0 s** at 15:38:07Z while **1259 and 1260** were both still
-  running — an opening at **two holes**. The frontier and hole set are
-  on the bullet line above, which bank.py owns; *this prose
-  deliberately does not repeat them.* **No duration, no rank, no
+  running — an opening at **two holes**. *The frontier and hole set on
+  the bullet line above belong to the **fifty-fifth**, which is the
+  span open now; this paragraph was written while the fifty-fourth was
+  the open one and is left as it stood.* **No duration, no rank, no
   monotonicity, no commit count and no hole chain until it closes.**
 
-  The ordinal was derived before the outcome, as at the last nineteen:
+  The ordinal was derived before the outcome, as at the last nineteen
+  — *and that counter does not fit its own arithmetic; see the
+  fifty-fifth's entry above*:
   `--spans all` re-run after the holes appeared still ends at
   **e2bc312**, **118 closed spans**, so this is walk position **119**
   and, at the offset of 65, ordinal **fifty-four**.
@@ -10136,7 +10444,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1262 of 1949 = 64.7512%**; **687 undecided**. **50% IS CROSSED**, at
+- **1266 of 1949 = 64.9564%**; **683 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -10850,7 +11158,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **28 decided**, undecided 37 spanning 1262..1298
+  **32 decided**, undecided 33 spanning 1264..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
