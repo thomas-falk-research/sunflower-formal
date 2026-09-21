@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T17:27Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T17:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6022,7 +6022,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1438 -> 1439 rows)
+## State as of the last refresh (1439 -> 1440 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6033,7 +6033,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1439 rows; 1270 labels decided; 1270 UNSAT; 0 SAT; 0 labels
+- **1440 rows; 1271 labels decided; 1271 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -6045,7 +6045,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1270 decided plus 169 superseded
+  A row count is not a decision count: 1271 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -6064,9 +6064,23 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1269, highest decided 1269, holes [].**
+- **Frontier contiguous 0..1270, highest decided 1270, holes [].**
   <!-- SPAN-STATE: closed -->
-  ***BANK idx 1269, ONE ROW — FRONTIER EXTENDED, NO HOLE, NO SPAN.***
+  ***BANK idx 1270, ONE ROW — FRONTIER EXTENDED, NO HOLE, NO SPAN.***
+  It landed at **3344.3 s** at 17:34:01Z. **Rank 607 of 1271**, 664
+  cheaper, and `1271 − 664 = 607` reproduces it, so no tie; the
+  whole-sweep tie census holds at **13 of 1271**. *Count
+  **1271 = 65.2129%**, neither trap nor threshold; the next marked
+  count is the 66% trap at **1286**, **fifteen** away, with nothing
+  marked strictly between.* `[13,12,12,12]` at **37 of 65**, **28**
+  short of complete; **the block maximum stays at 4029.9 s** at idx
+  1259 and this row is **sixth dearest of the 37**, *so the run of two
+  banks taking third place ends here.* **That run was written down as a
+  census fact and not as a shape**, which is why its ending costs
+  nothing and is recorded in one clause. **0.1548 of the cap.**
+
+  ***PREVIOUSLY: BANK idx 1269, ONE ROW — FRONTIER EXTENDED, NO HOLE,
+  NO SPAN.***
   It landed at **3471.0 s** at 17:26:50Z. **Rank 586 of 1270**, 684
   cheaper, and `1270 − 684 = 586` reproduces it, so no tie; the
   whole-sweep tie census holds at **13 of 1270**. *Count
@@ -10780,7 +10794,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1270 of 1949 = 65.1616%**; **679 undecided**. **50% IS CROSSED**, at
+- **1271 of 1949 = 65.2129%**; **678 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -11494,7 +11508,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **36 decided**, undecided 29 spanning 1270..1298
+  **37 decided**, undecided 28 spanning 1271..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
