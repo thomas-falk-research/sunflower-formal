@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T22:10Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T22:31Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6190,7 +6190,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1449 -> 1450 rows)
+## State as of the last refresh (1450 -> 1453 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6201,7 +6201,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1450 rows; 1281 labels decided; 1281 UNSAT; 0 SAT; 0 labels
+- **1453 rows; 1284 labels decided; 1284 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6215,7 +6215,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1281 decided plus 169 superseded
+  A row count is not a decision count: 1284 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6249,9 +6249,90 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1276, highest decided 1281, holes [1277].**
-  <!-- SPAN-STATE: open -->
-  ***BANK idx 1279, ONE ROW — THE FIFTY-SEVENTH SPAN IS OPEN, AT
+- **Frontier contiguous 0..1283, highest decided 1283, holes [].**
+  <!-- SPAN-STATE: closed -->
+  ***THE FIFTY-SEVENTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** The closing bank carries **three** rows: **idx 1277 at
+  5637.8 s** (detected 22:24:56Z), **idx 1283 at 1690.5 s** (22:27:21Z)
+  and **idx 1282 at 1823.5 s**, which **no waiter announced** — the file
+  held 1452 rows at 22:27:21Z and the next waiter armed at **1453** rows
+  at **22:28:15Z**, so 1282 landed inside that bracket and was swept in
+  by a re-stage. ***THAT BRACKET IS THE WHOLE OF WHAT IS KNOWN ABOUT ITS
+  LANDING INSTANT***, and it is written as a bracket because the draft
+  of this sentence said **"22:28:4xZ"** — *a timestamp composed rather
+  than read, which is the one thing the procedure names outright.* **A
+  bank sweeping in a row no waiter reported is not new** (`380b306` did
+  it) — *what is new is nearly inventing a time for it.*
+  **The frontier and hole set are on the bullet above, which bank.py
+  owns; this prose does not repeat them.**
+
+  ***NO DURATION, NO RANK, NO COMMIT COUNT, NO HOLE CHAIN AND NO
+  MONOTONE VERDICT ARE CLAIMED HERE.*** They come from `--spans all`
+  **after this commit exists** — the walk cannot see a commit that has
+  not been made — and every quoted span rank must then be recomputed
+  against the new N **together, in one script**, because a denominator
+  is not a rank. *That is the next commit's work, and this wording is
+  due to be struck in it.*
+
+  ***AND THE PROSE ABOVE WAS FALSE FOR AT MOST FIFTY-FOUR SECONDS, WITH
+  A GUARD THE ONLY THING BETWEEN IT AND A COMMIT.*** *At most*, because
+  the window runs from **22:27:21Z** to whenever idx 1282 landed, and
+  that instant is only bracketed — before **22:28:15Z**. **The draft
+  said "eighty-nine seconds"**, measured to the **22:28:50Z** bank.py
+  run instead of to the bracket, *which is the same error as the
+  composed timestamp one paragraph up: a duration is only as read as its
+  worse endpoint.*
+
+  *The sequence:* the sentence *"the fifty-seventh span has closed"*
+  was written at **22:25** against a
+  frontier that idx 1277 had just made whole. At **22:27:21Z** idx 1283
+  landed with **1282** still out, and the next `bank.py` run refused:
+  *"SPAN PROSE CONTRADICTS THE FRONTIER: holes [1282] but the note still
+  says 'No span is open'. A SPAN HAS OPENED."* **Had the commit gone in
+  during that window it would have carried a closure that had not
+  happened.** *The guard is a prose-versus-frontier check and says
+  nothing about span accounting, so the accounting was then read out of
+  `checkpoint_audit.py` itself rather than reasoned about:* **`spans()`
+  walks `git rev-list HEAD -- CHECKPOINT` and a span is a maximal run of
+  consecutive CHECKPOINT-TOUCHING commits with non-empty holes.** *A
+  commit at holes `[1282]` would have been another broken commit and
+  the span would have stayed open.* **Then idx 1282 landed and the
+  question went away on its own** — *which is luck, not method, and the
+  method is that nothing was committed while the two disagreed.*
+
+  ***THAT IS THE SECOND COMMIT-TIMING RACE IN THIS SPAN AND THEY POINT
+  OPPOSITE WAYS.*** At the third bank a transient **widening** (3 → 2 →
+  3) never reached a commit and so did **not** make the verdict False;
+  here a transient **re-break** never reached a commit and so did **not**
+  keep the span open. *Both are the `#29` rider — the commit is the
+  measurement — and together they are the clearest statement this note
+  can make that **the span record is a record of commits, not of the
+  file**.* **The excursion through `[1282]` is real, is in
+  `cpu_ratio_samples.tsv` and in two bank.py runs, and will never appear
+  in any span figure.**
+
+  **The three rows' own figures, all against N = 1284** — *row figures,
+  not span figures*: **idx 1277 rank 327**, 957 cheaper; **idx 1282 rank
+  924**, 360 cheaper; **idx 1283 rank 948**, 336 cheaper. *Each
+  `1284 − cheaper` reproduces its rank, so none is tied*, and the
+  whole-sweep tie census holds at **13 of 1284**. **Count 1284 =
+  65.8799%**, neither trap nor threshold, *and the 66% trap at **1286**
+  is now **two** away.* **No superlative is attached to that**: the
+  counter only increases, so every bank is nearer the next marked value
+  than the last one was, and *"the closest this session"* — which the
+  draft said — **is true of every bank and therefore says nothing.**
+  `[13,12,12,12]` at **50 of 65**, **15** short.
+  ***idx 1277 IS A NEW BLOCK MAXIMUM***: **5637.8 s** displaces idx
+  1273's **5504.5 s**, which had stood for four consecutive banks; it is
+  the dearest of the 50, with idx 1282 at 25th and idx 1283 at 28th, and
+  the block median moves to **1801.0 s**. *It is not a sweep record: the
+  dearest decided row stands at 21678.5 s and idx 1277 ranks 327 of
+  1284.*
+
+  ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
+  left exactly as each bank committed it.
+
+  ***BANK idx 1279, ONE ROW — THE FIFTY-SEVENTH SPAN OPENED AT
   THREE HOLES.*** It landed at **1137.7 s** at 21:26:39Z while
   **1276, 1277 and 1278** were all still running. *The frontier and
   hole set are on the bullet line above, which bank.py owns; this prose
@@ -11674,7 +11755,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1281 of 1949 = 65.7260%**; **668 undecided**. **50% IS CROSSED**, at
+- **1284 of 1949 = 65.8799%**; **665 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -12388,7 +12469,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **47 decided**, undecided 18 spanning 1277..1298
+  **50 decided**, undecided 15 spanning 1284..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
