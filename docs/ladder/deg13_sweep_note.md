@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T10:31Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T10:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5532,7 +5532,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1380 -> 1381 rows)
+## State as of the last refresh (1381 -> 1382 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5543,7 +5543,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1381 rows; 1212 labels decided; 1212 UNSAT; 0 SAT; 0 labels
+- **1382 rows; 1213 labels decided; 1213 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5555,7 +5555,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1212 decided plus 169 superseded
+  A row count is not a decision count: 1213 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5574,7 +5574,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1210, highest decided 1212, holes [1211].**
+- **Frontier contiguous 0..1210, highest decided 1213, holes [1211].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FIFTY-FIRST.** idx 1212 landed at
   **747.3 s** while **1209, 1210 and 1211** were all still running — an
@@ -5614,14 +5614,21 @@ exactly one bank.
   | 1st | idx 1212 | 747.3 s | `[1209, 1210, 1211]` | 1214+ while 1213 out |
   | 2nd | idx 1209 | 1905.6 s | `[1210, 1211]` | 1214+ while 1213 out |
   | 3rd | idx 1210 | 1801.5 s | `[1211]` | 1214+ while 1213 out |
+  | 4th | idx 1213 | 641.0 s | `[1211]` | 1215+ while 1214 out |
 
-  *Both fills have landed in index order — the case that adds nothing —
-  so the set has narrowed twice and **the condition has carried over
-  unchanged in form at both**. Two draws from the quiet case are two
-  draws; the note's own case counts say the other branch is available at
-  every one.* **The span now rests on `1211` alone**, which is also the
-  last undecided member of `[13,13,8,8]`, so **the block completes on
-  the same row** — separated only by the failure mode above.
+  *Three banks, three quiet outcomes: 1209 and 1210 filled in index
+  order and 1213 was the immediate next index above the frontier's
+  highest, so none of them opened anything and **the condition has
+  carried over unchanged in form at all three**. Three draws from the
+  quiet case are three draws.* **The span rests on `1211` alone**, which
+  is also the last undecided member of `[13,13,8,8]`, so **the block
+  completes on the same row** — separated only by the failure mode
+  above, which is the arrangement the forty-ninth span had and which
+  held there.
+
+  **`[13,13,8,7]` has opened at 5 members**, idx 1214..1217 undecided —
+  *the second entry of the `7, 5, 3, 2, 1, 1` descent `SEQ` gives this
+  group, confirmed as arithmetic rather than as a finding.*
 
   **PREVIOUSLY: THE FIFTIETH SPAN IS CLOSED, AND ITS FIGURES ARE IN
   `31029da`** — in the spans section, not repeated here. It was filled by **idx 1201
@@ -8656,7 +8663,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1212 of 1949 = 62.1857%**; **737 undecided**. **50% IS CROSSED**, at
+- **1213 of 1949 = 62.2370%**; **736 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -9371,6 +9378,8 @@ exactly one bank.
 
 - `[13, 13, 8, 8]` idx 1206..1212: **7 members**,
   **6 decided**, undecided [1211]
+- `[13, 13, 8, 7]` idx 1213..1217: **5 members**,
+  **1 decided**, undecided [1214, 1215, 1216, 1217]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
