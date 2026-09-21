@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T08:47Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T08:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5454,7 +5454,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1358 -> 1359 rows)
+## State as of the last refresh (1359 -> 1361 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5465,7 +5465,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1359 rows; 1190 labels decided; 1190 UNSAT; 0 SAT; 0 labels
+- **1361 rows; 1192 labels decided; 1192 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5477,7 +5477,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1190 decided plus 169 superseded
+  A row count is not a decision count: 1192 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5496,10 +5496,57 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1189, highest decided 1189, holes [].**
-  <!-- SPAN-STATE: closed -->
-  **THE FORTY-NINTH SPAN IS CLOSED, AND ITS FIGURES ARE IN THIS
-  COMMIT** — in the spans section, not repeated here. It was filled by
+- **Frontier contiguous 0..1189, highest decided 1193, holes [1190, 1192].**
+  <!-- SPAN-STATE: open -->
+  **A SPAN IS OPEN, AND IT IS THE FIFTIETH.** ***AND THE `#29` RIDER
+  FIRED ON THE VERY FIRST CLAUSE THAT WAS WRITTEN WITH IT.***
+
+  `d0c9c23` wrote the whole conditional one commit ahead: *1193 first
+  opens three, the four-thread ceiling — **iff** 1193 finishes first
+  **and** the bank that commits it carries no row filling one of the
+  holes.* **Both halves came due at once.** idx 1193 landed at
+  **966.7 s** at 08:47:17Z, so the first half held and **the file did
+  show three holes**, `[1190, 1191, 1192]`. **idx 1191 then landed at
+  2810.6 s at 08:47:58Z — forty-one seconds later — and was swept into
+  the same bank, filling one of them.** *So the second half came out
+  **false**, and the **committed** opening is **two**, `[1190, 1192]`,
+  not three.*
+
+  ***WITHOUT THE RIDER THIS ENTRY WOULD HAVE SAID THREE.*** The note
+  records that the rider's second half *"has been missing every time the
+  clause was written, and it went unnoticed twice because those banks
+  happened to carry one row"*. **This bank carried two.** *The rider was
+  not a prediction that came true — it is a distinction that turned out
+  to matter, on its first outing, and the figure it protected is the one
+  this paragraph would otherwise have got wrong.*
+
+  ***AND THE bank.py / checkpoint_audit.py DETECTOR FIRED IN THE WILD,
+  WHICH IS WHAT IT IS FOR.*** bank.py read the STAGED blob at 08:47:43Z
+  and reported **1191 decided, holes `[1190, 1191, 1192]`**. A cost
+  script run moments later read the WORKING TREE and reported **1192
+  decided**. *The two disagreeing is the documented signal that a row
+  landed between them, not a bug — and it is the reason the second row
+  was noticed and banked rather than committed around.*
+
+  The frontier and hole set are on the bullet line above, which bank.py
+  owns; *this prose deliberately does not repeat them.* **No duration,
+  no rank, no monotonicity, no commit count and no hole chain until it
+  closes.**
+
+  The ordinal was derived before the outcome, as at the last fourteen:
+  `--spans all` re-run after the holes appeared still ends at
+  **2321b43**, **114 closed spans**, so this is walk position **115**
+  and, at the offset of 65, ordinal **fifty**.
+
+  **Close condition, in the rule form:** filling **both** 1190 and 1192
+  closes it **iff the committing tree leaves no undecided index below
+  its highest decided**. *With 1193 the highest decided and 1194 onward
+  undecided but above it, the failure mode is a row at **1195 or above**
+  riding in the same bank while 1194 is still out. Neither branch is
+  predicted and when it lands is not claimed.*
+
+  **PREVIOUSLY: THE FORTY-NINTH SPAN IS CLOSED, AND ITS FIGURES ARE IN
+  `f788f83`** — in the spans section, not repeated here. It was filled by
   **idx 1184 at 6218.2 s**, **the dearest of the seven rows banked while
   it was open**, ahead of idx 1183's 4921.4 s. *`--spans all` walks
   `git rev-list HEAD -- CHECKPOINT`, so the closing commit had to exist
@@ -8127,7 +8174,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1190 of 1949 = 61.0570%**; **759 undecided**. **50% IS CROSSED**, at
+- **1192 of 1949 = 61.1596%**; **757 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8841,7 +8888,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 9, 7]` idx 1187..1193: **7 members**,
-  **3 decided**, undecided [1190, 1191, 1192, 1193]
+  **5 decided**, undecided [1190, 1192]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
