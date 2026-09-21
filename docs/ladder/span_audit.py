@@ -49,6 +49,35 @@ OFFSET = 65
 MIN_SPANS      = 100
 MIN_TABLE_ROWS = 42
 MIN_MONO_ROWS  = 56
+# The opening-width census is written in PROSE at every span open and struck
+# at every close, so it never reaches either table above -- and prose is where
+# the stale figure lives.  At the fifty-seventh open the sentence read "the
+# first opening at three since the forty-second" when the walk says the
+# fifty-first, and it read so with the words "counted off the chains rather
+# than recalled" attached to it: a claim of method that was false when
+# written.  Nothing here could have caught that.  Now the census is parsed
+# too -- ONLY while a span is open, because when none is open the sentences
+# are correctly absent and their absence is not a failure.
+MIN_CENSUS_SENTENCES = 4
+MIN_CENSUS_LIVE      = 4
+
+SPAN_OPEN = "<!-- SPAN-STATE: open -->"
+
+# Ordinal words, BUILT rather than typed: a hand-written table of ninety-nine
+# words is itself a place for a wrong entry to sit unread for months.
+_ONES = ('first second third fourth fifth sixth seventh eighth ninth tenth '
+         'eleventh twelfth thirteenth fourteenth fifteenth sixteenth '
+         'seventeenth eighteenth nineteenth').split()
+_TENS_C = 'twenty thirty forty fifty sixty seventy eighty ninety'.split()
+_TENS_O = ('twentieth thirtieth fortieth fiftieth sixtieth seventieth '
+           'eightieth ninetieth').split()
+WORDS = {w: i + 1 for i, w in enumerate(_ONES)}
+for _t, (_c, _o) in enumerate(zip(_TENS_C, _TENS_O)):
+    WORDS[_o] = (_t + 2) * 10
+    for _u, _w in enumerate(_ONES[:9]):
+        WORDS[f'{_c}-{_w}'] = (_t + 2) * 10 + _u + 1
+CARDS = {w: i + 1 for i, w in enumerate(
+    'one two three four five six seven eight nine ten'.split())}
 
 
 def secs(d):
@@ -85,6 +114,110 @@ def walk():
 def ranker(pop, key):
     vals = sorted((key(s) for s in pop), reverse=True)
     return (lambda v: vals.index(v) + 1), (lambda v: vals.count(v) - 1)
+
+
+def census(note, spans):
+    """Check EVERY opening-width census sentence against the walk.
+
+    Two kinds of sentence carry this census, and they are checked
+    differently because they mean different things:
+
+      * a CLOSE WRITEUP states the census as it stood at ITS OWN close --
+        a permanent record of a past state.  It is still checkable: the
+        census "at N closed chains" is the census of the walk's FIRST N
+        spans, so every one of them is re-derivable from a prefix today.
+      * the LIVE OPEN ENTRY states the census as it stands now, plus
+        figures only an open span has ("since the Nth", "last five").
+
+    The first version of this function searched the WHOLE note for one
+    sentence and took `re.search`'s first hit -- which is the newest close
+    writeup, not the live entry.  It reported eleven figures checked and
+    passed a note whose live percentage had been mutated, because the
+    sentence it actually read was a different, correct one further up.
+    bank.py's own span guard carries the same lesson in its comments: a
+    pattern that cannot tell an assertion from an older assertion checks
+    the wrong thing and says so confidently.  Hence: all sentences are
+    checked, each against its own N, and the live-only figures are read
+    ONLY from the text at and after the open marker.
+
+    Positions are carried alongside each span and never recovered with
+    list.index(): these are dicts, dicts compare by value, and two spans
+    agreeing in every field would hand back the first one's position.
+    """
+    bad = []
+    flat = re.sub(r'\s+', ' ', note)
+    ow = [(i + 1 - OFFSET, s['chain'][0]) for i, s in enumerate(spans)]
+
+    def tally_of(k):
+        """Opening-width census over the walk's FIRST k closed spans."""
+        w = [x for _, x in ow[:k]]
+        return {v: w.count(v) for v in sorted(set(w))}
+
+    sentences = re.findall(
+        r'Over the \*\*(\d+)\*\* closed chains the opening hole count is '
+        r'\*\*(.+?)\*\*, so (\w+) is \*\*([\d.]+)%\*\*', flat)
+    checked = 0
+    for dn, body, word, pct in sentences:
+        k = int(dn)
+        checked += 1
+        if not 1 <= k <= len(spans):
+            bad.append(('census', 'declared N', f'note {k}, walk has {len(spans)}'))
+            continue
+        want = tally_of(k)
+        got = {int(a): int(b) for a, b in re.findall(r'(\d+) in (\d+)', body)}
+        checked += 2
+        if got != want:
+            bad.append((f'census at {k}', 'width tally', f'note {got} vs walk {want}'))
+        if sum(got.values()) != k:
+            bad.append((f'census at {k}', 'tally total',
+                        f'note sums to {sum(got.values())} vs its own N {k}'))
+        checked += 1
+        w = CARDS.get(word)
+        exp = round(100 * want.get(w, 0) / k, 1)
+        if w is None or abs(float(pct) - exp) > 0.05:
+            bad.append((f'census at {k}', 'percent',
+                        f'note {pct}% for "{word}" vs walk {exp}%'))
+
+    live = 0
+    if SPAN_OPEN in note:
+        # Scoped to the open entry: the archived writeups above it use the
+        # same words about different spans.
+        lf = re.sub(r'\s+', ' ', note[note.index(SPAN_OPEN):])
+        m = re.search(r'first opening at (\w+) since the ([a-z-]+)\*\*', lf)
+        if not m:
+            bad.append(('live census', '"since the" sentence',
+                        'NOT FOUND -- pattern or prose changed'))
+        else:
+            live += 1
+            seen = [o for o, x in ow if x == CARDS.get(m.group(1))]
+            want = seen[-1] if seen else None
+            if WORDS.get(m.group(2)) != want:
+                bad.append(('live census', '"since the"',
+                            f'note {m.group(2)} ({WORDS.get(m.group(2))}) vs walk {want}'))
+        m = re.search(r'opened at (\w+) are \*\*(\d+)\*\* of the (\d+)', lf)
+        if not m:
+            bad.append(('live census', '"of the N" sentence',
+                        'NOT FOUND -- pattern or prose changed'))
+        else:
+            live += 2
+            seen = [o for o, x in ow if x == CARDS.get(m.group(1))]
+            if int(m.group(2)) != len(seen):
+                bad.append(('live census', 'width count',
+                            f'note {m.group(2)} vs walk {len(seen)}'))
+            if int(m.group(3)) != len(spans):
+                bad.append(('live census', 'of the N',
+                            f'note {m.group(3)} vs walk {len(spans)}'))
+            m5 = re.search(r'the last five of them ordinals \*\*([\d, and]+)\*\*', lf)
+            if not m5:
+                bad.append(('live census', '"last five" sentence',
+                            'NOT FOUND -- pattern or prose changed'))
+            else:
+                live += 1
+                said = [int(x) for x in re.findall(r'\d+', m5.group(1))]
+                if said != seen[-5:]:
+                    bad.append(('live census', 'last five ordinals',
+                                f'note {said} vs walk {seen[-5:]}'))
+    return len(sentences), checked, live, bad
 
 
 def main(note_path=NOTE):
@@ -166,7 +299,21 @@ def main(note_path=NOTE):
         if (verdict == 'True') != s['mono']:
             bad.append((f'row {num}', 'monotone', f'note {verdict} vs walk {s["mono"]}'))
 
-    checked = len(rows) * 7 + len(mono) * 4
+    nsent, cchecked, live, cbad = census(note, spans)
+    bad += cbad
+    print(f'census sentences parsed: {nsent} ({cchecked} figures);'
+          f' live-span figures: {live}')
+    if nsent < MIN_CENSUS_SENTENCES:
+        print(f'!! only {nsent} census sentences parsed, floor is'
+              f' {MIN_CENSUS_SENTENCES} -- the pattern is broken, it is not'
+              f' that the note is clean')
+        return 1
+    if SPAN_OPEN in note and live < MIN_CENSUS_LIVE:
+        print(f'!! a span is open but only {live} live-census figures parsed,'
+              f' floor is {MIN_CENSUS_LIVE}')
+        return 1
+
+    checked = len(rows) * 7 + len(mono) * 4 + cchecked + live
     print(f'figures checked: {checked}')
     if bad:
         print(f'\n!! {len(bad)} MISMATCH(ES):')
