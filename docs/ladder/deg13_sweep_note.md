@@ -4862,6 +4862,30 @@ exactly one bank.
   span's only hole — not a forecast about when it lands, which is not
   claimed.*
 
+  ***AND THE BLOCK WILL CLOSE ON ITS DEAREST MEMBER — THIS ONE IS
+  SETTLED IN ADVANCE, WHICH THE PREVIOUS FOUR WERE NOT.*** At the
+  02:42:15Z sample idx 1147 read **3404 s elapsed**, and the block's six
+  decided costs are **630.8, 958.8, 1480.5, 1699.4, 2886.1 and
+  2971.6 s**. It has **already exceeded all six**, so whatever it
+  finishes at, it is the block's dearest. *This is not a forecast: a
+  running cube's cost only grows, so the comparison is decided now. The
+  one thing left open is whether it is decided at all — a cube killed at
+  the cap writes UNKNOWN and closes nothing — so the claim is **if the
+  block closes, it closes on its dearest**, and when it lands is not
+  claimed.*
+
+  *That would be the **fifth** consecutive block to do so. At the
+  recomputed base rate of **21 of 41 = 51.2%** a run of five is
+  **3.5%**, against 6.9% for the four already on the page. **The same
+  two caveats still apply and are not weakened by the run getting
+  longer**: the blocks in the run are themselves among the 41, and the
+  run was noticed after it began. A 3.5% figure computed from a rate
+  that the run helped set is not a p-value, and is not offered as one.*
+
+  *Bound for the hole, denominator and bound in one expression:* **565**
+  of the 1149 decided costs are below 3404 s, so idx 1147's eventual
+  rank is **at most 585 of 1150**.
+
   **THE FORTY-FOURTH SPAN IS CLOSED.** It opened at **three holes at
   once** when idx 1141 landed at 580.9 s while **1138, 1139 and 1140**
   were all still running, and was filled by **idx 1139 at 6441.8 s**,
