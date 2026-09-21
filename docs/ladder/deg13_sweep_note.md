@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T23:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T23:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6484,6 +6484,20 @@ exactly one bank.
   a row at 1295 or above while 1294 is out.** ***KEPT TERSE ON PURPOSE:
   three banks have now passed without the hole set moving, and a span
   that is not changing does not earn a paragraph per commit.***
+
+  ***AND A COUNTDOWN WAS ANNOUNCED THAT DOES NOT EXIST.*** At the
+  23:41Z check-in it was said aloud that *"the driver's 21600 s cap
+  expires around 01:34Z"* and that the driver would exit then.
+  **`--seconds` is the PER-CUBE budget, not a total** — *this note says
+  so twice already, beside the driver command and again in the re-run
+  section* — **so pid 419 has no scheduled exit at all** and nothing
+  happens at 01:34Z. *The figure was inferred from the waiter's own
+  `cap 21600` label without reading what the flag means*, which is the
+  check-in's standing rule in its plainest form: **read the note's
+  definition before believing a reading of your own.** *The `of the
+  cap` fractions in every bank entry are unaffected — bank.py computes
+  cost/21600 against the per-cube budget, which is the right
+  denominator.*
 
   **Figures against N = 1292**: **rank 1187**, 105 cheaper,
   `1292 − 105 = 1187`, no tie; tie census holds at **13 of 1292**.
