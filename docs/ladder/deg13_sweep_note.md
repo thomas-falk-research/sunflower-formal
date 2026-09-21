@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T22:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T22:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -67,6 +67,7 @@ and `pgrep` outranks both.
 | `refig.py <spans-file> <sha7> <ordinal>` | refigures the spans table at a close: reproduces every carried row at the OLD N first, then rewrites all of them at the new one, emits the new spans and monotonicity rows, checks the three set equalities and prints the globals. **Both N values are derived from the walk, never typed**, and it asserts that the parsed row count matches what the walk implies. *It is PARAMETERISED precisely because the two alternatives both failed: a `sed`-patched copy of the previous close's script left a bare old N in an expected-value tuple and reported 39 spurious mismatches, and the "write it fresh each time" remedy that replaced it produces an unchecked script every close — one of those matched zero rows on its first run.* **Committed at the fifty-sixth close, after living in the scratchpad for five.** |
 | `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by **both** `bank.py` (each bank) and `cnf_mtime_check.py` (each run), so there is one source rather than two. Read the LAST row per cube before the teardown instant; never a later one, and never an average. **COMMIT IT** — see below. |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
+| `git rev-parse HEAD origin/<branch>` | **the HEAD-equals-origin check, and it must NOT carry `--short`.** *`git rev-parse --short HEAD origin/<branch>` fails with `fatal: Needed a single revision` — `--short` makes rev-parse single-revision-only, in every form including `--short=7`.* **Use the full-hash two-revision form, or two separate `--short` calls.** A chained check that dies on exit 128 reports nothing about whether the branch is pushed, and the failure looks like a git problem rather than a usage one. |
 
 Reuse the helpers with:
 
