@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T19:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T20:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -398,6 +398,27 @@ the answer is a bracket, not a substituted number.
    cube**. So: distrust a sample from the first ~100 s and bracket, but
    **do not wait for a later one to be "more settled"** — past a few
    hundred seconds there is nothing left to settle, only noise.
+
+   ***THAT LAST CLAUSE IS WRONG AND IS CORRECTED HERE: THE THRESHOLD IS
+   NEARER 600 s THAN 100.*** **Distrust a sample below roughly 600 s of
+   elapsed and bracket it**; the rest of the sentence — do not wait for
+   a later one, because a cube killed early has no later one — stands.
+   *Measured within a slot, which is the comparison that is not
+   confounded by which cubes are dear: **96** slots have samples in both
+   the 300–600 s window and past 1200 s, the within-slot median change
+   is **+0.0060**, **73 of the 96** are higher later, and the change's
+   quartiles are +0.0003, +0.0060, +0.0131 — positive even at the first
+   quartile.* **Sign test z = 5.10; treating each batch of four slots as
+   perfectly correlated, the worst case, still gives z = 2.45.** The
+   band medians agree: **0.9767** (≤100 s), **0.9805** (100–300 s),
+   **0.9779** (300–600 s), **0.9873** (600–1200 s), **0.9883**
+   (>1200 s). *Found at the 20:41Z check-in after #48, when four cubes
+   read 0.9375–0.9548 at 199–448 s and 0.9847–0.9927 at 3976 s; the
+   write-up and what it does to #48's recorded loss are in the state
+   block.* **The 300 s cut this entry's quantile tables use therefore
+   does NOT clear the climb**, and those tables are left as they are
+   with that stated rather than recomputed, because every figure they
+   carry is a comparison between two readings taken the same way.
    *This qualifies `af67502`, whose body called the settling effect
    "confirmed on the same slots" on the strength of **two** time points
    per slot; with 3 to 11 points it is a rise followed by noise, not a
@@ -6181,6 +6202,61 @@ exactly one bank.
   and it is the first quantitative question the machine change makes
   askable — the ratio is a **scheduling** quantity, not a speed one, so
   it is a different question from the costs-off-a-common-basis one.*
+
+  ***THE 20:41Z CHECK-IN ANSWERED THE QUESTION THE 19:41Z ONE FILED,
+  AND THE ANSWER IS "NOT THE MACHINE".*** The four re-taken cubes are
+  still running at **3976 s** of elapsed and their ratios now read
+  **0.9922, 0.9927, 0.9847 and 0.9922** — *three of the four are ABOVE
+  the 2.10GHz machine's p75 of 0.9911, and the fourth sits between its
+  median and p75.* **The direction has reversed**, so the low readings
+  an hour ago were the startup climb and not a property of the new
+  machine. *The question was filed with "no difference is claimed" and
+  it resolves against the difference; that is what filing it was for.*
+
+  ***AND RESOLVING IT BREAKS ONE OF THIS NOTE'S OWN PROCEDURE
+  SENTENCES.*** The absorb procedure says *"past a few hundred seconds
+  there is nothing left to settle, only noise."* **The climb runs
+  longer than that.** pid 419's own trajectory reads 0.9447 at 199 s,
+  0.9375 at 448 s and 0.9847 at 3976 s — *still depressed at 448 s,
+  which is past the 300 s cut the quantile analysis uses.* **And it is
+  not one machine's quirk**: over the 2.10GHz samples the band medians
+  run **0.9767** (≤100 s), **0.9805** (100–300 s), **0.9779**
+  (300–600 s), **0.9873** (600–1200 s) and **0.9883** (>1200 s), and
+  the share falling below p25 runs **40.3%**, **25.1%** and **18.9%**
+  across the three bands past 300 s — *which must average 25% by
+  construction, and does, at 25.0% pooled; the check is that the
+  300–600 band is nearly twice its share.*
+
+  ***THE CLEAN TEST IS WITHIN A CUBE, AND IT AGREES.*** A slot
+  contributes samples at increasing elapsed over its own life, so
+  comparing a slot with itself is not confounded by which cubes are
+  dear. **96 slots have samples in both the 300–600 s window and past
+  1200 s**; the within-slot median change is **+0.0060** and **73 of
+  the 96 are higher later**, with the change's quartiles at +0.0003,
+  +0.0060 and +0.0131 — *positive even at the first quartile.* A sign
+  test gives **z = 5.10**; **treating each batch of four slots as
+  perfectly correlated — the worst case — still gives z = 2.45**, and
+  *the truth is between the two, which is why both are written.*
+
+  ***AND THAT PUTS A KNOWN DIRECTION ON #48's RECORDED LOSS.*** It
+  weighted four cubes by ratios sampled at **522 s**, inside the
+  not-yet-settled band, and **all four sit below the 2.10GHz p25**.
+  *The recorded 3.8216 CPU-h follows the stated procedure — last sample
+  before teardown — and is **not** revised here.* **What is now known
+  is the direction and a ceiling**: at the old median the four would
+  give **3.9013** (+0.0797), at p75 **3.9172** (+0.0955), and at the
+  1.0 ceiling **3.9523** (+0.1307). *So #48's loss is understated by at
+  most 0.1307 CPU-h, which moves no claim anywhere in this note;* **the
+  finding is the procedure sentence, not the figure.**
+
+  ***AND THE FIX IS NOT "WAIT LONGER" EITHER.*** The same procedure
+  entry already warns against waiting for a sample to be "more
+  settled", and that warning stands — *a cube killed at 300 s has no
+  later sample to wait for.* **What changes is the threshold in the
+  advice**: distrust a sample below roughly **600 s**, not 100, and
+  where one is all there is, bracket it rather than use it as a point.
+  *The #47 entry's young-sample bracket was right for the right reason
+  at 67 s; this widens the band it applies to.*
 
   ***AND THE FIVE-REPEAT STREAK BROKE AT THE SIXTH READING, EXACTLY AS
   THE CAUTION BESIDE IT SAID IT COULD.*** Every one of #43 through #47
