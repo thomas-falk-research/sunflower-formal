@@ -48,8 +48,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 43
-MIN_MONO_ROWS  = 57
+MIN_TABLE_ROWS = 44
+MIN_MONO_ROWS  = 58
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -59,7 +59,7 @@ MIN_MONO_ROWS  = 57
 # written.  Nothing here could have caught that.  Now the census is parsed
 # too -- ONLY while a span is open, because when none is open the sentences
 # are correctly absent and their absence is not a failure.
-MIN_CENSUS_SENTENCES = 6
+MIN_CENSUS_SENTENCES = 7
 MIN_CENSUS_LIVE      = 4
 # The monotonicity prose -- the True partition, the False-chain column and
 # the rank sentence beside them -- is the OTHER half of the gap the note
