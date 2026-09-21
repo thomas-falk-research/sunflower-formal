@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T05:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T06:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -788,6 +788,68 @@ second-run. A "prior kill" means one from an **earlier** restart, and the
 grep is what settles it.* **The claim was inverted, not merely
 imprecise**, and it was caught by checking the checkpoint rather than by
 re-reading the sentence.
+
+***THREE OF SET FOURTEEN'S FOUR MEMBERS HAVE COMPLETED THEIR RE-RUNS,
+AND THE COMPARISON EACH SUPPORTS IS ONE-SIDED.*** *Only **idx 1173**,
+the one that had run longest when the kill landed, is still out.*
+
+| idx | re-run | killed run reached | verdict |
+|---|---|---|---|
+| 1177 | **1558.7 s** | [667.432, 1234.639] s, unfinished | consistent |
+| 1179 | **1606.7 s** | [49.224, 616.431] s, unfinished | consistent |
+| 1178 | **1650.0 s** | [229.448, 796.655] s, unfinished | consistent |
+
+Every killed run stopped **below** its cube's eventual cost, so each is
+**consistent** with the re-run and nothing more.
+
+*What that does **not** establish is any lower bound on run-to-run
+variance. **None of the three** killed runs had reached its cube's
+eventual cost at either end of the bracket, so all three are silent
+about how long they would have taken.* **What any of them would have
+shown, had it gone the other way**, is a genuine same-cube,
+same-machine discrepancy — a killed run passing the re-run's cost
+without finishing. *None did, so what is recorded is a check that could
+have failed three times and failed none of them.* **A draft of this
+paragraph said "two" and "neither" and was one row behind its own
+table.**
+
+***AND A DRAFT OF THIS PARAGRAPH MISDESCRIBED WHAT A RE-RUN SET IS
+FOR.*** It contrasted set fourteen with *"the sets where a cube completed
+twice and a real ratio exists"*. **No such set exists, and none can.**
+The driver only re-takes **undecided** cubes, so a cube that completes is
+never run again; **no member of any re-run set has two completed runs**.
+*A set makes its four members' re-run clocks comparable **to each
+other** — they start at the same instant on a machine whose six spec
+fields are unchanged — which is exactly what set thirteen's entry says
+and what I had stopped reading.* **The killed-run comparison above is a
+separate, one-sided consistency check and is not what the set is for.**
+*Caught by going back to the definition instead of arguing from the
+name, which is the rule the check-in prompt states for scripts and
+applies identically to prose.*
+
+***AND WHAT THE SET IS ACTUALLY FOR PRODUCED A FIGURE, WHOSE WHOLE
+MEANING TURNS ON THE NULL.*** The three completed re-runs span
+**1558.7 → 1650.0 s**, a spread of **1.0586×** over a **91.3 s** range,
+on clocks that started at the same instant. *Asking how unusual that is
+gives three different answers depending on what it is compared against:*
+
+| comparison population | this tight or tighter |
+|---|---|
+| random trios from all **1179** decided costs | **0.106%** |
+| all trios drawn from **within one block** | **0.27%** |
+| three **consecutive** decided indices in a block | **4.91%** |
+
+***THE FIRST NUMBER IS THE WRONG ONE AND IT IS THE ONE THAT LOOKS
+IMPRESSIVE.*** idx 1177, 1178 and 1179 are **three consecutive members
+of `[13,13,9,8]`**, not a random draw from the sweep: cubes in one block
+share their first four coordinates and are structurally alike, so
+tightness is what the structure predicts. **Matching the null to that
+structure moves the headline from 0.106% to 4.91% — a factor of about
+46 — without a single cost changing.** *Nothing here is evidence of
+anything about the re-take; it is evidence that a base rate computed
+over the wrong population will make an ordinary observation look
+extraordinary, which is the same failure `#30` records for a run length
+and the closed-block rate records for a streak.*
 
 ***AND THE SIMULTANEOUS RE-TAKE IS CONFIRMED FROM A SECOND DIRECTION.***
 The **05:42:36Z** sample shows all four of set fourteen at **295 s
@@ -5089,7 +5151,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1344 -> 1345 rows)
+## State as of the last refresh (1345 -> 1348 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5100,7 +5162,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1345 rows; 1176 labels decided; 1176 UNSAT; 0 SAT; 0 labels
+- **1348 rows; 1179 labels decided; 1179 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5112,7 +5174,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1176 decided plus 169 superseded
+  A row count is not a decision count: 1179 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5131,7 +5193,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1172, highest decided 1176, holes [1173].**
+- **Frontier contiguous 0..1172, highest decided 1179, holes [1173].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-SEVENTH.** idx 1172 landed at
   1870.9 s while **1169, 1170 and 1171** were all still running, and
@@ -7272,7 +7334,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1176 of 1949 = 60.3386%**; **773 undecided**. **50% IS CROSSED**, at
+- **1179 of 1949 = 60.4926%**; **770 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7988,7 +8050,7 @@ exactly one bank.
 - `[13, 13, 9, 9]` idx 1161..1175: **15 members**,
   **14 decided**, undecided [1173]
 - `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
-  **1 decided**, undecided 10 spanning 1177..1186
+  **4 decided**, undecided 7 spanning 1180..1186
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
