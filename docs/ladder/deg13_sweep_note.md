@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T05:06Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T05:09Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5005,7 +5005,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1340 -> 1341 rows)
+## State as of the last refresh (1341 -> 1342 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5016,7 +5016,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1341 rows; 1172 labels decided; 1172 UNSAT; 0 SAT; 0 labels
+- **1342 rows; 1173 labels decided; 1173 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -5024,7 +5024,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1172 decided plus 169 superseded
+  A row count is not a decision count: 1173 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -5043,7 +5043,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1169, highest decided 1174, holes [1170, 1171, 1173].**
+- **Frontier contiguous 0..1169, highest decided 1175, holes [1170, 1171, 1173].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-SEVENTH.** idx 1172 landed at
   1870.9 s while **1169, 1170 and 1171** were all still running, and
@@ -5099,6 +5099,24 @@ exactly one bank.
   affected by this.* **The two get conflated easily**, which is why the
   hole-count chain is read off the tool at close rather than summarised
   from prose.
+
+  ***AND THE BLOCK'S UNDECIDED SET IS NOW EXACTLY THE SPAN'S HOLES.***
+  `[13,13,9,9]` stands at **12 of 15**, undecided `[1170, 1171, 1173]`
+  — *the same three.* In the `#29` form, which is now the standing way
+  this file states such things:
+
+  - **Filling all three closes the block at 15 of 15.** Membership,
+    printed in the census, cannot change.
+  - **Whether it also closes the span depends on the committing bank.**
+    The span closes only at a commit whose tree holds none of them
+    **and** no new hole. **idx 1175 is already decided and is the
+    block's last index**, so there is nothing above it left in this
+    block to open a fresh gap — *but the next block begins at 1176, and
+    a row from it riding in the same bank while 1173 is still out would
+    keep the span open.*
+
+  *Neither is predicted, and when any of it lands is not claimed. The
+  clause now carries the rider it was missing three closes ago.*
 
   **THE FORTY-SIXTH SPAN IS CLOSED, AND ITS FIGURES ARE NOT IN THIS
   COMMIT.** It opened at **one hole** when idx 1164 landed at 1109.2 s
@@ -7119,7 +7137,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1172 of 1949 = 60.1334%**; **777 undecided**. **50% IS CROSSED**, at
+- **1173 of 1949 = 60.1847%**; **776 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -7833,7 +7851,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 13, 9, 9]` idx 1161..1175: **15 members**,
-  **11 decided**, undecided [1170, 1171, 1173, 1175]
+  **12 decided**, undecided [1170, 1171, 1173]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
