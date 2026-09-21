@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T23:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T23:27Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6263,7 +6263,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1455 -> 1456 rows)
+## State as of the last refresh (1456 -> 1457 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6274,7 +6274,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1456 rows; 1287 labels decided; 1287 UNSAT; 0 SAT; 0 labels
+- **1457 rows; 1288 labels decided; 1288 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6288,7 +6288,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1287 decided plus 169 superseded
+  A row count is not a decision count: 1288 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6322,8 +6322,47 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1285, highest decided 1287, holes [1286].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1287, highest decided 1287, holes [].**
+  <!-- SPAN-STATE: closed -->
+  ***THE FIFTY-EIGHTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** It was filled by **idx 1286 at 3532.5 s**, detected at
+  23:26:20Z, in a bank that carried **one** row — *the last of the two
+  indices this span ever held as holes.* **The frontier and hole set
+  are on the bullet above, which bank.py owns; this prose does not
+  repeat them.**
+
+  ***NO DURATION, NO RANK, NO COMMIT COUNT, NO HOLE CHAIN AND NO
+  MONOTONE VERDICT ARE CLAIMED HERE.*** They come from `--spans all`
+  **after this commit exists** — the walk cannot see a commit that has
+  not been made — and every quoted span rank must then be recomputed
+  against the new N **together, in one script**. *That is the next
+  commit's work, and this wording is due to be struck in it.*
+  **bank.py's span guard fired correctly on this bank** and was fixed
+  rather than silenced.
+
+  ***AND THIS TIME THE PROSE WAS NOT LEFT STANDING WHILE THE FILE
+  MOVED.*** At the fifty-seventh close the closure sentence sat in the
+  working tree for up to fifty-four seconds while idx 1283 re-broke the
+  frontier, and only a guard stood between it and a commit. *Here the
+  figures were verified and the entry written against a single bank.py
+  run, with the commit following immediately* — **which is a change of
+  pace, not a change of method, and the method is still that nothing is
+  committed while the guard and the prose disagree.**
+
+  **The closing row's own figures, against N = 1288** — *row figures,
+  not span figures*: **rank 587**, 701 cheaper, `1288 − 701 = 587`,
+  **no tie**; the whole-sweep tie census holds at **13 of 1288**.
+  *Count **1288 = 66.0852%**, neither trap nor threshold — both k = 66
+  marks are now behind the counter — and the next marked value, the
+  k = 67 trap at **1305**, is **seventeen** away.* `[13,12,12,12]` at
+  **54 of 65**, **11** short; **9th dearest of the 54**; **the block
+  maximum stays 5637.8 s** at idx 1277 and the median moves to
+  **1865.85 s**. **0.1635 of the cap.** *All recomputed from the
+  checkpoint independently of bank.py and agreeing with it.*
+
+  ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
+  left exactly as each bank committed it.
+
   ***THE 66% TRAP IS CAUGHT, AND A COMMITTED TREE HOLDS IT.*** The
   counter stands at **1286 = 65.9826%**, which is **exactly the k = 66
   trap**: *it rounds to **66.0%** at one decimal and is **below 66%**.*
@@ -11950,7 +11989,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1287 of 1949 = 66.0339%**; **662 undecided**. **50% IS CROSSED**, at
+- **1288 of 1949 = 66.0852%**; **661 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -12664,7 +12703,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **53 decided**, undecided 12 spanning 1286..1298
+  **54 decided**, undecided 11 spanning 1288..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
