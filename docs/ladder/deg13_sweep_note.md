@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T05:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T05:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -788,6 +788,15 @@ second-run. A "prior kill" means one from an **earlier** restart, and the
 grep is what settles it.* **The claim was inverted, not merely
 imprecise**, and it was caught by checking the checkpoint rather than by
 re-reading the sentence.
+
+***AND THE SIMULTANEOUS RE-TAKE IS CONFIRMED FROM A SECOND DIRECTION.***
+The **05:42:36Z** sample shows all four of set fourteen at **295 s
+`ps_elapsed`, identical across the four**, under driver pid 32389.
+*That is `ps` elapsed, not CNF mtime: the opening spread was measured
+from the mtimes, and this reads the same fact off the process table
+instead.* **Two paths, one conclusion** — and the 4 ms spread the mtimes
+record is far below the 1 s resolution `ps` reports, so the two agreeing
+is what should happen and is worth only the line it takes.
 
 **SET THIRTEEN OPENED AT RESTART #45** with idx **1106, 1107, 1108 and
 1109**, all four re-taken together at launch + 60.778454304 s (60.782454491 s
