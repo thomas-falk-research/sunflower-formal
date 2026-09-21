@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T11:09Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T11:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5606,7 +5606,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1385 -> 1386 rows)
+## State as of the last refresh (1386 -> 1387 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5617,7 +5617,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1386 rows; 1217 labels decided; 1217 UNSAT; 0 SAT; 0 labels
+- **1387 rows; 1218 labels decided; 1218 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5629,7 +5629,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1217 decided plus 169 superseded
+  A row count is not a decision count: 1218 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5648,7 +5648,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1215, highest decided 1218, holes [1216, 1217].**
+- **Frontier contiguous 0..1215, highest decided 1219, holes [1216, 1217].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FIFTY-SECOND.** idx 1218 landed at
   **709.0 s** while **1216 and 1217** were both still running — an
@@ -5667,6 +5667,7 @@ exactly one bank.
   | bank | row(s) | cost | holes after | condition becomes |
   |---|---|---|---|---|
   | 1st | idx 1218 | 709.0 s | `[1216, 1217]` | 1220+ while 1219 out |
+  | 2nd | idx 1219 | 1296.8 s | `[1216, 1217]` | 1221+ while 1220 out |
 
   **Close condition, in the rule form:** filling **both** 1216 and 1217
   closes it **iff the committing tree leaves no undecided index below
@@ -8842,7 +8843,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1217 of 1949 = 62.4423%**; **732 undecided**. **50% IS CROSSED**, at
+- **1218 of 1949 = 62.4936%**; **731 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -9558,7 +9559,7 @@ exactly one bank.
 - `[13, 13, 8, 7]` idx 1213..1217: **5 members**,
   **3 decided**, undecided [1216, 1217]
 - `[13, 13, 8, 6]` idx 1218..1220: **3 members**,
-  **1 decided**, undecided [1219, 1220]
+  **2 decided**, undecided [1220]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
