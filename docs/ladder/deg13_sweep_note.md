@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T02:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T02:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -4764,7 +4764,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1315 -> 1318 rows)
+## State as of the last refresh (1318 -> 1319 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -4775,7 +4775,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1318 rows; 1149 labels decided; 1149 UNSAT; 0 SAT; 0 labels
+- **1319 rows; 1150 labels decided; 1150 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#45**
   — extended from #44 here, against the #45 header block in the
   checkpoint, which records **1275 rows on both sides** of the teardown
@@ -4783,7 +4783,7 @@ exactly one bank.
   "#37 through #44" for every bank since #45 was absorbed, which is the
   standing-claim-never-re-checked pattern in its mildest form: the claim
   was true, and its range was stale.*
-  A row count is not a decision count: 1149 decided plus 169 superseded
+  A row count is not a decision count: 1150 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 28574**, launched 2026-09-20T16:39:13.770000Z (read from
@@ -4802,7 +4802,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1146, highest decided 1149, holes [1147].**
+- **Frontier contiguous 0..1146, highest decided 1150, holes [1147].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-FIFTH.** idx 1149 landed at
   635.1 s while **1147** was still running — an opening at **one hole**.
@@ -6526,7 +6526,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1149 of 1949 = 58.9533%**; **800 undecided**. **50% IS CROSSED**, at
+- **1150 of 1949 = 59.0046%**; **799 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -6645,11 +6645,25 @@ exactly one bank.
   see below. After it: **54% needs `ceil(0.54 × 1949) = 1053` =
   54.0277%, trap at 1052 = 53.9764%**, also from the script.
 
-  ***59% — THE COUNTER HAS LANDED EXACTLY ON THE TRAP, AND THIS TIME
-  THE CHECK WAS RUN BEFORE THE BANK RATHER THAN AFTER.*** The decided
-  count reached **1149 = 58.9533%**, which is the 59% trap: it rounds to
-  59.0 while sitting **below** 59, and `ceil(0.59 × 1949) = 1150 =
-  59.0046%` is the first value at or above. **So 59% is NOT crossed.**
+  ***59% IS CROSSED, AND THE TRAP WAS CAUGHT ONE BANK EARLIER BY
+  ARRANGEMENT RATHER THAN BY LUCK.*** idx 1150 took the decided count to
+  **1150 = 59.0046%**, the first value at or above 59. One bank earlier
+  the counter sat exactly on **1149 = 58.9533%**, the 59% trap — it
+  rounds to 59.0 while sitting **below** 59 — and `ce1e307` is the tree
+  that holds it.
+
+  ***THE CONTRAST WITH THE 58% CROSSING IS THE POINT, AND IT IS A
+  CONTRAST BETWEEN TWO ADJACENT CROSSINGS, NOT A CLAIM OF A FIRST.*** At
+  58% the trap was caught and the bank's commit body **says nothing
+  about it**; the catch stood only because the criterion is a committed
+  tree rather than a subject line. Here the trap arithmetic was run
+  **before** the bank, three rows were already waiting, and the bank was
+  made at once because of what it said — *the mechanism is in the
+  paragraph below and is not repeated here.* **Both are catches and both
+  count the same in the tally.** What differs is that one was
+  recoverable only after the fact and the other was not left to chance.
+  **The crossing came exactly one row after the trap**, 1150 − 1149 = 1,
+  as it did at 50% (975 one row after 974).
 
   ***AND THE CATCH WAS NOT LUCK — IT WAS ONE ROW FROM BEING LOST.***
   Three rows were waiting unbanked when the trap arithmetic was run, and
@@ -7063,7 +7077,7 @@ exactly one bank.
 - `[13, 13, 10, 6]` idx 1142..1148: **7 members**,
   **6 decided**, undecided [1147]
 - `[13, 13, 10, 5]` idx 1149..1153: **5 members**,
-  **1 decided**, undecided [1150, 1151, 1152, 1153]
+  **2 decided**, undecided [1151, 1152, 1153]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
