@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T08:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T08:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5358,7 +5358,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1356 -> 1357 rows)
+## State as of the last refresh (1357 -> 1358 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5369,7 +5369,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1357 rows; 1188 labels decided; 1188 UNSAT; 0 SAT; 0 labels
+- **1358 rows; 1189 labels decided; 1189 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5381,7 +5381,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1188 decided plus 169 superseded
+  A row count is not a decision count: 1189 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5400,7 +5400,7 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1183, highest decided 1188, holes [1184].**
+- **Frontier contiguous 0..1183, highest decided 1189, holes [1184].**
   <!-- SPAN-STATE: open -->
   **A SPAN IS OPEN, AND IT IS THE FORTY-NINTH.** idx 1186 landed at
   **632.7 s** while **1183, 1184 and 1185** were all still running — an
@@ -5605,6 +5605,45 @@ exactly one bank.
   fifth bank running:** filling **1184** closes it unless a row at
   **1190 or above** rides in while **1189** is still out.
 
+  ***61% IS CROSSED, AND 1189 FINISHED FIRST — THE ONE CASE THAT OPENED
+  NOTHING.*** idx 1189 landed at **1509.4 s**, taking the counter to
+  **1189 = 61.0056%**, which is `ceil(0.61 × 1949)` and therefore **the
+  first value at or above 61%**. *The paragraph below had counted three
+  cases and said two of them add a hole; the one that does not is what
+  happened. That is an outcome, not a prediction borne out — the count
+  was over cases and named no favourite.* **The hole set is unchanged at
+  `[1184]`.**
+
+  **SO BOTH THE TRAP AND THE THRESHOLD ARE HELD, BY CONSECUTIVE TREES**
+  — `6360854` holds **1188 = 60.9543%** and this commit's tree holds
+  **1189 = 61.0056%**. ***AND THAT IS THE COMMON CASE, NOT A FIRST,
+  WHICH WAS CHECKED BEFORE IT WAS WRITTEN.*** Walking `decided()` over
+  **all 1148 checkpoint commits** and intersecting with the trap and
+  threshold sets, of the **59** percent crossings the counter has
+  reached: **45 have both held**, **7 have the trap held and the
+  threshold stepped over** (k = 18, 26, 27, 28, 42, 44, 60), **4 have
+  the threshold held and the trap stepped** (k = 3, 6, 47, 52), and
+  **3 have neither** (k = 1, 4, 5). *61% joins the 45. It is worth
+  saying at all only because **60%, immediately before it, is one of the
+  7** — `3ddca3b` holds the trap 1169 and no tree holds 1170.*
+
+  ***AND THAT DECOMPOSITION REPRODUCES THE TALLY BY A DIFFERENT ROUTE.***
+  Caught = 45 + 7 = **52**; missed = 4 + 3 = **7**; total **59**. *The
+  per-trap entries further down this page were written one at a time as
+  each crossing arrived; this is a single walk over the whole history
+  intersected with arithmetic, and it lands on the same three numbers.
+  Two routes agreeing is not proof, but the tally had never been
+  re-derived whole before, only incremented.*
+
+  **THE NEXT TRAP IS 1208, NINETEEN DECISIONS AWAY.** `62%` needs
+  `ceil(0.62 × 1949) = 1209 = 62.0318%`, trap **1208 = 61.9805%**,
+  shortfall `38/1949 = 0.019497 pp`, **tightness rank 38 of 97** — tight
+  — and the **60th of the 97**. **No threshold or trap lies between 1189
+  and 1208.** *So the trap-arithmetic-before-every-bank discipline can
+  stand down again and resume as 1208 approaches, exactly as it did over
+  the 18-decision gap that just closed. Nothing is predicted about when
+  any of it lands.*
+
   ***AND THE SHAPE HAS CHANGED: ONE STUCK CUBE AGAINST THREE LEADERS.***
   The 08:03:31Z sample shows the four solvers on **idx 1184, 1189, 1190
   and 1191** — the first time in this span that **more than one** index
@@ -5620,6 +5659,22 @@ exactly one bank.
   does not — which is a count over cases, **not a probability**, since
   nothing here says the three are equally likely. Which finishes first
   is not predicted.*
+
+  ***THE SHAPE HELD AND SHIFTED UP BY ONE.*** The 08:14:22Z sample shows
+  the four solvers on **idx 1184, 1190, 1191 and 1192** — still **one
+  stuck cube against three leaders**, the same arrangement one index
+  higher. *The case count above transfers unchanged: **1190 first opens
+  nothing**, **1191 first opens one** (`[1184, 1190]`), **1192 first
+  opens two** (`[1184, 1190, 1191]`).* **Close condition, carried over
+  unchanged in form for the sixth bank running:** filling **1184**
+  closes the span unless a row at **1191 or above** rides in while
+  **1190** is still out.
+
+  *Six banks is not a test of the rule form and is not offered as one —
+  the form was chosen precisely because it does not depend on the
+  indices, so it carrying over is arithmetic, not evidence. What the
+  repeats record is that the indices really did move each time, which is
+  what the retired proxy form could not have survived.*
 
   **PREVIOUSLY: THE FORTY-EIGHTH SPAN IS CLOSED, AND ITS FIGURES ARE IN
   `76c364c`** — in the spans section, not repeated here. It opened at **two
@@ -7862,7 +7917,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1188 of 1949 = 60.9543%**; **761 undecided**. **50% IS CROSSED**, at
+- **1189 of 1949 = 61.0056%**; **760 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -8578,7 +8633,7 @@ exactly one bank.
 - `[13, 13, 9, 8]` idx 1176..1186: **11 members**,
   **10 decided**, undecided [1184]
 - `[13, 13, 9, 7]` idx 1187..1193: **7 members**,
-  **2 decided**, undecided [1189, 1190, 1191, 1192, 1193]
+  **3 decided**, undecided [1190, 1191, 1192, 1193]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
