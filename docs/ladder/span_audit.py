@@ -59,6 +59,14 @@ MIN_MONO_ROWS  = 58
 # written.  Nothing here could have caught that.  Now the census is parsed
 # too -- ONLY while a span is open, because when none is open the sentences
 # are correctly absent and their absence is not a failure.
+# THE CENSUS FLOOR HAS A SAWTOOTH AND MUST LAG THE LIVE COUNT BY ONE.
+# While a span is open the note carries one census sentence per past close
+# PLUS the live entry's.  The CLOSING commit strikes the live one and adds
+# nothing (it carries no figures), so the count DROPS BY ONE at that commit
+# and is restored by the figures commit that follows.  Set this floor to the
+# count at a CLOSING commit, never to the count while a span is open --
+# raising it to the open-span count passes today and fails at the next close
+# on correct prose.
 MIN_CENSUS_SENTENCES = 7
 MIN_CENSUS_LIVE      = 4
 # The monotonicity prose -- the True partition, the False-chain column and
