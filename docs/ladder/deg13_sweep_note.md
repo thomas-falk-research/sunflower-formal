@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-21T12:58Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-21T13:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -5687,7 +5687,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1413 -> 1414 rows)
+## State as of the last refresh (1414 -> 1415 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -5698,7 +5698,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1414 rows; 1245 labels decided; 1245 UNSAT; 0 SAT; 0 labels
+- **1415 rows; 1246 labels decided; 1246 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#46**
   — extended from #45 here, against the **#46** header block in the
   checkpoint, which records **1345 rows on both sides** of the teardown
@@ -5710,7 +5710,7 @@ exactly one bank.
   restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1245 decided plus 169 superseded
+  A row count is not a decision count: 1246 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 32389**, launched 2026-09-21T05:36:39.940000Z (read from
@@ -5729,8 +5729,61 @@ exactly one bank.
   **2149 → 2331 at #44**, each on the first bank after the relaunch.
   That is the same staleness that survived three commits at #40, and it
   has now been caught mechanically four times running.
-- **Frontier contiguous 0..1244, highest decided 1244, holes [].**
+- **Frontier contiguous 0..1245, highest decided 1245, holes [].**
   <!-- SPAN-STATE: closed -->
+  ***BANK idx 1245, ONE ROW — Q2 IS FALSE, AND THE 2-OF-2 HEURISTIC
+  IS NOW 2 OF 4.*** It landed at **1679.9 s** at 13:05:05Z, extending
+  the frontier and opening no hole. **Rank 921 of 1246**, 325 cheaper,
+  and `1246 − 325 = 921` reproduces it, so no tie; the census holds at
+  **13 of 1246**. *The count **1246 = 63.9302%** is neither a trap nor
+  a threshold.* ***The next decision is 1247, which IS the 64% trap*** —
+  one row away, with nothing marked between.
+
+  ***Q2 IS FALSIFIED.*** `82297a5` registered *"idx 1244, the (9,6)
+  member, is the dearest of idx 1241..1245"*. The five are **1078.4,
+  1428.4, 1433.8, 1649.9, 1679.9** and **the dearest is idx 1245**.
+  *Registered before any of the four later rows existed.*
+
+  **The third second-sub-run breaks the precedents' shape outright.**
+
+  | second sub-run | costs | steps | peak | last step |
+  |---|---|---|---|---|
+  | `[13,13,13,10]` | 1985.9, 2503.5, 2632.4, 2671.9, 2615.9 | +517.6, +128.9, +39.5, −56.0 | **4** | **−56.0** |
+  | `[13,13,12,11]` | 3471.9, 4243.7, 4841.4, 5149.5, 5050.6 | +771.8, +597.7, +308.1, −98.9 | **4** | **−98.9** |
+  | `[13,12,12,12]` | 1078.4, 1428.4, 1433.8, 1649.9, 1679.9 | +350.0, +5.4, +216.1, **+30.0** | **5** | **+30.0** |
+
+  *Both precedents peak at position 4 and fall at the last step; this
+  one rises at every step and peaks at position 5.* **Neither the peak
+  position nor the sign of the last step survived the third instance.**
+
+  ***AND HERE IS THE FIGURE THAT MATTERS MORE THAN ANY OF THEM.***
+  Seven predictions have been registered in commits before their rows
+  existed, and **four of the seven are false**:
+
+  | registered in | claim | base rate | outcome |
+  |---|---|---|---|
+  | `7c62056` | own-step-1 reading | — | **FALSE** |
+  | `7c62056` | position reading | — | **FALSE** |
+  | `d70cb57` | P1: idx 1239 dearer than 776.1 | 2 of 2 | **FALSE** |
+  | `d70cb57` | P2: idx 1240 cheaper than idx 1239 | 2 of 2 | TRUE |
+  | `d70cb57` | P3: block not monotone | 0 of 20 | TRUE *(dependent on P1)* |
+  | `82297a5` | Q1: idx 1241 dearer than 776.1 | 2 of 2 | TRUE |
+  | `82297a5` | Q2: idx 1244 dearest of five | 2 of 2 | **FALSE** |
+
+  ***Restricting to the four claims that rested on a 2-of-2 precedent:
+  P1 false, P2 true, Q1 true, Q2 false — **two of four**.*** **A
+  two-instance precedent has predicted correctly exactly half the time
+  in this block.** *That is a coin flip, measured rather than assumed,
+  and it is the most useful thing this sub-run produced.*
+
+  ***SO NO NEW 2-OF-2 PREDICTION IS FILED HERE.*** *The third sub-run
+  of `[13,12,12,12]` is idx 1246..1249 and both precedents have theirs
+  complete; the pattern would be easy to read off and file, and on this
+  session's own record it would be worth a coin flip.* **Filing it
+  anyway would be using the registration discipline as decoration.**
+  *What the discipline is for is making a claim cost something, and a
+  claim with no evidence behind it costs nothing to be wrong about.*
+
   ***BANK idx 1244, ONE ROW — THE STEP-DECAY READING WAS WRONG AND Q2
   IS ONE ROW FROM RESOLVING.*** It landed at **1649.9 s** at 12:57:18Z,
   extending the frontier and opening no hole. **Rank 927 of 1245**, 318
@@ -9671,7 +9724,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1245 of 1949 = 63.8789%**; **704 undecided**. **50% IS CROSSED**, at
+- **1246 of 1949 = 63.9302%**; **703 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -10385,7 +10438,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 12]` idx 1234..1298: **65 members**,
-  **11 decided**, undecided 54 spanning 1245..1298
+  **12 decided**, undecided 53 spanning 1246..1298
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
