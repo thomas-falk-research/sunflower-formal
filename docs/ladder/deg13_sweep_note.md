@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T04:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T05:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6411,7 +6411,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1487 -> 1488 rows)
+## State as of the last refresh (1488 -> 1489 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6422,7 +6422,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1488 rows; 1319 labels decided; 1319 UNSAT; 0 SAT; 0 labels
+- **1489 rows; 1320 labels decided; 1320 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6436,7 +6436,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1319 decided plus 169 superseded
+  A row count is not a decision count: 1320 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6470,7 +6470,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1318, highest decided 1318, holes [].**
+- **Frontier contiguous 0..1319, highest decided 1319, holes [].**
   <!-- SPAN-STATE: closed -->
   ***THE FIFTY-NINTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
   COMMIT.*** It was filled by **idx 1289 at 5622.9 s** — *the cube that
@@ -6764,6 +6764,47 @@ exactly one bank.
   clocks and hedge against an unknown third, because the units were open.
   It is now **one inequality read off the source**, and it is strictly
   stronger than the hedged version was.
+
+  **BANK idx 1319 at 6930.1 s**, in the file by 05:16:48Z. *No span: the
+  frontier stays contiguous at 0..1319.* **Rank 232 of 1320**, 1088
+  cheaper, `1320 − 1088 = 232` reproduces it, untied; *tie census holds at
+  **16 of 1320**.* **Count 1320 = 67.7270%**, remaining 629; *the k = 68
+  trap at **1325** is now **five** away.* `[13,12,12,11]` at **21 of 49**
+  and this row is its **new maximum at 6930.1 s**, beating idx 1318's
+  5413.7 s by **1516.4 s**; min 347.0 s at idx 1299, mean **2787.0 s**,
+  median **2445.1 s**, total **58526.5 s**. **0.3208 of the cap.**
+
+  ***AND IT IS NOT A SWEEP RECORD, WHICH IS WHY THE SUPERLATIVE WAS
+  CHECKED BEFORE IT WAS WRITTEN.*** At 6930.1 s this row is dearer than
+  anything else in its block by a wide margin and it reads like a record.
+  **It is rank 232 of 1320.** The ten dearest decided cubes are *all* in
+  `(13,13,13,12)` and run from **17598.9 s to 21678.5 s** (idx 188), so
+  idx 1319 is **13879.5 s short** of the dearest. *The note already carries
+  "unverified superlative" as an error pattern — a "lowest share in the
+  record" that had to be withdrawn — and the cost of checking here was one
+  sort.* **What is true is the narrow claim: new maximum of its own
+  block.** *Also worth separating: `UNKNOWN` rows reach 21813.4 s, but
+  those are CAPPED attempts, not decided costs, and comparing them to a
+  decided cost is a category error.*
+
+  ***THE BOUND IN `d3db493` HELD, AND THE SECOND HALF OF IT RESOLVED THE
+  WAY IT SAID IT MIGHT.*** It claimed idx 1319's cost was already known to
+  exceed **4875 s**, guaranteeing a top-four place in its block, and noted
+  it was **538.7 s** short of the block maximum. **It came in at 6930.1 s
+  — 2055.1 s above the floor, and block rank 1 of 21.** *The guaranteed
+  part (top four) was a bound and held as bounds do; the maximum was
+  explicitly NOT claimed, only measured as a distance, and it happened to
+  fall. **The distinction is the whole point**: nothing here is entered in
+  the forward-test series, because a distance to a threshold is not a
+  prediction that the threshold will be crossed.*
+
+  ***FOURTH TIMING CASE, SAME VERDICT.*** idx 1319's process started
+  03:21:09Z (elapsed 4927 s at the 04:43:16Z sample). The wall reading
+  predicts the write in **05:16:37Z–05:16:39Z**, inside the waiter's window
+  `(05:16:28Z, 05:16:48Z]`; the cpu reading puts it at **05:17:47Z or
+  later, 59.3 s after the row existed**, and would need **2051.1 s of cpu
+  in 2012 s of wall (101.9%)**. **Four cubes now, four refutations, at
+  104.8%, 101.6%, 109.4% and 101.9%.** *Still silent on `--maxtime`.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -12913,7 +12954,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1319 of 1949 = 67.6757%**; **630 undecided**. **50% IS CROSSED**, at
+- **1320 of 1949 = 67.7270%**; **629 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -13627,7 +13668,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **20 decided**, undecided 29 spanning 1319..1347
+  **21 decided**, undecided 28 spanning 1320..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
