@@ -397,15 +397,26 @@ def main(rev=None):
         # was five hand-picked ratios from the two most recent sample rounds,
         # and the file does not support it.  See the note.
         try:
-            srows = []
+            srows, percube = [], {}
             for sl in open(SAMPLES, encoding='utf-8'):
                 if not sl.strip() or sl.startswith('#'): continue
                 sf = sl.rstrip('\n').split('\t')
                 if len(sf) < 8: continue
                 sel_, scp_ = int(sf[4]), int(sf[5])
-                if sel_ > 0 and scp_ > 0: srows.append((sel_, scp_))
+                if sel_ > 0 and scp_ > 0:
+                    srows.append((sel_, scp_))
+                    # ONE OBSERVATION PER CUBE, keyed by (driver pid, solver pid,
+                    # cube index) so a recycled solver pid across restarts cannot
+                    # merge two different cubes.  The file is in time order, so
+                    # the last write wins and each cube contributes its LONGEST
+                    # observation.  This exists because the per-SAMPLE count is
+                    # not a count of independent observations: the samplers run
+                    # together at every check-in, so the file arrives in bursts
+                    # of the same four processes seconds apart, and every cube
+                    # contributes once per bank besides.
+                    percube[(sf[1], sf[2], sf[3])] = (sel_, scp_)
         except OSError:
-            srows = []
+            srows, percube = [], {}
         thr = min(NOMINAL)
         exs = sorted(100.0 * (e / c - 1.0) for e, c in srows if e >= thr)
         if exs:
@@ -421,6 +432,20 @@ def main(rev=None):
             print(f"the overshoot should inherit that spread.  It does not.  So the")
             print(f"magnitudes are consistent with (1) and the shapes are not, (2) is")
             print(f"untested, and THIS EVIDENCE SEPARATES NOTHING.  See the note.")
+            exc = sorted(100.0 * (e / c - 1.0)
+                         for e, c in percube.values() if e >= thr)
+            if exc:
+                pcc = lambda p: exc[min(len(exc) - 1, int(p * len(exc)))]
+                print(f"\nAND THE SAMPLE COUNT ABOVE IS NOT A COUNT OF INDEPENDENT")
+                print(f"OBSERVATIONS.  Those {len(exs)} rows cover only {len(exc)} distinct cubes:"
+                      f" every")
+                print(f"cube is sampled once per bank, and at a check-in both samplers run,")
+                print(f"so the file arrives in bursts of the same processes seconds apart.")
+                print(f"ONE ROW PER CUBE -- its longest observation -- gives median "
+                      f"{statistics.median(exc):.3f}%,")
+                print(f"p5-p95 {pcc(.05):.3f}%-{pcc(.95):.3f}%, full {min(exc):.3f}%-{max(exc):.3f}%.")
+                print(f"Read the per-cube figures as the honest ones; the per-sample n is")
+                print(f"reported only so the inflation is visible rather than hidden.")
         print(f"\nlast UNKNOWN is real data row {last_unk+1} of {len(rows)} (0-based index")
         print(f"{last_unk}, NOT a file line -- the file also holds comment lines);")
         print(f"{len(rows)-1-last_unk} rows have landed since, none of them capped.")
