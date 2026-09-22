@@ -12292,3 +12292,96 @@ g=11 [13, 12, 12, 10, 13, 13, 13, 13, 12, 9, 8]	UNSAT	2939.4
 g=11 [13, 12, 12, 10, 13, 13, 13, 13, 11, 11, 7]	UNSAT	2567.0
 g=11 [13, 12, 12, 10, 13, 13, 13, 13, 11, 10, 8]	UNSAT	2526.5
 g=11 [13, 12, 12, 10, 13, 13, 13, 13, 11, 9, 9]	UNSAT	2412.3
+# RESTART #50 -- HOST REBOOT.  Teardown 2026-09-22T17:09:45.652235336Z,
+# host booted 2026-09-22T17:09:50Z.  THIS IS NOT A CONTAINER RESTART AND
+# THE MACHINE CHANGED.  COSTS ACROSS THIS POINT ARE NOT ON A COMMON BASIS.
+#
+#     field          #49                #50
+#     CPU model      @ 2.80GHz          @ 2.10GHz      CHANGED
+#     cpu MHz        2799.998           2100.000       CHANGED
+#     cache size     33792 KB           266240 KB      CHANGED
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# THE CPU HAS CHANGED BACK.  #48 moved it 2.10GHz -> 2.80GHz with cache
+# 266240 KB -> 33792 KB; #50 moves both fields back to exactly their
+# pre-#48 values.  So the fast machine ran from #48 to #49 inclusive and
+# this restart returns to the machine every restart before #48 used.  DO
+# NOT ESTIMATE A SPEED RATIO FROM THE SWEEP'S OWN TIMINGS -- cube-cost
+# variance swamps it, and that prohibition is not weakened by the change
+# being a return to a known machine rather than a move to a new one.
+#
+# btime MOVED, WHICH IS HOW THE TWO CASES ARE TOLD APART: 1790019157 at
+# #49 (2026-09-21T19:32:37Z) and 1790096990 now (2026-09-22T17:09:50Z),
+# a delta of 77833 s.  At #49 this field did NOT move and that proved a
+# container restart; here it moved and proves a host reboot.  Read, never
+# inferred from the spec table above -- an identical spec after a reboot
+# would look the same there, and a changed spec is not itself proof of a
+# reboot either.  /proc/uptime read 45.35 s at the first measurement.
+#
+# THE TWO [killed] MARKERS AGREE TO THE NANOSECOND AGAIN.  Driver
+# bfkwfvl4b and waiter b81o8z5i1 both carry mtime
+# 2026-09-22T17:09:45.652235336Z.  The procedure says take the EARLIER
+# and that they need not agree; as at #49 there is nothing to choose.
+# The same caveat applies: two files written in one teardown by the same
+# harness are not two independent clocks.
+#
+# MY FIRST CNF GLOB WAS WRONG AND REPORTED ZERO MATCHES.  I globbed
+# sf-*13145*-seq-c*.cnf, but the driver pid sits AFTER -seq-c in these
+# names (sf-sym-11-4-32-seq-c1361-cryptominisat5-13145-34.cnf), so that
+# pattern cannot match anything.  A "0 CNFs survived the reboot" reading
+# would have forced the weaker measurement route for no reason at all.
+# The correct glob, sf-*-seq-c*-cryptominisat5-13145-*.cnf, found four.
+# /tmp held 212 sf-*.cnf files across 51 distinct driver pids.  Exactly
+# one further file mentions 13145 -- /tmp/environment-manager-
+# 2341314570.diag.log, dated 2026-09-03, whose random name contains
+# those digits -- so it is not a CNF and the #41 transient-startup trap
+# did not apply here.
+#
+# LOST WORK -- FOUR CUBES, BY THE CNF-MTIME METHOD, GLOB FILTERED BY THE
+# DEAD PID AND REQUIRING -seq-c.
+#
+#     idx   CNF mtime (launch)              elapsed at teardown
+#     1361  2026-09-22T16:33:39.652284Z              2166.0 s
+#     1362  2026-09-22T16:52:59.084258Z              1006.6 s
+#     1363  2026-09-22T16:57:36.780252Z               728.9 s
+#     1364  2026-09-22T17:02:31.092245Z               434.6 s
+#
+# TOTAL WALL LOST 4336.0 s = 1.2044 h.  Cross-checked against the second,
+# independent route -- each cube's last cpu/elapsed sample plus the gap
+# from that sample to the teardown -- which agrees within 0.7 s on every
+# cube (-0.7, -0.1, +0.2, -0.1 s) and 0.6 s on the total.  The two
+# methods share no input except the teardown instant.
+#
+# CPU-WEIGHTED, AND BRACKETED RATHER THAN POINT-ESTIMATED BECAUSE ALL
+# FOUR SAMPLES ARE YOUNG.  At #49 three of four were settled past 2400 s
+# and only one had to be bracketed; here every sample is from the
+# 17:03:15Z bank and the oldest cube had run 1776 s at it, so NONE meets
+# that bar.  The bracket is 4288.5 .. 4308.1 s, width 19.6 s = 0.45% of
+# the wall total.  Its LOWER end assumes each cube's ratio held to the
+# teardown; its UPPER end assumes NO further CPU was lost after the
+# sample, which is sound because the CPU deficit (elapsed - cpu) is
+# monotone non-decreasing on a single-threaded process -- the same
+# argument that settled the cost column's units at f68ed0a.  The upper
+# end sits 28.0 s below the wall total, so the bracket is tighter than
+# the trivial "cpu <= wall" bound by that much.
+#
+#     idx   wall       deficit at sample   ratio     cpu bracket
+#     1361  2166.0 s            18 s      0.9899   2144.0 .. 2148.0
+#     1362  1006.6 s             7 s      0.9886    995.2 ..  999.6
+#     1363   728.9 s             2 s      0.9941    724.6 ..  726.9
+#     1364   434.6 s             1 s      0.9773    424.7 ..  433.6
+#
+# RE-RUN SET EIGHTEEN OPENS: idx 1361, 1362, 1363, 1364.  *** AND IT IS
+# CONFOUNDED, SAID AT THE OPENING AS THE RULE REQUIRES, NOT AT THE
+# CLOSE. ***  Every one of the four accrued its lost 434.6 to 2166.0 s on
+# the 2.80GHz machine and will be re-run from scratch on the 2.10GHz one.
+# Set sixteen was confounded the same way by #48's change in the other
+# direction; this is the second such set in the series.  Whatever costs
+# these four finally record are NOT comparable with their neighbours in
+# the same block, which were decided on the fast machine.
+#
+# NOTHING WAS LOST FROM COMMITTED STATE: 1530 real data rows before the
+# teardown and 1530 after it, HEAD 870e7fb on both sides, working tree
+# clean.  The loss is solver time only.

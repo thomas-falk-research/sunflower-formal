@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T17:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T17:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6457,8 +6457,8 @@ exactly one bank.
   A row count is not a decision count: 1361 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
-  `/proc/13145/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
+  `/proc/477/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
