@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T11:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T11:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6417,7 +6417,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1500 -> 1501 rows)
+## State as of the last refresh (1501 -> 1502 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6428,7 +6428,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1501 rows; 1332 labels decided; 1332 UNSAT; 0 SAT; 0 labels
+- **1502 rows; 1333 labels decided; 1333 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6443,7 +6443,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1332 decided plus 169 superseded
+  A row count is not a decision count: 1333 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6477,7 +6477,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1331, highest decided 1331, holes [].**
+- **Frontier contiguous 0..1332, highest decided 1332, holes [].**
   <!-- SPAN-STATE: closed -->
   ***THE SIXTY-SECOND SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `5763cd8` EXISTED.*** **The retirement sentence stood for exactly one
@@ -7552,6 +7552,46 @@ exactly one bank.
   longest-running of their cohort — so the ranks are the selection
   showing through, **not a discovery about them**, and no probability is
   computed for an outcome whose mechanism is known.*
+
+  ***THE TREE-VERSUS-INDEX DETECTOR FIRED, AND IT CAUGHT THIS ENTRY IN
+  THE ACT OF BEING WRONG.*** At the 11:41Z check-in the in-flight picture
+  showed idx 1332 at 5768 s, 1333 at 5582 s, 1334 at 1667 s and 1335 at
+  311 s, and this paragraph was drafted as *"no row at the 11:41Z
+  check-in"*. **bank.py then reported `HEAD 1501 -> staged 1501, 0 new
+  rows`, and `git diff --stat` came back NON-EMPTY** — one row in the
+  working tree that the index did not have. *That is the documented
+  detector doing exactly its job:* **bank.py reads the STAGED blob and
+  the tree check reads the WORKING TREE, so the two disagreeing means a
+  row landed between them.** *The draft sentence was false by the time it
+  was written and would have been committed had the tree check been
+  skipped or read loosely.*
+
+  **BANK idx 1332 at 5812.7 s**, in the file by 11:42:46Z — *58 seconds
+  after the sample that bounded it.* **Rank 319 of 1333**, 1014 cheaper,
+  `1333 − 1014 = 319` reproduces it, untied; *tie census holds at **17 of
+  1333**.* **Count 1333 = 68.3940%**, remaining 616. *No span: the
+  frontier stays contiguous at 0..1332.* `[13,12,12,11]` at **34 of
+  49**: idx 1332 places **9th of 34**; mean **4168.0 s**, median
+  **3006.1 s**, total **141712.6 s**. **0.2691 of the cap.**
+
+  ***AND THE WITHIN-RUN BOUND LANDED EXACTLY ON ITS BOUNDARY.*** Minutes
+  earlier this entry said, from idx 1332's own elapsed, **`cost > 5768 s`
+  and "no worse than 9th"**. *It came in at **5812.7 s**, HELD by **+44.7
+  s**, and placed **9th** — the precise rank named.* **That is the sound
+  form of bound working at its tightest**: the margin is small only
+  because the sample was taken 58 s before the finish, and it is sound
+  regardless of the margin because nothing crossed between runs.
+  *Contrast `5763cd8`, where a cross-run wall transfer failed by 45.1 s
+  on a similar scale — the same size of error, one bound sound and the
+  other not.*
+
+  *The other three bounds stand: idx 1333 no worse than 10th, idx 1334 no
+  worse than 28th, idx 1335 no worse than 34th, each against its own
+  run's elapsed. **Set seventeen is behind and all four of these are
+  FRESH cubes.** The block's median has moved to 3006.1 s; the run of
+  dear cubes continues and **nothing is inferred from that** — its costs
+  span 347.0 s to 11029.0 s, and neighbouring cubes resembling each other
+  is what a block is.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -13701,7 +13741,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1332 of 1949 = 68.3427%**; **617 undecided**. **50% IS CROSSED**, at
+- **1333 of 1949 = 68.3940%**; **616 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14415,7 +14455,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **33 decided**, undecided 16 spanning 1332..1347
+  **34 decided**, undecided 15 spanning 1333..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
