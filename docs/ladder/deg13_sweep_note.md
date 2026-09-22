@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T21:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T21:56Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6432,7 +6432,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1542 -> 1543 rows)
+## State as of the last refresh (1543 -> 1544 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6443,7 +6443,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1543 rows; 1374 labels decided; 1374 UNSAT; 0 SAT; 0 labels
+- **1544 rows; 1375 labels decided; 1375 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6458,7 +6458,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1374 decided plus 169 superseded
+  A row count is not a decision count: 1375 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6492,8 +6492,73 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1373, highest decided 1373, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1373, highest decided 1377, holes [1374, 1375, 1376].**
+  <!-- SPAN-STATE: open -->
+
+  ***THE SIXTY-SEVENTH SPAN HAS OPENED, AND THE ORDINAL WAS DERIVED
+  BEFORE THE OUTCOME.*** Walk position **132** less the OFFSET of 65 —
+  the **sixty-seventh**. **idx 1377 came in at 783.8 s**, the newest of
+  the four cubes in flight and the first of them to finish, leaving the
+  three older ones behind it: **holes [1374, 1375, 1376], width three**,
+  frontier contiguous 0..1373, highest decided 1377. *Per the `#29`
+  rider the width is what it is AT THIS COMMIT and the file's state
+  between commits is not the record.*
+
+  ***AN OPENING AT THREE IS NOT RARE AND IS NOT OFFERED AS ONE.*** Over
+  the **131** closed chains the opening hole count is **1 in 45 cases,
+  2 in 43, 3 in 40 and 4 in 3**, so three is **30.5%**. **It is the
+  first opening at three since the sixty-third**, and the closed spans
+  that opened at three are **40** of the 131, the last five of them
+  ordinals **44, 49, 51, 57 and 63**. *Three closes separate this
+  opening from that one — the sixty-fourth opened at two and the
+  sixty-fifth and sixty-sixth at one each.*
+
+  ***THE BOUND ON idx 1377 HELD TWICE, AND WIDELY.*** Published at
+  **>= 53 s** (21:38:56Z) and sampled again at **369 s** (21:44:11Z)
+  against an actual **783.8 s** — margins of **730.8 s** and **414.8 s**.
+  *Wide is what a bound taken early looks like. It says nothing about the
+  claim, for the same reason the narrow one two commits ago said nothing:
+  `cost = overhead + final elapsed` makes both true by construction.*
+
+  **New bounds on the three holes, 21:53:32Z sample, within-run only:
+  idx 1374 >= 5386 s, idx 1375 >= 4060 s, idx 1376 >= 1526 s.** *idx 1378
+  is running at >= 146 s and is NOT a hole — it sits above the highest
+  decided, not below it.* ***AND idx 1374 IS NOW 226 s SHORT OF THE
+  5612.0 s BLOCK RECORD***, which is the nearest the block-span
+  prediction has come to being tested.
+
+  ***A REGULARITY WORTH MORE THAN THIS SPAN: THE HOLE COUNT HAS NOT
+  EXCEEDED THREE IN 122 CONSECUTIVE SPANS.*** Computed over every chain
+  in the walk, not over a sample of them:
+
+  | walk positions | spans | hole-count observations | max | distribution |
+  |---|---|---|---|---|
+  | 1..9 | 9 | 235 | **15** | runs to 15 |
+  | **10..131** | **122** | **552** | **3** | **1 in 263, 2 in 180, 3 in 109** |
+
+  **Six spans of 131 ever exceed three holes and all six are in the first
+  nine.** *The driver runs `--threads 4`, so at most four cubes are
+  outstanding at any instant and at most three of them can be older than
+  a cube that has just finished — which is exactly the observed ceiling.*
+  **It is NOT a theorem about the recorded chain**: the chain is sampled
+  AT COMMITS, so two landings with a gap between them could in principle
+  record a four, and the census's three width-4 openings sit at walk
+  positions 1, 2 and 3. *Nor is the driver's `--threads 4` the same flag
+  as cryptominisat5's own `--threads`, which defaults to 1 and is the
+  premise behind `cpu <= elapsed` — the same spelling for two different
+  subjects, and this file mentions both.*
+
+  ***AND THE BOUNDARY IS AT NINE, NOT AT SIXTY-FIVE, WHICH IS WHERE I
+  FIRST PUT IT.*** The first cut of this table split the walk at position
+  **65** — and that number came from the table's own OFFSET, not from the
+  data. It separated the exceptions cleanly only because all six of them
+  happen to lie in the first nine positions. *Running the actual
+  question — where is the LAST chain above three — puts the boundary at
+  walk position 9, fifty-six positions earlier, and makes the regularity
+  122 spans long instead of 66.* **Imposing an existing boundary on new
+  data is how a weaker result gets published in place of a stronger one**,
+  and the only reason it did not happen here is that the boundary was
+  computed after being assumed.
 
   ***THE MONOTONE-DEFICIT ARGUMENT IS STATED TOO STRONGLY IN TWO COMMITS,
   AND THE ERROR IS NOW BOUNDED INSTEAD OF ASSUMED AWAY.*** Checked over
@@ -14239,7 +14304,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1374 of 1949 = 70.4977%**; **575 undecided**. **50% IS CROSSED**, at
+- **1375 of 1949 = 70.5490%**; **574 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14953,7 +15018,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
-  **26 decided**, undecided 12 spanning 1374..1385
+  **27 decided**, undecided 11 spanning 1374..1385
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
