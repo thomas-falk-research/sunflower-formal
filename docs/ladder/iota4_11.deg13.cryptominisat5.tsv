@@ -12259,3 +12259,4 @@ g=11 [13, 12, 12, 11, 13, 13, 12, 12, 12, 11, 7]	UNSAT	6380.9
 # Relaunched verbatim.  New driver pid 13145, exact launch
 # 2026-09-22T08:31:46.840000Z from /proc/13145/stat field 22 against
 # btime 1790019157.
+g=11 [13, 12, 12, 11, 13, 13, 12, 12, 12, 9, 9]	UNSAT	5572.2

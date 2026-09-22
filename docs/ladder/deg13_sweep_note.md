@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T09:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T10:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6415,7 +6415,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1496 -> 1497 rows)
+## State as of the last refresh (1497 -> 1498 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6426,7 +6426,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1497 rows; 1328 labels decided; 1328 UNSAT; 0 SAT; 0 labels
+- **1498 rows; 1329 labels decided; 1329 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6441,7 +6441,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1328 decided plus 169 superseded
+  A row count is not a decision count: 1329 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6475,8 +6475,25 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1327, highest decided 1327, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1327, highest decided 1329, holes [1328].**
+  <!-- SPAN-STATE: open -->
+  ***THE SIXTY-SECOND SPAN HAS OPENED, AT ONE HOLE.*** **idx 1329 landed
+  at 5572.2 s while idx 1328 was still out**, so the frontier breaks at
+  **1328**. *The frontier and hole set are on the bullet line above,
+  which bank.py owns.* **No duration, no rank, no monotonicity, no commit
+  count and no hole chain until it closes.**
+
+  *The ordinal is derived, not counted off by hand: the walk holds **126**
+  closed spans, so this one takes **walk position 127**, and
+  `127 − 65 (OFFSET)` makes it the **sixty-second**. **Derived before the
+  outcome**, to be matched against the tool at close.*
+
+  *Opening-width census, counted off the chains by script: this is the
+  **first opening at one since the sixtieth**, and chains that opened at
+  one are **42** of the 126 closed — *the last five of them ordinals
+  **45, 46, 53, 56 and 60***. **The `#29` rider applies**: this width is
+  what THIS COMMIT holds.
+
   ***THE SIXTY-FIRST SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `e414c26` EXISTED.*** **The retirement sentence stood for exactly one
   commit — `e414c26` — and this edit is the striking. Fourteen for
@@ -7342,6 +7359,35 @@ exactly one bank.
   the longest-running of their cohort before any of this.* **That three
   of four floors rose is a fact about how long the re-run has been going,
   not evidence that these cubes are dearer than was thought.**
+
+  ***BANK idx 1329 at 5572.2 s — THE FIRST MEMBER OF SET SEVENTEEN TO
+  COMPLETE ITS RE-RUN, AND THE SIXTY-SECOND SPAN OPENS WITH IT.*** In the
+  file by 10:05:50Z, while idx 1328 was still out. **Rank 339 of 1329**,
+  990 cheaper, `1329 − 990 = 339` reproduces it, untied; *tie census holds
+  at **17 of 1329**.* **Count 1329 = 68.1888%**, remaining 620.
+  `[13,12,12,11]` at **30 of 49**: idx 1329 places **7th of 30**; mean
+  **3648.0 s**, median **2741.5 s**, total **109439.4 s**. **0.2580 of
+  the cap.** *The counter reaching 1329 on the row that decided idx 1329
+  is arithmetic, not meaning: the frontier is nearly contiguous, so the
+  two track each other for long stretches.*
+
+  ***THE BOUND `87674f6` STATED FOR THIS CUBE HELD, AND THE ONE IT DID
+  NOT STATE IS THE INTERESTING PART.*** It put idx 1329 at **cost >
+  4152.0 s**; the cube came in at **5572.2 s, +1420.2 s above**. *idx
+  1328's tighter bound of **> 5803.5 s** is untouched — that cube is
+  still running, and nothing here tests it.*
+
+  ***AND THE WASTE FROM RESTART #49 IS NOW MEASURED FOR ONE CUBE INSTEAD
+  OF BOUNDED.*** idx 1329's killed first attempt reached **3815.1 s**
+  against a true cost of **5572.2 s**, so it died **1757.1 s short** of
+  finishing, having covered **68.47%** of the work it needed. **That is a
+  measurement, not a bound** — the denominator exists now because the
+  cube finished — *and it is only sayable because #49 left the machine
+  unchanged; across #48 the two figures would sit on different CPUs.*
+  **The other three cubes' fractions are NOT computable**, because each
+  needs its own true cost as a denominator and none of them has one yet.
+  *No average of one is offered, and 68.47% is not a rate at which work
+  is lost — it is one cube's arithmetic.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -13491,7 +13537,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1328 of 1949 = 68.1375%**; **621 undecided**. **50% IS CROSSED**, at
+- **1329 of 1949 = 68.1888%**; **620 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14205,7 +14251,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **29 decided**, undecided 20 spanning 1328..1347
+  **30 decided**, undecided 19 spanning 1328..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
