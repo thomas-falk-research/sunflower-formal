@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T21:56Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T22:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6432,7 +6432,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1543 -> 1544 rows)
+## State as of the last refresh (1544 -> 1545 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6443,7 +6443,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1544 rows; 1375 labels decided; 1375 UNSAT; 0 SAT; 0 labels
+- **1545 rows; 1376 labels decided; 1376 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6458,7 +6458,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1375 decided plus 169 superseded
+  A row count is not a decision count: 1376 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6492,8 +6492,53 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1373, highest decided 1377, holes [1374, 1375, 1376].**
+- **Frontier contiguous 0..1373, highest decided 1378, holes [1374, 1375, 1376].**
   <!-- SPAN-STATE: open -->
+
+  ***THE MATCHED-FRACTION INTERVAL IS REFUTED, BY A BOUND THAT CANNOT BE
+  UNDONE.*** **idx 1374 stood at 6409 s elapsed at 22:10:35Z** — **797.0 s
+  past the block maximum of 5612.0 s**, so *the block record is already
+  broken by a cube that has not finished*. That forces the block span to
+  **>= 6409 / 437.4 = 14.652492x**. Recomputed at FULL PRECISION from the
+  state the prediction was actually made in — n = 25, span
+  **12.830361x**, growth factors **1.024217** and **1.140172** — the
+  matched-fraction interval is **13.141068x .. 14.628822x**, a required
+  block maximum of **5747.90 .. 6398.65 s**. **The lower bound clears its
+  top by 10.35 s, or 0.023670x.**
+
+  **Why it cannot be undone, in three steps that are each true by
+  construction:** `ps etimes` TRUNCATES, so true elapsed >= 6409 s;
+  `cost = overhead + final elapsed`, so the cube's cost >= true elapsed;
+  and a block's maximum only rises while its minimum only falls, so the
+  span only rises. *The refutation is monotone — by the time this commit
+  lands it clears by more than 10.35 s, and the figure is quoted from the
+  sample it was taken from rather than retightened.*
+
+  ***IT REFUTES ONE READING AND CONFIRMS NEITHER.*** The matched-count
+  interval needs **7973.80 s** and idx 1374 is **1564.8 s** short of it.
+  **The gap 6398.65 .. 7973.80 s belongs to neither interval, and a close
+  inside it refutes both.** *What was predicted was "ONE of these two
+  intervals is wrong". That is now settled. "The other is right" was
+  never predicted and is not established by this.*
+
+  ***AND THE DEFEATER NAMED IN ADVANCE DID NOT FIRE.*** The prediction
+  said the block minimum could fall and raise the span with the maximum
+  unmoved, *"for a reason that has nothing to do with why the count
+  reading was proposed"*. **The minimum is still 437.4; what moved is the
+  maximum.** *So the prediction is being settled on the mechanism it was
+  about, not through its escape hatch* — **which is the difference
+  between a forecast that was tested and one that was merely overtaken.**
+  **10.35 s on a 6409 s cube is 0.16%**, and that thinness is worth
+  saying out loud: this is a narrow refutation of an interval that was
+  itself extrapolated from two blocks.
+
+  **idx 1378 closed at 1133.3 s** — block rank **26 of 28**, sweep rank
+  **1134 of 1376**, both untied — and it did **not** change the hole set,
+  because it sits ABOVE the highest decided rather than below it.
+  **The chain is now `3, 3`: monotone non-increasing on its first
+  comparison.** **New in-flight bounds, 22:10:35Z, within-run only: idx
+  1374 >= 6409 s, idx 1375 >= 5082 s, idx 1376 >= 2549 s, idx 1379 >=
+  36 s.** *idx 1375 is 530 s from the old block record itself.*
 
   ***THE SIXTY-SEVENTH SPAN HAS OPENED, AND THE ORDINAL WAS DERIVED
   BEFORE THE OUTCOME.*** Walk position **132** less the OFFSET of 65 —
@@ -14304,7 +14349,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1375 of 1949 = 70.5490%**; **574 undecided**. **50% IS CROSSED**, at
+- **1376 of 1949 = 70.6003%**; **573 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15018,7 +15063,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
-  **27 decided**, undecided 11 spanning 1374..1385
+  **28 decided**, undecided 10 spanning 1374..1385
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
