@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T23:27Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T23:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6434,7 +6434,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1549 -> 1550 rows)
+## State as of the last refresh (1550 -> 1551 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6445,7 +6445,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1550 rows; 1381 labels decided; 1381 UNSAT; 0 SAT; 0 labels
+- **1551 rows; 1382 labels decided; 1382 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6460,7 +6460,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1381 decided plus 169 superseded
+  A row count is not a decision count: 1382 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6494,8 +6494,41 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1379, highest decided 1383, holes [1380, 1381, 1382].**
+- **Frontier contiguous 0..1380, highest decided 1383, holes [1381, 1382].**
   <!-- SPAN-STATE: open -->
+
+  ***THE BLOCK'S ENDGAME IS NOW FULLY DETERMINED: THE FOUR CUBES LEFT ARE
+  EXACTLY THE FOUR IN FLIGHT.*** **idx 1380 closed at 2807.7 s** — block
+  rank **17 of 34**, sweep rank **741 of 1382**, both untied — filling a
+  hole, so **holes `[1381, 1382]`, width two**, frontier contiguous
+  0..1380, highest decided 1383, **chain `3, 2`**. *It is neither a new
+  block maximum nor a new minimum, so the block stands unchanged at min
+  437.4, max 8915.7, span 20.383402x.* **The block's undecided set is
+  `[1381, 1382, 1384, 1385]` and the 23:38:18Z sample shows those same
+  four running** — *no further cube of `[13,12,12,10]` will be
+  dispatched, so the block-span prediction is settled by these four and
+  nothing else.*
+
+  **Both remaining ways the matched-count reading can fail, quantified
+  from that sample:**
+
+  | cube | bound | to exceed 9612.44 s (refutes the reading) | to finish under 437.4 s (fires the defeater) |
+  |---|---|---|---|
+  | idx 1381 | >= 2417 s | needs **7195.44 s** more | **impossible**, already past |
+  | idx 1382 | >= 1872 s | needs **7740.44 s** more | **impossible**, already past |
+  | idx 1384 | >= 942 s | needs **8670.44 s** more | **impossible**, already past |
+  | idx 1385 | >= 39 s | needs **9573.44 s** more | **possible**, 398.4 s of runway |
+
+  ***THE MINIMUM DEFEATER IS DOWN TO ONE CUBE AND A 398.4 s WINDOW.***
+  *Three of the four are already past 437.4 s and can never lower the
+  block minimum; only idx 1385 can, and only if it finishes inside the
+  next 398.4 s of its own runtime.* **That is a real possibility, not a
+  formality** — the block has already produced a 437.4 and a 487.3, so
+  costs in that range are not rare here. **And the max side stays open
+  on all four**, though none is within 7000 s of the threshold.
+  *Neither outcome is predicted here. What is recorded is that the
+  question now has exactly four remaining inputs and both of its failure
+  modes have numbers attached.*
 
   ***THE SIXTY-EIGHTH SPAN HAS OPENED, IN THE SAME COMMIT THAT CARRIES
   THE SIXTY-SEVENTH'S FIGURES.*** **idx 1383 came in at 487.3 s**,
@@ -14428,7 +14461,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1381 of 1949 = 70.8568%**; **568 undecided**. **50% IS CROSSED**, at
+- **1382 of 1949 = 70.9082%**; **567 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15142,7 +15175,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
-  **33 decided**, undecided [1380, 1381, 1382, 1384, 1385]
+  **34 decided**, undecided [1381, 1382, 1384, 1385]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
