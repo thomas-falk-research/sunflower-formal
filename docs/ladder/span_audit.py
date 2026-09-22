@@ -48,8 +48,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 45
-MIN_MONO_ROWS  = 59
+MIN_TABLE_ROWS = 46
+MIN_MONO_ROWS  = 60
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -67,7 +67,22 @@ MIN_MONO_ROWS  = 59
 # count at a CLOSING commit, never to the count while a span is open --
 # raising it to the open-span count passes today and fails at the next close
 # on correct prose.
-MIN_CENSUS_SENTENCES = 8
+#
+# AT THE SIXTIETH CLOSE THE SAWTOOTH DID NOT FIRE, AND THE REASON IS WORTH
+# RECORDING RATHER THAN TREATING AS A FIX.  The count went 9 (before the
+# open) -> 9 (while open) -> 9 (at the closing commit c00d1ee) -> 10 (at the
+# figures commit).  There was no drop, because that span's LIVE entry did not
+# carry an "Over the **N** closed chains ..." sentence at all -- it stated the
+# census only in the three live forms ("since the Nth", "M of the N", last
+# five), which the live checks require and this pattern does not match.  So
+# the sawtooth is a property of how the live entry is WORDED, not a law of the
+# close cycle, and a floor set from it must assume the shallower of the two
+# shapes.  Raised 8 -> 9: nine is what a closing commit actually showed.  It
+# is deliberately NOT raised to 10, which today's count would permit, because
+# a future live entry written in the older style would drop back to 10 at its
+# close and to 9 only if a sentence were also removed -- 9 cannot fail on
+# correct prose under either wording.
+MIN_CENSUS_SENTENCES = 9
 MIN_CENSUS_LIVE      = 4
 # The monotonicity prose -- the True partition, the False-chain column and
 # the rank sentence beside them -- is the OTHER half of the gap the note
