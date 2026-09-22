@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T10:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T10:10Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6415,7 +6415,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1497 -> 1498 rows)
+## State as of the last refresh (1498 -> 1499 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6426,7 +6426,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1498 rows; 1329 labels decided; 1329 UNSAT; 0 SAT; 0 labels
+- **1499 rows; 1330 labels decided; 1330 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6441,7 +6441,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1329 decided plus 169 superseded
+  A row count is not a decision count: 1330 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6475,24 +6475,18 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1327, highest decided 1329, holes [1328].**
-  <!-- SPAN-STATE: open -->
-  ***THE SIXTY-SECOND SPAN HAS OPENED, AT ONE HOLE.*** **idx 1329 landed
-  at 5572.2 s while idx 1328 was still out**, so the frontier breaks at
-  **1328**. *The frontier and hole set are on the bullet line above,
-  which bank.py owns.* **No duration, no rank, no monotonicity, no commit
-  count and no hole chain until it closes.**
+- **Frontier contiguous 0..1329, highest decided 1329, holes [].**
+  <!-- SPAN-STATE: closed -->
+  ***THE SIXTY-SECOND SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** It was filled by **idx 1328 at 5758.4 s**, its only hole,
+  and the frontier is whole again at **0..1329**. **The live
+  opening-width census that stood here is struck with this edit.** **Its
+  duration, rank, monotonicity, commit count and hole chain come from
+  `--spans all` in the NEXT commit, with every carried row first
+  reproduced at the OLD N = 126 before any is rewritten at 127.**
 
-  *The ordinal is derived, not counted off by hand: the walk holds **126**
-  closed spans, so this one takes **walk position 127**, and
-  `127 − 65 (OFFSET)` makes it the **sixty-second**. **Derived before the
-  outcome**, to be matched against the tool at close.*
-
-  *Opening-width census, counted off the chains by script: this is the
-  **first opening at one since the sixtieth**, and chains that opened at
-  one are **42** of the 126 closed — *the last five of them ordinals
-  **45, 46, 53, 56 and 60***. **The `#29` rider applies**: this width is
-  what THIS COMMIT holds.
+  *The ordinal was derived **before** this close, in `168e6a6`: walk
+  position 127 less the OFFSET of 65, the **sixty-second**.*
 
   ***THE SIXTY-FIRST SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `e414c26` EXISTED.*** **The retirement sentence stood for exactly one
@@ -7388,6 +7382,59 @@ exactly one bank.
   needs its own true cost as a denominator and none of them has one yet.
   *No average of one is offered, and 68.47% is not a rate at which work
   is lost — it is one cube's arithmetic.*
+
+  ***BANK idx 1328 at 5758.4 s — AND IT VIOLATES THE BOUND I STATED FOR
+  IT. THE BOUND WAS UNSOUND IN PRINCIPLE, NOT UNLUCKY.*** In the file by
+  10:08:48Z; it filled the sixty-second span's only hole, so the frontier
+  is whole again at 0..1329. **`87674f6` said `cost > 5803.5 s`; the cube
+  came in at 5758.4 s, LOWER BY 45.1 s.**
+
+  ***WHY IT WAS WRONG.*** That bound took the FIRST attempt's **wall**
+  elapsed at the kill and applied it to a SECOND run. **Wall time does
+  not reproduce between runs** — it moves with contention — and *this
+  very session measured the wall-over-cpu excess varying from **0.144% to
+  9.668%** across cubes and moments. The 45.1 s shortfall is **0.783% of
+  the cost**, comfortably inside that. **The entry justified the transfer
+  by "restart #49 changed nothing, so the two attempts are on a common
+  basis", and that step is the error: an unchanged machine makes the
+  SOLVER WORK comparable, it does not make two wall timings of that work
+  equal.**
+
+  ***THE PARTICULAR IRONY IS THAT BOTH HALVES WERE ESTABLISHED IN THIS
+  SAME SESSION.*** The cost column being wall-clock came from reading
+  `iota_sym.rs`; the wall-over-cpu spread came from the cherry-picking
+  correction a few entries above. **I used the first finding to build the
+  bound and ignored the second, which invalidates it.**
+
+  ***IN CPU TERMS THE PICTURE IS THE OPPOSITE, AND IT IS REMARKABLE.***
+  Reconstructing from the last sample of each run: the killed attempt had
+  consumed about **5708.7 s** of CPU, and the completed re-run about
+  **5715.9 s** — a difference of **+7.2 s**, with the hard brackets
+  (ratio in [0,1]) overlapping. ***THE FIRST ATTEMPT WAS ROUGHLY SEVEN
+  SECONDS OF CPU FROM FINISHING WHEN THE CONTAINER DIED.*** *Those
+  reconstructions carry the ratio assumption between the last sample and
+  the endpoint, so they are estimates inside brackets, not readings.*
+
+  ***THE OTHER THREE BOUNDS ARE SOUND AND ARE NOT WITHDRAWN.*** idx 1329,
+  1330 and 1331 were bounded by **their own run's** elapsed — *cost =
+  overhead + final elapsed ≥ current elapsed*, entirely within one run,
+  with no transfer. **Only the idx 1328 row was cross-run, and the table
+  in `87674f6` labelled its source as "first attempt" while the others
+  said "re-run"** — *the flaw was visible in the table's own source
+  column and I did not see it.*
+
+  ***AND idx 1329's 68.47% INHERITS THE SAME DEFECT, THOUGH NOT A
+  CONTRADICTION.*** It divides one run's wall by another's, exactly the
+  comparison that just failed. Redone in CPU it reads **68.37%** — a
+  difference of **0.10 percentage points**, so the conclusion survives,
+  but *two decimals of a cross-run wall ratio were false precision.*
+  **Read it as "about 68%, ±1 point".**
+
+  **Rank 322 of 1330**, 1008 cheaper, `1330 − 1008 = 322` reproduces it,
+  untied; *tie census holds at **17 of 1330**.* **Count 1330 = 68.2401%**,
+  remaining 619. `[13,12,12,11]` at **31 of 49**: idx 1328 places **7th
+  of 31**; mean **3716.1 s**, median **2745.4 s**, total **115197.8 s**.
+  **0.2666 of the cap.**
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -13537,7 +13584,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1329 of 1949 = 68.1888%**; **620 undecided**. **50% IS CROSSED**, at
+- **1330 of 1949 = 68.2401%**; **619 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14251,7 +14298,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **30 decided**, undecided 19 spanning 1328..1347
+  **31 decided**, undecided 18 spanning 1330..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
