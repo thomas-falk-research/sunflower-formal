@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T06:28Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T06:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7034,6 +7034,23 @@ exactly one bank.
   how the k = 67 trap at 1305 was lost.* **Nothing about the sweep
   decides this — only commit cadence does**, and that is a thing within
   reach rather than a thing to hope for.
+
+  *No row at the 06:41Z check-in — eight cpu/elapsed samples committed
+  rather than left to ride; the counter is unmoved at **1324**, one short
+  of the trap. In flight: idx 1324 at 3048 s, 1325 at 2311 s, 1326 at
+  1961 s, 1327 at 839 s, all far inside the 21600 s cap.*
+
+  ***WHICHEVER OF THOSE FOUR LANDS FIRST PUTS THE COUNTER ON THE TRAP.***
+  *It does not matter which*: the trap is a property of the **count**, not
+  of any index, so the next decision — 1324, 1325, 1326 or 1327, in
+  whatever order they finish — takes the counter to **1325 = 67.9836%**,
+  which displays as 68.0% and is not 68%. **The one after that reaches
+  1326 = 68.0349%, the threshold, which is.** *Their in-flight bounds, for
+  what they are worth: `cost > elapsed` puts idx 1324 no worse than 10th
+  of the block's 25, idx 1325 no worse than 17th, idx 1326 no worse than
+  20th, idx 1327 no worse than 25th. **None of that bears on the trap**
+  — it is recorded because the bounds are free once the units are
+  settled, not because cost has anything to do with the counter.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
