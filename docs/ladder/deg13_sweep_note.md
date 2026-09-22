@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T00:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T00:46Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6507,8 +6507,20 @@ exactly one bank.
   1410.3 and 1421.9 s**. **0.0653 of the cap.**
 
   ***THE k = 67 TRAP AT 1305 IS NOW TWO AWAY, WITH ITS THRESHOLD AT
-  1306 THREE AWAY.*** *Both fall inside `[13,12,12,11]`, and no claim
-  is made about which row will land on either.*
+  1306 THREE AWAY.*** *No claim is made about which row lands on
+  either.*
+
+  ***AND THE SENTENCE THAT STOOD HERE IN `0c1a166` SAID "BOTH FALL
+  INSIDE `[13,12,12,11]`", WHICH IS A CATEGORY ERROR.*** **A trap and a
+  threshold are COUNTS OF DECIDED SUB-CUBES**; *`[13,12,12,11]` is a
+  range of CUBE INDICES, 1299..1347.* **A count cannot fall inside an
+  index range** — *the two quantities merely happen to be near each
+  other right now, because the frontier is contiguous and the decided
+  count therefore tracks the highest index within one or two.* **That
+  coincidence is exactly what made the sentence readable and wrong**,
+  and it will stop being available the moment a span opens and the two
+  separate again. *The trap is a value the COUNTER passes through; the
+  block is where the SOLVER is working. Nothing connects them.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
