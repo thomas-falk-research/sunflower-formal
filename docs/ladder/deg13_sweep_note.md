@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T05:55Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T06:04Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6411,7 +6411,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1489 -> 1490 rows)
+## State as of the last refresh (1490 -> 1491 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6422,7 +6422,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1490 rows; 1321 labels decided; 1321 UNSAT; 0 SAT; 0 labels
+- **1491 rows; 1322 labels decided; 1322 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6436,7 +6436,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1321 decided plus 169 superseded
+  A row count is not a decision count: 1322 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6470,7 +6470,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1319, highest decided 1321, holes [1320].**
+- **Frontier contiguous 0..1319, highest decided 1322, holes [1320].**
   <!-- SPAN-STATE: open -->
   ***THE SIXTIETH SPAN HAS OPENED, AT ONE HOLE.*** **idx 1321 landed at
   6564.6 s while idx 1320 was still out**, so the frontier breaks at
@@ -6894,6 +6894,55 @@ exactly one bank.
   needs **550.6 s of cpu in 499 s of wall (110.3%)** — **the widest of the
   five**. **Five cubes, five refutations: 104.8%, 101.6%, 109.4%, 101.9%,
   110.3%.** *Still silent on `--maxtime`.*
+
+  **BANK idx 1322 at 6621.1 s**, in the file by 06:03:07Z. *The sixtieth
+  span stays open on the same single hole at **1320**; no chain, duration
+  or ordinal figures are claimed for it here.* **Rank 248 of 1322**, 1074
+  cheaper, `1322 − 1074 = 248` reproduces it, untied; *tie census holds at
+  **16 of 1322**.* **Count 1322 = 67.8297%**, remaining 627; *the k = 68
+  trap at **1325** is now **three** away.* `[13,12,12,11]` at **23 of
+  49**: idx 1322 places **2nd of 23** at 6621.1 s, behind idx 1319's
+  6930.1 s; mean **3117.9 s**, median **2482.5 s**, total **71712.2 s**.
+  **0.3065 of the cap.** *The `d634ba4` bound on this cube — cost above
+  **5350 s** — **HELD by +1271.1 s**, and its measured distance to the
+  block maximum again did **not** become a crossing: 309.0 s short.*
+
+  ***AND idx 1320, THE SPAN'S OWN HOLE, IS NOW GUARANTEED TO TAKE THE
+  BLOCK MAXIMUM.*** At the 05:55:01Z sample its elapsed was **6937 s**,
+  and `cost = overhead + final_elapsed` with `final_elapsed ≥ 6937` puts
+  its cost **above 6937 s — already 6.9 s past idx 1319's 6930.1 s**. *It
+  beats **23 of the 23** decided members of the block.* **This is a
+  guarantee, not a forecast**: it follows from time already spent.
+  *`ps` ELAPSED truncates downward, so the true elapsed is at least the
+  6937 recorded and the margin can only be larger than 6.9 s — the
+  quantization runs in the safe direction. **The margin is nonetheless
+  small**, and it is stated as 6.9 s rather than rounded into comfort.*
+
+  *This datum was in `7b82dea`'s staged diff as a sample row, and the
+  inference was deliberately **withheld** from that commit's body: the
+  note's rule is that a figure enters the note before a commit quotes it.
+  It is entered here and quoted for the first time in the commit that
+  carries this paragraph.*
+
+  ***THE DOUBLE EVENT IS STATED CONDITIONALLY, AS THE FIVE EARLIER ONES
+  WERE.*** idx 1320 landing would close the sixtieth span **and** set the
+  block maximum in the same row — *but only if no new hole has opened
+  below the top by then.* **If a row at 1324 or beyond lands while 1323 is
+  still out, the hole set becomes two and filling 1320 leaves the span
+  open.** *Of the five double closures flagged in advance so far, two
+  closed two things, two closed one and one closed none — **the
+  conditional half has never yet been the thing to rely on**, which is why
+  it is written as a condition and not as an expectation.*
+
+  ***SIXTH TIMING CASE, AND THIS ONE SITS COMFORTABLY INSIDE.*** idx
+  1322's process started 04:12:35Z (elapsed 6146 s at the 05:55:01Z
+  sample). The wall reading predicts the write in **06:02:54Z–06:02:56Z**,
+  **well within** the waiter window `(06:02:47Z, 06:03:07Z]` — *a cleaner
+  fit than the fifth case, which only grazed its window.* The cpu reading
+  puts it at **06:04:07Z or later, 59.9 s after the row existed**, needing
+  **540.1 s of cpu in 486 s of wall (111.1%)**. **Six cubes, six
+  refutations: 104.8%, 101.6%, 109.4%, 101.9%, 110.3%, 111.1%.** *Still
+  silent on `--maxtime`; nothing here touches that question.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -13043,7 +13092,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1321 of 1949 = 67.7783%**; **628 undecided**. **50% IS CROSSED**, at
+- **1322 of 1949 = 67.8297%**; **627 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -13757,7 +13806,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **22 decided**, undecided 27 spanning 1320..1347
+  **23 decided**, undecided 26 spanning 1320..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
