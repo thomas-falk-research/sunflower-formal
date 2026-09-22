@@ -57,10 +57,11 @@ checkpoint as of that revision.
 """
 
 import collections
-import datetime as _dt, subprocess, sys
+import datetime as _dt, statistics, subprocess, sys
 
 CHECKPOINT = 'docs/ladder/iota4_11.deg13.cryptominisat5.tsv'
 HELPERS    = 'docs/ladder/forward_test.py'
+SAMPLES    = 'docs/ladder/cpu_ratio_samples.tsv'
 SPLIT_AT   = "# ------------------------------------------------------------------ calibration"
 
 # Figures recorded at this revision.  The checkpoint grows, so these go stale
@@ -342,11 +343,84 @@ def main(rev=None):
             print(f"   {len(g):>4} {lo:>10.1f} {hi:>10.1f} {min(pos):>6}..{max(pos):<6}  "
                   f"{'tight -- a cap' if tight else 'diffuse -- mechanism not established'}")
         last_unk = max(n for _, n in unk)
+
+        # THE OVERSHOOT IS COMPUTED HERE, NOT TYPED.  An earlier version of
+        # this block stated "0.417% to 1.350%" and "3.2x against 28.5x" as
+        # literals, which is the same-quantity-written-twice defect the note
+        # tracks -- the figures also appear in the note, and a typed pair
+        # cannot drift together.  The nominal budgets ARE an input: they are
+        # the --seconds values from the restart record, and no rule for
+        # reading a cap off its own cluster survives all four (the largest
+        # multiple of 60 below 21744.1 is 21720, not 21600).
+        NOMINAL = [1800, 5400, 10800, 21600]
+        over = []
+        for g in groups:
+            glo, ghi = g[0][0], g[-1][0]
+            if (ghi - glo) > 0.02 * glo:
+                continue                      # diffuse: no cap to compare against
+            cands = [c for c in NOMINAL if 0 <= glo - c <= 0.02 * c]
+            assert len(cands) == 1, (
+                f"the tight cluster at {glo:.1f}..{ghi:.1f} matches {cands} of the "
+                f"nominal budgets {NOMINAL}; add the cap it was actually run under "
+                f"rather than letting this figure be inferred")
+            cap = cands[0]
+            over.append((cap, len(g), glo - cap, ghi - cap,
+                         100 * (glo - cap) / cap, 100 * (ghi - cap) / cap))
+        fr = [x for o in over for x in o[4:6]]
+        sc = [x for o in over for x in o[2:4]]
+
         print(f"\nTHE CAP IS SOFT. Every tight cluster sits ABOVE its nominal cap, by an")
-        print(f"amount proportional to the cap rather than a fixed number of seconds, so")
-        print(f"the budget is a deadline checked periodically and overshot by the lag.")
-        print(f"A decided cost slightly above the nominal cap is therefore NOT an anomaly:")
-        print(f"it is a cube that finished inside that lag, before the check killed it.")
+        print(f"amount proportional to the cap rather than a fixed number of seconds:")
+        print(f"   {'cap':>7} {'n':>4} {'over, s':>18} {'over, % of cap':>20}")
+        for cap, n, a, b, p, q in over:
+            print(f"   {cap:>7} {n:>4} {a:>8.1f} ..{b:>8.1f} {p:>9.3f}% ..{q:>8.3f}%")
+        print(f"{min(fr):.3f}% to {max(fr):.3f}% of the cap across "
+              f"{len(over)} clusters, which spans")
+        print(f"{max(fr)/min(fr):.1f}x as a fraction where the raw seconds span "
+              f"{max(sc)/min(sc):.1f}x.")
+        print(f"A decided cost slightly above the nominal cap is therefore NOT an anomaly.")
+        print(f"\nTHE MECHANISM IS NOT SETTLED, AND THIS TOOL USED TO ASSERT ONE THAT")
+        print(f"CONTRADICTED ITS OWN OBSERVATION: it said the budget is a deadline")
+        print(f"\"checked periodically and overshot by the lag\", but a deadline checked")
+        print(f"on a FIXED period overshoots by a bounded number of SECONDS, not by a")
+        print(f"fraction of the cap.  Two candidates do fit: (1) --maxtime enforced on")
+        print(f"the solver\'s CPU time while the checkpoint records the driver\'s WALL")
+        print(f"time -- iota_sym.rs times each cube with Instant::elapsed(), so the")
+        print(f"column IS wall-clock; or (2) a check interval that itself grows with")
+        print(f"runtime.  cryptominisat5\'s --help names no clock for --maxtime.")
+
+        # The quantitative side of candidate (1), COMPUTED rather than quoted.
+        # A capped cube by definition runs to at least its cap, so the relevant
+        # regime is long elapsed -- and the band must be read off the whole
+        # file, not off a handful of recent rows.  An earlier version of this
+        # paragraph quoted "0.422%-1.082%, the same band as the overshoot"; that
+        # was five hand-picked ratios from the two most recent sample rounds,
+        # and the file does not support it.  See the note.
+        try:
+            srows = []
+            for sl in open(SAMPLES, encoding='utf-8'):
+                if not sl.strip() or sl.startswith('#'): continue
+                sf = sl.rstrip('\n').split('\t')
+                if len(sf) < 8: continue
+                sel_, scp_ = int(sf[4]), int(sf[5])
+                if sel_ > 0 and scp_ > 0: srows.append((sel_, scp_))
+        except OSError:
+            srows = []
+        thr = min(NOMINAL)
+        exs = sorted(100.0 * (e / c - 1.0) for e, c in srows if e >= thr)
+        if exs:
+            pc = lambda p: exs[min(len(exs) - 1, int(p * len(exs)))]
+            print(f"\nTHE QUANTITATIVE CASE FOR (1) IS WEAKER THAN IT LOOKS. Wall-over-cpu")
+            print(f"excess over the {len(exs)} samples with elapsed >= {thr} s (the smallest cap,")
+            print(f"so the capped regime): median {statistics.median(exs):.3f}%, p5-p95 "
+                  f"{pc(.05):.3f}%-{pc(.95):.3f}%,")
+            print(f"full {min(exs):.3f}%-{max(exs):.3f}%.  The overshoot band "
+                  f"{min(fr):.3f}%-{max(fr):.3f}% sits INSIDE")
+            print(f"that, so the two agree in MAGNITUDE -- but the excess is far more")
+            print(f"DISPERSED than the overshoot ({max(exs)/max(fr):.1f}x the upper end), and under (1)")
+            print(f"the overshoot should inherit that spread.  It does not.  So the")
+            print(f"magnitudes are consistent with (1) and the shapes are not, (2) is")
+            print(f"untested, and THIS EVIDENCE SEPARATES NOTHING.  See the note.")
         print(f"\nlast UNKNOWN is real data row {last_unk+1} of {len(rows)} (0-based index")
         print(f"{last_unk}, NOT a file line -- the file also holds comment lines);")
         print(f"{len(rows)-1-last_unk} rows have landed since, none of them capped.")

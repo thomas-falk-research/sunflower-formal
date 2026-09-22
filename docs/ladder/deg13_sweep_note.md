@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T03:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T04:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -91,15 +91,29 @@ landings — it is never the source of the count.
 - Holes in the frontier are **in-flight work**. A long-running hole is
   **not a stall**: a stall is an `UNKNOWN` row written **at the cap** plus
   0.4–1.4%, never silence.
+- **The cost column is WALL-CLOCK SECONDS, settled from the source and no
+  longer an open question.** `iota_sym.rs` brackets each cube with
+  `Instant::now()` / `Instant::elapsed()`, so the figure spans the CNF
+  clone, the DIMACS write, the solver spawn, the solve and the parse —
+  **cost ≥ the solver process's elapsed ≥ its CPU**. That ordering is what
+  makes `cpu_ratio_samples.tsv` a valid *lower* bound on a running cube's
+  eventual cost. Each `cryptominisat5` is **single-threaded** (`--threads`
+  is never passed); `iota_sym --threads 4` is cube-level parallelism.
 - **Decided cost** = `max(cost)` over that label's non-`UNKNOWN` rows. 80
   labels carry multiple rows; in 27 the naive max over all rows differs.
   No label is decided twice (invariant I4).
 - Say "0 labels undecided-only", never "0 UNKNOWN": there are 169 `UNKNOWN`
   rows in the file, each superseded by a later `UNSAT` on the same label.
 - **The cap is soft** (a252d3e). Tight cost clusters sit *above* their
-  nominal cap by an amount proportional to it, so a decided cost slightly
-  over the cap is a cube that finished inside the checking lag, not an
-  anomaly.
+  nominal cap by **0.417–1.350% of the cap** — proportional, not a fixed
+  number of seconds (3.2× spread as a fraction against 28.5× in raw
+  seconds). A decided cost slightly over the cap is **not an anomaly**.
+  ***Do not say "finished inside the checking lag": that mechanism does not
+  fit a proportional overshoot*** — a fixed-period check overshoots by
+  bounded seconds. Two candidates fit (a CPU-enforced `--maxtime` read
+  against a wall-clock record, or a check interval that grows with
+  runtime) and **the evidence does not separate them**; see the entry in
+  the log.
 - A **block** is the **first four entries only** (ac23afa). A sub-family,
   level or group closing is *not* a block closing.
 
@@ -6339,6 +6353,26 @@ alongside it.**
   which is committed, rather than only in a prompt.** Checked at the time:
   the identifier, arithmetic, commit-subject, banned-pipe and heredoc
   rules were all already here.
+- ***CHOOSING THE SAMPLE AFTER SEEING WHAT IT WOULD SHOW — and every
+  figure in it verified.*** Arguing that the soft cap's overshoot comes
+  from a CPU-enforced `--maxtime` read against a wall-clock record, I
+  quoted the wall-over-cpu excess as **"0.422% .. 1.082%, the same band"**
+  as the observed 0.417%–1.350%. **All five ratios behind it were real,
+  correctly converted, and freshly read.** They were also **the five most
+  recent samples in the file**, picked while the conclusion was already in
+  view. Over the whole file in the regime that matters — `elapsed ≥ 1800
+  s`, 1286 samples — the excess runs **0.144% to 9.668%**, p5–p95
+  0.377%–3.520%, which does *not* support "the same band" and makes the
+  mechanism look **weaker**, not stronger. **This is the failure mode a
+  file full of individually verified figures is least protected against**,
+  because the check every other rule in here applies — *is this number
+  real?* — returns yes. The fix is not another verification step: it is
+  that **a band must be computed over a stated population before it is
+  compared to anything**, and `checkpoint_audit.py` now computes this one
+  on every run, with the population (`elapsed >= min(NOMINAL)`) named in
+  its output. *Caught the same session it was written, before it reached
+  a conclusion anyone relied on, and by asking what the population was —
+  not by re-checking the arithmetic, which was already right.*
 
 ---
 
@@ -6377,7 +6411,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1484 -> 1485 rows)
+## State as of the last refresh (1485 -> 1487 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6388,7 +6422,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1485 rows; 1316 labels decided; 1316 UNSAT; 0 SAT; 0 labels
+- **1487 rows; 1318 labels decided; 1318 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6402,7 +6436,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1316 decided plus 169 superseded
+  A row count is not a decision count: 1318 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6436,7 +6470,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1315, highest decided 1315, holes [].**
+- **Frontier contiguous 0..1317, highest decided 1317, holes [].**
   <!-- SPAN-STATE: closed -->
   ***THE FIFTY-NINTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
   COMMIT.*** It was filled by **idx 1289 at 5622.9 s** — *the cube that
@@ -6586,6 +6620,85 @@ exactly one bank.
   the miss were not wasted effort so much as a demonstration of what
   the habit buys. *This waiter did cover its gap: armed 02:42:51Z,
   reported 03:21:12Z, and the row was banked inside a minute.*
+
+  **BANK idx 1316 AND idx 1317, TWO ROWS.** idx 1316 at **5404.5 s**, in
+  the file by 03:59:33Z; idx 1317 at **5311.1 s**, in the file by
+  04:01:22Z. *No span: the frontier stays contiguous at 0..1317 with no
+  holes.* **idx 1316: rank 354 of 1318**, 964 cheaper, `1318 − 964 = 354`
+  reproduces it, untied, **0.2502 of the cap**. **idx 1317: rank 368 of
+  1318**, 950 cheaper, `1318 − 950 = 368` reproduces it, untied, **0.2459
+  of the cap**. *Tie census holds at **15 of 1318**.* **Count 1318 =
+  67.6244%**, remaining 631; *the k = 68 trap at **1325** is now **seven**
+  away.* `[13,12,12,11]` at **19 of 49**: idx 1316 is its **new maximum at
+  5404.5 s** and idx 1317 the **second at 5311.1 s**, together displacing
+  idx 1315's 3235.3 s; min 347.0 s at idx 1299, mean **2430.7 s**, median
+  **2354.1 s**, total **46182.7 s**. *Recomputed from the checkpoint
+  independently of bank.py and agreeing with it.*
+
+  *Two rows in one commit steps the counter 1316 → 1318, so it passes
+  through 1317 without a commit standing on it. **No marked value lies
+  there** — the next is the k = 68 trap at 1325 — so nothing of the trap
+  series was lost, and this is stated rather than left for someone to
+  check, because the one-row-per-commit rule above is exactly the sort of
+  ideal that decays if its exceptions go unrecorded.*
+
+  ***AND THE BOUND `f06be7e` REGISTERED BEFORE THESE ROWS LANDED HELD, ON
+  BOTH OF THE TWO IT COULD BE TESTED ON.*** It said idx 1316, 1317 and
+  1318 **cannot** come in below `[13,12,12,11]`'s then-maximum of 3235.3 s,
+  because each had already burned more than that in elapsed *and* in cpu.
+  **idx 1316 came in at 5404.5 s (+2169.2 s) and idx 1317 at 5311.1 s
+  (+2075.8 s).** *idx 1318 is still running, so one third of the bound is
+  still open.* **This was a bound, not a prediction** — it followed from
+  time already spent — *and it is worth exactly what a bound is worth: it
+  forbade a region and the region stayed empty. It is not in the
+  forward-test series and no pattern is claimed.*
+
+  ***THEN THESE TWO ROWS DID SOMETHING THE BOUND WAS NOT FOR: THEY
+  REFUTED THE CPU READING OF THE COST COLUMN FROM TIMING ALONE,
+  INDEPENDENTLY OF THE SOURCE.*** The source already settled it (see the
+  entry above), but the source and a clock are independent witnesses, and
+  here the clock was available for free. For each cube: its `ps` elapsed
+  at the 03:45:34Z sample fixes the process's start, the checkpoint gives
+  the cost, and the waiter's report gives an **upper bound** on when the
+  row was written.
+
+  | | process start | row in file by | **WALL** predicts write | **CPU** would predict |
+  |---|---|---|---|---|
+  | idx 1316 | 02:29:20Z | 03:59:33Z | **03:59:23-24Z, fits** | at least 04:00:23Z, **50.0 s too late** |
+  | idx 1317 | 02:32:43Z | 04:01:22Z | **04:01:12-14Z, fits** | at least 04:01:42Z, **20.2 s too late** |
+
+  **The wall reading predicts a write time inside the waiter's 20 s window
+  in both cases; the cpu reading puts it after the row demonstrably
+  existed.** *And the refutation does not depend on the sampled ratio
+  holding: for the cpu reading to fit, idx 1316 would have had to accrue
+  879.5 s of cpu in 839 s of wall (**104.8%**) and idx 1317 963.1 s in 948
+  s (**101.6%**) — above one core for a single-threaded process.* **That
+  premise is measured, not assumed: across all 3937 samples in
+  `cpu_ratio_samples.tsv` the count with `cpu > elapsed` is ZERO and the
+  maximum ratio is exactly 1.00000.**
+
+  *Only the upper bound on the write time is used, so the poll interval
+  cannot rescue the cpu reading — a later true write time makes the wall
+  prediction fit better and the cpu prediction worse. **The 20 s poll is
+  why idx 1316 is the stronger of the two**: its 50.0 s margin clears the
+  interval outright, while idx 1317's 20.2 s only just does, and for that
+  one the above-100% form is the argument that carries.* **What this does
+  NOT touch is the `--maxtime` question**: it settles what the *column*
+  records, which the source already gave, and says nothing about which
+  clock the solver's own deadline is read against. *Mechanisms (1) and (2)
+  are exactly as unseparated as before.*
+
+  ***AND THE FIRST PASS AT THIS ARITHMETIC GOT IT BACKWARDS BY TREATING
+  THE WAITER'S REPORT AS A WRITE TIME.*** Subtracting 03:45:34Z from
+  03:59:33Z gives 839 s, which put idx 1316's final elapsed at about 5413 s
+  against a cost of 5404.5 s — **a negative 8.5 s gap, which would have
+  refuted the wall reading rather than confirmed it.** The error is the one
+  `3a008b2` already records in capitals — *the waiter's timestamp is an
+  upper bound, not an instant* — and the 8.5 s is simply where inside the
+  20 s window the row actually landed. **Caught before it was written
+  down, by the note's own prior entry**, which is the clearest case this
+  file has that the value of writing an error down is that it is there the
+  next time the same shape appears.
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -9566,6 +9679,180 @@ exactly one bank.
   property of those four particular cubes and would have persisted
   regardless.* **The open question about the cost column is still
   open**, and nothing here touches it.
+
+  ***AND THE OPEN QUESTION ABOVE IS NOW CLOSED — BY READING THE SOURCE,
+  NOT BY MEASURING ANYTHING.*** **The cost column is WALL-CLOCK SECONDS.**
+  `examples/iota_sym.rs` takes `let start = Instant::now()` before each
+  cube and `let secs = start.elapsed().as_secs_f64()` after it, then hands
+  that `secs` straight to `append_checkpoint`, which writes
+  `{label}\t{verdict}\t{secs:.1}`. `std::time::Instant` (imported at
+  line 56, unshadowed) is the monotonic **wall** clock: not CPU time, and
+  not the solver's own accounting.
+
+  **THE BRACKET IS WIDER THAN THE SOLVER.** Following `solve_cube` in
+  `src/symbreak.rs` and `run_solver` in `src/sat.rs`, the timed interval
+  covers `inst.cnf.clone()`, adding the cube's unit clauses,
+  `cnf.to_dimacs()`, the `std::fs::write` of the CNF, the `Command::new`
+  spawn and wait, reading the output, and `parse_raw`. So
+  **cost ≥ the solver process's elapsed ≥ its CPU**. *Note which side the
+  clone falls on: it runs BEFORE the file exists, so it is inside `secs`
+  but outside the `now − mtime` that `cnf_mtime_check.py` reads. Those two
+  are not the same interval and were never meant to be.*
+
+  *This does not contradict `3352`, which says wall-clock BETWEEN COMMITS
+  is not solver effort. That is a different interval — commit-to-commit
+  time includes the commit lag and the gaps between cubes. Per-cube wall
+  time is what the column holds.*
+
+  **THE ORDERING IS THE USEFUL PART.** Because cost ≥ elapsed ≥ cpu,
+  `cpu_ratio_samples.tsv` gives a real LOWER bound on a running cube's
+  eventual cost on **either** of its two clocks. `f06be7e` used that to
+  state, before the rows landed, that idx 1316, 1317 and 1318 cannot come
+  in below `[13,12,12,11]`'s standing maximum of 3235.3 s — but it hedged
+  against *"some third solver-internal measure that could sit below
+  both"*, and **that hedge is now withdrawn: the measure sits ABOVE both**,
+  so the bound is stronger than it was claimed to be. *Wrong in the safe
+  direction is still wrong about the shape of the argument, and it is
+  recorded rather than quietly absorbed.*
+
+  **EACH SOLVER IS SINGLE-THREADED, WHICH IS WHY THE RATIO IS 0.99 AND
+  NOT 4.** `cryptominisat5 --help` gives `--threads arg (=1)`, and
+  `src/sat.rs` never passes `--threads` — the word does not occur in the
+  file. `iota_sym --threads 4` is the driver's **cube-level** parallelism:
+  four single-threaded solvers, one per core. So `cpu/elapsed ≈ 0.99` per
+  solver is one core's work on one core, and *a ratio near 4 would have
+  meant the opposite of what it looks like.*
+
+  ***THE SOFT CAP: THE OBSERVATION IS CONFIRMED AND SHARPENED, AND THE
+  MECHANISM `checkpoint_audit.py` NAMED DOES NOT FIT ITS OWN
+  OBSERVATION.*** The tool said the tight clusters sit above their nominal
+  caps *"by an amount proportional to the cap rather than a fixed number of
+  seconds, so the budget is a deadline checked periodically and overshot by
+  the lag"*. The first half is right and now has numbers; **the second half
+  contradicts the first** — a deadline checked on a fixed period overshoots
+  by a BOUNDED number of seconds, not by a fraction of the cap. The four
+  clusters, as the tool itself recovers them:
+
+  | nominal cap | n | overshoot, s | overshoot, % of cap |
+  |---|---|---|---|
+  | 1800 | 30 | 7.5 .. 24.3 | 0.417 .. 1.350 |
+  | 5400 | 19 | 28.0 .. 59.3 | 0.519 .. 1.098 |
+  | 10800 | 81 | 53.3 .. 139.0 | 0.494 .. 1.287 |
+  | 21600 | 22 | 144.1 .. 213.4 | 0.667 .. 0.988 |
+
+  In raw seconds the overshoot spans **28.5×**; as a fraction of the cap it
+  spans **3.2×**. Proportional is much the better description, so the
+  "checked periodically" clause has been removed from the tool.
+
+  *That table is a transcript of `checkpoint_audit.py`'s output, which now
+  **computes** those percentages from the clusters it already recovers
+  instead of carrying them as literals. The nominal budgets stay an input —
+  they are the `--seconds` values from the restart record, and no rule for
+  reading a cap off its own cluster survives all four: the largest multiple
+  of 60 below 21744.1 is 21720, not 21600. The tool asserts each tight
+  cluster matches exactly one budget.*
+
+  **TWO MECHANISMS FIT AND THIS EVIDENCE SEPARATES NOTHING.**
+  (1) `--maxtime` enforced on the solver's **CPU** time while the
+  checkpoint records the driver's **WALL** time, so the recorded cost
+  clears the cap by the wall-over-cpu excess. (2) A check interval that
+  itself **grows with runtime**, which also yields a roughly proportional
+  overshoot. *Both predict what is seen, and (2) has not been tested at
+  all.*
+
+  ***AND THE FIGURE THAT MADE (1) LOOK STRONG WAS CHERRY-PICKED. IT IS
+  RETRACTED.*** The first version of this entry — and of the tool's
+  paragraph — said the wall-over-cpu excess is **"0.422% .. 1.082%, the
+  same band as the observed 0.417% .. 1.350%"**. That band came from **five
+  ratios hand-picked out of the two most recent sample rounds**, not from
+  `cpu_ratio_samples.tsv`. Read off the whole file, restricted to
+  `elapsed ≥ 1800 s` (the smallest cap, so the regime a capped cube is
+  actually in), the excess over **1286** samples is **median 0.774%, p5–p95
+  0.377%–3.520%, full 0.144%–9.668%**. So:
+
+  - **The magnitudes DO agree**: the overshoot band 0.417%–1.350% sits
+    inside the excess distribution, and the overshoot's midpoint is close
+    to the excess median.
+  - **The shapes DO NOT.** The excess is far more dispersed — its upper end
+    is **7.2×** the overshoot's — and under mechanism (1) the overshoot
+    should inherit that spread. It does not.
+  - *The `elapsed ≥ 10800 s` bucket points the same way and is too small to
+    lean on: **10 samples**, 0.402%–0.525%, against the 21600-cap cluster's
+    0.667%–0.988%. Noted, not used.*
+
+  **So the honest reading is that the corrected figures make (1) WEAKER
+  than the cherry-picked ones made it look**, and the tool now computes
+  this comparison on every run rather than quoting it. *The error pattern
+  is not a slip in arithmetic — every one of those five ratios was real.
+  It is **choosing the sample after seeing what it would show**, which is
+  the one failure mode a file full of verified figures is least protected
+  against, because each figure in it checks out.*
+
+  **WHAT IS AND IS NOT ESTABLISHED ABOUT `--maxtime`.** `--help` says only
+  *"Stop solving after this much time (s)"* and names no clock. The binary
+  imports **`getrusage`** as well as `gettimeofday`, carries the symbol
+  strings **`double cpuTime()`** and **`double cpuTimeTotal()`** (the
+  MiniSat-lineage CPU-time helpers), and prints *"Sum parsing time among
+  all threads (wall time will differ)"* — so it does distinguish the two
+  clocks and its own accounting is CPU-based. ***None of that shows
+  `--maxtime` is compared against `cpuTime()`.*** **The clock behind
+  `--maxtime` is NOT established here.**
+
+  *The experiment that would settle it is cheap and was deliberately NOT
+  run: give `cryptominisat5` a small `--maxtime` under intentional CPU
+  contention so wall greatly exceeds cpu, and see which clock it stops on.
+  It competes for the same four cores the sweep is using, and this file
+  already records heavy tooling dragging cpu/elapsed from 0.98 to 0.91 for
+  eight minutes. **Declining it while the sweep is live is a scheduling
+  choice, not a limit of the method** — it belongs at a teardown, and it is
+  written down here so that it can be run there.*
+
+  *One naming nuance, while the source is open: `iota_sym.rs` calls the sum
+  of per-cube durations "the real core-seconds figure", against wall time
+  multiplied by the thread count, which "would charge idleness to the
+  cubes". **The contrast it draws is correct; its own name is loose** — with
+  the units settled, that sum is of WALL seconds, which equals core-seconds
+  only to within the ~1% the ratio file measures.*
+
+  ***AND THE ONE-SIDED TEST THAT CAME FIRST FOUND NOTHING, WHICH IS WHY THE
+  SOURCE GOT READ AT ALL.*** Before any of the above, the samples were used
+  as bounds: elapsed and cpu both grow monotonically, so a decided cube
+  whose cost fell BELOW its last sampled clock would rule that clock out.
+  Of 1316 decided indices, **969 have no samples at all** and **24 were
+  dropped for carrying more than one solver pid** — a restart resets
+  elapsed, so an earlier attempt's last sample bounds nothing — leaving a
+  clean set of **323**. *The filters are applied in that order, so the
+  buckets are disjoint and order-dependent: **0 indices reached the
+  multi-row-label filter**, which is not the claim that there are none (the
+  audit counts 80) but that every one of them was already excluded as
+  restarted or unsampled.* The violation count was **0 for elapsed and 0
+  for cpu**: the test refutes neither, because the last sample sits far
+  enough from the finish that the cost clears both bounds. **A null result
+  from an underpowered test is not evidence for either side**, and it is
+  recorded because the tempting misreading — "cost never fell below cpu, so
+  cpu it is" — supports nothing whatever.
+
+  ***THE SAME 323 CUBES DO YIELD ONE REAL NUMBER, ONCE THE SOURCE SAYS
+  WHAT TO ASK THEM.*** Since `cost = overhead + final_elapsed` and the
+  last sample sits at `e ≤ final_elapsed`, the gap `cost − e` equals
+  `overhead + lag` with both terms `≥ 0` — so **the MINIMUM gap over the
+  set bounds the driver-side overhead from above**. It is **1.9 s**, at
+  idx 1120 (`cost 3604.9`, last sampled elapsed `3603`). The overhead is
+  the CNF clone, `to_dimacs`, the `fs::write`, the spawn, the read and the
+  parse; **every cube's CNF is the same size**, so the bound carries
+  across the sweep. *`ps` ELAPSED truncates to whole seconds, which makes
+  the reported gap no smaller than the true one — the quantization pushes
+  this bound in the conservative direction, not the flattering one.* The
+  median gap is 292.1 s and the maximum 3238.5 s; **those are sampling lag,
+  not overhead**, and mean nothing on their own.
+
+  **AND THE SOURCE READING SURVIVES ITS OWN FALSIFICATION TEST**: it
+  predicts `cost ≥ the solver process's elapsed` for every cube, so a
+  single negative gap would refute it. Over the 323, **negative gaps: 0**.
+  *This is weak confirmation and is worth exactly what it costs — the
+  prediction was derived from the source, not from the data, and the
+  same data was already shown above to be too loose to discriminate. What
+  it rules out is a misreading of the bracket, not much else.*
 
   ***THE 62% TRAP WAS NAMED ONE COMMIT AHEAD AND THIS TREE HOLDS IT.***
   `63c0321`, banking at counter 1207, wrote: *"the next decision takes
@@ -12561,7 +12848,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1316 of 1949 = 67.5218%**; **633 undecided**. **50% IS CROSSED**, at
+- **1318 of 1949 = 67.6244%**; **631 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -13275,7 +13562,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **17 decided**, undecided 32 spanning 1316..1347
+  **19 decided**, undecided 30 spanning 1318..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
