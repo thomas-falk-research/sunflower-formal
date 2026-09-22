@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T07:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T07:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7170,6 +7170,23 @@ exactly one bank.
   BROKEN COMMITS*** — *stated here only as what the committed record
   holds, since the chain is one of the figures the close writeup owns; the
   tool's version arrives with the rest of them in the next commit.*
+
+  *No row at the 07:41Z check-in — eight cpu/elapsed samples committed
+  rather than left to ride. In flight: idx 1327 at 4465 s, 1328 at 2977 s,
+  1329 at 989 s, 1330 at 471 s, all far inside the 21600 s cap.*
+
+  ***THE NEXT TWO MARKED VALUES, COMPUTED NOW THAT THE 68% PAIR IS
+  BEHIND.*** **k = 69: `r = 49·69 mod 100 = 81`, trap at **1344** reading
+  **68.9584%** and displaying 69.0%, threshold **1345** at **69.0097%**;
+  shortfall `81/1949 = 0.041560 pp`, tightness rank **81 of 97**.** *That
+  rank is worth noting for what it means: **81 is a LOOSE trap**, the
+  shortfall being about two and a half times the 68% trap's 32.* **k = 70:
+  trap at **1364** (69.9846%), threshold **1365** (70.0359%), `r = 30`,
+  tightness rank **30 of 97** — tighter than either.* **The counter is at
+  1327**, so the 69% trap is **17** decisions away and the 70% trap
+  **37**. *Both exist — `r ≤ 97` in each case — which is not automatic;
+  the note's count of 97 is exactly the number of percent values that
+  have one.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
