@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T08:33Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T08:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7253,6 +7253,62 @@ exactly one bank.
   **2026-09-22T08:31:46.840000Z**, read from `/proc/13145/stat` field 22
   against btime rather than from the wall clock at the moment of
   relaunch.*
+
+  ***AND THE 4 ms CNF REGULARITY IS NOW DELIMITED RATHER THAN MERELY
+  RECORDED — AFTER TWO OF MY OWN EXPLANATIONS FOR IT WERE KILLED BY
+  TESTING THEM.*** Set seventeen's four CNFs were written at
+  **08:32:47.616944791, .620944791, .624944791 and .628944791** —
+  **three consecutive gaps of exactly 4.000000 ms**, with the
+  sub-millisecond suffix `944791` **identical in all four**. *That is a
+  fifth sighting of the spacing this file has flagged since the idx 1010
+  entry and declined to explain.*
+
+  **HYPOTHESIS ONE, KILLED: a global 4 ms clock grid.** The identical
+  suffix suggested mtimes land on 4 ms ticks. Tested over **all 212**
+  surviving `/tmp` CNFs: **196 distinct residues mod 4 ms**, and 211
+  distinct sub-second parts. *There is no global grid; the clock carries
+  full nanosecond resolution.*
+
+  **HYPOTHESIS TWO, ALSO KILLED: a grid with a per-driver offset.** That
+  would make every intra-pid difference a 4 ms multiple. Tested across
+  **51 driver pids**: only **6** satisfy it, and most have every one of
+  their three differences off the grid.
+
+  ***WHAT SURVIVES IS A SHARP AND NARROW CLAIM.*** Splitting each pid's
+  writes into its **startup burst** (within 1 s of that pid's first
+  write) and everything later:
+
+  | | gaps that are a 4 ms multiple |
+  |---|---|
+  | **startup burst** | **20 of 20 — 100%** |
+  | later writes | 16 of 137 — 11.7% |
+
+  *The burst gaps are `0, 4×10, 8×3, 12, 24, 28, 44, 48, 56` ms — every
+  one a multiple of four.* **So the regularity is a property of the
+  launch batch, not of the clock and not of the driver's whole life.**
+
+  ***THREE CAVEATS, AND THE THIRD IS THE ONE THAT MATTERS.*** *(i)*
+  `/tmp` holds only CNFs not yet overwritten, so this is a **survivorship
+  sample** and cannot support a rate. *(ii)* Twenty gaps from **seven**
+  pids is small. *(iii)* **The 11.7% outside the bursts is NOT explained
+  away**: against a uniform-nanosecond chance level of 0.100% it is about
+  a hundredfold excess, so something partial persists there too. *A clean
+  100% inside and a clean 0% outside would have been a mechanism; 100%
+  and 11.7% is a mechanism plus a residue nobody has accounted for, and
+  it is written down that way.*
+
+  ***AND THE FIRST SCRIPT I WROTE FOR THIS PRINTED A CONCLUSION ITS OWN
+  OUTPUT CONTRADICTED.*** It ended with a fixed string asserting "the
+  clock IS quantized to 4 ms, with an offset constant within a pid",
+  immediately below a table showing **6 of 51** pids satisfying exactly
+  that. *The string was written before the test ran, as a prediction of
+  what the test would say, and it printed regardless.* **This is the
+  `script-output-asserts-what-the-code-does-not-do` pattern the span
+  guard's own comment names**, reappearing in a throwaway analysis
+  script rather than in a committed tool — *which is where it is hardest
+  to notice, because nothing audits a scratch script.* **The remedy
+  applied here was to re-run with no conclusion text at all and read the
+  numbers.**
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
