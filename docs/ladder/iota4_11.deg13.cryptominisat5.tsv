@@ -12305,12 +12305,35 @@ g=11 [13, 12, 12, 10, 13, 13, 13, 13, 11, 9, 9]	UNSAT	2412.3
 #     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
 #
 # THE CPU HAS CHANGED BACK.  #48 moved it 2.10GHz -> 2.80GHz with cache
-# 266240 KB -> 33792 KB; #50 moves both fields back to exactly their
-# pre-#48 values.  So the fast machine ran from #48 to #49 inclusive and
-# this restart returns to the machine every restart before #48 used.  DO
-# NOT ESTIMATE A SPEED RATIO FROM THE SWEEP'S OWN TIMINGS -- cube-cost
-# variance swamps it, and that prohibition is not weakened by the change
-# being a return to a known machine rather than a move to a new one.
+# 266240 KB -> 33792 KB; #50 moves both fields back.  The fast machine ran
+# from #48 to #49 inclusive.  #50 matches the #42..#47 configuration on
+# ALL SIX FIELDS -- @ 2.10GHz, 2100.000, 266240 KB, nproc 4, MemTotal
+# 16481980 kB, kernel 6.18.44-fc-v37 -- so for that configuration the
+# return claim is supportable in the way #42's own block demanded, where
+# a matching model name alone was refused as "one field agreeing while
+# three disagree".  DO NOT ESTIMATE A SPEED RATIO FROM THE SWEEP'S OWN
+# TIMINGS -- cube-cost variance swamps it, and that prohibition is not
+# weakened by the change being a return to a known configuration.
+#
+# *** CORRECTION TO THIS BLOCK AS FIRST COMMITTED AT 5d3b6d0. ***  It read
+# "this restart returns to the machine every restart before #48 used".
+# THAT IS FALSE ON TWO COUNTS, and the check-in prompt's mention of a CPU
+# change at #41 is what sent me back to the record to find out:
+#
+#   * #41 RAN THE FAST CPU.  It is the series' first host reboot and the
+#     first restart at which the spec was recorded at all: @ 2.80GHz,
+#     2800.186 MHz, 33792 KB, MemTotal 16482220 kB, kernel 6.18.44-fc-v33.
+#     #42 then moved it to 2100.000 / 266240 KB.  So the machine before
+#     #48 was not uniform; it was fast at #41 and slow from #42.
+#   * CONTAINERS 1-8 DIFFER FROM TODAY ON MemTotal: 16482220 kB against
+#     16481980 kB now, the same 240 kB gap #42's block flagged when it
+#     refused to call itself a return to the original.
+#
+# The CPU has therefore moved at #41, #42, #48 and #50 -- FOUR changes,
+# not the one my first draft implied.  I wrote "every restart before #48"
+# from the two blocks I had open (#48 and #49) without reading back to
+# #41, which is the standing-claim-never-re-checked pattern applied to a
+# claim I made myself, in the same commit that made it.
 #
 # btime MOVED, WHICH IS HOW THE TWO CASES ARE TOLD APART: 1790019157 at
 # #49 (2026-09-21T19:32:37Z) and 1790096990 now (2026-09-22T17:09:50Z),
