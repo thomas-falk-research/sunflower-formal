@@ -12181,3 +12181,81 @@ g=11 [13, 12, 12, 11, 13, 13, 12, 12, 12, 12, 6]	UNSAT	2610.6
 g=11 [13, 12, 12, 11, 13, 13, 13, 11, 10, 10, 10]	UNSAT	4948.5
 g=11 [13, 12, 12, 11, 13, 13, 13, 11, 11, 10, 9]	UNSAT	6203.6
 g=11 [13, 12, 12, 11, 13, 13, 12, 12, 12, 11, 7]	UNSAT	6380.9
+# RESTART #49 -- CONTAINER RESTART 2026-09-22T08:28:59.712950004Z.  THE
+# MACHINE DID NOT CHANGE, AND THE HOST DID NOT REBOOT.  Costs across this
+# point ARE on a common basis -- the first restart in a while of which
+# that can be said, and it is said only because the spec was re-read.
+#
+#     field          #48                #49
+#     CPU model      @ 2.80GHz          @ 2.80GHz      same
+#     cpu MHz        2799.998           2799.998       same
+#     cache size     33792 KB           33792 KB       same
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# btime DID NOT MOVE: 1790019157 at #48 and 1790019157 now, which is
+# 2026-09-21T19:32:37Z.  That is #48's own boot instant, so the host has
+# been up continuously across this teardown and only the container's
+# processes were killed.  THIS IS THE FIELD THAT DISTINGUISHES THE TWO
+# CASES and it is read, not inferred from the spec matching: an identical
+# spec after a reboot would look the same in the table above.
+#
+# THE TWO [killed] MARKERS AGREE TO THE NANOSECOND, WHICH THE PROCEDURE
+# SAYS THEY NEED NOT.  Driver bh5c09637 and waiter b1dydw8ki both carry
+# mtime 2026-09-22T08:28:59.712950004Z -- identical, not merely close.
+# The procedure says to take the EARLIER of the two and that they are not
+# guaranteed to agree; here there is nothing to choose between them.
+# Recorded as an observation, not as a new rule: two files written in one
+# teardown event by the same harness are not two independent clocks, so
+# their agreeing is weaker evidence than two agreeing measurements would
+# normally be.
+#
+# LOST WORK -- FOUR CUBES, BY THE CNF-MTIME METHOD, GLOB FILTERED BY THE
+# DEAD PID.  /tmp held 208 sf-*.cnf files; exactly 4 carried pid 419 with
+# the required -seq-c form, and NO non-seq-c CNF carried it, so the #41
+# transient-startup trap did not apply here.
+#
+#     idx   CNF mtime (launch)              elapsed at teardown
+#     1328  2026-09-22T06:52:16.193083Z              5803.5 s
+#     1329  2026-09-22T07:25:24.637037Z              3815.1 s
+#     1330  2026-09-22T07:34:02.273026Z              3297.4 s
+#     1331  2026-09-22T08:13:49.280971Z               910.4 s
+#
+# TOTAL WALL LOST 13826.4 s = 3.8407 h.  Cross-checked against a second,
+# independent route -- each cube's last cpu/elapsed sample plus the gap
+# from that sample to the teardown -- which agrees within 0.6 s on all
+# four (-0.2, -0.6, -0.3, -0.3 s).  The two methods share no inputs
+# except the teardown instant.
+#
+# CPU-WEIGHTED, AND BRACKETED RATHER THAN POINT-ESTIMATED BECAUSE ONE
+# SAMPLE IS YOUNG.  Ratios are read from cpu_ratio_samples.tsv at the
+# 08:14:43Z bank, the last before teardown; the processes are gone and
+# none of this is re-samplable.  idx 1328 0.9836, idx 1329 0.9875, idx
+# 1330 0.9848 -- all three sampled past 2400 s and settled.  idx 1331's
+# only sample was taken at 54 s elapsed, inside the startup depression
+# this file documents, so 0.9074 is NOT a good estimate of its lifetime
+# ratio over 910.4 s.  Its loss is bracketed 826.1 s (that young ratio)
+# to 910.4 s (ratio 1.0, the hard cap for a single-threaded solver).
+# The note's core median of 0.9904 would give 901.7 s and sits inside the
+# bracket; it is NOT adopted as the figure.
+#
+#     TOTAL CPU-SECONDS LOST: 13549.1 .. 13633.4 s = 3.7636 .. 3.7871 CPU-h
+#
+# NOTHING WAS LOST FROM THE COMMITTED STATE.  1497 rows on both sides of
+# the teardown, 1328 decided, and the working tree came back clean at
+# f720c14 with local HEAD equal to origin.  What was lost is solver time
+# on four cubes that had not yet landed, and nothing else.
+#
+# SET SEVENTEEN OPENS, with idx 1328, 1329, 1330 and 1331 re-taken.  IT
+# IS NOT CONFOUNDED BY A MACHINE CHANGE -- said at the OPENING, as the
+# rule requires -- because the spec and btime above are unchanged, which
+# is what set sixteen could not say.  THE SELECTION EFFECT STILL APPLIES
+# IN FULL: these four are the cubes that were still running at teardown,
+# so they are by construction the longest-running of their cohort, and
+# their re-run costs must never be compared with the block's other
+# members as though they were a random sample of it.
+#
+# Relaunched verbatim.  New driver pid 13145, exact launch
+# 2026-09-22T08:31:46.840000Z from /proc/13145/stat field 22 against
+# btime 1790019157.

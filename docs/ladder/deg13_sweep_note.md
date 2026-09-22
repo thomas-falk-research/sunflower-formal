@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T08:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T08:33Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6427,14 +6427,15 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1497 rows; 1328 labels decided; 1328 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#48**
-  — extended from #47 here, against the **#48** header block in the
-  checkpoint, which records **1441 rows on both sides** of the teardown
-  and says "NOTHING WAS LOST BUT SOLVER TIME". *The waiter was armed at
-  1441 and its output ends in `[killed]` with no landing line, which is
-  the independent half of that check: the row count agreeing with itself
-  either side of a teardown would also be what a lost row looks like if
-  the waiter had missed it.* **At #46 the same pair of facts read 1345
+  undecided-only.** No rows were lost across restarts #37 through **#49**
+  — extended from #48 here, against the **#49** header block in the
+  checkpoint, which records **1497 rows on both sides** of the teardown
+  and says "NOTHING WAS LOST FROM THE COMMITTED STATE". *The waiter was
+  armed at 1497 and its output ends in `[killed]` with no landing line,
+  which is the independent half of that check: the row count agreeing
+  with itself either side of a teardown would also be what a lost row
+  looks like if the waiter had missed it.* **At #48 the same pair read
+  1441 and 1441.** **At #46 the same pair of facts read 1345
   and 1345**, and the check is the same one applied twice, not a
   stronger one for having held. **The range was previously extended
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
@@ -6443,8 +6444,8 @@ exactly one bank.
   A row count is not a decision count: 1328 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
-  `/proc/419/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
+  `/proc/13145/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -7203,6 +7204,55 @@ exactly one bank.
   converted into a rate or an estimate of what the remaining 20 will
   cost**: this block's decided costs already run from 347.0 s to 7761.2 s,
   a factor of 22, and nothing in that spread supports extrapolation.*
+
+  ***RESTART #49 — THE CONTAINER WAS RESTARTED AT 08:28:59.712950004Z AND
+  THE MACHINE DID NOT CHANGE.*** *Full figures are in the `#49` header
+  block in the checkpoint; this entry carries only what the note needs.*
+  **Four cubes were killed in flight — idx 1328, 1329, 1330 and 1331 —
+  losing 13826.4 s of wall, 3.8407 h.** *CPU-weighted the loss is
+  **13549.1 .. 13633.4 s = 3.7636 .. 3.7871 CPU-h**, a BRACKET and not a
+  point estimate, because idx 1331's only cpu/elapsed sample was taken at
+  **54 s** elapsed — inside the startup depression this file documents —
+  and weighting 910.4 s by that young 0.9074 would understate it.*
+  **Nothing was lost from the committed state: 1497 rows on both sides,
+  1328 decided, tree clean at `f720c14`.**
+
+  ***btime IS THE FIELD THAT SETTLED THIS ONE, AND THE SPEC TABLE COULD
+  NOT HAVE.*** All six spec fields match #48 exactly, but *an identical
+  spec after a reboot would look exactly the same*. **`btime` did not
+  move — 1790019157 both sides, which is #48's own boot instant — so the
+  host ran continuously and only the container's processes died.** *That
+  is why #49 is a container restart and not a host reboot, and it is read
+  rather than inferred.* **Costs across this point ARE on a common
+  basis**, which is the opposite of what had to be said at #48.
+
+  ***AND THE TWO `[killed]` MARKERS AGREED TO THE NANOSECOND, WHICH IS
+  WORTH LESS THAN IT LOOKS.*** The procedure says to take the earlier of
+  the two and warns they need not agree; here both carry
+  **08:28:59.712950004Z**, identical rather than merely close. *Two files
+  written by one harness in one teardown event are **not two independent
+  clocks**, so their agreement is weaker evidence than two agreeing
+  measurements would normally be, and it is recorded as an observation
+  rather than promoted into a rule.* **The genuinely independent check is
+  the other one**: the CNF-mtime loss figures reproduce to within **0.6
+  s** on all four cubes against a route through the last cpu/elapsed
+  sample, and those two share no input but the teardown instant.
+
+  ***SET SEVENTEEN OPENS, AND IT IS NOT CONFOUNDED — SAID AT THE OPENING,
+  AS THE RULE REQUIRES.*** Members idx **1328, 1329, 1330, 1331**.
+  *Unlike set sixteen, which opened across a machine change at #48, this
+  set's re-runs sit on the same configuration as the costs they will be
+  compared against.* **THE SELECTION EFFECT APPLIES IN FULL AND IS
+  UNCHANGED BY THAT**: these four are precisely the cubes still running
+  at teardown, so they are **by construction the longest-running of their
+  cohort**, and their re-run costs must never be read as a random sample
+  of the block. *Set sixteen's entry above is the worked example of what
+  that selection does to a comparison.*
+
+  *Relaunched verbatim; new driver **pid 13145**, exact launch
+  **2026-09-22T08:31:46.840000Z**, read from `/proc/13145/stat` field 22
+  against btime rather than from the wall clock at the moment of
+  relaunch.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
