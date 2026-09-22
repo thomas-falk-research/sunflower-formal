@@ -161,37 +161,16 @@ def main():
         print(f"{len(solvers)} solver(s) running but none could be paired to a CNF.")
         return 1
 
-    dpids = sorted({r[2] for r in rows})
-    print(f"live sample at {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now))}"
-          f"   driver pid(s): {', '.join(map(str, dpids))}   n = {len(rows)}")
-    if len(dpids) > 1:
-        print("  NOTE: more than one driver pid is present; CNFs from a dead")
-        print("        driver must never be mixed into a live measurement.")
-    print()
-    print(f"{'pid':>6} {'idx':>5} {'ps_elapsed':>11} {'now-mtime':>10} "
-          f"{'delta':>6} {'cpu%':>6} {'cpu/elapsed':>12}")
-    for pid, idx, dpid, et, ct, pc, derived in sorted(rows, key=lambda r: -r[3]):
-        print(f"{pid:>6} {idx:>5} {et:>11} {derived:>10} {derived-et:>6} "
-              f"{pc:>6} {ct/et if et else float('nan'):>12.4f}")
-
-    worst = max(abs(r[6] - r[3]) for r in rows)
-    print(f"\nmax |now-mtime - ps ELAPSED| over this sample: {worst} s   (n = {len(rows)})")
-    print("both clocks have 1 s resolution, so a 0 s delta bounds launch")
-    print("latency below 1 s -- it does not show the latency is zero.")
-    if unpaired:
-        print(f"\nunpaired pids (exited mid-sample, or CNF already removed): {unpaired}")
-
-    print("\nfor reference, the pinned earlier samples:")
-    allworst, alln = 0, 0
-    for p in PINNED_SAMPLES:
-        w = max(abs(d - e) for _, e, d, _ in p["rows"])
-        allworst = max(allworst, w); alln += len(p["rows"])
-        print(f"  {p['when']}  driver pid {p['driver_pid']}  n = {len(p['rows'])}"
-              f"  max |delta| = {w} s  ({p['clock']} clock)")
-    print(f"  over all pinned observations: max |delta| = {allworst} s, n = {alln}")
-    print("  the live run above is a SEPARATE sample; it does not reproduce")
-    print("  the pinned ones and is not expected to.")
-
+    # THIS BLOCK RUNS BEFORE ANY PRINTING, AND THAT ORDER IS LOAD-BEARING.
+    # It used to sit at the end of main().  Piping this tool to `head`
+    # closes the pipe, and the next print raises BrokenPipeError OUTSIDE
+    # this try -- killing the script before it ever appended.  On 2026-09-22
+    # it silently lost the 16:41:33Z CHECK-IN sample and the 16:42:51Z
+    # reproduction run, while the SAME `| head -11` invocation appended fine
+    # at 15:42:08Z: it is a race between the buffer reaching the closed pipe
+    # and the script reaching this block, so the loss was silent AND
+    # nondeterministic.  `rows` and `now` are both final by here, so doing
+    # the write first costs nothing and cannot be raced away.
     # Append this sample to the same log bank.py writes, so there is ONE
     # source for a restart's weighting ratios instead of two.  Before this,
     # bank.py wrote the file and this script only printed, so the freshest
@@ -229,6 +208,38 @@ def main():
             print(f"\nappended {len(out)} row(s) to cpu_ratio_samples.tsv at {stamp}")
     except Exception as e:
         print(f"\n!! sample NOT appended: {type(e).__name__}: {e}")
+
+    dpids = sorted({r[2] for r in rows})
+    print(f"live sample at {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(now))}"
+          f"   driver pid(s): {', '.join(map(str, dpids))}   n = {len(rows)}")
+    if len(dpids) > 1:
+        print("  NOTE: more than one driver pid is present; CNFs from a dead")
+        print("        driver must never be mixed into a live measurement.")
+    print()
+    print(f"{'pid':>6} {'idx':>5} {'ps_elapsed':>11} {'now-mtime':>10} "
+          f"{'delta':>6} {'cpu%':>6} {'cpu/elapsed':>12}")
+    for pid, idx, dpid, et, ct, pc, derived in sorted(rows, key=lambda r: -r[3]):
+        print(f"{pid:>6} {idx:>5} {et:>11} {derived:>10} {derived-et:>6} "
+              f"{pc:>6} {ct/et if et else float('nan'):>12.4f}")
+
+    worst = max(abs(r[6] - r[3]) for r in rows)
+    print(f"\nmax |now-mtime - ps ELAPSED| over this sample: {worst} s   (n = {len(rows)})")
+    print("both clocks have 1 s resolution, so a 0 s delta bounds launch")
+    print("latency below 1 s -- it does not show the latency is zero.")
+    if unpaired:
+        print(f"\nunpaired pids (exited mid-sample, or CNF already removed): {unpaired}")
+
+    print("\nfor reference, the pinned earlier samples:")
+    allworst, alln = 0, 0
+    for p in PINNED_SAMPLES:
+        w = max(abs(d - e) for _, e, d, _ in p["rows"])
+        allworst = max(allworst, w); alln += len(p["rows"])
+        print(f"  {p['when']}  driver pid {p['driver_pid']}  n = {len(p['rows'])}"
+              f"  max |delta| = {w} s  ({p['clock']} clock)")
+    print(f"  over all pinned observations: max |delta| = {allworst} s, n = {alln}")
+    print("  the live run above is a SEPARATE sample; it does not reproduce")
+    print("  the pinned ones and is not expected to.")
+
     return 0
 
 
