@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T07:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T08:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6415,7 +6415,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1495 -> 1496 rows)
+## State as of the last refresh (1496 -> 1497 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6426,7 +6426,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1496 rows; 1327 labels decided; 1327 UNSAT; 0 SAT; 0 labels
+- **1497 rows; 1328 labels decided; 1328 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#48**
   — extended from #47 here, against the **#48** header block in the
   checkpoint, which records **1441 rows on both sides** of the teardown
@@ -6440,7 +6440,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1327 decided plus 169 superseded
+  A row count is not a decision count: 1328 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 419**, launched 2026-09-21T19:34:36.370000Z (read from
@@ -6474,7 +6474,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1326, highest decided 1326, holes [].**
+- **Frontier contiguous 0..1327, highest decided 1327, holes [].**
   <!-- SPAN-STATE: closed -->
   ***THE SIXTY-FIRST SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `e414c26` EXISTED.*** **The retirement sentence stood for exactly one
@@ -7187,6 +7187,22 @@ exactly one bank.
   **37**. *Both exist — `r ≤ 97` in each case — which is not automatic;
   the note's count of 97 is exactly the number of percent values that
   have one.*
+
+  **BANK idx 1327 at 6380.9 s**, in the file by 08:13:55Z. *No span: the
+  frontier stays contiguous at 0..1327.* **Rank 271 of 1328**, 1057
+  cheaper, `1328 − 1057 = 271` reproduces it, untied; *tie census holds at
+  **17 of 1328**.* **Count 1328 = 68.1375%**, remaining 621; *the k = 69
+  trap at 1344 is **16** away.* `[13,12,12,11]` at **29 of 49** — **20
+  undecided** — with idx 1327 **5th of 29**; mean **3581.6 s**, median
+  **2737.6 s**, total **103867.2 s**. **0.2954 of the cap.**
+
+  *The block's running total has passed **100000 s** — 103867.2 s over its
+  29 decided members, which is **28.85 CPU-hours** if the wall seconds are
+  read as core-seconds, and the note has just established that they equal
+  core-seconds only to within about 1%. **Recorded as a total, not
+  converted into a rate or an estimate of what the remaining 20 will
+  cost**: this block's decided costs already run from 347.0 s to 7761.2 s,
+  a factor of 22, and nothing in that spread supports extrapolation.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -13336,7 +13352,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1327 of 1949 = 68.0862%**; **622 undecided**. **50% IS CROSSED**, at
+- **1328 of 1949 = 68.1375%**; **621 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14050,7 +14066,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **28 decided**, undecided 21 spanning 1327..1347
+  **29 decided**, undecided 20 spanning 1328..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
