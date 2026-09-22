@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T22:12Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T22:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6494,6 +6494,45 @@ exactly one bank.
   prose, which is the whole difference.*
 - **Frontier contiguous 0..1373, highest decided 1378, holes [1374, 1375, 1376].**
   <!-- SPAN-STATE: open -->
+
+  ***THE "BOTH WRONG" OUTCOME IS NOW ELIMINATED, AND THE COUNT READING IS
+  THE ONLY ONE OF THE TWO STILL STANDING — WHICH IS NOT THE SAME AS
+  RIGHT.*** **idx 1374 stood at 8276 s at 22:41:42Z**, forcing the block
+  span to **>= 8276 / 437.4 = 18.920896x**. At full precision the two
+  intervals are:
+
+  | reading | interval | required block maximum | status |
+  |---|---|---|---|
+  | matched on fraction | 13.141068x .. 14.628822x | 5747.90 .. 6398.65 s | **REFUTED**, by 1877.35 s |
+  | matched on count | 18.232497x .. 21.976306x | 7974.89 .. 9612.44 s | **lower bound now INSIDE it** |
+
+  **The gap between them — 6398.65 .. 7974.89 s — was the region where
+  BOTH readings would have been wrong, and the span has passed straight
+  through it.** *That outcome can no longer happen.* **The count reading
+  is still not confirmed**: it fails if idx 1374 passes **9612.44 s**,
+  which leaves it **1336.44 s** of headroom, and the per-cube cap is
+  **21600 s** — a cube that ran to cap would put the block at **49.3827x**
+  and refute the count reading as thoroughly as the fraction one is
+  refuted now. *A lower bound entering an interval is evidence the
+  interval is not too high. It is no evidence at all that it is not too
+  low.*
+
+  ***AND TWO FIGURES IN THE PREVIOUS COMMIT WERE QUOTED FROM THE ROUNDED
+  MULTIPLIER, NOT THE FULL-PRECISION ONE.*** That commit gave the
+  matched-count interval as needing **7973.80 .. 9614.1 s**; recomputed
+  the way the fraction interval was recomputed in the same commit, it is
+  **7974.89 .. 9612.44 s** — out by **1.09 s** and **1.66 s**. *Nothing
+  turns on it: the refutation of the fraction interval never touched
+  these endpoints, and "1564.8 s short" becomes 1565.89 s short.* **What
+  is worth recording is that ONE commit used full precision for one
+  interval and the rounded `18.23x .. 21.98x` for the other**, three
+  paragraphs apart. *Rounding is not an error; using two different
+  precisions for the two halves of one comparison is.*
+
+  **In-flight bounds, 22:41:42Z, within-run only: idx 1374 >= 8276 s,
+  idx 1375 >= 6950 s, idx 1376 >= 4416 s, idx 1379 >= 1903 s.** ***idx
+  1375 has ALSO passed the old block maximum of 5612.0 s***, so the block
+  will take at least two new record-beating costs whatever happens next.
 
   ***THE MATCHED-FRACTION INTERVAL IS REFUTED, BY A BOUND THAT CANNOT BE
   UNDONE.*** **idx 1374 stood at 6409 s elapsed at 22:10:35Z** — **797.0 s
