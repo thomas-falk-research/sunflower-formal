@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T15:22Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T15:29Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6419,7 +6419,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1518 -> 1519 rows)
+## State as of the last refresh (1519 -> 1520 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6430,7 +6430,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1519 rows; 1350 labels decided; 1350 UNSAT; 0 SAT; 0 labels
+- **1520 rows; 1351 labels decided; 1351 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6445,7 +6445,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1350 decided plus 169 superseded
+  A row count is not a decision count: 1351 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6479,79 +6479,42 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1340, highest decided 1350, holes [1341].**
-  <!-- SPAN-STATE: open -->
-  ***THE SIXTY-FOURTH SPAN HAS OPENED, AT TWO HOLES.*** **idx 1342
-  landed at 1099.0 s while idx 1340 AND idx 1341 were both still out**,
-  so the frontier breaks at **1340 and 1341**. *The frontier and hole
-  set are on the bullet line above, which bank.py owns.* **No duration,
-  no rank, no monotonicity, no commit count and no hole chain until it
-  closes.**
+- **Frontier contiguous 0..1350, highest decided 1350, holes [].**
+  <!-- SPAN-STATE: closed -->
+  ***THE SIXTY-FOURTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** It was filled by **idx 1341 at 8290.9 s** — its last hole,
+  and the only one of its two original holes to survive past `dc3e9db`.
+  The frontier is whole again at **0..1350**. **The live opening-width
+  census, the live bound table and the live hole-count sequence that
+  stood here are all struck with this edit.** **Its duration, rank,
+  monotonicity, commit count and hole chain come from `--spans all` in
+  the NEXT commit, with every carried row first reproduced at the OLD
+  N = 128 before any is rewritten at 129.**
 
-  *The ordinal is derived, not counted off: the walk holds **128** closed
-  spans, so this takes **walk position 129**, and `129 − 65 (OFFSET)`
-  makes it the **sixty-fourth**. **Derived before the outcome.***
+  *The ordinal was derived **before** this close, in `900427a`: walk
+  position 129 less the OFFSET of 65, the **sixty-fourth**.*
 
-  *Opening-width census, counted off the chains by script: this is the
-  **first opening at two since the sixty-first**, and chains that
-  opened at two are **42** of the 128 closed — *the last five of them
-  ordinals **54, 55, 58, 59 and 61***. **AND THE GAP IS TWO CLOSES, NOT
-  A DROUGHT**: ordinal 61 is walk position 126 and the walk ends at 128,
-  so only the sixty-second and sixty-third intervene. *A first draft of
-  this sentence said sixty-seven, by subtracting an ordinal from a walk
-  position — the two are 65 apart and are not interchangeable.* ***THE
-  `#29` RIDER IS LIVE HERE AND NOT DECORATIVE***: idx 1340 and 1341 are
-  both running, so either of them landing before the commit narrows the
-  opening, and **the width the record keeps is whatever bank.py reads
-  off the staged blob** — not what the file showed while this was
-  written.
+  ***THE STRIKING HAPPENS HERE, IN THE CLOSING COMMIT, WHICH IS WHERE IT
+  BELONGS.*** At the sixty-third close it did not: `f68ed0a` left the
+  live entry standing and the marker reading `open` beside its own
+  `holes []`, and the figures commit had to do both jobs. *That made the
+  count fifteen of sixteen; this close is the sixteenth striking done at
+  the right commit and takes it to **sixteen of seventeen**.*
 
-  ***THE BOUND ON idx 1340 IS SETTLED, AND IT HELD AT EVERY ONE OF ITS
-  FOUR PUBLISHED TIGHTENINGS.*** It landed at **6268.2 s**, above
-  **4277 s** (`900427a`), **4766 s** (`016b29e`), **5849 s** (`c008086`)
-  and **5965 s** (`28f47bc`) — clearing the last and tightest by
-  **303.2 s**. *Every one of the four was read off the process's own
-  elapsed inside this run, so each was sound when written; none was a
-  cross-run wall transfer of the kind `87674f6` got wrong.*
+  ***ELEVEN SUCCESSIVE WITHIN-RUN BOUNDS WERE PUBLISHED ON idx 1341, AND
+  ALL ELEVEN HELD.*** **3497, 3986, 5069, 5185, 5576, 5650, 6023, 6858,
+  7204, 7643 and 8055 s** — at `900427a`, `016b29e`, `c008086`,
+  `28f47bc`, `dc3e9db`, `a8649be`, `f684d1a`, `ea1a83b`, `8ad7019`,
+  `b4740db` and `d019249` respectively. *Strictly increasing, as a
+  within-run chain must be, and the tightest cleared by **235.9 s**
+  against an actual **8290.9 s**.* **This is the longest such chain in
+  the sweep**; idx 1340's four and idx 1346's four were the previous
+  longest, both inside this same span. *A cube's cost bound is not a
+  span figure, which is why it may stand in a closing commit.*
 
-  ***AND THEN THE SPAN WIDENED AGAIN, FROM ONE HOLE TO THREE.*** It had
-  narrowed two → one when idx 1340 landed; then **idx 1348 landed at
-  437.4 s while idx 1346 and idx 1347 were both still out**, so the
-  holes are now **[1341, 1346, 1347]** and the committed hole count rose
-  from **1** to **3**. *A rising hole count is the raw material of a
-  False monotonicity verdict — but **NO VERDICT IS CLAIMED HERE**. The
-  chain and its verdict come from `--spans all` at the close, like every
-  other span figure, and this note does not anticipate them.* **The
-  opening width stays two**, fixed at the commit that opened it and not
-  revised by anything that happens afterwards.
-
-  ***idx 1347 HAS SINCE LANDED AT 1609.5 s AND BOTH ITS PUBLISHED BOUNDS
-  HELD*** — **518 s** (this note, 14:42:38Z sample) and **890 s**
-  (`f684d1a`, 14:48:51Z sample), cleared by **1091.5 s** and **719.5 s**.
-  ***AND idx 1346 HAS SINCE LANDED AT 2552.9 s, WITH ALL FOUR OF ITS
-  PUBLISHED BOUNDS HOLDING*** — **632 s** (this note, 14:42:38Z),
-  **1005 s** (`f684d1a`), **1840 s** (`ea1a83b`) and **2186 s**
-  (`8ad7019`), cleared by **1920.9**, **1547.9**, **712.9** and
-  **366.9 s**. *That is the second chain of successive tightenings in
-  this span carried to its landing and checked end to end; idx 1340's
-  four were the first.* **One hole remains — idx 1341, the span's only
-  surviving original hole — bounded at more than 7204 s** from the
-  15:08:32Z sample.
-
-  ***THE HOLE COUNT AT THIS SPAN'S CHECKPOINT-TOUCHING COMMITS READS
-  2, 2, 2, 2, 1, 3, 2*** — `900427a`, `016b29e`, `c008086`, `28f47bc`,
-  `dc3e9db`, `f684d1a` and this one. **`a8649be` is NOT in that list and
-  that is not an oversight**: it was a samples-only commit and touches
-  the checkpoint in **zero** files, and `checkpoint_audit.py` walks
-  `git rev-list HEAD -- <checkpoint>`, so a commit that does not touch
-  the checkpoint cannot enter a chain. *Read from the source at
-  `checkpoint_audit.py:134`, not inferred — though it was first noticed
-  by counting the SIXTY-THIRD span's commits, where six carried holes
-  and the tool's chain has five entries, the missing one being that
-  span's own samples-only commit `f3ed48c`.* **The sequence above is
-  still an observation of the frontier, not the tool's chain**: the
-  chain and its monotonicity verdict are read from `--spans all` at the
-  close, and nothing here anticipates them.
+  ***AND THE `[13, 12, 12, 11]` BLOCK IS COMPLETE AT 49 OF 49*** with
+  this row — mean **4043.3 s**, median **2776.9 s**, total
+  **198120.6 s**, and idx 1341 is its **4th dearest**.
 
   ***THE SIXTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `f68ed0a` EXISTED.*** ***AND THE RETIREMENT SENTENCE WAS NEVER
@@ -13966,7 +13929,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1350 of 1949 = 69.2663%**; **599 undecided**. **50% IS CROSSED**, at
+- **1351 of 1949 = 69.3176%**; **598 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14679,8 +14642,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **48 decided**, undecided [1341]
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
   **3 decided**, undecided 35 spanning 1351..1385
 
