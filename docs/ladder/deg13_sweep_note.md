@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T21:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T21:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6494,6 +6494,46 @@ exactly one bank.
   prose, which is the whole difference.*
 - **Frontier contiguous 0..1373, highest decided 1373, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***THE MONOTONE-DEFICIT ARGUMENT IS STATED TOO STRONGLY IN TWO COMMITS,
+  AND THE ERROR IS NOW BOUNDED INSTEAD OF ASSUMED AWAY.*** Checked over
+  the whole of `cpu_ratio_samples.tsv` — **4385 rows, 445 series keyed by
+  (driver pid, solver pid, cube index), 432 of them with more than one
+  observation, 3940 consecutive pairs**:
+
+  | quantity | violations |
+  |---|---|
+  | `cpu <= elapsed` (the premise) | **0 of 4385** |
+  | `elapsed` non-decreasing | **0 of 3940 pairs** |
+  | **deficit `elapsed - cpu` non-decreasing** | **117 of 3940 pairs** |
+
+  ***AND EVERY ONE OF THE 117 DROPS IS EXACTLY -1 s.*** *Not one is -2 or
+  worse.* **That single-bar histogram is what separates quantization from
+  a real violation** — a genuinely non-monotone quantity would show a
+  spread of magnitudes. The mechanism is that `ps -o etimes=,times=`
+  returns **whole seconds, each truncated independently**, so their
+  difference carries up to 1 s of truncation error even when the
+  underlying difference is monotone. *The drops are spread over elapsed
+  gaps from 1 s to 86 s, so they are not a burst from one bad sample
+  either.*
+
+  **NEITHER CONCLUSION THAT USED THE ARGUMENT FALLS.** At `f68ed0a` the
+  measured deficit of **101 s** becomes **>= 100 s**, so "reaching 9606.6
+  CPU seconds needs elapsed >= 9707.6 s" becomes **>= 9706.6 s** — against
+  a **97 s** gap between that predicted write time and the row the waiter
+  actually saw, so the units conclusion survives with 96 s to spare. At
+  `5d3b6d0` the restart #50 bracket's upper end of **4308.1 s** should be
+  read as up to about **4 s** looser across its four cubes, against the
+  **28.0 s** by which that end already sits below wall — so it remains
+  tighter than the trivial `cpu <= wall` bound, by less than was claimed.
+
+  ***WHAT CHANGES IS THE STATEMENT, NOT THE RESULT.*** **The TRUE deficit
+  is monotone non-decreasing; the MEASURED deficit is monotone
+  non-decreasing only to within 1 s per observation**, and every future
+  use must carry that slack explicitly rather than treat a reading as
+  exact. *Both commits treated it as exact. The premise they checked —
+  `cpu > elapsed` never observed — is the weaker claim and still holds,
+  now at 0 of 4385 rather than the 0 of 3937 checked then.*
 
   ***THE NULL OUTCOME I NAMED AS LIKELIER HAPPENED, WHICH IS THE WEAKEST
   KIND OF CONFIRMATION THERE IS.*** The previous commit wrote, before the
