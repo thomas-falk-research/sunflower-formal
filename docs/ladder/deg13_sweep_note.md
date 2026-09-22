@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T20:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T20:47Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6430,7 +6430,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1539 -> 1540 rows)
+## State as of the last refresh (1540 -> 1541 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6441,7 +6441,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1540 rows; 1371 labels decided; 1371 UNSAT; 0 SAT; 0 labels
+- **1541 rows; 1372 labels decided; 1372 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6456,7 +6456,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1371 decided plus 169 superseded
+  A row count is not a decision count: 1372 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6490,34 +6490,38 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1369, highest decided 1371, holes [1370].**
-  <!-- SPAN-STATE: open -->
-  ***THE SIXTY-SIXTH SPAN HAS OPENED, AT ONE HOLE.*** **idx 1371 landed
-  at 2167.4 s while idx 1370 was still out**, so the frontier breaks at
-  **1370**. *The frontier and hole set are on the bullet line above,
-  which bank.py owns.* **No duration, no rank, no monotonicity, no commit
-  count and no hole chain until it closes.**
+- **Frontier contiguous 0..1371, highest decided 1371, holes [].**
+  <!-- SPAN-STATE: closed -->
+  ***THE SIXTY-SIXTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** It was filled by **idx 1370 at 4401.4 s**, its only hole,
+  and the frontier is whole again at **0..1371**. **The live
+  opening-width census — including its zero-gap sentence — and the live
+  bound that stood here are struck with this edit.** **Its duration,
+  rank, monotonicity, commit count and hole chain come from `--spans all`
+  in the NEXT commit, with every carried row first reproduced at the OLD
+  N = 130 before any is rewritten at 131.**
 
-  *The ordinal is derived, not counted off: the walk holds **130** closed
-  spans, so this takes **walk position 131**, and `131 − 65 (OFFSET)`
-  makes it the **sixty-sixth**. **Derived before the outcome.***
+  *The ordinal was derived **before** this close, in `cf2e9ba`: walk
+  position 131 less the OFFSET of 65, the **sixty-sixth**.*
 
-  *Opening-width census, counted off the chains by script: this is the
-  **first opening at one since the sixty-fifth**, and chains that
-  opened at one are **44** of the 130 closed — *the last five of them
-  ordinals **53, 56, 60, 62 and 65***. ***AND THE GAP IS ZERO CLOSES.***
-  **The sixty-fifth is the span that closed one commit ago**, so these
-  are back-to-back openings at width one with nothing in between — the
-  shortest possible gap, and the first time this census sentence has had
-  to report one. *It is still a tally of two adjacent events and carries
-  no more weight than that.* ***THE `#29` RIDER IS LIVE HERE***: idx 1370
-  is running, so its landing before the commit would close this span
-  before it exists, exactly as happened at `6f0be90`, and **the width the
-  record keeps is whatever bank.py reads off the staged blob**.
+  ***BOTH PUBLISHED BOUNDS ON idx 1370 HELD*** — **2447 s** (`cf2e9ba`)
+  and **4184 s** (`f0f0cbd`), cleared by **1954.4 s** and **217.4 s**
+  against an actual **4401.4 s**. *The second was tight: **217.4 s** of
+  margin on a 4401.4 s cost, **4.94%**.*
 
-  *Within-run bound on the hole: **idx 1370 costs more than 2447 s**,
-  from its elapsed at the 20:13:18Z sample. Sound because it was sampled
-  inside this run.*
+  ***A SUPERLATIVE WAS DRAFTED HERE AND DID NOT SURVIVE BEING COMPUTED.***
+  The draft read "the narrowest clearance any bound in this sweep has
+  had". Two things were wrong with it. **It did not say by which
+  measure, and the two measures disagree**: over the seven cubes whose
+  bound chains were computed in this session, 217.4 s IS the narrowest
+  ABSOLUTE margin, but idx 1341's 235.9 s on a 8290.9 s cost is **2.85%**
+  against this one's 4.94%, so by RELATIVE margin idx 1341 is tighter.
+  **And "in this sweep" was not a range I had**: those seven cubes are
+  this session's, not the whole run. *The figure stands; the superlative
+  is withdrawn.* **A bound that holds narrowly is not a bound that nearly
+  failed** — `cost = overhead + final elapsed` makes it true by
+  construction, and the margin measures how late the last sample was
+  taken, not how close the claim came to breaking.
 
   ***THE SIXTY-FIFTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3462cdc` EXISTED.*** **The retirement sentence stood for exactly one
@@ -14041,7 +14045,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1371 of 1949 = 70.3438%**; **578 undecided**. **50% IS CROSSED**, at
+- **1372 of 1949 = 70.3951%**; **577 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14755,7 +14759,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
-  **23 decided**, undecided 15 spanning 1370..1385
+  **24 decided**, undecided 14 spanning 1372..1385
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
