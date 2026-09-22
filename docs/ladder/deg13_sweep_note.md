@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T05:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T05:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6805,6 +6805,35 @@ exactly one bank.
   later, 59.3 s after the row existed**, and would need **2051.1 s of cpu
   in 2012 s of wall (101.9%)**. **Four cubes now, four refutations, at
   104.8%, 101.6%, 109.4% and 101.9%.** *Still silent on `--maxtime`.*
+
+  *No row at the 05:41Z check-in — four cpu/elapsed samples committed
+  rather than left to ride. In flight: idx 1320 at 6141 s, 1321 at 6031 s,
+  1322 at 5350 s, 1323 at 1507 s, all inside the 21600 s cap.*
+
+  **THE IN-FLIGHT BOUNDS, AND ONE THING THEY DO NOT SAY.** Against the
+  block's 21 decided members (top five 6930.1, 5413.7, 5404.5, 5311.1,
+  3235.3), `cost > current elapsed` gives: **idx 1320 already beats 20 of
+  21**, idx 1321 **20 of 21**, idx 1322 **18 of 21**, idx 1323 **6 of
+  21**. ***What that does NOT license is calling idx 1320 and idx 1321
+  each "no worse than second".*** Each is measured against the **decided**
+  set, and the two of them are not in that set for one another — **they
+  contend**. The joint statement is the defensible one: *both will come in
+  above 5413.7 s, so together they take **two of the top three** places,
+  and which of them is second is not determined by anything measured
+  here.* **Treating independent bounds as if they composed is a real way
+  to overstate**, and it is the same shape as the rank-versus-denominator
+  error the rules section already carries.
+
+  *For the block maximum they need **789.1 s** and **899.1 s** more than
+  they have; idx 1322 needs 1580.1 s and idx 1323 5423.1 s. **No
+  prediction is registered** — these are distances, not forecasts, and
+  `fffacd9` is the entry that explains why the distinction is kept.*
+
+  *Counter arithmetic, computed not recalled: the counter is **1320** and
+  the k = 68 trap is at **1325**, five away, threshold 1326. **Even if all
+  four cubes in flight land, the counter reaches only 1324** — one short.
+  So the trap needs a fifth row, and catching it still depends on a commit
+  standing on it.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
