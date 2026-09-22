@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T14:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T14:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6419,7 +6419,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1512 -> 1513 rows)
+## State as of the last refresh (1513 -> 1514 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6430,7 +6430,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1513 rows; 1344 labels decided; 1344 UNSAT; 0 SAT; 0 labels
+- **1514 rows; 1345 labels decided; 1345 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6445,7 +6445,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1344 decided plus 169 superseded
+  A row count is not a decision count: 1345 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6479,7 +6479,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1339, highest decided 1345, holes [1340, 1341].**
+- **Frontier contiguous 0..1340, highest decided 1345, holes [1341].**
   <!-- SPAN-STATE: open -->
   ***THE SIXTY-FOURTH SPAN HAS OPENED, AT TWO HOLES.*** **idx 1342
   landed at 1099.0 s while idx 1340 AND idx 1341 were both still out**,
@@ -6506,14 +6506,16 @@ exactly one bank.
   off the staged blob** — not what the file showed while this was
   written.
 
-  *Within-run bounds on the two holes, sound because both were sampled
-  inside this run and `cost = overhead + final elapsed`: **idx 1340 costs
-  more than 4766 s** and **idx 1341 more than 3986 s**, from their
-  elapsed at the 14:14:54Z sample. These are not cross-run transfers.*
-  **Tightened from the 4277 s and 3497 s first recorded at `900427a`**,
-  which remain true and are the ones that commit is on the hook for; a
-  bound only ever moves upward while the process runs, and the looser
-  pair stays in the permanent record whatever this line says.
+  ***THE BOUND ON idx 1340 IS SETTLED, AND IT HELD AT EVERY ONE OF ITS
+  FOUR PUBLISHED TIGHTENINGS.*** It landed at **6268.2 s**, above
+  **4277 s** (`900427a`), **4766 s** (`016b29e`), **5849 s** (`c008086`)
+  and **5965 s** (`28f47bc`) — clearing the last and tightest by
+  **303.2 s**. *Every one of the four was read off the process's own
+  elapsed inside this run, so each was sound when written; none was a
+  cross-run wall transfer of the kind `87674f6` got wrong.* **One hole
+  remains: idx 1341 costs more than 5185 s**, from its elapsed at the
+  14:34:53Z sample. *The span narrows from two to one; its opening width
+  stays two, fixed at the commit that opened it.*
 
   ***THE SIXTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `f68ed0a` EXISTED.*** ***AND THE RETIREMENT SENTENCE WAS NEVER
@@ -13928,7 +13930,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1344 of 1949 = 68.9584%**; **605 undecided**. **50% IS CROSSED**, at
+- **1345 of 1949 = 69.0097%**; **604 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14642,7 +14644,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **45 decided**, undecided [1340, 1341, 1346, 1347]
+  **46 decided**, undecided [1341, 1346, 1347]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
