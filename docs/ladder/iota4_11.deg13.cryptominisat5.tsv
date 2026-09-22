@@ -12409,3 +12409,4 @@ g=11 [13, 12, 12, 10, 13, 13, 13, 13, 11, 9, 9]	UNSAT	2412.3
 # teardown and 1530 after it, HEAD 870e7fb on both sides, working tree
 # clean.  The loss is solver time only.
 g=11 [13, 12, 12, 10, 13, 13, 13, 13, 10, 10, 9]	UNSAT	2017.5
+g=11 [13, 12, 12, 10, 13, 13, 13, 12, 12, 12, 6]	UNSAT	2901.6
