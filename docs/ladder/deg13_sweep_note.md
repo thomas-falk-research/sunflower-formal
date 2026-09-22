@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T11:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T12:04Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6417,7 +6417,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1501 -> 1502 rows)
+## State as of the last refresh (1502 -> 1503 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6428,7 +6428,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1502 rows; 1333 labels decided; 1333 UNSAT; 0 SAT; 0 labels
+- **1503 rows; 1334 labels decided; 1334 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6443,7 +6443,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1333 decided plus 169 superseded
+  A row count is not a decision count: 1334 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6477,8 +6477,28 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1332, highest decided 1332, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1332, highest decided 1336, holes [1333, 1334, 1335].**
+  <!-- SPAN-STATE: open -->
+  ***THE SIXTY-THIRD SPAN HAS OPENED, AT THREE HOLES — THE WIDEST
+  OPENING SINCE THE FIFTY-SEVENTH.*** **idx 1336 landed at 1209.6 s while
+  idx 1333, 1334 AND 1335 were all still out**, so the frontier breaks at
+  **1333, 1334 and 1335**. *The frontier and hole set are on the bullet
+  line above, which bank.py owns.* **No duration, no rank, no
+  monotonicity, no commit count and no hole chain until it closes.**
+
+  *The ordinal is derived, not counted off: the walk holds **127** closed
+  spans, so this takes **walk position 128**, and `128 − 65 (OFFSET)`
+  makes it the **sixty-third**. **Derived before the outcome.***
+
+  *Opening-width census, counted off the chains by script: this is the
+  **first opening at three since the fifty-seventh**, and chains that
+  opened at three are **39** of the 127 closed — *the last five of them
+  ordinals **42, 44, 49, 51 and 57***. ***THE `#29` RIDER IS LIVE HERE
+  AND NOT DECORATIVE***: idx 1333, 1334 and 1335 are all running, so any
+  of them landing before the commit narrows the opening, and **the width
+  the record keeps is whatever bank.py reads off the staged blob** — not
+  what the file showed while this was written.
+
   ***THE SIXTY-SECOND SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `5763cd8` EXISTED.*** **The retirement sentence stood for exactly one
   commit — `5763cd8` — and this edit is the striking. Fifteen for fifteen
@@ -7592,6 +7612,23 @@ exactly one bank.
   dear cubes continues and **nothing is inferred from that** — its costs
   span 347.0 s to 11029.0 s, and neighbouring cubes resembling each other
   is what a block is.*
+
+  ***BANK idx 1336 at 1209.6 s — A CHEAP ROW AFTER A RUN OF DEAR ONES,
+  AND THE SIXTY-THIRD SPAN OPENS AT THREE.*** In the file by 12:02:56Z,
+  with idx 1333, 1334 and 1335 all still out. **Rank 1081 of 1334**, 253
+  cheaper, `1334 − 253 = 1081` reproduces it, untied; *tie census holds
+  at **17 of 1334**.* **Count 1334 = 68.4454%**, remaining 615.
+  `[13,12,12,11]` at **35 of 49**: idx 1336 places **34th of 35**, second
+  cheapest in the block. **0.0560 of the cap.**
+
+  ***THE PRECEDING FIVE ROWS RAN 5572.2, 5758.4, 9673.1, 11029.0 AND
+  5812.7 s AND THIS ONE IS 1209.6.*** *After five consecutive rows above
+  5500 s, a row at a ninth of that.* **No inference is drawn.** *The
+  block's decided costs span 347.0 s to 11029.0 s — a factor of 32 — so a
+  cheap row after dear ones is the spread reasserting itself, not a turn.
+  The note has said since the idx 1315 entry that neighbouring cubes
+  resembling each other is what a block IS; the converse is equally
+  unremarkable.*
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
@@ -13741,7 +13778,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1333 of 1949 = 68.3940%**; **616 undecided**. **50% IS CROSSED**, at
+- **1334 of 1949 = 68.4454%**; **615 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14455,7 +14492,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **34 decided**, undecided 15 spanning 1333..1347
+  **35 decided**, undecided 14 spanning 1333..1347
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
