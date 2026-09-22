@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T12:09Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T12:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7663,6 +7663,16 @@ exactly one bank.
   cube closes it, not **when**, and a new hole opening above the top
   before idx 1334 lands would leave it open.* **No prediction is
   registered.**
+
+  *No row at the 12:42Z check-in — four cpu/elapsed samples, bank.py in
+  its own invocation. **The sixty-third span is still open on idx 1334
+  alone**, which has now run **5303 s**. In flight beside it: idx 1337 at
+  2381 s, 1338 at 2117 s, 1339 at 2009 s.*
+
+  *Within-run bounds, the sound form only: **idx 1334 lands no worse than
+  16th** of the block's 37, idx 1337 no worse than 26th, idx 1338 no
+  worse than 29th, idx 1339 no worse than 30th. **Nothing is transferred
+  from any other run.***
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
