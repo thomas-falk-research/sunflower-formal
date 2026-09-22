@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T21:33Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T21:39Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6432,7 +6432,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1541 -> 1542 rows)
+## State as of the last refresh (1542 -> 1543 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6443,7 +6443,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1542 rows; 1373 labels decided; 1373 UNSAT; 0 SAT; 0 labels
+- **1543 rows; 1374 labels decided; 1374 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6458,7 +6458,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1373 decided plus 169 superseded
+  A row count is not a decision count: 1374 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6492,8 +6492,50 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1372, highest decided 1372, holes [].**
+- **Frontier contiguous 0..1373, highest decided 1373, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***THE NULL OUTCOME I NAMED AS LIKELIER HAPPENED, WHICH IS THE WEAKEST
+  KIND OF CONFIRMATION THERE IS.*** The previous commit wrote, before the
+  fact, *"a cube that finishes below 5612.0 s discriminates nothing,
+  which is the likelier outcome"*. **idx 1373 came in at 5287.1 s** —
+  **324.9 s short** of the block record, block rank **4 of 26**, sweep
+  rank **393 of 1374**, both untied. *The block's span is therefore
+  UNCHANGED at 12.83x: neither the minimum (437.4) nor the maximum
+  (5612.0) moved, so not one figure in the prediction table below is
+  touched.* **This is the same shape as the k = 51 trap that did not
+  happen** — a forecast of nothing happening, confirmed by nothing
+  happening. *It is recorded because it was written down first, and for
+  no stronger reason than that.* **Twelve rows left to settle the two
+  intervals, not thirteen.**
+
+  ***AND THE PRICE OF THE BANK-LAST RULE IS NOW MEASURED RATHER THAN
+  ASSERTED.*** The previous commit published **idx 1373 >= 4954 s** from
+  the 21:32:30Z sample and explicitly declined to retighten it against
+  the 21:33:58Z sample bank.py appended in the same commit, which read
+  **5043 s**. Against the actual **5287.1 s**:
+
+  | bound | source | margin | as % of cost |
+  |---|---|---|---|
+  | **4954 s** | 21:32:30Z, published | **333.1 s** | **6.30%** |
+  | 5043 s | 21:33:58Z, appended but not published | 244.1 s | 4.62% |
+
+  **The rule cost 89 s of tightness on this cube.** *That is the whole
+  price, it is small, and it is now a number instead of a claim that it
+  would be small.* **Both bounds held, and neither held "better"** —
+  `cost = overhead + final elapsed` makes a within-run bound true by
+  construction, so the margin measures how late the sample was taken and
+  nothing about the claim. *This is the same reasoning that withdrew the
+  narrowest-clearance superlative two commits ago, applied here to stop
+  the 4.62% figure being read as the stronger result.*
+
+  **New in-flight bounds, 21:38:56Z sample, within-run only: idx 1374 >=
+  4509 s, idx 1375 >= 3183 s, idx 1376 >= 649 s, idx 1377 >= 53 s.** All
+  four are still inside `[13,12,12,10]` (indices 1348..1385), now **26 of
+  38 decided with 12 left**. ***idx 1374 is the next candidate for the
+  record and needs 1103 s more to reach 5612.0 s*** — *and reaching it
+  would move only the block maximum, not yet either interval, which begin
+  at 5748 s and 7975 s.*
 
   ***THE `[13,12,12,10]` BLOCK TOOK A NEW MAXIMUM, AND THE TIGHTNESS IT
   SHOWS SURVIVES ONE CONTROL AND BREAKS THE MOMENT IT IS POINTED
@@ -14157,7 +14199,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1373 of 1949 = 70.4464%**; **576 undecided**. **50% IS CROSSED**, at
+- **1374 of 1949 = 70.4977%**; **575 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14871,7 +14913,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
-  **25 decided**, undecided 13 spanning 1373..1385
+  **26 decided**, undecided 12 spanning 1374..1385
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
