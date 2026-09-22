@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T23:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T23:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6434,7 +6434,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1551 -> 1552 rows)
+## State as of the last refresh (1552 -> 1553 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6445,7 +6445,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1552 rows; 1383 labels decided; 1383 UNSAT; 0 SAT; 0 labels
+- **1553 rows; 1384 labels decided; 1384 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6460,7 +6460,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1383 decided plus 169 superseded
+  A row count is not a decision count: 1384 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6494,8 +6494,58 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1380, highest decided 1384, holes [1381, 1382].**
+- **Frontier contiguous 0..1380, highest decided 1386, holes [1381, 1382, 1385].**
   <!-- SPAN-STATE: open -->
+
+  ***71% IS CROSSED, AND THE k = 71 TRAP WAS SAT ON FOR EXACTLY ONE
+  COMMIT.*** *Computed by script, not by hand.* The threshold is
+  `ceil(1949 x 71/100)` = **1384**, which is **71.0108%**. The trap
+  arithmetic gives `r = 49 x 71 mod 100` = **79**, and since 79 <= 97 a
+  trap exists at `(1949 x 71 - 79)/100` = **1383** = **70.9595%** — *a
+  figure that rounds to 71.0% at one decimal while sitting below 71%,
+  short by `79/1949` = **0.0405 pp***. **The previous commit reported
+  exactly 1383, so the counter sat on the trap for one commit and this
+  one steps off it.** *Unlike the k = 70 trap, which two rows landing in
+  one bank stepped over entirely.* **The percentage remains a counter and
+  not a rung** — deg(0) = 13 is UNSAT only when all 1949 are, and 565
+  are not.
+
+  ***THE MINIMUM DEFEATER IS DEAD, AND THE CHAIN WENT UP BY THE EXACT
+  MECHANISM DESCRIBED TWO COMMITS AGO.*** **idx 1386 came in at 385.0 s**
+  — sweep rank **1324 of 1384**, untied — and it is the FIRST member of
+  the NEXT block, `[13,12,12,9]`, **28 members at indices 1386..1413**.
+  *It is not in `[13,12,12,10]` and cannot touch that block's figures.*
+
+  **But it moved the hole set UP: `[1381, 1382]` becomes
+  `[1381, 1382, 1385]`, width two to three.** *idx 1386 decided, which
+  raised the highest decided from 1384 to 1386 and so pulled idx 1385 —
+  undecided all along — below the top for the first time.* **This commit
+  therefore writes a 3 after a 2, so the chain reads `3, 2, 2, 3` and can
+  no longer be non-increasing.** *The verdict itself is a span figure and
+  comes from `--spans all` at the close, not from here; what is stated
+  here is arithmetic on the chain, which this note does own.* **`862f508`
+  described this exact mechanism as the way a chain goes back up, three
+  commits before it happened** — *named in advance as a risk to a
+  different span, and realised here.*
+
+  ***AND THE BLOCK MINIMUM IS NOW FINAL AT 437.4 s.*** At 23:49:13Z the
+  three undecided members stand at **idx 1381 >= 3072 s, idx 1382 >=
+  2527 s and idx 1385 >= 694 s** — *every one of them already past
+  437.4 s, so none can ever lower it.* **The defeater named when the
+  block-span prediction was written is therefore closed, unfired**, after
+  narrowing from 398.4 s to 177.4 s to 68.4 s and then expiring.
+
+  | | |
+  |---|---|
+  | closing span is now | **max / 437.4** exactly, with only the max able to move |
+  | matched on count | needs closing max in **7974.89 .. 9612.44 s**; current max **8915.7** is **INSIDE** |
+  | matched on fraction | needs **5747.90 .. 6398.65 s**; already refuted |
+  | to break the count reading | idx 1381 needs **6540.44 s** more, idx 1382 **7085.44 s**, idx 1385 **8918.44 s** |
+
+  **One failure mode is closed and the other is still open on three
+  cubes.** *The prediction is settled when the last of them lands, and
+  not before.* **In-flight bounds, 23:49:13Z, within-run only: idx 1381
+  >= 3072 s, idx 1382 >= 2527 s, idx 1385 >= 694 s, idx 1387 >= 31 s.**
 
   ***THE DETECTOR FIRED FOR REAL, FOR THE FIRST TIME THIS SESSION.***
   `checkpoint_audit.py` read the WORKING TREE at 23:41:45Z and reported
@@ -14504,7 +14554,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1383 of 1949 = 70.9595%**; **566 undecided**. **50% IS CROSSED**, at
+- **1384 of 1949 = 71.0108%**; **565 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15219,6 +15269,8 @@ exactly one bank.
 
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
   **35 decided**, undecided [1381, 1382, 1385]
+- `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
+  **1 decided**, undecided 27 spanning 1387..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
