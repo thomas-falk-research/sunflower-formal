@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T04:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T04:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6746,6 +6746,24 @@ exactly one bank.
   reading, at 104.8%, 101.6% and 109.4%.** *Still nothing about which
   clock `--maxtime` is read against: that question is untouched and the
   two mechanisms remain unseparated.*
+
+  *No row at the 04:42Z check-in — eight cpu/elapsed samples committed
+  rather than left to ride, and nothing structural in progress. In flight:
+  idx 1319 at 4875 s, 1320 at 2578 s, 1321 at 2469 s, 1322 at 1788 s, all
+  far inside the 21600 s per-cube cap.*
+
+  ***AND THE SETTLED UNITS PAY OFF IMMEDIATELY, WHICH IS THE ONLY REASON
+  THIS BULLET IS WORTH WRITING.*** Because the cost column is wall-clock
+  over the whole `solve_cube` call, `cost = overhead + final_elapsed` and
+  `final_elapsed ≥ current elapsed` — so **idx 1319's cost is already
+  known to exceed 4875 s**, which beats **17 of the 20** decided members of
+  `[13,12,12,11]` and **guarantees it a place in that block's top four**.
+  *It needs **538.7 s** more than it has to take the block maximum from idx
+  1318's 5413.7 s.* **The point is the form of the statement, not the
+  cube**: `f06be7e` had to make the same kind of claim against BOTH sampled
+  clocks and hedge against an unknown third, because the units were open.
+  It is now **one inequality read off the source**, and it is strictly
+  stronger than the hedged version was.
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
