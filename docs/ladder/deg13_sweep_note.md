@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T08:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T09:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7309,6 +7309,39 @@ exactly one bank.
   to notice, because nothing audits a scratch script.* **The remedy
   applied here was to re-run with no conclusion text at all and read the
   numbers.**
+
+  *No row at the 09:41Z check-in, an hour and ten minutes after the
+  relaunch — eight cpu/elapsed samples committed rather than left to
+  ride. All four of set seventeen sit at **4152 s** with ratios 0.9896 to
+  0.9959, well clear of the startup depression.*
+
+  ***THE RE-RUN HAS ALREADY IMPROVED WHAT IS KNOWN ABOUT THREE OF THE
+  FOUR CUBES, AND IT IS THE UNCHANGED MACHINE THAT MAKES THAT SAYABLE.***
+  Neither attempt finished, so each attempt's elapsed is a **lower bound**
+  on that cube's true cost — and because restart #49 changed nothing (the
+  btime check, not the spec table), the two attempts are on a common
+  basis and the bounds compose:
+
+  | idx | killed at | re-run now | binding bound | source |
+  |---|---|---|---|---|
+  | 1328 | 5803.5 s | 4152.0 s | **cost > 5803.5 s** | first attempt |
+  | 1329 | 3815.1 s | 4152.0 s | **cost > 4152.0 s** | re-run, +336.9 s |
+  | 1330 | 3297.4 s | 4152.0 s | **cost > 4152.0 s** | re-run, +854.6 s |
+  | 1331 | 910.4 s | 4152.0 s | **cost > 4152.0 s** | re-run, +3241.6 s |
+
+  *Had #49 moved the CPU as #48 did, none of this column could be
+  written — the two elapsed figures would not be comparable and each
+  cube's bound would revert to its re-run alone.* **This is the first
+  concrete use the btime check has been put to beyond classifying the
+  restart.**
+
+  ***AND IT IS A FLOOR, NOT A MEASUREMENT.*** **None of the four has
+  finished**, so every figure above is a bound and none of them is a
+  cost. *The selection effect stands unchanged on top of that: these four
+  are the cubes that were still running at teardown, so they were already
+  the longest-running of their cohort before any of this.* **That three
+  of four floors rose is a fact about how long the re-run has been going,
+  not evidence that these cubes are dearer than was thought.**
 
   ***BELOW IS THE SPAN'S RECORD AS IT WAS WRITTEN WHILE IT WAS OPEN***,
   left exactly as each bank committed it.
