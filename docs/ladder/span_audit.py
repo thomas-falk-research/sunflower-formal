@@ -48,8 +48,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 44
-MIN_MONO_ROWS  = 58
+MIN_TABLE_ROWS = 45
+MIN_MONO_ROWS  = 59
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -67,7 +67,7 @@ MIN_MONO_ROWS  = 58
 # count at a CLOSING commit, never to the count while a span is open --
 # raising it to the open-span count passes today and fails at the next close
 # on correct prose.
-MIN_CENSUS_SENTENCES = 7
+MIN_CENSUS_SENTENCES = 8
 MIN_CENSUS_LIVE      = 4
 # The monotonicity prose -- the True partition, the False-chain column and
 # the rank sentence beside them -- is the OTHER half of the gap the note
