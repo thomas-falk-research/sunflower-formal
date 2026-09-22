@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-22T15:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-22T15:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6419,7 +6419,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1516 -> 1517 rows)
+## State as of the last refresh (1517 -> 1518 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6430,7 +6430,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1517 rows; 1348 labels decided; 1348 UNSAT; 0 SAT; 0 labels
+- **1518 rows; 1349 labels decided; 1349 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6445,7 +6445,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1348 decided plus 169 superseded
+  A row count is not a decision count: 1349 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 13145**, launched 2026-09-22T08:31:46.840000Z (read from
@@ -6479,7 +6479,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1340, highest decided 1349, holes [1341, 1346].**
+- **Frontier contiguous 0..1340, highest decided 1349, holes [1341].**
   <!-- SPAN-STATE: open -->
   ***THE SIXTY-FOURTH SPAN HAS OPENED, AT TWO HOLES.*** **idx 1342
   landed at 1099.0 s while idx 1340 AND idx 1341 were both still out**,
@@ -6528,8 +6528,15 @@ exactly one bank.
   ***idx 1347 HAS SINCE LANDED AT 1609.5 s AND BOTH ITS PUBLISHED BOUNDS
   HELD*** — **518 s** (this note, 14:42:38Z sample) and **890 s**
   (`f684d1a`, 14:48:51Z sample), cleared by **1091.5 s** and **719.5 s**.
-  *The holes are back to two:* **idx 1341 costs more than 6023 s** and
-  **idx 1346 more than 1005 s**, from the 14:48:51Z sample.
+  ***AND idx 1346 HAS SINCE LANDED AT 2552.9 s, WITH ALL FOUR OF ITS
+  PUBLISHED BOUNDS HOLDING*** — **632 s** (this note, 14:42:38Z),
+  **1005 s** (`f684d1a`), **1840 s** (`ea1a83b`) and **2186 s**
+  (`8ad7019`), cleared by **1920.9**, **1547.9**, **712.9** and
+  **366.9 s**. *That is the second chain of successive tightenings in
+  this span carried to its landing and checked end to end; idx 1340's
+  four were the first.* **One hole remains — idx 1341, the span's only
+  surviving original hole — bounded at more than 7204 s** from the
+  15:08:32Z sample.
 
   ***THE HOLE COUNT AT THIS SPAN'S CHECKPOINT-TOUCHING COMMITS READS
   2, 2, 2, 2, 1, 3, 2*** — `900427a`, `016b29e`, `c008086`, `28f47bc`,
@@ -13959,7 +13966,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1348 of 1949 = 69.1637%**; **601 undecided**. **50% IS CROSSED**, at
+- **1349 of 1949 = 69.2150%**; **600 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -14673,7 +14680,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 11]` idx 1299..1347: **49 members**,
-  **47 decided**, undecided [1341, 1346]
+  **48 decided**, undecided [1341]
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
   **2 decided**, undecided 36 spanning 1350..1385
 
