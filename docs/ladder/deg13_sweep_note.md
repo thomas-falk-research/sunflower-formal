@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T21:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T21:31Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6547,7 +6547,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1678 -> 1679 rows)
+## State as of the last refresh (1679 -> 1680 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6558,7 +6558,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1679 rows; 1510 labels decided; 1510 UNSAT; 0 SAT; 0 labels
+- **1680 rows; 1511 labels decided; 1511 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6590,7 +6590,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1510 decided plus 169 superseded
+  A row count is not a decision count: 1511 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6640,8 +6640,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1505, highest decided 1510, holes [1506].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1510, highest decided 1510, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `8cc7a74` EXISTED.*** **The retirement sentence stood for exactly one
@@ -8605,13 +8605,14 @@ exactly one bank.
   running.* **The width was re-checked against `bank.py` after the
   second row landed and is still two.**
 
-  ***AN OPENING AT TWO.*** Over the **142** closed chains the opening
-  hole count is **1 in 48, 2 in 46, 3 in 45 and 4 in 3**, so two is
-  **32.4%**. **It is the first opening at two since the
-  seventy-sixth**, and the closed spans that opened at two are **46**
-  of the 142, the last five of them ordinals **61, 64, 71, 73 and 76**.
-  *Two closes separate this opening from that one; this span will be
-  the **seventy-eighth**.*
+  ***AN OPENING AT TWO, AND THE SPAN THAT OPENED THERE HAS NOW
+  CLOSED.*** Over the **142** closed chains the opening hole count is
+  **1 in 48, 2 in 46, 3 in 45 and 4 in 3**, so two is **32.4%**. *The
+  three live-only sentences that stood here — the "since the" ordinal,
+  the "M of the N" count and the last-five list — are struck at this
+  close, per the census convention; the sentence above survives because
+  it is checked against the walk's first 142 spans and stays true for
+  good. This span took the seventy-eighth ordinal.*
 
   **Set twenty goes to 2 of 4** — *idx 1505 and idx 1508 re-taken, idx
   1506 and idx 1507 still out — and its figures stay withheld, as set
@@ -8705,6 +8706,61 @@ exactly one bank.
   banked idx 909. So this is the first time the withholding rule has
   been applied at three of four, and it is applied for the same reason
   it was at one and two.* **Block 30 of 38.**
+
+  ***THE SPAN CLOSES, SET TWENTY CLOSES, AND A CLAIM I PUBLISHED THREE
+  HOURS AGO TURNS OUT TO BE FALSE.*** *From the staged blob.* **idx
+  1506 at 8467.1 s** (coord9 = **11** in `[13,12,11,11]`, rank **171 of
+  1511**); *untied, detector agrees at 171.* **Holes `[]`, frontier
+  contiguous 0..1510, highest decided 1510. Decided 1511 of 1949 =
+  77.5269%; still 0 SAT.**
+
+  ***THE SEVENTY-EIGHTH SPAN HAS CLOSED AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** *The marker is flipped, the three live-only census
+  sentences are struck above, and no duration, rank, chain or verdict
+  figure is claimed — they come from `--spans all` only after this
+  commit exists.* **The chain carried no rise while the span was open
+  (`2,2,1`), so unlike the seventy-seventh there is no determination to
+  score against the walk** — *which, given what the seventy-seventh
+  taught, is the safer place to be.* **This sentence is the retirement
+  sentence and stands for exactly one commit.**
+
+  ***RE-RUN SET TWENTY IS CLOSED AT 4 OF 4, AND ITS RATIOS ARE COMPUTED
+  NOW.*** *Withheld at one, two and three of four on separate commits;
+  the table is in the live bullet.* **min 0.1401, median 0.4748, mean
+  0.4894, max 0.8680, spread 6.1962×.** ***No ratio exceeds 1.0 — every
+  one of the four re-takes cost more than the run it replaced***, *by
+  +711.68, +3864.41, +4619.91 and +5200.94 s. idx 1508 is the extreme:
+  847.26 s discarded against 6048.2 s on the re-take, **7.1385×**.*
+
+  ***AND NOW THE CORRECTION.*** *At the seventy-seventh close I wrote
+  that set nineteen's 1.0342 was "the first ratio above 1.0 among the 24
+  this note tabulates".* **It is the fifth, and it is not the largest.**
+  *The file already records **1.0805 (idx 788)**, **1.0595 (idx 989)**,
+  **1.0556 (idx 991)** and **1.0079 (idx 1106)** — and a paragraph
+  beside the first of them says outright that 1.0805 is the largest
+  recorded and is not the first above 1.0.*
+
+  ***HOW THE SCAN MISSED THEM IS THE WHOLE LESSON.*** *The regex
+  matched a ratio cell as `[\d.]+`, which cannot match `**1.0595**`.*
+  **Every ratio above 1.0 in this file is bolded — because it was
+  notable — so the pattern silently dropped exactly the rows it was
+  being used to find**, *returned 24 rows and a maximum of 0.9621, and
+  the claim was written from that output. The corrected pattern finds
+  **28** rows and a maximum of **1.0805**; all 28 agree with
+  `discarded / re-run`.* ***This is precisely the case the check-in
+  names — "when a script of yours contradicts the note, read the note's
+  definition before believing the script" — and the note was not
+  consulted at all.*** *A scan for exceptional values, run against a
+  file that marks exceptional values up, has to allow for the markup or
+  it is a scan for unexceptional values.*
+
+  **coord9 = 11 goes 11 of 14, interval `[2497.55, 5645.2]` →
+  `[2727.85, 5645.2]`**, *lower up 230.30, upper unmoved again — 8467.1
+  is above the pair fixing it.* **The second half is still
+  undetermined**: *the gap `lo(11)` must close is **1835.10 s**, from
+  2065.40.* **Block 31 of 38; min 396.3, max 8467.1, span `21.365380x`**
+  *from 19.622761x; three more coord9 = 11 cubes and four more
+  coord9 = 12.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -18970,7 +19026,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1510 of 1949 = 77.4756%**; **439 undecided**. **50% IS CROSSED**, at
+- **1511 of 1949 = 77.5269%**; **438 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -19684,7 +19740,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **30 decided**, undecided 8 spanning 1506..1517
+  **31 decided**, undecided 7 spanning 1511..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
@@ -19770,22 +19826,50 @@ exactly one bank.
   `#51`, table in that header block). *Ratios `discarded / re-run`:*
   **1.0342, 0.5852, 0.4848, 0.3274** — *min 0.3274, median **0.5350**
   (midpoint of 0.4848 and 0.5852), mean 0.6079, max **1.0342**, spread
-  3.1592×.* ***AND IT CARRIES A RATIO ABOVE 1.0.*** *idx 1419 was killed
-  at 2013.73 s and re-took in **1947.1 s** — the re-run finished **66.63
-  s sooner** than the time already spent before the kill.* **That is the
-  first ratio above 1.0 among the 24 this note tabulates**, *whose
-  previous maximum was 0.9621 (idx 1107); the note does not tabulate
-  every set, so this is a statement about the 24 recorded rows and not
-  about the whole series.* *All 24 were re-checked against
-  `discarded / re-run` at this close and every quoted ratio agrees.*
-- **RE-RUN SET TWENTY IS OPEN**: **idx 1505, 1506, 1507, 1508**, opened
-  by `#52`. *Not confounded — said at the opening, as the rule requires.*
-  ***AND ALL FOUR WERE RE-DISPATCHED TOGETHER***: *their CNF mtimes span
-  **20.0 ms** (19:07:30.651879934Z to 19:07:30.671879935Z), so the four
-  re-run clocks are directly comparable — the same condition the note
-  cites for set seven, whose four were within 4.0 ms.* **No forward test
-  is registered** and there is **no live registered pattern
-  commitment.** *The ratios will be computed at 4-of-4 and not before.*
+  3.1592×.* ***AND IT CARRIES A RATIO ABOVE 1.0*** — *idx 1419 was killed
+  at 2013.73 s and re-took in **1947.1 s**, finishing **66.63 s sooner**
+  than the time already spent before the kill.* ***THE CLAIM FIRST
+  WRITTEN HERE — THAT THIS WAS THE FIRST SUCH RATIO — WAS FALSE, AND IS
+  CORRECTED AT THE SEVENTY-EIGHTH CLOSE.*** *It is the **fifth**, and
+  not the largest. The note already records* **1.0805 (idx 788), 1.0595
+  (idx 989), 1.0556 (idx 991) and 1.0079 (idx 1106)**, *and a paragraph
+  beside the first of them says in terms that 1.0805 is the largest of
+  the ratios recorded and is **not** the first above 1.0.* **The scan
+  that produced the false claim used a regex whose ratio cell was
+  `[\d.]+`, which cannot match a **bolded** cell — and every ratio above
+  1.0 in this file is bolded, precisely because it was notable.** *So
+  the pattern silently dropped exactly the rows it was being used to
+  look for, reported 24 rows and a maximum of 0.9621, and the claim was
+  written from it without checking it against the note's own prose. The
+  corrected regex finds **28** rows and a maximum of **1.0805**; all 28
+  agree with `discarded / re-run`.* **This is the case the check-in
+  names: when a fresh script contradicts the note, read the note's
+  definition before believing the script.** *Here the note was not even
+  consulted — it says the answer outright, two hundred lines above the
+  bullet that got it wrong.*
+- **RE-RUN SET TWENTY IS CLOSED** (1505, 1506, 1507, 1508 — opened by
+  `#52`, not confounded, all four re-dispatched within **20.0 ms** so
+  their clocks are directly comparable). *Withheld at 1-of-4, 2-of-4 and
+  3-of-4 on separate commits and computed only at 4-of-4.*
+
+  | idx | discarded | re-run | ratio |
+  |---|---|---|---|
+  | 1505 | 4679.42 | 5391.1 | 0.8680 |
+  | 1506 | 4602.69 | 8467.1 | 0.5436 |
+  | 1507 | 3156.59 | 7776.5 | 0.4059 |
+  | 1508 | 847.26 | 6048.2 | 0.1401 |
+
+  *min **0.1401**, median **0.4748** (midpoint of 0.4059 and 0.5436),
+  mean 0.4894, max **0.8680**, spread **6.1962×**.* **No ratio exceeds
+  1.0 — every one of the four re-takes cost MORE than the run it
+  replaced**, *by +711.68, +3864.41, +4619.91 and +5200.94 s.* **The
+  spread is the widest of the recorded sets**, *against 4.6436× as the
+  previous widest; 1.7810× remains the tightest. Nothing is made of
+  that ranking — this note has already withdrawn one spread claim that
+  rested on a margin of 0.046, and 6.1962× over four points is a
+  statement about four numbers.* **No re-run set is open**, **no
+  forward test is registered**, and there is **no live registered
+  pattern commitment.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
