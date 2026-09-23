@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T01:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T01:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6440,7 +6440,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1564 -> 1565 rows)
+## State as of the last refresh (1565 -> 1566 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6451,7 +6451,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1565 rows; 1396 labels decided; 1396 UNSAT; 0 SAT; 0 labels
+- **1566 rows; 1397 labels decided; 1397 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6466,7 +6466,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1396 decided plus 169 superseded
+  A row count is not a decision count: 1397 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6500,8 +6500,49 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1395, highest decided 1395, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1395, highest decided 1397, holes [1396].**
+  <!-- SPAN-STATE: open -->
+
+  ***THE SIXTY-NINTH SPAN HAS OPENED, AND THE ORDINAL WAS DERIVED BEFORE
+  THE OUTCOME.*** Walk position **134** less the OFFSET of 65 — the
+  **sixty-ninth**. **idx 1397 came in at 1631.6 s** while idx 1396 is
+  still running, leaving **holes `[1396]`, width one**, frontier
+  contiguous **0..1395**, highest decided 1397. *Per the `#29` rider the
+  width is what it is AT THIS COMMIT.*
+
+  ***AN OPENING AT ONE IS THE COMMONEST WIDTH AND IS NOT OFFERED AS
+  ANYTHING ELSE.*** Over the **133** closed chains the opening hole
+  count is **1 in 45 cases, 2 in 43, 3 in 42 and 4 in 3**, so one is
+  **33.8%**. **It is the first opening at one since the sixty-sixth**,
+  and the closed spans that opened at one are **45** of the 133, the last
+  five of them ordinals **56, 60, 62, 65 and 66**. *Two closes separate
+  this opening from that one.*
+
+  ***AND THE COORDINATE FINDING TAKES A SECOND OBSERVATION AGAINST IT,
+  FROM THE OTHER END.*** idx 1397 is the block's **first coord9 = 10
+  member**, and it came in at **1631.6 s** — *below the coord9 = 11
+  member, below the whole coord9 = 12 group, and above only the
+  coord9 = 13 group.* `[13,12,12,9]` now reads:
+
+  | coord9 | n | median | costs |
+  |---|---|---|---|
+  | 13 | 5 | 1133.0 | 385.0, 1131.5, 1133.0, 1157.0, 1255.1 |
+  | 12 | 4 | 2342.3 | 2280.6, 2316.1, 2368.5, 2373.8 |
+  | 11 | 1 | 2204.6 | 2204.6 |
+  | 10 | 1 | 1631.6 | 1631.6 |
+
+  **The median sequence 1133.0 -> 2342.3 -> 2204.6 -> 1631.6 is NOT
+  monotone**, where all three complete blocks were monotone over
+  13 -> 12 -> 11. *Two of the four groups have a single member, so this
+  is not a refutation and is not offered as one* — **but the published
+  claim has now been tested twice in this block and pointed the wrong way
+  twice.** *The complete blocks also broke the trend below coord9 = 11,
+  which was stated when the finding was published; what is new is that
+  the break here starts one step earlier.*
+
+  **In-flight bounds, 01:34:10Z, within-run only: idx 1396 >= 1811 s,
+  idx 1398 >= 1468 s, idx 1399 >= 306 s, idx 1400 >= 38 s.** *idx 1396 is
+  the hole.*
 
   ***THE FIRST TEST OF LAST COMMIT'S COORDINATE FINDING POINTS THE OTHER
   WAY.*** **idx 1395 closed at 2204.6 s** — sweep rank
@@ -14699,7 +14740,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1396 of 1949 = 71.6265%**; **553 undecided**. **50% IS CROSSED**, at
+- **1397 of 1949 = 71.6778%**; **552 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15413,7 +15454,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **10 decided**, undecided 18 spanning 1396..1413
+  **11 decided**, undecided 17 spanning 1396..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
