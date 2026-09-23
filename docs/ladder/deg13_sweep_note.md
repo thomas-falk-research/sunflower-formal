@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T02:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T02:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6504,6 +6504,26 @@ exactly one bank.
   prose, which is the whole difference.*
 - **Frontier contiguous 0..1398, highest decided 1398, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***NO ROW LANDED FOR FORTY MINUTES, AND THE REASON IS VISIBLE IN THE
+  SAMPLE.*** *02:01:36Z to 02:41:49Z with nothing banked.* **All four
+  in-flight cubes already exceed the block's decided MEDIAN of 2204.6 s,
+  and three of the four already exceed its decided MAXIMUM of 3101.6 s**:
+  idx 1399 at **>= 4366 s**, idx 1400 at **>= 4098 s**, idx 1401 at
+  **>= 3438 s**, idx 1402 at **>= 2426 s**, all read from the 02:41:49Z
+  sample. *The cheap members of `[13,12,12,9]` are done; what is left is
+  the expensive tail.*
+
+  ***AND THAT ALREADY FORCES THE BLOCK'S SPAN UP, BEFORE ANY OF THEM
+  LANDS.*** `cost = overhead + final elapsed` makes idx 1399's cost at
+  least 4366 s, and the block minimum is **385.0**, so the closing span
+  is **>= 4366 / 385.0 = 11.3403x** — *against the 8.0561x the decided
+  members give today, a rise of at least **1.4077x** guaranteed by a cube
+  that has not finished.* **Frontier contiguous 0..1398, holes `[]`, no
+  span open**, and the block stands at **13 of 28** with fifteen members
+  left. *The matched-n forecast point named three commits ago — eighteen
+  members, the same 65.79% fraction at which the previous block's
+  interval was built — is five rows away.*
 
   ***THE SIXTY-NINTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `fc1ab8c` EXISTED.*** **The retirement sentence stood for exactly one
