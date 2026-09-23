@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T22:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T22:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -9041,6 +9041,41 @@ exactly one bank.
 
   **Block 37 of 38 — one cube left, idx 1513.** *`[13,12,11,10]` stays
   1 of 28; block min 396.3, max 8467.1, span 21.365380x unmoved.*
+
+  ***NO ROW LANDED, BUT THE RUNNING CLOCK PINS THE LAST MEDIAN.***
+  *The 22:41Z check-in banked eight cpu/elapsed samples and nothing
+  else: **1518 of 1949 = 77.8861%**, frontier contiguous 0..1512, hole
+  `[1513]`, 0 SAT, all invariants holding, pid 27488, local HEAD
+  matching origin at 1687 rows.*
+
+  ***AND idx 1513 HAS NOW RUN LONG ENOUGH TO DETERMINE THE BLOCK'S
+  THIRD MEDIAN EXACTLY.*** *It is at* **5086 s** *of elapsed. The
+  within-run bound gives `cost ≥ elapsed` — valid because there has been
+  no restart since the 19:06:29Z launch and the pid is unchanged — so
+  the fourteenth coord9 = 11 cost is at least 5086.* **Any value at or
+  above 3896.4 puts the seventh and eighth order statistics at 2914.6
+  and 3896.4**, *so the median is `(2914.6 + 3896.4)/2` for every cost
+  in that range, and 5086 is well inside it.* ***The final coord9 = 11
+  median is therefore `3405.5` — not an interval, a value.***
+
+  ***THE BLOCK'S PROFILE IS NOW COMPLETE IN ALL THREE STEPS.***
+  **`13 → 1261.75`, `12 → 2829.65`, `11 → 3405.5`** — *steps* **`+1567.90
+  s`** *and* **`+575.85 s`**, *ratios 2.242639x and 1.203506x.* *Last
+  commit recorded the second step as `[+33.25, +575.85]`; the running
+  clock has collapsed that to its upper end.*
+
+  ***WITH ONE CAVEAT, STATED BECAUSE THIS NOTE HAS BEEN CAUGHT BY IT
+  BEFORE.*** **The within-run bound is destroyed by a restart.** *If the
+  driver dies before idx 1513 finishes, its re-take starts at zero
+  elapsed, the bound is void, and the median returns to its interval
+  `[2862.9, 3405.5]`.* **The direction verdict does not depend on
+  this** — *it was determined last commit from the interval alone, and
+  `2862.9 > 2829.65` either way.* *What the clock buys is the exact
+  value of the second step, and that is exactly what a restart would
+  take back.*
+
+  **Block 37 of 38; `[13,12,11,10]` is 1 of 28 with idx 1521 in flight
+  at 1577 s.** *Bracket unchanged.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
