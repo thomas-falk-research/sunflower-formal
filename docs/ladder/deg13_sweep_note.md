@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T05:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T05:56Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6444,7 +6444,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1586 -> 1587 rows)
+## State as of the last refresh (1587 -> 1588 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6455,7 +6455,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1587 rows; 1418 labels decided; 1418 UNSAT; 0 SAT; 0 labels
+- **1588 rows; 1419 labels decided; 1419 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6470,7 +6470,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1418 decided plus 169 superseded
+  A row count is not a decision count: 1419 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6504,8 +6504,93 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1406, highest decided 1418, holes [1407].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1418, highest decided 1418, holes [].**
+  <!-- SPAN-STATE: closed -->
+
+  ***THE SEVENTY-FIRST SPAN HAS CLOSED AND THE MATCHED-COUNT INTERVAL IS
+  CONFIRMED. ITS SPAN FIGURES ARE NOT IN THIS COMMIT.*** **idx 1407 came
+  in at 9175.1 s**, filling the span's last hole and **completing
+  `[13,12,12,9]` at 28 of 28**. *The live in-flight bounds and the live
+  opening-width census are struck with this edit; everything else below
+  is kept.* **The span's duration, ranks, monotonicity, commit count and
+  hole chain come from `--spans all` in the NEXT commit, with every
+  carried row first reproduced at the OLD N = 135 before any is
+  rewritten at 136.** *Its verdict is already known to be **False** —
+  the chain rose at idx 1412 — and that was recorded before the close.*
+
+  ***THE FINAL SPAN IS 23.831429x (385.0 .. 9175.1), AND THE FOUR-WINDOW
+  TABLE PUBLISHED BEFORE idx 1407 FINISHED RESOLVES LIKE THIS:***
+
+  | outcome | window | result |
+  |---|---|---|
+  | matched-FRACTION interval | `12.594937x .. 19.844634x` | **REFUTED** |
+  | size-trend GAP | `19.844634x .. 21.789383x` | **REFUTED** |
+  | matched-COUNT interval | `21.789383x .. 40.693099x` | ***CONFIRMED*** |
+  | above the count ceiling | `> 40.693099x` | refuted |
+
+  **23.831429x sits 2.042046x above the count floor and 16.861670x below
+  its ceiling — 10.80% of the way into an interval 18.903716x wide.**
+  *That width was named as caveat (i) when the forecast was published:
+  the interval is 5.05 times wider than the one it succeeded, so
+  confirming it says proportionately less.* **idx 1407 is block rank
+  1 of 28 — the block maximum — and sweep rank 140 of 1419, both
+  untied.** *Both published bounds held: **>= 8794 s** by 381.1 s
+  (4.33%) and **>= 8830 s** by 345.1 s (3.91%).*
+
+  ***THE MATCHED-COUNT BASIS IS NOW 2 FOR 2, THE FRACTION BASIS 0 FOR 2,
+  AND THE SIZE-TREND ARGUMENT 0 FOR 2.*** *Count confirmed at
+  `[13,12,12,10]`'s close and here; fraction refuted at both; the
+  size-trend extrapolation wrong in its count leg there and wrong
+  outright here.* **Two for two is two**, and the second test shares
+  three of its four reference blocks with the first, *so this is not
+  two independent confirmations and is not offered as one.*
+
+  ***AND THE CONFOUND THAT WAS NAMED AS THE FORECAST'S MAIN ALTERNATIVE
+  EXPLANATION HAS ITSELF BEEN BROKEN.*** The publication said: **"the
+  three blocks run 65, 49, 38 cubes and their spans run 74.28x, 31.78x,
+  12.83x — span falls with block size, and a smaller block draws fewer
+  samples, so a smaller maximum is expected with no change in the
+  underlying distribution at all."** With the fourth block complete the
+  series reads:
+
+  | block | size | final span |
+  |---|---|---|
+  | `[13,12,12,12]` | 65 | 74.279315x |
+  | `[13,12,12,11]` | 49 | 31.783862x |
+  | `[13,12,12,10]` | 38 | 20.383402x |
+  | `[13,12,12,9]` | **28** | ***23.831429x*** |
+
+  ***THE 28-MEMBER BLOCK SPANS MORE THAN THE 38-MEMBER ONE, BY 3.448027x
+  = 16.92%.*** **Span does NOT fall monotonically with block size**; it
+  did over the first three and stops at the fourth. *That is exactly why
+  both size-trend extrapolations failed — they assumed a monotonicity
+  that held over three points and does not hold over four.* **The
+  confound is not disposed of, it is contradicted**, which is a
+  different and stronger result than the caveat anticipated.
+
+  ***THE COORDINATE FINDING'S DIRECTION HOLDS IN THE COMPLETED BLOCK,
+  MAKING IT FOUR OF FOUR.*** The final groups are **coord9 = 13: n=5,
+  median 1133.0; 12: n=14, median 2371.15; 11: n=8, median 3339.1; 10:
+  n=1, median 1631.6** — *the 13 -> 12 -> 11 sequence is monotone
+  increasing, as in all three complete predecessors.* **And the control
+  holds too**: the within-group spans are **3.26x, 9.634980x and
+  4.161798x**, *so the groups still overlap heavily and the coordinate
+  still moves the centre without partitioning the costs.* **The
+  direction below 11 is still inconsistent** — coord9 = 10's single
+  member at 1631.6 s sits below the coord9 = 12 median — *which is what
+  the finding said when it was published.*
+
+  ***AND THE SERIES OF 12-to-11 GAPS THAT LOOKED LIKE NOISE ENDED
+  SOMEWHERE DEFINITE.*** It ran negative for six members, spiked to
+  +1093.15, fell to +34.85 and closes at **+967.95** (3339.1 against
+  2371.15). *A statistic that wandered that far inside one block and
+  landed on a value larger than any it held after its seventh member is
+  not one this note will quote as a magnitude again* — **the direction
+  is the finding; the size of the gap never stabilised.**
+
+  **In-flight bounds, 05:55:34Z, within-run only: idx 1419 >= 1392 s,
+  idx 1420 >= 614 s, idx 1421 >= 468 s, idx 1422 >= 62 s.** *No hole:
+  the frontier is whole at 0..1418.*
 
   ***THE NEW BLOCK'S FIRST FIVE MEMBERS ARE ALL coord9 = 13, AND THAT IS
   SAID NOW RATHER THAN DISCOVERED LATER.*** **idx 1418 closed at
@@ -7064,11 +7149,12 @@ exactly one bank.
   ***AN OPENING AT TWO, WHICH IS THE SECOND COMMONEST WIDTH AND IS NOT
   OFFERED AS ANYTHING ELSE.*** Over the **135** closed chains the
   opening hole count is **1 in 47 cases, 2 in 43, 3 in 42 and 4 in 3**,
-  so two is **31.9%**. **It is the first opening at two since the
-  sixty-fourth**, and the closed spans that opened at two are **43** of
-  the 135, the last five of them ordinals **55, 58, 59, 61 and 64**.
-  *Six closes separate this opening from that one — the longest drought
-  of the three common widths, against zero for one and two for three.*
+  so two is **31.9%** — *that sentence names its own N and stays true.*
+  **The three LIVE census figures that stood beside it are STRUCK HERE**
+  at the close: the "since the Nth" ordinal, the count of spans that
+  opened at two against today's walk, and the last-five-ordinals list,
+  *together with the drought comparison built on them.* **All of them
+  move the moment this span joins the walk, which is this commit.**
 
   ***A NEW BLOCK MAXIMUM, AND THE PUBLISHED FORECAST'S LOWER OUTCOME IS
   NOW ELIMINATED BY A DECIDED COST RATHER THAN A BOUND.*** **idx 1405 at
@@ -15612,7 +15698,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1418 of 1949 = 72.7553%**; **531 undecided**. **50% IS CROSSED**, at
+- **1419 of 1949 = 72.8066%**; **530 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16325,8 +16411,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **27 decided**, undecided [1407]
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
   **5 decided**, undecided 16 spanning 1419..1434
 
