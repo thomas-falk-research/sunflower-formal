@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T00:53Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T01:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6440,7 +6440,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1560 -> 1561 rows)
+## State as of the last refresh (1561 -> 1562 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6451,7 +6451,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1561 rows; 1392 labels decided; 1392 UNSAT; 0 SAT; 0 labels
+- **1562 rows; 1393 labels decided; 1393 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6466,7 +6466,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1392 decided plus 169 superseded
+  A row count is not a decision count: 1393 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6500,8 +6500,39 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1391, highest decided 1391, holes [].**
+- **Frontier contiguous 0..1392, highest decided 1392, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  **idx 1392 closed at 2373.8 s** — sweep rank **840 of 1393**, untied —
+  **advancing the frontier again**: contiguous **0..1392**, highest
+  decided 1392, holes `[]`, no span open. *`[13,12,12,9]` is **7 of 28**,
+  min 385.0, max 2373.8, span **6.1657x**.*
+
+  ***A SECOND CONSECUTIVE BLOCK MAXIMUM, AND IT MOVED FAR LESS THAN THE
+  FIRST.*** **2373.8 s is rank 1 of 7**, taking the record from 2280.6 s
+  by **93.2 s** and the span from **5.9236x to 6.1657x** — *a factor of
+  1.04, against the previous row's 1.82.* **Two record-setting rows in a
+  row is not a trend and is not offered as one**: *a block's running
+  maximum is a record every time until it is not, and early in a block
+  almost every large cost sets one.* **FIVE of the seven members were the
+  running maximum at the moment they landed**: in completion order
+  **385.0, 1133.0, 1255.1, 2280.6, 2373.8** of
+  `385.0, 1133.0, 1131.5, 1255.1, 1157.0, 2280.6, 2373.8`.
+
+  ***AND GETTING TO THAT FIVE TOOK TWO WRONG HAND COUNTS IN ONE
+  PARAGRAPH.*** *The sentence was drafted as **three**. Re-counting it by
+  eye gave **four**, with the list "385.0, 1133.0, 2280.6, 2373.8"
+  written out beside it as if that settled it.* **The script says five —
+  the eye dropped 1255.1, which beat 1133.0 when it landed.** *So a hand
+  count was corrected by hand and the correction was wrong too.*
+  **NEVER COUNT BY EYE FOR THE RECORD is already a rule here, and this is
+  what breaking it twice in four lines looks like.** *Recorded in full
+  rather than replaced by the right number, because the failure mode is
+  the point: a wrong count that comes with a list reads as checked.*
+
+  **In-flight bounds, 01:04:34Z, within-run only: idx 1393 >= 2263 s,
+  idx 1394 >= 2009 s, idx 1395 >= 735 s, idx 1396 >= 36 s.** *All four
+  are in `[13,12,12,9]`.*
 
   **idx 1391 closed at 2280.6 s** — sweep rank **868 of 1392**, untied —
   **advancing the frontier rather than opening anything**: contiguous
@@ -14559,7 +14590,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1392 of 1949 = 71.4212%**; **557 undecided**. **50% IS CROSSED**, at
+- **1393 of 1949 = 71.4726%**; **556 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15273,7 +15304,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **6 decided**, undecided 22 spanning 1392..1413
+  **7 decided**, undecided 21 spanning 1393..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
