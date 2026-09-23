@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T04:50Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T05:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6444,7 +6444,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1578 -> 1579 rows)
+## State as of the last refresh (1579 -> 1580 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6455,7 +6455,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1579 rows; 1410 labels decided; 1410 UNSAT; 0 SAT; 0 labels
+- **1580 rows; 1411 labels decided; 1411 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6470,7 +6470,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1410 decided plus 169 superseded
+  A row count is not a decision count: 1411 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6504,8 +6504,86 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1406, highest decided 1412, holes [1407, 1410, 1411].**
+- **Frontier contiguous 0..1406, highest decided 1413, holes [1407, 1410, 1411].**
   <!-- SPAN-STATE: open -->
+
+  ***THE TIE DETECTOR FIRED ON A ROW RANK.*** **idx 1413 closed at
+  978.0 s**, sweep rank **1212 of 1411** — and `N - cheaper` gives
+  **1411 - 198 = 1213**, *which is not 1212.* **The two agree only when
+  the value is untied, so the disagreement IS the detection**, and
+  bank.py's own column confirms it: **1 tied**. *The partner is **idx
+  497**, `[13,13,13,6,13,13,13,13,13,11,7]`, from an entirely different
+  block and decided long ago.*
+
+  ***A DRAFT CALLED THIS "THE FIRST TIME ON A ROW RANK IN THIS RUN OF
+  BANKS" AND IT WAS STRUCK BEFORE COMMITTING***, because that is a
+  universal over a set the reader cannot check — *the note already
+  records one such clause being removed at the sixty-ninth close for
+  exactly this reason, and writing the rule down did not stop it
+  recurring here.* **What IS checkable and is stated instead**: the
+  eight rows banked from `d4b16d2` through this one are idx **1404,
+  1403, 1408, 1405, 1406, 1409, 1412 and 1413**, and bank.py's tie
+  column reads **0 for the first seven**.
+
+  ***AND THE RATE OF TIES IS SMALL BUT NOT NEGLIGIBLE, COMPUTED OVER THE
+  WHOLE FILE RATHER THAN GUESSED.*** Of **1411** decided costs there are
+  **1391 distinct values**; **18 values are shared**, covering **38
+  cubes — 2.69%**. *The largest multiplicity is **4**, at 0.1 s, which
+  is the floor rather than a coincidence; every other shared value has
+  exactly two.* **So roughly one row in thirty-seven should trip this
+  detector**, and the detector exists because a rank quoted without it
+  looks identical either way.
+
+  ***THE BLOCK'S MINIMUM IS NOW FINAL, WHICH TURNS THE CLOSING SPAN INTO
+  A FUNCTION OF ONE UNKNOWN.*** **idx 1413 is the last index in
+  `[13,12,12,9]` (1386..1413)**, so the block is **25 of 28** and *every
+  remaining cube is one of the span's three holes* — **`[1407, 1410,
+  1411]`**, all three in flight and **all three already past 385.0 s**.
+  *The minimum can therefore no longer fall, and the closing span is
+  exactly `final max / 385.0`.*
+
+  ***AND idx 1407 HAS ALREADY FORCED IT TO 16.218182x.*** At **>= 6244 s**
+  (05:05:41Z) it is **1308.0 s past the decided maximum of 4936.0**, so
+  the block's closing span is now **>= 16.218182x** — *up from the
+  12.820779x this bank records, and squarely inside the published
+  matched-fraction interval `12.594937x .. 19.844634x`.* ***IT IS NOW
+  1396.18 s FROM BREAKING OUT OF THAT INTERVAL***: the fraction ceiling
+  needs a maximum of **7640.18 s**, the count floor **8388.91 s**, and
+  idx 1407 is **1396.18 s** and **2144.91 s** short of them with a
+  21600 s cap and no sign of stopping. **For the first time since the
+  intervals were published, one running cube can settle them**, and
+  which way is not predicted here.
+
+  ***THE `[12,12]` SUB-BLOCK IS COMPLETE AND BOTH ITS MEMBERS ARE
+  CHEAP.*** idx 1413 at 978.0 s joins idx 1412's 512.3 s: **median
+  745.15, internal span 1.909038x**, against the 23-member
+  `[13,12,12,9,13,13]` sub-block's median 2371.15 and span 12.820779x.
+
+  | sub-block | members | decided | costs | undecided |
+  |---|---|---|---|---|
+  | `[13,12,12,9,13,13]` | 23 | 22 | 385.0 .. 4936.0 | 1407 |
+  | `[13,12,12,9,13,12]` | 3 | 1 | 1230.2 | 1410, 1411 |
+  | `[13,12,12,9,12,12]` | **2** | **2** | **512.3, 978.0** | — |
+
+  **A complete two-member sub-block is still two cubes** — *it is the
+  whole of that sub-block, which is more than the one-sample readings
+  before it, and it is two numbers, which is less than a
+  distribution.* **idx 1413 is block rank 23 of 25**, behind only 385.0
+  and 512.3.
+
+  ***THE coord9 = 12 GROUP TOOK ITS THIRTEENTH MEMBER AND ITS SPAN DID
+  NOT MOVE.*** The median goes **2371.15 -> 2368.5** (**-2.65 s**, the
+  same one-position step as the last three rows) and the internal span
+  stays **9.634980x**, because 978.0 is neither that group's minimum nor
+  its maximum. *The 13 -> 12 -> 11 sequence is 1133.0 -> 2368.5 ->
+  2772.55 and monotone increasing for a tenth row running.*
+
+  **In-flight bounds, 05:05:41Z, within-run only: idx 1407 >= 6244 s,
+  idx 1410 >= 2637 s, idx 1411 >= 2334 s, idx 1414 >= 40 s.** *The
+  first three are the holes and the whole of what is left of the block;
+  **idx 1414 is outside it**, so the driver has already moved on.* **idx
+  1410 and 1411 force only 6.849351x and 6.062338x on their own**,
+  far below what idx 1407 has already forced.
 
   ***THE HOLE CHAIN ROSE, SO THE SEVENTY-FIRST SPAN'S MONOTONICITY
   VERDICT IS SETTLED AS FALSE BEFORE THE CLOSE.*** **idx 1412 closed at
@@ -15282,7 +15360,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1410 of 1949 = 72.3448%**; **539 undecided**. **50% IS CROSSED**, at
+- **1411 of 1949 = 72.3961%**; **538 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15996,7 +16074,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **24 decided**, undecided [1407, 1410, 1411, 1413]
+  **25 decided**, undecided [1407, 1410, 1411]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
