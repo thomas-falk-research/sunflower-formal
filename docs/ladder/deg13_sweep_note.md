@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T22:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T22:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6549,7 +6549,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1687 -> 1688 rows)
+## State as of the last refresh (1688 -> 1691 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6560,7 +6560,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1688 rows; 1519 labels decided; 1519 UNSAT; 0 SAT; 0 labels
+- **1691 rows; 1522 labels decided; 1522 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6592,7 +6592,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1519 decided plus 169 superseded
+  A row count is not a decision count: 1522 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6642,8 +6642,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1512, highest decided 1519, holes [1513].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1521, highest decided 1521, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `8cc7a74` EXISTED.*** **The retirement sentence stood for exactly one
@@ -8850,14 +8850,16 @@ exactly one bank.
   is a prediction — 434.55 s is a measurement of where two intervals
   sit today.***
 
-  ***AN OPENING AT THREE.*** Over the **143** closed chains the opening
-  hole count is **1 in 48, 2 in 47, 3 in 45 and 4 in 3**, so three is
-  **31.5%**. **It is the first opening at three since the
-  seventy-seventh**, and the closed spans that opened at three are
-  **45** of the 143, the last five of them ordinals **67, 68, 74, 75 and
-  77**. *Two closes separate this opening from that one; this span will
-  be the **seventy-ninth**.* **The width is what the commit carries and
-  was re-checked against `bank.py` immediately before committing.**
+  ***AN OPENING AT THREE, AND THE SPAN THAT OPENED THERE HAS NOW
+  CLOSED.*** Over the **143** closed chains the opening hole count is
+  **1 in 48, 2 in 47, 3 in 45 and 4 in 3**, so three is **31.5%**. *The
+  three live-only sentences that stood here — the "since the" ordinal,
+  the "45 of the 143" count and the last-five list — are struck at this
+  close, per the census convention; the sentence above survives because
+  it is checked against the walk's first 143 spans and stays true for
+  good. This span took the seventy-ninth ordinal.* **The width is what
+  the commit carries and was re-checked against `bank.py` immediately
+  before committing.**
 
   **535.8 is the third cube outside coord9 = 13 to land below that
   group's top**, *after 720.1 and 950.6 — `0.424648x` the 13-median at
@@ -9002,6 +9004,16 @@ exactly one bank.
   seventy-ninth stays determined False — its rise is already in and the
   fall back to two changes nothing.*
 
+  ***THE CHAIN DIGIT IN THE PARAGRAPH ABOVE IS WRONG, AND THE SAME
+  SENTENCE CONTAINS ITS OWN REFUTATION.*** *Left standing as the record
+  of the error.* **`528c694` carries `holes [1513]` — ONE hole — so the
+  chain at that commit is `3,2,2,3,1`, not `3,2,2,3,2`.** *Two rows
+  landed in that one commit, idx 1517 and idx 1514, closing 1514 and
+  1517 together; the previous entry's `2` was carried forward instead of
+  counted.* **"the fall back to two" is wrong twice over: it was a fall
+  to one.** *Verified against the committed blob, not against this
+  note's own state line — see the correction written at the seventy-ninth's close.*
+
   ***THE THREE MEDIANS.*** **coord9 = 13 FINAL at `1261.75`.**
   **coord9 = 12 FINAL at `2829.65`.** **coord9 = 11 at 13 of 14,
   confined to `[2862.9, 3405.5]`.** *And `2862.9 > 2829.65`.*
@@ -9085,6 +9097,15 @@ exactly one bank.
   seventy-ninth's rise is already in; the chain has been flat at two
   since and the verdict is unchanged.*
 
+  ***WRONG IN THE SAME WAY, ONE COMMIT LATER.*** *Left standing.*
+  **`971f913` carries `holes [1513]` — ONE hole — so the chain is
+  `3,2,2,3,1,1`, not `3,2,2,3,2,2`.** *The error propagated because the
+  previous entry's bad digit was read back instead of the blob; "flat at
+  two" is right about flat and wrong about two.* **The verdict is
+  genuinely unchanged** — *the `2 → 3` rise between `68d355b` and
+  `50be377` is in the corrected chain too, and that is what decides
+  it.*
+
   **`[13,12,11,10]` goes 2 of 28** — *coord9 = 13 at 2 of 5 with
   `[589.2, 1937.1]`, and the other three groups still empty at 0 of 14,
   0 of 8 and 0 of 1.* **min 589.2, max 1937.1, span 3.287678x.** *One
@@ -9098,6 +9119,182 @@ exactly one bank.
   `1261.75 → 2829.65 → 3405.5`.* **The verdict was never contingent on
   that clock**, *only the second step's exact value, and the bound has
   only strengthened.*
+
+  ***THREE ROWS, AND THE SPAN CLOSES ON THE THIRD.*** *From the staged
+  blob; all three were in it before any figure below was computed.*
+  **idx 1520 at 1924.2 s** (rank **1036 of 1522**), **idx 1521 at 1813.1
+  s** (rank **1069 of 1522**) *— both coord9 = 13 in `[13,12,11,10]` —*
+  **and idx 1513 at 5750.4 s** (coord9 = **11** in `[13,12,11,11]`,
+  rank **338 of 1522**). *None tied: `1522 − 486 = 1036`, `1522 − 453 =
+  1069` and `1522 − 1184 = 338` reproduce all three ranks, so the
+  detector agrees on all three.* **Holes `[]`, frontier contiguous
+  0..1521, highest decided 1521. Decided 1522 of 1949 = 78.0913%; still
+  0 SAT.**
+
+  ***A DRAFT OF THIS PARAGRAPH SAID "THE SPAN IS STILL ONE HOLE WIDE"
+  AND QUOTED RANKS OUT OF 1521.*** *idx 1513 landed between the audit
+  and the bank, and* **`checkpoint_audit.py` is what caught it** —
+  *reading the working tree where `bank.py` reads the staged blob, it
+  reported `holes []` and `decided 1522` against the draft's `holes
+  [1513]` and 1521.* **That disagreement is the stale-read detector
+  doing exactly the job it was built for**, *and every rank above moved
+  by one because the denominator did.*
+
+  ***THE CHAIN PUBLISHED AT THE LAST TWO COMMITS WAS WRONG, AND THIS IS
+  THE CORRECTION.*** **Recomputed from each commit's own checkpoint
+  blob** — *not from the state lines this note wrote, which is how the
+  error survived two commits.* **The walk is the commits that change the
+  checkpoint; `8a44cf3` is bank-only and contributes no entry, per the
+  rule fixed at the seventy-seventh.** *Blob by blob:* `0ae67eb` **3**,
+  `e7e47ff` **2**, `68d355b` **2**, `50be377` **3**, `528c694` **1**,
+  `971f913` **1** — *and this commit closes the span, leaving no hole,
+  so it is not a broken commit and adds no entry.* **The seventy-ninth's
+  chain is `3,2,2,3,1,1`, six entries.** *Published were `3,2,2,3,2` and
+  `3,2,2,3,2,2`. Both wrong entries are left in place above, flagged.*
+  **Whether a seventh joins is exactly the question the retirement
+  sentence leaves open, and `--spans all` answers it in the next
+  commit** — *the count of broken commits is the tool's to confirm, not
+  this paragraph's to assert.*
+
+  ***THE VERDICT IS UNAFFECTED: STILL DETERMINED FALSE.*** *Monotone
+  non-increasing is a universal over adjacent pairs, and* **`2 → 3`
+  between `68d355b` and `50be377` is a rise that sits in the corrected
+  chain exactly where it sat in the wrong one.** *The error was in
+  digits that come after the rise, and nothing after a rise can repair
+  one.* **This is the third chain error in this file** — *the first was
+  a staged state superseded before its commit, these two were a digit
+  read back from the previous entry instead of counted. The first was a
+  reason to distrust the working tree; these are a reason to distrust
+  this note as a source about itself.* **The hole count is now taken
+  from the blob at every commit, never from the entry above it.**
+
+  ***THE SEVENTY-NINTH SPAN HAS CLOSED AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** *The marker is flipped, the three live-only census
+  sentences are struck above, and no duration, rank or tie figure is
+  claimed — they come from `--spans all` only after this commit exists.*
+  **This sentence is the retirement sentence and stands for exactly one
+  commit.**
+
+  ***AND THIS TIME THERE IS A DETERMINATION TO SCORE.*** *The
+  seventy-eighth closed with nothing to check — its chain carried no
+  rise. This one does:* **the determined-False verdict published while
+  the span was open, on the `2 → 3` rise between `68d355b` and
+  `50be377`, is now testable against the walk.** ***The seventy-seventh
+  is why that matters***: *there a determined-False was published in two
+  commits and `--spans all` returned True, because the rise I read was a
+  staged state that never became a commit.* **Here the rise was read
+  from the committed blobs, and both commits either side of it are in
+  the walk** — *but the corrected chain is the third chain error in this
+  file, so the verdict is offered as a prediction to be checked, not as
+  a result. If `--spans all` returns True, this paragraph is the record
+  of the fourth.*
+
+  ***AND A HOLE OPENED AND CLOSED BETWEEN COMMITS AGAIN.*** *When idx
+  1521 was banked alone the staged state held* **`holes [1513, 1520]`**
+  *— two — and a draft saying "the span widened from one hole to two"
+  was written against it.* **idx 1520 landed before that draft became a
+  commit, closing 1520, and the committed width is one.** *Had it been
+  committed it would have been a fourth chain error of the first kind.
+  The `#29` rider is what caught it: a width is measured at a commit,
+  and the working tree between commits is not the record.*
+
+  ***`[13,12,11,10]` REACHES 4 OF 28, AND ITS FIRST GROUP IS ONE CUBE
+  FROM FINAL.*** **coord9 = 13 at 4 of 5** — *`589.2, 1813.1, 1924.2,
+  1937.1` at idx 1518, 1521, 1520, 1519; min 589.2, max 1937.1, span
+  3.287678×.* **The other three groups are still empty at 0 of 14, 0 of
+  8 and 0 of 1.** *The block's window needs all three of the top groups,
+  so it is nowhere near a verdict.*
+
+  ***THE GROUP MEDIAN IS CONFINED TO `[1813.1, 1924.2]`.*** *n = 5, so
+  the threshold is `⌊5/2⌋ + 1 = 3` and the bound went finite at 3 of 5;
+  this is the narrowing step, not the first bound.* **Verified by
+  exhaustive sweep over all 216,000 feasible tenth-second values for the
+  one outstanding member** — *every one of them puts the median in that
+  interval, and both endpoints are attained.* **At 3 of 5 the bracket
+  was `[589.2, 1937.1]`, width 1347.9 s; it is now width 111.1 s, a
+  narrowing of 12.132313×.** *Both ends moved — lower up 1223.9 s, upper
+  down 12.9 s — because* **idx 1520 at 1924.2 landed between the two
+  bounding members**, *which is the third of the three cases and the
+  only one that moves both.*
+
+  ***`[13,12,11,11]` IS COMPLETE AT 38 OF 38, AND THE PINNED-MEDIAN
+  PREDICTION SCORED.*** *The prediction on record was that idx 1513's
+  within-run bound of* **≥ 5134 s** *already fixed the coord9 = 11
+  median at exactly* **3405.5** *— not a bracket, a single value.*
+  **idx 1513 came in at 5750.4 s, the bound held with 616.4 s to
+  spare, and the median is 3405.5.** *Scored, and scored on the value
+  rather than on an interval.*
+
+  ***THE BLOCK'S DIRECTION WINDOW IS NOW MEASURED RATHER THAN
+  DETERMINED.*** **Final profile `1261.75 → 2829.65 → 3405.5`**, *steps*
+  **+1567.90 s** *and* **+575.85 s**, *so* `13-median < 12-median <
+  11-median` **HOLDS** *on a block with nothing outstanding.* **The
+  tally does not move — six keep, two break, of eight settled blocks**
+  — *because this block was already counted as settled when the verdict
+  was determined; what changed is that the verdict no longer rests on a
+  bound.* *The 12-median prints as `2829.6499999999996` in binary
+  floating point; in exact decimal `(2769.2 + 2890.1)/2 = 2829.65`,
+  re-checked here and not carried over on trust.* **The fourth group,
+  coord9 = 10, closes at 2 of 2 with median 3090.0** — *below the
+  coord9 = 11 median, which the window says nothing about and which is
+  therefore not evidence for or against it.*
+
+  ***AND `bank.py` HAS BEEN WRITING DUPLICATE SAMPLE ROWS SINCE IT WAS
+  WRITTEN.*** *Found in the staged diff at this commit, not by any
+  check.* **Running it twice inside one second appends the cpu/elapsed
+  block twice under one timestamp** — *here four rows keyed
+  `(22:51:53Z, solver_pid)` written twice and not even equal: one solver
+  read* **315 cpu then 316**, *ratios 0.9783 and 0.9814, because a
+  second sample really was taken.* **That is a duplicate key carrying
+  two different values.**
+
+  ***THE FIRST THING I WROTE ABOUT IT SAID "IT HAPPENED ONCE". IT HAS
+  HAPPENED FOUR TIMES.*** *Scanning the whole file for repeated
+  `(iso_utc, solver_pid)` keys finds* **three earlier events already in
+  the committed history** — **`2026-09-21T06:44:54Z`**,
+  **`2026-09-22T10:43:50Z`** and **`2026-09-23T13:22:28Z`**, *each eight
+  rows for four solvers, and in the last of them all four solvers
+  disagree between the two copies.* **12 duplicate rows, across three
+  events.** *No row total is quoted for this file: `bank.py` appends to
+  it on every run and must be run
+  last, so any total written into a draft is stale before the commit
+  that carries it — the first version of this sentence said "in 5483"
+  and was already wrong when it was staged. The duplicate count is a
+  property of the history and does not move.* *The
+  claim of "once" was made from the one instance in front of me, which
+  is the same habit as reading a chain digit off the entry above.*
+
+  ***AND THE GUARD ALREADY EXISTED — IN THE OTHER TOOL.***
+  `cnf_mtime_check.py` *carries this exact check, with this exact
+  reasoning, in a comment that predates* `bank.py`*'s sampler:* **"Running
+  this tool twice in one second appends the same rows twice."** **`bank.py`
+  was given the same append and not the guard.** *So this is not a
+  discovery, it is a fix that failed to propagate when the second writer
+  was added to a file the note itself describes as having "one source
+  rather than two".*
+
+  ***NO PUBLISHED FIGURE MOVES.*** *Checked rather than assumed, on
+  deduplicated rows:* **max ratio `1.0` either way, count with `cpu >
+  elapsed` ZERO either way, 599 series either way.** *The whole-file
+  claims in this note are a maximum, a zero count and a series count,
+  and none of the three can be moved by repeating a row that satisfies
+  them; the row totals quoted at earlier revisions are counts of rows in
+  the file, duplicates included, which is what they say they are.*
+  **The read this file is actually for — last sample per cube before a
+  teardown — is unaffected too**, *which is what the older comment
+  already said.*
+
+  ***WHAT IS REMOVED AND WHAT IS KEPT.*** **The block created in this
+  session is removed: it was staged, never committed, and committing a
+  known duplicate key is not recording history, it is adding a defect.**
+  **The three committed events are left exactly where they are** — *they
+  are the record, and rewriting a committed sample log to make a tool's
+  past output look like its present output is the kind of tidying this
+  note exists to refuse.* **The append is now guarded in `bank.py` too:
+  if the file already ends with this second's stamp, it is skipped**, *and
+  a later second still lands. The procedure — run `bank.py` last — is
+  what collides, by calling it twice back to back; the guard makes that
+  procedure safe rather than replacing it.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -19363,7 +19560,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1519 of 1949 = 77.9374%**; **430 undecided**. **50% IS CROSSED**, at
+- **1522 of 1949 = 78.0913%**; **427 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -20076,10 +20273,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **37 decided**, undecided [1513]
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
-  **2 decided**, undecided 26 spanning 1520..1545
+  **4 decided**, undecided 24 spanning 1522..1545
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

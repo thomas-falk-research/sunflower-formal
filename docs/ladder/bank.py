@@ -181,8 +181,23 @@ try:
         if c is None or elapsed<=0: continue
         idx,dpid,_=c
         lines.append(f"{stamp}\t{dpid}\t{spid}\t{idx}\t{elapsed}\t{cpu}\t{pcpu}\t{cpu/elapsed:.4f}")
-    if lines:
-        import os as _os
+    # Two runs inside the same second append two blocks under one timestamp,
+    # which makes (iso_utc, solver_pid) a duplicate key with DIFFERENT cpu
+    # values.  cnf_mtime_check.py has carried this guard from the start; this
+    # sampler was added without it, so three events are already in the
+    # committed log (2026-09-21T06:44:54Z, 2026-09-22T10:43:50Z,
+    # 2026-09-23T13:22:28Z) and a fourth was caught in the staged diff at
+    # idx 1520/1521.  Skip an append whose stamp the file already ends with;
+    # a later second is a real sample and lands.
+    import os as _os
+    dup=False
+    if lines and _os.path.exists(SAMPLE):
+        tail=open(SAMPLE).read().splitlines()
+        dup = bool(tail) and tail[-1].startswith(stamp+"\t")
+    if dup:
+        print(f"cpu/elapsed sample NOT appended: {stamp} is already the "
+              f"last stamp in the file (same-second re-run)")
+    elif lines:
         head = not _os.path.exists(SAMPLE)
         with open(SAMPLE,'a') as fh:
             if head: fh.write("# iso_utc\tdriver_pid\tsolver_pid\tidx\telapsed_s\tcpu_s\tpcpu\tratio\n")
