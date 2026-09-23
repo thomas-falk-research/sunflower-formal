@@ -12466,3 +12466,77 @@ g=11 [13, 12, 12, 8, 13, 13, 13, 13, 13, 11, 7]	UNSAT	1159.3
 g=11 [13, 12, 12, 8, 13, 13, 13, 13, 13, 10, 8]	UNSAT	1075.0
 g=11 [13, 12, 12, 8, 13, 13, 13, 13, 13, 9, 9]	UNSAT	1007.5
 g=11 [13, 12, 12, 9, 13, 13, 12, 12, 11, 11, 10]	UNSAT	9175.1
+# RESTART #51 -- CONTAINER RESTART.  Teardown 2026-09-23T06:05:54.989092Z,
+# new driver pid 17535 launched 2026-09-23T06:08:02.280000Z (btime +
+# /proc/17535/stat field 22 / SC_CLK_TCK, computed by script).  THE
+# MACHINE DID NOT CHANGE.
+#
+#     field          #50                #51
+#     CPU model      @ 2.10GHz          @ 2.10GHz      same
+#     cpu MHz        2100.000           2100.000       same
+#     cache size     266240 KB          266240 KB      same
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# btime DID NOT MOVE -- 1790096990 at #50 and 1790096990 now, the same
+# 2026-09-22T17:09:50Z host boot -- WHICH IS HOW THIS IS KNOWN TO BE A
+# CONTAINER RESTART AND NOT A HOST REBOOT.  /proc/uptime read 46670.73 s
+# at the first measurement, consistent with a host up since #50.  Read,
+# never inferred from the spec table: an unchanged spec after a reboot
+# would look identical there.  #50's block makes the same point in the
+# other direction, where btime moved and proved a reboot.
+#
+# So the six-field spec is unchanged and costs across this point ARE on
+# a common basis.  That is stated as the result of re-reading all six
+# fields, not assumed: the CPU has moved at #41, #42, #48 and #50, and
+# at #41 it moved after eight identical readings.
+#
+# THE TWO [killed] MARKERS AGREE TO THE NANOSECOND, FOR THE THIRD
+# RESTART RUNNING.  Driver bywk5u2ag and waiter bf0xbhjr8 both carry
+# mtime 2026-09-23T06:05:54.989092317Z.  The procedure says take the
+# EARLIER and that they need not agree; as at #49 and #50 there is
+# nothing to choose.  Two files written in one teardown by the same
+# supervisor is ONE observation of the teardown instant, not two.
+#
+# NO ROWS WERE LOST.  The driver's own stdout ends with idx 1407 at
+# 9175.1 s and then [killed]; that row is the last row in this file.
+# 1588 rows, 1419 decided, I1-I6 pass, 0 SAT.
+#
+# WORK LOST: FOUR CUBES, idx 1419, 1420, 1421, 1422 -- every CNF for
+# driver pid 477 matching -seq-c, no more and no fewer.
+#
+#     idx    dispatched (CNF mtime)   elapsed at kill   last sample
+#     1419   05:32:21.260972Z             2013.73 s     1748 el / 1688 cpu
+#     1420   05:45:19.625019Z             1235.36 s      970 el /  927 cpu
+#     1421   05:47:45.901028Z             1089.09 s      823 el /  784 cpu
+#     1422   05:54:31.941052Z              683.05 s      417 el /  384 cpu
+#
+# TOTAL ELAPSED LOST 5021.23 s = 1.3948 h.
+# CPU-SECONDS LOST: BRACKETED AT [3783.00, 4846.23] s = [1.0508, 1.3462]
+# CPU-h, width 1063.23 s = 21.94% of the upper end.  Lower end is the
+# cpu actually observed at each cube's last sample; upper end adds the
+# unsampled tail at the cpu <= elapsed ceiling -- the single-threaded
+# premise, which was checked over all 4729 samples at 8c463eb and found
+# never to exceed 1.0.
+#
+# *** A FIRST PASS MULTIPLIED EACH CUBE'S ELAPSED BY ITS LAST RATIO AND
+# GOT 4791.78 s.  THAT NUMBER IS NOT USED. ***  It assumes the ratio held
+# through 266 s of unsampled runtime at the end of each cube, which is
+# exactly the assumption the bracket exists to avoid.  It happens to sit
+# inside the bracket, near the top -- a point estimate that survives its
+# own check teaches nothing, and #45's loss was bracketed rather than
+# point-estimated for this reason.
+#
+# EVERY KILLED CUBE HAS A RATIO SAMPLE, so the "do not invent a ratio"
+# case does not arise here.  But all four samples are from ONE bank at
+# 06:01:29Z, 265.7 to 266.1 s before the teardown, so all four brackets
+# have nearly the same unsampled tail and their widths are not
+# independent.
+#
+# RE-RUN SET NINETEEN OPENS: idx 1419, 1420, 1421, 1422.  *** IT IS NOT
+# CONFOUNDED, AND THAT IS SAID AT THE OPENING AS THE RULE REQUIRES. ***
+# The rule exists because a set spanning a machine change cannot be read
+# as a re-take; here all six spec fields and btime are unchanged, so the
+# re-takes will run on the same machine as the killed attempts.  Set
+# eighteen (idx 1361..1364), opened at #50, WAS confounded.

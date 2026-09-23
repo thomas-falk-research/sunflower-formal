@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T06:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T06:11Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6470,8 +6470,16 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1588 rows; 1419 labels decided; 1419 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#49**
-  — extended from #48 here, against the **#49** header block in the
+  undecided-only.** No rows were lost across restarts #37 through **#51**
+  — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
+  **#49** across the whole of restart #50 and every commit since, so the
+  note's own sentence below about being "extended from #44 to #45 one
+  restart late" has now been repeated at a lag of two. *The paragraph
+  that records the pattern did not prevent the pattern; the absorb did,
+  by making someone read the range.* **The check at #51 is the same
+  one**: the driver's stdout ends with idx 1407 at 9175.1 s and then
+  `[killed]`, and that row is the last row in the file — **1588 rows on
+  both sides of the teardown**, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
   and says "NOTHING WAS LOST FROM THE COMMITTED STATE". *The waiter was
   armed at 1497 and its output ends in `[killed]` with no landing line,
@@ -6482,13 +6490,15 @@ exactly one bank.
   and 1345**, and the check is the same one applied twice, not a
   stronger one for having held. **The range was previously extended
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
-  in its mildest form; it is extended in the same commit as the absorb
-  this time.
+  in its mildest form; *the same sentence claimed it would be "extended
+  in the same commit as the absorb this time" and then was not, at #50.*
+  **Twice late now, and both times found by rereading rather than by the
+  reminder.**
   A row count is not a decision count: 1419 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
-  `/proc/477/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
+  `/proc/17535/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -6503,8 +6513,24 @@ exactly one bank.
   2149 → 2331 at #44, 2331 → 28574 at #45, 28574 → 32389 at #46,
   32389 → 3269 at #47 and **3269 → 419 at #48**, each on the first bank
   after the relaunch. That is the same staleness that survived three
-  commits at #40, and it has now been caught mechanically eight times
-  running.
+  commits at #40.
+
+  ***THE GUARD FIRED AGAIN AT #51, AND THE TALLY ABOVE IS DELIBERATELY
+  NOT EXTENDED.*** **This bank's own output reads `driver line REWRITTEN
+  from the live process: pid 477 -> 17535, launch
+  2026-09-23T06:08:02.280000Z`** — *that one firing is verified, from
+  the run that produced this commit.* **The list stops at #48 and three
+  restarts have happened since (#49, #50, #51), so it is short by at
+  least this one and probably by three** — *but the #49 and #50
+  transitions were not re-derived from the record here, and a first
+  attempt to trace them with `git log --grep` matched the wrong commits
+  and returned an identical pid either side, which is not evidence of
+  anything.* **A count is not extended on the argument that the guard
+  must have fired**, however sound that argument is: *the mechanism says
+  bank.py rewrites on the first bank after any relaunch, and that is a
+  reason to expect three firings, not a measurement of three.* ***THIS
+  IS THE THIRD TIME THIS PARTICULAR TALLY HAS BEEN FOUND SHORT***, which
+  is the argument for deleting the number rather than maintaining it.
 
   ***AND THIS COUNT WAS ITSELF STALE, BY TWO, IN THE SENTENCE THAT
   EXISTS TO RECORD A GUARD AGAINST STALENESS.*** It read *"four times"*
@@ -6520,6 +6546,57 @@ exactly one bank.
   prose, which is the whole difference.*
 - **Frontier contiguous 0..1418, highest decided 1418, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***RESTART #51 — THE CONTAINER WAS RESTARTED AT 06:05:54.989092Z AND
+  THE MACHINE DID NOT CHANGE.*** *Full figures are in the `#51` header
+  block in the checkpoint; this is the index entry.* **New driver pid
+  17535, launched 2026-09-23T06:08:02.280000Z**, computed by script from
+  `btime` plus `/proc/17535/stat` field 22 over `SC_CLK_TCK` — *never
+  converted by hand, which the note records going wrong by exactly
+  1800 s once.*
+
+  ***btime DID NOT MOVE, AND THAT IS THE WHOLE PROOF THIS IS A CONTAINER
+  RESTART.*** **1790096990 at #50 and 1790096990 now** — the same
+  2026-09-22T17:09:50Z host boot — with `/proc/uptime` reading
+  **46670.73 s** at the first measurement. *All six spec fields are
+  unchanged against #50: @ 2.10GHz, 2100.000 MHz, 266240 KB, nproc 4,
+  16481980 kB, kernel 6.18.44-fc-v37.* **So costs across this point ARE
+  on a common basis** — *stated as the result of re-reading all six,
+  not assumed, because the CPU has moved at #41, #42, #48 and #50 and at
+  #41 it moved after eight identical readings.*
+
+  ***NO ROWS WERE LOST, AND FOUR CUBES WERE.*** The driver's stdout ends
+  with **idx 1407 at 9175.1 s** and then `[killed]`, and that row is the
+  last row in the file: **1588 rows either side**, I1–I6 pass, **0 SAT**.
+  *Killed in flight were **idx 1419, 1420, 1421 and 1422** — every CNF
+  for driver pid 477 matching `-seq-c`, no more and no fewer.*
+  **Total elapsed lost 5021.23 s = 1.3948 h.**
+
+  ***THE CPU LOSS IS BRACKETED AT [3783.00, 4846.23] s = [1.0508,
+  1.3462] CPU-h***, width **1063.23 s = 21.94%** of the upper end. *The
+  lower end is the cpu actually observed at each cube's last sample; the
+  upper end adds the unsampled tail at the `cpu <= elapsed` ceiling —
+  the single-threaded premise checked over all 4729 samples at
+  `8c463eb` and never found above 1.0.*
+
+  ***A FIRST PASS MULTIPLIED ELAPSED BY EACH CUBE'S LAST RATIO AND GOT
+  4791.78 s. THAT NUMBER IS NOT USED.*** *It assumes the ratio held
+  through 266 s of unsampled runtime at the end of every cube, which is
+  exactly what the bracket exists to avoid.* **It lands inside the
+  bracket, near the top** — *and a point estimate that survives its own
+  check teaches nothing, which is why #45's loss was bracketed too.*
+  **Every killed cube does have a ratio sample**, so the "never invent a
+  ratio" case did not arise; *but all four samples come from ONE bank at
+  06:01:29Z, so the four brackets share almost the same tail and their
+  widths are not independent.*
+
+  ***RE-RUN SET NINETEEN OPENS: idx 1419, 1420, 1421, 1422 — AND IT IS
+  NOT CONFOUNDED.*** *Said at the OPENING, as the rule requires.* **Set
+  eighteen, opened at #50, was confounded**; this one is not, because
+  the re-takes will run on the same machine as the killed attempts.
+  *The two [killed] markers agree to the nanosecond for the third
+  restart running, and that remains ONE observation of the teardown
+  instant written twice, not two.*
 
   ***THE SEVENTY-FIRST SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `16046e9` EXISTED — AND IT MOVED MORE FIGURES THAN ANY CLOSE IN THE
