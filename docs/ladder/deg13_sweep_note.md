@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T09:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T09:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6531,7 +6531,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1603 -> 1604 rows)
+## State as of the last refresh (1604 -> 1605 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6542,7 +6542,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1604 rows; 1435 labels decided; 1435 UNSAT; 0 SAT; 0 labels
+- **1605 rows; 1436 labels decided; 1436 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6567,7 +6567,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1435 decided plus 169 superseded
+  A row count is not a decision count: 1436 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6617,7 +6617,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1430, highest decided 1435, holes [1431].**
+- **Frontier contiguous 0..1430, highest decided 1436, holes [1431].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-THIRD SPAN HAS OPENED, AT WIDTH TWO.*** Walk position
@@ -6833,6 +6833,52 @@ exactly one bank.
   violation has grown from at least 24.6 s to **at least 159.8 s**.*
   **Nothing idx 1431 can do brings it back to zero** — its clamp tops
   out at 2086.5, which is 159.8 below the now-final 2246.3.
+
+  ***A QUIET ROW, AND THEN A WITHIN-RUN BOUND THAT SETTLES THE WHOLE
+  QUESTION BEFORE THE LAST CUBE FINISHES.*** **idx 1436 came in at
+  1062.8 s**, second member of `[13,12,12,7]`, coord9 = **13**; holes
+  unchanged at **`[1431]`**, frontier **0..1430**, chain **`2,3,3,2,1,1`**,
+  verdict still determined False. *Sweep rank **1211 of 1436**, no tie,
+  detector agrees. The new block stands at **2 of 15**, 442.0 and
+  1062.8, span 2.404525x. Decided 1436 of 1949; still 0 SAT.*
+
+  ***idx 1431 HAS ALREADY RUN PAST ITS OWN CLAMP, SO THE coord9 = 11
+  MEDIAN IS PINNED AT 2086.5.*** **At 09:20:01Z the tool reads idx 1431
+  at 4918 s elapsed**, and `cost = overhead + final elapsed >= elapsed`,
+  so its cost exceeds 2086.5 — *the clamp's upper stop* — by a wide
+  margin. **`clamp(cost, 1876.3, 2086.5) = 2086.5`, and the 12 → 11 gap
+  is therefore exactly `2086.5 − 2246.3 = −159.8`**, not merely confined
+  to `[-370.00, -159.80]`. *The interval has collapsed onto its own
+  binding end, which is where it was always going to land if the last
+  cube was dear.*
+
+  ***AND THE FACT WAS AVAILABLE BEFORE IT WAS READ.*** *The samples
+  bracket the crossing tightly: idx 1431 read **2082 s at 08:32:45Z**,
+  **4.5 s** below the stop, and **2251 s at 08:35:34Z**, above it.*
+  **So the answer has been determined since somewhere in those three
+  minutes, and five commits since then wrote intervals for a quantity
+  that was already a number.** *Nothing was wrong in them — an interval
+  containing the truth is not false — but the sharper fact was sitting
+  in a file this note reads at every bank, and reading a cube's elapsed
+  time against a published stop was not part of the row procedure. It
+  is now.*
+
+  ***THE SAME BOUND FORCES A NEW BLOCK MAXIMUM AND A WIDER SPAN.***
+  **idx 1431's cost already exceeds the block's current maximum of
+  4650.6 by at least 267.4 s**, so **the maximum of `[13,12,12,8]` will
+  be idx 1431 at >= 4918 s**, and the block span is forced from
+  **9.966995x to >= 10.540077x** — *a rise of at least 0.573082x,
+  against a minimum of 466.6 that no remaining cube can lower.*
+
+  ***ALL THREE OF THESE ARE WITHIN-RUN ONLY, AND THE CAVEAT IS NOT A
+  FORMALITY.*** *A restart kills idx 1431 and its re-run starts from
+  zero elapsed, and the checkpoint records the run that completes — so
+  a cheap re-take would restore `[-370.00, -159.80]`, leave 4650.6 as
+  the maximum and put the span back to 9.966995x.* **Unconditionally
+  the gap stays in `[-370.00, -159.80]`; conditional on this run
+  finishing, it is −159.8 exactly.** *The note has refuted a published
+  interval by exactly this kind of bound before — the matched-fraction
+  refutation — and stated the same caveat there.*
 
   ***THE SEVENTY-SECOND SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `eb7d872` EXISTED.*** **The retirement sentence stood for exactly one
@@ -16608,7 +16654,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1435 of 1949 = 73.6275%**; **514 undecided**. **50% IS CROSSED**, at
+- **1436 of 1949 = 73.6788%**; **513 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -17324,7 +17370,7 @@ exactly one bank.
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
   **20 decided**, undecided [1431]
 - `[13, 12, 12, 7]` idx 1435..1449: **15 members**,
-  **1 decided**, undecided 14 spanning 1436..1449
+  **2 decided**, undecided 13 spanning 1437..1449
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
