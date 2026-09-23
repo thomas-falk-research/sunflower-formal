@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T19:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T20:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6547,7 +6547,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1673 -> 1674 rows)
+## State as of the last refresh (1674 -> 1675 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6558,7 +6558,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1674 rows; 1505 labels decided; 1505 UNSAT; 0 SAT; 0 labels
+- **1675 rows; 1506 labels decided; 1506 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6590,7 +6590,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1505 decided plus 169 superseded
+  A row count is not a decision count: 1506 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6640,7 +6640,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1504, highest decided 1504, holes [].**
+- **Frontier contiguous 0..1505, highest decided 1505, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -8515,6 +8515,43 @@ exactly one bank.
   basis with the discarded runs.* **Set nineteen is closed in the same
   commit** — *it had been complete since idx 1422 landed and the note
   had never recorded it, which the live bullet above was still denying.*
+
+  ***THE FIRST RE-TAKE OF SET TWENTY LANDS, AND ITS RATIO IS NOT
+  COMPUTED.*** *From the staged blob.* **idx 1505 at 5391.1 s** (coord9
+  = **12** in `[13,12,11,11]`, rank **384 of 1506**); *untied, detector
+  agrees at 384.* **Holes `[]`, frontier contiguous 0..1505, highest
+  decided 1505. Decided 1506 of 1949 = 77.2704%; still 0 SAT.** *First
+  row since restart #52, and it landed in order, so no span opened.*
+
+  ***SET TWENTY IS 1 OF 4 AND ITS FIGURES STAY WITHHELD.*** *idx 1505's
+  discarded run is in the `#52` header block and its re-take is above,
+  so the ratio is one division away — and it is **not being done**.*
+  **The convention is that re-run ratios are computed at 4-of-4 and not
+  before**, *and the note's stated reason is not bookkeeping tidiness:
+  "a number in hand is a number that leaks into how the next sentence
+  gets phrased." Set seven was withheld at 1-of-4 and again at 2-of-4 on
+  separate commits. This is the same discipline applied under the same
+  conditions, and the fact that the arithmetic is trivial is exactly
+  why the rule has to be kept rather than judged case by case.*
+
+  **coord9 = 12 goes 11 of 16 and the interval narrows again
+  `[2612.9, 4863.4]` → `[2790.55, 4863.4]`**, *width 2250.50 →
+  2072.85.* ***The lower end rose 177.65 s and the upper end did not
+  move — for the third time in this block, and for the same reason
+  each time***: *with eleven decided the upper is `(d₈+d₉)/2` = (4773.8
+  + 4953.0)/2, and 5391.1 arrived above that pair, so neither order
+  statistic changed.* *Both ends remain attained by feasible costs —
+  all five undecided at the 0.1 s floor gives 2790.55, at the 21600 s
+  cap gives 4863.4.*
+
+  **The window's first half holds with more room again**: *margin from
+  the 13-median `1024.00 → 1351.15 → **1528.80 s**`, `1.811571x →
+  2.070854x → **2.211650x**`.* **coord9 = 11 stays 7 of 14.**
+
+  **Block 26 of 38; min 396.3, max 5738.4, span 14.479939x — unmoved,
+  5391.1 being interior.** *Five more coord9 = 12 cubes, seven more
+  coord9 = 11; `5391.1` is `4.272716x` the 13-median at `0.2496` of the
+  cap.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -18780,7 +18817,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1505 of 1949 = 77.2191%**; **444 undecided**. **50% IS CROSSED**, at
+- **1506 of 1949 = 77.2704%**; **443 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -19494,7 +19531,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **25 decided**, undecided 13 spanning 1505..1517
+  **26 decided**, undecided 12 spanning 1506..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

@@ -12697,3 +12697,4 @@ g=11 [13, 12, 11, 11, 13, 13, 12, 12, 12, 11, 8]	UNSAT	5395.8
 # CONFOUNDED, AND THAT IS SAID AT THE OPENING AS THE RULE REQUIRES. ***
 # All six spec fields and btime are unchanged, so the re-takes are on a
 # common basis with the discarded runs.
+g=11 [13, 12, 11, 11, 13, 13, 12, 12, 12, 10, 9]	UNSAT	5391.1
