@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T12:47Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T12:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6540,7 +6540,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1637 -> 1639 rows)
+## State as of the last refresh (1639 -> 1640 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6551,7 +6551,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1639 rows; 1470 labels decided; 1470 UNSAT; 0 SAT; 0 labels
+- **1640 rows; 1471 labels decided; 1471 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6576,7 +6576,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1470 decided plus 169 superseded
+  A row count is not a decision count: 1471 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6626,7 +6626,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1465, highest decided 1470, holes [1466].**
+- **Frontier contiguous 0..1465, highest decided 1473, holes [1466, 1471, 1472].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -7396,6 +7396,26 @@ exactly one bank.
   contiguous run of 13s doing its work**, *already recorded two blocks
   back as the shape both earlier blocks shared; three more instances are
   consistent with it and add no new claim.*
+
+  ***A SIXTH BLOCK OPENS AND THE SPAN'S VERDICT GOES DETERMINED
+  FALSE.*** **idx 1473 came in at 147.6 s**, coord9 = **13**, first
+  member of `[13,12,12,3]`; *rank **1446 of 1471**, no tie, detector
+  agrees; index resolved through the cube list.* **It landed three
+  places past the frontier's next gap, so holes go `[1466]` →
+  `[1466, 1471, 1472]`, and the chain at this commit reads
+  `2,1,1,3`.** *Frontier contiguous **0..1465**, highest decided
+  **1473**. Decided 1471 of 1949; still 0 SAT.*
+
+  **The `1 → 3` step is a rise, so the seventy-sixth is determined
+  False** — *the same universal-over-adjacent-pairs argument the
+  seventy-third and seventy-fourth used, and the third time this session
+  a verdict has been settled before the close.* **Forward test:
+  `--spans all` will report False for the seventy-sixth.**
+
+  **`[13,12,12,3]` is idx 1473..1475, three members, coord9
+  `{13: 2, 12: 1}`** — *the third of the six untestable blocks, and now
+  small enough that its coord9 = 12 "group" is a single cube.* *The
+  whole block is three cubes; the enumeration's tail is running out.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17661,7 +17681,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1470 of 1949 = 75.4233%**; **479 undecided**. **50% IS CROSSED**, at
+- **1471 of 1949 = 75.4746%**; **478 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18378,6 +18398,8 @@ exactly one bank.
   **6 decided**, undecided [1466]
 - `[13, 12, 12, 4]` idx 1468..1472: **5 members**,
   **3 decided**, undecided [1471, 1472]
+- `[13, 12, 12, 3]` idx 1473..1475: **3 members**,
+  **1 decided**, undecided [1474, 1475]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
