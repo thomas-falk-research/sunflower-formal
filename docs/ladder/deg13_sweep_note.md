@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T10:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T10:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6534,7 +6534,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1613 -> 1614 rows)
+## State as of the last refresh (1614 -> 1615 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6545,7 +6545,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1614 rows; 1445 labels decided; 1445 UNSAT; 0 SAT; 0 labels
+- **1615 rows; 1446 labels decided; 1446 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6570,7 +6570,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1445 decided plus 169 superseded
+  A row count is not a decision count: 1446 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6620,7 +6620,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1443, highest decided 1446, holes [1444, 1445].**
+- **Frontier contiguous 0..1443, highest decided 1446, holes [1444].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk
@@ -6718,6 +6718,49 @@ exactly one bank.
   **The gap itself is still `[-711.90, 9877.80]` and straddles zero**,
   so the step that broke in `[13,12,12,8]` remains undetermined here.
   *All the elapsed-derived ends are within-run only.*
+
+  ***THE THRESHOLD I NAMED LAST COMMIT WAS NOT MET.*** **idx 1445 came
+  in at 3135.3 s**, and the figure needed to settle the step that way
+  was **4245.8** — *short by 1110.5 s.* **So that route did not fire**,
+  and the step is not settled by it. *Holes down to `[1444]`, frontier
+  contiguous 0..1443, chain at this commit `3,2,1`. Sweep rank **709 of
+  1446**, no tie, detector agrees; block to **11 of 15**, span
+  **6.997285x → 7.093439x**. Decided 1446 of 1949; still 0 SAT.*
+
+  ***BUT coord9 = 11 IS NOW COMPLETE, WHICH REDUCES THE WHOLE QUESTION
+  TO ONE NUMBER'S POSITION.*** **The group is `[1939.8, 3135.3]` and its
+  median is `2537.55`, final.** *Two of the three medians in this block
+  are now fixed — 13 at **1054.65**, 11 at **2537.55** — so 12 → 11
+  holds if the coord9 = 12 median lands below 2537.55 and is violated if
+  it lands above.*
+
+  ***AND THAT REDUCES FURTHER, TO THREE NAMED CUBES.*** *The
+  coord9 = 12 median is the 5th smallest of nine; **four** of the five
+  decided costs sit below 2537.55 and **one** above, with **four**
+  undecided.* **So the median falls below the threshold if at least one
+  unknown does, and rises above it only if all four do.** *idx 1444
+  reads **3224 s** elapsed at 10:49:13Z, so `cost >= elapsed` already
+  puts it above.* **That leaves idx 1447, 1448 and 1449:**
+
+  > **12 → 11 RISES — the direction holds — if any one of idx 1447,
+  > 1448, 1449 finishes below 2537.55 s. It is VIOLATED only if all
+  > three exceed it.**
+
+  *Their elapsed readings are **703**, **421** and **43** s, so each has
+  **1834.6**, **2116.6** and **2494.6** s of room left below the
+  threshold and none is determined either way.*
+
+  ***A BASE RATE FOR SCALE, AND IT IS NOT A FORECAST.*** **617 of 1446
+  decided costs fall below 2537.55 — 42.67%**, so a **minority** of this
+  sweep's cubes finish under the bar. *No probability is claimed from
+  it: these three are neighbours inside one block and are not
+  independent draws.* ***AND THE SCRIPT THAT PRINTED THAT FIGURE ALSO
+  PRINTED A GLOSS CONTRADICTING IT*** — *its own comment read "the bar
+  is LOW by sweep standards, most cubes finish under it" beside 42.67%,
+  which is the minority, not the majority.* **The gloss was typed and
+  the number was computed; the number is right and the gloss was struck
+  before it reached this note.** *Same shape as every other entry in the
+  error list: prose asserting something the adjacent figure denies.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -16983,7 +17026,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1445 of 1949 = 74.1406%**; **504 undecided**. **50% IS CROSSED**, at
+- **1446 of 1949 = 74.1919%**; **503 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -17697,7 +17740,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 7]` idx 1435..1449: **15 members**,
-  **10 decided**, undecided [1444, 1445, 1447, 1448, 1449]
+  **11 decided**, undecided [1444, 1447, 1448, 1449]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
