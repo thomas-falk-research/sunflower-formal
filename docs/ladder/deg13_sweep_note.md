@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T00:05Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T00:08Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6434,7 +6434,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1554 -> 1555 rows)
+## State as of the last refresh (1555 -> 1556 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6445,7 +6445,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1555 rows; 1386 labels decided; 1386 UNSAT; 0 SAT; 0 labels
+- **1556 rows; 1387 labels decided; 1387 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6460,7 +6460,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1386 decided plus 169 superseded
+  A row count is not a decision count: 1387 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6494,8 +6494,25 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1380, highest decided 1386, holes [1381].**
+- **Frontier contiguous 0..1380, highest decided 1387, holes [1381].**
   <!-- SPAN-STATE: open -->
+
+  **idx 1387 closed at 1133.0 s** — sweep rank **1143 of 1387**, untied —
+  and it moved **nothing that matters here**. *It is in `[13,12,12,9]`,
+  which is now 2 of 28, and it sits above the highest decided, so the
+  hole set is still `[1381]`; the chain reads `3, 2, 2, 3, 2, 1, 1`.*
+  **The `[13,12,12,10]` block is untouched at 37 of 38, min 437.4, max
+  8915.7, span 20.383402x, with idx 1381 still its only undecided
+  member.** *Its block rank of 1 of 2 is reported for completeness and is
+  worth nothing: a two-element set always has its maximum at one of its
+  two elements, which is the same trap a control killed earlier in this
+  block's history.*
+
+  **In-flight bounds, 00:08:00Z, within-run only: idx 1381 >= 4200 s,
+  idx 1388 >= 753 s, idx 1389 >= 271 s, idx 1390 >= 26 s.** ***idx 1381
+  now needs 5412.44 s more to refute the matched-count reading***, down
+  from 5641.44 s at the previous sample — *the single inequality is
+  unchanged and only the clock has moved.*
 
   ***THE WHOLE BLOCK-SPAN PREDICTION IS NOW ONE CUBE AND ONE NUMBER.***
   **idx 1385 closed at 1550.7 s** — block rank **27 of 37**, sweep rank
@@ -14617,7 +14634,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1386 of 1949 = 71.1134%**; **563 undecided**. **50% IS CROSSED**, at
+- **1387 of 1949 = 71.1647%**; **562 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15333,7 +15350,7 @@ exactly one bank.
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
   **37 decided**, undecided [1381]
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **1 decided**, undecided 27 spanning 1387..1413
+  **2 decided**, undecided 26 spanning 1388..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
