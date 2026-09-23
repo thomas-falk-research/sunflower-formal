@@ -48,8 +48,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 56
-MIN_MONO_ROWS  = 70
+MIN_TABLE_ROWS = 57
+MIN_MONO_ROWS  = 71
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -371,7 +371,7 @@ def mono_prose(note, spans):
         if int(m.group(2)) != len(F):
             bad.append(('mono prose', 'tally total', f'note {m.group(2)} vs walk {len(F)}'))
 
-    m = re.search(r"\*The ([\w-]+)'s nine is (\d+)(?:st|nd|rd|th), unchanged\.\*", flat)
+    m = re.search(r"\*The ([\w-]+)'s nine is (\d+)(?:st|nd|rd|th)(?:, unchanged)?\.\*", flat)
     if not m:
         bad.append(('mono prose', 'nine-rank sentence', 'NOT FOUND'))
     else:
