@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T18:50Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T19:10Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6559,8 +6559,11 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1674 rows; 1505 labels decided; 1505 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#51**
-  — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
+  undecided-only.** No rows were lost across restarts #37 through **#52**
+  — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
+  FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
+  same as every restart in the range.* — ***AND THIS RANGE WAS STALE BY
+  TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
   note's own sentence below about being "extended from #44 to #45 one
   restart late" has now been repeated at a lag of two. *The paragraph
@@ -6581,13 +6584,17 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; *the same sentence claimed it would be "extended
   in the same commit as the absorb this time" and then was not, at #50.*
-  **Twice late now, and both times found by rereading rather than by the
-  reminder.**
+  **Twice late, and both times found by rereading rather than by the
+  reminder.** ***AT #52 IT WAS FINALLY KEPT***: *the range moved to #52
+  in the absorb commit itself, which is the first time in the series.
+  The promise took three restarts to honour, and it was honoured by
+  reading this paragraph while writing the absorb — the same rereading
+  that caught it late twice, not a new control.*
   A row count is not a decision count: 1505 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
-  `/proc/17535/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
+  `/proc/27488/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -8452,6 +8459,62 @@ exactly one bank.
   **Block 25 of 38; min 396.3, max 5738.4, span 14.479939x — unmoved,
   5395.8 being interior.** *Six more coord9 = 12 cubes to complete that
   group, seven more coord9 = 11.*
+
+  ***RESTART #52 — THE CONTAINER WAS RESTARTED AT 19:03:31.083866Z AND
+  THE MACHINE DID NOT CHANGE.*** *Full figures are in the `#52` header
+  block in the checkpoint; this is the index entry.* **New driver pid
+  27488, launched 2026-09-23T19:06:29.260000Z**, computed by script from
+  `btime` plus `/proc/27488/stat` field 22 over `SC_CLK_TCK`.
+  **Downtime 178.176 s.**
+
+  ***btime DID NOT MOVE — 1790096990 at #51 and 1790096990 now***, the
+  same 2026-09-22T17:09:50Z host boot, with `/proc/uptime` reading
+  **93239.95 s**. *All six spec fields are unchanged against #51:
+  @ 2.10GHz, 2100.000 MHz, 266240 KB, nproc 4, 16481980 kB, kernel
+  6.18.44-fc-v37.* **So costs across this point ARE on a common basis**,
+  *stated as the result of re-reading all six.* **The two `[killed]`
+  markers agree to the nanosecond for the fourth restart running.**
+
+  ***NO ROWS WERE LOST, AND FOUR CUBES WERE.*** *The driver's stdout
+  ends with **idx 1504 at 5395.8 s** and then `[killed]`, and that row
+  is the last row in the file: **1674 rows either side**, I1–I6 pass,
+  **0 SAT**. The waiter had been armed at 1674 rows and never reported a
+  landing, which settles the window independently of the row count.*
+  **The four lost cubes are idx 1505, 1506, 1507, 1508** — *every CNF
+  carrying the dead pid 17535 and matching `-seq-c`, no more and no
+  fewer, with no transient `-c0-` to mistake for one.* **Total elapsed
+  lost 13285.96 s = 3.6905 h.**
+
+  ***AND I MADE #51's REJECTED MISTAKE AGAIN BEFORE RE-READING #51's OWN
+  BLOCK.*** *The first pass multiplied each cube's elapsed by its last
+  sampled ratio and produced **12902.25 s** of CPU loss. That is exactly
+  the method `#51`'s header block records as **NOT USED**, and for the
+  same reason: it assumes the ratio held through roughly 753 s of
+  unsampled runtime at the end of every cube, which is the assumption
+  the bracket exists to avoid.* **The figure of record is the bracket:
+  `[10011.00, 13023.96]` s = `[2.7808, 3.6178]` CPU-h**, *lower end the
+  cpu actually observed at each last sample, upper end adding the
+  unsampled tail at the `cpu ≤ elapsed` ceiling; width 3012.96 s, 23.13%
+  of the upper end.* *The rejected point estimate sits inside the
+  bracket near the top — which, as `#51` says, teaches nothing.*
+  **The error was caught by reading the previous restart's block before
+  writing this one**, *which is now the reason to read it every time and
+  not only when something looks wrong.*
+
+  *One thing the bracket makes cheap: **idx 1508's only ratio sample is
+  at 94 s of elapsed**, far below the ~600 s threshold this note records
+  for distrusting a young sample. Because the bracket uses observed cpu
+  and a ceiling rather than any ratio, the young sample costs nothing —
+  the "do not invent a ratio" case never arises. All four samples come
+  from one bank at 18:50:58Z, so the four tails are 752.69–753.59 s and
+  their widths are **not independent**.*
+
+  ***RE-RUN SET TWENTY OPENS: idx 1505, 1506, 1507, 1508 — AND IT IS NOT
+  CONFOUNDED, SAID AT THE OPENING AS THE RULE REQUIRES.*** *All six spec
+  fields and `btime` are unchanged, so the re-takes are on a common
+  basis with the discarded runs.* **Set nineteen is closed in the same
+  commit** — *it had been complete since idx 1422 landed and the note
+  had never recorded it, which the live bullet above was still denying.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -19505,13 +19568,31 @@ exactly one bank.
   it. Do not update either from the other, and do not write down how many
   indices they share — that count is a third copy and it went stale within
   one commit of being written.
-- **RE-RUN SET SEVEN IS CLOSED** (907, 908, 909, 910 — full table above;
-  median 0.5962, spread 2.0116×, no ratio above 1.0). The ratios were
-  withheld at 1-of-4 and at 2-of-4, on separate commits, and computed only
-  at 4-of-4. **No re-run set is open**, **no forward test is registered**,
-  and there is **no live registered pattern commitment.** Do not invent one
-  to fill the gap: the next set opens when the next restart does, not
-  before.
+- ***THIS BULLET WAS STALE BY TWELVE SETS AND IS REWRITTEN AT #52.*** It
+  read *"**No re-run set is open**"* while the checkpoint recorded sets
+  up to **nineteen**, opened at `#51`. *It described set **seven** as the
+  live state — seven closed at restart #39.* **Fifth live instance of the
+  standing-claim-never-re-checked pattern**, beside the pid line, the
+  41/14.6% line, the monotonicity bullets and the restart-range tally.
+  *Nothing mechanical checks this bullet, which is exactly why it drifted;
+  `span_audit.py` covers the spans and the census and reaches none of it.*
+- **RE-RUN SET NINETEEN IS CLOSED** (1419, 1420, 1421, 1422 — opened at
+  `#51`, table in that header block). *Ratios `discarded / re-run`:*
+  **1.0342, 0.5852, 0.4848, 0.3274** — *min 0.3274, median **0.5350**
+  (midpoint of 0.4848 and 0.5852), mean 0.6079, max **1.0342**, spread
+  3.1592×.* ***AND IT CARRIES A RATIO ABOVE 1.0.*** *idx 1419 was killed
+  at 2013.73 s and re-took in **1947.1 s** — the re-run finished **66.63
+  s sooner** than the time already spent before the kill.* **That is the
+  first ratio above 1.0 among the 24 this note tabulates**, *whose
+  previous maximum was 0.9621 (idx 1107); the note does not tabulate
+  every set, so this is a statement about the 24 recorded rows and not
+  about the whole series.* *All 24 were re-checked against
+  `discarded / re-run` at this close and every quoted ratio agrees.*
+- **RE-RUN SET TWENTY IS OPEN**: **idx 1505, 1506, 1507, 1508**, opened
+  by `#52`. *Not confounded — said at the opening, as the rule requires.*
+  **No forward test is registered** and there is **no live registered
+  pattern commitment.** *The ratios will be computed at 4-of-4 and not
+  before.*
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 

@@ -12626,3 +12626,74 @@ g=11 [13, 12, 11, 11, 13, 13, 12, 12, 12, 12, 7]	UNSAT	2036.7
 g=11 [13, 12, 11, 11, 13, 13, 13, 12, 11, 10, 9]	UNSAT	5552.0
 g=11 [13, 12, 11, 11, 13, 13, 13, 11, 11, 10, 10]	UNSAT	3896.4
 g=11 [13, 12, 11, 11, 13, 13, 12, 12, 12, 11, 8]	UNSAT	5395.8
+# RESTART #52 -- CONTAINER RESTART.  Teardown 2026-09-23T19:03:31.083866Z,
+# new driver pid 27488 launched 2026-09-23T19:06:29.260000Z (btime +
+# /proc/27488/stat field 22 / SC_CLK_TCK, computed by script).  THE
+# MACHINE DID NOT CHANGE.  Downtime 178.176 s.
+#
+#     field          #51                #52
+#     CPU model      @ 2.10GHz          @ 2.10GHz      same
+#     cpu MHz        2100.000           2100.000       same
+#     cache size     266240 KB          266240 KB      same
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# btime DID NOT MOVE -- 1790096990 at #51 and 1790096990 now, the same
+# 2026-09-22T17:09:50Z host boot -- WHICH IS HOW THIS IS KNOWN TO BE A
+# CONTAINER RESTART AND NOT A HOST REBOOT.  /proc/uptime read 93239.95 s
+# at the first measurement, consistent with a host up since #50.  Read,
+# never inferred from the spec table.  So the six-field spec is unchanged
+# and costs across this point ARE on a common basis -- stated as the
+# result of re-reading all six fields, not assumed, because the CPU has
+# moved at #41, #42, #48 and #50 and at #41 it moved after eight
+# identical readings.
+#
+# THE TWO [killed] MARKERS AGREE TO THE NANOSECOND, FOR THE FOURTH
+# RESTART RUNNING.  Driver b8t19uzzo and waiter bk8wrne0u both carry
+# mtime 2026-09-23T19:03:31.083865693Z.  The procedure says take the
+# EARLIER and that they need not agree; as at #49, #50 and #51 there is
+# nothing to choose.  Two files written in one teardown by the same
+# supervisor is ONE observation of the teardown instant, not two.
+#
+# NO ROWS WERE LOST.  The driver's own stdout ends with idx 1504 at
+# 5395.8 s and then [killed]; that row is the last row in this file.
+# 1674 rows, 1505 decided, I1-I6 pass, 0 SAT.  The waiter was armed at
+# 1674 rows and never reported a landing, which settles the window
+# independently of the row count.
+#
+# WORK LOST: FOUR CUBES, idx 1505, 1506, 1507, 1508 -- every CNF for
+# driver pid 27488's predecessor 17535 matching -seq-c, no more and no
+# fewer.  No transient -c0- CNF existed for this pid.
+#
+#     idx    dispatched (CNF mtime)   elapsed at kill   last sample
+#     1505   17:45:31.663588Z             4679.42 s     3926 el / 3839 cpu
+#     1506   17:46:48.395592Z             4602.69 s     3850 el / 3754 cpu
+#     1507   18:10:54.495678Z             3156.59 s     2403 el / 2332 cpu
+#     1508   18:49:23.819815Z              847.26 s       94 el /   86 cpu
+#
+# TOTAL ELAPSED LOST 13285.96 s = 3.6905 h.
+# CPU-SECONDS LOST: BRACKETED AT [10011.00, 13023.96] s = [2.7808,
+# 3.6178] CPU-h, width 3012.96 s = 23.13% of the upper end.  Lower end
+# is the cpu actually observed at each cube's last sample; upper end
+# adds the unsampled tail at the cpu <= elapsed ceiling.
+#
+# *** A FIRST PASS MULTIPLIED EACH CUBE'S ELAPSED BY ITS LAST RATIO AND
+# GOT 12902.25 s.  THAT NUMBER IS NOT USED. ***  Same error as at #51,
+# made again here and caught by re-reading #51's own block: it assumes
+# the ratio held through ~753 s of unsampled runtime at the end of each
+# cube, which is exactly the assumption the bracket exists to avoid.  It
+# sits inside the bracket near the top, which teaches nothing.
+#
+# EVERY KILLED CUBE HAS A RATIO SAMPLE, so the "do not invent a ratio"
+# case does not arise.  But idx 1508's only sample is at 94 s of
+# elapsed, below the ~600 s threshold this file records for distrusting
+# a young sample, so its 0.9149 is not relied on -- the bracket does not
+# use any ratio, which is why the young sample costs nothing here.  All
+# four samples come from ONE bank at 18:50:58Z, so the four unsampled
+# tails are 752.69-753.59 s and their widths are NOT independent.
+#
+# RE-RUN SET TWENTY OPENS: idx 1505, 1506, 1507, 1508.  *** IT IS NOT
+# CONFOUNDED, AND THAT IS SAID AT THE OPENING AS THE RULE REQUIRES. ***
+# All six spec fields and btime are unchanged, so the re-takes are on a
+# common basis with the discarded runs.
