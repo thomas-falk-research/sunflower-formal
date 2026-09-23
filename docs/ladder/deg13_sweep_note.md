@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T11:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T11:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6534,7 +6534,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1621 -> 1622 rows)
+## State as of the last refresh (1622 -> 1624 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6545,7 +6545,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1622 rows; 1453 labels decided; 1453 UNSAT; 0 SAT; 0 labels
+- **1624 rows; 1455 labels decided; 1455 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6570,7 +6570,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1453 decided plus 169 superseded
+  A row count is not a decision count: 1455 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6620,7 +6620,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1446, highest decided 1453, holes [1447].**
+- **Frontier contiguous 0..1453, highest decided 1456, holes [1454, 1455].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk
@@ -6907,6 +6907,46 @@ exactly one bank.
   span 2.265968x → 2.506238x**; *coord9 = 12 still 0 of 6 and
   coord9 = 11 still 0 of 1, so the block's direction question has one
   anchor and no other end.*
+
+  ***`[13,12,12,7]` IS COMPLETE AND THE DIRECTION IT HELD BY INTERVAL IS
+  NOW HELD BY NUMBERS.*** **idx 1447 at 3549.9 s** closed it at 15 of
+  15, and **idx 1456 at 1269.0 s** closed the new block's single
+  coord9 = 11 member. *Ranks **636 of 1455** and **1153 of 1455**,
+  neither tied, detector agrees on both. Holes `[1447]` →
+  **`[1454, 1455]`**, frontier contiguous **0..1453**, chain
+  **`3,2,1,3,2,1,2,1,2`**, still determined False. Decided 1455 of 1949;
+  still 0 SAT.*
+
+  | `[13,12,12,7]` | n | FINAL median |
+  |---|---|---|
+  | coord9 = 13 | 4 | **1054.65** |
+  | coord9 = 12 | 9 | **1971.7** |
+  | coord9 = 11 | 2 | **2537.55** |
+
+  **13 → 12 is `+917.05` and 12 → 11 is `+565.85`.** *The bound at 8 of
+  9 was `[1892.1, 1971.7]` and the answer is **1971.7**, the upper end —
+  idx 1447 came in at 3549.9, above the median index, so it pushed
+  nothing down.* **min 184.4, max 3693.9, span 20.031996x, all
+  unmoved.**
+
+  ***AND THE TEST IS CLEANER STATED AS A WINDOW, WHICH MAKES THE THIRD
+  BLOCK LOOK TIGHT.*** *The direction holds exactly when the
+  coord9 = 12 median lands strictly between the other two, so each block
+  is one number against an interval:*
+
+  | block | window | width | 12-median | verdict |
+  |---|---|---|---|---|
+  | `[13,12,12,8]` | (1075.0, 2086.5) | 1011.5 | **2246.3** | **outside — violated** |
+  | `[13,12,12,7]` | (1054.65, 2537.55) | 1482.9 | **1971.7** | inside — holds |
+  | `[13,12,12,6]` | **(888.3, 1269.0)** | **380.7** | 0 of 6 decided | open |
+
+  **The third block's window is 380.7 s wide, against 1011.5 and
+  1482.9** — *because its coord9 = 11 "median" is a single cube at
+  1269.0 and happened to land low, not because anything narrowed.*
+  **Six coord9 = 12 cubes now have to produce a median inside a band
+  a quarter the width of the last one's**, *and three blocks is still
+  three blocks: this is a description of where the test stands, not a
+  prediction of how it resolves.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17172,7 +17212,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1453 of 1949 = 74.5511%**; **496 undecided**. **50% IS CROSSED**, at
+- **1455 of 1949 = 74.6537%**; **494 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -17885,10 +17925,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 12, 7]` idx 1435..1449: **15 members**,
-  **14 decided**, undecided [1447]
 - `[13, 12, 12, 6]` idx 1450..1460: **11 members**,
-  **4 decided**, undecided 7 spanning 1454..1460
+  **5 decided**, undecided 6 spanning 1454..1460
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
