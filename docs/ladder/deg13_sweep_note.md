@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T06:11Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T06:48Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6458,7 +6458,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1587 -> 1588 rows)
+## State as of the last refresh (1588 -> 1592 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6469,7 +6469,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1588 rows; 1419 labels decided; 1419 UNSAT; 0 SAT; 0 labels
+- **1592 rows; 1423 labels decided; 1423 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6494,7 +6494,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1419 decided plus 169 superseded
+  A row count is not a decision count: 1423 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6544,8 +6544,156 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1418, highest decided 1418, holes [].**
+- **Frontier contiguous 0..1422, highest decided 1422, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***A SPAN OPENED AND CLOSED WITHOUT EVER EXISTING AT A COMMIT, AND
+  bank.py's GUARD IS WHAT CAUGHT IT.*** **All four set-nineteen re-takes
+  landed inside one bank**: idx 1419 at 1947.1 s, idx 1422 at 2086.5,
+  idx 1420 at 2111.1 and **idx 1421 at 2246.3**. *Between the third and
+  the fourth the frontier was contiguous 0..1420 with **holes
+  `[1421]`**, and a full opening writeup for a "seventy-second span" had
+  been drafted against it — walk position 137, ordinal 72, an opening at
+  one, census over 136 closed chains.* **NONE OF THAT EXISTS.** *The
+  previous commit `16832aa` had holes `[]` and this commit has holes
+  `[]`, so no committed revision between them has a broken frontier, and
+  the span walk follows committed revisions: **there is no
+  seventy-second span**, and the next one to open will take that
+  ordinal.*
+
+  ***THE GUARD FIRED IN SO MANY WORDS***: bank.py printed **"SPAN PROSE
+  CONTRADICTS THE FRONTIER: holes [] but the note still says 'A SPAN IS
+  OPEN'"** and refused to let the claim through. *This is the second
+  time in one session that the `#29` rider has decided what the record
+  says — at `eda8165` it was the difference between an opening width of
+  three and of two, and here it is the difference between a span and no
+  span at all.* **A state that is real in the working tree and never at
+  a commit is not in the record**, and the draft would have published an
+  ordinal that the walk will hand to a different span.
+
+  ***RE-RUN SET NINETEEN IS COMPLETE, AND ONLY ONE OF ITS FOUR CARRIES
+  INFORMATION.***
+
+  | idx | killed elapsed, unfinished | re-take cost | direction |
+  |---|---|---|---|
+  | 1419 | 2013.73 s | **1947.1** | ***BELOW by 66.63 s*** |
+  | 1420 | 1235.36 s | 2111.1 | above by 875.74 s |
+  | 1421 | 1089.09 s | 2246.3 | above by 1157.21 s |
+  | 1422 | 683.05 s | 2086.5 | above by 1403.45 s |
+
+  *For 1420, 1421 and 1422 the killed attempt was nowhere near done —
+  1235, 1089 and 683 s against re-takes of 2111, 2246 and 2086 — so
+  finishing above says nothing at all; a cube killed early has simply
+  not finished yet.* **idx 1419 is the ONLY member where the killed
+  attempt had already outrun the re-take's entire cost**, *so the
+  >3.31% bound below rests on one cube out of four, not on the set.*
+  **One observation**, and the note's standing refusal to build on one
+  observation applies to it unchanged.
+
+  **All four ranks, recomputed together at N = 1423 rather than
+  relabelled**: idx 1421 is **block rank 1 of 9** and sweep **888 of
+  1423**; idx 1420 **2 of 9** and **925**; idx 1422 **3 of 9** and
+  **936**; idx 1419 **4 of 9** and **981**. *All four untied.*
+  **`[13,12,12,8]` is 9 of 21** at min 466.6, max 2246.3, span
+  **4.814188x** — *up from 2.484569x four rows ago, because all four
+  re-takes landed in the block's expensive half.*
+
+  ***AND A CARELESS COMMAND NEARLY KILLED THE DRIVER, THREE MINUTES
+  AFTER AN ABSORB.*** *A `pkill -f 'waiter armed at'` was run to clear a
+  stray untracked waiter loop.* **It matched the shell running that loop
+  and killed it, returning exit 144** — *and the ONLY reason it did not
+  also kill the sweep is that `iota_sym`'s command line does not contain
+  that string.* **`pkill -f` matches the whole command line of every
+  process on the machine**, and the driver was verified alive
+  immediately afterwards (pid 17535, four solvers) *only because the
+  near-miss was noticed.* **The lesson is the one the note already
+  applies to `pgrep`: name the process exactly** — *`pkill -x iota_sym`
+  is a precise statement and `pkill -f <substring>` is a guess about
+  what else is running.* *The stray waiter existed at all because it was
+  started with a shell `&` redirect instead of the tracked background
+  mechanism, so nothing would have reported its exit.*
+
+  ***THE FIRST RE-TAKE OF SET NINETEEN CAME IN BELOW THE ELAPSED ITS
+  KILLED ATTEMPT HAD ALREADY RUN, ON THE SAME MACHINE.*** **idx 1419
+  closed at 1947.1 s.** *Its killed attempt ran **2013.73 s** from CNF
+  write to teardown WITHOUT finishing.* **The re-take's whole cost —
+  clone, DIMACS write, spawn, solve and parse — is 66.63 s SHORTER than
+  the post-CNF wall the first attempt had already spent**, so the same
+  work differed by **more than 3.31%** between the two runs. *That is a
+  LOWER bound on the difference, not an estimate: the re-take's
+  post-CNF portion is strictly less than its 1947.1 s total.*
+
+  ***AND THE OBVIOUS EXPLANATION IS RULED OUT, BY READING THE CODE
+  RATHER THAN GUESSING.*** **`rust/src/sat.rs` invokes
+  `cryptominisat5 --verb 0 --maxtime <seconds> <cnf>` and passes NO
+  seed**, and `cryptominisat5 --help` gives `-r [ --random ] arg (=0)`
+  — *the seed defaults to **0**, a fixed value.* **So the solver's
+  randomised choices are seeded identically in both runs, on an
+  identical CNF, with an identical binary** (5.11.15), *and solver
+  nondeterminism is not available as the explanation.*
+
+  ***WHAT IS LEFT IS THAT THE COST COLUMN IS WALL-CLOCK.*** Four cubes
+  share four cores with the driver and the OS, and the neighbour mix
+  differed between the two attempts. **This is the first SAME-MACHINE
+  measurement of run-to-run wall variance in this sweep.** *The note
+  already records a larger case — a cube that ran 4977.4 s without
+  finishing and then finished at 4388.5 s — but that one straddled
+  #48's 2.10GHz → 2.80GHz change and the faster CPU explained it. Here
+  all six spec fields and `btime` are unchanged, so nothing explains it
+  away.*
+
+  ***NO MECHANISM IS ASSERTED BEYOND THAT, AND THE CANDIDATES ARE NAMED
+  RATHER THAN CHOSEN BETWEEN.*** *Contention is the leading one; the
+  cpu/elapsed samples do not settle it — under driver 477 this cube's
+  twelve samples ran 0.9455 to 0.9823, and under 17535 its two early
+  samples read 0.9191 and 0.9254, which is **lower** and therefore
+  points the wrong way for a simple contention story, but two samples
+  inside the first 136 s of a run is not evidence.* **A second
+  possibility is that `--maxtime` or a time-keyed restart heuristic
+  makes the search itself depend on elapsed time**, which the fixed seed
+  would not protect against. *Neither is established here.*
+
+  ***THE CONSEQUENCE IS WORTH STATING PLAINLY: EVERY BLOCK SPAN, MEDIAN
+  AND RANK IN THIS NOTE IS BUILT FROM WALL-CLOCK COSTS THAT CARRY THIS
+  VARIANCE.*** **At >3.31% on one cube it is small against block spans
+  of 2x to 74x and will not move any of them** — *but it is now measured
+  rather than assumed, and a figure quoted to four decimal places rests
+  on a quantity that is reproducible only to a few percent.* ***ALL THREE
+  REMAINING RE-TAKES HAVE SINCE LANDED IN THIS SAME BANK AND NONE OF
+  THEM BOUNDS THIS ANY FURTHER***, because each was killed long before
+  its re-take's cost — *the set is spent as a source of this
+  measurement, and it produced exactly one usable comparison.* **None of
+  them can produce two completed runs of the same cube**: *the note's
+  standing fact that no re-run-set member has two completed runs still
+  holds, which is exactly why this comparison had to be made against a
+  killed elapsed rather than against a second cost.*
+
+  ***idx 1419 WAS A NEW BLOCK MAXIMUM WHEN IT LANDED ALONE, AND THE
+  FIGURES FOR THAT MOMENT WERE DRAFTED AND ARE NOT THIS COMMIT'S.***
+  *They read span **4.172953x** at **6 of 21**, block rank **1 of 6**,
+  sweep rank **978 of 1420**.* **Three more rows landed before the bank
+  and every one of those figures is superseded**: the entry above gives
+  idx 1419 as **block rank 4 of 9** and **sweep rank 981 of 1423** in a
+  block spanning **4.814188x** at 9 of 21. ***THE RANKS WERE RECOMPUTED
+  TOGETHER AT THE NEW N, NOT RELABELLED***: a denominator swapped from
+  1420 to 1423 while the rank stayed at 978 would have been wrong by
+  three, and the block rank would have gone from 1 to 1 while the truth
+  moved to 4. *The superseded reading is kept only to show what the
+  relabelling would have destroyed.*
+
+  **In-flight bounds, 06:43:24Z, within-run only: idx 1421 >= 2061 s,
+  idx 1420 >= 2061 s, idx 1422 >= 2061 s, idx 1423 >= 114 s.** *The
+  first three are the remaining set-nineteen re-takes, all dispatched
+  together at the relaunch and all already past their killed elapsed —
+  1235.36, 1089.09 and 683.05 s — so all three will finish ABOVE what
+  their killed attempts had spent, the opposite of idx 1419.* ***ALL
+  THREE LANDED BEFORE THIS BANK AND ALL THREE DID***: idx 1420 at
+  2111.1 s against a killed 1235.36 (**+875.74 s**), idx 1422 at 2086.5
+  against 683.05 (**+1403.45 s**) and idx 1421 at 2246.3 against
+  1089.09 (**+1157.21 s**). **The prediction was made three rows before
+  the last of them landed and held for all three** — *which is worth
+  exactly as much as it cost, since a cube killed at 683 s was never
+  going to finish under 683 s.*
 
   ***RESTART #51 — THE CONTAINER WAS RESTARTED AT 06:05:54.989092Z AND
   THE MACHINE DID NOT CHANGE.*** *Full figures are in the `#51` header
@@ -15847,7 +15995,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1419 of 1949 = 72.8066%**; **530 undecided**. **50% IS CROSSED**, at
+- **1423 of 1949 = 73.0118%**; **526 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16561,7 +16709,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
-  **5 decided**, undecided 16 spanning 1419..1434
+  **9 decided**, undecided 12 spanning 1423..1434
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

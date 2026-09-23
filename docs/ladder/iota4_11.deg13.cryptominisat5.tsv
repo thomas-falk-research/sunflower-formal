@@ -12540,3 +12540,7 @@ g=11 [13, 12, 12, 9, 13, 13, 12, 12, 11, 11, 10]	UNSAT	9175.1
 # as a re-take; here all six spec fields and btime are unchanged, so the
 # re-takes will run on the same machine as the killed attempts.  Set
 # eighteen (idx 1361..1364), opened at #50, WAS confounded.
+g=11 [13, 12, 12, 8, 13, 13, 13, 13, 12, 12, 7]	UNSAT	1947.1
+g=11 [13, 12, 12, 8, 13, 13, 13, 13, 11, 11, 9]	UNSAT	2086.5
+g=11 [13, 12, 12, 8, 13, 13, 13, 13, 12, 11, 8]	UNSAT	2111.1
+g=11 [13, 12, 12, 8, 13, 13, 13, 13, 12, 10, 9]	UNSAT	2246.3
