@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T07:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T07:53Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6458,7 +6458,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1593 -> 1594 rows)
+## State as of the last refresh (1594 -> 1595 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6469,7 +6469,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1594 rows; 1425 labels decided; 1425 UNSAT; 0 SAT; 0 labels
+- **1595 rows; 1426 labels decided; 1426 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6494,7 +6494,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1425 decided plus 169 superseded
+  A row count is not a decision count: 1426 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6544,8 +6544,52 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1424, highest decided 1424, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1424, highest decided 1426, holes [1425].**
+  <!-- SPAN-STATE: open -->
+
+  ***THE SEVENTY-SECOND SPAN HAS OPENED, AND IT TAKES THE ORDINAL THE
+  LAST CLOSE SAID IT WOULD.*** Walk position **137** less the OFFSET of
+  65 — the **seventy-second**. *Two commits ago a "seventy-second span"
+  was drafted and struck because it never existed at a commit, and that
+  entry said in as many words: **"there is no seventy-second span, and
+  the next one to open will take that ordinal."*** **This is that
+  span**, and the walk still declares **136** closed chains, unchanged
+  by the state that was never committed.
+
+  **idx 1426 came in at 3920.3 s** while idx 1425 is still running,
+  leaving **holes `[1425]`, width one**, frontier contiguous
+  **0..1424**, highest decided 1426. *Per the `#29` rider the width is
+  what it is AT THIS COMMIT — and this time there IS a commit.*
+
+  ***AN OPENING AT ONE.*** Over the **136** closed chains the opening
+  hole count is **1 in 47 cases, 2 in 44, 3 in 42 and 4 in 3**, so one
+  is **34.6%**. **It is the first opening at one since the seventieth**,
+  and the closed spans that opened at one are **47** of the 136, the
+  last five of them ordinals **62, 65, 66, 69 and 70**. *One close
+  separates this opening from that one.*
+
+  ***AND IT IS THE BLOCK'S FOURTH MAXIMUM IN FIVE ROWS.*** `[13,12,12,8]`
+  goes from max **3165.1 to 3920.3** and its span from **6.783326x to
+  8.401843x** at **12 of 21**, min unmoved at 466.6. **Block rank 1 of
+  12, sweep rank 591 of 1426, both untied.** *The block has now tripled
+  its span in SEVEN rows — 2.484569x at 5 members, 8.401843x at 12, a
+  factor of 3.3816 (**a draft said six rows; 5 to 12 is seven**) — and
+  every one of those steps came from the maximum rising, never from the
+  minimum falling, which has sat at 466.6 since the block's first
+  member.*
+
+  ***THE COORDINATE DIRECTION IS VIOLATED FOR A THIRD ROW AND THE GAP
+  KEEPS WIDENING FROM THE SAME SIDE.*** Medians are **coord9 = 13: n=5,
+  1075.0; 12: n=5, 2246.3; 11: n=2, 1981.4**, so 11 sits **264.90 s
+  BELOW** 12 against **197.30** last row and **129.70** the row before.
+  *All three widenings came from the coord9 = 12 median rising —
+  2111.1 → 2178.7 → 2246.3 — while the coord9 = 11 median has not moved
+  from 1981.4 since it got its second member.* **The 11 group is frozen
+  at n = 2 because the enumeration has not reached another one**, which
+  the corrected sequence says arrives at idx 1427 and 1428. *So the
+  widening is an artefact of which group is being filled, not a
+  deepening of any effect* — **and the sequence makes that checkable in
+  the next two rows rather than arguable.**
 
   ***THE CORRECTED ENUMERATION READING MADE A PREDICTION AND IT HELD.***
   *Last commit replaced "1422 onward are 11" with the computed sequence
@@ -16071,7 +16115,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1425 of 1949 = 73.1144%**; **524 undecided**. **50% IS CROSSED**, at
+- **1426 of 1949 = 73.1657%**; **523 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16785,7 +16829,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
-  **11 decided**, undecided 10 spanning 1425..1434
+  **12 decided**, undecided 9 spanning 1425..1434
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
