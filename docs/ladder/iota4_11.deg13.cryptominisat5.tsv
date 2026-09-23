@@ -12698,3 +12698,5 @@ g=11 [13, 12, 11, 11, 13, 13, 12, 12, 12, 11, 8]	UNSAT	5395.8
 # All six spec fields and btime are unchanged, so the re-takes are on a
 # common basis with the discarded runs.
 g=11 [13, 12, 11, 11, 13, 13, 12, 12, 12, 10, 9]	UNSAT	5391.1
+g=11 [13, 12, 11, 11, 13, 13, 12, 11, 11, 11, 10]	UNSAT	6048.2
+g=11 [13, 12, 11, 11, 13, 13, 11, 11, 11, 11, 11]	UNSAT	720.1
