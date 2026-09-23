@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T08:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T08:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6531,7 +6531,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1598 -> 1599 rows)
+## State as of the last refresh (1599 -> 1600 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6542,7 +6542,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1599 rows; 1430 labels decided; 1430 UNSAT; 0 SAT; 0 labels
+- **1600 rows; 1431 labels decided; 1431 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6567,7 +6567,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1430 decided plus 169 superseded
+  A row count is not a decision count: 1431 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6617,8 +6617,72 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1429, highest decided 1429, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1429, highest decided 1432, holes [1430, 1431].**
+  <!-- SPAN-STATE: open -->
+
+  ***THE SEVENTY-THIRD SPAN HAS OPENED, AT WIDTH TWO.*** Walk position
+  **138** less the OFFSET of 65 — the **seventy-third**. **idx 1432 came
+  in at 1100.0 s** while idx 1430 and idx 1431 are both still running,
+  leaving **holes `[1430, 1431]`, width two**, frontier contiguous
+  **0..1429** — *unmoved, because the row landed two places ahead of it*
+  — and highest decided **1432**. *Per the `#29` rider the width is what
+  it is AT THIS COMMIT, and this is that commit.*
+
+  ***AN OPENING AT TWO.*** Over the **137** closed chains the opening
+  hole count is **1 in 48, 2 in 44, 3 in 42 and 4 in 3**, so two is
+  **32.1%**. **It is the first opening at two since the seventy-first**,
+  and the closed spans that opened at two are **44** of the 137, the
+  last five of them ordinals **58, 59, 61, 64 and 71**. *One close
+  separates this opening from that one — the seventy-second, which
+  opened at one.*
+
+  **The row: idx 1432, UNSAT at 1100.0 s, sweep rank 1195 of 1431 with
+  no tie** (the detector agrees — 1431 less the 236 cheaper is 1195, and
+  it reproduces the rank only when untied). *Decided 1431 of 1949; still
+  0 SAT.*
+
+  ***AND IT IS THE FIRST REAL TEST OF THE coord9 CLAIM THIS NOTE CALLS
+  DETERMINED — WHICH HELD, FROM THE MOST ADVERSE SIDE AVAILABLE.*** idx
+  1432 is a **coord9 = 12** member of `[13,12,12,8]`, and at **1100.0 s
+  it came in below the entire previously known coord9 = 12 range**,
+  whose minimum was 1947.1. *That is the direction that could have
+  broken the claim: the binding quantity is the SMALLEST POSSIBLE
+  coord9 = 12 median, and a new member arrived under everything already
+  in the group.*
+
+  **The smallest possible coord9 = 12 median did not move: 2111.1,
+  exactly as published.** *It could not have. A minimum over completions
+  is attained by placing every undecided member at −∞, so realising one
+  of them at any finite cost can only hold that bound or raise it —
+  2111.1 was the 2nd smallest of 7 and is now the 3rd smallest of 8, the
+  same number either way.* **What did move is the loose end**: the
+  largest possible coord9 = 12 median fell from **3920.3 to 3165.1**,
+  because a new low member pushes the all-at-+∞ completion down one
+  rank.
+
+  | coord9 | total | decided | FINAL median confined to | was |
+  |---|---|---|---|---|
+  | 13 | 5 | 5 | **1075.0** exactly | 1075.0 exactly |
+  | 12 | 11 | **8** | **[2111.1, 3165.1]** | [2111.1, 3920.3] |
+  | 11 | 5 | 4 | **[1876.3, 2086.5]** | [1876.3, 2086.5] |
+
+  **So the 12 → 11 gap is now confined to `[-1288.80, -24.60]`**, down
+  from `[-2044.00, -24.60]` — *tightened by 755.20 s at the loose end
+  and unmoved at the binding one.* **It is still negative over every
+  completion**, because 2086.5 < 2111.1 and no undecided cube can change
+  either number. *The block will still be the first to break the
+  13 → 12 → 11 direction, and the claim is now one adverse row stronger
+  than when it was written rather than merely unfalsified.*
+
+  ***A SEPARATE THING DID CHANGE, AND IT IS NOT THE MEDIAN CLAIM.*** At
+  1100.0 the new member sits **59.3 s below the coord9 = 13 group's
+  maximum of 1159.3** and 8.8 s above that group's fourth value, 1091.2.
+  **The two groups' ranges had been disjoint — 0 inverting pairs of 35 —
+  and now exactly 1 pair of 40 inverts.** *The group minimum fell 847.1 s
+  in a single row, 1947.1 → 1100.0.* **This does NOT touch the 13 → 12
+  median step**, which compares 1075.0 against a 12-median of at least
+  2111.1 and cannot fail; *ranges overlapping and medians crossing are
+  different questions, and only the second one is the finding.*
 
   ***THE SEVENTY-SECOND SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `eb7d872` EXISTED.*** **The retirement sentence stood for exactly one
@@ -16394,7 +16458,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1430 of 1949 = 73.3710%**; **519 undecided**. **50% IS CROSSED**, at
+- **1431 of 1949 = 73.4223%**; **518 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -17108,7 +17172,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
-  **16 decided**, undecided [1430, 1431, 1432, 1433, 1434]
+  **17 decided**, undecided [1430, 1431, 1433, 1434]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
