@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T22:02Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T22:11Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6549,7 +6549,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1683 -> 1684 rows)
+## State as of the last refresh (1684 -> 1685 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6560,7 +6560,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1684 rows; 1515 labels decided; 1515 UNSAT; 0 SAT; 0 labels
+- **1685 rows; 1516 labels decided; 1516 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6592,7 +6592,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1515 decided plus 169 superseded
+  A row count is not a decision count: 1516 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6642,7 +6642,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1512, highest decided 1516, holes [1513, 1514].**
+- **Frontier contiguous 0..1512, highest decided 1518, holes [1513, 1514, 1517].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -8945,6 +8945,52 @@ exactly one bank.
   **Block 35 of 38; min 396.3, max 8467.1, span 21.365380x — unmoved.**
   *Three cubes left in the block, all coord9 = 11: idx 1513, 1514 and
   1517.*
+
+  ***THE ENUMERATION MOVES ON WHILE THE BLOCK IS STILL OPEN, AND THE
+  SPAN IS DETERMINED FALSE.*** *From the staged blob.* **idx 1518 at
+  589.2 s** (coord9 = **13**, rank **1386 of 1516**); *untied, detector
+  agrees at 1386.* **Holes `[1513, 1514, 1517]`, frontier contiguous
+  0..1512, highest decided 1518, chain `3,2,2,3`. Decided 1516 of 1949
+  = 77.7835%; still 0 SAT.**
+
+  ***THE CHAIN ROSE `2 → 3`, SO THE SEVENTY-NINTH IS DETERMINED
+  FALSE.*** *Monotone non-increasing fails on one counterexample and
+  cannot recover.* **And this time the chain was checked the way the
+  seventy-seventh's correction requires**: *`3,2,2,3` is what the four
+  commits of this span actually carry — `0ae67eb` at three, `e7e47ff`
+  and `68d355b` at two, and this commit at three — read from each
+  commit's own state line and not from any intermediate staged blob,
+  with `bank.py` re-run immediately before committing to confirm the
+  width is still three.* *The figures still wait for `--spans all`.*
+
+  ***A NEW BLOCK OPENS BEFORE THE OLD ONE FINISHES.*** **idx 1518 is the
+  first member of `[13,12,11,10]` — 28 members, idx 1518..1545, coord9
+  `{13: 5, 12: 14, 11: 8, 10: 1}`** — *while `[13,12,11,11]` is still
+  **35 of 38**, its last three cubes (idx 1513, 1514, 1517) all
+  coord9 = 11 and all still running.* **That is the dispatcher's
+  ordering showing through**: *cubes are handed out in index order and
+  complete out of it, so a block can be passed while incomplete. The
+  note has recorded this as holes and spans for months; this is the
+  first time it has left a **block's verdict** pending while the
+  enumeration walked into the next one.*
+
+  *The new block is testable — it carries coord9 = 13, 12 and 11 — with
+  thresholds **3 of 5**, **8 of 14** and **5 of 8**. It also has a
+  single coord9 = 10 member, so that median will be that one cube.*
+
+  ***AND THE VERDICT FOR `[13,12,11,11]` IS UNAFFECTED BY ANY OF
+  THIS.*** *Its coord9 = 11 group is 11 of 14 with interval
+  `[2727.85, 5645.2]`, its 12-median is final at 2829.65, and the three
+  outstanding cubes still decide the second half exactly as computed
+  last commit.* **A block does not stop being decidable because the
+  enumeration moved past it.**
+
+  **Sixteen testable blocks remain**, *counting from idx 1513;
+  **436** cubes are undecided across **89** blocks that still have
+  members outstanding.* **Block `[13,12,11,10]` is 1 of 28; min 396.3,
+  max 8467.1, span 21.365380x unmoved** — *589.2 belongs to a different
+  block and the span figure is `[13,12,11,11]`'s, so it is quoted here
+  only to say it did not move.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -19210,7 +19256,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1515 of 1949 = 77.7322%**; **434 undecided**. **50% IS CROSSED**, at
+- **1516 of 1949 = 77.7835%**; **433 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -19925,6 +19971,8 @@ exactly one bank.
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
   **35 decided**, undecided [1513, 1514, 1517]
+- `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
+  **1 decided**, undecided 27 spanning 1519..1545
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
