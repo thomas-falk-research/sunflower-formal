@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T11:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T11:58Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6538,7 +6538,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1626 -> 1627 rows)
+## State as of the last refresh (1627 -> 1628 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6549,7 +6549,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1627 rows; 1458 labels decided; 1458 UNSAT; 0 SAT; 0 labels
+- **1628 rows; 1459 labels decided; 1459 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6574,7 +6574,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1458 decided plus 169 superseded
+  A row count is not a decision count: 1459 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6624,7 +6624,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1456, highest decided 1460, holes [1457, 1458, 1459].**
+- **Frontier contiguous 0..1456, highest decided 1461, holes [1457, 1458, 1459].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -7111,6 +7111,44 @@ exactly one bank.
   carries, so this would have been a wrong subject**, *and it was caught
   only because the undecided list contradicted the assumption. Indices
   are read, not inferred from order.*
+
+  ***A FOURTH BLOCK OPENS AND IT CANNOT RUN THE DIRECTION TEST AT ALL.***
+  **idx 1461 came in at 379.9 s**, first member of `[13,12,12,5]`,
+  coord9 = **13**; *sweep rank **1399 of 1459**, no tie, detector agrees.
+  Holes unchanged at `[1457, 1458, 1459]`, frontier contiguous
+  **0..1456**, chain at this commit **`3,3`**. Decided 1459 of 1949;
+  still 0 SAT.* **The index was resolved through the regenerated cube
+  list, not assumed** — *the previous commit records why.*
+
+  **`[13,12,12,5]` is idx 1461..1467, seven members, coord9 composition
+  `{13: 3, 12: 4}` — there is no coord9 = 11 group.** *The test needs
+  all three, so this block cannot be tested at all, and neither can the
+  five after it.*
+
+  ***THE ENUMERATION IS KNOWN IN ADVANCE, SO THE PAUSE IS EXACTLY
+  MEASURABLE.*** **Six consecutive blocks — `[13,12,12,5]` down to
+  `[13,12,12,0]`, idx 1461..1479, nineteen cubes — have no
+  coord9 = 11 member between them.**
+
+  | block | members | coord9 |
+  |---|---|---|
+  | `[13,12,12,5]` | 7 | {13: 3, 12: 4} |
+  | `[13,12,12,4]` | 5 | {13: 3, 12: 2} |
+  | `[13,12,12,3]` | 3 | {13: 2, 12: 1} |
+  | `[13,12,12,2]` | 2 | {13: 2} |
+  | `[13,12,12,1]` | 1 | {13: 1} |
+  | `[13,12,12,0]` | 1 | {13: 1} |
+
+  ***AND THEN IT RESUMES ON THE BIGGEST BLOCK YET.*** **`[13,12,11,11]`,
+  idx 1480..1517, 38 members, coord9 `{13: 6, 12: 16, 11: 14, 10: 2}`**
+  — *larger than `[13,12,12,8]`'s 21, and the first block to carry a
+  coord9 = **10** group at all.* **Sixteen testable blocks remain, 283
+  cubes in total, with sizes 38, 28, 28, 21, 21, 21, 15, 15, 15, 15 and
+  six of 11.** *So the shrinking run this note flagged two commits ago —
+  21, 15, 11 — was the tail of one family, not a trend in the
+  enumeration; the next family starts larger than the last one did.*
+  **That earlier entry said "three blocks is three blocks and no rule is
+  claimed"**, *and this is what that caution was for.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17376,7 +17414,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1458 of 1949 = 74.8076%**; **491 undecided**. **50% IS CROSSED**, at
+- **1459 of 1949 = 74.8589%**; **490 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18091,6 +18129,8 @@ exactly one bank.
 
 - `[13, 12, 12, 6]` idx 1450..1460: **11 members**,
   **8 decided**, undecided [1457, 1458, 1459]
+- `[13, 12, 12, 5]` idx 1461..1467: **7 members**,
+  **1 decided**, undecided 6 spanning 1462..1467
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
