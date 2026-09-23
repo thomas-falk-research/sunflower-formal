@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T03:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T04:25Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6444,7 +6444,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1573 -> 1574 rows)
+## State as of the last refresh (1574 -> 1576 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6455,7 +6455,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1574 rows; 1405 labels decided; 1405 UNSAT; 0 SAT; 0 labels
+- **1576 rows; 1407 labels decided; 1407 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6470,7 +6470,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1405 decided plus 169 superseded
+  A row count is not a decision count: 1407 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6504,8 +6504,119 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1404, highest decided 1404, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1405, highest decided 1408, holes [1406, 1407].**
+  <!-- SPAN-STATE: open -->
+
+  ***THE SEVENTY-FIRST SPAN HAS OPENED, AND THE ORDINAL WAS DERIVED
+  BEFORE THE OUTCOME.*** Walk position **136** less the OFFSET of 65 —
+  the **seventy-first**. **idx 1408 came in at 2504.9 s and idx 1405 at
+  4936.0 s**, **detected 112 s apart at 04:19:57Z and 04:21:49Z**,
+  leaving **holes `[1406, 1407]`, width two**, frontier contiguous
+  **0..1405**, highest decided 1408. *Two rows in one bank; the first
+  waiter fired on idx 1408 and the re-armed one caught idx 1405.*
+  ***THOSE TWO TIMES ARE DETECTIONS, NOT LANDINGS.*** *The waiter polls
+  every 20 s, so each is within 20 s AFTER the row was written, and the
+  112 s gap carries that uncertainty at both ends.* **The previous
+  two-row bank wrote the same kind of figure as "landing 42 s apart"
+  with no such qualification**, which is the note's own rule — row
+  landing times are not recorded anywhere, only bounded — *applied to
+  the waiter everywhere except in the sentence that quotes it.*
+
+  ***AND THE `#29` RIDER FIRED FOR REAL, ON A CENSUS SENTENCE THAT WAS
+  ALREADY DRAFTED.*** Between the two landings the hole set was
+  **`[1405, 1406, 1407]` — width THREE, the `--threads 4` ceiling** —
+  and a full opening-at-three census had been written against it: *42 of
+  135, 31.1%, first since the sixty-eighth.* **That state existed in the
+  working tree for about two minutes and NEVER AT A COMMIT**, so the
+  walk will record this span's opening width as **two**, not three, and
+  the three-census would have been a figure about a state no revision
+  holds. *The rider says an opening width is measured AT A COMMIT; this
+  is the first time it has been the difference between two different
+  census sentences in the same edit.* **What caught it was re-running
+  the audit after the second waiter fired instead of banking the draft.**
+
+  ***AN OPENING AT TWO, WHICH IS THE SECOND COMMONEST WIDTH AND IS NOT
+  OFFERED AS ANYTHING ELSE.*** Over the **135** closed chains the
+  opening hole count is **1 in 47 cases, 2 in 43, 3 in 42 and 4 in 3**,
+  so two is **31.9%**. **It is the first opening at two since the
+  sixty-fourth**, and the closed spans that opened at two are **43** of
+  the 135, the last five of them ordinals **55, 58, 59, 61 and 64**.
+  *Six closes separate this opening from that one — the longest drought
+  of the three common widths, against zero for one and two for three.*
+
+  ***A NEW BLOCK MAXIMUM, AND THE PUBLISHED FORECAST'S LOWER OUTCOME IS
+  NOW ELIMINATED BY A DECIDED COST RATHER THAN A BOUND.*** **idx 1405 at
+  4936.0 s is block rank 1 of 21**, taking `[13,12,12,9]` from max
+  4734.4 to **4936.0** and its span from **12.297143x to 12.820779x**
+  against an unmoved minimum of 385.0. *That is **inside** the published
+  matched-fraction interval `12.594937x .. 19.844634x`.* **A block's
+  span is monotone non-decreasing as members arrive** — the maximum can
+  only rise and the minimum can only fall — *so the closing span can
+  never again be below 12.820779x, and the outcome "below the fraction
+  floor" is dead.* **idx 1408 is block rank 8 of 21; sweep ranks are 452
+  of 1407 and 824 of 1407, all four untied.**
+
+  ***AND THAT IS STILL THE SMALLEST OF THE FIVE INCREMENTS.*** The two
+  intervals admit five outcomes — **below the fraction floor; inside the
+  fraction interval; in the size-trend gap; inside the count interval;
+  above the count ceiling** — and **only the first is eliminated**.
+  *Being inside the fraction interval today is not the fraction interval
+  being right*, because the span only rises: **7640.18 s** in any
+  remaining cube carries it past the fraction ceiling and **8388.91 s**
+  into the count interval, **2704.18 s** and **3452.91 s** above today's
+  maximum. **Nothing yet discriminates between the three readings.**
+
+  ***THE BOUND PUBLISHED ON idx 1405 IN THE DRAFT HELD BY 56.0 s.*** It
+  was read at **>= 4880 s** from the 04:20:48Z sample against an actual
+  **4936.0 s** — a **1.15%** margin, and the cube finished 61 s after
+  that sample was taken. *`cost = overhead + final elapsed`, so the
+  bound could not have failed; what the narrow margin shows is only that
+  the sample was taken close to the end.* **It is quoted here because
+  the draft built an argument on it and the argument survived the
+  cube finishing, which is the only way a bound earns anything.**
+
+  ***BOTH MEDIANS MOVED, AND THE coord9 = 12 ONE MOVED BACK TO WHERE IT
+  WAS TWO ROWS AGO.*** idx 1408 is the block's **sixth coord9 = 11
+  member** and idx 1405 its **ninth coord9 = 12 member**. The
+  coord9 = 11 median goes **3040.2 -> 2772.55** (-267.65, its second
+  fall running) and the coord9 = 12 median **2371.15 -> 2373.8**
+  (+2.65) — *which is exactly the value it held at n = 7, so two
+  additions have returned it to its own earlier figure.*
+  `[13,12,12,9]` now reads:
+
+  | coord9 | n | median | within-group span | costs |
+  |---|---|---|---|---|
+  | 13 | 5 | 1133.0 | 3.260000x | 385.0, 1131.5, 1133.0, 1157.0, 1255.1 |
+  | **12** | **9** | **2373.8** | **2.445259x** | 2018.6, 2280.6 .. **4936.0** |
+  | **11** | **6** | **2772.55** | 2.069990x | 2204.6, 2433.2, **2504.9**, 3040.2, 4495.4, 4563.5 |
+  | 10 | 1 | 1631.6 | — | 1631.6 |
+
+  **The sequence 1133.0 -> 2373.8 -> 2772.55 is still monotone
+  increasing over 13 -> 12 -> 11**, for the sixth row running. *The
+  12-to-11 gap is **398.75 s**, down from 1093.15 and 669.05 at the two
+  previous rows — but those were measured against a coord9 = 12 median
+  of 2371.15 and this one against 2373.8, so the three are NOT a clean
+  series and the narrowing is partly the other group moving.* **A
+  six-member median and a nine-member one 398.75 s apart, inside groups
+  spanning 2.07x and 2.45x, is not a separation.**
+
+  **In-flight bounds, 04:23:32Z, within-run only: idx 1406 >= 3965 s,
+  idx 1407 >= 3715 s, idx 1409 >= 232 s, idx 1410 >= 109 s.** *The first
+  two are the holes, and neither has yet reached idx 1405's 4936.0 s*,
+  so the span stands where the bank leaves it.
+
+  ***A PROCEDURAL DEVIATION AT THE LAST COMMIT, RECORDED IN THE NOTE AND
+  NOT ONLY IN THE COMMIT MESSAGE.*** The rule is to read
+  `git diff --cached` **ALONE** as the last command before committing.
+  At `019eda1` all three reads were preceded in the SAME invocation by
+  another command — `--stat`, then `--numstat`, then a `head -0` no-op —
+  *each one an attempt to satisfy the rule that broke it again.* **The
+  whole unfiltered diff WAS read, three times, and nothing was filtered
+  out of it**, so the control itself did its work; but the rule was
+  written after the near-miss at `75caa3d` and it was not followed to
+  the letter. *It is recorded here because a deviation that lives only
+  in a commit message is not in the index, and the index is what gets
+  re-read at the next close.*
 
   ***THE SEVENTIETH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `a0b15bd` EXISTED.*** **The retirement sentence stood for exactly one
@@ -14975,7 +15086,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1405 of 1949 = 72.0883%**; **544 undecided**. **50% IS CROSSED**, at
+- **1407 of 1949 = 72.1909%**; **542 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15689,7 +15800,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **19 decided**, undecided 9 spanning 1405..1413
+  **21 decided**, undecided 7 spanning 1406..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
