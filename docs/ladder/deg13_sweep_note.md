@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T05:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T05:30Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6444,7 +6444,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1580 -> 1582 rows)
+## State as of the last refresh (1582 -> 1583 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6455,7 +6455,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1582 rows; 1413 labels decided; 1413 UNSAT; 0 SAT; 0 labels
+- **1583 rows; 1414 labels decided; 1414 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6470,7 +6470,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1413 decided plus 169 superseded
+  A row count is not a decision count: 1414 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6504,8 +6504,98 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1406, highest decided 1414, holes [1407, 1411].**
+- **Frontier contiguous 0..1406, highest decided 1414, holes [1407].**
   <!-- SPAN-STATE: open -->
+
+  ***THE WHOLE FORECAST NOW RESTS ON ONE RUNNING CUBE, AND IT IS 42.18 s
+  FROM THE FIRST DECISION POINT.*** **idx 1411 closed at 3638.0 s**,
+  leaving **holes `[1407]`** and `[13,12,12,9]` at **27 of 28** with
+  **idx 1407 the only member left**. *The block minimum was already
+  final at 385.0, so the closing span is now exactly
+  `max(4936.0, cost of idx 1407) / 385.0` — a function of one unknown.*
+  **At >= 7598 s (05:28:15Z) it already forces 19.735065x.**
+
+  ***THE THREE PUBLISHED READINGS NOW MAP ONTO FOUR COST WINDOWS ON THAT
+  ONE CUBE***, and they are written down before it finishes:
+
+  | cost of idx 1407 | closing span | outcome |
+  |---|---|---|
+  | **<= 7640.18 s** | <= 19.844634x | **matched-FRACTION interval CONFIRMED** |
+  | **7640.18 .. 8388.91 s** | the 748.73 s window between them | **BOTH published intervals refuted, size-trend GAP confirmed** |
+  | **8388.91 .. 15666.84 s** | 21.789383x .. 40.693099x | **matched-COUNT interval CONFIRMED** |
+  | **> 15666.84 s** | above the count ceiling | **all three wrong** |
+
+  **From 7598 s those boundaries were +42.18 s, +790.91 s and
+  +8068.84 s away, against a per-cube cap still 14002.00 s off.**
+  ***AND THE FIRST ONE WAS CROSSED BEFORE THIS COMMIT WAS WRITTEN.***
+  *bank.py takes its own cpu/elapsed sample at bank time, and at
+  **05:30:04Z it read idx 1407 at 7707 s** — **66.82 s past the
+  7640.18 s the fraction ceiling needs.*** **THE MATCHED-FRACTION
+  INTERVAL IS THEREFORE REFUTED**, by a within-run lower bound on a
+  still-running cube: the closing span is now forced to
+  **>= 20.018182x**, above the interval's 19.844634x ceiling.
+
+  ***THAT PUTS THE BLOCK IN THE SIZE-TREND GAP AT THIS INSTANT, AND THE
+  GAP IS 681.91 s WIDE FROM HERE.*** The count floor needs **8388.91 s**
+  and idx 1407 is **681.91 s** short of it. *Three of the four rows
+  above are still live — gap, count interval, above the count ceiling —
+  and the first is now dead.* **No prediction is made between the
+  remaining three.** *The size-trend argument is on record predicting
+  the gap, but its count leg was refuted at the previous block's close,
+  so it is the weakest of the three and is not restated as a forecast
+  now.* ***THE POINT OF WRITING THE TABLE IS THAT IT CANNOT BE REDRAWN
+  AFTERWARDS***, and it is being kept exactly as drawn even though the
+  first row died between the sample and the commit.
+
+  **The two figures disagreeing is the DETECTOR working, not an error:**
+  *the note's 7598 s came from `cnf_mtime_check.py` at 05:28:15Z and the
+  7707 s from bank.py at 05:30:04Z, 109 s later, and both are recorded
+  rather than one being quietly replaced.*
+
+  ***AND idx 1411 COMPLETED THE SECOND SMALL SUB-BLOCK.*** It is the
+  third and last member of `[13,12,12,9,13,12]`, which now reads
+  **1230.2, 3078.8, 3638.0 — median 3078.8, internal span
+  2.957243x**. **Block rank 7 of 27, sweep rank 616 of 1414, both
+  untied.**
+
+  | sub-block | members | decided | costs | span |
+  |---|---|---|---|---|
+  | `[13,12,12,9,13,13]` | 23 | 22 | 385.0 .. 4936.0, median 2371.15 | 12.820779x |
+  | `[13,12,12,9,13,12]` | **3** | **3** | 1230.2, 3078.8, 3638.0 | **2.957243x** |
+  | `[13,12,12,9,12,12]` | 2 | 2 | 512.3, 978.0 | 1.909038x |
+
+  **The two small sub-blocks span 2.96x and 1.91x against the big one's
+  12.82x** — *and that comparison is worth almost nothing, because a
+  two- or three-member sample draws a smaller range than a twenty-two
+  member one for reasons that have nothing to do with the sub-block.*
+  **It is the same size confound already named in the forecast's own
+  caveats**, arriving here on a smaller scale.
+
+  ***THE coord9 = 11 MEDIAN ROSE FOR THE FIRST TIME IN THREE ROWS, AND
+  THE GAP SERIES BESIDE IT WAS TYPED BEFORE IT WAS COMPUTED.*** idx 1411
+  is that group's **seventh member** and takes its median
+  **2772.55 -> 3040.2** (**+267.65 s**). *The 13 -> 12 -> 11 sequence is
+  **1133.0 -> 2371.15 -> 3040.2**, monotone increasing for an eleventh
+  row running.* ***A DRAFT LISTED THE 12-to-11 GAP AS "1093.15, 669.05,
+  398.75, 34.85, 398.75 and now 669.05" AND THREE OF THOSE SIX WERE
+  WRONG.*** **Recomputed over every block member in completion order,
+  the last six are `34.85, 398.75, 401.40, 404.05, 401.40, 669.05`.**
+  *The draft had 398.75 where the walk gives 401.40 and 404.05, and
+  dropped a value entirely — typed from memory of earlier entries rather
+  than derived, which is the error the note has recorded four times
+  already and which the script caught again here before the commit.*
+
+  **And the whole series says more than its tail does.** Over all
+  eighteen block members with both groups non-empty the gap runs
+  **-137.70, -137.70, -23.40, -49.60, -52.25, -54.90, +59.40, +1090.50,
+  +1093.15, +669.05, +401.40, +398.75, +34.85, +398.75, +401.40,
+  +404.05, +401.40, +669.05**. ***THE FIRST SIX ARE NEGATIVE***, so the
+  coordinate finding's direction was against the data in this block
+  until its seventh member, *which the entries at the time recorded as
+  "pointed the wrong way twice" without ever putting the series in one
+  place.* **Eleven rows of the direction holding follows six of it not
+  holding**, and a figure that has been -137.70 and +1093.15 within one
+  block is not measuring a property of the coordinate.
 
   ***THE "BOTH SUB-BLOCKS ARE CHEAP" READING TOOK ITS FIRST
   CONTRADICTION, FROM THE VERY NEXT MEMBER.*** **idx 1410 closed at
@@ -15410,7 +15500,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1413 of 1949 = 72.4987%**; **536 undecided**. **50% IS CROSSED**, at
+- **1414 of 1949 = 72.5500%**; **535 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16124,7 +16214,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **26 decided**, undecided [1407, 1411]
+  **27 decided**, undecided [1407]
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
   **1 decided**, undecided 20 spanning 1415..1434
 
