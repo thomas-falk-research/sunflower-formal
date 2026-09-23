@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T06:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T07:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6458,7 +6458,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1588 -> 1592 rows)
+## State as of the last refresh (1592 -> 1593 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6469,7 +6469,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1592 rows; 1423 labels decided; 1423 UNSAT; 0 SAT; 0 labels
+- **1593 rows; 1424 labels decided; 1424 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6494,7 +6494,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1423 decided plus 169 superseded
+  A row count is not a decision count: 1424 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6544,8 +6544,48 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1422, highest decided 1422, holes [].**
+- **Frontier contiguous 0..1423, highest decided 1423, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***A CLAIM I PUBLISHED TWO COMMITS AGO ABOUT THE ENUMERATION ORDER IS
+  WRONG, AND idx 1423 IS WHAT EXPOSED IT.*** **idx 1423 closed at
+  1876.3 s with coord9 = 11** — *block rank **5 of 10**, sweep rank
+  **1010 of 1424**, both untied; neither a block extreme, so
+  `[13,12,12,8]` keeps min 466.6, max 2246.3, span **4.814188x** at 10
+  of 21.*
+
+  ***`a7fb539` SAID "the enumeration runs coord9 in descending order:
+  indices 1414..1418 are 13, 1419..1421 are 12, 1422 onward are 11".
+  THE LAST CLAUSE IS FALSE.*** **Computed over the whole block rather
+  than the first ten indices, the coord9 sequence is
+  `13,13,13,13,13, 12,12,12, 11,11, 12,12,12, 11,11, 12,12, 11,
+  12,12,12`** — *runs of 5, 3, 2, 3, 2, 2, 1, 3.* **It descends for ten
+  indices and then INTERLEAVES**, returning to 12 at idx 1424 and
+  alternating to the end. *The composition 5 at 13, 11 at 12 and 5 at 11
+  was right and should have been enough to catch it at the time: eleven
+  members at coord9 = 12 cannot fit in the three indices 1419..1421.*
+
+  ***THIS IS THE "GENERALISED FROM A HANDFUL WITHOUT COMPUTING OVER THE
+  WHOLE RANGE" FAILURE, COMMITTED IN A PARAGRAPH WHOSE POINT WAS THAT
+  EARLY SAMPLES MISLEAD.*** *I printed the first ten `(index, coord9)`
+  pairs, saw a clean descent, and wrote "1422 onward" from it.* **The
+  paragraph's substantive point survives and is arguably strengthened**
+  — *the coord9 groups still fill in enumeration order rather than at
+  random, so an early median still reports which group the driver has
+  reached; the filling is just messier than a single descending pass.*
+  **But the mechanism sentence was a guess dressed as a reading**, and
+  the correction cost one script over the whole block.
+
+  ***AND THE DIRECTION IS CURRENTLY VIOLATED IN THIS BLOCK, WHICH IS
+  WORTH RECORDING WHILE IT MEANS NOTHING.*** The groups read **coord9 =
+  13: n=5, median 1075.0; 12: n=3, median 2111.1; 11: n=2, median
+  1981.4** — *so 11 sits **129.7 s BELOW** 12, against a finding whose
+  direction held in four of four complete blocks.* **At n = 3 and n = 2
+  this is not a test and is not offered as one**; *it is written down
+  now so that if the direction later recovers, the recovery is not
+  mistaken for the block having pointed that way all along — which is
+  exactly what the previous block's entries had to unpick after the
+  fact.*
 
   ***A SPAN OPENED AND CLOSED WITHOUT EVER EXISTING AT A COMMIT, AND
   bank.py's GUARD IS WHAT CAUGHT IT.*** **All four set-nineteen re-takes
@@ -15995,7 +16035,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1423 of 1949 = 73.0118%**; **526 undecided**. **50% IS CROSSED**, at
+- **1424 of 1949 = 73.0631%**; **525 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16709,7 +16749,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
-  **9 decided**, undecided 12 spanning 1423..1434
+  **10 decided**, undecided 11 spanning 1424..1434
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
