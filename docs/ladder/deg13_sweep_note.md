@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T01:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T01:46Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6440,7 +6440,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1565 -> 1566 rows)
+## State as of the last refresh (1566 -> 1567 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6451,7 +6451,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1566 rows; 1397 labels decided; 1397 UNSAT; 0 SAT; 0 labels
+- **1567 rows; 1398 labels decided; 1398 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6466,7 +6466,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1397 decided plus 169 superseded
+  A row count is not a decision count: 1398 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6500,112 +6500,37 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1395, highest decided 1397, holes [1396].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1397, highest decided 1397, holes [].**
+  <!-- SPAN-STATE: closed -->
 
-  **No row landed between 01:34:10Z and 01:41:45Z; only the clock moved.**
-  *The sixty-ninth span is still open at **holes `[1396]`, width one**,
-  frontier contiguous 0..1395, highest decided 1397.* **In-flight bounds,
-  01:41:45Z, within-run only: idx 1396 >= 2266 s, idx 1398 >= 1923 s,
-  idx 1399 >= 761 s, idx 1400 >= 493 s** — *all read from the tool.*
-  **idx 1396, the span's only hole, is the longest-running of the four**
-  — *at 2266 s against idx 1398's 1923 s.*
+  ***THE SIXTY-NINTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** It was filled by **idx 1396 at 2433.2 s**, its only hole,
+  and the frontier is whole again at **0..1397**. **The live
+  opening-width census and the live in-flight bounds are struck with this
+  edit; the results below are kept because none of them is live state.**
+  **Its duration, rank, monotonicity, commit count and hole chain come
+  from `--spans all` in the NEXT commit, with every carried row first
+  reproduced at the OLD N = 133 before any is rewritten at 134.**
 
-  ***A DRAFT ADDED "having passed idx 1398 while both were in flight",
-  AND IT IS FALSE.*** **idx 1396 was ahead at all EIGHT samples where
-  both appear**, from 1553 against 1210 at 01:29:52Z onward — *it never
-  passed anything, it was simply dispatched first.* **Cubes go out in
-  index order, so a lower index is always further along unless it has
-  already finished**, which makes "passed" impossible between two
-  cubes in flight together. *The clause was written because "longest
-  running" felt like it needed a story, and the story was invented.*
-  **Checked by script against the sample file rather than by looking at
-  one pair of numbers**, which is what the previous two entries said
-  would have to become habit.
+  *The ordinal was derived **before** this close, in `d089ccc`: walk
+  position 134 less the OFFSET of 65, the **sixty-ninth**.*
 
-  ***THE SIXTY-NINTH SPAN HAS OPENED, AND THE ORDINAL WAS DERIVED BEFORE
-  THE OUTCOME.*** Walk position **134** less the OFFSET of 65 — the
-  **sixty-ninth**. **idx 1397 came in at 1631.6 s** while idx 1396 is
-  still running, leaving **holes `[1396]`, width one**, frontier
-  contiguous **0..1395**, highest decided 1397. *Per the `#29` rider the
-  width is what it is AT THIS COMMIT.*
+  ***THE LAST BOUND ON idx 1396 HELD BY 167.2 s*** — published at
+  **>= 2266 s** (01:41:45Z) against an actual **2433.2 s**, a **6.87%**
+  margin. *It is block rank **1 of 12** and sweep rank **828 of 1398**,
+  both untied, and it takes `[13,12,12,9]` to min 385.0, max 2433.2,
+  **span 6.3200x** at 12 of 28.*
 
-  ***AN OPENING AT ONE IS THE COMMONEST WIDTH AND IS NOT OFFERED AS
-  ANYTHING ELSE.*** Over the **133** closed chains the opening hole
-  count is **1 in 45 cases, 2 in 43, 3 in 42 and 4 in 3**, so one is
-  **33.8%**. **It is the first opening at one since the sixty-sixth**,
-  and the closed spans that opened at one are **45** of the 133, the last
-  five of them ordinals **56, 60, 62, 65 and 66**. *Two closes separate
-  this opening from that one.*
+  ***THE PUBLISHED COORDINATE FINDING, RESTORED AFTER THE STAGED DIFF
+  CAUGHT THE STRIKING REMOVING IT.*** *This is the second close in a row
+  at which the live-entry sweep took a durable result with it, and the
+  second time the staged-diff read was the only thing that noticed.* **A
+  result about every chain or every block in the record is not live
+  state, however recently it was written.**
 
-  ***AND THE COORDINATE FINDING TAKES A SECOND OBSERVATION AGAINST IT,
-  FROM THE OTHER END.*** idx 1397 is the block's **first coord9 = 10
-  member**, and it came in at **1631.6 s** — *below the coord9 = 11
-  member, below the whole coord9 = 12 group, and above only the
-  coord9 = 13 group.* `[13,12,12,9]` now reads:
-
-  | coord9 | n | median | costs |
-  |---|---|---|---|
-  | 13 | 5 | 1133.0 | 385.0, 1131.5, 1133.0, 1157.0, 1255.1 |
-  | 12 | 4 | 2342.3 | 2280.6, 2316.1, 2368.5, 2373.8 |
-  | 11 | 1 | 2204.6 | 2204.6 |
-  | 10 | 1 | 1631.6 | 1631.6 |
-
-  **The median sequence 1133.0 -> 2342.3 -> 2204.6 -> 1631.6 is NOT
-  monotone**, where all three complete blocks were monotone over
-  13 -> 12 -> 11. *Two of the four groups have a single member, so this
-  is not a refutation and is not offered as one* — **but the published
-  claim has now been tested twice in this block and pointed the wrong way
-  twice.** *The complete blocks also broke the trend below coord9 = 11,
-  which was stated when the finding was published; what is new is that
-  the break here starts one step earlier.*
-
-  **In-flight bounds, 01:34:10Z, within-run only: idx 1396 >= 1811 s,
-  idx 1398 >= 1468 s, idx 1399 >= 306 s, idx 1400 >= 38 s.** *idx 1396 is
-  the hole.*
-
-  ***THE FIRST TEST OF LAST COMMIT'S COORDINATE FINDING POINTS THE OTHER
-  WAY.*** **idx 1395 closed at 2204.6 s** — sweep rank
-  **884 of 1396**, untied, block rank **5 of 10** — frontier contiguous
-  **0..1395**, holes `[]`, no span open. *It is the **first coord9 = 11
-  member** of `[13,12,12,9]`, and the three complete blocks all showed
-  coord9 = 11 sitting ABOVE coord9 = 12.* **It came in 76.0 s BELOW the
-  coord9 = 12 group's floor**, which now reads:
-
-  | coord9 | n | costs |
-  |---|---|---|
-  | 13 | 5 | 385.0, 1131.5, 1133.0, 1157.0, 1255.1 |
-  | 12 | 4 | 2280.6, 2316.1, 2368.5, 2373.8 |
-  | **11** | **1** | **2204.6** |
-
-  **At n = 1 this refutes nothing** — *the within-group spans measured
-  one commit ago were 11.5x, 11.2x and 19.1x, so a single member landing
-  76 s outside a four-member range is exactly the noise that control
-  quantified.* **But it is the first observation and it points against
-  the direction**, and that is recorded now rather than after the group
-  fills in and the impression has had time to settle. *The published
-  claim was about MEDIANS over groups of 14 to 27; this group has one
-  member.*
-
-  **In-flight bounds, 01:29:52Z, within-run only: idx 1396 >= 1553 s,
-  idx 1397 >= 1411 s, idx 1398 >= 1210 s, idx 1399 >= 48 s.** *Read from
-  the tool, not composed.*
-
-  ***THE NINTH COORDINATE SHIFTS COST RELIABLY AND EXPLAINS ALMOST NONE
-  OF IT — THE FIRST STRUCTURAL REGULARITY IN THE DATA THIS SESSION HAS
-  FOUND AND CONTROLLED.*** **idx 1394 closed at 2316.1 s** — sweep rank
-  **855 of 1395**, untied, block rank **3 of 9** — frontier contiguous
-  **0..1394**, holes `[]`, no span open, `[13,12,12,9]` unchanged at min
-  385.0, max 2373.8, span **6.1657x**.
-
-  *What prompted the look:* the block's nine costs fall into two visible
-  tiers — **`385.0, 1131.5, 1133.0, 1157.0, 1255.1`** against
-  **`2280.6, 2316.1, 2368.5, 2373.8`** — and the split is exactly the
-  **ninth coordinate**, 13 for the first five and 12 for the last four.
-
-  **The same split, run on all three COMPLETE predecessor blocks, gives a
-  monotone rise in median cost from coord9 = 13 to 12 to 11 in THREE of
-  THREE:**
+  **THE NINTH COORDINATE SHIFTS COST RELIABLY AND EXPLAINS ALMOST NONE OF
+  IT.** Across all three COMPLETE blocks the median rises monotonically
+  from coord9 = 13 to 12 to 11 — three of three:
 
   | block | coord9=13 | coord9=12 | coord9=11 | between-group spread |
   |---|---|---|---|---|
@@ -6613,118 +6538,53 @@ exactly one bank.
   | `[13,12,12,11]` | 1374.2 (n=6) | 2745.4 (n=19) | 6268.2 (n=19) | **4.56x** |
   | `[13,12,12,12]` | 713.6 (n=7) | 1679.9 (n=21) | 2751.2 (n=27) | **4.26x** |
 
-  ***AND THE CONTROL CUTS THE FINDING IN HALF.*** **The largest
-  WITHIN-group span in those same blocks is 11.52x, 11.16x and 19.13x** —
-  *three to four times the between-group spread in every case.* **The
-  groups overlap heavily**: in `[13,12,12,10]` the coord9=12 group runs
-  **487.3 to 5612.0** while coord9=11 runs **783.8 to 8915.7**. *So the
-  ninth coordinate moves the CENTRE of the distribution reliably and does
-  NOT partition the costs.* **Knowing it would not predict a cube's cost
-  within a factor of ten.**
+  ***AND THE CONTROL CUT THE FINDING IN HALF WHEN IT WAS FIRST RUN.***
+  **The largest WITHIN-group span in those same blocks is 11.52x, 11.16x
+  and 19.13x** — *three to four times the between-group spread in every
+  case.* **The groups overlap heavily**: in `[13,12,12,10]` coord9 = 12
+  runs **487.3 to 5612.0** while coord9 = 11 runs **783.8 to 8915.7**.
+  *The coordinate moves the CENTRE of the distribution and does NOT
+  partition the costs; knowing it would not predict a cube's cost within
+  a factor of ten.* **Two further limits stated at publication**: the
+  trend does not continue below 11 — coord9 = 10 is lower than 11 in
+  `[13,12,12,11]` (4948.5 against 6268.2) and higher in `[13,12,12,12]`
+  (3039.6 against 2751.2) — and **coord9 is correlated with position in
+  the block and the two were never disentangled**, a crude half-and-half
+  positional split giving only **1.17x, 1.91x and 1.26x** against
+  coord9's 2.84x to 4.56x.
 
-  **Two further limits, stated rather than left out.** *First, the trend
-  does not continue below 11*: coord9 = 10 has a lower median than 11 in
-  `[13,12,12,11]` (4948.5 against 6268.2) and a higher one in
-  `[13,12,12,12]` (3039.6 against 2751.2), so the direction is
-  inconsistent exactly where the groups get small. *Second, coord9 is
-  correlated with position in the block and the two were NOT
-  disentangled.* **A crude half-and-half split by enumeration position
-  gives median ratios of only 1.17x, 1.91x and 1.26x**, well under
-  coord9's 2.84x to 4.56x, so coord9 is not merely a relabelling of
-  position — **but that is a weaker statement than independence, and no
-  proper separation was attempted.**
+  ***AND THE FINDING'S SECOND coord9 = 11 MEMBER PULLS BACK TOWARD THE
+  PUBLISHED DIRECTION WITHOUT REACHING IT.*** The open block now reads:
 
-  **In-flight bounds, 01:11:52Z, within-run only: idx 1395 >= 1173 s,
-  idx 1396 >= 473 s, idx 1397 >= 332 s, idx 1398 >= 130 s.**
+  | coord9 | n | median | costs |
+  |---|---|---|---|
+  | 13 | 5 | 1133.0 | 385.0, 1131.5, 1133.0, 1157.0, 1255.1 |
+  | 12 | 4 | 2342.3 | 2280.6, 2316.1, 2368.5, 2373.8 |
+  | 11 | 2 | **2318.9** | 2204.6, **2433.2** |
+  | 10 | 1 | 1631.6 | 1631.6 |
 
-  ***AND THE SAME RULE WAS BROKEN AGAIN, TWO COMMITS AFTER IT WAS WRITTEN
-  UP.*** `b04619f` recorded composing in-flight figures before the tool
-  produced them, under the heading that the rule *"names TIMESTAMPS
-  explicitly"*. **This entry did it a second time**: the bounds paragraph
-  was first written as *"01:10:24Z ... idx 1395 >= 1085 s, idx 1396 >=
-  385 s, idx 1397 >= 244 s, idx 1398 >= 21 s"*, and the real 01:11:52Z
-  sample reads **1173, 473, 332, 130** — *five composed values, five
-  wrong.* **And the sweep rank in the headline above was composed too**:
-  it was written **841 of 1395** and the script says **855**. *The block
-  rank 3 of 9 was also composed and happened to be right, which is worse
-  than the wrong one* — **a composed figure that survives checking teaches
-  nothing and encourages the habit.** ***SEVEN COMPOSED FIGURES IN ONE
-  ENTRY, ONE COMMIT AFTER A PARAGRAPH ABOUT COUNTING BY EYE AND TWO AFTER
-  A PARAGRAPH ABOUT THIS EXACT RULE.*** *Writing the rule down did not
-  stop it. What stopped it both times was running the tool and comparing,
-  which is the only control that has ever worked here.*
+  *One commit ago the coord9 = 11 group was a single 2204.6 and sat
+  **137.7 s** below the coord9 = 12 median; with 2433.2 added its median
+  is **2318.9**, now **23.4 s** below.* **The published claim was that
+  coord9 = 11 sits ABOVE coord9 = 12, and at n = 2 it is still below —
+  but by a tenth of what it was.** *This is a median over two values
+  moving when a second value arrives, which is arithmetic and not
+  evidence.* **Recorded because the first observation was recorded**, and
+  a finding that only gets an entry when the news is bad is not being
+  tracked, it is being argued with.
 
-  **idx 1393 closed at 2368.5 s** — sweep rank **842 of 1394**, untied,
-  block rank **2 of 8** — frontier contiguous **0..1393**, highest
-  decided 1393, holes `[]`, no span open. ***THE RECORD STREAK BROKE BY
-  5.3 s***: 2368.5 falls just short of idx 1392's 2373.8, so
-  `[13,12,12,9]` keeps min 385.0, max 2373.8 and **span 6.1657x
-  unchanged**. *The running-maxima count stays at **5 of 8** — computed
-  by script this time, from the start, after the previous commit's
-  paragraph needed two hand counts to get one number.*
-
-  **The 5.3 s gap is NOT offered as a coincidence.** *The gap control run
-  four commits ago found the median adjacent gap over the whole sweep to
-  be **4.7 s**, with 20.69% of gaps at 1.5 s or smaller — so two costs
-  5.3 s apart are less close together than the typical neighbouring pair.*
-  **Running that control once and then citing it is the point of having
-  run it.**
-
-  **In-flight bounds, 01:06:50Z, within-run only: idx 1394 >= 2144 s,
-  idx 1395 >= 871 s, idx 1396 >= 171 s, idx 1397 >= 30 s.**
-
-  **idx 1392 closed at 2373.8 s** — sweep rank **840 of 1393**, untied —
-  **advancing the frontier again**: contiguous **0..1392**, highest
-  decided 1392, holes `[]`, no span open. *`[13,12,12,9]` is **7 of 28**,
-  min 385.0, max 2373.8, span **6.1657x**.*
-
-  ***A SECOND CONSECUTIVE BLOCK MAXIMUM, AND IT MOVED FAR LESS THAN THE
-  FIRST.*** **2373.8 s is rank 1 of 7**, taking the record from 2280.6 s
-  by **93.2 s** and the span from **5.9236x to 6.1657x** — *a factor of
-  1.04, against the previous row's 1.82.* **Two record-setting rows in a
-  row is not a trend and is not offered as one**: *a block's running
-  maximum is a record every time until it is not, and early in a block
-  almost every large cost sets one.* **FIVE of the seven members were the
-  running maximum at the moment they landed**: in completion order
-  **385.0, 1133.0, 1255.1, 2280.6, 2373.8** of
-  `385.0, 1133.0, 1131.5, 1255.1, 1157.0, 2280.6, 2373.8`.
-
-  ***AND GETTING TO THAT FIVE TOOK TWO WRONG HAND COUNTS IN ONE
-  PARAGRAPH.*** *The sentence was drafted as **three**. Re-counting it by
-  eye gave **four**, with the list "385.0, 1133.0, 2280.6, 2373.8"
-  written out beside it as if that settled it.* **The script says five —
-  the eye dropped 1255.1, which beat 1133.0 when it landed.** *So a hand
-  count was corrected by hand and the correction was wrong too.*
-  **NEVER COUNT BY EYE FOR THE RECORD is already a rule here, and this is
-  what breaking it twice in four lines looks like.** *Recorded in full
-  rather than replaced by the right number, because the failure mode is
-  the point: a wrong count that comes with a list reads as checked.*
-
-  **In-flight bounds, 01:04:34Z, within-run only: idx 1393 >= 2263 s,
-  idx 1394 >= 2009 s, idx 1395 >= 735 s, idx 1396 >= 36 s.** *All four
-  are in `[13,12,12,9]`.*
-
-  **idx 1391 closed at 2280.6 s** — sweep rank **868 of 1392**, untied —
-  **advancing the frontier rather than opening anything**: contiguous
-  **0..1391**, highest decided 1391, holes `[]`. *No span is open, and
-  bank.py's guard reads consistent.*
-
-  ***THE NEW BLOCK'S SPAN NEARLY DOUBLED ON ONE ROW, WHICH IS WHAT THE
-  CONTROL SAID TO EXPECT.*** `[13,12,12,9]` is **6 of 28** with
-  completion-order costs **385.0, 1133.0, 1131.5, 1255.1, 1157.0,
-  2280.6**, and the span goes **3.2600x -> 5.9236x** because 2280.6 is a
-  new block maximum, **rank 1 of 6**. *One commit ago the same block sat
-  at 3.26x and the matched-n control said its predecessors ran 3.07x,
-  4.10x and 10.23x at five members before growing by factors of 6.6 to
-  7.8.* **A single row moving the span by 1.82x at six members is the
-  mechanism that control was describing**, and it is recorded as a
-  confirmation of the control rather than as news about this block —
-  *six members is still not a distribution, and the forecast still waits
-  for 18.*
-
-  **In-flight bounds, 00:53:01Z, within-run only: idx 1392 >= 1716 s,
-  idx 1393 >= 1570 s, idx 1394 >= 1316 s, idx 1395 >= 42 s.** *All four
-  are in `[13,12,12,9]`, whose members are indices 1386..1413.*
+  ***THREE FABRICATIONS IN FIVE COMMITS, AND WHAT THE THREE HAVE IN
+  COMMON.*** `b04619f` composed four in-flight bounds and a timestamp;
+  `3f3795d` composed seven figures including a rank that happened to be
+  right; `f784b84` invented the mechanism *"having passed idx 1398 while
+  both were in flight"*, which the sample file refutes at all eight
+  common instants. **None came from a tool and all three read as
+  plausible.** *The first was written up as a rule; the second happened
+  two commits after that write-up; the third happened two commits after
+  the second.* **Writing the rule down has not once prevented the next
+  occurrence** — *what has caught all three is running the script and
+  comparing the output to the sentence before the commit.* **The control
+  is mechanical or it does not exist.**
 
   ***THE SIXTY-EIGHTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `456781a` EXISTED.*** **The retirement sentence stood for exactly one
@@ -14760,7 +14620,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1397 of 1949 = 71.6778%**; **552 undecided**. **50% IS CROSSED**, at
+- **1398 of 1949 = 71.7291%**; **551 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15474,7 +15334,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **11 decided**, undecided 17 spanning 1396..1413
+  **12 decided**, undecided 16 spanning 1398..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
