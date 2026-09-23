@@ -10,8 +10,10 @@ every N from the walk, so it can be re-run rather than re-typed.
 
     python3 refig.py <spans-file> <closing-sha7> <ordinal-word>
 """
-import re, sys
+import re, sys, os
 from collections import Counter
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import safe_stdout  # noqa: F401  -- a closed stdout must not skip side effects
 
 SPANS, NEW_SHA, ORDINAL = sys.argv[1], sys.argv[2], sys.argv[3]
 txt = open(SPANS).read()

@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T22:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T23:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -65,6 +65,7 @@ and `pgrep` outranks both.
 | `bank.py` | stages the checkpoint and rewrites every state figure in this note from the **staged blob** in one run: status line, row/decided counts, percentage, frontier and holes, the open-block census, and the driver pid and launch instant read live from `pgrep` and `/proc`. Guards on the census, on span/hole consistency, and on the pid; each **refuses loudly** rather than writing a figure it cannot justify. **Do not hand-edit a figure it owns.** It also appends a cpu/elapsed sample to `cpu_ratio_samples.tsv` on every run. |
 | `span_audit.py` | checks **every span figure written in this note** against `--spans all`: the spans table's duration, both ranks, both denominators and the tie count; the monotonicity table's sha, chain, comparison count and verdict. It **prints how many figures it checked** and **asserts contiguity** of both tables' ordinals, so a pattern that misses a row fails instead of passing quietly. Durations are parsed from `H:MM:SS`, never from the four-decimal hours. Takes an optional note path so it can be run against a mutated copy — *proved to fail on a wrong rank, a flipped verdict, a mutated hole chain and a deleted row — all four re-run at the forty-eighth close against the raised floors, each exiting non-zero with the right message.* **It now also checks the OPENING-WIDTH CENSUS**, which is prose and was therefore never covered by either table: every `Over the **N** closed chains…` sentence is re-derived from the walk's **first N** spans, so the archived close writeups are each audited against **their own N** rather than today's; and while a span is open the live entry's *"since the Nth"*, *"M of the N"* and last-five-ordinals figures are read **only from the text at and after the `SPAN-STATE: open` marker**, because the archived writeups use the same words about different spans. *Proved to fail on twelve mutations — seven live, five archived — each one verified to have actually changed the file before its run was scored.* **And the MONOTONICITY PROSE** — the True partition's count-words, ordinal lists and comparison-count breakdown, the False-chain column with its value tally, and the rank sentence — *13 figures, proved to fail on fifteen mutations with the unmutated note as control.* **FROZEN paragraphs are deliberately excluded**: the one headed *"as of ordinal 31"* states its True partition at 31 and its False-chain list at 32, names both vintages itself, and a checker keyed to its headline would fail correct prose. |
 | `refig.py <spans-file> <sha7> <ordinal>` | refigures the spans table at a close: reproduces every carried row at the OLD N first, then rewrites all of them at the new one, emits the new spans and monotonicity rows, checks the three set equalities and prints the globals. **Both N values are derived from the walk, never typed**, and it asserts that the parsed row count matches what the walk implies. *It is PARAMETERISED precisely because the two alternatives both failed: a `sed`-patched copy of the previous close's script left a bare old N in an expected-value tuple and reported 39 spurious mismatches, and the "write it fresh each time" remedy that replaced it produces an unchecked script every close — one of those matched zero rows on its first run.* **Committed at the fifty-sixth close, after living in the scratchpad for five.** |
+| `safe_stdout.py` | imported by `bank.py`, `refig.py` and `cnf_mtime_check.py`; makes a **closed stdout non-fatal** so a truncated pipe cannot skip a script's side effects. `tool.py | head -N` closes stdout after N lines, the next print raised `BrokenPipeError`, and the script died **before** its note rewrite, `git add`, sample append or `table_new.txt` write — while looking successful, because `head` had shown the figures and the pipeline's exit status is `head`'s. **Caught at idx 1522**, where two `bank.py | head -N` runs left the note claiming 1691 rows against a staged 1692; *40 commits were re-checked note-against-blob and all agreed, so nothing was published wrong.* **`| tail -N` and `sed -n '1,Np'` read to EOF and are safe; `| head` is the one to avoid.** It lives in one file because the duplicate-sample guard was written in `cnf_mtime_check.py`, never reached `bank.py`, and three duplicate-key events went into the sample log in that gap. |
 | `cpu_ratio_samples.tsv` | append-only log of every in-flight cube's cpu/elapsed ratio, written by **both** `bank.py` (each bank) and `cnf_mtime_check.py` (each run), so there is one source rather than two. Read the LAST row per cube before the teardown instant; never a later one, and never an average. **COMMIT IT** — see below. |
 | `/proc/<pid>/stat` field 22 vs `btime` | a process's exact launch time. Better than any recalled "launched at HH:MM" (4083af8). |
 | `git rev-parse HEAD origin/<branch>` | **the HEAD-equals-origin check, and it must NOT carry `--short`.** *`git rev-parse --short HEAD origin/<branch>` fails with `fatal: Needed a single revision` — `--short` makes rev-parse single-revision-only, in every form including `--short=7`.* **Use the full-hash two-revision form, or two separate `--short` calls.** A chained check that dies on exit 128 reports nothing about whether the branch is pushed, and the failure looks like a git problem rather than a usage one. |
@@ -6552,7 +6553,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1688 -> 1691 rows)
+## State as of the last refresh (1691 -> 1692 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6563,7 +6564,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1691 rows; 1522 labels decided; 1522 UNSAT; 0 SAT; 0 labels
+- **1692 rows; 1523 labels decided; 1523 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6595,7 +6596,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1522 decided plus 169 superseded
+  A row count is not a decision count: 1523 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6645,7 +6646,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1521, highest decided 1521, holes [].**
+- **Frontier contiguous 0..1522, highest decided 1522, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -9341,6 +9342,91 @@ exactly one bank.
   a later second still lands. The procedure — run `bank.py` last — is
   what collides, by calling it twice back to back; the guard makes that
   procedure safe rather than replacing it.*
+
+  ***ONE ROW, NO SPAN, AND THE BRACKET PUBLISHED ONE COMMIT AGO IS
+  SETTLED.*** *From the staged blob.* **idx 1522 at 1948.8 s** (coord9
+  = **13** in `[13,12,11,10]`, rank **1022 of 1523**); *untied — `1523 −
+  501 = 1022` reproduces the rank, detector agrees.* **Holes `[]`,
+  frontier contiguous 0..1522, highest decided 1522. Decided 1523 of
+  1949 = 78.1426%; still 0 SAT.** *The row extends the frontier, so no
+  span opens and the marker stays closed.*
+
+  ***THE SECOND PREDICTION IN TWO COMMITS, AND IT SCORED ON THE EXACT
+  VALUE.*** *One commit ago the coord9 = 13 group of `[13,12,11,10]`
+  stood at 4 of 5 and its median was confined to* **`[1813.1, 1924.2]`**
+  *by exhaustive sweep.* **The group is now COMPLETE at 5 of 5 and its
+  median is `1924.2` — the upper endpoint of that interval.** *Members
+  `589.2, 1813.1, 1924.2, 1937.1, 1948.8` at idx 1518, 1521, 1520, 1519,
+  1522.*
+
+  ***AND THE THREE-CASES RULE PICKED WHICH ENDPOINT BEFORE THE ROW
+  LANDED.*** *The rule says a member arriving* **above** *the bounding
+  pair holds the upper bound and raises the lower.* **1948.8 is above
+  1924.2, so the upper was held and the lower rose 1813.1 → 1924.2 to
+  meet it.** *That is the whole of it: the interval collapsed from above
+  because the new member sat outside it on the high side.*
+
+  ***SAID PLAINLY, SO IT IS NOT MISTAKEN FOR MORE THAN IT IS.***
+  **Both scored predictions — this one and idx 1513's pinned median —
+  are arithmetic consequences of order statistics, not discoveries
+  about the search.** *A median of five is the third smallest; once four
+  are known the fifth can only move it within a computable interval, and
+  which end it lands on is decided by which side of the pair it falls.
+  Getting them right is a check that the rule was applied correctly, and
+  nothing more.* **What they are NOT is evidence about `ι(4)`, which
+  neither of them touches.**
+
+  ***`[13,12,11,10]` GOES 5 OF 28 WITH ITS FIRST GROUP FINAL.***
+  **coord9 = 13 complete, median `1924.2`**; *min 589.2, max 1948.8,
+  span `3.307536×` from 3.287678×.* **The other three groups are still
+  empty at 0 of 14, 0 of 8 and 0 of 1.** *For a finite bound the
+  coord9 = 12 group needs* **8 of 14** *and the coord9 = 11 group needs*
+  **5 of 8**, *both by `⌊n/2⌋ + 1`; the block's direction window needs
+  all three of the top groups, so it is 13 cubes short of even a
+  bracketed verdict and nothing about it should be anticipated here.*
+
+  ***AND `bank.py | head -N` HAS BEEN SILENTLY KILLING `bank.py`
+  MID-RUN.*** *Caught at this row, by reading the note's state lines
+  after the bank rather than trusting that the bank had run.* **The note
+  said `1691 rows; 1522 labels decided; frontier 0..1521` against a
+  staged 1692 and 1523.** *Two invocations in a row had been written as*
+  `bank.py 2>&1 | head -8` *and* `| head -5`.
+
+  ***THE MECHANISM, CONFIRMED DIRECTLY RATHER THAN INFERRED.*** *Run
+  with stderr captured,* `bank.py | head -3` *gives* **`BrokenPipeError:
+  [Errno 32] Broken pipe` at line 44, exit 1, no sample appended and no
+  note rewrite.** **`head` closes stdout once it has its N lines, and
+  the next print kills the script** — *and in `bank.py` everything that
+  matters happens after the printing: the census rewrite, the state-line
+  rewrite, the sample append and the `git add`.* ***So the one tool
+  whose entire contract is "run it last so the staged state is right"
+  was being stopped before it could do any of that*** — *while looking
+  like it had worked, because `head` had already displayed the figures
+  and a pipeline's exit status belongs to `head`, not to what feeds it.*
+
+  ***NOTHING WAS PUBLISHED WRONG, AND THAT WAS CHECKED, NOT ASSUMED.***
+  *Every one of the* **last 40 commits** *was re-read — the note's row
+  and decided counts against that commit's own checkpoint blob — and*
+  **all 40 agree.** *`| tail -N` and `| sed -n '1,6p'` read to EOF and
+  never truncated anything; only the `head` runs did, and both were in
+  this commit's own working session.* **The defect was caught by the
+  same habit that caught the chain error: read the artefact, not the
+  tool's summary of it.**
+
+  ***THE FIX IS IN ONE FILE, DELIBERATELY.*** **`safe_stdout.py`** *makes
+  a dead stdout non-fatal — the print is dropped, the run continues, the
+  side effects happen — and* **`bank.py`, `refig.py` and
+  `cnf_mtime_check.py` all import it** *rather than carrying three
+  copies.* ***That choice is the direct lesson of the duplicate-sample
+  bug two commits ago***: *the guard for it was written in
+  `cnf_mtime_check.py`, never reached `bank.py`, and three duplicate-key
+  events went into the sample log in the gap.* **Copying this block into
+  three scripts would have been the same mistake with a different body.**
+  *Verified after wiring: under* `| head -2` *`bank.py` appends its
+  sample and rewrites the note and exits 0, `cnf_mtime_check.py` appends
+  and exits 0, and `refig.py` now reaches its own N-guard — which fires
+  correctly, because the spans table is already refigured to 65 rows at
+  N = 144 and it refuses to do it twice.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -19606,7 +19692,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1522 of 1949 = 78.0913%**; **427 undecided**. **50% IS CROSSED**, at
+- **1523 of 1949 = 78.1426%**; **426 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -20320,7 +20406,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
-  **4 decided**, undecided 24 spanning 1522..1545
+  **5 decided**, undecided 23 spanning 1523..1545
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

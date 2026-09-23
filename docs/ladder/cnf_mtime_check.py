@@ -83,6 +83,8 @@ LIMITS OF THAT OBSERVATION -- read these before relying on it
 """
 
 import os, glob, re, subprocess, sys, time
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import safe_stdout  # noqa: F401  -- a closed stdout must not skip side effects
 
 CNF_GLOB = "/tmp/sf-sym-*-seq-c*-cryptominisat5-{pid}-*.cnf"
 CUBE_RE  = re.compile(r"seq-c(\d+)-cryptominisat5-(\d+)-(\d+)\.cnf")

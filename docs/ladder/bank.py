@@ -8,6 +8,9 @@ line does not match what SEQ says about the one open block, this REFUSES to
 touch it and says so loudly, rather than writing a figure it cannot justify."""
 import subprocess, re, statistics
 from collections import OrderedDict
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import safe_stdout  # noqa: F401  -- a closed stdout must not skip side effects
 exec(open('docs/ladder/forward_test.py').read()
      .split("# ------------------------------------------------------------------ calibration")[0])
 
