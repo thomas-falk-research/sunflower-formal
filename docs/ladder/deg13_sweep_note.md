@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T01:05Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T01:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6440,7 +6440,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1561 -> 1562 rows)
+## State as of the last refresh (1562 -> 1563 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6451,7 +6451,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1562 rows; 1393 labels decided; 1393 UNSAT; 0 SAT; 0 labels
+- **1563 rows; 1394 labels decided; 1394 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6466,7 +6466,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1393 decided plus 169 superseded
+  A row count is not a decision count: 1394 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6500,8 +6500,27 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1392, highest decided 1392, holes [].**
+- **Frontier contiguous 0..1393, highest decided 1393, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  **idx 1393 closed at 2368.5 s** — sweep rank **842 of 1394**, untied,
+  block rank **2 of 8** — frontier contiguous **0..1393**, highest
+  decided 1393, holes `[]`, no span open. ***THE RECORD STREAK BROKE BY
+  5.3 s***: 2368.5 falls just short of idx 1392's 2373.8, so
+  `[13,12,12,9]` keeps min 385.0, max 2373.8 and **span 6.1657x
+  unchanged**. *The running-maxima count stays at **5 of 8** — computed
+  by script this time, from the start, after the previous commit's
+  paragraph needed two hand counts to get one number.*
+
+  **The 5.3 s gap is NOT offered as a coincidence.** *The gap control run
+  four commits ago found the median adjacent gap over the whole sweep to
+  be **4.7 s**, with 20.69% of gaps at 1.5 s or smaller — so two costs
+  5.3 s apart are less close together than the typical neighbouring pair.*
+  **Running that control once and then citing it is the point of having
+  run it.**
+
+  **In-flight bounds, 01:06:50Z, within-run only: idx 1394 >= 2144 s,
+  idx 1395 >= 871 s, idx 1396 >= 171 s, idx 1397 >= 30 s.**
 
   **idx 1392 closed at 2373.8 s** — sweep rank **840 of 1393**, untied —
   **advancing the frontier again**: contiguous **0..1392**, highest
@@ -14590,7 +14609,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1393 of 1949 = 71.4726%**; **556 undecided**. **50% IS CROSSED**, at
+- **1394 of 1949 = 71.5239%**; **555 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15304,7 +15323,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **7 decided**, undecided 21 spanning 1393..1413
+  **8 decided**, undecided 20 spanning 1394..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
