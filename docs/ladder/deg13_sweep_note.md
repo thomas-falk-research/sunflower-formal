@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T10:05Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T10:40Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6534,7 +6534,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1611 -> 1612 rows)
+## State as of the last refresh (1612 -> 1613 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6545,7 +6545,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1612 rows; 1443 labels decided; 1443 UNSAT; 0 SAT; 0 labels
+- **1613 rows; 1444 labels decided; 1444 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6570,7 +6570,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1443 decided plus 169 superseded
+  A row count is not a decision count: 1444 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6620,8 +6620,67 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1442, highest decided 1442, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1442, highest decided 1446, holes [1443, 1444, 1445].**
+  <!-- SPAN-STATE: open -->
+
+  ***THE SEVENTY-FOURTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk
+  position **139** less the OFFSET of 65 — the **seventy-fourth**. **idx
+  1446 came in at 2015.8 s** while idx 1443, 1444 and 1445 are all still
+  running, leaving **holes `[1443, 1444, 1445]`, width three**, frontier
+  contiguous **0..1442** and highest decided **1446**. *Per the `#29`
+  rider the width is what it is AT THIS COMMIT, and this is that
+  commit.*
+
+  ***AN OPENING AT THREE.*** Over the **138** closed chains the opening
+  hole count is **1 in 48, 2 in 45, 3 in 42 and 4 in 3**, so three is
+  **30.4%**. **It is the first opening at three since the
+  sixty-eighth**, and the closed spans that opened at three are **42**
+  of the 138, the last five of them ordinals **51, 57, 63, 67 and 68**.
+  *Five closes separate this opening from that one.*
+
+  **The row: idx 1446, UNSAT at 2015.8 s, sweep rank 973 of 1444 with no
+  tie**, detector agrees; coord9 = **12**, a new block maximum taking
+  `[13,12,12,7]` to **9 of 15** and its span **4.460860x → 4.560633x**.
+  *Decided 1444 of 1949; still 0 SAT.*
+
+  ***AND THE THREE HOLES ARE EXACTLY THE CUBES THE TWO OPEN MEDIANS ARE
+  WAITING ON.*** **Their coord9 values are 12, 12 and 11** — *idx 1443
+  and 1444 are coord9 = 12, idx 1445 is the single missing
+  coord9 = 11.* **So the close takes coord9 = 12 from 4 of 9 to 6 of 9,
+  past the 5-of-9 threshold where both ends of that median become
+  finite, and takes coord9 = 11 from 1 of 2 to 2 of 2, which makes it a
+  number.** *One close turns one median into a value and the other from
+  unbounded into an interval, at the same instant — the same shape as
+  the previous block's three-events-one-moment, with different
+  content.*
+
+  ***AND THE ELAPSED FLOORS ALREADY PUT A FINITE FLOOR UNDER THE
+  coord9 = 12 MEDIAN, WHICH WAS UNBOUNDED BOTH WAYS ONE ROW AGO.*** *At
+  10:38:50Z the tool reads idx 1443 at **2891 s**, idx 1444 at **2600 s**
+  and idx 1445 at **2555 s**.* Since `cost >= elapsed`, two of the five
+  undecided coord9 = 12 members are known to exceed 2600, and that is
+  enough: **the coord9 = 12 median is >= 1892.1**, where a row ago it had
+  no finite end at all. *Checked by brute force as well as derived —
+  200000 random completions respecting the floors and the 21600 s cap,
+  minimum seen **1892.1000**, matching the analytic value exactly.*
+
+  **And idx 1445's floor has moved the other median up with it: the
+  coord9 = 11 median is now >= (1939.8 + 2555)/2 = 2247.4**, against
+  >= 1220.9 one row ago. *The 13 → 11 rise is settled by a wider margin
+  than before.*
+
+  ***THE 12 → 11 STEP — THE ONE THAT BROKE IN THE LAST BLOCK — IS STILL
+  UNDETERMINED, AND THE UPPER ENDS ARE WHY.*** *The per-cube cap does
+  give both medians a formal ceiling — 21600 for the 12 group,
+  (1939.8 + 21600)/2 = 11769.9 for the 11 — but those are the cap
+  speaking, not the data, and the gap they allow is
+  `[-19352.60, 9877.80]`.* **That straddles zero and settles nothing.**
+  *The honest statement is that both medians now have real floors and no
+  useful ceiling, and the step stays open until the close.*
+
+  *All the elapsed-derived bounds here are **within-run only**: a
+  restart kills all three cubes and every floor above returns to
+  nothing.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -16887,7 +16946,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1443 of 1949 = 74.0380%**; **506 undecided**. **50% IS CROSSED**, at
+- **1444 of 1949 = 74.0893%**; **505 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -17601,7 +17660,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 7]` idx 1435..1449: **15 members**,
-  **8 decided**, undecided 7 spanning 1443..1449
+  **9 decided**, undecided 6 spanning 1443..1449
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
