@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T05:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T05:32Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6444,7 +6444,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1582 -> 1583 rows)
+## State as of the last refresh (1583 -> 1584 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6455,7 +6455,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1583 rows; 1414 labels decided; 1414 UNSAT; 0 SAT; 0 labels
+- **1584 rows; 1415 labels decided; 1415 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6470,7 +6470,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1414 decided plus 169 superseded
+  A row count is not a decision count: 1415 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6504,8 +6504,27 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1406, highest decided 1414, holes [1407].**
+- **Frontier contiguous 0..1406, highest decided 1415, holes [1407].**
   <!-- SPAN-STATE: open -->
+
+  ***idx 1407 IS NOW 600.91 s FROM THE SECOND DECISION POINT, AND THE
+  BLOCK IS STILL IN THE GAP.*** **idx 1415 closed at 1091.2 s** in the
+  new block; `[13,12,12,9]` is unchanged at **27 of 28** with idx 1407
+  its only member left. *At **>= 7788 s** (05:31:25Z) that cube forces
+  the closing span to **>= 20.228571x** — **147.82 s past** the fraction
+  ceiling it crossed last commit, and **600.91 s short** of the
+  8388.91 s the count floor needs.* **The gap row of the published table
+  is the one the block currently occupies**, and the count row needs
+  600.91 s more of runtime against **13812.00 s** of remaining cap.
+  *Neither is predicted here; the distances are.*
+
+  ***THE NEW BLOCK HAS TWO MEMBERS.*** **idx 1415 at 1091.2 s is block
+  rank 1 of 2** in `[13,12,12,8]`, whose decided costs are now **466.6
+  and 1091.2 — span 2.338620x** on 2 of 21. **Sweep rank 1185 of 1415,
+  untied.** *A two-member span is the smallest sample that has one and
+  says nothing; it is recorded because the block's own forecast, when it
+  gets one, will be built from this series and the series has to start
+  somewhere visible.*
 
   ***THE WHOLE FORECAST NOW RESTS ON ONE RUNNING CUBE, AND IT IS 42.18 s
   FROM THE FIRST DECISION POINT.*** **idx 1411 closed at 3638.0 s**,
@@ -15500,7 +15519,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1414 of 1949 = 72.5500%**; **535 undecided**. **50% IS CROSSED**, at
+- **1415 of 1949 = 72.6013%**; **534 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16216,7 +16235,7 @@ exactly one bank.
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
   **27 decided**, undecided [1407]
 - `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
-  **1 decided**, undecided 20 spanning 1415..1434
+  **2 decided**, undecided 19 spanning 1416..1434
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
