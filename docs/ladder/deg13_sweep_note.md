@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T11:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T11:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6534,7 +6534,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1624 -> 1625 rows)
+## State as of the last refresh (1625 -> 1626 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6545,7 +6545,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1625 rows; 1456 labels decided; 1456 UNSAT; 0 SAT; 0 labels
+- **1626 rows; 1457 labels decided; 1457 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6570,7 +6570,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1456 decided plus 169 superseded
+  A row count is not a decision count: 1457 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6620,8 +6620,21 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1454, highest decided 1456, holes [1455].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1456, highest decided 1456, holes [].**
+  <!-- SPAN-STATE: closed -->
+
+  ***THE SEVENTY-FOURTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** Filled by **idx 1455 at 1786.7 s**, its only remaining
+  hole; frontier whole again at **0..1456**. *The live opening-width
+  census is struck with this edit.* **Duration, ranks, monotonicity,
+  commit count and hole chain come from `--spans all` in the NEXT
+  commit, with every carried row first reproduced at the OLD N = 138
+  before any is rewritten at 139.** *Its chain at the last commit read
+  `3,2,1,3,2,1,2,1,2,1`; whether an eleventh entry joins it depends on
+  whether this commit is the one that closes it, which `--spans all`
+  will say.* **The verdict does not wait on that: the chain already
+  contains a rise — its third entry is 1 and its fourth is 3 — so False
+  is determined whatever follows.**
 
   ***THE SEVENTY-FOURTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk
   position **139** less the OFFSET of 65 — the **seventy-fourth**. **idx
@@ -6633,10 +6646,11 @@ exactly one bank.
 
   ***AN OPENING AT THREE.*** Over the **138** closed chains the opening
   hole count is **1 in 48, 2 in 45, 3 in 42 and 4 in 3**, so three is
-  **30.4%**. **It is the first opening at three since the
-  sixty-eighth**, and the closed spans that opened at three are **42**
-  of the 138, the last five of them ordinals **51, 57, 63, 67 and 68**.
-  *Five closes separate this opening from that one.*
+  **30.4%**. *The three live-only sentences that stood here — the
+  "since the" ordinal, the "M of the N" count and the last-five list —
+  are struck at this close, per the census convention; the sentence
+  above survives because it is checked against the walk's first 138
+  spans and stays true for good.*
 
   **The row: idx 1446, UNSAT at 2015.8 s, sweep rank 973 of 1444 with no
   tie**, detector agrees; coord9 = **12**, a new block maximum taking
@@ -7004,6 +7018,24 @@ exactly one bank.
   with the floor in place — 400000 completions, minimum below still
   **3**, now out of four.* **Within-run only: a restart frees idx 1455
   and the requirement relaxes back to three of five.**
+
+  ***THE ROW THAT CLOSED IT ALSO MADE THE BLOCK'S REQUIREMENT
+  RESTART-PROOF.*** **idx 1455 came in at 1786.7 s**, coord9 = **12**;
+  *sweep rank **1043 of 1457**, no tie, detector agrees. The block goes
+  **7 of 11**, span **4.039172x → 4.457834x**. Decided 1457 of 1949;
+  still 0 SAT.* **Its elapsed floor was 1731 s at 11:41:48Z and the
+  final cost is 1786.7 — loose by 55.7 s**, *between idx 1443's 0.8 and
+  idx 1444's 238.9.*
+
+  **Both decided coord9 = 12 costs are now at or above 1618.9 —
+  `[1618.9, 1786.7]` — so "at least three of the four free cubes below
+  1618.9" rests on DECIDED costs and no longer on an elapsed floor.**
+  *One commit ago the same requirement depended on idx 1455 still
+  running; a restart would have relaxed it back to three of five. It
+  cannot now.* **Brute-forced once more against the decided pair:
+  400000 completions, minimum below still 3 of 4.** *idx 1457, 1458,
+  1459 and 1460 are the four, and they are the whole of what is left of
+  this question.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17269,7 +17301,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1456 of 1949 = 74.7050%**; **493 undecided**. **50% IS CROSSED**, at
+- **1457 of 1949 = 74.7563%**; **492 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -17983,7 +18015,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 6]` idx 1450..1460: **11 members**,
-  **6 decided**, undecided [1455, 1457, 1458, 1459, 1460]
+  **7 decided**, undecided [1457, 1458, 1459, 1460]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
