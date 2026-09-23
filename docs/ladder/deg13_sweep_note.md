@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T01:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T01:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6502,6 +6502,26 @@ exactly one bank.
   prose, which is the whole difference.*
 - **Frontier contiguous 0..1395, highest decided 1397, holes [1396].**
   <!-- SPAN-STATE: open -->
+
+  **No row landed between 01:34:10Z and 01:41:45Z; only the clock moved.**
+  *The sixty-ninth span is still open at **holes `[1396]`, width one**,
+  frontier contiguous 0..1395, highest decided 1397.* **In-flight bounds,
+  01:41:45Z, within-run only: idx 1396 >= 2266 s, idx 1398 >= 1923 s,
+  idx 1399 >= 761 s, idx 1400 >= 493 s** — *all read from the tool.*
+  **idx 1396, the span's only hole, is the longest-running of the four**
+  — *at 2266 s against idx 1398's 1923 s.*
+
+  ***A DRAFT ADDED "having passed idx 1398 while both were in flight",
+  AND IT IS FALSE.*** **idx 1396 was ahead at all EIGHT samples where
+  both appear**, from 1553 against 1210 at 01:29:52Z onward — *it never
+  passed anything, it was simply dispatched first.* **Cubes go out in
+  index order, so a lower index is always further along unless it has
+  already finished**, which makes "passed" impossible between two
+  cubes in flight together. *The clause was written because "longest
+  running" felt like it needed a story, and the story was invented.*
+  **Checked by script against the sample file rather than by looking at
+  one pair of numbers**, which is what the previous two entries said
+  would have to become habit.
 
   ***THE SIXTY-NINTH SPAN HAS OPENED, AND THE ORDINAL WAS DERIVED BEFORE
   THE OUTCOME.*** Walk position **134** less the OFFSET of 65 — the
