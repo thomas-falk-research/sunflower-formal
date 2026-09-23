@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T19:10Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T19:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -19590,9 +19590,12 @@ exactly one bank.
   `discarded / re-run` at this close and every quoted ratio agrees.*
 - **RE-RUN SET TWENTY IS OPEN**: **idx 1505, 1506, 1507, 1508**, opened
   by `#52`. *Not confounded — said at the opening, as the rule requires.*
-  **No forward test is registered** and there is **no live registered
-  pattern commitment.** *The ratios will be computed at 4-of-4 and not
-  before.*
+  ***AND ALL FOUR WERE RE-DISPATCHED TOGETHER***: *their CNF mtimes span
+  **20.0 ms** (19:07:30.651879934Z to 19:07:30.671879935Z), so the four
+  re-run clocks are directly comparable — the same condition the note
+  cites for set seven, whose four were within 4.0 ms.* **No forward test
+  is registered** and there is **no live registered pattern
+  commitment.** *The ratios will be computed at 4-of-4 and not before.*
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
