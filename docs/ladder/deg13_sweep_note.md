@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T11:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T11:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6986,6 +6986,24 @@ exactly one bank.
   `[0.1, 21600]`, which is nothing like the real cost distribution; it
   was run to confirm the "at least three" boundary and to check that
   holding is still possible at all, and its hit rate means nothing.*
+
+  ***AND AT THE 11:41Z CHECK-IN THE REQUIREMENT TIGHTENED WITHOUT A ROW
+  LANDING.*** *No row landed — 1625 rows, 1456 decided, holes `[1455]`,
+  all invariants hold — but the in-flight picture moved the boundary.*
+  **idx 1455 reads 1731 s elapsed at 11:41:48Z**, and it is a
+  coord9 = 12 member of `[13,12,12,6]`, so `cost >= elapsed` puts it
+  **above 1618.9 already**. **Two of the six are now known to be at or
+  above 1618.9** — idx 1454 decided there, idx 1455 floored past it.
+
+  **So the requirement goes from "three of the five" to "three of the
+  FOUR":** *with two values at or above 1618.9, if only two of the free
+  four came in below it then `s[2]` and `s[3]` would both be at least
+  1618.9 and their sum at least 3237.8, past the 2538.0 the window
+  allows.* **At least three of idx 1457, 1458, 1459 and 1460 must finish
+  below 1618.9 for the direction to hold here.** *Brute-forced again
+  with the floor in place — 400000 completions, minimum below still
+  **3**, now out of four.* **Within-run only: a restart frees idx 1455
+  and the requirement relaxes back to three of five.**
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
