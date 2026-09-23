@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T13:28Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T13:40Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6544,7 +6544,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1653 -> 1654 rows)
+## State as of the last refresh (1654 -> 1655 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6555,7 +6555,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1654 rows; 1485 labels decided; 1485 UNSAT; 0 SAT; 0 labels
+- **1655 rows; 1486 labels decided; 1486 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6580,7 +6580,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1485 decided plus 169 superseded
+  A row count is not a decision count: 1486 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6630,7 +6630,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1484, highest decided 1484, holes [].**
+- **Frontier contiguous 0..1485, highest decided 1485, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -7700,6 +7700,53 @@ exactly one bank.
   way on purpose: no re-run set is open and no pattern
   commitment is registered, and a formula whose inputs are already known
   is not one. The only thing still unknown is `c`.*
+
+  ***THE CLOSED FORM SCORED, AND THE MEDIAN LANDED ON THE UPPER END BY
+  3.8 SECONDS.*** *From the staged blob.* **idx 1485 at 1287.2 s**
+  (coord9 = **13** in `[13,12,11,11]`, rank **1158 of 1486**); *untied,
+  detector agrees at 1158.* **Holes `[]`, frontier contiguous 0..1485,
+  highest decided 1485. Decided 1486 of 1949 = 76.2442%; still 0 SAT.**
+  *Five commits running with the frontier advancing in step.*
+
+  **`[13,12,11,11]`'s coord9 = 13 group is COMPLETE at 6 of 6 —
+  `[396.3, 1187.8, 1240.1, 1283.4, 1287.2, 1339.4]`, median FINAL at
+  `1261.75`.** *The formula published last commit was
+  `(1240.1 + clamp(c, 1187.8, 1283.4))/2`; `c` came in at 1287.2, the
+  clamp returned 1283.4, and the formula gives 1261.75. Evaluating the
+  median directly on the six costs gives 1261.75. **They agree.***
+  **min 396.3, max 1339.4, span 3.379763x — all three unmoved**, *since
+  1287.2 landed interior to the group.*
+
+  ***IT CLEARED THE CLAMP BY 3.8 SECONDS.*** *The interval was
+  `[1213.95, 1261.75]` and the realised median sits at **100.0%** of its
+  width — the upper end exactly. That took `c > 1283.4`, and `c` was
+  1287.2: a margin of **3.8 s**, **0.295%** of the cost itself.* **Had
+  this cube been 3.9 s cheaper the median would have been strictly
+  below the upper end**, *and had it been 99.4 s cheaper it would have
+  sat at the lower end instead. The bound was honest about the range;
+  the outcome inside that range was decided by a few seconds of solver
+  time.*
+
+  ***AND THE THRESHOLD TABLE TURNS OUT TO BE ONE RULE.*** *This note has
+  carried seven measured thresholds — `n = 1 → 1, 2 → 2, 3 → 2, 4 → 3,
+  6 → 4, 9 → 5, 11 → 6` — gathered one block at a time.* **Every one of
+  them is `⌊n/2⌋ + 1`, and both ends go finite at the same `k`.**
+  *Proved for even `n` from `median = (x_{n/2} + x_{n/2+1})/2`: the
+  upper end needs `n/2 + 1 ≤ n − u` and the lower needs `n/2 > u`, both
+  of which are `u ≤ n/2 − 1`. For odd `n` the single order statistic
+  gives `u ≤ (n−1)/2` twice over. Checked exhaustively for `n = 1..40`
+  against the definition — the first `k` with a finite lower end, the
+  first with a finite upper end, and `⌊n/2⌋ + 1` agree in every case.*
+  **This is the correction from two commits ago carried to its
+  conclusion**: *the asymmetry that draft imagined does not exist at any
+  `n`, and the table was never a list of special cases.*
+
+  **What it says about the groups still to come**: *coord9 = 12 needs
+  **9** of its 16, coord9 = 11 needs **8** of its 14, coord9 = 10 needs
+  **2** of its 2, and the block as a whole needs **20** of 38.* **The
+  direction window needs all three of 13, 12 and 11**, *so with 13 now
+  final the earliest any of it can be bounded is nine cubes into the
+  coord9 = 12 group, which begins at idx 1486 — the next cube.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17965,7 +18012,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1485 of 1949 = 76.1929%**; **464 undecided**. **50% IS CROSSED**, at
+- **1486 of 1949 = 76.2442%**; **463 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18679,7 +18726,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **5 decided**, undecided 33 spanning 1485..1517
+  **6 decided**, undecided 32 spanning 1486..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
