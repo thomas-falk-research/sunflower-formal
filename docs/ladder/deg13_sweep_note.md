@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T13:22Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T13:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6544,7 +6544,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1651 -> 1653 rows)
+## State as of the last refresh (1653 -> 1654 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6555,7 +6555,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1653 rows; 1484 labels decided; 1484 UNSAT; 0 SAT; 0 labels
+- **1654 rows; 1485 labels decided; 1485 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6580,7 +6580,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1484 decided plus 169 superseded
+  A row count is not a decision count: 1485 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6630,7 +6630,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1483, highest decided 1483, holes [].**
+- **Frontier contiguous 0..1484, highest decided 1484, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -7656,6 +7656,50 @@ exactly one bank.
   trio 8.05% wide sitting about three times the first. Four points, one
   of them alone; that is an observation, not a shape, and thirty-four
   cubes of this block are still to come.*
+
+  ***ONE ROW, AND THE BOUND NARROWS TENFOLD WITHOUT ITS UPPER END
+  MOVING AT ALL.*** *From the staged blob.* **idx 1484 at 1339.4 s**
+  (coord9 = **13** in `[13,12,11,11]`, rank **1142 of 1485**); *untied,
+  detector agrees at 1142.* **Holes `[]`, frontier contiguous 0..1484,
+  highest decided 1484. Decided 1485 of 1949 = 76.1929%; still 0 SAT.**
+  *Four commits running with the frontier advancing in step.*
+
+  **`[13,12,11,11]` goes 5 of 38, its coord9 = 13 group 5 of 6 —
+  `[396.3, 1187.8, 1240.1, 1283.4, 1339.4]`.** ***The median's interval
+  goes `[792.05, 1261.75]` → `[1213.95, 1261.75]`***, *width 469.70 →
+  **47.80**, a **9.83×** narrowing on one cube; 200000 random
+  completions attain both ends and never leave.* **min 396.3, max
+  1339.4, span 3.379763x.**
+
+  ***THE UPPER END DID NOT MOVE, AND THAT IS THE MIRROR OF A RULE
+  ALREADY IN THIS FILE.*** *The recorded rule is that min-over-
+  completions is invariant to a member arriving **below** it, because
+  the member adds one beneath the bound and removes one from `u`, and
+  the shifts cancel.* **1339.4 is the same statement upside down**: *the
+  upper end is `(x₃ + x₄)/2` computed with the undecided at +∞, so it is
+  fixed by 1240.1 and 1283.4; 1339.4 arrived **above** that pair, taking
+  the place of a +∞ that was also above it, so neither order statistic
+  moved and the end stayed at 1261.75 exactly.* **All of the narrowing
+  came from the lower end**, *which rose 792.05 → 1213.95 because the
+  new member displaced a −∞ from beneath.*
+
+  ***AND THE LAST CUBE OF THIS GROUP DETERMINES THE MEDIAN BY A CLOSED
+  FORM, NOT A PREDICTION.*** **idx 1485 is the sixth and final member**,
+  *and with the other five fixed the median is an exact function of its
+  cost `c`:*
+
+      median = (1240.1 + clamp(c, 1187.8, 1283.4)) / 2
+
+  *`c` can land in any of **six** slots among the five known costs, but
+  those collapse to **three** behaviours: the two slots below 1187.8 all
+  clamp low, the two above 1283.4 all clamp high, and the two between
+  pair `c` with 1240.1 either way round — which is why one clamp
+  expression covers the lot. Checked against the definition on 500000
+  costs drawn over `[0, 4000]` — zero mismatches, worst error 0.*
+  **This is arithmetic, not a forward test**, *and it is written that
+  way on purpose: no re-run set is open and no pattern
+  commitment is registered, and a formula whose inputs are already known
+  is not one. The only thing still unknown is `c`.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17921,7 +17965,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1484 of 1949 = 76.1416%**; **465 undecided**. **50% IS CROSSED**, at
+- **1485 of 1949 = 76.1929%**; **464 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18635,7 +18679,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **4 decided**, undecided 34 spanning 1484..1517
+  **5 decided**, undecided 33 spanning 1485..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
