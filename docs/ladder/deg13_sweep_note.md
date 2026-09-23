@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T05:33Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T05:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6506,6 +6506,43 @@ exactly one bank.
   prose, which is the whole difference.*
 - **Frontier contiguous 0..1406, highest decided 1416, holes [1407].**
   <!-- SPAN-STATE: open -->
+
+  ***THE SIZE-TREND GAP PREDICTION IS REFUTED, AND THE BLOCK HAS ENTERED
+  THE MATCHED-COUNT INTERVAL. No new row; this is a sample.*** At
+  **>= 8408 s** (05:41:45Z) idx 1407 forces `[13,12,12,9]`'s closing
+  span to **>= 21.838961x**, which is **19.09 s of cube runtime past**
+  the **8388.91 s** the count floor needs. *Two of the four windows in
+  the published table are now dead:* **the matched-FRACTION interval
+  (crossed at 05:30:04Z, now passed by 767.82 s) and the SIZE-TREND GAP
+  (crossed here).**
+
+  ***THE PREDICTION THAT DIED HERE IS THE ONE THIS NOTE CALLED THE
+  WEAKEST OF THE THREE WHEN IT PUBLISHED IT***, on the ground that its
+  count leg had already been refuted once at the previous block's close.
+  *It was recorded anyway, at full precision, "so that it can fail in
+  public" — and it has.* **The size-trend argument is now 0 for 2**: its
+  count leg wrong at `[13,12,12,10]`'s close and the whole prediction
+  wrong here. **The matched-COUNT basis, which was CONFIRMED at the
+  previous block, is the live reading again.**
+
+  | outcome | status |
+  |---|---|
+  | matched-FRACTION interval | **REFUTED** at 05:30:04Z |
+  | size-trend GAP | **REFUTED** at 05:41:45Z |
+  | matched-COUNT interval, `21.789383x .. 40.693099x` | **ENTERED**; confirmed iff idx 1407 finishes at or below **15666.84 s** |
+  | above the count ceiling | live; needs idx 1407 above 15666.84 s |
+
+  **idx 1407 is 7258.84 s below the count ceiling and 13192.00 s below
+  the per-cube cap.** *So the count interval is not confirmed — it is
+  entered, and a cube that ran to the cap would refute it too.* **Entered
+  is not confirmed and the distinction is the whole reason the table was
+  written before the fact.**
+
+  ***AND THE ENTRY IS BY A LOWER BOUND ON A RUNNING CUBE, WHICH IS SOUND
+  BUT NOT FINAL.*** *`cost = overhead + final elapsed >= elapsed`, so
+  the span can only rise from 21.838961x; what it cannot do is come back
+  below the count floor.* **The refutations are permanent; the
+  confirmation is not yet earned.**
 
   ***522.91 s FROM THE COUNT FLOOR, AND STILL IN THE GAP.*** **idx 1416
   closed at 1159.3 s** in the new block; `[13,12,12,9]` is unchanged at
