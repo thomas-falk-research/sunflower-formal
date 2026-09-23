@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T17:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T17:13Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6544,7 +6544,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1667 -> 1668 rows)
+## State as of the last refresh (1668 -> 1669 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6555,7 +6555,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1668 rows; 1499 labels decided; 1499 UNSAT; 0 SAT; 0 labels
+- **1669 rows; 1500 labels decided; 1500 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6580,7 +6580,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1499 decided plus 169 superseded
+  A row count is not a decision count: 1500 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6630,7 +6630,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1497, highest decided 1501, holes [1498, 1499, 1500].**
+- **Frontier contiguous 0..1498, highest decided 1501, holes [1499, 1500].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -8155,6 +8155,42 @@ exactly one bank.
   finite end.** *coord9 = 12 stays 8 of 16, one short of its own.*
   **Block 19 of 38; min 396.3, max 4953.0, span 12.498107x — unmoved,
   since 2914.6 is interior.**
+
+  ***THE SPAN NARROWS TO TWO, AND THE BLOCK HAS A NEW CEILING.*** *From
+  the staged blob.* **idx 1498 at 5738.4 s** (coord9 = **11** in
+  `[13,12,11,11]`, rank **337 of 1500**); *untied, detector agrees at
+  337.* **Holes `[1499, 1500]`, frontier contiguous 0..1498, highest
+  decided 1501, chain `3,2`. Decided 1500 of 1949 = 76.9625%; still
+  0 SAT.** *The chain's second entry is a fall, so the seventy-seventh
+  is **not yet determined** either way — monotone non-increasing needs
+  no rise to appear at all, which is a claim about every entry still to
+  come.*
+
+  **It is the most expensive cube in the block**: *`1.158571x` the
+  previous ceiling, `4.547969x` the 13-median, `0.2657` of the cap.*
+  **min 396.3, max 5738.4, span `14.479939x`**, *from 12.498107x.*
+
+  **coord9 = 11 goes 5 of 14 — `[2409.4, 2454.0, 2541.1, 2914.6,
+  5738.4]`**, *band `1.209679x → 2.381672x` on one cube.* **Three more
+  before its median has a finite end**; *coord9 = 12 stays 8 of 16, one
+  short. Block 20 of 38.*
+
+  ***A THIRD GROUP SHOWS A DETACHED TOP MEMBER — AND THE NOTE HAS
+  ALREADY WATCHED ONE OF THESE COLLAPSE.*** *The coord9 = 11 gaps are*
+  **`44.6, 87.1, 373.5, 2823.8`** *— four members inside **505.2 s**
+  of each other and then 5738.4, detached by **7.56x** the next largest
+  gap.* **That is very nearly the shape coord9 = 12 had two commits ago
+  at 7.39x**, *and one cube later that detachment fell to 2.67x when
+  4352.1 landed inside the gap.* **coord9 = 11 has nine of fourteen
+  still to come**, *so the same dissolution is not merely possible but
+  has precedent in this very block, one group over.*
+
+  *Stated once and not repeated: three of the four groups have now shown
+  a cluster-plus-detached-member shape at some point — 13's detached
+  member below, 12's and 11's above. One of the three has already lost
+  it. The honest summary is that these shapes appear while a group is
+  sparsely sampled and are not yet known to survive completion; only
+  coord9 = 13, complete at 6 of 6, has one that is final.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -18420,7 +18456,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1499 of 1949 = 76.9112%**; **450 undecided**. **50% IS CROSSED**, at
+- **1500 of 1949 = 76.9625%**; **449 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -19134,7 +19170,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **19 decided**, undecided 19 spanning 1498..1517
+  **20 decided**, undecided 18 spanning 1499..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
