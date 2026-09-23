@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T08:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T08:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -441,6 +441,77 @@ the answer is a bracket, not a substituted number.
    climb. It does **not** move the #45 loss bracket
    [5.3799, 5.4319] CPU-h, which was bracketed rather than
    point-estimated for exactly this reason — it is why that was right.*
+
+   ***RE-MEASURED AT 4925 OBSERVATIONS, AND THE SMALL-SAMPLE VERSION OF
+   THIS ENTRY WAS WRONG IN BOTH DIRECTIONS.*** *Read at the 08:41Z
+   check-in after the seventy-second close, over every data row the file
+   then held — **4925 of them (the 4926th tab-eight line is the `#`
+   header), 505 cube-slots, 492 with more than one reading**. The 08:41Z
+   rows are among those this commit first puts on record, and `bank.py`
+   appends four more after the count was taken; the figure is a
+   measurement at a stated instant, not a state line, and is not
+   maintained as the file grows.*
+
+   **The note's own five bands are STRICTLY INCREASING now, and were not
+   when written.** Same cut points, recomputed:
+
+   | band | n | note | now | delta |
+   |---|---|---|---|---|
+   | ≤ 100 s | 792 | 0.9767 | 0.9773 | +0.0006 |
+   | 100–300 s | 624 | 0.9805 | 0.9783 | −0.0022 |
+   | 300–600 s | 540 | **0.9779** | **0.9809** | +0.0030 |
+   | 600–1200 s | 763 | 0.9873 | 0.9873 | ±0.0000 |
+   | > 1200 s | 2206 | 0.9883 | 0.9908 | +0.0025 |
+
+   **The 300–600 s step the entry above records as a dip has changed
+   sign: −0.0026 then, +0.0026 now.** *No band median moved by more than
+   0.0030 and one did not move at all to four decimals, so this is the
+   single non-monotone step closing, not the bands shifting.* **The
+   original's boundary convention is not recorded, so both were tried:
+   `(prev, e]` and `[prev, e)` give medians differing by at most 0.0001
+   and the same +0.0026 step** — the result does not rest on which edge
+   owns an endpoint. Carried out to a coarser cut the rise continues
+   past the last band: **0.9777, 0.9833, 0.9887, 0.9907, 0.9917,
+   0.9935** over 0–300, 300–900, 900–1800, 1800–3600, 3600–7200 and
+   ≥ 7200 s, **increasing on all five steps, and unchanged to four
+   decimals on five of the six when every reading below 60 s is
+   dropped.**
+
+   ***BUT "NONE OF THE SEVEN IS MONOTONE" GENERALISED FROM SEVEN, AND
+   THE STATISTIC IT USED IS THE WRONG ONE.*** At 492 series **32 are
+   monotone non-decreasing — 6.504%, not zero** — *and that figure is
+   mostly series length: **54.55%** of the 33 two-reading series are
+   monotone, 22.22% at three, 9.09% at four, and **zero at every length
+   of eight or more**. A series with ten chances to fall will fall; the
+   seven that entry looked at had 3 to 11 readings each, which is why it
+   saw none.* **The unconfounded rate is the adjacent pair: 1967
+   decreases in 4420 pairs = 44.502%**, a coin flip — which is what "a
+   rise followed by noise" should look like.
+
+   **And the decreases are MORE common late, not less.** Pairs whose
+   earlier reading sits below 600 s decrease **39.88%** of the time
+   (735 of 1843); pairs at or above 600 s decrease **47.81%** (1232 of
+   2577). *That is the startup climb suppressing decreases while it
+   lasts, and noise afterwards.* **No significance is quoted, because
+   adjacent pairs share endpoints and are not independent** — and the
+   residual drift still visible between the last two bands is enough on
+   its own to hold the late rate below a half.
+
+   ***A 1.0000 READING IS A RESOLUTION ARTEFACT WITH A HARD BOUNDARY.***
+   **212 rows read exactly 1.0000 and every one is at elapsed ≤ 80 s;
+   the largest is 80 s.** *The quantisation half-width is 1/elapsed —
+   ±1.0000 at 1 s, ±0.0167 at 60 s, ±0.0011 at 900 s* — so the entry
+   above was right to call idx 1113's 1.0000 at 27 s resolution rather
+   than a settled cube, and it is now a rule with a measured edge rather
+   than one example. **Exactly one row reads 0.0000**: idx 1237 at 1 s
+   elapsed and 0 s CPU, while `ps` reported **78.0%** in the same
+   sample — the two columns disagreeing in the only way integer
+   truncation allows.
+
+   *None of this moves a recorded loss and none of it touches the
+   bracket. Every restart whose killed cubes had no sample was bracketed
+   rather than point-estimated, and these numbers say to keep doing
+   exactly that.*
 6. Re-read `nproc`, CPU model name, **`cpu MHz`, cache size**, `MemTotal`
    and the kernel, and **compare**. **If any of them moved, say so loudly
    and say that costs across that point are not on a common basis** — the
