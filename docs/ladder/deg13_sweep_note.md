@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T21:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T21:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6549,7 +6549,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1680 -> 1681 rows)
+## State as of the last refresh (1681 -> 1682 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6560,7 +6560,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1681 rows; 1512 labels decided; 1512 UNSAT; 0 SAT; 0 labels
+- **1682 rows; 1513 labels decided; 1513 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6592,7 +6592,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1512 decided plus 169 superseded
+  A row count is not a decision count: 1513 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6642,8 +6642,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1511, highest decided 1511, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1511, highest decided 1515, holes [1512, 1513, 1514].**
+  <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `8cc7a74` EXISTED.*** **The retirement sentence stood for exactly one
@@ -8820,6 +8820,50 @@ exactly one bank.
   `1528.80 → 1567.90 s`, `2.211650x → 2.242639x`.* **Block 32 of 38;
   min 396.3, max 8467.1, span 21.365380x — unmoved, 2769.2 being
   interior.** *Three more coord9 = 12 cubes, three more coord9 = 11.*
+
+  ***THE GAP IS DOWN TO 434.55 SECONDS, AND A SPAN OPENS AT WIDTH
+  THREE.*** *From the staged blob.* **idx 1515 at 535.8 s** (coord9 =
+  **12** in `[13,12,11,11]`, rank **1397 of 1513**); *untied, detector
+  agrees at 1397.* **Holes `[1512, 1513, 1514]`, frontier contiguous
+  0..1511, highest decided 1515, chain `3`. Decided 1513 of 1949 =
+  77.6296%; still 0 SAT.** *The index expected idx 1512 and got idx
+  1515; the other three are still running.*
+
+  **coord9 = 12 goes 14 of 16 and the interval narrows
+  `[2829.65, 3788.7]` → `[2829.65, 3162.4]`**, *width 959.05 →
+  **332.75**.* ***The lower end did not move — the invariance again***:
+  *535.8 arrived below the bound, adding one member beneath it and
+  removing one from `u`, and the shifts cancel exactly. The upper fell
+  626.30.* *Both ends attained by feasible costs: two undecided at the
+  0.1 s floor gives 2829.65, at the cap gives 3162.4.*
+
+  ***THE SECOND HALF IS CLOSE NOW, AND THIS IS THE FOURTH COMMIT
+  RUNNING IN WHICH IT HAS CLOSED.*** *The window's second inequality
+  holds only if `lo(11) > hi(12)`. That gap has gone* **2131.25 →
+  2065.40 → 1835.10 → 1060.85 → 434.55 s** *across five commits.*
+  **It is still undetermined**, *and the note attaches no trend to the
+  sequence: every one of those closures came from `hi(12)` falling as
+  cheap coord9 = 12 cubes landed, and* **two coord9 = 12 cubes remain**.
+  *If either lands above 3225.3 the upper end stops falling; if both
+  land below 3099.5 it falls again. `lo(11)` has not moved in three
+  commits and has three cubes of its own outstanding.* ***Nothing here
+  is a prediction — 434.55 s is a measurement of where two intervals
+  sit today.***
+
+  ***AN OPENING AT THREE.*** Over the **143** closed chains the opening
+  hole count is **1 in 48, 2 in 47, 3 in 45 and 4 in 3**, so three is
+  **31.5%**. **It is the first opening at three since the
+  seventy-seventh**, and the closed spans that opened at three are
+  **45** of the 143, the last five of them ordinals **67, 68, 74, 75 and
+  77**. *Two closes separate this opening from that one; this span will
+  be the **seventy-ninth**.* **The width is what the commit carries and
+  was re-checked against `bank.py` immediately before committing.**
+
+  **535.8 is the third cube outside coord9 = 13 to land below that
+  group's top**, *after 720.1 and 950.6 — `0.424648x` the 13-median at
+  `0.0248` of the cap, and the block's second-cheapest cube after
+  396.3.* **Block 33 of 38; min 396.3, max 8467.1, span 21.365380x —
+  unmoved.** *Two more coord9 = 12 cubes, three more coord9 = 11.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -19085,7 +19129,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1512 of 1949 = 77.5782%**; **437 undecided**. **50% IS CROSSED**, at
+- **1513 of 1949 = 77.6296%**; **436 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -19799,7 +19843,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **32 decided**, undecided 6 spanning 1512..1517
+  **33 decided**, undecided [1512, 1513, 1514, 1516, 1517]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
