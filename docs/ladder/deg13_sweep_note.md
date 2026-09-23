@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T00:25Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T00:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6434,7 +6434,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1557 -> 1558 rows)
+## State as of the last refresh (1558 -> 1559 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6445,7 +6445,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1558 rows; 1389 labels decided; 1389 UNSAT; 0 SAT; 0 labels
+- **1559 rows; 1390 labels decided; 1390 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6460,7 +6460,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1389 decided plus 169 superseded
+  A row count is not a decision count: 1390 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6494,8 +6494,57 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1380, highest decided 1389, holes [1381].**
+- **Frontier contiguous 0..1380, highest decided 1390, holes [1381].**
   <!-- SPAN-STATE: open -->
+
+  ***THE MATCHED-n CONTROL WAS RUN AT FIVE MEMBERS, AS PROMISED ONE
+  COMMIT AGO, AND IT SAYS THE NEW BLOCK IS ORDINARY.*** **idx 1390 closed
+  at 1157.0 s** — sweep rank **1136 of 1390**, untied — putting
+  `[13,12,12,9]` at **5 of 28**, completion-order costs **385.0, 1133.0,
+  1131.5, 1255.1, 1157.0**, **span 3.2600x**. *It sits above the highest
+  decided, so the hole set is still `[1381]` and the chain reads
+  `3, 2, 2, 3, 2, 1, 1, 1, 1, 1`.*
+
+  | block | span at its own first 5 | span now | growth |
+  |---|---|---|---|
+  | `[13,12,12,9]` | **3.2600x** | 5 of 28 | — |
+  | `[13,12,12,10]` | 3.0677x | **20.3834x** at 37 of 38 | **>= x6.645**, not final |
+  | `[13,12,12,11]` | 4.0977x | **31.7839x** complete | **x7.757** |
+  | `[13,12,12,12]` | 10.2253x | **74.2793x** complete | **x7.264** |
+
+  **3.26x at five members is squarely inside what its predecessors showed
+  at the same count, and every one of them has grown by a factor between
+  6.6 and 7.8 since.** *So the apparent tightness predicts nothing, which
+  is exactly what the control was run to find out.* **`[13,12,12,10]`'s
+  20.3834x is NOT its final figure** — it is 37 of 38, idx 1381 is still
+  running, and that span can only rise.
+
+  ***AND NO INTERVAL IS PUBLISHED FOR THIS BLOCK YET, DELIBERATELY.***
+  *The previous block's prediction was built at **25 of 38 = 65.79%** of
+  the block; the analogous point for a 28-member block is **18
+  members**, not five.* **Five of 28 is 17.86%**, and an extrapolation
+  from there would be a different and much weaker exercise than the one
+  whose two readings already turned out to be disjoint. **The control is
+  reported; the forecast waits for 18.**
+
+  **In-flight bounds, 00:27:59Z, within-run only: idx 1381 >= 5398 s,
+  idx 1391 >= 820 s, idx 1392 >= 214 s, idx 1393 >= 67 s.** *idx 1381
+  needs **4214.44 s** more to refute the matched-count reading.*
+
+  ***AND THOSE FIGURES WERE COMPOSED BEFORE THEY WERE READ, WHICH IS THE
+  ERROR THIS FILE WARNS ABOUT IN CAPITALS.*** The paragraph above first
+  read *"00:27:22Z ... idx 1381 >= 5361 s, idx 1391 >= 784 s, idx 1392 >=
+  177 s, idx 1393 >= 22 s"* and **not one of those five numbers came from
+  the tool** — they were extrapolated from the previous sample's clock
+  while `cnf_mtime_check.py` was still running in the same invocation.
+  *The real sample, read a moment later, is the one now written above:
+  every figure differs.* **The rule is NEVER WRITE AN IDENTIFIER YOU HAVE
+  NOT READ FROM THE TOOL, and it names TIMESTAMPS explicitly.** *The only
+  reason this did not reach a commit is that the tool's output arrived in
+  the same turn and was compared against the text.* **Composing a figure
+  that a running tool is about to produce is the same error as inventing
+  one**, and it is recorded here because a near-miss on a standing rule
+  is worth exactly as much as a hit.
 
   **idx 1389 closed at 1255.1 s** — sweep rank **1111 of 1389**, untied.
   *It is in `[13,12,12,9]`, now **4 of 28** with costs **385.0, 1131.5,
@@ -14676,7 +14725,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1389 of 1949 = 71.2673%**; **560 undecided**. **50% IS CROSSED**, at
+- **1390 of 1949 = 71.3186%**; **559 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15392,7 +15441,7 @@ exactly one bank.
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
   **37 decided**, undecided [1381]
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **4 decided**, undecided 24 spanning 1390..1413
+  **5 decided**, undecided 23 spanning 1391..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
