@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T22:11Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T22:17Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6549,7 +6549,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1684 -> 1685 rows)
+## State as of the last refresh (1685 -> 1687 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6560,7 +6560,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1685 rows; 1516 labels decided; 1516 UNSAT; 0 SAT; 0 labels
+- **1687 rows; 1518 labels decided; 1518 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6592,7 +6592,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1516 decided plus 169 superseded
+  A row count is not a decision count: 1518 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6642,7 +6642,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1512, highest decided 1518, holes [1513, 1514, 1517].**
+- **Frontier contiguous 0..1512, highest decided 1518, holes [1513].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -8991,6 +8991,56 @@ exactly one bank.
   max 8467.1, span 21.365380x unmoved** — *589.2 belongs to a different
   block and the span figure is `[13,12,11,11]`'s, so it is quoted here
   only to say it did not move.*
+
+  ***THE DIRECTION WINDOW IS DETERMINED FOR `[13,12,11,11]`, AND IT
+  HOLDS.*** *From the staged blob; rewritten once when the second row
+  landed mid-draft.* **idx 1517 at 1532.5 s** (rank **1127 of 1518**)
+  and **idx 1514 at 2811.2 s** (rank **780 of 1518**), both coord9 =
+  **11**; *neither tied, detector agrees on both.* **Holes `[1513]`,
+  frontier contiguous 0..1512, highest decided 1518, chain
+  `3,2,2,3,2`. Decided 1518 of 1949 = 77.8861%; still 0 SAT.** *The
+  seventy-ninth stays determined False — its rise is already in and the
+  fall back to two changes nothing.*
+
+  ***THE THREE MEDIANS.*** **coord9 = 13 FINAL at `1261.75`.**
+  **coord9 = 12 FINAL at `2829.65`.** **coord9 = 11 at 13 of 14,
+  confined to `[2862.9, 3405.5]`.** *And `2862.9 > 2829.65`.*
+
+  ***SO `13-median < 12-median < 11-median` HOLDS, AND THE LAST CUBE
+  CANNOT UNDO IT.*** *The one outstanding member, idx 1513, can take any
+  cost in `[0.1, 21600]`; sweeping it, the final 11-median ranges over*
+  **`[2862.9, 3405.5]`** *— the same interval, because the lower end is
+  already pinned by two decided members. Its **minimum** clears the
+  12-median by* **33.25 s**. **The verdict is settled before the block
+  is complete.**
+
+  ***IT TURNED ON ONE CUBE, AND ON 66.5 SECONDS.*** *One commit ago this
+  note computed that if the two remaining coord9 = 11 cubes landed at a
+  common value `v`, the boundary was `v ≈ 2744.7 s`.* **idx 1514 came in
+  at 2811.2 — clearing that boundary by 66.50 s — and the same 2744.7
+  is the single-cube threshold with the other still outstanding**,
+  *which is why one arrival was enough.* *Had it landed below 2744.7
+  the window would still be open and idx 1513 would decide it.* **The
+  boundary was published before the cube ran and the cube cleared it;
+  that is a scored calculation, not a forecast that came true** — *the
+  note claimed only that this was where the line sat.*
+
+  ***THE TALLY MOVES: SIX KEEP, TWO BREAK, OF EIGHT SETTLED BLOCKS.***
+  *`[13,12,11,11]` is the first block settled since the six untestable
+  ones, the largest settled so far at 38 members, and the first whose
+  verdict was determined while the enumeration had already moved into
+  the next block.* **Its steps are `13 → 12 = +1567.90 s` and
+  `12 → 11 ∈ [+33.25, +575.85] s`** — *the second step's exact value
+  waits on idx 1513, but its sign does not.*
+
+  **coord9 = 11's lower end moved for the first time in four
+  arrivals**, *rising 135.05 to 2862.9 because 2811.2 landed **between**
+  the pair that fixed it; the upper fell 1318.70.* *1532.5 was the
+  fourth consecutive arrival below the lower pivot and moved only the
+  upper end, down 921.00, before that.*
+
+  **Block 37 of 38 — one cube left, idx 1513.** *`[13,12,11,10]` stays
+  1 of 28; block min 396.3, max 8467.1, span 21.365380x unmoved.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -19256,7 +19306,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1516 of 1949 = 77.7835%**; **433 undecided**. **50% IS CROSSED**, at
+- **1518 of 1949 = 77.8861%**; **431 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -19970,7 +20020,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **35 decided**, undecided [1513, 1514, 1517]
+  **37 decided**, undecided [1513]
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
   **1 decided**, undecided 27 spanning 1519..1545
 
