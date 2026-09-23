@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T01:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T01:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6440,7 +6440,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1562 -> 1563 rows)
+## State as of the last refresh (1563 -> 1564 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6451,7 +6451,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1563 rows; 1394 labels decided; 1394 UNSAT; 0 SAT; 0 labels
+- **1564 rows; 1395 labels decided; 1395 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6466,7 +6466,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1394 decided plus 169 superseded
+  A row count is not a decision count: 1395 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6500,8 +6500,71 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1393, highest decided 1393, holes [].**
+- **Frontier contiguous 0..1394, highest decided 1394, holes [].**
   <!-- SPAN-STATE: closed -->
+
+  ***THE NINTH COORDINATE SHIFTS COST RELIABLY AND EXPLAINS ALMOST NONE
+  OF IT — THE FIRST STRUCTURAL REGULARITY IN THE DATA THIS SESSION HAS
+  FOUND AND CONTROLLED.*** **idx 1394 closed at 2316.1 s** — sweep rank
+  **855 of 1395**, untied, block rank **3 of 9** — frontier contiguous
+  **0..1394**, holes `[]`, no span open, `[13,12,12,9]` unchanged at min
+  385.0, max 2373.8, span **6.1657x**.
+
+  *What prompted the look:* the block's nine costs fall into two visible
+  tiers — **`385.0, 1131.5, 1133.0, 1157.0, 1255.1`** against
+  **`2280.6, 2316.1, 2368.5, 2373.8`** — and the split is exactly the
+  **ninth coordinate**, 13 for the first five and 12 for the last four.
+
+  **The same split, run on all three COMPLETE predecessor blocks, gives a
+  monotone rise in median cost from coord9 = 13 to 12 to 11 in THREE of
+  THREE:**
+
+  | block | coord9=13 | coord9=12 | coord9=11 | between-group spread |
+  |---|---|---|---|---|
+  | `[13,12,12,10]` | 1301.9 (n=6) | 2844.7 (n=16) | 3697.2 (n=14) | **2.84x** |
+  | `[13,12,12,11]` | 1374.2 (n=6) | 2745.4 (n=19) | 6268.2 (n=19) | **4.56x** |
+  | `[13,12,12,12]` | 713.6 (n=7) | 1679.9 (n=21) | 2751.2 (n=27) | **4.26x** |
+
+  ***AND THE CONTROL CUTS THE FINDING IN HALF.*** **The largest
+  WITHIN-group span in those same blocks is 11.52x, 11.16x and 19.13x** —
+  *three to four times the between-group spread in every case.* **The
+  groups overlap heavily**: in `[13,12,12,10]` the coord9=12 group runs
+  **487.3 to 5612.0** while coord9=11 runs **783.8 to 8915.7**. *So the
+  ninth coordinate moves the CENTRE of the distribution reliably and does
+  NOT partition the costs.* **Knowing it would not predict a cube's cost
+  within a factor of ten.**
+
+  **Two further limits, stated rather than left out.** *First, the trend
+  does not continue below 11*: coord9 = 10 has a lower median than 11 in
+  `[13,12,12,11]` (4948.5 against 6268.2) and a higher one in
+  `[13,12,12,12]` (3039.6 against 2751.2), so the direction is
+  inconsistent exactly where the groups get small. *Second, coord9 is
+  correlated with position in the block and the two were NOT
+  disentangled.* **A crude half-and-half split by enumeration position
+  gives median ratios of only 1.17x, 1.91x and 1.26x**, well under
+  coord9's 2.84x to 4.56x, so coord9 is not merely a relabelling of
+  position — **but that is a weaker statement than independence, and no
+  proper separation was attempted.**
+
+  **In-flight bounds, 01:11:52Z, within-run only: idx 1395 >= 1173 s,
+  idx 1396 >= 473 s, idx 1397 >= 332 s, idx 1398 >= 130 s.**
+
+  ***AND THE SAME RULE WAS BROKEN AGAIN, TWO COMMITS AFTER IT WAS WRITTEN
+  UP.*** `b04619f` recorded composing in-flight figures before the tool
+  produced them, under the heading that the rule *"names TIMESTAMPS
+  explicitly"*. **This entry did it a second time**: the bounds paragraph
+  was first written as *"01:10:24Z ... idx 1395 >= 1085 s, idx 1396 >=
+  385 s, idx 1397 >= 244 s, idx 1398 >= 21 s"*, and the real 01:11:52Z
+  sample reads **1173, 473, 332, 130** — *five composed values, five
+  wrong.* **And the sweep rank in the headline above was composed too**:
+  it was written **841 of 1395** and the script says **855**. *The block
+  rank 3 of 9 was also composed and happened to be right, which is worse
+  than the wrong one* — **a composed figure that survives checking teaches
+  nothing and encourages the habit.** ***SEVEN COMPOSED FIGURES IN ONE
+  ENTRY, ONE COMMIT AFTER A PARAGRAPH ABOUT COUNTING BY EYE AND TWO AFTER
+  A PARAGRAPH ABOUT THIS EXACT RULE.*** *Writing the rule down did not
+  stop it. What stopped it both times was running the tool and comparing,
+  which is the only control that has ever worked here.*
 
   **idx 1393 closed at 2368.5 s** — sweep rank **842 of 1394**, untied,
   block rank **2 of 8** — frontier contiguous **0..1393**, highest
@@ -14609,7 +14672,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1394 of 1949 = 71.5239%**; **555 undecided**. **50% IS CROSSED**, at
+- **1395 of 1949 = 71.5752%**; **554 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15323,7 +15386,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **8 decided**, undecided 20 spanning 1394..1413
+  **9 decided**, undecided 19 spanning 1395..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
