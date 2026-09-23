@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T00:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T00:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6434,7 +6434,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1555 -> 1556 rows)
+## State as of the last refresh (1556 -> 1557 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6445,7 +6445,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1556 rows; 1387 labels decided; 1387 UNSAT; 0 SAT; 0 labels
+- **1557 rows; 1388 labels decided; 1388 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6460,7 +6460,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1387 decided plus 169 superseded
+  A row count is not a decision count: 1388 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6494,8 +6494,32 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1380, highest decided 1387, holes [1381].**
+- **Frontier contiguous 0..1380, highest decided 1388, holes [1381].**
   <!-- SPAN-STATE: open -->
+
+  ***A COINCIDENCE THAT LOOKED WORTH REPORTING AND WAS NOT.***
+  **idx 1388 closed at 1131.5 s** — sweep rank **1145 of 1388**, untied —
+  **1.5 s away from idx 1387's 1133.0 s**, the row banked immediately
+  before it, from the same block. *The draft was going to call that
+  striking.* **The control says it is ordinary and then says something
+  worse.** Over the **1387 adjacent gaps** in the sorted list of all 1388
+  decided costs, the median gap is **4.7 s** and **287 of them (20.69%)
+  are 1.5 s or smaller** — *so a 1.5 s separation is commoner than not
+  being within 5 s of a neighbour.* ***AND THE TWO ARE NOT EVEN
+  ADJACENT***: the sorted neighbourhood reads **1129.0, 1130.0, 1131.1,
+  1131.5, 1131.7, 1133.0, 1133.3** — **1131.7 sits between them**, and
+  seven costs lie inside a 4.3 s window. *The pair was picked out only
+  because the two rows arrived consecutively, which is a fact about
+  arrival order and not about the costs.*
+
+  **Nothing else moved.** *idx 1388 is in `[13,12,12,9]`, now 3 of 28,
+  and sits above the highest decided, so the hole set is still `[1381]`;
+  the chain reads `3, 2, 2, 3, 2, 1, 1, 1`. `[13,12,12,10]` stays at 37
+  of 38, min 437.4, max 8915.7, span 20.383402x.*
+
+  **In-flight bounds, 00:15:09Z, within-run only: idx 1381 >= 4628 s,
+  idx 1389 >= 699 s, idx 1390 >= 454 s, idx 1391 >= 50 s.** *idx 1381
+  needs **4984.44 s** more to refute the matched-count reading.*
 
   **idx 1387 closed at 1133.0 s** — sweep rank **1143 of 1387**, untied —
   and it moved **nothing that matters here**. *It is in `[13,12,12,9]`,
@@ -14634,7 +14658,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1387 of 1949 = 71.1647%**; **562 undecided**. **50% IS CROSSED**, at
+- **1388 of 1949 = 71.2160%**; **561 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -15350,7 +15374,7 @@ exactly one bank.
 - `[13, 12, 12, 10]` idx 1348..1385: **38 members**,
   **37 decided**, undecided [1381]
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **2 decided**, undecided 26 spanning 1388..1413
+  **3 decided**, undecided 25 spanning 1389..1413
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
