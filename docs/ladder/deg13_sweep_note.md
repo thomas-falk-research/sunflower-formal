@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T12:56Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T13:06Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6540,7 +6540,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1640 -> 1643 rows)
+## State as of the last refresh (1643 -> 1650 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6551,7 +6551,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1643 rows; 1474 labels decided; 1474 UNSAT; 0 SAT; 0 labels
+- **1650 rows; 1481 labels decided; 1481 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6576,7 +6576,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1474 decided plus 169 superseded
+  A row count is not a decision count: 1481 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6626,8 +6626,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1470, highest decided 1476, holes [1471, 1472, 1475].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1480, highest decided 1480, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `8cc7a74` EXISTED.*** **The retirement sentence stood for exactly one
@@ -7333,12 +7333,14 @@ exactly one bank.
   opening at two**, *because that is what the first broken commit
   carries.*
 
-  ***AN OPENING AT TWO.*** Over the **140** closed chains the opening
-  hole count is **1 in 48, 2 in 45, 3 in 44 and 4 in 3**, so two is
-  **32.1%**. **It is the first opening at two since the
-  seventy-third**, and the closed spans that opened at two are **45** of
-  the 140, the last five of them ordinals **59, 61, 64, 71 and 73**.
-  *Two closes separate this opening from that one.*
+  ***AN OPENING AT TWO, AND THE SPAN THAT OPENED THERE HAS NOW
+  CLOSED.*** Over the **140** closed chains the opening hole count is
+  **1 in 48, 2 in 45, 3 in 44 and 4 in 3**, so two is **32.1%**. *The
+  three live-only sentences that stood here — the "since the" ordinal,
+  the "M of the N" count and the last-five list — are struck at this
+  close, per the census convention; the sentence above survives because
+  it is checked against the walk's first 140 spans and stays true for
+  good.*
 
   **`[13,12,12,4]` is idx 1468..1472, five members, coord9
   `{13: 3, 12: 2}`** — *no coord9 = 11 group, so it cannot run the
@@ -7453,6 +7455,95 @@ exactly one bank.
   members, coord9 `{13: 2}`, no coord9 = 12 group either.** *It is the
   fourth of the six untestable blocks and the first with only one
   coordinate value present, so it cannot produce a step at all.*
+
+  ***SEVEN ROWS, FIVE BLOCKS CLOSED, THE UNTESTABLE RUN SPENT, THE SPAN
+  CLOSED, AND THE DIRECTION TEST ALREADY RESUMED.*** *This entry was
+  drafted four times — at three rows, then four, then six, then seven —
+  because rows kept landing while it was being written. The inverted
+  order is what made that survivable: every figure here is recomputed
+  from `bank.py`'s staged blob, so a row
+  arriving mid-draft moves the numbers instead of sitting beneath stale
+  ones.* **idx 1477 at 101.8 s** (rank **1462 of 1481**), **idx 1478 at
+  22.2 s** (rank **1476 of 1481**) and **idx 1479 at 0.1 s** (rank
+  **1477 of 1481**, *four ties*), all coord9 = **13**; then **idx 1471
+  at 966.7 s** (rank **1260 of 1481**, *one tie*) and **idx 1472 at
+  768.8 s** (rank **1312 of 1481**), both coord9 = **12**, and **idx
+  1475 at 386.6 s** (rank **1411 of 1481**, coord9 = **12**); then
+  **idx 1480 at 396.3 s** (rank **1409 of 1481**, coord9 = **13**), the
+  first member of the block the direction test resumes on. *All seven
+  indices resolved through the cube list.* **Holes `[]`, frontier
+  contiguous 0..1480, highest decided 1480. Decided 1481 of 1949 =
+  75.9877%; still 0 SAT.**
+
+  | block | members | state | costs |
+  |---|---|---|---|
+  | `[13,12,12,4]` | 5 | **complete** | 243.2, 481.1, 511.1, 768.8, 966.7 |
+  | `[13,12,12,3]` | 3 | **complete** | 147.6, 239.0, 386.6 |
+  | `[13,12,12,2]` | 2 | **complete** | 60.2, 101.8 |
+  | `[13,12,12,1]` | 1 | **complete** | 22.2 |
+  | `[13,12,12,0]` | 1 | **complete** | 0.1 |
+  | `[13,12,11,11]` | 38 | 1 of 38 | 396.3 |
+
+  ***THE SEVENTY-SIXTH SPAN HAS CLOSED, AND ITS FIGURES ARE NOT IN THIS
+  COMMIT.*** **The frontier is contiguous with no holes, so the span
+  that opened at two is over.** *Per the two-commit convention its
+  duration, both ranks, its chain and its verdict are read from
+  `--spans all` only AFTER this commit exists — a closing commit that
+  quotes them is quoting a walk that does not yet contain the closing
+  commit.* **The standing prediction is that `--spans all` will report
+  the seventy-sixth FALSE**, *determined earlier in this span off the
+  `1 → 3` rise and restated at every entry since; it is recorded here as
+  a prediction and will be scored, not assumed, at the next commit.*
+  **This sentence is the retirement sentence and stands for exactly one
+  commit.**
+
+  ***BOTH REMAINING UNTESTABLE BLOCKS COMPLETED IN THE SAME BREATH.***
+  **`[13,12,12,4]` is 5 of 5** — coord9 = 13 `[243.2, 481.1, 511.1]`
+  median **481.1**, coord9 = 12 `[768.8, 966.7]` median **867.75**, its
+  one step 13 → 12 **`+386.65`**; **min 243.2, max 966.7, span
+  3.974918x.** **`[13,12,12,3]` is 3 of 3** — coord9 = 13
+  `[147.6, 239.0]` median **193.3**, coord9 = 12 the single cube
+  **386.6**; its one step 13 → 12 is **`+193.30`**; **min 147.6, max
+  386.6, span 2.619241x.** *The prediction made two commits ago held
+  exactly: idx 1475 was the whole of that block's coord9 = 12 group, so
+  its cost had to BE that group's median, and 386.6 is that median.*
+  **Neither block has a coord9 = 11 group, so neither yields a direction
+  verdict** — *both steps are rises, and a rise with nothing after it is
+  not the 13 < 12 < 11 window the finding is about.*
+
+  *One arithmetic curiosity, flagged as exactly that: `[13,12,12,3]`'s
+  step `+193.30` equals its own coord9 = 13 median `193.3`, because
+  386.6 is twice 193.3 to the tenth of a second the checkpoint records.
+  Nothing follows from it; it is written down only so that a later
+  reader does not rediscover it and mistake it for a pattern.*
+
+  ***THE NINETEEN-CUBE PAUSE IS SPENT.*** **All six blocks with no
+  coord9 = 11 group — `[13,12,12,5]` down to `[13,12,12,0]`, idx
+  1461..1479 — are complete, 19 of 19**, *and the pause this note first
+  measured at nineteen cubes cost nineteen cubes.* **idx 1480 is the
+  first member of `[13,12,11,11]` — 38 members, coord9
+  `{13: 6, 12: 16, 11: 14, 10: 2}`** — *the largest block the sweep has
+  seen and the first carrying a coord9 = 10 group, so also the first
+  that could in principle show a three-step profile rather than the
+  two-step one the direction test reads.* **It landed inside this same
+  commit window at 396.3 s, so the block is already 1 of 38 and the
+  direction test has resumed**, *with the tally standing at five keep,
+  two break of seven settled blocks.* **Nothing is testable yet**: *one
+  cube of a six-member coord9 = 13 group bounds no median, and the
+  window needs all three of 13, 12 and 11.*
+
+  ***THE TIE DETECTOR FIRED TWICE, ON OPPOSITE EXTREMES OF ITS RANGE.***
+  *idx 1479's competition rank is **1477** and `N − cheaper` is
+  **1481** — they disagree by **four** because **nothing is cheaper**:
+  0.1 s is the sweep's minimum and **five cubes sit on it**.* **A rank
+  computed as `N − cheaper` on the minimum value returns N no matter how
+  many cubes share it**, *the detector's least subtle case.* **idx 1471
+  is the subtle one** — rank **1260**, detector **1261**, *a single twin
+  at 966.7 and a one-place gap, the smallest disagreement the detector
+  can register.* **The other five rows agree exactly**, *which is the
+  point: the defect is invisible unless both figures are computed
+  separately for every row, and five of these seven give no sign of
+  it.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17718,7 +17809,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1474 of 1949 = 75.6285%**; **475 undecided**. **50% IS CROSSED**, at
+- **1481 of 1949 = 75.9877%**; **468 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18431,12 +18522,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 12, 4]` idx 1468..1472: **5 members**,
-  **3 decided**, undecided [1471, 1472]
-- `[13, 12, 12, 3]` idx 1473..1475: **3 members**,
-  **2 decided**, undecided [1475]
-- `[13, 12, 12, 2]` idx 1476..1477: **2 members**,
-  **1 decided**, undecided [1477]
+- `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
+  **1 decided**, undecided 37 spanning 1481..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
