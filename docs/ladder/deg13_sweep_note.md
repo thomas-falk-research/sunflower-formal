@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T13:19Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T13:22Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6544,7 +6544,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1650 -> 1651 rows)
+## State as of the last refresh (1651 -> 1653 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6555,7 +6555,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1651 rows; 1482 labels decided; 1482 UNSAT; 0 SAT; 0 labels
+- **1653 rows; 1484 labels decided; 1484 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6580,7 +6580,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1482 decided plus 169 superseded
+  A row count is not a decision count: 1484 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6630,7 +6630,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1481, highest decided 1481, holes [].**
+- **Frontier contiguous 0..1483, highest decided 1483, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -7610,6 +7610,52 @@ exactly one bank.
   that does mean something, and not because it is round: it is where
   decided first exceeded undecided, an identity that flips exactly
   once.*
+
+  ***TWO MORE IN ORDER, AND THE BLOCK'S FIRST MEDIAN IS BOUNDED.***
+  *From the staged blob as before.* **idx 1482 at 1240.1 s** (rank
+  **1174 of 1484**) and **idx 1483 at 1283.4 s** (rank **1158 of
+  1484**), both coord9 = **13** in `[13,12,11,11]`; *neither tied, and
+  the detector agrees on both — 1174 and 1158.* **Holes `[]`, frontier
+  contiguous 0..1483, highest decided 1483. Decided 1484 of 1949 =
+  76.1416%; still 0 SAT.** *Three commits running with the frontier
+  advancing in step, so the walk stays at 141 closed spans and the
+  marker stays closed.*
+
+  **`[13,12,11,11]` goes 4 of 38**, *its coord9 = 13 group 4 of 6 —
+  `[396.3, 1187.8, 1240.1, 1283.4]` — the other three still at 0 of 16,
+  0 of 14 and 0 of 2.* **min 396.3, max 1283.4, span 3.238456x.**
+  ***AND THE GROUP'S MEDIAN IS NOW CONFINED TO `[792.05, 1261.75]`***,
+  *width 469.70: placing both undecided at −∞ gives (396.3 + 1187.8)/2
+  and placing them at +∞ gives (1240.1 + 1283.4)/2, and 200000 random
+  completions attain both ends exactly and never leave the interval.*
+
+  ***THE DRAFT OF THIS ENTRY GOT THE THRESHOLD'S SHAPE WRONG, AND THE
+  ROW THAT ARRIVED MID-DRAFT IS WHAT EXPOSED IT.*** *Written at three of
+  six, it said the fourth cube would "buy the upper end and only the
+  upper end", with the lower staying at −∞ until five landed.* **That is
+  false.** *The median of six is `(x₃ + x₄)/2`. With `u` undecided at
+  +∞ the fourth order statistic is decided iff `4 ≤ 6 − u`; with them at
+  −∞ the third is decided iff `3 > u`. Both conditions are `u ≤ 2`, so
+  **both** ends go finite at the same cube — the threshold is symmetric,
+  and the note's table saying "n = 6 → 4" always meant both ends at
+  once.* **The claim was never committed**, *because the fourth cube
+  landed while the entry was still being written and the figures were
+  recomputed from the staged blob rather than patched. That is the
+  second time in three commits the inverted order has caught something
+  rather than merely kept the numbers current.*
+
+  ***STILL NO STEP.*** *A bounded median for coord9 = 13 is one group of
+  four; `13 → 12` needs the coord9 = 12 group, which is **0 of 16**, and
+  the direction window needs coord9 = 11 as well at 0 of 14.* **The
+  block cannot say anything about direction until the second group
+  starts landing**, *and on the enumeration's order that is sixteen
+  cubes of coord9 = 12 beginning at idx 1486.*
+
+  *On the costs themselves: the first cube of this block came in at
+  396.3 and the next three at 1187.8, 1240.1 and 1283.4 — a tight
+  trio 8.05% wide sitting about three times the first. Four points, one
+  of them alone; that is an observation, not a shape, and thirty-four
+  cubes of this block are still to come.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17875,7 +17921,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1482 of 1949 = 76.0390%**; **467 undecided**. **50% IS CROSSED**, at
+- **1484 of 1949 = 76.1416%**; **465 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18589,7 +18635,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 11]` idx 1480..1517: **38 members**,
-  **2 decided**, undecided 36 spanning 1482..1517
+  **4 decided**, undecided 34 spanning 1484..1517
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
