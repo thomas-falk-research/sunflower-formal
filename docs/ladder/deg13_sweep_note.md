@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T12:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T12:40Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6540,7 +6540,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1633 -> 1634 rows)
+## State as of the last refresh (1634 -> 1636 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6551,7 +6551,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1634 rows; 1465 labels decided; 1465 UNSAT; 0 SAT; 0 labels
+- **1636 rows; 1467 labels decided; 1467 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#51**
   — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
@@ -6576,7 +6576,7 @@ exactly one bank.
   in the same commit as the absorb this time" and then was not, at #50.*
   **Twice late now, and both times found by rereading rather than by the
   reminder.**
-  A row count is not a decision count: 1465 decided plus 169 superseded
+  A row count is not a decision count: 1467 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 17535**, launched 2026-09-23T06:08:02.280000Z (read from
@@ -6626,8 +6626,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1464, highest decided 1464, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1465, highest decided 1468, holes [1466, 1467].**
+  <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `8cc7a74` EXISTED.*** **The retirement sentence stood for exactly one
@@ -7311,6 +7311,42 @@ exactly one bank.
   **Its coord9 = 12 group is 1 of 4 and bounds nothing** — *four members
   need three decided before either end is finite* — *and the block has
   no coord9 = 11 group to compare against in any case.*
+
+  ***THE SEVENTY-SIXTH SPAN HAS OPENED — AT WIDTH TWO, NOT THREE, AND
+  THE `#29` RIDER IS WHY.*** **idx 1468 came in at 243.2 s** (coord9 =
+  **13**, first member of `[13,12,12,4]`, rank **1428 of 1467**) and
+  **idx 1465 at 1301.2 s** (coord9 = **12** in `[13,12,12,5]`, rank
+  **1153 of 1467**), neither tied, detector agrees on both; *both
+  indices resolved through the cube list.* **Holes at this commit are
+  `[1466, 1467]`, width two**, frontier contiguous **0..1465**, highest
+  decided **1468**. *Walk position **141** less the OFFSET of 65 — the
+  **seventy-sixth**. Decided 1467 of 1949; still 0 SAT.*
+
+  ***THE WORKING TREE HELD WIDTH THREE FOR ABOUT FORTY SECONDS AND NO
+  COMMIT SAW IT.*** *idx 1468 landed at 12:37:48Z three places ahead of
+  the frontier, making holes `[1465, 1466, 1467]`; idx 1465 landed at
+  12:38:35Z and filled the first of them.* **This entry was drafted as
+  "AN OPENING AT THREE" with the width-three census figures, and
+  `bank.py` staged holes `[1466, 1467]` instead** — *the `#29` rider
+  exactly: the width is what it is AT A COMMIT, and the state between
+  commits is not the record.* **`--spans all` will report this span as
+  opening at two**, *because that is what the first broken commit
+  carries.*
+
+  ***AN OPENING AT TWO.*** Over the **140** closed chains the opening
+  hole count is **1 in 48, 2 in 45, 3 in 44 and 4 in 3**, so two is
+  **32.1%**. **It is the first opening at two since the
+  seventy-third**, and the closed spans that opened at two are **45** of
+  the 140, the last five of them ordinals **59, 61, 64, 71 and 73**.
+  *Two closes separate this opening from that one.*
+
+  **`[13,12,12,4]` is idx 1468..1472, five members, coord9
+  `{13: 3, 12: 2}`** — *no coord9 = 11 group, so it cannot run the
+  direction test; it is the second of the six untestable blocks the
+  enumeration names.* **`[13,12,12,5]` goes 5 of 7**, *its coord9 = 12
+  group at 2 of 4 — `[1301.2, 1515.1]` — still one short of the three
+  it needs for a finite bound, min, max and span unmoved at 379.9,
+  1515.1 and 3.988155x.*
 
   ***THE SEVENTY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `3322a67` EXISTED.*** **The retirement sentence stood for exactly one
@@ -17576,7 +17612,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1465 of 1949 = 75.1668%**; **484 undecided**. **50% IS CROSSED**, at
+- **1467 of 1949 = 75.2694%**; **482 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -18290,7 +18326,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 5]` idx 1461..1467: **7 members**,
-  **4 decided**, undecided [1465, 1466, 1467]
+  **5 decided**, undecided [1466, 1467]
+- `[13, 12, 12, 4]` idx 1468..1472: **5 members**,
+  **1 decided**, undecided [1469, 1470, 1471, 1472]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
