@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-23T05:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-23T05:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6444,7 +6444,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1579 -> 1580 rows)
+## State as of the last refresh (1580 -> 1582 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6455,7 +6455,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1580 rows; 1411 labels decided; 1411 UNSAT; 0 SAT; 0 labels
+- **1582 rows; 1413 labels decided; 1413 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#49**
   — extended from #48 here, against the **#49** header block in the
   checkpoint, which records **1497 rows on both sides** of the teardown
@@ -6470,7 +6470,7 @@ exactly one bank.
   from #44 to #45 one restart late**, which is the standing-claim-never-re-checked pattern
   in its mildest form; it is extended in the same commit as the absorb
   this time.
-  A row count is not a decision count: 1411 decided plus 169 superseded
+  A row count is not a decision count: 1413 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 477**, launched 2026-09-22T17:13:43Z (read from
@@ -6504,8 +6504,58 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1406, highest decided 1413, holes [1407, 1410, 1411].**
+- **Frontier contiguous 0..1406, highest decided 1414, holes [1407, 1411].**
   <!-- SPAN-STATE: open -->
+
+  ***THE "BOTH SUB-BLOCKS ARE CHEAP" READING TOOK ITS FIRST
+  CONTRADICTION, FROM THE VERY NEXT MEMBER.*** **idx 1410 closed at
+  3078.8 s and idx 1414 at 466.6 s**, two rows in one bank. *One commit
+  ago this note wrote that the two small sub-blocks had "one sample
+  each, both far below the big sub-block's centre".* **idx 1410 is the
+  SECOND member of `[13,12,12,9,13,12]` and it came in at 3078.8 s,
+  which is ABOVE the 23-member sub-block's median of 2371.15** — *so
+  that sub-block now reads 1230.2 and 3078.8, median 2154.5, internal
+  span 2.502682x, and it straddles the big sub-block's centre rather
+  than sitting below it.* **The impression was formed on one sample and
+  the second sample contradicted it**, which is the whole reason the
+  one-sample caveat was written beside it.
+
+  | sub-block | members | decided | costs | undecided |
+  |---|---|---|---|---|
+  | `[13,12,12,9,13,13]` | 23 | 22 | 385.0 .. 4936.0, median 2371.15 | 1407 |
+  | `[13,12,12,9,13,12]` | 3 | **2** | **1230.2, 3078.8**, median 2154.5 | 1411 |
+  | `[13,12,12,9,12,12]` | 2 | 2 | 512.3, 978.0, median 745.15 | — |
+
+  **`[12,12]` is still cheap and is still complete** — *two members,
+  both under 1000 s.* **`[13,12]` is not**, and with one member left it
+  is not yet anything.
+
+  ***THE HOLE CHAIN FELL BACK TO TWO, WHICH CHANGES NOTHING ABOUT THE
+  VERDICT.*** Holes are now **`[1407, 1411]`**, frontier contiguous
+  **0..1406**, highest decided 1414, so the chain reads **`2,1,1,3,2`**.
+  *It has already risen once, and the seventy-first span's monotonicity
+  is False whatever it does from here.* **idx 1410 is block rank 8 of 26
+  and sweep rank 713 of 1413, both untied**; `[13,12,12,9]` keeps min
+  385.0, max 4936.0, span **12.820779x** at **26 of 28**.
+
+  ***idx 1407 IS NOW 942.18 s FROM SETTLING THE FRACTION INTERVAL.*** At
+  **>= 6698 s** (05:13:15Z) it forces the block's closing span to
+  **>= 17.397403x**, against a fraction ceiling that needs a maximum of
+  **7640.18 s** and a count floor that needs **8388.91 s**. *The gap has
+  closed 1396.18 -> 942.18 s in one bank.* **idx 1411 at >= 2788 s
+  forces only 7.241558x** and is 4852.18 s from the ceiling, *so the
+  question rests on one cube.*
+
+  ***AND THE DRIVER HAS OPENED THE NEXT BLOCK.*** **idx 1414 at 466.6 s
+  is the first decided member of `[13,12,12,8]`** — **21 members,
+  indices 1414..1434** — *sweep rank 1329 of 1413, untied.* **The
+  family's sizes run 65, 49, 38, 28, 21, 15**, so this one is smaller
+  again. *When `[13,12,12,9]` closes it becomes the fourth complete
+  reference in the family, and `[13,12,12,8]` becomes the next subject —
+  at 21 members against the 28 that the current forecast was built on.*
+  **No forecast is opened for it here**: *its span is 1.000000x on one
+  member, and the matched-count basis needs the subject block to reach
+  the comparison count before anything can be matched.*
 
   ***THE TIE DETECTOR FIRED ON A ROW RANK.*** **idx 1413 closed at
   978.0 s**, sweep rank **1212 of 1411** — and `N - cheaper` gives
@@ -15360,7 +15410,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1411 of 1949 = 72.3961%**; **538 undecided**. **50% IS CROSSED**, at
+- **1413 of 1949 = 72.4987%**; **536 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -16074,7 +16124,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 12, 9]` idx 1386..1413: **28 members**,
-  **25 decided**, undecided [1407, 1410, 1411]
+  **26 decided**, undecided [1407, 1411]
+- `[13, 12, 12, 8]` idx 1414..1434: **21 members**,
+  **1 decided**, undecided 20 spanning 1415..1434
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
