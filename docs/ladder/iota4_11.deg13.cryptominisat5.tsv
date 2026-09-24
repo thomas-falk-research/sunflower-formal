@@ -12942,3 +12942,97 @@ g=11 [13, 12, 10, 10, 13, 13, 13, 13, 13, 10, 8]	UNSAT	1058.1
 g=11 [13, 12, 10, 10, 13, 13, 13, 13, 13, 9, 9]	UNSAT	1049.4
 g=11 [13, 12, 10, 10, 13, 13, 13, 13, 12, 12, 7]	UNSAT	2038.3
 g=11 [13, 12, 10, 10, 13, 13, 13, 13, 12, 11, 8]	UNSAT	2003.6
+g=11 [13, 12, 10, 10, 13, 13, 13, 13, 11, 11, 9]	UNSAT	1967.7
+# RESTART #54 -- CONTAINER RESTART.  Teardown 2026-09-24T20:57:03.765406Z,
+# new driver pid 21147 launched 2026-09-24T20:59:10.390000Z (btime +
+# /proc/21147/stat field 22 / SC_CLK_TCK, computed by script:
+# 1790096990 + 18656039/100 = 1790283550.39).  THE MACHINE DID NOT
+# CHANGE.  Downtime 126.625 s.
+#
+#     field          #53                #54
+#     CPU model      @ 2.10GHz          @ 2.10GHz      same
+#     cpu MHz        2100.000           2100.000       same
+#     cache size     266240 KB          266240 KB      same
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# btime DID NOT MOVE -- 1790096990 at #53 and 1790096990 now, the same
+# 2026-09-22T17:09:50Z host boot -- WHICH IS HOW THIS IS KNOWN TO BE A
+# CONTAINER RESTART AND NOT A HOST REBOOT.  All six fields were re-read
+# live before the relaunch, never inferred from the spec table.  So
+# costs across this point ARE on a common basis.
+#
+# *** A DRAFT OF THIS BLOCK NEARLY DECLARED A CPU CHANGE. ***  The spec
+# table in the note ends at #48, whose column reads @ 2.80GHz, and
+# comparing today's @ 2.10GHz against THAT column reads as a change.
+# It is not one: the comparison is against the LAST READING, #53's, and
+# all six fields match it exactly.  The table is an archive with a
+# stated end, not the current state.  Same lesson the note already
+# carries as "read the note's definition before believing the script",
+# arriving here as "read the table's vintage before believing the diff".
+#
+# ON THE DOWNTIME: 126.625 s, against 178.176 s at #52 and 108.565 s at
+# #53.  Those are the only three blocks in this file carrying a measured
+# downtime, so this one sits between the other two and NOTHING FURTHER
+# IS CLAIMED.
+#
+# *** THE TWO [killed] MARKERS DISAGREE, FOR THE FIRST TIME IN SIX
+# RESTARTS. ***  Driver b0biuacp1 carries mtime
+# 2026-09-24T20:57:03.765406531Z and waiter by45jrq1t carries
+# 2026-09-24T20:57:03.773406532Z -- 8.000 ms apart.  #49 through #53
+# agreed to the nanosecond and each block said the procedure's "take the
+# EARLIER, they need not agree" had nothing to choose.  Here it does:
+# the EARLIER, the driver's, is used throughout.  8 ms is too small to
+# move any figure in this block by more than a hundredth of a second,
+# so the choice is recorded for the rule's sake and not for its effect.
+#
+# NO ROWS WERE LOST.  1789 rows either side, 1620 decided, 0 SAT: the
+# file counts 1789 before and after the relaunch, and the new driver's
+# own stdout reports "1620 of 1949 cubes already decided".  The waiter
+# was armed at 1789 rows at 20:56:35Z and its [killed] marker is the
+# teardown instant itself, which settles that window with no gap.
+#
+# WORK LOST: FOUR CUBES, idx 1619, 1621, 1622, 1623 -- every CNF for the
+# dead driver pid 26669 matching -seq-c, no more and no fewer.  A
+# transient startup CNF named ...-c0-... exists for the NEW pid 21147
+# and is excluded by that same filter, which is what the filter is for.
+#
+#     idx    dispatched (CNF mtime)   elapsed at kill   last sample
+#     1619   20:21:34.645279Z             2129.120 s     2106 el / 2049 cpu
+#     1621   20:51:15.657385Z              348.108 s      325 el /  314 cpu
+#     1622   20:51:41.909387Z              321.856 s      299 el /  290 cpu
+#     1623   20:56:09.193403Z               54.572 s       32 el /   31 cpu
+#
+# Two independent methods for elapsed-at-kill agree to under 0.36 s on
+# all four: CNF mtime to the kill marker, and last-sample elapsed plus
+# the 22.765 s sample-to-kill gap.
+#
+# TOTAL ELAPSED LOST 2853.656 s = 0.7927 h.
+# CPU-SECONDS LOST: BRACKETED AT [2684.00, 2775.656] s = [0.7456, 0.7710]
+# CPU-h, width 91.656 s = 3.30% of the upper end.  Lower end is the cpu
+# actually observed at each cube's last sample; upper end adds the
+# unsampled tail at the cpu <= elapsed ceiling.  That single-threaded
+# premise was RE-CHECKED HERE over all 6629 banked samples and the
+# maximum ratio is 1.0000, never above.
+#
+# *** THIS IS MUCH THE NARROWEST BRACKET OF THE FOUR COMPUTED THIS WAY
+# -- 3.30% here against 21.94% at #51, 23.13% at #52 and 55.72% at #53
+# -- AND THE REASON IS TIMING, NOT PRECISION. ***  The last sample was
+# taken 22.765 s before the kill, so the unsampled tail is 91.656 s
+# total against 265.7-266.1 s at #51, 752.69-753.59 s at #52 and
+# 1107.56-1108.14 s at #53.  A check-in that happens to fire shortly
+# before a teardown narrows the bracket; nothing about the measurement
+# improved.
+#
+# *** THE ELAPSED-TIMES-LAST-RATIO METHOD IS NOT USED.  IT WOULD HAVE
+# GIVEN 2772.855 s. ***  Rejected at #51, wrongly repeated at #52, and
+# not repeated at #53 or here: the bracket was computed first and the
+# point estimate only afterwards, to see where it lands.  It lands
+# inside the bracket, 96.9% of the way up -- nearer the top than at #51,
+# #52 or #53, which teaches nothing.
+#
+# RE-RUN SET TWENTY-TWO OPENS with idx 1619, 1621, 1622, 1623.  It is
+# NOT CONFOUNDED: the six-field spec is unchanged and btime did not
+# move, so the discarded runs and the re-takes are on the same machine.
+# Stated at the OPENING, as the procedure requires, not at the close.

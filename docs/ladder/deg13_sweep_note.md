@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T20:53Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T21:04Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -122,7 +122,7 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Thirty** involuntary restarts, CPU-hours discarded:
+**Thirty-one** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
@@ -132,7 +132,7 @@ landings — it is never the source of the count.
     #47 in [3.9879, 4.0319]   #48 = 3.8216
     #49 in [3.7636, 3.7871]   #50 in [1.1913, 1.1967]
     #51 in [1.0508, 1.3462]   #52 in [2.7808, 3.6178]
-    #53 in [0.9783, 2.2092]
+    #53 in [0.9783, 2.2092]  #54 in [0.7456, 0.7710]
 
 ***THIS SECTION HAD STOPPED AT #48 AND WAS FIVE RESTARTS BEHIND.*** *It
 read "**Twenty-five**" across the whole of #49, #50, #51, #52 and #53,
@@ -170,9 +170,19 @@ Built one restart at a time, newest swept and all older at midpoint:
     #51   28   3.5790            3.5578–3.5684    99.6196–99.9150    24..28 of 28
     #52   29   3.5640–3.5940     3.5361–3.5650   102.5481–103.3851   14..20 of 29
     #53   30   3.5155            3.4648–3.5059   103.9449–105.1758   23..30 of 30
+    #54   31   3.4670            3.3970–3.3978   105.3059–105.3313   31 of 31
 
-**The current line is n = 30: median 3.5155, mean 3.4648–3.5059, total
-103.9449–105.1758.** *The median is a single value here and the mean
+**The current line is n = 31: median 3.4670, mean 3.3970–3.3978, total
+105.3059–105.3313.** ***#54 IS THE SMALLEST LOSS IN THE SERIES AND
+UNAMBIGUOUSLY SO*** — *rank* **31 of 31 at BOTH ends of its bracket**,
+*because its upper end of* **0.7710** *sits below the smallest LOWER end
+among all thirty prior entries,* **#46's 0.8908**. *So the ranking does
+not depend on the midpoint convention for once; it would hold however
+the older entries were collapsed.* **The n = 30 line above was
+reproduced to four decimals before this one was added** — *median
+3.5155, mean 3.4648–3.5059, total 103.9449–105.1758, rank 23..30 of 30,
+all four verbatim — which is the fifth consecutive extension checked that
+way.* *The median is a single value here and the mean
 and total are not, which is the ordinary case — across the fourteen
 bracketed lines the total is a point at only three (#42, #43, #48),
 exactly the three whose newest entry is a point.*
@@ -641,6 +651,16 @@ its boot instant 2.2 s *after* the teardown), **and #48 is the third**
 (→ 1790019157, its boot instant **7.730 s after** the teardown marker).
 **FOUR distinct machine configurations in three reboots:**
 
+***THIS TABLE STOPS AT #48 AND IS AN ARCHIVE, NOT THE CURRENT STATE.***
+*The readings for #49 through #54 live in their own header blocks in the
+checkpoint and were never folded in here.* **At #54 a draft compared a
+live `@ 2.10GHz` against #48's `@ 2.80GHz` column and was one sentence
+away from declaring a CPU change that had not happened** — *the right
+comparison is against the LAST reading, #53's, which matches on all six
+fields.* **Read the table's vintage before believing a diff against
+it**, *which is the same shape as the note's standing "read the note's
+definition before believing the script".*
+
 | | containers 1–8 | #41 | #42 | #43 | #44 | #45 | #46 | #47 | #48 |
 |---|---|---|---|---|---|---|---|---|---|
 | CPU model name | @ 2.10GHz | **@ 2.80GHz** | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | @ 2.10GHz | **@ 2.80GHz** |
@@ -806,7 +826,7 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **thirteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), **SET TWENTY-ONE OPEN at 0 of 4**
+## Re-run sets — **fourteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty, twenty-one), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), **SET TWENTY-TWO OPEN at 0 of 4**
 
 ***THE HEADING USED TO SAY "SET TWELVE OPEN" AND THE TABLE STOPPED AT
 THIRTEEN, WHILE `#53` HAD JUST OPENED SET TWENTY-ONE.*** *Found while
@@ -6810,7 +6830,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1786 -> 1788 rows)
+## State as of the last refresh (1788 -> 1789 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6821,7 +6841,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1788 rows; 1619 labels decided; 1619 UNSAT; 0 SAT; 0 labels
+- **1789 rows; 1620 labels decided; 1620 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6857,11 +6877,11 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1619 decided plus 169 superseded
+  A row count is not a decision count: 1620 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
-  `/proc/26669/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
+  `/proc/21147/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -6907,8 +6927,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1618, highest decided 1618, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1618, highest decided 1620, holes [1619].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6942,6 +6962,114 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1620 UNSAT AT 1967.7 s AND THE NINETY-THIRD SPAN HAS OPENED, AT
+  WIDTH ONE.*** Walk position **158** less the OFFSET of 65 — the
+  **ninety-third**, derived from the walk's 157 closed spans plus this
+  one. **Rank 1074 of 1620 with no tie** — *`1620 − 546 = 1074`
+  reproduces the rank, detector agrees.* **0.0911 of the per-cube cap.
+  idx 1620 came in while idx 1619 was still running, leaving holes
+  `[1619]`, width one**, *frontier contiguous* **0..1618** *and highest
+  decided* **1620**. *Per the `#29` rider the width is what it is AT
+  THIS COMMIT.* **coord9 = 11 opens at 1 of 5 against a threshold of 3.
+  Decided 1620 of 1949 = 83.1195%; still 0 SAT.**
+
+  ***AN OPENING AT ONE.*** Over the **157** closed chains the opening
+  hole count is **1 in 53, 2 in 52, 3 in 49 and 4 in 3**, so one is
+  **33.8%**. **It is the first opening at one since the eighty-eighth**,
+  and the spans that opened at one are **53** of the 157, the last five
+  of them ordinals **80, 82, 83, 86 and 88**.
+
+  ***AND ITS ONE HOLE IS A RE-RUN SET MEMBER, WHICH IS NEW.*** **idx
+  1619 was killed by the teardown and is the first cube of re-run set
+  twenty-two**, *so the span's only hole is a cube whose earlier run was
+  discarded.* **The span cannot close until that re-take lands**, *and
+  when it does the row is both the span's closing row and one quarter of
+  the set.* *Nothing follows from that — it is a coincidence of timing
+  between a teardown and a broken frontier — but the two things are
+  usually independent and here they are not.*
+
+  ***RESTART #54 — THE CONTAINER WAS TORN DOWN AT 20:57:03.765406Z AND
+  THE DRIVER IS BACK AS pid 21147 AT 20:59:10.390000Z.*** **Downtime
+  126.625 s.** *Full measurements are in the `# RESTART #54` header
+  block in the checkpoint; what follows is what the absorb turned up
+  that is not routine.* **idx 1620 was banked but uncommitted when the
+  container went down and is in this commit; no rows were lost — 1789
+  either side, 1620 decided, and the new driver's own stdout says "1620
+  of 1949 cubes already decided".**
+
+  ***THE MACHINE DID NOT CHANGE, AND A DRAFT OF THIS ABSORB NEARLY SAID
+  IT DID.*** **All six fields match #53's reading exactly and `btime` is
+  still 1790096990**, *the 2026-09-22T17:09:50Z host boot — so this is a
+  container teardown, not a reboot, and costs stay on a common basis.*
+  ***BUT THE SPEC TABLE IN THIS NOTE ENDS AT #48, WHOSE COLUMN READS
+  `@ 2.80GHz`***, *and a live reading of* `@ 2.10GHz` *checked against
+  THAT column looks exactly like the thing the check-in says to flag
+  loudly.* **It is not a change; it is a stale comparison.** *The
+  readings for #49 through #54 live in the checkpoint's header blocks
+  and were never folded into the table.* ***THE TABLE IS NOW LABELLED
+  WITH ITS OWN VINTAGE***, *because the near-miss was one sentence from
+  a false alarm in the file's loudest voice.* **This is the same shape
+  as the standing rule "read the note's definition before believing the
+  script"** — *here it is "read the table's vintage before believing a
+  diff against it".*
+
+  ***THE TWO `[killed]` MARKERS DISAGREE FOR THE FIRST TIME IN SIX
+  RESTARTS.*** **Driver `b0biuacp1` at 20:57:03.765406531Z and waiter
+  `by45jrq1t` at 20:57:03.773406532Z — 8.000 ms apart.** *#49 through
+  #53 each agreed to the nanosecond, and each of those blocks noted that
+  the procedure's "take the EARLIER, they need not agree" had nothing to
+  choose.* **Here it does, and the earlier — the driver's — is used
+  throughout.** *8 ms cannot move any figure in the block by more than a
+  hundredth of a second, so this is recorded for the rule's sake and not
+  for its effect:* **a procedure only shows its worth on the run where
+  the easy case stops holding.**
+
+  ***THE LOSS IS THE SMALLEST OF THE SERIES, AND UNAMBIGUOUSLY SO.***
+  **Four cubes — idx 1619, 1621, 1622, 1623 — totalling 2853.656 s of
+  elapsed = 0.7927 h, with CPU bracketed at `[2684.00, 2775.656]` s =
+  `[0.7456, 0.7710]` CPU-h.** *The accounting line goes to* **n = 31:
+  median 3.4670, mean 3.3970–3.3978, total 105.3059–105.3313, rank 31 of
+  31** — ***at BOTH ends of the bracket***, *because the upper end*
+  **0.7710** *sits below the smallest LOWER end among all thirty prior
+  entries,* **#46's 0.8908**. **So for once the ranking does not rest on
+  the midpoint convention**; *it holds however the older entries are
+  collapsed.* **The n = 30 line was reproduced to four decimals before
+  the extension — fifth consecutive time.**
+
+  ***AND THE BRACKET IS MUCH THE NARROWEST OF THE FOUR COMPUTED THIS
+  WAY, FOR A REASON THAT IS NOT PRECISION.*** **3.30% of its upper end,
+  against 21.94% at #51, 23.13% at #52 and 55.72% at #53.** *The last
+  cpu/elapsed sample landed* **22.765 s** *before the kill, so the
+  unsampled tail is* **91.656 s** *in total — against 265.7–266.1 s at
+  #51, 752.69–753.59 s at #52 and 1107.56–1108.14 s at #53.* ***A
+  CHECK-IN THAT HAPPENS TO FIRE SHORTLY BEFORE A TEARDOWN NARROWS THE
+  BRACKET; NOTHING ABOUT THE MEASUREMENT IMPROVED.*** *The rejected
+  elapsed-times-last-ratio method would have given* **2772.855 s**,
+  *landing 96.9% of the way up the bracket — nearer the top than at #51,
+  #52 or #53, which teaches nothing.*
+
+  ***TWO INDEPENDENT METHODS FOR ELAPSED-AT-KILL AGREE TO UNDER 0.36 s
+  ON ALL FOUR CUBES.*** *CNF mtime to the kill marker, and last-sample
+  elapsed plus the 22.765 s gap:* **0.355, 0.343, 0.091 and 0.193 s
+  apart.** *That is a check on the CNF-mtime method rather than a new
+  figure, and it is the first restart where the sample was recent enough
+  for the second method to be worth running.*
+
+  ***RE-RUN SET TWENTY-TWO OPENS — idx 1619, 1621, 1622, 1623 — AND IT
+  IS NOT CONFOUNDED.*** *The six-field spec is unchanged and `btime` did
+  not move, so the discarded runs and the re-takes are on the same
+  machine.* **Stated at the OPENING, which is where the procedure says
+  it belongs.** *Its ratios are withheld until all four re-takes land,
+  by the standing convention.*
+
+  ***AND THE RE-RUN SECTION HEADER WAS STALE BY A WHOLE SET.*** *It read*
+  "**SET TWENTY-ONE OPEN at 0 of 4**" *while the body of the section
+  recorded that set* **closed at 4 of 4** — *the same
+  header-versus-body divergence this note has caught before, found by
+  reading the header while opening the next set rather than by any
+  check.* **Corrected to fourteen closed and divided, with set
+  twenty-two open at 0 of 4.**
 
   ***83% IS CROSSED — AND THE TRAP DEMONSTRATION DID NOT HAPPEN, BECAUSE
   THE CROSSING ROW WAS SWEPT INTO A TWO-ROW BANK.*** **idx 1617 UNSAT at
@@ -24310,7 +24438,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1619 of 1949 = 83.0682%**; **330 undecided**. **50% IS CROSSED**, at
+- **1620 of 1949 = 83.1195%**; **329 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -25024,7 +25152,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **7 decided**, undecided 14 spanning 1619..1632
+  **8 decided**, undecided 13 spanning 1619..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
