@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T07:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T07:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6561,7 +6561,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1714 -> 1715 rows)
+## State as of the last refresh (1715 -> 1716 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6572,7 +6572,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1715 rows; 1546 labels decided; 1546 UNSAT; 0 SAT; 0 labels
+- **1716 rows; 1547 labels decided; 1547 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6604,7 +6604,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1546 decided plus 169 superseded
+  A row count is not a decision count: 1547 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6654,7 +6654,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1538, highest decided 1547, holes [1539, 1543].**
+- **Frontier contiguous 0..1538, highest decided 1548, holes [1539, 1543].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -10617,6 +10617,38 @@ exactly one bank.
   `588.5, 1888.0`, spread `3.208156×`, threshold 3 — one more and that
   group carries its first bound.* **`[13,12,11,10]` stays at 26 of 28,
   chain `2,2,1,3,3,2,2,2`, still determined False on the `1 → 3` rise.**
+
+  ***THE NEW BLOCK'S FIRST GROUP REACHES THRESHOLD, AND IT NEEDS A RULE
+  THIS NOTE HAD NOT WRITTEN DOWN.*** *From the staged blob.* **idx 1548
+  at 1859.1 s** (coord9 = **13** in `[13,12,11,9]`, rank **1082 of
+  1547**); *untied — `1547 − 465 = 1082` reproduces the rank, detector
+  agrees.* **Holes `[1539, 1543]`, frontier contiguous 0..1538, highest
+  decided 1548. Decided 1547 of 1949 = 79.3740%; still 0 SAT.**
+  **coord9 = 13 goes 3 of 5, its threshold**, *with `588.5, 1859.1,
+  1888.0`, spread `3.159048×`.*
+
+  ***n IS ODD HERE, AND THE DERIVATION THIS NOTE HAS BEEN USING IS FOR
+  EVEN n.*** **For odd `n` the median is a SINGLE order statistic
+  `x₍₍ₙ₊₁₎/₂₎`, not the mean of two**, *so the bracket is not
+  `(k+k)/2 … (k+k)/2` at all.* **With `j` known and `u = n − j`
+  unknown: lower = `k[j − (n−1)/2]`, upper = `k[(n+1)/2]`.** *Tested on
+  6000 random odd-`n` configurations — `n` from 5 to 15, `j` from the
+  threshold to `n−1` — with no exception.* **Here `n = 5`, `j = 3`, `u =
+  2`: lower = `k[1] = 588.5`, upper = `k[3] = 1888.0`**, *agreeing with
+  exhaustive enumeration of all 10 placements.* **The 13-median is
+  confined to `[588.5, 1888.0]`, width 1299.5 s.**
+
+  ***AND THE THREE BLOCKS DIFFER IN GROUP PARITY, WHICH IS WHY THIS CAME
+  UP ONLY NOW.*** **`[13,12,11,11]` has group sizes {13: 6, 12: 16, 11:
+  14, 10: 2} — all even. `[13,12,11,10]` has {13: 5, 12: 14, 11: 8, 10:
+  1} — mixed. `[13,12,11,9]` has {13: 5, 12: 11, 11: 5} — all odd.**
+  *The even-`n` rule carried this note through two blocks because every
+  bracket that mattered in them was even-sized; this block has no even
+  group at all.* ***The rule was not wrong, it was incomplete, and the
+  incompleteness only showed when the data changed shape.***
+
+  **New block 3 of 21**; *`[13,12,11,10]` stays at 26 of 28, chain
+  `2,2,1,3,3,2,2,2,2`, still determined False.*
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
@@ -20949,7 +20981,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1546 of 1949 = 79.3227%**; **403 undecided**. **50% IS CROSSED**, at
+- **1547 of 1949 = 79.3740%**; **402 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -21665,7 +21697,7 @@ exactly one bank.
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
   **26 decided**, undecided [1539, 1543]
 - `[13, 12, 11, 9]` idx 1546..1566: **21 members**,
-  **2 decided**, undecided 19 spanning 1548..1566
+  **3 decided**, undecided 18 spanning 1549..1566
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
