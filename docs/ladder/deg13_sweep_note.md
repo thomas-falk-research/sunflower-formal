@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T19:55Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T20:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6807,7 +6807,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1773 -> 1775 rows)
+## State as of the last refresh (1775 -> 1780 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6818,7 +6818,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1775 rows; 1606 labels decided; 1606 UNSAT; 0 SAT; 0 labels
+- **1780 rows; 1611 labels decided; 1611 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6854,7 +6854,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1606 decided plus 169 superseded
+  A row count is not a decision count: 1611 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6904,7 +6904,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1603, highest decided 1606, holes [1604].**
+- **Frontier contiguous 0..1606, highest decided 1611, holes [1607].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6939,6 +6939,82 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***FIVE ROWS IN ONE BANK, AND THE UNTESTABLE RUN IS DOWN TO ONE
+  CUBE.*** *All five untied, each rank reproduced by `N − cheaper` at*
+  **N = 1611**, *the whole table emitted by script rather than
+  transcribed:*
+
+  | idx | cost | of cap | rank | cheaper | check |
+  |---|---|---|---|---|---|
+  | 1608 | 218.1 s | 0.0101 | 1570 | 41 | `1611 − 41 = 1570` |
+  | 1610 | 109.0 s | 0.0050 | 1587 | 24 | `1611 − 24 = 1587` |
+  | 1611 | 25.8 s | 0.0012 | 1603 | 8 | `1611 − 8 = 1603` |
+  | 1604 | 1885.4 s | 0.0873 | 1112 | 499 | `1611 − 499 = 1112` |
+  | 1609 | 420.9 s | 0.0195 | 1524 | 87 | `1611 − 87 = 1524` |
+
+  **Decided 1611 of 1949 = 82.6578%; still 0 SAT. Holes `[1607]`,
+  frontier contiguous 0..1606, highest decided 1611.**
+
+  ***THREE BLOCKS COMPLETE IN THIS BANK AND FOUR MEDIANS GO FINAL.***
+  **`[13,12,11,5]`'s 12-median at 2061.85 s** *from* `1885.4, 2238.3`;
+  **`[13,12,11,3]`'s 13-median at 319.50 s** *from* `218.1, 420.9`;
+  **`[13,12,11,2]` at 109.0 s and `[13,12,11,1]` at 25.8 s**, *each a
+  one-member group whose median is simply its cost — threshold
+  `⌊1/2⌋ + 1 = 1`, final the instant it landed.* **idx 1611 at 25.8 s is
+  the ninth-cheapest row in the sweep**, *with 8 of 1611 cheaper, and
+  five of those eight are the 0.1 s floor.*
+
+  ***THE TWO ELAPSED-FLOOR BOUNDS ON `[13,12,11,5]`'s 12-MEDIAN HELD,
+  AND BOTH WERE GUARANTEED TO.*** **≥ 1348.0 s** *published at*
+  `6d1159c` *with 0 of 2 landed, and* **≥ 1902.15 s** *at* `53063cb`
+  *with 1 of 2; the answer is* **2061.85**. *The content is the slack:*
+  **idx 1604 carried a floor of 1566 s and cost 1885.4 — 319.4 s above
+  it.** ***A DRAFT CALLED THAT THE SMALLEST OVERSHOOT OF THE SESSION,
+  WHICH IS BOTH WRONG AND MEANINGLESS.*** *Wrong: idx 1590 overshot its
+  4643 s floor by* **304.5 s**. **Meaningless: the overshoot is measured
+  against whichever sample you quote**, *and the same idx 1590 overshot
+  its LATER 4753 s floor by only* **194.5 s** — *so the figure describes
+  when the check-in last ran, not the cube.* **The overshoots are 572.2,
+  533.3, 319.4 and 304.5 (or 194.5) s and they are not comparable.**
+
+  ***THE UNTESTABLE RUN, RE-DERIVED FROM THE ENUMERATION IN THIS
+  COMMIT.***
+
+  | block | idx | members | decided | medians |
+  |---|---|---|---|---|
+  | `[13,12,11,6]` | 1593..1599 | 7 | 7 | 13: 1511.00, 12: 2891.45 |
+  | `[13,12,11,5]` | 1600..1604 | 5 | 5 | 13: 1199.30, 12: 2061.85 |
+  | `[13,12,11,4]` | 1605..1607 | 3 | 2 | 13: 601.25, 12: 0 of 1 |
+  | `[13,12,11,3]` | 1608..1609 | 2 | 2 | 13: 319.50 |
+  | `[13,12,11,2]` | 1610..1610 | 1 | 1 | 13: 109.00 |
+  | `[13,12,11,1]` | 1611..1611 | 1 | 1 | 13: 25.80 |
+
+  **Sizes 7, 5, 3, 2, 1, 1 — nineteen cubes, six blocks, NOT ONE with a
+  coord9 = 11 group**, *exactly as written at idx 1593 before any of it
+  landed.* ***IT WAS NEVER A PREDICTION***: *block membership is a
+  property of the enumeration, readable at any time, so this confirms
+  arithmetic and not behaviour.* **Every median in that table is a
+  figure with no window use, and the tally stays eight keep, four break,
+  of twelve settled blocks.**
+
+  ***ONE CUBE REMAINS BELOW THE NEXT TESTABLE BLOCK: idx 1607.*** *It is
+  the sole member of `[13,12,11,4]`'s coord9 = 12 group, so that median
+  will simply BE its cost, and it is also the span's only hole* —
+  **closing the span, completing the block, finishing the untestable run
+  and finalising that median are all one landing.** *Counted by script
+  after a draft said "four" while listing five.*
+
+  ***THE NEXT TESTABLE BLOCK IS CONFIRMED AS `[13,12,10,10]` BY A
+  SCAN.*** **Scanning every block from idx 1612 onward for the first
+  carrying all three of coord9 13, 12 and 11 returns the very first one:
+  `[13,12,10,10]`, idx 1612..1632, 21 members, groups `{13: 5, 12: 11,
+  11: 5}`.** *The note has named it since idx 1593; this is the first
+  time the "next" part was checked rather than asserted.*
+
+  *The ninety-second span stays open and its verdict stays False; the
+  committed chain reads* **`2,1,1,1,2,1`** *and this commit adds a*
+  **1**.
 
   ***idx 1606 UNSAT AT 822.2 s FINALISES `[13,12,11,4]`'s 13-MEDIAN AT
   601.25 s, AND idx 1603 UNSAT AT 2238.3 s ADVANCES THE OTHER BOUND.***
@@ -23894,7 +23970,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1606 of 1949 = 82.4012%**; **343 undecided**. **50% IS CROSSED**, at
+- **1611 of 1949 = 82.6578%**; **338 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -24607,8 +24683,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 11, 5]` idx 1600..1604: **5 members**,
-  **4 decided**, undecided [1604]
 - `[13, 12, 11, 4]` idx 1605..1607: **3 members**,
   **2 decided**, undecided [1607]
 
