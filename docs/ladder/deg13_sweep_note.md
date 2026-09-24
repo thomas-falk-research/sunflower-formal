@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T08:23Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T08:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -22339,7 +22339,18 @@ exactly one bank.
 - ***RE-RUN SET TWENTY-ONE IS OPEN*** (1551, 1552, 1553, 1554 — opened by
   `#53`, **not confounded**, table in that header block). *Nothing of it
   has landed: **0 of 4**, and by the standing convention its ratios are
-  **withheld** until all four re-takes are in.* **This bullet is written
+  **withheld** until all four re-takes are in.* ***BUT THREE OF THE FOUR
+  ARE ALREADY BOUNDED BELOW 1.0, WITHIN THE RUN.*** *At the 08:42:14Z
+  sample all four re-takes stood at* **2330 s** *of elapsed, and
+  `ratio = discarded / re-run` can only fall as the re-run grows, so:*
+  **idx 1552 ≤ 0.9960, idx 1553 ≤ 0.6904, idx 1554 ≤ 0.6803 — each
+  re-take has already outlasted the run it replaced.** *Only* **idx
+  1551** *can still come in above 1.0; its bound is* **≤ 1.0956** *and
+  it needs another* **222.656 s** *to match its own discarded 2552.656 s.*
+  **THIS IS A WITHIN-RUN BOUND AND A RESTART DESTROYS IT** — *`#53`'s
+  own entry is the worked example of why that distinction is written
+  down every time. It is recorded because it is true now, not because it
+  will survive.* **This bullet is written
   in the same commit that opens the set**, *which is the thing the `#52`
   rewrite above says had never been done — that bullet had gone stale by
   twelve sets before anyone read it, and the answer to a bullet nothing
