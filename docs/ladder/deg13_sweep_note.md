@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T13:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T13:35Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6792,7 +6792,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1736 -> 1737 rows)
+## State as of the last refresh (1737 -> 1739 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6803,7 +6803,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1737 rows; 1568 labels decided; 1568 UNSAT; 0 SAT; 0 labels
+- **1739 rows; 1570 labels decided; 1570 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6839,7 +6839,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1568 decided plus 169 superseded
+  A row count is not a decision count: 1570 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6889,8 +6889,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1562, highest decided 1568, holes [1563].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1569, highest decided 1569, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6925,7 +6925,70 @@ exactly one bank.
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
 
-  ***idx 1562 UNSAT AT 7451.8 s COMPLETES THE coord9 = 12 GROUP AND THE
+  ***TWO ROWS: idx 1569 UNSAT AT 1740.8 s AND idx 1563 UNSAT AT
+  7766.1 s. `[13,12,11,9]` IS COMPLETE AT 21 OF 21 AND THE SPAN
+  CLOSES.*** **Ranks 1127 and 210 of 1570, neither tied** — *`1570 −
+  443 = 1127`, `1570 − 1360 = 210`; detector agrees on both.* **Holes
+  `[]`, frontier contiguous 0..1569, highest decided 1569. Decided 1570
+  of 1949 = 80.5541%; still 0 SAT.** *The span is retired here and
+  carries no figures; they come from `--spans all` in the NEXT commit,
+  with every carried row first reproduced at the OLD N = 151.*
+
+  ***THE REGISTERED PREDICTION IS CONFIRMED EXACTLY.*** *Two commits
+  ago, with idx 1563 still running, this note wrote:* "**the registered
+  prediction is that this block's 11-median ends at `3263.7`** — a
+  number, not an interval, written down before the cube finishes".
+  **idx 1563 landed at 7766.1 s and the coord9 = 11 group's five values
+  are `2461.2, 3144.4, 3263.7, 7156.7, 7766.1`, whose third smallest is
+  `3263.7`.** *The prediction did not need the landing value, only that
+  it exceed 3263.7, which its elapsed floor of 4676 s had already
+  guaranteed — and that is why it could be stated as a number rather
+  than a range.*
+
+  ***`[13,12,11,9]` IS COMPLETE, AND ITS WINDOW BREAKS ON THREE FINAL
+  NUMBERS.***
+
+      13-median  FINAL  1859.1
+      12-median  FINAL  3920.8
+      11-median  FINAL  3263.7
+
+  **Steps `+2061.7` then `−657.1`; ratios `2.108977×` then
+  `0.832407×`.** *`13-median < 12-median` holds and `12-median <
+  11-median` fails, so the window* **BREAKS**, *now with nothing
+  conditional and nothing bracketed anywhere in it.* **The verdict was
+  settled ten rows earlier, at idx 1560, when the two brackets first
+  became disjoint** — *the block completing changes the evidence from
+  two intervals plus a point to three numbers, and changes the verdict
+  not at all.* **The tally stays at seven keep, three break, of ten
+  settled blocks.**
+
+  ***AND THE SECOND STEP IS THE FIRST NEGATIVE ONE ON RECORD IN THIS
+  SERIES.*** *The two completed blocks before it —* **`[13,12,11,11]`
+  `1261.75 → 2829.65 → 3405.5`** *and* **`[13,12,11,10]` `1924.2 →
+  4000.8 → 5618.8`** *— both rise twice.* **This one rises `+2061.7`
+  and then falls `−657.1`.** *Three completed profiles is three
+  completed profiles; the note has declined to claim shape from a pair
+  and declines it from a triple, and the negative step is recorded as
+  what a break looks like rather than as a finding about breaks.*
+
+  ***idx 1569 ALSO GAVE `[13,12,11,8]` ITS FIRST BOUND, AND THE
+  REGISTERED FORM IS CONFIRMED.*** **coord9 = 13 reaches 3 of 4, its
+  threshold**, *and one row ago this note registered the FORM without
+  the value:* "**at `j = 3` the ends become `(k[1]+k[2])/2` and
+  `(k[2]+k[3])/2`**". **With `683.0, 1740.8, 1757.1` that gives
+  `[1211.90, 1748.95]`**, *and 300000 completions of the single
+  remaining member return* **1211.9000** *and* **1748.9500**, *matching
+  on both ends.* **Width 537.05 s.** *The even-`n` and odd-`n` rules are
+  now both in play inside one block — `{13: 4, 12: 9, 11: 2}` — and this
+  is the first of the two halves to produce a figure.*
+
+  ***AND idx 1569's RANK WENT STALE INSIDE THIS ENTRY, FOR THE FOURTH
+  TIME TODAY.*** *It was drafted as* **1126 of 1569** *and is* **1127
+  of 1570**, *because idx 1563 landed at 13:33:50Z while the draft was
+  being written — twenty seconds after the waiter that caught idx 1569
+  re-armed.* **Rewritten from the staged blob, not patched.**
+
+  ***idx 1562 UNSAT AT 7451.8 s COMPLETES THE coord9 = 12 GROUP AND THE  ***idx 1562 UNSAT AT 7451.8 s COMPLETES THE coord9 = 12 GROUP AND THE
   12-MEDIAN IS FINAL AT 3920.8.*** **Rank 225 of 1568 with no tie** —
   *`1568 − 1343 = 225` reproduces the rank, detector agrees.* **The
   group is 11 of 11**, *so the median is the sixth smallest exactly:*
@@ -7132,9 +7195,11 @@ exactly one bank.
 
   ***AN OPENING AT TWO.*** Over the **151** closed chains the opening
   hole count is **1 in 52, 2 in 49, 3 in 47 and 4 in 3**, so two is
-  **32.5%**. **It is the first opening at two since the eighty-fourth**,
-  and the spans that opened at two are **49** of the 151, the last five
-  of them ordinals **73, 76, 78, 81 and 84**.
+  **32.5%**. *The three live-only sentences that stood here — the
+  "since the" ordinal, the "M of the N" count and the last-five list —
+  are struck at this close, per the census convention; the sentence
+  above survives because it is checked against the walk's first 151
+  spans and stays true for good.*
 
   **The row: idx 1564, UNSAT at 1603.2 s, sweep rank 1153 of 1563 with
   no tie** — *`1563 − 410 = 1153` reproduces the rank, detector agrees.*
@@ -22324,7 +22389,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1568 of 1949 = 80.4515%**; **381 undecided**. **50% IS CROSSED**, at
+- **1570 of 1949 = 80.5541%**; **379 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -23037,10 +23102,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 11, 9]` idx 1546..1566: **21 members**,
-  **20 decided**, undecided [1563]
 - `[13, 12, 11, 8]` idx 1567..1581: **15 members**,
-  **2 decided**, undecided 13 spanning 1569..1581
+  **3 decided**, undecided 12 spanning 1570..1581
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
