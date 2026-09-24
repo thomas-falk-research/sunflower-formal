@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T20:25Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T20:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6942,6 +6942,61 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 20:42:05Z CHECK-IN BOUNDS NOTHING, AND WORKING OUT WHY GIVES
+  THE RULE THE LAST TWO CHECK-INS WERE USING WITHOUT STATING.*** *No row
+  landed; four cubes are in flight —* **idx 1617 at 1488 s, idx 1618 at
+  1427 s and idx 1619 at 1230 s, all coord9 = 12; idx 1620 at 1123 s,
+  coord9 = 11.** *Two check-ins ago the same kind of sample pinned a
+  median with 0 of 2 landed; here it pins neither group, and the
+  difference is structural rather than a matter of how long they have
+  run.*
+
+  ***THE CONDITION, DERIVED AND CHECKED BOTH WAYS.*** *An elapsed floor
+  constrains a median only if the members WITHOUT floors cannot fill
+  every slot at or below the median position. With `n` members and `f`
+  of them floored:*
+
+  - **odd `n`** — median is `x₍ⱼ₎` with `j = (n+1)/2` — *a positive
+    bound exists iff* **`n − f < j`**;
+  - **even `n`** — median is `(x₍ₙ/₂₎ + x₍ₙ/₂₊₁₎)/2` — *iff* **`n − f <
+    n/2 + 1`**.
+
+  **Checked adversarially rather than by sampling**: *push every
+  unfloored member to 0 and every floored one to its floor, and read the
+  median off that arrangement.* ***THE SAMPLING CHECK WOULD HAVE LIED
+  HERE***: *200000 uniform draws for the 12-group never produced a
+  median below* **1112.79 s**, *which reads like a bound and is not one
+  — eight free members all landing near zero is simply rare under a
+  uniform draw.* **The worst case is 0.00, constructed in one line.**
+
+  | group | `n` | `f` | free | bound? |
+  |---|---|---|---|---|
+  | `[13,12,10,10]` coord9 = 12 | 11 | 3 | 8 | no — 8 ≥ 6 |
+  | `[13,12,10,10]` coord9 = 11 | 5 | 1 | 4 | no — 4 ≥ 3 |
+  | `[13,12,11,5]` coord9 = 12 | 2 | 2 | 0 | yes — 1348.0 s |
+  | `[13,12,11,4]` coord9 = 12 | 1 | 1 | 0 | yes — 791 s |
+
+  *The two that worked were groups whose every member was in flight; the
+  two that fail have eight and four members not yet started.* **So the
+  0-of-2 pin recorded at `6d1159c` was not a general device** — *it
+  worked because that group had exactly two members and both were
+  running,* **and this note should not have quoted it as though it
+  would generalise.**
+
+  ***AND THE PACE HAS CHANGED.*** **No row landed between 20:23:21Z and
+  this check-in at 20:42:05Z — nineteen minutes**, *against six rows in
+  the four minutes before that.* **The four cubes in flight stand at
+  1123–1488 s**, *already dearer than every cube in the last three
+  blocks of the untestable run.* *That is what leaving a run of 1- and
+  2-member blocks for a 21-member one looks like, and it is an
+  observation about the enumeration's shape, not about difficulty.*
+
+  **State unchanged: 1617 of 1949 = 82.9656%, 0 SAT, holes `[]`,
+  frontier contiguous 0..1616, highest decided 1616.** *`[13,12,10,10]`
+  stays at 5 of 21 with its 13-median final at 1058.1 and the other two
+  groups empty.* **Driver pid 26669 alive; max clock delta 1 s over
+  n = 4.**
 
   ***THE 83% TRAP IS OBSERVED ON THE ROW IT NAMED, AND idx 1616 UNSAT AT
   1049.4 s COMPLETES THE 13-GROUP.*** **Decided 1617 of 1949 = 82.9656%,
