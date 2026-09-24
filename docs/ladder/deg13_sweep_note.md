@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T21:50Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T22:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -826,7 +826,7 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **fourteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty, twenty-one), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), **SET TWENTY-TWO OPEN at 0 of 4**
+## Re-run sets — **fifteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty, twenty-one, twenty-two), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), **NO SET OPEN**
 
 ***THE HEADING USED TO SAY "SET TWELVE OPEN" AND THE TABLE STOPPED AT
 THIRTEEN, WHILE `#53` HAD JUST OPENED SET TWENTY-ONE.*** *Found while
@@ -898,6 +898,8 @@ corrected at 060fb26 by checking it against published data).
 | seventeen | this commit | 4 | 0.5128 | **12.2093×** |
 | nineteen | `#51` block + census | 4 | 0.5350 | 3.1592× |
 | twenty | `#52` block + census | 4 | 0.4748 | 6.1962× |
+| twenty-one | `#53` block + census | 4 | 0.5379 | 1.6082× |
+| twenty-two | `#54` block + census | 4 | 0.1428 | **76.2625×** |
 
 ***SETS NINETEEN AND TWENTY WERE DIVIDED IN THE LIVE CENSUS AND NEVER
 ENTERED THIS TABLE***, *which is the same split that let the heading
@@ -6832,7 +6834,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1791 -> 1792 rows)
+## State as of the last refresh (1792 -> 1794 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6843,7 +6845,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1792 rows; 1623 labels decided; 1623 UNSAT; 0 SAT; 0 labels
+- **1794 rows; 1625 labels decided; 1625 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6879,7 +6881,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1623 decided plus 169 superseded
+  A row count is not a decision count: 1625 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6929,8 +6931,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1622, highest decided 1622, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1623, highest decided 1626, holes [1624, 1625].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6964,6 +6966,85 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***RE-RUN SET TWENTY-TWO IS CLOSED AT 4 OF 4, AND ITS SPREAD IS THE
+  WIDEST IN THE COLUMN.*** *Withheld at 1 of 4, 2 of 4 and 3 of 4 as the
+  convention requires, and divided only now.*
+
+  | idx | discarded | re-run | ratio |
+  |---|---|---|---|
+  | 1619 | 2129.120 | 2156.9 | 0.9871 |
+  | 1621 | 348.108 | 1976.4 | 0.1761 |
+  | 1622 | 321.856 | 2940.4 | 0.1095 |
+  | 1623 | 54.572 | 4216.1 | 0.0129 |
+
+  *min **0.0129**, median **0.1428** (midpoint of 0.1095 and 0.1761),
+  max **0.9871**, spread **76.2625×**.* **No ratio exceeds 1.0 — every
+  one of the four re-takes cost MORE than the run it replaced.**
+
+  ***76.2625× EXCEEDS EVERY ROW OF THE SPREAD COLUMN, CHECKED BY
+  PARSING THE TABLE RATHER THAN BY READING ITS PROSE.*** **The widest
+  entry was set one's 54.99× over eight members**, *and the widest among
+  the n = 4 sets was set seventeen's 12.2093×; set twenty-one's 1.6082×,
+  the tightest, closed four hours ago.* ***NOTHING IS CLAIMED FROM THE
+  RANKING.*** *A wide spread here means the four numerators were far
+  apart, and they were:* **the discarded times run 54.572 s to
+  2129.120 s, a 39× range by themselves**, *because the teardown caught
+  idx 1619 at 2129 s of work and idx 1623 at 54 s.* **That is a fact
+  about where the kill landed**, *which this note says at every opening
+  — and it is the same sentence set twenty-one's close used to explain
+  the opposite extreme.*
+
+  ***A SCAN OF THE NOTE'S RATIO TABLES WOULD HAVE GOT THIS WRONG, AND
+  THE SUMMARY COLUMN IS WHAT SAVED IT.*** *Ten tables in the*
+  `| idx | discarded | re-run | ratio |` *format parse cleanly and their
+  widest spread is* **8.2994×** — *which would have made this close look
+  like a nine-fold record.* **The sets whose spreads are 54.99× and
+  12.2093× are not in that format**, *so the scan silently missed them.*
+  **The comparison that counts is against the 13-row summary column**,
+  *and it is the one the note already built for exactly this.*
+
+  ***ALL THREE PUBLISHED WITHIN-RUN BOUNDS HELD.*** **idx 1619 ≤ 1.0493
+  → 0.9871; idx 1622 ≤ 0.1273 → 0.1095; idx 1623 ≤ 0.0216 → 0.0129.**
+  *None could have failed inside the run — a re-take only grows and the
+  ratio only falls — so they are arithmetic confirmed, not predictions
+  scored.* **The one that carried content was idx 1619's**, *which named
+  a threshold rather than a range and answered a real question: whether
+  any member of this set would ratio above 1.0.* **None did.**
+
+  ***idx 1626 UNSAT AT 1366.0 s GIVES coord9 = 11 ITS FIRST BRACKET, AND
+  THE WINDOW NOW HAS TWO OF ITS THREE TERMS.*** **Rank 1242 of 1625 with
+  no tie** — *`1625 − 383 = 1242`.* **The group is at 3 of 5, its
+  threshold, holding `1366.0, 1967.7, 1976.4`**, *so by the odd-`n` rule
+  at* `j = 3` *of* `n = 5` *the ends are* `k[1]` *and* `k[3]`:
+  **`[1366.0, 1976.4]`, width 610.4 s**, *both returned exactly by
+  400000 brute-force completions of the two remaining members.*
+
+  | term | state |
+  |---|---|
+  | 13-median | **FINAL 1058.1** |
+  | 12-median | 5 of 11, threshold 6 — no bracket |
+  | 11-median | **`[1366.0, 1976.4]`** |
+
+  ***AND THE WINDOW IS STILL UNDECIDED ON BOTH LEGS.*** *Leg one needs*
+  `13-median < 12-median` *and the 12-median has no bracket at all; leg
+  two needs* `12-median < 11-median` *and has the same gap.* **What CAN
+  be said is that the 11-median is now capped at 1976.4**, *so if the
+  12-median ever exceeds that, leg two fails outright* — **registered
+  here as a condition, with no claim about whether it will.**
+
+  ***THE NINETY-FOURTH SPAN HAS OPENED, AT WIDTH TWO.*** Walk position
+  **159** less the OFFSET of 65 — the **ninety-fourth**. **idx 1626 came
+  in while idx 1624 and idx 1625 were still running, leaving holes
+  `[1624, 1625]`, width two**, *frontier contiguous* **0..1623** *and
+  highest decided* **1626**. *Per the `#29` rider the width is what it
+  is AT THIS COMMIT.* **Decided 1625 of 1949 = 83.3761%; still 0 SAT.**
+
+  ***AN OPENING AT TWO.*** Over the **158** closed chains the opening
+  hole count is **1 in 54, 2 in 52, 3 in 49 and 4 in 3**, so two is
+  **32.9%**. **It is the first opening at two since the ninety-second**,
+  and the spans that opened at two are **52** of the 158, the last five
+  of them ordinals **81, 84, 87, 90 and 92**.
 
   ***idx 1622 UNSAT AT 2940.4 s — SET TWENTY-TWO REACHES 3 OF 4, ONE
   CUBE FROM CLOSING.*** **Rank 802 of 1623 with no tie** — *`1623 − 821
@@ -24638,7 +24719,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1623 of 1949 = 83.2735%**; **326 undecided**. **50% IS CROSSED**, at
+- **1625 of 1949 = 83.3761%**; **324 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -25352,7 +25433,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **11 decided**, undecided 10 spanning 1623..1632
+  **13 decided**, undecided 8 spanning 1624..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
