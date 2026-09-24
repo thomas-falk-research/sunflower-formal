@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T14:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T15:19Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6798,7 +6798,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1742 -> 1744 rows)
+## State as of the last refresh (1744 -> 1745 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6809,7 +6809,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1744 rows; 1575 labels decided; 1575 UNSAT; 0 SAT; 0 labels
+- **1745 rows; 1576 labels decided; 1576 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6845,7 +6845,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1575 decided plus 169 superseded
+  A row count is not a decision count: 1576 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6895,8 +6895,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1574, highest decided 1574, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1574, highest decided 1578, holes [1575, 1576, 1577].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6930,6 +6930,41 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE EIGHTY-NINTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk position
+  **154** less the OFFSET of 65 — the **eighty-ninth**, derived from the
+  walk's 153 closed spans plus this one. **idx 1578 came in at 2480.5 s**
+  while idx 1575, 1576 and 1577 are all still running, leaving **holes
+  `[1575, 1576, 1577]`, width three**, frontier contiguous **0..1574**
+  and highest decided **1578**. *Per the `#29` rider the width is what
+  it is AT THIS COMMIT.*
+
+  ***AN OPENING AT THREE.*** Over the **153** closed chains the opening
+  hole count is **1 in 53, 2 in 50, 3 in 47 and 4 in 3**, so three is
+  **30.7%**. **It is the first opening at three since the eighty-fifth**,
+  and the spans that opened at three are **47** of the 153, the last
+  five of them ordinals **74, 75, 77, 79 and 85**.
+
+  **The row: idx 1578, UNSAT at 2480.5 s, sweep rank 907 of 1576 with no
+  tie** — *`1576 − 669 = 907` reproduces the rank, detector agrees.*
+  **coord9 = 12**, taking that group to **4 of 9** against a threshold
+  of 5, *and the block to 9 of 15.* *Decided 1576 of 1949 = 80.8620%;
+  still 0 SAT.*
+
+  ***ONE MORE coord9 = 12 CUBE GIVES THAT MEDIAN ITS FIRST ENDS, AND
+  THE FORM IS REGISTERED NOW.*** *The group has nine members, so the
+  odd-`n` rule applies: at `j = 5` of `n = 9` the ends are `k[j −
+  (n−1)/2] = k[1]` and `k[(n+1)/2] = k[5]`.* **That is the smallest and
+  the largest of the five known — the whole spread of what has
+  landed.** *With* **`2480.5, 3331.9, 3443.5, 3824.5`** *in hand, the
+  fifth landing at `v` makes the bracket* **`[min(…, v), max(…, v)]`**
+  *exactly.* **Registered before the row exists**; *the same form was
+  registered and confirmed for the 11-group of `[13,12,11,9]`, and this
+  is its first use on a group of nine.*
+
+  **idx 1577, the second and last coord9 = 11, is one of the three
+  holes**, *so closing this span also turns that median from nothing
+  into an exact number.*
 
   ***THE EIGHTY-EIGHTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `7c29d71` EXISTED.*** **The retirement sentence stood for exactly one
@@ -22597,7 +22632,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1575 of 1949 = 80.8107%**; **374 undecided**. **50% IS CROSSED**, at
+- **1576 of 1949 = 80.8620%**; **373 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -23311,7 +23346,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 8]` idx 1567..1581: **15 members**,
-  **8 decided**, undecided 7 spanning 1575..1581
+  **9 decided**, undecided 6 spanning 1575..1581
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
