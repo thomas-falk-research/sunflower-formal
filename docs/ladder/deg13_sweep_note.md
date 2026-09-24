@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T23:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T23:52Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6836,7 +6836,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1802 -> 1803 rows)
+## State as of the last refresh (1803 -> 1804 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6847,7 +6847,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1803 rows; 1634 labels decided; 1634 UNSAT; 0 SAT; 0 labels
+- **1804 rows; 1635 labels decided; 1635 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6883,7 +6883,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1634 decided plus 169 superseded
+  A row count is not a decision count: 1635 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6933,8 +6933,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1628, highest decided 1634, holes [1629].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1634, highest decided 1634, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6968,6 +6968,49 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1629 UNSAT AT 4495.1 s: `[13,12,10,10]` IS COMPLETE AT 21 OF 21
+  AND THE NINETY-FIFTH SPAN CLOSES.*** **Rank 549 of 1635 with no tie** —
+  *`1635 − 1086 = 549` reproduces the rank, detector agrees.* **0.2081
+  of the per-cube cap. Holes `[]`, frontier contiguous 0..1634, highest
+  decided 1634. Decided 1635 of 1949 = 83.8892%; still 0 SAT.** *The
+  span is retired here and carries no figures; they come from `--spans
+  all` in the NEXT commit, with every carried row first reproduced at
+  the OLD N = 159.*
+
+  ***THE PIN HELD, AND IT ONLY EVER NEEDED A THRESHOLD.*** *The check-in
+  at* `3b76d65` *published the 11-median at* **exactly 1976.4**, *on the
+  ground that idx 1629's 3926 s of elapsed already put it past the
+  1976.4 mark above which the median stops depending on its value.*
+  **It landed at 4495.1 — clearing that mark by 2518.7 s — and the
+  median is 1976.4.** *As with idx 1619's ratio bound and the
+  `[13,12,11,7]` 12-median pin, the claim was a NUMBER because it rested
+  on a crossing the cube had already made, not on where it would
+  finish.*
+
+  ***ALL THREE MEDIANS ARE NOW FINAL, AND THE VERDICT IS THE ONE
+  PUBLISHED TWELVE CUBES AGO.***
+
+  | term | final |
+  |---|---|
+  | 13-median | **1058.1** |
+  | 12-median | **2156.9** |
+  | 11-median | **1976.4** |
+
+  **Leg one holds by 1098.8 s; leg two fails by 180.5 s.**
+  ***`13-median < 12-median < 11-median` BREAKS*** — *identical to*
+  `ff09312`, *which settled it from two non-overlapping brackets when
+  seven cubes were still out.* **The tally does not move: eight keep,
+  five break, of thirteen settled blocks** — *a block is counted once,
+  and what the last twelve cubes added was the exact triple, not a
+  verdict.*
+
+  ***AND THAT IS THE SECOND BLOCK THIS SESSION SETTLED BEFORE ITS ROWS
+  WERE IN.*** *`[13,12,11,7]` broke at* `9dba48d` *with one cube out;
+  this one broke with seven.* **Both rested on landed-only brackets
+  failing to overlap, and in both the remaining rows moved the medians
+  only inside intervals that were already disjoint.** *Nothing is
+  claimed from two instances.*
 
   ***idx 1634 UNSAT AT 1660.1 s — `[13,12,10,9]`'s 13-GROUP AT 2 OF 4,
   STILL SHORT OF ITS THRESHOLD.*** **Rank 1177 of 1634 with no tie** —
@@ -7182,9 +7225,11 @@ exactly one bank.
 
   ***AN OPENING AT TWO.*** Over the **159** closed chains the opening
   hole count is **1 in 54, 2 in 53, 3 in 49 and 4 in 3**, so two is
-  **33.3%**. **It is the first opening at two since the ninety-fourth**,
-  and the spans that opened at two are **53** of the 159, the last five
-  of them ordinals **84, 87, 90, 92 and 94**.
+  **33.3%**. *The three live-only sentences that stood here — the
+  "since the" ordinal, the "M of the N" count and the last-five list —
+  are struck at this close, per the census convention; the sentence
+  above survives because it is checked against the walk's first 159
+  spans and stays true for good.*
 
   ***AND THIS CENSUS WAS BUILT FROM THE TOOL'S DECLARED COUNT, NOT FROM
   A PATTERN MATCH.*** *One commit ago a regex over* `hole counts :`
@@ -25169,7 +25214,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1634 of 1949 = 83.8379%**; **315 undecided**. **50% IS CROSSED**, at
+- **1635 of 1949 = 83.8892%**; **314 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -25882,8 +25927,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **20 decided**, undecided [1629]
 - `[13, 12, 10, 9]` idx 1633..1647: **15 members**,
   **2 decided**, undecided 13 spanning 1635..1647
 
