@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T12:29Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T12:40Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6792,7 +6792,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1732 -> 1733 rows)
+## State as of the last refresh (1733 -> 1734 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6803,7 +6803,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1733 rows; 1564 labels decided; 1564 UNSAT; 0 SAT; 0 labels
+- **1734 rows; 1565 labels decided; 1565 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6839,7 +6839,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1564 decided plus 169 superseded
+  A row count is not a decision count: 1565 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6889,7 +6889,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1561, highest decided 1566, holes [1562, 1563, 1565].**
+- **Frontier contiguous 0..1561, highest decided 1567, holes [1562, 1563, 1565].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6924,6 +6924,42 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1567 UNSAT AT 683.0 s OPENS A NEW BLOCK, AND TWO BLOCKS ARE
+  NOW OPEN AT ONCE.*** **Rank 1416 of 1565 with no tie** — *`1565 − 149
+  = 1416` reproduces the rank, detector agrees.* **`[13,12,11,8]`, 15
+  members, idx 1567..1581, at 1 of 15.** **Holes stay `[1562, 1563,
+  1565]`, frontier contiguous 0..1561, highest decided 1567. Decided
+  1565 of 1949 = 80.2976%; still 0 SAT.** *It is the cheapest cube on
+  either open block, at 0.0316 of the per-cube cap.* **`bank.py`'s
+  census region reports two open blocks and rewrote both** — *the
+  region form exists precisely because the old single-sentence version
+  refused the moment a second block opened, and this is the first time
+  since that rewrite that it has had two to write.*
+
+  ***THE NEW BLOCK'S SHAPE, READ FROM THE CUBE LIST AND NOT GUESSED.***
+  **Group sizes `{13: 4, 12: 9, 11: 2}` — MIXED parity, not all-odd
+  like `[13,12,11,9]` nor all-even like `[13,12,11,11]`.** *So the
+  bracket rules split inside one block: the 13-group of four and the
+  11-group of two take the EVEN-`n` rule — median the mean of two order
+  statistics, lower `(k[L]+k[L+1])/2` with `L = j − n/2`, upper with
+  `U = n/2` — while the 12-group of nine takes the ODD-`n` rule with a
+  single order statistic.* **Thresholds are 3, 5 and 2**, *from
+  `⌊n/2⌋ + 1`.* **All three of 13, 12 and 11 are present, so the
+  direction test can be run here** — *unlike the six blocks the
+  enumeration names as untestable.*
+
+  ***AND THE 11-GROUP HAS ONLY TWO MEMBERS, WHICH IS THE SMALLEST
+  GROUP THE WINDOW HAS HAD TO WORK WITH IN THIS BLOCK SERIES.*** *Its
+  threshold is 2, so both members must land before the 11-median is
+  anything at all, and then it is their mean exactly — no interval.*
+  **That makes the second leg of the window here a single comparison
+  against a number rather than against a bracket**, *which is stated now
+  because it is a property of the block's shape and not of any result.*
+
+  **`[13,12,11,9]` remains at 18 of 21 with its verdict settled: the
+  window BREAKS there, and the three outstanding cubes cannot reopen
+  it.**
 
   ***idx 1566 UNSAT AT 717.9 s AND THE OPEN SPAN WIDENS FROM TWO TO
   THREE.*** **Rank 1408 of 1564 with no tie** — *`1564 − 156 = 1408`
@@ -22164,7 +22200,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1564 of 1949 = 80.2463%**; **385 undecided**. **50% IS CROSSED**, at
+- **1565 of 1949 = 80.2976%**; **384 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -22879,6 +22915,8 @@ exactly one bank.
 
 - `[13, 12, 11, 9]` idx 1546..1566: **21 members**,
   **18 decided**, undecided [1562, 1563, 1565]
+- `[13, 12, 11, 8]` idx 1567..1581: **15 members**,
+  **1 decided**, undecided 14 spanning 1568..1581
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
