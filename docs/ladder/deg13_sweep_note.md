@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T03:16Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T03:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -9962,6 +9962,45 @@ exactly one bank.
   the vacuous column goes **nineteen → twenty**, gaining ordinal 82;
   20 + 16 + 16 = 52.* **The False column is untouched at thirty.**
   *Width one goes 49 → 50 and leads two by 2 again.*
+
+  ***WHAT THE EIGHTH coord9 = 12 CUBE WILL DO, WORKED OUT BEFORE IT
+  LANDS.*** *No row since idx 1532; at the 03:41Z check-in the four
+  in-flight cubes are* **idx 1534 at 7652 s and idx 1535 at 2140 (both
+  coord9 = 11), idx 1536 at 2076 and idx 1537 at 1756 (both coord9 =
+  12)**. *The group is at 7 of 14 and the threshold is 8, so the next
+  coord9 = 12 cube to land gives the 12-median its first finite
+  bracket.*
+
+  ***THE BRACKET'S SHAPE IS ALREADY FIXED BY THE SEVEN IN HAND.***
+  **With 8 known of 14 and 6 outstanding, the median — the mean of the
+  7th and 8th smallest — is confined to `[(k₁+k₂)/2, (k₇+k₈)/2]`**,
+  *because six unknowns can push the pair down to the two smallest
+  knowns or up to the two largest and no further.* **Verified against
+  brute force at all 216,000 feasible tenth-second values of the eighth
+  cube, no disagreement.** *If that eighth value falls anywhere between
+  3710.6 and 8312.7 the bracket is exactly* **`[3578.05, 8396.05]`,
+  width 4818.00 s** — *and over every feasible value the lower end can
+  be as low as 1722.8 and the upper as high as 15039.7.*
+
+  ***AND THE FIRST STEP OF THE WINDOW TURNS ON ONE NUMBER: 402.9 s.***
+  **`13-median < 12-median` is settled the moment the bracket's lower
+  end clears 1924.2, which happens iff the eighth coord9 = 12 value
+  exceeds `2 × 1924.2 − 3445.5 = 402.9` s.** *The sweep confirms it:
+  of the 216,000 values, exactly the 4029 at or below 402.9 fail.*
+  **Both in-flight coord9 = 12 cubes are already far past it** — *idx
+  1537's floor alone is* **`4.3584×`** *the threshold.*
+
+  ***BUT THIS IS NOT A DETERMINATION AND MUST NOT BE WRITTEN AS ONE.***
+  **The eighth cube to land need not be idx 1536 or idx 1537.** *Five
+  coord9 = 12 cubes are undecided and undispatched — idx 1538, 1541,
+  1542, 1544, 1545 — and if a slot frees, one of them starts and
+  finishes under 402.9 s, it lands eighth instead and the step is not
+  settled.* ***That escape is not hypothetical***: **75 of the 1534
+  decided cubes cost under 402.9 s (4.89%), 16 of the 594 decided
+  coord9 = 12 cubes do, and the previous block `[13,12,11,11]` had its
+  cheapest member at 396.3 s** — *below the line.* **And the whole
+  construction dies at a restart**, *which would reset all four clocks.*
+  *So: a conditional with its condition stated, not a result.*
 
   ***AND THE CHAIN IS `1` AGAIN, SO THE VERDICT WILL BE VACUOUS AGAIN.***
   **One broken commit, `e1f2852` carrying `holes [1532]`; this commit
