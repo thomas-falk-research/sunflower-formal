@@ -12874,3 +12874,4 @@ g=11 [13, 12, 11, 9, 13, 13, 13, 13, 13, 9, 9]	UNSAT	1748.3
 # THE BRACKET ON iota(4) IS UNMOVED BY THIS RESTART AND CANNOT BE MOVED
 # BY IT: 27 <= iota(4) <= 71.  A restart costs CPU-hours and loses
 # cube-attempts; it decides nothing.
+g=11 [13, 12, 11, 9, 13, 13, 13, 13, 11, 11, 9]	UNSAT	3263.7
