@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T04:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T05:13Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6561,7 +6561,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1705 -> 1706 rows)
+## State as of the last refresh (1706 -> 1707 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6572,7 +6572,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1706 rows; 1537 labels decided; 1537 UNSAT; 0 SAT; 0 labels
+- **1707 rows; 1538 labels decided; 1538 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6604,7 +6604,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1537 decided plus 169 superseded
+  A row count is not a decision count: 1538 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6654,7 +6654,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1536, highest decided 1536, holes [].**
+- **Frontier contiguous 0..1537, highest decided 1537, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -10173,6 +10173,45 @@ exactly one bank.
   83; 21 + 16 + 16 = 53.* **The False column is untouched at thirty.**
   *Width one goes 50 → 51; the gap over two is now 3, its widest since
   N = 140.*
+
+  ***A NINTH coord9 = 12 CUBE, AND THE 12-BRACKET TIGHTENS ON BOTH
+  ENDS.*** *From the staged blob.* **idx 1537 at 7126.9 s** (coord9 =
+  **12** in `[13,12,11,10]`, rank **238 of 1538**); *untied — `1538 −
+  1300 = 238` reproduces the rank, detector agrees.* **Holes `[]`,
+  frontier contiguous 0..1537, highest decided 1537. Decided 1538 of
+  1949 = 78.9123%; still 0 SAT.** *No hole, so no span opens.*
+
+  ***`[3419.45, 8396.05] → [3578.05, 7719.8]`.*** **coord9 = 12 goes 9
+  of 14, so five unknowns remain and the median pair can be pushed only
+  as far as `(k₂+k₃)/2` below or `(k₇+k₈)/2` above** — *the index shifts
+  by one each time a member lands, which is the whole of the
+  narrowing.* **Verified by exhaustive enumeration of all 2002
+  placements of the five unknowns across the ten gaps, agreeing with
+  the formula.** *Lower rose* **158.60 s**, *upper fell* **676.25 s**,
+  *width* **4976.60 → 4141.75 s**.
+
+  ***STEP ONE STILL HOLDS; STEP TWO IS STILL OPEN.*** **`lo₁₂ = 3578.05
+  > 1924.2`, so `13-median < 12-median` is unaffected** — *a narrowing
+  bracket cannot undo a determination made from its lower end.*
+  **`hi₁₂ = 7719.8` is not below `lo₁₁ = 3562.15`, and `lo₁₂` is not
+  above `hi₁₁ = 8334.7`, so `12-median < 11-median` is settled in
+  neither direction.**
+
+  ***THE CONTAINMENT BETWEEN THE TWO BRACKETS HAS FLIPPED.*** *One
+  commit ago the* **11-bracket sat entirely inside the 12-bracket**;
+  *now the* **12-bracket sits entirely inside the 11-bracket** — *`lo₁₂`
+  is 15.90 s above `lo₁₁` and `hi₁₂` is 614.9 s below `hi₁₁`.*
+  ***That flip decides nothing.*** *Containment either way is exactly
+  the case where neither `hi₁₂ < lo₁₁` nor `lo₁₂ > hi₁₁` can hold, so
+  the two configurations are equally undetermined. It is recorded
+  because it is checkable and because a reader watching the brackets
+  move might otherwise read the flip as progress.*
+
+  **Block 20 of 28**; *coord9 = 12 spread `2.498792×` and block span
+  `14.782077×` both unchanged, 7126.9 having landed inside each range.*
+  **7126.9 is `3.703825×` the block's final coord9 = 13 median.**
+  *coord9 = 12 needs 5 more members to pin its median, coord9 = 11
+  needs 3.*
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
@@ -20505,7 +20544,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1537 of 1949 = 78.8610%**; **412 undecided**. **50% IS CROSSED**, at
+- **1538 of 1949 = 78.9123%**; **411 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -21219,7 +21258,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
-  **19 decided**, undecided 9 spanning 1537..1545
+  **20 decided**, undecided 8 spanning 1538..1545
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
