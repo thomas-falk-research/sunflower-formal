@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T19:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T19:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6939,6 +6939,40 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 19:43:39Z CHECK-IN SAMPLE BOUNDS A MEDIAN WHOSE GROUP HAS NOT
+  LANDED A SINGLE MEMBER.*** *No row landed; the content is four elapsed
+  readings.* **`[13,12,11,5]`'s coord9 = 12 group is exactly `[1603,
+  1604]` — two members, ZERO decided — and both are in flight at 1705 s
+  and 991 s.** *The median of two is `(a + b)/2`, and `cost ≥ elapsed`
+  holds for each inside a run, so the sum is at least the sum of the
+  floors:* **the 12-median of that block is already ≥ 1348.0 s.**
+  ***THAT IS A BOUND ON A MEDIAN WITH 0 OF 2 LANDED***, *which the
+  threshold rule alone cannot give — `⌊2/2⌋ + 1 = 2` says a landed-only
+  bracket needs both — and it comes entirely from the elapsed floors.*
+
+  ***A SECOND, WEAKER BOUND ON THE NEXT BLOCK.*** **`[13,12,11,4]`'s
+  coord9 = 13 group is `[1605, 1606]` at 1 of 2, holding 380.3, with idx
+  1606 in flight at 250 s** — *so its median is* **≥ 315.15 s**,
+  within-run. **And that block's coord9 = 12 group has exactly one
+  member, idx 1607**, *so its median will simply BE idx 1607's cost —
+  threshold `⌊1/2⌋ + 1 = 1` — and at 216 s of elapsed that median is
+  already* **≥ 216 s**.
+
+  ***BOTH BOUNDS ARE WITHIN-RUN AND A RESTART DESTROYS THEM, AND
+  NEITHER HAS ANY WINDOW USE.*** *They rest on `cost ≥ elapsed`, which
+  holds inside a run and not across one.* **Both blocks are untestable —
+  `[13,12,11,5]` has groups `{13: 3, 12: 2}` and `[13,12,11,4]` has
+  `{13: 2, 12: 1}`, neither with a coord9 = 11 group** — *so every
+  median named here is a figure and none of them can ever be a term in
+  `13-median < 12-median < 11-median`.* **They are recorded because they
+  are true now, not because they decide anything.**
+
+  **State unchanged: 1604 of 1949 = 82.2986%, 0 SAT, holes `[1603,
+  1604]`, frontier contiguous 0..1602, highest decided 1605.** *The
+  ninety-second span stays open on a chain of `2,1,1,1,2` and its
+  monotone verdict stays False.* **Driver pid 26669 alive on idx 1603,
+  1604, 1606 and 1607; max clock delta 0 s over n = 4.**
 
   ***THE NINETY-SECOND SPAN DID NOT CLOSE, AND THE REASON IS THE `#29`
   RIDER AGAIN: THE MEASUREMENT IS THE COMMIT.*** **idx 1598 landed at
