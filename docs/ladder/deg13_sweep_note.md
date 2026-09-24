@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T18:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T18:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6937,6 +6937,47 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 18:42:02Z CHECK-IN SAMPLE PINS `[13,12,11,7]`'s 12-MEDIAN TO A
+  SINGLE NUMBER, WITHIN-RUN: 3460.45 s.*** *No row landed; the whole
+  fact is one elapsed reading.* **idx 1590 — the sweep's only hole and
+  the last member of that coord9 = 12 group — stands at 4643 s of
+  elapsed**, *cross-checked against the CNF mtime at 4644 s, the two
+  clocks agreeing to the 1 s that is their resolution.* **4643 exceeds
+  every one of the five landed values in its group — `579.0, 2702.8,
+  3457.3, 3463.6, 4289.0`** *(the largest is 4289.0, so the floor clears
+  it by 354 s)*, **so the sixth value is the group's maximum and the
+  median of six, `(x₍₃₎ + x₍₄₎)/2`, is `(3457.3 + 3463.6)/2 =
+  3460.45` whatever that value turns out to be.** *Brute force over
+  400000 completions drawn above the floor returns 3460.45 at both ends
+  — a range of zero width.*
+
+  ***IT LANDS ON THE UPPER END OF THE BRACKET PUBLISHED ONE COMMIT AGO,
+  WHICH IS CONFIRMATION AND NOT NEWS.*** *`9dba48d` published the
+  landed-only bracket* **`[3080.05, 3460.45]`**, *and that bracket is
+  **unchanged** — without the floor, the same brute force still returns
+  both ends.* **The pin is the floor's doing, not a new landing**, *and
+  it falls on the end the break was argued from.*
+
+  ***AND IT CHANGES NOTHING ABOUT THE VERDICT OR THE TALLY.*** *The
+  block's window already* **BROKE unconditionally at `9dba48d`**, *from
+  the landed-only bracket alone: `1546.65 < 3080.05` held leg one, and
+  the whole bracket sitting above the 11-median's 2481.5 refuted leg
+  two.* **A pin inside an interval that was already entirely on the
+  wrong side of the corridor adds no evidence.** *The tally stays*
+  **eight keep, four break, of twelve settled blocks**, *and it is
+  recorded here because it is true now, not because it decides
+  anything.*
+
+  ***THE PIN IS WITHIN-RUN AND A RESTART DESTROYS IT.*** *It rests
+  entirely on `cost ≥ elapsed`, which holds inside a run and not across
+  one; if the driver is killed, idx 1590 restarts from zero and the
+  12-median reverts to the `[3080.05, 3460.45]` range.* **The verdict
+  does not revert, because the verdict never needed the floor.** *The
+  pin becomes unconditional the moment idx 1590 lands, whatever it lands
+  at, since it need only exceed the 4289.0 it has already passed.*
+  **For scale: 4643 s is already dearer than 1073 of the 1595 decided
+  rows — 522 of them, 32.7273%, cost at least that much.**
 
   ***idx 1594 UNSAT AT 1511.0 s, AND IT IS TIED — THE SUBTRACTION
   DETECTOR FIRED.*** **Rank 1196 of 1595**, 398 cheaper, and `1595 −
