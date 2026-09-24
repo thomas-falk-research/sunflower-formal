@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T20:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T20:53Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6810,7 +6810,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1785 -> 1786 rows)
+## State as of the last refresh (1786 -> 1788 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6821,7 +6821,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1786 rows; 1617 labels decided; 1617 UNSAT; 0 SAT; 0 labels
+- **1788 rows; 1619 labels decided; 1619 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6857,7 +6857,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1617 decided plus 169 superseded
+  A row count is not a decision count: 1619 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6907,7 +6907,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1616, highest decided 1616, holes [].**
+- **Frontier contiguous 0..1618, highest decided 1618, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6942,6 +6942,52 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***83% IS CROSSED — AND THE TRAP DEMONSTRATION DID NOT HAPPEN, BECAUSE
+  THE CROSSING ROW WAS SWEPT INTO A TWO-ROW BANK.*** **idx 1617 UNSAT at
+  2038.3 s and idx 1618 UNSAT at 2003.6 s**, *taking the counter from*
+  **1617 = 82.9656%** *through* **1618 = 83.0169%, the crossing**, *to*
+  **1619 = 83.0682%** *in one bank.* ***SO THE 83% PAIR IS NOT IN
+  CONSECUTIVE COMMITS THE WAY 66%, 68% AND 82% WERE.*** *`1d850f7`
+  headlines* **83.0%** *(the trap at 82.9656%) and this commit headlines*
+  **83.1%** *(83.0682%)* — **the crossing value 83.0169% is never a
+  commit's headline figure at all.** *A reader stepping through the
+  history sees 83.0% then 83.1% and would not know a crossing sat
+  between them.* **The trap was still registered four times and observed
+  on its row**; *what failed to materialise is the two-commit display,
+  and it failed for a reason nothing can control — whether two rows land
+  inside one bank.*
+
+  ***THE PAIR DEMONSTRATION NEEDS THE CROSSING TO STRADDLE A COMMIT
+  BOUNDARY, WHICH IS NOT SOMETHING THE TRAP REGISTRATION CAN GUARANTEE.***
+  *The note has recorded the pair three times — 1286/1287, 1325/1326 and
+  1598/1599 — and each time it was luck that the two rows banked
+  separately.* **That is worth saying because the registration practice
+  and the display are different things**: *registering the trap protects
+  the FIGURES, and only a one-row bank produces the side-by-side
+  demonstration.*
+
+  **Both rows untied: idx 1617 rank 1051 of 1619** — *`1619 − 568 =
+  1051`* — **and idx 1618 rank 1062 of 1619** — *`1619 − 557 = 1062`.*
+  **0.0944 and 0.0928 of the per-cube cap. Holes `[]`, frontier
+  contiguous 0..1618, highest decided 1618; still 0 SAT.**
+
+  ***BOTH ARE coord9 = 12, TAKING THAT GROUP TO 2 OF 11, AND THE RULE
+  FROM THE LAST COMMIT SAYS THERE IS STILL NO BOUND.*** **`n = 11`,
+  `f = 2` landed, 9 free, median `x₍₆₎`; a bound needs `n − f < 6` and
+  9 is not.** *So the two values* `2003.6, 2038.3` *constrain nothing
+  yet — nine members can still sit below them.* **Both happen to be
+  dearer than every coord9 = 13 value in the block** *(the largest is
+  1123.6)*, ***WHICH IS NOT EVIDENCE FOR LEG ONE OF THE WINDOW***: *with
+  nine of eleven unknown the 12-median can still land anywhere above 0,
+  and leg one needs* `13-median < 12-median` *with the 13-median already
+  final at* **1058.1**.
+
+  ***THE 84% TRAP IS REGISTERED, EIGHTEEN ROWS OUT.*** **`0.84 × 1949 =
+  1637.16`, so the crossing is at 1638 decided = 84.0431%** — *and*
+  **1637 decided = 83.9918%, which prints as 84.0% at one decimal
+  without having crossed.** *Computed, not read off.* **The block goes
+  to 7 of 21. Decided 1619 of 1949 = 83.0682%.**
 
   ***THE 20:42:05Z CHECK-IN BOUNDS NOTHING, AND WORKING OUT WHY GIVES
   THE RULE THE LAST TWO CHECK-INS WERE USING WITHOUT STATING.*** *No row
@@ -24264,7 +24310,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1617 of 1949 = 82.9656%**; **332 undecided**. **50% IS CROSSED**, at
+- **1619 of 1949 = 83.0682%**; **330 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -24978,7 +25024,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **5 decided**, undecided 16 spanning 1617..1632
+  **7 decided**, undecided 14 spanning 1619..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
