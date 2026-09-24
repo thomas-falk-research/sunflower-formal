@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T22:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T22:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6834,7 +6834,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1794 -> 1795 rows)
+## State as of the last refresh (1795 -> 1796 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6845,7 +6845,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1795 rows; 1626 labels decided; 1626 UNSAT; 0 SAT; 0 labels
+- **1796 rows; 1627 labels decided; 1627 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6881,7 +6881,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1626 decided plus 169 superseded
+  A row count is not a decision count: 1627 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6931,7 +6931,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1624, highest decided 1626, holes [1625].**
+- **Frontier contiguous 0..1624, highest decided 1627, holes [1625].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6966,6 +6966,89 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1627 UNSAT AT 1947.4 s LANDS BELOW THE 11-MEDIAN'S CAP, AND THE
+  BREAK SURVIVES ANYWAY — FOR A REASON WORTH SPELLING OUT.*** **Rank
+  1086 of 1627 with no tie** — *`1627 − 541 = 1086` reproduces the rank,
+  detector agrees.* **0.0902 of the per-cube cap. coord9 = 12 goes to 7
+  of 11** *with* `1947.4, 2003.6, 2038.3, 2156.9, 2940.4, 3817.7,
+  4216.1` — **and 1947.4 is the group's new smallest, sitting 29.0 s
+  BELOW the 11-median's upper end of 1976.4.**
+
+  ***A READER COULD TAKE THAT FOR A THREAT TO THE VERDICT. IT IS NOT.***
+  *The 12-median's lower end is* `known[j − u]`, *not* `known[1]`: *at*
+  `j = 6` *with* `u = 4` *unknowns it is* **`known[2]` = 2003.6**,
+  *because four members can still come in below the median slot and the
+  smallest known value cannot occupy it.* **The bracket moves to
+  `[2003.6, 3817.7]` — the lower end unchanged, the upper end down from
+  4216.1.** *Brute force over 300000 joint completions:* **zero hold.**
+
+  ***AND THE LOWER END CANNOT FALL, WHICH IS WHY `ff09312` COULD SAY
+  "UNCONDITIONAL".*** *A landed-only lower bound on a median is an
+  infimum over a set of completions that only SHRINKS as rows land, so
+  it is monotonically non-decreasing.* **2003.6 is a floor that can rise
+  and never drop**, *so no future landing in this block can undo the
+  break* — *which is what "with seven cubes still out" meant one commit
+  ago and is worth stating as the general fact rather than the
+  instance.* **The margin stays 27.2 s** *and the tally stays* **eight
+  keep, five break, of thirteen settled blocks.**
+
+  **The block goes to 15 of 21. Holes stay `[1625]`, frontier contiguous
+  0..1624, highest decided 1627. Decided 1627 of 1949 = 83.4787%; still
+  0 SAT.**
+
+  ***THE 22:41:46Z CHECK-IN NARROWS THE 11-MEDIAN TO 8.7 SECONDS, AND
+  LEAVES THE 12-MEDIAN EXACTLY WHERE IT WAS.*** *No row landed. Four
+  cubes are in flight —* **idx 1625 at 3937 s and idx 1629 at 300 s,
+  both coord9 = 11; idx 1627 at 1878 s and idx 1628 at 1787 s, both
+  coord9 = 12.**
+
+  | group | landed | in flight | unstarted | bracket |
+  |---|---|---|---|---|
+  | coord9 = 11 | 3 | 2 | 0 | **`[1967.7, 1976.4]`**, width 8.7 s |
+  | coord9 = 12 | 6 | 2 | 3 | `[2003.6, 4216.1]`, **unchanged at the sample** |
+
+  ***THE 11-GROUP HAS NO UNSTARTED MEMBER LEFT, WHICH IS WHY IT
+  COLLAPSES.*** *Its landed-only bracket was* `[1366.0, 1976.4]`,
+  *width* **610.4 s**; *with both outstanding members floored it is*
+  **`[1967.7, 1976.4]`**, *width* **8.7 s** — **1.43% of the old
+  width.** *The work is done by* **idx 1625 at 3937 s**, *already dearer
+  than all three landed 11-values, so it cannot sit below the median
+  slot; only idx 1629 can go low, and one low value cannot pull* `x₍₃₎`
+  *past* **1967.7**.
+
+  ***THE 12-GROUP'S FLOORS ADD NOTHING, AND THAT IS NOT A DEFECT.***
+  **idx 1627 and idx 1628 stand at 1878 s and 1787 s, both BELOW the
+  bracket's lower end of 2003.6**, *so flooring them changes no order
+  statistic;* **three members are still unstarted and can be anything.**
+  *A floor only helps when it lands at or above the slot it is meant to
+  push.*
+
+  ***AND THE BRUTE-FORCE CHECK UNDER-REPORTED THE RANGE AGAIN — IT GIVES
+  AN INNER BOUND, NOT THE BRACKET.*** *Sampling the 12-group over 300000
+  completions returned* **[2038.3, 4216.1]**, *against the analytic*
+  **[2003.6, 4216.1]**. **The lower end needs the two in-flight members
+  AND all three unstarted ones below 2003.6 at once, and a uniform draw
+  on `[floor, cap]` puts the in-flight pair near 11000 s almost every
+  time.** ***SO THE ADVERSARIAL CONSTRUCTION IS THE METHOD AND THE
+  SAMPLING IS THE SANITY CHECK, NOT THE OTHER WAY ROUND*** — *the same
+  lesson as the 1112.79 s "bound" at* `0759d94`, *and the second time
+  this session sampling would have narrowed a bracket that is not
+  narrow.*
+
+  ***NONE OF THIS TOUCHES THE VERDICT.*** **`[13,12,10,10]` broke
+  unconditionally at `ff09312` on landed values alone**, *and these
+  brackets are within-run.* **The margin is still 27.2 s** — *the
+  11-median's upper end did not move, and it is the upper end the
+  break is measured against.* **The narrowing is a figure, not
+  evidence**, *and the tally stays* **eight keep, five break, of
+  thirteen settled blocks.**
+
+  **State unchanged: 1626 of 1949 = 83.4274%, 0 SAT, holes `[1625]`,
+  frontier contiguous 0..1624, highest decided 1626.** *The block is at
+  14 of 21 and the ninety-fourth span stays open at width one.*
+  **Driver pid 21147 alive and matching the note; max clock delta 1 s
+  over n = 4.**
 
   ***idx 1624 UNSAT AT 3817.7 s: `[13,12,10,10]`'s WINDOW BREAKS,
   UNCONDITIONALLY, WITH SEVEN CUBES STILL OUT.*** **Rank 648 of 1626
@@ -24779,7 +24862,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1626 of 1949 = 83.4274%**; **323 undecided**. **50% IS CROSSED**, at
+- **1627 of 1949 = 83.4787%**; **322 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -25493,7 +25576,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **14 decided**, undecided 7 spanning 1625..1632
+  **15 decided**, undecided 6 spanning 1625..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
