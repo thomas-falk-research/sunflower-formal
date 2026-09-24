@@ -12743,3 +12743,134 @@ g=11 [13, 12, 11, 10, 13, 13, 12, 12, 11, 11, 10]	UNSAT	11651.5
 g=11 [13, 12, 11, 10, 13, 12, 12, 12, 11, 11, 11]	UNSAT	6394.5
 g=11 [13, 12, 11, 9, 13, 13, 13, 13, 13, 10, 8]	UNSAT	1890.7
 g=11 [13, 12, 11, 9, 13, 13, 13, 13, 13, 9, 9]	UNSAT	1748.3
+# RESTART #53 -- CONTAINER RESTART.  Teardown 2026-09-24T08:00:33.434637Z,
+# new driver pid 26669 launched 2026-09-24T08:02:22.000000Z (btime +
+# /proc/26669/stat field 22 / SC_CLK_TCK, computed by script:
+# 1790096990 + 13995200/100 = 1790236942 exactly).  THE MACHINE DID NOT
+# CHANGE.  Downtime 108.565 s.
+#
+#     field          #52                #53
+#     CPU model      @ 2.10GHz          @ 2.10GHz      same
+#     cpu MHz        2100.000           2100.000       same
+#     cache size     266240 KB          266240 KB      same
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# btime DID NOT MOVE -- 1790096990 at #52 and 1790096990 now, the same
+# 2026-09-22T17:09:50Z host boot -- WHICH IS HOW THIS IS KNOWN TO BE A
+# CONTAINER RESTART AND NOT A HOST REBOOT.  /proc/uptime read 140106.88 s
+# at 08:04:56Z, consistent with a host up since #50's boot.  Read, never
+# inferred from the spec table.  So the six-field spec is unchanged and
+# costs across this point ARE on a common basis -- stated as the result
+# of re-reading all six fields, not assumed, because the CPU has moved
+# at #41, #42, #48 and #50 and at #41 it moved after eight identical
+# readings.
+#
+# ON THE DOWNTIME: 108.565 s here against 178.176 s at #52.  Those are
+# the ONLY TWO restart blocks in this file that carry a measured
+# downtime, so this is shorter than that one and NOTHING FURTHER IS
+# CLAIMED -- with two measurements there is no "shortest on record" to
+# be had, and the 290.1 s figure elsewhere in this file belongs to a
+# kill-and-relaunch from before restarts were numbered.
+#
+# THE TWO [killed] MARKERS AGREE TO THE NANOSECOND, FOR THE FIFTH
+# RESTART RUNNING.  Driver bwe0l2g73 and waiter bsbpq00w4 both carry
+# mtime 2026-09-24T08:00:33.434637064Z.  The procedure says take the
+# EARLIER and that they need not agree; as at #49, #50, #51 and #52
+# there is nothing to choose.  Two files written in one teardown by the
+# same supervisor is ONE observation of the teardown instant, not two.
+#
+# NO ROWS WERE LOST.  1720 rows either side, 1551 decided, I1-I6 pass,
+# 0 SAT: the committed blob at 7a3f355 counts 1720 and the file after
+# the relaunch counts 1720, and the new driver's own stdout reports
+# "1551 of 1949 cubes already decided".  The waiter was armed at 1720
+# rows at 07:34:30Z and never reported a landing, which settles the
+# 07:34:30Z -> teardown window independently of the row count.
+#
+# WORK LOST: FOUR CUBES, idx 1551, 1552, 1553, 1554 -- every CNF for the
+# dead driver pid 27488 matching -seq-c, no more and no fewer.
+#
+#     idx    dispatched (CNF mtime)   elapsed at kill   last sample
+#     1551   07:18:00.778485Z             2552.66 s     1445 el / 1406 cpu
+#     1552   07:21:52.870499Z             2320.56 s     1213 el / 1177 cpu
+#     1553   07:33:44.718541Z             1608.72 s      501 el /  482 cpu
+#     1554   07:34:08.298543Z             1585.14 s      477 el /  457 cpu
+#
+# TOTAL ELAPSED LOST 8067.07 s = 2.2409 h.
+# CPU-SECONDS LOST: BRACKETED AT [3522.00, 7953.07] s = [0.9783, 2.2092]
+# CPU-h, width 4431.07 s = 55.72% of the upper end.  Lower end is the
+# cpu actually observed at each cube's last sample; upper end adds the
+# unsampled tail at the cpu <= elapsed ceiling.  That single-threaded
+# premise was RE-CHECKED HERE over every banked sample and the maximum
+# ratio is 1.0000, never above -- not taken on the strength of the
+# earlier check at 8c463eb.
+#
+# *** THE ELAPSED-TIMES-LAST-RATIO METHOD IS NOT USED.  IT WOULD HAVE
+# GIVEN 7801.83 s. ***  That method was rejected at #51 and then wrongly
+# repeated at #52.  It was NOT repeated here: the bracket was computed
+# first and the point estimate only afterwards, to see where it would
+# have landed.  It lands inside the bracket near the top, as at #51 and
+# #52, which teaches nothing.
+#
+# THIS IS THE WIDEST OF THE THREE BRACKETS COMPUTED THIS WAY -- 21.94%
+# at #51, 23.13% at #52, 55.72% here.  #50's 0.45% is NOT part of that
+# comparison: its lower end is the ratio estimate rather than the
+# observed cpu, so it is a different and narrower interval BY
+# CONSTRUCTION, and putting the four side by side would be comparing two
+# different quantities.  The width here is driven by two things read off
+# the table above, not guessed:
+#
+#   (a) the unsampled tail is 1107.56-1108.14 s, the longest of the
+#       three -- against 265.7-266.1 s at #51 and 752.69-753.59 s at
+#       #52;
+#   (b) for idx 1553 and idx 1554 THE TAIL IS LONGER THAN THE CPU
+#       ACTUALLY OBSERVED (1107.72 vs 482, 1108.14 vs 457), so for
+#       those two the upper end is 3.30x and 3.42x the lower.  This is
+#       not new in kind -- idx 1508 at #52 had 753.26 s of tail against
+#       86 s of observed cpu -- but there it was one cube of four and
+#       here it is two.
+#
+# EVERY KILLED CUBE HAS A RATIO SAMPLE, so the "do not invent a ratio"
+# case does not arise.  idx 1553 and idx 1554 were last sampled at 501 s
+# and 477 s of elapsed, below the ~600 s threshold this file records for
+# distrusting a young sample; because the bracket uses observed cpu and
+# a ceiling and NO RATIO AT ALL, the young samples cost nothing.  All
+# four samples come from ONE bank at 07:42:06Z, so the four tails agree
+# to within 0.572 s and their widths are NOT independent.
+#
+# ON WHICH TAIL WAS USED.  The tails are elapsed-at-kill minus the
+# driver's own INTEGER-TRUNCATED sampled elapsed (1445, 1213, 501, 477).
+# Truncation makes each tail at most 1 s LONGER than the truth, which
+# keeps the upper end an upper end.  Taking the tails from the 07:42:06Z
+# bank timestamp instead gives 7953.07 - 1.33 = 7951.74 s; that is the
+# figure a first pass produced and it is NOT used, because a bound
+# computed from a second-truncated timestamp is not guaranteed to bound.
+# The difference is 1.33 s on a bracket 4431.07 s wide and changes
+# nothing; it is recorded so the arithmetic can be reproduced exactly.
+#
+# RE-RUN SET TWENTY-ONE OPENS: idx 1551, 1552, 1553, 1554.  *** IT IS
+# NOT CONFOUNDED, AND THAT IS SAID AT THE OPENING AS THE RULE
+# REQUIRES. ***  All six spec fields and btime are unchanged, so the
+# re-takes are on a common basis with the discarded runs.  Set twenty
+# (idx 1505..1508), opened at #52, is closed at 4 of 4 with ratios
+# 0.8680 / 0.5436 / 0.4059 / 0.1401 and is untouched by this restart.
+# Per the standing convention, set twenty-one's ratios are WITHHELD
+# until all four re-takes have landed.
+#
+# NOTHING CONDITIONAL DIED HERE, AND THAT IS NOT LUCK.  The
+# [13,12,11,10] direction window -- 1924.2 -> 4000.8 -> 5618.8, complete
+# at 28 of 28 -- was determined FROM LANDED VALUES.  Its second step was
+# first taken CONDITIONALLY on the within-run bound cost >= elapsed >=
+# cpu, and that condition was retired when idx 1539 landed at 11651.5 s
+# and made the step unconditional.  A within-run bound is destroyed by a
+# restart; a landed value is not.  Had the teardown come before idx 1539
+# landed, the step would have died here.  And at the last check-in
+# before the teardown it was recorded in terms that nothing in the new
+# block [13,12,11,9] was bounded or could be, so this restart carried no
+# conditional result away with it.  The window tally is unchanged at
+# SEVEN KEEP, TWO BREAK of nine settled blocks.
+#
+# THE BRACKET ON iota(4) IS UNMOVED BY THIS RESTART AND CANNOT BE MOVED
+# BY IT: 27 <= iota(4) <= 71.  A restart costs CPU-hours and loses
+# cube-attempts; it decides nothing.

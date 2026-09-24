@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T07:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T08:13Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -699,7 +699,31 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **ten CLOSED** (one–eight, eleven and thirteen), **set nine ABANDONED**, **set ten COMPLETE but undivided**, **SET TWELVE OPEN**
+## Re-run sets — **THIS HEADING AND TABLE ARE STALE AND ARE NOT TO BE QUOTED**
+
+***THE HEADING BELOW SAYS "SET TWELVE OPEN" AND THE TABLE STOPS AT
+THIRTEEN, WHILE `#53` HAS JUST OPENED SET TWENTY-ONE.*** *Found while
+absorbing restart #53, by reading this section rather than the live
+census.* **The table is missing eight sets — fourteen through
+twenty-one — and the heading names the wrong open set by nine.** *The
+live census bullet is current; this section is not.* **The state of
+twelve and of fourteen–eighteen is not established here**, *so nothing
+in the heading or the table below may be quoted as the current state of
+re-run sets.* **The live census at the foot of this
+file is the current statement**; *this section is a partial archive of
+closed sets and is left exactly as it stands until each missing set is
+re-derived from the header blocks, because the alternative — typing a
+heading from memory — is what put it this far behind.* **Sixth live
+instance of the standing-claim-never-re-checked pattern**, *beside the
+pid line, the 41/14.6% line, the monotonicity bullets, the restart-range
+tally and the re-run-set census bullet that was rewritten at `#52` after
+drifting by twelve sets. The `#52` rewrite fixed the bullet and did not
+look at the heading two hundred lines above it.*
+
+The stale heading, kept verbatim so the drift is visible and not
+paraphrased: *"Re-run sets — **ten CLOSED** (one–eight, eleven and
+thirteen), **set nine ABANDONED**, **set ten COMPLETE but undivided**,
+**SET TWELVE OPEN**"*.
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -6575,11 +6599,15 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1720 rows; 1551 labels decided; 1551 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#52**
-  — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
-  FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
-  same as every restart in the range.* — ***AND THIS RANGE WAS STALE BY
-  TWO WHEN #51 ABSORBED IT***: it read
+  undecided-only.** No rows were lost across restarts #37 through **#53**
+  — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
+  RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
+  SHOWING.*** *#53 lost four cubes and no rows, the same as every
+  restart in the range; the check is the same one — 1720 rows either
+  side of the teardown, and a waiter armed at 1720 that never reported a
+  landing.* **Two in a row is two in a row**, *and the promise that took
+  three restarts to honour the first time is not yet a control.*
+  — ***AND THIS RANGE WAS STALE BY TWO WHEN #51 ABSORBED IT***: it read
   **#49** across the whole of restart #50 and every commit since, so the
   note's own sentence below about being "extended from #44 to #45 one
   restart late" has now been repeated at a lag of two. *The paragraph
@@ -6609,8 +6637,8 @@ exactly one bank.
   A row count is not a decision count: 1551 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
-  `/proc/27488/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
+  `/proc/26669/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -10785,6 +10813,135 @@ exactly one bank.
   coord9 = 11 at 0 of 5 (threshold 3), so the window needs nine more
   cubes before its other two terms carry a bound.* **The three 13-medians
   on record are `1261.75`, `1924.2` and now `1859.1`.**
+
+  ***RESTART #53 — THE CONTAINER WAS RESTARTED AT 08:00:33.434637Z AND
+  THE MACHINE DID NOT CHANGE.*** *Full figures are in the `#53` header
+  block in the checkpoint; this is the index entry.* **New driver pid
+  26669, launched 2026-09-24T08:02:22.000000Z**, computed by script from
+  `btime` plus `/proc/26669/stat` field 22 over `SC_CLK_TCK` —
+  `1790096990 + 13995200/100 = 1790236942` exactly. **Downtime
+  108.565 s.**
+
+  ***btime DID NOT MOVE — 1790096990 at #52 and 1790096990 now***, the
+  same 2026-09-22T17:09:50Z host boot, with `/proc/uptime` reading
+  **140106.88 s** at 08:04:56Z. *All six spec fields are unchanged
+  against #52: @ 2.10GHz, 2100.000 MHz, 266240 KB, nproc 4, 16481980 kB,
+  kernel 6.18.44-fc-v37.* **So costs across this point ARE on a common
+  basis**, *stated as the result of re-reading all six.* **The two
+  `[killed]` markers agree to the nanosecond for the fifth restart
+  running** — *driver `bwe0l2g73` and waiter `bsbpq00w4`, both
+  `08:00:33.434637064Z`, which is ONE observation of the teardown
+  written twice, not two.*
+
+  ***NO ROWS WERE LOST, AND FOUR CUBES WERE.*** **1720 rows either side,
+  1551 decided, I1–I6 pass, 0 SAT** — *the committed blob at `7a3f355`
+  counts 1720, the file after the relaunch counts 1720, and the new
+  driver's own stdout reports "1551 of 1949 cubes already decided".*
+  *The waiter had been armed at 1720 rows at 07:34:30Z and never
+  reported a landing, which settles the 07:34:30Z → teardown window
+  independently of the row count.* **The four lost cubes are idx 1551,
+  1552, 1553, 1554** — *every CNF carrying the dead pid 27488 and
+  matching `-seq-c`, no more and no fewer.* **Total elapsed lost
+  8067.07 s = 2.2409 h.**
+
+  ***AND #52's MISTAKE WAS NOT REPEATED, BECAUSE THE BRACKET WAS
+  COMPUTED FIRST.*** **The figure of record is `[3522.00, 7953.07]` s =
+  `[0.9783, 2.2092]` CPU-h**, *lower end the cpu actually observed at
+  each last sample, upper end adding the unsampled tail at the
+  `cpu ≤ elapsed` ceiling.* **The elapsed-times-last-ratio method would
+  have given 7801.83 s and IS NOT USED** — *it was worked out only after
+  the bracket, to see where it would land, and it lands inside near the
+  top, as at #51 and #52.* *At #52 that method was run first and caught
+  only by re-reading #51's block; here the order was reversed, which is
+  the whole of the difference.* **The single-threaded premise was
+  RE-CHECKED at this restart over every banked sample — maximum ratio
+  `1.0000`, never above** — *rather than carried on the strength of the
+  check at `8c463eb`.*
+
+  ***THE BRACKET IS THE WIDEST OF THE THREE COMPUTED THIS WAY: 55.72% of
+  the upper end, against 23.13% at #52 and 21.94% at #51.*** **`#50`'s
+  0.45% is NOT in that comparison** — *its lower end is the ratio
+  estimate rather than the observed cpu, so it is a different and
+  narrower interval by construction, and ranking the four would be
+  ranking two different quantities.* **Two things read off the table
+  drive the width**: *the unsampled tail is* **1107.56–1108.14 s**, *the
+  longest of the three (265.7–266.1 at #51, 752.69–753.59 at #52); and
+  for* **idx 1553 and idx 1554 the tail is LONGER than the cpu actually
+  observed** *(1107.72 against 482, 1108.14 against 457), so for those
+  two the upper end is* **3.30× and 3.42×** *the lower.* **That is not
+  new in kind — idx 1508 at #52 had 753.26 s of tail against 86 s of cpu
+  — but there it was one cube of four and here it is two.**
+
+  *All four samples come from one bank at 07:42:06Z, so the four tails
+  agree to within **0.572 s** and their widths are **not independent**.*
+  **idx 1553 and idx 1554 were last sampled at 501 s and 477 s of
+  elapsed, below the ~600 s threshold this note records for distrusting
+  a young sample** — *and because the bracket uses observed cpu and a
+  ceiling and no ratio at all, the young samples cost nothing.* *The
+  tails are taken against the driver's own integer-truncated sampled
+  elapsed, which makes each at most 1 s too long and therefore keeps the
+  upper end an upper end; taking them from the bank timestamp instead
+  gives 7951.74 s, 1.33 s lower, and that is **not** used, because a
+  bound computed from a second-truncated timestamp is not guaranteed to
+  bound.*
+
+  ***ON THE DOWNTIME, NOTHING IS RANKED.*** **108.565 s here against
+  178.176 s at #52, and those are the only two restart blocks in this
+  file carrying a measured downtime.** *So this one is shorter than that
+  one and no more is claimed — with two measurements there is no
+  "shortest on record" to have, and the 290.1 s figure elsewhere in this
+  note belongs to a kill-and-relaunch from before restarts were
+  numbered.*
+
+  ***RE-RUN SET TWENTY-ONE OPENS: idx 1551, 1552, 1553, 1554 — AND IT IS
+  NOT CONFOUNDED, SAID AT THE OPENING AS THE RULE REQUIRES.*** *All six
+  spec fields and `btime` are unchanged, so the re-takes are on a common
+  basis with the discarded runs.* **Set twenty (1505–1508) is closed at
+  4 of 4 and is untouched by this restart.** *Per the standing
+  convention set twenty-one's ratios are **withheld** until all four
+  re-takes have landed.*
+
+  ***NOTHING CONDITIONAL DIED HERE, AND THAT IS NOT LUCK.*** **The
+  `[13,12,11,10]` window — `1924.2 → 4000.8 → 5618.8`, complete at 28 of
+  28 — was determined FROM LANDED VALUES.** *Its second step was first
+  taken **conditionally** on the within-run bound `cost ≥ elapsed ≥
+  cpu`, and that condition was retired when idx 1539 landed at
+  11651.5 s.* **A within-run bound is destroyed by a restart; a landed
+  value is not** — *had the teardown come before idx 1539 landed, the
+  step would have died here.* *And at the last check-in before the
+  teardown it was recorded in terms that nothing in the new block
+  `[13,12,11,9]` was bounded or could be, so this restart carried no
+  conditional result away.* **The tally is unchanged at seven keep, two
+  break, of nine settled blocks.**
+
+  ***AND THE RESTART ACCOUNTING SECTION IS SHORT BY FIVE.*** **It still
+  reads "Twenty-five involuntary restarts" and its series stops at
+  `#48`** — *`#49`, `#50`, `#51`, `#52` and now `#53` have all happened
+  without being added, so the count should read thirty.* **This is the
+  standing-claim-never-re-checked pattern again, on the one table in
+  this note whose whole job is to count restarts**, *and it is recorded
+  here rather than fixed in the same breath because extending it
+  properly means first reproducing the n = 25 median, mean and total —
+  which is the rule that section states about itself and has kept at
+  three consecutive closes.* **No figure in that section is trustworthy
+  as a current total until that is done**, *and this entry is the only
+  thing standing between the table and a sixth silent restart.*
+
+  ***AND THE DRIVER-LINE GUARD FIRED, OBSERVED, AND THE TALLY IS STILL
+  NOT EXTENDED.*** **This bank's own output reads `driver line REWRITTEN
+  from the live process: pid 27488 -> 26669, launch
+  2026-09-24T08:02:22Z`** — *verified, from the run that produced this
+  commit, and it independently reproduces the launch instant this entry
+  computed by hand from `btime` plus field 22.* **The list in the state
+  section still stops at `#48` and five restarts have happened since**,
+  *and it stays there: the note's standing decision is that a count of
+  firings is prose beside a mechanism that is not, and the argument is
+  for deleting the number rather than maintaining it.* **Two independent
+  routes to 2026-09-24T08:02:22Z is the part that is worth something
+  here**, *not the count.*
+
+  **Bracket unchanged: 27 ≤ ι(4) ≤ 71.** *A restart costs CPU-hours and
+  loses cube-attempts; it decides nothing.*
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
@@ -21958,8 +22115,16 @@ exactly one bank.
   previous widest; 1.7810× remains the tightest. Nothing is made of
   that ranking — this note has already withdrawn one spread claim that
   rested on a margin of 0.046, and 6.1962× over four points is a
-  statement about four numbers.* **No re-run set is open**, **no
-  forward test is registered**, and there is **no live registered
+  statement about four numbers.*
+- ***RE-RUN SET TWENTY-ONE IS OPEN*** (1551, 1552, 1553, 1554 — opened by
+  `#53`, **not confounded**, table in that header block). *Nothing of it
+  has landed: **0 of 4**, and by the standing convention its ratios are
+  **withheld** until all four re-takes are in.* **This bullet is written
+  in the same commit that opens the set**, *which is the thing the `#52`
+  rewrite above says had never been done — that bullet had gone stale by
+  twelve sets before anyone read it, and the answer to a bullet nothing
+  mechanical checks is to write it while the fact is in hand.*
+- **No forward test is registered**, and there is **no live registered
   pattern commitment.**
 - All six audit invariants hold.
 - **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
