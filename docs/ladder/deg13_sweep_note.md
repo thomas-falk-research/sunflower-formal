@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T11:26Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T11:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6921,6 +6921,32 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 11-MEDIAN TIGHTENS TO `[3144.4, 3263.7]`, AND THE BREAK IS
+  UNAFFECTED BECAUSE IT NEVER USED THE LOWER END.*** *At the 11:41:45Z
+  sample idx 1559 stands at* **6688 s** *and idx 1563 at* **1047 s**,
+  *both coord9 = 11 and both giving `cost ≥ elapsed` floors.* **With
+  those the median of five is in `[3144.4, 3263.7]` rather than the
+  landed-only `[2461.2, 3263.7]`** — *brute force over 300000
+  completions reproduces both ends exactly.* **The upper end did not
+  move and could not**: *the refutation rests on `3263.7 < 3782.7`, and
+  3263.7 is a landed value with two members already above it, so no
+  floor can raise it.* **The window still BREAKS, and it still breaks on
+  landed values alone** — *the tightening is a smaller interval around
+  the same verdict, not evidence for it.*
+
+  ***AND idx 1559 WILL NOT CHANGE THAT WHEN IT LANDS.*** **It is
+  coord9 = 11 at 6688 s of elapsed, so it must land above 6688 — far
+  above the other three.** *Taking the group to 4 of 5, the odd-`n` rule
+  at `j = 4` of `n = 5` gives ends `k[2]` and `k[3]`: the bracket
+  becomes* **`[3144.4, 3263.7]` from landed values alone**, *the same
+  interval the floors give now and with the floor dependence gone.*
+  **Registered before the row exists**: *a cube that is already the most
+  expensive in its group cannot pull that group's median up, because the
+  median of five is the third smallest and it is now the fourth or
+  fifth.* **idx 1559 is also the only hole in the open eighty-sixth
+  span, so closing that span and settling this bracket are the same
+  row.**
 
   ***80% IS CROSSED, AND THE TRAP BEHAVED EXACTLY AS REGISTERED.***
   **idx 1560 UNSAT at 2461.2 s takes the counter to 1560 of 1949 =
