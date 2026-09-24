@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T03:14Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T03:16Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -1618,73 +1618,74 @@ at the thirty-fifth.
 
 | span | duration | rank by duration | commits | rank by commits |
 |---|---|---|---|---|
-| fifteenth `a5172c7` | 1:29:45 | 43 of 146 | 2 | 82 of 146 (28 tied) |
-| sixteenth `cae2b5d` | 0:51:42 | 69 of 146 | 2 | 82 of 146 (28 tied) |
-| seventeenth `75ff84b` | 2:36:20 | 16 of 146 | 8 | 29 of 146 (8 tied) |
-| eighteenth `faa424a` | 1:06:55 | 57 of 146 | 8 | 29 of 146 (8 tied) |
-| nineteenth `0362b4f` | 0:20:28 | 89 of 146 | 1 | 111 of 146 (35 tied) |
-| twentieth `ca5ce5a` | 2:19:09 | 21 of 146 | 2 | 82 of 146 (28 tied) |
-| twenty-first `83cabc1` | **5:05:31** | **8 of 146** | 7 | 38 of 146 (7 tied) |
-| twenty-second `31d9565` | 1:57:02 | 29 of 146 | 4 | 63 of 146 (4 tied) |
-| twenty-third `b4d2068` | 2:17:22 | 22 of 146 | 10 | 15 of 146 (7 tied) |
-| twenty-fourth `e2e3d5f` | 0:10:42 | 95 of 146 | 1 | 111 of 146 (35 tied) |
-| twenty-fifth `741b900` | 0:54:37 | 62 of 146 | 1 | 111 of 146 (35 tied) |
-| twenty-sixth `b7f8c36` | 1:14:19 | 55 of 146 | 1 | 111 of 146 (35 tied) |
-| twenty-seventh `d322a9d` | 1:49:26 | 35 of 146 | 2 | 82 of 146 (28 tied) |
-| twenty-eighth `6f6d668` | 1:56:29 | 30 of 146 | **9** | **23 of 146** (5 tied) |
-| twenty-ninth `69a8a16` | 0:18:42 | 91 of 146 | 1 | 111 of 146 (35 tied) |
-| thirtieth `3db5927` | 1:36:10 | 41 of 146 | 2 | 82 of 146 (28 tied) |
-| thirty-first `43f2ddb` | 1:31:53 | 42 of 146 | 6 | 46 of 146 (6 tied) |
-| thirty-second `5cde733` | **3:33:32** | **12 of 146** | **11** | **11 of 146** (3 tied) |
-| thirty-third `743c24d` | 1:15:56 | 51 of 146 | 6 | 46 of 146 (6 tied) |
-| thirty-fourth `4e27c14` | **0:09:49** | **97 of 146** | 1 | 111 of 146 (35 tied) |
-| thirty-fifth `bb28ab9` | 0:39:00 | 76 of 146 | **8** | **29 of 146** (8 tied) |
-| thirty-sixth `b393f25` | 0:37:35 | 78 of 146 | 2 | 82 of 146 (28 tied) |
-| thirty-seventh `ae0b64e` | 0:20:34 | 88 of 146 | 1 | 111 of 146 (35 tied) |
-| thirty-eighth `ff5f073` | **2:03:16** | 26 of 146 | **8** | 29 of 146 (8 tied) |
-| thirty-ninth `7440e6b` | 0:47:02 | 72 of 146 | 1 | 111 of 146 (35 tied) |
-| fortieth `39bb186` | 2:06:48 | 25 of 146 | 4 | 63 of 146 (4 tied) |
-| forty-first `f558bb0` | 1:59:51 | 27 of 146 | **8** | 29 of 146 (8 tied) |
-| forty-second `87f9b19` | **2:39:11** | **15 of 146** | **9** | **23 of 146** (5 tied) |
-| forty-third `e2b41d5` | **0:12:20** | 94 of 146 | 2 | **82 of 146** (28 tied) |
-| forty-fourth `16f864c` | 1:43:13 | 37 of 146 | 6 | 46 of 146 (6 tied) |
-| forty-fifth `f4bebe4` | 1:01:06 | 59 of 146 | 7 | 38 of 146 (7 tied) |
-| forty-sixth `6b218fa` | 0:03:36 | 100 of 146 | 1 | 111 of 146 (35 tied) |
-| forty-seventh `a4534da` | 2:25:44 | 17 of 146 | 8 | 29 of 146 (8 tied) |
-| forty-eighth `193d35b` | 0:28:32 | 83 of 146 | 2 | 82 of 146 (28 tied) |
-| forty-ninth `2321b43` | 1:26:34 | 45 of 146 | 6 | 46 of 146 (6 tied) |
-| fiftieth `f0a53f8` | 1:24:29 | 47 of 146 | **9** | **23 of 146** (5 tied) |
-| fifty-first `faa53ca` | 0:39:47 | 75 of 146 | 4 | 63 of 146 (4 tied) |
-| fifty-second `7c62056` | 0:54:17 | 64 of 146 | 5 | 53 of 146 (9 tied) |
-| fifty-third `e2bc312` | 0:10:23 | 96 of 146 | 1 | 111 of 146 (35 tied) |
-| fifty-fourth `a0483cd` | 0:21:49 | 85 of 146 | 1 | 111 of 146 (35 tied) |
-| fifty-fifth `09ec002` | 1:24:48 | 46 of 146 | 3 | 68 of 146 (13 tied) |
-| fifty-sixth `6e35abc` | 0:18:44 | 90 of 146 | 1 | 111 of 146 (35 tied) |
-| fifty-seventh `7bfa5a9` | 1:23:21 | 48 of 146 | 4 | 63 of 146 (4 tied) |
-| fifty-eighth `b101eee` | 0:47:27 | 71 of 146 | 2 | 82 of 146 (28 tied) |
-| fifty-ninth `6f66f47` | 1:11:34 | 56 of 146 | 9 | 23 of 146 (5 tied) |
-| sixtieth `c00d1ee` | 0:53:10 | 66 of 146 | 2 | 82 of 146 (28 tied) |
-| sixty-first `e414c26` | 1:06:21 | 58 of 146 | 2 | 82 of 146 (28 tied) |
-| sixty-second `5763cd8` | 1:37:05 | 40 of 146 | 1 | 111 of 146 (35 tied) |
-| sixty-third `f68ed0a` | 2:12:38 | 24 of 146 | 5 | 53 of 146 (9 tied) |
-| sixty-fourth `60babe7` | 1:22:33 | 49 of 146 | 10 | 15 of 146 (7 tied) |
-| sixty-fifth `3462cdc` | 0:37:57 | 77 of 146 | 2 | 82 of 146 (28 tied) |
-| sixty-sixth `18afa53` | 0:36:39 | 79 of 146 | 1 | 111 of 146 (35 tied) |
-| sixty-seventh `75caa3d` | 1:38:31 | 39 of 146 | 5 | 53 of 146 (9 tied) |
-| sixty-eighth `456781a` | 1:14:51 | 53 of 146 | 10 | 15 of 146 (7 tied) |
-| sixty-ninth `fc1ab8c` | 0:16:11 | 92 of 146 | 1 | 111 of 146 (35 tied) |
-| seventieth `a0b15bd` | 0:22:16 | 84 of 146 | 1 | 111 of 146 (35 tied) |
-| seventy-first `16046e9` | 2:16:06 | 23 of 146 | 11 | 11 of 146 (3 tied) |
-| seventy-second `eb7d872` | 0:54:35 | 63 of 146 | 3 | 68 of 146 (13 tied) |
-| seventy-third `3322a67` | 0:52:16 | 68 of 146 | 6 | 46 of 146 (6 tied) |
-| seventy-fourth `8cc7a74` | 1:39:11 | 38 of 146 | 10 | 15 of 146 (7 tied) |
-| seventy-fifth `e4c39f2` | 0:48:07 | 70 of 146 | 5 | 53 of 146 (9 tied) |
-| seventy-sixth `68dc8a6` | 0:30:22 | 82 of 146 | 5 | 53 of 146 (9 tied) |
-| seventy-seventh `f0895d1` | 1:53:57 | 33 of 146 | 4 | 63 of 146 (4 tied) |
-| seventy-eighth `3f3e8bb` | 0:53:11 | 65 of 146 | 3 | 68 of 146 (13 tied) |
-| seventy-ninth `084617f` | 1:20:56 | 50 of 146 | 6 | 46 of 146 (6 tied) |
-| eightieth `00945f9` | 0:07:30 | 98 of 146 | 1 | 111 of 146 (35 tied) |
-| eighty-first `71554ab` | 0:41:43 | 74 of 146 | 2 | 82 of 146 (28 tied) |
+| fifteenth `a5172c7` | 1:29:45 | 44 of 147 | 2 | 82 of 147 (28 tied) |
+| sixteenth `cae2b5d` | 0:51:42 | 70 of 147 | 2 | 82 of 147 (28 tied) |
+| seventeenth `75ff84b` | 2:36:20 | 16 of 147 | 8 | 29 of 147 (8 tied) |
+| eighteenth `faa424a` | 1:06:55 | 58 of 147 | 8 | 29 of 147 (8 tied) |
+| nineteenth `0362b4f` | 0:20:28 | 90 of 147 | 1 | 111 of 147 (36 tied) |
+| twentieth `ca5ce5a` | 2:19:09 | 21 of 147 | 2 | 82 of 147 (28 tied) |
+| twenty-first `83cabc1` | **5:05:31** | **8 of 147** | 7 | 38 of 147 (7 tied) |
+| twenty-second `31d9565` | 1:57:02 | 29 of 147 | 4 | 63 of 147 (4 tied) |
+| twenty-third `b4d2068` | 2:17:22 | 22 of 147 | 10 | 15 of 147 (7 tied) |
+| twenty-fourth `e2e3d5f` | 0:10:42 | 96 of 147 | 1 | 111 of 147 (36 tied) |
+| twenty-fifth `741b900` | 0:54:37 | 63 of 147 | 1 | 111 of 147 (36 tied) |
+| twenty-sixth `b7f8c36` | 1:14:19 | 56 of 147 | 1 | 111 of 147 (36 tied) |
+| twenty-seventh `d322a9d` | 1:49:26 | 35 of 147 | 2 | 82 of 147 (28 tied) |
+| twenty-eighth `6f6d668` | 1:56:29 | 30 of 147 | **9** | **23 of 147** (5 tied) |
+| twenty-ninth `69a8a16` | 0:18:42 | 92 of 147 | 1 | 111 of 147 (36 tied) |
+| thirtieth `3db5927` | 1:36:10 | 42 of 147 | 2 | 82 of 147 (28 tied) |
+| thirty-first `43f2ddb` | 1:31:53 | 43 of 147 | 6 | 46 of 147 (6 tied) |
+| thirty-second `5cde733` | **3:33:32** | **12 of 147** | **11** | **11 of 147** (3 tied) |
+| thirty-third `743c24d` | 1:15:56 | 52 of 147 | 6 | 46 of 147 (6 tied) |
+| thirty-fourth `4e27c14` | **0:09:49** | **98 of 147** | 1 | 111 of 147 (36 tied) |
+| thirty-fifth `bb28ab9` | 0:39:00 | 77 of 147 | **8** | **29 of 147** (8 tied) |
+| thirty-sixth `b393f25` | 0:37:35 | 79 of 147 | 2 | 82 of 147 (28 tied) |
+| thirty-seventh `ae0b64e` | 0:20:34 | 89 of 147 | 1 | 111 of 147 (36 tied) |
+| thirty-eighth `ff5f073` | **2:03:16** | 26 of 147 | **8** | 29 of 147 (8 tied) |
+| thirty-ninth `7440e6b` | 0:47:02 | 73 of 147 | 1 | 111 of 147 (36 tied) |
+| fortieth `39bb186` | 2:06:48 | 25 of 147 | 4 | 63 of 147 (4 tied) |
+| forty-first `f558bb0` | 1:59:51 | 27 of 147 | **8** | 29 of 147 (8 tied) |
+| forty-second `87f9b19` | **2:39:11** | **15 of 147** | **9** | **23 of 147** (5 tied) |
+| forty-third `e2b41d5` | **0:12:20** | 95 of 147 | 2 | **82 of 147** (28 tied) |
+| forty-fourth `16f864c` | 1:43:13 | 37 of 147 | 6 | 46 of 147 (6 tied) |
+| forty-fifth `f4bebe4` | 1:01:06 | 60 of 147 | 7 | 38 of 147 (7 tied) |
+| forty-sixth `6b218fa` | 0:03:36 | 101 of 147 | 1 | 111 of 147 (36 tied) |
+| forty-seventh `a4534da` | 2:25:44 | 17 of 147 | 8 | 29 of 147 (8 tied) |
+| forty-eighth `193d35b` | 0:28:32 | 84 of 147 | 2 | 82 of 147 (28 tied) |
+| forty-ninth `2321b43` | 1:26:34 | 46 of 147 | 6 | 46 of 147 (6 tied) |
+| fiftieth `f0a53f8` | 1:24:29 | 48 of 147 | **9** | **23 of 147** (5 tied) |
+| fifty-first `faa53ca` | 0:39:47 | 76 of 147 | 4 | 63 of 147 (4 tied) |
+| fifty-second `7c62056` | 0:54:17 | 65 of 147 | 5 | 53 of 147 (9 tied) |
+| fifty-third `e2bc312` | 0:10:23 | 97 of 147 | 1 | 111 of 147 (36 tied) |
+| fifty-fourth `a0483cd` | 0:21:49 | 86 of 147 | 1 | 111 of 147 (36 tied) |
+| fifty-fifth `09ec002` | 1:24:48 | 47 of 147 | 3 | 68 of 147 (13 tied) |
+| fifty-sixth `6e35abc` | 0:18:44 | 91 of 147 | 1 | 111 of 147 (36 tied) |
+| fifty-seventh `7bfa5a9` | 1:23:21 | 49 of 147 | 4 | 63 of 147 (4 tied) |
+| fifty-eighth `b101eee` | 0:47:27 | 72 of 147 | 2 | 82 of 147 (28 tied) |
+| fifty-ninth `6f66f47` | 1:11:34 | 57 of 147 | 9 | 23 of 147 (5 tied) |
+| sixtieth `c00d1ee` | 0:53:10 | 67 of 147 | 2 | 82 of 147 (28 tied) |
+| sixty-first `e414c26` | 1:06:21 | 59 of 147 | 2 | 82 of 147 (28 tied) |
+| sixty-second `5763cd8` | 1:37:05 | 41 of 147 | 1 | 111 of 147 (36 tied) |
+| sixty-third `f68ed0a` | 2:12:38 | 24 of 147 | 5 | 53 of 147 (9 tied) |
+| sixty-fourth `60babe7` | 1:22:33 | 50 of 147 | 10 | 15 of 147 (7 tied) |
+| sixty-fifth `3462cdc` | 0:37:57 | 78 of 147 | 2 | 82 of 147 (28 tied) |
+| sixty-sixth `18afa53` | 0:36:39 | 80 of 147 | 1 | 111 of 147 (36 tied) |
+| sixty-seventh `75caa3d` | 1:38:31 | 39 of 147 | 5 | 53 of 147 (9 tied) |
+| sixty-eighth `456781a` | 1:14:51 | 54 of 147 | 10 | 15 of 147 (7 tied) |
+| sixty-ninth `fc1ab8c` | 0:16:11 | 93 of 147 | 1 | 111 of 147 (36 tied) |
+| seventieth `a0b15bd` | 0:22:16 | 85 of 147 | 1 | 111 of 147 (36 tied) |
+| seventy-first `16046e9` | 2:16:06 | 23 of 147 | 11 | 11 of 147 (3 tied) |
+| seventy-second `eb7d872` | 0:54:35 | 64 of 147 | 3 | 68 of 147 (13 tied) |
+| seventy-third `3322a67` | 0:52:16 | 69 of 147 | 6 | 46 of 147 (6 tied) |
+| seventy-fourth `8cc7a74` | 1:39:11 | 38 of 147 | 10 | 15 of 147 (7 tied) |
+| seventy-fifth `e4c39f2` | 0:48:07 | 71 of 147 | 5 | 53 of 147 (9 tied) |
+| seventy-sixth `68dc8a6` | 0:30:22 | 83 of 147 | 5 | 53 of 147 (9 tied) |
+| seventy-seventh `f0895d1` | 1:53:57 | 33 of 147 | 4 | 63 of 147 (4 tied) |
+| seventy-eighth `3f3e8bb` | 0:53:11 | 66 of 147 | 3 | 68 of 147 (13 tied) |
+| seventy-ninth `084617f` | 1:20:56 | 51 of 147 | 6 | 46 of 147 (6 tied) |
+| eightieth `00945f9` | 0:07:30 | 99 of 147 | 1 | 111 of 147 (36 tied) |
+| eighty-first `71554ab` | 0:41:43 | 75 of 147 | 2 | 82 of 147 (28 tied) |
+| eighty-second `dd98d77` | 1:38:05 | 40 of 147 | 1 | 111 of 147 (36 tied) |
 
 ***THE FIFTY-NINTH MOVED SIXTY-THREE FIGURES — 21 duration ranks, 39
 commit ranks and 3 tie counts***, asserted as 21 + 39 + 3 = 63 and
@@ -3827,8 +3828,9 @@ were once in use at once and the label was retired for it.
 | 79 | `084617f` | 3,2,2,3,1,1 | 5 | False |
 | 80 | `00945f9` | 1 | 0 | True |
 | 81 | `71554ab` | 2,1 | 1 | True |
+| 82 | `dd98d77` | 1 | 0 | True |
 
-**Fifty-one True of eighty-one** — and the breakdown is where the
+**Fifty-two True of eighty-two** — and the breakdown is where the
 weight goes, recomputed whole rather than incremented.
 
 ***AND "RECOMPUTED WHOLE RATHER THAN INCREMENTED" WAS FALSE OF BOTH
@@ -3888,9 +3890,9 @@ script run to fold in,
 against the two tables and a warning paragraph they would have cost
 before.*
 
-- **Nineteen of the fifty-one Trues contain zero comparisons and
+- **Twenty of the fifty-two Trues contain zero comparisons and
   could not have come out False**: ordinals **5, 10, 19, 24, 25, 26,
-  29, 34, 37, 39, 46, 53, 54, 56, 62, 66, 69, 70, 80**.
+  29, 34, 37, 39, 46, 53, 54, 56, 62, 66, 69, 70, 80, 82**.
 - **Sixteen more rest on a single comparison** — one coin flip each, the
   shape this note has flagged as weak since span 3: **3, 8, 11, 15, 16,
   20, 27, 30, 36, 43, 48, 58, 60, 61, 65, 81**.
@@ -3899,7 +3901,7 @@ before.*
   **63**, **67** and **75** with four, and **33**, **44** and **49**
   with five each.
 
-Asserted as 19 + 16 + 16 = 51 by the script that produced the lists, not
+Asserted as 20 + 16 + 16 = 52 by the script that produced the lists, not
 by counting the table by eye. ***AND THIS PARAGRAPH WAS STALE FOR THE
 LENGTH OF ONE COMMIT AND `span_audit.py` CAUGHT IT***, which is the
 first time anything mechanical has caught this prose: the fifty-seventh
@@ -9915,12 +9917,51 @@ exactly one bank.
   cube named there, idx 1534, is still running and its floor was only*
   **≥ 4046 s**, *which the block's decided maximum already exceeds.*
 
-  ***THE EIGHTY-SECOND SPAN HAS CLOSED AND ITS FIGURES ARE NOT IN THIS
-  COMMIT.*** *The marker is flipped, the three live-only census
-  sentences are struck above, and no duration, rank or tie figure is
-  claimed — they come from `--spans all` only after this commit exists.*
-  **This sentence is the retirement sentence and stands for exactly one
-  commit.**
+  ***THE EIGHTY-SECOND SPAN'S FIGURES, READ FROM `--spans all` AFTER
+  `dd98d77` EXISTED.*** **The retirement sentence stood for exactly one
+  commit — `dd98d77` — and this edit is the striking.** Opened after
+  **`89657ee`** at 01:36:19Z, closed by **`dd98d77`** at 03:14:24Z,
+  duration **1:38:05** (1.6347 h) by committer timestamps, **1 broken
+  commit**, hole counts **`1`**, **monotone non-increasing TRUE** on
+  **ZERO** comparisons, most holes at once **1** at `e1f2852`, holes
+  **[1532]**. **Duration rank 40 of 147; commit rank 111 of 147 with 36
+  tied.**
+
+  ***THE VACUOUS TRUE CAME BACK, AS THE CLOSING COMMIT SAID IT WOULD.***
+  **Chain `1`, zero comparisons, True because there is no adjacent pair
+  to test** — *written into the note before the walk was asked, for the
+  second time in three closes.* **Thirty-seven closed spans now carry
+  single-entry chains and all thirty-seven are True.**
+
+  ***AND HERE IS THE CONTRAST WORTH KEEPING.*** *The eightieth and the
+  eighty-second have the* **same chain `1`**, *the same verdict, the
+  same* **0 commit-rank moves** *— both sit at the minimum of the commit
+  axis, so neither can displace a carried row there and both only join
+  the tie count.* **But the eightieth moved 1 duration rank and this one
+  moved 48.** *The eightieth ran 0:07:30 and ranks* **99 of 147**
+  *on duration; this one ran 1:38:05 and ranks* **40 of 147**, *above
+  the one-hour line that 60 of 147 clear.* ***A draft wrote the
+  eightieth as "97 of 147" — that was its rank at N = 145, carried
+  across two closes without recomputing.*** *The rank is read from the
+  refigured table in this commit, which is the whole reason the table is
+  refigured rather than appended to.* ***Identical verdict shape, forty-eight times
+  the displacement*** — *because the refiguring measures where a span
+  falls in two orderings, and a chain says nothing about a clock.*
+
+  ***A LARGE REFIGURING ON ONE AXIS ONLY.*** **67 of 67 carried rows
+  reproduced at the OLD N = 146, zero mismatches**; *set equalities
+  duration 48 of 48, commits* **0 of 0**, *ties 17 of 17.* **At N = 147:
+  48 duration + 0 commit + 17 tie = 65 figures move, and 19 of 67 came
+  through untouched.** **65 ranks 9 of 59, tied with nothing.**
+  *Fifty-nine closes have now moved 2226 figures.*
+
+  **Globals at 147**: monotone **True 98, False 49**; opening widths
+  **{1: 50, 2: 48, 3: 46, 4: 3}**; single-entry chains **37, all True**.
+  *Row 82 is True on zero comparisons, so the headline moves
+  **eighty-one → eighty-two** and **fifty-one → fifty-two** True, and
+  the vacuous column goes **nineteen → twenty**, gaining ordinal 82;
+  20 + 16 + 16 = 52.* **The False column is untouched at thirty.**
+  *Width one goes 49 → 50 and leads two by 2 again.*
 
   ***AND THE CHAIN IS `1` AGAIN, SO THE VERDICT WILL BE VACUOUS AGAIN.***
   **One broken commit, `e1f2852` carrying `holes [1532]`; this commit
