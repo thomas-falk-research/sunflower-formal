@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T17:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T18:03Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6805,7 +6805,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1758 -> 1759 rows)
+## State as of the last refresh (1759 -> 1760 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6816,7 +6816,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1759 rows; 1590 labels decided; 1590 UNSAT; 0 SAT; 0 labels
+- **1760 rows; 1591 labels decided; 1591 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6852,7 +6852,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1590 decided plus 169 superseded
+  A row count is not a decision count: 1591 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6902,7 +6902,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1588, highest decided 1592, holes [1589, 1590, 1591].**
+- **Frontier contiguous 0..1588, highest decided 1593, holes [1589, 1590, 1591].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6937,6 +6937,48 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1593 UNSAT AT 687.1 s OPENS `[13,12,11,6]`, AND IT CANNOT RUN
+  THE DIRECTION TEST.*** **Rank 1439 of 1591 with no tie** — *`1591 −
+  152 = 1439` reproduces the rank, detector agrees.* **7 members, idx
+  1593..1599, group sizes `{13: 3, 12: 4}` — NO coord9 = 11 group at
+  all.** **Holes stay `[1589, 1590, 1591]`, frontier contiguous
+  0..1588, highest decided 1593. Decided 1591 of 1949 = 81.6316%; still
+  0 SAT.** *`[13,12,11,7]` remains at 8 of 11 with its break forced
+  within-run.*
+
+  ***A SECOND RUN OF UNTESTABLE BLOCKS BEGINS HERE, AND IT IS THE SAME
+  SHAPE AS THE FIRST.*** **From `[13,12,11,6]` down to `[13,12,11,1]`:
+  six blocks of 7, 5, 3, 2, 1 and 1 members — SIX BLOCKS AND NINETEEN
+  CUBES.** *The first such run, recorded at idx 1461..1479, was*
+  **`[13,12,12,5]` down to `[13,12,12,0]` — also six blocks and also
+  nineteen cubes.** ***THAT IS ARITHMETIC ABOUT THE ENUMERATION AND NOT
+  A FINDING*** — *the block sizes descend 7, 5, 3, 2, 1, 1 in both runs
+  because the same combinatorial shape repeats one step down the
+  prefix, and nothing about the solver or the cubes is involved.*
+  **The next testable block is `[13,12,10,10]`, idx 1612..1632, 21
+  members.**
+
+  ***AND THE NOTE'S "SIX UNTESTABLE BLOCKS" IS A LOCAL COUNT, WHICH I
+  CHECKED BEFORE BELIEVING A SCRIPT THAT SEEMED TO CONTRADICT IT.*** *A
+  fresh enumeration says* **118 of the 171 blocks lack one of coord9
+  13, 12 or 11, so only 53 can ever run the direction test** — *which
+  reads at first like a flat contradiction of the note's repeated "the
+  six untestable blocks the enumeration names".* **It is not.** *The
+  note's own sentence at the close of that run defines it:* "**All six
+  blocks with no coord9 = 11 group — `[13,12,12,5]` down to
+  `[13,12,12,0]`, idx 1461..1479**". **That is a contiguous run, not a
+  global total**, *and the note was right about what it was counting.*
+  **This is the case the check-in names — when a script contradicts the
+  note, read the note's definition first** — *and the definition was
+  three hundred lines away from the sentences that quote it.*
+
+  ***THE GLOBAL FIGURE IS NEW AND IS WORTH HAVING SEPARATELY: 53 OF 171
+  BLOCKS CARRY ALL THREE GROUPS, 118 DO NOT.*** *So the direction test
+  is a statement about under a third of the blocks by count.* **Nothing
+  is claimed from that** — *the tested blocks are not a sample of the
+  untested ones, and the note has only ever tallied verdicts among
+  blocks that could be tested.*
 
   ***THE NINETY-FIRST SPAN HAS OPENED, AT WIDTH THREE.*** Walk position
   **156** less the OFFSET of 65 — the **ninety-first**, derived from the
@@ -23176,7 +23218,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1590 of 1949 = 81.5803%**; **359 undecided**. **50% IS CROSSED**, at
+- **1591 of 1949 = 81.6316%**; **358 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -23891,6 +23933,8 @@ exactly one bank.
 
 - `[13, 12, 11, 7]` idx 1582..1592: **11 members**,
   **8 decided**, undecided [1589, 1590, 1591]
+- `[13, 12, 11, 6]` idx 1593..1599: **7 members**,
+  **1 decided**, undecided 6 spanning 1594..1599
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
