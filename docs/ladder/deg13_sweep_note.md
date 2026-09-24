@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T18:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T18:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6805,7 +6805,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1761 -> 1762 rows)
+## State as of the last refresh (1762 -> 1764 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6816,7 +6816,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1762 rows; 1593 labels decided; 1593 UNSAT; 0 SAT; 0 labels
+- **1764 rows; 1595 labels decided; 1595 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6852,7 +6852,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1593 decided plus 169 superseded
+  A row count is not a decision count: 1595 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6902,7 +6902,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1589, highest decided 1593, holes [1590].**
+- **Frontier contiguous 0..1589, highest decided 1595, holes [1590].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6937,6 +6937,94 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1594 UNSAT AT 1511.0 s, AND IT IS TIED — THE SUBTRACTION
+  DETECTOR FIRED.*** **Rank 1196 of 1595**, 398 cheaper, and `1595 −
+  398 = 1197` — which **overshoots the rank by one**, exactly as a
+  two-way tie makes it do. *The twin is **idx 1195** at the same 1511.0
+  s, in the unrelated block `(13,13,9,6)`.* **Counted directly, not
+  inferred: 1194 rows are strictly dearer and 398 strictly cheaper, and
+  exactly 2 rows carry the cost.** *Every other row this session was
+  reported "with no tie" and the arithmetic shown; this one is not, and
+  the detector is the reason the subtraction is written out each time
+  rather than trusted as a rank formula.*
+
+  ***AND THE FIRST BANK OF THIS ROW GAVE IT A DIFFERENT RANK, WHICH IS
+  THE POINT OF WRITING `N` BESIDE IT.*** *The 18:27:00Z bank read*
+  **rank 1195 of 1594**; *the re-bank four minutes later reads* **rank
+  1196 of 1595** — *because idx 1595 landed at 1596.9 s, dearer than
+  1511.0, and one more strictly-dearer row moves the rank up by one.*
+  **Same row, same cost, two different ranks, and neither is wrong.**
+  *The first of them also happened to equal the twin's idx — `1195` as
+  a rank and `1195` as an index — and a reader who met that pair in one
+  sentence could reasonably think one had been derived from the other.*
+  **It was a coincidence and one landing row dissolved it.**
+
+  ***THE STALE-READ DETECTOR FIRED FOR THE SEVENTH TIME THIS SESSION.***
+  *bank.py staged 1763 rows at 18:27:00Z; idx 1595 landed at 18:31:14Z
+  while the entry for idx 1594 was being drafted, and a working-tree
+  read found the checkpoint one row ahead of the staged blob.* **The
+  entry was re-banked and rewritten from the staged index, not
+  patched** — *which is the standing rule, and the reason the rank
+  above is 1196 rather than the 1195 the draft already had in it.*
+
+  ***coord9 = 13 IN `[13,12,11,6]` COMPLETES AT 3 OF 3, SO ITS MEDIAN IS
+  FINAL: 1511.0 s.*** **The three values are `687.1, 1511.0, 1596.9`**,
+  *and the median of three is the single order statistic `x₍₂₎`.* **At 2
+  of 3 the landed-only bracket was `[687.1, 1511.0]`** — *by the odd-`n`
+  rule at `j = 2` of `n = 3`, lower `k[j − (n−1)/2] = k[1]` and upper
+  `k[(n+1)/2] = k[2]`, checked against 300000 random completions which
+  returned both ends exactly.* **The third member came in at 1596.9,
+  above the upper end, so the median stayed put at 1511.0 — the bracket's
+  upper end.** ***THIS IS NOT A SCORED PREDICTION.*** *The bracket was
+  derived and the row that resolved it landed in the same working
+  session, and it is published here in the same commit as the answer;
+  nothing was registered before the row existed, so it is two states
+  written down together and not a forward test.*
+
+  ***AND THE FINAL MEDIAN HAS NO WINDOW USE, BECAUSE THIS BLOCK CANNOT
+  RUN THE DIRECTION TEST AT ALL.*** **The block's groups are `{13: 3,
+  12: 4}` across its 7 members — NO coord9 = 11 group**, *as its opening
+  entry at `b177b4d` recorded.* **That is three commits back, not one**
+  — *a first draft of this sentence said "one commit ago" and was wrong,
+  because the commits since the span opened have banked idx* **1592,
+  1593, 1589, 1591** *in that order, which is not walk order.* **coord9
+  = 12 stands at 0 of 4.** *So
+  `13-median < 12-median < 11-median` has no third term here and never
+  will; the tally of twelve settled blocks — eight keep, four break —
+  does not move and cannot move on this block.*
+
+  ***THE TIE CENSUS, RE-DERIVED RATHER THAN RECALLED: 24 → 25 of
+  1595***, across **22 distinct duplicated costs — 21 with two members
+  and one with five**, the five being the 0.1 s floor. *Check: `21 × 1 +
+  4 = 25`.* **It moves by ONE though TWO rows became tied**, *because
+  the census counts members beyond the first and idx 1195 was not a tie
+  until its twin arrived.* ***AND THE LINE HAD GONE UNMAINTAINED FOR 269
+  ROWS*** — *the last census written into this note is* **17 at N =
+  1325**; *re-deriving at N = 1595 gives 25.* **Nothing was recalled: the
+  count came off the staged index in this commit.**
+
+  ***idx 1595 UNSAT AT 1596.9 s, UNTIED.*** **Rank 1178 of 1595** —
+  *`1595 − 417 = 1178` reproduces the rank, detector agrees.* **The
+  block goes to 3 of 7. Holes stay `[1590]`, frontier contiguous
+  0..1589, highest decided 1595. Decided 1595 of 1949 = 81.8368%; still
+  0 SAT.** *`[13,12,11,7]` stays at 10 of 11 with its break
+  unconditional, and the ninety-first span stays open at width one.*
+
+  ***THE 82% TRAP IS REGISTERED THREE ROWS OUT.*** **`0.82 × 1949 =
+  1598.18`, so the crossing is at 1599 decided = 82.0421%** — *and*
+  **1598 decided = 81.9908%, which prints as 82.0% at one decimal
+  without having crossed.** *That is the trap, and it is written down
+  before the counter reaches it.* **This is the practice the 81%
+  crossing did without**, *which this note already records as a lapse
+  at its own entry — `0.81 × 1949 = 1578.69`, crossing 1579 =
+  81.0159%, the trap row 1578 = 80.9646% — and that bullet is not
+  restated here beyond the pointer.* **The standing claim that 97 of 99
+  percent thresholds carry a trap, with the exceptions exactly {2, 51},
+  was re-derived by script in this commit and it checks out** — *worth
+  saying in a file where most standing claims re-checked this session
+  have not.* **Computed, not read off: `1598/1949` and `1599/1949`
+  were divided by script.**
 
   ***idx 1591 UNSAT AT 2702.8 s: THE BREAK FOR `[13,12,11,7]` IS NOW
   UNCONDITIONAL.*** **Rank 853 of 1593 with no tie** — *`1593 − 740 =
@@ -23288,7 +23376,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1593 of 1949 = 81.7342%**; **356 undecided**. **50% IS CROSSED**, at
+- **1595 of 1949 = 81.8368%**; **354 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -24004,7 +24092,7 @@ exactly one bank.
 - `[13, 12, 11, 7]` idx 1582..1592: **11 members**,
   **10 decided**, undecided [1590]
 - `[13, 12, 11, 6]` idx 1593..1599: **7 members**,
-  **1 decided**, undecided 6 spanning 1594..1599
+  **3 decided**, undecided [1596, 1597, 1598, 1599]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
