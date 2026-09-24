@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T21:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T21:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6964,6 +6964,50 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 21:42:20Z CHECK-IN BOUNDS BOTH GROUPS THAT THE 20:42Z ONE COULD
+  NOT, AND THE RULE PUBLISHED IN BETWEEN IS WHAT SAYS WHY.*** *No row
+  landed. Four cubes are in flight —* **idx 1622 and idx 1623 at 2528 s,
+  idx 1624 at 552 s, all coord9 = 12; idx 1625 at 371 s, coord9 = 11.**
+  *Two check-ins ago, at* `0759d94`, *the same kind of sample bounded
+  neither group; it does now, and nothing about the measurement changed
+  — more members simply started.*
+
+  | group | `n` | floored | unfloored | rule `n − f < j` | bound |
+  |---|---|---|---|---|---|
+  | coord9 = 11 | 5 | 3 (2 landed + 1 in flight) | 2 | 2 < 3 ✓ | **≥ 371.0 s** |
+  | coord9 = 12 | 11 | 6 (3 landed + 3 in flight) | 5 | 5 < 6 ✓ | **≥ 552.0 s** |
+
+  *At* `0759d94` *the same groups read* **f = 1, unfloored 4, `4 ≥ 3`**
+  *and* **f = 3, unfloored 8, `8 ≥ 6`** — *both refused.* **Checked
+  adversarially, not by sampling**: *push every unfloored member to 0
+  and every floored one to its floor, and read the median off that
+  arrangement —* `[0, 0, 371, 1967.7, 1976.4]` *and* `[0, 0, 0, 0, 0,
+  552, 2003.6, 2038.3, 2156.9, 2528, 2528]`. **The bound is the floored
+  member sitting at the median slot, which is why it is the SMALLEST
+  floor and not the largest.**
+
+  ***AND NEITHER BOUND TOUCHES THE DIRECTION WINDOW.*** **The 13-median
+  is FINAL at 1058.1 s; leg one needs the 12-median above it and the
+  bound is only ≥ 552.0**, *so leg one is not established.* **Leg two
+  needs `12-median < 11-median` and bounds of 552.0 and 371.0 order
+  nothing** — *a lower bound on each of two quantities says nothing
+  about which is larger.* ***SO THE WINDOW IS EXACTLY AS OPEN AS IT WAS
+  BEFORE THIS SAMPLE***, *and the bounds are figures rather than
+  evidence.*
+
+  ***THE TWO OUTSTANDING RE-TAKES OF SET TWENTY-TWO ARE NOW FAR PAST THE
+  RUNS THEY REPLACED.*** **idx 1622 and idx 1623 both stand at 2528 s,
+  against discarded runs of 321.856 s and 54.572 s** — *7.85× and 46.32×
+  — *so their ratio bounds tighten to* **≤ 0.1273** *and* **≤ 0.0216**.
+  *The set stays* **2 of 4** *and its ratios stay withheld.* **This is
+  within-run and a restart destroys it**, *which #54 demonstrated four
+  commits ago.*
+
+  **State unchanged: 1622 of 1949 = 83.2222%, 0 SAT, holes `[]`,
+  frontier contiguous 0..1621, highest decided 1621.** *`[13,12,10,10]`
+  stays at 10 of 21.* **Driver pid 21147 alive and matching the note;
+  max clock delta 1 s over n = 4.**
 
   ***THE NINETY-THIRD SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `8a7a486` EXISTED.*** Opened after **`f2bd489`** at 20:53:20Z, closed
