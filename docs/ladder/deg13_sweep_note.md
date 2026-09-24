@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T17:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T17:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6937,6 +6937,24 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***ALL FOUR REMAINING coord9 = 12 CUBES ARE IN FLIGHT AT ONCE, SO THE
+  BLOCK'S VERDICT IS ONE SLOT-CYCLE AWAY.*** *At the 17:41:57Z sample
+  the four running cubes are* **idx 1589 at 3076 s, idx 1590 at 1178 s,
+  idx 1591 at 584 s and idx 1592 at 247 s** — *precisely the four
+  members `[13,12,11,7]` still needs.* **When they land the coord9 = 12
+  group is 6 of 6, its median is a number, and the corridor test is
+  answered outright.**
+
+  ***AND THE TRIGGER IS NOT YET ARMED BY ANY OF THEM.*** *The forced
+  break needs* **two or more above 3457.3 s**, *and none of the four has
+  reached that elapsed:* **idx 1589 is nearest at 381.3 s short**, *then
+  2279.3, 2873.3 and 3210.3 s.* **So zero of the four are committed high
+  and the trigger needs two** — *which is a statement about elapsed
+  floors, not about where the costs will fall; a cube at 247 s can still
+  land anywhere.* *Recorded as the live state of a condition registered
+  one commit ago, and it is the elapsed readings that are live, not the
+  condition.*
 
   ***THE NINETIETH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `ff7a4bb` EXISTED.*** **The retirement sentence stood for exactly one
