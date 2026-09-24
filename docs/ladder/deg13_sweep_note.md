@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T13:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T13:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6928,6 +6928,21 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE NEW BLOCK'S GROUPS ARE CONTIGUOUS BY INDEX, WHICH IS WORTH
+  KNOWING BEFORE IT MATTERS.*** *Read off the cube list for idx
+  1567..1581:* **coord9 = 13 is 1567–1570 (all four landed), coord9 =
+  11 is exactly idx 1574 and idx 1577, and every other index in the
+  block is coord9 = 12.** *So the 11-group of two is split across the
+  run rather than adjacent, and the 12-group of nine is everything
+  else.* **At the 13:41:52Z check-in the four in flight are idx 1571,
+  1572, 1573 and 1574** — *three coord9 = 12 and one coord9 = 11, so
+  the next four landings take the 12-group to 3 of 9 (threshold 5) and
+  the 11-group to 1 of 2 (threshold 2).* **Neither reaches its
+  threshold**, *so nothing in this block will be bounded for at least
+  two more rows after those, and the window here cannot be read yet.*
+  *Recorded because the last block's first bound arrived without anyone
+  having said in advance when it could.*
 
   ***idx 1570 UNSAT AT 1777.0 s COMPLETES `[13,12,11,8]`'s 13-GROUP AND
   ITS MEDIAN IS FINAL AT 1748.95.*** **Rank 1117 of 1571 with no tie** —
