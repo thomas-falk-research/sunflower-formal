@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T17:44Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T17:51Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6805,7 +6805,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1757 -> 1758 rows)
+## State as of the last refresh (1758 -> 1759 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6816,7 +6816,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1758 rows; 1589 labels decided; 1589 UNSAT; 0 SAT; 0 labels
+- **1759 rows; 1590 labels decided; 1590 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6852,7 +6852,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1589 decided plus 169 superseded
+  A row count is not a decision count: 1590 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6902,8 +6902,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1588, highest decided 1588, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1588, highest decided 1592, holes [1589, 1590, 1591].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6937,6 +6937,52 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE NINETY-FIRST SPAN HAS OPENED, AT WIDTH THREE.*** Walk position
+  **156** less the OFFSET of 65 — the **ninety-first**, derived from the
+  walk's 155 closed spans plus this one. **idx 1592 came in at 579.0 s**
+  while idx 1589, 1590 and 1591 are still running, leaving **holes
+  `[1589, 1590, 1591]`, width three**, frontier contiguous **0..1588**
+  and highest decided **1592**. *Per the `#29` rider the width is what
+  it is AT THIS COMMIT.*
+
+  ***AN OPENING AT THREE.*** Over the **155** closed chains the opening
+  hole count is **1 in 53, 2 in 51, 3 in 48 and 4 in 3**, so three is
+  **31.0%**. **It is the first opening at three since the
+  eighty-ninth**, and the spans that opened at three are **48** of the
+  155, the last five of them ordinals **75, 77, 79, 85 and 89**.
+
+  **The row: idx 1592, UNSAT at 579.0 s, sweep rank 1462 of 1590 with no
+  tie** — *`1590 − 128 = 1462` reproduces the rank, detector agrees.*
+  **coord9 = 12 goes to 3 of 6** — *`3457.3, 3463.6, 579.0`* — *and the
+  block to 8 of 11. Decided 1590 of 1949 = 81.5803%; still 0 SAT.*
+
+  ***AND THE WINDOW FOR `[13,12,11,7]` IS NOW FORCED TO BREAK, ON EVERY
+  BRANCH, WITHIN-RUN.*** *At the 17:50:26Z sample* **idx 1589 stands at
+  3461 s — PAST the 3457.3 threshold, so it is committed high** — *and*
+  **idx 1590 stands at 1563 s.** *Take the two cases:*
+
+  - **If idx 1590 or idx 1591 also lands above 3457.3**, *two of the
+    three remaining are high, so four of the six values are at or above
+    3457.3 and the median is too* — **far outside the corridor.**
+  - **If both stay below**, *the six split three low and three high;*
+    `x₍₄₎` *is then* **3457.3** *and* `x₍₃₎` *is the largest of the
+    lows, which is at least idx 1590's floor of* **1563** — *giving a
+    median of at least* **2510.15**, **28.65 s above the corridor's
+    upper end of 2481.5.**
+
+  **Both branches miss the corridor, so `13-median < 12-median <
+  11-median` FAILS here.** *Brute force over 400000 completions
+  respecting all three elapsed floors: smallest median seen* **2511.15**
+  *and* **zero** *completions inside the corridor.*
+
+  ***IT IS WITHIN-RUN AND THE TALLY DOES NOT MOVE.*** *Both legs of the
+  argument rest on elapsed readings — idx 1589's 3461 s and idx 1590's
+  1563 s — and a restart voids them; with the three costs unconstrained
+  the corridor is reachable again.* **The verdict becomes unconditional
+  the moment idx 1589 and idx 1590 land**, *whatever they land at, since
+  each need only exceed the floor it has already passed.* **Registered
+  before either row exists, and NOT scored until they do.**
 
   ***ALL FOUR REMAINING coord9 = 12 CUBES ARE IN FLIGHT AT ONCE, SO THE
   BLOCK'S VERDICT IS ONE SLOT-CYCLE AWAY.*** *At the 17:41:57Z sample
@@ -23130,7 +23176,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1589 of 1949 = 81.5290%**; **360 undecided**. **50% IS CROSSED**, at
+- **1590 of 1949 = 81.5803%**; **359 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -23844,7 +23890,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 7]` idx 1582..1592: **11 members**,
-  **7 decided**, undecided [1589, 1590, 1591, 1592]
+  **8 decided**, undecided [1589, 1590, 1591]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
