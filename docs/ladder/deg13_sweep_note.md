@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T21:04Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T21:34Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6830,7 +6830,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1788 -> 1789 rows)
+## State as of the last refresh (1789 -> 1790 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6841,7 +6841,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1789 rows; 1620 labels decided; 1620 UNSAT; 0 SAT; 0 labels
+- **1790 rows; 1621 labels decided; 1621 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6877,7 +6877,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1620 decided plus 169 superseded
+  A row count is not a decision count: 1621 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6927,7 +6927,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1618, highest decided 1620, holes [1619].**
+- **Frontier contiguous 0..1618, highest decided 1621, holes [1619].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6962,6 +6962,44 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1621 UNSAT AT 1976.4 s — THE FIRST RE-TAKE OF SET TWENTY-TWO
+  LANDS, AND ITS RATIO IS WITHHELD.*** **Rank 1069 of 1621 with no tie**
+  — *`1621 − 552 = 1069` reproduces the rank, detector agrees.*
+  **0.0915 of the per-cube cap. coord9 = 11 goes to 2 of 5 against a
+  threshold of 3. Holes stay `[1619]`, frontier contiguous 0..1618,
+  highest decided 1621. Decided 1621 of 1949 = 83.1709%; still 0 SAT.**
+  ***THE SET IS 1 OF 4 AND ITS FIGURES STAY WITHHELD UNTIL ALL FOUR ARE
+  IN***, *by the standing convention — the ratio exists, it is a landed
+  fact, and it is not published here.*
+
+  ***BUT TWO OF THE THREE OUTSTANDING RE-TAKES ARE ALREADY BOUNDED FAR
+  BELOW 1.0, WITHIN THE RUN.*** *At the 21:34:00Z sample idx 1619, 1622
+  and 1623 all stand at* **2029 s** *of elapsed — they were dispatched
+  together at the relaunch — and* `ratio = discarded / re-run` *can only
+  fall as the re-run grows, so:*
+
+  | idx | discarded | ratio bound | reading |
+  |---|---|---|---|
+  | 1619 | 2129.120 s | ≤ **1.0493** | can still exceed 1.0 |
+  | 1622 | 321.856 s | ≤ **0.1586** | already below 1.0 |
+  | 1623 | 54.572 s | ≤ **0.0269** | already below 1.0 |
+
+  **idx 1622 and idx 1623 have already outlasted the runs they replaced
+  by 1707 s and 1974 s.** *Only* **idx 1619** *can still come in above
+  1.0, and it needs another* **100.120 s** *to match its own discarded
+  2129.120 s.* ***THIS IS A WITHIN-RUN BOUND AND A RESTART DESTROYS
+  IT*** — *#54's own absorb, three commits back, is the worked example
+  of why that sentence is written every time.* **Recorded because it is
+  true now, not because it will survive.** *This bullet is written in
+  the same commit as the set's first landing, which is the practice set
+  twenty-one's opening established.*
+
+  ***AND THE SPAN'S HOLE IS STILL THE SET'S OTHER OPEN CASE.*** **idx
+  1619 is both the ninety-third span's only hole and the one re-take
+  that could still ratio above 1.0**, *so one landing closes the span
+  and answers the set's only open question at once.* *That remains a
+  coincidence of timing and nothing follows from it.*
 
   ***idx 1620 UNSAT AT 1967.7 s AND THE NINETY-THIRD SPAN HAS OPENED, AT
   WIDTH ONE.*** Walk position **158** less the OFFSET of 65 — the
@@ -24438,7 +24476,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1620 of 1949 = 83.1195%**; **329 undecided**. **50% IS CROSSED**, at
+- **1621 of 1949 = 83.1709%**; **328 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -25152,7 +25190,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **8 decided**, undecided 13 spanning 1619..1632
+  **9 decided**, undecided 12 spanning 1619..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 

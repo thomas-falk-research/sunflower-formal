@@ -13036,3 +13036,4 @@ g=11 [13, 12, 10, 10, 13, 13, 13, 13, 11, 11, 9]	UNSAT	1967.7
 # NOT CONFOUNDED: the six-field spec is unchanged and btime did not
 # move, so the discarded runs and the re-takes are on the same machine.
 # Stated at the OPENING, as the procedure requires, not at the close.
+g=11 [13, 12, 10, 10, 13, 13, 13, 13, 11, 10, 10]	UNSAT	1976.4
