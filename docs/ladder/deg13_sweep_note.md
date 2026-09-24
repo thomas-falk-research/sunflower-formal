@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T18:05Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T18:20Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6805,7 +6805,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1760 -> 1761 rows)
+## State as of the last refresh (1761 -> 1762 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6816,7 +6816,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1761 rows; 1592 labels decided; 1592 UNSAT; 0 SAT; 0 labels
+- **1762 rows; 1593 labels decided; 1593 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6852,7 +6852,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1592 decided plus 169 superseded
+  A row count is not a decision count: 1593 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6902,7 +6902,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1589, highest decided 1593, holes [1590, 1591].**
+- **Frontier contiguous 0..1589, highest decided 1593, holes [1590].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6937,6 +6937,42 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1591 UNSAT AT 2702.8 s: THE BREAK FOR `[13,12,11,7]` IS NOW
+  UNCONDITIONAL.*** **Rank 853 of 1593 with no tie** — *`1593 − 740 =
+  853` reproduces the rank, detector agrees.* **coord9 = 12 goes to 5
+  of 6 with `579.0, 2702.8, 3457.3, 3463.6, 4289.0`.** **Holes `[1590]`,
+  the span narrows to one; frontier contiguous 0..1589, highest decided
+  1593. Decided 1593 of 1949 = 81.7342%; still 0 SAT.**
+
+  **At `j = 5` of `n = 6` the even-`n` ends are `(k[2]+k[3])/2` and
+  `(k[3]+k[4])/2`, so the 12-median is in `[3080.05, 3460.45]` FROM
+  LANDED VALUES ALONE** — *brute force over 400000 completions of the
+  single remaining member returns both ends exactly and* **zero**
+  *completions inside the corridor.*
+
+      13-median  FINAL  1546.65
+      12-median         [3080.05, 3460.45]   (5 of 6)
+      11-median  FINAL  2481.5
+
+  **`1546.65 < 3080.05` so leg 1 holds; `3460.45 > 2481.5` — indeed the
+  whole bracket sits `598.55 s` above the 11-median — so `12-median <
+  11-median` is REFUTED.** ***THE WINDOW BREAKS, AND NOTHING IN THAT
+  RESTS ON AN ELAPSED READING.*** *One commit ago the same verdict was
+  within-run and the landed-only bracket `[2018.15, 3876.30]` still
+  overlapped the corridor; one row has moved the lower end from 2018.15
+  to 3080.05 and taken the corridor out of reach.*
+
+  ***THE TALLY MOVES: EIGHT KEEP, FOUR BREAK, OF TWELVE SETTLED
+  BLOCKS.*** *The previous line read eight keep, three break of eleven.*
+  **Settled with 1 of 11 cubes still out** — *idx 1590, the open span's
+  only hole, which cannot reach the corridor whatever it costs.*
+  ***AND THE CORRIDOR TEST IS SCORED AS REGISTERED*** — *it was
+  published as a single question with two failure directions before any
+  coord9 = 12 cube had landed, and the answer came out on the upper
+  side, which is the side the first two 12-values pointed at.*
+  **Nothing is claimed from eight of twelve**: *the tally is a count of
+  verdicts and this note has said so at every block.*
 
   ***idx 1589 UNSAT AT 4289.0 s — THE HIGH CUBE THE TRIGGER WAS
   WATCHING.*** **Rank 584 of 1592 with no tie** — *`1592 − 1008 = 584`
@@ -23252,7 +23288,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1592 of 1949 = 81.6829%**; **357 undecided**. **50% IS CROSSED**, at
+- **1593 of 1949 = 81.7342%**; **356 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -23966,7 +24002,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 7]` idx 1582..1592: **11 members**,
-  **9 decided**, undecided [1590, 1591]
+  **10 decided**, undecided [1590]
 - `[13, 12, 11, 6]` idx 1593..1599: **7 members**,
   **1 decided**, undecided 6 spanning 1594..1599
 
