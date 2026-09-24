@@ -205,10 +205,16 @@ try:
         with open(SAMPLE,'a') as fh:
             if head: fh.write("# iso_utc\tdriver_pid\tsolver_pid\tidx\telapsed_s\tcpu_s\tpcpu\tratio\n")
             fh.write("\n".join(lines)+"\n")
-        subprocess.run(['git','add',SAMPLE],check=True)
         print(f"cpu/elapsed sample appended: {len(lines)} solver(s) at {stamp}")
     else:
         print("cpu/elapsed sample NOT appended: no live solver paired to a cube")
+    # Stage the sample file whichever branch ran.  It used to be staged only
+    # on the append path, so when the same-second guard fired at 01:41:47Z --
+    # cnf_mtime_check.py having appended in that same second -- ITS rows were
+    # left unstaged and would have missed the commit.  The file is shared by
+    # two writers; staging it is not the appender's business.
+    if _os.path.exists(SAMPLE):
+        subprocess.run(['git','add',SAMPLE],check=True)
 except Exception as e:
     print(f"!! cpu/elapsed sample NOT appended: {type(e).__name__}: {e}")
 

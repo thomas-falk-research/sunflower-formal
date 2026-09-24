@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T01:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T01:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -9800,6 +9800,31 @@ exactly one bank.
   which is not a step in the direction window.* **coord9 = 11 is
   unchanged at 2 of 8**, *so the window still has two of its three terms
   unbounded.* **Block 13 of 28**, *min 589.2, max 4890.6.*
+
+  ***THE SAME-SECOND GUARD FIRED FOR REAL, AND IT EXPOSED A SECOND BUG
+  BEHIND IT.*** *At the 01:41Z check-in `cnf_mtime_check.py` appended
+  its sample at* **`01:41:47Z`** *and `bank.py`, run seconds later, drew
+  the same stamp.* **The guard added at idx 1520/1521 did its job: "NOT
+  appended: 2026-09-24T01:41:47Z is already the last stamp in the file"
+  — the first time it has fired outside a test.** *No duplicate key was
+  written.*
+
+  ***BUT THE SKIP TOOK THE `git add` WITH IT.*** **`git add SAMPLE`
+  sat inside the append branch, so when the guard fired nothing staged
+  the file — and `cnf_mtime_check.py`'s four rows, already written to
+  the working tree, were left unstaged.** *`git status` showed them as*
+  `' M'`*, not* `'M '`*, and they would have missed this commit
+  silently.* ***The guard turned a duplicate-write bug into a
+  lost-write bug***, *which is the more dangerous of the two: a
+  duplicate is visible in the file, a dropped append is visible only in
+  a diff nobody reads.*
+
+  **The staging is moved out of the append branch and now runs on every
+  path.** *The file has two writers and only one of them was staging it;
+  that was the actual defect, and the guard only made it reachable.*
+  **Caught by reading `git status --porcelain` after the bank rather
+  than assuming the bank had staged what it printed** — *the same habit
+  that caught the `| head` truncation two hours ago.*
 
   ***AND THE VERDICT IS THE ONE THAT WAS DECLARED WORTHLESS IN ADVANCE.***
   *The previous entry said, before the row landed:* **"If this span
