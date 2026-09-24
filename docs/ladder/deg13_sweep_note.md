@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T08:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T08:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -806,31 +806,59 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **THIS HEADING AND TABLE ARE STALE AND ARE NOT TO BE QUOTED**
+## Re-run sets — **thirteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), **SET TWENTY-ONE OPEN at 0 of 4**
 
-***THE HEADING BELOW SAYS "SET TWELVE OPEN" AND THE TABLE STOPS AT
-THIRTEEN, WHILE `#53` HAS JUST OPENED SET TWENTY-ONE.*** *Found while
-absorbing restart #53, by reading this section rather than the live
-census.* **The table is missing eight sets — fourteen through
-twenty-one — and the heading names the wrong open set by nine.** *The
-live census bullet is current; this section is not.* **The state of
-twelve and of fourteen–eighteen is not established here**, *so nothing
-in the heading or the table below may be quoted as the current state of
-re-run sets.* **The live census at the foot of this
-file is the current statement**; *this section is a partial archive of
-closed sets and is left exactly as it stands until each missing set is
-re-derived from the header blocks, because the alternative — typing a
-heading from memory — is what put it this far behind.* **Sixth live
-instance of the standing-claim-never-re-checked pattern**, *beside the
-pid line, the 41/14.6% line, the monotonicity bullets, the restart-range
-tally and the re-run-set census bullet that was rewritten at `#52` after
-drifting by twelve sets. The `#52` rewrite fixed the bullet and did not
-look at the heading two hundred lines above it.*
+***THE HEADING USED TO SAY "SET TWELVE OPEN" AND THE TABLE STOPPED AT
+THIRTEEN, WHILE `#53` HAD JUST OPENED SET TWENTY-ONE.*** *Found while
+absorbing restart #53, by reading this section instead of quoting it;
+flagged in that commit and resolved in this one.* **Sixth live instance
+of the standing-claim-never-re-checked pattern**, *beside the pid line,
+the 41/14.6% line, the monotonicity bullets, the restart-range tally and
+the re-run-set census bullet that was rewritten at `#52` after drifting
+by twelve sets — the `#52` rewrite fixed the bullet and did not look at
+the heading two hundred lines above it.* The stale heading, kept
+verbatim so the drift is visible and not paraphrased: *"Re-run sets —
+**ten CLOSED** (one–eight, eleven and thirteen), **set nine
+ABANDONED**, **set ten COMPLETE but undivided**, **SET TWELVE OPEN**"*.
 
-The stale heading, kept verbatim so the drift is visible and not
-paraphrased: *"Re-run sets — **ten CLOSED** (one–eight, eleven and
-thirteen), **set nine ABANDONED**, **set ten COMPLETE but undivided**,
-**SET TWELVE OPEN**"*.
+***EVERY SET FROM TWELVE TO TWENTY IS 4-OF-4 DECIDED IN THE CHECKPOINT,
+CHECKED MECHANICALLY AND NOT RECALLED.*** *Each set's member indices
+were read from its opening — in the header block or in this note — and
+each index looked up in the checkpoint by label.* **The completeness
+column below is that lookup; the "divided" column is whether this note
+anywhere publishes the four `discarded / re-run` ratios.** *The two are
+different questions and the drift happened because they were treated as
+one.*
+
+| set | members | 4-of-4? | divided? | why not |
+|---|---|---|---|---|
+| twelve | 1034, 1038, 1039, 1040 | yes | no | close never performed; three numerators near-interchangeable, stated at its opening |
+| thirteen | 1106–1109 | yes | **yes** | — |
+| fourteen | 1173, 1177, 1178, 1179 | yes | no | its discarded runs are **intervals**, not points, so every ratio would be a bracket |
+| fifteen | 1272–1275 | — | — | **died empty** at #48 with no re-run clock at all |
+| sixteen | 1272–1275 | yes | no | **confounded** — opened across the 2.10 → 2.80 GHz change |
+| seventeen | 1328–1331 | yes | **yes, in this commit** | — |
+| eighteen | 1361–1364 | yes | no | **confounded**, and absent from this note entirely until now |
+| nineteen | 1419–1422 | yes | **yes** | — |
+| twenty | 1505–1508 | yes | **yes** | — |
+| twenty-one | 1551–1554 | **0 of 4** | no | **open**; ratios withheld until all four land |
+
+***SET EIGHTEEN APPEARS NOWHERE IN THIS NOTE.*** **It was opened in the
+`#50` header block, named again in `#51`'s as confounded, and the phrase
+"set eighteen" occurs in this file zero times outside the table above.**
+*Its four cubes are long decided — 1361 at 2017.5 s, 1362 at 2901.6,
+1363 at 5031.7, 1364 at 4985.1 — so nothing was lost; what was missing
+was any record on this side of the ledger.* **A set can be opened in the
+checkpoint and never reach the note**, *which is the failure mode the
+table above exists to make impossible to repeat.*
+
+***AND SET SEVENTEEN WAS CLOSABLE FOR FOUR RESTARTS AND WAS NEVER
+CLOSED.*** **4-of-4 decided, explicitly NOT confounded at its opening,
+and its four discarded elapsed times are point values in the `#49`
+header block — nothing stood between it and a close except that no one
+performed one.** *It is closed below, which applies this note's own
+convention (ratios at 4-of-4 and not before) rather than making a new
+decision.*
 
 Ratio is **discarded / re-run** (cd2ad61 — it was carried inverted once and
 corrected at 060fb26 by checking it against published data).
@@ -847,6 +875,71 @@ corrected at 060fb26 by checking it against published data).
 | eight | idx-953 commit | 4 | 0.6766 | 4.3988× |
 | eleven | idx-992 commit | 4 | **0.87834** | 4.5244× |
 | thirteen | idx-1108 commit | 4 | **0.91910** | 1.7810× |
+| seventeen | this commit | 4 | 0.5128 | **12.2093×** |
+| nineteen | `#51` block + census | 4 | 0.5350 | 3.1592× |
+| twenty | `#52` block + census | 4 | 0.4748 | 6.1962× |
+
+***SETS NINETEEN AND TWENTY WERE DIVIDED IN THE LIVE CENSUS AND NEVER
+ENTERED THIS TABLE***, *which is the same split that let the heading
+drift: a set can be closed at the foot of the file and missing from the
+section that tabulates closes.* **Both rows are re-derived here from the
+discarded and re-run times rather than copied** — nineteen from
+2013.73/1947.1, 1235.36/2111.1, 1089.09/2246.3 and 683.05/2086.5, twenty
+from 4679.42/5391.1, 4602.69/8467.1, 3156.59/7776.5 and 847.26/6048.2 —
+*and both reproduce the published medians and spreads to four decimals.*
+
+***AND A SUPERLATIVE PUBLISHED ABOUT SET TWENTY IS FALSE.*** **The live
+census says of twenty's 6.1962×: "the spread is the widest of the
+recorded sets, against 4.6436× as the previous widest".** *Read off this
+table, that is wrong twice over: **set one is 54.99×** and **set two is
+8.15×**, both wider, and **set four is 5.3747×**, which is also above
+the 4.6436× named as the runner-up.* **Even restricted to the n = 4
+sets, set two's 8.15× beats it.** *The claim was made by comparing
+against a neighbour rather than against the column, and it is corrected
+at the census bullet as well as here.* **With seventeen closed, the
+ordering among n = 4 sets is 12.2093× (seventeen), 8.15× (two), 6.1962×
+(twenty), 5.3747× (four) … and 1.7810× (thirteen) is still the
+tightest**; *set one's 54.99× is over eight members and is not compared
+with them.*
+
+***SET SEVENTEEN IS CLOSED HERE, AT 4 OF 4, AND ITS RATIOS ARE
+COMPUTED.*** Members idx **1328, 1329, 1330, 1331**, opened at `#49`,
+**not confounded** (said at its opening, as the rule requires), all four
+re-taken together and all four long since landed.
+
+| idx | discarded | re-run | ratio |
+|---|---|---|---|
+| 1328 | 5803.5 | 5758.4 | **1.0078** |
+| 1329 | 3815.1 | 5572.2 | 0.6847 |
+| 1330 | 3297.4 | 9673.1 | 0.3409 |
+| 1331 | 910.4 | 11029.0 | 0.0825 |
+
+*min **0.0825**, median **0.5128** (midpoint of 0.3409 and 0.6847), mean
+0.5290, max **1.0078**, spread **12.2093×**.* **The discarded times are
+the `elapsed at teardown` column of the `#49` header block and the
+re-runs are the checkpoint's costs**; *nothing here is recalled.*
+
+***ONE RATIO IS ABOVE 1.0, AND ITS MARGIN IS TIED WITH THE NARROWEST ON
+RECORD RATHER THAN BELOW IT.*** **idx 1328's 1.0078 — the killed run reached 5803.5 s and the
+re-take finished in 5758.4 s, 45.1 s faster.** *The note already records
+1.0805 (idx 788), 1.0595 (idx 989), 1.0556 (idx 991), 1.0079 (idx 1106)
+and 1.0342 (idx 1419); 1.0078 is below all of them, and it sits
+**0.0001 below idx 1106's 1.0079** — a gap inside the rounding of the
+times both came from, so the two are treated as **tied for the narrowest
+margin** and no ordering between them is published.*
+**1.0805 remains the largest and that sentence elsewhere in this note
+still holds.**
+
+***THE SPREAD IS THE WIDEST OF ANY n = 4 SET AND THAT IS SELECTION, NOT
+A FINDING.*** *Set seventeen's own opening says it: these four are
+precisely the cubes still running at teardown, so they are by
+construction the longest-running of their cohort, and* **idx 1331 was
+killed at 910.4 s and then took 11029.0 s — a cube whose discarded run
+sampled 8% of its eventual cost.** *A set whose members are selected for
+being slow, and whose numerators are set by where the kill landed rather
+than by the cube, will produce a wide spread whenever one member is
+killed early; 12.2093× is that mechanism, and nothing is claimed from
+it.*
 
 **SET SIX IS CLOSED**, by idx 832 — the same row that closed the eleventh
 span. It opened at restart #38 with idx **831, 832, 833, 834**, all four
@@ -22217,12 +22310,32 @@ exactly one bank.
   *min **0.1401**, median **0.4748** (midpoint of 0.4059 and 0.5436),
   mean 0.4894, max **0.8680**, spread **6.1962×**.* **No ratio exceeds
   1.0 — every one of the four re-takes cost MORE than the run it
-  replaced**, *by +711.68, +3864.41, +4619.91 and +5200.94 s.* **The
+  replaced**, *by +711.68, +3864.41, +4619.91 and +5200.94 s.*
+  ***AND THE SPREAD CLAIM MADE HERE IS WITHDRAWN.*** *It read* "**the
   spread is the widest of the recorded sets**, *against 4.6436× as the
-  previous widest; 1.7810× remains the tightest. Nothing is made of
-  that ranking — this note has already withdrawn one spread claim that
-  rested on a margin of 0.046, and 6.1962× over four points is a
-  statement about four numbers.*
+  previous widest*" — **and it is not.** *Read off the re-run sets
+  table rather than off a neighbour: **set one is 54.99×**, **set two is
+  8.15×** and **set four is 5.3747×**, so 6.1962× is beaten twice over
+  and the named runner-up was not even the runner-up.* **With set
+  seventeen closed at 12.2093× it is beaten a third time.** *The
+  arithmetic 6.1962× is correct and only the superlative was wrong; the
+  same sentence's* "**1.7810× remains the tightest**" *is checked and
+  does hold.* **Seventh live instance of the
+  standing-claim-never-re-checked pattern** — *and the second in this
+  session found by reading a table instead of the sentence beside it.*
+  *Nothing is made of any of these rankings: this note has already
+  withdrawn one spread claim that rested on a margin of 0.046, and four
+  points is four points.*
+- **RE-RUN SET SEVENTEEN IS CLOSED** (1328, 1329, 1330, 1331 — opened at
+  `#49`, **not confounded**, table in the re-run sets section). *Ratios
+  `discarded / re-run`:* **1.0078, 0.6847, 0.3409, 0.0825** — *min
+  0.0825, median **0.5128**, mean 0.5290, max **1.0078**, spread
+  **12.2093×**, the widest of any n = 4 set.* ***IT HAD BEEN CLOSABLE
+  SINCE BEFORE #50 AND WAS NEVER CLOSED*** — *4-of-4 decided, not
+  confounded, discarded times sitting as point values in the `#49`
+  header block.* **Closing it applies this note's own convention rather
+  than making a new decision**, *and the wide spread is the selection
+  effect its own opening predicted, not a finding.*
 - ***RE-RUN SET TWENTY-ONE IS OPEN*** (1551, 1552, 1553, 1554 — opened by
   `#53`, **not confounded**, table in that header block). *Nothing of it
   has landed: **0 of 4**, and by the standing convention its ratios are
