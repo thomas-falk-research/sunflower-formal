@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T09:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T09:11Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6787,7 +6787,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1720 -> 1721 rows)
+## State as of the last refresh (1721 -> 1724 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6798,7 +6798,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1721 rows; 1552 labels decided; 1552 UNSAT; 0 SAT; 0 labels
+- **1724 rows; 1555 labels decided; 1555 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6834,7 +6834,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1552 decided plus 169 superseded
+  A row count is not a decision count: 1555 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6884,8 +6884,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1550, highest decided 1554, holes [1551, 1552, 1553].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1554, highest decided 1554, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***THE EIGHTY-FIFTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk position
   **150** less the OFFSET of 65 — the **eighty-fifth**, derived from the
@@ -6898,9 +6898,11 @@ exactly one bank.
 
   ***AN OPENING AT THREE.*** Over the **149** closed chains the opening
   hole count is **1 in 51, 2 in 49, 3 in 46 and 4 in 3**, so three is
-  **30.9%**. **It is the first opening at three since the
-  seventy-ninth**, and the spans that opened at three are **46** of the
-  149, the last five of them ordinals **68, 74, 75, 77 and 79**.
+  **30.9%**. *The three live-only sentences that stood here — the
+  "since the" ordinal, the "M of the N" count and the last-five list —
+  are struck at this close, per the census convention; the sentence
+  above survives because it is checked against the walk's first 149
+  spans and stays true for good.*
 
   **The row: idx 1554, UNSAT at 3263.7 s, sweep rank 715 of 1552 with no
   tie** — *`1552 − 837 = 715` reproduces the rank, detector agrees.*
@@ -6961,6 +6963,96 @@ exactly one bank.
   window cannot be read in this block yet.** *Stated because the last
   block's window was settled by exactly such a floor, and this one is
   not the same case.*
+
+  ***THREE ROWS AND THE SPAN CLOSES: idx 1551 AT 3782.7 s, idx 1553 AT
+  3833.7 s, idx 1552 AT 3932.5 s.*** **Ranks 633, 627 and 619 of 1555,
+  none tied** — *`1555 − 922 = 633`, `1555 − 928 = 627`, `1555 − 936 =
+  619`; detector agrees on all three.* **All three are coord9 = 12.**
+  **Holes `[]`, frontier contiguous 0..1554, highest decided 1554.
+  Decided 1555 of 1949 = 79.7845%; still 0 SAT.**
+
+  ***THE EIGHTY-FIFTH SPAN IS RETIRED HERE AND CARRIES NO FIGURES.***
+  *Per the two-commit close: this commit flips the `SPAN-STATE` marker,
+  strikes the live census sentences and says nothing about duration,
+  chain, ranks or verdict.* **Those come from `--spans all` in the NEXT
+  commit, read after this one exists**, *with every carried row first
+  reproduced at the OLD N = 149.* **`span_audit.py` will FAIL on
+  spans-table contiguity between the two commits** — *the walk will hold
+  150 closed spans while the table stops at 84, which is the procedure
+  working, not a defect.*
+
+  ***AND THE STALE-READ DETECTOR FIRED TWICE INSIDE THIS ONE ENTRY.***
+  *The entry was drafted first for* **one** *row — idx 1551 alone,
+  "holes `[1552, 1553]`", rank* **"631 of 1553"** — *and `bank.py`
+  staged* **two** *rows with holes `[1552]`, because idx 1553 landed at
+  09:07:22Z mid-draft. It was rewritten from the staged blob, at ranks*
+  **632 and 626 of 1554** *— and `bank.py` then staged* **three** *rows
+  with holes `[]`, because idx 1552 landed at 09:08:56Z mid-rewrite.*
+  **The rank moved twice in the documented way: 631 of 1553 → 632 of
+  1554 → 633 of 1555**, *the population growing by one under it each
+  time.* **`checkpoint_audit.py` reads the working tree and `bank.py`
+  reads the staged blob; their disagreeing is the detector, not a bug**
+  — *and these are at least the second and third times it has caught a
+  draft mid-flight; this note records one earlier instance, at idx 1533,
+  and no running count of them has been kept, so "second and third" is a
+  floor and not a tally.* **Both times the entry was rewritten from
+  the staged blob rather than patched**, *because patching one number is
+  how the next one survives. Four cubes that started together finish
+  together; the cadence was foreseeable and the drafting still had to be
+  redone twice.*
+
+  ***RE-RUN SET TWENTY-ONE IS CLOSED AT 4 OF 4, AND ITS RATIOS ARE
+  COMPUTED.*** *Withheld at 1-of-4 on the previous commit, as the
+  convention requires, and divided only now.*
+
+  | idx | discarded | re-run | ratio |
+  |---|---|---|---|
+  | 1551 | 2552.656 | 3782.7 | 0.6748 |
+  | 1552 | 2320.564 | 3932.5 | 0.5901 |
+  | 1553 | 1608.716 | 3833.7 | 0.4196 |
+  | 1554 | 1585.136 | 3263.7 | 0.4857 |
+
+  *min **0.4196**, median **0.5379** (midpoint of 0.4857 and 0.5901),
+  mean 0.5426, max **0.6748**, spread **1.6082×**.* **No ratio exceeds
+  1.0 — every one of the four re-takes cost MORE than the run it
+  replaced**, *by +1230.04, +1611.94, +2224.98 and +1678.56 s.*
+
+  ***AND THE SPREAD IS THE TIGHTEST ON RECORD.*** **1.6082× against set
+  thirteen's 1.7810×, which had held that place**; *checked against the
+  whole spread column rather than against its neighbour, which is the
+  mistake this note withdrew for set twenty two commits ago.* **The five
+  tightest are now 1.6082 (twenty-one), 1.7810 (thirteen), 2.0116
+  (seven), 2.06 (three) and 2.8226 (five)**; *set seventeen's 12.2093×
+  is still the widest of the n = 4 sets and set one's 54.99× the widest
+  overall.* ***NOTHING IS CLAIMED FROM THE RANKING*** — *a tight spread
+  here means the four numerators were near each other, and they were:
+  the four were DISPATCHED within 16 minutes of each other — CNF mtimes
+  07:18:00.778, 07:21:52.870, 07:33:44.718 and 07:34:08.298 — and then
+  killed at a single instant, so the discarded times sit in
+  1585.1–2552.7 s and the re-takes, all started together, in
+  3263.7–3932.5 s. That is a fact about where the kill landed, which
+  this note says at every opening.*
+
+  ***AND ALL FOUR PUBLISHED WITHIN-RUN BOUNDS HELD.*** **idx 1551 ≤
+  0.7380 landed 0.6748; idx 1552 ≤ 0.6709 landed 0.5901; idx 1553 ≤
+  0.4651 landed 0.4196; idx 1554 ≤ 0.6803 landed 0.4857.** *Each bound
+  was a statement that a re-take would exceed a named elapsed floor, and
+  each was checked at the time by comparing two times rather than by
+  dividing — so the set's ratios were genuinely withheld until this
+  commit.* **Four for four is four for four**: *the bound is sound by
+  construction (`cost ≥ elapsed`, so the ratio can only fall), and the
+  useful part is not that it held but that a restart would have voided
+  every one of them.*
+
+  ***THE BLOCK GOES 6 OF 21 TO 9 OF 21 AND STILL NOTHING IS BOUNDED.***
+  **coord9 = 13 complete at 5 of 5, median FINAL `1859.1`; coord9 = 12
+  at 3 of 11 holding `3782.7, 3833.7, 3932.5`, threshold 6; coord9 = 11
+  at 1 of 5 holding `3263.7`, threshold 3.** *Three more coord9 = 12
+  cubes are needed before either end of that median is finite, and two
+  more coord9 = 11.* **The direction window cannot be read here yet.**
+  *All three coord9 = 12 values on record sit above the FINAL 13-median
+  of 1859.1, which is the direction the window wants — three points out
+  of eleven, and nothing is claimed from it.*
 
   **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
@@ -21551,7 +21643,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1552 of 1949 = 79.6306%**; **397 undecided**. **50% IS CROSSED**, at
+- **1555 of 1949 = 79.7845%**; **394 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -22265,7 +22357,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 9]` idx 1546..1566: **21 members**,
-  **6 decided**, undecided 15 spanning 1551..1566
+  **9 decided**, undecided 12 spanning 1555..1566
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
