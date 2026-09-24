@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T05:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T05:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6561,7 +6561,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1709 -> 1710 rows)
+## State as of the last refresh (1710 -> 1711 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6572,7 +6572,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1710 rows; 1541 labels decided; 1541 UNSAT; 0 SAT; 0 labels
+- **1711 rows; 1542 labels decided; 1542 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6604,7 +6604,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1541 decided plus 169 superseded
+  A row count is not a decision count: 1542 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6654,7 +6654,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1538, highest decided 1541, holes [1539].**
+- **Frontier contiguous 0..1538, highest decided 1544, holes [1539, 1542, 1543].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -10390,6 +10390,53 @@ exactly one bank.
   *coord9 = 12 spread `5.905697×` and block span `14.782077×` both
   unchanged; 6415.0 is `3.333853×` the block's final coord9 = 13
   median.*
+
+  ***A CHEAP coord9 = 12 CUBE, AND THE SPAN WIDENS TO THREE.*** *From
+  the staged blob.* **idx 1544 at 680.8 s** (coord9 = **12** in
+  `[13,12,11,10]`, rank **1396 of 1542**); *untied — `1542 − 146 = 1396`
+  reproduces the rank, detector agrees.* **Holes `[1539, 1542, 1543]`,
+  frontier contiguous 0..1538, highest decided 1544. Decided 1542 of
+  1949 = 79.1175%; still 0 SAT.** *idx 1544 landed while three cubes
+  behind it are still running.*
+
+  ***THE CHAIN RISES `1 → 3`, SO THE SPAN IS DETERMINED FALSE.***
+  **Chain `2,2,1,3`, read from the committed blobs: `55d6312` and
+  `42d14f0` carry `holes [1538, 1539]`, `01f0fc7` carries `holes
+  [1539]`, this commit carries three.** *`dead752` is bank-only and
+  contributes no entry.* **Monotone non-increasing is a universal over
+  adjacent pairs and `1 → 3` is a rise, so the verdict is settled
+  before the span closes** — *the same shape as the seventy-ninth, and
+  offered the same way: as a prediction for `--spans all` to check, not
+  as a result. The hole counts are counted from the blobs at every
+  commit, which is the rule three chain errors bought.*
+
+  ***AND THE EXTREMUM RULE HELD FOR THE THIRD TIME, ON THE ROW THAT
+  TESTED IT HARDEST.*** **680.8 is a new group minimum — less than half
+  the old one of 1435.8 — and `lo₁₂` did not move by so much as a
+  hundredth.** *It is still* **3854.15**, *and step one's margin is
+  still* **1929.95 s**. **`hi₁₂` fell 5652.8 → 4652.5**, *a drop of*
+  **1000.3**, *and the bracket is now* **`[3854.15, 4652.5]`, width
+  798.35** *from 1798.65.* **Verified exhaustively over all 91
+  placements of the two remaining unknowns.** *A cube costing `0.353809×`
+  the 13-median arrived in the group whose median must exceed it, and
+  moved the determination not at all — which is the rule's whole
+  content.*
+
+  ***STEP TWO: TRUE CLOSED BY 1000.30, FALSE BY NOTHING.*** **TRUE
+  `hi₁₂ − lo₁₁`: 2090.65 → 1090.35. FALSE `hi₁₁ − lo₁₂`: 2547.30,
+  unchanged.** *Exactly the one-sided move the rule predicts for an
+  extremum, and the mirror of idx 1541's row, which was also a new
+  minimum and also moved only TRUE.* **Still undetermined in both
+  directions** — *and worth noting that TRUE can no longer be reached by
+  `hi₁₂` alone: `lo₁₂ = 3854.15` already exceeds `lo₁₁ = 3562.15`, so
+  `hi₁₂ < lo₁₁` is unreachable while `lo₁₁` stays where it is.* **TRUE
+  now requires the 11-bracket's lower end to rise above 4652.5.**
+
+  **Block 24 of 28**; *coord9 = 12 spread `12.455053×` from `5.905697×`
+  — 680.8 more than doubled it again — while the block span
+  `14.782077×` is unchanged, 680.8 being above the block minimum of
+  589.2.* **coord9 = 12 needs 2 more to pin its median, coord9 = 11
+  needs 2.**
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
@@ -20722,7 +20769,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1541 of 1949 = 79.0662%**; **408 undecided**. **50% IS CROSSED**, at
+- **1542 of 1949 = 79.1175%**; **407 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -21436,7 +21483,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
-  **23 decided**, undecided [1539, 1542, 1543, 1544, 1545]
+  **24 decided**, undecided [1539, 1542, 1543, 1545]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
