@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T15:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T15:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6930,6 +6930,32 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE BREAK BRANCH FOR `[13,12,11,8]` IS RULED OUT, WITHIN-RUN.***
+  *At the 15:42:13Z sample idx 1577 — the coord9 = 11 group's second and
+  last member — stands at* **3953 s** *of elapsed, so its cost is at
+  least that.* **The 11-median is `(3469.0 + v)/2`, so `v ≥ 3953` puts
+  it at or above `3711.0`.** *One commit ago this note registered the
+  three branches:* "**if that mean exceeds 5251.0 the window holds; if
+  it falls below 2480.5 it breaks; between them the block has to
+  finish**". **Breaking needs `v < 1492.0` and `v` is already past
+  3953**, *so that branch is closed.*
+
+  ***AND THE HOLD BRANCH IS STILL 3080 SECONDS AWAY.*** **It needs the
+  11-median above 5251.0, which is `v > 7033.0`; idx 1577 is at 3953
+  and must run another 3080.0 s to get there.** *If it lands anywhere in
+  `[3953.0, 7033.0]` the 11-median falls in `[3711.0, 5251.0]` — inside
+  the 12-median's bracket — and the verdict waits for the block to
+  finish.* **So one of three named outcomes, with one already
+  eliminated.**
+
+  ***THIS IS WITHIN-RUN AND A RESTART VOIDS IT, AND THE ARITHMETIC SAYS
+  EXACTLY WHY.*** *Without the elapsed floor, `v ≥ 0` gives an
+  11-median of only* **1734.5**, *which is BELOW 2480.5 — so the break
+  branch would be open again.* **The floor is doing all the work here**,
+  *which is the same shape as `[13,12,11,9]`'s first leg before idx 1539
+  landed, and the reason the distinction is written out every time
+  rather than assumed carried.*
 
   ***idx 1575 UNSAT AT 5251.0 s TAKES coord9 = 12 TO ITS THRESHOLD AND
   THE REGISTERED FORM IS CONFIRMED.*** **Rank 426 of 1577 with no tie**
