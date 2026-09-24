@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T20:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T20:07Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6807,7 +6807,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1775 -> 1780 rows)
+## State as of the last refresh (1780 -> 1782 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6818,7 +6818,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1780 rows; 1611 labels decided; 1611 UNSAT; 0 SAT; 0 labels
+- **1782 rows; 1613 labels decided; 1613 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6854,7 +6854,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1611 decided plus 169 superseded
+  A row count is not a decision count: 1613 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6904,8 +6904,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1606, highest decided 1611, holes [1607].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1612, highest decided 1612, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6939,6 +6939,75 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1607 UNSAT AT 1432.9 s: THE NINETY-SECOND SPAN CLOSES AND THE
+  UNTESTABLE RUN IS FINISHED.*** **Rank 1215 of 1613 with no tie** —
+  *`1613 − 398 = 1215` reproduces the rank, detector agrees.* **0.0663
+  of the per-cube cap. Holes `[]`, frontier contiguous 0..1612, highest
+  decided 1612. Decided 1613 of 1949 = 82.7604%; still 0 SAT** — *idx
+  1612 landed while this entry was being written and is banked with it,
+  so the counter is one past the closing row.* **idx 1612 UNSAT at
+  446.3 s, rank 1514 of 1613 with no tie** — *`1613 − 99 = 1514`
+  reproduces it.* *The span is retired here and carries no figures; they
+  come from `--spans all` in the NEXT commit, with every carried row
+  first reproduced at the OLD N = 156.*
+
+  ***THE SWEEP HAD NO OPEN BLOCK AT ALL FOR 107 SECONDS, AND THIS COMMIT
+  DOES NOT RECORD IT.*** *When idx 1607 was banked alone,* `bank.py`
+  *printed* **`NO open block`** *and rewrote the census region to zero
+  entries: every block from idx 0 to 1611 complete, the frontier
+  contiguous to the last decided cube.* **idx 1612 landed 107 seconds
+  later — 20:04:06Z to 20:05:53Z — and opened `[13,12,10,10]` before any
+  commit was made**, *so the census in this commit carries one open
+  block, not none.* ***THE `#29` RIDER AGAIN, FOR THE THIRD TIME THIS
+  SESSION***: *after the transient span close at idx 1598 and the
+  opening width that moved from three to two at idx 1599.* **The
+  difference is that nothing was lost this time** — *holes stayed `[]`
+  across both banks, so the span close is unaffected; only the "no open
+  block" state went unrecorded, and it is written here as prose rather
+  than claimed as the commit's state.*
+
+  ***`[13,12,11,4]` COMPLETES AT 3 OF 3 AND ITS 12-MEDIAN IS 1432.9 s
+  EXACTLY.*** **The coord9 = 12 group has one member, so its median is
+  that member's cost** — *threshold* `⌊1/2⌋ + 1 = 1`. *The bound
+  published at* `53063cb` *was* **≥ 791 s** *from an elapsed floor; the
+  answer is* **1432.9**, *641.9 s above it.* **That bound could not have
+  failed inside the run**, *so the only content is the slack, and the
+  slack is a statement about when the check-in last sampled.*
+
+  ***THE UNTESTABLE RUN IS COMPLETE: SIX BLOCKS, NINETEEN CUBES, ALL
+  DECIDED, NOT ONE ABLE TO RUN THE DIRECTION TEST.***
+
+  | block | idx | members | medians |
+  |---|---|---|---|
+  | `[13,12,11,6]` | 1593..1599 | 7 | 13: 1511.00, 12: 2891.45 |
+  | `[13,12,11,5]` | 1600..1604 | 5 | 13: 1199.30, 12: 2061.85 |
+  | `[13,12,11,4]` | 1605..1607 | 3 | 13: 601.25, 12: 1432.90 |
+  | `[13,12,11,3]` | 1608..1609 | 2 | 13: 319.50 |
+  | `[13,12,11,2]` | 1610..1610 | 1 | 13: 109.00 |
+  | `[13,12,11,1]` | 1611..1611 | 1 | 13: 25.80 |
+
+  **Ten medians, every one final, every one a figure with no window
+  use.** *The tally of settled blocks does not move:* **eight keep, four
+  break, of twelve** — *nineteen cubes of solver time produced no verdict
+  because none of these blocks carries a coord9 = 11 group.* ***THAT IS
+  THE COST OF THE DIRECTION TEST'S COVERAGE, STATED IN CUBES***: *the
+  note already records that only 53 of 171 blocks can ever run it, and
+  this run is what the other 118 look like from the inside.*
+
+  ***AND THE TESTABLE PART HAS ALREADY RESUMED.*** **idx 1612 opens
+  `[13,12,10,10]` at 1 of 21 — idx 1612..1632, groups `{13: 5, 12: 11,
+  11: 5}`, all three present**, *with twenty cubes still undecided.* *Confirmed by the scan run two
+  commits ago, not by assertion.* **It is the first TESTABLE block since
+  `[13,12,11,7]`**, *whose window broke — verified from the run table
+  above, since every block between the two is in it.* ***A DRAFT ALSO
+  CALLED IT "THE LARGEST THE SWEEP HAS OPENED IN SOME TIME", WHICH THE
+  ENUMERATION DOES NOT SUPPORT.*** *Its 21 members tie* `[13,12,11,9]`,
+  *and the twelve block sizes immediately before it run* **1, 38, 28,
+  21, 15, 11, 7, 5, 3, 2, 1, 1** — *so 38- and 28-member blocks sit a
+  few positions back.* **28 of the 93 blocks opened before it have had
+  21 members or more**, *so 21 is unremarkable and only looks large
+  against the run that just ended.*
 
   ***FIVE ROWS IN ONE BANK, AND THE UNTESTABLE RUN IS DOWN TO ONE
   CUBE.*** *All five untied, each rank reproduced by `N − cheaper` at*
@@ -7313,9 +7382,11 @@ exactly one bank.
 
   ***AN OPENING AT TWO.*** Over the **156** closed chains the opening
   hole count is **1 in 53, 2 in 51, 3 in 49 and 4 in 3**, so two is
-  **32.7%**. **It is the first opening at two since the ninetieth**, and
-  the spans that opened at two are **51** of the 156, the last five of
-  them ordinals **78, 81, 84, 87 and 90**.
+  **32.7%**. *The three live-only sentences that stood here — the
+  "since the" ordinal, the "M of the N" count and the last-five list —
+  are struck at this close, per the census convention; the sentence
+  above survives because it is checked against the walk's first 156
+  spans and stays true for good.*
 
   **The rows: idx 1599, UNSAT at 990.8 s, sweep rank 1353 of 1598 with
   no tie** — *`1598 − 245 = 1353` reproduces the rank* — **and idx 1596,
@@ -23970,7 +24041,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1611 of 1949 = 82.6578%**; **338 undecided**. **50% IS CROSSED**, at
+- **1613 of 1949 = 82.7604%**; **336 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -24683,8 +24754,8 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 11, 4]` idx 1605..1607: **3 members**,
-  **2 decided**, undecided [1607]
+- `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
+  **1 decided**, undecided 20 spanning 1613..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
