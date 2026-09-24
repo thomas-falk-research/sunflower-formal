@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T08:13Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T08:18Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -122,7 +122,7 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Twenty-five** involuntary restarts, CPU-hours discarded:
+**Thirty** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
@@ -130,17 +130,124 @@ landings — it is never the source of the count.
     #42 = 3.3278   #43 = 3.9984   #44 in [1.5889, 1.6040]
     #45 in [5.3799, 5.4319]   #46 in [0.8908, 1.5291]
     #47 in [3.9879, 4.0319]   #48 = 3.8216
+    #49 in [3.7636, 3.7871]   #50 in [1.1913, 1.1967]
+    #51 in [1.0508, 1.3462]   #52 in [2.7808, 3.6178]
+    #53 in [0.9783, 2.2092]
 
-median **3.5940**, mean **3.7440**, **total 93.5994** — *single values,
-not ranges, because **#48 is a point**: all four of its cubes had
-mature ratio samples, so nothing is swept.* ***THE MEDIAN HAS LEFT THE
-PAIR IT WAS OSCILLATING BETWEEN*** — it has now run 3.5640 → 3.5790 →
-3.5640 → 3.5790 → **3.5940** across five restarts, and the fifth step
-is to a value neither of the previous four held. *That is still
-arithmetic about which element is central and not a fact about
-restarts; a two-value oscillation that leaves its two values is the
-fifth demonstration of the same caution, and it is the demonstration
-that shows the oscillation was never a pattern.*
+***THIS SECTION HAD STOPPED AT #48 AND WAS FIVE RESTARTS BEHIND.*** *It
+read "**Twenty-five**" across the whole of #49, #50, #51, #52 and #53,
+and was found at the `#53` absorb by reading it rather than quoting it.
+Sixth live instance of the standing-claim-never-re-checked pattern.*
+**The five missing losses are taken from their own header blocks in the
+checkpoint — `#49` 13549.1..13633.4 s, `#50` 4288.5..4308.1 s, `#51`
+3783.00..4846.23 s, `#52` 10011.00..13023.96 s, `#53`
+3522.00..7953.07 s — and divided by 3600, never re-derived from
+memory.**
+
+***AND THE CONVENTION WAS REPRODUCED ON TWO PUBLISHED LINES BEFORE ANY
+OF THEM WAS ADDED.*** *The convention is: **the newest entry is swept
+over its bracket, every older entry is held at its midpoint**, and
+ranks are **descending**, 1 = largest.* **Neither half of that is
+written down anywhere in this section; both were recovered by
+reproducing lines it already publishes.** *Sweeping only `#47` over
+[3.9879, 4.0319] with everything older at its midpoint returns median
+**3.5790** at both ends, mean **3.7398–3.7417**, total
+**89.7558–89.7998** and rank **11 of 24 at the lower end, 10 at the
+upper** — the n = 24 line verbatim. Sweeping only `#48`, a point,
+returns median **3.5940**, mean **3.7440**, total **93.5994** and rank
+**12 of 25** — the n = 25 line verbatim, single values because the
+newest entry is a point and nothing is swept, which is what that line's
+"#48 is a point" means and is internally consistent.* **Two independent
+published lines reproduced to four decimals before the extension; the
+previous close called that the third consecutive time, and this is the
+fourth.**
+
+Built one restart at a time, newest swept and all older at midpoint:
+
+    new   n    median            mean             total              rank
+    #49   26   3.6788–3.6905     3.7447–3.7456    97.3630–97.3865    13 of 26
+    #50   27   3.5940            3.6506–3.6508    98.5661–98.5715    26 of 27
+    #51   28   3.5790            3.5578–3.5684    99.6196–99.9150    24..28 of 28
+    #52   29   3.5640–3.5940     3.5361–3.5650   102.5481–103.3851   14..20 of 29
+    #53   30   3.5155            3.4648–3.5059   103.9449–105.1758   23..30 of 30
+
+**The current line is n = 30: median 3.5155, mean 3.4648–3.5059, total
+103.9449–105.1758.** *The median is a single value here and the mean
+and total are not, which is the ordinary case — across the fourteen
+bracketed lines the total is a point at only three (#42, #43, #48),
+exactly the three whose newest entry is a point.*
+
+***#49 IS THE FIRST LINE IN THE SERIES WHOSE MEDIAN THE MEASUREMENT
+DOES NOT PIN.*** **Every line from n = 17 to n = 25 pinned the median at
+both ends; n = 26 gives 3.6788–3.6905 and n = 29 gives 3.5640–3.5940.**
+*Two of fourteen, and both because a recorded loss falls inside the
+newest bracket — the same mechanism the section already records for
+ranks, arriving at the median for the first time.*
+
+***AND THE MEDIAN CAME BACK TO THE PAIR IT WAS SAID TO HAVE LEFT.***
+*The n = 25 line said the median "**has left the pair it was
+oscillating between**" — 3.5640 / 3.5790 — by reaching 3.5940, "a value
+neither of the previous four held", and attached its own caution that
+this is "arithmetic about which element is central and not a fact about
+restarts".* **The caution was right and the headline was not: the
+median runs 3.5940 → 3.6788–3.6905 → 3.5940 → **3.5790** →
+3.5640–3.5940 → 3.5155 across the five added restarts**, *so it
+returned to 3.5790 at n = 28 and its n = 29 interval contains both
+members of the "abandoned" pair.* **A departure that reverses within
+three restarts was never a departure**; *the note's own caution is what
+survives here, not the claim it was attached to.* **At n = 30 the
+median is 3.5155 — a value it has not held at any earlier line** —
+*and by the same argument nothing is claimed from that either.*
+
+***THE CUMULATIVE DISCARD CROSSED 100 CPU-HOURS AT #52, AND THE
+CROSSING IS UNAMBIGUOUS.*** **n = 28 is 99.6196–99.9150, below 100 at
+both ends; n = 29 is 102.5481–103.3851, above 100 at both ends.** *No
+choice within any bracket puts the crossing anywhere else, so this one
+milestone does not depend on the midpoint convention.* **104.5603
+CPU-hours at midpoints, over four slots, is about 26.1 hours — a little
+over one day — of four-core wall time**, *on the assumption that all
+four slots were busy throughout, which is what the series measures and
+not something re-checked here.* ***A FIRST PASS WROTE "about 4.4 days"
+BY TREATING CPU-HOURS AS WALL HOURS*** — *104.5603 / 24 = 4.36 days,
+with the division by four slots simply left out. The error is a factor
+of four, and it is recorded rather than quietly fixed; a first attempt
+to describe it as "multiplying by four instead of dividing", a factor of
+sixteen, was itself wrong and is corrected here in the same breath.*
+**Stated as what it is, a cost, and not as progress: it has decided no
+cube and moved no bracket.**
+
+***THE FIVE ADDED RESTARTS ARE CHEAPER THAN THE TWENTY-FIVE BEFORE
+THEM.*** **Their midpoints are 3.77535, 1.1940, 1.1985, 3.1993 and
+1.59375, mean 2.19218, against 3.7440 for the n = 25 line**; *the n =
+30 mean interval [3.4648, 3.5059] is disjoint from and below the n = 25
+value 3.7440, so the fall is not a midpoint artifact.* **Nothing is
+claimed from it.** *This section already says that a restart's cost
+"depends entirely on where the kill landed relative to four independent
+start times", which is a statement about four clocks and not about
+restarts getting cheaper; five points cannot overturn that and are not
+being asked to.*
+
+***#53 HAS THE WIDEST RANK SPAN IN THE SERIES: 23..30 of 30, eight
+places.*** *Against #52's 14..20 (seven), #51's 24..28 (five), #46's
+21..23 (three) and #47's 10..11 (two); the other nine bracketed lines
+pin the rank exactly.* **Its lower end reaches 30 of 30, so `#53` could
+be the smallest loss on record — and that is NOT claimed**, *because
+the rank compares one end of the newest bracket against every older
+bracket's **midpoint**, and #46's own lower end, **0.8908**, is below
+#53's **0.9783**. End-to-end the smallest is still #46; end-to-midpoint
+it is #53. The two conventions disagree, so no "smallest" is published
+until both ends of both are settled.*
+
+***AND EVERY RANK PUBLISHED BELOW IS AT ITS OWN N AND IS STALE AT
+N = 30.*** **#46's "23 of 23", #47's "11 of 24", #48's "12 of 25" were
+correct when written and are not the current ranks**; *they are left as
+written, exactly as the span rankings elsewhere in this note are, because
+re-typing them is how the seventy-third's duration rank was published
+wrong.* **Ranks go stale — that rule is not suspended for this section.**
+
+*The three paragraphs that follow belong to the n = 25 close and are
+kept as written; this close's reproduction is the one above, and it
+covers two published lines rather than one.*
 
 ***AND THE CONVENTION WAS CONFIRMED BEFORE IT WAS EXTENDED, AGAIN.***
 Sweeping only **#47**'s bracket, with every other bracket at its
