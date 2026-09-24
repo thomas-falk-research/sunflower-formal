@@ -106,7 +106,7 @@ print(f"  single-entry chains: {sum(1 for r in ALL if len(r['chain'])==1)}, "
 # movement figures, which exist only in the note.  Guarded so a stale list
 # fails loudly instead of printing a wrong total -- the series must hold one
 # entry per close, and the closes start at walk position 89.
-series = [1,5,8,14,20,5,17,19,33,19,5,21,15,10,38,14,35,42,50,16,36,32,8,56,23,39,50,29,33,11,18,41,17,46,35,63,38,43,45,71,74,36,24,70,79,19,26,105,52,62,100,57,51,82,55,82,17,49,65,31,127,51,41,102,36]
+series = [1,5,8,14,20,5,17,19,33,19,5,21,15,10,38,14,35,42,50,16,36,32,8,56,23,39,50,29,33,11,18,41,17,46,35,63,38,43,45,71,74,36,24,70,79,19,26,105,52,62,100,57,51,82,55,82,17,49,65,31,127,51,41,102,36,133]
 assert len(series) == N_OLD - 88, (
     f"movement series has {len(series)} entries; the walk implies {N_OLD-88}. "
     f"Append the previous close's figure before re-running.")
