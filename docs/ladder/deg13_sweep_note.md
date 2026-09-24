@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T05:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T05:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -10313,6 +10313,40 @@ exactly one bank.
   — 1435.8 more than doubled it — while the block span `14.782077×` is
   unchanged.* **coord9 = 12 needs 4 more to pin its median, coord9 = 11
   needs 2.**
+
+  ***THE TWO HOLES ARE THE TWO CUBES THAT MOVE BOTH LOWER ENDS, AND
+  BOTH ARE ALREADY PAST THE POINT WHERE THE MOVE IS FIXED.*** *At the
+  05:41Z check-in the four in-flight cubes are* **idx 1538 at 6123 s
+  (coord9 = 12), idx 1539 at 5863 (coord9 = 11), idx 1542 at 1050
+  (coord9 = 12) and idx 1543 at 374 (coord9 = 11)** — *and idx 1538 and
+  idx 1539 are precisely the two holes.*
+
+  ***BOTH LOWER ENDS ARE ALREADY DETERMINED BY THE WITHIN-RUN BOUND.***
+  **Whatever idx 1538 finally costs, so long as it is at least its
+  current 6123 s, the 12-bracket's lower end becomes `3854.15`** —
+  *swept over all* **154,771** *feasible tenth-second values from the
+  floor to the cap; the lower end takes exactly one value across all of
+  them.* **And whatever idx 1539 costs above 5863 s, the 11-bracket's
+  lower end becomes `4215.5`** — *swept over all* **157,371** *values,
+  again a single value.* *Neither upper end is fixed: they range over
+  `[5506.8, 6008.75]` and `[5353.05, 6401.45]`.*
+
+  ***STEP ONE GETS STRONGER; STEP TWO STILL WILL NOT CLOSE.*** **`lo₁₂`
+  rising 3578.05 → 3854.15 takes step one's margin over the 13-median
+  from 1653.85 to 1929.95 s.** *Step two is a different matter:* **TRUE
+  would need `hi₁₂ < 4215.5`, and `hi₁₂` is at least 5506.8 — short by
+  at least 1291.3 s. FALSE would need `3854.15 > hi₁₁`, and `hi₁₁` is at
+  least 5353.05 — short by at least 1498.90 s.** ***So both open holes
+  can land and step two will still be open in both directions.*** *The
+  gaps do shrink: TRUE from 2446.60 to at most 1793.25, FALSE from
+  2823.40 to at most 2547.30.*
+
+  ***AND ALL OF IT DIES AT A RESTART.*** **The within-run bound is sound
+  within a run and destroyed by one**; *if the container is reclaimed,
+  idx 1538 and idx 1539 are re-dispatched with their clocks reset and
+  neither lower end is forced by anything.* *Recorded as a conditional
+  on this run, as at the 02:41Z check-in, whose three bounds all held
+  because the run continued.*
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
