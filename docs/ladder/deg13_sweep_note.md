@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T06:35Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T06:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -10563,6 +10563,29 @@ exactly one bank.
   **Chain `2,2,1,3,3,2,2`** *from the blobs — `bdd5a1c` and this commit
   each carry `holes [1539, 1543]`.* **The `1 → 3` rise is still in, so
   the span remains determined False.**
+
+  ***AT THE 06:41Z CHECK-IN BOTH CLOCKS HAVE MOVED AND THE CONDITIONAL
+  STRENGTHENS.*** *No row since idx 1546.* **idx 1539 reads 9497 s (was
+  8899) and idx 1543 reads 4008 (was 3410)**; *idx 1547 is at 680 and
+  idx 1548 at 485, both in the new block.* **idx 1539 is still
+  necessarily the coord9 = 11 maximum, 9497 being past 8709.6.**
+
+  ***THE FINAL 11-MEDIAN IS NOW CONFINED TO `[4425.55, 6401.45]`.***
+  *Swept over every feasible value of idx 1543 from its raised floor.*
+  **The lower end rose 4215.5 → 4425.55**, *so the margin over the
+  12-median of 4000.8 goes* **214.7 → 424.75 s**. *Step two is still
+  determined TRUE on the same condition, and the condition is the same
+  one: idx 1539's clock, which a restart resets.*
+
+  ***AND THERE IS A SECOND ROUTE THAT WOULD REMOVE THE CONDITION'S
+  DEPENDENCE ON idx 1539.*** **At 7 of 8 the next coord9 = 11 cube
+  settles step two TRUE on its own iff it exceeds 4413.7 s.** *idx 1543
+  is at* **4008 s** *and needs* **405.7 s more** *of elapsed to cross
+  that line.* ***If it does, step two no longer rests on idx 1539 at
+  all*** — *it would be forced by idx 1543's own clock, and the two
+  independent routes would have to fail together for the determination
+  to fail.* **That is not yet the case, and it is not being counted as
+  though it were.**
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
