@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T20:19Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T20:22Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6810,7 +6810,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1782 -> 1784 rows)
+## State as of the last refresh (1784 -> 1785 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6821,7 +6821,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1784 rows; 1615 labels decided; 1615 UNSAT; 0 SAT; 0 labels
+- **1785 rows; 1616 labels decided; 1616 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6857,7 +6857,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1615 decided plus 169 superseded
+  A row count is not a decision count: 1616 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6907,7 +6907,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1614, highest decided 1614, holes [].**
+- **Frontier contiguous 0..1615, highest decided 1615, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6942,6 +6942,40 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1615 UNSAT AT 1058.1 s COLLAPSES THE 13-MEDIAN BRACKET TO
+  `[1058.1, 1085.8]` — 4.09% OF ITS WIDTH ONE ROW AGO.*** **Rank 1348 of
+  1616 with no tie** — *`1616 − 268 = 1348` reproduces the rank,
+  detector agrees.* **0.0490 of the per-cube cap. Holes `[]`, frontier
+  contiguous 0..1615, highest decided 1615. Decided 1616 of 1949 =
+  82.9143%; still 0 SAT.**
+
+  **coord9 = 13 goes to 4 of 5 with `446.3, 1058.1, 1085.8, 1123.6`**,
+  *and with one member out the median `x₍₃₎` is pinned between the
+  second and third of the four:* **lower `1058.1`, upper `1085.8`, width
+  27.7 s.** *Brute force over 400000 completions of the single remaining
+  member returns both ends exactly.* ***THE BRACKET WENT FROM 677.3 s TO
+  27.7 s ON ONE ROW*** — *a narrowing of* **649.6 s**, *leaving* **4.09%
+  of the old width**.
+
+  ***THE INDEX ARITHMETIC IS NOT THE ONE THE NOTE USUALLY QUOTES, AND
+  THAT MATTERS.*** *The standing odd-`n` sentence — lower* `k[j −
+  (n−1)/2]`, *upper* `k[(n+1)/2]` — **is written for the threshold case,
+  `k = j` landed**, *and it gives* `k[1]` *and* `k[3]` *there.* **With
+  `k = 4` of `n = 5` the unknown count `u = n − k` is 1, and the ends
+  become `known[j − u] = known[2]` and `known[j] = known[3]`** — *i.e.
+  the window slides as `u` shrinks.* **Stated generally: with `u`
+  unknowns the median sits between the `(j − u)`-th and `j`-th smallest
+  of what has landed**, *which reduces to the note's sentence at*
+  `u = n − j` *and to a single value at* `u = 0`. **Checked by brute
+  force rather than by reusing the quoted indices**, *which would have
+  given `[446.3, 1085.8]` — a bracket 24 times too wide.*
+
+  ***THE 83% TRAP IS ONE ROW OUT.*** **The next landing puts the counter
+  on 1617 = 82.9656%, which prints as 83.0% without having crossed; the
+  crossing is 1618 = 83.0169%.** *Registered at* `5fed54e` *seventeen
+  rows out, restated at three, at two, and here at one* — *the full 80%
+  cadence, and the thing the 81% crossing went without.*
 
   ***idx 1613 AND idx 1614 UNSAT — `[13,12,10,10]`'s coord9 = 13 GROUP
   REACHES ITS THRESHOLD AT 3 OF 5, AND THE FIRST BRACKET OF THE NEW
@@ -24132,7 +24166,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1615 of 1949 = 82.8630%**; **334 undecided**. **50% IS CROSSED**, at
+- **1616 of 1949 = 82.9143%**; **333 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -24846,7 +24880,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 10]` idx 1612..1632: **21 members**,
-  **3 decided**, undecided 18 spanning 1615..1632
+  **4 decided**, undecided 17 spanning 1616..1632
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
