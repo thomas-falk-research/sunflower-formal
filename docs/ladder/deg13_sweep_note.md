@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T09:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T10:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6789,7 +6789,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1724 -> 1725 rows)
+## State as of the last refresh (1725 -> 1726 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6800,7 +6800,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1725 rows; 1556 labels decided; 1556 UNSAT; 0 SAT; 0 labels
+- **1726 rows; 1557 labels decided; 1557 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6836,7 +6836,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1556 decided plus 169 superseded
+  A row count is not a decision count: 1557 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6886,7 +6886,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1555, highest decided 1555, holes [].**
+- **Frontier contiguous 0..1556, highest decided 1556, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6922,7 +6922,82 @@ exactly one bank.
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
 
-  ***THE EIGHTY-FIFTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
+  ***idx 1556 UNSAT AT 5805.8 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
+  340 of 1557 with no tie** — *`1557 − 1217 = 340` reproduces the rank,
+  detector agrees.* **coord9 = 12**, taking that group to **4 of 11**.
+  **Holes `[]`, frontier contiguous 0..1556, highest decided 1556.
+  Decided 1557 of 1949 = 79.8871%; still 0 SAT.** *It is the most
+  expensive cube in this block so far, at 0.2688 of the per-cube cap.*
+
+  ***AND THE CLAIM "coord9 = 12 ... HAS NO END AT ALL", PUBLISHED TWO
+  COMMITS AGO, IS WRONG.*** *It read* "**coord9 = 12 stays at 3 of 11
+  against a threshold of 6 and has no end at all**". **It had a finite
+  floor at that moment: 1992.0 s.** *Three coord9 = 12 cubes were in
+  flight at 2142, 2091 and 1992 s of elapsed, and `cost ≥ elapsed` makes
+  those floors; with five members not yet started and free to be
+  anything, the smallest the sixth-smallest of eleven can be is the
+  smallest in-flight floor.* **The threshold of 6 governs when LANDED
+  values alone bound the median; it says nothing about what the elapsed
+  floors already bound**, *and this note had used exactly that device one
+  block earlier, at `[13,12,11,10]`, in a paragraph headed "THE ELAPSED
+  FLOORS ALREADY PUT A FINITE FLOOR UNDER THE coord9 = 12 MEDIAN, WHICH
+  WAS UNBOUNDED BOTH WAYS ONE ROW AGO".* **The device was in the note
+  and was not applied.** *Ninth live instance of the
+  standing-claim-never-re-checked pattern — and unlike the others it was
+  not a stale figure but a live one never computed.*
+
+  ***THE FLOOR IS NOW 3782.7 s, AND THE FIRST LEG OF THE DIRECTION
+  WINDOW HOLDS.*** **coord9 = 12 has four landed — `3782.7, 3833.7,
+  3932.5, 5805.8` — two in flight at the 10:44:08Z sample (idx 1557 at
+  5811 s, idx 1558 at 5712 s) and five not started.** *At most five
+  members can fall below 3782.7, so the sixth-smallest cannot.*
+  **The coord9 = 12 median is `≥ 3782.7`**, *checked analytically and by
+  200000 random completions respecting the floors and the 21600 s cap,
+  whose minimum came out at* **3782.7000** *exactly.* **The 13-median is
+  FINAL at `1859.1`, so `13-median < 12-median` HOLDS.** ***WITHIN-RUN,
+  AND A RESTART VOIDS IT***: *from LANDED values alone the floor is*
+  **0.0** — *seven members unconstrained is enough to put the
+  sixth-smallest at the bottom — so every bit of this rests on two
+  elapsed readings. That is the distinction `#53` was written around,
+  and this is the side of it that does not survive a teardown.*
+
+  ***THE FLOOR DID NOT MOVE WHEN idx 1556 LANDED, AND THAT IS THE
+  ARITHMETIC, NOT A COINCIDENCE.*** *It came in at 5805.8, above the
+  floor, and replaced an in-flight member whose own floor was already
+  above it.* **A floor set by the smallest landed value with five free
+  members beneath it moves only when something lands BELOW it**, *which
+  is worth saying because the next three coord9 = 12 rows could each
+  leave it exactly where it is.*
+
+  ***IT BECOMES UNCONDITIONAL AT 6 OF 11, WHICH IS TWO MORE ROWS, AND
+  THEY ARE THE TWO IN FLIGHT.*** *By the odd-`n` rule at `j = 6` of
+  `n = 11` the ends are `k[1]` and `k[6]`, the smallest and largest of
+  the six known.* **If idx 1557 and idx 1558 land where their floors
+  say they must — above 5700 s — the smallest of the six is still
+  `3782.7`, from landed values alone**, *so the first leg would survive
+  the transition rather than need re-deriving.* **That is a prediction
+  about what the next two rows do to a published bound, registered
+  before they exist.**
+
+  ***THE SECOND LEG IS OPEN AND THE TWO BRACKETS OVERLAP.***
+  **coord9 = 12's median is in `[3782.7, 21600]`; coord9 = 11's is in
+  `[3144.4, 21600]`** — *the latter from two landed values `3144.4,
+  3263.7`, two in-flight floors (idx 1559 at 3236 s, idx 1560 at 56 s)
+  and one not started; brute force reproduces the 3144.4 minimum
+  exactly.* **The intervals overlap, so `12-median < 11-median` is
+  neither established nor refuted**, *and the 11-group's two landed
+  values both sit below the 12-median's floor, which is not the
+  direction the window wants.* **Nothing is claimed from that**: *two
+  points of five, and the median of five is the third smallest, which
+  those two do not pin.*
+
+  ***THE 80% CROSSING IS THREE ROWS AWAY.*** **1557 decided =
+  79.8871%; the crossing is at 1560 = 80.0410%; the trap sits at 1559 =
+  79.9897%, printing as 80.0% without having crossed.** *Registered one
+  commit ago at four rows out, repeated here at three because the
+  counter is the thing most likely to be misread out loud.*
+
+  ***THE EIGHTY-FIFTH SPAN'S FIGURES, READ FROM `--spans all` AFTER  ***THE EIGHTY-FIFTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `9594397` EXISTED.*** **The retirement sentence stood for exactly one
   commit — `9594397` — and this edit is the striking.** Opened after
   **`b956f7e`** at 08:13:44Z, closed by **`9594397`** at 09:11:45Z,
@@ -21741,7 +21816,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1556 of 1949 = 79.8358%**; **393 undecided**. **50% IS CROSSED**, at
+- **1557 of 1949 = 79.8871%**; **392 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -22455,7 +22530,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 9]` idx 1546..1566: **21 members**,
-  **10 decided**, undecided 11 spanning 1556..1566
+  **11 decided**, undecided 10 spanning 1557..1566
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
