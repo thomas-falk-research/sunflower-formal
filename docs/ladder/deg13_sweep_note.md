@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T05:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T06:27Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6561,7 +6561,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1710 -> 1711 rows)
+## State as of the last refresh (1711 -> 1712 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6572,7 +6572,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1711 rows; 1542 labels decided; 1542 UNSAT; 0 SAT; 0 labels
+- **1712 rows; 1543 labels decided; 1543 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#52**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB THIS TIME, WHICH IS THE
   FIRST TIME THAT HAS HAPPENED.*** *#52 lost four cubes and no rows, the
@@ -6604,7 +6604,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1542 decided plus 169 superseded
+  A row count is not a decision count: 1543 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27488**, launched 2026-09-23T19:06:29.260000Z (read from
@@ -6654,7 +6654,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1538, highest decided 1544, holes [1539, 1542, 1543].**
+- **Frontier contiguous 0..1538, highest decided 1545, holes [1539, 1542, 1543].**
   <!-- SPAN-STATE: open -->
 
   ***THE SEVENTY-FOURTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
@@ -10437,6 +10437,50 @@ exactly one bank.
   `14.782077×` is unchanged, 680.8 being above the block minimum of
   589.2.* **coord9 = 12 needs 2 more to pin its median, coord9 = 11
   needs 2.**
+
+  ***coord9 = 12 REACHES 13 OF 14, ONE FROM EXACT.*** *From the staged
+  blob.* **idx 1545 at 1587.9 s** (coord9 = **12** in `[13,12,11,10]`,
+  rank **1138 of 1543**); *untied — `1543 − 405 = 1138` reproduces the
+  rank, detector agrees.* **Holes `[1539, 1542, 1543]`, frontier
+  contiguous 0..1538, highest decided 1545. Decided 1543 of 1949 =
+  79.1688%; still 0 SAT.** *The span stays at three holes, so the chain
+  is `2,2,1,3,3` and the rise that determined it False is unchanged.*
+
+  ***AND THE RULE I STATED TWO COMMITS AGO WAS A SPECIAL CASE.*** *It
+  said an* **extremum** *moves only one end.* **1587.9 is not an
+  extremum — it sits between 1435.8 and 3393.4 — and `lo₁₂` still did
+  not move.** *So the rule is not about extrema at all.* **The general
+  form, derived rather than guessed: with `j` known of `n` even, the
+  lower end is `(k[L] + k[L+1])/2` with `L = j − n/2`, the upper is
+  `(k[U] + k[U+1])/2` with `U = n/2`; adding a member shifts the lower
+  window up one index and leaves the upper window's indices alone, so**
+  ***LOWER is unchanged iff the new value sorts at or below `k[L]`, and
+  UPPER is unchanged iff it sorts at or above `k[U+1]`.*** *Here `L =
+  5`, `k[5] = 3710.6` and `1587.9 ≤ 3710.6`, so the lower end held; `U+1
+  = 8`, `k[8] = 4890.6` and `1587.9 < 4890.6`, so the upper fell.*
+
+  ***AND THE FIRST TEST OF THAT GENERAL FORM FAILED — BECAUSE THE TEST
+  WAS WRONG, NOT THE RULE.*** *A first predicate used `k[U]` where the
+  derivation gives `k[U+1]`, and reported* **730 violations in 6000
+  random draws.** **Re-derived with the correct indices and re-run on
+  20,000 draws — `n` from 6 to 16, `j` from the threshold to `n−1` —
+  the rule holds with ZERO violations across the 5632 and 5628 draws
+  that satisfy each predicate.** ***This is exactly the case the
+  check-in names***: *a fresh script contradicting the note, where the
+  script's predicate was off by one and the note was right. The lesson
+  held only because the failure was investigated rather than believed.*
+
+  ***THE BRACKET NARROWS AGAIN.*** **`[3854.15, 4652.5] → [3854.15,
+  4206.05]`, width 798.35 → 351.90**; *upper fell* **446.45 s**,
+  *verified over all 14 placements of the single remaining unknown.*
+  **Step one's margin is still 1929.95 s.** *Step two:* **TRUE gap
+  1090.35 → 643.90, FALSE unchanged at 2547.30** — *one-sided again, and
+  now the general rule says exactly why.* **Still undetermined.**
+
+  **Block 25 of 28**; *coord9 = 12 spread `12.455053×` and block span
+  `14.782077×` both unchanged; 1587.9 is `0.825226×` the block's final
+  coord9 = 13 median.* **One more coord9 = 12 cube makes that median
+  exact; coord9 = 11 still needs 2.**
 
   ***AND THE CHAIN IS `1` FOR THE THIRD TIME IN FOUR CLOSES.*** **One
   broken commit, `8b8a24a` carrying `holes [1535]`; this commit closes
@@ -20769,7 +20813,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1542 of 1949 = 79.1175%**; **407 undecided**. **50% IS CROSSED**, at
+- **1543 of 1949 = 79.1688%**; **406 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -21483,7 +21527,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 10]` idx 1518..1545: **28 members**,
-  **24 decided**, undecided [1539, 1542, 1543, 1545]
+  **25 decided**, undecided [1539, 1542, 1543]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
