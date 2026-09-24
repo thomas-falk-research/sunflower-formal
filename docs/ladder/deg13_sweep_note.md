@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T12:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T12:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6924,6 +6924,28 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE `[13,12,11,9]` 11-MEDIAN IS PINNED AT EXACTLY 3263.7 s, AND
+  ITS FINAL VALUE IS REGISTERED BEFORE THE ROW LANDS.*** *At the
+  12:42:13Z sample idx 1563 — the 11-group's last member — stands at*
+  **4676 s** *of elapsed, so its cost is at least that.* **With four
+  landed values `2461.2, 3144.4, 3263.7, 7156.7` and a fifth known to
+  exceed 4676, the third smallest of five is `3263.7` and nothing else**
+  — *the bracket collapses from the landed-only `[3144.4, 3263.7]` to
+  the single point* **3263.7**, *brute force over 300000 completions
+  returning 3263.7000 at both ends.* **THIS IS WITHIN-RUN**, *resting on
+  one elapsed reading;* **but the value it predicts is not**: *the
+  median becomes exactly 3263.7 the moment idx 1563 lands anywhere above
+  3263.7, and its floor of 4676 s already guarantees that.* **So the
+  registered prediction is that this block's 11-median ends at
+  `3263.7`** — *a number, not an interval, written down before the cube
+  finishes.*
+
+  ***AND THE BREAK'S MARGIN IS NOW A GAP BETWEEN A POINT AND AN
+  INTERVAL.*** **12-median `[3782.7, 3932.5]`, 11-median `3263.7`, gap
+  519.0 s** — *the same 519.0 s as when the break was first established,
+  because neither end involved has moved since.* **The window still
+  BREAKS.**
 
   ***idx 1567 UNSAT AT 683.0 s OPENS A NEW BLOCK, AND TWO BLOCKS ARE
   NOW OPEN AT ONCE.*** **Rank 1416 of 1565 with no tie** — *`1565 − 149
