@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T23:32Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T23:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6968,6 +6968,52 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 23:42:12Z CHECK-IN PINS `[13,12,10,10]`'s LAST MEDIAN, SO ALL
+  THREE ARE NOW DETERMINED.*** *No row landed.* **idx 1629 — the block's
+  one outstanding cube and the ninety-fifth span's only hole — stands at
+  3926 s of elapsed.** *The 11-median is* `x₍₃₎` *of five with four
+  landed, and its value depends on the fifth only through which side of*
+  **1976.4** *it falls:*
+
+  | idx 1629's cost | 11-median |
+  |---|---|
+  | below 1967.7 | 1967.7 |
+  | between | the cost itself |
+  | **at or above 1976.4** | **1976.4** |
+
+  **At 3926 s the floor is already 1949.6 s past the top of that range,
+  so the 11-median is pinned at exactly 1976.4** — *within-run, and
+  final the moment the cube lands at any cost at all above 1976.4, which
+  it now must.*
+
+  | term | value |
+  |---|---|
+  | 13-median | **1058.1 FINAL** |
+  | 12-median | **2156.9 FINAL** |
+  | 11-median | **1976.4**, pinned within-run |
+
+  ***`1058.1 < 2156.9` HOLDS AND `2156.9 < 1976.4` FAILS BY 180.5 s.***
+  **This adds nothing to the verdict** — *`ff09312` broke the window
+  unconditionally from brackets, four commits and eleven cubes ago, and
+  the note said then that the seven cubes still out could not change
+  it.* **What the pin adds is the exact triple**, *which a reader can
+  now see rather than infer from two intervals.*
+
+  ***THE NEW BLOCK IS BOUNDED ON ONE GROUP AND NOWHERE ELSE.***
+  **`[13,12,10,9]`'s coord9 = 13 group has all three outstanding members
+  in flight — idx 1634 at 1492 s, idx 1635 at 711 s, idx 1636 at 666 s
+  — so its median, an average at `n = 4`, is already ≥ 688.5 s.** *Its
+  coord9 = 12 group is* **0 of 9 with all nine unstarted** *and its
+  coord9 = 11 group* **0 of 2, both unstarted**, *so neither has any
+  bound at all — `n − f < j` fails outright when `f = 0`.* **The
+  direction test for this block has one loose lower bound and two
+  unknowns**, *and nothing is registered.*
+
+  **State unchanged: 1633 of 1949 = 83.7866%, 0 SAT, holes `[1629]`,
+  frontier contiguous 0..1628, highest decided 1633.** *The tally stays*
+  **eight keep, five break, of thirteen settled blocks.** **Driver pid
+  21147 alive and matching the note; max clock delta 1 s over n = 4.**
 
   ***idx 1628 UNSAT AT 4702.5 s AND idx 1631 UNSAT AT 2225.5 s:
   `[13,12,10,10]`'s 12-MEDIAN IS FINAL AT 2156.9 s.*** *Both untied at*
