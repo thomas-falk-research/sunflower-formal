@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T11:10Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T11:26Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6789,7 +6789,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1726 -> 1728 rows)
+## State as of the last refresh (1728 -> 1729 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6800,7 +6800,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1728 rows; 1559 labels decided; 1559 UNSAT; 0 SAT; 0 labels
+- **1729 rows; 1560 labels decided; 1560 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6836,7 +6836,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1559 decided plus 169 superseded
+  A row count is not a decision count: 1560 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 26669**, launched 2026-09-24T08:02:22Z (read from
@@ -6886,8 +6886,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1558, highest decided 1558, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1558, highest decided 1560, holes [1559].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6921,6 +6921,76 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***80% IS CROSSED, AND THE TRAP BEHAVED EXACTLY AS REGISTERED.***
+  **idx 1560 UNSAT at 2461.2 s takes the counter to 1560 of 1949 =
+  80.0410%.** *The previous commit sat on* **1559 = 79.9897%**, *which
+  printed as 80.0% and had not crossed; this one has.* **The trap was
+  written down four rows out, again at three, again at one, and then
+  observed on the row it named** — *the note's standing count of 97 of
+  99 thresholds carrying a trap, exceptions exactly {2, 51}, holds at
+  this instance and was tested rather than assumed.* **The percentage is
+  a counter, not a rung: 389 sub-cubes are undecided and any one of them
+  could be SAT.**
+
+  ***THE EIGHTY-SIXTH SPAN HAS OPENED, AT WIDTH ONE.*** Walk position
+  **151** less the OFFSET of 65 — the **eighty-sixth**, derived from the
+  walk's 150 closed spans plus this one. **idx 1560 came in while idx
+  1559 is still running, leaving holes `[1559]`, width one**, frontier
+  contiguous **0..1558**, highest decided **1560**. *Per the `#29` rider
+  the width is what it is AT THIS COMMIT.*
+
+  ***AN OPENING AT ONE.*** Over the **150** closed chains the opening
+  hole count is **1 in 51, 2 in 49, 3 in 47 and 4 in 3**, so one is
+  **34.0%**. **It is the first opening at one since the eighty-third**,
+  and the spans that opened at one are **51** of the 150, the last five
+  of them ordinals **70, 72, 80, 82 and 83**.
+
+  **The row: idx 1560, UNSAT at 2461.2 s, sweep rank 901 of 1560 with no
+  tie** — *`1560 − 659 = 901` reproduces the rank, detector agrees.*
+  **coord9 = 11**, taking that group to **3 of 5 — its threshold.**
+  *Decided 1560 of 1949; still 0 SAT.*
+
+  ***AND THE DIRECTION WINDOW BREAKS IN THIS BLOCK, SETTLED FROM LANDED
+  VALUES ALONE WITH SEVEN CUBES STILL UNDECIDED.*** **coord9 = 11 now
+  holds `2461.2, 3144.4, 3263.7` at 3 of 5, and by the odd-`n` rule at
+  `j = 3` of `n = 5` the ends are `k[1]` and `k[3]`: the 11-median is in
+  `[2461.2, 3263.7]`.** **coord9 = 12 is in `[3782.7, 7217.1]`.** *Both
+  brackets are landed-only and both were reproduced by 300000 random
+  completions respecting the 21600 s cap, matching the analytic ends
+  exactly on all four sides.*
+
+      13-median  FINAL  1859.1
+      12-median         [3782.7, 7217.1]
+      11-median         [2461.2, 3263.7]
+
+  **`13-median < 12-median` HOLDS: 1859.1 < 3782.7.**
+  ***`12-median < 11-median` IS REFUTED: the 11-median's UPPER end,
+  3263.7, is below the 12-median's LOWER end, 3782.7, so the two
+  intervals are disjoint in the wrong order and no completion of the
+  remaining seven cubes can reverse it.*** **The window
+  `13 < 12 < 11` BREAKS here.** *Not "looks like it will break" — the
+  brackets are disjoint, which settles it.*
+
+  ***THE BLOCK TALLY MOVES: SEVEN KEEP, THREE BREAK, OF TEN SETTLED
+  BLOCKS.*** *The previous line read seven keep, two break of nine.*
+  **This is the third break and the first since the tally last moved**,
+  *and it is settled with* **7 of 21** *cubes still undecided — the
+  window is a statement about three medians, and two of the three were
+  pinned tightly enough to decide it long before the block completes.*
+  ***NOTHING IS CLAIMED ABOUT WHY.*** *Seven of ten is a count of
+  verdicts across ten blocks and this note has said at every one of them
+  that it is not a law; a third break is a third break.*
+
+  ***AND THE BREAK ARRIVED ON THE LEG THAT WAS NEVER THE CONDITIONAL
+  ONE.*** *One commit ago the first leg went unconditional and the
+  second was described as open with the 11-group "the conditional one".*
+  **It did not need to become unconditional by waiting — idx 1560
+  landed BELOW both existing coord9 = 11 values, at 2461.2 against
+  3144.4 and 3263.7, which pushed the group's lower end down and left
+  its upper end at 3263.7**, *and the upper end is the side the refutal
+  needed.* *Registered one commit ago: "refuting it needs below
+  3782.7" — the 11-median's whole interval now is.*
 
   ***TWO ROWS: idx 1557 UNSAT AT 7217.1 s AND idx 1558 UNSAT AT
   7179.6 s, BOTH IN ORDER, SO NO SPAN OPENS.*** **Ranks 232 and 233 of
@@ -21874,7 +21944,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1559 of 1949 = 79.9897%**; **390 undecided**. **50% IS CROSSED**, at
+- **1560 of 1949 = 80.0410%**; **389 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -22588,7 +22658,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 11, 9]` idx 1546..1566: **21 members**,
-  **13 decided**, undecided 8 spanning 1559..1566
+  **14 decided**, undecided 7 spanning 1559..1566
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
