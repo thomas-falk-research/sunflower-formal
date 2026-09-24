@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-24T01:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-24T02:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -9825,6 +9825,30 @@ exactly one bank.
   **Caught by reading `git status --porcelain` after the bank rather
   than assuming the bank had staged what it printed** — *the same habit
   that caught the `| head` truncation two hours ago.*
+
+  ***AN HOUR WITH NO ROW, AND THE WITHIN-RUN BOUND ALREADY SETTLES THE
+  NEXT BLOCK MAXIMUM.*** *No row has landed since idx 1530 at 01:34:28Z;
+  at the 02:41Z check-in the four in-flight cubes read* **idx 1531 at
+  6847 s, idx 1532 at 6629, idx 1533 at 6430, idx 1534 at 4046** —
+  *all four in `[13,12,11,10]`, the first two coord9 = 12 and the last
+  two coord9 = 11.* **Three of the four have already passed the block's
+  decided maximum of 4890.6**, *so by the within-run bound — a cube's
+  final cost is at least its current elapsed — the next block maximum is
+  already fixed at* **≥ 6847 s**, **`1.400033×`** *the present one, and
+  the block span at* **≥ `11.620842×`** *from `8.300407×`.*
+
+  ***THAT BOUND DIES AT A RESTART AND THE SENTENCE ABOVE IS ONLY TRUE
+  WITHIN THIS RUN.*** **If the container is reclaimed these four cubes
+  are lost and re-dispatched, their clocks reset, and nothing above
+  survives** — *the same reason the note insists the within-run bound is
+  sound within a run and destroyed by one. It is recorded as a
+  conditional, not a prediction about the file.*
+
+  ***AND IT MOVES NEITHER MEDIAN.*** **coord9 = 12 would go 5 → 7 of 14
+  against a threshold of 8, and coord9 = 11 would go 2 → 4 of 8 against
+  a threshold of 5.** *Neither group reaches its bound from these four,
+  so even landing all of them leaves the direction window with two of
+  its three terms unbounded.* **The block would stand at 17 of 28.**
 
   ***AND THE VERDICT IS THE ONE THAT WAS DECLARED WORTHLESS IN ADVANCE.***
   *The previous entry said, before the row landed:* **"If this span
