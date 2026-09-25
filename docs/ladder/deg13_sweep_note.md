@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T17:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T18:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7021,6 +7021,47 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — AND THE BLOCK'S ENTIRE REMAINING VERDICT IS
+  REGISTERED BEFORE EITHER QUANTITY EXISTS.*** *The entry below says* "**the next one gets its own commit before the row lands or it
+  does not get written**"; *this is that commit, and it carries no new
+  row on purpose.* **`[13,11,11,9]` KEEPS iff**
+
+  > `1055.8000 < M₁₂ < (1959.5 + w)/2`
+
+  *where* `M₁₂` *is the final 12-median —* **nine members, three landed
+  at 1939.9, 1962.8, 2109.1** — *and* `w` *is the cost of* **idx 1784**,
+  *the 11-group's one remaining cube.* **Everything else in the block is
+  already fixed**: *the 13-median is* **FINAL at 1055.8000** *and the
+  11-group's other member landed at* **1959.5**, *so the 11-median is
+  exactly* `(1959.5 + w)/2` *and no third quantity is left.* **Checked
+  against the direction window itself** — `13-median < 12-median <
+  11-median` *evaluated from scratch* — **over 200000 random completions
+  of the six outstanding 12-cubes and of `w`: zero disagreements.**
+  *Neither* `M₁₂` *nor* `w` *exists yet.*
+
+  ***TWO COROLLARIES, BOTH FALSIFIABLE.*** **(1) On `w` alone the
+  condition needs `(1959.5 + w)/2 > 1055.8000`, i.e. `w > 152.1000`** —
+  *`2 × 1055.8000 − 1959.5`, computed; idx 1784 stood at* **615 s of
+  elapsed at 2026-09-25T17:58:52Z**, *so it is already past that,* **but
+  within the run only — a restart puts 152.1000 back in play.** **(2) If
+  every one of the six outstanding 12-cubes lands at or above 1939.9,
+  the smallest the group has yet produced, then `M₁₂ ≥ 1939.9`** *(the
+  median of nine values all at least 1939.9; checked over 200000 random
+  draws, zero violations)* **and leg two then requires `w > 2 × 1939.9
+  − 1959.5 = 1920.3000`.** *So:* **if idx 1784 lands at or below
+  1920.3000 and no outstanding 12-cube lands below 1939.9, the block
+  BREAKS** — *written now, against rows that do not exist, and it is
+  wrong if the block keeps under those two conditions.*
+
+  ***WHAT THIS DOES NOT SAY.*** *It does not predict a verdict —* **both
+  legs are still undetermined**, *and the counter in the entry two below
+  still stands at* **7** *ways for leg one to fail.* *It does not survive
+  a restart in corollary (1), which leans on an elapsed floor.* *And it
+  is an* **iff about the block given what has landed**, *not a claim
+  about how the outstanding cubes will land; the only falsifiable part
+  is corollary (2).* **Decided 1782 of 1949 = 91.4315%; 167 undecided;
+  still 0 SAT; holes `[]`; no span open; driver pid 27185 unchanged.**
 
   ***idx 1781 UNSAT AT 1959.5 s — THE 11-GROUP OPENS, THE BRACKET MOVES
   ON THE FIRST LANDING, AND THE FORMULA THAT PREDICTED IT WAS NEVER
