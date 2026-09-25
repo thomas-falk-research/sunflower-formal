@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T16:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T16:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7017,6 +7017,60 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***AN ELAPSED FLOOR ON idx 1769 FORCES LEG TWO TO FAIL, SO
+  `[13,11,11,10]` BREAKS — WITHIN THIS RUN ONLY, AND THE TALLY DOES NOT
+  MOVE.*** *No row landed for this entry; it is written from the
+  in-flight picture at the* **16:41:55Z** *check-in.* **idx 1769 is a
+  coord9 = 12 cube at pid 28777, elapsed 3563 s at
+  2026-09-25T16:43:36Z**, *read from* `cnf_mtime_check.py` *and written
+  to* `cpu_ratio_samples.tsv` *in the same run.* **So its final cost is
+  at least 3563 s.**
+
+  ***THE DERIVATION.*** *The final 12-median is* `x₆` *of eleven. Nine
+  are landed —* **460.5, 1050.1, 2082.6, 2100.3, 2189.7, 2455.3, 3073.0,
+  3794.1, 4479.8** *— and idx 1769 at ≥ 3563 sits above the seventh of
+  them, so at most eight values can fall below it: the seven landed
+  under 3563 plus idx 1772.* **The sixth smallest of those eight is at
+  least 2189.7**, *whatever idx 1772 costs.* **Minimum final 12-median:
+  2189.7000** — *confirmed by a grid over 1 000 × 1 090 pairs and by
+  300 000 random draws, both returning exactly 2189.7000.* **The
+  11-median is confined to [2161.6000, 2169.0000], so at most
+  2169.0000.** `2189.7000 ≥ 2169.0000` — ***LEG TWO FAILS, BY AT LEAST
+  20.7000 s.*** *Over 300 000 fills of idx 1769 above its floor, idx
+  1772 and the last 11-cube, leg two held* **zero** *times.*
+
+  ***AND THIS BREAK IS NOT RESTART-PROOF, WHICH IS WHERE IT DIFFERS
+  FROM `[13,12,9,9]`.*** *That block's entry drew the distinction
+  exactly:* **"The pin is within-run: it rests on an elapsed floor, and
+  a teardown destroys it. The BREAK is not: the landed-only bracket
+  already lies wholly above the ceiling."** ***HERE THERE IS NO
+  RESTART-PROOF HALF.*** **The landed-only 12-lower is 2100.3000, which
+  is 68.7000 BELOW the 11-upper of 2169.0000**, *so from landed values
+  alone leg two is still open.* **The whole verdict rests on idx 1769's
+  floor, and a teardown kills idx 1769, re-runs it, and can return it
+  cheaper.**
+
+  ***SO THE TALLY DOES NOT MOVE.*** *It stays at* **ten keep, seven
+  break, of seventeen settled blocks.** *`[13,12,9,9]` was counted at
+  its registration because its verdict survived a restart; this one
+  would not, and counting it would put a figure in the tally that a
+  teardown could falsify.* **The block is recorded as BREAKING WITHIN
+  THIS RUN and is not counted as settled.** *That is a stricter reading
+  than "a verdict is a verdict", and it is the reading the* `[13,12,9,9]`
+  *entry already argued for when it separated the two lifetimes.*
+
+  ***AND IT BECOMES RESTART-PROOF THE MOMENT idx 1769 LANDS.*** *At*
+  `m = 10` *the landed-only 12-lower is the fifth smallest of ten, and
+  for every* `v ≥ 2189.7` *that is* **2189.7000** *— above the 11-upper.*
+  *Checked at* **2169.0 → 2169.0000**, **3000 → 2189.7000**, **3563 →
+  2189.7000**, **5000 and the cap → 2189.7000**, *all clearing 2169.0000.*
+  **idx 1769 is already past 3563, so whatever it returns the landed-only
+  bracket will carry the break on its own** — *and the tally moves then,
+  not now.* *The other two cubes in flight are* **idx 1770 at 3315 s**
+  *— the block's last coord9 = 11 — and* **idx 1772 at 1666 s**, *a
+  coord9 = 12 whose floor is not yet past the threshold and which the
+  derivation above does not need.*
 
   ***idx 1773 UNSAT AT 460.5 s — A THIRD MISS, AND THE 12-BRACKET
   COLLAPSES TO 355.0000 s.*** **Rank 1653 of 1771 with no tie** —
