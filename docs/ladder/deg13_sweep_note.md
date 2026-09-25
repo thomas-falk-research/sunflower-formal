@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T04:56Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T05:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6845,7 +6845,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1829 -> 1830 rows)
+## State as of the last refresh (1830 -> 1831 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6856,7 +6856,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1830 rows; 1661 labels decided; 1661 UNSAT; 0 SAT; 0 labels
+- **1831 rows; 1662 labels decided; 1662 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6892,7 +6892,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1661 decided plus 169 superseded
+  A row count is not a decision count: 1662 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6942,8 +6942,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1655, highest decided 1661, holes [1656].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1661, highest decided 1661, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6977,6 +6977,69 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1656 UNSAT AT 5160.0 s: `[13,12,10,8]` IS COMPLETE AT 11 OF
+  11, THE PIN IS CONFIRMED EXACTLY, AND THE NINETY-EIGHTH SPAN
+  CLOSES.*** **Rank 445 of 1662 with no tie** — *`1662 − 1217 = 445`
+  reproduces the rank, detector agrees.* **0.2389 of the per-cube cap.
+  Holes `[]`, frontier contiguous 0..1661, highest decided 1661.
+  Decided 1662 of 1949 = 85.2745%; still 0 SAT.** *The span is retired
+  here and carries no figures — no duration, no chain, no ranks, no
+  verdict; they come from* `--spans all` *in the NEXT commit, with
+  every carried row first reproduced at the OLD N = 162.*
+
+  ***THE PIN REGISTERED AT `ef2760a` IS CONFIRMED TO THE DECIMAL.***
+  *That commit published the 12-median at* **exactly 3024.7**, *on the
+  ground that idx 1655 and 1656 both had elapsed above the largest
+  landed value 3140.4, so wherever they finished they would be the two
+  largest and* `x₍₃₎`, `x₍₄₎` *would stay at 2909.0 and 3140.4.*
+  **They landed at 4828.3 and 5160.0, both above 3140.4 as the argument
+  required, and the median is 3024.7.** ***THE CONDITION IT CARRIED —
+  "only if idx 1655 and 1656 land under driver 21147" — HELD***: *pid
+  21147 is unchanged since 20:59:10.390000Z.*
+
+  ***ALL THREE MEDIANS ARE FINAL, AND THE VERDICT IS THE ONE PUBLISHED
+  TWO CUBES AGO.***
+
+  | term | final |
+  |---|---|
+  | 13-median | **1608.3** |
+  | 12-median | **3024.7** |
+  | 11-median | **2369.7** |
+
+  **Leg one holds by 1416.4 s; leg two fails by 655.0 s.**
+  ***`13-median < 12-median < 11-median` BREAKS*** — *identical to*
+  `65d174a`, *which settled it from a landed-only bracket with one cube
+  out.* **The tally does not move: nine keep, six break, of fifteen
+  settled blocks** — *a block is counted once, and what the last two
+  cubes added was the exact triple, not a verdict.*
+
+  ***AND FIVE OF THE SIX coord9 = 12 CUBES ENDED AT OR ABOVE THE
+  11-MEDIAN.*** **2676.0, 2909.0, 3140.4, 4828.3 and 5160.0 are all at
+  or above 2369.7; only idx 1658's 552.9 is below.** *The break needed four and got five.*
+
+  ***AND THE COUNT AND THE BRACKET ARE NOT TWO INDEPENDENT ARGUMENTS —
+  THE BRACKET IS STRICTLY THE STRONGER.*** *A draft of the sentence
+  above said the counting condition "fired a cube before the bracket
+  closed the question"; it did not.* **Both closed on the same row,
+  `65d174a`: four landed at or above 2369.7 and a landed-only lower end
+  of 2792.5.** *And that is no coincidence —* **four values at or above
+  the mark force `x₍₃₎` and `x₍₄₎` to be at or above it, so the count
+  ALWAYS implies the bracket.** ***THE CONVERSE IS FALSE***: *with
+  landed values* `552.9, 2300, 2450, 2500, 2600` *and one unknown, only
+  three are at or above the mark and the lower end is* **2375.0**,
+  *which clears it.* **So the bracket can close the question with three
+  above and the count cannot**, *and in this block they fired together
+  because of these particular numbers, not because they are the same
+  test.*
+
+  ***THE WHOLE BLOCK, IN ONE PLACE.*** **coord9 = 13: 704.9, 1594.0,
+  1622.6, 1641.2 — median `(1594.0 + 1622.6)/2 = 1608.3`. coord9 = 12:
+  552.9, 2676.0, 2909.0, 3140.4, 4828.3, 5160.0 — median `(2909.0 +
+  3140.4)/2 = 3024.7`. coord9 = 11: 2369.7 alone — its own cost.**
+  *Two of the three terms are even-`n` averages and the third is a
+  single cube, which is the shape this block had from its opening and
+  the reason its corridor was a corridor at all.*
 
   ***idx 1661 UNSAT AT 1551.0 s COMPLETES `[13,12,10,7]`'s 13-GROUP,
   AND THE FINAL MEDIAN IT PRODUCES IS USELESS BY CONSTRUCTION.***
@@ -7304,9 +7367,11 @@ exactly one bank.
 
   ***AN OPENING AT THREE.*** Over the **162** closed chains the opening
   hole count is **1 in 54, 2 in 55, 3 in 50 and 4 in 3**, so three is
-  **30.9%**. **It is the first opening at three since the ninety-sixth**,
-  and the spans that opened at three are **50** of the 162, the last
-  five of them ordinals **79, 85, 89, 91 and 96**.
+  **30.9%**. *The three live-only sentences that stood here — the
+  "since the" ordinal, the "M of the N" count and the last-five list —
+  are struck at this close, per the census convention; the sentence
+  above survives because it is checked against the walk's first 162
+  spans and stays true for good.*
 
   ***THE SPAN'S THREE HOLES ARE THE BLOCK'S THREE REMAINING CUBES, AND
   ALL THREE ARE coord9 = 12.*** **`[13,12,10,8]` is at 8 of 11 with idx
@@ -26651,7 +26716,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1661 of 1949 = 85.2232%**; **288 undecided**. **50% IS CROSSED**, at
+- **1662 of 1949 = 85.2745%**; **287 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27364,8 +27429,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
-  **10 decided**, undecided [1656]
 - `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
   **3 decided**, undecided [1662, 1663, 1664, 1665]
 
