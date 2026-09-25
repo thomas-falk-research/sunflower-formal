@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T09:34Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T09:39Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6857,7 +6857,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1872 -> 1875 rows)
+## State as of the last refresh (1875 -> 1877 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6868,7 +6868,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1875 rows; 1706 labels decided; 1706 UNSAT; 0 SAT; 0 labels
+- **1877 rows; 1708 labels decided; 1708 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6904,7 +6904,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1706 decided plus 169 superseded
+  A row count is not a decision count: 1708 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6954,7 +6954,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1702, highest decided 1707, holes [1703, 1705].**
+- **Frontier contiguous 0..1702, highest decided 1708, holes [1703].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6989,6 +6989,39 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1705 AND idx 1708 UNSAT — AND THE RUN CONTINUES PAST ITS
+  `(6,19)` PREFIX, WHICH IS THE TRAP WRITTEN DOWN AT `270c759`.***
+  **idx 1705 at 1045.8 s, rank 1415 of 1708** (*`1708 − 293 = 1415`*);
+  **idx 1708 at 398.8 s, rank 1626 of 1708** (*`1708 − 82 = 1626`*).
+  *Both* **coord9 = 13**, *neither tied.* **Holes `[1703]`, frontier
+  contiguous 0..1702, highest decided 1708. Decided 1708 of 1949 =
+  87.6347%; 241 undecided; still 0 SAT.**
+
+  ***THE TRAP FIRES EXACTLY WHERE IT WAS SAID IT WOULD.*** *That entry
+  recorded that all twelve untestable runs begin* **7, 5, 3, 2**, *that*
+  **six** *of them have the complete profile* **7, 5, 3, 2, 1, 1** *—
+  six blocks, nineteen cubes — and that* **this run's first six blocks
+  are that profile exactly and then it keeps going.** **The prefix is
+  idx 1689..1707, nineteen cubes, and eighteen of them are now
+  decided.** **idx 1708 opens `[13,12,8,8]` with 5 cubes**, *exactly the
+  seventh entry of the predicted profile.* ***A READER TAKING THE LAST
+  FIVE RUNS AS A PATTERN WOULD HAVE CALLED THIS RUN OVER AT idx 1707,
+  AND WOULD BE WRONG BY SEVENTEEN CUBES.*** **The prediction was written
+  nineteen cubes before the point where it could fail**, *and it did not
+  fail — though the honest reading stands unchanged: this is a
+  derivation from* `SEQ`, *so what has been checked is that* `SEQ` *was
+  read correctly, not that the sweep behaved as forecast.*
+
+  ***AND THREE MORE BLOCKS COMPLETE, ALL UNTESTABLE.*** **`[13,12,9,5]`
+  at 2 of 2, median FINAL 840.0500** *(`(634.3 + 1045.8)/2`, an even
+  pair)*; **`[13,12,9,4]` at 1 of 1, FINAL 426.2000**; **`[13,12,9,3]`
+  at 1 of 1, FINAL 130.9000.** *The last two are single-cube blocks:*
+  **one cube cannot carry two coord9 values, let alone the three the
+  window needs**, *so they are untestable by arithmetic rather than by
+  accident.* **The tally stays at nine keep, seven break, of sixteen
+  settled blocks.** *Only idx 1703 remains of the first nineteen cubes,
+  and it is also the span's only hole.*
 
   ***idx 1704, 1706 AND 1707 UNSAT — THREE BLOCKS OPEN, TWO OF THEM
   COMPLETE ON ARRIVAL, AND THE HUNDRED-AND-THIRD SPAN OPENS AT WIDTH
@@ -28575,7 +28608,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1706 of 1949 = 87.5321%**; **243 undecided**. **50% IS CROSSED**, at
+- **1708 of 1949 = 87.6347%**; **241 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29290,8 +29323,8 @@ exactly one bank.
 
 - `[13, 12, 9, 6]` idx 1701..1703: **3 members**,
   **2 decided**, undecided [1703]
-- `[13, 12, 9, 5]` idx 1704..1705: **2 members**,
-  **1 decided**, undecided [1705]
+- `[13, 12, 8, 8]` idx 1708..1712: **5 members**,
+  **1 decided**, undecided [1709, 1710, 1711, 1712]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
