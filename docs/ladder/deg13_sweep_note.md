@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T18:58Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T19:12Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1957 -> 1958 rows)
+## State as of the last refresh (1958 -> 1960 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1958 rows; 1789 labels decided; 1789 UNSAT; 0 SAT; 0 labels
+- **1960 rows; 1791 labels decided; 1791 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1789 decided plus 169 superseded
+  A row count is not a decision count: 1791 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,7 +6986,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1785, highest decided 1789, holes [1786].**
+- **Frontier contiguous 0..1785, highest decided 1791, holes [1786].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7021,6 +7021,82 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1790 AND idx 1791 UNSAT — `[13,11,11,8]`'s 13-GROUP REACHES
+  `m = k`, AND THE PARITY DICHOTOMY'S ASYMMETRY IS WRONG: THE TWO ENDS
+  NEVER DISAGREE.*** *From the staged blob.* **idx 1790 at 963.4 s, rank
+  1505 of 1791** — *`1791 − 286 = 1505`*; **idx 1791 at 1013.7 s, rank
+  1479 of 1791** — *`1791 − 312 = 1479`*. **Neither tied**, *detector
+  agrees on both; read from the script.* **Both coord9 = 13. Holes
+  `[1786]`, frontier contiguous 0..1785, highest decided 1791. Decided
+  1791 of 1949 = 91.8933%; 158 undecided; still 0 SAT.**
+  **`[13,11,11,8]` is at 3 of 11; `[13,11,11,9]` stays at 14 of 15.**
+
+  ***THE 13-GROUP IS AT `m = 3 = k` AND ITS BRACKET IS [720.2000,
+  988.5500].*** **Both ends are zero-free and cap-free** — *the lower
+  reads* `(477.0 + 963.4)/2` *and the upper* `(963.4 + 1013.7)/2`,
+  *neither carrying a trivial term.* **The `m = 3` half of the
+  prediction registered at `b1a81c9` is confirmed.** *The* `m = 2`
+  *intermediate state was seen in a* `bank.py` *run and never reached a
+  commit, so by the* `#29` *rider it did not happen; it is described
+  below only as the object of the correction.*
+
+  ***AND NOW THE CORRECTION, WHICH IS THE POINT OF THIS ENTRY.*** *The
+  parity dichotomy, as this note has stated it since* `[13,11,11,11]`,
+  *says of an even group that* "**the lower end leaves zero one landing
+  before the upper leaves the cap**", *and the* `[13,11,11,10]`
+  *13-group entry called its* `m = 2` "**exactly the one landing where
+  the two disagree**". **THE SECOND SENTENCE IS FALSE AND THE FIRST IS
+  COMPARING TWO DIFFERENT EVENTS.** *Computed exhaustively for all four events over* `n = 1` *to* `19`
+  *and, separately, over* **every one of the twenty group sizes that
+  actually occur in this sweep** — `1, 2, 4, 5, 6, 7, 8, 9, 11, 14, 16,
+  19, 21, 24, 26, 27, 29, 33, 42, 48` — **with zero violations in either
+  run**:
+
+  | event | first `m` |
+  | --- | --- |
+  | lower end stops being `0` | `n − k + 1` |
+  | upper end stops being the cap | `n − k + 1` |
+  | lower end carries no `0` term | `k` |
+  | upper end carries no cap term | `k` |
+
+  **The two ends move at the same landing, always — both in value and
+  in dependency. There is no group size in this sweep where they
+  differ, and none in `n = 1..19` either.** *The one-landing gap is real, but it is between* **"moved
+  off trivial"** *and* **"free of a trivial term"**, *not between the
+  lower end and the upper end.*
+
+  ***THE CONCLUSION SURVIVES; THE MECHANISM DID NOT.*** *For an* **odd**
+  *group* `n − k + 1 = k`, *so all four events coincide and there are*
+  **two states**. *For an* **even** *group* `n − k + 1 = k − 1`, *so the
+  first pair fires one landing before the second and there are* **three
+  states**. **"Odd groups have two states, even groups three" is
+  correct and is not withdrawn.** *What is withdrawn is the reading that
+  the intermediate state is one where the ends disagree.* **In the
+  intermediate state BOTH ends are non-trivial in value and BOTH still
+  carry a trivial term** — *at* `[13,11,11,10]`'s `m = 2` *the lower was*
+  **233.2500** *from order statistics* `[0, 466.5]` *and the upper*
+  **11325.2500** *from* `[1050.5, 21600]`: **one zero and one cap,
+  symmetric.** *Those two figures are in the note already and they were
+  the evidence against the sentence they were written beside.*
+
+  ***AND THE NOTE'S OWN RECORDED HISTORY NEVER CONTRADICTED THIS.***
+  `[13,11,11,11]`'s *12-group,* `n = 14, k = 8`, *was headed* **"THE
+  12-GROUP'S LOWER END LEAVES ZERO"** *at* `m = 7` *and* **"REACHES
+  m = 8 = k AND THE CAP LEAVES THE BRACKET"** *at* `m = 8`. **Both
+  headings are true**: `m = 7` *is where both ends move off trivial and*
+  `m = 8` *is where both become trivial-free.* **The two headings used
+  two different senses of "leaves", and the derivation then read them as
+  an asymmetry between the ends.** *The data was right and the sentence
+  drawn from it was not, which is why the correction needed a
+  computation and not a re-reading.*
+
+  ***THREE SENTENCES ARE MARKED IN PLACE.*** *The false one, the
+  misleading one and the copy of it written at* `b1a81c9` *each carry a
+  pointer to this entry now.* **Archived entries are not rewritten**,
+  *but a false sentence left unmarked in a file this long is the defect
+  this note has already recorded once as "a withdrawal left standing
+  three lines above its own withdrawal".*
 
   ***idx 1789 UNSAT AT 477.0 s — `[13,11,11,8]` OPENS, AND THE
   SMALLEST GROUP CLAIM IS FALSE.*** *From the staged blob.* **Rank 1659
@@ -7070,7 +7146,7 @@ exactly one bank.
 
   ***THE BLOCK'S SHAPE, REGISTERED AT ITS OPENING.*** **11 members, idx
   1789..1799.** **coord9 = 13: `n = 4`, `k = 3`, even — lower leaves
-  zero at `m = 2`, upper leaves the cap at `m = 3`; it has 1.**
+  zero at `m = 2`, upper leaves the cap at `m = 3`; it has 1.** ‹**CORRECTED AT THE `[13,11,11,8]` 13-GROUP ENTRY: the two ends never disagree; see it for the exhaustive table.**›
   **coord9 = 12: `n = 6`, `k = 4`, even — lower at `m = 3`, upper at
   `m = 4`; it has 0.** **coord9 = 11: `n = 1`, `k = 1`, odd — both at
   `m = 1`; it has 0.** **Seven more cubes before all three brackets can
@@ -7861,7 +7937,7 @@ exactly one bank.
   jumped straight from trivial to cap-free."** *The 13-group has* `n =
   4, k = 3` *— even — so by the rule the lower end leaves zero at* `m ≥
   n − k + 1 = 2` *and the upper leaves the cap at* `m ≥ k = 3`. **m is
-  now 2, which is exactly the one landing where the two disagree.**
+  now 2, which is exactly the one landing where the two disagree.** ‹**CORRECTED AT THE `[13,11,11,8]` 13-GROUP ENTRY: the two ends never disagree; see it for the exhaustive table.**›
 
   ***AND THE FIGURES COME OUT OF THE ORDER STATISTIC BY HAND.*** *The
   median of four reads* `(x₂ + x₃)/2`. *With the two landed values*
@@ -8672,7 +8748,7 @@ exactly one bank.
   **EVEN** *group* `k = n/2 + 1`, *so* `n − k + 1 = k − 1` *and the
   lower end leaves zero* **one landing before** *the upper leaves the
   cap; at* `m = k − 1` *the upper is* `(x₍ₖ₋₁₎ + cap)/2`, *non-trivial
-  and still cap-dependent.* **Odd groups have two states, even groups
+  and still cap-dependent.* ‹**CORRECTED AT THE `[13,11,11,8]` 13-GROUP ENTRY: the two ends never disagree; see it for the exhaustive table.**› **Odd groups have two states, even groups
   three** — *enumerated by script over every `m` from 0 to `n` for
   `n = 5, 8, 11, 14`.*
 
@@ -32108,7 +32184,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1789 of 1949 = 91.7907%**; **160 undecided**. **50% IS CROSSED**, at
+- **1791 of 1949 = 91.8933%**; **158 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -32824,7 +32900,7 @@ exactly one bank.
 - `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
   **14 decided**, undecided [1786]
 - `[13, 11, 11, 8]` idx 1789..1799: **11 members**,
-  **1 decided**, undecided 10 spanning 1790..1799
+  **3 decided**, undecided 8 spanning 1792..1799
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
