@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T21:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T21:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6893,7 +6893,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1988 -> 1989 rows)
+## State as of the last refresh (1989 -> 1990 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6904,7 +6904,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1989 rows; 1820 labels decided; 1820 UNSAT; 0 SAT; 0 labels
+- **1990 rows; 1821 labels decided; 1821 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6946,7 +6946,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1820 decided plus 169 superseded
+  A row count is not a decision count: 1821 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6996,7 +6996,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1819, highest decided 1819, holes [].**
+- **Frontier contiguous 0..1820, highest decided 1820, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7031,6 +7031,57 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1820 UNSAT — THE INTERMEDIATE STATE APPEARS EXACTLY WHERE THE
+  CORRECTED RULE PUTS IT, AND THE ELAPSED FLOOR HALVES THE BRACKET.***
+  *From the staged blob.* **idx 1820 at 1076.3 s, rank 1463 of 1821 with
+  no tie** — *`1821 − 358 = 1463`; detector agrees.* **Decided 1821 of
+  1949 = 93.4325%; 128 undecided; holes `[]`; frontier contiguous
+  0..1820; still 0 SAT.** **Its cube is `[13, 11, 10, 10, 13, 13, 13,
+  13, 13, 12, 7]`, coord9 = 13**, *the second of that group's four, and
+  the block is open at* **2 of 15**.
+
+  ***THE 13-GROUP IS idx 1819..1822, CONTIGUOUS — ENUMERATED FROM `SEQ`,
+  NOT ASSUMED.*** **All four coord9 = 13 members are the block's first
+  four**, *and the full split is* `13` *at 1819, 1820, 1821, 1822;* `12`
+  *at 1823, 1824, 1825, 1827, 1828, 1830, 1831, 1832, 1833;* `11` *at
+  1826 and 1829.* ***BOTH REMAINING 13-MEMBERS ARE IN FLIGHT RIGHT
+  NOW***, *so the 13-median can go FINAL inside the next two landings —
+  written before it happens, not after.*
+
+  ***THE BRACKET AT `m = 2`, COMPUTED.*** **`n = 4`, `k = 3`, so `n − k
+  + 1 = 2` and `k = 3`: at `m = 2` both ends have moved off trivial and
+  both still carry a trivial term. That is the intermediate state the
+  even-group case predicts, and it is here on the first landing that
+  could produce it.** **Bracket `[221.2500, 1538.1500]`, width
+  `1316.9000`** — *lower from* `sorted[0, 0, 442.5, 1076.3]` *giving*
+  `(0 + 442.5)/2`*, upper from* `sorted[442.5, 1076.3, 2000, 2000]`
+  *giving* `(1076.3 + 2000)/2`. **Neither end is trivial; the lower
+  still carries a `0` term and the upper still carries a cap term, and
+  both become free of one at `m = 3`.** *Computed by script over the
+  median definition, not asserted from the table.*
+
+  ***AND THE ELAPSED FLOOR CUTS THE WIDTH BY MORE THAN HALF.*** **At
+  2026-09-25T21:42:19Z the two outstanding 13-members had elapsed `904 s`
+  (idx 1821) and `825 s` (idx 1822), read from `cpu_ratio_samples.tsv`,
+  under driver pid 27185 unchanged.** *Since* `cost ≥ elapsed` *within a
+  run, putting them at their floors instead of at 0 gives* `sorted[442.5,
+  825, 904, 1076.3]` *and a lower end of* `(825 + 904)/2 = 864.5000`.
+  **Floor-tightened bracket `[864.5000, 1538.1500]`, width `673.6500`
+  against the plain `1316.9000` — the lower end rises by `643.2500`.**
+  ***THIS TIGHTENING IS DESTROYED BY A RESTART*** *and is worth nothing
+  the moment the driver pid changes; it is recorded with its pid and its
+  timestamp for exactly that reason.* **The upper end does not move at
+  all** — *a floor bounds a cost from below and says nothing about the
+  cap side.*
+
+  ***THE 12-GROUP HAS STARTED TOO.*** **idx 1823 and idx 1824 are in
+  flight at 706 s and 38 s at that same 21:42:19Z sample, both coord9 =
+  12.** *That group is* `n = 9`,
+  `k = 5`, **odd — both ends move at `m = 5` and there is no
+  intermediate state**, *so it stays unreadable for three more of its
+  landings after these two.* **The tally stays at eleven keep, nine
+  break, of twenty**, *and the census at* **50 and 50**.
 
   ***THE HUNDRED-AND-FOURTEENTH SPAN'S FIGURES, AND THE PREDICTION MADE
   BEFORE THEM IS CONFIRMED.*** *The previous commit closed the span and
@@ -33438,7 +33489,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1820 of 1949 = 93.3812%**; **129 undecided**. **50% IS CROSSED**, at
+- **1821 of 1949 = 93.4325%**; **128 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -34152,7 +34203,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 10, 10]` idx 1819..1833: **15 members**,
-  **1 decided**, undecided 14 spanning 1820..1833
+  **2 decided**, undecided 13 spanning 1821..1833
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
