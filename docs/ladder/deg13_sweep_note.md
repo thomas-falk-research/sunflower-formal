@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T00:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T00:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6839,7 +6839,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1805 -> 1806 rows)
+## State as of the last refresh (1806 -> 1807 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6850,7 +6850,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1806 rows; 1637 labels decided; 1637 UNSAT; 0 SAT; 0 labels
+- **1807 rows; 1638 labels decided; 1638 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6886,7 +6886,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1637 decided plus 169 superseded
+  A row count is not a decision count: 1638 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6936,7 +6936,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1636, highest decided 1636, holes [].**
+- **Frontier contiguous 0..1637, highest decided 1637, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6971,6 +6971,42 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***84% IS CROSSED, AND THIS TIME THE PAIR DOES SIT IN CONSECUTIVE
+  COMMITS.*** **Decided 1638 of 1949 = 84.0431%, and this one IS 84%;
+  the previous commit, `b87eb68`, sat on 1637 = 83.9918%, the trap.**
+  ***BOTH DISPLAY AS 84.0%.*** *That is the demonstration the trap
+  series exists for, and it is the fourth time this file has caught it
+  in consecutive commits — after the 66% pair at 1286/1287, the 68% pair
+  at 1325/1326 and the 82% pair at 1598/1599.* **A reader who saw only
+  "84.0%" on either commit could not tell which had reached 84%**,
+  *which is why the four-decimal form is the one written down.*
+
+  ***AND IT LANDED THAT WAY BY LUCK, WHICH THE 83% CROSSING MADE
+  EXPLICIT ONE THRESHOLD AGO.*** *`f2bd489` recorded that the pair
+  demonstration needs the two rows to bank separately, and that*
+  **registering the trap protects the FIGURES while only a one-row bank
+  produces the side-by-side display.** *83% missed it because the trap
+  row and the crossing arrived in the same bank.* **84% got it because
+  they did not.** *The registration was identical in both cases; the
+  display was not, and nothing about the practice changed between them.*
+
+  **Rank 778 of 1638 with no tie** — *`1638 − 860 = 778` reproduces the
+  rank, detector agrees.* **0.1447 of the per-cube cap. Holes `[]`,
+  frontier contiguous 0..1637, highest decided 1637; still 0 SAT.**
+
+  ***idx 1637 OPENS `[13,12,10,9]`'s coord9 = 12 GROUP AT 1 OF 9.***
+  **3125.0 s, against a threshold of 5** — *so no bracket, and with
+  eight members unstarted no elapsed floor can give one either:* `n − f
+  < j` *needs* `9 − f < 5`, *i.e. at least five of the nine floored.*
+  **The 13-median stands final at 1636.35 and coord9 = 11 is still 0 of
+  2.** *The block is at 5 of 15.*
+
+  ***THE 85% TRAP IS REGISTERED, EIGHTEEN ROWS OUT.*** **`0.85 × 1949 =
+  1656.65`, so the crossing is at 1657 decided = 85.0180%** — *and*
+  **1656 decided = 84.9666%, which prints as 85.0% at one decimal
+  without having crossed.** *Computed, not read off, and written at the
+  same distance as the 83% and 84% registrations.*
 
   ***THE 84% TRAP IS OBSERVED ON THE ROW IT NAMED, AND idx 1636 UNSAT AT
   1871.5 s COMPLETES `[13,12,10,9]`'s 13-GROUP.*** **Decided 1637 of
@@ -25332,7 +25368,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1637 of 1949 = 83.9918%**; **312 undecided**. **50% IS CROSSED**, at
+- **1638 of 1949 = 84.0431%**; **311 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -26046,7 +26082,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 9]` idx 1633..1647: **15 members**,
-  **4 decided**, undecided 11 spanning 1637..1647
+  **5 decided**, undecided 10 spanning 1638..1647
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
