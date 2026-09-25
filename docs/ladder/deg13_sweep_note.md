@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T08:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T08:56Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6854,7 +6854,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1864 -> 1867 rows)
+## State as of the last refresh (1867 -> 1868 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6865,7 +6865,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1867 rows; 1698 labels decided; 1698 UNSAT; 0 SAT; 0 labels
+- **1868 rows; 1699 labels decided; 1699 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6901,7 +6901,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1698 decided plus 169 superseded
+  A row count is not a decision count: 1699 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6951,7 +6951,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1693, highest decided 1698, holes [1694].**
+- **Frontier contiguous 0..1693, highest decided 1701, holes [1694, 1699, 1700].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6986,6 +6986,49 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1701 UNSAT AT 594.5 s — AND THE SPAN WIDENS FROM ONE BACK TO
+  THREE, WHICH SETTLES ITS VERDICT AS FALSE.*** **Rank 1550 of 1699 with
+  no tie** — *`1699 − 149 = 1550`, detector agrees.* **coord9 = 13.
+  Holes `[1694, 1699, 1700]`, frontier contiguous 0..1693, highest
+  decided 1701. Decided 1699 of 1949 = 87.1729%; 250 undecided; still 0
+  SAT.** **The committed chain is now 3, 2, 1, 3** — *read off the four
+  commits that changed the checkpoint since the span opened*
+  (`4e9031b`, `2fb930e`, `d6ebed6` *and this one;* `dfc6f48` *changed no
+  rows and is invisible to the walk, which is the rule*). **The single
+  increase guarantees the span closes `monotone non-increasing = FALSE`
+  whatever happens next**, *since one rise is enough and the property
+  cannot be recovered.* **It came within one hole of closing and
+  reopened two wider.**
+
+  ***AND THAT IS ORDINARY — THE DRAFT WAS ABOUT TO CALL IT SOMETHING.***
+  Over the **166 closed spans**, **56 are False**, and **35 of those
+  reached a width of one and then increased**; **24 of the 35 are in the
+  tabled range.** *A jump off one of exactly two —* **1 → 3, this span's
+  own shape** — *has happened* **25 times**. *The other jump sizes are
+  22 at +1 and one at +8.* **Nothing here is a first**, *and the only
+  reason to write the figures down is that the sentence "came within one
+  hole of closing" reads like an event and is not one.*
+
+  ***A COUNTING ERROR IN THAT CENSUS, CAUGHT BEFORE IT WAS WRITTEN.***
+  `checkpoint_audit.py --spans all` *prints* **167 span blocks** *and
+  says in its own header* **"166 closed spans, 1 with a missing endpoint
+  excluded"** — *the extra block is the OPEN span, reported with* `closed
+  by: STILL BROKEN at the walk head` *and no duration.* **The first
+  census script counted all 167 and returned True 111, False 56**;
+  *filtering on a real closing sha gives* **True 110, False 56**, *which
+  is what the hundred-and-first close's figures commit already recorded
+  at N = 166.* **The tool said so in its own output and the script
+  ignored it.**
+
+  ***AND `[13,12,9,6]` OPENS — THE THIRD BLOCK OF THE PREDICTED RUN,
+  AS WRITTEN.*** **idx 1701..1703, 3 cubes, coord9 {13: 2, 12: 1}**, *no
+  coord9 = 11 member, so* **untestable** *and unable to move the tally.*
+  `270c759` *wrote the run's sizes as* **7, 5, 3, 2, 1, 1, 5, 3, 2, 1,
+  1, 2, 1, 1, 1**; *blocks one, two and three have now opened at* **7,
+  5 and 3 cubes** *at the stated indices.* **Still a derivation from
+  `SEQ` and not a forecast of behaviour** — *what it checks is that*
+  `SEQ` *was read correctly.*
 
   ***NO ROW LANDED, BUT `[13,12,9,8]`'s 12-MEDIAN IS NOW PINNED AT
   2866.0000.*** *Check-in, not a landing: the checkpoint is unchanged at*
@@ -28303,7 +28346,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1698 of 1949 = 87.1216%**; **251 undecided**. **50% IS CROSSED**, at
+- **1699 of 1949 = 87.1729%**; **250 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29020,6 +29063,8 @@ exactly one bank.
   **6 decided**, undecided [1694]
 - `[13, 12, 9, 7]` idx 1696..1700: **5 members**,
   **3 decided**, undecided [1699, 1700]
+- `[13, 12, 9, 6]` idx 1701..1703: **3 members**,
+  **1 decided**, undecided [1702, 1703]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
