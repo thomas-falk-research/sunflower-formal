@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T18:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T18:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7021,6 +7021,53 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — BUT A FLOOR NARROWS THIS BLOCK'S 12-BRACKET FOR
+  THE FIRST TIME.*** *Four samples at* **2026-09-25T18:41:50Z**, *read
+  by* `cnf_mtime_check.py`: **idx 1783 at 3260 s, idx 1784 at 3193 s,
+  idx 1786 at 818 s, idx 1787 at 447 s**, *driver pid* **27185**,
+  *all four deltas* `now-mtime − ps ELAPSED` *at* **0 s**. **idx 1783's
+  3260 s already exceeds the 12-bracket's landed-only upper end of
+  3017.1000**, *and folding all four outstanding cubes in at their
+  floors — idx 1788 has not started, so its floor is* **0** — *lifts
+  the lower end.* **Landed-only [1869.1000, 3017.1000]; within-run
+  [1939.9000, 3017.1000].** *Every 12-group floor before this one bound
+  nothing, because the group had fewer than* `k = 5` *landed; this is
+  the first that moves an end.* **A RESTART DESTROYS THE NARROWING AND
+  NOT THE BRACKET.**
+
+  ***AND idx 1784's FLOOR MOVES THE LEG-TWO THRESHOLD BY 274 s.***
+  *With* `w ≥` **3193**, *leg two holds if* **`M₁₂ < (3193 + 1959.5)/2
+  =` 2576.2500** — *up from* **2302.2500** *at* `f762b2d`, **+274.0000**.
+  **2576.2500 still sits inside [1939.9000, 3017.1000], so nothing is
+  settled.** **The landed-only forcing thresholds are untouched: `w >
+  4074.7000` forces leg two to HOLD, `w < 1778.7000` forces it to
+  FAIL**, *and* `w ≥ 3193` *keeps the FAIL branch closed within the run
+  while forcing nothing the other way.* **Leg one still HOLDS at
+  `1055.8000 < 1869.1000`, from landed costs alone.**
+
+  ***AND THE FIRST VERSION OF THAT BRACKET WAS WRONG IN A WAY THAT GAVE
+  THE RIGHT ANSWER.*** *The script that computed the within-run interval
+  put the outstanding cubes at their floors for* **both** *ends and
+  returned* **[1939.9000, 1962.8000]**. **A floor bounds below only**:
+  *the lower end is minimised by setting every outstanding cube to its
+  floor, but the upper end is maximised by leaving them at the cap, so
+  the upper is* **3017.1000** *and does not move at all.* **The wrong
+  interval still contained 2576.2500 and still returned
+  "undetermined"** — *which is exactly why it nearly went in. An error
+  that changes no conclusion is the one a conclusion-level check cannot
+  see, and the only thing that caught it was reading the two ends
+  against their own definitions.*
+
+  ***THE CHECK-IN'S FIVE STEPS, ALL CLEAN.*** **All invariants hold;
+  verdicts `{'UNSAT': 1784, 'UNKNOWN': 169}`, 0 SAT, 0 undecided-only.**
+  **Frontier contiguous 0..1782, highest decided 1785, holes `[1783,
+  1784]` — the span opened at `f762b2d` is still open and no figures
+  are claimed for it.** **`pgrep -x iota_sym` returns 27185, matching
+  the note.** **The waiter is still armed at 1953 rows** *(tail-anchored
+  check, not a whole-file grep)*. **HEAD `f762b2d` equals
+  `origin/claude/sunflower-deg13-p3-bhbe9w`.** **Decided 1784 of 1949
+  = 91.5341%; 165 undecided.** **Bracket unchanged: 27 ≤ ι(4) ≤ 71.**
 
   ***idx 1785 AND idx 1782 UNSAT — THE 12-BRACKET GOES CAP-FREE AND LEG
   ONE OF THE DIRECTION WINDOW IS DECIDED, EXACTLY WHERE `14230ba` SAID
