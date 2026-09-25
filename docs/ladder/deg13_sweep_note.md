@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T04:10Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T04:33Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6845,7 +6845,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1825 -> 1826 rows)
+## State as of the last refresh (1826 -> 1828 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6856,7 +6856,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1826 rows; 1657 labels decided; 1657 UNSAT; 0 SAT; 0 labels
+- **1828 rows; 1659 labels decided; 1659 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6892,7 +6892,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1657 decided plus 169 superseded
+  A row count is not a decision count: 1659 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6942,7 +6942,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1654, highest decided 1659, holes [1655, 1656, 1657].**
+- **Frontier contiguous 0..1654, highest decided 1660, holes [1655, 1656].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6977,6 +6977,99 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1657 UNSAT AT 2676.0 s AND idx 1660 AT 1368.6: LEG ONE OF
+  `[13,12,10,8]`'s WINDOW HOLDS UNCONDITIONALLY AND LEG TWO FAILS
+  WITHIN-RUN.*** **Decided 1659 of 1949 = 85.1206%; 290 undecided;
+  still 0 SAT.** *Both untied — strict counts taken directly and the
+  subtraction agrees with each.*
+
+  | idx | cost | rank of 1659 | cheaper | `1659 − cheaper` | of cap | block |
+  |---|---|---|---|---|---|---|
+  | 1657 | **2676.0 s** | 886 | 773 | 886 | 0.1239 | `[13,12,10,8]`, coord9 = 12 |
+  | 1660 | **1368.6 s** | 1267 | 392 | 1267 | 0.0634 | `[13,12,10,7]`, coord9 = 13 |
+
+  ***AND THE STALE-READ DETECTOR FIRED ON THIS VERY ENTRY.*** *It was
+  drafted against* `bank.py`'s *04:29:49Z run, which read* **1827 rows
+  and 1658 decided**, *and by the run that produced this commit —*
+  **04:31:25Z, 1828 rows and 1659 decided** — *idx 1660 had landed.*
+  **The draft's "rank 886 of 1658" and "85.0693%" were correct when
+  taken and wrong when banked.** ***THE ENTRY WAS REWRITTEN FROM THE
+  STAGED BLOB, NOT PATCHED***, *which is the rule precisely because a
+  patched figure keeps the shape of the stale one:* **idx 1657's rank
+  is still 886, but its "cheaper" count went 772 → 773 and the
+  denominator 1658 → 1659**, *and patching the denominator alone would
+  have left a rank that no longer reproduces.*
+
+  *Holes narrow to* `[1655, 1656]`, *frontier contiguous 0..1654,
+  highest decided 1660, and the ninety-eighth span stays open.*
+
+  ***THE BOTTOM ROUTE IS NOW DEAD ON LANDED VALUES, NOT MERELY
+  WITHIN-RUN.*** **The 12-group's landed-only bracket is `[1614.45,
+  3024.7]` on four landed values — 552.9, 2676.0, 2909.0, 3140.4 — and
+  1614.45 is ABOVE 1608.3 by 6.15 s.** *Constructed adversarially, both
+  unknowns at zero, and checked exhaustively over both extremes: the
+  minimum is 1614.4500 and nothing below it is reachable.* ***AT
+  `a5fd7da` THE BOTTOM ROUTE WAS KILLED BY idx 1655's ELAPSED FLOOR,
+  WHICH A RESTART WOULD HAVE RESTORED.*** **This kills it for good.**
+
+  ***AND IT WAS CLOSE — 12.3 s OF CUBE COST CLOSE.*** *For the lower
+  end to clear 1608.3, idx 1657 had to exceed* `2 × 1608.3 − 552.9 =`
+  **2663.7**; *it came in at* **2676.0**. **Below that mark leg one
+  would still be a within-run claim.** *The comparison is between two
+  even-`n` averages —* **1608.3 = (1594.0 + 1622.6)/2** *from the
+  13-group and* **1614.45 = (552.9 + 2676.0)/2** *from the 12-group's
+  two smallest* — **so each side moves on two terms, and the 6.15 s
+  between them is the whole of leg one.**
+
+  ***AND THE 12-MEDIAN IS PINNED AT 3024.7 WITHIN-RUN, WHICH FAILS LEG
+  TWO.*** **At the 04:33:04Z sample banked in this
+  commit idx 1655 reads 3970 s of elapsed and idx 1656 reads 3366 s,
+  and both exceed the largest landed value, 3140.4.** *So wherever they
+  finish they are the two largest of the six,* `x₍₃₎` *and* `x₍₄₎` *are
+  fixed at* **2909.0 and 3140.4**, *and the median is* **(2909.0 +
+  3140.4)/2 = 3024.7 at BOTH ends of the bracket.** **3024.7 exceeds
+  the corridor's upper mark of 2369.7 by 655.0**, *so leg two fails and
+  the window breaks.* **Three of the four at the top are landed — idx
+  1652, 1653 and 1657 — and the two floors supply a fourth and a
+  fifth.**
+
+  ***THE TALLY DOES NOT MOVE, AND THIS IS EXACTLY THE CASE FOR NOT
+  MOVING IT.*** **Leg one is restart-proof and leg two is not.** *On
+  landed values alone the bracket* `[1614.45, 3024.7]` *straddles
+  2369.7, so the window is UNDECIDED; it is the two elapsed floors and
+  nothing else that make it a break.* **A relaunch re-runs idx 1655 and
+  1656 from zero and voids the pin**, *and the landed-only bracket
+  would be all that is left.* ***SO THE VERDICT IS "BREAKS WITHIN-RUN",
+  WHICH IS NOT A VERDICT*** — **the tally stays at nine keep, five
+  break, of fourteen settled blocks**, *and moves when the two rows
+  land, or not at all if a restart comes first.*
+
+  ***THE TWO LEGS NOW REST ON DIFFERENT KINDS OF EVIDENCE, AND ONLY THE
+  WEAKER ONE CARRIES THE VERDICT.*** *Leg one is arithmetic on four
+  costs the file holds; leg two is two readings of `/proc` that a
+  relaunch erases.* **No ordinal is claimed for that split** — *whether
+  it has happened before in this record was not computed, so it is not
+  asserted.* *What is worth keeping is the shape: a block can be half
+  settled permanently and half settled provisionally, and the weaker
+  half decides what may be written down.*
+
+  ***AND idx 1660 TAKES `[13,12,10,7]`'s 13-GROUP TO ITS THRESHOLD,
+  WHICH BUYS NOTHING.*** **The group has three members and a threshold
+  of 2, so with 615.4 and 1368.6 in hand its median is bracketed at
+  `[615.4, 1368.6]`** — *the odd-`n` rule at* `j = 2` *of* `n = 3`.
+  ***AND THERE IS NO WINDOW TO PUT IT IN.*** *The block's groups are*
+  `{13: 3, 12: 4}` *with no coord9 = 11 member, as registered at*
+  `a5fd7da` *before its first row landed*, **so a bounded 13-median
+  here is an arithmetic fact about four numbers and not evidence about
+  anything.** *It is recorded so that the bracket is not later found in
+  the data and mistaken for a half-finished test.*
+
+  ***THE 86% TRAP, AT SEVENTEEN ROWS OUT.*** **`0.86 × 1949 = 1676.14`,
+  so the crossing is at 1677 decided = 86.0441%, and 1676 decided =
+  85.9928% prints as 86.0% at one decimal without having crossed.**
+  *Registered two commits ago at nineteen and restated here at
+  seventeen.* **Computed, not read off.**
 
   ***idx 1659 UNSAT AT 615.4 s AND 85% IS CROSSED — THE PAIR SITS IN
   CONSECUTIVE COMMITS.*** **Rank 1510 of 1657 with no tie** — *`1657 −
@@ -26444,7 +26537,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1657 of 1949 = 85.0180%**; **292 undecided**. **50% IS CROSSED**, at
+- **1659 of 1949 = 85.1206%**; **290 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27158,9 +27251,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
-  **8 decided**, undecided [1655, 1656, 1657]
+  **9 decided**, undecided [1655, 1656]
 - `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
-  **1 decided**, undecided 6 spanning 1660..1665
+  **2 decided**, undecided [1661, 1662, 1663, 1664, 1665]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
