@@ -47,9 +47,9 @@ OFFSET = 65
 # Floors: a run that parses fewer than these has a broken pattern, not a
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
-MIN_SPANS      = 111
-MIN_TABLE_ROWS = 97
-MIN_MONO_ROWS  = 111
+MIN_SPANS      = 112
+MIN_TABLE_ROWS = 98
+MIN_MONO_ROWS  = 112
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -152,6 +152,8 @@ CARDS['a hundred and ten'] = CARDS['one hundred and ten'] = 110
 CARDS['hundred and ten'] = 110
 CARDS['a hundred and eleven'] = CARDS['one hundred and eleven'] = 111
 CARDS['hundred and eleven'] = 111
+CARDS['a hundred and twelve'] = CARDS['one hundred and twelve'] = 112
+CARDS['hundred and twelve'] = 112
 # The ORDINAL table stops at ninety-nine for the same reason, and the
 # live-census "since the Nth" sentence needs it as soon as a span points
 # back past the hundredth.  Found here at the hundred-and-second open,
@@ -181,6 +183,8 @@ WORDS['hundred-and-tenth'] = WORDS['one-hundred-and-tenth'] = 110
 WORDS['a-hundred-and-tenth'] = 110
 WORDS['hundred-and-eleventh'] = WORDS['one-hundred-and-eleventh'] = 111
 WORDS['a-hundred-and-eleventh'] = 111
+WORDS['hundred-and-twelfth'] = WORDS['one-hundred-and-twelfth'] = 112
+WORDS['a-hundred-and-twelfth'] = 112
 
 
 def secs(d):
