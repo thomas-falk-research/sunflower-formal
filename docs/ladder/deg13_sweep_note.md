@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T05:15Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T05:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6847,7 +6847,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1831 -> 1832 rows)
+## State as of the last refresh (1832 -> 1833 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6858,7 +6858,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1832 rows; 1663 labels decided; 1663 UNSAT; 0 SAT; 0 labels
+- **1833 rows; 1664 labels decided; 1664 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6894,7 +6894,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1663 decided plus 169 superseded
+  A row count is not a decision count: 1664 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6944,8 +6944,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1662, highest decided 1662, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1662, highest decided 1665, holes [1663, 1664].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6979,6 +6979,52 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1665 UNSAT AT 1022.4 s — THE BLOCK'S LAST MEMBER LANDS
+  THIRD-FROM-LAST, AND THE NINETY-NINTH SPAN OPENS AT WIDTH TWO.***
+  **Rank 1395 of 1664 with no tie** — *`1664 − 269 = 1395` reproduces
+  the rank, detector agrees.* **0.0473 of the per-cube cap. Decided
+  1664 of 1949 = 85.3771%; 285 undecided; still 0 SAT.**
+
+  ***THE SPAN.*** Walk position **164** less the OFFSET of 65 — the
+  **ninety-ninth**, derived from the walk's 163 closed spans plus this
+  one, *with the parsed and declared counts asserted equal.* **idx 1665
+  came in while idx 1663 and 1664 were still running, leaving holes
+  `[1663, 1664]`, width two**, *frontier contiguous* **0..1662** *and
+  highest decided* **1665**. *Per the `#29` rider the width is what it
+  is AT THIS COMMIT.*
+
+  ***AN OPENING AT TWO.*** Over the **163** closed chains the opening
+  hole count is **1 in 54, 2 in 55, 3 in 51 and 4 in 3**, so two is
+  **33.7%**. **It is the first opening at two since the ninety-seventh**,
+  and the spans that opened at two are **55** of the 163, the last five
+  of them ordinals **90, 92, 94, 95 and 97**.
+
+  ***AND THE LAST INDEX OF A BLOCK IS NOT THE LAST CUBE OF IT.*** **idx
+  1665 is `[13,12,10,7]`'s highest index and its fifth landing of
+  seven**, *with idx 1663 and 1664 still out* — **so the block will
+  complete out of index order, and the span's two holes are its two
+  remaining cubes.** *That is the ordinary consequence of four solvers
+  running concurrently.* **It is recorded because the block census and
+  the span's hole list name the same rows for the second block
+  running**: *at* `a5fd7da` *the ninety-eighth opened on* `[1655, 1656,
+  1657]` *and* `[13,12,10,8]` *was undecided on exactly those three;
+  here the ninety-ninth opens on* `[1663, 1664]` *and* `[13,12,10,7]`
+  *is undecided on exactly those two.* **It is not structural** — *it
+  needs the frontier to sit at a block boundary with every out-of-order
+  cube inside one block* — *and two instances are two instances.*
+
+  ***THE coord9 = 12 GROUP IS AT 2 OF 4 AGAINST A THRESHOLD OF 3.***
+  **1022.4 and 2601.0 are in; idx 1663 and 1664 are out.** *Still no
+  bound, and still nothing to compare it with* — `[13,12,10,7]` *has no
+  coord9 = 11 member, so its 13-median's* **FINAL 1368.6** *and whatever
+  this group ends at are two numbers that never meet.* **The tally
+  stays at nine keep, six break, of fifteen settled blocks.**
+
+  ***THE 86% TRAP, AT TWELVE ROWS OUT.*** **`0.86 × 1949 = 1676.14`, so
+  the crossing is at 1677 decided = 86.0441%, and 1676 decided =
+  85.9928% prints as 86.0% at one decimal without having crossed.**
+  **Computed, not read off.**
 
   ***idx 1662 UNSAT AT 2601.0 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   906 of 1663 with no tie** — *`1663 − 757 = 906` reproduces the rank,
@@ -26792,7 +26838,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1663 of 1949 = 85.3258%**; **286 undecided**. **50% IS CROSSED**, at
+- **1664 of 1949 = 85.3771%**; **285 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27506,7 +27552,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
-  **4 decided**, undecided [1663, 1664, 1665]
+  **5 decided**, undecided [1663, 1664]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
