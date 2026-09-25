@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T10:11Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T10:21Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6859,7 +6859,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1880 -> 1881 rows)
+## State as of the last refresh (1881 -> 1882 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6870,7 +6870,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1881 rows; 1712 labels decided; 1712 UNSAT; 0 SAT; 0 labels
+- **1882 rows; 1713 labels decided; 1713 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6912,7 +6912,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1712 decided plus 169 superseded
+  A row count is not a decision count: 1713 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6962,7 +6962,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1710, highest decided 1713, holes [1711, 1712].**
+- **Frontier contiguous 0..1710, highest decided 1713, holes [1711].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6997,6 +6997,48 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1712 UNSAT AT 1302.9 s — AND THE TIE DETECTOR FIRED.*** **Rank
+  1318 of 1713, TIED WITH 1.** ***`1713 − 394 = 1319` DOES NOT
+  REPRODUCE THE RANK***, *and that mismatch by exactly one is the
+  detector doing the only job it has: the two formulas agree when a
+  value is untied and disagree when it is not.* **The partner is idx
+  858, `[13,13,12,5]`, coord9 = 13, at exactly 1302.9 s** — *a block
+  eight hundred and fifty-four indices away with nothing in common but
+  the number.* **The honest line is "rank 1318 of 1713, tied with 1"**,
+  *not the "with no tie" that every other entry in this run has
+  carried.* **Holes `[1711]`, frontier contiguous 0..1710, highest
+  decided 1713. Decided 1713 of 1949 = 87.8912%; 236 undecided; still 0
+  SAT.**
+
+  ***AND THE WHOLE OF SET TWENTY-THREE IS NOW BOUND BELOW 1.0.***
+  **Every one of the four re-takes has outlasted its discarded run, two
+  as settled figures and two as bounds** *(`ps` at 10:20:34Z, pid
+  27185)*:
+
+  | idx | discarded | state | ratio |
+  |---|---|---|---|
+  | 1711 | 1005.012 s | in flight ≥ 1350.0 | **≤ 0.7445** — crossed below 1 since the last entry |
+  | 1712 | 779.436 s | **re-ran 1302.9 s** | **0.5982** |
+  | 1713 | 427.572 s | **re-ran 653.7 s** | **0.6541** |
+  | 1714 | 120.188 s | in flight ≥ 1350.0 | **≤ 0.0890** |
+
+  *One entry ago idx 1711 stood at* **≤ 1.3958** *and idx 1712 at* **≤
+  1.0826**, *both still able to exceed 1; both have since fallen through
+  it — 1712 by landing and 1711 by continuing to run.* **The set is at 2
+  of 4 settled and no member can now come in above 1.0.** **THIS IS A
+  WITHIN-RUN BOUND AND A RESTART DESTROYS IT**, *which is not
+  hypothetical for this set: it exists because a restart destroyed the
+  runs it is measuring.*
+
+  ***AND `[13,12,8,8]` REACHES 4 OF 5.*** Its **coord9 = 12 group is n =
+  2, k = 2, m = 1**: landed **1302.9**, idx 1711 out. *The landed-only
+  bracket is* **[651.4500, 11451.4500]**, *width* **10800.0000** *—*
+  `cap/2` *to the decimal, the two-member fact again — and the floor
+  lifts the lower end to* **1326.4500** *while leaving the ceiling
+  alone, because* `m = 1 < k = 2` *makes it* **not cap-free**. *So*
+  `13 < 12` *is forced against a 13-median final at* **895.4000**,
+  *and, the block being untestable,* **that settles nothing at all.**
 
   ***idx 1713 UNSAT AT 653.7 s — THE FIRST RE-TAKE OF SET TWENTY-THREE,
   AND THE HUNDRED-AND-FOURTH SPAN OPENS AT WIDTH TWO.*** **Rank 1544 of
@@ -28836,7 +28878,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1712 of 1949 = 87.8399%**; **237 undecided**. **50% IS CROSSED**, at
+- **1713 of 1949 = 87.8912%**; **236 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29550,7 +29592,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 8, 8]` idx 1708..1712: **5 members**,
-  **3 decided**, undecided [1711, 1712]
+  **4 decided**, undecided [1711]
 - `[13, 12, 8, 7]` idx 1713..1715: **3 members**,
   **1 decided**, undecided [1714, 1715]
 

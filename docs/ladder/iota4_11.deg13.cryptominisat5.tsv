@@ -13195,3 +13195,4 @@ g=11 [13, 12, 8, 8, 13, 13, 13, 13, 13, 11, 11]	UNSAT	895.4
 # closed -- the note's heading reads NO SET OPEN -- so twenty-three
 # starts clean.
 g=11 [13, 12, 8, 7, 13, 13, 13, 13, 13, 13, 10]	UNSAT	653.7
+g=11 [13, 12, 8, 8, 13, 13, 13, 12, 12, 12, 12]	UNSAT	1302.9
