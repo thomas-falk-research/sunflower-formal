@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T08:47Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T08:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6986,6 +6986,54 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED, BUT `[13,12,9,8]`'s 12-MEDIAN IS NOW PINNED AT
+  2866.0000.*** *Check-in, not a landing: the checkpoint is unchanged at*
+  **1867 rows, 1698 decided, holes `[1694]`, still 0 SAT**, *all
+  invariants hold,* `pgrep` *confirms pid 21147, and HEAD was level with
+  origin at* `d6ebed6`. **What changed is an elapsed floor.** At
+  **08:47:56Z** idx 1694 stood at **≥ 3272.0 s**, **exceeding the
+  group's largest landed value (2893.6) by 378.4 s** — *so it is the
+  dearest cube in the block and has not finished.* With the only unknown
+  forced to the top, `x₂` and `x₃` of four sit at **2838.4** and
+  **2893.6**, so the **12-median is fixed at 2866.0000**; *verified over
+  100 000 random u ≥ 3272.0 together with u = 10¹².* **Second
+  to-the-decimal pin registered before its row exists; the previous one,
+  1787.5500 on `[13,12,9,9]`, confirmed exactly.**
+
+  ***AND THE PIN LANDS ON THE CAP-FREE BRACKET'S UPPER END — WHICH IS
+  FORCED, BUT ONLY UNDER `m ≥ k`.*** *The bracket recorded one entry
+  above is* **[1977.6000, 2866.0000]**, *and the pin is its ceiling
+  exactly. That is not a coincidence:* **if `m ≥ k` values have landed
+  AND every floored unknown exceeds the largest landed value, the median
+  is pinned and equals the landed-only bracket's upper end.** *Proof in
+  one line: the median reads `x₍ₖ₎` (and `x₍ₖ₋₁₎` when n is even); with
+  `m ≥ k` landed and every unknown above `max(L)`, the unknowns occupy
+  only the top `n − m` slots, which begin at position `m + 1 > k`, so
+  every order statistic the median reads is a landed value.* **Tested
+  over 66 216 random configurations with `m ≥ k`: zero
+  counterexamples.**
+
+  ***THE UNRESTRICTED VERSION WAS DRAFTED FIRST AND IS FALSE.*** *Written
+  without the* `m ≥ k` *clause — "if every floored unknown exceeds the
+  largest landed value, the median is pinned" — it failed* **85 004 of
+  85 004** *random configurations with* `m < k`, *among them* **n = 11,
+  m = 4, landed 2381.5, 2457.4, 4635.1, 4737.2**. **The condition is not
+  decoration; it is exactly where the claim lives**, *and the test that
+  found this was written to look for counterexamples rather than to
+  confirm.* **Both pins this file has registered satisfy it**:
+  `[13,12,9,9]` *at n = 6, k = 4, m = 5, pin 1787.5500 = bracket upper;*
+  `[13,12,9,8]` *at n = 4, k = 3, m = 3, pin 2866.0000 = bracket upper.*
+  **The usable consequence: once a group is cap-free, the pin can be
+  read off the bracket's ceiling instead of recomputed.**
+
+  ***AND IT DECIDES NOTHING.*** *The block has* **no coord9 = 11
+  member**, *so there is no corridor to test the 12-median against and
+  the tally cannot move whatever idx 1694 costs.* **The pin is
+  within-run and a teardown destroys it; the cap-free bracket is not,
+  because `m ≥ k` makes it a function of landed values alone.** *In
+  flight at that reading: idx 1694 at 3272 s, idx 1699 at 443, idx 1700
+  at 294, idx 1701 at 193.*
 
   ***87% IS CROSSED — AND THE PAIR IS NOT DISPLAYED. THE DRAFT SAID IT
   WAS.*** **Decided 1698 of 1949 = 87.1216%; 251 undecided; still 0
