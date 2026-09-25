@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T21:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T21:20Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6888,7 +6888,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1980 -> 1981 rows)
+## State as of the last refresh (1981 -> 1982 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6899,7 +6899,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1981 rows; 1812 labels decided; 1812 UNSAT; 0 SAT; 0 labels
+- **1982 rows; 1813 labels decided; 1813 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6941,7 +6941,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1812 decided plus 169 superseded
+  A row count is not a decision count: 1813 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6991,7 +6991,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1810, highest decided 1812, holes [1811].**
+- **Frontier contiguous 0..1810, highest decided 1813, holes [1811].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7026,6 +7026,45 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1813 UNSAT AT 715.3 s — 93% IS CROSSED, AT THE ROW REGISTERED
+  TWELVE ROWS IN ADVANCE.*** *From the staged blob.* **Rank 1600 of 1813
+  with no tie** — *`1813 − 213 = 1600`, detector agrees; read from the
+  script.* **coord9 = 13. Holes `[1811]`, frontier contiguous 0..1810,
+  highest decided 1813. Decided 1813 of 1949 = 93.0221%; 136 undecided;
+  still 0 SAT.** **`[13,11,11,5]` is at 2 of 3; `[13,11,11,6]` stays at
+  4 of 5.** *The span stays open at one hole and its monotonicity stays
+  determined False.*
+
+  ***THE PAIR IS COMPLETE.*** **1812 decided = 92.9708% printed 93.0%
+  and had NOT crossed; 1813 decided = 93.0221% prints 93.0% and HAS.**
+  *`0.93 × 1949 = 1812.57`, so 1813 is the crossing row —* **named at
+  `04f3931` twelve rows out, restated at `7c589f0` eight rows out,
+  displayed as a table at `435a204` sitting on the trap, and crossed
+  here.** **Both halves are now on the record with their own commits**,
+  *which is the thing the* **89%** *threshold never got: its crossing row
+  was never committed and no pair exists for it.* **97 of 99 percent
+  thresholds carry a trap, the exceptions being {2, 51}; this was one of
+  the 97 and it behaved.**
+
+  ***AND `[13,11,11,5]`'s 13-MEDIAN IS FINAL AT 544.2000.*** *Its two
+  members landed at* **373.1 and 715.3**, *so the median of two is*
+  `(373.1 + 715.3)/2`. **The bracket at `m = 1` was [186.5500,
+  10986.5500], 10800.0000 wide, and the final value sits 357.6500 above
+  the floor — 3.31% of the way up.** *For* `n = 2` *the final median is
+  the floor only if the second cube costs zero and the ceiling only if
+  it costs the cap;* **it landed low because 715.3 is small against
+  21600, which is what the whole run's cost distribution makes likely
+  and not a fact about this block.** *No superlative is claimed.*
+
+  ***ONE CUBE REMAINS AND IT DECIDES NOTHING.*** **idx 1814 is the
+  block's lone coord9 = 12 — `n = 1`, `k = 1`, so its median will be its
+  own cost the moment it lands, with no intermediate state at all.**
+  *And* `[13,11,11,5]` **has no 11-group**, *so it will complete without
+  a verdict, like* `[13,11,11,7]` *before it.* **`[13,11,11,6]` is also one
+  cube short, so which of the two finishes first is the solver's to
+  decide and no order is claimed here.** *The tally stays at* **eleven keep, nine break, of twenty
+  settled blocks**, *and the census at* **50 and 50**.
 
   ***idx 1810 UNSAT AT 1619.2 s — THE COUNTER IS SITTING ON THE 93%
   TRAP, EXACTLY WHERE IT WAS REGISTERED TWELVE ROWS OUT.*** *From the
@@ -33169,7 +33208,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1812 of 1949 = 92.9708%**; **137 undecided**. **50% IS CROSSED**, at
+- **1813 of 1949 = 93.0221%**; **136 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33885,7 +33924,7 @@ exactly one bank.
 - `[13, 11, 11, 6]` idx 1807..1811: **5 members**,
   **4 decided**, undecided [1811]
 - `[13, 11, 11, 5]` idx 1812..1814: **3 members**,
-  **1 decided**, undecided [1813, 1814]
+  **2 decided**, undecided [1814]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
