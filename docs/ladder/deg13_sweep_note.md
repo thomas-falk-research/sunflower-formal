@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T07:00Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T07:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6852,7 +6852,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1851 -> 1852 rows)
+## State as of the last refresh (1852 -> 1855 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6863,7 +6863,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1852 rows; 1683 labels decided; 1683 UNSAT; 0 SAT; 0 labels
+- **1855 rows; 1686 labels decided; 1686 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6899,7 +6899,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1683 decided plus 169 superseded
+  A row count is not a decision count: 1686 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6949,8 +6949,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1682, highest decided 1682, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1684, highest decided 1688, holes [1685, 1686, 1687].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6984,6 +6984,149 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THREE ROWS, A BLOCK SETTLED, AND A SPAN THAT OPENED TWICE — ONCE
+  FOR REAL.*** **idx 1684 UNSAT at 1330.8 s, rank 1296 of 1686 with no
+  tie** (*`1686 − 390 = 1296`, detector agrees*); **idx 1683 UNSAT at
+  1864.0 s, rank 1153 of 1686 with no tie** (*`1686 − 533 = 1153`*);
+  **idx 1688 UNSAT at 399.5 s, rank 1605 of 1686 with no tie**
+  (*`1686 − 81 = 1605`*). **Decided 1686 of 1949 = 86.5059%; 263
+  undecided; still 0 SAT.**
+
+  ***THE FIRST 101ST SPAN DID NOT HAPPEN, AND THAT IS `#29`'s RIDER
+  DOING ITS JOB.*** The bank at **07:07:19Z** read `holes [1683]` and
+  printed *"A SPAN HAS OPENED"*; the bank at **07:12:27Z** read
+  `holes []` and printed *"span guard: holes [], note says no span is
+  open — consistent."* **Nothing was committed between them.** The rider
+  says a hole state is measured **AT A COMMIT**, and a transient state
+  never committed did not happen. *The tempting error was not
+  hypothetical — the opening entry had already been computed:* **ordinal
+  101, width ONE, hole `[1683]`, census 54 of 165 opening at one
+  (32.7273%), last five such ordinals 82, 83, 86, 88, 93.** *Every
+  figure was right for a state the next bank erased five minutes later.*
+  ***AND THE POINT IS SHARPER THAN "AN ENTRY WOULD HAVE BEEN STRUCK":***
+  **a real 101st span opened five minutes and thirty-six seconds after
+  that, at the 07:18:03Z bank — with a different width.** *Had the aborted one been written, the
+  note would now carry ordinal 101 at width one, and the span that
+  actually exists is* **width THREE**. *The rider did not save an entry;
+  it saved the ordinal from being wrong.*
+
+  ***SO THE 101ST SPAN OPENS, AT WIDTH THREE.*** **Holes `[1685, 1686,
+  1687]`, frontier contiguous 0..1684, highest decided 1688.** Walk
+  position **166** less the OFFSET of 65 — the **hundred-and-first**.
+  Over the **165** closed chains the opening hole count is **1 in 54
+  cases, 2 in 57, 3 in 51 and 4 in 3**, so three is **30.9%** — *still
+  the least common of the three ordinary widths, trailing width one by
+  three cases and width two by six.* **It is the first opening at three
+  since the ninety-eighth**, and the closed spans that opened at three
+  are **51** of the 165, the last five of them ordinals **85, 89, 91, 96
+  and 98**. *A gap of three ordinals. The archived version of this
+  same sentence, written at 121 closed chains, reported a gap of six —
+  that one is the paragraph whose "since the forty-second" was written
+  from impression and had to be corrected to the fifty-first, so the
+  figure beside it is quoted here only as the note's own, not as a
+  trend.* **No figures are claimed for this span until it closes.**
+
+  ***idx 1684 IS THE BLOCK'S ONLY coord9 = 11 CUBE, SO THE 11-MEDIAN IS
+  FINAL AT 1330.8 ON ONE ROW — AND BOTH OUTER TERMS ARE NOW FIXED.***
+  The 13-median was already final at **889.65** (*`(845.4 + 933.9)/2`
+  from 463.8, 845.4, 933.9, 1008.7*), so **the corridor is `(889.65,
+  1330.8)`, width 441.15**, and the verdict reduces to where the
+  12-median falls. **The two blocks this note has previously written up
+  at that position** — `[13,12,11,7]` and `[13,12,10,8]`, at widths
+  934.85 and 761.40 — **both BROKE.** *No ordinal is claimed for this
+  one: how many blocks have passed through "both outer medians final,
+  12-median open" over the whole enumeration is a landing-order question
+  that has not been computed, and the last uncomputed ordinal written
+  into this file had to be struck.*
+
+  ***AND THIS CORRIDOR IS THE NARROWEST ANY LIVE BLOCK HAS HAD.***
+  Across the **53 testable blocks**, **46** have both outer medians
+  final and **45** are fully settled. By width `[13,12,9,9]` is **third
+  of the 46** and **narrower than 43 of the 45 settled**; by the
+  scale-free ratio `11-median / 13-median` it is **1.495869**, **smaller
+  than 42 of 45**. The settled 45 split **31 HOLD / 14 BREAK**, and:
+  **the 11 narrowest by width ALL BREAK** (344.40 … 1011.50; narrowest
+  HOLD `[13,13,13,5]` at 1296.75, widest BREAK `[13,13,11,8]` at
+  2274.40); **the 13 smallest by ratio ALL BREAK** (1.4286 … 2.0247;
+  smallest-ratio HOLD `[13,13,10,9]` at 2.1941, largest-ratio BREAK
+  `[13,13,11,8]` at 2.3194 — a mixed band only three blocks wide).
+  **This block's ratio sits inside that all-BREAK band, not merely below
+  it.** *The mechanism is not mysterious — the window needs
+  `13 < 12 < 11` and a narrow corridor is a small target — but this was
+  a* **PATTERN OVER SETTLED BLOCKS AND NOT A VERDICT** *when it was
+  computed, and it is recorded that way even though the verdict below
+  agrees with it. The agreement is not evidence for the pattern: the
+  block was going to be decided by its own cubes either way.*
+
+  ***AND A CENSUS THAT HAD NEVER BEEN TAKEN: EVERY ONE OF THE 14 BREAKS
+  FAILED THE UPPER LEG. NOT ONE HAS EVER FAILED THE LOWER.*** In all 14
+  the 12-median came in **at or above the 11-median**; in none did it
+  fall at or below the 13-median. *An observation about 14 cases, not a
+  law — nothing in the construction forbids a lower-leg failure.*
+  **This block is the fifteenth, and it fails the upper leg
+  too.** ***TWO DIFFERENT COUNTS ARE IN PLAY HERE AND MUST NOT BE
+  ADDED:*** *this "fourteen breaks" is over the* **45 testable blocks
+  whose three medians are all final**, *computed from the checkpoint in
+  this commit; the running* **"nine keep, six break, of fifteen"**
+  *tally below is over the smaller set of blocks this note has settled
+  and written up one at a time. Both move by one here — to* **15 of 46**
+  *and to* **seven of sixteen** *— and they will never agree, because
+  they count different populations.*
+
+  ***THE BLOCK IS SETTLED: `[13,12,9,9]` BREAKS.*** The coord9 = 12
+  group has **3 of 6** landed — **idx 1682 at 1654.3, idx 1683 at
+  1864.0, idx 1688 at 399.5** — and **the other three are in flight**,
+  their indices read off the CNF filenames (`…-c1685-…`, `…-c1686-…`,
+  `…-c1687-…`) and their elapsed read from `ps` at **07:18:41Z** against
+  pid 21147, unchanged: **idx 1685 ≥ 1994.0 s, idx 1686 ≥ 1143.0 s, idx
+  1687 ≥ 704.0 s.** Putting every unknown at its own floor orders the
+  six as **399.5, 704.0, 1143.0, 1654.3, 1864.0, 1994.0**, so
+  `x₃ = 1143.0`, `x₄ = 1654.3` and the **12-median ≥ (1143.0 + 1654.3)/2
+  = 1398.6500**; the bracket is **[1398.6500, 11732.0]**. Against the
+  corridor: **leg one HOLDS by 509.00 s**, and **leg two FAILS by 67.85
+  s** — `1398.65 ≥ 1330.8`. **The window `13 < 12 < 11` is broken on the
+  upper leg. NINE KEEP, SEVEN BREAK, OF SIXTEEN SETTLED BLOCKS.**
+  *Settled is not completed: idx 1685, 1686 and 1687 are still running
+  and the block stands at 8 of 11.*
+
+  ***AND THIS IS THE CLEANEST LIVE DEMONSTRATION YET THAT THE BRACKET
+  BEATS THE COUNTING CONDITION.*** **At 07:18:41Z the counting condition had
+  NOT fired**: only **three** of the six sat at or above 1330.8 (1654.3,
+  1864.0, and idx 1685 by its floor) and it needs **four**. **The
+  bracket fired anyway**, because it uses *where* the floors are and not
+  merely *how many* clear a mark. *The note has claimed the bracket is
+  strictly stronger since the `[13,12,10,9]` writeup and has previously
+  had to strike a sentence claiming the counting condition got there
+  first; here the two were evaluated on the same six values at the same
+  instant and only one of them decided the block.* ***AND THE LEAD WAS
+  THEN MEASURED:*** at **07:21:48Z** idx 1686's elapsed reached **1331
+  s**, putting a fourth value at or above 1330.8 and firing the counting
+  condition as well. **Same block, same cubes, same mark — the bracket
+  settled it at 07:18:41Z and the counting condition caught up about
+  three minutes later.** *Both then agree, which is the only outcome
+  that would not have demanded an explanation.* **And the floors are
+  doing the whole job**: on the three landed values alone the bracket is
+  **[199.7500, 11732.0]**, which straddles 1330.8 and registers nothing.
+  **THIS IS A WITHIN-RUN BOUND AND A RESTART DESTROYS IT** — *if the
+  driver is torn down before idx 1685, 1686 and 1687 land, this verdict
+  is not merely unproved but unsupported, and must wait for the landed
+  values rather than be carried across.*
+
+  ***NO FORWARD TEST IS REGISTERED FOR THIS, DELIBERATELY.*** *The
+  corridor-ratio pattern would make a clean-looking FT-6, and two things
+  forbid it.* **First, FT-5's stopping rule says in as many words "no
+  FT-6"**, and *the one occasion on which honouring a stopping rule
+  costs anything is the occasion on which the next test looks good.*
+  **Second, and independently, the forecast would have been worthless
+  even if allowed**: *a forward test needs a null the outcome is
+  independent of, and three of the six values were already known to sit
+  above the mark while the rest were in flight — any p-value from the
+  45-block ratio census would measure the null's ignorance of facts
+  already in hand, which is exactly what FT-4's writeup calls a hit on
+  an uninformative test.* **So the pattern stays prose, the deduction
+  stays a deduction, and the "no forward test is registered" line below
+  stays true.**
 
   ***idx 1682 UNSAT AT 1654.3 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   1202 of 1683 with no tie** — *`1683 − 481 = 1202` reproduces the
@@ -27590,7 +27733,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1683 of 1949 = 86.3520%**; **266 undecided**. **50% IS CROSSED**, at
+- **1686 of 1949 = 86.5059%**; **263 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -28304,7 +28447,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 9, 9]` idx 1678..1688: **11 members**,
-  **5 decided**, undecided 6 spanning 1683..1688
+  **8 decided**, undecided [1685, 1686, 1687]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
