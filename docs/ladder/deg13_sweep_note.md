@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T15:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T15:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6874,7 +6874,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1932 -> 1933 rows)
+## State as of the last refresh (1933 -> 1934 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6885,7 +6885,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1933 rows; 1764 labels decided; 1764 UNSAT; 0 SAT; 0 labels
+- **1934 rows; 1765 labels decided; 1765 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6927,7 +6927,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1764 decided plus 169 superseded
+  A row count is not a decision count: 1765 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6977,8 +6977,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1763, highest decided 1763, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1763, highest decided 1765, holes [1764].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -7012,6 +7012,52 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1765 UNSAT AT 3794.1 s — AND THE LEG-ONE TEST COLLAPSES TO ONE
+  NUMBER, WHICH IS THE SPAN'S ONLY HOLE.*** **Rank 662 of 1765 with no
+  tie** — *`1765 − 1103 = 662`, detector agrees; read from the script.*
+  **coord9 = 12. Holes `[1764]`, frontier contiguous 0..1763, highest
+  decided 1765. Decided 1765 of 1949 = 90.5593%; 184 undecided; still 0
+  SAT.** **`[13,11,11,10]` is at 12 of 21.** *3794.1 is the dearest
+  12-cube of the block; the five now read* **2082.6, 2189.7, 2455.3,
+  3073.0, 3794.1.**
+
+  ***THE 12-GROUP IS AT 5 OF 11, SO THE STATEMENT MADE ONE ROW AGO
+  REDUCES TO A SINGLE INEQUALITY.*** *At* `m = 6` *the 12-bracket's
+  lower end is* `min(2082.6, v)` *for* `v` *the sixth landing, and since*
+  **2082.6 > 1212.9000** *the minimum is* `v` *exactly when* `v` *is the
+  smaller.* ***SO LEG ONE IS FORCED BY THE NEXT coord9 = 12 CUBE IF AND
+  ONLY IF IT COSTS MORE THAN 1212.9000 s.*** *Checked at* **800 →
+  not forced**, **1212.9 → not forced** *(equality is not* `<`*)*,
+  **1213.0 → forced**, **1500 → forced**, **5000 → forced.** *One row,
+  one comparison, both branches falsifiable.*
+
+  ***AND THE ROW THAT SETTLES IT IS THE ROW THAT CLOSES THE SPAN.***
+  **The hole is `[1764]` and idx 1764 is a coord9 = 12 cube** — *so the
+  landing that fills the frontier is the sixth of the 12-group and the
+  one the inequality is about.* *That is a coincidence of ordering and
+  nothing more — `SEQ` fixed it long ago and the solver's dispatch
+  order surfaced it — but it means the next bank carries both a span
+  close and a leg-one verdict, and those are two separate readings that
+  must not be allowed to lean on each other.*
+
+  ***AND THE HUNDRED-AND-TENTH SPAN OPENS AT WIDTH ONE*** — *walk
+  position* **175** *less the OFFSET of 65.* Over the **174** closed
+  chains the opening hole count is **1 in 58, 2 in 59, 3 in 54 and 4 in
+  3**, so one is **33.3%**. **It is the first opening at one since the
+  hundred-and-ninth**, and the closed spans that opened at one are
+  **58** of the 174, the last five of them ordinals **93, 106, 107, 108
+  and 109**. **No figures are claimed for this span until it closes.**
+  *Four of the last five spans have opened at one; that is a reading of
+  the list above and not a trend, and the width is measured at the
+  commit this entry stages.*
+
+  ***THE 11-GROUP IS UNMOVED AT 2 OF 5.*** **2161.6 and 2169.0**, *still
+  one short, and its* **7.4000-second** *floor from two rows ago stands
+  untested.* **Leg two needs both the 12-median and the 11-median and
+  has neither**, *so even a forced leg one leaves the block undecided.*
+  *The tally stays at ten keep, seven break, of seventeen settled
+  blocks.*
 
   ***idx 1763 UNSAT AT 3073.0 s — THE 12-GROUP REACHES 4 OF 11, AND LEG
   ONE COMES INTO RANGE FOR THE FIRST TIME IN THIS BLOCK.*** **Rank 806
@@ -30695,7 +30741,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1764 of 1949 = 90.5080%**; **185 undecided**. **50% IS CROSSED**, at
+- **1765 of 1949 = 90.5593%**; **184 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -31409,7 +31455,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 10]` idx 1753..1773: **21 members**,
-  **11 decided**, undecided 10 spanning 1764..1773
+  **12 decided**, undecided 9 spanning 1764..1773
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
