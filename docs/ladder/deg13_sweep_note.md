@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T05:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T05:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6847,7 +6847,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1832 -> 1833 rows)
+## State as of the last refresh (1833 -> 1834 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6858,7 +6858,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1833 rows; 1664 labels decided; 1664 UNSAT; 0 SAT; 0 labels
+- **1834 rows; 1665 labels decided; 1665 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6894,7 +6894,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1664 decided plus 169 superseded
+  A row count is not a decision count: 1665 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6944,7 +6944,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1662, highest decided 1665, holes [1663, 1664].**
+- **Frontier contiguous 0..1662, highest decided 1666, holes [1663, 1664].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6979,6 +6979,58 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1666 UNSAT AT 718.0 s OPENS `[13,12,10,6]`, AND A SECOND
+  UNTESTABLE BLOCK IN A ROW MEANS A RUN.*** **Rank 1490 of 1665 with no
+  tie** — *`1665 − 175 = 1490` reproduces the rank, detector agrees.*
+  **0.0332 of the per-cube cap. Decided 1665 of 1949 = 85.4284%; 284
+  undecided; still 0 SAT.** *Holes stay* `[1663, 1664]`, *frontier
+  contiguous 0..1662, highest decided 1666, and the ninety-ninth span
+  stays open.*
+
+  ***THE BLOCK.*** **5 members, idx 1666..1670, groups `{13: 3, 12: 2}`
+  with thresholds 2 and 2, and no coord9 = 11 member.** *It is the*
+  **ninety-eighth block of the enumeration's 171**, *and idx 1666 is a
+  coord9 = 13 cube, so that group stands at 1 of 3.*
+
+  ***THE RUN IS SIX BLOCKS AND NINETEEN CUBES, AND ALL OF IT IS
+  ARITHMETIC ON `SEQ`.*** **From `[13,12,10,7]` at idx 1659 to
+  `[13,12,10,2]` at idx 1677**: *sizes* **7, 5, 3, 2, 1, 1** —
+  `[13,12,10,7]`, `[13,12,10,6]`, `[13,12,10,5]`, `[13,12,10,4]`,
+  `[13,12,10,3]`, `[13,12,10,2]`. ***NONE OF THIS IS AN OBSERVATION***
+  — *the whole block map is fixed before any cube runs, and the note's
+  standing rule is that "how many blocks are left" and "how big is the
+  next one" are* `SEQ` *arithmetic and must never be written as though
+  the sweep discovered them.* **The next TESTABLE block is
+  `[13,12,9,9]`, idx 1678..1688, groups `{13: 4, 12: 6, 11: 1}`** —
+  *the same* `(4, 6, 1)` *shape as* `[13,12,10,8]`, *which just broke.*
+
+  ***AND THE RUN'S SHAPE IS NOT UNUSUAL: SIX OF THE ENUMERATION'S
+  TWELVE UNTESTABLE RUNS ARE EXACTLY SIX BLOCKS AND NINETEEN CUBES.***
+  **Counted over the whole label space: 12 runs, with shapes
+  `(4, 17)`, `(5, 18)`, `(6, 19) × 6`, `(15, 36)`, `(18, 47) × 2` and
+  `(22, 46)`.** *The six-and-nineteen runs begin at idx* **1048, 1142,
+  1461, 1593, 1659 and 1800**, *so this is the fifth of them* — **and
+  the note already wrote one up as "SIX BLOCKS, NINETEEN CUBES" at the
+  run beginning idx 1593**, *which was the fourth.* ***AND ALL SIX
+  CARRY THE SAME SIZE PROFILE, 7, 5, 3, 2, 1, 1*** — *checked over all
+  six, not inferred from two.* **The repetition is a property of how
+  the degree sequences are enumerated and not of anything the solver
+  did**, *and the only reason to write it down is that a run of six
+  verdict-free blocks looks like a gap in the record unless its shape
+  is on the page.*
+
+  ***ONE COINCIDENCE WORTH DEFUSING.*** **The run's last cube is idx
+  1677, and the 86% crossing is at 1677 DECIDED.** *Those are different
+  quantities — an index into the cube list and a count of decided
+  labels — that happen to share a number because the sweep runs nearly
+  in order.* **Nothing connects them**, *and it is written down only so
+  that the two 1677s are not later read as one fact.*
+
+  ***THE 86% TRAP, AT ELEVEN ROWS OUT.*** **`0.86 × 1949 = 1676.14`, so
+  the crossing is at 1677 decided = 86.0441%, and 1676 decided =
+  85.9928% prints as 86.0% at one decimal without having crossed.**
+  **Computed, not read off.**
 
   ***idx 1665 UNSAT AT 1022.4 s — THE BLOCK'S LAST MEMBER LANDS
   THIRD-FROM-LAST, AND THE NINETY-NINTH SPAN OPENS AT WIDTH TWO.***
@@ -26838,7 +26890,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1664 of 1949 = 85.3771%**; **285 undecided**. **50% IS CROSSED**, at
+- **1665 of 1949 = 85.4284%**; **284 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27553,6 +27605,8 @@ exactly one bank.
 
 - `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
   **5 decided**, undecided [1663, 1664]
+- `[13, 12, 10, 6]` idx 1666..1670: **5 members**,
+  **1 decided**, undecided [1667, 1668, 1669, 1670]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
