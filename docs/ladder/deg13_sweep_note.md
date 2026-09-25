@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T18:55Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T18:58Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1954 -> 1957 rows)
+## State as of the last refresh (1957 -> 1958 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1957 rows; 1788 labels decided; 1788 UNSAT; 0 SAT; 0 labels
+- **1958 rows; 1789 labels decided; 1789 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1788 decided plus 169 superseded
+  A row count is not a decision count: 1789 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,7 +6986,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1785, highest decided 1788, holes [1786].**
+- **Frontier contiguous 0..1785, highest decided 1789, holes [1786].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7021,6 +7021,63 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1789 UNSAT AT 477.0 s — `[13,11,11,8]` OPENS, AND THE
+  SMALLEST GROUP CLAIM IS FALSE.*** *From the staged blob.* **Rank 1659
+  of 1789 with no tie** — *`1789 − 130 = 1659`, detector agrees; read
+  from the script.* **coord9 = 13. Holes `[1786]`, frontier contiguous
+  0..1785, highest decided 1789. Decided 1789 of 1949 = 91.7907%; 160
+  undecided; still 0 SAT.** **`[13,11,11,9]` stays at 14 of 15** — *its
+  verdict was settled at* `6b26825` *and idx 1786 cannot change it.*
+  **`[13,11,11,8]` is at 1 of 11**, *and it is one of the four testable
+  blocks that had no verdict.*
+
+  ***AND THE SUPERLATIVE WRITTEN AT `bb50b6a` IS FALSE, COMPUTED OVER
+  ITS WHOLE RANGE THIS TIME.*** *That commit said of the previous
+  block's 11-group:* "**`n = 2`, the smallest group the direction window
+  ever has to read**". **It is not.** *Over all* **53** *testable blocks
+  and their* **159** *groups the size distribution is* **{1: 12, 2: 10,
+  4: 22, 5: 23, 6: 22, 7: 6, 8: 7, 9: 10, 11: 8, 14: 12, 16: 5, 19: 8,
+  21: 3, 24: 2, 26: 1, 27: 3, 29: 1, 33: 2, 42: 1, 48: 1}**. **The
+  smallest is 1, there are twelve of them, and every one is a coord9 =
+  11 group** — `[13,10,10,10]`, `[13,11,10,9]`, **`[13,11,11,8]`**,
+  `[13,12,9,9]`, `[13,12,10,8]`, `[13,12,11,7]`, `[13,12,12,6]`,
+  `[13,13,9,8]`, `[13,13,10,7]`, `[13,13,11,6]`, `[13,13,12,5]`,
+  `[13,13,13,4]`. **There is no size 3 at all**, *which is its own small
+  surprise.*
+
+  ***AND THE COUNTEREXAMPLE WAS ALREADY IN THIS FILE WHEN THE CLAIM WAS
+  WRITTEN.*** `[13,12,9,9]` *is one of the twelve, and it is a block
+  this note had already settled and written up before* `bb50b6a`
+  *existed.* **The claim was not merely unverified; it was contradicted
+  by the note's own history.** *The standing rule is that a claim
+  generalised from a handful of instances is* **computed over its whole
+  range** *before it is written as "every";* **"the smallest" is the
+  same shape of claim and it got the same treatment it deserved, one
+  row late.** *What survives of the sentence is the part that needed no
+  superlative:* **an even group of two has its lower end leave zero on
+  the first landing and its upper leave the cap on the second**, *which
+  was the point being made.*
+
+  ***`n = 1` IS THE EXTREME OF THE ODD BRANCH, AND THIS BLOCK HAS
+  ONE.*** *With* `n = 1`, `k = 1` *and the median is* `x₁`: *the bracket
+  is* **[0, 21600]** *before the landing and a* **point** *after.*
+  **There is no intermediate state at all** — *not the two states an odd
+  group of nine has, not the three an even group has, but one landing
+  from fully trivial to final.* *Checked over* **50000** *random values:
+  zero violations.* **So `[13,11,11,8]`'s 11-median is decided by a
+  single row, whichever row that is.**
+
+  ***THE BLOCK'S SHAPE, REGISTERED AT ITS OPENING.*** **11 members, idx
+  1789..1799.** **coord9 = 13: `n = 4`, `k = 3`, even — lower leaves
+  zero at `m = 2`, upper leaves the cap at `m = 3`; it has 1.**
+  **coord9 = 12: `n = 6`, `k = 4`, even — lower at `m = 3`, upper at
+  `m = 4`; it has 0.** **coord9 = 11: `n = 1`, `k = 1`, odd — both at
+  `m = 1`; it has 0.** **Seven more cubes before all three brackets can
+  be cap-free** *(2 in the 13-group, 4 in the 12-group, 1 in the
+  11-group), and* **ten of the eleven are still out.** *The tally stays
+  at* **eleven keep, eight break, of nineteen settled blocks**, *and the
+  census is unmoved at* **49 verdict-forced, 48 all-medians-final.**
 
   ***idx 1788, idx 1787 AND idx 1783 UNSAT — `[13,11,11,9]` KEEPS, AND
   THE FOUR-ROW FORM REGISTERED ONE COMMIT AGO WAS SETTLED BY THE VERY
@@ -32051,7 +32108,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1788 of 1949 = 91.7394%**; **161 undecided**. **50% IS CROSSED**, at
+- **1789 of 1949 = 91.7907%**; **160 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -32766,6 +32823,8 @@ exactly one bank.
 
 - `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
   **14 decided**, undecided [1786]
+- `[13, 11, 11, 8]` idx 1789..1799: **11 members**,
+  **1 decided**, undecided 10 spanning 1790..1799
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
