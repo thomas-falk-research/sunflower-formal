@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T05:07Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T05:15Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6847,7 +6847,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1830 -> 1831 rows)
+## State as of the last refresh (1831 -> 1832 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6858,7 +6858,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1831 rows; 1662 labels decided; 1662 UNSAT; 0 SAT; 0 labels
+- **1832 rows; 1663 labels decided; 1663 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6894,7 +6894,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1662 decided plus 169 superseded
+  A row count is not a decision count: 1663 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6944,7 +6944,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1661, highest decided 1661, holes [].**
+- **Frontier contiguous 0..1662, highest decided 1662, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6979,6 +6979,28 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1662 UNSAT AT 2601.0 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
+  906 of 1663 with no tie** — *`1663 − 757 = 906` reproduces the rank,
+  detector agrees.* **0.1204 of the per-cube cap. Holes `[]`, frontier
+  contiguous 0..1662, highest decided 1662. Decided 1663 of 1949 =
+  85.3258%; 286 undecided; still 0 SAT.** *The frontier caught up in
+  the same row that advanced it, which is what a lone landing at the
+  frontier does, and the walk records no new span.*
+
+  ***IT OPENS `[13,12,10,7]`'s coord9 = 12 GROUP AT 1 OF 4.***
+  **Threshold 3, so one landed value gives no bound: the bracket is
+  `[0, 21600]`, the whole range the cap allows.** *The block's 13-median
+  is FINAL at 1368.6 and there is no coord9 = 11 group at all*, **so
+  there is nothing for this group's median to be compared against
+  however it ends** — *the block stays untestable and stays out of the
+  tally, which remains nine keep, six break, of fifteen settled
+  blocks.*
+
+  ***THE 86% TRAP, AT THIRTEEN ROWS OUT.*** **`0.86 × 1949 = 1676.14`,
+  so the crossing is at 1677 decided = 86.0441%, and 1676 decided =
+  85.9928% prints as 86.0% at one decimal without having crossed.**
+  **Computed, not read off.**
 
   ***THE NINETY-EIGHTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `62f702e` EXISTED.*** Opened after **`5765342`** at 03:51:03Z, closed
@@ -26770,7 +26792,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1662 of 1949 = 85.2745%**; **287 undecided**. **50% IS CROSSED**, at
+- **1663 of 1949 = 85.3258%**; **286 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27484,7 +27506,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
-  **3 decided**, undecided [1662, 1663, 1664, 1665]
+  **4 decided**, undecided [1663, 1664, 1665]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
