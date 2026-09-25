@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T14:28Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T14:36Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6872,7 +6872,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1928 -> 1929 rows)
+## State as of the last refresh (1929 -> 1930 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6883,7 +6883,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1929 rows; 1760 labels decided; 1760 UNSAT; 0 SAT; 0 labels
+- **1930 rows; 1761 labels decided; 1761 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6925,7 +6925,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1760 decided plus 169 superseded
+  A row count is not a decision count: 1761 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6975,8 +6975,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1759, highest decided 1759, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1759, highest decided 1761, holes [1760].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -7010,6 +7010,48 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1761 UNSAT AT 2169.0 s — THE 11-GROUP OPENS AND A SPAN OPENS
+  WITH IT.*** **Rank 1043 of 1761 with no tie** — *`1761 − 718 = 1043`,
+  detector agrees; read from the script.* **coord9 = 11. Holes
+  `[1760]`, frontier contiguous 0..1759, highest decided 1761. Decided
+  1761 of 1949 = 90.3540%; 188 undecided; still 0 SAT.**
+  **`[13,11,11,10]` is at 8 of 21.** *The hole,* **idx 1760**, *is a*
+  **coord9 = 12** *cube, so filling it takes that group to 3 of 11 and
+  leaves its bracket exactly where it is.*
+
+  ***ALL THREE WINDOW TERMS NOW HAVE A LANDED VALUE, AND EXACTLY ONE OF
+  THEM IS A BOUND.*** **13-median FINAL 1212.9000** *(5 of 5)*;
+  **12-median [0, 21600]** *at 2 of 11*; **11-median [0, 21600]** *at 1
+  of 5, the single value* **2169.0**. *Both open groups are odd, so by
+  the rule written two rows ago each sits at the trivial bracket until
+  its* `k`*-th cube and jumps to cap-free there —* `k = 6` *and* `k = 3`
+  *respectively.* **Six more cubes — four in the 12-group, two in the
+  11-group — before there is anything to compare**, *and* **thirteen of
+  the twenty-one are still out.** ***"ALL THREE GROUPS HAVE STARTED" IS
+  NOT A MILESTONE***, *and is recorded here only so that it is not
+  mistaken for one later: three landed values in three groups bound
+  nothing unless they reach the median positions, and two of these three
+  do not.*
+
+  ***AND THE HUNDRED-AND-NINTH SPAN OPENS AT WIDTH ONE*** — *walk
+  position* **174** *less the OFFSET of 65.* Over the **173** closed
+  chains the opening hole count is **1 in 57, 2 in 59, 3 in 54 and 4 in
+  3**, so one is **32.9%**. **It is the first opening at one since the
+  hundred-and-eighth**, and the closed spans that opened at one are
+  **57** of the 173, the last five of them ordinals **88, 93, 106, 107
+  and 108**. **No figures are claimed for this span until it closes.**
+  *This ordinal was computed and withdrawn once already, at* `e30b6b9`,
+  *when its hole filled before any commit. Two checkpoint commits have
+  landed since —* `1b4b46f` *and* `305db52` *— so this is the* **second
+  attempt at the ordinal**, *not the third: two commits since a
+  withdrawal is not three attempts, and the first draft of this very
+  correction said "third" while fixing a different miscount in the same
+  sentence.* *Counted with* `git log e30b6b9..HEAD` *rather than
+  estimated; the draft before that said "four rows ago" and there were
+  two.* **The width and census are read from the blob this commit
+  stages**, *and if that blob changes before the commit lands the entry
+  is rewritten rather than patched.*
 
   ***idx 1759 UNSAT AT 2189.7 s, IN ORDER — AND THE BRACKET STILL DOES
   NOT MOVE, AS THE PARITY RULE SAYS IT CANNOT.*** **Rank 1036 of 1760
@@ -30496,7 +30538,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1760 of 1949 = 90.3027%**; **189 undecided**. **50% IS CROSSED**, at
+- **1761 of 1949 = 90.3540%**; **188 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -31210,7 +31252,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 10]` idx 1753..1773: **21 members**,
-  **7 decided**, undecided 14 spanning 1760..1773
+  **8 decided**, undecided 13 spanning 1760..1773
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
