@@ -13194,3 +13194,4 @@ g=11 [13, 12, 8, 8, 13, 13, 13, 13, 13, 11, 11]	UNSAT	895.4
 # twenty-two (idx 1619, 1621, 1622, 1623), opened at #54, is already
 # closed -- the note's heading reads NO SET OPEN -- so twenty-three
 # starts clean.
+g=11 [13, 12, 8, 7, 13, 13, 13, 13, 13, 13, 10]	UNSAT	653.7
