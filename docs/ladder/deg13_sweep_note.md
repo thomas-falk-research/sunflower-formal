@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T13:32Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T13:37Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6869,7 +6869,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1920 -> 1921 rows)
+## State as of the last refresh (1921 -> 1922 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6880,7 +6880,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1921 rows; 1752 labels decided; 1752 UNSAT; 0 SAT; 0 labels
+- **1922 rows; 1753 labels decided; 1753 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6922,7 +6922,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1752 decided plus 169 superseded
+  A row count is not a decision count: 1753 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6972,7 +6972,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1745, highest decided 1753, holes [1746, 1750].**
+- **Frontier contiguous 0..1749, highest decided 1753, holes [1750].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7007,6 +7007,65 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1746 UNSAT AT 3922.2 s — THE DEAREST 11-CUBE OF THE BLOCK, AND
+  `[13,11,11,11]` IS DOWN TO ONE.*** **Rank 645 of 1753 with no tie** —
+  *`1753 − 1108 = 645`, detector agrees; read from the script.*
+  **coord9 = 11. Holes `[1750]`, frontier contiguous 0..1749, highest
+  decided 1753. Decided 1753 of 1949 = 89.9436%; 196 undecided; still 0
+  SAT.** **`[13,11,11,11]` is at 27 of 28.** *The span narrows from two
+  to one: chain* **`1,1,3,2,2` → `1,1,3,2,2,1`**, *verdict still False.*
+
+  ***3922.2 IS THE DEAREST OF THE SEVEN LANDED, BY 1412.0 s — AND idx
+  1750 COULD STILL BEAT IT.*** *The seven landed 11-values now run* **1048.0, 1086.4, 1409.6, 1517.9, 2409.1,
+  2510.2, 3922.2**; *the previous dearest was* **2510.2**. **The
+  11-bracket tightens [1248.0000, 1963.5000] → [1463.7500, 1963.5000]**
+  — *width* **715.5000 → 499.7500**, *the lower end up* **215.7500** *and
+  the upper end unmoved, because a value above* `x₅` *cannot pull the
+  upper end down.* **The verdict does not move and could not: it was
+  forced at the last bank and a forced verdict is not re-opened by
+  data.** *What moves is the* **margin**.
+
+  ***THE GUARANTEED LEG-TWO MARGIN GOES 9.1500 → 224.9000 s, AND THE
+  "THINNEST EVER" QUESTION IS NOW ANSWERED: NO.*** *The margin is*
+  `11-median − 1238.8500` *and the 11-median is now at least*
+  **1463.7500**, *so the margin is at least* **224.9000** — *above*
+  **28.7000**, *the thinnest among the 31 completed KEEP blocks
+  (`[13,13,10,9]`).* **The last entry declined to claim this block was
+  the thinnest and said the question would not be settled until idx 1746
+  and idx 1750 landed. One of the two has landed and it settled it
+  alone.** *Had the entry claimed it, the claim would have been wrong
+  one row later.*
+
+  ***AND THE WHOLE REMAINING QUESTION IS NOW ONE CUBE AND ONE
+  INEQUALITY.*** **idx 1750 is the block's last member and it is coord9
+  = 11**, *so it alone fixes the final 11-median. With the seven landed
+  values the median is a piecewise function of that one cost* `v`:
+
+  | `v` | final 11-median |
+  |---|---|
+  | `v ≤ 1409.6` | **1463.7500** |
+  | `1409.6 < v ≤ 2409.1` | **`(1517.9 + v)/2`** |
+  | `v ≥ 2409.1` | **1963.5000** |
+
+  *Checked against the direct median at* **31 000 values of `v` across
+  [0, 21700]: zero mismatches.* **So the final margin lies in
+  [224.9000, 724.6500]** *and nothing outside that is reachable.*
+
+  ***A FORWARD STATEMENT THAT WILL ACTUALLY BE TESTED THIS TIME: THE
+  MARGIN COMES IN SECOND-THINNEST — BELOW `[13,13,11,9]`'s 237.5000 —
+  EXACTLY WHEN idx 1750 LANDS BELOW 1434.8000 s.*** *From the table:
+  below* **1409.6** *the median is pinned at* **1463.7500** *for a
+  margin of* **224.9000**, *which is under 237.5000; above it the
+  condition is* `(1517.9 + v)/2 < 1476.3500`, *that is* **`v <
+  1434.8000`**. **At v = 1434.8000 exactly the margin is 237.5000 — a
+  tie, not a win — so the inequality is strict.** ***AND UNLIKE THE
+  1305.4000 THRESHOLD TWO ENTRIES AGO, THIS ONE CANNOT BE ROUTED
+  AROUND***: *that one named a sufficient condition the run never met,
+  because the block was settled from the other side. This one is about
+  the* **last cube of the block** — *there is no other side left, so idx
+  1750 will answer it.* **The verdict is KEEP either way; only the
+  margin's rank is at stake, and a rank is not a result.**
 
   ***idx 1753 UNSAT AT 463.9 s — `[13,11,11,10]` OPENS, TESTABLE, AND
   IT IS ONE OF ONLY SIX BLOCKS LEFT THAT CAN MOVE THE TALLY.*** **Rank
@@ -30085,7 +30144,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1752 of 1949 = 89.8923%**; **197 undecided**. **50% IS CROSSED**, at
+- **1753 of 1949 = 89.9436%**; **196 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -30799,7 +30858,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 11]` idx 1725..1752: **28 members**,
-  **26 decided**, undecided [1746, 1750]
+  **27 decided**, undecided [1750]
 - `[13, 11, 11, 10]` idx 1753..1773: **21 members**,
   **1 decided**, undecided 20 spanning 1754..1773
 
