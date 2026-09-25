@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T10:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T10:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6861,7 +6861,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1887 -> 1888 rows)
+## State as of the last refresh (1888 -> 1889 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6872,7 +6872,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1888 rows; 1719 labels decided; 1719 UNSAT; 0 SAT; 0 labels
+- **1889 rows; 1720 labels decided; 1720 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6914,7 +6914,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1719 decided plus 169 superseded
+  A row count is not a decision count: 1720 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6964,7 +6964,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1714, highest decided 1720, holes [1715, 1717].**
+- **Frontier contiguous 0..1714, highest decided 1720, holes [1715].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6999,6 +6999,32 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1717 UNSAT AT 1152.4 s — `[13,12,8,6]` COMPLETES AND THE SPAN
+  NARROWS TO ONE.*** **Rank 1369 of 1720 with no tie** — *`1720 − 351 =
+  1369`, detector agrees.* **coord9 = 13. Holes `[1715]`, frontier
+  contiguous 0..1714, highest decided 1720. Decided 1720 of 1949 =
+  88.2504%; 229 undecided; still 0 SAT.** *Committed chain* **3, 2, 2,
+  1** *so far — non-increasing with one flat, and no figures are claimed
+  until it closes.*
+
+  ***THE BLOCK'S 13-MEDIAN IS FINAL AT 869.3000*** — *`(586.2 +
+  1152.4)/2`, an even pair, total cost 1738.6 s. Like* `[13,12,7,7]`
+  *it carries* **one coord9 value across two cubes**, *so it is
+  untestable in the strongest sense the enumeration offers: not a
+  missing 11-member but a missing second value altogether.*
+
+  ***THE RUN IS AT 10 OF 15 BLOCKS AND 31 OF 36 CUBES.*** *Outstanding:*
+  `[13,12,8,7]` *(idx 1715, the span's last hole),* `[13,12,7,7]` *(idx
+  1721),* `[13,12,7,6]`, `[13,12,7,5]` *and* `[13,12,6,6]` — **five
+  cubes.** *When idx 1715 lands it both completes* `[13,12,8,7]` *and
+  closes the hundred-and-fifth span — a double this run has already
+  produced* **three** *times:* **idx 1699** *(completed* `[13,12,9,7]`,
+  *closed the 102nd),* **idx 1703** *(completed* `[13,12,9,6]` *and the
+  nineteen-cube prefix, closed the 103rd) and* **idx 1711** *(closed
+  re-run set twenty-three, completed* `[13,12,8,8]`, *closed the
+  104th).* **A draft of this sentence said "twice"** *on no count; the
+  three are read off the entries below.*
 
   ***idx 1720 UNSAT AT 386.2 s, OPENING `[13,12,7,7]` — THE TWELFTH
   BLOCK OF THE RUN AND THE TWELFTH TO MATCH.*** **Rank 1639 of 1719 with
@@ -29079,7 +29105,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1719 of 1949 = 88.1991%**; **230 undecided**. **50% IS CROSSED**, at
+- **1720 of 1949 = 88.2504%**; **229 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29794,8 +29820,6 @@ exactly one bank.
 
 - `[13, 12, 8, 7]` idx 1713..1715: **3 members**,
   **2 decided**, undecided [1715]
-- `[13, 12, 8, 6]` idx 1716..1717: **2 members**,
-  **1 decided**, undecided [1717]
 - `[13, 12, 7, 7]` idx 1720..1721: **2 members**,
   **1 decided**, undecided [1721]
 
