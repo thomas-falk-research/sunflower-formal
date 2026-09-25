@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T02:18Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T02:41Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6839,7 +6839,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1813 -> 1814 rows)
+## State as of the last refresh (1814 -> 1817 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6850,7 +6850,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1814 rows; 1645 labels decided; 1645 UNSAT; 0 SAT; 0 labels
+- **1817 rows; 1648 labels decided; 1648 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6886,7 +6886,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1645 decided plus 169 superseded
+  A row count is not a decision count: 1648 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6936,7 +6936,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1641, highest decided 1647, holes [1642, 1645, 1646].**
+- **Frontier contiguous 0..1644, highest decided 1648, holes [1645].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6971,6 +6971,132 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THREE ROWS IN ONE BANK — idx 1642, idx 1646 AND idx 1648 — AND
+  THE LAST OF THEM OPENS A NEW BLOCK.*** **Decided 1648 of 1949 =
+  84.5562%; still 0 SAT.** *All three untied: the strict counts were
+  taken directly and the subtraction detector agrees with each.*
+
+  | idx | cost | rank of 1648 | cheaper | `1648 − cheaper` | of cap |
+  |---|---|---|---|---|---|
+  | 1642 | **6345.8 s** | 299 | 1349 | 299 | 0.2938 |
+  | 1646 | **1531.8 s** | 1223 | 425 | 1223 | 0.0709 |
+  | 1648 | **704.9 s** | 1482 | 166 | 1482 | 0.0326 |
+
+  ***ONE ROW ADVANCED THE FRONTIER BY THREE.*** **Holes narrow from
+  `[1642, 1645, 1646]` to `[1645]`, frontier contiguous 0..1644,
+  highest decided 1648.** *idx 1642 was the hole pinning the frontier
+  at 1641, and 1643 and 1644 were already decided behind it, so filling
+  one index moved the frontier three.* **The ninety-sixth span stays
+  open on the single hole `[1645]`** — *no figures are claimed here;
+  they come from* `--spans all` *on close.*
+
+  ***THE TALLY DOES NOT MOVE: STILL NINE KEEP, FIVE BREAK, OF FOURTEEN
+  SETTLED BLOCKS.*** *idx 1642 and idx 1646 both landed in*
+  `[13,12,10,9]`, *whose window was settled unconditionally at*
+  `926dbb8` *with three cubes out.* **Two of those three are now in and
+  the verdict is unchanged** — *which is the whole content of the word
+  "unconditionally", and the reason this entry is worth writing is that
+  it could have embarrassed the previous one and did not.*
+
+  | term | final or bracket | one bank ago |
+  |---|---|---|
+  | 13-median | **FINAL 1636.35** | FINAL 1636.35 |
+  | 12-median | **`[2876.1, 3125.0]`** — landed-only, 8 of 9 | `[2875.3, 3214.1]`, 6 of 9 |
+  | 11-median | **FINAL 4175.75** | FINAL 4175.75 |
+
+  ***BOTH HALVES OF THE MONOTONICITY CLAIM WERE OBSERVED IN THE SAME
+  BANK.*** *A landed-only bound is an infimum, or a supremum, over the
+  set of completions, and that set only shrinks as rows land — so the
+  lower end can rise and never fall, and the upper end can fall and
+  never rise.* **Lower end 2875.3 → 2876.1, up 0.8 s; upper end
+  3214.1 → 3125.0, down 89.1 s.** *Both moved in the permitted
+  direction, off two rows.* **Leg one's margin goes 1238.95 → 1239.75
+  and leg two's 961.65 → 1050.75**, *so the window sits further from
+  breaking than it did, on landed values alone.*
+
+  ***AND THE 12-MEDIAN IS NOW PINNED TO A POINT — 3125.0 EXACTLY — BY
+  AN ELAPSED FLOOR THIS COMMIT BANKS.*** *The one cube still out is*
+  **idx 1645**, *running as pid 16855 under driver 21147.* **The sample
+  banked in this commit reads elapsed 3271 s at 02:37:05Z — cpu 3211 s,
+  ratio 0.9817.** *With the eight landed values and a ninth known to
+  exceed 3271, the fifth smallest of nine is* `x₍₅₎` *of the landed
+  eight and nothing else:* **3125.0, which is idx 1637's cost.**
+
+  ***CONSTRUCTED, NOT SAMPLED.*** *The median is monotone in the
+  unknown, so its infimum over admissible completions is at* `cost =
+  floor` *and its supremum at* `cost = +∞`. **At a floor of 3271 both
+  give 3125.0, so the bracket is a single point.** *Sampling would have
+  returned an interval no wider and quite possibly narrower than the
+  truth, which is the failure mode this note has already hit twice.*
+
+  ***THE CROSSING INSTANT IS COMPUTABLE, AND BOTH SIDES OF IT ARE IN
+  THIS COMMIT.*** **pid 16855 started 01:42:33Z, so its elapsed reached
+  3125.0 s at 02:34:38Z.** *The sample banked at 02:32:20Z reads*
+  **2986 s — 139.0 s short**; *the sample banked at 02:37:05Z reads*
+  **3271 s — 146.0 s past.** **Both rows are in
+  `cpu_ratio_samples.tsv` as committed here**, *so the crossing is
+  bracketed inside the record rather than asserted from a live
+  reading.*
+
+  ***A RESTART VOIDS THE PIN AND NOT THE VERDICT.*** *The floor is a
+  within-run bound:* `cost ≥ elapsed` *is sound inside a run and is
+  destroyed by a restart, which re-runs the cube from zero.* **So
+  3125.0 is registered as the 12-median's final value only if idx 1645
+  lands under driver 21147** — *the landed-only bracket* `[2876.1,
+  3125.0]` *survives a restart, and the verdict rests on that bracket,
+  not on the pin.* **This is the same structure as the `[13,12,11,8]`
+  12-median pin at 3443.5**, *where the floor "simply picks its upper
+  end".*
+
+  ***idx 1648 UNSAT AT 704.9 s OPENS `[13,12,10,8]`, AND IT IS
+  TESTABLE.*** **11 members, idx 1648..1658, groups
+  `{13: 4, 12: 6, 11: 1}` — all three present.** *It is the*
+  **ninety-sixth block of the enumeration's 171** *and the*
+  **forty-fifth of the 53 that are testable**, *both counted from* `SEQ`
+  *and not from memory.* **Thresholds `⌊n/2⌋ + 1` are 3, 4 and 1.**
+
+  ***TWO OF ITS THREE MEDIANS ARE EVEN-`n` AVERAGES AND THE THIRD IS
+  ONE CUBE'S OWN COST.*** **13-median `(x₍₂₎ + x₍₃₎)/2` of four;
+  12-median `(x₍₃₎ + x₍₄₎)/2` of six; 11-median = the single member's
+  cost.** *So this block inverts* `[13,12,10,9]`, *where only the
+  12-median was an order statistic: here only the 11-median is, and
+  trivially.* ***NOTHING IS REGISTERED YET*** — *one cube of eleven has
+  landed, in the 13-group at 1 of 4 against a threshold of 3, and no
+  group is at its threshold.* **Its shape `(4, 6, 1)` is the same as
+  `[13,12,11,7]`'s, whose window broke**; *nothing whatever follows
+  from that, and it is written down only so the resemblance cannot be
+  discovered later and mistaken for a finding.*
+
+  ***AND OPENING IT STRIKES A SENTENCE IN THE `[13,12,10,9]` OPENING
+  ENTRY BELOW.*** *That entry called a two-member coord9 = 11 group*
+  **"the smallest a testable block can have"**, *and the minimum over
+  the 53 testable blocks is one, held by twelve of them.* ***THE
+  COUNTEREXAMPLE WAS NOT HYPOTHETICAL AND WAS NOT EVEN NEW*** —
+  `[13,12,11,7]`, *the forty-second testable block, has groups*
+  `{13: 4, 12: 6, 11: 1}`, *and this note's own entry for its opening
+  says* **"its coord9 = 11 group has exactly one member, which is the
+  smallest a group can be"**. **That block was fifty-one indices behind
+  idx 1633 and completely settled — its 11-median went final on one row
+  at 2481.5, idx 1588 — when the struck sentence was written.** *The
+  claim was about the whole enumeration and was made from the block in
+  front of it, with the enumeration one script away.* **Corrected in
+  place.**
+
+  ***TWO BLOCKS ARE OPEN AT ONCE, AND bank.py's CENSUS SAYS SO.***
+  **`census region rewritten: 2 open block(s)`** — `[13,12,10,9]` *at
+  14 of 15 waiting on idx 1645, and* `[13,12,10,8]` *at 1 of 11.* *The
+  same overlap happened when idx 1582 opened* `[13,12,11,7]`; *it is
+  what the sweep does whenever a block's last cube outlives the next
+  block's first, and it is a fact about scheduling, not about either
+  block.*
+
+  ***THE 85% TRAP, RESTATED AT NINE ROWS OUT.*** **`0.85 × 1949 =
+  1656.65`, so the crossing is at 1657 decided = 85.0180%** — *and*
+  **1656 decided = 84.9666%, which prints as 85.0% at one decimal
+  without having crossed.** *Registered eighteen rows out at the entry
+  below and restated here at nine.* **Computed, not read off:
+  `1656/1949` and `1657/1949` were divided by script.**
 
   ***idx 1647 UNSAT AT 328.5 s: `[13,12,10,9]`'s WINDOW HOLDS,
   UNCONDITIONALLY, WITH THREE CUBES STILL OUT.*** **Rank 1581 of 1645
@@ -7559,8 +7685,19 @@ exactly one bank.
   `{13: 4, 12: 9, 11: 2}` — all three present. Decided 1631 of 1949 =
   83.6839%; still 0 SAT.**
 
-  ***ITS coord9 = 11 GROUP HAS ONLY TWO MEMBERS, WHICH IS THE SMALLEST
-  A TESTABLE BLOCK CAN HAVE AND CHANGES THE ARITHMETIC.*** *Thresholds
+  ***ITS coord9 = 11 GROUP HAS ONLY TWO MEMBERS, AND THAT CHANGES THE
+  ARITHMETIC.*** ***THIS SENTENCE USED TO CALL TWO "THE SMALLEST A
+  TESTABLE BLOCK CAN HAVE", AND THAT WAS FALSE — STRUCK WHEN***
+  `[13,12,10,8]` ***OPENED AT idx 1648 WITH A ONE-MEMBER 11-GROUP.***
+  **Counted from the enumeration: 53 of the 171 blocks are testable,
+  the minimum 11-group size over all 53 is 1, and twelve blocks have
+  it.** *Worse, this note had already said so —* `[13,12,11,7]`'s
+  *opening entry below reads* **"its coord9 = 11 group has exactly one
+  member, which is the smallest a group can be"**, *written fifty-one
+  indices behind idx 1633 about a block that was completely settled by
+  the time the struck sentence existed.* ***THE NOTE CONTRADICTED
+  ITSELF AND NEITHER SENTENCE WAS CHECKED AGAINST THE OTHER.***
+  *Thresholds
   are* `⌊n/2⌋ + 1`: **13-group 4 members, threshold 3; 12-group 9
   members, threshold 5; 11-group 2 members, threshold 2.** ***SO THE
   11-MEDIAN NEEDS BOTH ITS MEMBERS AND IS AN AVERAGE, NOT AN ORDER
@@ -25643,7 +25780,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1645 of 1949 = 84.4023%**; **304 undecided**. **50% IS CROSSED**, at
+- **1648 of 1949 = 84.5562%**; **301 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -26357,7 +26494,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 9]` idx 1633..1647: **15 members**,
-  **12 decided**, undecided [1642, 1645, 1646]
+  **14 decided**, undecided [1645]
+- `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
+  **1 decided**, undecided 10 spanning 1649..1658
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
