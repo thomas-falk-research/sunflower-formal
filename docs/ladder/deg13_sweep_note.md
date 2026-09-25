@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T07:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T07:38Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6852,7 +6852,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1856 -> 1857 rows)
+## State as of the last refresh (1857 -> 1858 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6863,7 +6863,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1857 rows; 1688 labels decided; 1688 UNSAT; 0 SAT; 0 labels
+- **1858 rows; 1689 labels decided; 1689 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6899,7 +6899,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1688 decided plus 169 superseded
+  A row count is not a decision count: 1689 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6949,7 +6949,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1685, highest decided 1689, holes [1686, 1687].**
+- **Frontier contiguous 0..1685, highest decided 1689, holes [1686].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6984,6 +6984,65 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1687 UNSAT AT 1711.1 s — AND THE `[13,12,9,9]` VERDICT IS NOW
+  RESTART-PROOF.*** **Rank 1191 of 1689 with no tie** — *`1689 − 498 =
+  1191`, detector agrees.* **Holes `[1686]`, frontier contiguous
+  0..1685, highest decided 1689. Decided 1689 of 1949 = 86.6598%; 260
+  undecided; still 0 SAT.** The span opened at three and is now at one;
+  **still no figures claimed for it.** *The second of the two floors the
+  verdict leaned on is also checked: idx 1687 was read at* **≥ 1145.0 s**
+  *at 07:26:03Z and came in at* **1711.1 s**, *respected by 566.1 s.
+  Both floors held.*
+
+  ***AND THE "A RESTART DESTROYS IT" CAVEAT IS DISCHARGED.*** With **5
+  of 6** landed — **399.5, 1654.3, 1711.1, 1864.0, 2404.4** — the
+  **landed-only** bracket is **[1682.7000, 1787.5500]**, which lies
+  **entirely above the 1330.8 ceiling**. **Leg one holds by 793.05 s,
+  leg two fails by 351.90 s, on landed values alone with no elapsed
+  floor anywhere in the argument.** *The entry three above this one
+  registered the break from floors and said in as many words that a
+  teardown would leave it "not merely unproved but unsupported". That is
+  no longer true, and the retraction is the point of writing the caveat
+  down: it was a real exposure for twelve minutes and it has been closed
+  by data rather than by argument.*
+
+  ***AND THE CAP HAS DROPPED OUT OF THE BRACKET — WHICH TURNS OUT TO
+  HAPPEN AT A PRECISE, GENERAL MOMENT.*** With five of six landed the
+  bracket is **[(y₂+y₃)/2, (y₃+y₄)/2]**, width **(y₄ − y₂)/2 =
+  104.8500** — *and the 21600 s cap does not appear in it at all.*
+  **THE LEMMA: in a group of n, the cap leaves the median bracket at
+  exactly m = k landed values, where `k = ⌊n/2⌋ + 1` is the same
+  threshold the median bound already uses.** *Proof in one line: the
+  median depends on the order statistic `x₍ₖ₎` (and on `x₍ₖ₋₁₎` when n
+  is even); once k values have landed, at least k of the n are ≤ the
+  k-th smallest landed value, so `x₍ₖ₎ ≤ y₍ₖ₎` whatever the unknowns do,
+  and the upper end is pinned by landed data.* **Verified two ways**:
+  *by search over n = 1…13, where the crossover sat on `⌊n/2⌋+1` every
+  time, and for this group by 200 000 random values of the last unknown
+  plus u = 0 and u = 10⁹, whose min and max reproduced 1682.7000 and
+  1787.5500 exactly.*
+
+  ***IT IS THE SAME STATEMENT AS THE TWO-MEMBER FACT ALREADY IN THIS
+  FILE, READ AT A DIFFERENT m.*** That one says a two-member group with
+  one landed value `k` has median range `[k/2, (k+cap)/2]` — **width
+  exactly cap/2 = 10800.0 for every k**. *There n = 2 and the threshold
+  is 2, so m = 1 is* **below** *it and the cap governs the whole width;
+  here n = 6, threshold 4, m = 5 is* **above** *it and the cap governs
+  nothing. The two were written eleven hundred indices apart as separate
+  observations and are one lemma.*
+
+  ***AND THE PRACTICAL CONSEQUENCE IS THE TEST THIS NOTE HAS BEEN DOING
+  BY HAND.*** **A bracket whose ends are cap-free is a function of
+  landed values only, so it survives a teardown; a bound that uses an
+  elapsed floor does not.** *So "does this registered verdict need
+  re-deriving after a restart?" is answered by `m ≥ k`, not by reading
+  the paragraph that produced it.* **And this file already had a
+  cap-free bound in it without noticing**: *the entry above records the
+  4-of-6 landed bracket as* **[1026.9000, 2134.2000]**, *and 2134.20 is
+  `(1864.0 + 2404.4)/2` — cap-free, because m = 4 had already reached
+  the threshold. It was computed correctly and its significance was
+  missed by one entry.*
 
   ***idx 1689 UNSAT AT 618.3 s, OPENING `[13,12,9,8]` — AND IT IS
   UNTESTABLE.*** **Rank 1534 of 1688 with no tie** — *`1688 − 154 =
@@ -27838,7 +27897,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1688 of 1949 = 86.6085%**; **261 undecided**. **50% IS CROSSED**, at
+- **1689 of 1949 = 86.6598%**; **260 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -28552,7 +28611,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 9, 9]` idx 1678..1688: **11 members**,
-  **9 decided**, undecided [1686, 1687]
+  **10 decided**, undecided [1686]
 - `[13, 12, 9, 8]` idx 1689..1695: **7 members**,
   **1 decided**, undecided 6 spanning 1690..1695
 
