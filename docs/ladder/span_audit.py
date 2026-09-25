@@ -132,6 +132,15 @@ CARDS['one hundred'] = CARDS['a hundred'] = CARDS['hundred'] = 100
 # expected rather than discovered by a NOT FOUND.
 CARDS['a hundred and one'] = CARDS['one hundred and one'] = 101
 CARDS['hundred and one'] = 101
+# The ORDINAL table stops at ninety-nine for the same reason, and the
+# live-census "since the Nth" sentence needs it as soon as a span points
+# back past the hundredth.  Found here at the hundred-and-second open,
+# ONE CLOSE after the same gap was patched in CARDS -- the cardinal fix
+# did not imply the ordinal one and the note's comment about expecting
+# the next round-hundred word did not cover a different dictionary.
+WORDS['hundredth'] = WORDS['one-hundredth'] = WORDS['a-hundredth'] = 100
+WORDS['hundred-and-first'] = WORDS['one-hundred-and-first'] = 101
+WORDS['a-hundred-and-first'] = 101
 
 
 def secs(d):

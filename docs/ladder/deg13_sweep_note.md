@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T08:09Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T08:17Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6854,7 +6854,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1858 -> 1861 rows)
+## State as of the last refresh (1861 -> 1862 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6865,7 +6865,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1861 rows; 1692 labels decided; 1692 UNSAT; 0 SAT; 0 labels
+- **1862 rows; 1693 labels decided; 1693 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6901,7 +6901,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1692 decided plus 169 superseded
+  A row count is not a decision count: 1693 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6951,8 +6951,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1691, highest decided 1691, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1691, highest decided 1695, holes [1692, 1693, 1694].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6986,6 +6986,65 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1695 UNSAT AT 1116.8 s, OUT OF ORDER BY THREE — THE
+  HUNDRED-AND-SECOND SPAN OPENS AT WIDTH THREE.*** **Rank 1376 of 1693
+  with no tie** — *`1693 − 317 = 1376`, detector agrees.* **Holes `[1692,
+  1693, 1694]`, frontier contiguous 0..1691, highest decided 1695.
+  Decided 1693 of 1949 = 86.8651%; 256 undecided; still 0 SAT.** Walk
+  position **167** less the OFFSET of 65 — the **hundred-and-second**.
+  Over the **166** closed chains the opening hole count is **1 in 54, 2
+  in 57, 3 in 52 and 4 in 3**, so three is **31.3%**. **It is the first
+  opening at three since the hundred-and-first**, and the closed spans
+  that opened at three are **52** of the 166, the last five of them
+  ordinals **89, 91, 96, 98 and 101**. **No figures are claimed for this
+  span until it closes.**
+
+  ***BACK-TO-BACK OPENINGS AT THREE ARE NOT NEW, AND "FIRST" WAS ABOUT
+  TO BE WRITTEN HERE.*** *A gap of* **one** *ordinal looks like a
+  novelty and is not: the tabled range already holds* **seven**
+  *consecutive pairs that opened at the same width three —* **6/7,
+  13/14, 14/15, 22/23, 32/33, 67/68 and 74/75** — *and eleven over the
+  whole walk including the pre-table ordinals. What is true is narrower
+  and was computed rather than felt:* **the most recent such pair was
+  74/75, so 101/102 is the first in 26 ordinals.** **The count is NOT
+  incremented here**: *ordinal 102 does not enter the table until it
+  closes, so "seven" stands and becomes eight at the close, not now.*
+
+  ***AND THE 87% CONDITIONAL IS RESOLVED — IT DID NOT HOLD.*** *Three
+  entries ago the crossing was registered conditionally: if the eight
+  cubes then undecided at or below idx 1695 landed before anything past
+  idx 1695 did, the crossing row would be* **idx 1695, the last cube of
+  `[13,12,9,8]`**, *and 87% would cross on the same landing that
+  completed the block.* **Instead idx 1695 landed first, jumping three
+  cubes**, *so the block is at 4 of 7 with its last member already in.*
+  **The crossing is now whichever of idx 1692, 1693 and 1694 lands
+  third, and 87% is three landings away.** *The escape clause — "four
+  threads run ahead of the frontier, a later cube can finish first" —
+  is the half that fired, which is the only reason the conditional was
+  written with one.*
+
+  ***THE CHECKER'S ORDINAL TABLE HAD THE SAME GAP AS ITS CARDINAL ONE,
+  ONE CLOSE LATER.*** `span_audit.py` *resolves the live census's "since
+  the Nth" through* `WORDS`, *which is generated only to* **ninety-nine**.
+  *The previous commit patched* `CARDS` *for 100 and 101 and left a
+  comment saying the next round-hundred total would have to be listed by
+  hand — and that comment did not cover* `WORDS`, *a different
+  dictionary, which this span's "since the hundred-and-first" needed
+  immediately.* **Added 'hundredth' and 'hundred-and-first' with their
+  variants.** *Found by checking the table before writing the sentence
+  rather than by a `NOT FOUND` after it, which is the only difference
+  between this and the last one.* **Proved by six mutations against an
+  unmutated control that exits 0**: *"since the ninety-eighth" fails
+  with* `note ninety-eighth (98) vs walk 101` — **which is the line that
+  demonstrates the `WORDS` entry is actually being used** — *and the
+  other five fail on the width count (*`note 51 vs walk 52`*), the
+  last-five list (*`[89, 91, 96, 98, 99]` *vs* `[89, 91, 96, 98, 101]`*),
+  the width tally (*`{1: 54, 2: 57, 3: 51, 4: 4}` *vs the walk's*
+  `{1: 54, 2: 57, 3: 52, 4: 3}`*), the percentage at its own N
+  (*`note 30.9% for "three" vs walk 31.3%`*) and the declared N itself
+  (*`census at 165 ... note 31.3% vs walk 30.9%`*).* **span_audit.py
+  clean at 1236 figures, 4 of them live.**
 
   ***THE HUNDRED-AND-FIRST SPAN'S FIGURES, read from `--spans all`
   after `2eb376e` existed.*** **Opened after `38e69d7`, closed by
@@ -28063,7 +28122,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1692 of 1949 = 86.8138%**; **257 undecided**. **50% IS CROSSED**, at
+- **1693 of 1949 = 86.8651%**; **256 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -28777,7 +28836,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 9, 8]` idx 1689..1695: **7 members**,
-  **3 decided**, undecided [1692, 1693, 1694, 1695]
+  **4 decided**, undecided [1692, 1693, 1694]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
