@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T22:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T22:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7031,6 +7031,62 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — BUT LEG ONE IS FORCED TRUE BY ELAPSED FLOORS ALONE,
+  WITH SIX OF THE NINE 12-MEMBERS ABOVE THE 13-MEDIAN AND ONLY THREE
+  STILL FREE.*** *Found on a fallback check-in, not on a landing: the
+  checkpoint is unchanged at* **1996 rows, 1827 decided = 93.7404%, holes
+  `[]`, frontier contiguous 0..1826, 0 SAT**, *pid 27185 unchanged, HEAD
+  equal to origin.* **A live sample at 2026-09-25T22:42:05Z reads idx
+  1827 at `2409 s`, idx 1828 at `1655 s`, idx 1829 at `1610 s` and idx
+  1830 at `1428 s` elapsed.**
+
+  ***THE COUNT THAT SETTLES LEG ONE.*** **Three 12-members have landed
+  above `1039.4500` — 1841.3, 1882.9, 1968.3 — and three more are FORCED
+  above it by their elapsed floors: idx 1827 at `≥ 2409`, idx 1828 at
+  `≥ 1655`, idx 1830 at `≥ 1428`.** *That is* **six of the nine**, *so
+  only* **three can possibly be at or below `T`** — *and leg one holds
+  iff at most four are.* ***SO LEG ONE IS FORCED TRUE***: **the 12-median
+  must exceed the 13-median, whatever idx 1831, 1832 and 1833 do.**
+  *Checked at* **0 counterexamples over 400,000 floor-respecting draws.**
+  *This is the odd-median counting rule paying off for the third time in
+  this block, and it is exact only because* `n = 9` *is odd.*
+
+  ***THE BRACKETS UNDER THE FLOORS.*** **12-median `[1655.0000,
+  21600.0000]`** — *the lower end is* `x₍₅₎` *of the six floors and
+  landed values with the three free members at 0, which is idx 1828's*
+  `1655`. **11-median `[1775.6000, 11770.6000]`** — *from* `(1941.2 +
+  1610)/2` *and* `(1941.2 + 21600)/2`. **Leg two is 12-median <
+  11-median, so KEEP is forced if the 12-median lands below `1775.6000`
+  and BREAK is forced if it reaches `11770.6000`.** **The reachable part
+  of the KEEP window is `[1655.0000, 1775.6000)`, width `120.6000`** —
+  *it was* `36.6500` *one entry ago and is wider now because the floors
+  moved both brackets;* **both forcing rules checked at 0
+  counterexamples over 400,000 draws.**
+
+  ***AND THE WHOLE OF IT DIES AT A RESTART — SAID PLAINLY BECAUSE IT IS
+  THE LARGEST FLOOR-CONTINGENT CLAIM THIS NOTE HAS MADE.*** **Without the
+  floors nothing above survives: leg one is undetermined, the 12-median
+  is `[0, 21600]`, and the 11-median is `[970.6000, 11770.6000]` whose
+  lower end is BELOW the 13-median.** *A restart does not merely loosen
+  these figures, it deletes the verdict on leg one.* **The hard,
+  restart-proof state of this block is exactly what it was at the last
+  bank: 13-median FINAL 1039.4500, nothing else settled.**
+
+  ***idx 1827 IS NOW THE MOST EXPENSIVE CUBE THIS BLOCK HAS SEEN, AND IT
+  HAS NOT FINISHED.*** **Its `2409 s` floor exceeds the block's largest
+  landed cost, idx 1824's 1968.3, by `440.7 s`.** *In the run as a whole
+  that is unremarkable —* **983 of the 1827 decided cubes cost more than
+  2409 s, which is 53.80%** — *so this is a statement about the block and
+  not about the cube.* **23 minutes 30 seconds have passed since the last
+  landing at 22:18:35Z.** **Six inter-landing gaps were measured in this
+  block — 169, 84, 967, 745, 47 and 191 s — so the open gap of `1410 s`
+  is longer than all six, the previous longest being idx 1822 → idx 1823
+  at 967 s.** *Six and not seven, because idx 1819's landing time was
+  never captured;* **the claim is over the gaps measured, not over the
+  block.** *With four solvers in flight and none near the cap there is
+  nothing to absorb and nothing wrong.* **The tally stays at eleven keep, nine break, of
+  twenty**, *and the census at* **50 and 50**.
 
   ***idx 1826 UNSAT — THE 11-GROUP OPENS, AND THE TRANSITIVE OBSTRUCTION
   IS CLEARED BY AN ELAPSED FLOOR BEFORE THE CUBE THAT WOULD SETTLE IT
