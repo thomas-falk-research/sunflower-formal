@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T23:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T23:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6906,7 +6906,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2001 -> 2002 rows)
+## State as of the last refresh (2002 -> 2003 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6917,7 +6917,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2002 rows; 1833 labels decided; 1833 UNSAT; 0 SAT; 0 labels
+- **2003 rows; 1834 labels decided; 1834 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6959,7 +6959,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1833 decided plus 169 superseded
+  A row count is not a decision count: 1834 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7009,7 +7009,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1827, highest decided 1834, holes [1828, 1831].**
+- **Frontier contiguous 0..1827, highest decided 1835, holes [1828, 1831].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7044,6 +7044,55 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1835 UNSAT AT 1634.9 s — `[13,11,10,9]`'s 13-BRACKET REACHES THE
+  INTERMEDIATE STATE ON CUE, AND THE STALE-SAMPLE TRAP FIRED A SECOND
+  TIME.*** *From the staged blob.* **Rank 1262 of 1834 with no tie** —
+  *`1834 − 572 = 1262`; detector agrees.* **Decided 1834 of 1949 =
+  94.0995%; 115 undecided.** **Frontier contiguous 0..1827, highest
+  decided 1835, holes `[1828, 1831]` unchanged; still 0 SAT.** **coord9 =
+  13, the second of four; the block is at 2 of 11 and `[13,11,10,10]`
+  stays at 13 of 15.**
+
+  ***THE INTERMEDIATE STATE, WHERE THE REGISTRATION PUT IT.*** **`n = 4`,
+  `k = 3`, so `n − k + 1 = 2`: at `m = 2` both ends have moved off
+  trivial and both still carry a trivial term.** **Bracket `[310.6500,
+  11617.4500]`, width `11306.8000`** — *lower* `(0 + 621.3)/2`*, upper*
+  `(1634.9 + 21600)/2`. **Neither end is trivial and both become free of
+  a trivial term at `m = 3`**, *exactly as the shape registered two banks
+  ago for this block says.* ***AND THIS IS THE FIRST `m = 2` BRACKET IN
+  THE SESSION WRITTEN WITH THE CORRECTED CAP FROM THE START*** — *the*
+  `[13,11,10,10]` *one at the same position was the figure the cap error
+  spoiled, and its upper end had to be corrected from* `1538.1500` *to*
+  `11338.1500`*; this one reads* `11617.4500` *first time.*
+
+  ***THE FLOOR TIGHTENS THE LOWER END BY 177.5 SECONDS.*** **idx 1836 is
+  in flight at `355 s` and idx 1837 at `15 s` at 23:52:58Z, so the
+  floor-tightened bracket is `[488.1500, 11617.4500]`** — *from* `sorted[15,
+  355, 621.3, 1634.9]` *taking* `(355 + 621.3)/2`. **Width `11129.3000`
+  against the hard `11306.8000`, a cut of `177.5000 s` — 1.57% of the
+  width, which is worth almost nothing** *and is recorded at that size
+  rather than dressed up.* *The upper end does not move, as always.*
+
+  ***THE STALE-SAMPLE TRAP FIRED A SECOND TIME, AND THE FIRST TIME IS
+  WHY IT WAS CAUGHT.*** *A first pass read the in-flight set as "latest
+  cpu sample per index" and so included* **idx 1835** *— the row being
+  banked — with its* `1452 s` *reading from 23:49:39Z, which put the
+  floor-tightened lower end at* **621.3000** *instead of* **488.1500**.
+  **The outstanding set is read from the STAGED BLOB, never from
+  `cpu_ratio_samples.tsv`**, *which is a log and not a roster.* **The
+  identical error was recorded at the idx 1824/1825 bank, where it wrongly
+  counted a landed cube as forced above a threshold**; *the note carried
+  the lesson and the lesson caught it, which is the only reason to write
+  these down.*
+
+  ***AND idx 1828 AND idx 1831 ARE AT 3435 s EACH, STILL RUNNING.***
+  *They are the last two of* `[13,11,10,10]`*, both coord9 = 12, and*
+  **the block's verdict does not depend on them** — *it was carried on
+  landed costs one bank ago with margins of 748.0500 and 627.5500.* **What
+  they still decide is the all-medians-final census, which stays at 50
+  until both land.** **The tally stays at twelve keep, nine break, of
+  twenty-one**, *and the census at* **51 and 50**.
 
   ***idx 1829 UNSAT AT 3079.7 s — THE 11-MEDIAN GOES FINAL AND
   `[13,11,10,10]` KEEPS ON LANDED COSTS ALONE.*** *From the staged blob.*
@@ -34298,7 +34347,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1833 of 1949 = 94.0482%**; **116 undecided**. **50% IS CROSSED**, at
+- **1834 of 1949 = 94.0995%**; **115 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -35014,7 +35063,7 @@ exactly one bank.
 - `[13, 11, 10, 10]` idx 1819..1833: **15 members**,
   **13 decided**, undecided [1828, 1831]
 - `[13, 11, 10, 9]` idx 1834..1844: **11 members**,
-  **1 decided**, undecided 10 spanning 1835..1844
+  **2 decided**, undecided 9 spanning 1836..1844
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
