@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T21:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T22:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6893,7 +6893,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1990 -> 1992 rows)
+## State as of the last refresh (1992 -> 1993 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6904,7 +6904,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1992 rows; 1823 labels decided; 1823 UNSAT; 0 SAT; 0 labels
+- **1993 rows; 1824 labels decided; 1824 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6946,7 +6946,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1823 decided plus 169 superseded
+  A row count is not a decision count: 1824 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6996,7 +6996,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1822, highest decided 1822, holes [].**
+- **Frontier contiguous 0..1823, highest decided 1823, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7032,6 +7032,73 @@ exactly one bank.
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
 
+  ***idx 1823 UNSAT — AND A CAP I INVENTED INSTEAD OF READING THE NOTE'S
+  PUT A WRONG UPPER END INTO THREE COMMITTED BRACKETS.*** *From the
+  staged blob.* **idx 1823 at 1882.9 s, rank 1188 of 1824 with no tie** —
+  *`1824 − 636 = 1188`; detector agrees.* **Decided 1824 of 1949 =
+  93.5865%; 125 undecided; holes `[]`; frontier contiguous 0..1823;
+  still 0 SAT.** **Cube `[13, 11, 10, 10, 13, 13, 13, 13, 12, 12, 8]`,
+  coord9 = 12 — the FIRST member of the 12-group; the block is at 5 of
+  15.**
+
+  ***THE ERROR, STATED PLAINLY.*** **I took the cap to be `2000` from the
+  driver's `--cubecap 2000` flag. `--cubecap` caps the CUBE COUNT. The
+  per-cube budget is `--seconds 21600`, and `[0, 21600]` is the cap this
+  note has used in every bracket it has ever written.** *It was not
+  caught by a contradiction, because nothing contradicted it — the
+  brackets were self-consistent and merely wrong.* **It surfaced while
+  validating an unrelated counting claim: the largest decided cost in the
+  checkpoint is `21678.5 s`, which cannot happen under a 2000 s cap.**
+  ***AND THE NOTE ALREADY SAID SO, IN THE RULES SECTION*** — *"`--seconds`
+  is the per-cube budget (21600 s = 6 h), not a total" and "the cap is
+  soft".* **The check-in procedure names this exact failure — read the
+  note's definition before believing your own script — and here there was
+  no script to disbelieve, only a flag read out of context.**
+
+  ***WHAT IS WRONG, EXACTLY.*** **`028c695`**: *the `m = 1` bracket's cap
+  printed as* **2000**, *should be* **21600**; *the form* `[0, cap]` *and
+  "both ends trivial" stand.* **`4781cf4`**: *the `m = 2` bracket read*
+  **`[221.2500, 1538.1500]`, width `1316.9000`**, *and is truly*
+  **`[221.2500, 11338.1500]`, width `11116.9000`**; *and the claim that*
+  **the floor "cuts the width by more than half" is FALSE** — *it cuts*
+  `11116.9000 → 10473.6500`, **`643.2500 s` = `5.79%`**. **`fcc0570`**:
+  *the closed form's validation range was drawn from* `[984, 2000]`
+  *instead of* `[984, 21600]`. **All five places now carry an inline
+  correction marker pointing here.**
+
+  ***WHAT IS UNAFFECTED, AND WHY THAT IS NOT LUCK BUT STRUCTURE.*** **Every
+  `m = 3` figure is correct as committed**: *bracket* **`[740.1500,
+  1057.0500]`, width `316.9000`**, *floor bracket* **`[1010.9000,
+  1057.0500]`, width `46.1500`**, *and the* **FINAL 13-median
+  `1039.4500`**. **The closed form `(1037.8 + min(x, 1076.3))/2` is
+  re-validated at 0 disagreements over 400,000 draws in `[984, 21600]`.**
+  **Leg one's threshold — leg one holds iff the 12-median exceeds
+  `1039.4500` — is untouched, as are the forcing thresholds and every
+  elapsed-floor slack and write-lag figure.** ***THE REASON IS THE
+  DEFINITION OF THE STATE ITSELF***: `m = 3 = k` **is the trivial-free
+  state, which means by construction that no cap term enters either end.
+  A wrong cap can only corrupt a bracket while the bracket still carries
+  a cap term — that is `m ≤ 2` here — so the error was mathematically
+  incapable of reaching anything downstream of `m = 3`.** *That is a
+  reason, not a reprieve: at `m = 2` it did reach, and it was committed
+  and pushed.*
+
+  ***THE 12-GROUP AT `m = 1`.*** **`n = 9`, `k = 5`, odd, so the bracket
+  is exactly `[0, 21600]` and both ends are trivial** — *as the
+  registration said, with no intermediate state and nothing readable
+  until the fifth member lands.* ***BUT THE ODD MEDIAN GIVES AN EXACT
+  COUNTING TEST, WHICH THE EVEN ONES DO NOT.*** **Because `n = 9` is odd,
+  "12-median > T" is exactly "at most 4 of the 9 are ≤ T". With
+  `T = 1039.4500` the 13-median, and idx 1823 at 1882.9 already above it,
+  LEG ONE HOLDS IF AND ONLY IF AT MOST 4 OF THE OUTSTANDING 8 LAND AT OR
+  BELOW 1039.4500.** *Tested, not asserted:* **0 disagreements over
+  400,000 random draws** *in both forms.* **This is the good case of the
+  rule the session got wrong twice on even groups** — *a count pins an
+  odd median and only bounds an even one* — *and it is written here with
+  its test because the two earlier counting claims were written without
+  one.* **The tally stays at eleven keep, nine break, of twenty**, *and
+  the census at* **50 and 50**.
+
   ***idx 1821 AND idx 1822 UNSAT — THE 13-MEDIAN OF `[13,11,10,10]` IS
   FINAL AT 1039.4500, AND THE CLOSED FORM WRITTEN ONE LANDING EARLIER
   PREDICTED IT EXACTLY.*** *From the staged blob.* **idx 1821 at 1037.8 s,
@@ -7059,7 +7126,10 @@ exactly one bank.
   computed straight from the definition is `1039.4500`.** *The form had
   been validated at* **0 disagreements over 200,000 draws in `[984,
   2000]`** *and* **89,930 over 200,000 in `[0, 984)`**, *so the elapsed
-  floor was load-bearing for it.* **The prediction was made from a
+  floor was load-bearing for it.* ‹**CORRECTED AT THE idx 1823 ENTRY: the cap is 21600, not 2000 — `--cubecap 2000` caps the CUBE COUNT and `--seconds 21600` is the per-cube budget the note has used for every bracket. See that entry for the recomputation.**› *The upper limit of that
+  draw range should have been* `21600`. **Re-run over `[984, 21600]` it
+  is 0 disagreements of 400,000, so the form survives the correction
+  unchanged, and so does the load-bearing reading of the floor.** **The prediction was made from a
   bracket and an elapsed floor, and the row landed inside both**: *the
   hard bracket was* `[740.1500, 1057.0500]` *and the floor bracket*
   `[1010.9000, 1057.0500]`*, and* **1039.4500 sits 28.5500 above the
@@ -7106,6 +7176,7 @@ exactly one bank.
 
   ***idx 1820 UNSAT — THE INTERMEDIATE STATE APPEARS EXACTLY WHERE THE
   CORRECTED RULE PUTS IT, AND THE ELAPSED FLOOR HALVES THE BRACKET.***
+  ‹**CORRECTED AT THE idx 1823 ENTRY: the cap is 21600, not 2000 — `--cubecap 2000` caps the CUBE COUNT and `--seconds 21600` is the per-cube budget the note has used for every bracket. See that entry for the recomputation.**›
   *From the staged blob.* **idx 1820 at 1076.3 s, rank 1463 of 1821 with
   no tie** — *`1821 − 358 = 1463`; detector agrees.* **Decided 1821 of
   1949 = 93.4325%; 128 undecided; holes `[]`; frontier contiguous
@@ -7128,12 +7199,17 @@ exactly one bank.
   could produce it.** **Bracket `[221.2500, 1538.1500]`, width
   `1316.9000`** — *lower from* `sorted[0, 0, 442.5, 1076.3]` *giving*
   `(0 + 442.5)/2`*, upper from* `sorted[442.5, 1076.3, 2000, 2000]`
-  *giving* `(1076.3 + 2000)/2`. **Neither end is trivial; the lower
+  *giving* `(1076.3 + 2000)/2`. ‹**CORRECTED AT THE idx 1823 ENTRY: the cap is 21600, not 2000 — `--cubecap 2000` caps the CUBE COUNT and `--seconds 21600` is the per-cube budget the note has used for every bracket. See that entry for the recomputation.**› **The truth is
+  `[221.2500, 11338.1500]`, width `11116.9000`; the lower end and the
+  intermediate-state reading are unaffected.** **Neither end is trivial; the lower
   still carries a `0` term and the upper still carries a cap term, and
   both become free of one at `m = 3`.** *Computed by script over the
   median definition, not asserted from the table.*
 
-  ***AND THE ELAPSED FLOOR CUTS THE WIDTH BY MORE THAN HALF.*** **At
+  ***AND THE ELAPSED FLOOR CUTS THE WIDTH BY MORE THAN HALF.*** ‹**CORRECTED AT THE idx 1823 ENTRY: the cap is 21600, not 2000 — `--cubecap 2000` caps the CUBE COUNT and `--seconds 21600` is the per-cube budget the note has used for every bracket. See that entry for the recomputation.**› **It does not: at the correct cap the width goes `11116.9000 →
+  10473.6500`, a cut of `643.2500 s` = `5.79%`. The `643.2500` figure
+  below is right; "more than half" is wrong and follows only from the
+  wrong cap.** **At
   2026-09-25T21:42:19Z the two outstanding 13-members had elapsed `904 s`
   (idx 1821) and `825 s` (idx 1822), read from `cpu_ratio_samples.tsv`,
   under driver pid 27185 unchanged.** *Since* `cost ≥ elapsed` *within a
@@ -7141,6 +7217,8 @@ exactly one bank.
   825, 904, 1076.3]` *and a lower end of* `(825 + 904)/2 = 864.5000`.
   **Floor-tightened bracket `[864.5000, 1538.1500]`, width `673.6500`
   against the plain `1316.9000` — the lower end rises by `643.2500`.**
+  ‹**CORRECTED AT THE idx 1823 ENTRY: the cap is 21600, not 2000 — `--cubecap 2000` caps the CUBE COUNT and `--seconds 21600` is the per-cube budget the note has used for every bracket. See that entry for the recomputation.**› **Correct: `[864.5000, 11338.1500]`, width `10473.6500`
+  against the plain `11116.9000`; the rise of `643.2500` stands.**
   ***THIS TIGHTENING IS DESTROYED BY A RESTART*** *and is worth nothing
   the moment the driver pid changes; it is recorded with its pid and its
   timestamp for exactly that reason.* **The upper end does not move at
@@ -7238,7 +7316,9 @@ exactly one bank.
   13-bracket is* **[0, cap] exactly — both ends trivial, as the
   `m < n − k + 1` case requires.** *Checked against the rule rather
   than asserted: three unknowns at 0 give* `x₍₂₎ = x₍₃₎ = 0`*, three at
-  the cap give* `x₍₂₎ = x₍₃₎ = 2000`. **The tally stays at eleven keep,
+  the cap give* `x₍₂₎ = x₍₃₎ = 2000`. ‹**CORRECTED AT THE idx 1823 ENTRY: the cap is 21600, not 2000 — `--cubecap 2000` caps the CUBE COUNT and `--seconds 21600` is the per-cube budget the note has used for every bracket. See that entry for the recomputation.**› **The cap value is
+  `21600`, so the bracket is `[0, 21600]`; "both ends trivial" is
+  unaffected.** **The tally stays at eleven keep,
   nine break, of twenty**, *and the census at* **50 and 50**.
 
   ***idx 1816 AND idx 1814 UNSAT — EVERY BLOCK IS COMPLETE, THE SPAN
@@ -33561,7 +33641,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1823 of 1949 = 93.5351%**; **126 undecided**. **50% IS CROSSED**, at
+- **1824 of 1949 = 93.5865%**; **125 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -34275,7 +34355,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 10, 10]` idx 1819..1833: **15 members**,
-  **4 decided**, undecided 11 spanning 1823..1833
+  **5 decided**, undecided 10 spanning 1824..1833
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
