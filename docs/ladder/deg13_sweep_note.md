@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T13:26Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T13:32Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6869,7 +6869,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1918 -> 1920 rows)
+## State as of the last refresh (1920 -> 1921 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6880,7 +6880,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1920 rows; 1751 labels decided; 1751 UNSAT; 0 SAT; 0 labels
+- **1921 rows; 1752 labels decided; 1752 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6922,7 +6922,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1751 decided plus 169 superseded
+  A row count is not a decision count: 1752 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6972,7 +6972,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1745, highest decided 1752, holes [1746, 1750].**
+- **Frontier contiguous 0..1745, highest decided 1753, holes [1746, 1750].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7007,6 +7007,71 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1753 UNSAT AT 463.9 s — `[13,11,11,10]` OPENS, TESTABLE, AND
+  IT IS ONE OF ONLY SIX BLOCKS LEFT THAT CAN MOVE THE TALLY.*** **Rank
+  1632 of 1752 with no tie** — *`1752 − 120 = 1632`, detector agrees;
+  read from the script.* **coord9 = 13. Holes `[1746, 1750]`, frontier
+  contiguous 0..1745, highest decided 1753. Decided 1752 of 1949 =
+  89.8923%; 197 undecided; still 0 SAT.** *The hole state is unchanged,
+  so the hundred-and-eighth span stays at width two and its chain goes*
+  **`1,1,3,2` → `1,1,3,2,2`**, *verdict still False.*
+  **`[13,11,11,11]` is untouched at 26 of 28 and its verdict stands.**
+
+  ***THE NEW BLOCK: 21 MEMBERS, idx 1753..1773, SPLIT 5 / 11 / 5 ACROSS
+  coord9 = 13 / 12 / 11.*** **All three groups are ODD**, *which
+  `[13,11,11,11]` was not — its 12- and 11-groups had 14 and 8 members
+  and their medians were midpoints of two order statistics.* **Here
+  every median is a single landed cost**: `x₃` *of five,* `x₆` *of
+  eleven,* `x₃` *of five, thresholds* **k = 3, 6, 3**. *So each of this
+  block's three medians will be an actual measured number rather than an
+  average of two — which changes nothing about the method and everything
+  about how a bracket collapses, since a single order statistic pins the
+  moment its position is fixed.* **By the `m ≥ k` lemma the block needs
+  at least 3 + 6 + 3 = 12 of its 21 cubes for all three brackets to go
+  cap-free**, *and they must fall* **≥ 3 in the 13-group, ≥ 6 in the
+  12-group, ≥ 3 in the 11-group** — *twelve is a floor on the count, not
+  a guarantee at the count.*
+
+  ***AND A CENSUS WORTH HAVING: ONLY SIX BLOCK VERDICTS REMAIN IN THE
+  WHOLE SWEEP.*** *Of the* **53 testable blocks**, **47 already have a
+  verdict** — *the* **46** *whose three medians are all final, plus*
+  `[13,11,11,11]`, *settled at 26 of 28.* **The six outstanding are:**
+
+  | block | members | idx | coord9 split | decided |
+  |---|---|---|---|---|
+  | `[13,11,11,10]` | 21 | 1753..1773 | 5 / 11 / 5 | 1 |
+  | `[13,11,11,9]` | 15 | 1774..1788 | 4 / 9 / 2 | 0 |
+  | `[13,11,11,8]` | 11 | 1789..1799 | 4 / 6 / 1 | 0 |
+  | `[13,11,10,10]` | 15 | 1819..1833 | 4 / 9 / 2 | 0 |
+  | `[13,11,10,9]` | 11 | 1834..1844 | 4 / 6 / 1 | 0 |
+  | `[13,10,10,10]` | 11 | 1892..1902 | 4 / 6 / 1 | 0 |
+
+  **84 members between them, 83 still undecided.** *Read from* `SEQ`
+  *and the staged checkpoint in this commit, not recalled.*
+
+  ***WHICH MEANS 114 OF THE 197 UNDECIDED CUBES CANNOT MOVE THE TALLY AT
+  ALL.*** **83 of the 197 sit in those six blocks; 2 are
+  `[13,11,11,11]`'s remainder, whose verdict is already forced; the
+  other 112 are in untestable blocks and were never going to produce
+  one.** *That is* **58%** *of the work left doing nothing to the
+  direction census* — *the same fact the 36-cube untestable run made in
+  the large, now stated for the whole remainder.* **It is a statement
+  about what the tally can still learn, not about the sweep's purpose**:
+  *every one of those 114 still has to come back UNSAT, and a single SAT
+  anywhere in them would matter more than every verdict in this note put
+  together.*
+
+  ***AND THREE OF THE SIX HAVE A ONE-MEMBER 11-GROUP.*** `[13,11,11,8]`,
+  `[13,11,10,9]` *and* `[13,10,10,10]` *each carry exactly* **one**
+  *coord9 = 11 cube, so their 11-median is that cube's cost and is*
+  **final the instant it lands** — *no bracket, no cap, no lemma.* *Two
+  more,* `[13,11,11,9]` *and* `[13,11,10,10]`, *carry* **two**, *so
+  their 11-median is the midpoint of both and is final when the second
+  lands.* **Only `[13,11,11,10]`, with five, has an 11-group that can
+  sit in a bracket for any length of time.** *Registered now because it
+  says where the next verdicts will come from and how fast — and it is a
+  reading of* `SEQ`, *which is fixed, not a forecast of behaviour.*
 
   ***idx 1749 AND idx 1752 UNSAT — THE coord9 = 12 GROUP COMPLETES AND
   `[13,11,11,11]` IS SETTLED: IT KEEPS.*** **idx 1749 at 1424.0 s, rank
@@ -30020,7 +30085,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1751 of 1949 = 89.8409%**; **198 undecided**. **50% IS CROSSED**, at
+- **1752 of 1949 = 89.8923%**; **197 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -30735,6 +30800,8 @@ exactly one bank.
 
 - `[13, 11, 11, 11]` idx 1725..1752: **28 members**,
   **26 decided**, undecided [1746, 1750]
+- `[13, 11, 11, 10]` idx 1753..1773: **21 members**,
+  **1 decided**, undecided 20 spanning 1754..1773
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
