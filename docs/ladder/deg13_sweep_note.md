@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T09:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T09:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6871,10 +6871,16 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1880 rows; 1711 labels decided; 1711 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#53**
-  — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
-  RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
-  SHOWING.*** *#53 lost four cubes and no rows, the same as every
+  undecided-only.** No rows were lost across restarts #37 through **#55**
+  — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
+  THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
+  restart #54 and every commit after it, so the promise to extend it in
+  the absorb commit held twice and then failed on its third test. It is
+  extended to* **#55** *in the absorb commit here, which makes the
+  honest score two kept, one missed, three attempts.* **The sentence
+  below about being "extended for the second time running" is left
+  standing because it was true when written**; *what was false was
+  treating it as a habit.*** *#53 lost four cubes and no rows, the same as every
   restart in the range; the check is the same one — 1720 rows either
   side of the teardown, and a waiter armed at 1720 that never reported a
   landing.* **Two in a row is two in a row**, *and the promise that took
@@ -6909,8 +6915,8 @@ exactly one bank.
   A row count is not a decision count: 1711 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
-  `/proc/21147/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
+  `/proc/27185/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -6991,6 +6997,77 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***RESTART #55 — THE CONTAINER WAS TORN DOWN AT 09:54:52.916180684Z
+  AND NOTHING WAS LOST.*** **1880 rows either side of the teardown**,
+  *and the waiter armed at 1880 ends in* `[killed]` *with no landing
+  line, which is the independent half of that check.* **New driver pid
+  27185, launched 2026-09-25T09:57:03.040000Z** — *computed by script
+  as* `btime + /proc/27185/stat field 22 / SC_CLK_TCK = 1790096990 +
+  23323304/100`, *never converted by hand.* **Downtime 130.124 s**,
+  *against 178.176 at #52, 108.565 at #53 and 126.625 at #54 — the only
+  four measured downtimes in the file, and this one sits between #54 and
+  #52.* **Nothing further is claimed about that.**
+
+  ***AND bank.py's PID GUARD REPRODUCED THE LAUNCH INSTANT
+  INDEPENDENTLY.*** *Its run on this absorb printed* **"driver line
+  REWRITTEN from the live process: pid 21147 -> 27185, launch
+  2026-09-25T09:57:03.040000Z"** — *the same instant this entry computed
+  by hand-script from* `btime + field 22 / SC_CLK_TCK`, *to the
+  microsecond, from a separate read of* `/proc`. **The firing count
+  above is deliberately NOT extended**, *per the paragraph beside it:
+  that tally has been found short three times and the standing decision
+  is to stop maintaining it rather than to correct it again.*
+
+  ***THE MACHINE DID NOT CHANGE, AND THE ALARM THAT SAYS IT DID WAS
+  DRAFTED ANYWAY.*** *All six fields were re-read live before the
+  relaunch —* **@ 2.10GHz, 2100.000 MHz, 266240 KB, nproc 4, MemTotal
+  16481980 kB, kernel 6.18.44-fc-v37** — *and every one matches #54's
+  column. `btime` did not move either* (**1790096990**, *the same
+  2026-09-22T17:09:50Z host boot*), **which is how this is known to be a
+  container restart and not a host reboot.** ***AND THIS ABSORB STILL
+  DRAFTED "THE CPU HAS CHANGED" IN CAPITALS.*** *The spec table in this
+  note ends at* **#48**, *whose column reads* **@ 2.80GHz**, *and
+  today's* **@ 2.10GHz** *read against THAT column looks like a change.*
+  **#54's block records the identical near-miss and explains it**, *and
+  reading that block is what stopped the alarm here.* **The trap has now
+  caught two consecutive absorbs.** *A table with a stated end is an
+  archive, not the current state — the same lesson this file already
+  carries as "read the note's definition before believing the script".*
+
+  ***FOUR CUBES KILLED IN FLIGHT, EVERY ONE WITH A cpu/elapsed
+  SAMPLE.*** *So no ratio is invented and no loss is bracketed.*
+  **Elapsed at teardown was computed two ways — from each CNF's mtime,
+  and from the 09:54:01Z sample plus the 51.916 s to teardown — and they
+  agree within 0.7 s on all four**:
+
+  | idx | CNF written | elapsed at teardown | cpu/elapsed | CPU-s |
+  |---|---|---|---|---|
+  | 1711 | 09:38:07.904 | 1005.012 s | 0.9213 | 925.9 |
+  | 1712 | 09:41:53.480 | 779.436 s | 0.9133 | 711.9 |
+  | 1713 | 09:47:45.344 | 427.572 s | 0.9493 | 405.9 |
+  | 1714 | 09:52:52.728 | 120.188 s | 0.8971 | 107.8 |
+
+  **TOTAL LOST: 2332.2 s elapsed = 0.6478 h; 2151.5 CPU-s = 0.5976
+  CPU-h.** *The CNF glob was filtered by the driver pid* **and**
+  *required* `-seq-c`, *per the procedure — the transient* `...-c0-...`
+  *CNF that appeared at #41 would otherwise read as a 0.4 s re-take
+  lag.* **The measurement was taken BEFORE the relaunch**, *because the
+  new driver overwrites the CNFs.*
+
+  ***THE TWO `[killed]` MARKERS AGREE TO THE NANOSECOND.*** *Driver*
+  `bo67wpn6q` *and waiter* `b73hh43gr` *both carry mtime*
+  **2026-09-25T09:54:52.916180684Z**. *At #54 they disagreed by* **8.000
+  ms** *and the procedure's "take the EARLIER, they need not agree" had
+  something to choose; here it has nothing, as at #49 through #53.*
+
+  ***RE-RUN SET TWENTY-THREE OPENS: idx 1711, 1712, 1713, 1714.*** ***IT
+  IS NOT CONFOUNDED, AND THAT IS SAID AT THE OPENING AS THE RULE
+  REQUIRES.*** *All six spec fields and `btime` are unchanged, so the
+  re-takes run on the same machine as the discarded attempts.* **Set
+  twenty-two (idx 1619, 1621, 1622, 1623), opened at #54, is already
+  closed** — *the section heading reads* **NO SET OPEN** — *so
+  twenty-three starts clean.*
 
   ***idx 1710 UNSAT AT 895.4 s, IN ORDER — `[13,12,8,8]`'s 13-GROUP
   COMPLETES AT 3 OF 3.*** **Rank 1471 of 1711 with no tie** — *`1711 −

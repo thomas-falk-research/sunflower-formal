@@ -13127,3 +13127,70 @@ g=11 [13, 12, 9, 5, 13, 13, 13, 13, 13, 12, 12]	UNSAT	1045.8
 g=11 [13, 12, 9, 6, 13, 13, 13, 13, 12, 12, 12]	UNSAT	2173.6
 g=11 [13, 12, 8, 8, 13, 13, 13, 13, 13, 12, 10]	UNSAT	902.2
 g=11 [13, 12, 8, 8, 13, 13, 13, 13, 13, 11, 11]	UNSAT	895.4
+# RESTART #55 -- CONTAINER RESTART.  Teardown 2026-09-25T09:54:52.916180684Z,
+# new driver pid 27185 launched 2026-09-25T09:57:03.040000Z (btime +
+# /proc/27185/stat field 22 / SC_CLK_TCK, computed by script:
+# 1790096990 + 23323304/100 = 1790330223.04).  THE MACHINE DID NOT
+# CHANGE.  Downtime 130.124 s.
+#
+#     field          #54                #55
+#     CPU model      @ 2.10GHz          @ 2.10GHz      same
+#     cpu MHz        2100.000           2100.000       same
+#     cache size     266240 KB          266240 KB      same
+#     nproc          4                  4              same
+#     MemTotal       16481980 kB        16481980 kB    same
+#     kernel         6.18.44-fc-v37     6.18.44-fc-v37 same
+#
+# btime DID NOT MOVE -- 1790096990 at #54 and 1790096990 now, the same
+# 2026-09-22T17:09:50Z host boot -- WHICH IS HOW THIS IS KNOWN TO BE A
+# CONTAINER RESTART AND NOT A HOST REBOOT.  All six fields were re-read
+# live BEFORE the relaunch, never inferred from the spec table, and the
+# four killed CNFs were measured before the new driver could overwrite
+# them.  So costs across this point ARE on a common basis.
+#
+# *** THE CPU-CHANGE TRAP FIRED AGAIN, AND #54's BLOCK IS WHY IT WAS
+# CAUGHT. ***  This absorb also drafted a "THE CPU HAS CHANGED" alarm,
+# from today's @ 2.10GHz against the note's spec table, which ends at
+# #48 reading @ 2.80GHz.  #54's block records the identical near-miss
+# and says why it is not a change: the comparison is against the LAST
+# READING, and all six fields match #54's exactly.  The trap has now
+# caught two consecutive absorbs and the warning written at #54 is what
+# stopped it here.  A table with a stated end is an archive, not the
+# current state.
+#
+# *** THE TWO [killed] MARKERS AGREE TO THE NANOSECOND. ***  Driver
+# bo67wpn6q and waiter b73hh43gr both carry mtime
+# 2026-09-25T09:54:52.916180684Z.  At #54 they disagreed by 8.000 ms and
+# the procedure's "take the EARLIER, they need not agree" had something
+# to choose; here it has nothing, as at #49 through #53.
+#
+# NOTHING WAS LOST FROM THE COMMITTED STATE: 1880 rows either side of the
+# teardown, and the waiter armed at 1880 ends in [killed] with no landing
+# line -- the independent half of that check.
+#
+# FOUR CUBES WERE KILLED IN FLIGHT, EVERY ONE WITH A cpu/elapsed SAMPLE,
+# so no ratio is invented and no loss is bracketed.  Elapsed at teardown
+# was computed two ways -- from the CNF mtime, and from the 09:54:01Z
+# sample plus the 51.916 s to teardown -- agreeing within 0.7 s on all
+# four:
+#
+#     idx    CNF written     elapsed at teardown   cpu/elapsed    CPU-s
+#     1711   09:38:07.904       1005.012 s            0.9213      925.9
+#     1712   09:41:53.480        779.436 s            0.9133      711.9
+#     1713   09:47:45.344        427.572 s            0.9493      405.9
+#     1714   09:52:52.728        120.188 s            0.8971      107.8
+#
+# TOTAL LOST: 2332.2 s elapsed = 0.6478 h; 2151.5 CPU-s = 0.5976 CPU-h.
+#
+# ON THE DOWNTIME: 130.124 s, against 178.176 s at #52, 108.565 s at #53
+# and 126.625 s at #54.  Those four are the only measured downtimes in
+# this file; this one sits between #54 and #52 and NOTHING FURTHER IS
+# CLAIMED.
+#
+# RE-RUN SET TWENTY-THREE OPENS: idx 1711, 1712, 1713, 1714.  *** IT IS
+# NOT CONFOUNDED, AND THAT IS SAID AT THE OPENING AS THE RULE
+# REQUIRES. ***  All six spec fields and btime are unchanged, so the
+# re-takes run on the same machine as the discarded attempts.  Set
+# twenty-two (idx 1619, 1621, 1622, 1623), opened at #54, is already
+# closed -- the note's heading reads NO SET OPEN -- so twenty-three
+# starts clean.
