@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T21:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T21:11Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6888,7 +6888,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1978 -> 1979 rows)
+## State as of the last refresh (1979 -> 1980 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6899,7 +6899,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1979 rows; 1810 labels decided; 1810 UNSAT; 0 SAT; 0 labels
+- **1980 rows; 1811 labels decided; 1811 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6941,7 +6941,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1810 decided plus 169 superseded
+  A row count is not a decision count: 1811 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6991,7 +6991,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1804, highest decided 1812, holes [1805, 1810, 1811].**
+- **Frontier contiguous 0..1809, highest decided 1812, holes [1810, 1811].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7026,6 +7026,44 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1805 UNSAT AT 2624.9 s — `[13,11,11,7]` IS COMPLETE, AND THE
+  PIECEWISE BRANCH REGISTERED ONE COMMIT AGO IS THE ONE THAT FIRED.***
+  *From the staged blob.* **Rank 918 of 1811 with no tie** — *`1811 −
+  893 = 918`, detector agrees; read from the script.* **coord9 = 12.
+  Holes `[1810, 1811]`, frontier contiguous 0..1809, highest decided
+  1812. Decided 1811 of 1949 = 92.9194%; 138 undecided; still 0 SAT.**
+  **`[13,11,11,7]` is 7 of 7; `[13,11,11,6]` at 3 of 5; `[13,11,11,5]`
+  at 1 of 3.** *The span narrows from three holes to two;* **the rise
+  committed at `7d64924` stands, so its monotonicity is still determined
+  False.**
+
+  ***THE 12-MEDIAN IS FINAL AT 1615.4000 — THE CEILING, AND THE BRANCH
+  WAS NAMED IN ADVANCE.*** *Its four members landed at* **703.4, 1613.5,
+  1617.3, 2624.9**, *so the median of four is* `(1613.5 + 1617.3)/2 =`
+  **1615.4000**. `3fcf9d5` *registered the piecewise form and wrote:*
+  "**the final median is `(1613.5 + v)/2` only while `v` is in the
+  3.8-second window `[1613.5, 1617.3]`, and it is pinned at 1615.4000
+  for every `v` above it**". **`v = 2624.9` is 1007.6 above the window,
+  so the pinned branch fired and the median is the bracket's upper end
+  exactly.** *The honest gloss:* **that window was 3.8 s wide against a
+  cap of 21600, or 0.000190 of the range above 1613.5**, *so the pinned
+  branch was overwhelmingly the likely one and the prediction was cheap.*
+  **A confirmed prediction that was nearly certain is worth recording as
+  nearly certain**, *which is why the width is quoted beside it.*
+
+  ***AND `[13,11,11,7]` IS DONE WITHOUT A VERDICT, EXACTLY AS ITS
+  OPENING ENTRY SAID.*** **13-median FINAL 881.6000; 12-median FINAL
+  1615.4000; 11-group EMPTY.** *`5871418` wrote at its opening:* "**the
+  direction window is `13-median < 12-median < 11-median` and there is
+  no 11-median to read, so the block's seven cubes will land, cost what
+  they cost, and decide nothing about the window. No verdict is
+  possible for it, now or ever.**" **Seven cubes have now landed and
+  none of it decided anything.** *The tally stays at* **eleven keep,
+  nine break, of twenty settled blocks**, *and the census at* **50 and
+  50** — **an untestable block completing moves neither, which is the
+  first time this note has watched one finish since the 118 were
+  counted.**
 
   ***idx 1812 UNSAT AT 373.1 s — `[13,11,11,5]` OPENS, THE THIRD
   UNTESTABLE BLOCK IN A ROW, AND THE SPAN WIDENS TO THREE.*** *From the
@@ -33091,7 +33129,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1810 of 1949 = 92.8681%**; **139 undecided**. **50% IS CROSSED**, at
+- **1811 of 1949 = 92.9194%**; **138 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33804,8 +33842,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 11, 11, 7]` idx 1800..1806: **7 members**,
-  **6 decided**, undecided [1805]
 - `[13, 11, 11, 6]` idx 1807..1811: **5 members**,
   **3 decided**, undecided [1810, 1811]
 - `[13, 11, 11, 5]` idx 1812..1814: **3 members**,
