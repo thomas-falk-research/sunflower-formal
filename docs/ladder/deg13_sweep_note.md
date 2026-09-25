@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T05:36Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T05:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6979,6 +6979,45 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 05:41Z CHECK-IN: A FLOOR THAT IS DOING ALMOST ALL THE WORK,
+  WHICH IS THE OPPOSITE OF THE LAST ONE.*** *No row landed: decided
+  1666, holes* `[1664]`, *frontier contiguous 0..1663, highest decided
+  1666, driver pid 21147 confirmed by* `pgrep`.
+
+  **At the 05:41:41Z sample idx 1664 — the one cube out of
+  `[13,12,10,7]`'s coord9 = 12 group — reads 2783 s of elapsed.** *The
+  group's median is* `(x₍₂₎ + x₍₃₎)/2` *of four, so:* **landed-only
+  `[1811.7, 2745.5]`, width 933.8; with the floor `[2692.0, 2745.5]`,
+  width 53.5.** ***THE FLOOR MAKES IT 17.4542× TIGHTER.***
+
+  ***AND AT `7226980` THE SAME MACHINERY BOUGHT NOTHING.*** *There the
+  floors gave* `[575.0, 21600]`, *an interval containing the whole
+  corridor, and the note said the floor was deciding "nothing through
+  the bracket and everything through the count".* **Here there is no
+  count to be had — the block is untestable — and the bracket is where
+  all the value is.** *The difference is not the machinery but WHERE
+  THE FLOOR SITS AMONG THE LANDED VALUES*: **a floor above most of them
+  pins the order statistics; a floor below them all leaves every
+  ordering open.** *Two instances, opposite outcomes, same rule.*
+
+  ***AND THE TIMESTAMP ABOVE WAS COMPOSED BEFORE IT WAS READ.*** *A
+  draft of this paragraph said* **05:41:39Z**; *the sample carrying
+  2783 s is stamped* **05:41:41Z**. **Second time in three check-ins
+  that a stamp was written from the clock in my head rather than out of
+  the staged file**, *both times on a sentence whose only job was
+  provenance, and both times caught by grepping the file for the
+  figure.* **The grep is now the habit and the composing is the thing
+  to stop.**
+
+  ***THE COLLAPSE POINT IS 2890.0 AND IT IS 107.0 s AWAY.*** *Once idx
+  1664's elapsed passes the largest landed value, the unknown is always*
+  `x₍₄₎` *and the median is* **2745.5 exactly** — *the bracket's own
+  upper end, as at every previous pin.* **Within-run, and a relaunch
+  voids it.** ***AND NONE OF IT DECIDES ANYTHING***: `[13,12,10,7]`
+  *has no coord9 = 11 member, so a pinned 12-median there is a number
+  with no window to enter.* **The tally stays at nine keep, six break,
+  of fifteen settled blocks.**
 
   ***idx 1663 UNSAT AT 2890.0 s, AND IT LANDS ON THE SWEEP'S OWN
   MEDIAN COST.*** **Rank 833 of 1666 with no tie** — *`1666 − 833 =
