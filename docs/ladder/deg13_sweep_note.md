@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T19:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T20:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6886,7 +6886,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1965 -> 1966 rows)
+## State as of the last refresh (1966 -> 1967 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6897,7 +6897,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1966 rows; 1797 labels decided; 1797 UNSAT; 0 SAT; 0 labels
+- **1967 rows; 1798 labels decided; 1798 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6939,7 +6939,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1797 decided plus 169 superseded
+  A row count is not a decision count: 1798 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6989,7 +6989,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1795, highest decided 1799, holes [1796, 1797, 1798].**
+- **Frontier contiguous 0..1795, highest decided 1800, holes [1796, 1797, 1798].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7024,6 +7024,88 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1800 UNSAT AT 437.4 s — `[13,11,11,7]` OPENS AND IT CAN NEVER
+  BE TESTED.*** *From the staged blob.* **Rank 1686 of 1798 with no
+  tie** — *`1798 − 111 = 1686`, detector agrees; read from the script.*
+  **coord9 = 13. Holes `[1796, 1797, 1798]`, frontier contiguous
+  0..1795, highest decided 1800. Decided 1798 of 1949 = 92.2524%; 151
+  undecided; still 0 SAT.** **`[13,11,11,8]` stays at 8 of 11 and its
+  span stays open at three.** **`[13,11,11,7]` is at 1 of 7.**
+
+  ***THE BLOCK HAS NO 11-GROUP AT ALL.*** **Seven members, idx
+  1800..1806, and the coord9 distribution is `{13: 3, 12: 4}`** —
+  *read from the enumeration, not from the rows.* **The direction window
+  is `13-median < 12-median < 11-median` and there is no 11-median to
+  read**, *so the block's seven cubes will land, cost what they cost,
+  and decide nothing about the window.* **No verdict is possible for it,
+  now or ever.**
+
+  ***AND THE COMPLEMENT OF "53 TESTABLE" IS COMPUTED HERE FOR THE FIRST
+  TIME.*** *The note has carried* **53 of the 171 blocks are testable**
+  *since* `[13,12,10,8]`'s *entry; the other* **118** *have never been
+  characterised.* **Of the 118: 49 lack only the 11-group, and 69 lack
+  both the 12-group and the 11-group.** ***EVERY ONE OF THE 118 LACKS
+  THE 11-GROUP.*** **No block in the whole enumeration is blocked by a
+  missing 13-group, and the 12-group is missing only when the 11-group
+  is missing too** — *computed over all* **171**, *not sampled.* **So
+  more than two-thirds of the blocks can never produce a verdict and the
+  tally's ceiling is 53**, *of which* **49 are already verdict-forced
+  and 4 are not**: `[13,11,11,8]`, `[13,11,10,10]`, `[13,11,10,9]`,
+  `[13,10,10,10]`. `[13,11,11,7]` *is one of the 49 that lack only the
+  11-group.*
+
+  ***AND THE CORRECTION AT `b1a81c9` WAS A REDISCOVERY, NOT A
+  DISCOVERY.*** *That commit computed the group-size distribution to
+  show that* **"n = 2, the smallest group the direction window ever has
+  to read"** *was false, and found* **twelve one-member 11-groups**.
+  **The note already said so.** *The* `[13,12,10,8]` *entry reads:*
+  "**53 of the 171 blocks are testable, the minimum 11-group size over
+  all 53 is 1, and twelve blocks have it**", *and it was written
+  striking an earlier sentence that had called two the smallest —* **the
+  same claim, struck for the same reason, before `bb50b6a` made it
+  again.** **The two computations agree exactly: twelve blocks, minimum
+  one.** *That agreement is reassuring about the method and damning
+  about the reading.* **THE FILE IS NOW LONG ENOUGH THAT A CORRECTION
+  CAN BE REDISCOVERED RATHER THAN RECALLED**, *and rediscovery costs a
+  script where recall would have cost a grep.*
+
+  ***THE BLOCK'S SHAPE, REGISTERED AT ITS OPENING, IN THE CORRECTED
+  WORDING.*** **coord9 = 13: `n = 3`, `k = 2`, odd — both ends move off
+  trivial at `m = n − k + 1 = 2` and both are trivial-free at `m = k =
+  2`, the same landing, so two states and no intermediate; it has 1.**
+  **coord9 = 12: `n = 4`, `k = 3`, even — both move at `m = 2` and both
+  are trivial-free at `m = 3`, so three states; it has 0.** **Four more
+  cubes before both brackets are trivial-free** *(1 in the 13-group, 3
+  in the 12-group)*, **and six of the seven are still out.** *Neither
+  bracket will ever be compared to anything.*
+
+  ***AND WHILE THIS ENTRY WAS BEING WRITTEN, `[13,11,11,8]` BROKE —
+  WITHIN THE RUN.*** *The sample* `bank.py` *appended at*
+  **2026-09-25T20:00:18Z** *reads* **idx 1796 at 1411 s, idx 1797 at
+  1394 s, idx 1798 at 1389 s** — **all three above the band's ceiling of
+  1376.5000**, *by* **34.5, 17.5 and 12.5** *seconds.* *Seven minutes
+  earlier, at the entry below, all three were under it with* **402.5,
+  419.5 and 424.5 s of headroom**; *they spent it.* **A cost cannot come
+  in below its own elapsed, so part (b) of the condition fires: two or
+  more of the three at or above the ceiling forces leg two to FAIL, and
+  all three are.** *The minimum achievable 12-median, every outstanding
+  cube pinned at its floor, is* `(1394.0 + 1411.0)/2 =` **1402.5000**,
+  *which is* **26.0000 above the ceiling** *and* **422.7000 above the
+  floor**: **leg one HOLDS and leg two FAILS — an upper-leg break.**
+  *Checked over* **400000** *draws with each outstanding cube at or above
+  its floor:* **zero violations.**
+
+  ***AND THE TALLY IS HELD.*** **THIS IS A WITHIN-RUN VERDICT AND A
+  RESTART DESTROYS IT** — *the landed-only bracket is still* **[232.7500,
+  11800.9000]**, *which straddles* **1376.5000** *and decides nothing.*
+  *The precedent is* `[13,11,11,10]`, *whose break was registered from an
+  elapsed floor with the tally explicitly held and only counted when a
+  landed value carried it.* **The tally therefore stays at eleven keep,
+  eight break, of nineteen settled blocks**, *and the census at* **49 and
+  49**. *If the three land as their floors require, this becomes the*
+  **seventeenth upper-leg break and the seventeenth with no lower-leg
+  failure** — *stated as a conditional, not counted.*
 
   ***idx 1799 UNSAT AT 465.5 s — A NEW SPAN OPENS AT THREE, AND THE
   CORRECTED PARITY MECHANISM IS CONFIRMED ON REAL ROWS: BOTH ENDS MOVE
@@ -32525,7 +32607,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1797 of 1949 = 92.2011%**; **152 undecided**. **50% IS CROSSED**, at
+- **1798 of 1949 = 92.2524%**; **151 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33240,6 +33322,8 @@ exactly one bank.
 
 - `[13, 11, 11, 8]` idx 1789..1799: **11 members**,
   **8 decided**, undecided [1796, 1797, 1798]
+- `[13, 11, 11, 7]` idx 1800..1806: **7 members**,
+  **1 decided**, undecided 6 spanning 1801..1806
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
