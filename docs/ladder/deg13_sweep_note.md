@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T07:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T07:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6984,6 +6984,38 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED, BUT THE 12-MEDIAN IS NOW PINNED AT 1787.5500.***
+  *This is a check-in, not a landing: the checkpoint is unchanged at*
+  **1858 rows, 1689 decided, holes `[1686]`, still 0 SAT**, *all
+  invariants hold, pid 21147 matches, and HEAD was level with origin at*
+  `74a38e4`. **What changed is an elapsed floor.** At **07:41:58Z** idx
+  1686 stood at **≥ 2541.0 s**, which **exceeds the dearest value the
+  block has landed (2404.4) by 136.6 s** — *so idx 1686 is now the most
+  expensive cube in `[13,12,9,9]`, and it has not finished.*
+
+  ***AND THAT IS THE PIN CONDITION.*** Once the only unknown must be the
+  largest of the six, `x₃` and `x₄` stop depending on it and sit at
+  **1711.1** and **1864.0**, so the **12-median is fixed at (1711.1 +
+  1864.0)/2 = 1787.5500** — *exactly the upper end of the landed-only
+  bracket recorded one entry above, which has now collapsed onto its own
+  ceiling from a width of 104.85.* **Verified**: *the median takes a
+  single value over 100 000 random u ≥ 2541.0 together with u = 10¹².*
+  **This is a to-the-decimal registration made before the row exists,
+  and it is falsifiable by the row itself.** *Two earlier pins in this
+  file were made the same way and both confirmed exactly — 3125.0 on
+  `[13,12,10,9]` and 3024.7 on `[13,12,10,8]`.* **No ordinal is claimed
+  for this one.**
+
+  ***THE PIN AND THE VERDICT HAVE DIFFERENT LIFETIMES, AND BOTH
+  STATEMENTS ARE TRUE AT ONCE.*** **The pin is within-run**: it rests on
+  an elapsed floor, and a teardown destroys it. **The BREAK is not**:
+  the landed-only bracket `[1682.7000, 1787.5500]` already lies wholly
+  above the 1330.8 ceiling, so the verdict survives a restart while the
+  exact figure would not. *Against the corridor the pinned value gives*
+  **leg one holding by 897.90 s and leg two failing by 456.75 s.**
+  *`m ≥ k` decides which half of this paragraph survives a teardown,
+  which is the lemma above being used rather than restated.*
 
   ***idx 1687 UNSAT AT 1711.1 s — AND THE `[13,12,9,9]` VERDICT IS NOW
   RESTART-PROOF.*** **Rank 1191 of 1689 with no tie** — *`1689 − 498 =
