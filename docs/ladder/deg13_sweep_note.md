@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T20:08Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T20:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6886,7 +6886,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1967 -> 1968 rows)
+## State as of the last refresh (1968 -> 1969 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6897,7 +6897,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1968 rows; 1799 labels decided; 1799 UNSAT; 0 SAT; 0 labels
+- **1969 rows; 1800 labels decided; 1800 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6939,7 +6939,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1799 decided plus 169 superseded
+  A row count is not a decision count: 1800 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6989,7 +6989,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1795, highest decided 1800, holes [1796, 1797].**
+- **Frontier contiguous 0..1795, highest decided 1801, holes [1796, 1797].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7024,6 +7024,41 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1801 UNSAT AT 881.6 s — AN ODD GROUP OF THREE GOES FROM
+  TRIVIAL TO TRIVIAL-FREE IN ONE LANDING, ON A BLOCK THAT CAN NEVER USE
+  IT.*** *From the staged blob.* **Rank 1537 of 1800 with no tie** —
+  *`1800 − 263 = 1537`, detector agrees; read from the script.* **coord9
+  = 13. Holes `[1796, 1797]`, frontier contiguous 0..1795, highest
+  decided 1801. Decided 1800 of 1949 = 92.3551%; 149 undecided; still 0
+  SAT.** **`[13,11,11,7]` is at 2 of 7; `[13,11,11,8]` stays at 9 of 11
+  and its span stays open at two.**
+
+  ***THE 13-GROUP'S BRACKET IS [437.4000, 881.6000], AND THERE WAS NO
+  INTERMEDIATE STATE.*** **`n = 3`, `k = 2`, odd — so `n − k + 1 = k =
+  2` and all four events fire at the same landing.** *One row ago the
+  bracket was* **exactly [0, 21600]**; *it is now* `[x₂` *of* `{437.4,
+  881.6, 0}`, `x₂` *of* `{437.4, 881.6, cap}]` **= [437.4000,
+  881.6000], with no zero and no cap in either end.** **That is the odd
+  branch's two-state behaviour at its smallest useful size**, *and it
+  sits beside the even group of six in the entry directly below, which
+  took three states to do the same thing across* `db3fe1a` *and*
+  `ba95f7a`. **The two parities are now demonstrated side by side, three
+  commits apart, on real rows.**
+  *`[13,11,11,7]` has no 11-group, so this bracket will never be
+  compared to anything;* **the demonstration is free and the block is
+  still untestable.**
+
+  ***AND THE 93% TRAP IS REGISTERED IN ADVANCE, TWELVE ROWS OUT.***
+  **`0.93 × 1949 = 1812.57`, so the crossing is at 1813 decided =
+  93.0221%** — *and* **1812 decided = 92.9708%, which prints as 93.0% at
+  one decimal without having crossed.** *That is the trap, and it exists
+  here.* **The note's standing count is that 97 of 99 percent thresholds
+  carry one, the exceptions being exactly {2, 51}**; *this is the next
+  instance and it is written down before the counter reaches it.*
+  **Computed, not read off: `1812/1949` and `1813/1949` were divided by
+  script.** *The counter stands at* **1800**, *twelve rows short of the
+  trap and thirteen short of the crossing.*
 
   ***idx 1798 UNSAT AT 1808.6 s — THE 12-BRACKET GOES TRIVIAL-FREE AT
   `m = k = 4` AND LEG ONE IS SETTLED ON LANDED VALUES.*** *From the
@@ -32646,7 +32681,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1799 of 1949 = 92.3037%**; **150 undecided**. **50% IS CROSSED**, at
+- **1800 of 1949 = 92.3551%**; **149 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33362,7 +33397,7 @@ exactly one bank.
 - `[13, 11, 11, 8]` idx 1789..1799: **11 members**,
   **9 decided**, undecided [1796, 1797]
 - `[13, 11, 11, 7]` idx 1800..1806: **7 members**,
-  **1 decided**, undecided 6 spanning 1801..1806
+  **2 decided**, undecided [1802, 1803, 1804, 1805, 1806]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
