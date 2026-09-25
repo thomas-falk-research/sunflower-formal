@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T03:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T03:47Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6843,7 +6843,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1821 -> 1822 rows)
+## State as of the last refresh (1822 -> 1823 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6854,7 +6854,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1822 rows; 1653 labels decided; 1653 UNSAT; 0 SAT; 0 labels
+- **1823 rows; 1654 labels decided; 1654 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6890,7 +6890,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1653 decided plus 169 superseded
+  A row count is not a decision count: 1654 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6940,7 +6940,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1651, highest decided 1654, holes [1652, 1653].**
+- **Frontier contiguous 0..1652, highest decided 1654, holes [1653].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6975,6 +6975,50 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1652 UNSAT AT 2909.0 s, AND IT IS TIED — THE SUBTRACTION
+  DETECTOR FIRED.*** **Rank 824 of 1654**, 829 cheaper, and `1654 − 829
+  = 825`, which **overshoots the rank by one**, *exactly as a two-way
+  tie makes it do.* **The twin is idx 925** *at the same 2909.0, in the
+  unrelated block* `(13,13,11,11)`. **Counted directly: 823 rows
+  strictly dearer, 829 strictly cheaper, exactly 2 at the cost.**
+  **0.1347 of the per-cube cap. Decided 1654 of 1949 = 84.8640%; still
+  0 SAT.** *Holes narrow to* `[1653]`, *frontier contiguous 0..1652,
+  highest decided 1654, and the ninety-seventh span stays open.*
+
+  ***THE TIE CENSUS GOES 26 → 27 AND THE DISTINCT-COST COUNT 23 → 24,
+  BOTH BY ONE — THE THIRD TIE RUNNING OF EXACTLY THIS SHAPE.*** *A cost
+  with exactly one holder acquires a second, so TWO rows become tied
+  while the census — which counts members beyond the first — moves by
+  one, and the distinct count moves by one because the cost is newly
+  duplicated.* **idx 1594 went 24 → 25 across 21 → 22 and idx 1632 went
+  25 → 26 across 22 → 23; this is the same on both counters.**
+  ***A DRAFT OF THIS PARAGRAPH SAID THIS WAS NOT WHAT HAPPENED THE LAST
+  TWO TIMES.*** *The note's own entries say it was, and they were read
+  rather than recalled — which is the whole reason they are written
+  down.* **Three instances of a shape is not a pattern**: *the record
+  also holds a bank that moved the census by two at once, and a cost
+  with five members, so neither counter is bound to move by one.*
+  *Counted from the staged blob, not incremented.*
+
+  ***THE FIRST OF THE FOUR AT THE TOP HAS HARDENED FROM A FLOOR INTO A
+  LANDED VALUE.*** **2909.0 is 539.3 s above the corridor's upper end
+  of 2369.7**, *so idx 1652 is now permanently one of the values at or
+  above the mark — no restart can take it back.* **idx 1653 is still
+  running and still above it, reading 2947 s of elapsed**, *which is a
+  within-run claim and not a permanent one.* ***SO THE COUNT IS STILL
+  TWO OF FOUR***, *one landed and one floored, and the condition
+  registered one commit ago is untouched.*
+
+  ***AND THE BRACKET IS STILL USELESS, WHICH IS THE POINT OF SEPARATING
+  THE TWO USES.*** **With one landed value and five unknowns at floors
+  `2947, 1133, 529, 56` and nothing for the unstarted idx 1658, the
+  12-median lies in `[831.0, 21600]`** — *the low end from the floors,
+  the high end from the per-cube cap.* **The lower end rose from 575.0
+  to 831.0, up 256.0**, *which is the monotonicity doing what it must
+  and nothing more.* *The interval still contains the whole corridor,
+  and the three cubes that have not passed the mark — idx 1655, 1656,
+  1657 — carry no information about which side they will land on.*
 
   ***THE 03:41Z CHECK-IN REGISTERS A COUNTING CONDITION ON THE
   CORRIDOR, AND TWO OF ITS FOUR ARE ALREADY IN.*** *No row landed:
@@ -26157,7 +26201,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1653 of 1949 = 84.8127%**; **296 undecided**. **50% IS CROSSED**, at
+- **1654 of 1949 = 84.8640%**; **295 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -26871,7 +26915,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
-  **5 decided**, undecided 6 spanning 1652..1658
+  **6 decided**, undecided [1653, 1655, 1656, 1657, 1658]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
