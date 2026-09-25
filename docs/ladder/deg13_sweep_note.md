@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T00:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T00:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6971,6 +6971,46 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 00:42:01Z CHECK-IN BOUNDS THE TWO-MEMBER GROUP AND NOTHING
+  ELSE.*** *No row landed. Four cubes are in flight —* **idx 1638 at
+  3020 s, idx 1639 at 2688 s and idx 1641 at 296 s, all coord9 = 12;
+  idx 1640 at 2384 s, coord9 = 11.**
+
+  | group | `n` | landed | in flight | unstarted | rule | bound |
+  |---|---|---|---|---|---|---|
+  | coord9 = 12 | 9 | 1 | 3 | 5 | `5 < 5` ✗ | none |
+  | coord9 = 11 | 2 | 0 | 1 | 1 | `1 < 2` ✓ | **≥ 1192.0 s** |
+
+  ***THE 12-GROUP MISSES ITS BOUND BY EXACTLY ONE MEMBER.*** **Four of
+  nine are floored and five are not; the rule needs `n − f < j`, that
+  is `5 < 5`, which fails by nothing at all.** *Push the five unstarted
+  members to 0 and* `x₍₅₎` *is* **0.0** — *they fill every slot up to
+  and including the median.* **One more cube starting would give a
+  bound**, *and that is a statement about the driver's slot order, not
+  about the block.*
+
+  ***THE 11-GROUP HAS A BOUND BECAUSE `n = 2` IS THE CHEAPEST CASE
+  THERE IS.*** *With two members the median is* `(x₍₁₎ + x₍₂₎)/2`, *so a
+  single floor already reaches it:* **send idx 1643 to 0, keep idx 1640
+  at 2384, and the average is 1192.0.** **That is the same shape as the
+  `[13,12,11,5]` pin at `6d1159c`** — *and the note has already recorded
+  why that one did not generalise: it worked because the group was tiny,
+  not because the device is strong.*
+
+  ***AND THE BOUND DOES NOT TOUCH EITHER LEG OF THE WINDOW.*** **Leg one
+  needs `12-median > 1636.35` and the 12-median has no bound at all; leg
+  two needs `12-median < 11-median`, and a LOWER bound on the 11-median
+  cannot settle that either** — *it would take an upper bound on the 12
+  or a lower bound big enough to be compared against one, and neither
+  exists.* **The 13-median is final at 1636.35 and the other two are
+  open**, *so the block has one term and no test, as at the last two
+  landings.*
+
+  **State unchanged: 1638 of 1949 = 84.0431%, 0 SAT, holes `[]`,
+  frontier contiguous 0..1637, highest decided 1637.** *`[13,12,10,9]`
+  stays at 5 of 15 and it is the only open block.* **Driver pid 21147
+  alive and matching the note; max clock delta 1 s over n = 4.**
 
   ***84% IS CROSSED, AND THIS TIME THE PAIR DOES SIT IN CONSECUTIVE
   COMMITS.*** **Decided 1638 of 1949 = 84.0431%, and this one IS 84%;
