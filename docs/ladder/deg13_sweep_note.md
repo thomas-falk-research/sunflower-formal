@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T04:01Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T04:10Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6845,7 +6845,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1824 -> 1825 rows)
+## State as of the last refresh (1825 -> 1826 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6856,7 +6856,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1825 rows; 1656 labels decided; 1656 UNSAT; 0 SAT; 0 labels
+- **1826 rows; 1657 labels decided; 1657 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6892,7 +6892,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1656 decided plus 169 superseded
+  A row count is not a decision count: 1657 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6942,7 +6942,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1654, highest decided 1658, holes [1655, 1656, 1657].**
+- **Frontier contiguous 0..1654, highest decided 1659, holes [1655, 1656, 1657].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6977,6 +6977,64 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1659 UNSAT AT 615.4 s AND 85% IS CROSSED — THE PAIR SITS IN
+  CONSECUTIVE COMMITS.*** **Rank 1510 of 1657 with no tie** — *`1657 −
+  147 = 1510` reproduces the rank, detector agrees.* **0.0285 of the
+  per-cube cap. Decided 1657 of 1949 = 85.0180%; 292 undecided; still
+  0 SAT.**
+
+  ***BOTH HALVES OF THE REGISTRATION ARE NOW ON THE RECORD, ONE ROW
+  APART.*** **`a5fd7da` sat on 1656 = 84.9666%, the trap; this commit
+  is 1657 = 85.0180%, the crossing — and BOTH DISPLAY AS 85.0% at one
+  decimal.** *That is the demonstration the trap series exists for, and
+  by the note's own enumeration it is the* **fifth** *time this file
+  has caught it in consecutive commits — after the 66% pair at
+  1286/1287, the 68% pair at 1325/1326, the 82% pair at 1598/1599 and
+  the 84% pair at 1637/1638.* **A reader seeing only "85.0%" on either
+  commit could not tell which had reached 85%**, *which is why the
+  four-decimal form is the one written down.*
+
+  ***AND IT LANDED THAT WAY BY LUCK AGAIN, EXACTLY AS THE 83% CROSSING
+  ESTABLISHED.*** **Registering the trap protects the FIGURES; only a
+  one-row bank produces the side-by-side display.** *83% missed it
+  because its two rows arrived in the same bank; 82%, 84% and now 85%
+  got it because they did not.* **The registration was identical in all
+  four**, *so the display is a property of the banking and not of the
+  care taken.*
+
+  ***AND THE COUNTER IS NOT A RUNG.*** **85.0180% of the sub-cubes are
+  decided and every one of them is UNSAT, which settles nothing**:
+  *deg(0) = 13 is UNSAT only when* **all 1949** *are, and 292 remain.*
+  **This sweep is a SECOND OPINION on cadical's UNSAT and only a SAT
+  would be news** — *there have been* **0 SAT in 1657 decided.* *A long
+  unbroken run of UNSATs looks exactly like the morning before the one
+  that is not.*
+
+  ***AND idx 1659 OPENS `[13,12,10,7]`, THE UNTESTABLE BLOCK REGISTERED
+  ONE COMMIT AGO.*** **7 members, idx 1659..1665, groups `{13: 3,
+  12: 4}` with thresholds 2 and 3, and no coord9 = 11 member at all.**
+  *idx 1659 is a coord9 = 13 cube, so that group stands at 1 of 3.*
+  ***NO DIRECTION WINDOW WILL BE COMPUTED IN THIS BLOCK*** — *the
+  window is* `13-median < 12-median < 11-median` *and the third term
+  does not exist here.* **The verdict tally stays where it is and this
+  block never enters it**, *which was written down at `a5fd7da` before
+  the block's first row landed, from `SEQ` rather than from the data.*
+
+  ***TWO BLOCKS ARE OPEN AND THE CORRIDOR BELONGS TO THE OLDER ONE.***
+  **`[13,12,10,8]` stays at 8 of 11 with idx 1655, 1656 and 1657 out;
+  `[13,12,10,7]` is at 1 of 7.** *This row is in the new block and
+  touches the corridor not at all* — **the corridor's three remaining
+  cubes are the ninety-eighth span's three holes**, *and the span's
+  holes are unchanged at* `[1655, 1656, 1657]`, *frontier contiguous
+  0..1654, highest decided 1659.*
+
+  ***THE 86% TRAP IS REGISTERED, NINETEEN ROWS OUT.*** **`0.86 × 1949 =
+  1676.14`, so the crossing is at 1677 decided = 86.0441%** — *and*
+  **1676 decided = 85.9928%, which prints as 86.0% at one decimal
+  without having crossed.** *Written down before the counter reaches
+  it, not after.* **Computed, not read off: `1676/1949` and
+  `1677/1949` were divided by script.**
 
   ***idx 1658 UNSAT AT 552.9 s, AND THE 85% TRAP LANDS ON THE ROW
   NAMED EIGHTEEN ROWS IN ADVANCE.*** **Rank 1528 of 1656 with no tie**
@@ -26386,7 +26444,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1656 of 1949 = 84.9666%**; **293 undecided**. **50% IS CROSSED**, at
+- **1657 of 1949 = 85.0180%**; **292 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27101,6 +27159,8 @@ exactly one bank.
 
 - `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
   **8 decided**, undecided [1655, 1656, 1657]
+- `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
+  **1 decided**, undecided 6 spanning 1660..1665
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
