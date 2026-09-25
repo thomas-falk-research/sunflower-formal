@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T21:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T21:25Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6888,7 +6888,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1982 -> 1983 rows)
+## State as of the last refresh (1983 -> 1986 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6899,7 +6899,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1983 rows; 1814 labels decided; 1814 UNSAT; 0 SAT; 0 labels
+- **1986 rows; 1817 labels decided; 1817 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6941,7 +6941,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1814 decided plus 169 superseded
+  A row count is not a decision count: 1817 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6991,7 +6991,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1810, highest decided 1815, holes [1811, 1814].**
+- **Frontier contiguous 0..1813, highest decided 1818, holes [1814, 1816].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7026,6 +7026,55 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1811, idx 1817 AND idx 1818 UNSAT — THREE BLOCKS COMPLETE IN
+  ONE BANK AND NONE OF THEM DECIDES ANYTHING.*** *From the staged blob.*
+  **idx 1811 at 1343.2 s, rank 1350 of 1817** — *`1817 − 467 = 1350`*;
+  **idx 1817 at 152.7 s, rank 1782 of 1817** — *`1817 − 35 = 1782`*;
+  **idx 1818 at 43.3 s, rank 1805 of 1817** — *`1817 − 12 = 1805`*.
+  **None tied**, *detector agrees on all three.* **Holes `[1814, 1816]`,
+  frontier contiguous 0..1813, highest decided 1818. Decided 1817 of
+  1949 = 93.2273%; 132 undecided; still 0 SAT.** *The span stays open at
+  two holes and its monotonicity stays determined False.*
+
+  ***THIS ENTRY WAS REWRITTEN, NOT PATCHED.*** *A first draft carried*
+  **two** *rows and the ranks* **1350 of 1816** *and* **1782 of 1816**;
+  **idx 1818 landed during the `git add -A` and the staged blob came
+  back with three.** *The note was restored from* `HEAD` *and the entry
+  written again from the new blob, per the standing rule.* **Every rank
+  in it moved by one denominator and one of them by a cheaper-count
+  too** — *`cheaper 466 → 467` for idx 1811 and `34 → 35` for idx 1817,
+  because 43.3 is below both.*
+
+  ***`[13,11,11,6]` IS COMPLETE AT 5 OF 5, AND IT DECIDED NOTHING.***
+  **13-median FINAL 799.1000; 12-median FINAL 1481.2000; 11-group
+  EMPTY.** *Its 12-group's two members landed at* **1343.2 and 1619.2**.
+  **The bracket at `m = 1` was [809.6000, 11609.6000] and the final
+  value sits 671.6000 above the floor — 6.22% of the way up**, *low for
+  the same reason the last one was: both costs are small against a cap
+  of 21600.* **It joins `[13,11,11,7]` — finished at `b964eae` —
+  among the untestable blocks that have run to completion**; *no ordinal
+  is claimed, because three blocks finish in this one commit and a
+  commit cannot order what it carries together.*
+
+  ***AND TWO ONE-CUBE BLOCKS OPENED AND CLOSED IN THE SAME LANDING.***
+  **`[13,11,11,3]` is idx 1817..1817 and `[13,11,11,2]` is idx
+  1818..1818** — *a single member each, coord9* `{13: 1}`, **no
+  12-group and no 11-group, so both are from the 69.** **Their medians
+  are their own costs — 152.7000 and 43.3000 — final on arrival, with
+  no bracket and no intermediate state at all: `n = 1`, `k = 1`, the
+  degenerate end of the odd branch.** *Each opened and closed in one
+  row and produced a number compared to nothing.* **That is now four
+  untestable blocks finished and two more open, and the tally has not
+  moved through any of them.**
+
+  ***AND 43.3 s IS NOT THE CHEAPEST CUBE OF THE RUN.*** *The sentence
+  "the cheapest yet" was drafted and checked:* **the six cheapest decided
+  costs are 0.1, 0.1, 0.1, 0.1, 0.1 and 22.2**, *and idx 1818 has*
+  **12** *cubes below it.* **No superlative.** *The tally stays at*
+  **eleven keep, nine break, of twenty settled blocks**, *and the census
+  at* **50 and 50**; **`[13,11,11,5]` at 2 of 3 and `[13,11,11,4]` at 1
+  of 2 are the only open blocks and neither can produce a verdict.**
 
   ***idx 1815 UNSAT AT 241.5 s — `[13,11,11,4]` OPENS, AND IT IS THE
   FIRST BLOCK FROM THE OTHER NON-TESTABLE POPULATION.*** *From the
@@ -33241,7 +33290,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1814 of 1949 = 93.0734%**; **135 undecided**. **50% IS CROSSED**, at
+- **1817 of 1949 = 93.2273%**; **132 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33954,8 +34003,6 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 11, 11, 6]` idx 1807..1811: **5 members**,
-  **4 decided**, undecided [1811]
 - `[13, 11, 11, 5]` idx 1812..1814: **3 members**,
   **2 decided**, undecided [1814]
 - `[13, 11, 11, 4]` idx 1815..1816: **2 members**,
