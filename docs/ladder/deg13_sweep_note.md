@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T07:23Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T07:24Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7040,7 +7040,13 @@ exactly one bank.
   that has not been computed, and the last uncomputed ordinal written
   into this file had to be struck.*
 
-  ***AND THIS CORRIDOR IS THE NARROWEST ANY LIVE BLOCK HAS HAD.***
+  ***AND IT IS THE THIRD-NARROWEST CORRIDOR IN THE ENUMERATION.***
+  *This heading first read* **"the narrowest any live block has had"**,
+  *which was struck in the commit after `806ae10` — the body below it
+  said "third of the 46" in the same breath, so the heading was not just
+  unverified but contradicted three lines later. Nothing was ever
+  computed about the corridors of blocks while they were live; the only
+  census that exists is the one below, over finished medians.*
   Across the **53 testable blocks**, **46** have both outer medians
   final and **45** are fully settled. By width `[13,12,9,9]` is **third
   of the 46** and **narrower than 43 of the 45 settled**; by the
