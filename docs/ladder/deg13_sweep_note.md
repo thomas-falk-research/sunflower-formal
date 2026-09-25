@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T22:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T22:57Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -122,7 +122,7 @@ landings — it is never the source of the count.
 
 ## Restart accounting
 
-**Thirty-one** involuntary restarts, CPU-hours discarded:
+**Thirty-three** involuntary restarts, CPU-hours discarded:
 
     5.160  1.190  4.800  2.645  1.330  2.111  7.204  3.594
     3.564  4.863  2.965  7.033  2.216  5.1477 3.4670  2.9470
@@ -133,6 +133,19 @@ landings — it is never the source of the count.
     #49 in [3.7636, 3.7871]   #50 in [1.1913, 1.1967]
     #51 in [1.0508, 1.3462]   #52 in [2.7808, 3.6178]
     #53 in [0.9783, 2.2092]  #54 in [0.7456, 0.7710]
+    #55 = 0.5976   #56 in [1.3657, 1.3722]
+
+***AND THE SECTION WAS ONE BEHIND AGAIN WHEN #56 ARRIVED: #55 WAS
+MISSING.*** *The list read* **Thirty-one** *and ended at* `#54`
+*through every commit of restart #55's life — the seventh live instance
+of the standing-claim-never-re-checked pattern, and the second time this
+particular list has been caught behind.* **Both entries are taken from
+their own header blocks in the checkpoint and divided by script —
+`#55` 2151.5 CPU-s and `#56` 4916.6..4939.9 CPU-s — never re-derived
+from memory.** *`#55` is exact because all four of its killed cubes had
+a usable sample;* **`#56` is a bracket because two of its four samples
+are younger than the note's ~600 s threshold and were refused as
+weights.**
 
 ***THIS SECTION HAD STOPPED AT #48 AND WAS FIVE RESTARTS BEHIND.*** *It
 read "**Twenty-five**" across the whole of #49, #50, #51, #52 and #53,
@@ -826,7 +839,7 @@ from the integer nanoseconds `stat` reports.
 
 ---
 
-## Re-run sets — **sixteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty, twenty-one, twenty-two, twenty-three), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), **NO SET OPEN**
+## Re-run sets — **sixteen CLOSED and DIVIDED** (one–eight, eleven, thirteen, seventeen, nineteen, twenty, twenty-one, twenty-two, twenty-three), **nine ABANDONED**, **fifteen EMPTY**, **five COMPLETE but UNDIVIDED** (ten, twelve, fourteen, sixteen, eighteen), ***SET TWENTY-FOUR OPEN*** (idx 1828, 1829, 1831, 1832 — opened by `#56`, **not confounded**)
 
 ***THE HEADING USED TO SAY "SET TWELVE OPEN" AND THE TABLE STOPPED AT
 THIRTEEN, WHILE `#53` HAD JUST OPENED SET TWENTY-ONE.*** *Found while
@@ -6905,7 +6918,7 @@ and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
 - **1998 rows; 1829 labels decided; 1829 UNSAT; 0 SAT; 0 labels
-  undecided-only.** No rows were lost across restarts #37 through **#55**
+  undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
   restart #54 and every commit after it, so the promise to extend it in
@@ -6949,8 +6962,8 @@ exactly one bank.
   A row count is not a decision count: 1829 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
-  `/proc/27185/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
+- **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
+  `/proc/20833/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
   from this line. **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
@@ -7031,6 +7044,72 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***RESTART #56 — THE CONTAINER WAS TORN DOWN AT 22:51:52.474952Z, AND
+  THE HARD/FLOOR-CONTINGENT LINE DRAWN ONE COMMIT EARLIER IS WHAT THE
+  RESTART TESTED.*** **New driver pid 20833 launched
+  2026-09-25T22:54:41.740000Z**, *from* `btime` *plus*
+  `/proc/20833/stat` *field 22 over* `SC_CLK_TCK`*, computed by script:*
+  `1790096990 + 27989174/100`. **Downtime 169.265 s.** **The machine did
+  not change** — *all six fields match* `#55`*'s reading, which is the
+  comparison the rule requires, not the note's spec table that ends at*
+  `#48`. **`btime` did not move (1790096990 either side), so this is a
+  CONTAINER RESTART and not a host reboot, and costs across it ARE on a
+  common basis.** *The full block is in the checkpoint.*
+
+  ***NOTHING WAS LOST FROM THE COMMITTED STATE, AND THE PUSH WAS THE
+  FIRST THING DONE.*** **1998 rows either side of the teardown; the
+  waiter armed at 1998 ends in `[killed]` with no landing line.** *But*
+  **commit `38d8334` had been made and NOT pushed when the container
+  went** — *it was pushed on return before a single measurement, because
+  an unpushed commit is the one thing a container restart can actually
+  destroy.* **Both `[killed]` markers agree to the nanosecond at epoch
+  1790376712.474951982**, *so the procedure's "take the earlier, they
+  need not agree" again had nothing to choose, as at* `#49` *through*
+  `#55`.
+
+  ***FOUR CUBES KILLED, AND TWO OF THE FOUR SAMPLES WERE REFUSED AS
+  WEIGHTS.*** **idx 1828 at 2242.612 s elapsed × 0.9732 = 2182.5 CPU-s;
+  idx 1829 at 2197.984 s × 0.9763 = 2145.9 CPU-s.** **idx 1831 at
+  383.356 s and idx 1832 at 228.144 s were sampled at 341 s and 186 s of
+  elapsed — both inside the startup depression the note puts at roughly
+  600 s — so their 0.9619 and 0.9731 readings are NOT weights.** *Each is
+  bracketed with* **1.0** *as the upper factor and the slot's smallest
+  measured ratio,* **0.9619**, *as the lower;* **no ratio is invented.**
+  **TOTAL LOST: 5052.1 s elapsed = 1.4034 h; CPU-s bracketed
+  [4916.6, 4939.9] = [1.3657, 1.3722] CPU-h.** *Elapsed was computed two
+  ways — CNF mtime, and the 22:51:10Z sample plus 42.475 s — and they*
+  **agree within 0.9 s on all four.** **The CNF glob was filtered by the
+  dead pid 27185 AND required `-seq-c`**, *and it returned exactly four
+  of the 236 CNFs in* `/tmp`*; no* `c0` *startup file appeared.*
+
+  ***RE-RUN SET TWENTY-FOUR OPENS: idx 1828, 1829, 1831, 1832 — AND IT IS
+  NOT CONFOUNDED, SAID AT THE OPENING AS THE RULE REQUIRES.*** *Set
+  twenty-three, opened at* `#55`*, is closed and the heading read* **NO
+  SET OPEN** *before this, so twenty-four starts clean.* ***AND THE OPEN
+  SPAN IS EXACTLY THIS SET***: **the holes are `[1828, 1829]` and the
+  other two killed cubes are 1831 and 1832, so the span that opened at
+  `38d8334` cannot close until the whole re-run set has been
+  re-taken.** **Its duration will include the 169.265 s of downtime** —
+  *written now so the close does not read that duration as solver time.*
+
+  ***WHAT THE RESTART DESTROYED, AND WHAT IT COULD NOT TOUCH.*** **VOID:
+  the floor-based clearing of leg two's BREAK threshold; the
+  floor-tightened 11-median `[1983.1000, 11770.6000]`; and the
+  KEEP-forcing rule keyed to idx 1829's elapsed floor passing
+  `3284.4000 s`.** *Idx 1829's elapsed is back to zero and every one of
+  those rested on it.* **SURVIVING, untouched: the 13-median FINAL at
+  1039.4500; the 12-bracket `[1787.5000, 2612.8000]` from five landed
+  costs; and LEG ONE FORCED TRUE on landed values alone.** ***THE
+  DISTINCTION WAS DRAWN AT `38d8334`, ONE COMMIT BEFORE THE TEARDOWN,
+  AND THIS IS THE EVENT IT WAS DRAWN FOR.*** *Two banks earlier leg one
+  was forced by six elapsed floors and nothing else; had the container
+  gone then, the verdict would have gone with it.* **The 11-median falls
+  back to its hard bracket `[970.6000, 11770.6000]`, whose lower end is
+  below the 13-median, so leg two is once again wide open** — *and the
+  BREAK threshold at* `y ≤ 1633.8000` *is live again rather than
+  cleared.* **The tally stays at eleven keep, nine break, of twenty**,
+  *and the census at* **50 and 50**.
 
   ***idx 1830 UNSAT — THE 12-BRACKET OPENS EXACTLY AS REGISTERED, LEG ONE
   IS NOW FORCED TRUE WITH NO FLOOR AT ALL, AND A SPAN OPENS BEHIND IT.***
