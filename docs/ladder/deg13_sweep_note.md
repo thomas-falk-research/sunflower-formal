@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T18:43Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T18:48Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1951 -> 1953 rows)
+## State as of the last refresh (1953 -> 1954 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1953 rows; 1784 labels decided; 1784 UNSAT; 0 SAT; 0 labels
+- **1954 rows; 1785 labels decided; 1785 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1784 decided plus 169 superseded
+  A row count is not a decision count: 1785 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,7 +6986,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1782, highest decided 1785, holes [1783, 1784].**
+- **Frontier contiguous 0..1782, highest decided 1785, holes [1783].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7021,6 +7021,73 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1784 UNSAT AT 3442.3 s — `w` LANDS, THE 11-MEDIAN IS FINAL AT
+  2700.9000, AND THE WHOLE VERDICT IS NOW ONE YES/NO ABOUT FOUR
+  ROWS.*** *From the staged blob.* **Rank 721 of 1785 with no tie** —
+  *`1785 − 1064 = 721`, detector agrees; read from the script.*
+  **coord9 = 11. Holes `[1783]`, frontier contiguous 0..1782, highest
+  decided 1785, chain `2,1`. Decided 1785 of 1949 = 91.5854%; 164
+  undecided; still 0 SAT.** **`[13,11,11,9]` is at 11 of 15.** *The span
+  opened at* `f762b2d` *stays open — one hole is still a hole — and no
+  figures are claimed for it.*
+
+  ***THE 11-GROUP IS COMPLETE.*** *Its two members landed at* **1959.5**
+  *and* **3442.3**, *so the 11-median is* `(1959.5 + 3442.3)/2 =`
+  **2700.9000, FINAL.** **For the first time in this block all three
+  medians are either final or cap-free**: **13-median FINAL 1055.8000;
+  12-median [1869.1000, 3017.1000] at 5 of 9; 11-median FINAL
+  2700.9000.**
+
+  ***THE IFF REGISTERED AT `e445d45` IS NOW FULLY INSTANTIATED.*** *That
+  commit wrote, before either quantity existed:* **KEEPS iff `1055.8000
+  < M₁₂ < (1959.5 + w)/2`.** *With* `w = 3442.3` *that reads* **KEEPS
+  iff `1055.8000 < M₁₂ < 2700.9000`**. **Leg one is settled** *(`f762b2d`,
+  `1055.8000 < 1869.1000`, landed-only)*, **so leg two is the whole
+  question** *and the bracket* **[1869.1000, 3017.1000]** *straddles*
+  **2700.9000**.
+
+  ***AND THE TWO FORCING THRESHOLDS REGISTERED AT `f762b2d` WERE RIGHT
+  AND DECIDED NOTHING.*** *That commit registered, before* `w` *existed:*
+  **`w > 4074.7000` forces leg two to HOLD; `w < 1778.7000` forces it to
+  FAIL.** **`w` landed at 3442.3, strictly inside the band** —
+  **1663.6 s above the FAIL threshold and 632.4 s below the HOLD
+  threshold.** *The entry said in the same breath that the band decides
+  nothing, so this is a prediction that was* **correct and unhelpful**,
+  *which is a real outcome and is recorded as one.* **It is neither the
+  confirmation the counter got nor the voiding corollary (2) got**:
+  *the bounds held and the row fell between them.* *Had idx 1784 run*
+  **632.4 s** *longer the block would have been decided KEEP on the
+  spot.*
+
+  ***THE VERDICT REDUCES TO A SINGLE QUESTION ABOUT FOUR ROWS.***
+  **`[13,11,11,9]` KEEPS iff at least one of idx 1783, 1786, 1787, 1788
+  lands below 2700.9000; it BREAKS iff all four land at or above
+  2700.9000.** *Why:* `M₁₂` *is* `x₅` *of nine, and* **four of the five
+  landed are already below 2700.9000** — **1869.1, 1939.9, 1962.8,
+  2109.1**, *against* **3017.1** *above — so one more below makes five
+  and drags the median under.* **Checked against the direction window
+  evaluated from scratch over 200000 random completions of the four
+  outstanding cubes: zero disagreements.**
+
+  ***AND ONE OF THE FOUR IS ALREADY OUT, WITHIN THE RUN.*** **idx 1783
+  stood at 3348 s of elapsed at 2026-09-25T18:43:19Z**, *and a cost
+  cannot come in below its own elapsed, so it cannot be the cube that
+  lands below 2700.9000.* **So the question is idx 1786, idx 1787 and
+  idx 1788** — *at* **906 s**, **536 s** *and* **not started** *at that
+  same sample —* **idx 1788 started between then and this commit and
+  reads 99 s at 18:47:39Z**, *which is why that sentence carries its
+  date.* **THIS IS A WITHIN-RUN REDUCTION AND A RESTART PUTS idx 1783
+  BACK IN PLAY**; *the four-row form above is landed-only and
+  survives.*
+
+  ***THE FLOOR.*** *idx 1784 was last read at* **3281 s at 18:43:19Z**
+  *and landed at* **3442.3** — *over by* **161.3 s**. *It bounded
+  something for once:* `f762b2d` *used the 2645 s reading of this same
+  cube to close the forced-FAIL branch within the run, and the landing
+  confirms that reading was sound.* *The tally stays at* **ten keep,
+  eight break, of eighteen settled blocks** — **two decided medians and
+  a settled leg are still not a verdict.**
 
   ***NO ROW LANDED — BUT A FLOOR NARROWS THIS BLOCK'S 12-BRACKET FOR
   THE FIRST TIME.*** *Four samples at* **2026-09-25T18:41:50Z**, *read
@@ -31888,7 +31955,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1784 of 1949 = 91.5341%**; **165 undecided**. **50% IS CROSSED**, at
+- **1785 of 1949 = 91.5854%**; **164 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -32602,7 +32669,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
-  **10 decided**, undecided [1783, 1784, 1786, 1787, 1788]
+  **11 decided**, undecided [1783, 1786, 1787, 1788]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
