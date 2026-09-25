@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T04:33Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T04:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6977,6 +6977,25 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 04:41Z CHECK-IN: THE PIN IS UNCHANGED, AND IT IS NOW
+  MONOTONICALLY SAFE FOR THE REST OF THE RUN.*** *No row landed:
+  decided 1659, holes* `[1655, 1656]`, *frontier contiguous 0..1654,
+  highest decided 1660, driver pid 21147 confirmed by* `pgrep`.
+  **At the 04:42:01Z sample idx 1655 reads 4507 s of elapsed and idx
+  1656 reads 3903 s, against the 3140.4 the pin needs them both to
+  exceed.** *A draft of this sentence carried a composed timestamp,
+  04:41:59Z, which is not a stamp any sample bears; it was replaced by
+  the one read out of the staged file.*
+
+  ***AND THAT IS NOW A PROPERTY, NOT A READING.*** *Elapsed is monotone
+  inside a run, so once both floors passed 3140.4 the 12-median's pin
+  at 3024.7 cannot be lost by anything except a relaunch* — **there is
+  no sample that could take it back, only a restart.** *So the pin need
+  not be re-read at each check-in; what is being watched from here is
+  whether the driver survives, not whether the numbers grow.*
+  **Nothing about the landed-only bracket `[1614.45, 3024.7]` moves
+  either way**, *and the tally still does not move.*
 
   ***idx 1657 UNSAT AT 2676.0 s AND idx 1660 AT 1368.6: LEG ONE OF
   `[13,12,10,8]`'s WINDOW HOLDS UNCONDITIONALLY AND LEG TWO FAILS
