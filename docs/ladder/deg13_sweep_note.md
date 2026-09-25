@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T16:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T16:49Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6879,7 +6879,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1939 -> 1940 rows)
+## State as of the last refresh (1940 -> 1941 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6890,7 +6890,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1940 rows; 1771 labels decided; 1771 UNSAT; 0 SAT; 0 labels
+- **1941 rows; 1772 labels decided; 1772 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6932,7 +6932,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1771 decided plus 169 superseded
+  A row count is not a decision count: 1772 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6982,7 +6982,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1768, highest decided 1773, holes [1769, 1770, 1772].**
+- **Frontier contiguous 0..1768, highest decided 1774, holes [1769, 1770, 1772].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7017,6 +7017,49 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1774 UNSAT AT 466.5 s — `[13,11,11,9]` OPENS, AND THE ROW IS
+  TIED, SO THE DETECTOR FIRES.*** **Rank 1649 of 1772, TIED** — *and*
+  `1772 − 122 = 1650`, ***which does NOT reproduce the rank.*** **That
+  is the tie detector working, not a miscount.** *The rank is* `1 +
+  strictly-greater` `= 1 + 1648 = 1649`; *the* `N − cheaper` *form gives*
+  **1650** *because it counts the tied twin as if it ranked above.* **The
+  two differ by exactly one, which is the tie count minus one.**
+  **coord9 = 13. Holes `[1769, 1770, 1772]`, frontier contiguous
+  0..1768, highest decided 1774. Decided 1772 of 1949 = 90.9184%; 177
+  undecided; still 0 SAT.**
+
+  ***THE TWIN IS idx 534, AT 466.5 s EXACTLY.*** *It sits in*
+  `[13,13,13,4]` *and is also a* **coord9 = 13** *cube — a coincidence
+  of cost, not of structure, and the two blocks are 1240 indices apart.*
+  **Twenty-seven of the checkpoint's 1742 distinct cost values carry a
+  tie somewhere**, *counted over the whole staged blob.* *The note's
+  standing caveat applies and is worth restating on the row that
+  exercises it:* **`N − cheaper = rank` reproduces the rank ONLY when
+  the row is untied**, *and it also passes on a consistent pair of wrong
+  numbers, so it is a detector and never a source.*
+
+  ***THE NEW BLOCK: 15 MEMBERS, idx 1774..1788, SPLIT 4 / 9 / 2 ACROSS
+  coord9 = 13 / 12 / 11 — TESTABLE, AND THE SECOND OF THE SIX
+  OUTSTANDING.*** *Thresholds and what each median reads:* **coord9 = 13
+  at n = 4, k = 3, even, reading `x₂` and `x₃`**; **coord9 = 12 at n =
+  9, k = 5, odd, reading `x₅`**; **coord9 = 11 at n = 2, k = 2, even,
+  reading `x₁` and `x₂`.** **All three cap-free needs at least 3 + 5 + 2
+  = 10 of its 15 cubes.** ***THE 11-GROUP HAS ONLY TWO MEMBERS***, *so
+  its median is the average of both and exists only when both have
+  landed; by the parity rule its intermediate state sits at* `m = 1`,
+  *where the lower end has left zero and the upper is still*
+  `(x₁ + cap)/2`. *Two of the block's three groups are even, so this
+  block* **will** *show intermediate states — unlike* `[13,11,11,10]`,
+  *whose three odd groups jumped straight from trivial to cap-free.*
+
+  ***AND `[13,11,11,10]` IS UNTOUCHED AT 18 OF 21.*** **Holes still
+  `[1769, 1770, 1772]`**, *so the hundred-and-eleventh span takes another
+  entry at width three — chain* **`2,3` → `2,3,3`** *— and its verdict
+  stays* **False**. *The within-run BREAK registered one commit ago
+  stands on idx 1769's elapsed floor and is unchanged; the tally stays
+  at* **ten keep, seven break, of seventeen settled blocks** *and moves
+  only when idx 1769 lands.*
 
   ***AN ELAPSED FLOOR ON idx 1769 FORCES LEG TWO TO FAIL, SO
   `[13,11,11,10]` BREAKS — WITHIN THIS RUN ONLY, AND THE TALLY DOES NOT
@@ -31149,7 +31192,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1771 of 1949 = 90.8671%**; **178 undecided**. **50% IS CROSSED**, at
+- **1772 of 1949 = 90.9184%**; **177 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -31864,6 +31907,8 @@ exactly one bank.
 
 - `[13, 11, 11, 10]` idx 1753..1773: **21 members**,
   **18 decided**, undecided [1769, 1770, 1772]
+- `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
+  **1 decided**, undecided 14 spanning 1775..1788
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
