@@ -13405,3 +13405,4 @@ g=11 [13, 11, 10, 10, 13, 13, 12, 12, 12, 12, 10]	UNSAT	1787.5
 # values alone.  The hard/floor-contingent distinction was drawn at
 # 38d8334 and this restart is the event it was drawn for.
 g=11 [13, 11, 10, 10, 13, 12, 12, 12, 12, 12, 11]	UNSAT	977.0
+g=11 [13, 11, 10, 10, 12, 12, 12, 12, 12, 12, 12]	UNSAT	186.6
