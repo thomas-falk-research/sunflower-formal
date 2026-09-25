@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T17:45Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T17:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1947 -> 1948 rows)
+## State as of the last refresh (1948 -> 1950 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1948 rows; 1779 labels decided; 1779 UNSAT; 0 SAT; 0 labels
+- **1950 rows; 1781 labels decided; 1781 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1779 decided plus 169 superseded
+  A row count is not a decision count: 1781 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,7 +6986,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1778, highest decided 1778, holes [].**
+- **Frontier contiguous 0..1780, highest decided 1780, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7021,6 +7021,86 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1779 AND idx 1780 UNSAT — TWO ROWS IN ONE BANK, BOTH coord9 =
+  12, AND THE BRACKET DOES NOT MOVE FOR EITHER.*** **idx 1779 at
+  2109.1 s, rank 1074 of 1781 with no tie** — *`1781 − 707 = 1074`,
+  detector agrees; read from the script.* **idx 1780 at 1939.9 s, rank
+  1147 of 1781 with no tie** — *`1781 − 634 = 1147`, detector agrees.*
+  **Holes `[]`, frontier contiguous 0..1780, highest decided 1780.
+  Decided 1781 of 1949 = 91.3802%; 168 undecided; still 0 SAT.** **No
+  span is open.** **`[13,11,11,9]` is at 7 of 15.** *Two rows in one
+  bank is not new here — it has happened at* `380b306` *and in other
+  entries in this file, so* **no ordinal is claimed**; *the count of
+  them was not computed, so it is not written.* *The
+  staged blob was re-made before* `bank.py` *ran, so the heading above
+  reads* `1948 -> 1950` *rather than going stale for one bank; that is
+  the handling the paragraph pinned beside that heading describes.*
+
+  ***THE PREDICTION MADE ONE COMMIT AGO HELD FOR BOTH ROWS.***
+  `5b4405a` *said* **four more coord9 = 12 cubes change nothing and the
+  fifth changes everything**; *two of the four have now landed and
+  neither moved anything.* **The group is at 3 of 9 against `k = 5`,
+  the bracket is still exactly [0, 21600], and two more change
+  nothing.**
+
+  ***AND THAT SENTENCE IS TRUE OF THE BRACKET AND FALSE OF THE STATE.***
+  *The bracket is frozen, and it is right to be frozen: until* `m = 5`
+  *its lower end sits at 0, so leg one* — `13-median < 12-median`,
+  *with the 13-median* **FINAL at 1055.8000** — *can still fail. What
+  the bracket does not show is how much room is left for it to fail
+  in.* **Leg one fails iff at least five of the nine land at or below
+  1055.8000**, *since the median is* `x₅` *of nine.* **All three landed
+  values are above it (1939.9, 1962.8, 2109.1), so all five would now
+  have to come from the six still out.** *Counting the low/high
+  assignments of the nine slots that fail leg one, against the number
+  of high values landed:*
+
+  | high landed | still out | assignments that fail leg one |
+  | --- | --- | --- |
+  | 0 | 9 | 256 |
+  | 1 | 8 | **93** |
+  | 2 | 7 | **29** |
+  | 3 | 6 | **7** |
+  | 4 | 5 | **1** |
+  | 5 | 4 | **0** |
+
+  **256 → 93 → 29 → 7 → 1 → 0**, *and the run is at* **7** — *it was at*
+  **93** *two rows ago.* *Closed form* `Σ_{j≥5} C(9−m, j)`,
+  *brute-forced independently over all* `2^(9−m)` *low/high
+  assignments; the two agree at every row, which is why the table is
+  here rather than the formula alone.* **The 1 at `m = 4` is the whole
+  escape that would be left: every single one of the last five cubes
+  would have to land at or below 1055.8000.**
+
+  ***AND THE ZERO AT `m = 5` IS NOT A SECOND EVENT — IT IS THE ONE THE
+  PARITY RULE ALREADY NAMES.*** *Checked at every* `m` *from 0 to 9:
+  "the lower end has left 0" and "leg one can no longer fail" flip at
+  the same* `m`, *given that every landed value is above the
+  threshold.* **So the counter is not new information about whether the
+  window can still break — it is the same fact, counted.** *It is
+  written down because "four more change nothing" invites the reading
+  that nothing is happening, and something is.*
+
+  ***BOTH ELAPSED FLOORS HELD, AND THE TEMPTING SUPERLATIVE IS FALSE.***
+  *idx 1779 was read at* **1964 s elapsed at 2026-09-25T17:45:05Z** *and
+  landed at* **2109.1** (*over by* **145.1 s**); *idx 1780 was read at*
+  **1904 s at 17:48:02Z** *and landed at* **1939.9** (*over by* **35.9
+  s**). **35.9 s is the tightest floor-to-landing gap this run has
+  recorded** — *that sentence was drafted, checked against every sample
+  in* `cpu_ratio_samples.tsv`, *and is* **wrong**: *of the* **863**
+  *last-floor-before-landing gaps on record it ranks* **110th
+  smallest**, *and the smallest is* **0.4 s** — *idx 1604, floor 1885.0
+  at 2026-09-24T19:58:33Z, landed 1885.4.* **Neither floor bounds
+  anything**, *because the 12-group needs five bounded cubes before any
+  floor reaches the reading position, and* `m = 3`.
+
+  ***THE BLOCK STILL HAS ONE TERM.*** **13-median FINAL 1055.8000;
+  12-median [0, 21600] at 3 of 9; 11-median [0, 21600] at 0 of 2.**
+  **Four more cubes before all three brackets can be cap-free** *(2 in
+  the 12-group, 2 in the 11-group), and* **eight of the fifteen are
+  still out.** *The tally stays at ten keep, eight break, of eighteen
+  settled blocks.*
 
   ***idx 1778 UNSAT AT 1962.8 s — THE 12-GROUP OPENS AT 1 OF 9 AND THE
   BRACKET DOES NOT MOVE.*** **Rank 1135 of 1779 with no tie** — *`1779 −
@@ -31503,7 +31583,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1779 of 1949 = 91.2776%**; **170 undecided**. **50% IS CROSSED**, at
+- **1781 of 1949 = 91.3802%**; **168 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -32217,7 +32297,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
-  **5 decided**, undecided 10 spanning 1779..1788
+  **7 decided**, undecided 8 spanning 1781..1788
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
