@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T09:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T09:54Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6859,7 +6859,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1878 -> 1879 rows)
+## State as of the last refresh (1879 -> 1880 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6870,7 +6870,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1879 rows; 1710 labels decided; 1710 UNSAT; 0 SAT; 0 labels
+- **1880 rows; 1711 labels decided; 1711 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6906,7 +6906,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1710 decided plus 169 superseded
+  A row count is not a decision count: 1711 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6956,7 +6956,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1709, highest decided 1709, holes [].**
+- **Frontier contiguous 0..1710, highest decided 1710, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6991,6 +6991,19 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1710 UNSAT AT 895.4 s, IN ORDER — `[13,12,8,8]`'s 13-GROUP
+  COMPLETES AT 3 OF 3.*** **Rank 1471 of 1711 with no tie** — *`1711 −
+  240 = 1471`, detector agrees.* **coord9 = 13. Holes `[]`, frontier
+  contiguous 0..1710, highest decided 1710. Decided 1711 of 1949 =
+  87.7886%; 238 undecided; still 0 SAT.** The group's **13-median is
+  FINAL at 895.4000** — *odd n at three, so the median is the middle
+  value and not an average, and the middle value here is the row that
+  just landed: 398.8, 895.4, 902.2.* **The block's remaining two cubes
+  are both coord9 = 12** (idx 1711 and 1712, n = 2, k = 2, m = 0), *so
+  that median needs both of them and no bound on it exists yet —*
+  `m = 0 < k = 2`, *so not even a cap-free one.* **The block is
+  untestable either way** *and cannot move the tally.*
 
   ***idx 1709 UNSAT AT 902.2 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   1468 of 1710 with no tie** — *`1710 − 242 = 1468`, detector agrees.*
@@ -28703,7 +28716,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1710 of 1949 = 87.7373%**; **239 undecided**. **50% IS CROSSED**, at
+- **1711 of 1949 = 87.7886%**; **238 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29417,7 +29430,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 8, 8]` idx 1708..1712: **5 members**,
-  **2 decided**, undecided [1710, 1711, 1712]
+  **3 decided**, undecided [1711, 1712]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
