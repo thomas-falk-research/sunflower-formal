@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T10:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T10:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6859,7 +6859,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1881 -> 1882 rows)
+## State as of the last refresh (1882 -> 1883 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6870,7 +6870,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1882 rows; 1713 labels decided; 1713 UNSAT; 0 SAT; 0 labels
+- **1883 rows; 1714 labels decided; 1714 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6912,7 +6912,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1713 decided plus 169 superseded
+  A row count is not a decision count: 1714 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6962,7 +6962,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1710, highest decided 1713, holes [1711].**
+- **Frontier contiguous 0..1710, highest decided 1714, holes [1711].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6997,6 +6997,37 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1714 UNSAT AT 1418.6 s — THE THIRD RE-TAKE, AND THE SMALLEST
+  RATIO OF THE SET BY AN ORDER OF MAGNITUDE.*** **Rank 1279 of 1714 with
+  no tie** — *`1714 − 435 = 1279`, detector agrees, back to agreeing
+  after the previous entry's tie.* **coord9 = 13. Holes `[1711]`,
+  frontier contiguous 0..1710, highest decided 1714. Decided 1714 of
+  1949 = 87.9425%; 235 undecided; still 0 SAT.**
+
+  ***IT WAS KILLED AT 120.188 s AND RE-RAN TO 1418.6 — `discarded /
+  re-run` = 0.0847, AND THE RE-TAKE TOOK 11.80× THE DISCARDED RUN.***
+  *The other two settled members came in at* **0.5982** *and* **0.6541**,
+  *so this one is smaller by a factor of about seven.* **The reason is
+  mechanical and worth stating plainly: idx 1714 was the cube dispatched
+  LAST before the teardown**, *at 09:52:52.728 against a teardown at
+  09:54:52.916, so it had accumulated only 120.188 s — the least of the
+  four — while its re-take is a full run of the same cube.* **A small
+  discarded time makes a small ratio, and that is arithmetic about when
+  the container died, not evidence about the cube.**
+
+  | idx | discarded | state | ratio |
+  |---|---|---|---|
+  | 1711 | 1005.012 s | in flight ≥ 1845.0 | **≤ 0.5447** |
+  | 1712 | 779.436 s | re-ran 1302.9 s | **0.5982** |
+  | 1713 | 427.572 s | re-ran 653.7 s | **0.6541** |
+  | 1714 | 120.188 s | **re-ran 1418.6 s** | **0.0847** |
+
+  **The set is at 3 of 4 settled, only idx 1711 still running, and every
+  member is below 1.0** — *three as figures and one as a bound that has
+  fallen from* **≤ 1.3958** *two entries ago to* **≤ 0.5447** *here,
+  purely by the cube continuing to run.* *It also opens nothing new:*
+  `[13,12,8,7]` *stands at* **2 of 3**, *untestable.*
 
   ***idx 1712 UNSAT AT 1302.9 s — AND THE TIE DETECTOR FIRED.*** **Rank
   1318 of 1713, TIED WITH 1.** ***`1713 − 394 = 1319` DOES NOT
@@ -28878,7 +28909,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1713 of 1949 = 87.8912%**; **236 undecided**. **50% IS CROSSED**, at
+- **1714 of 1949 = 87.9425%**; **235 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29594,7 +29625,7 @@ exactly one bank.
 - `[13, 12, 8, 8]` idx 1708..1712: **5 members**,
   **4 decided**, undecided [1711]
 - `[13, 12, 8, 7]` idx 1713..1715: **3 members**,
-  **1 decided**, undecided [1714, 1715]
+  **2 decided**, undecided [1715]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
