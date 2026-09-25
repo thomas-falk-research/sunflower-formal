@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T04:49Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T04:56Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6845,7 +6845,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1828 -> 1829 rows)
+## State as of the last refresh (1829 -> 1830 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6856,7 +6856,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1829 rows; 1660 labels decided; 1660 UNSAT; 0 SAT; 0 labels
+- **1830 rows; 1661 labels decided; 1661 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6892,7 +6892,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1660 decided plus 169 superseded
+  A row count is not a decision count: 1661 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6942,7 +6942,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1655, highest decided 1660, holes [1656].**
+- **Frontier contiguous 0..1655, highest decided 1661, holes [1656].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6977,6 +6977,38 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1661 UNSAT AT 1551.0 s COMPLETES `[13,12,10,7]`'s 13-GROUP,
+  AND THE FINAL MEDIAN IT PRODUCES IS USELESS BY CONSTRUCTION.***
+  **Rank 1227 of 1661 with no tie** — *`1661 − 434 = 1227` reproduces
+  the rank, detector agrees.* **0.0718 of the per-cube cap. Decided
+  1661 of 1949 = 85.2232%; 288 undecided; still 0 SAT.** *Holes stay*
+  `[1656]`, *frontier contiguous 0..1655, highest decided 1661, and the
+  ninety-eighth span stays open.*
+
+  ***THE GROUP IS COMPLETE AT 3 OF 3 AND ITS MEDIAN IS FINAL AT
+  1368.6.*** **615.4, 1368.6, 1551.0 — odd `n` at `j = 2` of `n = 3`,
+  so the median is the middle value and neither extreme touches it.**
+  *The bracket* `[615.4, 1368.6]` *this note recorded one commit ago
+  contained it, and the third cube landed above both, which is why the
+  median moved to the bracket's upper end rather than anywhere inside
+  it.*
+
+  ***AND IT IS STILL WORTH NOTHING, FOR THE REASON REGISTERED BEFORE
+  THE BLOCK'S FIRST ROW.*** `[13,12,10,7]` *has groups* `{13: 3,
+  12: 4}` *and* **no coord9 = 11 member**, *so the window* `13-median <
+  12-median < 11-median` *has no third term and cannot be evaluated.*
+  **A FINAL 13-median in an untestable block is a number with nothing
+  to be compared against** — *it is written down only so that a reader
+  meeting 1368.6 in the data does not go looking for the test it
+  belongs to.* **The tally stays at nine keep, six break, of fifteen
+  settled blocks**, *and this block will never join it.*
+
+  ***THE 12-GROUP IS AT 0 OF 4 AGAINST A THRESHOLD OF 3.*** *Its four
+  cubes are idx 1662, 1663, 1664 and 1665, all still out* — **so the
+  block's remaining four rows will complete it without ever producing a
+  verdict**, *which is the ordinary case for an untestable block and
+  not a disappointment.*
 
   ***idx 1655 UNSAT AT 4828.3 s: `[13,12,10,8]`'s WINDOW BREAKS
   UNCONDITIONALLY, AND THE COUNTING CONDITION FIRED EXACTLY AS
@@ -26619,7 +26651,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1660 of 1949 = 85.1719%**; **289 undecided**. **50% IS CROSSED**, at
+- **1661 of 1949 = 85.2232%**; **288 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27335,7 +27367,7 @@ exactly one bank.
 - `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
   **10 decided**, undecided [1656]
 - `[13, 12, 10, 7]` idx 1659..1665: **7 members**,
-  **2 decided**, undecided [1661, 1662, 1663, 1664, 1665]
+  **3 decided**, undecided [1662, 1663, 1664, 1665]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
