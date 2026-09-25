@@ -13404,3 +13404,4 @@ g=11 [13, 11, 10, 10, 13, 13, 12, 12, 12, 12, 10]	UNSAT	1787.5
 # 2612.8000] from five landed costs, and LEG ONE FORCED TRUE on landed
 # values alone.  The hard/floor-contingent distinction was drawn at
 # 38d8334 and this restart is the event it was drawn for.
+g=11 [13, 11, 10, 10, 13, 12, 12, 12, 12, 12, 11]	UNSAT	977.0

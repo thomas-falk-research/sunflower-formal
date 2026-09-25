@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T22:57Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T23:14Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6906,7 +6906,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1997 -> 1998 rows)
+## State as of the last refresh (1998 -> 1999 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6917,7 +6917,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1998 rows; 1829 labels decided; 1829 UNSAT; 0 SAT; 0 labels
+- **1999 rows; 1830 labels decided; 1830 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6959,7 +6959,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1829 decided plus 169 superseded
+  A row count is not a decision count: 1830 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7009,7 +7009,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1827, highest decided 1830, holes [1828, 1829].**
+- **Frontier contiguous 0..1827, highest decided 1832, holes [1828, 1829, 1831].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7044,6 +7044,73 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1832 UNSAT — THE FIRST RE-TAKE OF SET TWENTY-FOUR LANDS, THE
+  12-BRACKET NARROWS BY 644.5 SECONDS, AND LEG TWO IS DOWN TO A BAND OF
+  361.6.*** *From the staged blob.* **idx 1832 at 977.0 s, rank 1522 of
+  1830 with no tie** — *`1830 − 308 = 1522`; detector agrees.* **Decided
+  1830 of 1949 = 93.8943%; 119 undecided.** **Frontier contiguous
+  0..1827, highest decided 1832, holes `[1828, 1829, 1831]`; still 0
+  SAT.** **coord9 = 12, the SIXTH of nine; the block is at 11 of 15.**
+
+  ***THE SPAN'S WIDTH ROSE FROM TWO TO THREE, SO ITS MONOTONICITY IS
+  ALREADY FIXED FALSE.*** **The chain carries `2` at `38d8334`, `2` at
+  the absorb `a0c781f` — which landed no row — and `3` here.** *That is
+  a rise, and a chain with a rise cannot be monotone non-increasing, so*
+  **the hundred-and-fifteenth span's verdict is False and it is written
+  down before the close, as it was for the hundred-and-fourteenth.** *No
+  other figure is claimed for the span.*
+
+  ***THE m = 6 BRACKET, AND A GENERAL FORM THAT COVERS THE REST OF THE
+  GROUP.*** **`[1787.5000, 1968.3000]`, width `180.8000` against
+  `825.3000` at `m = 5` — a narrowing of `644.5000 s` in one landing.**
+  ***AND THE SHAPE GENERALISES***: *for* `n = 9`*,* `k = 5` *and* `m ≥
+  5` *the bracket is exactly* **`[(m − 4)th smallest landed cost, 5th
+  smallest landed cost]`**. *Tested at* **0 disagreements over 200,000
+  draws with `m` drawn from 5 to 9.** *So the upper end is pinned at the
+  fifth smallest and only the lower end climbs:* **at `m = 7` it becomes
+  the 3rd smallest, at `m = 8` the 4th, and at `m = 9` the two meet at
+  the 5th, which is the median.** *Registered here, before idx 1828,
+  1831 and 1833 land.*
+
+  ***AND THE FIRST 12-MEMBER BELOW THE 13-MEDIAN ARRIVED WITHOUT
+  THREATENING LEG ONE.*** **977.0 is below 1039.4500** — *the first of
+  the nine to be, after five above.* **Leg one is still hard: the
+  bracket's lower end is 1787.5000 and the 13-median is 1039.4500, on
+  landed values with no floor.** *The counting statement that carried leg
+  one before the bracket opened is now redundant and is not restated; the
+  bracket subsumes it.*
+
+  ***LEG TWO'S BAND, RECOMPUTED.*** **The 11-median is `(1941.2 + y)/2`
+  for `y` = idx 1829's RE-TAKE cost, so: BREAK is forced if `y ≤
+  1633.8000` and KEEP is forced if `y > 1995.4000`.** *Each at* **0
+  counterexamples over 400,000 draws.** **The undetermined band is
+  `361.6000 s` wide, against a KEEP threshold of `3284.4000 s` at `m =
+  5`** — *the narrowing 12-bracket pulled that threshold down by*
+  `1289.0000 s`.
+
+  ***AND HERE IS A TEMPTATION THAT MUST BE REFUSED IN WRITING.*** **idx
+  1829's DISCARDED attempt ran 2197.984 s without finishing, which is
+  above the 1995.4000 KEEP threshold.** *It is very tempting to read that
+  as KEEP already forced.* ***IT FORCES NOTHING.*** **A re-take starts
+  from zero and its cost is a fresh number; the note's own
+  `discarded / re-run` ratios exceed 1.0 on six recorded occasions —
+  1.0805 at idx 788, 1.0595 at idx 989, 1.0556 at idx 991, 1.0342 at idx
+  1419, 1.0079 at idx 1106 and 1.0078 at idx 1328 — every one of them a
+  re-take that finished FASTER than its killed run had already
+  consumed.** *The central tendency runs the other way — every closed
+  set's median ratio is below 1 — but a tendency with six counterexamples
+  is not a bound, and the verdict on a block is not a place to spend
+  one.*
+
+  ***THE RATIO FOR idx 1832 IS NOT COMPUTED HERE.*** **Set twenty-four is
+  at 1 of 4 and the convention is ratios at 4-of-4 and not before**, *so
+  the division is withheld although both numbers are in hand — the
+  discarded elapsed* `228.144 s` *from the* `#56` *block and the re-take*
+  `977.0 s` *from the checkpoint.* *The note records that this rule has
+  cost something at three consecutive sets and was honoured anyway; it is
+  honoured here too.* **The tally stays at eleven keep, nine break, of
+  twenty**, *and the census at* **50 and 50**.
 
   ***RESTART #56 — THE CONTAINER WAS TORN DOWN AT 22:51:52.474952Z, AND
   THE HARD/FLOOR-CONTINGENT LINE DRAWN ONE COMMIT EARLIER IS WHAT THE
@@ -34028,7 +34095,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1829 of 1949 = 93.8430%**; **120 undecided**. **50% IS CROSSED**, at
+- **1830 of 1949 = 93.8943%**; **119 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -34742,7 +34809,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 10, 10]` idx 1819..1833: **15 members**,
-  **10 decided**, undecided [1828, 1829, 1831, 1832, 1833]
+  **11 decided**, undecided [1828, 1829, 1831, 1833]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
