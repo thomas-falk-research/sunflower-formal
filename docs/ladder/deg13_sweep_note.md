@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T18:48Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T18:55Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1953 -> 1954 rows)
+## State as of the last refresh (1954 -> 1957 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1954 rows; 1785 labels decided; 1785 UNSAT; 0 SAT; 0 labels
+- **1957 rows; 1788 labels decided; 1788 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1785 decided plus 169 superseded
+  A row count is not a decision count: 1788 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,7 +6986,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1782, highest decided 1785, holes [1783].**
+- **Frontier contiguous 0..1785, highest decided 1788, holes [1786].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7021,6 +7021,102 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1788, idx 1787 AND idx 1783 UNSAT — `[13,11,11,9]` KEEPS, AND
+  THE FOUR-ROW FORM REGISTERED ONE COMMIT AGO WAS SETTLED BY THE VERY
+  NEXT ROW.*** *From the staged blob.* **idx 1788 at 197.6 s, rank 1746
+  of 1788** — *`1788 − 42 = 1746`*; **idx 1787 at 1043.3 s, rank 1470
+  of 1788** — *`1788 − 318 = 1470`*; **idx 1783 at 3934.3 s, rank 647
+  of 1788** — *`1788 − 1141 = 647`*. **None tied**, *detector agrees on
+  all three; read from the script.* **All three coord9 = 12. Holes
+  `[1786]`, frontier contiguous 0..1785, highest decided 1788. Decided
+  1788 of 1949 = 91.7394%; 161 undecided; still 0 SAT.**
+  **`[13,11,11,9]` is at 14 of 15.** *At* **0.0091 of the cap** *idx
+  1788 is the cheapest cube the block has produced —* **197.6 against
+  the previous floor of 466.5** — *and only* **42** *of the 1788 decided
+  cubes are cheaper.*
+
+  ***THE VERDICT: `[13,11,11,9]` KEEPS.*** **13-median FINAL 1055.8000;
+  12-median [1939.9000, 1962.8000] at 8 of 9; 11-median FINAL
+  2700.9000.** **Leg one `1055.8000 < 1939.9000` and leg two `1962.8000
+  < 2700.9000` — both from landed costs alone, and a restart touches
+  neither.** *Checked the other way as well:* **0 of 200000 random
+  values for the one outstanding cube fail the window.** **idx 1788
+  forced it on its own**: *with only that row added the bracket was*
+  **[1869.1000, 2109.1000]** *and* `2109.1000 < 2700.9000` *already; the
+  other two arrived in the same bank and only narrowed it.* **The
+  bracket is now 22.9 s wide.**
+
+  ***AND THE THREE ROWS DEMONSTRATE BOTH HALVES OF THE MECHANISM, IN
+  ONE BANK.*** *The bracket walk, in landing order:* **[1869.1000,
+  3017.1000] → [1869.1000, 2109.1000] → [1869.1000, 1962.8000] →
+  [1939.9000, 1962.8000]**. **The two cheap cubes — 197.6 and 1043.3,
+  both below the lower end — moved only the upper**, *because* `x₅` *of
+  the landed plus caps is the fifth-smallest landed and each cheap
+  arrival drops it one place.* **The dear one — 3934.3, above the upper
+  end — moved only the lower**, *by the mirror argument on* `x₅` *of
+  the landed plus zeros.* **The first fall, 3017.1000 → 2109.1000, is
+  what cleared 2700.9000; a dear cube in that slot would have decided
+  nothing.**
+
+  ***THE PREDICTION FROM `07900ea` WAS CONFIRMED BY THE NEXT ROW, AND IT
+  WAS DECISIVE.*** *That commit registered, before any of the four
+  existed:* **KEEPS iff at least one of idx 1783, 1786, 1787, 1788 lands
+  below 2700.9000; BREAKS iff all four land at or above it.** **Three of
+  the four have now landed — 197.6, 1043.3 and 3934.3 — and two of them
+  are below.** *This makes* **four distinct prediction outcomes in one
+  stretch**, *and the note has an example of each:* **CONFIRMED** *(the
+  counter,* `14230ba`*, which hit zero exactly at* `m = 5`*)*;
+  **VOIDED** *(corollary (2),* `e445d45`*, antecedent killed one row
+  later)*; **CORRECT AND UNHELPFUL** *(the forcing thresholds,*
+  `f762b2d`*, with* `w` *landing strictly between them)*; *and now*
+  **CONFIRMED AND DECISIVE.** *The four are not degrees of the same
+  thing and the note does not average them.*
+
+  ***THE TALLY MOVES: ELEVEN KEEP, EIGHT BREAK, OF NINETEEN SETTLED
+  BLOCKS.*** *This is the write-up tally — blocks this note has settled
+  and written up one at a time — and it is* **not** *either computable
+  population.*
+
+  ***THE CENSUS.*** **The verdict-forced population goes 48 → 49 — 33
+  keep, 16 break — and the all-medians-final population stays at 48 —
+  32 keep, 16 break — since idx 1786 is still out.** *The gap between
+  them opens for the* **third** *time, on the same mechanism as the
+  first two: a verdict registered early, closing when the block
+  finishes.* **Every break in both populations is still an upper-leg
+  failure and none a lower-leg one: 16 of 16.** *The script was
+  validated before being believed — re-run against* `HEAD`'s *own blob
+  it reproduced* **48 and 48, 32 keep and 16 break**, *and gave this
+  block* **verdict None, leg one HOLD, leg two undetermined**, *which is
+  exactly what the entry below says.* **Four testable blocks still have
+  no verdict**: `[13,11,11,8]`, `[13,11,10,10]`, `[13,11,10,9]`,
+  `[13,10,10,10]` — *the six-block list of three banks ago minus the two
+  settled since.* **53 blocks are testable in all.**
+
+  ***AND THE `#29` RIDER FIRED TWICE MORE WHILE THIS ENTRY WAS BEING
+  WRITTEN.*** *When idx 1788 landed the hole list read* **`[1783, 1786,
+  1787]`**; *a draft was written around* **three**. *idx 1787 landed
+  before that commit existed and it read* **`[1783, 1786]`**, *two; a
+  second draft was written.* *idx 1783 landed before* **that** *commit
+  existed and it reads* **`[1786]`**, *one.* **A hole state is measured
+  AT A COMMIT, so neither the three nor the two ever happened — only
+  the one in this commit did.** **Three drafts, one commit, and each
+  discarded draft carried a larger number than the truth.** *The same
+  rider had already fired at* `f762b2d` *on the span's* **opening**
+  *width.*
+
+  ***AND THE MONOTONICITY CLAIM IS WITHDRAWN, NOT RESTATED.*** *The previous
+  commit* `07900ea` *carried* **one** *hole and this one carries*
+  **one** — *no rise there* — **but the frontier moved from 0..1782 to
+  0..1785 with the hole count flat, and the chain is what `--spans all`
+  computes at the close, not what this entry asserts.** **SO NO
+  MONOTONICITY CLAIM IS MADE**: *the two discarded drafts each claimed
+  the chain had a rise, on hole counts of three and two that never
+  reached a commit.* **That is the `#29` rider catching a verdict and
+  not just a figure**, *and it is the reason the claim is withdrawn
+  rather than restated.* **No span figure is claimed at all**;
+  *duration, commit count, chain and both ranks come from* `--spans
+  all` *at the close.*
 
   ***idx 1784 UNSAT AT 3442.3 s — `w` LANDS, THE 11-MEDIAN IS FINAL AT
   2700.9000, AND THE WHOLE VERDICT IS NOW ONE YES/NO ABOUT FOUR
@@ -31955,7 +32051,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1785 of 1949 = 91.5854%**; **164 undecided**. **50% IS CROSSED**, at
+- **1788 of 1949 = 91.7394%**; **161 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -32669,7 +32765,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
-  **11 decided**, undecided [1783, 1786, 1787, 1788]
+  **14 decided**, undecided [1786]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
