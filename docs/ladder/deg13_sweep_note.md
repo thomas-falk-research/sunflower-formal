@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T17:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T17:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1948 -> 1950 rows)
+## State as of the last refresh (1950 -> 1951 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1950 rows; 1781 labels decided; 1781 UNSAT; 0 SAT; 0 labels
+- **1951 rows; 1782 labels decided; 1782 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1781 decided plus 169 superseded
+  A row count is not a decision count: 1782 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,7 +6986,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1780, highest decided 1780, holes [].**
+- **Frontier contiguous 0..1781, highest decided 1781, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7021,6 +7021,82 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1781 UNSAT AT 1959.5 s — THE 11-GROUP OPENS, THE BRACKET MOVES
+  ON THE FIRST LANDING, AND THE FORMULA THAT PREDICTED IT WAS NEVER
+  COMMITTED.*** **Rank 1137 of 1782 with no tie** — *`1782 − 645 =
+  1137`, detector agrees; read from the script.* **coord9 = 11. Holes
+  `[]`, frontier contiguous 0..1781, highest decided 1781. Decided 1782
+  of 1949 = 91.4315%; 167 undecided; still 0 SAT.** **No span is open.**
+  **`[13,11,11,9]` is at 8 of 15.**
+
+  ***THE 11-BRACKET IS NOW EXACTLY [979.7500, 11779.7500], AND THAT IS
+  THE WHOLE POINT OF THE PARITY DICHOTOMY.*** **The 11-group has `n =
+  2`, the smallest group the direction window ever has to read.** *Even,
+  so* `k = n/2 + 1 = 2`, *the median is* `(x₁ + x₂)/2`, *the lower end
+  leaves zero at* `m = n − k + 1 = 1` *and the upper leaves the cap at*
+  `m = k = 2`. **At `n = 2` those are the first and the second landing,
+  so the group's one intermediate state is `m = 1` and this row enters
+  it.** **With `v = 1959.5` the bracket is `[v/2, (v + 21600)/2] =
+  [979.7500, 11779.7500]`**, *and recomputing it from the staged blob
+  by the general median formula returns the same two numbers.*
+  **Meanwhile the 12-group sits at 3 of 9 and its bracket is still
+  exactly [0, 21600]**: *one block, two groups, and the first landing
+  moved one bracket completely and the other not at all.*
+
+  ***AND THE PREDICTION HAS NO STANDING, BECAUSE NO COMMIT CARRIES
+  IT.*** *The formula* `[v/2, (v + 21600)/2]` *was written into the
+  working tree while both idx 1781 and idx 1784 were still running, and
+  checked in closed form against* **50000** *random* `v` *with* **zero**
+  *violations — and then idx 1781 landed before that draft was
+  committed, so the draft was discarded and this entry written in its
+  place.* **The committed record therefore contains the formula and its
+  confirmation in the same commit, which is exactly the shape a
+  prediction must not have.** *This note's standing sentence is that
+  such a statement is worth something only at the moment it is made
+  before the row exists; it was made then and it is not on the record
+  as such, so* **it is claimed here as an unregistered prediction and
+  nothing more**. *The next one gets its own commit before the row
+  lands or it does not get written.*
+
+  ***A NECESSARY CONDITION FOR THE WINDOW IS NOW SECURED — WITHIN THE
+  RUN.*** *The window* `13 < 12 < 11` *implies* `13 < 11`, *so the
+  window dies outright if the 11-median falls to or below the 13-median,*
+  **FINAL at 1055.8000**, *whatever the 12-group does.* **That needs
+  `(1959.5 + v₂)/2 ≤ 1055.8000`, i.e. idx 1784 landing at or below
+  152.1000 s** — *`2 × 1055.8000 − 1959.5`, computed.* **idx 1784 was
+  already at 501 s of elapsed at 2026-09-25T17:56:58Z, so it is out of
+  that range**, *and the within-run 11-median floor is* `(1959.5 +
+  501.0)/2 =` **1230.2500 > 1055.8000.** **THIS IS A WITHIN-RUN BOUND
+  AND A RESTART DESTROYS IT**: *the landed-only lower end is* **979.7500
+  < 1055.8000**, *so the landings alone do not secure it and a restart
+  puts 152.1000 back in play.* **Securing `13 < 11` decides nothing on
+  its own** — *it is necessary, not sufficient, and the verdict is
+  still entirely the 12-group's.*
+
+  ***AND THE ELAPSED FLOOR ON THIS ROW HELD BY 5.5 s — WHICH IS AN
+  ARTIFACT OF THE SAMPLER, NOT A TREND.*** *idx 1781 was read at* **1954
+  s at 17:56:58Z** *and landed at* **1959.5** — *over its floor by*
+  **5.5 s**. *Of the* **864** *last-floor-before-landing gaps on record
+  it ranks* **21st smallest**; *the smallest is still* **0.4 s** *(idx
+  1604), so this is not a record.* **The last three rows to land gave
+  145.1, 35.9 and 5.5** — *strictly decreasing, and* **that means
+  nothing**: *the gap measures how long before a landing the sampler
+  last happened to run, and the sampler runs when a bank runs, so the
+  series is about this note's own cadence and not about the solver.
+  Written down because three decreasing numbers in a row invite exactly
+  the reading they do not support.* **A floor that holds and a floor that bounds something are
+  different claims**, *and here it does both: it held, and folding it
+  into the 11-median is what secured `13 < 11` above.*
+
+  ***THE BLOCK STILL HAS ONE TERM.*** **13-median FINAL 1055.8000;
+  12-median [0, 21600] at 3 of 9; 11-median [979.7500, 11779.7500] at 1
+  of 2.** **Three more cubes before all three brackets can be cap-free**
+  *(2 in the 12-group, 1 in the 11-group), and* **seven of the fifteen
+  are still out:** **idx 1784 is the 11-group's last**, *and* **1782,
+  1783, 1785, 1786, 1787, 1788** *are the 12-group's six, read from*
+  `forward_test.py`'s *sequence.* *The tally stays at ten keep, eight
+  break, of eighteen settled blocks.*
 
   ***idx 1779 AND idx 1780 UNSAT — TWO ROWS IN ONE BANK, BOTH coord9 =
   12, AND THE BRACKET DOES NOT MOVE FOR EITHER.*** **idx 1779 at
@@ -31583,7 +31659,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1781 of 1949 = 91.3802%**; **168 undecided**. **50% IS CROSSED**, at
+- **1782 of 1949 = 91.4315%**; **167 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -32297,7 +32373,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 9]` idx 1774..1788: **15 members**,
-  **7 decided**, undecided 8 spanning 1781..1788
+  **8 decided**, undecided 7 spanning 1782..1788
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
