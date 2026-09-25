@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T20:23Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T20:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6886,7 +6886,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1969 -> 1970 rows)
+## State as of the last refresh (1970 -> 1971 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6897,7 +6897,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1970 rows; 1801 labels decided; 1801 UNSAT; 0 SAT; 0 labels
+- **1971 rows; 1802 labels decided; 1802 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6939,7 +6939,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1801 decided plus 169 superseded
+  A row count is not a decision count: 1802 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6989,7 +6989,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1795, highest decided 1802, holes [1796, 1797].**
+- **Frontier contiguous 0..1796, highest decided 1802, holes [1797].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7024,6 +7024,56 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1796 UNSAT AT 3001.9 s — `[13,11,11,8]` BREAKS, AND THE
+  WITHIN-RUN VERDICT HELD SINCE `5871418` IS NOW CARRIED BY A LANDED
+  VALUE.*** *From the staged blob.* **Rank 823 of 1802 with no tie** —
+  *`1802 − 979 = 823`, detector agrees; read from the script.* **coord9
+  = 12. Holes `[1797]`, frontier contiguous 0..1796, highest decided
+  1802. Decided 1802 of 1949 = 92.4577%; 147 undecided; still 0 SAT.**
+  **`[13,11,11,8]` is at 10 of 11** *and the open span narrows from two
+  holes to one; no figures are claimed for it.*
+
+  ***THE VERDICT: `[13,11,11,8]` BREAKS.*** **13-median FINAL 979.8000;
+  12-median [1783.7500, 1905.2000] at 5 of 6; 11-median FINAL
+  1376.5000.** *The 12-group reads* **465.5, 1758.9, 1808.6, 2001.8,
+  3001.9**, *so the lower end is* `(1758.9 + 1808.6)/2` *and the upper*
+  `(1808.6 + 2001.8)/2`. **Leg one HOLDS by 803.9500 and leg two FAILS
+  by 407.2500** — *the whole bracket now sits above the band's ceiling
+  of* **1376.5000**, *so no value of the one outstanding cube can bring
+  the median back inside.* **Both from landed costs alone; a restart
+  touches neither.** *Checked the other way as well:* **0 of 400000
+  random values for idx 1797 would keep the block.**
+
+  ***THE WITHIN-RUN VERDICT WAS HELD FOR FOUR COMMITS AND THEN
+  CARRIED.*** `5871418` *registered the break from elapsed floors and
+  said in terms that the tally was held because a restart would destroy
+  it;* `ba95f7a` *hardened it;* **idx 1796 has now landed at 3001.9, and
+  the break is read off landed costs.** **This is the second time in
+  this session a verdict has been registered within-run, explicitly
+  held, and later carried by a landing** — *the first was*
+  `[13,11,11,10]`. **The discipline cost four commits of saying "not
+  yet" and bought a verdict that survives a restart.**
+
+  ***THE TALLY MOVES: ELEVEN KEEP, NINE BREAK, OF TWENTY SETTLED
+  BLOCKS.*** *This is the write-up tally and it is not either computable
+  population.*
+
+  ***THE CENSUS.*** **The verdict-forced population goes 49 → 50 — 33
+  keep, 17 break — and the all-medians-final population stays at 49 —
+  33 keep, 16 break — since idx 1797 is still out.** *The gap between
+  them opens again; the entry at* `6b26825` *called its own the third,
+  so this is the fourth if that count was right, and* **no independent
+  count of the openings has been made**. ***EVERY BREAK IS STILL AN
+  UPPER-LEG FAILURE AND NONE A LOWER-LEG ONE: 17 OF 17.*** *That has now
+  survived seventeen cases and it remains an observation about cases,
+  not a law.*
+
+  ***THREE TESTABLE BLOCKS STILL HAVE NO VERDICT***: `[13,11,10,10]`,
+  `[13,11,10,9]`, `[13,10,10,10]` — *`[13,11,11,8]` leaves the
+  four-block list first written at* `6b26825`; **no count of the
+  intervening banks is claimed.** **53 blocks are testable in all and 50 are now
+  forced**; *the other* **118** *never can be.*
 
   ***idx 1802 UNSAT AT 923.0 s — `[13,11,11,7]`'s 13-MEDIAN IS FINAL AT
   881.6000, ON ITS OWN CEILING.*** *From the staged blob.* **Rank 1527
@@ -32718,7 +32768,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1801 of 1949 = 92.4064%**; **148 undecided**. **50% IS CROSSED**, at
+- **1802 of 1949 = 92.4577%**; **147 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33432,7 +33482,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 8]` idx 1789..1799: **11 members**,
-  **9 decided**, undecided [1796, 1797]
+  **10 decided**, undecided [1797]
 - `[13, 11, 11, 7]` idx 1800..1806: **7 members**,
   **3 decided**, undecided [1803, 1804, 1805, 1806]
 
