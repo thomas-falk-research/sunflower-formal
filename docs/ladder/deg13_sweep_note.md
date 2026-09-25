@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T03:53Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T04:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6845,7 +6845,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1823 -> 1824 rows)
+## State as of the last refresh (1824 -> 1825 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6856,7 +6856,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1824 rows; 1655 labels decided; 1655 UNSAT; 0 SAT; 0 labels
+- **1825 rows; 1656 labels decided; 1656 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6892,7 +6892,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1655 decided plus 169 superseded
+  A row count is not a decision count: 1656 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6942,8 +6942,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1654, highest decided 1654, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1654, highest decided 1658, holes [1655, 1656, 1657].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6977,6 +6977,86 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1658 UNSAT AT 552.9 s, AND THE 85% TRAP LANDS ON THE ROW
+  NAMED EIGHTEEN ROWS IN ADVANCE.*** **Rank 1528 of 1656 with no tie**
+  — *`1656 − 128 = 1528` reproduces the rank, detector agrees.*
+  **0.0256 of the per-cube cap. Decided 1656 of 1949 = 84.9666%; still
+  0 SAT.**
+
+  ***THIS IS THE TRAP ITSELF, NOT A WARNING ABOUT IT.*** **84.9666%
+  prints as 85.0% at one decimal and has NOT crossed**: *`0.85 × 1949 =
+  1656.65`, so the crossing is at* **1657 decided = 85.0180%** *and the
+  counter is one row short of it.* **Registered at `0ddcfdf`,
+  in the idx 1637 entry, eighteen rows out, and restated at nine, six,
+  five, four and two**,
+  *each time by dividing rather than reading off, and it has arrived on
+  exactly the row named.* **The note's standing count — 97 of 99
+  percent thresholds carry a trap, the exceptions being {2, 51} — is
+  quoted, not extended**, *because extending it would need the whole
+  range recomputed and this row does not do that.*
+
+  ***AND THE CONDITION REGISTERED AT `5765342` HAS FIRED: THE BOTTOM
+  BREAK IS DEAD.*** *That commit said idx 1655 was* **233.3 s of
+  elapsed short of 1608.3** *and that the bottom route would die when
+  it passed.* **Its solver, pid 27317, started 03:26:53Z, so its
+  elapsed reached 1608.3 s at 03:53:41.3Z — four and a half minutes
+  before this row landed at 03:58:20Z — and it now reads 1939 s, past
+  the mark by 330.7.** *So* `cost(1655) ≥ 1939 > 1608.3`, *and at most
+  three of the six can be at or below 1608.3: idx 1658 landed there and
+  idx 1656 and 1657 might.* **Four are needed. The bottom route is
+  gone.** ***WITHIN-RUN, AS ALWAYS*** — *a relaunch re-runs idx 1655
+  from zero and restores it.*
+
+  ***idx 1658 SUPPLIED THE FIRST AND ONLY VALUE BELOW THE CORRIDOR
+  FLOOR.*** **552.9 is 1055.4 s below 1608.3**, *so the bottom count is
+  one of the four it needs and can now reach at most three.* *That is
+  the same row doing both things at once: adding to the bottom count
+  and, by arriving while idx 1655 ran past the mark, arriving after the
+  route it feeds had already closed.*
+
+  ***AND THE FOUR-COUNT IS SUFFICIENT, NOT NECESSARY, WHICH THIS ENTRY
+  WILL NOT BLUR.*** **Four at or above 2369.7 forces the median to
+  2369.7 or above and breaks the window.** *The converse does not
+  hold:* **with only three at or above the mark the median is
+  `(x₍₃₎ + x₍₄₎)/2` with `x₍₃₎` below it and `x₍₄₎` at or above, and a
+  large enough `x₍₄₎` still carries the average over 2369.7.** *So
+  "two more of the three remaining would break it" is a statement about
+  a sufficient condition, and* **nothing here says the window holds if
+  fewer than two do.** **The landed-only bracket is `[276.45,
+  12370.2]`** — *three landed values, three unknown between nothing and
+  the 21600 s cap —* **and it contains the whole corridor**, *so
+  nothing is decided either way.*
+
+  ***THE NINETY-EIGHTH SPAN HAS OPENED, AT WIDTH THREE.*** Walk
+  position **163** less the OFFSET of 65 — the **ninety-eighth**,
+  derived from the walk's 162 closed spans plus this one, *with the
+  parsed and declared counts asserted equal.* **idx 1658 came in while
+  idx 1655, 1656 and 1657 were still running, leaving holes `[1655,
+  1656, 1657]`, width three**, *frontier contiguous* **0..1654** *and
+  highest decided* **1658**. *Per the `#29` rider the width is what it
+  is AT THIS COMMIT.*
+
+  ***AN OPENING AT THREE.*** Over the **162** closed chains the opening
+  hole count is **1 in 54, 2 in 55, 3 in 50 and 4 in 3**, so three is
+  **30.9%**. **It is the first opening at three since the ninety-sixth**,
+  and the spans that opened at three are **50** of the 162, the last
+  five of them ordinals **79, 85, 89, 91 and 96**.
+
+  ***THE SPAN'S THREE HOLES ARE THE BLOCK'S THREE REMAINING CUBES, AND
+  ALL THREE ARE coord9 = 12.*** **`[13,12,10,8]` is at 8 of 11 with idx
+  1655, 1656 and 1657 out** — *the same rows, so the span closing and
+  the block's verdict arriving are the same event.* **Their elapsed
+  readings at 03:59:13Z are 1939, 1316 and 844 s**, *and idx 1655 is
+  430.7 s short of the corridor's upper mark.*
+
+  ***AND THE NEXT BLOCK IS UNTESTABLE.*** **idx 1659 is already running
+  — block `[13,12,10,7]`, idx 1659..1665, 7 members, groups
+  `{13: 3, 12: 4}`** — *and there is* **no coord9 = 11 group at all**,
+  *so the direction window cannot be evaluated in it.* **Read from
+  `SEQ` rather than recalled**, *and written down now so that the
+  absence is not discovered later and mistaken for a missing
+  measurement.*
 
   ***THE NINETY-SEVENTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `5765342` EXISTED.*** Opened after **`337a61d`** at 03:31:15Z, closed
@@ -26306,7 +26386,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1655 of 1949 = 84.9153%**; **294 undecided**. **50% IS CROSSED**, at
+- **1656 of 1949 = 84.9666%**; **293 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27020,7 +27100,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 10, 8]` idx 1648..1658: **11 members**,
-  **7 decided**, undecided [1655, 1656, 1657, 1658]
+  **8 decided**, undecided [1655, 1656, 1657]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
