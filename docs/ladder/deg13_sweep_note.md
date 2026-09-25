@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T23:54Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T23:57Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6906,7 +6906,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2002 -> 2003 rows)
+## State as of the last refresh (2003 -> 2004 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6917,7 +6917,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2003 rows; 1834 labels decided; 1834 UNSAT; 0 SAT; 0 labels
+- **2004 rows; 1835 labels decided; 1835 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6959,7 +6959,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1834 decided plus 169 superseded
+  A row count is not a decision count: 1835 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7009,7 +7009,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1827, highest decided 1835, holes [1828, 1831].**
+- **Frontier contiguous 0..1827, highest decided 1835, holes [1828].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7044,6 +7044,52 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1831 UNSAT AT 3649.0 s — ONE CUBE LEFT IN THE BLOCK AND IT DOES
+  THREE THINGS AT ONCE WHEN IT LANDS.*** *From the staged blob.* **Rank
+  687 of 1835 with no tie** — *`1835 − 1148 = 687`; detector agrees.*
+  **Decided 1835 of 1949 = 94.1508%; 114 undecided.** **Frontier
+  contiguous 0..1827, highest decided 1835, holes `[1828]`** — *the span's
+  width falls from two to one.* **Still 0 SAT.** **coord9 = 12, the
+  EIGHTH of nine; `[13,11,10,10]` is at 14 of 15.**
+
+  ***THE NINTH FLOOR HELD.*** **idx 1831's floor was `3435 s` at
+  23:52:58Z and its cost is 3649.0 — holds, slack 214.0 s. Nine floors
+  checked in this block, all nine held.**
+
+  ***THE FORM HELD A THIRD TIME.*** **At `m = 8` the registered rule gives
+  `[4th smallest, 5th smallest]` and the eight sorted are 186.6, 977.0,
+  1787.5, 1841.3, 1882.9, 1968.3, 2612.8, 3649.0, so the bracket is
+  `[1841.3000, 1882.9000]`, width `41.6000` against `95.4000` at `m =
+  7`.** *The rule has now been checked at* `m = 5`*,* `m = 7` *and* `m =
+  8`*, each time against the median definition rather than against
+  itself.*
+
+  ***AND A CLOSED FORM FOR THE FINAL VALUE.*** **With `v` = idx 1828's
+  cost, the finished 12-median is exactly `clamp(v, 1841.3000,
+  1882.9000)`** — *tested at* **0 disagreements over 400,000 draws.**
+  **idx 1828 was in flight at `3662 s` at 23:56:45Z, far above the
+  clamp's upper end, so the final value will be `1882.9000`** — *that
+  last part is floor-contingent;* **the clamp itself is not.**
+
+  ***THE VERDICT IS UNAFFECTED EITHER WAY, WHICH IS THE POINT OF HAVING
+  CARRIED IT ALREADY.*** **The whole clamp range `[1841.3000,
+  1882.9000]` lies strictly between the 13-median 1039.4500 and the
+  11-median 2510.4500: leg one's margin is at worst 801.8500 and leg
+  two's at worst 627.5500.** *No draw of* `v` *can move the KEEP.*
+
+  ***WHEN idx 1828 LANDS IT DOES THREE THINGS IN ONE COMMIT, AND THEY ARE
+  NAMED NOW.*** **First, `[13,11,10,10]` completes at 15 of 15 and all
+  three medians go final.** **Second, the all-medians-final census moves
+  50 → 51 and the gap with the verdict-forced 51 closes.** **Third, idx
+  1828 is the last hole, so `holes` goes `[]` and the
+  hundred-and-fifteenth span CLOSES** — *which means that commit is the
+  first half of a two-commit close, carrying no span figures, with the*
+  `--spans all` *figures and the monotonicity verdict following in the
+  next.* **That verdict is already known to be False**, *from the `2 → 3`
+  rise recorded at the idx 1832 bank.* **The tally stays at twelve keep,
+  nine break, of twenty-one**, *and the census at* **51 and 50** *until
+  that landing.*
 
   ***idx 1835 UNSAT AT 1634.9 s — `[13,11,10,9]`'s 13-BRACKET REACHES THE
   INTERMEDIATE STATE ON CUE, AND THE STALE-SAMPLE TRAP FIRED A SECOND
@@ -34347,7 +34393,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1834 of 1949 = 94.0995%**; **115 undecided**. **50% IS CROSSED**, at
+- **1835 of 1949 = 94.1508%**; **114 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -35061,7 +35107,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 10, 10]` idx 1819..1833: **15 members**,
-  **13 decided**, undecided [1828, 1831]
+  **14 decided**, undecided [1828]
 - `[13, 11, 10, 9]` idx 1834..1844: **11 members**,
   **2 decided**, undecided 9 spanning 1836..1844
 
