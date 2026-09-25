@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T20:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T20:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7026,6 +7026,45 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — BUT `[13,11,11,6]` HAS STARTED AND ITS SHAPE IS
+  REGISTERED BEFORE ANY OF IT EXISTS.*** *Four samples at*
+  **2026-09-25T20:42:21Z**, *read by* `cnf_mtime_check.py`: **idx 1804
+  at 1181 s, idx 1805 at 932 s, idx 1806 at 422 s, idx 1807 at 143 s**,
+  *driver pid* **27185**, *all four deltas* `now-mtime − ps ELAPSED` *at*
+  **0 s**. **idx 1807 is the first member of `[13,11,11,6]`**, *which the
+  enumeration gives as* **five members, idx 1807..1811, coord9 `{13: 3,
+  12: 2}`** — ***AND NO 11-GROUP, SO IT IS NOT TESTABLE EITHER.***
+  *That makes* **two untestable blocks in a row**, `[13,11,11,7]` *and*
+  `[13,11,11,6]`, *and both were already in the* **118** *counted at*
+  `5871418`, *where every one of the 118 was shown to lack the
+  11-group.* **The count was computed there and this is it being read,
+  not re-derived.**
+
+  ***THE SHAPES, IN THE CORRECTED WORDING.*** **coord9 = 13: `n = 3`,
+  `k = 2`, odd — both ends move off trivial at `m = n − k + 1 = 2` and
+  both are trivial-free at `m = k = 2`, the same landing, so two states
+  and no intermediate.** **coord9 = 12: `n = 2`, `k = 2`, even — both
+  ends move at `m = 1` and both are trivial-free at `m = 2`, so three
+  states with the intermediate at `m = 1`.** *Stated before any of the
+  five exists.* **Neither bracket will ever be compared to anything.**
+
+  ***AND THE 93% TRAP IS EIGHT ROWS OUT.*** *Registered at* `04f3931`
+  *twelve rows out;* **the counter now stands at 1804 = 92.5603%, the
+  trap at 1812 = 92.9708% and the crossing at 1813 = 93.0221%** — *eight
+  and nine rows away, all three divided by script.*
+
+  ***THE CHECK-IN'S STEPS, ALL CLEAN.*** **All invariants hold; verdicts
+  `{'UNSAT': 1804, 'UNKNOWN': 169}`, 0 SAT, 0 undecided-only, 1804
+  distinct indices touched, second opinion agrees.** **Frontier
+  contiguous 0..1803, highest decided 1803, holes `[]`; no span is
+  open and the walk stands at 178.** **`pgrep -x iota_sym` returns
+  27185.** **The waiter was still armed at 1973 rows and needed no
+  re-arm.** **HEAD `a5d8359` equalled
+  `origin/claude/sunflower-deg13-p3-bhbe9w` before this commit.** *The
+  tally stays at* **eleven keep, nine break, of twenty settled
+  blocks**, *and the census at* **50 and 50**. **Bracket unchanged: 27 ≤
+  ι(4) ≤ 71.**
 
   ***idx 1803 UNSAT AT 1613.5 s — IN ORDER, SO NO SPAN OPENS.*** *From
   the staged blob.* **Rank 1262 of 1804 with no tie** — *`1804 − 542 =
