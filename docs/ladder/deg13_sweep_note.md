@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T03:40Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T03:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6975,6 +6975,46 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 03:41Z CHECK-IN REGISTERS A COUNTING CONDITION ON THE
+  CORRIDOR, AND TWO OF ITS FOUR ARE ALREADY IN.*** *No row landed:
+  decided 1653, holes `[1652, 1653]`, frontier contiguous 0..1651,
+  highest decided 1654, driver pid 21147 confirmed by `pgrep`.*
+
+  ***THE 12-MEDIAN IS `(x₍₃₎ + x₍₄₎)/2` OF SIX, SO THE CORRIDOR CAN BE
+  BROKEN BY A COUNT ALONE.*** *Constructed adversarially, not sampled:*
+  **if FOUR of the six land at or above 2369.7 then `x₍₃₎` and `x₍₄₎`
+  are both at or above it, the median is at least 2369.7, and the
+  window breaks** — *it needs* `12-median < 11-median` *strictly.*
+  **And if FOUR land at or below 1608.3 the median is at most 1608.3
+  and it breaks at the other end.** ***AT THREE EITHER WAY NOTHING IS
+  FORCED***: *with three at or above the mark the median is only
+  guaranteed to be at least 1184.85, which is inside the corridor, so
+  the third cube decides nothing and the fourth decides everything.*
+
+  ***AND THE ELAPSED FLOORS ALREADY SUPPLY TWO OF THE FOUR AT THE
+  TOP.*** **At the 03:41:31Z sample idx 1652 reads 2709 s of elapsed
+  and idx 1653 reads 2691 s — both past 2369.7** — *so two of the six
+  are certainly at or above the corridor's upper end, whatever they
+  finally cost.* **Two more would end it that way.** *Which way it goes
+  is not predicted here; the other four cubes have no evidence at all,
+  and idx 1657 and 1658 have not started.*
+
+  ***THE FLOORS DECIDE NOTHING THROUGH THE BRACKET AND EVERYTHING
+  THROUGH THE COUNT, WHICH IS WORTH SEPARATING.*** **With those four
+  floors and two cubes unstarted, the 12-median's bracket is `[575.0,
+  21600]`** — *the low end from the floors, the high end from the
+  per-cube cap* — **and it contains the whole corridor and far more.**
+  *The same four readings that give a useless interval give a
+  decisive-in-principle count.* ***A FLOOR IS NOT ONE KIND OF
+  EVIDENCE***: *it bounds an order statistic, and it also says which
+  side of a fixed mark a value is on, and those two uses have different
+  strengths on the same data.*
+
+  ***WITHIN-RUN ONLY.*** `cost ≥ elapsed` *is sound inside a run and a
+  restart re-runs the cube from zero.* **Driver pid 21147 is unchanged
+  since 20:59:10.390000Z**, *so the two readings stand for now and a
+  relaunch voids both.*
 
   ***idx 1654 UNSAT AT 2369.7 s: `[13,12,10,8]`'s 11-MEDIAN IS FINAL
   ON ONE ROW, AND THE CONDITION REGISTERED AT `f0eb923` RESOLVES TO ITS
