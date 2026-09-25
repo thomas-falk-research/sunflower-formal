@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T09:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T09:23Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6854,7 +6854,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1869 -> 1870 rows)
+## State as of the last refresh (1870 -> 1871 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6865,7 +6865,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1870 rows; 1701 labels decided; 1701 UNSAT; 0 SAT; 0 labels
+- **1871 rows; 1702 labels decided; 1702 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6901,7 +6901,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1701 decided plus 169 superseded
+  A row count is not a decision count: 1702 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6951,7 +6951,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1698, highest decided 1702, holes [1699, 1700].**
+- **Frontier contiguous 0..1698, highest decided 1702, holes [1699].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6986,6 +6986,39 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1700 UNSAT AT 2260.3 s — AND IT PRODUCES A LIVE COUNTEREXAMPLE
+  TO THE CLAIM STRUCK TWO ENTRIES AGO.*** **Rank 1008 of 1702 with no
+  tie** — *`1702 − 694 = 1008`, detector agrees.* **coord9 = 12. Holes
+  `[1699]`, frontier contiguous 0..1698, highest decided 1702. Decided
+  1702 of 1949 = 87.3268%; 247 undecided; still 0 SAT.** *Committed
+  chain* **3, 2, 1, 3, 2, 2, 1** — *back to one hole, and still bound to
+  close FALSE by the rise at the fourth commit.*
+
+  ***THE PIN CONDITION HOLDS HERE AND THE MEDIAN IS NOT PINNED.***
+  `[13,12,9,7]`'s **coord9 = 12 group is n = 2, k = 2, m = 1**: idx 1700
+  landed at **2260.3** and idx 1699 is in flight at **≥ 2537.0 s**
+  (*`ps` at 09:22:49Z, pid 21147 unchanged*). **Every floored unknown
+  exceeds the largest landed value — 2537.0 > 2260.3 — which is exactly
+  the condition the unrestricted claim used.** *And the median is not
+  pinned:* **50 000 random values of u ≥ 2537.0 plus u = 10¹² give 50 004
+  distinct medians**, *from 2398.6500 upward without bound, because a
+  two-value median is their average and can never stop depending on
+  either one.* ***THE UNRESTRICTED CLAIM WOULD SAY "PINNED" HERE AND IS
+  WRONG*** — *and it is wrong on a live block in this sweep, two entries
+  after being struck on random configurations alone.* **`m = 1 < k = 2`
+  is the whole reason**, *which is the clause that was nearly left out.*
+
+  ***AND THE TWO-MEMBER cap/2 FACT SHOWS UP AGAIN, EXACTLY.*** *The
+  landed-only bracket is* **[1130.1500, 11930.1500]**, *width*
+  **10800.0000**, *which is* `cap/2` *to the decimal — the fact recorded
+  at idx 1669 and generalised at idx 1687, here on its own terms again.*
+  **The floor lifts the lower end to 2398.6500 — by 1268.5000 — and
+  leaves the upper end untouched at 11930.1500**, *because with*
+  `m = 1 < k = 2` *the cap still sets the ceiling.* *So* `13 < 12` *is
+  forced again (2398.6500 against a 13-median final at 1159.9000, margin
+  1238.7500),* **and again that is the whole of what an untestable block
+  can ever say.**
 
   ***idx 1702 UNSAT AT 1435.9 s — `[13,12,9,6]`'s 13-GROUP COMPLETES AT
   2 OF 2.*** **Rank 1265 of 1701 with no tie** — *`1701 − 436 = 1265`,
@@ -28416,7 +28449,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1701 of 1949 = 87.2755%**; **248 undecided**. **50% IS CROSSED**, at
+- **1702 of 1949 = 87.3268%**; **247 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -29130,7 +29163,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 9, 7]` idx 1696..1700: **5 members**,
-  **3 decided**, undecided [1699, 1700]
+  **4 decided**, undecided [1699]
 - `[13, 12, 9, 6]` idx 1701..1703: **3 members**,
   **2 decided**, undecided [1703]
 
