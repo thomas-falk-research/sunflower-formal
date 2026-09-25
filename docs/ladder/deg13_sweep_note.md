@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T06:21Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T06:25Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6850,7 +6850,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1840 -> 1842 rows)
+## State as of the last refresh (1842 -> 1845 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6861,7 +6861,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1842 rows; 1673 labels decided; 1673 UNSAT; 0 SAT; 0 labels
+- **1845 rows; 1676 labels decided; 1676 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6897,7 +6897,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1673 decided plus 169 superseded
+  A row count is not a decision count: 1676 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6947,8 +6947,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1672, highest decided 1672, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1672, highest decided 1677, holes [1673, 1675].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -6982,6 +6982,69 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THREE ROWS IN ONE BANK, AND THE COUNTER LANDS ON THE 86% TRAP
+  ROW ITSELF.*** **Decided 1676 of 1949 = 85.9928%; 273 undecided;
+  still 0 SAT.** *All three untied — strict counts taken directly and
+  the subtraction agrees with each.*
+
+  | idx | cost | rank of 1676 | cheaper | `1676 − cheaper` | of cap | block |
+  |---|---|---|---|---|---|---|
+  | 1674 | **414.0 s** | 1589 | 87 | 1589 | 0.0192 | `[13,12,10,4]` |
+  | 1676 | **227.6 s** | 1632 | 44 | 1632 | 0.0105 | `[13,12,10,3]` |
+  | 1677 | **49.1 s** | 1663 | 13 | 1663 | 0.0023 | `[13,12,10,2]` |
+
+  ***THIS IS THE TRAP, NOT A WARNING ABOUT IT.*** **85.9928% prints as
+  86.0% at one decimal and has NOT crossed**: *`0.86 × 1949 = 1676.14`,
+  so the crossing is at* **1677 decided = 86.0441%** *and the counter
+  is one row short.* **Registered at `97fbef2` nineteen rows out and
+  restated TWELVE times since — at seventeen, sixteen, thirteen,
+  twelve, eleven, ten, nine, eight, seven, six, five and three** —
+  *every time by dividing, and it has arrived on exactly the row
+  named.* ***A DRAFT OF THAT LIST WAS COMPOSED RATHER THAN READ***
+  — *it included an "eighteen" and a "fifteen" that do not exist, and
+  the real list came from grepping the note's own headlines.* **The
+  gaps are where rows landed in banks of two or three and a single
+  entry covered them.** **The
+  note's standing count — 97 of 99 percent thresholds carry a trap,
+  the exceptions being {2, 51} — is quoted, not extended.**
+
+  ***idx 1677 AT 49.1 s IS THE CHEAPEST ROW OF THIS WHOLE REGION AND
+  ONLY THIRTEEN ROWS IN THE SWEEP ARE CHEAPER.*** **0.0023 of the
+  per-cube cap.** *Those thirteen are* `0.1 × 5` *— the floor —* *and*
+  **22.2, 22.8, 23.8, 25.8, 34.6, 39.3, 39.6 and 47.2**. *Counted from
+  the staged blob, not recalled.*
+
+  ***AND IT IS THE LAST CUBE OF THE UNTESTABLE RUN.*** **`[13,12,10,2]`
+  is a one-member block and idx 1677 is that member, so the block
+  completed the moment it landed.** *The run's six blocks now stand at*
+  **7 of 7, 5 of 5, 2 of 3, 1 of 2, 1 of 1 and 1 of 1** — *four
+  complete, two open, and the two still open are* `[13,12,10,5]`
+  *waiting on idx 1673 and* `[13,12,10,4]` *waiting on idx 1675.*
+  ***SO THE RUN WILL FINISH OUT OF INDEX ORDER, ITS LAST INDEX ALREADY
+  IN AND TWO EARLIER ONES STILL RUNNING.***
+
+  ***THE HUNDREDTH SPAN HAS OPENED, AT WIDTH TWO.*** Walk position
+  **165** less the OFFSET of 65 — the **hundredth**, derived from the
+  walk's 164 closed spans plus this one, *with the parsed and declared
+  counts asserted equal.* **idx 1676 and 1677 came in while idx 1673
+  and 1675 were still running, leaving holes `[1673, 1675]`, width
+  two**, *frontier contiguous* **0..1672** *and highest decided*
+  **1677**. *Per the `#29` rider the width is what it is AT THIS
+  COMMIT.*
+
+  ***AN OPENING AT TWO.*** Over the **164** closed chains the opening
+  hole count is **1 in 54, 2 in 56, 3 in 51 and 4 in 3**, so two is
+  **34.1%**. **It is the first opening at two since the ninety-ninth**,
+  and the spans that opened at two are **56** of the 164, the last five
+  of them ordinals **92, 94, 95, 97 and 99**.
+
+  ***AND THE ORDINAL IS ROUND, WHICH IS WORTH EXACTLY NOTHING.*** **The
+  hundredth span is the hundredth because the OFFSET is 65 and the walk
+  is at 165** — *a label the note chose, applied to a count of commits
+  that broke the frontier.* **Nothing about the sweep changes at a
+  round ordinal**, *and it is said here only because a hundred is the
+  kind of number that invites a sentence it has not earned.*
 
   ***THE NINETY-NINTH SPAN'S FIGURES, READ FROM `--spans all` AFTER
   `386aa01` EXISTED.*** Opened after **`6b318fa`** at 05:15:49Z, closed
@@ -27279,7 +27342,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1673 of 1949 = 85.8389%**; **276 undecided**. **50% IS CROSSED**, at
+- **1676 of 1949 = 85.9928%**; **273 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -27994,6 +28057,8 @@ exactly one bank.
 
 - `[13, 12, 10, 5]` idx 1671..1673: **3 members**,
   **2 decided**, undecided [1673]
+- `[13, 12, 10, 4]` idx 1674..1675: **2 members**,
+  **1 decided**, undecided [1675]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
