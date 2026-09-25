@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T07:38Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T07:39Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7029,8 +7029,23 @@ exactly one bank.
   exactly cap/2 = 10800.0 for every k**. *There n = 2 and the threshold
   is 2, so m = 1 is* **below** *it and the cap governs the whole width;
   here n = 6, threshold 4, m = 5 is* **above** *it and the cap governs
-  nothing. The two were written eleven hundred indices apart as separate
-  observations and are one lemma.*
+  nothing. The two-member fact was established at* **idx 1669**
+  *and this one at* **idx 1687** — **eighteen cubes apart**, *not in
+  different eras of this file, which makes it worse rather than better:
+  the generalisation was available immediately and was not taken.* **A
+  draft of this sentence said "eleven hundred indices apart"** — *a
+  figure with no source at all. It was caught by grepping the note for
+  `cap/2`, but only AFTER it had been committed and pushed in* `0a600cb`,
+  *whose message claims the correction was already in. It was not: the
+  guarded edit that was supposed to apply it failed its own
+  `assert t.count(OLD)==1` on a leading asterisk, and the commit ran
+  anyway because it was chained after the edit with `&&` on a separate
+  line instead of depending on it.* **The guard worked and the shell
+  defeated it.** *Recorded because the guard is the control this file
+  relies on for every note edit, and here it was defeated by how it was
+  invoked rather than by anything in the text.* **No ordinal is claimed
+  for that either.** *The fix is mechanical: the edit and the commit go
+  in one chain, so a failed assert stops the commit.*
 
   ***AND THE PRACTICAL CONSEQUENCE IS THE TEST THIS NOTE HAS BEEN DOING
   BY HAND.*** **A bracket whose ends are cap-free is a function of
