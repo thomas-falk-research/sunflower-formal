@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T20:51Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T21:02Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6888,7 +6888,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1975 -> 1976 rows)
+## State as of the last refresh (1976 -> 1978 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6899,7 +6899,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1976 rows; 1807 labels decided; 1807 UNSAT; 0 SAT; 0 labels
+- **1978 rows; 1809 labels decided; 1809 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6941,7 +6941,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1807 decided plus 169 superseded
+  A row count is not a decision count: 1809 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6991,7 +6991,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1804, highest decided 1807, holes [1805].**
+- **Frontier contiguous 0..1804, highest decided 1809, holes [1805].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7026,6 +7026,51 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1809 AND idx 1808 UNSAT — `[13,11,11,6]`'s 13-MEDIAN IS FINAL
+  AT 799.1000, ON ITS CEILING AGAIN, AND THE `#29` RIDER KILLS A
+  MONOTONICITY CLAIM FOR THE SECOND TIME.*** *From the staged blob.*
+  **idx 1809 at 799.1 s, rank 1563 of 1809 with no tie** — *`1809 − 246
+  = 1563`*; **idx 1808 at 839.1 s, rank 1552 of 1809 with no tie** —
+  *`1809 − 257 = 1552`*; *detector agrees on both.* **Both coord9 = 13.
+  Holes `[1805]`, frontier contiguous 0..1804, highest decided 1809.
+  Decided 1809 of 1949 = 92.8168%; 140 undecided; still 0 SAT.**
+  **`[13,11,11,6]` is at 3 of 5; `[13,11,11,7]` stays at 6 of 7.**
+
+  ***THE 13-GROUP IS COMPLETE AND THE MEDIAN IS ITS CEILING.*** *Its
+  three members landed at* **441.5, 799.1, 839.1**, *so the median of
+  three is* `x₂ =` **799.1000, FINAL** — *and the bracket at* `m = 2`
+  *read* **[441.5000, 799.1000]**. **The final value is the upper end
+  exactly, because the third cube to land was the dearest of the
+  three.** *That is a* **one-in-three** *event under exchangeability, and*
+  **two blocks in a row have done it**: `[13,11,11,7]` *went* **437.4,
+  881.6, 923.0 → 881.6000**, *also its ceiling.* *Two independent trials
+  give* `(1/3)² =` **0.1111**. **A coincidence note, not a finding**, *and
+  no ordinal is claimed for either.*
+
+  ***AND THE `#29` RIDER KILLS A MONOTONICITY CLAIM AGAIN.*** *When idx
+  1809 landed the hole list read* **`[1805, 1808]`** — *two — and the
+  previous commit* `3fcf9d5` *had carried* **one**. **A draft of this
+  entry was about to say the chain contained a rise and that the span's
+  monotonicity was therefore already fixed at False**, *and unlike the
+  case at* `6b26825` *that rise would have sat between two* **committed**
+  *states, which is the form that is safe to claim.* **Then idx 1808
+  landed before this commit existed and the hole list is `[1805]`
+  again.** *The committed counts, read with* `git show` *rather than
+  recalled, are* **`bbe61e3` two, `3fcf9d5` one, this commit one** —
+  **2, 1, 1, non-increasing, with no rise anywhere.** ***THE TWO-HOLE
+  STATE NEVER REACHED A COMMIT, SO IT NEVER HAPPENED, AND NO
+  MONOTONICITY CLAIM IS MADE.*** **This is the second time in this
+  session the rider has caught a verdict rather than a figure**, *and
+  the second time the claim it killed was the same one.*
+
+  ***THE BLOCK'S 12-GROUP IS STILL AT 0 OF 2.*** **`n = 2`, `k = 2`,
+  even — both ends move at `m = 1` and both go trivial-free at `m = 2`**,
+  *as* `7c589f0` *registered before any of the five existed.* **Two cubes
+  remain, idx 1810 and idx 1811, and neither bracket will ever be
+  compared to anything** — *the block has no 11-group.* *The tally stays
+  at* **eleven keep, nine break, of twenty settled blocks**, *and the
+  census at* **50 and 50**.
 
   ***idx 1804 UNSAT AT 1617.3 s — `[13,11,11,7]`'s 12-BRACKET GOES
   TRIVIAL-FREE AT `m = k = 3`, AND THE LAST TWO VALUES ARE 3.8 s
@@ -33003,7 +33048,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1807 of 1949 = 92.7142%**; **142 undecided**. **50% IS CROSSED**, at
+- **1809 of 1949 = 92.8168%**; **140 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33719,7 +33764,7 @@ exactly one bank.
 - `[13, 11, 11, 7]` idx 1800..1806: **7 members**,
   **6 decided**, undecided [1805]
 - `[13, 11, 11, 6]` idx 1807..1811: **5 members**,
-  **1 decided**, undecided [1808, 1809, 1810, 1811]
+  **3 decided**, undecided [1810, 1811]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
