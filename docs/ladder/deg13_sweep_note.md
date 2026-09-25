@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T23:27Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T23:43Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7044,6 +7044,59 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — BUT A BRACKET COLLAPSED TO A POINT WITHOUT A SINGLE
+  ROW LANDING, AND `[13,11,10,10]` NOW READS KEEP ON THE FLOORS ALONE.***
+  *Found on a fallback check-in.* **The checkpoint is unchanged at 2001
+  rows, 1832 decided = 93.9969%, holes `[1828, 1829, 1831]`, frontier
+  contiguous 0..1827, 0 SAT**, *pid 20833 unchanged, HEAD equal to
+  origin.* **A live sample at 2026-09-25T23:41:42Z reads idx 1828, idx
+  1829 and idx 1831 all at `2759 s` elapsed, and idx 1835 at `974 s`.**
+  *The three share an elapsed because all three are set twenty-four
+  re-takes launched together;* **they started 61.260 s after the driver,
+  computed from the launch instant and the sample instant, which is the
+  same order of startup lag the `#38` relaunch recorded at 60.6 s.**
+
+  ***THE 12-MEDIAN IS PINNED AT A POINT.*** **The seven landed 12-costs
+  sort to 186.6, 977.0, 1787.5, 1841.3, 1882.9, 1968.3, 2612.8, whose
+  fifth smallest is 1882.9. Both outstanding 12-members — idx 1828 and
+  idx 1831 — are forced above `2759 s`, hence above 1882.9, so neither
+  can enter the fifth position and the bracket `[1787.5000, 1882.9000]`
+  COLLAPSES TO THE SINGLE VALUE 1882.9000.** *Checked at* **0
+  disagreements over 400,000 floor-respecting draws.** ***THIS IS A NEW
+  KIND OF EVENT IN THIS NOTE***: *every previous collapse of a bracket to
+  a point came from the last member LANDING;* **this one came from two
+  members not having landed, and being known to be expensive.**
+
+  ***AND THAT SETTLES BOTH LEGS.*** **Leg one: `1039.4500 < 1882.9000`,
+  hard, no floor needed.** **Leg two: the 11-median is `(1941.2 + y)/2`
+  with `y` = idx 1829's cost `≥ 2759`, so the 11-median is `≥
+  2350.1000`, and `2350.1000 > 1882.9000`.** ***SO
+  `13-median < 12-median < 11-median` HOLDS AND `[13,11,10,10]` READS
+  KEEP.*** *Checked at* **0 failures over 400,000 floor-respecting
+  draws.**
+
+  ***THE TALLY DOES NOT MOVE, AND THAT IS THE POINT OF THE LAST TWO
+  BANKS.*** **This verdict is FLOOR-CONTINGENT on all three of idx 1828,
+  1829 and 1831 finishing at or above 2759 s, and a restart voids it
+  completely** — *the three would re-take from zero with fresh costs, the
+  12-median would fall back to* `[1787.5000, 1882.9000]` *and leg two to
+  the undetermined band* `[1633.8000, 1824.6000]`. **The tally stays at
+  eleven keep, nine break, of twenty** *and the census at* **50 and
+  50**; *it moves when the three land, not now.* ***THE HARD STATE IS
+  UNCHANGED FROM THE LAST BANK***: **12-median in `[1787.5000,
+  1882.9000]`, 11-median in `[970.6000, 11770.6000]`, leg one forced,
+  leg two open.** **The absorb `a0c781f` is THREE commits back**, *read from*
+  `git rev-list --count`*, not recalled — and that closeness is the whole
+  reason this distinction is drawn at every bank rather than once.*
+
+  ***ONE FIGURE WORTH THE LINE.*** **All three outstanding cubes have now
+  run 2759 s, which is longer than the block's largest LANDED cost, idx
+  1827's 2612.8** — *so whatever they cost, the three most expensive
+  cubes in* `[13,11,10,10]` *will be the three that the restart killed.*
+  *That is a consequence of the kill selecting for long-running cubes,
+  the same mechanism set seventeen's opening records, and nothing is
+  claimed from it beyond the arithmetic.*
 
   ***idx 1834 UNSAT — `[13,11,10,9]` OPENS BEFORE `[13,11,10,10]` HAS
   FINISHED, SO TWO TESTABLE BLOCKS ARE OPEN AT ONCE.*** *From the staged
