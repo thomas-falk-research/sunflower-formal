@@ -47,9 +47,9 @@ OFFSET = 65
 # Floors: a run that parses fewer than these has a broken pattern, not a
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
-MIN_SPANS      = 100
-MIN_TABLE_ROWS = 86
-MIN_MONO_ROWS  = 100
+MIN_SPANS      = 101
+MIN_TABLE_ROWS = 87
+MIN_MONO_ROWS  = 101
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -126,6 +126,12 @@ for _t, _c in enumerate(_TENS_C):
 # explicitly and the headline's second group accepts a space; nothing else
 # in this file matches across a space.
 CARDS['one hundred'] = CARDS['a hundred'] = CARDS['hundred'] = 100
+# ...and 101 at the hundred-and-first close, by the same reasoning.  The
+# generated table above stops at ninety-nine, so every round-hundred
+# total from here on has to be listed by hand; noted so the next one is
+# expected rather than discovered by a NOT FOUND.
+CARDS['a hundred and one'] = CARDS['one hundred and one'] = 101
+CARDS['hundred and one'] = 101
 
 
 def secs(d):
