@@ -48,8 +48,8 @@ OFFSET = 65
 # clean file.  Raise them when the tables grow; never lower them to make a
 # run pass.
 MIN_SPANS      = 100
-MIN_TABLE_ROWS = 85
-MIN_MONO_ROWS  = 99
+MIN_TABLE_ROWS = 86
+MIN_MONO_ROWS  = 100
 # The opening-width census is written in PROSE at every span open and struck
 # at every close, so it never reaches either table above -- and prose is where
 # the stale figure lives.  At the fifty-seventh open the sentence read "the
@@ -121,6 +121,11 @@ for _t, _c in enumerate(_TENS_C):
     CARDS[_c] = (_t + 2) * 10
     for _u, _w in enumerate(_C1[:9]):
         CARDS[f'{_c}-{_w}'] = (_t + 2) * 10 + _u + 1
+# The monotonicity table reached a hundred rows at the hundredth close, so
+# the headline's total needs a word for it.  Two-word forms are listed
+# explicitly and the headline's second group accepts a space; nothing else
+# in this file matches across a space.
+CARDS['one hundred'] = CARDS['a hundred'] = CARDS['hundred'] = 100
 
 
 def secs(d):
@@ -321,7 +326,7 @@ def mono_prose(note, spans):
     # version of this function did NOT catch it -- it read the bullets'
     # count-words and not this sentence.  Enumerate the sentences; do not
     # claim "the prose" as a class.
-    m = re.search(r'\*\*([\w-]+) True of ([\w-]+)\*\* — and the breakdown', flat)
+    m = re.search(r'\*\*([\w-]+) True of ([\w -]+)\*\* — and the breakdown', flat)
     if not m:
         bad.append(('mono prose', 'True/total headline', 'NOT FOUND'))
     else:
