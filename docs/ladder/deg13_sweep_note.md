@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T19:39Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T19:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7021,6 +7021,61 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — BUT A FLOOR RULES ONE CUBE OUT OF THE BAND, AND
+  THE SAME COUNTING ERROR, A SECOND TIME.*** *Four samples at*
+  **2026-09-25T19:41:45Z**, *read by* `cnf_mtime_check.py`: **idx 1794
+  at 1907 s, idx 1796 at 298 s, idx 1797 at 281 s, idx 1798 at 276 s**,
+  *driver pid* **27185**, *max* `|now-mtime − ps ELAPSED|` *of* **1 s**
+  *over the four.* **idx 1799 has not started.**
+
+  ***idx 1794 IS ALREADY ABOVE THE BAND'S CEILING.*** *`[13,11,11,8]`
+  KEEPS iff* `979.8000 < M₁₂ < 1376.5000`, *and* **idx 1794 stands at
+  1907 s, which is 530.5000 above 1376.5000** — *a cost cannot come in
+  below its own elapsed, so it cannot be one of the cubes that lands
+  inside the band.* **That leaves four candidates: idx 1796, 1797, 1798,
+  1799.** **THIS IS WITHIN-RUN AND A RESTART PUTS idx 1794 BACK IN
+  PLAY.** *Two of the six 12-cubes are now above the ceiling —* **1758.9
+  landed and idx 1794 bounded** — *which is the direction, though no
+  verdict follows from it.*
+
+  ***THE CONDITION, IN THE THREE-PART FORM THE PARITY REQUIRES.***
+  *Given* `idx 1794 ≥ 1907`, *checked over* **400000** *draws each:*
+  **(a) all four of idx 1796, 1797, 1798, 1799 below 1376.5000 forces
+  leg two to HOLD — zero violations; (b) two or more of the four at or
+  above 1376.5000 forces it to FAIL — zero violations; (c) exactly one
+  at or above is decided by the values**, *and of* **386** *such draws*
+  **151 held**. *Sharpened for the commonest shape of (c):* **if the one
+  above lands at or beyond 1758.9, leg two holds iff the largest of the
+  three below is under 994.1000** — *zero violations of* **400000**.
+
+  ***AND THE LEG-ONE COUNTING CLAIM WAS FALSE TOO, CAUGHT THE SAME
+  WAY.*** *The sentence drafted was* "**leg one fails iff at least three
+  of the four land at or below 979.8000**". **It returned 142
+  disagreements of 400000.** *The corrected form is the same three-part
+  shape:* **(a) all four at or below 979.8000 forces leg one to FAIL —
+  zero violations; (b) leg one failing forces at least three at or below
+  — zero violations; (c) exactly three is value-dependent**, *with* **4
+  of 124** *such draws failing.* **This is the second counting iff in
+  two commits to be written and then destroyed by its own test, and the
+  cause is the same both times:** `n = 6` *is even, so* `M₁₂` *averages*
+  `x₃` *and* `x₄`, *and a count of values below a threshold cannot pin an
+  average of two of them.* **The lesson recorded one commit ago did not
+  stop the same mistake being made one paragraph later**, *which is
+  worth more than the lesson.*
+
+  ***THE CHECK-IN'S STEPS, ALL CLEAN.*** **All invariants hold; verdicts
+  `{'UNSAT': 1795, 'UNKNOWN': 169}`, 0 SAT, 0 undecided-only; 1795
+  distinct indices touched and the second opinion agrees.** **Frontier
+  contiguous 0..1793, highest decided 1795, holes `[1794]`** — *the span
+  opened at* `f762b2d` *is still open and no figures are claimed for
+  it.* **`pgrep -x iota_sym` returns 27185.** **The waiter is still
+  armed at 1964 rows**, *by the tail-anchored check.* **HEAD `41b47e3`
+  equalled `origin/claude/sunflower-deg13-p3-bhbe9w` before this
+  commit.** **Decided 1795 of 1949 = 92.0985%; 154 undecided.** *The
+  tally stays at* **eleven keep, eight break, of nineteen settled
+  blocks**, *and the census at* **49 and 49.** **Bracket unchanged: 27 ≤
+  ι(4) ≤ 71.**
 
   ***idx 1795, idx 1786 AND idx 1793 UNSAT — `[13,11,11,9]` IS COMPLETE
   AND ITS 12-MEDIAN LANDS EXACTLY ON THE CEILING IT HAD AT THE VERDICT
