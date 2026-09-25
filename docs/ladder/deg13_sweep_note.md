@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T19:42Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T19:45Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6883,7 +6883,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1961 -> 1964 rows)
+## State as of the last refresh (1964 -> 1965 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6894,7 +6894,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1964 rows; 1795 labels decided; 1795 UNSAT; 0 SAT; 0 labels
+- **1965 rows; 1796 labels decided; 1796 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6936,7 +6936,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1795 decided plus 169 superseded
+  A row count is not a decision count: 1796 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6986,8 +6986,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1793, highest decided 1795, holes [1794].**
-  <!-- SPAN-STATE: open -->
+- **Frontier contiguous 0..1795, highest decided 1795, holes [].**
+  <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -7021,6 +7021,56 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1794 UNSAT AT 2001.8 s — THE SPAN CLOSES, AND THE WITHIN-RUN
+  BOUND WRITTEN ONE COMMIT AGO IS NOW LANDED-ONLY.*** *From the staged
+  blob.* **Rank 1127 of 1796 with no tie** — *`1796 − 669 = 1127`,
+  detector agrees; read from the script.* **coord9 = 12. Holes `[]`,
+  frontier contiguous 0..1795, highest decided 1795. Decided 1796 of
+  1949 = 92.1498%; 153 undecided; still 0 SAT.** **`[13,11,11,8]` is at
+  7 of 11.**
+
+  ***THE SPAN OPENED AT `f762b2d` IS CLOSED.*** *idx 1794 was the last
+  hole and the frontier caught up with it.* **The `SPAN-STATE` marker
+  flips to closed here and the three live-only census sentences are
+  struck**, *per the two-commit close.* **THIS COMMIT CARRIES NO SPAN
+  FIGURES AT ALL** — *duration, commit count, hole chain, both ranks and
+  the monotonicity verdict come from* `--spans all` *in the* **next**
+  *commit, with every carried row first reproduced at the old* `N = 176`.
+  *That is the convention and it is not shortened because the figures
+  are one command away.*
+
+  ***AND THE BOUND IS NOW RESTART-PROOF.*** *`f712bcb`, one commit ago,
+  recorded* **idx 1794 at 1907 s of elapsed, 530.5000 above the band's
+  ceiling of 1376.5000**, *and said in terms that it was* **within-run,
+  and that a restart would put the cube back in play.** **It landed at
+  2001.8 — 625.3000 above the ceiling — so the exclusion is now read off
+  a landed cost and survives a restart.** *The floor held by* **94.8 s**.
+  **Two of `[13,11,11,8]`'s six 12-cubes are now above the ceiling on
+  landed values — 1758.9 and 2001.8 — and four are outstanding: idx
+  1796, 1797, 1798, 1799.**
+
+  ***THE CONDITION CARRIES OVER UNCHANGED, AND IS NO LONGER
+  CONDITIONAL.*** **`[13,11,11,8]` KEEPS iff `979.8000 < M₁₂ <
+  1376.5000`**, *with* `M₁₂ = (x₃ + x₄)/2` *of six and two of the six
+  already above the ceiling.* **(a) All four outstanding below
+  1376.5000 forces leg two to HOLD; (b) two or more of the four at or
+  above forces it to FAIL; (c) exactly one at or above is decided by the
+  values.** *Stated at* `f712bcb` *as a within-run consequence of idx
+  1794's floor;* **it is now a consequence of its landed cost, and the
+  three parts are unchanged.**
+
+  ***AND THE HEADLINE GUARD FIRED ON AN ARCHIVED ENTRY FOR THE THIRD
+  TIME IN THIS SESSION.*** *This entry was first written under* `assert
+  'THE SPAN CLOSES' not in t`. **It fired, and correctly nothing was
+  written** — *four archived entries carry that phrase.* *The same shape
+  fired on* **"TWO ROWS IN ONE BANK"** *and on* **"A SPAN OPENS AT WIDTH
+  THREE"**. **Three for three**: *every generic headline tried as an
+  already-present guard in this session has collided with the archive,
+  and every time the fix was to key the guard to a figure from the
+  draft's own body instead — here,* `625.3000 above the ceiling`.
+  **A guard keyed to a headline in this file is not a guard, it is a
+  coin flip that has now come up tails three times running.**
 
   ***NO ROW LANDED — BUT A FLOOR RULES ONE CUBE OUT OF THE BAND, AND
   THE SAME COUNTING ERROR, A SECOND TIME.*** *Four samples at*
@@ -7606,18 +7656,14 @@ exactly one bank.
   walk is still at* **176** *closed spans and the next close takes the*
   **hundred-and-twelfth** *ordinal.*
 
-  ***THE OPENING-WIDTH CENSUS, LIVE.*** **This is the first opening at
-  two since the hundred-and-eleventh**, *which is the most recent close
-  of all — so this is a second opening at two in a row.* *Among the
-  closed spans, those* opened at two are **60** of the 176, and the last
-  five of them ordinals **99, 100, 103, 104 and 111**. Over the **176**
+  ***THE OPENING-WIDTH CENSUS.*** Over the **176**
   closed chains the opening hole count is **1 in 59, 2 in 60, 3 in 54
   and 4 in 3**, so two is **34.1%** — *the most common opening width,
-  just ahead of one at 59 and three at 54.* **The three live-only
-  sentences here — the "since the" ordinal, the "M of the N" count and
-  the last-five list — are struck when this span closes**, *per the
-  census convention; the "Over the 176" sentence survives, because it is
-  checked against the walk's first 176 spans and stays true for good.*
+  just ahead of one at 59 and three at 54.* *The three live-only
+  sentences that stood here — the "since the" ordinal, the "M of the N"
+  count and the last-five list — are* **struck at this close**, *per the
+  census convention; the sentence above survives because it is checked
+  against the walk's first 176 spans and stays true for good.*
 
   ***THE VERDICT NOW RESTS ENTIRELY ON LEG TWO, AND IT HAS TWO FORCING
   THRESHOLDS.*** *With leg one settled the iff registered at* `e445d45`
@@ -32359,7 +32405,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1795 of 1949 = 92.0985%**; **154 undecided**. **50% IS CROSSED**, at
+- **1796 of 1949 = 92.1498%**; **153 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -33073,7 +33119,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 8]` idx 1789..1799: **11 members**,
-  **6 decided**, undecided [1794, 1796, 1797, 1798, 1799]
+  **7 decided**, undecided [1796, 1797, 1798, 1799]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
