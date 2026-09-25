@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T13:41Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T13:50Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6872,7 +6872,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1922 -> 1923 rows)
+## State as of the last refresh (1923 -> 1924 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6883,7 +6883,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1923 rows; 1754 labels decided; 1754 UNSAT; 0 SAT; 0 labels
+- **1924 rows; 1755 labels decided; 1755 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6925,7 +6925,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1754 decided plus 169 superseded
+  A row count is not a decision count: 1755 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6975,7 +6975,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1753, highest decided 1753, holes [].**
+- **Frontier contiguous 0..1754, highest decided 1754, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7010,6 +7010,64 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1754 UNSAT AT 1212.9 s — 90% IS CROSSED, ON THE ROW THE TRAP
+  ENTRY NAMED.*** **Rank 1365 of 1755 with no tie** — *`1755 − 390 =
+  1365`, detector agrees; read from the script.* **coord9 = 13. Holes
+  `[]`, frontier contiguous 0..1754, highest decided 1754. Decided 1755
+  of 1949 = 90.0462%; 194 undecided; still 0 SAT.** **No span is open.**
+  ***THE PREDICTION WAS EXACT***: *two commits ago this note wrote* **"the
+  crossing is at 1755 decided = 90.0462%"** *before the row existed, and
+  the row is* **1755 = 90.0462%**, *to the fourth decimal.*
+
+  ***AND THE PAIR IS DISPLAYED — WHICH ENDS A RUN OF THREE THAT WERE
+  NOT.*** *A threshold's pair is* **displayed** *when both the trap row
+  and the crossing row were committed states.* **The trap row 1754 was
+  committed at `9242bd0` and the crossing row 1755 is committed here**,
+  *so both exist in the history as separate states.* **86%, 87% and 88%
+  were each tracked and each not displayed**, *the crossing row swept
+  into a bank with a neighbour every time.* **That takes the count to
+  ten thresholds tracked, six displayed, four not** — *the four
+  unchanged at 83%, 86%, 87% and 88%.*
+
+  ***AND 89% WENT PAST WITHOUT BEING TRACKED AT ALL.*** *Computed from
+  the commit history rather than remembered: `0.89 × 1949 = 1734.61`, so
+  the trap row is* **1734 = 88.9687%, which prints as 89.0%**, *and the
+  crossing is* **1735 = 89.0200%**. **1734 WAS a committed state —
+  `82e74ba`, the hundred-and-sixth span's close — and 1735 never was:
+  the next checkpoint commit, `de0eff3`, jumped straight to 1737.** *So
+  89% is a* **fifth** *threshold whose pair went undisplayed, and it is*
+  **not in the count above**, *because the note never registered it.*
+  ***THE TRACKING HAS A HOLE IN IT AND THE HOLE IS EXACTLY ONE
+  THRESHOLD WIDE.*** **"Ten tracked" does not mean ten consecutive**:
+  *the note registered 87% and 88% in advance, crossed 89% in silence,
+  then registered 90%.* *Nothing mechanical watches for the next
+  threshold — the registrations are written by hand when someone notices
+  the counter approaching one, and at 89% nobody did.* **Recorded as a
+  gap in the instrument, not as a figure to be corrected**: *the
+  crossings themselves are all in the checkpoint and none was lost; what
+  was missed was the* **advance registration**, *which is the only part
+  that was ever worth anything.*
+
+  | threshold | trap row | crossing row | tracked? | displayed? |
+  |---|---|---|---|---|
+  | 86% | 1676 = 85.9928% | 1677 = 86.0441% | yes | **no** |
+  | 87% | 1695 = 86.9677% | 1696 = 87.0190% | yes | **no** |
+  | 88% | 1715 = 87.9938% | 1716 = 88.0452% | yes | **no** |
+  | 89% | 1734 = 88.9687% | 1735 = 89.0200% | ***no*** | **no** |
+  | 90% | 1754 = 89.9949% | 1755 = 90.0462% | yes | ***yes*** |
+
+  ***`[13,11,11,10]` REACHES 2 OF 21, BOTH IN THE 13-GROUP.*** **463.9
+  and 1212.9**, *so that group stands at* **2 of 5 against a threshold
+  of 3**. **One more coord9 = 13 cube and the 13-median goes cap-free**
+  — *by the `m ≥ k` lemma, and it would be the first of the block's
+  three brackets to do so.* *The 12- and 11-groups are at* **0 of 11**
+  *and* **0 of 5**, *so the direction window has nothing to compare yet.*
+  **All three brackets go cap-free only after ten more cubes land —
+  1 in the 13-group, 6 in the 12-group, 3 in the 11-group** — *summed
+  from each group's own `k − m`, and a floor on the count, not a
+  guarantee at it.* *A draft wrote* **"at least nine"**, *which dropped
+  the 13-group's outstanding one; the three shortfalls are 1, 6 and 3.*
 
   ***THE REFIGURING — AND THE COMMIT COLUMN MOVED 62 AFTER TWO CLOSES
   AT ZERO.*** **93 of 93 carried rows reproduced at the OLD N = 172,
@@ -30290,7 +30348,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1754 of 1949 = 89.9949%**; **195 undecided**. **50% IS CROSSED**, at
+- **1755 of 1949 = 90.0462%**; **194 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -31004,7 +31062,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 10]` idx 1753..1773: **21 members**,
-  **1 decided**, undecided 20 spanning 1754..1773
+  **2 decided**, undecided 19 spanning 1755..1773
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
