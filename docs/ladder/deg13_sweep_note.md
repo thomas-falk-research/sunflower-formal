@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T12:25Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T12:32Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6867,7 +6867,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1910 -> 1911 rows)
+## State as of the last refresh (1911 -> 1912 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6878,7 +6878,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1911 rows; 1742 labels decided; 1742 UNSAT; 0 SAT; 0 labels
+- **1912 rows; 1743 labels decided; 1743 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#55**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6920,7 +6920,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1742 decided plus 169 superseded
+  A row count is not a decision count: 1743 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 27185**, launched 2026-09-25T09:57:03.040000Z (read from
@@ -6970,8 +6970,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1741, highest decided 1741, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1741, highest decided 1743, holes [1742].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -7005,6 +7005,49 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1743 UNSAT AT 1054.2 s — THE 12-BRACKET GOES CAP-FREE AND LEG
+  ONE IS FORCED. THE FIRST REGISTRABLE FACT THIS BLOCK HAS
+  PRODUCED.*** **Rank 1428 of 1743 with no tie** — *`1743 − 315 = 1428`,
+  detector agrees; read from the script.* **coord9 = 12. Holes
+  `[1742]`, frontier contiguous 0..1741, highest decided 1743. Decided
+  1743 of 1949 = 89.4305%; 206 undecided; still 0 SAT.**
+  **`[13,11,11,11]` is at 18 of 28.**
+
+  ***THE 12-GROUP REACHES m = 8 = k AND THE CAP LEAVES THE BRACKET,
+  EXACTLY AS THE LEMMA SAYS.*** *Landed:* **979.2, 1054.2, 1061.5,
+  1234.8, 1242.9, 1472.1, 2260.6, 2432.0.** **The bracket collapses from
+  [489.6000, 12016.0000] to [1016.7000, 2346.3000]** — *a width of*
+  **1329.6000** *where it was* **11526.4000**, *and its upper end is
+  unchanged when the six unknowns are set to 10¹² instead of the cap.*
+  **Checked over 200 000 random fills of the six unknowns: every median
+  landed inside.**
+
+  ***LEG ONE HOLDS: 13 < 12, BY 407.7000 s.*** *The 13-median is final
+  at* **609.0000** *and the 12-median is now known to be* **≥
+  1016.7000**. ***AND THE BOUND IS CAP-FREE, SO IT RESTS ON LANDED
+  VALUES ALONE AND SURVIVES A RESTART*** — *unlike every elapsed-floor
+  bound this file has registered, which a teardown destroys.* **That is
+  the first thing `[13,11,11,11]` has settled**, *eighteen cubes in.*
+
+  ***LEG TWO IS UNTOUCHED, AND THE TALLY DOES NOT MOVE.*** *The
+  11-median is* **[524.0000, 12055.1000]** *— still* `m = 4 < k = 5`,
+  *still not cap-free — and it overlaps the 12-bracket completely, so*
+  **nothing is forced about their order in either direction.** *The
+  11-group needs one more cube to go cap-free.* **A block with one leg
+  held and one leg open is an undecided block**, *and the tally stays at
+  nine keep, seven break, of sixteen settled blocks.*
+
+  ***AND THE HUNDRED-AND-SEVENTH SPAN OPENS AT WIDTH ONE*** — *walk
+  position* **172** *less the OFFSET of 65.* Over the **171** closed
+  chains the opening hole count is **1 in 55, 2 in 59, 3 in 54 and 4 in
+  3**, so one is **32.2%**. **It is the first opening at one since the
+  hundred-and-sixth**, and the closed spans that opened at one are
+  **55** of the 171, the last five of them ordinals **83, 86, 88, 93 and
+  106**. **No figures are claimed for this span until it closes.**
+  *This ordinal was written once before and withdrawn when its hole
+  filled before any commit; the width and census here are read from the
+  blob this commit stages.*
 
   ***idx 1741 UNSAT AT 2409.1 s — THE 11-GROUP'S LOWER END LEAVES ZERO
   TOO, AND ALL THREE WINDOW TERMS ARE BOUNDED AT LAST.*** **Rank 967 of
@@ -29529,7 +29572,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1742 of 1949 = 89.3792%**; **207 undecided**. **50% IS CROSSED**, at
+- **1743 of 1949 = 89.4305%**; **206 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -30243,7 +30286,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 11, 11]` idx 1725..1752: **28 members**,
-  **17 decided**, undecided 11 spanning 1742..1752
+  **18 decided**, undecided 10 spanning 1742..1752
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
