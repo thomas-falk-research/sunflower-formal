@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-25T08:17Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-25T08:25Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6854,7 +6854,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (1861 -> 1862 rows)
+## State as of the last refresh (1862 -> 1864 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6865,7 +6865,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **1862 rows; 1693 labels decided; 1693 UNSAT; 0 SAT; 0 labels
+- **1864 rows; 1695 labels decided; 1695 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#53**
   — ***EXTENDED IN THE SAME COMMIT AS THE ABSORB FOR THE SECOND TIME
   RUNNING, SO IT IS NO LONGER A FIRST BUT A HABIT ON ITS SECOND
@@ -6901,7 +6901,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1693 decided plus 169 superseded
+  A row count is not a decision count: 1695 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 21147**, launched 2026-09-24T20:59:10.390000Z (read from
@@ -6951,7 +6951,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1691, highest decided 1695, holes [1692, 1693, 1694].**
+- **Frontier contiguous 0..1692, highest decided 1696, holes [1693, 1694].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -6986,6 +6986,53 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE 87% TRAP LANDS ON ITS NAMED ROW.*** **Decided 1695 of 1949 =
+  86.9677%, which prints as 87.0% at one decimal and has NOT crossed.**
+  *That figure and the row it would land on were registered twelve rows
+  out at* `feb9c09`: **`0.87 × 1949 = 1695.63`, so the crossing is at
+  1696 decided = 87.0190% and 1695 decided = 86.9677% is the trap.**
+  *Both divided by script at the registration and again here.* **The
+  crossing is one landing away.** *The note's standing count is that 97
+  of 99 percent thresholds carry a trap, the exceptions being exactly
+  {2, 51}; whether the pair is DISPLAYED in consecutive commits is a
+  separate matter — five of the last seven thresholds showed it and two
+  did not, because the crossing row was swept into a bank together with
+  the trap row.*
+
+  ***idx 1692 UNSAT AT 2893.6 s AND idx 1696 AT 628.0 s.*** **idx 1692
+  rank 834 of 1695 with no tie** (*`1695 − 861 = 834`, detector agrees*),
+  **coord9 = 12**, *filling a hole*; **idx 1696 rank 1539 of 1695 with
+  no tie** (*`1695 − 156 = 1539`*), **coord9 = 13**, *opening a block.*
+  **Holes `[1693, 1694]`, frontier contiguous 0..1692, highest decided
+  1696; 254 undecided; still 0 SAT.** *The hundred-and-second span
+  narrows from three to two — chain* **3, 3, 2** *so far, non-increasing
+  with one flat, and no figures are claimed until it closes.*
+  **`[13,12,9,8]` is at 5 of 7**, its coord9 = 12 group at **2 of 4**
+  (1116.8, 2893.6) against a threshold of 3, *and the block is
+  untestable either way.*
+
+  ***AND THE RUN WRITTEN DOWN IN ADVANCE IS ON ITS SECOND BLOCK, AS
+  STATED.*** `270c759` *recorded the untestable run as* **idx
+  1689..1724, 15 blocks, sizes 7, 5, 3, 2, 1, 1, 5, 3, 2, 1, 1, 2, 1, 1,
+  1**, *with the next testable block* `[13,11,11,11]` *at idx 1725.*
+  **Block one was `[13,12,9,8]` at idx 1689..1695 with 7 cubes; block
+  two is `[13,12,9,7]` at idx 1696..1700 with 5**, *coord9* **{13: 3,
+  12: 2}**, *no coord9 = 11 member.* **Both match.** *And the honest
+  reading is narrow:* **the run's shape is a derivation from `SEQ`, not
+  a forecast of behaviour** — *the enumeration could not have come out
+  otherwise, so what is checked here is whether `SEQ` was read
+  correctly, not whether the sweep did something predicted. Worth
+  writing in advance because a misreading would surface here; worth
+  nothing beyond that.*
+
+  ***THIS ENTRY WAS ALSO DRAFTED STALE, AT 1694, AND REWRITTEN AT
+  1695.*** *idx 1692 landed between the draft and the bank — the second
+  time in a handful of commits — and the draft's headline was* **"the
+  next landing is the 87% trap row"**, *which the bank made false by
+  making it the current one. Rewritten from the staged blob, not
+  patched. In this region the cubes are landing faster than an entry
+  takes to write, and the answer is the rewrite, not a faster draft.*
 
   ***idx 1695 UNSAT AT 1116.8 s, OUT OF ORDER BY THREE — THE
   HUNDRED-AND-SECOND SPAN OPENS AT WIDTH THREE.*** **Rank 1376 of 1693
@@ -28122,7 +28169,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1693 of 1949 = 86.8651%**; **256 undecided**. **50% IS CROSSED**, at
+- **1695 of 1949 = 86.9677%**; **254 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -28836,7 +28883,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 12, 9, 8]` idx 1689..1695: **7 members**,
-  **4 decided**, undecided [1692, 1693, 1694]
+  **5 decided**, undecided [1693, 1694]
+- `[13, 12, 9, 7]` idx 1696..1700: **5 members**,
+  **1 decided**, undecided [1697, 1698, 1699, 1700]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
