@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T04:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T05:01Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6925,7 +6925,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2048 -> 2049 rows)
+## State as of the last refresh (2049 -> 2050 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6936,7 +6936,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2049 rows; 1880 labels decided; 1880 UNSAT; 0 SAT; 0 labels
+- **2050 rows; 1881 labels decided; 1881 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6978,7 +6978,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1880 decided plus 169 superseded
+  A row count is not a decision count: 1881 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7028,7 +7028,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1877, highest decided 1882, holes [1878, 1880, 1881].**
+- **Frontier contiguous 0..1877, highest decided 1882, holes [1878, 1880].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7063,6 +7063,58 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1881 UNSAT AT 491.2 s — AND THE WHOLE MESSY LIST OF "CPU MARGINS" IS
+  REPLACED BY ONE IDENTITY, CHECKED ON 22 CUBES.*** *From the staged blob.*
+  **Rank 1731 of 1881 with no tie** — *`1881 − 150 = 1731`; detector agrees.*
+  **Decided 1881 of 1949 = 96.5110%; 68 undecided.** **Frontier contiguous
+  0..1877, highest decided 1882, holes `[1878, 1880]`** — *the count falls from
+  three back to two.* **Still 0 SAT.** **`[13,11,9,5]` is COMPLETE at 1 of 1: a
+  one-member block, 13-median `491.2000`, final on arrival** — *and the floor
+  bound this note put on it one bank ago,* **≥ 418.0000**, *held with slack*
+  **73.2000**. **The chain is now `2, 1, 2, 1, 3, 2`; the verdict stays FALSE and
+  the span's most-holes figure stays 3.**
+
+  ***THE IDENTITY.*** *This note has been quoting "the CPU refutation's margin"
+  as a list —* **19.1, 22.3, 37.5, 41.1, 42.7, 49, 60.1, 90.8, then 2.8 and a
+  vacuous 0** — *and calling the small ones properties of short cubes. That was
+  hand-waving. The separation between the two hypotheses' predicted finishes is
+  exactly* **`cost × (elapsed − cpu) / cpu`** *at the last sample — equivalently*
+  **`cost × (1/ratio − 1)`** — *and nothing else.* **Derived, not fitted**: *the
+  elapsed hypothesis finishes at* `t + (K − e)`, *the CPU hypothesis at*
+  `t + e(K − c)/c`, *and the difference collapses to* `K(e − c)/c`. ***CHECKED
+  AGAINST THE DIRECT COMPUTATION ON EVERY CUBE WITH A SAMPLE SINCE idx 1856 — 22
+  of 22, 0 disagreements.*** **It returns exactly `0.00` for idx 1882**, *whose
+  only sample read* `cpu = elapsed = 24`, **which is why that bank's test had no
+  power and why the arithmetic there produced a negative number.**
+
+  ***AND IT EXPLAINS THE TWO READINGS THAT CONFUSED THIS NOTE.*** **The naive
+  form — treating CPU-seconds as wall-seconds — gives a separation of just
+  `elapsed − cpu`, and the correct one is larger by a factor of `cost / cpu`.**
+  *For a cube sampled close to its finish that factor is near 1 and the two
+  agree; for one sampled early it is large.* **idx 1861 is the extreme: sampled
+  at `cpu = 22` with a cost of 870.0, the naive separation is `1 s` and the true
+  one is `39.55 s` — a factor of 39.5.** **idx 1876, the cube whose "4-second
+  margin" was flagged as a worry, has a true separation of `26.57 s`**; *the
+  alarming figure came from the naive form, which the next bank had already
+  identified as the wrong one.* ***SO THE RULE IS SIMPLE AND IS WRITTEN DOWN HERE
+  RATHER THAN RE-DERIVED EACH TIME***: **the refutation has power when
+  `cost × (1/ratio − 1)` exceeds the gap between the finish and the observed
+  write; when the sampled ratio is 1.0000 it has none at all.** **For idx 1881
+  the separation is `19.55 s` and the write was detected `17.8 s` after the
+  earliest finish, so only about two seconds of it survive** — *the refutation
+  holds, and it holds narrowly for a reason that is now a formula rather than a
+  hunch.*
+
+  ***THE ORDERING TEST IS FIFTEEN FOR FIFTEEN.*** **idx 1881's finish is in
+  `(05:00:23.2, 05:00:24.2]` and its replacement idx 1884 first appears at
+  05:01:23Z at elapsed 58, starting in `(05:00:24, 05:00:25]` — the intervals
+  intersect.** **The write bound is `17.8 s` raw, `18.8 s` widened**, *looser
+  than the standing* **3.7 s**. **Two blocks open: `[13,11,9,7]` at 2 of 3, whose
+  `n = 1` 12-median is already at least `1914.0000` on idx 1878's own elapsed —
+  that cube has now been running over 31 minutes — and `[13,11,9,6]` at 1 of 2,
+  floor bracket `[803.8500, 11086.8500]`.** **The tally stays at twelve keep, ten
+  break, of twenty-two and the census at 52 and 52.**
 
   ***idx 1882 UNSAT AT 173.5 s — A SINGLE-CUBE BLOCK IS FINAL ON ARRIVAL, THE
   CHAIN TAKES A SECOND RISE, AND THE CPU REFUTATION HAS NO POWER HERE AT ALL.***
@@ -36715,7 +36767,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1880 of 1949 = 96.4597%**; **69 undecided**. **50% IS CROSSED**, at
+- **1881 of 1949 = 96.5110%**; **68 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
