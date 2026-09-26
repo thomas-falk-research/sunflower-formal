@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T04:30Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T04:44Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6925,7 +6925,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2043 -> 2044 rows)
+## State as of the last refresh (2044 -> 2046 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6936,7 +6936,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2044 rows; 1875 labels decided; 1875 UNSAT; 0 SAT; 0 labels
+- **2046 rows; 1877 labels decided; 1877 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6978,7 +6978,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1875 decided plus 169 superseded
+  A row count is not a decision count: 1877 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7028,7 +7028,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1873, highest decided 1876, holes [1874, 1875].**
+- **Frontier contiguous 0..1874, highest decided 1877, holes [1875].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7063,6 +7063,74 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1874 AND idx 1877 UNSAT — `[13,11,9,7]`'s 13-MEDIAN GOES FINAL ON THE
+  CLOSED FORM, AND TWO REPLACEMENT PAIRINGS LAND IN ONE BANK.*** *From the
+  staged blob.* **idx 1874 at 2429.4 s, rank 992 of 1877 with no tie** —
+  *`1877 − 885 = 992`*; **idx 1877 at 1323.5 s, rank 1391 of 1877 with no tie**
+  — *`1877 − 486 = 1391`; detector agrees on both.* **Decided 1877 of 1949 =
+  96.3058%; 72 undecided.** **Frontier contiguous 0..1874, highest decided 1877,
+  holes `[1875]`** — *the span's width falls from two to one.* **Still 0 SAT.**
+  **`[13,11,9,8]` is at 4 of 5 and `[13,11,9,7]` at 2 of 3.**
+
+  ***THE CLOSED FORM REGISTERED ONE BANK AGO IS EXACT.*** **It said
+  `[13,11,9,7]`'s finished 13-median would be `(609.1 + v)/2`; `v = 1323.5`
+  gives `966.3000`, and the group's own mean is `966.3000`.** *An* `n = 2`
+  *group with both members landed, so the bracket is the point* `[966.3000,
+  966.3000]` *and there is no clamp to saturate.* **Its 12-group is `n = 1` with
+  idx 1878 outstanding, already known to be at least `893.0000` on that cube's
+  own elapsed floor.**
+
+  ***AND `[13,11,9,8]`'s 12-BRACKET IS THE `n = 2` FORM AGAIN, WITH A
+  CROSS-BANK CHECK THAT PASSES.*** **`m = 1`: hard bracket `[1214.7000,
+  12014.7000]`** — `2429.4/2` *and* `(2429.4 + 21600)/2`, **to the digit** —
+  **and floor bracket `[2075.2000, 12014.7000]` from idx 1875's floor of
+  1721 s.** ***THE CHECK IS THE INTERESTING PART***: *one bank ago, with* `m = 0`
+  *and nothing landed, this note put the median at* **≥ 2005.0000** *on floors
+  alone.* **For that bound to survive the landing, the cube still running had to
+  satisfy `v ≥ 1580.6000`** — *since the finished median is* `(2429.4 + v)/2` —
+  **and idx 1875's floor is now 1721, comfortably past it.** **The new floor
+  lower end, `2075.2000`, is ABOVE the old bound rather than below it**, *so the
+  floor method tightened across a landing instead of being contradicted by one.*
+  **No claim is made that this is the first such check**: *no count of
+  floor-only bounds carried through a landing was taken, so none is quoted.*
+
+  ***BOTH ELAPSED FLOORS HELD, ONE OF THEM BARELY.*** **idx 1874: floor 2410 s
+  at 04:42:21Z against cost 2429.4 — slack `19.4 s`. idx 1877: floor 1215 s at
+  the same batch against 1323.5 — slack `108.5 s`.** *The* **19.4 s** *is among
+  the tightest this note has recorded, though not the tightest —* **1.3 s**
+  *stands from idx 1840.*
+
+  ***AND THE ORDERING TEST GETS TWO INDEPENDENT PAIRINGS IN ONE BANK, ELEVEN
+  FOR ELEVEN.*** **idx 1874's finish is in `(04:42:39.4, 04:42:40.4]` and its
+  replacement idx 1879 first appears at elapsed 102, starting in `(04:42:39,
+  04:42:40]`; idx 1877's finish is in `(04:44:08.5, 04:44:09.5]` and its
+  replacement idx 1880 at elapsed 13 starts in `(04:44:08, 04:44:09]`.** *Both
+  pairs intersect, and this is the first bank with two replacement pairings
+  available at once.* **Both windows carry the demonstrated one-second slop, so
+  this remains the weak form of the test.** **The write bounds are looser than
+  the standing one**: *idx 1874's row was detected at 04:42:46Z giving* **under
+  6.6 s (7.6 widened)**, *and idx 1877's was in the file by 04:44:16Z giving*
+  **under 7.5 s (8.5 widened)**; *the standing bound stays* **3.7 s**.
+  ***AND THE CPU REFUTATIONS ARE BACK TO LARGE MARGINS***: **idx 1874's
+  CPU-hypothesis finish is 04:43:54.4Z — 68.4 s after the row was written and
+  75.4 s after its replacement had started; idx 1877's is 04:44:47.5Z — 31.5 s
+  and 39.5 s.** *Which answers the worry recorded at the last landing: the 4-second
+  margin there was a property of a short cube with a ratio near 1, not a trend.*
+
+  ***idx 1875 IS THE LAST HOLE AND `[13,11,9,8]`'s LAST MEMBER.*** **When it
+  lands the block completes at 5 of 5, its 12-median goes final at exactly
+  `(2429.4 + v)/2`, and `holes` goes `[]` so the hundred-and-twentieth span
+  CLOSES** — *that commit will be the first half of a two-commit close, carrying
+  no span figures.* **The chain so far is `2` at `dc3a1e9` and `1` here, with
+  `1e883c9` excluded as a no-row commit** — *so if idx 1875 lands next the chain
+  is* `2, 1`, **True on ONE comparison: the weak kind, a single coin flip, the
+  shape this note has flagged since span 3.** *A False would need a commit to
+  show two holes again, which from a single hole means a cube landing two gaps
+  ahead.* **The block is untestable either way — coord9 `{13: 3, 12: 2}`, no
+  coord9 = 11 — so the tally stays at twelve keep, ten break, of twenty-two and
+  the census at 52 and 52.** **`[13,11,9,6]`'s two cubes, idx 1879 and 1880, are
+  already in flight.**
 
   ***NO ROW LANDED — AND THE ONE-SECOND SLOP IS CORROBORATED BY A DIFFERENT PAIR
   OF CLOCKS.*** **`cnf_mtime_check.py` appended a batch at 04:42:21Z and printed
@@ -36478,7 +36546,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1875 of 1949 = 96.2032%**; **74 undecided**. **50% IS CROSSED**, at
+- **1877 of 1949 = 96.3058%**; **72 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -37192,9 +37260,9 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 9, 8]` idx 1871..1875: **5 members**,
-  **3 decided**, undecided [1874, 1875]
+  **4 decided**, undecided [1875]
 - `[13, 11, 9, 7]` idx 1876..1878: **3 members**,
-  **1 decided**, undecided [1877, 1878]
+  **2 decided**, undecided [1878]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
