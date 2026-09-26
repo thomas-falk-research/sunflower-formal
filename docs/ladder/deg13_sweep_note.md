@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T03:57Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T03:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6921,7 +6921,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2037 -> 2038 rows)
+## State as of the last refresh (2038 -> 2039 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6932,7 +6932,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2038 rows; 1869 labels decided; 1869 UNSAT; 0 SAT; 0 labels
+- **2039 rows; 1870 labels decided; 1870 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6974,7 +6974,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1869 decided plus 169 superseded
+  A row count is not a decision count: 1870 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7024,7 +7024,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1867, highest decided 1870, holes [1868, 1869].**
+- **Frontier contiguous 0..1868, highest decided 1870, holes [1869].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7059,6 +7059,88 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1868 UNSAT AT 1603.5 s — THE 12-BRACKET GOES TRIVIAL-FREE, AND THE
+  CONDITION NAMED ONE BANK AGO IS NOW MET SO THE CLOSED FORM DOES REDUCE TO A
+  CLAMP.*** *From the staged blob.* **Rank 1295 of 1870 with no tie** —
+  *`1870 − 575 = 1295`; detector agrees.* **Decided 1870 of 1949 = 95.9466%;
+  79 undecided.** **Frontier contiguous 0..1868, highest decided 1870, holes
+  `[1869]`** — *the span's width falls from two to one.* **Still 0 SAT.**
+  **coord9 = 12, so `[13,11,9,9]` is at 6 of 7 and the 12-group is at
+  `m = 3 = k`.**
+
+  ***THE TRIVIAL-FREE STATE, EXACTLY WHERE THE FORM PUTS IT.*** **`n = 4`,
+  `k = 3`, `m = 3 = k`: bracket `[1076.0500, 1566.1000]`, width `490.0500`
+  against `[311.7000, 11564.3500]` at `m = 2`** — *lower* `(623.4 + 1528.7)/2`,
+  *upper* `(1528.7 + 1603.5)/2`, **both ends landed costs and neither carrying a
+  trivial term.** *Computed by script, and the form's own prediction*
+  `[(a + b)/2, (b + c)/2]` *for the three landed sorted* `a < b < c` *matches
+  both ends to the digit.*
+
+  ***AND THE WIDTH BEING HALF THE LANDED RANGE IS AN IDENTITY, NOT AN
+  OBSERVATION.*** **`(b + c)/2 − (a + b)/2 = (c − a)/2`**, *so for every*
+  `n = 4`, `k = 3` *group at* `m = 3` *the bracket width is exactly half the
+  spread of the three landed costs — here* `980.1000 / 2 = 490.0500`. **This
+  note has recorded the ratio before as something seen**; *it is derived here,
+  which also retires the occasion when it was wrongly tied to an unrelated
+  timing figure.* **Two lines of algebra, no data.**
+
+  ***THE CLOSED FORM IS `(1528.7 + clamp(v, 623.4, 1603.5))/2` — 0
+  disagreements over 400,000 draws.*** *One bank ago, with two members
+  outstanding, this note said the median would not reduce to a clamp* **"unless
+  one of the two known values is guaranteed to be in the middle pair, and
+  neither is"**. **With three landed that condition is met**: *the middle
+  landed value* `1528.7` *is in the middle pair for every* `v` — *below*
+  `623.4` *the pair is* `(623.4, 1528.7)`, *above* `1603.5` *it is* `(1528.7,
+  1603.5)`, *and in between it is* `(v, 1528.7)` *or* `(1528.7, v)`. **So the
+  earlier sentence was right about its own case and named the exact condition
+  that has now been satisfied**, *which is the only reason it is worth
+  re-reading rather than rewriting.*
+
+  ***THE FLOOR CUTS 70.46% OFF THE WIDTH, AND THE FORM AND THE BRACKET AGREE ON
+  THE SAME NUMBER.*** **idx 1869's floor in the freshest staged batch, 03:59:42Z,
+  is 1314 s, so the floor bracket is `[1421.3500, 1566.1000]`, width
+  `144.7500` against the hard `490.0500` — a cut of `345.3000`, which is
+  `70.46%`.** *And the closed form evaluated at the floor,* `(1528.7 +
+  clamp(1314, 623.4, 1603.5))/2`, *returns* **1421.3500** *— the same figure the
+  bracket's lower end gives, which is a cross-check of the form against the
+  bracket rather than a second reading of one thing.* **Read after the final**
+  `bank.py` **run.**
+
+  ***AND THE TWO-CLOCK FINISH TEST IS FOUR FOR FOUR.*** **idx 1868's own clock:
+  elapsed 1523 at 03:57:14Z, so the start is in `(03:31:50, 03:31:51]` and the
+  finish in `(03:58:33.5, 03:58:34.5]`.** **Its replacement idx 1873 first
+  appears at 03:59:42Z at elapsed 67, so it started in `(03:58:34,
+  03:58:35]`** — *the intervals intersect in* `(03:58:34, 03:58:34.5]`. **The
+  elapsed floor held with slack 80.5 s.** ***CPU TIME IS RULED OUT AGAIN***:
+  *cpu was 1472 s, putting the finish at* **03:59:25.5Z**, **37.5 s after the
+  row was written.** **The write was detected at 03:58:48Z, so the lag is in
+  `[0, 14.5]` s** — *looser than the standing* **8.1 s** *bound; nothing
+  tightens.*
+
+  ***idx 1869 IS THE LAST HOLE AND THE BLOCK'S LAST MEMBER, SO ITS LANDING
+  CLOSES BOTH.*** **`[13,11,9,9]` completes at 7 of 7, the 12-median goes final
+  at `(1528.7 + clamp(v, 623.4, 1603.5))/2`, and `holes` goes `[]` so the
+  hundred-and-eighteenth span CLOSES** — *that commit will be the first half of
+  a two-commit close, carrying no span figures.* **The chain so far, counting
+  only commits that touch the CHECKPOINT: `3` at `4b3175c`, `2` at `42cc0fe`
+  and `1` here** — *read from each commit's own* `holes [...]` *line.*
+  ***BOTH BRANCHES OF THE VERDICT ARE NAMED NOW RATHER THAN AFTER***: **the
+  chain is monotone non-increasing so far, so the close comes out True unless
+  some commit in this span carries two or more holes again** — *which needs a
+  cube to land leaving two gaps behind it, for instance idx 1872 landing while
+  idx 1869 and idx 1871 are both still running.* **idx 1871 landing alone keeps
+  the count at one — a flat, still non-increasing, still True.** *So: True on
+  two comparisons if idx 1869 lands next, True on three if idx 1871 slips in
+  first, False the moment a commit shows two holes.*
+
+  ***THE 96% TRAP IS THE VERY NEXT ROW.*** **1871 decided = 95.9979%, which
+  prints as 96.0% at one decimal WITHOUT having crossed; the crossing is 1872 =
+  96.0493%.** *Registered in advance at* `7fde62d` *and repeated at every bank
+  since, because* **the 95% trap was walked through unremarked at its own bank**
+  *and recorded as a miss afterwards.* **The next landing sits on it.** **The
+  block stays untestable, so the tally stays at twelve keep, ten break, of
+  twenty-two**, *and the census at* **52 and 52**.
 
   ***idx 1867 UNSAT AT 1528.7 s — THE INTERMEDIATE STATE ARRIVES, AND BOTH
   ENDS OF THE 12-BRACKET MOVE ON THE SAME LANDING.*** *From the staged blob.*
@@ -35920,7 +36002,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1869 of 1949 = 95.8953%**; **80 undecided**. **50% IS CROSSED**, at
+- **1870 of 1949 = 95.9466%**; **79 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -36634,7 +36716,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 9, 9]` idx 1864..1870: **7 members**,
-  **5 decided**, undecided [1868, 1869]
+  **6 decided**, undecided [1869]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
