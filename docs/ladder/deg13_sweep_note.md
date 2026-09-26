@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T02:31Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T02:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7050,6 +7050,42 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — AND EVERY REMAINING PERCENT THRESHOLD IS REGISTERED
+  HERE, IN ADVANCE, WHICH IS THE REPAIR FOR THE 95% MISS.*** *Found on a
+  fallback check-in; the checkpoint is unchanged at* **2021 rows, 1852
+  decided = 95.0231%, holes `[1850]`, 0 SAT**, *pid 20833 unchanged, HEAD
+  equal to origin, all invariants hold.* **Nothing was re-measured: the four
+  lines below are arithmetic on 1949 and were computed by script.**
+
+  ***THE LAST ENTRY RECORDED THAT 95%'s TRAP WENT UNREMARKED AT ITS OWN
+  BANK.*** *The corrective is not an apology but a registration, so all four
+  remaining thresholds are written down now, while the counter is nineteen
+  rows short of the nearest one:*
+
+  | threshold | crossing row | at | trap row | prints | trap? |
+  |---|---|---|---|---|---|
+  | **96%** | **1872** | 96.0493% | **1871** | 95.9979% → 96.0% | **yes** |
+  | **97%** | **1891** | 97.0241% | **1890** | 96.9728% → 97.0% | **yes** |
+  | **98%** | **1911** | 98.0503% | **1910** | 97.9990% → 98.0% | **yes** |
+  | **99%** | **1930** | 99.0251% | **1929** | 98.9738% → 99.0% | **yes** |
+
+  ***ALL FOUR CARRY A TRAP, WHICH IS WHAT THE STANDING CLAIM PREDICTS*** —
+  *the note's count is* **97 of 99 thresholds carry one, the exceptions being
+  exactly {2, 51}**, *and none of 96 through 99 is an exception. So each of
+  the four rows in the trap column will print the round figure at one decimal
+  without having crossed*, **and each is named here by index so the bank that
+  hits it has no excuse.** **98%'s trap is the tightest of the four at
+  `97.9990%` — ten ten-thousandths of a point short** — *and* **96%'s at
+  `95.9979%` is the second tightest.*
+
+  ***THE COUNTER IS AT 1852, SO 1871 IS NINETEEN ROWS OFF AND 1872 IS
+  TWENTY.*** *Nothing else changed:* **idx 1850 is the last hole and the last
+  member of the untestable `[13,11,10,8]`, its closed form
+  `(2590.0 + clamp(v, 949.6, 2643.4))/2` already registered**; *the tally
+  stays at* **twelve keep, ten break, of twenty-two**, *the census at* **52
+  and 52**, *and* `[13,10,10,10]` *remains the only testable block without a
+  verdict.*
 
   ***idx 1851 UNSAT AT 949.6 s — 95% IS CROSSED — AND ITS TRAP WENT
   UNREMARKED AT ITS OWN BANK, WHICH IS A MISS.*** *From the staged blob.*
