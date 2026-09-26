@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T00:13Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T00:19Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6910,7 +6910,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2005 -> 2006 rows)
+## State as of the last refresh (2006 -> 2007 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6921,7 +6921,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2006 rows; 1837 labels decided; 1837 UNSAT; 0 SAT; 0 labels
+- **2007 rows; 1838 labels decided; 1838 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6963,7 +6963,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1837 decided plus 169 superseded
+  A row count is not a decision count: 1838 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7013,7 +7013,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1836, highest decided 1836, holes [].**
+- **Frontier contiguous 0..1837, highest decided 1837, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7048,6 +7048,56 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1837 UNSAT AT 1498.1 s — THE 13-MEDIAN GOES FINAL, THE CLAMP IS
+  EXACT AGAIN, AND THE TIE DETECTOR FIRES AND EARNS ITS KEEP.*** *From
+  the staged blob.* **Decided 1838 of 1949 = 94.3048%; 111 undecided;
+  holes `[]`; frontier contiguous 0..1837; still 0 SAT.** **coord9 = 13,
+  the FOURTH and last of that group, so `[13,11,10,9]`'s 13-group is
+  COMPLETE at 4 of 4 and the block is at 4 of 11.**
+
+  ***THE RANK IS TIED, AND THE SHORTCUT GETS IT WRONG — WHICH IS THE
+  WHOLE REASON THE DETECTOR EXISTS.*** **Competition rank 1314 of 1838:
+  1313 costs are strictly greater, 523 strictly less, and TWO are exactly
+  1498.1 — idx 1837 and idx 934.** *The* `N − cheaper` *shortcut gives*
+  `1838 − 523 = 1315`*, which is* **one too high**, *and the note's
+  standing statement is that the shortcut reproduces the rank* **only when
+  untied**. ***THIS IS THAT CASE, LIVE***: *the two readings disagree by
+  exactly 1, the detector says so, and* **1314 is the figure, taken from
+  the count of strictly-greater costs and not from the subtraction.**
+  *Every rank in this stretch has been untied until now, so this is the
+  first landing where writing the shortcut's answer would have put a wrong
+  number in the note.*
+
+  ***THE 13-MEDIAN IS FINAL AT 1492.1000, AND THE CLAMP CALLED IT.*** **The
+  four costs are 621.3, 1486.1, 1498.1, 1634.9, so the median is `(1486.1
+  + 1498.1)/2 = 1492.1000`.** *One bank ago the finished value was
+  registered as* **`(1486.1 + clamp(v, 621.3, 1634.9))/2`**; *with* `v =
+  1498.1` *that gives* **1492.1000** *— exact.* **It also landed inside
+  the floor bracket `[1325.5500, 1560.5000]` that the same entry
+  published.** *Second block running in which the last member's
+  contribution was written as a closed form before the cube existed and
+  then matched to the digit.* **The floor held too: `1165 s` at
+  00:12:08Z against a cost of 1498.1, slack 333.1 s.**
+
+  ***TWO FIGURES, KEPT SEPARATE BECAUSE THEY ARE NOT THE SAME FACT.***
+  **The two middle costs are 1486.1 and 1498.1, only `12.0 s` apart**, *so
+  the final median sits inside a very tight pair with 621.3 far below and
+  1634.9 above.* **And the `m = 3` bracket's width `506.8000` was exactly
+  half the landed range `1013.6000`**, *which is what* `[(x₁+x₂)/2,
+  (x₂+x₃)/2]` *always gives and has nothing to do with the middle pair.*
+  *A first draft joined the two with a "which is the reason"; they are
+  independent and the link was wrong.*
+
+  ***LEG ONE'S THRESHOLD FOR THIS BLOCK, REGISTERED WITH THE 12-GROUP
+  EMPTY.*** **Leg one is 13-median < 12-median, so it holds if and only if
+  the 12-median exceeds `1492.1000`.** *No 12-member has landed:* **idx
+  1838 is in flight at `1281 s`, idx 1839 at `1162 s` and idx 1841 at `12
+  s`, and the group's bracket is still exactly `[0, 21600]`** *until its
+  third lands.* **idx 1840, the `n = 1` 11-group, is at `364 s`** — *when
+  it returns the 11-median is final on arrival and leg two becomes a point
+  comparison.* **The tally stays at twelve keep, nine break, of
+  twenty-one**, *and the census at* **51 and 51**.
 
   ***idx 1836 UNSAT AT 1486.1 s — THE 13-BRACKET GOES TRIVIAL-FREE AND
   idx 1840 HAS STARTED, WHICH IS THE CUBE THAT MAKES LEG TWO A POINT.***
@@ -34556,7 +34606,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1837 of 1949 = 94.2535%**; **112 undecided**. **50% IS CROSSED**, at
+- **1838 of 1949 = 94.3048%**; **111 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -35270,7 +35320,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 10, 9]` idx 1834..1844: **11 members**,
-  **3 decided**, undecided 8 spanning 1837..1844
+  **4 decided**, undecided 7 spanning 1838..1844
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
