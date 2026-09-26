@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T03:59Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T04:02Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6921,7 +6921,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2038 -> 2039 rows)
+## State as of the last refresh (2039 -> 2040 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6932,7 +6932,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2039 rows; 1870 labels decided; 1870 UNSAT; 0 SAT; 0 labels
+- **2040 rows; 1871 labels decided; 1871 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6974,7 +6974,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1870 decided plus 169 superseded
+  A row count is not a decision count: 1871 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7024,7 +7024,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1868, highest decided 1870, holes [1869].**
+- **Frontier contiguous 0..1868, highest decided 1871, holes [1869].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7059,6 +7059,84 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1871 UNSAT AT 653.1 s — THE 96% TRAP IS HELD, AT ITS OWN BANK, ON THE
+  ROW IT WAS REGISTERED FOR.*** ***THE COUNTER READS 1871 of 1949 = 95.9979%,
+  WHICH PRINTS AS 96.0% AT ONE DECIMAL AND HAS NOT CROSSED 96%.*** **`0.96 ×
+  1949 = 1871.04`, computed by script, so the crossing is 1872 = 96.0493% and
+  this row is one short of it.** *This is the repair for the 95% miss working
+  as intended:* **95%'s trap at 1851 went unremarked at its own bank and was
+  recorded as a miss two commits later**, *after which all four remaining
+  thresholds were registered in advance at* `7fde62d`. **This one was named at
+  every bank since and is being held at the bank where it happened, not after.**
+  *From the staged blob.* **Rank 1664 of 1871 with no tie** — *`1871 − 207 =
+  1664`; detector agrees.* **78 undecided. Frontier contiguous 0..1868, highest
+  decided 1871, holes `[1869]`; still 0 SAT.**
+
+  ***AND THE CHAIN TAKES THE FLAT THAT THE PREVIOUS COMMIT NAMED AS BRANCH
+  TWO.*** *One bank ago this note wrote:* **"True on two comparisons if idx 1869
+  lands next, True on three if idx 1871 slips in first, False the moment a
+  commit shows two holes."** **idx 1871 slipped in first.** *It is ahead of the
+  hole, so the highest decided moves 1870 → 1871 and* `holes` *stays* `[1869]`
+  *at count one — a* **FLAT**, *not a rise.* **The chain is now `3, 2, 1, 1`**
+  — *read from the* `holes [...]` *line of* `4b3175c`, `42cc0fe`, `f3c2103`
+  *and this commit* — **still monotone non-increasing, so the close is still
+  headed for True, now on three comparisons.** *The third branch remains open:
+  a commit that leaves two gaps behind it would still make it False.*
+
+  ***THE 12-MEDIAN'S FLOOR BRACKET IS NOW `[1519.3500, 1566.1000]` — 90.46% OF
+  THE HARD WIDTH GONE, WITH THE LAST MEMBER STILL RUNNING.*** **idx 1869's
+  floor in the freshest staged batch, 04:02:59Z, is 1510 s**, *so the floor
+  bracket is* `[1519.3500, 1566.1000]`, **width `46.7500` against the hard
+  `490.0500`: a cut of `443.3000`, which is `90.46%`.** *One bank ago the same
+  bracket was* `[1421.3500, 1566.1000]` *at width* `144.7500`, *so the floor
+  alone has taken another* **98.0000** *off it.* **And the closed form
+  evaluated at the floor, `(1528.7 + clamp(1510, 623.4, 1603.5))/2`, returns
+  `1519.3500`** — *the bracket's lower end again, which is the form and the
+  bracket agreeing rather than one figure read twice.* **The finished 12-median
+  is now pinned inside a 46.75-second window before its last cube has
+  finished.**
+
+  ***AND THE TWO-CLOCK FINISH TEST TIGHTENS THE WRITE-LAG BOUND, FIVE FOR
+  FIVE.*** **idx 1871's own clock: elapsed 505 at 03:59:42Z, so the start is in
+  `(03:51:16, 03:51:17]` and the finish in `(04:02:09.1, 04:02:10.1]`.** *That
+  start interval is worth one line on its own:* **the cube's FIRST sample, 29 s
+  at 03:51:46Z, gives the identical interval `(03:51:16, 03:51:17]`** — *two
+  samples eight minutes apart placing the same start inside the same second,
+  which is a check on the sampler rather than on the cost.* **Its replacement
+  idx 1874 first appears at 04:02:59Z at elapsed 49, so it started in
+  `(04:02:09, 04:02:10]`; the intervals intersect in `(04:02:09.1,
+  04:02:10]`.** ***AND THE WRITE WAS DETECTED AT 04:02:15Z, SO THE LAG IS UNDER
+  5.9 s*** — **which is TIGHTER than the standing 8.1 s bound and becomes the
+  new one.** *It is still a bound and not a reading, for the same reason as
+  before: the detection sits on a 20-second poll grid, so every figure of this
+  kind is an upper bound.* **The elapsed floor held with slack 148.1 s.** **CPU
+  time is ruled out again**: *cpu was 481 s, putting the finish at* **04:02:34.1Z**,
+  **19.1 s after the row was written.**
+
+  ***`[13,11,9,8]` OPENS AND IS UNTESTABLE — EIGHT IN A ROW NOW.*** **5
+  members, idx 1871..1875, coord9 `{13: 3, 12: 2}` and NO coord9 = 11**,
+  *enumerated from* `SEQ`. **That is the same shape as `[13,11,10,7]` exactly**:
+  *a* `n = 3`, `k = 2` *13-group — two states, the finished median* `clamp(v,
+  min, max)` *on the third — and a* `n = 2`, `k = 2` *12-group, the mean of the
+  two, with three states and the* `m = 1` *bracket* `[v/2, (v + 21600)/2]`.
+  **With only idx 1871 landed the 13-bracket is exactly `[0, 21600]` at `m = 1`
+  and the 12-bracket is exactly `[0, 21600]` at `m = 0`.** **The untestable run
+  is now eight blocks — `[13,11,10,8]`, `[13,11,10,7]`, `[13,11,10,6]`,
+  `[13,11,10,5]`, `[13,11,10,4]`, `[13,11,10,3]`, `[13,11,9,9]` and
+  `[13,11,9,8]`** — *beginning immediately after* `[13,11,10,9]`, *and*
+  `[13,11,9,7]` *behind it is untestable too.* **Two blocks open: `[13,11,9,9]`
+  at 6 of 7 and `[13,11,9,8]` at 1 of 5.** **The tally stays at twelve keep,
+  ten break, of twenty-two**, *and the census at* **52 and 52**; **the next
+  testable block is still `[13,10,10,10]` at idx 1892..1902, twenty-one indices
+  past the frontier.**
+
+  ***THE 96% CROSSING IS THE NEXT ROW, AND THE THREE REMAINING PAIRS ARE
+  RE-READ FROM SCRIPT HERE.*** **1872 = 96.0493% crosses. 97%: trap 1890 =
+  96.9728%, crossing 1891 = 97.0241%. 98%: trap 1910 = 97.9990%, crossing 1911
+  = 98.0503%. 99%: trap 1929 = 98.9738%, crossing 1930 = 99.0251%.** *All eight
+  figures divided by script in the same run, not carried forward from the
+  commit that first registered them.*
 
   ***idx 1868 UNSAT AT 1603.5 s — THE 12-BRACKET GOES TRIVIAL-FREE, AND THE
   CONDITION NAMED ONE BANK AGO IS NOW MET SO THE CLOSED FORM DOES REDUCE TO A
@@ -36002,7 +36080,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1870 of 1949 = 95.9466%**; **79 undecided**. **50% IS CROSSED**, at
+- **1871 of 1949 = 95.9979%**; **78 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -36717,6 +36795,8 @@ exactly one bank.
 
 - `[13, 11, 9, 9]` idx 1864..1870: **7 members**,
   **6 decided**, undecided [1869]
+- `[13, 11, 9, 8]` idx 1871..1875: **5 members**,
+  **1 decided**, undecided [1872, 1873, 1874, 1875]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
