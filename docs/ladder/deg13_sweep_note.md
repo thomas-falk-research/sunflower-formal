@@ -7060,6 +7060,27 @@ exactly one bank.
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
 
+  ***NO ROW LANDED — AND THE 12-MEDIAN'S FLOOR BRACKET TIGHTENED BY 156.0000
+  ON THE SAMPLE LOG ALONE.*** **`cnf_mtime_check.py` appended a batch at
+  03:44:25Z: idx 1867 at 782 s, idx 1868 at 753, idx 1869 at 396, idx 1870 at
+  211** — *the same four cubes, all still outstanding in the checkpoint at*
+  **2036 rows, 1867 decided, holes `[]`, 0 SAT**, *none of which moved.*
+  **Sorted, the floors are `211, 396, 753, 782`, so the `n = 4`, `k = 3` floor
+  bracket is `[574.5000, 21600.0000]`** — *lower end* `(396 + 753)/2`,
+  *computed by script and not in the head.* **That is up from `[418.5000,
+  21600.0000]` one commit ago, a gain of `156.0000` with no row landing at
+  all.** *The figure is read from the* **FRESHEST** *batch, which is the whole
+  point: the previous commit's lower end came from the 03:41:49Z batch and was
+  already superseded when this one was written.*
+
+  ***THIS IS A NO-ROW COMMIT AND IT DOES NOT TOUCH THE CHECKPOINT.*** **No
+  span is open — holes `[]` and the `SPAN-STATE` marker is closed — so there
+  is no hole chain for it to be counted in or excluded from.** *Recorded
+  because the last two closes both turned on which commits touch the
+  checkpoint, and the rule is worth restating at a commit where it happens to
+  cost nothing.* **The tally stays at twelve keep, ten break, of twenty-two**,
+  *the census at* **52 and 52**, *and the* **96% trap is still four rows off**.
+
   ***idx 1865 AND idx 1866 UNSAT — `[13,11,9,9]`'s 13-GROUP GOES FINAL, AND
   THE STATE THE CLOSED FORM DESCRIBED NEVER EXISTED.*** *From the staged
   blob.* **idx 1865 at 881.3 s, rank 1581 of 1867 with no tie** — *`1867 − 286
