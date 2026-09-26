@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T02:20Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T02:28Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6912,7 +6912,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2017 -> 2019 rows)
+## State as of the last refresh (2019 -> 2020 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6923,7 +6923,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2019 rows; 1850 labels decided; 1850 UNSAT; 0 SAT; 0 labels
+- **2020 rows; 1851 labels decided; 1851 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6965,7 +6965,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1850 decided plus 169 superseded
+  A row count is not a decision count: 1851 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7015,8 +7015,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1849, highest decided 1849, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1849, highest decided 1852, holes [1850, 1851].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -7050,6 +7050,48 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1852 UNSAT AT 554.8 s — A THIRD UNTESTABLE BLOCK IN A ROW OPENS,
+  AND A SPAN OPENS AT WIDTH TWO.*** *From the staged blob.* **Rank 1689 of
+  1851 with no tie** — *`1851 − 162 = 1689`; detector agrees.* **Decided
+  1851 of 1949 = 94.9718%; 98 undecided.** **Frontier contiguous 0..1849,
+  highest decided 1852, holes `[1850, 1851]`; still 0 SAT.** **Two blocks
+  open: `[13,11,10,8]` at 5 of 7 and `[13,11,10,7]` at 1 of 5.**
+
+  ***`[13,11,10,7]` IS NOT TESTABLE EITHER.*** **5 members, idx 1852..1856,
+  coord9 `{13: 3, 12: 2}` and NO coord9 = 11**, *enumerated from* `SEQ`.
+  **So it has no direction window and the tally cannot move on it.** *That
+  is* `[13,11,10,8]` *and* `[13,11,10,7]` *back to back, both blocked by the
+  same missing group* — **the census's standing fact that every one of the
+  118 untestable blocks lacks the 11-group, holding again.** **Its shape:
+  coord9 = 13 is `n = 3`, `k = 2`, odd — two states, `[min, max]` of the two
+  landed at `m = 2`; coord9 = 12 is `n = 2`, `k = 2`, even — the mean of the
+  two, with the `m = 1` bracket `[v/2, (v + 21600)/2]` and three states.**
+  **At `m = 1` the 13-bracket is exactly `[0, 21600]`.**
+
+  ***A SPAN OPENS AT WIDTH TWO.*** **idx 1852 is the first member of the next
+  block and it landed while idx 1850 and idx 1851 — the last two of
+  `[13,11,10,8]` — are still running, so the frontier stayed at 1849 and two
+  holes opened in one commit. The `SPAN-STATE` marker flips to open here.**
+  **Per the `#29` rider the width is what the commit carries** — *recorded
+  as* **two** *and re-read from* `bank.py` *in the last run before this
+  commit.* **No figures are claimed for the span**; *duration, commit count,
+  chain and both ranks come from* `--spans all` *at the close, and the walk
+  stands at* **181** *closed spans with the next close taking the*
+  **hundred-and-seventeenth** *ordinal.* ***AND THE CHAIN WILL NOT COUNT A
+  NO-ROW COMMIT IF ONE OCCURS***: *the hundred-and-sixteenth close's figures
+  entry established that the walk counts commits touching the CHECKPOINT,
+  and a prediction made here should exclude any such commit from the start.*
+
+  ***THE OPENING-WIDTH CENSUS, LIVE.*** **This is the first opening at two
+  since the hundred-and-fifteenth**. *Among the closed spans, those* opened
+  at two are **63** of the 181, and the last five of them ordinals **104,
+  111, 112, 114 and 115**. Over the **181** closed chains the opening hole
+  count is **1 in 59, 2 in 63, 3 in 56 and 4 in 3**, so two is **34.8%** —
+  ***FIRST, ahead of one at 59 and three at 56***. **The three live-only
+  sentences here are struck when this span closes**, *per the census
+  convention.* **The tally stays at twelve keep, ten break, of twenty-two**,
+  *and the census at* **52 and 52**.
 
   ***THE HUNDRED-AND-SIXTEENTH SPAN'S FIGURES — VERDICT CONFIRMED, CHAIN
   LENGTH PREDICTED WRONG BY ONE, AND THE REASON IS EXACT.*** *The previous
@@ -35167,7 +35209,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1850 of 1949 = 94.9205%**; **99 undecided**. **50% IS CROSSED**, at
+- **1851 of 1949 = 94.9718%**; **98 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -35882,6 +35924,8 @@ exactly one bank.
 
 - `[13, 11, 10, 8]` idx 1845..1851: **7 members**,
   **5 decided**, undecided [1850, 1851]
+- `[13, 11, 10, 7]` idx 1852..1856: **5 members**,
+  **1 decided**, undecided [1853, 1854, 1855, 1856]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
