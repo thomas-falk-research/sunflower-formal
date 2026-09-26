@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T05:52Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T06:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6930,7 +6930,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2068 -> 2070 rows)
+## State as of the last refresh (2070 -> 2081 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6941,7 +6941,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2070 rows; 1901 labels decided; 1901 UNSAT; 0 SAT; 0 labels
+- **2081 rows; 1912 labels decided; 1912 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6983,7 +6983,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1901 decided plus 169 superseded
+  A row count is not a decision count: 1912 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7033,7 +7033,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1899, highest decided 1902, holes [1900, 1901].**
+- **Frontier contiguous 0..1907, highest decided 1912, holes [1908].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7068,6 +7068,80 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***ELEVEN ROWS — `[13,10,10,10]` IS COMPLETE AND BREAKS ON LANDED VALUES, SO
+  THE TALLY MAKES ITS LAST MOVE AND THE CENSUS REACHES 53 OF 53.*** *From the
+  staged blob.* **Decided 1912 of 1949 = 98.1016%; 37 undecided. Frontier
+  contiguous 0..1907, highest decided 1912, holes `[1908]`; still 0 SAT.** **The
+  eleven: idx 1900 (1499.2), 1901 (866.0), 1903 (391.9), 1904 (848.5), 1905
+  (939.5), 1906 (1578.3), 1907 (1554.5), 1909 (754.4), 1910 (389.6), 1911
+  (823.0) and 1912 (728.4)** — *ranks 1335, 1605, 1808, 1609, 1576, 1309, 1315,
+  1642, 1810, 1618 and 1652 of 1912,* **none tied, every one reproduced by
+  `N − cheaper`.**
+
+  ***THE VERDICT IS HARD NOW, NOT FLOOR-CONTINGENT.*** **`[13,10,10,10]`'s
+  12-group is COMPLETE at 6 of 6: `250.9, 811.6, 850.8, 866.0, 1175.5, 1499.2`,
+  so the 12-median is FINAL at `858.4000` — the mean of `850.8` and `866.0`.**
+  **Against the final 13-median `459.2000` and the final 11-median `618.4000`:
+  LEG ONE HOLDS and LEG TWO FAILS, the 12-median exceeding the 11-median by
+  `240.0000 s`.** ***SO THE BLOCK BREAKS, ON LANDED VALUES, RESTART-PROOF.***
+  *The registered condition was that the BREAK would be hard once both remaining
+  cubes landed with the larger of them at least* `425.2000`; **they landed at
+  `1499.2` and `866.0`, both far past it.**
+
+  ***AND THE TALLY MOVES FOR THE LAST TIME: TWELVE KEEP, ELEVEN BREAK, OF
+  TWENTY-THREE.*** *It had been held frozen at twelve/ten of twenty-two for two
+  commits while the verdict rested on floors, exactly as the convention
+  requires;* **the landing carries it, so it moves now.** ***AND IT IS FINAL***:
+  **the 22 blocks from idx 1903 onward contain no testable block at all** —
+  *enumerated from* `SEQ` — *so nothing can ever move it again.*
+
+  ***THE CENSUS CLOSES AT 53 OF 53.*** **Verdict-forced 53 of 53 testable
+  blocks; all-medians-final 53; both 34 KEEP and 19 BREAK; and ZERO blocks
+  without a verdict, where for the whole session it had been 52 and 52 with
+  `[13,10,10,10]` the lone gap.** ***EVERY ONE OF THE 19 BREAKS IS AN UPPER-LEG
+  FAILURE AND NOT ONE IS A LOWER-LEG FAILURE.*** **And leg one is now RESOLVED in
+  every testable block — HOLD 53, FAIL 0, undetermined 0 — which with the 43
+  fully-decided untestable blocks that carry both groups makes 96 blocks where
+  leg one is readable and 0 where it fails.** *The caveat stands unchanged and is
+  not softened by the count being complete:* **this is a statement about solver
+  costs, not about `iota(4)`**, *and the bracket stays* **27 ≤ iota(4) ≤ 71**.
+
+  ***AND A REGISTERED CLAIM OF MINE WAS OVER-SPECIFIC — THE VERDICT WAS NEVER AT
+  RISK BUT THE FIGURE WAS WRONG.*** *One commit ago this note wrote:* **"if
+  either is above 811.6 the median is `(811.6 + 850.8)/2 = 831.2000`
+  outright."** **Both landed above 811.6 and the median is `858.4000`, not
+  `831.2000`.** *The equality holds only when* **EXACTLY ONE** *of the two is
+  above* `811.6` — *checked:* `u = 900, w = 300` *gives exactly* **831.2000**,
+  *while* `u = 815, w = 820` *gives* **817.5000** *and the actual* `u = 866, w =
+  1499.2` *gives* **858.4000**. **The correct general statement is the
+  inequality**: *at least one above* `811.6` *puts four of the six at or above*
+  `811.6`, *so* `x₃ ≥ 811.6` *and the median is* **≥ 811.6**, *which is all the
+  BREAK ever needed.* **The conclusion was sound and the auxiliary equality was
+  not**; *written down because an over-specific figure that happens not to matter
+  is still a wrong figure.*
+
+  ***98% IS CROSSED, AND ITS TRAP WENT BY INSIDE THE SWEEP FOR THE THIRD TIME
+  RUNNING.*** **1912 decided = 98.1016%.** **The trap at 1910 = 97.9990% and the
+  crossing at 1911 = 98.0503% both fell between `20d154f` and this commit**,
+  *because the counter went* **1901 → 1912** *in one bank* — **the same thing
+  that happened to 97%, and for the same reason: a multi-row sweep leaves no
+  bank at the intervening counts.** *Registered in advance, recorded at the first
+  opportunity.* **The last pair is 99%: trap 1929 = 98.9738%, crossing 1930 =
+  99.0251% — seventeen and eighteen rows off.** *And the cube indices 1910, 1911
+  and 1912 also landed here, which means nothing:* **different counters, the
+  conflation this note has struck three times.**
+
+  ***WHAT IS LEFT IS ONLY THE UNSAT QUESTION.*** **37 sub-cubes remain
+  undecided: idx 1908 and idx 1913 through 1948**, *all of them in untestable
+  blocks.* **Two blocks are open — `[13,10,10,9]` at 6 of 7 with idx 1908
+  outstanding, and `[13,10,10,8]` at 3 of 5 — and `[13,10,10,7]` behind them has
+  not started.** *So the pattern work this note has been keeping is finished: no
+  further median, bracket or closed form can change a verdict, because there is
+  no verdict left to change.* ***WHAT REMAINS IS THE ONLY THING THAT EVER
+  MATTERED***: **`deg(0) = 13` is UNSAT only when ALL 1949 sub-cubes are, and 37
+  of them have not answered.** *A long unbroken run of UNSATs looks exactly like
+  the morning before the one that is not.*
 
   ***THE HUNDRED-AND-TWENTIETH SPAN'S FIGURES — CHAIN, VERDICT, ANCHOR AND
   MOST-HOLES ALL EXACTLY AS REGISTERED.*** *The previous commit closed the span
@@ -37010,7 +37084,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1901 of 1949 = 97.5372%**; **48 undecided**. **50% IS CROSSED**, at
+- **1912 of 1949 = 98.1016%**; **37 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -37723,8 +37797,10 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 10, 10, 10]` idx 1892..1902: **11 members**,
-  **9 decided**, undecided [1900, 1901]
+- `[13, 10, 10, 9]` idx 1903..1909: **7 members**,
+  **6 decided**, undecided [1908]
+- `[13, 10, 10, 8]` idx 1910..1914: **5 members**,
+  **3 decided**, undecided [1913, 1914]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
