@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T07:46Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T08:20Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6944,7 +6944,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2097 -> 2098 rows)
+## State as of the last refresh (2098 -> 2118 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6955,7 +6955,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2098 rows; 1929 labels decided; 1929 UNSAT; 0 SAT; 0 labels
+- **2118 rows; 1949 labels decided; 1949 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6997,12 +6997,23 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1929 decided plus 169 superseded
+  A row count is not a decision count: 1949 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
-- **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
-  `/proc/20833/stat` field 22). Confirm it with `pgrep -x iota_sym`, never
-  from this line. **This line was left stale across three commits after
+- ***THE DRIVER HAS EXITED NORMALLY AND THERE IS NO LIVE PID.*** **`pgrep -x
+  iota_sym` returns nothing**, *and the exit was* **code 0** *with the driver's own
+  terminal lines:* `# g = 11: UNSAT after 33906.0s (1949 sequence cubes, 0 at the
+  limit)` *and* `VERDICT UNSAT  iota(4,11) <= 31   (33906.0s)`. ***THIS IS NOT A
+  RESTART AND THE ABSORB PROCEDURE DOES NOT APPLY***: *the procedure exists for a
+  driver killed mid-run, and a zero exit carrying a completion verdict is the
+  opposite of that.* **Nothing has been relaunched.** **`bank.py` REFUSED to
+  rewrite this bullet** — *it reported* **"DRIVER LINE NOT REWRITTEN: pgrep -x
+  iota_sym returned 0 pid(s)"** *and told the operator to check by hand, which is
+  the guard working exactly as designed: it will not invent a pid and it will not
+  silently keep a dead one.* *The line it refused to keep read* **pid 20833,
+  launched 2026-09-25T22:54:41.740000Z** *(read from* `/proc/20833/stat` *field 22
+  while that process still existed).* **Confirm all of this with `pgrep -x
+  iota_sym`, never from this line.** **This line was left stale across three commits after
   restart #40** — `dc013e9` relaunched the driver and updated the TSV
   header block and the restart accounting but not this bullet, and
   `8fbe75a` and `ddeda8c` went by without catching it. It was found by
@@ -7047,7 +7058,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1928, highest decided 1928, holes [].**
+- **Frontier contiguous 0..1948, highest decided 1948, holes [].**
   <!-- SPAN-STATE: closed -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7082,6 +7093,54 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***THE SWEEP IS FINISHED. 1949 OF 1949 DECIDED, EVERY ONE UNSAT, ZERO SAT.***
+  **The driver exited with code 0 and printed its own terminal lines:** `# g = 11:
+  UNSAT after 33906.0s (1949 sequence cubes, 0 at the limit)` **and** `VERDICT UNSAT
+  iota(4,11) <= 31   (33906.0s)`. **The checkpoint agrees independently: 2118 rows,
+  labels `UNSAT 1949` and `UNKNOWN 169` and NOTHING ELSE — 0 SAT rows in the file at
+  all — decided 1949 of 1949 = 100.0000%, undecided 0, frontier contiguous 0..1948,
+  holes `[]`, no open block, and `checkpoint_audit.py` reports all invariants
+  hold.** *The twenty rows that finished it, all untied:* **idx 1929 (2020.5), 1930
+  (621.4), 1931 (1133.2), 1932 (551.5), 1933 (225.6), 1934 (380.1), 1935 (658.0),
+  1936 (565.9), 1937 (240.6), 1938 (164.9), 1939 (225.0), 1940 (424.7), 1941
+  (543.7), 1942 (386.1), 1943 (644.4), 1944 (357.2), 1945 (159.9), 1946 (356.0),
+  1947 (229.5), 1948 (99.5)** — *ranks 1143 through 1926 of 1949, every one
+  reproduced by* `N − cheaper`.
+
+  ***WHAT THIS DOES AND DOES NOT ESTABLISH.*** **What it establishes: the
+  `deg(0) = 13` branch is closed UNSAT, with no sub-cube left undecided and no SAT
+  anywhere.** *That is the SECOND OPINION this sweep existed to give —* **cadical
+  had already returned UNSAT on this branch, and only a SAT from cryptominisat5
+  would have been news.** **There was none, in 1949 of 1949.** ***WHAT IT DOES NOT
+  DO IS MOVE THE BRACKET.*** **`iota(4)` stays bracketed at `27 ≤ iota(4) ≤ 71`.**
+  *The driver's own verdict line is about* `iota(4,11)`, *a different quantity from*
+  `iota(4)`, *and this note is not converting one into the other here.* **Nothing
+  about a long unbroken run of UNSATs licenses more than what the rows say**, *which
+  was the standing caution for the whole sweep and is worth repeating at the end
+  rather than dropping now that the run is over.*
+
+  ***THE FINAL FIGURES, ALL COMPUTED FROM THE STAGED BLOB.*** **171 blocks, every
+  one fully decided.** **53 testable: 34 KEEP and 19 BREAK.** ***ALL NINETEEN
+  BREAKS ARE UPPER-LEG FAILURES AND NOT ONE IS A LOWER-LEG FAILURE — 19 of 19.***
+  **Leg one — `13-median < 12-median` — is readable in 102 blocks (53 testable plus
+  49 untestable carrying both groups) and FAILED IN NONE OF THEM.** *The caveat
+  stands unchanged and is not softened by the count being complete:* **this is a
+  statement about solver costs, not about the conjecture.** **Cost range over the
+  1949 final costs: min `0.1 s`, max `21678.5 s`, sum `6845530.3 s`.** ***EXACTLY
+  ONE CUBE FINISHED ABOVE THE 21600 s CAP, AT 21678.5 s*** — *which is the soft-cap
+  fact this note corrected itself about mid-sweep, now settled at a population of
+  one.* *The sum is the sum of the 1949 FINAL costs and is not the wall-clock cost
+  of the sweep:* **cubes killed by restarts were re-run, and 169 superseded UNKNOWN
+  rows are the record of that** — `1949 + 169 = 2118`.
+
+  ***THE 99% CROSSING WENT BY INSIDE THIS FINAL SWEEP, AND SO DID 100%.*** **1930
+  decided = 99.0251% and 1949 = 100.0000%, both inside the twenty rows.** *So the
+  last threshold pair ends the way three of the five did:* **the trap at 1929 was
+  held at its own bank one commit ago, and the crossing was not.** **The tally
+  stays at twelve keep, eleven break, of twenty-three, and the census at 53 and 53
+  — both final, both unable to move again, because there is nothing left to
+  decide.**
 
   ***idx 1928 UNSAT AT 1431.0 s — THE 99% TRAP IS HELD, AT ITS OWN BANK, AND IT IS
   THE LAST OF THE NINETY-NINE.*** ***THE COUNTER READS 1929 of 1949 = 98.9738%,
@@ -37682,7 +37741,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1929 of 1949 = 98.9738%**; **20 undecided**. **50% IS CROSSED**, at
+- **1949 of 1949 = 100.0000%**; **0 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -38395,8 +38454,7 @@ exactly one bank.
 
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
-- `[13, 10, 9, 8]` idx 1927..1929: **3 members**,
-  **2 decided**, undecided [1929]
+*No block is open: every block with any decided member is complete.*
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
