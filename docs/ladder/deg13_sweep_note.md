@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T01:37Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T01:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7048,6 +7048,35 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — THE LAST CUBE OF `[13,11,10,9]` HAS ITS CLOSED FORM
+  REGISTERED, AND IT CANNOT UNDO THE BREAK.*** *Found on a fallback
+  check-in; the checkpoint is unchanged at* **2015 rows, 1846 decided =
+  94.7152%, holes `[1842]`, 0 SAT**, *pid 20833 unchanged, HEAD equal to
+  origin, all invariants hold.* **No `cnf_mtime_check.py` run was needed
+  for this: the figures below come from the committed checkpoint and the
+  01:37:14Z sample already in `cpu_ratio_samples.tsv`.**
+
+  ***THE FORM.*** **With `v` = idx 1842's cost, the finished 12-median of
+  `[13,11,10,9]` is exactly `(3139.3 + clamp(v, 2496.6, 3227.7))/2`** —
+  *tested at* **0 disagreements over 400,000 draws.** **So the final value
+  must lie in `[2817.9500, 3183.5000]`, which is the hard bracket, and
+  every value in it exceeds the 11-median's 2463.3000.** ***THE BREAK
+  CANNOT BE UNDONE BY THE LAST CUBE***: **the smallest margin of failure
+  available is `354.6500`.** *idx 1842 was at* `2903 s` *at 01:37:14Z,
+  inside the clamp range, so on that floor the final value is at least*
+  **3021.1500** — *but the verdict does not need it.*
+
+  ***WHY THIS IS WORTH A COMMIT WITH NO ROW IN IT.*** *Four closed forms
+  registered before their cube existed have now been confirmed to the
+  digit —* **`[13,11,10,10]`'s 13-median, its 12-median, `[13,11,10,9]`'s
+  13-median and the `m ≥ 4` bracket form** — *and the device has been the
+  most productive thing in this stretch.* **This is the fifth and it is
+  registered while the cube is still running**, *which is the only time a
+  registration means anything.* **The tally stays at twelve keep, ten
+  break, of twenty-two**, *and the census at* **52 and 51**; *when idx 1842
+  lands, the block completes at 11 of 11, all-medians-final goes 51 → 52,
+  and the span closes.*
 
   ***idx 1846 UNSAT AT 1452.2 s — THE ODD `n = 3` CASE SKIPS STRAIGHT TO
   TRIVIAL-FREE, IN A BLOCK THAT CANNOT BE JUDGED.*** *From the staged blob.*
