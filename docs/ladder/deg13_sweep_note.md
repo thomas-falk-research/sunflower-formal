@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T00:55Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T01:03Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6910,7 +6910,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2008 -> 2010 rows)
+## State as of the last refresh (2010 -> 2011 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6921,7 +6921,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2010 rows; 1841 labels decided; 1841 UNSAT; 0 SAT; 0 labels
+- **2011 rows; 1842 labels decided; 1842 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6963,7 +6963,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1841 decided plus 169 superseded
+  A row count is not a decision count: 1842 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7013,8 +7013,8 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1840, highest decided 1840, holes [].**
-  <!-- SPAN-STATE: closed -->
+- **Frontier contiguous 0..1840, highest decided 1844, holes [1841, 1842, 1843].**
+  <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
   748 of 1556 with no tie** — *`1556 − 808 = 748` reproduces the rank,
@@ -7048,6 +7048,74 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1844 UNSAT AT 489.3 s — THE 12-BRACKET MAKES ITS FIRST MOVE
+  EXACTLY WHERE THE FORM SAID, LEG ONE IS FLOOR-FORCED TRUE FOR THE SECOND
+  BLOCK RUNNING, AND A SPAN OPENS AT WIDTH THREE.*** *From the staged
+  blob.* **Rank 1697 of 1842 with no tie** — *`1842 − 145 = 1697`; detector
+  agrees.* **Decided 1842 of 1949 = 94.5100%; 107 undecided.** **Frontier
+  contiguous 0..1840, highest decided 1844, holes `[1841, 1842, 1843]`;
+  still 0 SAT.** **coord9 = 12, the THIRD of six; `[13,11,10,9]` is at 8
+  of 11.**
+
+  ***THE FORM'S `m = 3` CASE, CONFIRMED.*** *Registered three banks ago:
+  for* `n = 6`*,* `k = 4`*,* **`m = 3` gives `[min/2, (3rd smallest +
+  21600)/2]`.** **The three landed sort to 489.3, 3139.3, 3227.7, so that
+  predicts `[244.6500, 12413.8500]` — and the median definition gives
+  `[244.6500, 12413.8500]`.** **Both ends have moved off trivial and the
+  upper still carries the cap, which goes at `m = 4`.** *Width*
+  `12169.2000`*, which is larger than the* `[0, 21600]` *it replaced only
+  in the sense that the old one was not a bound at all.*
+
+  ***AND 489.3 IS BELOW BOTH FINALS.*** **It is under the 13-median
+  1492.1000 and well under the 11-median 2463.3000** — *the first member of
+  this 12-group to be under either, after two that were above both.*
+
+  ***LEG ONE IS FLOOR-FORCED TRUE.*** **With idx 1841 at `2619 s`, idx 1842
+  at `748 s` and idx 1843 at `541 s` at 01:01:20Z, the floor-based sorted
+  six are `[489.3, 541, 748, 2619, 3139.3, 3227.7]`, so the 12-median is at
+  least `(748 + 2619)/2 = 1683.5000` — above the 13-median's
+  1492.1000.** *Checked at* **0 counterexamples over 400,000
+  floor-respecting draws.** ***AND IT IS FLOOR-CONTINGENT***: *the hard
+  lower end is* `244.6500`*, far below, so a restart takes leg one back to
+  undetermined.*
+
+  ***AND THE CONDITION FOR BREAK, WHICH IS NOW THE LIVE QUESTION.*** **KEEP
+  needs the 12-median below the 11-median's 2463.3000, so BREAK becomes
+  floor-forced once the lower end reaches it — that is `f₁₈₄₂ + f₁₈₄₁ ≥
+  4926.6000`, and the sum is `3367.0`, short by `1559.6`.** *The pair the
+  median reads stays* `(f₁₈₄₂, f₁₈₄₁)` *while* `f₁₈₄₃ < f₁₈₄₂` *and*
+  `f₁₈₄₂ > 489.3`*, both of which hold, and all three floors rise
+  together — so the ordering cannot change until one of them LANDS.* **No
+  time is predicted from that, for the same reason as last entry.** **The
+  12-median now sits in `[1683.5000, 12413.8500]` under the floors, and
+  KEEP needs it under `2463.3000`.**
+
+  ***A SPAN OPENS AT WIDTH THREE.*** **idx 1844 is the block's last member
+  by index and it landed before idx 1841, 1842 and 1843, so the frontier
+  stayed at 1840 and three holes opened in one commit. The `SPAN-STATE`
+  marker flips to open here.** **Per the `#29` rider the width is what the
+  commit carries** — *recorded as* **three** *and re-read from* `bank.py`
+  *in the last run before this commit.* **No figures are claimed for the
+  span**; *duration, commit count, chain and both ranks come from*
+  `--spans all` *at the close, and the walk stands at* **180** *closed
+  spans with the next close taking the* **hundred-and-sixteenth**
+  *ordinal.*
+
+  ***THE OPENING-WIDTH CENSUS, LIVE.*** **This is the first opening at
+  three since the hundred-and-thirteenth**. *Among the closed spans, those*
+  opened at three are **55** of the 180, and the last five of them
+  ordinals **98, 101, 102, 105 and 113**. Over the **180** closed
+  chains the opening hole count is **1 in 59, 2 in 63, 3 in 55 and 4 in
+  3**, so three is **30.6%** — ***THIRD, behind two at 63 and one at 59***,
+  *and that ordering is stated carefully because* **an archived
+  width-three census sentence got it wrong**: *the hundred-and-thirteenth
+  close's entry reads "second to two at 61 and just ahead of one at 59"
+  while its own figures were* `3 in 54` *against* `1 in 59`*, so three was
+  third there too.* **That sentence now carries an inline correction.**
+  **The three live-only sentences here are struck when this span closes**,
+  *per the census convention.* **The tally stays at twelve keep, nine
+  break, of twenty-one**, *and the census at* **51 and 51**.
 
   ***idx 1839 AND idx 1840 UNSAT — BOTH OUTER MEDIANS ARE NOW FINAL AND
   THE WHOLE VERDICT SITS ON A 971.2-SECOND WINDOW.*** *From the staged
@@ -9277,7 +9345,9 @@ exactly one bank.
   ***THE OPENING-WIDTH CENSUS.*** Over the **177** closed chains
   the opening hole count is **1 in 59, 2 in 61, 3 in 54 and 4 in 3**, so
   three is **30.5%** — *second to two at 61 and just ahead of one at
-  59.* *The three live-only sentences that stood here — the "since the"
+  59.* ‹**CORRECTED AT THE idx 1844 ENTRY: 54 is BELOW 59, so three was
+  THIRD there, behind two at 61 and one at 59 — the percentage is right
+  and the ranking clause is wrong.**› *The three live-only sentences that stood here — the "since the"
   ordinal, the "M of the N" count and the last-five list — are*
   **struck at this close**, *per the census convention; the sentence
   above survives because it is checked against the walk's first 177
@@ -34737,7 +34807,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1841 of 1949 = 94.4587%**; **108 undecided**. **50% IS CROSSED**, at
+- **1842 of 1949 = 94.5100%**; **107 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -35451,7 +35521,7 @@ exactly one bank.
 <!-- OPEN-BLOCK-CENSUS: rewritten by docs/ladder/bank.py; do not hand-edit -->
 
 - `[13, 11, 10, 9]` idx 1834..1844: **11 members**,
-  **7 decided**, undecided [1841, 1842, 1843, 1844]
+  **8 decided**, undecided [1841, 1842, 1843]
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
