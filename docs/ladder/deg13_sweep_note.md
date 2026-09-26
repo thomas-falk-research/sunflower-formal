@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T00:19Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T00:42Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -7048,6 +7048,39 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***NO ROW LANDED — THE TRANSITIVE OBSTRUCTION FOR `[13,11,10,9]` IS
+  CLEARED ON A FLOOR, AND NOTHING ELSE IS.*** *Found on a fallback
+  check-in; the checkpoint is unchanged at* **2007 rows, 1838 decided =
+  94.3048%, holes `[]`, 0 SAT**, *pid 20833 unchanged, HEAD equal to
+  origin.* **A live sample at 2026-09-26T00:42:10Z reads idx 1838 at
+  `2738 s`, idx 1839 at `2619 s`, idx 1840 at `1821 s` and idx 1841 at
+  `1469 s`.**
+
+  ***THE ONE THING THAT FOLLOWS.*** **KEEP requires `13-median < 12-median
+  < 11-median`, so transitively `13-median < 11-median`; the 11-group is
+  `n = 1`, so the 11-median IS idx 1840's cost `y`, and KEEP therefore
+  requires `y > 1492.1000` while BREAK is forced if `y ≤ 1492.1000`.**
+  **idx 1840's floor is `1821 s`, which clears that by `328.9000 s`**, *so*
+  **BREAK cannot be forced by the 11-group** — *checked at* **0
+  counterexamples over 400,000 floor-respecting draws.** ***AND IT IS
+  FLOOR-CONTINGENT AND DIES AT A RESTART***: *without the floor* `y` *is
+  unbounded in* `[0, 21600]` *and nothing whatever is cleared.*
+
+  ***NOTHING ELSE IS FORCED, AND THE ARITHMETIC SAYING SO IS WORTH ONE
+  LINE.*** **The 12-group has 0 landed, so its bracket is exactly `[0,
+  21600]`. Taking the three in-flight 12-floors and putting the three
+  unstarted members at 0 gives a 12-median lower bound of only
+  `734.5000`** — *from* `sorted[0, 0, 0, 1469, 2619, 2738]` *and*
+  `(0 + 1469)/2`. **For that bound to clear leg one's `1492.1000` the
+  smallest 12-floor would have to pass `2984.2000 s`, and it is at
+  `1469`.** *So leg one is not forced and will not be until either three
+  12-members land or the floors roughly double.*
+
+  ***THE HARD STATE OF THIS BLOCK, FOR THE RECORD.*** **13-median FINAL
+  `1492.1000`; 12-bracket exactly `[0, 21600]`; 11-median unknown.** *That
+  is all a restart would leave.* **The tally stays at twelve keep, nine
+  break, of twenty-one**, *and the census at* **51 and 51**.
 
   ***idx 1837 UNSAT AT 1498.1 s — THE 13-MEDIAN GOES FINAL, THE CLAMP IS
   EXACT AGAIN, AND THE TIE DETECTOR FIRES AND EARNS ITS KEEP.*** *From
