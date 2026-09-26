@@ -7064,6 +7064,45 @@ exactly one bank.
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
 
+  ***NO ROW LANDED — AND THE ONE-SECOND SLOP IS CORROBORATED BY A DIFFERENT PAIR
+  OF CLOCKS.*** **`cnf_mtime_check.py` appended a batch at 04:42:21Z and printed
+  its own `ps ELAPSED` against `now − mtime` for the same four cubes: deltas of
+  1, 0, 1 and 1 s, max `|delta| = 1 s` over `n = 4`.** *That is the same
+  magnitude as the slop demonstrated two banks ago, reached a different way:*
+  **there the disagreement was between two samples of one cube's start taken
+  eight minutes apart; here it is between two clocks read in the same instant.**
+  *The tool's own caveat already said as much —* **"both clocks have 1 s
+  resolution, so a 0 s delta bounds launch latency below 1 s; it does not show
+  the latency is zero"** — *and that caveat has been in the tool since long
+  before this note started deriving finish intervals from* `elapsed_s`. **So the
+  two-second-wide window is the right one to use, and the correction placed on
+  the 2.7 s bound stands on two independent measurements now rather than one.**
+  *The pinned 09-15 references are unchanged and were not re-derived:* **max
+  `|delta| = 1 s` over the eight pinned observations**, *which the tool prints
+  and this note is copying, not recomputing.* ***AND THE TOOL RAN TWICE, 15 s
+  APART, WHICH SHOWS THE SLOP MORE DIRECTLY THAN EITHER RUN ALONE***: *both
+  batches are in this commit's diff —* **04:42:06Z and 04:42:21Z** — *and for
+  the three cubes visible in both, the deltas read* **0, 1, 0** *at the first
+  and* **0, 1, 1** *at the second.* **idx 1878's delta flipped from 0 to 1 in
+  fifteen seconds with nothing about the cube changing**, *which is what a
+  one-second disagreement between two 1-second clocks looks like when you sample
+  it twice.*
+
+  ***AND BOTH OPEN BLOCKS' FLOOR BRACKETS MOVE ON THE SAMPLE LOG ALONE.***
+  **`[13,11,9,8]`'s 12-group is still at `m = 0` — hard `[0, 21600]` — and its
+  floor bracket is now `[2005.0000, 21600.0000]` from floors 2410 and 1600**,
+  *lower end* `(1600 + 2410)/2`, *up from* `[1293.0000, …]` *at the last bank.*
+  **`[13,11,9,7]`'s 13-group at `m = 1` has hard `[304.5500, 11104.5500]` and
+  floor `[912.0500, 11104.5500]` from idx 1877's floor of 1215** — *lower end*
+  `(1215 + 609.1)/2`, *up from* `556.0500`. **Its 12-group is `n = 1`, so the
+  median is already known to be at least `772.0000`** — *a single-member median
+  bounded below by nothing but its own cube's elapsed time.* **All read from the
+  freshest batch in the staged blob after the final append, per the rule written
+  down two banks ago.** **The checkpoint did not move: 2044 rows, 1875 decided =
+  96.2032%, frontier contiguous 0..1873, holes `[1874, 1875]`, 0 SAT.** **The
+  span stays open at the width it opened with; the tally stays at twelve keep,
+  ten break, of twenty-two and the census at 52 and 52.**
+
   ***idx 1876 UNSAT AT 609.1 s — A SPAN OPENS AT WIDTH TWO AND `[13,11,9,7]`
   MAKES NINE UNTESTABLE BLOCKS IN A ROW.*** *From the staged blob.* **Rank
   1686 of 1875 with no tie** — *`1875 − 189 = 1686`; detector agrees.*
