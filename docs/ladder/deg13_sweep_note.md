@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T04:56Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T04:59Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6925,7 +6925,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2047 -> 2048 rows)
+## State as of the last refresh (2048 -> 2049 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6936,7 +6936,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2048 rows; 1879 labels decided; 1879 UNSAT; 0 SAT; 0 labels
+- **2049 rows; 1880 labels decided; 1880 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6978,7 +6978,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1879 decided plus 169 superseded
+  A row count is not a decision count: 1880 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7028,7 +7028,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1877, highest decided 1879, holes [1878].**
+- **Frontier contiguous 0..1877, highest decided 1882, holes [1878, 1880, 1881].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7063,6 +7063,58 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1882 UNSAT AT 173.5 s — A SINGLE-CUBE BLOCK IS FINAL ON ARRIVAL, THE
+  CHAIN TAKES A SECOND RISE, AND THE CPU REFUTATION HAS NO POWER HERE AT ALL.***
+  *From the staged blob.* **Rank 1839 of 1880 with no tie** — *`1880 − 41 =
+  1839`; detector agrees.* **Decided 1880 of 1949 = 96.4597%; 69 undecided.**
+  **Frontier contiguous 0..1877, highest decided 1882, holes `[1878, 1880,
+  1881]`** — *the count rises from one to three.* **Still 0 SAT.** **At 173.5 s
+  this is `0.80%` of the cap and the 42nd-cheapest decided cube**; *the sweep's
+  cheapest is* **0.1 s**, *so "cheap" here is not "record".*
+
+  ***`[13,11,9,4]` IS A ONE-MEMBER BLOCK, SO ITS MEDIAN IS FINAL THE MOMENT THE
+  ROW EXISTS.*** **1 member, idx 1882, coord9 `{13: 1}` — 13-median `173.5000`,
+  final on arrival, no bracket at any stage.** *That is the* `n = 1` *case at the
+  block level, one of the* **48** *one-member blocks counted from* `SEQ` *two
+  banks ago.* **And `[13,11,9,3]` has no members at all**, *so the*
+  `[13,11,9,·]` *family ends at 4* — **checked against** `SEQ`, *not assumed from
+  the pattern of the* `[13,11,10,·]` *family, which bottomed at 3.*
+
+  ***THE CHAIN IS NOW `2, 1, 2, 1, 3`, WITH TWO RISES.*** **Read from the `holes
+  [...]` line of `dc3a1e9` (2), `d13f462` (1), `59ec31b` (2), `a94a304` (1) and
+  this commit (3), with `1e883c9` excluded because its diff touches only the
+  sample log and the note.** *The verdict was already fixed* **FALSE** *at the
+  first rise, so the second changes nothing about it* — **what it changes is the
+  span's "most holes at once", now 3 rather than 2.** *Recorded because the close
+  will state that figure and it should not arrive as a surprise.*
+
+  ***AND THE CPU REFUTATION IS VACUOUS FOR THIS CUBE, WHICH IS WORTH SAYING
+  OUTRIGHT.*** **idx 1882 has exactly ONE sample — 24 s elapsed and 24 s cpu at
+  04:56:16Z — so its measured ratio is `24/24 = 1.0000`.** ***AT A RATIO OF 1.0
+  THE CPU HYPOTHESIS AND THE ELAPSED HYPOTHESIS MAKE THE SAME PREDICTION***:
+  *both put the finish at* **04:58:45.5Z**, *and the arithmetic that has been
+  refuting CPU time returns* **−3.5 s** *against the write — which is not a
+  failed refutation but* **a test with no power.** *The ratio is itself an
+  artefact of the short sample: at 24 seconds, integer-second cpu and elapsed
+  columns coincide for a nearly CPU-bound solver.* **So the honest entry is that
+  this bank contributes NO evidence either way on `cost ≈ elapsed`**, *and the
+  standing refutations remain the ones from cubes whose ratio is measurably below
+  1.* **The ordering test does still run and passes: the finish is in
+  `(04:58:44.5, 04:58:45.5]` and the replacement idx 1883 first appears at
+  elapsed 26, starting in `(04:58:44, 04:58:45]`** — **fourteen for fourteen.**
+  **The elapsed floor held with slack 149.5 s, and the write bound is `4.5 s`
+  raw, `5.5 s` widened** — *looser than the standing* **3.7 s**.
+
+  ***THE THREE OPEN THINGS AND THEIR FLOORS.*** **`[13,11,9,7]`'s 12-group is
+  `n = 1` and already at least `1782.0000` on idx 1878's own elapsed**; *that
+  cube has been running since 04:29:28Z.* **`[13,11,9,6]`'s 13-bracket is hard
+  `[286.8500, 11086.8500]` and floor `[737.8500, 11086.8500]` from idx 1880's
+  floor of 902.** **`[13,11,9,5]` is another one-member block, idx 1881, already
+  at least `418.0000`.** *All three untestable, so the tally stays at* **twelve
+  keep, ten break, of twenty-two** *and the census at* **52 and 52**; **and the
+  leg-one census from the last bank is unchanged at 93 readable, 0 failures**,
+  *because* `[13,11,9,4]` *has no 12-group and cannot be added to it.*
 
   ***idx 1875 UNSAT AT 2410.5 s — `[13,11,9,8]` IS COMPLETE, AND A CENSUS WORTH
   MORE THAN THE ROW: THE LOWER LEG HAS NEVER ONCE FAILED.*** *From the staged
@@ -36663,7 +36715,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1879 of 1949 = 96.4084%**; **70 undecided**. **50% IS CROSSED**, at
+- **1880 of 1949 = 96.4597%**; **69 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
