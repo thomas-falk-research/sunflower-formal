@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T07:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T07:05Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6934,7 +6934,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2086 -> 2087 rows)
+## State as of the last refresh (2087 -> 2089 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6945,7 +6945,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2087 rows; 1918 labels decided; 1918 UNSAT; 0 SAT; 0 labels
+- **2089 rows; 1920 labels decided; 1920 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6987,7 +6987,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1918 decided plus 169 superseded
+  A row count is not a decision count: 1920 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7037,7 +7037,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1916, highest decided 1918, holes [1917].**
+- **Frontier contiguous 0..1916, highest decided 1921, holes [1917, 1919].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7072,6 +7072,37 @@ exactly one bank.
   the next instance and it is written down before the counter reaches
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
+
+  ***idx 1921 AND idx 1920 UNSAT — THE WIDTH-ONE SPAN TAKES ITS ONE CHANCE TO
+  RISE, SO ITS VERDICT IS FIXED FALSE.*** *From the staged blob.* **idx 1921 at
+  122.9 s, rank 1889 of 1920; idx 1920 at 340.0 s, rank 1833 of 1920; both untied
+  and both reproduced by `N − cheaper`.** **Decided 1920 of 1949 = 98.5121%; 29
+  undecided.** **Frontier contiguous 0..1916, highest decided 1921, holes `[1917,
+  1919]`** — *the count rises from one to two.* **Still 0 SAT.** ***THE OPENING
+  SAID "A WIDTH-ONE SPAN HAS EXACTLY ONE CHANCE TO RISE" AND IT TOOK IT***: **the
+  chain is `1` at `db59e87` and `2` here, so the hundred-and-twenty-third span's
+  monotonicity is FIXED FALSE and nothing later can undo it.** *Two width-one
+  spans in a row have now gone opposite ways — the hundred-and-nineteenth closed
+  on the next commit for a vacuous True, this one rose on the next commit for a
+  False* — **which is the whole content of calling the shape weak: one commit
+  decides it either way.**
+
+  ***TWO MORE ONE-MEMBER BLOCKS FINISH ON ARRIVAL.*** **`[13,10,10,5]` is idx 1920
+  alone — 13-median `340.0000` — and `[13,10,10,4]` is idx 1921 alone — 13-median
+  `122.9000`.** **`[13,10,10,3]` has no members, so the `[13,10,10,·]` family ends
+  at 4**, *checked against* `SEQ`. **Sixteen blocks remain after it, from
+  `[13,10,9,9]` down to `[13,8,8,8]`, and none of them is testable** — *the
+  enumeration made at the hundred-and-twentieth close, re-read here rather than
+  recalled.* **Two blocks stay open: `[13,10,10,7]` at 2 of 3, its `n = 1`
+  12-median already at least `1167.0000` on idx 1917's own elapsed, and
+  `[13,10,10,6]` at 1 of 2, hard `[185.8000, 10985.8000]` with floor lower end
+  `435.8000`.**
+
+  ***99% IS NINE ROWS OFF AT THE TRAP AND TEN AT THE CROSSING*** — **1929 =
+  98.9738%, 1930 = 99.0251%** — *and on the last three occasions a threshold pair
+  has been reached inside a multi-row sweep with no bank at either point, so it is
+  worth saying plainly that this one may go the same way.* **Tally twelve keep,
+  eleven break, of twenty-three, final; census 53 and 53.**
 
   ***THE HUNDRED-AND-TWENTY-SECOND SPAN'S FIGURES — CHAIN AND VERDICT AS
   PREDICTED, AND ITS MOVEMENT IS THE MIRROR OF THE LAST ONE'S.*** *The previous
@@ -37294,7 +37325,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1918 of 1949 = 98.4094%**; **31 undecided**. **50% IS CROSSED**, at
+- **1920 of 1949 = 98.5121%**; **29 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
