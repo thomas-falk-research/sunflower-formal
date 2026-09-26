@@ -1,6 +1,6 @@
 # deg(0) = 13 sweep — working note
 
-**Status: 2026-09-26T01:03Z.** Re-verify with `checkpoint_audit.py`; the
+**Status: 2026-09-26T01:13Z.** Re-verify with `checkpoint_audit.py`; the
 figures below go stale as rows land.
 
 This is the operator's note for the long-running `iota(4,11) >= 32`,
@@ -6910,7 +6910,7 @@ Task outputs live at
 
 ---
 
-## State as of the last refresh (2010 -> 2011 rows)
+## State as of the last refresh (2011 -> 2012 rows)
 
 *For one bank this heading read `1181 -> 1182` while the file held 1183
 rows*, because `380b306` swept in two rows and bank.py only advances the
@@ -6921,7 +6921,7 @@ next real bank**. It did, at this one. Recorded because the alternative
 and this is the case that shows waiting costs a stale heading for
 exactly one bank.
 
-- **2011 rows; 1842 labels decided; 1842 UNSAT; 0 SAT; 0 labels
+- **2012 rows; 1843 labels decided; 1843 UNSAT; 0 SAT; 0 labels
   undecided-only.** No rows were lost across restarts #37 through **#56**
   — ***AND THE "HABIT ON ITS SECOND SHOWING" CLAIMED HERE WAS BROKEN AT
   THE VERY NEXT RESTART.*** *This range read* **#53** *throughout
@@ -6963,7 +6963,7 @@ exactly one bank.
   The promise took three restarts to honour, and it was honoured by
   reading this paragraph while writing the absorb — the same rereading
   that caught it late twice, not a new control.*
-  A row count is not a decision count: 1842 decided plus 169 superseded
+  A row count is not a decision count: 1843 decided plus 169 superseded
   UNKNOWN rows. Say it that way — **never "0 UNKNOWN"**, which the file
   would contradict.
 - **Driver is pid 20833**, launched 2026-09-25T22:54:41.740000Z (read from
@@ -7013,7 +7013,7 @@ exactly one bank.
   the monotonicity bullets and the "still the weakest False chain"
   sentence. *The guard is mechanical and the count of its firings is
   prose, which is the whole difference.*
-- **Frontier contiguous 0..1840, highest decided 1844, holes [1841, 1842, 1843].**
+- **Frontier contiguous 0..1840, highest decided 1845, holes [1841, 1842, 1843].**
   <!-- SPAN-STATE: open -->
 
   ***idx 1555 UNSAT AT 3144.4 s, IN ORDER, SO NO SPAN OPENS.*** **Rank
@@ -7049,6 +7049,62 @@ exactly one bank.
   it, not after.* **Computed, not read off: `1559/1949` and
   `1560/1949` were divided by script.**
 
+  ***idx 1845 UNSAT AT 629.5 s — A NEW BLOCK OPENS AND IT IS NOT TESTABLE,
+  AND THE BREAK CONDITION WRITTEN ONE BANK AGO HAS BEEN SUPERSEDED BY A
+  GUARD CLAUSE I DID NOT WRITE.*** *From the staged blob.* **Rank 1652 of
+  1843 with no tie** — *`1843 − 191 = 1652`; detector agrees.* **Decided
+  1843 of 1949 = 94.5613%; 106 undecided.** **Frontier contiguous 0..1840,
+  highest decided 1845, holes `[1841, 1842, 1843]` unchanged; still 0
+  SAT.** **Two blocks open: `[13,11,10,9]` at 8 of 11 and `[13,11,10,8]` at
+  1 of 7.**
+
+  ***`[13,11,10,8]` IS NOT TESTABLE — ITS 11-GROUP IS EMPTY.*** **7
+  members, idx 1845..1851, coord9 `{13: 3, 12: 4}` and NO coord9 = 11 at
+  all**, *enumerated from* `SEQ`. **So no direction window exists for it
+  and the tally cannot move on it, whatever its members cost.** *It joins
+  the 118 untestable blocks, and it is another instance of the census's
+  standing fact that* **every one of the 118 lacks the 11-group** — *none
+  is ever blocked by a missing 13-group.* **Its shape for the record:
+  coord9 = 13 is `n = 3`, `k = 2`, odd — both ends move at `m = 2` and go
+  trivial-free at the same landing, so two states and at `m = 2` the
+  bracket is exactly `[min, max]` of the two landed; coord9 = 12 is `n =
+  4`, `k = 3`, even — the familiar three-state case.** **At `m = 1` the
+  13-bracket is exactly `[0, 21600]`.**
+
+  ***AND NOW THE CORRECTION, WHICH MATTERS MORE THAN THE ROW.*** *One bank
+  ago I registered:* **BREAK becomes floor-forced once `f₁₈₄₂ + f₁₈₄₁ ≥
+  4926.6000`**, *with two guard clauses —* `f₁₈₄₃ < f₁₈₄₂` *and* `f₁₈₄₂ >
+  489.3`. ***IT NEEDED A THIRD, `f₁₈₄₁ < 3139.3`, AND THAT ONE HAS
+  BROKEN.*** **idx 1841's floor is now `3257 s`, which has passed BOTH
+  landed high costs of 3139.3 and 3227.7**, *so the fourth-smallest of the
+  six is no longer idx 1841's floor but the LANDED* `3139.3`. **The sorted
+  floor-based six are `[489.3, 1179, 1386, 3139.3, 3227.7, 3257]`, the
+  median reads `1386` and `3139.3`, and the lower end is `2262.6500`.**
+  *The old condition's quantity now reads* `4643.0` *against* `4926.6`
+  *and would report "short by 283.6", which is simply the wrong
+  arithmetic.* **The superseded sentence carries an inline marker.**
+
+  ***THE CORRECTED CONDITION.*** **BREAK is floor-forced once `f₁₈₄₂ ≥
+  1787.3000`** — *from* `(f₁₈₄₂ + 3139.3)/2 ≥ 2463.3000` — **and idx 1842's
+  floor is `1386`, short by `401.3`.** *Checked at* **0 draws of 400,000
+  with the 12-median below the 11-median once that threshold is met.**
+  **This guard is robust in a way the last one was not**: *it holds while*
+  `f₁₈₄₃ < f₁₈₄₂ < 3139.3`*, and* `f₁₈₄₂` *only has to reach* `1787.3`*,
+  so the guard cannot break on the way there.* ***THE LESSON IS THE
+  GENERAL ONE***: **a forcing condition written in terms of which floors
+  the median happens to read is only as good as the enumeration of when
+  that changes, and the safe practice is what saved it — recomputing the
+  sorted six from scratch at every bank instead of carrying the condition
+  forward.**
+
+  ***LEG ONE REMAINS FLOOR-FORCED TRUE*** — **the lower end `2262.6500` is
+  well above the 13-median's 1492.1000** — *and both that and the BREAK
+  approach die at a restart.* **The 12-median sits in `[2262.6500,
+  12413.8500]` under the floors, and KEEP needs it under `2463.3000`: a
+  target `200.6500` wide at the bottom of a range ten thousand seconds
+  long.** **The tally stays at twelve keep, nine break, of twenty-one**,
+  *and the census at* **51 and 51**.
+
   ***idx 1844 UNSAT AT 489.3 s — THE 12-BRACKET MAKES ITS FIRST MOVE
   EXACTLY WHERE THE FORM SAID, LEG ONE IS FLOOR-FORCED TRUE FOR THE SECOND
   BLOCK RUNNING, AND A SPAN OPENS AT WIDTH THREE.*** *From the staged
@@ -7083,7 +7139,7 @@ exactly one bank.
   ***AND THE CONDITION FOR BREAK, WHICH IS NOW THE LIVE QUESTION.*** **KEEP
   needs the 12-median below the 11-median's 2463.3000, so BREAK becomes
   floor-forced once the lower end reaches it — that is `f₁₈₄₂ + f₁₈₄₁ ≥
-  4926.6000`, and the sum is `3367.0`, short by `1559.6`.** *The pair the
+  4926.6000`, and the sum is `3367.0`, short by `1559.6`.** ‹**SUPERSEDED AT THE idx 1845 ENTRY: this condition needed a THIRD guard clause, `f₁₈₄₁ < 3139.3`, which has since broken; see that entry for the corrected condition.**› *The pair the
   median reads stays* `(f₁₈₄₂, f₁₈₄₁)` *while* `f₁₈₄₃ < f₁₈₄₂` *and*
   `f₁₈₄₂ > 489.3`*, both of which hold, and all three floors rise
   together — so the ordering cannot change until one of them LANDS.* **No
@@ -34807,7 +34863,7 @@ exactly one bank.
   beside that table** that had been stale since
   N = 85 — written up in the spans section itself, next to the sentence that
   carried them. Recomputing a table is not recomputing a section.
-- **1842 of 1949 = 94.5100%**; **107 undecided**. **50% IS CROSSED**, at
+- **1843 of 1949 = 94.5613%**; **106 undecided**. **50% IS CROSSED**, at
   cube index 975, one row after the counter sat on the trap at **974 =
   49.9743%**. **More sub-cubes are decided than undecided for the first
   time**, 975 against 974 — an identity that flips exactly once, at
@@ -35522,6 +35578,8 @@ exactly one bank.
 
 - `[13, 11, 10, 9]` idx 1834..1844: **11 members**,
   **8 decided**, undecided [1841, 1842, 1843]
+- `[13, 11, 10, 8]` idx 1845..1851: **7 members**,
+  **1 decided**, undecided 6 spanning 1846..1851
 
 <!-- /OPEN-BLOCK-CENSUS -->
 
