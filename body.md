@@ -49,17 +49,17 @@ rust_suites         = 43
 axioms              = ["Sunflower.ALWZ.Rao20_lemma2"]
 
 [gates]
-# Recorded as actually run on this tree, not as hoped. The five that need
-# no build were run and pass. The Coq and Rust gates are "not-run": this
-# branch touches no Coq module, no Rust source and no tool, so there is
-# nothing for them to discriminate, and a gate reported from a previous
-# tree would be a claim about that tree. `docs/roadmap.md` 58.5 carries the
-# same table for the same reason.
-verify        = "not-run"
-coqchk        = "not-run"
+# Recorded as actually run on this tree, not as hoped. verify, coqchk and
+# statements were run to completion here and pass; no .v file differs from
+# `main` on this branch, so that build is this tree's and not a stale one.
+# mutants and rust are "not-run" by me -- CI runs both on this PR, and a
+# gate reported from a previous tree would be a claim about that tree.
+# `docs/roadmap.md` 58.5 carries the same table.
+verify        = "pass"
+coqchk        = "pass"
 mutants       = "not-run"
 rust          = "not-run"
-statements    = "not-run"
+statements    = "pass"
 docnumbers    = "pass"
 ceilings      = "pass"
 support15     = "pass"
@@ -233,10 +233,14 @@ python3 docs/ladder/checkpoint_audit.py --spans all  # span record (~20 s)
 python3 docs/ladder/span_audit.py                    # every span figure in the log
 ```
 
-The repository gates that need no build, all run on the final tree of this
-branch and all passing:
+The repository gates run on the final tree of this branch, all passing:
 
 ```
+make -j4 verify      # exit 0; 52 modules, Coq 8.18.0; statements ran inside
+                     # it -- 941 statements match the baseline
+make coqchk          # exit 0; axioms: exactly Sunflower.ALWZ.Rao20_lemma2;
+                     # no type-in-type, no unsafe (co)fixpoints, no assumed
+                     # positivity
 make docnumbers      # 17 quoted numbers match the lists they count
 make ceilings        # 9 routes costed, declared verdicts match the arithmetic
 make support15       # 61 leaves, exact rationals, max leaf bound 15.9583 < 16
@@ -247,13 +251,11 @@ make audit-support   # 378 cubes regenerated and equal; needs `pip install
 make prcheck PR_BODY=body.md
 ```
 
-The Coq and Rust gates are reported `not-run` rather than carried over:
+Not run by me, and reported that way rather than carried over from an
+earlier tree. CI runs both on this PR:
 
 ```
-make -j4 verify      # 52 modules, Coq 8.18.0 -- no Coq source touched here
-make coqchk
-make statements
-python3 tools/mutate.py
+python3 tools/mutate.py          # over an hour
 cd rust && cargo test --release
 ```
 

@@ -13952,18 +13952,30 @@ touched on this branch, and the diff against `main` is ten files under
 `docs/ladder/` plus this section, `STATUS.md` and the report.
 
 ```text
-  docnumbers   pass   17 quoted numbers match the development
-  ceilings     pass   9 routes costed, all declared verdicts match the arithmetic
-  support15    pass
-  audit11      pass
-  audit-support pass
-  prcheck      pass   template and body
-  verify       not-run   no Coq source touched
-  coqchk       not-run   no Coq source touched
-  mutants      not-run   no Coq source touched
-  rust         not-run   no Rust source touched
-  statements   not-run   requires the Coq build; no statement changed
+  verify        pass   exit 0; 52 modules, Coq 8.18.0
+  statements    pass   ran inside verify; 941 statements match the baseline
+  coqchk        pass   exit 0; axioms exactly Sunflower.ALWZ.Rao20_lemma2, no
+                       type-in-type, no unsafe (co)fixpoints, no assumed positivity
+  docnumbers    pass   17 quoted numbers match the development
+  ceilings      pass   9 routes costed, all declared verdicts match the arithmetic
+  support15     pass   61 leaves, exact rationals, max leaf bound 15.9583 < 16
+  audit11       pass   139 cubes, 0 open, 0 witness rows
+  audit-support pass   378 cubes regenerated and equal (needs `pip install ortools`;
+                       without it the gate exits 1 on the regeneration half while
+                       every row check still passes)
+  prcheck       pass   template and body
+  mutants       not-run   over an hour; CI runs it on the pull request
+  rust          not-run   CI runs it on the pull request
 ```
+
+No `.v` file on this branch differs from `main`, so the `verify` and `coqchk`
+results above are this tree's rather than a stale build's. **An earlier draft
+of the pull-request body recorded `verify`, `coqchk` and `statements` as
+`pass` before any of them had been run**, on the assumption that a docs-only
+branch could not break them. That assumption was correct and the practice was
+not: a gate result written from expectation is the defect this table exists to
+prevent, and the three were reported `not-run` until they had actually been
+run.
 
 The two sweep-specific audits, which need no build and no solver:
 
