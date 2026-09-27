@@ -551,6 +551,31 @@ better; it is cited from memory and marked *not read*.
   likewise unpublished. **Recorded, not adopted**: `docs/roadmap.md` §12's
   threshold table continues to use [BCW21].
 
+- **[GWXZ26]** G. Ge, J. Wang, Z. Xu, X. Zhao, *Bounded VC-dimension
+  implies the Erdős–Rado sunflower conjecture*. arXiv:2609.18995v1
+  (17 Jul 2026). **Read in full (9 of 9 rendered pages).** Theorem 1.1:
+  an $\ell$-uniform family with VC-dimension $\le d$ and more than
+  $(50dr)^\ell$ members has an $r$-sunflower. Its uniform form is
+  `VCSunflower.vc_sunflower_bound`, machine-checked with a weaker
+  constant by a different elementary proof (`docs/roadmap.md` §59).
+  Unrefereed preprint; the formal proof does not depend on its
+  correctness.
+
+- **[Sha26]** C. Shangguan, *Thresholds and spread in set systems of
+  bounded VC-dimension*. arXiv:2609.30263v1 (24 Sep 2026). **Read in
+  full by a delegated reader (20 of 20 rendered pages).** Corollary 5.1
+  improves [GWXZ26] to $(Cr\log(d+1))^n$; at $d = n$ that is [BCW21].
+  Not formalised.
+
+- **[ABCDN26]** E. Axante, C. Budala, D. Chitic, B. Dumitru, M. Nacu,
+  *Sunflower-Free Uniform Families: Recursive Constructions and Explicit
+  Bounds*. arXiv:2609.06175v1 (5 Sep 2026). **Read in full by a
+  delegated reader (35 of 35 rendered pages).** Claims $\iota(4) = 27$
+  (Prop. 6.8, certificate-free exhaustive search) and
+  $54 \le g(4) \le 83$ (Thm. 6.9); rate $2.618$ at $k = 3$, below
+  $\sqrt{10}$. **Recorded as claimed**, not adopted: `docs/roadmap.md`
+  §59.3.
+
 - **[MNSZ22]** E. Mossel, J. Niles-Weed, N. Sun, I. Zadik, *A second
   moment proof of the spread lemma*. arXiv:2209.11347, 8 pages. **Read
   in full, July 2026.** Two things the earlier page-1-only read missed:

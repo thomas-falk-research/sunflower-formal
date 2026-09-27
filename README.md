@@ -35,8 +35,15 @@ only on $k$.
 ## Honest status
 
 The Sunflower Conjecture is **open**. This repository does **not**
-claim progress on it. What is machine-checked here is the complete
-*provable frontier* around it:
+claim progress on it in general. It does contain one **case of the
+conjecture itself**, machine-checked and axiom-free: families of bounded
+VC-dimension (`coq/VCSunflower.v`) — a theorem of Ge, Wang, Xu and Zhao
+(arXiv:2609.18995, 2026), given here a new elementary proof and a formal
+one. That class provably excludes the Erdős–Rado product construction
+(`product_vc_full`: its VC-dimension equals its uniformity), and at
+`d = n` the theorem is weaker than Erdős–Rado, so it is not where the
+difficulty lives. What is
+machine-checked here is the complete *provable frontier* around it:
 
 | Result | Statement | File |
 |---|---|---|
@@ -70,6 +77,7 @@ claim progress on it. What is machine-checked here is the complete
 | Pigeonhole counting lemma | used by the Erdős–Rado induction | `coq/Pigeonhole.v` |
 | 2020 spread lemma | $r$-spread $\Rightarrow k$ disjoint members for $r \ge Ck\log(nk)$ — **the one named axiom**, cited | `coq/ALWZ.v` |
 | ALWZ/Rao 2020 bound | $f(n,k) \le (Ck\log(nk))^n + 1$ — **derived** from that axiom alone | `coq/ALWZ.v` |
+| **The conjecture for bounded VC-dimension** | every $n$-uniform family with VC-dimension $\le d$ and more than $K(d,k)^n$ members has a $k$-sunflower, $K(d,k) = 2^{2d+3+\lfloor\log_2((64d+8)k)\rfloor}$ independent of $n$ — **axiom-free**; the theorem is Ge–Wang–Xu–Zhao 2026 (constant $50dk$), the proof here replaces their entropy and Caro–Wei steps by counting, and proves Sauer–Shelah along the way | `coq/VCSunflower.v` |
 | The conjecture itself | formal statement, **open** | `coq/Conjecture.v` |
 | Definition audit | complementarity of the bounds, encoding-invariance, non-vacuity of the axiom's shape | `coq/Audit.v` |
 | Differential spread checker | a second decision procedure, proved to agree with the first | `coq/Reflect.v` |
@@ -266,7 +274,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 175 mutations, 172 are killed outright, two
+  that something breaks. Of 180 mutations, 177 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -344,10 +352,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 52 Coq files, then runs the axiom audit
+make verify        # builds all 53 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (789 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (812 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports

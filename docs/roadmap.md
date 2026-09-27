@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 175 anecdotes into a coverage metric over the
+  mutation testing from 180 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,12 +9842,12 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 52 modules, 789 audited theorems, 152 audited
-definitions, 175 mutations, and 43 Rust integration suites. (That count
+The development is now 53 modules, 812 audited theorems, 158 audited
+definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
-`cube_budget.rs` in §49. The two paragraphs above quoting
+`cube_budget.rs` in §49; `coq/VCSunflower.v` and five mutations in §59. The two paragraphs above quoting
 31 and 32 suites are historical records of earlier sessions and are
 correct as written.)
 
@@ -13995,3 +13995,185 @@ whichever cube is cheapest to log.
 
 §57 remains the handover for the `r*(3,3)` line of work, which this section
 does not touch.
+
+## 59. Handover — the conjecture, proved on a class; and `ι(4) = 27`, claimed from outside
+
+Start here; §57 remains the handover for the `r*(3,3)` line and §58 for
+cube 13. This section records the first session to put a case of **the
+conjecture itself** — not a bound near it — in the kernel, and the
+literature that arrived since §58 and changes what is worth doing.
+
+### 59.1 What is now proved
+
+| claim | status | where |
+|---|---|---|
+| **The Erdős–Rado conjecture for families of VC-dimension at most `d`**: every `n`-uniform family of distinct sets with `VCdimLe d F` and at least `K(d,k)^n + 1` members contains a `k`-sunflower, `K(d,k) = 2^(2d + 3 + log2((64d+8)k))`, independent of `n` | PROVEN (Coq, **axiom-free** — not even `Rao20_lemma2`) | `VCSunflower.vc_sunflower_bound`, `vc_sunflower_conjecture` |
+| Sauer–Shelah, over canonical traces, with `Φ_d(M) ≤ (M+1)^d` | PROVEN (Coq) | `sauer_shelah`, `Phi_le_pow`, `traces_count` |
+| Trace tail bound: an `R`-spread family with at most `R^t` traces on `E` has degree sum on `E` at most `(2t+1)\|F\|` | PROVEN (Coq) | `trace_sum_bound` |
+| Second moment: `R · Σ_x deg(x)² ≤ (32d+4)\|F\|²` for an `R = 2^s`-spread family of VC-dimension `≤ d`, `s ≥ 2d+2` | PROVEN (Coq) | `sum_deg_sq_bound` |
+| Greedy: `2t·S(F) < \|F\|²` (`S` = intersecting ordered pairs) gives `t` pairwise disjoint members | PROVEN (Coq) | `greedy_disjoint` |
+| The spread reduction, restricted to any VC class (links do not raise VC-dimension) | PROVEN (Coq) | `VCdimLe_link`, `vc_spread_reduction` |
+| Statement audits: VC `≤ 1` families of every size *and every uniformity* satisfy every hypothesis; the Erdős–Rado product family has VC-dimension exactly `n`; each of four weakenings of the definition is refuted by a concrete family | PROVEN (Coq) | `vc_hypotheses_satisfiable_at_every_uniformity`, `product_vc_full`, `uniform_vc_le`, `two_trace_test_is_weaker`, `nodup_clause_is_needed`, `trace_in_B_only_is_weaker`, `B_in_trace_only_is_weaker` |
+| Five mutations of `Shatters`, `VCdimLe`, `vc_exponent` | killed (`make mutants`) | `tools/mutations.toml` |
+
+The theorem is **Ge–Wang–Xu–Zhao's** (arXiv:2609.18995, July 2026,
+`docs/reading.md` [GWXZ26]) — its uniform "in particular" form; the
+`ℓ`-bounded form is not formalised. The machine-checked proof is this
+repository's, and it is *not* a transcription. The four places it departs
+from the paper, and why:
+
+1. **Entropy (their Lemma 2.3) → a tail bound over traces.** Members whose
+   trace on `E` has at most `t` points contribute at most `t` each; the
+   rest are grouped by trace, a group with trace `τ` has at most
+   `deg τ ≤ \|F\|/R^|τ|` members, and `s/R^s` is decreasing, so each group
+   costs at most `(t+1)\|F\|/R^(t+1)`; there are at most `R^t` groups. No
+   logarithms, no Jensen.
+2. **Sauer–Shelah** is proved (it is cited in the paper), by the standard
+   split on one point, over *canonical* traces — sublists of `E` in `E`'s
+   order — so that "distinct traces" is literal list inequality and the
+   list-of-lists representation costs nothing.
+3. **Caro–Wei (their Lemmas 2.2, 2.6) → a greedy invariant.** Take the
+   member meeting fewest others, discard what meets it, recurse. With
+   `N = \|F\|` and `D ≤ S/N` discarded, `(N−D)² ≥ N² − 2S`, so
+   `2t·S < N²` survives with `t − 1`. Loses a factor 2 against Caro–Wei.
+4. **The constant.** `(M+1)^d` in place of `(eM/d)^d` forces `s ≥ 2d+2`,
+   so `K(d,k)` is exponential in `d` where the paper's `50dk` is linear.
+   For the conjecture on a fixed class only the independence from `n`
+   matters. Recovering a polynomial constant needs `Φ_d(M) ≤ (3M/d)^d`
+   and is engineering, not mathematics (§59.4 item 4).
+
+**Prior art for the elementary proof: PLAUSIBLE-not-novel.** [Sha26]
+(delegated reading) groups traces by weight rather than points by
+degree, which is close to item 1 in spirit; no search was run for an
+entropy-free proof of [GWXZ26] specifically, and none is claimed.
+
+### 59.2 What it is not
+
+**It is not progress on the general conjecture, and nothing here should
+be read that way.** Three kernel facts fence it:
+
+* `uniform_vc_le`: every `n`-uniform family has VC-dimension at most `n`.
+  At `d = n` the theorem gives `K(n,k)^n = 2^Θ(n²)`, far worse than
+  Erdős–Rado; it bounds `f(n,k)` only on classes where `d` does not grow.
+* `product_vc_full`: the Erdős–Rado product family — `2^n` sets, no
+  3-sunflower — has VC-dimension exactly `n`, so **it lies outside every
+  fixed class**. Whether the Abbott–Hanson–Sauer constructions (the `√10`
+  record) do too is expected and **not checked**; and lower-bound
+  constructions of small VC-dimension do exist (Balogh et al. settle
+  `d = 1`, cited in [GWXZ26] p. 2), so this is a statement about the
+  product construction, not about every construction.
+* [Sha26] (delegated reading) improves `50dk` to `Ck log(d+1)` and the
+  delegated reader reports that `log(d+1)` is sharp for the
+  robust-sunflower conclusion that route produces. At `d = n` that is
+  Bell–Chueluecha–Warnke again. **The conjecture is exactly the question
+  of removing `log(d+1)`, and the robust-sunflower route cannot.**
+
+### 59.3 The literature since §58, and the course correction
+
+`docs/reading.md` Tier 3b. The one finding that changes the plan:
+**[ABCDN26] Prop. 6.8 claims `ι(4) = 27`** by an exhaustive
+canonical-augmentation search (`nauty`, ~1.06 × 10¹¹ nodes, custom code,
+no certificate). It is consistent with every rung measured here
+(`ι(4,9) = ι(4,10) = 27`, `ι(4,11) ≤ 31` under two solvers). On its
+word:
+
+* **`ι(4) ≥ 32` is false.** `Sharp.iota_four_at_least_32_refutes` never
+  fires, and the `ι(4,g)` ladders of §33–§58 were climbing toward a rung
+  that does not exist. **Stop spending compute on `ι(4) ≥ 32`.**
+* `Product.iota_four_at_most_27_would_beat_erdos_rado` becomes a
+  conditional statement with a published (uncertified) hypothesis:
+  `f(3,3) ≤ 28`, which Abbott–Gardner 1969 already beats.
+* `Palvolgyi.palvolgyi_at_four_if_iota_four_is_27` says Pálvölgyi's
+  equality conjecture would then give `g(4) = 54`; [ABCDN26] Thm. 6.9
+  proves only `54 ≤ g(4) ≤ 83`. Pálvölgyi's conjecture at `b = 4` is
+  therefore **open, and now the sharpest open question at uniformity 4**.
+* The next rung that could beat `√10` is `ι(5) ≥ 101` (the AHS rate
+  `ι(b)^(1/(b−1))` needs `ι(5)^(1/4) > √10`), at uniformity 5 — a search
+  space this repository has never had a working encoding for.
+
+It is recorded as **claimed**, not proved, under the rule of §56.8.
+
+### 59.4 What is owed, ranked by what it would buy
+
+1. **Certify `ι(4) ≤ 27` independently.** The single highest-value
+   verification target now: it would turn a 35-page preprint's
+   certificate-free search into a checked fact, close `Sharp.AHSOptimal`'s
+   `b = 4` rung for good, and it is the kind of search this repository has
+   the most experience encoding. Route: a support bound for a 28-member
+   intersecting sunflower-free 4-uniform family (the `IotaGround`
+   measurements say the extremal support is small; a *proof* of a bound
+   is what is missing), then CaDiCaL with DRAT on the bounded ground set,
+   checked by `drat-trim`. Every UNSAT verdict must carry its proof log,
+   per §56.8.
+2. **Replay `r*(3,3)` with proofs** — §57.2 item 1, unchanged.
+3. **Pálvölgyi at `b = 4`: is `g(4) = 54`?** [ABCDN26]'s `83` comes from
+   "members disjoint from `R` are at most `ι(4) = 27`, members meeting `R`
+   at most 56". The 56 is by hand; the repository's `PureLink` and
+   `CrossRefined` machinery attacks exactly that split.
+4. **Polynomial constant in `VCSunflower`**: prove
+   `Φ_d(M) ≤ (3M/d)^d` for `M ≥ d` and re-run `layer_exp` with
+   `s = O(log(dk))`. T1 engineering.
+5. **The moonshot this section opens, stated with its exact interface.**
+   The formal proof uses the VC hypothesis in **one** place:
+   `traces_count` inside `layer_size`, on point sets `E` of `M_j` points
+   each of degree above `\|F\|/(R 2^(j+1))`. So the spread lemma holds for
+   every `R`-spread family in which *those* sets carry at most `R^(t_j)`
+   traces. The conjecture's spread form (`Conjecture.spread_conjecture`)
+   therefore reduces to the complementary case: **an `R`-spread family in
+   which some set of `M_j` heavy points carries more than `R^(t_j)`
+   traces**. Whether "many traces on few heavy points" can be turned
+   into disjoint members by a *different* argument is the question; it is
+   CONJECTURED useful and nothing more. The one quantitative thing known
+   about it is negative: at `d ~ n` [Sha26]'s sharpness example lives
+   there.
+
+### 59.5 The independent review, and what it changed
+
+A fresh-context reviewer (no access to this session's reasoning) was
+asked to break the *claim*, not the proof. It found nothing critical: the
+statement matches [GWXZ26]'s uniform corollary, `coqchk` reports no
+axioms for the module. It found two real gaps, both fixed before commit:
+
+* **Two semantic weakenings survived every audit.** Shattering tested
+  only on `B = ∅` and `B = D`, and a `VCdimLe` that silently caps the
+  uniformity at `max 2 d`, both still proved the main theorem, the star
+  audit and `product_vc_full`. The second would have made the theorem
+  nearly empty. Fixed by `kmatch` (VC `≤ 1` at every uniformity, and its
+  bound needs all four traces of a pair) and four discriminating lemmas.
+  The lesson generalises: **a syntactic mutation that breaks a proof
+  script says nothing about the statement** — all five `vc-*` mutations
+  in `tools/mutations.toml` may be script-level kills — and the
+  evidence that a clause matters is a family on which dropping it changes
+  the answer.
+* **`vc_bound_coherent` was described as an audit.** A kernel-checked
+  file cannot contain a contradictory pair, and the inequality is plain
+  arithmetic; it is now described as a sanity corollary.
+
+Three prose overstatements were also corrected: "every extremal
+construction" became "the product construction"; the `ℓ`-bounded form of
+Theorem 1.1 is said to be unformalised; "`2^n` sets" holds at `t = 2`.
+
+### 59.6 Gates at the tip
+
+Every row below was run on this tree before commit; none is written from
+expectation.
+
+```text
+  verify        pass   exit 0 from `make clean`; 53 modules, Coq 8.18.0;
+                       812 audited theorems, every one "Closed under the
+                       global context"
+  statements    pass   970 statements match the baseline; the baseline
+                       diff against main is additions only (three name
+                       clashes with Intersecting.star, HiltonMilner.grid
+                       and Counting.NoDup_map_inj were renamed away first)
+  docnumbers    pass   17 quoted numbers match the development
+  ceilings      pass   all declared verdicts match the arithmetic
+  coqchk        pass   exit 0; axioms exactly Sunflower.ALWZ.Rao20_lemma2
+                       (library-wide, unchanged), no type-in-type, no
+                       unsafe (co)fixpoints, no assumed positivity
+  mutants       pass   the five vc-* mutations only (--only): 5 killed,
+                       0 script-only; control canary-alpha-rename survives
+                       (1/1). The full 180-mutation run was not repeated
+  rust          not-run   no Rust changed
+  prcheck       not-run   no pull request was opened
+```
