@@ -1,34 +1,40 @@
 ## Claim
 
-The size threshold in `SpreadYieldsDisjoint 3 3 3` is exactly tight: a
-3-uniform family of exactly `27 = 3^3` members, 9-regular on nine points,
-satisfies Rao's spread condition at `r = 3` and has no three pairwise
-disjoint members (`coq/TightThreshold.v`). Separately, an intersecting
-3-uniform family under Rao's caps at `r >= 3` with covering number
-exactly two has at most `3r + 1` members, attained
-(`coq/TwoCoverSharp.v`), sharpening the proved `max(4r, 3r+4)`. Frankl's
-value for covering number 3 — ten, with no caps — is proved in
-`coq/TauThreeTen.v`, axiom-free and sharp, so `I(3,3) = 10` is a theorem
-(§56.13). On the solver's word (CP-SAT INFEASIBLE verdicts, no proof
-logs) and nothing else, no 28-member family exists on any number of
-points — ten and eleven with the kernel cut, twelve to fifteen with the
-now-kernel-justified cut `B = 10`, sixteen and up by an exact LP-duality
-certificate checked without a solver (`make support15`) — so `r*(3,3) = 3`
-conditionally on those verdicts (§56.12). About sunflowers themselves:
-nothing — `r*(3,3)` stays `{3, 4}` in the tables until the verdicts are
-replayed with checked proofs. §57 is the handover.
+The `deg(0) = 13` branch of the `ι(4,11) ≥ 32` rung — the last of the
+rung's twenty-one top-degree cubes to rest on a single solver — has been
+refuted a second time, independently, by exhausting its full
+degree-sequence split under CryptoMiniSat 5.11.15: **1949 sub-cubes, every
+one UNSAT, no `SAT` row anywhere in the checkpoint.** The rung's agreement
+therefore goes from twenty of twenty-one cubes to **twenty-one of
+twenty-one**. About sunflowers themselves: nothing. `ι(4,11) ≤ 31` was
+already the standing value and remains it, the verdicts still carry no
+proof logs, and a second opinion can confirm but can never discover — only
+a `SAT` from CryptoMiniSat would have been news, and there was none in 1949
+of 1949. `docs/ladder/deg13_sweep_report.md` is the write-up and
+`docs/roadmap.md` §58 the session record.
 
 ## What did not move
 
-`r*(3,3) ∈ {3, 4}` is unchanged at both ends (ten and eleven points are
-excluded as a home for a refutation, which narrows where, not whether). No bound on `f(n,k)`, no
-exact value, no row of the `r*(m,3)` table, no entry of the conjecture
-ledger, and no constant in `[65, 125]` moved. `ι(4)` is still bracketed
-`27 ≤ ι(4) ≤ 71`, `ι(4,11) ≤ 31` still rests on cadical with the cube-13
-second opinion where §54 left it. The axiom count is unchanged: exactly
-`Sunflower.ALWZ.Rao20_lemma2`. What *is* withdrawn is evidence, not a
-bound: STATUS.md's 23-member object and §22.5's "weak evidence that the
-term really is 3" — the exact maximum on nine points is 27.
+**`27 ≤ ι(4) ≤ 71` is unchanged at both ends**, from
+`Product.iota_four_at_least_27` and
+`PureLink.iota_four_at_most_71_if_iota_three_is_ten`. The driver's own
+verdict line is about `ι(4,11)`, a different quantity from `ι(4)`, and this
+branch does not interconvert them anywhere. `ι(4,11) ≤ 31` does not move
+either: it was established before this run and this run corroborates it
+rather than extending it.
+
+No bound on `f(n,k)`, no exact value, no row of the `r*(m,3)` table, no
+entry of the conjecture ledger, and no constant in `[65, 125]` moved.
+`r*(3,3)` stays `{3, 4}` in the tables. **The axiom count is unchanged:
+exactly `Sunflower.ALWZ.Rao20_lemma2`.** No Coq module, theorem, definition
+or Rust test was added, removed or edited on this branch — the diff against
+`main` is solver rows, the tooling that audits them, and prose.
+
+And the rung is **still not a theorem.** Neither solver ran with proof
+logging, so by the rule of §56.8 — the same rule that keeps `r*(3,3) = 3`
+conditional in §57.1 — every one of the twenty-one cubes is a solver
+verdict. Twenty-one cubes with two solvers each and no checked proof among
+them is what this branch delivers, and nothing stronger.
 
 ## Machine-readable state
 
@@ -43,187 +49,275 @@ rust_suites         = 43
 axioms              = ["Sunflower.ALWZ.Rao20_lemma2"]
 
 [gates]
-verify      = "pass"
-coqchk      = "pass"
-mutants     = "pass"
-rust        = "pass"
-statements  = "pass"
-docnumbers  = "pass"
-ceilings    = "pass"
+# Recorded as actually run on this tree, not as hoped. verify, coqchk and
+# statements were run to completion here and pass; no .v file differs from
+# `main` on this branch, so that build is this tree's and not a stale one.
+# mutants and rust are "not-run" by me -- CI runs both on this PR, and a
+# gate reported from a previous tree would be a claim about that tree.
+# `docs/roadmap.md` 58.5 carries the same table.
+verify        = "pass"
+coqchk        = "pass"
+mutants       = "not-run"
+rust          = "not-run"
+statements    = "pass"
+docnumbers    = "pass"
+ceilings      = "pass"
+support15     = "pass"
+audit11       = "pass"
+audit-support = "pass"
 
 [[claim]]
-id       = "threshold-27-attained"
-statement = "There is a 3-uniform family of exactly 27 members satisfying RaoSpread 3 F 3 with no three pairwise disjoint members, so the non-strict form of SpreadYieldsDisjoint 3 3 3 is false."
-kind     = "theorem"
-evidence = "TightThreshold.threshold_27_is_attained"
-novelty  = "new-to-this-development"
-search   = "docs/reading.md, Session N+16: 17 arXiv API, 4 zbMATH, 23 web queries; Khare 2014 and Hou-Yu-Gao-Liu 2017 read from rendered pages; nothing on bounded-degree bounded-matching non-linear 3-graphs found"
-
-[[claim]]
-id       = "non-strict-threshold-fails"
-statement = "SpreadYieldsDisjointNonStrict 3 3 3 is false."
-kind     = "refutation"
-evidence = "TightThreshold.non_strict_threshold_fails_at_3_3_3"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "two-cover-3r-plus-1"
-statement = "An intersecting 3-uniform family satisfying RaoSpread 3 G r with r >= 3, covered by two points and by neither alone, has at most 3r + 1 members."
-kind     = "theorem"
-evidence = "TwoCoverSharp.two_cover_at_most_3r_plus_1"
-novelty  = "new-to-this-development"
-search   = "as above; nearest neighbour FHHZ17 (degree version of Hilton-Milner), which conditions on minimum degree rather than capping maximum degree"
-
-[[claim]]
-id       = "two-cover-3r-plus-1-tight"
-statement = "The bound 3r + 1 is attained at r = 3 by hm_family, a two-covered intersecting family of 10 members under the caps."
-kind     = "theorem"
-evidence = "TwoCoverSharp.two_cover_sharp_at_three_is_tight"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "nine-point-maximum-is-27"
-statement = "The largest 3-uniform family on nine points with no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 has 27 members."
+id       = "deg13-second-opinion-complete"
+statement = "The full 1949-sequence split of the deg(0) = 13 cube at (b, g, t) = (4, 11, 32) is exhausted under cryptominisat5 with every sub-cube UNSAT, so the cube is UNSAT under a second solver."
 kind     = "measurement"
-evidence = "rust/tests/tight_threshold.rs"
+evidence = "docs/ladder/iota4_11.deg13.cryptominisat5.tsv"
 novelty  = "new-to-this-development"
-search   = "as above"
+search   = "none run: no novelty is claimed, this corroborates a verdict the development already had"
 
 [[claim]]
-id       = "two-cover-measured"
-statement = "On six to nine points the two-covered maximum under the caps is 9, 10, 10, 10 at r = 3 and 10, 12, 13, 13 at r = 4, by an exhaustive depth-first search independent of the Coq."
+id       = "deg13-no-sat-row"
+statement = "No index in the checkpoint has any SAT attempt at all, superseded or otherwise, which is invariant I6 of the audit and the single observation the sweep existed to make."
 kind     = "measurement"
-evidence = "rust/tests/tight_threshold.rs"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "no-28-on-ten-points"
-statement = "No 3-uniform family on ten points with 28 members, no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 exists: all eleven degree-sequence cubes are infeasible under CP-SAT."
-kind     = "measurement"
-evidence = "docs/ladder/rstar_3_3_10.tsv"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "frankl-tau-three-proved"
-statement = "A 3-uniform intersecting family of distinct members with covering number at least 3 has at most 10 members (Frankl's value), with no degree or pair cap; attained by the 3-subsets of a 5-set, so TauThreeAtMost 9 is false. TwoCover.FranklTauThree is discharged and I(3,3) = 10 is a theorem."
-kind     = "theorem"
-evidence = "TauThreeTen.tau_three_ten"
+evidence = "docs/ladder/checkpoint_audit.py"
 novelty  = "not-new"
-search   = "the value is Frankl's, cited in docs/roadmap.md 24 and 56.5; the proof here is the development's own"
+search   = "none run: an invariant over this repository's own data file"
 
 [[claim]]
-id       = "i-three-three-is-ten"
-statement = "An intersecting 3-uniform family under Rao's caps at r = 3 has at most 10 members, and k53 attains it under the caps."
-kind     = "theorem"
-evidence = "TauThreeTen.i_three_three_is_ten"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "support-at-most-15-under-frankl"
-statement = "A 28-member 3-uniform family with s_E <= 7 for every member and every degree >= 2 (both follow from I(3,3) <= 10) has at most 15 points: a 61-leaf LP-duality certificate, docs/ladder/support15_cert.json, re-verified in exact rational arithmetic without a solver by tools/support15_check.py (make support15)."
+id       = "soft-cap-is-proportional"
+statement = "The per-cube budget overshoots by 0.417 to 1.350 percent of the cap across four recovered caps, proportional to the cap rather than a fixed number of seconds, which excludes a deadline checked on a fixed period and leaves two candidate mechanisms that this evidence does not separate."
 kind     = "measurement"
-evidence = "tools/support15_check.py"
+evidence = "docs/ladder/checkpoint_audit.py"
 novelty  = "new-to-this-development"
-search   = "as above"
+search   = "none run: a property of this run's instrumentation, not of mathematics"
 
 [[claim]]
-id       = "no-28-on-13-to-15-points-under-frankl"
-statement = "The 378 degree-profile cubes the relaxation allows at 13, 14 and 15 points are all INFEASIBLE under CP-SAT with the Frankl cut B = 10 (tools/audit_support.py, make audit-support)."
-kind     = "measurement"
-evidence = "docs/ladder/rstar_3_3_support13.tsv"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "no-28-on-twelve-points-under-frankl"
-statement = "All 738 degree-sequence cubes of a 28-member family on twelve points are INFEASIBLE under CP-SAT with the Frankl cut B = 10 (tools/audit_support.py checks them against the regenerated partition list); with sections 56.9-56.11 this decides r*(3,3) = 3 conditionally on Frankl's I(3,3) <= 10 and on the CP-SAT verdicts."
-kind     = "measurement"
-evidence = "docs/ladder/rstar_3_3_support12.tsv"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "no-28-on-eleven-points"
-statement = "No 3-uniform family on eleven points with 28 members, no three pairwise disjoint members, point degree <= 9 and pair degree <= 3 exists: all 139 degree-sequence cubes are infeasible under CP-SAT, 118 flat and 21 via every pair-degree-profile sub-cube; tools/audit11.py checks the ladders and exits 0."
-kind     = "measurement"
-evidence = "docs/ladder/rstar_3_3_11.sub.tsv"
-novelty  = "new-to-this-development"
-search   = "as above"
-
-[[claim]]
-id       = "weak-evidence-withdrawn"
-statement = "The 23-member object pinned in rust/tests/spread_threshold.rs and offered in docs/roadmap.md section 22.5 as weak evidence for r*(3,3) = 3 is no evidence: the exact maximum on a smaller ground is 27."
-kind     = "correction"
-evidence = "docs/roadmap.md"
-novelty  = "not-new"
-search   = "none run"
-
-[[claim]]
-id       = "prior-art-pass"
-statement = "Two papers (Khare 2014, Hou-Yu-Gao-Liu 2017) were added to the corpus with rendered-page readings; neither bounds the problem at codegree 3."
+id       = "span-audit-covers-the-log"
+statement = "Every span figure asserted in the operator log is re-derived from the audit's own walk and agrees, 1573 figures at the final state, with contiguity of both tables' ordinals asserted so that a pattern which misses a row fails instead of passing."
 kind     = "tooling"
-evidence = "docs/papers/manifest.json"
-novelty  = "not-new"
-search   = "none run"
+evidence = "docs/ladder/span_audit.py"
+novelty  = "new-to-this-development"
+search   = "none run: tooling internal to this repository"
+
+[[claim]]
+id       = "closed-stdout-skipped-side-effects"
+statement = "A truncated pipe closed stdout and killed three scripts before their note rewrite, git add and sample append while the pipeline still exited zero, which is now prevented rather than documented."
+kind     = "correction"
+evidence = "docs/ladder/safe_stdout.py"
+novelty  = "new-to-this-development"
+search   = "none run: a defect in this repository's own tooling"
+
+[[claim]]
+id       = "cost-monotonicity-asymmetry"
+statement = "Of 53 testable blocks 34 keep and 19 break a median-solver-cost monotonicity property, all nineteen breaks are upper-leg failures and none is lower-leg, and the lower leg is readable in 102 blocks and fails in none; this is a statement about solver costs on this instance family and not about the conjecture, iota, or any bound."
+kind     = "measurement"
+evidence = "docs/ladder/deg13_sweep_note.md"
+novelty  = "new-to-this-development"
+search   = "none run: explicitly not a mathematical claim"
 ```
 
 ## Results
 
-**`TightThreshold.threshold_27_is_attained`.** `nine27` is 27 triples on
-`{0..8}`; `nine27_uniform`, `nine27_distinct` and both spread checkers
-(`rao_witness_none` and `rao_spreadb`) decide by `vm_compute`, and
-`nine27_no_three_disjoint` is the `false` branch of
-`SpreadThreshold.decide_three_disjoint`'s boolean, so the family meets
-every hypothesis of `SpreadYieldsDisjoint 3 3 3` except `27 < |F|`. The
-family is 9-regular (`nine27_regular`), which is the counting ceiling
-`9·9/3` on nine points met exactly. Found by exact optimisation in
-0.0 s; independently re-checked in `rust/tests/tight_threshold.rs`.
+**The sweep terminated and two independent records agree.** The driver
+exited with code 0, printing `# g = 11: UNSAT after 33906.0s (1949 sequence
+cubes, 0 at the limit)` and `VERDICT UNSAT  iota(4,11) <= 31   (33906.0s)`
+— the seconds being the final resumed pass, not the campaign. The verdict
+was not taken from that. `checkpoint_audit.py` re-resolves every row from
+the file and regenerates the cube list from the binary's enumeration, and
+reports: 2118 data rows against 1949 cubes, verdicts `{UNSAT: 1949,
+UNKNOWN: 169}` and nothing else, 0 indices with any `SAT` attempt, 0
+unresolved labels, 0 indices decided twice, frontier contiguous `0..1948`,
+holes `[]`, decided 1949 of 1949 = 100.0000%, all six invariants hold.
 
-**`TwoCoverSharp.two_cover_at_most_3r_plus_1`.** Cases on whether a
-piece has a common point. A common point on one side caps that side at
-`r` by a pair, and either the other side shares the point (`r`) or some
-member misses it, which pins the first side to two triples and the
-second to one pair plus one triple (`r + 1`). No common point on either
-side: each side is pinned to four triples by the other, and a side with
-four members has two members with disjoint tails (a family of
-pairwise-meeting tails with no common point has at most three), whose
-four cross triples cannot all occur without forcing the first side to
-two — so the two sides total at most seven, which is `2r + 1` at `r = 3`.
-Plus `r` for the members through both cover points. The mutations
-`twocoversharp-three-r` and `twocoversharp-r-at-least-two` show the `+1`
-and the `3 <= r` are load-bearing.
+**The cover matters and is recorded.** The split enumerated is the 1949
+cover (a family on *at most* eleven points), not the 1939 `--ladder` cover
+(*exactly* eleven). UNSAT on all 1949 implies UNSAT on all 1939, so the
+second opinion is sound and marginally stronger than the cover it
+corroborates; the ten extra sequences are independently redundant, refuted
+by `ι(4,10) = 27 < 32`. Rows are never merged between the two files. §52.1
+is where this was established, and where the session that conflated them is
+recorded.
 
-**Gates.** `verify`, `coqchk` (census exactly `Sunflower.ALWZ.Rao20_lemma2`),
-`statements` (941 entries, no existing hash moved), `docnumbers` (17),
-`ceilings` (9 routes) all pass on the final tree; the eight new mutations
-(four on `TightThreshold`/`TwoCoverSharp`, four on `TauThreeTen`) are all
-killed (`tools/mutate.py --only ...`); `make support15`, `make audit11`
-and `make audit-support` exit 0; the new suite
-`rust/tests/tight_threshold.rs` passes. The full Rust suite passes, 43 of 43: on the first run two tests in
-`spread_threshold.rs` (a file this branch does not touch) panicked with
-`NotFound` because `cryptominisat5` was not installed in the container;
-after installing it, that suite passes 20 of 20, and the eleven suites
-cargo had skipped after the failure were run separately and pass.
+**Cost distribution over the 1949 decided sub-cubes**, decided cost being
+`max(cost)` over a label's non-`UNKNOWN` rows: min 0.1 s, Q1 1178.1 s,
+median 2481.5 s, mean 3512.3 s, Q3 4940.6 s, max 21678.5 s, sum 6845530.3 s.
+The sum is of final costs and is **not** the campaign's wall clock — cubes
+killed by restarts were re-run, the 169 superseded `UNKNOWN` rows are that
+record (`1949 + 169 = 2118`), and four solvers ran concurrently. Every
+figure is wall time under contention in a shared four-core container and is
+**not** comparable with the CaDiCaL rows.
 
-**Costs and what remains.** `docs/roadmap.md` §56.7 and §56.5. The
-28-member question — `r*(3,3) = 3` or `4` — is open; ten points (§56.9,
-eleven cubes) and eleven points (§56.10, 139 cubes, the stalls closed by
-pair-degree-profile sub-cubes, about 110 core-hours in all) are now
-excluded under CP-SAT; from above, an exact LP-duality certificate caps
-the support at fifteen under Frankl's `I(3,3) <= 10` (§56.11) and the
-13–15-point cubes are excluded under CP-SAT with the Frankl cut, so a
-refutation of `r*(3,3) = 3` would live on exactly twelve points; and all
-738 twelve-point cubes are excluded the same way (§56.12). Frankl's `τ = 3`
-value is now proved (`coq/TauThreeTen.v`, §56.13), so the row is decided
-conditionally on the CP-SAT verdicts alone and stays `{3, 4}` in the
-table until they are replayed with checked proofs; that replay is the
-one thing owed.
+**The budget ladder, at full scale.** The per-cube budget rose from 600 s to
+21600 s. At 1800 s the run had stopped producing verdicts entirely and
+looked like a cube that had become too hard; it had not, and raising the cap
+converted fifteen consecutive stalls, every one landing just above the old
+cap and nowhere near the new one. §52.3a called this and the completed run
+confirms it. The operational rule: **a run of consecutive stalls is a
+statement about the budget, not about the instance, until a larger budget
+has been tried.**
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+**Fifty-six numbered container restarts, zero rows lost.** Append-on-landing
+plus "`UNKNOWN` is a budget and not a verdict" held at every one. The check
+was never the row count alone — that cannot distinguish a clean teardown
+from a lost row — but the row count paired with a waiter armed at the
+pre-teardown count reporting no landing, and the relaunched driver's recount
+against an independent recount of distinct `UNSAT` labels.
 
-https://claude.ai/code/session_01SqzBAiCLvej7Q2KfCN32Yj
+## Negative results, with budgets
+
+**The sweep is exhaustive, not stopped.** All 1949 sub-cubes are decided;
+the budget was not left unspent and nothing is undecided. Say "0 labels
+undecided-only", never "0 UNKNOWN" — the file holds 169 `UNKNOWN` rows,
+each superseded by a later `UNSAT` on the same label.
+
+**Exactly one sub-cube finished above the final cap**, at 21678.5 s against
+21600 s, which is the soft-cap behaviour above and not an anomaly.
+
+**The soft-cap mechanism is not identified**, and the branch does not claim
+one. A fixed-period deadline is excluded by the proportionality. Of the two
+survivors — `--maxtime` on solver CPU time read against a wall-clock record,
+or a check interval growing with runtime — the wall-over-CPU excess measured
+on 411 distinct in-flight cubes (median 1.608%, full range
+0.144%–11.304%) agrees with the first in **magnitude** and disagrees in
+**dispersion**, the second is untested, and **this evidence separates
+nothing.**
+
+**No proof log was produced, by either solver, for any cube of the rung.**
+That is the standing negative and the reason §58.6 names replay as the only
+real next step.
+
+## Corrections
+
+**A prediction of mine was over-specific and is withdrawn.** On the last
+testable block I wrote that if either of two pending costs exceeded 811.6 s
+the median would be `(811.6 + 850.8)/2 = 831.2` outright. Both landed above
+811.6 and the median was 858.4. The equality holds only when *exactly one*
+is above; the correct general form is the inequality. The block's BREAK
+verdict never depended on it.
+
+**A registered trigger's number moved under it.** "BREAK becomes certain
+when any of idx 1900/1901/1902 passes 533.8 s" — none did, yet the break
+arrived, because 533.8 was conditional on a bound that then rose, moving the
+threshold to 425.2, which one of them had already passed. The logic fired;
+the number was conditional and was not labelled as such.
+
+**`checkpoint_audit.py` used to assert a soft-cap mechanism that contradicted
+its own observation** — a deadline "checked periodically and overshot by the
+lag" — when a fixed-period check overshoots by bounded seconds, not by a
+fraction of the cap. The assertion is gone and the two surviving candidates
+are named without being chosen between.
+
+**A tally of a guard's firings was found short three times** and is deleted
+rather than maintained, because a count of a mechanical event kept as prose
+beside the mechanism is the same staleness the guard exists to prevent.
+
+**`| head` on a script with side effects is banned**, not merely documented:
+it closed stdout, the next `print` raised `BrokenPipeError`, and three
+scripts died before their note rewrite, `git add` and sample append while
+the pipeline exited zero because the status is `head`'s. Caught at idx 1522
+by a one-row note-against-blob disagreement; 40 commits were re-checked and
+all agreed, so nothing had been published wrong. `docs/ladder/safe_stdout.py`
+makes a closed stdout non-fatal.
+
+**§52.4 is superseded on one clause and says so in place.** Its "cube 13's
+second opinion is still outstanding" was true when written and is kept as
+the dated record with a pointer to §58; the rest of that paragraph still
+holds.
+
+## Reproduction
+
+The result and both audits need no build and no solver:
+
+```
+python3 docs/ladder/checkpoint_audit.py              # invariants I1-I6, frontier, caps
+python3 docs/ladder/checkpoint_audit.py --spans all  # span record (~20 s)
+python3 docs/ladder/span_audit.py                    # every span figure in the log
+```
+
+The repository gates run on the final tree of this branch, all passing:
+
+```
+make -j4 verify      # exit 0; 52 modules, Coq 8.18.0; statements ran inside
+                     # it -- 941 statements match the baseline
+make coqchk          # exit 0; axioms: exactly Sunflower.ALWZ.Rao20_lemma2;
+                     # no type-in-type, no unsafe (co)fixpoints, no assumed
+                     # positivity
+make docnumbers      # 17 quoted numbers match the lists they count
+make ceilings        # 9 routes costed, declared verdicts match the arithmetic
+make support15       # 61 leaves, exact rationals, max leaf bound 15.9583 < 16
+make audit11         # 139 cubes, 0 open, 0 witness rows
+make audit-support   # 378 cubes regenerated and equal; needs `pip install
+                     # ortools`, without which it exits 1 on the regeneration
+                     # half while the row checks still pass
+make prcheck PR_BODY=body.md
+```
+
+Not run by me, and reported that way rather than carried over from an
+earlier tree. CI runs both on this PR:
+
+```
+python3 tools/mutate.py          # over an hour
+cd rust && cargo test --release
+```
+
+Re-running the sweep itself needs the driver and CryptoMiniSat, and resumes
+rather than restarts against an existing checkpoint:
+
+```
+./rust/target/release/examples/iota_sym 4 11 32 --only-deg 13 \
+  --solver cryptominisat5 --seqprefix 11 --cubecap 2000 \
+  --slice 60 --seconds 21600 --threads 4 \
+  --checkpoint docs/ladder/iota4_11.deg13.cryptominisat5.tsv
+```
+
+Expect the campaign cost above, and read §6.4 of the report before
+extrapolating from a partial run: the enumeration goes easy-to-hard, so any
+rate read off the opening rows is an overestimate.
+
+## What a reviewer should attack
+
+**The weakest link is that none of this is a proof.** Twenty-one cubes,
+two solvers each, zero proof logs. If both solvers share a defect on this
+instance family, agreement is worth nothing, and nothing here rules that
+out. The branch says so in four places rather than one, but saying so is
+not a mitigation.
+
+**Attack the cover argument next.** Everything rests on "UNSAT on all 1949
+implies UNSAT on all 1939". If that containment is wrong, the second
+opinion is about a different object than the rung. §52.1 is the argument;
+the ten extra sequences are the part to check, and the session that
+previously got these two covers backwards is on record.
+
+**Then the soft cap.** A decided cost above its nominal cap is treated as
+benign. The report argues proportionality and names two mechanisms without
+choosing; if the real mechanism were instead one that could terminate a
+solver *early* while recording `UNSAT`, the verdicts themselves would be in
+question. Nothing observed suggests that, and nothing observed excludes it
+either.
+
+**Least load-bearing, and least defended:** the cost-monotonicity
+asymmetry of §58.3. It is 19 of 19 in one direction and 0 of 102 in the
+other, which is exactly the shape that invites an inference about the
+instances. No such inference is drawn, and a reviewer who thinks the
+paragraph reads as if one were should say so — it is a statement about
+solver costs only.
+
+## Handover
+
+`docs/roadmap.md` §58 carries the full handover; §58.6 is the "what is
+owed" list and it is short, because nothing on this branch is owed. The
+rung is as closed as solver verdicts can close it.
+
+**Do not re-run this sweep.** It is complete, the checkpoint is the record,
+and a re-run would cost the campaign again to learn nothing. **Do not
+relaunch the driver**: `pgrep -x iota_sym` returning nothing is now the
+expected state, and the restart-absorption procedure in the operator log
+exists for a driver killed mid-run, not for a zero exit carrying a
+completion verdict.
+
+The next real step for `ι(4,11)` is the same one §57.2 names for
+`r*(3,3)`: replay a solver verdict with a checked proof. Cube 13 is now the
+best-corroborated of the twenty-one and therefore the least interesting to
+replay; the case for replay runs through whichever cube is cheapest to log.
+
+§57 remains the handover for the `r*(3,3)` line, which this branch does not
+touch.

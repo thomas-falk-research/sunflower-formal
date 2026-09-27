@@ -1,0 +1,478 @@
+#!/usr/bin/env python3
+"""Audit the deg-13 checkpoint against the independently regenerated cube list.
+
+WHY
+---
+Every progress figure reported for this sweep -- how many cubes are decided,
+where the frontier is, which indices are holes, what percentage is done --
+comes from resolving each row's label to an index in the 1949-cube list.
+That resolution is done row by row as rows land.  This script redoes the
+whole thing from scratch, for every row in the file at once, so the running
+figures are checked rather than trusted.
+
+It reuses the cube-list generator and the decided() resolver shipped in
+forward_test.py, and cross-checks its own recomputation against decided()
+as a second opinion on the same data.
+
+TWO KINDS OF CHECK
+------------------
+INVARIANTS hold at any size and any point in the sweep.  They are the
+durable value of this script:
+
+  I1  every row has exactly 3 tab-separated fields
+  I2  every verdict is UNSAT, SAT or UNKNOWN; every cost parses as a number
+  I3  every label resolves to some index in the regenerated 1949-cube list
+  I4  no index is ever DECIDED twice -- at most one non-UNKNOWN attempt per
+      label, so the decided-cost rule's max() never has to choose between
+      two conflicting decided costs
+  I5  the recomputation here agrees exactly with shipped decided()
+  I6  no SAT verdict anywhere (a SAT would refute deg(0)=13 being UNSAT and
+      is the one result that would change the mathematics)
+
+A SNAPSHOT cross-check compares against figures recorded at one revision.
+The checkpoint GROWS, so a snapshot mismatch is EXPECTED once new rows land
+and is reported as drift, not as failure.  Only an invariant violation is a
+failure.
+
+THE DECIDED-COST RULE, AND WHAT "27 DISAGREE" MEANS
+---------------------------------------------------
+A cube's cost is  max(c for verdict, c in rows if verdict != 'UNKNOWN').
+6ec69dc introduced this after finding that taking the max over ALL rows for
+a label picks up an earlier attempt that hit the cap and wrote UNKNOWN.  Its
+words: "80 labels carry multiple rows and in 27 the max disagrees with the
+decided cost; worst case used 10893.7 for a cube decided at 8270.4, 32
+percent too high."
+
+That 27 is the count of labels where the NAIVE max over all rows differs
+from the decided cost.  It is NOT a count of conflicting verdicts, and
+compressing it to "27 disagree" invites that misreading.  Invariant I4 is
+the sharper statement: no label is ever decided twice, so nothing in this
+file disagrees with anything.  Every multi-row label is exactly one UNSAT
+preceded by one or more UNKNOWN attempts.  The filter in the decided rule
+therefore never breaks a tie -- it only ever discards UNKNOWN cap costs --
+and the 27 counts how often discarding them actually changes the number.
+
+Run with no arguments to audit the working tree; pass a git rev to audit the
+checkpoint as of that revision.
+"""
+
+import collections
+import datetime as _dt, statistics, subprocess, sys
+
+CHECKPOINT = 'docs/ladder/iota4_11.deg13.cryptominisat5.tsv'
+HELPERS    = 'docs/ladder/forward_test.py'
+SAMPLES    = 'docs/ladder/cpu_ratio_samples.tsv'
+SPLIT_AT   = "# ------------------------------------------------------------------ calibration"
+
+# Figures recorded at this revision.  The checkpoint grows, so these go stale
+# by design; drift from them is not a failure.
+SNAPSHOT_REV = '07b8a61'
+SNAPSHOT = dict(rows=860, decided=691, total=1949, contig_top=683, highest=691,
+                holes=[684], undecided_only=0, sat=0,
+                multi_row_labels=80, naive_max_differs=27)
+
+
+def load(rev=None):
+    if rev:
+        return subprocess.run(['git', 'show', f'{rev}:{CHECKPOINT}'],
+                              capture_output=True, text=True, check=True).stdout
+    return open(CHECKPOINT).read()
+
+
+
+# ---------------------------------------------------------------- span mode
+# WHY THIS IS CODE AND NOT PROSE
+# ------------------------------
+# 93b9351 reported a broken-frontier span by hand and summarised the
+# hole-count trajectory as "shrinking 3 -> 2 -> 1".  Recomputing it here
+# gives 3,3,3,2,2,1,1,2,2,2,1,1,1,1 -- it rose back to 2 at a2a525c, when
+# 704 opened behind the edge while 696 was still out.  The span length (14
+# commits) and duration in that message are both correct; the SHAPE was a
+# summary of a sequence nobody had printed.  So this prints the trajectory
+# and COMPUTES whether it was monotone, instead of describing it.
+#
+# WHAT A SPAN IS MEASURED BETWEEN
+# -------------------------------
+# From the commit that last left the frontier whole to the commit that made
+# it whole again, using COMMITTER TIMESTAMPS.  Those are in git for every
+# commit.  Row-landing times are not: a row that lands between a waiter
+# firing and the next arming has no observed timestamp, only a bound
+# (a2a525c/9f8cad2), so they cannot support a uniform record.  The two
+# differ by the commit lag -- span B is 4:40:49 by commit stamps and
+# 4:41:02 by the row-landing times quoted at 93b9351.
+#
+# "across N commits" counts commits AT WHICH THE FRONTIER WAS BROKEN.  It is
+# one less than `git rev-list last_whole..closing_commit`, which includes the
+# closing commit, where the frontier is already whole again.
+
+def holes_at(text, IDX):
+    """(holes, contiguous_top, highest) for one checkpoint revision."""
+    dec = set()
+    for l in text.splitlines():
+        if not l or l.startswith('#'):
+            continue
+        f = l.split('\t')
+        if len(f) == 3 and f[1] != 'UNKNOWN' and f[0] in IDX:
+            dec.add(IDX[f[0]])
+    if not dec:
+        return [], -1, -1
+    hi = max(dec)
+    c = 0
+    while c in dec:
+        c += 1
+    return [i for i in range(hi) if i not in dec], c - 1, hi
+
+
+def spans(window=80):
+    """Recompute the frontier at each checkpoint-touching commit and report
+    every span during which it was broken.  window=None walks all of them,
+    which makes the record complete enough to rank."""
+    ns = {}
+    exec(open(HELPERS).read().split(SPLIT_AT)[0], ns)
+    IDX = ns['IDX']
+
+    revs = subprocess.run(['git', 'rev-list', '--reverse', 'HEAD', '--', CHECKPOINT],
+                          capture_output=True, text=True, check=True).stdout.split()
+    total_commits = len(revs)
+    truncated = window is not None and window < total_commits
+    if truncated:
+        revs = revs[-window:]
+
+    walk = []
+    for r in revs:
+        text = subprocess.run(['git', 'show', f'{r}:{CHECKPOINT}'],
+                              capture_output=True, text=True, check=True).stdout
+        sha = subprocess.run(['git', 'rev-parse', '--short', r],
+                             capture_output=True, text=True, check=True).stdout.strip()
+        when = subprocess.run(['git', 'log', '-1', '--format=%cI', r],
+                              capture_output=True, text=True, check=True).stdout.strip()
+        h, _, _ = holes_at(text, IDX)
+        walk.append((sha, when, h))
+
+    print(f"walked {len(walk)} of {total_commits} checkpoint-touching commits"
+          f"{' (WINDOWED -- a span open at the left edge is left-truncated)' if truncated else ' (COMPLETE HISTORY)'}\n")
+
+    found, i = [], 0
+    while i < len(walk):
+        if walk[i][2]:
+            j = i
+            while j < len(walk) and walk[j][2]:
+                j += 1
+            prev = walk[i - 1] if i > 0 else None
+            close = walk[j] if j < len(walk) else None
+            found.append((prev, walk[i:j], close))
+            i = j
+        else:
+            i += 1
+
+    for prev, broken, close in found:
+        traj = [len(h) for _, _, h in broken]
+        mono = all(traj[k + 1] <= traj[k] for k in range(len(traj) - 1))
+        print(f"  span of {len(broken)} broken commit(s)")
+        print(f"    opened after : {prev[0] + '  ' + prev[1] if prev else 'UNKNOWN -- span is open at the left edge of the walk'}")
+        print(f"    closed by    : {close[0] + '  ' + close[1] if close else 'STILL BROKEN at the walk head'}")
+        if prev and close:
+            a = _dt.datetime.fromisoformat(prev[1])
+            b = _dt.datetime.fromisoformat(close[1])
+            d = b - a
+            print(f"    duration     : {d} ({d.total_seconds() / 3600:.4f} h) by committer timestamps")
+        else:
+            print(f"    duration     : NOT COMPUTED -- an endpoint is missing, so any figure would be a bound, not a span")
+        print(f"    hole counts  : {','.join(map(str, traj))}")
+        print(f"    monotone non-increasing? {mono}"
+              f"{'' if mono else '  <-- it grew again mid-span; do not summarise this as a shrink'}")
+        widest = max(broken, key=lambda t: len(t[2]))
+        print(f"    most holes at once: {len(widest[2])} at {widest[0]}  {widest[2]}")
+        print()
+
+    if not found:
+        print("  no broken span inside the walk")
+    elif truncated:
+        print("  NOT RANKED: the walk is windowed, so this is not the complete record"
+              " (9f8cad2 -- do not claim longest/first/most from a record you do not keep).")
+    else:
+        def dur(t):
+            return _dt.datetime.fromisoformat(t[2][1]) - _dt.datetime.fromisoformat(t[0][1])
+        rank = sorted((t for t in found if t[0] and t[2]), key=dur, reverse=True)
+        print(f"  RANKED over the complete history ({len(rank)} closed spans, "
+              f"{len(found) - len(rank)} with a missing endpoint excluded):")
+        for n, t in enumerate(rank[:5], 1):
+            print(f"    {n}. {dur(t)} across {len(t[1])} commits, {t[0][0]} -> {t[2][0]}")
+
+        # THE POPULATION IS PADDED.  Most spans are single-commit blips: a hole
+        # opens and closes between two commits made seconds apart, so "rank 4 of
+        # 62" is a rank against a list that is mostly trivia (c9982c9 -- a
+        # convenient population by accident).  The distribution below is what
+        # tells you how to read a rank.
+        #
+        # WHAT THIS DELIBERATELY NO LONGER DOES
+        # -------------------------------------
+        # cd03f27 shipped a "RANK ROBUSTNESS" block here that recomputed each
+        # rank against only the spans over an hour and reported that all ten
+        # agreed.  That check CANNOT FAIL.  Any population defined by
+        # "duration > T" is exactly the top-k of the list already sorted by
+        # duration, so every member keeps its position by construction --
+        # verified across cuts from 30 to 90 minutes, every one agreeing.  It
+        # was arithmetic printed as verification, which is worse than printing
+        # nothing: it manufactured confidence in a rank nobody had checked.
+        # Instance twenty-one of a script whose output asserts what its code
+        # does not do, and it survived about forty minutes.
+        #
+        # There is no cheap substitute, because the question "is this rank
+        # meaningful" is not answerable from the ranking alone.  So the
+        # distribution is printed and the reader judges.
+        print(f"\n  duration distribution -- READ THE RANK THROUGH THIS, not alone:")
+        prev_n = len(rank)
+        for secs, lab in ((1, '1 second'), (60, '1 minute'), (600, '10 minutes'),
+                          (3600, '1 hour'), (14400, '4 hours')):
+            n = sum(1 for t in rank if dur(t) > _dt.timedelta(seconds=secs))
+            print(f"    longer than {lab:<10}: {n:>3} of {len(rank)}")
+            prev_n = n
+
+        # Any threshold here is a number someone picked, so show what the
+        # one-hour line excludes and by how little (1ce9de9/40ea25d).
+        below = [t for t in rank if dur(t) <= _dt.timedelta(hours=1)]
+        if below:
+            near = max(below, key=dur)
+            miss = _dt.timedelta(hours=1) - dur(near)
+            print(f"  nearest span excluded by the one-hour line: {near[0][0]} -> {near[2][0]}"
+                  f"  {dur(near)}, short by {miss}"
+                  f"{'   <-- the line is doing arbitrary work here' if miss < _dt.timedelta(minutes=10) else ''}")
+    return 0
+
+
+def main(rev=None):
+    ns = {}
+    exec(open(HELPERS).read().split(SPLIT_AT)[0], ns)
+    IDX, SEQ, decided, blockof = ns['IDX'], ns['SEQ'], ns['decided'], ns['blockof']
+
+    raw  = load(rev)
+    rows = [l for l in raw.splitlines() if l and not l.startswith('#')]
+    where = rev or 'working tree'
+    print(f"auditing {CHECKPOINT} @ {where}: {len(rows)} real data rows,"
+          f" {len(SEQ)} cubes in the regenerated list\n")
+
+    fails = []
+
+    # I1/I2 structure
+    malformed = [i for i, l in enumerate(rows) if len(l.split('\t')) != 3]
+    if malformed: fails.append(f"I1 malformed rows at lines {malformed[:5]}")
+    verdicts = collections.Counter(l.split('\t')[1] for l in rows if len(l.split('\t')) == 3)
+    stray = [v for v in verdicts if v not in ('UNSAT', 'SAT', 'UNKNOWN')]
+    if stray: fails.append(f"I2 unexpected verdict strings {stray}")
+    badc = []
+    for l in rows:
+        f = l.split('\t')
+        if len(f) == 3:
+            try: float(f[2])
+            except ValueError: badc.append(l)
+    if badc: fails.append(f"I2 {len(badc)} non-numeric cost fields")
+    print(f"I1 structure        rows malformed: {len(malformed)}")
+    print(f"I2 fields           verdicts {dict(verdicts)}, non-numeric costs {len(badc)}")
+
+    # I3 resolution
+    by, unresolved = collections.defaultdict(list), []
+    for i, l in enumerate(rows):
+        f = l.split('\t')
+        if len(f) != 3: continue
+        lab, v, c = f
+        if lab not in IDX: unresolved.append((i, lab)); continue
+        by[IDX[lab]].append((v, float(c)))
+    if unresolved:
+        fails.append(f"I3 {len(unresolved)} labels not in the cube list, e.g. {unresolved[:3]}")
+    print(f"I3 resolution       unresolved labels: {len(unresolved)};"
+          f" distinct indices touched: {len(by)}")
+
+    # I4 no index decided twice
+    twice = [i for i, a in by.items() if sum(1 for v, _ in a if v != 'UNKNOWN') >= 2]
+    if twice: fails.append(f"I4 {len(twice)} indices decided more than once: {twice[:5]}")
+    multi = {i: a for i, a in by.items() if len(a) > 1}
+    print(f"I4 single decision  indices decided more than once: {len(twice)}"
+          f"   (multi-row labels: {len(multi)})")
+
+    # I5 agreement with shipped decided()
+    mine   = {i: max(c for v, c in a if v != 'UNKNOWN')
+              for i, a in by.items() if any(v != 'UNKNOWN' for v, _ in a)}
+    theirs = decided(raw)
+    if mine != theirs:
+        d = set(mine) ^ set(theirs)
+        fails.append(f"I5 recomputation disagrees with decided() on {len(d)} indices")
+    print(f"I5 second opinion   agrees with shipped decided(): {mine == theirs}"
+          f"   ({len(mine)} decided)")
+
+    # I6 no SAT
+    sats = sorted(i for i, a in by.items() if any(v == 'SAT' for v, _ in a))
+    if sats: fails.append(f"I6 SAT verdict present at indices {sats}")
+    print(f"I6 no SAT           indices with any SAT attempt: {len(sats)}")
+
+    # derived figures
+    lo = 0
+    while lo in mine: lo += 1
+    contig, highest = lo - 1, (max(mine) if mine else -1)
+    holes = [i for i in range(highest + 1) if i not in mine]
+    undec = sorted(i for i in by if i not in mine)
+    naive = sum(1 for a in multi.values()
+                if any(v != 'UNKNOWN' for v, _ in a)
+                and max(c for v, c in a if v != 'UNKNOWN') != max(c for _, c in a))
+
+    print(f"\nfrontier contiguous 0..{contig}, highest decided {highest}, holes {holes}")
+    print(f"done {len(mine)} of {len(SEQ)} = {100*len(mine)/len(SEQ):.4f}%,"
+          f" remaining {len(SEQ)-len(mine)}")
+    print(f"undecided-only indices: {len(undec)}"
+          f"   (UNKNOWN rows in file: {verdicts.get('UNKNOWN', 0)}, the rest superseded)")
+    print(f"multi-row labels {len(multi)}; naive max over ALL rows differs from the"
+          f" decided cost in {naive} of them")
+
+    # cap history, recovered from the UNKNOWN rows (diagnostic, NOT an invariant:
+    # the cap is raised over the sweep's life, so these values legitimately change)
+    unk = sorted((float(l.split('\t')[2]), n) for n, l in enumerate(rows)
+                 if len(l.split('\t')) == 3 and l.split('\t')[1] == 'UNKNOWN')
+    if unk:
+        groups = [[unk[0]]]
+        for c in unk[1:]:
+            if c[0] - groups[-1][-1][0] > 0.10 * groups[-1][-1][0]: groups.append([c])
+            else: groups[-1].append(c)
+        print("\ncap history recovered from UNKNOWN rows (diagnostic, not an invariant).")
+        print("An UNKNOWN row is written when the per-cube budget runs out, so each")
+        print("tight cluster marks a cap that was in force for part of the sweep:")
+        print(f"   {'n':>4} {'cost min':>10} {'cost max':>10} {'0-based rows':>14}  cluster")
+        for g in groups:
+            lo, hi = g[0][0], g[-1][0]
+            pos = [n for _, n in g]
+            tight = (hi - lo) <= 0.02 * lo
+            print(f"   {len(g):>4} {lo:>10.1f} {hi:>10.1f} {min(pos):>6}..{max(pos):<6}  "
+                  f"{'tight -- a cap' if tight else 'diffuse -- mechanism not established'}")
+        last_unk = max(n for _, n in unk)
+
+        # THE OVERSHOOT IS COMPUTED HERE, NOT TYPED.  An earlier version of
+        # this block stated "0.417% to 1.350%" and "3.2x against 28.5x" as
+        # literals, which is the same-quantity-written-twice defect the note
+        # tracks -- the figures also appear in the note, and a typed pair
+        # cannot drift together.  The nominal budgets ARE an input: they are
+        # the --seconds values from the restart record, and no rule for
+        # reading a cap off its own cluster survives all four (the largest
+        # multiple of 60 below 21744.1 is 21720, not 21600).
+        NOMINAL = [1800, 5400, 10800, 21600]
+        over = []
+        for g in groups:
+            glo, ghi = g[0][0], g[-1][0]
+            if (ghi - glo) > 0.02 * glo:
+                continue                      # diffuse: no cap to compare against
+            cands = [c for c in NOMINAL if 0 <= glo - c <= 0.02 * c]
+            assert len(cands) == 1, (
+                f"the tight cluster at {glo:.1f}..{ghi:.1f} matches {cands} of the "
+                f"nominal budgets {NOMINAL}; add the cap it was actually run under "
+                f"rather than letting this figure be inferred")
+            cap = cands[0]
+            over.append((cap, len(g), glo - cap, ghi - cap,
+                         100 * (glo - cap) / cap, 100 * (ghi - cap) / cap))
+        fr = [x for o in over for x in o[4:6]]
+        sc = [x for o in over for x in o[2:4]]
+
+        print(f"\nTHE CAP IS SOFT. Every tight cluster sits ABOVE its nominal cap, by an")
+        print(f"amount proportional to the cap rather than a fixed number of seconds:")
+        print(f"   {'cap':>7} {'n':>4} {'over, s':>18} {'over, % of cap':>20}")
+        for cap, n, a, b, p, q in over:
+            print(f"   {cap:>7} {n:>4} {a:>8.1f} ..{b:>8.1f} {p:>9.3f}% ..{q:>8.3f}%")
+        print(f"{min(fr):.3f}% to {max(fr):.3f}% of the cap across "
+              f"{len(over)} clusters, which spans")
+        print(f"{max(fr)/min(fr):.1f}x as a fraction where the raw seconds span "
+              f"{max(sc)/min(sc):.1f}x.")
+        print(f"A decided cost slightly above the nominal cap is therefore NOT an anomaly.")
+        print(f"\nTHE MECHANISM IS NOT SETTLED, AND THIS TOOL USED TO ASSERT ONE THAT")
+        print(f"CONTRADICTED ITS OWN OBSERVATION: it said the budget is a deadline")
+        print(f"\"checked periodically and overshot by the lag\", but a deadline checked")
+        print(f"on a FIXED period overshoots by a bounded number of SECONDS, not by a")
+        print(f"fraction of the cap.  Two candidates do fit: (1) --maxtime enforced on")
+        print(f"the solver\'s CPU time while the checkpoint records the driver\'s WALL")
+        print(f"time -- iota_sym.rs times each cube with Instant::elapsed(), so the")
+        print(f"column IS wall-clock; or (2) a check interval that itself grows with")
+        print(f"runtime.  cryptominisat5\'s --help names no clock for --maxtime.")
+
+        # The quantitative side of candidate (1), COMPUTED rather than quoted.
+        # A capped cube by definition runs to at least its cap, so the relevant
+        # regime is long elapsed -- and the band must be read off the whole
+        # file, not off a handful of recent rows.  An earlier version of this
+        # paragraph quoted "0.422%-1.082%, the same band as the overshoot"; that
+        # was five hand-picked ratios from the two most recent sample rounds,
+        # and the file does not support it.  See the note.
+        try:
+            srows, percube = [], {}
+            for sl in open(SAMPLES, encoding='utf-8'):
+                if not sl.strip() or sl.startswith('#'): continue
+                sf = sl.rstrip('\n').split('\t')
+                if len(sf) < 8: continue
+                sel_, scp_ = int(sf[4]), int(sf[5])
+                if sel_ > 0 and scp_ > 0:
+                    srows.append((sel_, scp_))
+                    # ONE OBSERVATION PER CUBE, keyed by (driver pid, solver pid,
+                    # cube index) so a recycled solver pid across restarts cannot
+                    # merge two different cubes.  The file is in time order, so
+                    # the last write wins and each cube contributes its LONGEST
+                    # observation.  This exists because the per-SAMPLE count is
+                    # not a count of independent observations: the samplers run
+                    # together at every check-in, so the file arrives in bursts
+                    # of the same four processes seconds apart, and every cube
+                    # contributes once per bank besides.
+                    percube[(sf[1], sf[2], sf[3])] = (sel_, scp_)
+        except OSError:
+            srows, percube = [], {}
+        thr = min(NOMINAL)
+        exs = sorted(100.0 * (e / c - 1.0) for e, c in srows if e >= thr)
+        if exs:
+            pc = lambda p: exs[min(len(exs) - 1, int(p * len(exs)))]
+            print(f"\nTHE QUANTITATIVE CASE FOR (1) IS WEAKER THAN IT LOOKS. Wall-over-cpu")
+            print(f"excess over the {len(exs)} samples with elapsed >= {thr} s (the smallest cap,")
+            print(f"so the capped regime): median {statistics.median(exs):.3f}%, p5-p95 "
+                  f"{pc(.05):.3f}%-{pc(.95):.3f}%,")
+            print(f"full {min(exs):.3f}%-{max(exs):.3f}%.  The overshoot band "
+                  f"{min(fr):.3f}%-{max(fr):.3f}% sits INSIDE")
+            print(f"that, so the two agree in MAGNITUDE -- but the excess is far more")
+            print(f"DISPERSED than the overshoot ({max(exs)/max(fr):.1f}x the upper end), and under (1)")
+            print(f"the overshoot should inherit that spread.  It does not.  So the")
+            print(f"magnitudes are consistent with (1) and the shapes are not, (2) is")
+            print(f"untested, and THIS EVIDENCE SEPARATES NOTHING.  See the note.")
+            exc = sorted(100.0 * (e / c - 1.0)
+                         for e, c in percube.values() if e >= thr)
+            if exc:
+                pcc = lambda p: exc[min(len(exc) - 1, int(p * len(exc)))]
+                print(f"\nAND THE SAMPLE COUNT ABOVE IS NOT A COUNT OF INDEPENDENT")
+                print(f"OBSERVATIONS.  Those {len(exs)} rows cover only {len(exc)} distinct cubes:"
+                      f" every")
+                print(f"cube is sampled once per bank, and at a check-in both samplers run,")
+                print(f"so the file arrives in bursts of the same processes seconds apart.")
+                print(f"ONE ROW PER CUBE -- its longest observation -- gives median "
+                      f"{statistics.median(exc):.3f}%,")
+                print(f"p5-p95 {pcc(.05):.3f}%-{pcc(.95):.3f}%, full {min(exc):.3f}%-{max(exc):.3f}%.")
+                print(f"Read the per-cube figures as the honest ones; the per-sample n is")
+                print(f"reported only so the inflation is visible rather than hidden.")
+        print(f"\nlast UNKNOWN is real data row {last_unk+1} of {len(rows)} (0-based index")
+        print(f"{last_unk}, NOT a file line -- the file also holds comment lines);")
+        print(f"{len(rows)-1-last_unk} rows have landed since, none of them capped.")
+
+    got = dict(rows=len(rows), decided=len(mine), total=len(SEQ), contig_top=contig,
+               highest=highest, holes=holes, undecided_only=len(undec), sat=len(sats),
+               multi_row_labels=len(multi), naive_max_differs=naive)
+    print(f"\nsnapshot recorded at {SNAPSHOT_REV} (the checkpoint grows, so drift"
+          f" here is expected, not failure):")
+    drift = [k for k in SNAPSHOT if SNAPSHOT[k] != got[k]]
+    for k in SNAPSHOT:
+        mark = 'same    ' if k not in drift else 'DRIFTED '
+        print(f"   {mark} {k:<18} snapshot {SNAPSHOT[k]!s:<8} now {got[k]!s}")
+    print(f"   {'matches the snapshot exactly' if not drift else f'{len(drift)} field(s) moved on'}")
+
+    print()
+    if fails:
+        print("INVARIANT VIOLATIONS -- these are failures:")
+        for f in fails: print("  *", f)
+        return 1
+    print("all invariants hold.")
+    return 0
+
+
+if __name__ == '__main__':
+    a = sys.argv[1:]
+    if a and a[0] == '--spans':
+        w = None if len(a) > 1 and a[1] == 'all' else (int(a[1]) if len(a) > 1 else 80)
+        sys.exit(spans(w))
+    sys.exit(main(a[0] if a else None))
