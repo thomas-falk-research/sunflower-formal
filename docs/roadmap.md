@@ -12605,6 +12605,14 @@ and cube 13's second opinion is still outstanding — where §47, §50 and §51
 each left it in turn. Seven cubes remain open at eleven points and target
 28.
 
+> **Superseded on the second opinion, 2026-09-26 (§58).** The sentence
+> above was true when written and is kept as the dated record. Cube 13's
+> second opinion is **finished**: 1949 of 1949 sub-cubes UNSAT under
+> cryptominisat5, no SAT anywhere, so the agreement is now twenty-one of
+> twenty-one. The rest of the paragraph still holds — the bracket is
+> untouched, the rung is still a solver verdict and not a theorem, and the
+> seven cubes at target 28 are still open.
+
 What changed is that a run now records which of the two covers it
 enumerated — in its log, and in the header of any checkpoint it creates —
 and that both covers are machine-checked at five top degrees; and that the
@@ -13806,3 +13814,172 @@ row of `r*(m,3)` is as §54 left it.
   novelty word without a rendered-page search; every hand argument that
   reaches a contradiction gets a computer check before it is written down
   (§56.11 records one that was wrong and withdrawn).
+
+## 58. Cube 13's second opinion, finished: 1949 of 1949 UNSAT, and the
+##     rung's last single-solver dependency removed
+
+§52.4 closed with "cube 13's second opinion is still outstanding — where
+§47, §50 and §51 each left it in turn." **It is no longer outstanding.**
+The full degree-sequence split of `deg(0) = 13` at `(b, g, t) = (4, 11, 32)`
+was carried to completion under CryptoMiniSat between 2026-09-01 and
+2026-09-26: **1949 sub-cubes, every one UNSAT, no satisfiable sub-cube
+anywhere in the file.**
+
+The full write-up, with the experimental setup, the verification chain and
+the limitations stated at length, is `docs/ladder/deg13_sweep_report.md`.
+This section is the session record and the pointer; it does not repeat the
+report's tables.
+
+### 58.1 What is now known that was not
+
+`ι(4,11) ≤ 31` previously rested on CaDiCaL with two-solver agreement on
+**twenty of twenty-one** top-degree cubes. It now has two-solver agreement
+on **twenty-one of twenty-one**. That is the entire content of this run.
+
+The driver exited 0 with its own lines — `# g = 11: UNSAT after 33906.0s
+(1949 sequence cubes, 0 at the limit)` and `VERDICT UNSAT  iota(4,11) <= 31
+(33906.0s)`, the seconds being the final resumed pass and not the campaign
+— and the checkpoint agrees independently: 2118 rows, `UNSAT 1949` and
+`UNKNOWN 169` and nothing else, decided 1949 of 1949 = 100.0000%, frontier
+contiguous `0..1948`, holes `[]`, and `checkpoint_audit.py` reporting all
+six invariants hold. **I6, "no index has any SAT attempt", is the
+load-bearing one**: there is no `SAT` row in the file at all, not one
+superseded and not one retracted, and that is the single observation the
+sweep existed to make.
+
+The cover enumerated was the **1949** one (at most eleven points), not the
+1939 `--ladder` cover (exactly eleven). UNSAT on all 1949 implies UNSAT on
+all 1939, so the second opinion is sound and marginally stronger than the
+cover it corroborates. §52.1 is the section that establishes this and the
+one that records the session which conflated the two; nothing here merges
+rows between the files.
+
+### 58.2 What this does not do
+
+**It does not move the bracket.** `27 ≤ ι(4) ≤ 71` is untouched, from
+`Product.iota_four_at_least_27` and
+`PureLink.iota_four_at_most_71_if_iota_three_is_ten`. The driver's verdict
+line is about `ι(4,11)`, a different quantity from `ι(4)`, and the two are
+not interconverted anywhere in the report or in this section. `ι(4,11) ≤
+31` was the standing value before this run and remains it.
+
+**It is not a theorem.** Neither solver ran with proof logging, so by the
+rule of §56.8 — the same rule that holds `r*(3,3) = 3` conditional in
+§57.1 — the rung is a solver verdict. Twenty-one cubes with two solvers
+each and no checked proof among them is what it is; replaying any of it
+with DRAT or VeriPB would be strictly stronger and was not attempted.
+
+**A second opinion can confirm and can never discover.** Only a SAT from
+CryptoMiniSat would have been news, and there was none in 1949 of 1949.
+Nothing about a long unbroken run of `UNSAT` results licenses more than
+what the rows say.
+
+No Coq module, theorem or axiom was touched; the axiom count is unchanged
+at exactly `Sunflower.ALWZ.Rao20_lemma2`. No bound on `f(n,k)`, no exact
+value, no row of the `r*(m,3)` table and no entry of the conjecture ledger
+moved.
+
+### 58.3 What the campaign measured that was not the verdict
+
+Three findings are methodological, and each is reported with the limit of
+what it supports.
+
+**The budget ladder, confirming §52.3a at full scale.** The per-cube budget
+rose from 600 s to 21600 s across the campaign. The caps are recoverable
+from the checkpoint's `UNKNOWN` clusters, and every tight cluster sits
+*above* its nominal cap by 0.417%–1.350% **of the cap** — proportional, not
+a fixed number of seconds, which excludes a deadline checked on a fixed
+period. Two mechanisms survive (a CPU-enforced `--maxtime` read against a
+wall-clock record, or a check interval that grows with runtime) and **the
+evidence separates neither**: the wall-over-CPU excess on 411 distinct
+in-flight cubes has median 1.608% and full range 0.144%–11.304%, so the
+magnitudes agree with the first candidate while the dispersions do not.
+Exactly one of the 1949 final costs landed above the final cap, at 21678.5 s.
+
+**Fifty-six numbered container restarts, zero rows lost.** The checkpoint
+protocol — append on landing, skip `UNSAT`/`SAT` on resume, re-run
+`UNKNOWN` because a budget is not a verdict — held at every one. The check
+was never the row count alone, which cannot distinguish a clean teardown
+from a lost row; it was the row count paired with a waiter armed at the
+pre-teardown count that reports no landing, and the relaunched driver's own
+recount against an independent recount of distinct `UNSAT` labels.
+
+**An asymmetry in solver costs, which is not evidence about `ι`.** All 171
+blocks decided; 53 testable; 34 kept a median-cost monotonicity property
+and 19 broke it; **all nineteen breaks are upper-leg failures and not one
+is lower-leg**, with the lower leg readable in 102 blocks and failing in
+none. Reported because it was computed over its whole range rather than
+sampled and because the asymmetry is total. **It is a statement about
+solver costs on this instance family, not about the conjecture, not about
+`ι`, and not about any bound**, and no inference is drawn from it anywhere.
+
+### 58.4 The instrumentation, and one defect class it caught
+
+The sweep's figures are checked by two auditors rather than asserted.
+`checkpoint_audit.py` re-resolves every row and regenerates the cube list
+from the enumeration; `span_audit.py` re-derives **every** figure the
+operator log asserts against the audit's own walk — 1573 figures at the
+final state, all in agreement — and asserts contiguity of its tables'
+ordinals so that a pattern which silently misses a row fails instead of
+passing. Both were validated adversarially, `span_audit.py` against
+thirty-one mutations — a wrong rank, a flipped verdict, a mutated hole
+chain, a deleted row, twelve on the opening-width census and fifteen on the
+monotonicity prose — each verified to have changed the file before its run
+was scored.
+
+The defect class worth carrying is the one §51.4 named and this campaign
+supplied two more instances of. A truncated pipe (`tool.py | head -N`)
+closed stdout, the next `print` raised `BrokenPipeError`, and the script
+died **before** its note rewrite, `git add` and sample append — while
+looking successful, because `head` had already shown the figures and the
+pipeline's exit status is `head`'s. Caught at idx 1522 by a one-row
+disagreement between the note and the staged blob; 40 commits were
+re-checked note-against-blob and all agreed, so nothing had been published
+wrong. The fix is `docs/ladder/safe_stdout.py`, imported by all three
+scripts that have side effects. **`| tail -N` and `sed -n '1,Np'` read to
+EOF and are safe; `| head` is the one to avoid.**
+
+The second instance is `bank.py` refusing to rewrite the driver's process
+line at the completion bank: `DRIVER LINE NOT REWRITTEN: pgrep -x iota_sym
+returned 0 pid(s)`. That is the guard working as designed — it will not
+invent a process id and will not silently keep a dead one — and the line
+was rewritten by hand to record the normal exit instead.
+
+### 58.5 Gates
+
+Documentation and solver rows only; no Coq, Rust or tool source was
+touched on this branch, and the diff against `main` is ten files under
+`docs/ladder/` plus this section, `STATUS.md` and the report.
+
+```text
+  docnumbers   pass   17 quoted numbers match the development
+  ceilings     pass   9 routes costed, all declared verdicts match the arithmetic
+  support15    pass
+  audit11      pass
+  audit-support pass
+  prcheck      pass   template and body
+  verify       not-run   no Coq source touched
+  coqchk       not-run   no Coq source touched
+  mutants      not-run   no Coq source touched
+  rust         not-run   no Rust source touched
+  statements   not-run   requires the Coq build; no statement changed
+```
+
+The two sweep-specific audits, which need no build and no solver:
+
+```
+  python3 docs/ladder/checkpoint_audit.py     # invariants I1-I6, frontier, caps
+  python3 docs/ladder/span_audit.py           # every span figure in the log
+```
+
+### 58.6 What is owed next
+
+Nothing on this branch. The rung is as closed as solver verdicts can close
+it, and the honest next step for `ι(4,11)` is the same one §57.2 names for
+`r*(3,3)`: **replay a verdict with a checked proof.** Cube 13 is now the
+best-corroborated cube of the twenty-one and therefore the least
+interesting to replay; the argument for replaying instead runs through
+whichever cube is cheapest to log.
+
+§57 remains the handover for the `r*(3,3)` line of work, which this section
+does not touch.

@@ -8,6 +8,37 @@ deg(0) = 13 sweep. It was carried for days inside a scheduled check-in
 prompt, where it would have died with the session; it lives here now so it
 survives.
 
+---
+
+> ## THE SWEEP IS FINISHED, AND THIS FILE IS NOW A RECORD
+>
+> **1949 of 1949 sub-cubes decided, every one UNSAT, no SAT row anywhere.**
+> The driver exited 0 on 2026-09-26. Nothing is running: `pgrep -x
+> iota_sym` returning nothing is the **expected** state, and the
+> restart-absorption procedure below does **not** apply to a normal exit —
+> it exists for a driver killed mid-run. **Do not relaunch the driver.**
+> The scheduled check-in routine that carried this note has been deleted.
+>
+> **The reviewable result is `docs/ladder/deg13_sweep_report.md`**, with
+> `docs/roadmap.md` §58 as the session record. Read one of those first.
+> This file is the *working* log: it was written as the sweep ran, it keeps
+> its running commentary and its own corrections, and its live-state
+> figures were true when banked. It is kept unedited for that reason.
+>
+> **What the completion does not do: it does not move the bracket.**
+> `27 ≤ ι(4) ≤ 71` is unchanged. The driver's verdict line is about
+> `ι(4,11)`, a different quantity, and the two are not interconverted. The
+> sweep was a *second opinion* on cadical's UNSAT for this branch; only a
+> SAT would have been news, and there was none in 1949 of 1949. Neither
+> solver ran with proof logging, so the rung remains a solver verdict and
+> not a theorem.
+>
+> The `Status:` timestamp above is owned by `bank.py` and is left at its
+> last real bank rather than hand-edited — the rule this note sets for
+> every figure a tool owns.
+
+---
+
 **The commit history is authoritative, not this file.** Every figure below
 is a headline plus the commit that derived it, and that commit is the
 record. If this file and a commit disagree, the commit wins. Re-derive
