@@ -14572,7 +14572,7 @@ The descent does **not** close on saturation alone.
 
 ### 63.3 Near-saturation: unwitnessed traces of size 3
 
-**Lemma** (PROVEN by hand; fresh-context review pending at this commit).
+**Lemma** (PROVEN by hand, and confirmed by a fresh-context review, 63.5).
 Let `F` be 4-uniform and sunflower-free, `R ∈ F`, and `D = D(R)`
 nonempty with covering number 4. Let `B` be the set of its unwitnessed
 traces, and suppose all have size 3. Let `M = F \ D`. Assume the
@@ -14638,3 +14638,26 @@ point `x`. Such a member misses every member of `D` except the
 `deg(x)` members containing `x` (1 to 4 here), so its own link has size
 ≥ `|D| − deg(x)`, and the argument can recurse on
 that link instead. CONJECTURED useful, not attempted.
+
+### 63.5 Independent review
+
+A fresh-context reviewer wrote its own code without reading the scripts
+here, and found no HIGH or MEDIUM issues:
+
+* It re-verified all 305 families and found 0 isomorphic duplicates.
+* It reproduced the saturated counts (20 / 3 / 1, all with covering
+  number 4) and the non-saturated breakdown.
+* It checked the lemma step by step. `R` is itself in `M0`, and every
+  `r` used lies in `R`, so the star conclusion is consistent.
+* Its SAT model confirmed two structural steps mechanically, with 8
+  extra points for the two size-26 classes the lemma closes. The only
+  candidates meeting `V` are `T + r`. Every pair of such a member and a
+  member of `M0` avoiding `r` is already forbidden.
+
+One LOW correction: among the 22 size-25 classes closed by the lemma the
+largest `|B|` is 2, not 3, so those links give `|F| ≤ 53`. A
+falsification search for `|M| ≥ 29` on those two classes found nothing:
+UNSAT with 4 extra points, and timeouts with 8. That is not evidence
+either way at the target size. Completeness of the class list and
+`ι(4) ≤ 27` remain VALIDATED inputs, not checked by the review.
+
