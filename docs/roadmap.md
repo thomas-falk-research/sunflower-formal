@@ -14525,3 +14525,116 @@ concrete steps:
 
 Both are CONJECTURED to be tractable, not attempted here.
 
+
+## 63. Saturation of the 25- and 26-member classes: 5 of 6 closed at 26, 42 of 298 at 25
+
+§62.5 proposed a descent. A saturated link of any size gives
+`|F| ≤ |D(R)| + 27`, so every link class near the top that is
+saturated closes another stability case. This section tests every class.
+
+### 63.1 Recovering the classes
+
+The §60 census recorded only counts. But every shard record carries its
+per-depth accepted vector, so the ledger names the shards that reached
+size 25. There are **six** of them (6144, 6146, 6178, 6729, 6745, 6757),
+and together they hold all 298 + 6 + 1 classes.
+
+I re-ran those six with `isearch2` patched to print every accepted family
+of size ≥ 25 (`tools/iota4/isearch2p.patch`, three lines, after the
+`accepted[r2]++`). The checks:
+
+* each re-run reproduces its ledger record's full accepted vector exactly
+  (`big_shards_rerun.log`);
+* 305 families were printed, 298 / 6 / 1 at sizes 25 / 26 / 27;
+* every family was re-verified from scratch as 4-uniform, distinct,
+  intersecting and sunflower-free;
+* the families are pairwise non-isomorphic (networkx VF2 within
+  Weisfeiler–Lehman buckets, 0 isomorphic pairs;
+  `tools/iota4/isoclasses.py`);
+* the nine-point subset (4 / 1 / 1) matches `control_C9_m28.log`.
+
+The list is `docs/ladder/iota4_replication/classes_25_27.txt.gz`
+(sha256 of the uncompressed file
+`7305953e509ceaddeff7c97ec294d34dd5f4791127c6dc4eeaa4557c3b849af4`).
+Its completeness is exactly as strong as §60: VALIDATED.
+
+### 63.2 Saturation
+
+`tools/iota4/satcheck.py`:
+
+| size | classes | saturated | points used |
+|---|---|---|---|
+| 27 | 1 | 1 | 9 |
+| 26 | 6 | **3** | 9, 10, 10, 10, 10, 14 |
+| 25 | 298 | **20** | 9 to 18 |
+
+The descent does **not** close on saturation alone.
+
+### 63.3 Near-saturation: unwitnessed traces of size 3
+
+**Lemma** (PROVEN by hand; fresh-context review pending at this commit).
+Let `F` be 4-uniform and sunflower-free, `R ∈ F`, and `D = D(R)`
+nonempty with covering number 4. Let `B` be the set of its unwitnessed
+traces, and suppose all have size 3. Let `M = F \ D`. Assume the
+intersecting, 3-uniform and 2-uniform maxima are at most 27, 26 and 6
+(the last two are kernel theorems, `PureLink.g_three_at_most_26` and
+`g_two_at_most_six`). Then
+
+```text
+|M| ≤ max(27, 26 + |B|, 6 + 2|B|)
+```
+
+**Proof.**
+
+* Every member of `M` meets `R`, and `R` misses every point of `D`.
+* Let `M0` be the members of `M` that miss every point of `D`. They are
+  intersecting: two disjoint ones and any member of `D` would be three
+  pairwise disjoint sets. So `|M0| ≤ 27`.
+* Any other member `S` of `M` has a trace `T` on the points of `D` with
+  `1 ≤ |T| ≤ 3`. That trace is unwitnessed, or `S` would form a
+  sunflower with two members of `D`. So `S = T + r` with `r ∈ R`.
+* There are at most two such members per `T`: three would be a
+  sunflower with core `T`.
+* Some member of `D` avoids `T`, because the covering number is 4. So
+  every member of `M0` meets `T + r`, which means it contains `r`.
+* If one `r` is used, `M0` is a star at `r`, so `|M0| ≤ g(3)`, and
+  there are at most `|B|` other members.
+* If two or more are used, `M0` members contain two fixed points, so
+  `|M0| ≤ g(2)`, and there are at most `2|B|` others.
+
+So a link of size 26 with `|B| ≤ 2`, or size 25 with `|B| ≤ 3`, gives
+`|F| ≤ 54`.
+
+| size | saturated | closed by the lemma | open |
+|---|---|---|---|
+| 26 | 3 | 2 (`|B|` = 1, 2) | **1** |
+| 25 | 20 | 22 | **256** |
+
+(`tools/iota4/classify.py`.)
+
+### 63.4 What is open, and its shape
+
+Every open class has an unwitnessed trace consisting of a **single
+point**. A member of `F` meeting that link in one point has three points
+outside it, so neither the "two per trace" count nor the star argument
+applies.
+
+* **The size-26 holdout** uses 14 points. It has covering number 2, two
+  points of degree 16, and six of degree 2.
+* **240 of the 256 at size 25** share one shape: a 15-member core on 8
+  points, plus 10 members that each put 3 points in the core and 1 point
+  outside it. That last point is the unwitnessed singleton.
+
+Status after this section:
+
+| claim | status |
+|---|---|
+| a member disjoint from ≥ 26 others ⇒ `|F| ≤ 54` | holds for 6 of the 7 possible link classes of size 26 or 27 (PROVEN given the VALIDATED census and `ι(4) ≤ 27`); **one class open** |
+| a member disjoint from exactly 25 others ⇒ `|F| ≤ 54` | 42 of 298 link classes closed; 256 open |
+| `g(4) = 54` | open |
+
+The natural next lemma bounds the members of `M` whose trace is a single
+point `x`. Such a member misses every member of `D` except the
+`deg(x)` members containing `x` (1 to 4 here), so its own link has size
+≥ `|D| − deg(x)`, and the argument can recurse on
+that link instead. CONJECTURED useful, not attempted.

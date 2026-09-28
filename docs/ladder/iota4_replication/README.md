@@ -123,3 +123,13 @@ Two features, neither claimed as novel:
   records plus separately run shards (`tools/iota4/combine.py`, and
   `tools/iota4/rebuild.py`). The auditor requires every one of
   the 11720 shard indices exactly once with a `NONE` verdict, and passes.
+
+## Addendum: the families at sizes 25–27
+
+`classes_25_27.txt.gz` lists every class at sizes 25, 26 and 27, which is
+298 + 6 + 1 families. Each line is the shard id, then `BIG r C`, then the
+row masks. They were recovered by re-running the six shards whose ledger
+records reach size 25 (`big_shards_rerun.log`, identical accepted
+vectors), with the printing patch `tools/iota4/isearch2p.patch`. The
+families are re-verified and pairwise non-isomorphic. See
+`docs/roadmap.md` §63, which uses them.
