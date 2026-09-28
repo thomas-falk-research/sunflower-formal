@@ -1095,3 +1095,14 @@ thm VCSunflower.nodup_clause_is_needed
 thm VCSunflower.trace_in_B_only_is_weaker
 thm VCSunflower.B_in_trace_only_is_weaker
 def VCSunflower.kmatch
+thm Stability4.stability_at_four
+thm Stability4.length_le_of_trace_saturated_link
+thm Stability4.DisjointFrom_length_le
+thm Stability4.iota4_trace_saturated
+thm Stability4.saturated_of_certificate
+thm Stability4.TraceSaturated_transport
+thm Stability4.stability_hypotheses_satisfiable
+thm Stability4.single_member_not_saturated
+def Stability4.TraceSaturated
+def Stability4.DisjointFrom
+def Stability4.saturation_certificate

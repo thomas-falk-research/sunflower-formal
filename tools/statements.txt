@@ -2916,3 +2916,36 @@ ea0b2ce3fd4a9445  thm VCSunflower.B_in_trace_only_is_weaker
 
 d84f654ad2b3c793  def VCSunflower.kmatch
     kmatch = fun k M : nat => List.map (fun i : nat => (List.seq 0 k ++ k + 2 * i :: k + 2 * i + 1 :: nil)%list) (List.seq 0 M) : nat -> nat -> Family Arguments kmatch (k M)%nat_scope
+
+5c0e47381993f127  thm Stability4.stability_at_four
+    stability_at_four : IotaAtMost 4 27 -> forall (g h : nat -> nat) (F : Family) (R : list nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> SubFamilySetEq (DisjointFrom R F) (rmapF g iota4) -> SubFamilySetEq (rmapF g iota4) (DisjointFrom R F) -> length F <= 54
+
+c26d103d8501fdab  thm Stability4.length_le_of_trace_saturated_link
+    length_le_of_trace_saturated_link : forall (b N : nat) (F : Family) (R : list nat), IotaAtMost b N -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> DisjointFrom R F <> nil -> TraceSaturated b (DisjointFrom R F) -> length F <= length (DisjointFrom R F) + N
+
+e176d639ffd552ff  thm Stability4.DisjointFrom_length_le
+    DisjointFrom_length_le : forall (b N : nat) (F : Family) (R : list nat), IotaAtMost b N -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (exists z : nat, List.In z R) -> length (DisjointFrom R F) <= N
+
+cb3b253f742d0905  thm Stability4.iota4_trace_saturated
+    iota4_trace_saturated : TraceSaturated 4 iota4
+
+34736934c683e204  thm Stability4.saturated_of_certificate
+    saturated_of_certificate : forall (b : nat) (A : Family) (U : list nat), List.NoDup U -> Grounded A U -> coversb A U = true -> saturation_certificate b A U = true -> TraceSaturated b A
+
+5fa6897b88087143  thm Stability4.TraceSaturated_transport
+    TraceSaturated_transport : forall (g h : nat -> nat) (b : nat) (A : Family) (B : list (list nat)), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> SubFamilySetEq B (rmapF g A) -> SubFamilySetEq (rmapF g A) B -> TraceSaturated b A -> TraceSaturated b B
+
+9c2d0b13753629ca  thm Stability4.stability_hypotheses_satisfiable
+    stability_hypotheses_satisfiable : let F := double iota4 in let R := List.map ev (0 :: 1 :: 2 :: 3 :: nil) in Uniform 4 F /\ Distinct F /\ ~ ContainsKSunflower 3 F /\ List.In R F /\ DisjointFrom R F = rmapF swap18 iota4 /\ length F = 54
+
+d4f52ad0520a8cc0  thm Stability4.single_member_not_saturated
+    single_member_not_saturated : saturation_certificate 4 ((0 :: 1 :: 2 :: 3 :: nil) :: nil)%list (List.seq 0 4) = false
+
+692c36fc40b5cc04  def Stability4.TraceSaturated
+    TraceSaturated = fun (b : nat) (A : Family) => forall S0 : list nat, UniformSet b S0 -> (exists (y : nat) (C : list nat), List.In y S0 /\ List.In C A /\ List.In y C) -> (exists x : nat, List.In x S0 /\ (forall C : list nat, List.In C A -> ~ List.In x C)) -> ContainsKSunflower 3 (S0 :: A)%list : nat -> Family -> Prop Arguments TraceSaturated b%nat_scope A
+
+9127da1eac2d8975  def Stability4.DisjointFrom
+    DisjointFrom = fun (R : list nat) (F : Family) => List.filter (fun C : list nat => disjointb R C) F : list nat -> Family -> Family Arguments DisjointFrom R%list_scope F
+
+6374397388b4bf20  def Stability4.saturation_certificate
+    saturation_certificate = fun (b : nat) (A : Family) (U : list nat) => List.forallb (fun T : list nat => implb (negb (PeanoNat.Nat.eqb (length T) 0) && PeanoNat.Nat.ltb (length T) b) (saturation_witnessb T A)) (sublists U) : nat -> Family -> list nat -> bool Arguments saturation_certificate b%nat_scope A U%list_scope

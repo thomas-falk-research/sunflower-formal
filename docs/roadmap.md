@@ -14407,3 +14407,121 @@ here.
 | `54 + max|Z|` or `27 + max|N[R]|` can prove 54 | **refuted by measurement** (61.2) |
 | exact `max|N[R]|` by rooted exhaustive search | infeasible, measured (61.3) |
 | stability case reduces to `|U| + |W| ≤ 27` with `W` meeting all of `U` | PROVEN (hand, uses the kernel's maximality theorem and the validated uniqueness) |
+| stability case itself | **closed in §62**: `W` is always empty, and `|F| ≤ 54` is kernel-checked given `ι(4) ≤ 27` |
+
+## 62. The stability case of Pálvölgyi at `b = 4` is closed: a member disjoint from 27 others caps the family at 54
+
+§61.4 reduced the stability case to a joint bound `|U| + |W| ≤ 27` and
+left it open. **It holds, for a reason stronger than the reduction
+expected: `W` is always empty.** No joint argument is needed.
+
+### 62.1 How it was found
+
+Before attempting a proof, the joint maximum was measured exactly by SAT:
+fix the 27-family `A` on `P = {0..8}` and `R = {9,10,11,12}`, allow `k`
+outer points, and make every 4-set meeting `R` a variable. Every member
+outside `A` meets `R`, because `D(R) = A`. The maxima of `|U| + |W|` were
+
+```text
+  k (outer points)    4    5    6
+  max |U| + |W|       1    5    9      every optimum has W = ∅
+```
+
+(`tools/g4/stability_sat.py` with `stabtri.c`; CaDiCaL, sequential-counter
+cardinality; every SAT family re-verified from scratch. The trace brute
+force is `tools/g4/stability_traces.py`.) `k = 4` allowing *no* `W` member at all pointed at the
+fact below.
+
+### 62.2 Trace saturation
+
+A family `A` is **trace-saturated** when every `b`-set `S` that meets a
+member of `A` and has a point in no member of `A` forms a 3-sunflower
+with two members of `A`. Only the trace `T = S ∩ P` matters: the
+condition is two distinct members with `T ∩ C1 = T ∩ C2 = C1 ∩ C2`.
+Then `S, C1, C2` is a sunflower with core `C1 ∩ C2`.
+
+**The Abbott–Hanson family is trace-saturated.** All 129 nonempty traces
+of size at most 3 on its nine points have a witness pair. This is
+PROVEN in the kernel (`Stability4.iota4_trace_saturated`, a `forallb`
+over the 512 sublists of the ground set, lifted to every `S` on every
+ground set by `saturated_of_certificate`). It was also VALIDATED
+independently by a Python brute force written without the certificate.
+
+The fact is strictly stronger than maximality. `Maximal.v` forbids only
+sets meeting *every* member; here a set meeting *one* member is
+forbidden, provided it also leaves the nine points.
+
+### 62.3 The counting theorem
+
+`Stability4.length_le_of_trace_saturated_link`, for any `b` and `N`,
+kernel-checked. Assume:
+
+* `IotaAtMost b N`;
+* `F` is sunflower-free and contains `R`;
+* the link `D = D(R)` (the members disjoint from `R`) is nonempty and
+  trace-saturated.
+
+Then `|F| ≤ |D| + N`. The proof:
+
+1. Every other member `S` meets `R`, and `R` lies outside every member
+   of `D`.
+2. So `S` has a point in no member of `D`. If `S` met a member of `D`,
+   saturation would give a sunflower. So `S` misses all of `D`.
+3. Two such members that were disjoint would form three pairwise
+   disjoint sets with any member of `D`. So the members outside `D` are
+   intersecting, and there are at most `N` of them.
+
+`Stability4.stability_at_four` specialises this to `b = 4`. Under
+`IotaAtMost 4 27`, if `D(R)` is a relabelled copy of `iota4` (as a
+family of sets, for any bijection of the naturals), then `|F| ≤ 54`.
+`TraceSaturated_transport` moves saturation across the relabelling, and
+`DisjointFrom_length_le` bounds `|D(R)|` by 27 as well. Nothing is
+assumed about the ground set.
+
+Both axioms-audits (`Print Assumptions`) are closed. Two sanity checks:
+
+* `stability_hypotheses_satisfiable`: on the double of `iota4` (54
+  members, no sunflower), the first member's link is literally `iota4`
+  relabelled by an explicit bijection. So every hypothesis holds and the
+  bound is attained. This witness was added after the fresh-context
+  review found the earlier sanity check did not establish it.
+* `single_member_not_saturated`: the certificate can fail.
+
+### 62.4 What is and is not established
+
+| claim | status |
+|---|---|
+| `iota4` is trace-saturated (every ground set) | **PROVEN** (kernel) |
+| sunflower-free `F`, saturated nonempty link `D(R)`, `ι(b) ≤ N` ⇒ `\|F\| ≤ \|D(R)\| + N` | **PROVEN** (kernel) |
+| `ι(4) ≤ 27` and `D(R) ≅ AHS27` ⇒ `\|F\| ≤ 54` | **PROVEN** (kernel), with `ι(4) ≤ 27` as an explicit hypothesis |
+| `ι(4) ≤ 27` | VALIDATED (§60), not proved |
+| `\|D(R)\| = 27` ⇒ `D(R) ≅ AHS27` | VALIDATED (§60 uniqueness census), not proved |
+| hence: a family with a member disjoint from 27 others has `≤ 54` members | VALIDATED (the two rows above), PROVEN given them |
+| `g(4) = 54` | **open**. A 55-member family must have every member disjoint from at most 26 others, and every nonempty link non-saturated |
+
+### 62.5 Where this points: descent by saturation
+
+The counting theorem needs only a **saturated link, of any size**, since
+`|D(R)| ≤ 27` anyway. Saturation is robust under deletion. Sampling
+random subfamilies of `AHS27` (300 per size, seed 1, the same brute
+force):
+
+```text
+  members kept   27   26    25    24    23   22   21   20   19  ≤18
+  saturated       1  300   251   178    94   43    7    3    1    0   (of 300)
+```
+
+All 27 single deletions are saturated (also evaluated with the Coq
+certificate function by `Compute`; not committed as a theorem). So Pálvölgyi at `b = 4` reduces to families in which
+no link is saturated, which is where a next attempt should look. Two
+concrete steps:
+
+1. Recover the 6 classes at size 26 and the 298 at size 25 from the
+   §60 census, and test each for saturation. The run recorded only
+   counts, so this needs a targeted re-run.
+2. Bound `|F|` when every link is non-saturated. Each such link has an
+   unwitnessed trace, which is a structural constraint the rooted
+   search of §61.3 could use.
+
+Both are CONJECTURED to be tractable, not attempted here.
+
