@@ -14304,3 +14304,106 @@ auditor, run from the committed ledger:
   python3 tools/iota4/audit.py docs/ladder/iota4_replication/logs \
       <(zcat docs/ladder/iota4_replication/d6.txt.gz)      AUDIT PASS
 ```
+
+## 61. Pálvölgyi at `b = 4`: no 55 under 48 groups, and why no single-part bound can prove 54
+
+The question (§59.4 item 3, §60.6 item 3): is `g(4) = 2·ι(4) = 54`, as
+Pálvölgyi's equality would have it? With `ι(4) = 27` VALIDATED (§60) the
+bracket is `54 ≤ g(4) ≤ 83` ([ABCDN26] Thm. 6.9). Pálvölgyi himself called
+equality "unlikely", so a 55-member family — a certificate anyone can check
+in milliseconds — was the first target. **None was found, and nothing here
+decides `g(4)`.**
+
+### 61.1 The counterexample search: prescribed symmetry
+
+Earlier sessions attacked `g(4)` only by local search, which never left the
+54-member seed (§20.6). This session prescribed a group and searched unions
+of its orbits of 4-sets for a sunflower-free family of weight `≥ 55`
+(`tools/g4/`: `kmtri.c` enumerates orbit-level sunflower triples from
+orbit-representative triples only; `km.py`/`campaign2.py` add a weighted
+totalizer and call CaDiCaL; every SAT family is re-verified from scratch).
+Controls: the trivial group reproduces `g(3,6) = 10`, `g(3,7) = 12`,
+`g(3,8) = 12` exactly; the automorphism group of the double reaches 54 and
+refutes 55; under `C_n` the maximum is `3n` for `n = 12, 15, 18`, so the
+pipeline finds large families when they exist.
+
+`tools/g4/results_T55.tsv`, 52 groups at target 55:
+
+| family of groups | points | verdict |
+|---|---|---|
+| cyclic `C_n` | 12 … 24 | UNSAT, all 13 |
+| `C_m` with two orbits | 14 … 24 | UNSAT, all 6 |
+| `C_m` with three orbits | 15, 18, 21 | UNSAT; 24 points skipped (1338 orbits) |
+| `AGL(1,p)` and its index-2 subgroup | 13, 17, 19, 23 | UNSAT, all 8 |
+| `PSL(2,p)` on the projective line | 12, 14, 18, 20, 24 | UNSAT, all 5 |
+| random subgroups of Aut(double) | 18 | 13 UNSAT; one timeout (724 orbits, 30 min), one out of memory (1072), one skipped (1590) |
+
+**48 UNSAT, 0 SAT, 4 undecided.** Each UNSAT says only that no family of
+`≥ 55` is invariant under *that* group. And the 54 the cyclic group finds on
+18 points is the double again: its disjointness graph is exactly `K_{27,27}`,
+so by the uniqueness of §60 each side is the Abbott–Hanson family.
+
+### 61.2 The decomposition, and two bounds measured dead
+
+A sunflower-free family has no three pairwise disjoint members, so its
+disjointness graph is triangle-free. Along a disjoint pair `R, S`, every
+other member is disjoint from `R` (set `X`; `X ∪ {S}` is intersecting, so
+`|X| ≤ 26`), disjoint from `S` (`Y`, `|Y| ≤ 26`), or meets both (`Z`):
+`|F| = 2 + |X| + |Y| + |Z| ≤ 54 + |Z|`. And for any member `R`,
+`|F| ≤ ι(4) + |N[R]|`, `N[R]` the members meeting `R` — [ABCDN26]'s route,
+with `|N[R]| ≤ 56` by hand.
+
+Both single-part bounds were measured by exact SAT on small outer ground
+sets (`tools/g4/zmax.py`, `nrmax.py`):
+
+```text
+  max |Z|     >= 23 with 4 outer points (8 + 4 = 12 points), still growing
+  max |N[R]|  >= 28 with 6 outer points (4 + 6 = 10 points), still growing
+```
+
+`54 + |Z|` therefore cannot beat 77, and `27 + |N[R]|` cannot reach 54,
+since that needs `|N[R]| ≤ 27`. **Pálvölgyi's equality cannot be proved by
+bounding any one of these parts; it needs a joint argument** in which a
+large `Z` or `N[R]` forces the rest to shrink.
+
+### 61.3 Exact `max |N[R]|` is out of reach, measured
+
+A new exact value of `max |N[R]|` would improve 83 directly. The rooted
+search (`tools/iota4/isearch3.c`, flag `-R`: row 0 is a fixed root, never
+deleted, with its own nauty colour; every other row must meet it) is
+validated against a nauty-free VF2 oracle (`tools/iota4/rootoracle.py`,
+`b = 3` on 6 and 7 points, every class count equal). But rooted families
+are not intersecting, and their classes grow about 30-fold per member:
+
+```text
+  size        5        6          7
+  rooted   8,156   227,828   7,329,128
+  (intersecting, §60:  993    11,720     133,931)
+```
+
+— already 55 times the intersecting census at size 7. Exact `max |N[R]|`
+over all ground sets is not feasible by this method.
+
+### 61.4 One structural fact, recorded
+
+If some member `R` has `|D(R)| = 27` (its disjoint members are the unique
+Abbott–Hanson family `A` on nine points `P`), write `U` for the members
+disjoint from `P` and `W` for the rest outside `A`. Then `U` is
+intersecting, and **every member of `W` meets every member of `U`**:
+otherwise it and that member of `U` are disjoint from some member of `A`,
+because `A` is maximal intersecting (`Maximal.iota4_is_maximal_intersecting`,
+kernel-proved) and no 4-set outside `A` meets all of it. So any one `W`
+member's points outside `P` cover `U`, and when `W ≠ ∅`, `|U| ≤ 26`
+(the unique 27-family has covering number 4). The stability case of
+Pálvölgyi at `b = 4` is exactly `|U| + |W| ≤ 27`, which is not proved
+here.
+
+### 61.5 Standing
+
+| claim | status |
+|---|---|
+| `g(4) ≥ 55` | not found: 48 prescribed groups UNSAT; §20.6 local search never left 54 |
+| `g(4) = 54` | open |
+| `54 + max|Z|` or `27 + max|N[R]|` can prove 54 | **refuted by measurement** (61.2) |
+| exact `max|N[R]|` by rooted exhaustive search | infeasible, measured (61.3) |
+| stability case reduces to `|U| + |W| ≤ 27` with `W` meeting all of `U` | PROVEN (hand, uses the kernel's maximality theorem and the validated uniqueness) |
