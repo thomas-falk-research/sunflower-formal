@@ -14270,6 +14270,30 @@ is a claim, not an observation; write it from the pipeline's status.
    `Palvolgyi.palvolgyi_at_four_if_iota_four_is_27` says it would give
    `g(4) = 54`.
 
+### 60.8 The support bound, attempted: local counting stops at 34
+
+The certificate route in §60.6 item 1 was tried the day after §60.2 and
+stopped at the first measurement. SAT with proof logging at target 28 is
+out of reach above about ten points (§46: ten points took 11.6 h without
+proof logs, one cube 41.5 core-hours; §48: eleven points left seven cubes
+open at an hour each). So a useful bound has to be about 10.
+
+What local facts give, as an LP over member degree-types
+(`tools/iota4/support_lp.py`): every member has
+`Σ_{x∈A}(deg x − 1) ≥ 27`, degrees are at most 20, at most two points
+have degree 1 (§60.4), 28 members, degree sum 112. **The LP maximum is
+34.37.** It is attained by 27 members of degree type `(2, 2, 7, 20)` and
+one of type `(1, 1, 9, 20)` — 27 degree-2 points around one hub of degree
+20. That configuration is globally impossible (a star holds at most 20
+members, and the rest must meet all of them), but excluding it needs a
+structural theorem about low-degree points, not more counting. Closing
+34 → 10 is a research problem of its own, not a step; nothing in this
+repository or [ABCDN26] suggests how, and [ABCDN26] itself worked with the
+trivial 85.
+
+**Verdict: the support-bound route to a certificate is not viable with
+what is known.** ι(4) = 27 stays VALIDATED (§60.2), not PROVEN.
+
 ### 60.7 Gates
 
 No Coq, Rust or gated tool changed; `docnumbers` and `statements` were
