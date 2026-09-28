@@ -42,7 +42,11 @@ VC-dimension (`coq/VCSunflower.v`) — a theorem of Ge, Wang, Xu and Zhao
 one. That class provably excludes the Erdős–Rado product construction
 (`product_vc_full`: its VC-dimension equals its uniformity), and at
 `d = n` the theorem is weaker than Erdős–Rado, so it is not where the
-difficulty lives. What is
+difficulty lives. Separately, `ι(4) = 27` (no intersecting
+3-sunflower-free family of 28 four-sets, and a unique one of 27) is
+**validated, not proved**, by an independent exhaustive search that agrees
+with arXiv:2609.06175's to the unit on an isomorphism-invariant count of
+about 10¹¹ (`docs/ladder/iota4_replication/`). What is
 machine-checked here is the complete *provable frontier* around it:
 
 | Result | Statement | File |

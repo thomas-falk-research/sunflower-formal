@@ -14091,7 +14091,7 @@ word:
   `ι(b)^(1/(b−1))` needs `ι(5)^(1/4) > √10`), at uniformity 5 — a search
   space this repository has never had a working encoding for.
 
-It is recorded as **claimed**, not proved, under the rule of §56.8.
+It was recorded as **claimed**, not proved, under the rule of §56.8. **§60 has since replicated it independently** (VALIDATED by a second exhaustive search, agreeing with the first on an isomorphism-invariant count of about 10¹¹ to the unit); it is still not *proved* in this repository's sense.
 
 ### 59.4 What is owed, ranked by what it would buy
 
@@ -14176,4 +14176,107 @@ expectation.
                        (1/1). The full 180-mutation run was not repeated
   rust          not-run   no Rust changed
   prcheck       not-run   no pull request was opened
+```
+
+## 60. `ι(4) ≤ 27`, replicated independently — two searches, one invariant, equal to the unit
+
+Start here for the `ι(4)` line; §59 remains the handover for everything
+else. The record, the ledger and the audit command are in
+`docs/ladder/iota4_replication/README.md`; the program is `tools/iota4/`.
+
+### 60.1 What was asked, and what was possible
+
+The request was to *certify* [ABCDN26] Prop. 6.8, `ι(4) = 27`. A proof
+certificate in this repository's sense (a DRAT log, a kernel term) was
+not reachable, and the reason is structural rather than a matter of
+compute: SAT needs a bounded ground set, the only proved bound for a
+28-member candidate is `4 + 27·3 = 85` points, and the repository's own
+SAT ladder already stalled at eleven points for this target (§48). No
+support bound was found this session either; the merge argument that
+removes private points (§60.4) only bounds degree-1 points.
+
+What was reachable was **independent replication**: a separately written
+exhaustive search, validated by controls, whose output can be compared
+with the paper's on a quantity any correct search must reproduce.
+
+### 60.2 The result
+
+| claim | status | where |
+|---|---|---|
+| No intersecting, 3-sunflower-free family of 28 distinct 4-sets exists on any ground set (`IotaRate.IotaAtMost 4 27`) | **VALIDATED — two independent searches agree** | `docs/ladder/iota4_replication/`, `AUDIT PASS` |
+| The 27-member family is unique up to isomorphism, and lives on nine points | VALIDATED, one search (one class at depth 27 globally; one class at 27 on ≤ 9 points) | same |
+| The visited-orbit total is 105,917,077,857, equal to the paper's archived 105,917,089,577 less one root per shard | VALIDATED — exact equality of an isomorphism invariant between two programs | same |
+| Complete census of isomorphism classes by size, 0 to 28 | VALIDATED; sizes ≤ 6 also by a nauty-free oracle, 6–8 also by the paper's program | same |
+
+**Why the invariant matters.** A correct canonical-augmentation search
+visits, at each accepted node, one representative of each `Aut`-orbit of
+valid one-row extensions, so its total is a sum over isomorphism classes
+and does not depend on the canonical-deletion rule, the candidate
+generator or the sharding. The two programs differ in all three and
+agree to the unit on a number of order 10¹¹. That is far stronger than
+"both said UNSAT": a completeness bug in either would have to be
+compensated exactly by the other.
+
+### 60.3 What it rests on
+
+nauty (2.8.8 here, 2.8.9 there — the one component the searches share),
+gcc, `isearch.c`/`isearch2.c`, the McKay canonical-augmentation theorem,
+and shell/Python bookkeeping. A fresh-context reviewer read the search
+line by line and ran three harnesses of its own (candidate generation vs
+brute force, 27.5 M candidates; canonical-deletion invariance, 3000
+relabelled families; shard mode vs whole run) plus eight nauty-free
+class-count series — no completeness bug found (`tools/iota4/tests/`).
+The author had read the paper's program first; the independence is of
+implementation, not of framework.
+
+### 60.4 A lemma worth keeping: private points can be merged away
+
+If `A ≠ B` are members with private points `a ∈ A`, `b ∈ B` (degree 1),
+identifying `b` with `a` keeps the family intersecting, 4-uniform and
+sunflower-free unless `A \ {a} = B \ {b}`: the only new intersection is
+`A ∩ B ∪ {a}`, and a triple containing both `A` and `B` then has one
+pairwise intersection containing the merged point and another not. So a
+support-minimal counterexample has at most three degree-1 points.
+PLAUSIBLE-not-novel, not formalised, and too weak alone to bound the
+support (degree-2 points need a blocking-configuration count that does
+not close). Recorded because a support bound is the one thing that would
+turn §60.2 into a certificate.
+
+### 60.5 Cost, and the operational record
+
+About 67 hours of summed per-shard wall time in the ledger, against the
+paper's 313 (≈ 4.7× less; both are wall-clock sums, and this run was at
+times oversubscribed, so the CPU difference is larger — mostly from
+hitting-set candidate generation), plus roughly
+10–15 core-hours discarded when four giant shards (1522, 1565, 1813, 6550,
+together about 30 % of all nodes) were stopped and re-run split at
+depth 10. One worker pool died to an over-broad `pkill` that matched its
+parent shell, and `run.sh` then printed `ALLDONE` for a pool that had
+not finished — the driver now prints it only when `xargs` exits 0, and the
+auditor would have failed on the missing records either way. **Lesson,
+general:** a completion marker written unconditionally after a pipeline
+is a claim, not an observation; write it from the pipeline's status.
+
+### 60.6 What is owed
+
+1. **A support bound.** If a 28-member counterexample can be shown to
+   live on `≤ g` points with `g` small enough for proof-logged SAT, the
+   result becomes a certificate. §60.4 is the start; §41 the context.
+2. **The uniqueness at 27 has one search behind it.** The paper's program
+   stops at the first family; re-running it without stopping at `-m 27`
+   and counting depth-27 classes would give the second.
+3. **Pálvölgyi at `b = 4`** (§59.4 item 3) is now the sharpest question at
+   uniformity 4, with `ι(4) = 27` as a validated input:
+   `Palvolgyi.palvolgyi_at_four_if_iota_four_is_27` says it would give
+   `g(4) = 54`.
+
+### 60.7 Gates
+
+No Coq, Rust or gated tool changed; `docnumbers` and `statements` were
+run on this tree before commit (below). The replication's own gate is the
+auditor, run from the committed ledger:
+
+```text
+  python3 tools/iota4/audit.py docs/ladder/iota4_replication/logs \
+      <(zcat docs/ladder/iota4_replication/d6.txt.gz)      AUDIT PASS
 ```

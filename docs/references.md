@@ -573,7 +573,7 @@ better; it is cited from memory and marked *not read*.
   delegated reader (35 of 35 rendered pages).** Claims $\iota(4) = 27$
   (Prop. 6.8, certificate-free exhaustive search) and
   $54 \le g(4) \le 83$ (Thm. 6.9); rate $2.618$ at $k = 3$, below
-  $\sqrt{10}$. **Recorded as claimed**, not adopted: `docs/roadmap.md`
+  $\sqrt{10}$. **Recorded as claimed; independently replicated** by this repository's own exhaustive search (`docs/roadmap.md` §60), still not a proof certificate: `docs/roadmap.md`
   §59.3.
 
 - **[MNSZ22]** E. Mossel, J. Niles-Weed, N. Sun, I. Zadik, *A second

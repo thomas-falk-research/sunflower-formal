@@ -1013,6 +1013,17 @@ certificate-free enumeration, and by the rule of §56.8 it is recorded as
 *claimed*. What it does settle, on its word, is where effort should not
 go. §59 of the roadmap draws the line.
 
+**Replicated, same week.** A separately written exhaustive search
+(`tools/iota4/`, `docs/ladder/iota4_replication/`, roadmap §60) also finds
+no 28-member family, and its total of visited orbit representatives —
+an isomorphism invariant — equals the paper's archived total
+(105,917,089,577, over 11,720 shard logs in its public repository
+`github.com/bogdan27182/sunflower-paper`, less one root per shard) to the
+unit: 105,917,077,857. Upgraded from *claimed* to **VALIDATED by two
+independent searches**; not a certificate. One gap in the paper's own
+artifact, noted while reading its code: its README cites a
+`PROVENANCE.md` that is not in the repository.
+
 ### Abstract only
 
 * **arXiv:2609.27044**, Karingula–Lovett (22 Sep 2026): for `k ≥ 4` every
