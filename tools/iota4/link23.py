@@ -26,11 +26,11 @@ the largest link; the argument for each is next to it):
         with a is known exactly (see `exclusions`).
 
   link23.py solve CLASSES.gz INDEX...   integer optimum (scipy/HiGHS)
-  link23.py cnf CLASSES.gz INDEX OUT    CNF of "|F| - Delta >= 55 - 2*Delta... " i.e. |F| >= 55
+  link23.py cnf CLASSES.gz INDEX OUT    CNF satisfiable iff the model allows |F| >= 55
 """
 import sys, itertools
 sys.path.insert(0, __import__("os").path.dirname(__file__))
-from linkcert import load, unwitnessed
+from linkcert import load, unwitnessed, validate
 
 G3 = 26                       # kernel: PureLink.g_three_at_most_26
 R = range(4)
@@ -42,6 +42,7 @@ def model(D):
        ('le', [i...], k)            sum n_i <= k
        ('if_le', a, [i...], k)      n_a >= 1  =>  sum n_i <= k
        ('excl', a, b)               n_a >= 1  =>  n_b = 0     (a is determined)"""
+    validate(D)                   # 4-uniform, distinct, intersecting, sunflower-free
     Delta = len(D)
     B = unwitnessed(D)
     types = [("M1", T, P) for T in B for P in PROFILES if len(T) + len(P) <= 4] + \
