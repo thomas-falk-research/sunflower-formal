@@ -24,7 +24,10 @@ certificate (y_C, z_T, w >= 0) with
 bounds it by Delta*sum y + sum cap_T z_T + 27 w (weak duality).
 
   linkcert.py solve CLASSES.gz CERTS.json.gz    find certificates (scipy/HiGHS)
-  linkcert.py check CLASSES.gz CERTS.json.gz    verify them exactly (fractions only)
+  linkcert.py check CLASSES.gz CERTS.json.gz [MIN_DELTA]
+                                                verify them exactly (fractions only);
+                                                PASS requires every class of size
+                                                >= MIN_DELTA (default: all) to certify
 
 `check` needs no solver: it recomputes each class's unwitnessed traces and
 checks every inequality in exact rational arithmetic.
@@ -94,6 +97,7 @@ def check(F, B, cert):
 
 if __name__ == "__main__":
     mode, cls, certs = sys.argv[1:4]
+    min_delta = int(sys.argv[4]) if len(sys.argv) > 4 else 0
     fams = load(cls)
     if mode == "solve":
         out = []
@@ -120,6 +124,8 @@ if __name__ == "__main__":
             print(f"Delta={d}: {n} classes, largest certified |F| - Delta = {worst[d]}"
                   f" (allowed {54 - d}), failing {nf}")
         if fail:
-            print("CHECK FAIL:", len(fail), "classes not certified; first:", fail[:5])
+            print("not certified (index, Delta, bound):", [(k, d, str(b)) for k, d, b in fail])
+        if any(d >= min_delta for _, d, _ in fail):
+            print("CHECK FAIL")
             sys.exit(1)
-        print("CHECK PASS: every class certifies |F| <= 54")
+        print(f"CHECK PASS: every class of size >= {min_delta} certifies |F| <= 54")

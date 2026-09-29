@@ -1,0 +1,4 @@
+293a294,296
+>         if (r2 >= 23) { printf("BIG %d %d", r2, C2);
+>             for (int a = 0; a < r2; a++) printf(" %016llx%016llx", (unsigned long long)(rows[a] >> 64), (unsigned long long)rows[a]);
+>             printf("\n"); fflush(stdout); }

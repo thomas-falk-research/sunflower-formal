@@ -14729,7 +14729,8 @@ the integer bound. The integer program (HiGHS) gives 27 and 26 for the
 | every class at sizes 25–27 certifies `\|F\| − Δ ≤ 54 − Δ` | PROVEN given the class list (exact rational check) |
 | the class list is complete | VALIDATED (§60 census, §63.1) |
 | **largest link ≥ 25 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list**, both VALIDATED |
-| `g(4) = 54` | open: a 55-member family needs every link to have ≤ 24 members |
+| **largest link ≥ 24 ⇒ `\|F\| ≤ 54`** | same status; extended in 64.6 |
+| `g(4) = 54` | open: a 55-member family needs every link to have ≤ 23 members (64.6) |
 
 ### 64.4 Going further down, and where it must stop
 
@@ -14764,4 +14765,52 @@ Its one LOW wording point was the missing justification for `m0 ≤ 27`,
 now added under (c). It also noted that the bound 28 for the tightest
 size-26 class may not be attained: 3000 random attempts to realise it
 failed. The claim does not depend on that.
+
+### 64.6 Sizes 24 and 23: all of 24 certified, 11 classes at 23 are not
+
+**Recovery.** The 37 shards whose ledger records reach size 23 were
+re-run with the printing threshold at 23 (`tools/iota4/isearch2p23.patch`).
+
+* All 37 reproduce their ledger records' accepted vectors exactly
+  (`big23_shards_rerun.log`).
+* They printed 12,524 / 1,976 / 298 / 6 / 1 families at sizes 23 to 27,
+  the census counts.
+* The part at size ≥ 25 is line-for-line identical to
+  `classes_25_27.txt.gz`.
+* There are no isomorphic duplicates among the 14,805 (VF2).
+
+The list is `classes_23_27.txt.gz` (sha256 of the uncompressed file
+`c4c437b94ec2f12e33d33d03ee3138644d59edc643462de892ec9af9a1d03fc0`).
+
+**Certificates** (`linkcerts_23_27.json.gz`;
+`linkcert.py check CLASSES CERTS 24` passes):
+
+```text
+Delta=24:  1976 classes, largest certified |F| - Delta = 30   (allowed 30), failing 0
+Delta=23: 12524 classes, largest certified |F| - Delta = 38.2 (allowed 31), failing 11
+```
+
+**So a family with a link of 24 or more members has at most 54 members**
+(PROVEN given the VALIDATED census and `ι(4) ≤ 27`). At 23, 12,513 of
+12,524 classes certify. The other 11 (indices 1722, 1726, 10590 to
+10597, and 14708 in the class file) fail both the LP and the integer
+program, with optima 33 to 37. They need constraints the system does not
+yet have:
+
+* **14708** has 9 points and covering number 4, and its unwitnessed
+  traces are eight 3-point sets. Its optimum has `m0 = 19` with 16
+  members of the form `T + r`. But `M0` must meet every such member, so
+  it runs through at least two fixed points of `R` and `m0 ≤ g(2) = 6`
+  (the §63 argument). Adding that coupling is a linear case split.
+* **The other ten** have covering number 2 or 3, and their optima take
+  `m0 = 1`. They stack members on traces of 1 and 2 points, for example
+  14 members sharing the trace `{9}`. What limits them in reality is
+  interaction *inside* `M1`, which the per-trace caps ignore. Two such
+  members that are disjoint need `T ∪ T'` to be a transversal of `D`
+  (no triangle), and two members `S, S'` with
+  `S ∩ S' = S ∩ R = S' ∩ R` form a sunflower with `R`.
+
+Closing these 11 would put the descent at `Δ ≥ 23`. After that, sizes 22
+(69,616 classes, 29.9 core-hours) and 21 (407,115, 41.4) remain
+enumerable. Size 20 (308 million) does not.
 
