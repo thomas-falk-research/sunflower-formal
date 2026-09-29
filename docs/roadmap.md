@@ -14694,7 +14694,9 @@ Three families of constraints hold:
   the outer parts are a sunflower-free family of `(4 − |T|)`-sets. The
   caps are `g(1) = 2` and the kernel bounds `g(2) ≤ 6` and `g(3) ≤ 26`
   (`coq/PureLink.v`).
-* **(c)** `0 ≤ m0 ≤ 27`.
+* **(c)** `0 ≤ m0 ≤ 27`. `M0` is intersecting: two disjoint members of it
+  and any member of `D` would be three pairwise disjoint sets. Constraint
+  (a) also gives `m0 ≤ Δ` directly.
 
 So `|F| − Δ` is at most the LP maximum over these constraints, which
 depends only on the isomorphism class of `D`.
@@ -14723,7 +14725,7 @@ the integer bound. The integer program (HiGHS) gives 27 and 26 for the
 
 | claim | status |
 |---|---|
-| the constraint system (a)–(c) is valid | PROVEN (hand); fresh-context review pending at this commit |
+| the constraint system (a)–(c) is valid | PROVEN (hand), confirmed by a fresh-context review (64.5) |
 | every class at sizes 25–27 certifies `\|F\| − Δ ≤ 54 − Δ` | PROVEN given the class list (exact rational check) |
 | the class list is complete | VALIDATED (§60 census, §63.1) |
 | **largest link ≥ 25 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list**, both VALIDATED |
@@ -14741,3 +14743,25 @@ At `Δ = 20` there are 308 million classes, so enumeration ends there. The
 class-free fallback `|F| ≤ Δ + |N[R]|`, with `|N[R]| ≤ 56`, is the
 published route to 83 and cannot reach 54. Closing `Δ ≤ 20` needs a
 different idea, not recorded here.
+
+### 64.5 Independent review
+
+A fresh-context reviewer found no HIGH or MEDIUM issues:
+
+* It checked each step. Every member counted in (a) is disjoint from `C`
+  and distinct from it, and nothing is counted twice. (a) genuinely
+  needs `Δ` to be the maximum over all links, which is how it is stated.
+  A trace of 4 points is impossible. The caps in (b) are correct,
+  including `n_T ≤ 2`.
+* It wrote its own exact checker, never reading `linkcert.py`, and it
+  accepts all 305 certificates.
+* It solved all 305 LPs and integer programs itself. Both optima equal
+  the certified bound in every class.
+* A greedy search seeded with classes of size ≥ 25 never exceeded 50
+  members.
+
+Its one LOW wording point was the missing justification for `m0 ≤ 27`,
+now added under (c). It also noted that the bound 28 for the tightest
+size-26 class may not be attained: 3000 random attempts to realise it
+failed. The claim does not depend on that.
+

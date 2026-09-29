@@ -15,7 +15,8 @@ number of members with trace T:
       (the outer parts of the members with trace T form a sunflower-free
        family of (4-|T|)-sets: g(1) = 2, g(2) <= 6, g(3) <= 26, the last
        two kernel theorems in coq/PureLink.v);
-  (c) 0 <= m0 <= 27.
+  (c) 0 <= m0 <= 27 (M0 is intersecting: two disjoint members of it and
+      any C in D would be pairwise disjoint).
 
 So |F| - Delta = m0 + sum n_T is at most the LP maximum. A dual
 certificate (y_C, z_T, w >= 0) with
