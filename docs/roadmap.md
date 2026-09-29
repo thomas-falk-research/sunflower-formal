@@ -14661,3 +14661,83 @@ UNSAT with 4 extra points, and timeouts with 8. That is not evidence
 either way at the target size. Completeness of the class list and
 `ι(4) ≤ 27` remain VALIDATED inputs, not checked by the review.
 
+
+## 64. Descent by the largest link: every family with a link of 25 or more members has at most 54
+
+§63 left 257 link classes open, all with a single-point unwitnessed trace.
+They close without any single-point lemma, and all 305 classes at sizes
+25–27 now close **by one uniform argument**. The idea is to choose `R` so
+that its link is as large as any link in `F`.
+
+### 64.1 The argument
+
+Let `Δ` be the largest link size in `F`, attained at `R`, and let
+`D = D(R)` with point set `V`.
+
+* Every other member meets `R`, and `R` misses `V`.
+* `M0` is the set of members that miss `V`. It includes `R`.
+* Every remaining member `S` has a trace `T = S ∩ V` of 1 to 3 points.
+  That trace is unwitnessed in `D`, or `S` would form a sunflower with
+  two members of `D`.
+* Write `n_T` for the number of members with trace `T`.
+
+Three families of constraints hold:
+
+* **(a) one per member `C` of `D`:** `m0 + Σ_{T ∩ C = ∅} n_T ≤ Δ`.
+  Every member counted is disjoint from `C`, so it lies in `C`'s link,
+  and **no link is larger than `Δ`**. This is where the choice of `R`
+  pays: a member whose trace is a single point `x` misses all but the
+  `deg(x)` members of `D` through `x`, so it is charged in almost every
+  constraint.
+* **(b) caps:** `n_T ≤ 2, 6, 26` for `|T| = 3, 2, 1`. Members sharing
+  the trace `T` form a sunflower exactly when their outer parts do, so
+  the outer parts are a sunflower-free family of `(4 − |T|)`-sets. The
+  caps are `g(1) = 2` and the kernel bounds `g(2) ≤ 6` and `g(3) ≤ 26`
+  (`coq/PureLink.v`).
+* **(c)** `0 ≤ m0 ≤ 27`.
+
+So `|F| − Δ` is at most the LP maximum over these constraints, which
+depends only on the isomorphism class of `D`.
+
+### 64.2 The certificates
+
+`tools/iota4/linkcert.py solve` finds, for each of the 305 classes, a
+dual solution `(y_C, z_T, w)` rounded to small rationals.
+`linkcert.py check` verifies it in exact rational arithmetic, with no
+solver: it re-derives every class's unwitnessed traces from the class
+file and checks dual feasibility and the bound. The certificates are
+`docs/ladder/iota4_replication/linkcerts_25_27.json.gz`.
+
+```text
+Delta=27:   1 class,   largest certified |F| - Delta = 27 <= 27
+Delta=26:   6 classes, largest certified |F| - Delta = 28 <= 28
+Delta=25: 298 classes, largest certified |F| - Delta = 27 <= 29
+CHECK PASS: every class certifies |F| <= 54
+```
+
+The certificate is for the LP relaxation, so it is at least as strong as
+the integer bound. The integer program (HiGHS) gives 27 and 26 for the
+257 classes §63 had left open.
+
+### 64.3 Status
+
+| claim | status |
+|---|---|
+| the constraint system (a)–(c) is valid | PROVEN (hand); fresh-context review pending at this commit |
+| every class at sizes 25–27 certifies `\|F\| − Δ ≤ 54 − Δ` | PROVEN given the class list (exact rational check) |
+| the class list is complete | VALIDATED (§60 census, §63.1) |
+| **largest link ≥ 25 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list**, both VALIDATED |
+| `g(4) = 54` | open: a 55-member family needs every link to have ≤ 24 members |
+
+### 64.4 Going further down, and where it must stop
+
+Each step down costs the classes at the next size: 1,976 at 24 (16
+shards, 7.2 core-hours), 12,524 at 23 (37 shards, 20.6), 69,616 at 22
+(29.9), and 407,115 at 21 (41.4). The allowance grows as it goes,
+`54 − 2Δ` = 6, 8, 10, 12. Classes of size ≥ 23 are being recovered as
+this section is written.
+
+At `Δ = 20` there are 308 million classes, so enumeration ends there. The
+class-free fallback `|F| ≤ Δ + |N[R]|`, with `|N[R]| ≤ 56`, is the
+published route to 83 and cannot reach 54. Closing `Δ ≤ 20` needs a
+different idea, not recorded here.
