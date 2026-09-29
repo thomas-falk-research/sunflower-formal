@@ -106,14 +106,20 @@ if __name__ == "__main__":
     else:
         C = json.load(gzip.open(certs, "rt"))
         assert len(C) == len(fams)
-        worst = {}
-        for F, c in zip(fams, C):
+        worst, fail = {}, []
+        for k, (F, c) in enumerate(zip(fams, C)):
             validate(F)
             bound = check(F, unwitnessed(F), c)
             d = len(F)
-            assert bound <= 54 - d, (d, bound)
+            if bound > 54 - d:
+                fail.append((k, d, bound))
             worst[d] = max(worst.get(d, 0), bound)
         for d in sorted(worst, reverse=True):
             n = sum(len(F) == d for F in fams)
-            print(f"Delta={d}: {n} classes, largest certified |F| - Delta = {worst[d]} <= {54 - d}")
+            nf = sum(f[1] == d for f in fail)
+            print(f"Delta={d}: {n} classes, largest certified |F| - Delta = {worst[d]}"
+                  f" (allowed {54 - d}), failing {nf}")
+        if fail:
+            print("CHECK FAIL:", len(fail), "classes not certified; first:", fail[:5])
+            sys.exit(1)
         print("CHECK PASS: every class certifies |F| <= 54")
