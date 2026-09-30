@@ -14814,3 +14814,97 @@ Closing these 11 would put the descent at `Δ ≥ 23`. After that, sizes 22
 (69,616 classes, 29.9 core-hours) and 21 (407,115, 41.4) remain
 enumerable. Size 20 (308 million) does not.
 
+## 65. The 11 remaining classes at 23: all certified, so a link of 23 or more members forces `|F| ≤ 54`
+
+§64.6 left 11 link classes of size 23 that the §64 constraint system
+cannot certify. They close under a finer model, `tools/iota4/link23.py`.
+
+### 65.1 The finer model
+
+Each member `S` outside `D ∪ {R}` has three attributes:
+
+* its trace `T` on `V`;
+* its **profile** `P = S ∩ R`, which is nonempty;
+* its number `e = 4 − |T| − |P|` of extra points outside `V ∪ R`.
+
+Members missing `V` have `T` empty and a profile other than `R`. The
+integer program counts members of each type, with these constraints
+(each argued in the file, next to the code):
+
+* **Caps per type.** 1, 2 or 6 for `e = 0, 1, 2`. For members missing
+  `V`: 1, 3 or 26 for `|P| = 3, 2, 1`, because their extra parts must
+  also avoid a sunflower with `R`.
+* **Per trace, per member `C` of `D`, and per star** through each point
+  of `R` (at most `g(3) ≤ 26`).
+* **Determined members.** A member with `e = 0` is exactly `T ∪ P`,
+  which lies inside `V ∪ R`. So its intersection with a member of any
+  type is known exactly: `(T ∩ T') ∪ (P ∩ P')`. From that follow:
+  * a bound on its own link (at most `Δ` members);
+  * exclusion of any partner that would form a sunflower with `R`;
+  * exclusion of any partner that would form a sunflower with a
+    member of `D`;
+  * exclusion of any partner disjoint from it when some member of `D`
+    avoids both traces (three pairwise disjoint sets).
+
+A fresh-context review checked every constraint and found no HIGH or
+MEDIUM issue. It re-implemented the model independently and matched
+all 11 integer optima: 27, 31, 29 (×8) and 23. It also confirmed that
+the CNF encoding is satisfiable exactly at the model optimum.
+
+### 65.2 Certificates
+
+Two independent kinds of certificate, each with its own checker:
+
+* **DRAT.** CaDiCaL refutes the CNF "`|F| ≥ 55`" for each class, and
+  `drat-trim` verifies the proof.
+  * 1722, 1726, 10592, 10593, 10594, 10596, 10597 and 14708 were
+    refuted whole (`link23_proofs/c*.log`, with CNF sha256).
+  * 10595 was split into 32 cubes on its five top-ranked variables, and
+    its hardest cube into 32 sub-cubes; all 63 pieces were refuted
+    (`link23_proofs/c10595_cubes.log`).
+  * 10590 and 10591 were not finished this way. Their all-false corner
+    cube resisted two hours of solving. CDCL handles the counting badly.
+* **Exact branch-and-bound** (`tools/iota4/bnbcert.py`,
+  `link23_bnb/bnb_K.json.gz`).
+  * The tree branches `x_i ≤ f` versus `x_i ≥ f + 1`, so its leaves
+    cover every integer point.
+  * Every leaf carries a rational dual certificate:
+    `Aᵀy + u − v ≥ 1` and `b·y + hi·u − lo·v < 31`, so `Σx ≤ 30` on that
+    leaf. Infeasible leaves carry the Farkas form.
+  * The checker rebuilds the model from `link23.py` and verifies every
+    leaf in exact arithmetic.
+  * Trees: 10590 has 175 nodes, 10591 has 111, 10592, 10593 and 10595
+    have 55 each, 1722 has 1119, 1726 has 941, 10597 has 977, and
+    14708 has 127.
+  * Controls: for 14708, whose optimum is `Σx = 22`, the method refuses
+    a goal of 21 and finds the integer point with sum 22. A certificate
+    with one multiplier zeroed is rejected.
+
+Every class has at least one certificate, and seven have both kinds.
+
+| certificate | classes |
+|---|---|
+| DRAT | 1722, 1726, 10592, 10593, 10594, 10595, 10596, 10597, 14708 |
+| branch-and-bound | 10590, 10591, 10592, 10593, 10595, 1722, 1726, 10597, 14708 |
+
+### 65.3 Status
+
+| claim | status |
+|---|---|
+| the `link23` constraints are valid | PROVEN (hand), reviewed |
+| each of the 11 classes: `\|F\| − Δ ≤ 31` | PROVEN given the model: machine-checked certificates (DRAT or exact branch-and-bound) |
+| **largest link ≥ 23 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list** (both VALIDATED), with the kernel's `g(2) ≤ 6` and `g(3) ≤ 26` |
+| `g(4) = 54` | open: a 55-member family needs every link to have ≤ 22 members |
+
+The checker of the branch-and-bound certificates is the only certificate
+for 10590 and 10591. Its fresh-context review is pending at this commit.
+
+**Operational notes.**
+* The container restarted repeatedly, and it appears to be reclaimed
+  while the session is idle. Long runs therefore went into restartable
+  units (cubes, per-class logs) and were watched with the session
+  attached.
+* Three times a `pgrep -f` / `pkill -f` pattern matched the agent's own
+  shell. Processes are now stopped only by exact PID after checking the
+  process name.
+
