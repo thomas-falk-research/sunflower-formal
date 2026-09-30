@@ -1,0 +1,9 @@
+class 1722
+p cnf 292637 605476
+cadical_rc=unrecorded (loop interrupted; proof complete)
+c 45586 of 605476 clauses in core                            
+c 636203 of 3921843 lemmas in core using 83201586 resolution steps
+c 0 RAT lemmas in core; 204748 redundant literals in core lemmas
+c verification time: 456.686 seconds
+656cdd50a2c9c61aa613ede1326f13ce1f498506b0b319de5be140d41084f481
+s VERIFIED

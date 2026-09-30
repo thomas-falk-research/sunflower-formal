@@ -1,0 +1,9 @@
+class 10592
+p cnf 286163 593749
+cadical_rc=20
+c 66457 of 593749 clauses in core                            
+c 2289921 of 10059215 lemmas in core using 557284283 resolution steps
+c 0 RAT lemmas in core; 838252 redundant literals in core lemmas
+c verification time: 3757.708 seconds
+dbebc810ce19c565d8e55176d6eae8e0108f4794c903d8650d94c52b36a1a455
+s VERIFIED
