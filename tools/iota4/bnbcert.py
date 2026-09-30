@@ -122,41 +122,69 @@ def solve(D, out):
     return stats
 
 
+class CertError(Exception):
+    pass
+
+
+def need(cond, *why):
+    # explicit check: survives `python3 -O`, unlike assert
+    if not cond:
+        raise CertError(*why)
+
+
+def index(key, bound, what):
+    """A multiplier key must be a decimal index in range(bound)."""
+    need(isinstance(key, str) and key.isdigit(), what, "bad key", key)
+    k = int(key)
+    need(0 <= k < bound, what, "key out of range", key)
+    return k
+
+
+def rational(q, what):
+    need(isinstance(q, str), what, "multiplier not a string", q)
+    x = Fr(q)
+    need(x >= 0, what, "negative multiplier", q)
+    return x
+
+
 def check(D, path):
     n, rows, rhs, ub = matrix(D)
+    m = len(rows)
     goal = int(os.environ.get("BNB_GOAL", 54 - len(D) - 1))
     C = json.load(gzip.open(path, "rt"))
-    assert C["n"] == n and C["goal"] == goal
+    need(C.get("n") == n and C.get("goal") == goal, "header mismatch", C.get("n"), C.get("goal"), n, goal)
     cnt = {"leaves": 0, "nodes": 0}
 
     def leaf(node, lo, hi):
+        need(node["leaf"] in ("bound", "infeasible"), "unknown leaf kind", node["leaf"])
         c = 1 if node["leaf"] == "bound" else 0
         T = Fr(goal + 1) if c == 1 else Fr(0)
         cert = node["cert"]
-        y = {int(k): Fr(q) for k, q in cert["y"].items()}
-        u = {int(k): Fr(q) for k, q in cert["u"].items()}
-        v = {int(k): Fr(q) for k, q in cert["v"].items()}
-        assert all(q >= 0 for q in list(y.values()) + list(u.values()) + list(v.values()))
+        need(set(cert) == {"y", "u", "v"}, "certificate keys", sorted(cert))
+        y = {index(k, m, "y"): rational(q, "y") for k, q in cert["y"].items()}
+        u = {index(k, n, "u"): rational(q, "u") for k, q in cert["u"].items()}
+        v = {index(k, n, "v"): rational(q, "v") for k, q in cert["v"].items()}
         w = [Fr(0)] * n
         for j, yj in y.items():
             for i, a in rows[j]:
                 w[i] += yj * a
         for i in range(n):
             w[i] += u.get(i, 0) - v.get(i, 0)
-            assert w[i] >= c, (i, w[i])
+            need(w[i] >= c, "dual infeasible at column", i, w[i])
         bound = sum(yj * rhs[j] for j, yj in y.items()) + \
             sum(q * hi[i] for i, q in u.items()) - sum(q * lo[i] for i, q in v.items())
-        assert bound < T, (bound, T)
+        need(bound < T, "bound not below target", bound, T)
 
     def walk(node, lo, hi):
         cnt["nodes"] += 1
-        assert all(0 <= lo[i] <= hi[i] for i in range(n)) or "leaf" in node
         if "leaf" in node:
             cnt["leaves"] += 1
             leaf(node, lo, hi)
             return
         i, f = node["var"], node["f"]
-        assert lo[i] <= f < hi[i], (i, f, lo[i], hi[i])     # both children nonempty ranges
+        need(type(i) is int and 0 <= i < n, "bad branching variable", i)
+        need(type(f) is int, "non-integer split", f)
+        need(lo[i] <= f < hi[i], "split outside range", i, f, lo[i], hi[i])   # both children nonempty
         h2 = list(hi); h2[i] = f
         l2 = list(lo); l2[i] = f + 1
         walk(node["le"], lo, h2)

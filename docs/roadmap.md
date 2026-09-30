@@ -14896,8 +14896,43 @@ Every class has at least one certificate, and seven have both kinds.
 | **largest link ≥ 23 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list** (both VALIDATED), with the kernel's `g(2) ≤ 6` and `g(3) ≤ 26` |
 | `g(4) = 54` | open: a 55-member family needs every link to have ≤ 22 members |
 
-The checker of the branch-and-bound certificates is the only certificate
-for 10590 and 10591. Its fresh-context review is pending at this commit.
+For 10590 and 10591 the branch-and-bound certificates are the only
+evidence, so their checker was reviewed on its own (65.4).
+
+### 65.4 Review of the certificate checker: one soundness hole, fixed
+
+A fresh-context review of `bnbcert.py` found no issue in the
+linearisation, the duality argument, or the branching coverage. It also
+confirmed that the 10595 cubes and sub-cubes cover every assignment:
+all `2^10` assignments of the ten split variables were enumerated.
+
+It found one **MEDIUM soundness hole**: `check()` accepted forged
+certificates.
+
+* A multiplier key such as `"-1"` passed `int()`. It then indexed the
+  bound's `lo` list from the end, with no matching term in `w`.
+* The reviewer built a certificate "proving" `Σx ≤ 0` for class 10590,
+  and the checker passed it.
+* A non-integer split point would also have been accepted, which would
+  drop integer points from both children.
+* All checks were `assert`s, which vanish under `python3 -O` (LOW).
+
+**None of the shipped certificates used any of this.** The reviewer's
+own strict checker, written independently and reusing only
+`link23.model()`, passes all nine.
+
+**Fix.** `check()` now raises `CertError` explicitly. Multiplier keys
+must be decimal indices in range, split points must be integers, and
+leaf kinds and certificate keys are validated.
+
+**Regression test.** `tools/iota4/tests/test_bnbcert.py` builds five
+malformed certificates: the reviewer's forgery, a fractional split, an
+emptied leaf, an out-of-range row key and an unknown leaf kind.
+
+* All five are rejected, both plainly and under `python3 -O`.
+* The genuine certificate passes.
+* The pre-fix checker accepts the forgery, which reproduces the hole.
+* All nine shipped certificates pass the hardened checker under `-O`.
 
 **Operational notes.**
 * The container restarted repeatedly, and it appears to be reclaimed
