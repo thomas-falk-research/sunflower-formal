@@ -46,7 +46,11 @@ difficulty lives. Separately, `ι(4) = 27` (no intersecting
 3-sunflower-free family of 28 four-sets, and a unique one of 27) is
 **validated, not proved**, by an independent exhaustive search that agrees
 with arXiv:2609.06175's to the unit on an isomorphism-invariant count of
-about 10¹¹ (`docs/ladder/iota4_replication/`). What is
+about 10¹¹ (`docs/ladder/iota4_replication/`). Building on it, Pálvölgyi's
+`g(4) = 54` is settled for every family in which some member is disjoint
+from 23 or more others (`docs/roadmap.md` §62–§65): proven given that
+validated census, with the largest case kernel-checked
+(`coq/Stability4.v`); `g(4)` itself stays open. What is
 machine-checked here is the complete *provable frontier* around it:
 
 | Result | Statement | File |
@@ -82,6 +86,7 @@ machine-checked here is the complete *provable frontier* around it:
 | 2020 spread lemma | $r$-spread $\Rightarrow k$ disjoint members for $r \ge Ck\log(nk)$ — **the one named axiom**, cited | `coq/ALWZ.v` |
 | ALWZ/Rao 2020 bound | $f(n,k) \le (Ck\log(nk))^n + 1$ — **derived** from that axiom alone | `coq/ALWZ.v` |
 | **The conjecture for bounded VC-dimension** | every $n$-uniform family with VC-dimension $\le d$ and more than $K(d,k)^n$ members has a $k$-sunflower, $K(d,k) = 2^{2d+3+\lfloor\log_2((64d+8)k)\rfloor}$ independent of $n$ — **axiom-free**; the theorem is Ge–Wang–Xu–Zhao 2026 (constant $50dk$), the proof here replaces their entropy and Caro–Wei steps by counting, and proves Sauer–Shelah along the way | `coq/VCSunflower.v` |
+| **A link of 27 caps $g(4)$ at 54** | given $\iota(4) \le 27$, a 4-uniform sunflower-free family in which the members disjoint from some $R$ form a relabelled Abbott–Hanson family has at most 54 members; the key fact is that this family is **trace-saturated** (every 4-set meeting one member and leaving its nine points makes a sunflower with two members) | `coq/Stability4.v` |
 | The conjecture itself | formal statement, **open** | `coq/Conjecture.v` |
 | Definition audit | complementarity of the bounds, encoding-invariance, non-vacuity of the axiom's shape | `coq/Audit.v` |
 | Differential spread checker | a second decision procedure, proved to agree with the first | `coq/Reflect.v` |

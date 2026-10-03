@@ -14943,3 +14943,53 @@ emptied leaf, an out-of-range row key and an unknown leaf kind.
   shell. Processes are now stopped only by exact PID after checking the
   process name.
 
+## 66. Handover: where the `b = 4` descent stands, and what would move it
+
+**State.**
+* A 4-uniform 3-sunflower-free family with a link of ≥ 23 members has at
+  most 54 members (§62–§65). This is PROVEN given `ι(4) ≤ 27` and the
+  link-class census, both VALIDATED.
+* The only kernel theorem is the size-27 case, `Stability4.stability_at_four`.
+* Sizes 23–26 rest on exact rational LP certificates, DRAT proofs and
+  branch-and-bound certificates. Each had its own checker and a
+  fresh-context review.
+
+**Not done, by choice.** Sizes 22 (69,616 classes, about 30
+core-hours of shard reruns) and 21 (407,115, about 41) can be
+enumerated. The method is mechanical: recover the classes from the
+shards whose ledger records reach the size, then run `linkcert.py`,
+then `link23.py` with `bnbcert.py` on whatever the LP leaves. Two things
+make it uneconomic in the cloud session that did §62–§65:
+
+* its container is reclaimed while idle;
+* background commands are cut off at 30 minutes.
+
+It belongs on a machine that can run unattended. Even done, it moves
+the boundary by one, and **enumeration ends at 20** (308 million classes).
+
+**What would move `g(4)` itself.** A 55-member counterexample has every
+link of size ≤ 22: a triangle-free disjointness graph on ≥ 55 vertices
+with maximum degree ≤ 22, in which every neighbourhood is an
+intersecting sunflower-free family. Three directions, none attempted:
+
+1. **A class-free version of the link LP.** The constraint (a) of §64
+   (`m0 + Σ_{T∩C=∅} n_T ≤ Δ`) used only the size of `C`'s link. Small `Δ`
+   leaves more room (`54 − 2Δ` grows), so an argument that bounds the
+   unwitnessed-trace structure of *any* intersecting family by its size
+   alone might close `Δ ≤ 20` without enumeration. CONJECTURED.
+2. **Two roots instead of one.** Every bound here fixes one member `R`.
+   In a counterexample all links are small, so double counting over
+   many roots (or over the disjoint pairs, as §61.2 started) might
+   supply the missing global constraint. PLAUSIBLE.
+3. **Kernel-checking the certificates.** The LP and branch-and-bound
+   certificates are plain rational arithmetic over finite objects. A
+   reflective Coq checker would raise sizes 23–26 to the level of size
+   27, conditional only on the census. That is real work but bounded,
+   and it removes Python from the trust base.
+
+**Reusable tools.** `tools/iota4/linkcert.py` (class certificates),
+`link23.py` (finer model), `bnbcert.py` plus `tests/test_bnbcert.py`
+(exact branch-and-bound with a hardened checker),
+`isearch2p*.patch` (printing classes from shard reruns). The lessons are
+in §65's operational notes.
+
