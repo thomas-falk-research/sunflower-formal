@@ -2829,3 +2829,123 @@ ab0b895063262063  def TwoCoverSharp.piece
 
 e80c483e7bb23171  def TwoCoverSharp.hm_family
     hm_family = ((0 :: 2 :: 4 :: nil) :: (0 :: 2 :: 5 :: nil) :: (0 :: 2 :: 6 :: nil) :: (0 :: 3 :: 7 :: nil) :: (0 :: 3 :: 8 :: nil) :: (0 :: 3 :: 9 :: nil) :: (1 :: 2 :: 3 :: nil) :: (0 :: 1 :: 10 :: nil) :: (0 :: 1 :: 11 :: nil) :: (0 :: 1 :: 12 :: nil) :: nil)%list : Family
+
+3c1a534e8136e8c5  thm VCSunflower.sauer_shelah
+    sauer_shelah : forall (E : list nat) (d : nat) (V : list (list nat)), List.NoDup E -> List.NoDup V -> (forall v : list nat, List.In v V -> Canon E v) -> (forall D : list nat, List.NoDup D -> List.incl D E -> Shatters V D -> length D <= d) -> length V <= Phi d (length E)
+
+324ce0e18c4c5d09  thm VCSunflower.Phi_le_pow
+    Phi_le_pow : forall M d : nat, Phi d M <= PeanoNat.Nat.pow (M + 1) d
+
+e28f384b87492cee  thm VCSunflower.traces_count
+    traces_count : forall (d : nat) (E : list nat) (F : Family), List.NoDup E -> VCdimLe d F -> length (Traces E F) <= Phi d (length E)
+
+029c4828754d5362  thm VCSunflower.trace_sum_bound
+    trace_sum_bound : forall (E : list nat) (F : Family) (R t : nat), List.NoDup E -> Spread F R -> 2 <= R -> length (Traces E F) <= PeanoNat.Nat.pow R t -> sumf (fun x : nat => deg (x :: nil) F) E <= (2 * t + 1) * length F
+
+664814dc101c8a0d  thm VCSunflower.sum_deg_sq_bound
+    sum_deg_sq_bound : forall (d s : nat) (F : Family), VCdimLe d F -> 2 * d + 2 <= s -> Spread F (PeanoNat.Nat.pow 2 s) -> forall U : list nat, List.NoDup U -> PeanoNat.Nat.pow 2 s * sumf (fun x : nat => deg (x :: nil) F * deg (x :: nil) F) U <= (32 * d + 4) * (length F * length F)
+
+1959374e7ee0157d  thm VCSunflower.greedy_disjoint
+    greedy_disjoint : forall (t : nat) (F : list (list nat)), (forall A : list nat, List.In A F -> A <> nil) -> 2 * t * SF F < length F * length F -> exists L : list (list nat), List.incl L F /\ List.NoDup L /\ length L = t /\ PairwiseDisjoint L
+
+11431dc1ad5497fc  thm VCSunflower.vc_spread_disjoint
+    vc_spread_disjoint : forall (d s r m : nat) (F : Family), 1 <= m -> Uniform m F -> VCdimLe d F -> Spread F (PeanoNat.Nat.pow 2 s) -> 2 * d + 2 <= s -> (64 * d + 8) * r < PeanoNat.Nat.pow 2 s -> 1 <= length F -> exists L : list (list nat), List.incl L F /\ List.NoDup L /\ length L = r /\ PairwiseDisjoint L
+
+d9361d59f915ecef  thm VCSunflower.VCdimLe_link
+    VCdimLe_link : forall (d : nat) (T : list nat) (F : Family), VCdimLe d F -> VCdimLe d (link T F)
+
+81742949d183f38a  thm VCSunflower.vc_spread_reduction
+    vc_spread_reduction : forall d k r : nat, 2 <= k -> 1 <= r -> (forall (m : nat) (F : Family), 1 <= m -> Uniform m F -> Distinct F -> VCdimLe d F -> PeanoNat.Nat.pow r m < length F -> RaoSpread m F r -> exists S : list (list nat), List.incl S F /\ List.NoDup S /\ length S = k /\ PairwiseDisjoint S) -> forall m : nat, VCUpperBound d m k (S (PeanoNat.Nat.pow r m))
+
+5e52deff46594227  thm VCSunflower.vc_sunflower_bound
+    vc_sunflower_bound : forall d k n : nat, 2 <= k -> VCUpperBound d n k (S (PeanoNat.Nat.pow (vc_K d k) n))
+
+ebcd6acd60c0107b  thm VCSunflower.vc_sunflower_conjecture
+    vc_sunflower_conjecture : forall d : nat, exists c : nat -> nat, forall n k : nat, 2 <= k -> VCUpperBound d n k (S (PeanoNat.Nat.pow (c k) n))
+
+b4419f56e7c70974  thm VCSunflower.uniform_vc_le
+    uniform_vc_le : forall (n : nat) (F : Family), Uniform n F -> VCdimLe n F
+
+c1a41e6b6455b18e  thm VCSunflower.pointed_star_vc_one
+    pointed_star_vc_one : forall M : nat, VCdimLe 1 (pointed_star M)
+
+402fa143d4a4e0c8  thm VCSunflower.vc_hypotheses_satisfiable
+    vc_hypotheses_satisfiable : forall M : nat, Uniform 2 (pointed_star M) /\ Distinct (pointed_star M) /\ VCdimLe 1 (pointed_star M) /\ length (pointed_star M) = M
+
+2075fb6d56144b6f  thm VCSunflower.product_shatters
+    product_shatters : forall t n : nat, 2 <= t -> Shatters (prod_family t n) (shatter_grid t n)
+
+7c73f5f4e0ec7082  thm VCSunflower.product_vc_full
+    product_vc_full : forall t n d : nat, 2 <= t -> d < n -> ~ VCdimLe d (prod_family t n)
+
+cf0ebb38578e5d09  thm VCSunflower.vc_bound_coherent
+    vc_bound_coherent : forall n k : nat, 1 <= n -> 2 <= k -> PeanoNat.Nat.pow (k - 1) n < S (PeanoNat.Nat.pow (vc_K n k) n)
+
+1ffca9fb84cc2570  def VCSunflower.Shatters
+    Shatters = fun (F : Family) (D : list nat) => forall B : list nat, Subset B D -> exists A : list nat, List.In A F /\ SetEq (inter A D) B : Family -> list nat -> Prop Arguments Shatters F D%list_scope
+
+4a06d829856dd51b  def VCSunflower.VCdimLe
+    VCdimLe = fun (d : nat) (F : Family) => forall D : list nat, List.NoDup D -> Shatters F D -> length D <= d : nat -> Family -> Prop Arguments VCdimLe d%nat_scope F
+
+1ec5228e0cd6cc90  def VCSunflower.VCUpperBound
+    VCUpperBound = fun d n k m : nat => forall F : Family, Uniform n F -> Distinct F -> VCdimLe d F -> length F >= m -> ContainsKSunflower k F : nat -> nat -> nat -> nat -> Prop Arguments VCUpperBound (d n k m)%nat_scope
+
+bd0d4435023e8fb5  def VCSunflower.vc_K
+    vc_K = fun d k : nat => PeanoNat.Nat.pow 2 (vc_exponent d k) : nat -> nat -> nat Arguments vc_K (d k)%nat_scope
+
+bd59e3b19532f6ce  def VCSunflower.vc_exponent
+    vc_exponent = fun d k : nat => 2 * d + 3 + PeanoNat.Nat.log2 ((64 * d + 8) * k) : nat -> nat -> nat Arguments vc_exponent (d k)%nat_scope
+
+611a80cb59b55c28  thm VCSunflower.kmatch_vc_one
+    kmatch_vc_one : forall k M : nat, VCdimLe 1 (kmatch k M)
+
+02eae2c1bb40bc3c  thm VCSunflower.vc_hypotheses_satisfiable_at_every_uniformity
+    vc_hypotheses_satisfiable_at_every_uniformity : forall n M : nat, 2 <= n -> Uniform n (kmatch (n - 2) M) /\ Distinct (kmatch (n - 2) M) /\ VCdimLe 1 (kmatch (n - 2) M) /\ length (kmatch (n - 2) M) = M
+
+b11c9ee7cd1defac  thm VCSunflower.two_trace_test_is_weaker
+    two_trace_test_is_weaker : forall k : nat, (exists A : list nat, List.In A (kmatch k 2) /\ SetEq (inter A (k :: k + 1 :: nil)) nil) /\ (exists A : list nat, List.In A (kmatch k 2) /\ SetEq (inter A (k :: k + 1 :: nil)) (k :: k + 1 :: nil)) /\ ~ Shatters (kmatch k 2) (k :: k + 1 :: nil)
+
+f5bfa98196ce545b  thm VCSunflower.nodup_clause_is_needed
+    nodup_clause_is_needed : Shatters (pointed_star 2) (1 :: 1 :: nil) /\ ~ List.NoDup (1 :: 1 :: nil) /\ VCdimLe 1 (pointed_star 2)
+
+13a26f89b2abdc7d  thm VCSunflower.trace_in_B_only_is_weaker
+    trace_in_B_only_is_weaker : (forall B : list nat, Subset B (5 :: 6 :: nil) -> exists A : list nat, List.In A (pointed_star 1) /\ Subset (inter A (5 :: 6 :: nil)) B) /\ ~ Shatters (pointed_star 1) (5 :: 6 :: nil)
+
+ea0b2ce3fd4a9445  thm VCSunflower.B_in_trace_only_is_weaker
+    B_in_trace_only_is_weaker : (forall B : list nat, Subset B (0 :: 1 :: nil) -> exists A : list nat, List.In A (pointed_star 1) /\ Subset B (inter A (0 :: 1 :: nil))) /\ ~ Shatters (pointed_star 1) (0 :: 1 :: nil)
+
+d84f654ad2b3c793  def VCSunflower.kmatch
+    kmatch = fun k M : nat => List.map (fun i : nat => (List.seq 0 k ++ k + 2 * i :: k + 2 * i + 1 :: nil)%list) (List.seq 0 M) : nat -> nat -> Family Arguments kmatch (k M)%nat_scope
+
+5c0e47381993f127  thm Stability4.stability_at_four
+    stability_at_four : IotaAtMost 4 27 -> forall (g h : nat -> nat) (F : Family) (R : list nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> SubFamilySetEq (DisjointFrom R F) (rmapF g iota4) -> SubFamilySetEq (rmapF g iota4) (DisjointFrom R F) -> length F <= 54
+
+c26d103d8501fdab  thm Stability4.length_le_of_trace_saturated_link
+    length_le_of_trace_saturated_link : forall (b N : nat) (F : Family) (R : list nat), IotaAtMost b N -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> DisjointFrom R F <> nil -> TraceSaturated b (DisjointFrom R F) -> length F <= length (DisjointFrom R F) + N
+
+e176d639ffd552ff  thm Stability4.DisjointFrom_length_le
+    DisjointFrom_length_le : forall (b N : nat) (F : Family) (R : list nat), IotaAtMost b N -> Uniform b F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (exists z : nat, List.In z R) -> length (DisjointFrom R F) <= N
+
+cb3b253f742d0905  thm Stability4.iota4_trace_saturated
+    iota4_trace_saturated : TraceSaturated 4 iota4
+
+34736934c683e204  thm Stability4.saturated_of_certificate
+    saturated_of_certificate : forall (b : nat) (A : Family) (U : list nat), List.NoDup U -> Grounded A U -> coversb A U = true -> saturation_certificate b A U = true -> TraceSaturated b A
+
+5fa6897b88087143  thm Stability4.TraceSaturated_transport
+    TraceSaturated_transport : forall (g h : nat -> nat) (b : nat) (A : Family) (B : list (list nat)), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> SubFamilySetEq B (rmapF g A) -> SubFamilySetEq (rmapF g A) B -> TraceSaturated b A -> TraceSaturated b B
+
+9c2d0b13753629ca  thm Stability4.stability_hypotheses_satisfiable
+    stability_hypotheses_satisfiable : let F := double iota4 in let R := List.map ev (0 :: 1 :: 2 :: 3 :: nil) in Uniform 4 F /\ Distinct F /\ ~ ContainsKSunflower 3 F /\ List.In R F /\ DisjointFrom R F = rmapF swap18 iota4 /\ length F = 54
+
+d4f52ad0520a8cc0  thm Stability4.single_member_not_saturated
+    single_member_not_saturated : saturation_certificate 4 ((0 :: 1 :: 2 :: 3 :: nil) :: nil)%list (List.seq 0 4) = false
+
+692c36fc40b5cc04  def Stability4.TraceSaturated
+    TraceSaturated = fun (b : nat) (A : Family) => forall S0 : list nat, UniformSet b S0 -> (exists (y : nat) (C : list nat), List.In y S0 /\ List.In C A /\ List.In y C) -> (exists x : nat, List.In x S0 /\ (forall C : list nat, List.In C A -> ~ List.In x C)) -> ContainsKSunflower 3 (S0 :: A)%list : nat -> Family -> Prop Arguments TraceSaturated b%nat_scope A
+
+9127da1eac2d8975  def Stability4.DisjointFrom
+    DisjointFrom = fun (R : list nat) (F : Family) => List.filter (fun C : list nat => disjointb R C) F : list nat -> Family -> Family Arguments DisjointFrom R%list_scope F
+
+6374397388b4bf20  def Stability4.saturation_certificate
+    saturation_certificate = fun (b : nat) (A : Family) (U : list nat) => List.forallb (fun T : list nat => implb (negb (PeanoNat.Nat.eqb (length T) 0) && PeanoNat.Nat.ltb (length T) b) (saturation_witnessb T A)) (sublists U) : nat -> Family -> list nat -> bool Arguments saturation_certificate b%nat_scope A U%list_scope

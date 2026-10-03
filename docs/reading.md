@@ -899,6 +899,143 @@ the paper gives only an upper bound. Unchanged.
 
 ---
 
+## Tier 3b — the August–September 2026 sweep (session of 2026-09-27)
+
+**Method.** The arXiv API (`export.arxiv.org`) answered HTTP 406 from this
+container, so the sweep used the arXiv web search
+(`arxiv.org/search/?query=sunflower&order=-announced_date_first`, 50
+results) instead. Five hits post-date the Tier 3 list:
+
+```
+2026-09-24  2609.30263  Thresholds and spread in set systems of bounded VC-dimension   [read, delegated]
+2026-09-22  2609.27044  Limitations of the slice rank method in additive combinatorics [abstract only]
+2026-09-07  2609.07268  The exponent of harmonic LCM avoidance                         [abstract only]
+2026-09-05  2609.06175  Sunflower-Free Uniform Families: Recursive Constructions ...   [read, delegated]
+2026-07-17  2609.18995  Bounded VC-dimension implies the Erdős–Rado sunflower conj.   [read]
+```
+
+**Rendering deviation from rule 1, stated rather than hidden.** `pdftoppm`
+is not installed in this container; every page below was rendered with
+PyMuPDF (`page.get_pixmap(dpi=110)`), and every rendered page was looked
+at as an image. No quotation comes from extracted text. Two of the three
+papers were read by *delegated reader sessions* under the same rule; their
+quotations are second-hand to this file's author and are marked so.
+
+### [GWXZ26] Ge, Wang, Xu, Zhao, *Bounded VC-dimension implies the Erdős–Rado sunflower conjecture*, arXiv:2609.18995v1
+
+**Read in full: 9 of 9 rendered pages, by this session.**
+
+p. 1, the definition this repository's `VCSunflower.Shatters` transcribes:
+
+> For a set system `H`, a set `D` is *shattered* if `{H ∩ D : H ∈ H} = 2^D`,
+> and the VC-dimension `VC(H)` is the largest size of such a set.
+
+p. 2, **Theorem 1.1**:
+
+> Let `d ≥ 1`, `r ≥ 2`, and `ℓ ≥ 1`. If `H` is an `ℓ`-bounded set system
+> with `VC(H) ≤ d` and no `r`-sunflower, then
+> `|H| ≤ Σ_{k=0}^{ℓ} (50dr)^k < 2(50dr)^ℓ`. In particular, every
+> `ℓ`-uniform set system `H` with `VC(H) ≤ d` and `|H| > (50dr)^ℓ`
+> contains an `r`-sunflower.
+
+The proof (pp. 3–7) is four lemmas, each checked line by line on the
+rendered page: Lemma 2.3 (p. 3, entropy: `Σ_{x∈E} μ_x ≤ d log(em/d) / log(1/q)`
+for a `q`-spread family, from `P(R = A) ≤ q^{|A|}` and Sauer–Shelah);
+Lemma 2.4 (pp. 4–5, dyadic layers `E_j = {x : 2^{-j-1}q < μ_x ≤ 2^{-j}q}`,
+Claim 2.5 `u_j ≤ 4(j+2)`, total `Σ μ_x² < 49dq`); Lemma 2.6 (p. 5,
+Caro–Wei on the intersection graph, `ν(G) > 1/(49dq)`); Lemma 2.7 (p. 6,
+an inclusion-maximal `C` with `d_H(C) ≥ |H| q^{|C|}`, whose link is
+`q`-spread and has `VC(G) ≤ VC(H)`). **No error found.** Lemma 2.7 is this
+repository's `SpreadReduction.spread_reduction` dichotomy in fractional
+form, plus the one-line observation that links cannot raise the
+VC-dimension (`VCSunflower.VCdimLe_link`).
+
+**What this repository did with it**: `coq/VCSunflower.v` machine-checks
+the theorem with a weaker, exponential-in-`d` constant, replacing the
+entropy and Caro–Wei steps by elementary counting. See `docs/roadmap.md`
+§59. The formal proof is this repository's; the theorem is theirs.
+
+### [Sha26] Chong Shangguan, *Thresholds and spread in set systems of bounded VC-dimension*, arXiv:2609.30263v1
+
+**Read in full by a delegated reader: 20 of 20 rendered pages.**
+Quotations second-hand. p. 18, Corollary 5.1:
+
+> There is an absolute constant `C > 0` such that, for integers `d, n ≥ 1`
+> and `r ≥ 2`, every `n`-uniform family `F` with `VC(F) ≤ d` and
+> `|F| > (Cr log(d+1))^n` contains an `r`-sunflower.
+
+Improves [GWXZ26]'s `50dr` to `Cr log(d+1)` (p. 4: *"the dependence on the
+VC dimension improves from the linear bound in [10] to logarithmic"*),
+through a robust-sunflower route that uses Bell's threshold lemma as a
+black box (p. 12). **Why it matters here:** every `n`-uniform family has
+VC-dimension at most `n` (`VCSunflower.uniform_vc_le`), so at `d = n`
+this is the Bell–Chueluecha–Warnke `(Cr log n)^n` bound again, and the
+whole conjecture is the question of removing `log(d+1)`. The delegated
+reader reports (p. 16) that the transversal family shows the `log(d+1)` is
+sharp *for the robust-sunflower conclusion*, so the full conjecture needs a
+route that is not a robust-sunflower argument. p. 18 acknowledgements:
+AI assistance used for exploratory discussion and calculation checks.
+Not formalised; not needed by anything in the kernel.
+
+### [ABCDN26] Axante, Budala, Chitic, Dumitru, Nacu, *Sunflower-Free Uniform Families: Recursive Constructions and Explicit Bounds*, arXiv:2609.06175v1
+
+**Read in full by a delegated reader: 35 of 35 rendered pages.**
+Quotations second-hand. Notation (p. 3): their `f(w,k)` is the *maximum
+size* of a `w`-uniform family with no `k`-sunflower, so `f(w,3)` is this
+repository's `g(w)`, and their `ψ(w,3,2)` is this repository's `ι(w)`.
+
+* **Prop. 6.8 (pp. 27–28): `ψ(4,3,2) = 27`, i.e. `ι(4) = 27`.** Lower
+  bound: the Abbott–Hanson construction (this repository's
+  `Product.iota_four_at_least_27`). Upper bound: **computer search only** —
+  McKay-style canonical augmentation with `nauty`, a depth-6 frontier of
+  11,720 roots and `105,917,089,577` nodes below them, custom code, a
+  400-generator cap on stored automorphisms argued to preserve
+  completeness (Lemma 6.6). **No proof certificate**; the paper's separate
+  C verifier checks bookkeeping (one completed record per root), not the
+  exclusion. Section 8: not in their Lean development.
+* **Thm. 6.9 (p. 29): `54 ≤ f(4,3) ≤ 83`**, i.e. `54 ≤ g(4) ≤ 83`. The 83
+  uses Prop. 6.8 and a hand argument (Prop. 6.5) plus a DRAT-checked
+  CaDiCaL run for Prop. 6.1(ii).
+* **Thm. 3.5 (p. 7):** `B(k) ≥ r_k`; at `k = 3` that is
+  `(3+√5)/2 = 2.618…`, and p. 8 says so: *"Abbott, Hanson, and Sauer
+  proved `B(3) ≥ √10` [3]. This is stronger than the `k = 3`
+  specialization of theorem 3.5."* New records only at `k = 4, 5, 6`.
+* The acknowledgements state an "AI-assisted workflow".
+
+**Consequence for this repository, and it is a large one.** If Prop. 6.8
+is correct, **`ι(4) ≥ 32` is false**, and with it every route here that
+aimed to beat `√10` at uniformity 4: `Sharp.iota_four_at_least_32_refutes`
+can never fire, and the `ι(4,g)` ladders (§33–§58) were climbing toward a
+rung that does not exist. That is *consistent with every rung measured
+here* — `ι(4,9) = ι(4,10) = 27`, `ι(4,11) ≤ 31` under two solvers
+(§58) — and it is **not** a theorem here: it is a solver-free but also
+certificate-free enumeration, and by the rule of §56.8 it is recorded as
+*claimed*. What it does settle, on its word, is where effort should not
+go. §59 of the roadmap draws the line.
+
+**Replicated, same week.** A separately written exhaustive search
+(`tools/iota4/`, `docs/ladder/iota4_replication/`, roadmap §60) also finds
+no 28-member family, and its total of visited orbit representatives —
+an isomorphism invariant — equals the paper's archived total
+(105,917,089,577, over 11,720 shard logs in its public repository
+`github.com/bogdan27182/sunflower-paper`, less one root per shard) to the
+unit: 105,917,077,857. Upgraded from *claimed* to **VALIDATED by two
+independent searches**; not a certificate. One gap in the paper's own
+artifact, noted while reading its code: its README cites a
+`PROVENANCE.md` that is not in the repository.
+
+### Abstract only
+
+* **arXiv:2609.27044**, Karingula–Lovett (22 Sep 2026): for `k ≥ 4` every
+  tensor supported exactly on the `k`-sunflower relation has maximal slice
+  rank, ruling out exponential savings by that method. Abstract only; it
+  bears on `coq/SliceRank.v`'s framing (the method is a `k = 3`
+  phenomenon) and on nothing proved.
+* **arXiv:2609.07268**, Luo–Yang–Zhu (7 Sep 2026): harmonic-LCM exponent
+  `γ_k` via weighted sunflower-free families. Abstract only.
+
+---
+
 ## Zach Hunter's MathOverflow answer — read in full, and denser than its citation
 
 `docs/references.md` has credited this to [FPPTZ24] for two sessions

@@ -161,3 +161,21 @@ these papers — `docs/reading.md` — is; the papers are not.
 * **Changes:** none; redistributed as retrieved on 2026-08-01
 * **SHA-256:** `0efa86fe09274690724aeb19156c260d0e2325e44fcdcf97897477a7e661cac3`
 
+### `pdf/gwxz_vc_sunflower.pdf`
+
+* **Title:** Bounded VC-dimension implies the Erdős--Rado sunflower conjecture
+* **Authors:** Gennian Ge, Jian Wang, Zixiang Xu, Xiaochen Zhao
+* **Source:** https://arxiv.org/abs/2609.18995v1
+* **Licence:** CC BY 4.0 — <http://creativecommons.org/licenses/by/4.0/>
+* **Changes:** none; redistributed as retrieved on 2026-09-27
+* **SHA-256:** `44cb126702ce0e055b382795f592ee1ac048f18c7bd75e58390294a760549217`
+
+### `pdf/abcdn_sunflower_free.pdf`
+
+* **Title:** Sunflower-Free Uniform Families: Recursive Constructions and Explicit Bounds
+* **Authors:** Edward Axante, Cristian Budala, David Chitic, Bogdan Dumitru, Mihai Nacu
+* **Source:** https://arxiv.org/abs/2609.06175v1
+* **Licence:** CC BY 4.0 — <http://creativecommons.org/licenses/by/4.0/>
+* **Changes:** none; redistributed as retrieved on 2026-09-27
+* **SHA-256:** `8ca521d68179497b496c1177e47b5922142fdc91e45c305fe6dd8020867b1976`
+

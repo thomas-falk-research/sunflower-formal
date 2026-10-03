@@ -2721,3 +2721,54 @@ pair? Adding [5;6;7], disjoint from every member, must break it."""
 find = "[1;2;3];[1;2;4];[1;3;4];[2;3;4]]."
 replace = "[1;2;3];[1;2;4];[1;3;4];[2;3;4];[5;6;7]]."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# VCSunflower.v: the definitions the bounded-VC theorem is stated in.
+# Each weakens one clause of shattering or of the VC bound; each must
+# break something, or the statement is not saying what it claims.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "vc-shatters-one-direction-trace-in-B"
+file = "coq/VCSunflower.v"
+question = """Shattering asks for the trace A ∩ D to EQUAL B. Keep only A ∩ D ⊆ B \
+(then B = D is met by every member): does the audit notice that shattering became trivial?"""
+find = "  forall B, Subset B D -> exists A, In A F /\\ SetEq (inter A D) B."
+replace = "  forall B, Subset B D -> exists A, In A F /\\ Subset (inter A D) B."
+expect = "killed"
+
+[[mutation]]
+id = "vc-shatters-one-direction-B-in-trace"
+file = "coq/VCSunflower.v"
+question = """Keep only B ⊆ A ∩ D (then B = [] is met by every member): is the \
+other half of the set equality load-bearing?"""
+find = "  forall B, Subset B D -> exists A, In A F /\\ SetEq (inter A D) B."
+replace = "  forall B, Subset B D -> exists A, In A F /\\ Subset B (inter A D)."
+expect = "killed"
+
+[[mutation]]
+id = "vc-dimle-drop-nodup"
+file = "coq/VCSunflower.v"
+question = """The historical defect class, re-injected: without NoDup, a list with \
+repeats counts its points twice. Does dropping it break the VC bound's statement?"""
+find = "  forall D, NoDup D -> Shatters F D -> length D <= d."
+replace = "  forall D, Shatters F D -> length D <= d."
+expect = "killed"
+
+[[mutation]]
+id = "vc-dimle-strict"
+file = "coq/VCSunflower.v"
+question = """Off by one: `length D < d` makes VCdimLe d mean VC-dimension at most \
+d - 1. Is the boundary pinned?"""
+find = "  forall D, NoDup D -> Shatters F D -> length D <= d."
+replace = "  forall D, NoDup D -> Shatters F D -> length D < d."
+expect = "killed"
+
+[[mutation]]
+id = "vc-exponent-too-small"
+file = "coq/VCSunflower.v"
+question = """The threshold exponent needs s >= 2d + 2 for the layer inequality. \
+Lowering 2d + 3 to 2d + 1 must break the proof, or the constant is decoration."""
+find = "  2 * d + 3 + Nat.log2 ((64 * d + 8) * k)."
+replace = "  2 * d + 1 + Nat.log2 ((64 * d + 8) * k)."
+expect = "killed"

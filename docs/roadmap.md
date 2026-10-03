@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 175 anecdotes into a coverage metric over the
+  mutation testing from 180 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,12 +9842,12 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 52 modules, 789 audited theorems, 152 audited
-definitions, 175 mutations, and 43 Rust integration suites. (That count
+The development is now 54 modules, 820 audited theorems, 161 audited
+definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
-`cube_budget.rs` in §49. The two paragraphs above quoting
+`cube_budget.rs` in §49; `coq/VCSunflower.v` and five mutations in §59. The two paragraphs above quoting
 31 and 32 suites are historical records of earlier sessions and are
 correct as written.)
 
@@ -13995,3 +13995,1001 @@ whichever cube is cheapest to log.
 
 §57 remains the handover for the `r*(3,3)` line of work, which this section
 does not touch.
+
+## 59. Handover — the conjecture, proved on a class; and `ι(4) = 27`, claimed from outside
+
+Start here; §57 remains the handover for the `r*(3,3)` line and §58 for
+cube 13. This section records the first session to put a case of **the
+conjecture itself** — not a bound near it — in the kernel, and the
+literature that arrived since §58 and changes what is worth doing.
+
+### 59.1 What is now proved
+
+| claim | status | where |
+|---|---|---|
+| **The Erdős–Rado conjecture for families of VC-dimension at most `d`**: every `n`-uniform family of distinct sets with `VCdimLe d F` and at least `K(d,k)^n + 1` members contains a `k`-sunflower, `K(d,k) = 2^(2d + 3 + log2((64d+8)k))`, independent of `n` | PROVEN (Coq, **axiom-free** — not even `Rao20_lemma2`) | `VCSunflower.vc_sunflower_bound`, `vc_sunflower_conjecture` |
+| Sauer–Shelah, over canonical traces, with `Φ_d(M) ≤ (M+1)^d` | PROVEN (Coq) | `sauer_shelah`, `Phi_le_pow`, `traces_count` |
+| Trace tail bound: an `R`-spread family with at most `R^t` traces on `E` has degree sum on `E` at most `(2t+1)\|F\|` | PROVEN (Coq) | `trace_sum_bound` |
+| Second moment: `R · Σ_x deg(x)² ≤ (32d+4)\|F\|²` for an `R = 2^s`-spread family of VC-dimension `≤ d`, `s ≥ 2d+2` | PROVEN (Coq) | `sum_deg_sq_bound` |
+| Greedy: `2t·S(F) < \|F\|²` (`S` = intersecting ordered pairs) gives `t` pairwise disjoint members | PROVEN (Coq) | `greedy_disjoint` |
+| The spread reduction, restricted to any VC class (links do not raise VC-dimension) | PROVEN (Coq) | `VCdimLe_link`, `vc_spread_reduction` |
+| Statement audits: VC `≤ 1` families of every size *and every uniformity* satisfy every hypothesis; the Erdős–Rado product family has VC-dimension exactly `n`; each of four weakenings of the definition is refuted by a concrete family | PROVEN (Coq) | `vc_hypotheses_satisfiable_at_every_uniformity`, `product_vc_full`, `uniform_vc_le`, `two_trace_test_is_weaker`, `nodup_clause_is_needed`, `trace_in_B_only_is_weaker`, `B_in_trace_only_is_weaker` |
+| Five mutations of `Shatters`, `VCdimLe`, `vc_exponent` | killed (`make mutants`) | `tools/mutations.toml` |
+
+The theorem is **Ge–Wang–Xu–Zhao's** (arXiv:2609.18995, July 2026,
+`docs/reading.md` [GWXZ26]) — its uniform "in particular" form; the
+`ℓ`-bounded form is not formalised. The machine-checked proof is this
+repository's, and it is *not* a transcription. The four places it departs
+from the paper, and why:
+
+1. **Entropy (their Lemma 2.3) → a tail bound over traces.** Members whose
+   trace on `E` has at most `t` points contribute at most `t` each; the
+   rest are grouped by trace, a group with trace `τ` has at most
+   `deg τ ≤ \|F\|/R^|τ|` members, and `s/R^s` is decreasing, so each group
+   costs at most `(t+1)\|F\|/R^(t+1)`; there are at most `R^t` groups. No
+   logarithms, no Jensen.
+2. **Sauer–Shelah** is proved (it is cited in the paper), by the standard
+   split on one point, over *canonical* traces — sublists of `E` in `E`'s
+   order — so that "distinct traces" is literal list inequality and the
+   list-of-lists representation costs nothing.
+3. **Caro–Wei (their Lemmas 2.2, 2.6) → a greedy invariant.** Take the
+   member meeting fewest others, discard what meets it, recurse. With
+   `N = \|F\|` and `D ≤ S/N` discarded, `(N−D)² ≥ N² − 2S`, so
+   `2t·S < N²` survives with `t − 1`. Loses a factor 2 against Caro–Wei.
+4. **The constant.** `(M+1)^d` in place of `(eM/d)^d` forces `s ≥ 2d+2`,
+   so `K(d,k)` is exponential in `d` where the paper's `50dk` is linear.
+   For the conjecture on a fixed class only the independence from `n`
+   matters. Recovering a polynomial constant needs `Φ_d(M) ≤ (3M/d)^d`
+   and is engineering, not mathematics (§59.4 item 4).
+
+**Prior art for the elementary proof: PLAUSIBLE-not-novel.** [Sha26]
+(delegated reading) groups traces by weight rather than points by
+degree, which is close to item 1 in spirit; no search was run for an
+entropy-free proof of [GWXZ26] specifically, and none is claimed.
+
+### 59.2 What it is not
+
+**It is not progress on the general conjecture, and nothing here should
+be read that way.** Three kernel facts fence it:
+
+* `uniform_vc_le`: every `n`-uniform family has VC-dimension at most `n`.
+  At `d = n` the theorem gives `K(n,k)^n = 2^Θ(n²)`, far worse than
+  Erdős–Rado; it bounds `f(n,k)` only on classes where `d` does not grow.
+* `product_vc_full`: the Erdős–Rado product family — `2^n` sets, no
+  3-sunflower — has VC-dimension exactly `n`, so **it lies outside every
+  fixed class**. Whether the Abbott–Hanson–Sauer constructions (the `√10`
+  record) do too is expected and **not checked**; and lower-bound
+  constructions of small VC-dimension do exist (Balogh et al. settle
+  `d = 1`, cited in [GWXZ26] p. 2), so this is a statement about the
+  product construction, not about every construction.
+* [Sha26] (delegated reading) improves `50dk` to `Ck log(d+1)` and the
+  delegated reader reports that `log(d+1)` is sharp for the
+  robust-sunflower conclusion that route produces. At `d = n` that is
+  Bell–Chueluecha–Warnke again. **The conjecture is exactly the question
+  of removing `log(d+1)`, and the robust-sunflower route cannot.**
+
+### 59.3 The literature since §58, and the course correction
+
+`docs/reading.md` Tier 3b. The one finding that changes the plan:
+**[ABCDN26] Prop. 6.8 claims `ι(4) = 27`** by an exhaustive
+canonical-augmentation search (`nauty`, ~1.06 × 10¹¹ nodes, custom code,
+no certificate). It is consistent with every rung measured here
+(`ι(4,9) = ι(4,10) = 27`, `ι(4,11) ≤ 31` under two solvers). On its
+word:
+
+* **`ι(4) ≥ 32` is false.** `Sharp.iota_four_at_least_32_refutes` never
+  fires, and the `ι(4,g)` ladders of §33–§58 were climbing toward a rung
+  that does not exist. **Stop spending compute on `ι(4) ≥ 32`.**
+* `Product.iota_four_at_most_27_would_beat_erdos_rado` becomes a
+  conditional statement with a published (uncertified) hypothesis:
+  `f(3,3) ≤ 28`, which Abbott–Gardner 1969 already beats.
+* `Palvolgyi.palvolgyi_at_four_if_iota_four_is_27` says Pálvölgyi's
+  equality conjecture would then give `g(4) = 54`; [ABCDN26] Thm. 6.9
+  proves only `54 ≤ g(4) ≤ 83`. Pálvölgyi's conjecture at `b = 4` is
+  therefore **open, and now the sharpest open question at uniformity 4**.
+* The next rung that could beat `√10` is `ι(5) ≥ 101` (the AHS rate
+  `ι(b)^(1/(b−1))` needs `ι(5)^(1/4) > √10`), at uniformity 5 — a search
+  space this repository has never had a working encoding for.
+
+It was recorded as **claimed**, not proved, under the rule of §56.8. **§60 has since replicated it independently** (VALIDATED by a second exhaustive search, agreeing with the first on an isomorphism-invariant count of about 10¹¹ to the unit); it is still not *proved* in this repository's sense.
+
+### 59.4 What is owed, ranked by what it would buy
+
+1. **Certify `ι(4) ≤ 27` independently.** The single highest-value
+   verification target now: it would turn a 35-page preprint's
+   certificate-free search into a checked fact, close `Sharp.AHSOptimal`'s
+   `b = 4` rung for good, and it is the kind of search this repository has
+   the most experience encoding. Route: a support bound for a 28-member
+   intersecting sunflower-free 4-uniform family (the `IotaGround`
+   measurements say the extremal support is small; a *proof* of a bound
+   is what is missing), then CaDiCaL with DRAT on the bounded ground set,
+   checked by `drat-trim`. Every UNSAT verdict must carry its proof log,
+   per §56.8.
+2. **Replay `r*(3,3)` with proofs** — §57.2 item 1, unchanged.
+3. **Pálvölgyi at `b = 4`: is `g(4) = 54`?** [ABCDN26]'s `83` comes from
+   "members disjoint from `R` are at most `ι(4) = 27`, members meeting `R`
+   at most 56". The 56 is by hand; the repository's `PureLink` and
+   `CrossRefined` machinery attacks exactly that split.
+4. **Polynomial constant in `VCSunflower`**: prove
+   `Φ_d(M) ≤ (3M/d)^d` for `M ≥ d` and re-run `layer_exp` with
+   `s = O(log(dk))`. T1 engineering.
+5. **The moonshot this section opens, stated with its exact interface.**
+   The formal proof uses the VC hypothesis in **one** place:
+   `traces_count` inside `layer_size`, on point sets `E` of `M_j` points
+   each of degree above `\|F\|/(R 2^(j+1))`. So the spread lemma holds for
+   every `R`-spread family in which *those* sets carry at most `R^(t_j)`
+   traces. The conjecture's spread form (`Conjecture.spread_conjecture`)
+   therefore reduces to the complementary case: **an `R`-spread family in
+   which some set of `M_j` heavy points carries more than `R^(t_j)`
+   traces**. Whether "many traces on few heavy points" can be turned
+   into disjoint members by a *different* argument is the question; it is
+   CONJECTURED useful and nothing more. The one quantitative thing known
+   about it is negative: at `d ~ n` [Sha26]'s sharpness example lives
+   there.
+
+### 59.5 The independent review, and what it changed
+
+A fresh-context reviewer (no access to this session's reasoning) was
+asked to break the *claim*, not the proof. It found nothing critical: the
+statement matches [GWXZ26]'s uniform corollary, `coqchk` reports no
+axioms for the module. It found two real gaps, both fixed before commit:
+
+* **Two semantic weakenings survived every audit.** Shattering tested
+  only on `B = ∅` and `B = D`, and a `VCdimLe` that silently caps the
+  uniformity at `max 2 d`, both still proved the main theorem, the star
+  audit and `product_vc_full`. The second would have made the theorem
+  nearly empty. Fixed by `kmatch` (VC `≤ 1` at every uniformity, and its
+  bound needs all four traces of a pair) and four discriminating lemmas.
+  The lesson generalises: **a syntactic mutation that breaks a proof
+  script says nothing about the statement** — all five `vc-*` mutations
+  in `tools/mutations.toml` may be script-level kills — and the
+  evidence that a clause matters is a family on which dropping it changes
+  the answer.
+* **`vc_bound_coherent` was described as an audit.** A kernel-checked
+  file cannot contain a contradictory pair, and the inequality is plain
+  arithmetic; it is now described as a sanity corollary.
+
+Three prose overstatements were also corrected: "every extremal
+construction" became "the product construction"; the `ℓ`-bounded form of
+Theorem 1.1 is said to be unformalised; "`2^n` sets" holds at `t = 2`.
+
+### 59.6 Gates at the tip
+
+Every row below was run on this tree before commit; none is written from
+expectation.
+
+```text
+  verify        pass   exit 0 from `make clean`; 53 modules, Coq 8.18.0;
+                       812 audited theorems, every one "Closed under the
+                       global context"
+  statements    pass   970 statements match the baseline; the baseline
+                       diff against main is additions only (three name
+                       clashes with Intersecting.star, HiltonMilner.grid
+                       and Counting.NoDup_map_inj were renamed away first)
+  docnumbers    pass   17 quoted numbers match the development
+  ceilings      pass   all declared verdicts match the arithmetic
+  coqchk        pass   exit 0; axioms exactly Sunflower.ALWZ.Rao20_lemma2
+                       (library-wide, unchanged), no type-in-type, no
+                       unsafe (co)fixpoints, no assumed positivity
+  mutants       pass   the five vc-* mutations only (--only): 5 killed,
+                       0 script-only; control canary-alpha-rename survives
+                       (1/1). The full 180-mutation run was not repeated
+  rust          not-run   no Rust changed
+  prcheck       not-run   no pull request was opened
+```
+
+## 60. `ι(4) ≤ 27`, replicated independently — two searches, one invariant, equal to the unit
+
+Start here for the `ι(4)` line; §59 remains the handover for everything
+else. The record, the ledger and the audit command are in
+`docs/ladder/iota4_replication/README.md`; the program is `tools/iota4/`.
+
+### 60.1 What was asked, and what was possible
+
+The request was to *certify* [ABCDN26] Prop. 6.8, `ι(4) = 27`. A proof
+certificate in this repository's sense (a DRAT log, a kernel term) was
+not reachable, and the reason is structural rather than a matter of
+compute: SAT needs a bounded ground set, the only proved bound for a
+28-member candidate is `4 + 27·3 = 85` points, and the repository's own
+SAT ladder already stalled at eleven points for this target (§48). No
+support bound was found this session either; the merge argument that
+removes private points (§60.4) only bounds degree-1 points.
+
+What was reachable was **independent replication**: a separately written
+exhaustive search, validated by controls, whose output can be compared
+with the paper's on a quantity any correct search must reproduce.
+
+### 60.2 The result
+
+| claim | status | where |
+|---|---|---|
+| No intersecting, 3-sunflower-free family of 28 distinct 4-sets exists on any ground set (`IotaRate.IotaAtMost 4 27`) | **VALIDATED — two independent searches agree** | `docs/ladder/iota4_replication/`, `AUDIT PASS` |
+| The 27-member family is unique up to isomorphism, and lives on nine points | VALIDATED, one search (one class at depth 27 globally; one class at 27 on ≤ 9 points) | same |
+| The visited-orbit total is 105,917,077,857, equal to the paper's archived 105,917,089,577 less one root per shard | VALIDATED — exact equality of an isomorphism invariant between two programs | same |
+| Complete census of isomorphism classes by size, 0 to 28 | VALIDATED; sizes ≤ 6 also by a nauty-free oracle, 6–8 also by the paper's program | same |
+
+**Why the invariant matters.** A correct canonical-augmentation search
+visits, at each accepted node, one representative of each `Aut`-orbit of
+valid one-row extensions, so its total is a sum over isomorphism classes
+and does not depend on the canonical-deletion rule, the candidate
+generator or the sharding. The two programs differ in all three and
+agree to the unit on a number of order 10¹¹. That is far stronger than
+"both said UNSAT": a completeness bug in either would have to be
+compensated exactly by the other.
+
+### 60.3 What it rests on
+
+nauty (2.8.8 here, 2.8.9 there — the one component the searches share),
+gcc, `isearch.c`/`isearch2.c`, the McKay canonical-augmentation theorem,
+and shell/Python bookkeeping. A fresh-context reviewer read the search
+line by line and ran three harnesses of its own (candidate generation vs
+brute force, 27.5 M candidates; canonical-deletion invariance, 3000
+relabelled families; shard mode vs whole run) plus eight nauty-free
+class-count series — no completeness bug found (`tools/iota4/tests/`).
+The author had read the paper's program first; the independence is of
+implementation, not of framework.
+
+### 60.4 A lemma worth keeping: private points can be merged away
+
+If `A ≠ B` are members with private points `a ∈ A`, `b ∈ B` (degree 1),
+identifying `b` with `a` keeps the family intersecting, 4-uniform and
+sunflower-free unless `A \ {a} = B \ {b}`: the only new intersection is
+`A ∩ B ∪ {a}`, and a triple containing both `A` and `B` then has one
+pairwise intersection containing the merged point and another not. So a
+support-minimal counterexample has at most three degree-1 points.
+PLAUSIBLE-not-novel, not formalised, and too weak alone to bound the
+support (degree-2 points need a blocking-configuration count that does
+not close). Recorded because a support bound is the one thing that would
+turn §60.2 into a certificate.
+
+### 60.5 Cost, and the operational record
+
+About 67 hours of summed per-shard wall time in the ledger, against the
+paper's 313 (≈ 4.7× less; both are wall-clock sums, and this run was at
+times oversubscribed, so the CPU difference is larger — mostly from
+hitting-set candidate generation), plus roughly
+10–15 core-hours discarded when four giant shards (1522, 1565, 1813, 6550,
+together about 30 % of all nodes) were stopped and re-run split at
+depth 10. One worker pool died to an over-broad `pkill` that matched its
+parent shell, and `run.sh` then printed `ALLDONE` for a pool that had
+not finished — the driver now prints it only when `xargs` exits 0, and the
+auditor would have failed on the missing records either way. **Lesson,
+general:** a completion marker written unconditionally after a pipeline
+is a claim, not an observation; write it from the pipeline's status.
+
+### 60.6 What is owed
+
+1. **A support bound.** If a 28-member counterexample can be shown to
+   live on `≤ g` points with `g` small enough for proof-logged SAT, the
+   result becomes a certificate. §60.4 is the start; §41 the context.
+2. **The uniqueness at 27 has one search behind it.** The paper's program
+   stops at the first family; re-running it without stopping at `-m 27`
+   and counting depth-27 classes would give the second.
+3. **Pálvölgyi at `b = 4`** (§59.4 item 3) is now the sharpest question at
+   uniformity 4, with `ι(4) = 27` as a validated input:
+   `Palvolgyi.palvolgyi_at_four_if_iota_four_is_27` says it would give
+   `g(4) = 54`.
+
+### 60.8 The support bound, attempted: local counting stops at 34
+
+The certificate route in §60.6 item 1 was tried the day after §60.2 and
+stopped at the first measurement. SAT with proof logging at target 28 is
+out of reach above about ten points (§46: ten points took 11.6 h without
+proof logs, one cube 41.5 core-hours; §48: eleven points left seven cubes
+open at an hour each). So a useful bound has to be about 10.
+
+What local facts give, as an LP over member degree-types
+(`tools/iota4/support_lp.py`): every member has
+`Σ_{x∈A}(deg x − 1) ≥ 27`, degrees are at most 20, at most two points
+have degree 1 (§60.4), 28 members, degree sum 112. **The LP maximum is
+34.37.** It is attained by 27 members of degree type `(2, 2, 7, 20)` and
+one of type `(1, 1, 9, 20)` — 27 degree-2 points around one hub of degree
+20. That configuration is globally impossible (a star holds at most 20
+members, and the rest must meet all of them), but excluding it needs a
+structural theorem about low-degree points, not more counting. Closing
+34 → 10 is a research problem of its own, not a step; nothing in this
+repository or [ABCDN26] suggests how, and [ABCDN26] itself worked with the
+trivial 85.
+
+**Verdict: the support-bound route to a certificate is not viable with
+what is known.** ι(4) = 27 stays VALIDATED (§60.2), not PROVEN.
+
+### 60.7 Gates
+
+No Coq, Rust or gated tool changed; `docnumbers` and `statements` were
+run on this tree before commit (below). The replication's own gate is the
+auditor, run from the committed ledger:
+
+```text
+  python3 tools/iota4/audit.py docs/ladder/iota4_replication/logs \
+      <(zcat docs/ladder/iota4_replication/d6.txt.gz)      AUDIT PASS
+```
+
+## 61. Pálvölgyi at `b = 4`: no 55 under 48 groups, and why no single-part bound can prove 54
+
+The question (§59.4 item 3, §60.6 item 3): is `g(4) = 2·ι(4) = 54`, as
+Pálvölgyi's equality would have it? With `ι(4) = 27` VALIDATED (§60) the
+bracket is `54 ≤ g(4) ≤ 83` ([ABCDN26] Thm. 6.9). Pálvölgyi himself called
+equality "unlikely", so a 55-member family — a certificate anyone can check
+in milliseconds — was the first target. **None was found, and nothing here
+decides `g(4)`.**
+
+### 61.1 The counterexample search: prescribed symmetry
+
+Earlier sessions attacked `g(4)` only by local search, which never left the
+54-member seed (§20.6). This session prescribed a group and searched unions
+of its orbits of 4-sets for a sunflower-free family of weight `≥ 55`
+(`tools/g4/`: `kmtri.c` enumerates orbit-level sunflower triples from
+orbit-representative triples only; `km.py`/`campaign2.py` add a weighted
+totalizer and call CaDiCaL; every SAT family is re-verified from scratch).
+Controls: the trivial group reproduces `g(3,6) = 10`, `g(3,7) = 12`,
+`g(3,8) = 12` exactly; the automorphism group of the double reaches 54 and
+refutes 55; under `C_n` the maximum is `3n` for `n = 12, 15, 18`, so the
+pipeline finds large families when they exist.
+
+`tools/g4/results_T55.tsv`, 52 groups at target 55:
+
+| family of groups | points | verdict |
+|---|---|---|
+| cyclic `C_n` | 12 … 24 | UNSAT, all 13 |
+| `C_m` with two orbits | 14 … 24 | UNSAT, all 6 |
+| `C_m` with three orbits | 15, 18, 21 | UNSAT; 24 points skipped (1338 orbits) |
+| `AGL(1,p)` and its index-2 subgroup | 13, 17, 19, 23 | UNSAT, all 8 |
+| `PSL(2,p)` on the projective line | 12, 14, 18, 20, 24 | UNSAT, all 5 |
+| random subgroups of Aut(double) | 18 | 13 UNSAT; one timeout (724 orbits, 30 min), one out of memory (1072), one skipped (1590) |
+
+**48 UNSAT, 0 SAT, 4 undecided.** Each UNSAT says only that no family of
+`≥ 55` is invariant under *that* group. And the 54 the cyclic group finds on
+18 points is the double again: its disjointness graph is exactly `K_{27,27}`,
+so by the uniqueness of §60 each side is the Abbott–Hanson family.
+
+### 61.2 The decomposition, and two bounds measured dead
+
+A sunflower-free family has no three pairwise disjoint members, so its
+disjointness graph is triangle-free. Along a disjoint pair `R, S`, every
+other member is disjoint from `R` (set `X`; `X ∪ {S}` is intersecting, so
+`|X| ≤ 26`), disjoint from `S` (`Y`, `|Y| ≤ 26`), or meets both (`Z`):
+`|F| = 2 + |X| + |Y| + |Z| ≤ 54 + |Z|`. And for any member `R`,
+`|F| ≤ ι(4) + |N[R]|`, `N[R]` the members meeting `R` — [ABCDN26]'s route,
+with `|N[R]| ≤ 56` by hand.
+
+Both single-part bounds were measured by exact SAT on small outer ground
+sets (`tools/g4/zmax.py`, `nrmax.py`):
+
+```text
+  max |Z|     >= 23 with 4 outer points (8 + 4 = 12 points), still growing
+  max |N[R]|  >= 28 with 6 outer points (4 + 6 = 10 points), still growing
+```
+
+`54 + |Z|` therefore cannot beat 77, and `27 + |N[R]|` cannot reach 54,
+since that needs `|N[R]| ≤ 27`. **Pálvölgyi's equality cannot be proved by
+bounding any one of these parts; it needs a joint argument** in which a
+large `Z` or `N[R]` forces the rest to shrink.
+
+### 61.3 Exact `max |N[R]|` is out of reach, measured
+
+A new exact value of `max |N[R]|` would improve 83 directly. The rooted
+search (`tools/iota4/isearch3.c`, flag `-R`: row 0 is a fixed root, never
+deleted, with its own nauty colour; every other row must meet it) is
+validated against a nauty-free VF2 oracle (`tools/iota4/rootoracle.py`,
+`b = 3` on 6 and 7 points, every class count equal). But rooted families
+are not intersecting, and their classes grow about 30-fold per member:
+
+```text
+  size        5        6          7
+  rooted   8,156   227,828   7,329,128
+  (intersecting, §60:  993    11,720     133,931)
+```
+
+— already 55 times the intersecting census at size 7. Exact `max |N[R]|`
+over all ground sets is not feasible by this method.
+
+### 61.4 One structural fact, recorded
+
+If some member `R` has `|D(R)| = 27` (its disjoint members are the unique
+Abbott–Hanson family `A` on nine points `P`), write `U` for the members
+disjoint from `P` and `W` for the rest outside `A`. Then `U` is
+intersecting, and **every member of `W` meets every member of `U`**:
+otherwise it and that member of `U` are disjoint from some member of `A`,
+because `A` is maximal intersecting (`Maximal.iota4_is_maximal_intersecting`,
+kernel-proved) and no 4-set outside `A` meets all of it. So any one `W`
+member's points outside `P` cover `U`, and when `W ≠ ∅`, `|U| ≤ 26`
+(the unique 27-family has covering number 4). The stability case of
+Pálvölgyi at `b = 4` is exactly `|U| + |W| ≤ 27`, which is not proved
+here.
+
+### 61.5 Standing
+
+| claim | status |
+|---|---|
+| `g(4) ≥ 55` | not found: 48 prescribed groups UNSAT; §20.6 local search never left 54 |
+| `g(4) = 54` | open |
+| `54 + max|Z|` or `27 + max|N[R]|` can prove 54 | **refuted by measurement** (61.2) |
+| exact `max|N[R]|` by rooted exhaustive search | infeasible, measured (61.3) |
+| stability case reduces to `|U| + |W| ≤ 27` with `W` meeting all of `U` | PROVEN (hand, uses the kernel's maximality theorem and the validated uniqueness) |
+| stability case itself | **closed in §62**: `W` is always empty, and `|F| ≤ 54` is kernel-checked given `ι(4) ≤ 27` |
+
+## 62. The stability case of Pálvölgyi at `b = 4` is closed: a member disjoint from 27 others caps the family at 54
+
+§61.4 reduced the stability case to a joint bound `|U| + |W| ≤ 27` and
+left it open. **It holds, for a reason stronger than the reduction
+expected: `W` is always empty.** No joint argument is needed.
+
+### 62.1 How it was found
+
+Before attempting a proof, the joint maximum was measured exactly by SAT:
+fix the 27-family `A` on `P = {0..8}` and `R = {9,10,11,12}`, allow `k`
+outer points, and make every 4-set meeting `R` a variable. Every member
+outside `A` meets `R`, because `D(R) = A`. The maxima of `|U| + |W|` were
+
+```text
+  k (outer points)    4    5    6
+  max |U| + |W|       1    5    9      every optimum has W = ∅
+```
+
+(`tools/g4/stability_sat.py` with `stabtri.c`; CaDiCaL, sequential-counter
+cardinality; every SAT family re-verified from scratch. The trace brute
+force is `tools/g4/stability_traces.py`.) `k = 4` allowing *no* `W` member at all pointed at the
+fact below.
+
+### 62.2 Trace saturation
+
+A family `A` is **trace-saturated** when every `b`-set `S` that meets a
+member of `A` and has a point in no member of `A` forms a 3-sunflower
+with two members of `A`. Only the trace `T = S ∩ P` matters: the
+condition is two distinct members with `T ∩ C1 = T ∩ C2 = C1 ∩ C2`.
+Then `S, C1, C2` is a sunflower with core `C1 ∩ C2`.
+
+**The Abbott–Hanson family is trace-saturated.** All 129 nonempty traces
+of size at most 3 on its nine points have a witness pair. This is
+PROVEN in the kernel (`Stability4.iota4_trace_saturated`, a `forallb`
+over the 512 sublists of the ground set, lifted to every `S` on every
+ground set by `saturated_of_certificate`). It was also VALIDATED
+independently by a Python brute force written without the certificate.
+
+The fact is strictly stronger than maximality. `Maximal.v` forbids only
+sets meeting *every* member; here a set meeting *one* member is
+forbidden, provided it also leaves the nine points.
+
+### 62.3 The counting theorem
+
+`Stability4.length_le_of_trace_saturated_link`, for any `b` and `N`,
+kernel-checked. Assume:
+
+* `IotaAtMost b N`;
+* `F` is sunflower-free and contains `R`;
+* the link `D = D(R)` (the members disjoint from `R`) is nonempty and
+  trace-saturated.
+
+Then `|F| ≤ |D| + N`. The proof:
+
+1. Every other member `S` meets `R`, and `R` lies outside every member
+   of `D`.
+2. So `S` has a point in no member of `D`. If `S` met a member of `D`,
+   saturation would give a sunflower. So `S` misses all of `D`.
+3. Two such members that were disjoint would form three pairwise
+   disjoint sets with any member of `D`. So the members outside `D` are
+   intersecting, and there are at most `N` of them.
+
+`Stability4.stability_at_four` specialises this to `b = 4`. Under
+`IotaAtMost 4 27`, if `D(R)` is a relabelled copy of `iota4` (as a
+family of sets, for any bijection of the naturals), then `|F| ≤ 54`.
+`TraceSaturated_transport` moves saturation across the relabelling, and
+`DisjointFrom_length_le` bounds `|D(R)|` by 27 as well. Nothing is
+assumed about the ground set.
+
+Both axioms-audits (`Print Assumptions`) are closed. Two sanity checks:
+
+* `stability_hypotheses_satisfiable`: on the double of `iota4` (54
+  members, no sunflower), the first member's link is literally `iota4`
+  relabelled by an explicit bijection. So every hypothesis holds and the
+  bound is attained. This witness was added after the fresh-context
+  review found the earlier sanity check did not establish it.
+* `single_member_not_saturated`: the certificate can fail.
+
+### 62.4 What is and is not established
+
+| claim | status |
+|---|---|
+| `iota4` is trace-saturated (every ground set) | **PROVEN** (kernel) |
+| sunflower-free `F`, saturated nonempty link `D(R)`, `ι(b) ≤ N` ⇒ `\|F\| ≤ \|D(R)\| + N` | **PROVEN** (kernel) |
+| `ι(4) ≤ 27` and `D(R) ≅ AHS27` ⇒ `\|F\| ≤ 54` | **PROVEN** (kernel), with `ι(4) ≤ 27` as an explicit hypothesis |
+| `ι(4) ≤ 27` | VALIDATED (§60), not proved |
+| `\|D(R)\| = 27` ⇒ `D(R) ≅ AHS27` | VALIDATED (§60 uniqueness census), not proved |
+| hence: a family with a member disjoint from 27 others has `≤ 54` members | VALIDATED (the two rows above), PROVEN given them |
+| `g(4) = 54` | **open**. A 55-member family must have every member disjoint from at most 26 others, and every nonempty link non-saturated |
+
+### 62.5 Where this points: descent by saturation
+
+The counting theorem needs only a **saturated link, of any size**, since
+`|D(R)| ≤ 27` anyway. Saturation is robust under deletion. Sampling
+random subfamilies of `AHS27` (300 per size, seed 1, the same brute
+force):
+
+```text
+  members kept   27   26    25    24    23   22   21   20   19  ≤18
+  saturated       1  300   251   178    94   43    7    3    1    0   (of 300)
+```
+
+All 27 single deletions are saturated (also evaluated with the Coq
+certificate function by `Compute`; not committed as a theorem). So Pálvölgyi at `b = 4` reduces to families in which
+no link is saturated, which is where a next attempt should look. Two
+concrete steps:
+
+1. Recover the 6 classes at size 26 and the 298 at size 25 from the
+   §60 census, and test each for saturation. The run recorded only
+   counts, so this needs a targeted re-run.
+2. Bound `|F|` when every link is non-saturated. Each such link has an
+   unwitnessed trace, which is a structural constraint the rooted
+   search of §61.3 could use.
+
+Both are CONJECTURED to be tractable, not attempted here.
+
+
+## 63. Saturation of the 25- and 26-member classes: 5 of 6 closed at 26, 42 of 298 at 25
+
+§62.5 proposed a descent. A saturated link of any size gives
+`|F| ≤ |D(R)| + 27`, so every link class near the top that is
+saturated closes another stability case. This section tests every class.
+
+### 63.1 Recovering the classes
+
+The §60 census recorded only counts. But every shard record carries its
+per-depth accepted vector, so the ledger names the shards that reached
+size 25. There are **six** of them (6144, 6146, 6178, 6729, 6745, 6757),
+and together they hold all 298 + 6 + 1 classes.
+
+I re-ran those six with `isearch2` patched to print every accepted family
+of size ≥ 25 (`tools/iota4/isearch2p.patch`, three lines, after the
+`accepted[r2]++`). The checks:
+
+* each re-run reproduces its ledger record's full accepted vector exactly
+  (`big_shards_rerun.log`);
+* 305 families were printed, 298 / 6 / 1 at sizes 25 / 26 / 27;
+* every family was re-verified from scratch as 4-uniform, distinct,
+  intersecting and sunflower-free;
+* the families are pairwise non-isomorphic (networkx VF2 within
+  Weisfeiler–Lehman buckets, 0 isomorphic pairs;
+  `tools/iota4/isoclasses.py`);
+* the nine-point subset (4 / 1 / 1) matches `control_C9_m28.log`.
+
+The list is `docs/ladder/iota4_replication/classes_25_27.txt.gz`
+(sha256 of the uncompressed file
+`7305953e509ceaddeff7c97ec294d34dd5f4791127c6dc4eeaa4557c3b849af4`).
+Its completeness is exactly as strong as §60: VALIDATED.
+
+### 63.2 Saturation
+
+`tools/iota4/satcheck.py`:
+
+| size | classes | saturated | points used |
+|---|---|---|---|
+| 27 | 1 | 1 | 9 |
+| 26 | 6 | **3** | 9, 10, 10, 10, 10, 14 |
+| 25 | 298 | **20** | 9 to 18 |
+
+The descent does **not** close on saturation alone.
+
+### 63.3 Near-saturation: unwitnessed traces of size 3
+
+**Lemma** (PROVEN by hand, and confirmed by a fresh-context review, 63.5).
+Let `F` be 4-uniform and sunflower-free, `R ∈ F`, and `D = D(R)`
+nonempty with covering number 4. Let `B` be the set of its unwitnessed
+traces, and suppose all have size 3. Let `M = F \ D`. Assume the
+intersecting, 3-uniform and 2-uniform maxima are at most 27, 26 and 6
+(the last two are kernel theorems, `PureLink.g_three_at_most_26` and
+`g_two_at_most_six`). Then
+
+```text
+|M| ≤ max(27, 26 + |B|, 6 + 2|B|)
+```
+
+**Proof.**
+
+* Every member of `M` meets `R`, and `R` misses every point of `D`.
+* Let `M0` be the members of `M` that miss every point of `D`. They are
+  intersecting: two disjoint ones and any member of `D` would be three
+  pairwise disjoint sets. So `|M0| ≤ 27`.
+* Any other member `S` of `M` has a trace `T` on the points of `D` with
+  `1 ≤ |T| ≤ 3`. That trace is unwitnessed, or `S` would form a
+  sunflower with two members of `D`. So `S = T + r` with `r ∈ R`.
+* There are at most two such members per `T`: three would be a
+  sunflower with core `T`.
+* Some member of `D` avoids `T`, because the covering number is 4. So
+  every member of `M0` meets `T + r`, which means it contains `r`.
+* If one `r` is used, `M0` is a star at `r`, so `|M0| ≤ g(3)`, and
+  there are at most `|B|` other members.
+* If two or more are used, `M0` members contain two fixed points, so
+  `|M0| ≤ g(2)`, and there are at most `2|B|` others.
+
+So a link of size 26 with `|B| ≤ 2`, or size 25 with `|B| ≤ 3`, gives
+`|F| ≤ 54`.
+
+| size | saturated | closed by the lemma | open |
+|---|---|---|---|
+| 26 | 3 | 2 (`|B|` = 1, 2) | **1** |
+| 25 | 20 | 22 | **256** |
+
+(`tools/iota4/classify.py`.)
+
+### 63.4 What is open, and its shape
+
+Every open class has an unwitnessed trace consisting of a **single
+point**. A member of `F` meeting that link in one point has three points
+outside it, so neither the "two per trace" count nor the star argument
+applies.
+
+* **The size-26 holdout** uses 14 points. It has covering number 2, two
+  points of degree 16, and six of degree 2.
+* **240 of the 256 at size 25** share one shape: a 15-member core on 8
+  points, plus 10 members that each put 3 points in the core and 1 point
+  outside it. That last point is the unwitnessed singleton.
+
+Status after this section:
+
+| claim | status |
+|---|---|
+| a member disjoint from ≥ 26 others ⇒ `|F| ≤ 54` | holds for 6 of the 7 possible link classes of size 26 or 27 (PROVEN given the VALIDATED census and `ι(4) ≤ 27`); **one class open** |
+| a member disjoint from exactly 25 others ⇒ `|F| ≤ 54` | 42 of 298 link classes closed; 256 open |
+| `g(4) = 54` | open |
+
+The natural next lemma bounds the members of `M` whose trace is a single
+point `x`. Such a member misses every member of `D` except the
+`deg(x)` members containing `x` (1 to 4 here), so its own link has size
+≥ `|D| − deg(x)`, and the argument can recurse on
+that link instead. CONJECTURED useful, not attempted.
+
+### 63.5 Independent review
+
+A fresh-context reviewer wrote its own code without reading the scripts
+here, and found no HIGH or MEDIUM issues:
+
+* It re-verified all 305 families and found 0 isomorphic duplicates.
+* It reproduced the saturated counts (20 / 3 / 1, all with covering
+  number 4) and the non-saturated breakdown.
+* It checked the lemma step by step. `R` is itself in `M0`, and every
+  `r` used lies in `R`, so the star conclusion is consistent.
+* Its SAT model confirmed two structural steps mechanically, with 8
+  extra points for the two size-26 classes the lemma closes. The only
+  candidates meeting `V` are `T + r`. Every pair of such a member and a
+  member of `M0` avoiding `r` is already forbidden.
+
+One LOW correction: among the 22 size-25 classes closed by the lemma the
+largest `|B|` is 2, not 3, so those links give `|F| ≤ 53`. A
+falsification search for `|M| ≥ 29` on those two classes found nothing:
+UNSAT with 4 extra points, and timeouts with 8. That is not evidence
+either way at the target size. Completeness of the class list and
+`ι(4) ≤ 27` remain VALIDATED inputs, not checked by the review.
+
+
+## 64. Descent by the largest link: every family with a link of 25 or more members has at most 54
+
+§63 left 257 link classes open, all with a single-point unwitnessed trace.
+They close without any single-point lemma, and all 305 classes at sizes
+25–27 now close **by one uniform argument**. The idea is to choose `R` so
+that its link is as large as any link in `F`.
+
+### 64.1 The argument
+
+Let `Δ` be the largest link size in `F`, attained at `R`, and let
+`D = D(R)` with point set `V`.
+
+* Every other member meets `R`, and `R` misses `V`.
+* `M0` is the set of members that miss `V`. It includes `R`.
+* Every remaining member `S` has a trace `T = S ∩ V` of 1 to 3 points.
+  That trace is unwitnessed in `D`, or `S` would form a sunflower with
+  two members of `D`.
+* Write `n_T` for the number of members with trace `T`.
+
+Three families of constraints hold:
+
+* **(a) one per member `C` of `D`:** `m0 + Σ_{T ∩ C = ∅} n_T ≤ Δ`.
+  Every member counted is disjoint from `C`, so it lies in `C`'s link,
+  and **no link is larger than `Δ`**. This is where the choice of `R`
+  pays: a member whose trace is a single point `x` misses all but the
+  `deg(x)` members of `D` through `x`, so it is charged in almost every
+  constraint.
+* **(b) caps:** `n_T ≤ 2, 6, 26` for `|T| = 3, 2, 1`. Members sharing
+  the trace `T` form a sunflower exactly when their outer parts do, so
+  the outer parts are a sunflower-free family of `(4 − |T|)`-sets. The
+  caps are `g(1) = 2` and the kernel bounds `g(2) ≤ 6` and `g(3) ≤ 26`
+  (`coq/PureLink.v`).
+* **(c)** `0 ≤ m0 ≤ 27`. `M0` is intersecting: two disjoint members of it
+  and any member of `D` would be three pairwise disjoint sets. Constraint
+  (a) also gives `m0 ≤ Δ` directly.
+
+So `|F| − Δ` is at most the LP maximum over these constraints, which
+depends only on the isomorphism class of `D`.
+
+### 64.2 The certificates
+
+`tools/iota4/linkcert.py solve` finds, for each of the 305 classes, a
+dual solution `(y_C, z_T, w)` rounded to small rationals.
+`linkcert.py check` verifies it in exact rational arithmetic, with no
+solver: it re-derives every class's unwitnessed traces from the class
+file and checks dual feasibility and the bound. The certificates are
+`docs/ladder/iota4_replication/linkcerts_25_27.json.gz`.
+
+```text
+Delta=27:   1 class,   largest certified |F| - Delta = 27 <= 27
+Delta=26:   6 classes, largest certified |F| - Delta = 28 <= 28
+Delta=25: 298 classes, largest certified |F| - Delta = 27 <= 29
+CHECK PASS: every class certifies |F| <= 54
+```
+
+The certificate is for the LP relaxation, so it is at least as strong as
+the integer bound. The integer program (HiGHS) gives 27 and 26 for the
+257 classes §63 had left open.
+
+### 64.3 Status
+
+| claim | status |
+|---|---|
+| the constraint system (a)–(c) is valid | PROVEN (hand), confirmed by a fresh-context review (64.5) |
+| every class at sizes 25–27 certifies `\|F\| − Δ ≤ 54 − Δ` | PROVEN given the class list (exact rational check) |
+| the class list is complete | VALIDATED (§60 census, §63.1) |
+| **largest link ≥ 25 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list**, both VALIDATED |
+| **largest link ≥ 24 ⇒ `\|F\| ≤ 54`** | same status; extended in 64.6 |
+| `g(4) = 54` | open: a 55-member family needs every link to have ≤ 23 members (64.6) |
+
+### 64.4 Going further down, and where it must stop
+
+Each step down costs the classes at the next size: 1,976 at 24 (16
+shards, 7.2 core-hours), 12,524 at 23 (37 shards, 20.6), 69,616 at 22
+(29.9), and 407,115 at 21 (41.4). The allowance grows as it goes,
+`54 − 2Δ` = 6, 8, 10, 12. Classes of size ≥ 23 are being recovered as
+this section is written.
+
+At `Δ = 20` there are 308 million classes, so enumeration ends there. The
+class-free fallback `|F| ≤ Δ + |N[R]|`, with `|N[R]| ≤ 56`, is the
+published route to 83 and cannot reach 54. Closing `Δ ≤ 20` needs a
+different idea, not recorded here.
+
+### 64.5 Independent review
+
+A fresh-context reviewer found no HIGH or MEDIUM issues:
+
+* It checked each step. Every member counted in (a) is disjoint from `C`
+  and distinct from it, and nothing is counted twice. (a) genuinely
+  needs `Δ` to be the maximum over all links, which is how it is stated.
+  A trace of 4 points is impossible. The caps in (b) are correct,
+  including `n_T ≤ 2`.
+* It wrote its own exact checker, never reading `linkcert.py`, and it
+  accepts all 305 certificates.
+* It solved all 305 LPs and integer programs itself. Both optima equal
+  the certified bound in every class.
+* A greedy search seeded with classes of size ≥ 25 never exceeded 50
+  members.
+
+Its one LOW wording point was the missing justification for `m0 ≤ 27`,
+now added under (c). It also noted that the bound 28 for the tightest
+size-26 class may not be attained: 3000 random attempts to realise it
+failed. The claim does not depend on that.
+
+### 64.6 Sizes 24 and 23: all of 24 certified, 11 classes at 23 are not
+
+**Recovery.** The 37 shards whose ledger records reach size 23 were
+re-run with the printing threshold at 23 (`tools/iota4/isearch2p23.patch`).
+
+* All 37 reproduce their ledger records' accepted vectors exactly
+  (`big23_shards_rerun.log`).
+* They printed 12,524 / 1,976 / 298 / 6 / 1 families at sizes 23 to 27,
+  the census counts.
+* The part at size ≥ 25 is line-for-line identical to
+  `classes_25_27.txt.gz`.
+* There are no isomorphic duplicates among the 14,805 (VF2).
+
+The list is `classes_23_27.txt.gz` (sha256 of the uncompressed file
+`c4c437b94ec2f12e33d33d03ee3138644d59edc643462de892ec9af9a1d03fc0`).
+
+**Certificates** (`linkcerts_23_27.json.gz`;
+`linkcert.py check CLASSES CERTS 24` passes):
+
+```text
+Delta=24:  1976 classes, largest certified |F| - Delta = 30   (allowed 30), failing 0
+Delta=23: 12524 classes, largest certified |F| - Delta = 38.2 (allowed 31), failing 11
+```
+
+**So a family with a link of 24 or more members has at most 54 members**
+(PROVEN given the VALIDATED census and `ι(4) ≤ 27`). At 23, 12,513 of
+12,524 classes certify. The other 11 (indices 1722, 1726, 10590 to
+10597, and 14708 in the class file) fail both the LP and the integer
+program, with optima 33 to 37. They need constraints the system does not
+yet have:
+
+* **14708** has 9 points and covering number 4, and its unwitnessed
+  traces are eight 3-point sets. Its optimum has `m0 = 19` with 16
+  members of the form `T + r`. But `M0` must meet every such member, so
+  it runs through at least two fixed points of `R` and `m0 ≤ g(2) = 6`
+  (the §63 argument). Adding that coupling is a linear case split.
+* **The other ten** have covering number 2 or 3, and their optima take
+  `m0 = 1`. They stack members on traces of 1 and 2 points, for example
+  14 members sharing the trace `{9}`. What limits them in reality is
+  interaction *inside* `M1`, which the per-trace caps ignore. Two such
+  members that are disjoint need `T ∪ T'` to be a transversal of `D`
+  (no triangle), and two members `S, S'` with
+  `S ∩ S' = S ∩ R = S' ∩ R` form a sunflower with `R`.
+
+Closing these 11 would put the descent at `Δ ≥ 23`. After that, sizes 22
+(69,616 classes, 29.9 core-hours) and 21 (407,115, 41.4) remain
+enumerable. Size 20 (308 million) does not.
+
+## 65. The 11 remaining classes at 23: all certified, so a link of 23 or more members forces `|F| ≤ 54`
+
+§64.6 left 11 link classes of size 23 that the §64 constraint system
+cannot certify. They close under a finer model, `tools/iota4/link23.py`.
+
+### 65.1 The finer model
+
+Each member `S` outside `D ∪ {R}` has three attributes:
+
+* its trace `T` on `V`;
+* its **profile** `P = S ∩ R`, which is nonempty;
+* its number `e = 4 − |T| − |P|` of extra points outside `V ∪ R`.
+
+Members missing `V` have `T` empty and a profile other than `R`. The
+integer program counts members of each type, with these constraints
+(each argued in the file, next to the code):
+
+* **Caps per type.** 1, 2 or 6 for `e = 0, 1, 2`. For members missing
+  `V`: 1, 3 or 26 for `|P| = 3, 2, 1`, because their extra parts must
+  also avoid a sunflower with `R`.
+* **Per trace, per member `C` of `D`, and per star** through each point
+  of `R` (at most `g(3) ≤ 26`).
+* **Determined members.** A member with `e = 0` is exactly `T ∪ P`,
+  which lies inside `V ∪ R`. So its intersection with a member of any
+  type is known exactly: `(T ∩ T') ∪ (P ∩ P')`. From that follow:
+  * a bound on its own link (at most `Δ` members);
+  * exclusion of any partner that would form a sunflower with `R`;
+  * exclusion of any partner that would form a sunflower with a
+    member of `D`;
+  * exclusion of any partner disjoint from it when some member of `D`
+    avoids both traces (three pairwise disjoint sets).
+
+A fresh-context review checked every constraint and found no HIGH or
+MEDIUM issue. It re-implemented the model independently and matched
+all 11 integer optima: 27, 31, 29 (×8) and 23. It also confirmed that
+the CNF encoding is satisfiable exactly at the model optimum.
+
+### 65.2 Certificates
+
+Two independent kinds of certificate, each with its own checker:
+
+* **DRAT.** CaDiCaL refutes the CNF "`|F| ≥ 55`" for each class, and
+  `drat-trim` verifies the proof.
+  * 1722, 1726, 10592, 10593, 10594, 10596, 10597 and 14708 were
+    refuted whole (`link23_proofs/c*.log`, with CNF sha256).
+  * 10595 was split into 32 cubes on its five top-ranked variables, and
+    its hardest cube into 32 sub-cubes; all 63 pieces were refuted
+    (`link23_proofs/c10595_cubes.log`).
+  * 10590 and 10591 were not finished this way. Their all-false corner
+    cube resisted two hours of solving. CDCL handles the counting badly.
+* **Exact branch-and-bound** (`tools/iota4/bnbcert.py`,
+  `link23_bnb/bnb_K.json.gz`).
+  * The tree branches `x_i ≤ f` versus `x_i ≥ f + 1`, so its leaves
+    cover every integer point.
+  * Every leaf carries a rational dual certificate:
+    `Aᵀy + u − v ≥ 1` and `b·y + hi·u − lo·v < 31`, so `Σx ≤ 30` on that
+    leaf. Infeasible leaves carry the Farkas form.
+  * The checker rebuilds the model from `link23.py` and verifies every
+    leaf in exact arithmetic.
+  * Trees: 10590 has 175 nodes, 10591 has 111, 10592, 10593 and 10595
+    have 55 each, 1722 has 1119, 1726 has 941, 10597 has 977, and
+    14708 has 127.
+  * Controls: for 14708, whose optimum is `Σx = 22`, the method refuses
+    a goal of 21 and finds the integer point with sum 22. A certificate
+    with one multiplier zeroed is rejected.
+
+Every class has at least one certificate, and seven have both kinds.
+
+| certificate | classes |
+|---|---|
+| DRAT | 1722, 1726, 10592, 10593, 10594, 10595, 10596, 10597, 14708 |
+| branch-and-bound | 10590, 10591, 10592, 10593, 10595, 1722, 1726, 10597, 14708 |
+
+### 65.3 Status
+
+| claim | status |
+|---|---|
+| the `link23` constraints are valid | PROVEN (hand), reviewed |
+| each of the 11 classes: `\|F\| − Δ ≤ 31` | PROVEN given the model: machine-checked certificates (DRAT or exact branch-and-bound) |
+| **largest link ≥ 23 ⇒ `\|F\| ≤ 54`** | **PROVEN given `ι(4) ≤ 27` and the class list** (both VALIDATED), with the kernel's `g(2) ≤ 6` and `g(3) ≤ 26` |
+| `g(4) = 54` | open: a 55-member family needs every link to have ≤ 22 members |
+
+For 10590 and 10591 the branch-and-bound certificates are the only
+evidence, so their checker was reviewed on its own (65.4).
+
+### 65.4 Review of the certificate checker: one soundness hole, fixed
+
+A fresh-context review of `bnbcert.py` found no issue in the
+linearisation, the duality argument, or the branching coverage. It also
+confirmed that the 10595 cubes and sub-cubes cover every assignment:
+all `2^10` assignments of the ten split variables were enumerated.
+
+It found one **MEDIUM soundness hole**: `check()` accepted forged
+certificates.
+
+* A multiplier key such as `"-1"` passed `int()`. It then indexed the
+  bound's `lo` list from the end, with no matching term in `w`.
+* The reviewer built a certificate "proving" `Σx ≤ 0` for class 10590,
+  and the checker passed it.
+* A non-integer split point would also have been accepted, which would
+  drop integer points from both children.
+* All checks were `assert`s, which vanish under `python3 -O` (LOW).
+
+**None of the shipped certificates used any of this.** The reviewer's
+own strict checker, written independently and reusing only
+`link23.model()`, passes all nine.
+
+**Fix.** `check()` now raises `CertError` explicitly. Multiplier keys
+must be decimal indices in range, split points must be integers, and
+leaf kinds and certificate keys are validated.
+
+**Regression test.** `tools/iota4/tests/test_bnbcert.py` builds five
+malformed certificates: the reviewer's forgery, a fractional split, an
+emptied leaf, an out-of-range row key and an unknown leaf kind.
+
+* All five are rejected, both plainly and under `python3 -O`.
+* The genuine certificate passes.
+* The pre-fix checker accepts the forgery, which reproduces the hole.
+* All nine shipped certificates pass the hardened checker under `-O`.
+
+**Operational notes.**
+* The container restarted repeatedly, and it appears to be reclaimed
+  while the session is idle. Long runs therefore went into restartable
+  units (cubes, per-class logs) and were watched with the session
+  attached.
+* Three times a `pgrep -f` / `pkill -f` pattern matched the agent's own
+  shell. Processes are now stopped only by exact PID after checking the
+  process name.
+
+## 66. Handover: where the `b = 4` descent stands, and what would move it
+
+**State.**
+* A 4-uniform 3-sunflower-free family with a link of ≥ 23 members has at
+  most 54 members (§62–§65). This is PROVEN given `ι(4) ≤ 27` and the
+  link-class census, both VALIDATED.
+* The only kernel theorem is the size-27 case, `Stability4.stability_at_four`.
+* Sizes 23–26 rest on exact rational LP certificates, DRAT proofs and
+  branch-and-bound certificates. Each had its own checker and a
+  fresh-context review.
+
+**Not done, by choice.** Sizes 22 (69,616 classes, about 30
+core-hours of shard reruns) and 21 (407,115, about 41) can be
+enumerated. The method is mechanical: recover the classes from the
+shards whose ledger records reach the size, then run `linkcert.py`,
+then `link23.py` with `bnbcert.py` on whatever the LP leaves. Two things
+make it uneconomic in the cloud session that did §62–§65:
+
+* its container is reclaimed while idle;
+* background commands are cut off at 30 minutes.
+
+It belongs on a machine that can run unattended. Even done, it moves
+the boundary by one, and **enumeration ends at 20** (308 million classes).
+
+**What would move `g(4)` itself.** A 55-member counterexample has every
+link of size ≤ 22: a triangle-free disjointness graph on ≥ 55 vertices
+with maximum degree ≤ 22, in which every neighbourhood is an
+intersecting sunflower-free family. Three directions, none attempted:
+
+1. **A class-free version of the link LP.** The constraint (a) of §64
+   (`m0 + Σ_{T∩C=∅} n_T ≤ Δ`) used only the size of `C`'s link. Small `Δ`
+   leaves more room (`54 − 2Δ` grows), so an argument that bounds the
+   unwitnessed-trace structure of *any* intersecting family by its size
+   alone might close `Δ ≤ 20` without enumeration. CONJECTURED.
+2. **Two roots instead of one.** Every bound here fixes one member `R`.
+   In a counterexample all links are small, so double counting over
+   many roots (or over the disjoint pairs, as §61.2 started) might
+   supply the missing global constraint. PLAUSIBLE.
+3. **Kernel-checking the certificates.** The LP and branch-and-bound
+   certificates are plain rational arithmetic over finite objects. A
+   reflective Coq checker would raise sizes 23–26 to the level of size
+   27, conditional only on the census. That is real work but bounded,
+   and it removes Python from the trust base.
+
+**Reusable tools.** `tools/iota4/linkcert.py` (class certificates),
+`link23.py` (finer model), `bnbcert.py` plus `tests/test_bnbcert.py`
+(exact branch-and-bound with a hardened checker),
+`isearch2p*.patch` (printing classes from shard reruns). The lessons are
+in §65's operational notes.
+

@@ -1,0 +1,81 @@
+SHARD 9680 k=4 m=28 inter=1 colcap=128: NONE visited=35292 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 12 74 241 305 99 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9681 k=4 m=28 inter=1 colcap=128: NONE visited=508552 time=0.3s
+ACCEPTED 0 0 0 0 0 0 0 17 180 1133 3699 5298 2935 733 70 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9682 k=4 m=28 inter=1 colcap=128: NONE visited=6372 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 4 24 53 49 7 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9683 k=4 m=28 inter=1 colcap=128: NONE visited=9816 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 3 14 64 96 37 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9684 k=4 m=28 inter=1 colcap=128: NONE visited=52326 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 5 34 155 442 538 232 45 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9685 k=4 m=28 inter=1 colcap=128: NONE visited=1108 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 5 6 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9686 k=4 m=28 inter=1 colcap=128: NONE visited=473072 time=0.3s
+ACCEPTED 0 0 0 0 0 0 0 12 118 794 2927 4951 3218 972 143 6 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9687 k=4 m=28 inter=1 colcap=128: NONE visited=87 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9688 k=4 m=28 inter=1 colcap=128: NONE visited=851 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 2 7 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9689 k=4 m=28 inter=1 colcap=128: NONE visited=868 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 5 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9690 k=4 m=28 inter=1 colcap=128: NONE visited=8210 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 11 62 113 81 39 7 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9691 k=4 m=28 inter=1 colcap=128: NONE visited=77 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9692 k=4 m=28 inter=1 colcap=128: NONE visited=414 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 6 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9693 k=4 m=28 inter=1 colcap=128: NONE visited=2202 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 10 21 23 13 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9694 k=4 m=28 inter=1 colcap=128: NONE visited=72 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9695 k=4 m=28 inter=1 colcap=128: NONE visited=111 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9696 k=4 m=28 inter=1 colcap=128: NONE visited=243 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9697 k=4 m=28 inter=1 colcap=128: NONE visited=127 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9698 k=4 m=28 inter=1 colcap=128: NONE visited=234653 time=0.1s
+ACCEPTED 0 0 0 0 0 0 0 22 228 1060 2406 2650 1168 90 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9699 k=4 m=28 inter=1 colcap=128: NONE visited=602988 time=0.3s
+ACCEPTED 0 0 0 0 0 0 0 23 294 1832 5394 7487 4450 1075 116 2 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9700 k=4 m=28 inter=1 colcap=128: NONE visited=165693 time=0.2s
+ACCEPTED 0 0 0 0 0 0 0 9 76 436 1380 2289 1583 304 32 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9701 k=4 m=28 inter=1 colcap=128: NONE visited=19775 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 12 74 170 182 116 30 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9702 k=4 m=28 inter=1 colcap=128: NONE visited=364 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 5 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9703 k=4 m=28 inter=1 colcap=128: NONE visited=6272 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 15 50 44 10 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9704 k=4 m=28 inter=1 colcap=128: NONE visited=42643 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 11 67 217 368 406 221 39 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9705 k=4 m=28 inter=1 colcap=128: NONE visited=169606 time=0.1s
+ACCEPTED 0 0 0 0 0 0 0 15 120 585 1454 1747 968 233 26 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9706 k=4 m=28 inter=1 colcap=128: NONE visited=4097 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 11 23 37 25 14 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9707 k=4 m=28 inter=1 colcap=128: NONE visited=1589 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 7 15 15 4 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9708 k=4 m=28 inter=1 colcap=128: NONE visited=33 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9709 k=4 m=28 inter=1 colcap=128: NONE visited=314 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 3 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9710 k=4 m=28 inter=1 colcap=128: NONE visited=1630 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 7 17 10 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9711 k=4 m=28 inter=1 colcap=128: NONE visited=57169 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 11 97 354 556 397 111 21 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9712 k=4 m=28 inter=1 colcap=128: NONE visited=6504 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 8 31 54 43 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9713 k=4 m=28 inter=1 colcap=128: NONE visited=66 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9714 k=4 m=28 inter=1 colcap=128: NONE visited=99 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9715 k=4 m=28 inter=1 colcap=128: NONE visited=24 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9716 k=4 m=28 inter=1 colcap=128: NONE visited=2155 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 7 10 22 22 9 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9717 k=4 m=28 inter=1 colcap=128: NONE visited=79 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9718 k=4 m=28 inter=1 colcap=128: NONE visited=1507 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 3 11 15 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+SHARD 9719 k=4 m=28 inter=1 colcap=128: NONE visited=4934 time=0.0s
+ACCEPTED 0 0 0 0 0 0 0 9 30 61 66 15 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+DONE exit=20

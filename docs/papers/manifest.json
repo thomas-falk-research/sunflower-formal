@@ -961,5 +961,81 @@
     "redistributable": false,
     "read": "read pp. 1-4 and 15-16 of 16",
     "bears_on": "Thm 2 p. 3: codegree-only bound e(H) <= f(n,nu,Delta_2) for n large, no vertex-degree parameter; for nu=2, Delta_2=3 it is 3(n-2), unbounded in n. Its introduction lists the state of the art as graphs -> linear 3-graphs -> codegree; no degree-capped non-linear version. docs/roadmap.md section 56."
+  },
+  {
+    "arxiv": "2609.18995v1",
+    "authors": [
+      "Gennian Ge",
+      "Jian Wang",
+      "Zixiang Xu",
+      "Xiaochen Zhao"
+    ],
+    "bears_on": "Theorem 1.1 = VCSunflower.vc_sunflower_bound (constant weakened); Lemma 2.7 = the VC-preserving spread reduction.",
+    "bytes": 328720,
+    "doi": null,
+    "file": "gwxz_vc_sunflower.pdf",
+    "journal_ref": null,
+    "key": "GWXZ26",
+    "kind": "arxiv",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "pages": 9,
+    "published": "2026-07-17",
+    "read": "read in full, every page rendered to an image (9 of 9 pages)",
+    "redistributable": true,
+    "retrieved": "2026-09-27",
+    "sha256": "44cb126702ce0e055b382795f592ee1ac048f18c7bd75e58390294a760549217",
+    "title": "Bounded VC-dimension implies the Erdős--Rado sunflower conjecture",
+    "updated": "2026-07-17",
+    "url": "https://arxiv.org/pdf/2609.18995v1"
+  },
+  {
+    "arxiv": "2609.30263v1",
+    "authors": [
+      "Chong Shangguan"
+    ],
+    "bears_on": "Corollary 5.1: (Cr log(d+1))^n for VC-dimension d, improving GWXZ26; the log(d+1) is where the full conjecture sits.",
+    "bytes": 409038,
+    "doi": null,
+    "file": "shangguan_vc_thresholds.pdf",
+    "journal_ref": null,
+    "key": "Sha26",
+    "kind": "arxiv",
+    "license": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+    "pages": 20,
+    "published": "2026-09-24",
+    "read": "read in full by a delegated reader, every page rendered to an image (20 of 20 pages)",
+    "redistributable": false,
+    "retrieved": "2026-09-27",
+    "sha256": "ad3b5103735a56c18eee36b456513ff1053528087335ed98f014cfaf94e9b7ac",
+    "title": "Thresholds and spread in set systems of bounded VC-dimension",
+    "updated": "2026-09-24",
+    "url": "https://arxiv.org/pdf/2609.30263v1"
+  },
+  {
+    "arxiv": "2609.06175v1",
+    "authors": [
+      "Edward Axante",
+      "Cristian Budala",
+      "David Chitic",
+      "Bogdan Dumitru",
+      "Mihai Nacu"
+    ],
+    "bears_on": "Prop 6.8: iota(4) = psi(4,3,2) = 27 (computer search, no certificate); Thm 6.9: 54 <= g(4) <= 83; Thm 3.5 rate at k=3 is 2.618 < sqrt(10).",
+    "bytes": 520333,
+    "doi": null,
+    "file": "abcdn_sunflower_free.pdf",
+    "journal_ref": null,
+    "key": "ABCDN26",
+    "kind": "arxiv",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "pages": 35,
+    "published": "2026-09-05",
+    "read": "read in full by a delegated reader, every page rendered to an image (35 of 35 pages)",
+    "redistributable": true,
+    "retrieved": "2026-09-27",
+    "sha256": "8ca521d68179497b496c1177e47b5922142fdc91e45c305fe6dd8020867b1976",
+    "title": "Sunflower-Free Uniform Families: Recursive Constructions and Explicit Bounds",
+    "updated": "2026-09-05",
+    "url": "https://arxiv.org/pdf/2609.06175v1"
   }
 ]

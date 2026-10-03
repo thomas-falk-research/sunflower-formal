@@ -60,6 +60,9 @@ get "Thi21" "https://www.isa-afp.org/browser_info/current/AFP/Sunflowers/documen
 get "VS25" "https://arxiv.org/pdf/2505.03671v2" "vecspaces.pdf" "891b6405125e885287d57f3771c918edff0a625314fb4d3bb5ef6ddfa77f880b"
 get "Kha14" "https://arxiv.org/pdf/1304.4791v1" "khare_linear.pdf" "52a6e8b4479fa84cb952c5986ece5c4e9fa9de556d49d6a39c6825d5c29aa4cc"
 get "Hou17" "https://arxiv.org/pdf/1709.07208v1" "hou_codegree.pdf" "3a2699097d4b3c0066f09803bd9cb57b04ea0d87ded2558455c2d2a584bb3027"
+get "GWXZ26" "https://arxiv.org/pdf/2609.18995v1" "gwxz_vc_sunflower.pdf" "44cb126702ce0e055b382795f592ee1ac048f18c7bd75e58390294a760549217"
+get "Sha26" "https://arxiv.org/pdf/2609.30263v1" "shangguan_vc_thresholds.pdf" "ad3b5103735a56c18eee36b456513ff1053528087335ed98f014cfaf94e9b7ac"
+get "ABCDN26" "https://arxiv.org/pdf/2609.06175v1" "abcdn_sunflower_free.pdf" "8ca521d68179497b496c1177e47b5922142fdc91e45c305fe6dd8020867b1976"
 if [ -n "$RENDER" ]; then
   for f in pdf/*.pdf; do d="render/$(basename "$f" .pdf)"; mkdir -p "$d"; pdftoppm -png -r 150 "$f" "$d/p"; done
   echo "rendered to render/"

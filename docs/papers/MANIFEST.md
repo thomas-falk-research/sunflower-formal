@@ -84,9 +84,12 @@ more; it is not a claim about the contents.
 | `VS25` | Ferdinand Ihringer, Andrey Kupavskii | The Erdős-Rado Sunflower Problem for Vector Spaces | arXiv:2505.03671v2 | 9 | arXiv non-exclusive | not stored | not read (9 pages rendered) |
 | `Kha14` | Niraj Khare | Size of a 3-uniform linear hypergraph | arXiv:1304.4791v1 | 21 | arXiv non-exclusive | not stored | read pp. 1-3 of 21 |
 | `Hou17` | Xinmin Hou et al. | The size of 3-uniform hypergraphs with given matching number and codegree | arXiv:1709.07208v1 | 16 | arXiv non-exclusive | not stored | read pp. 1-4 and 15-16 of 16 |
+| `GWXZ26` | Gennian Ge et al. | Bounded VC-dimension implies the Erdős--Rado sunflower conjecture | arXiv:2609.18995v1 | 9 | CC BY 4.0 | `pdf/gwxz_vc_sunflower.pdf` | read in full, every page rendered to an image (9 of 9 pages) |
+| `Sha26` | Chong Shangguan | Thresholds and spread in set systems of bounded VC-dimension | arXiv:2609.30263v1 | 20 | arXiv non-exclusive | not stored | read in full by a delegated reader, every page rendered to an image (20 of 20 pages) |
+| `ABCDN26` | Edward Axante et al. | Sunflower-Free Uniform Families: Recursive Constructions and Explicit Bounds | arXiv:2609.06175v1 | 35 | CC BY 4.0 | `pdf/abcdn_sunflower_free.pdf` | read in full by a delegated reader, every page rendered to an image (35 of 35 pages) |
 
-40 records, 17 PDFs stored,
-14 read in full.
+43 records, 19 PDFs stored,
+17 read in full.
 
 ## What bears on what
 
@@ -132,6 +135,9 @@ more; it is not a claim about the contents.
 | `VS25` | Erdos-Rado sunflower problem for vector spaces. |
 | `Kha14` | Chvatal-Hanson for LINEAR 3-graphs only (codegree 1): Thm 2 |F| <= 2 Delta nu for Delta >= 5, Thm 3 |F| <= Delta nu for Delta >= (23/6) nu (1+1/(nu-1)); ineq. (1) p. 3 the trivial (Delta-1) k nu + nu. Says nothing about codegree 3; docs/roadmap.md section 56. |
 | `Hou17` | Thm 2 p. 3: codegree-only bound e(H) <= f(n,nu,Delta_2) for n large, no vertex-degree parameter; for nu=2, Delta_2=3 it is 3(n-2), unbounded in n. Its introduction lists the state of the art as graphs -> linear 3-graphs -> codegree; no degree-capped non-linear version. docs/roadmap.md section 56. |
+| `GWXZ26` | Theorem 1.1 = VCSunflower.vc_sunflower_bound (constant weakened); Lemma 2.7 = the VC-preserving spread reduction. |
+| `Sha26` | Corollary 5.1: (Cr log(d+1))^n for VC-dimension d, improving GWXZ26; the log(d+1) is where the full conjecture sits. |
+| `ABCDN26` | Prop 6.8: iota(4) = psi(4,3,2) = 27 (computer search, no certificate); Thm 6.9: 54 <= g(4) <= 83; Thm 3.5 rate at k=3 is 2.618 < sqrt(10). |
 
 ## Provenance rules
 

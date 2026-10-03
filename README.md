@@ -35,8 +35,23 @@ only on $k$.
 ## Honest status
 
 The Sunflower Conjecture is **open**. This repository does **not**
-claim progress on it. What is machine-checked here is the complete
-*provable frontier* around it:
+claim progress on it in general. It does contain one **case of the
+conjecture itself**, machine-checked and axiom-free: families of bounded
+VC-dimension (`coq/VCSunflower.v`) — a theorem of Ge, Wang, Xu and Zhao
+(arXiv:2609.18995, 2026), given here a new elementary proof and a formal
+one. That class provably excludes the Erdős–Rado product construction
+(`product_vc_full`: its VC-dimension equals its uniformity), and at
+`d = n` the theorem is weaker than Erdős–Rado, so it is not where the
+difficulty lives. Separately, `ι(4) = 27` (no intersecting
+3-sunflower-free family of 28 four-sets, and a unique one of 27) is
+**validated, not proved**, by an independent exhaustive search that agrees
+with arXiv:2609.06175's to the unit on an isomorphism-invariant count of
+about 10¹¹ (`docs/ladder/iota4_replication/`). Building on it, Pálvölgyi's
+`g(4) = 54` is settled for every family in which some member is disjoint
+from 23 or more others (`docs/roadmap.md` §62–§65): proven given that
+validated census, with the largest case kernel-checked
+(`coq/Stability4.v`); `g(4)` itself stays open. What is
+machine-checked here is the complete *provable frontier* around it:
 
 | Result | Statement | File |
 |---|---|---|
@@ -70,6 +85,8 @@ claim progress on it. What is machine-checked here is the complete
 | Pigeonhole counting lemma | used by the Erdős–Rado induction | `coq/Pigeonhole.v` |
 | 2020 spread lemma | $r$-spread $\Rightarrow k$ disjoint members for $r \ge Ck\log(nk)$ — **the one named axiom**, cited | `coq/ALWZ.v` |
 | ALWZ/Rao 2020 bound | $f(n,k) \le (Ck\log(nk))^n + 1$ — **derived** from that axiom alone | `coq/ALWZ.v` |
+| **The conjecture for bounded VC-dimension** | every $n$-uniform family with VC-dimension $\le d$ and more than $K(d,k)^n$ members has a $k$-sunflower, $K(d,k) = 2^{2d+3+\lfloor\log_2((64d+8)k)\rfloor}$ independent of $n$ — **axiom-free**; the theorem is Ge–Wang–Xu–Zhao 2026 (constant $50dk$), the proof here replaces their entropy and Caro–Wei steps by counting, and proves Sauer–Shelah along the way | `coq/VCSunflower.v` |
+| **A link of 27 caps $g(4)$ at 54** | given $\iota(4) \le 27$, a 4-uniform sunflower-free family in which the members disjoint from some $R$ form a relabelled Abbott–Hanson family has at most 54 members; the key fact is that this family is **trace-saturated** (every 4-set meeting one member and leaving its nine points makes a sunflower with two members) | `coq/Stability4.v` |
 | The conjecture itself | formal statement, **open** | `coq/Conjecture.v` |
 | Definition audit | complementarity of the bounds, encoding-invariance, non-vacuity of the axiom's shape | `coq/Audit.v` |
 | Differential spread checker | a second decision procedure, proved to agree with the first | `coq/Reflect.v` |
@@ -266,7 +283,7 @@ Highlights of the less-routine parts:
   counterexamples to the axiom's shape over small ground sets
   (`make testbed`); and mutation testing of the definitions
   (`make mutants`), which weakens one hypothesis at a time and checks
-  that something breaks. Of 175 mutations, 172 are killed outright, two
+  that something breaks. Of 180 mutations, 177 are killed outright, two
   survive — `LowerBound`'s `length F = m` really is documentation, as
   `Audit.LowerBound_ge_equiv` proves, and `Product.IotaAtLeast`'s is too,
   by `Product.IotaAtLeast_antitone` — and one is a positive control
@@ -344,10 +361,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 52 Coq files, then runs the axiom audit
+make verify        # builds all 54 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (789 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (820 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
