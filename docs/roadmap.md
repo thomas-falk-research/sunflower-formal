@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 54 modules, 820 audited theorems, 161 audited
+The development is now 55 modules, 823 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -14993,3 +14993,120 @@ intersecting sunflower-free family. Three directions, none attempted:
 `isearch2p*.patch` (printing classes from shard reruns). The lessons are
 in §65's operational notes.
 
+
+## 67. `g(4) ≤ 78`: the descent and the published meeting bound, combined; and why the two-root count cannot go lower
+
+**One line.** A 4-uniform 3-sunflower-free family has at most 78
+members. Status: **PROVEN given the same two VALIDATED inputs as §65**
+(`ι(4) ≤ 27` and the link census at sizes 23–27) **and [ABCDN26]
+Proposition 6.5.** The published bracket was `54 ≤ g(4) ≤ 83`
+([ABCDN26] Thm. 6.9); it is now `54 ≤ g(4) ≤ 78`, on strictly more
+hypotheses than the 83 (the census), and no fewer than the 54-descent
+already carried. Nothing here touches `g(4) = 54`.
+
+### 67.1 The argument, and where each piece comes from
+
+Fix a member `R`. Every other member is disjoint from `R` or meets it,
+so `|F| = |D(R)| + |N[R]|`, where `N[R]` counts `R` itself.
+
+* **[ABCDN26] Prop. 6.5 (p. 26, rendered this session):** `|N[R]| ≤ 56`
+  for every `R`. Its proof (pp. 24–26) is a linear count over the exact
+  traces of members on `R`: with `s, p, t` the numbers of members whose
+  trace is a point, a pair, a triple, it has `s_x ≤ 10` (Lemma 6.2:
+  exact-trace residues are *intersecting* and sunflower-free, so
+  `ψ(3,3,2) = 10` — their Prop. 6.1, DRAT-checked), `p_xy ≤ 3`,
+  `t_m ≤ 1`, the incidence count `s + 2p + 3t ≤ 4(20 − 1) = 76` from
+  `d(x) ≤ f(3,3) = 20` (Abbott–Gardner 1969), and Lemma 6.3
+  (`r_x ≤ 6` at a saturated point), linearised as `3s + 2p ≤ 144`. The
+  LP maximum of `s + p + t` is 56, attained only at `(40, 12, 4)`, which
+  Lemma 6.4 excludes by hand; so `h ≤ 55` and `|N[R]| = 1 + h ≤ 56`.
+  **Re-derived here independently** (`tools/g4/tworoot_lp.py` has the
+  single-root constraints; the LP and the integer enumeration both give
+  56 with `(40,12,4)` the unique optimum). Lemmas 6.3 and 6.4 were read
+  on the rendered pages and not re-proved.
+* **§62–§65:** if `|D(R)| ≥ 23` for some `R`, then `|F| ≤ 54`.
+* So either some link has 23 or more members and `|F| ≤ 54`, or every
+  link has at most 22 and `|F| ≤ 22 + 56 = 78`.
+
+The combination is kernel-checked with both inputs as explicit premises:
+
+```coq
+LinkCombine.g_at_most_of_descent_and_meeting :
+  forall b N M H, LinkDescent b N M -> MeetingBound b H ->
+  GAtMost b (Nat.max M (N - 1 + H))
+LinkCombine.g_four_at_most_78 :
+  LinkDescent 4 23 54 -> MeetingBound 4 56 -> GAtMost 4 78
+LinkCombine.g_four_at_most_83_of_iota :
+  IotaAtMost 4 27 -> MeetingBound 4 56 -> GAtMost 4 83
+```
+
+All three are `Closed under the global context`; `coqchk` passes on the
+module. `LinkDescent 4 23 54` is §65's theorem and `MeetingBound 4 56` is
+[ABCDN26] Prop. 6.5; neither is proved in the kernel, and the module
+says so in its header. The third theorem is the published 83 in the same
+shape, so that the two routes differ in exactly one premise.
+
+### 67.2 What the two-root count gives, measured: exactly `56 + Δ`
+
+§66 direction 2 asked whether fixing *two* roots helps. Along a disjoint
+pair `R, S` (one exists unless `F` is intersecting, when `|F| ≤ 27`),
+`F = {R, S} ∪ X ∪ Y ∪ Z` with `X = D(R) ∖ {S}`, `Y = D(S) ∖ {R}` and
+`Z` the members meeting both; `X ∩ Y = ∅` by triangle-freeness of the
+disjointness graph, so `|F| = 2 + |X| + |Y| + |Z|`. Every constraint of
+Prop. 6.5 holds at `R` and at `S` simultaneously, with each `Z` member
+typed by `(|Z ∩ R|, |Z ∩ S|)` and counted at both roots, and
+`|X|, |Y| ≤ Δ − 1`. `tools/g4/tworoot_lp.py` solves the joint integer
+program:
+
+```text
+  all links <= Delta:   27   22   20   16   12
+  joint IP maximum:     83   78   76   72   68      (= 56 + Delta, every time)
+```
+
+The optimum puts `|Z| = 34` with `h = 55` at both roots. **So the
+constraints Prop. 6.5 proves at one root, even imposed at two roots
+jointly, cannot beat `56 + Δ`.** Anything below 78 needs a constraint on
+`Z` that is not a consequence of the single-root ones. CONJECTURED: none
+of the obvious candidates (per-pair degrees `d(xy) ≤ 6`, the
+`Σ|A|·|B| ≤ 96` incidence count) is binding at the optimum; they were
+checked and are not.
+
+### 67.3 How large `|Z|` and `|N[R]|` get, measured
+
+Exact SAT on bounded outer ground sets (`tools/g4/zmax.py`,
+`tools/g4/nrmax.py`, CaDiCaL 1.7.4; every row is a found family, so a
+lower bound on the true maximum):
+
+```text
+  outer points k:        4     5     6     8    10
+  max |Z|       >=      24    26    28     -     -     (§61.2 had 23 at k = 4)
+  max |N[R]|    >=       -     -    29    32     ?     (§61.2 had 28 at k = 6; 36 at k = 10 undecided in 900 s)
+```
+
+Both grow by about two per outer point with no plateau in sight. So a
+bound `|Z| ≤ 33`, which is what the two-root route would need, is not
+supported by measurement, and Prop. 6.5's 55 is not visibly loose at
+these sizes. Neither row is a verdict on the true maxima.
+
+### 67.4 Standing
+
+| claim | status |
+|---|---|
+| `\|N[R]\| ≤ 56` for every member `R` | PROVEN by [ABCDN26] (hand + DRAT); LP step re-derived here; Lemmas 6.3–6.4 read, not re-proved |
+| some link `≥ 23` ⇒ `\|F\| ≤ 54` | PROVEN given `ι(4) ≤ 27` and the census (§65) |
+| **`g(4) ≤ 78`** | **PROVEN given the two rows above**; combination kernel-checked (`LinkCombine.g_four_at_most_78`) |
+| two-root ABCDN count beats `56 + Δ` | **REFUTED** (67.2): the joint IP is exactly `56 + Δ` |
+| `\|Z\| ≤ 33` or `\|N[R]\| ≤ 50` | not supported by measurement (67.3); open |
+| `g(4) = 54` | open |
+
+### 67.5 What is owed
+
+1. A constraint on `Z` (members meeting both of a disjoint pair) that the
+   single-root count does not imply. Candidates not yet tried: the links
+   of `Z` members themselves (each `≤ Δ`), and the requirement that
+   blocks from three saturated classes never be pairwise disjoint.
+2. Re-proving [ABCDN26] Lemmas 6.3 and 6.4 in the kernel, which would
+   make `MeetingBound 4 56` a theorem modulo `f(3,3) = 20` and
+   `ψ(3,3,2) = 10` only.
+3. The census dependency is unchanged from §65 and is the larger trust
+   item; §59.4 item 1 still names the fix.

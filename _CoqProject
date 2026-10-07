@@ -55,3 +55,4 @@ coq/Palvolgyi.v
 coq/Audit.v
 coq/VCSunflower.v
 coq/Stability4.v
+coq/LinkCombine.v

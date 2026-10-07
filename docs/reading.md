@@ -993,7 +993,7 @@ repository's `g(w)`, and their `ψ(w,3,2)` is this repository's `ι(w)`.
   completeness (Lemma 6.6). **No proof certificate**; the paper's separate
   C verifier checks bookkeeping (one completed record per root), not the
   exclusion. Section 8: not in their Lean development.
-* **Thm. 6.9 (p. 29): `54 ≤ f(4,3) ≤ 83`**, i.e. `54 ≤ g(4) ≤ 83`. The 83
+* **Thm. 6.9 (p. 29): `54 ≤ f(4,3) ≤ 83`**, i.e. `54 ≤ g(4) ≤ 83` (narrowed to `≤ 78` in `docs/roadmap.md` §67, given the §65 census). The 83
   uses Prop. 6.8 and a hand argument (Prop. 6.5) plus a DRAT-checked
   CaDiCaL run for Prop. 6.1(ii).
 * **Thm. 3.5 (p. 7):** `B(k) ≥ r_k`; at `k = 3` that is

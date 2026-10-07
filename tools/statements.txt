@@ -2949,3 +2949,12 @@ d4f52ad0520a8cc0  thm Stability4.single_member_not_saturated
 
 6374397388b4bf20  def Stability4.saturation_certificate
     saturation_certificate = fun (b : nat) (A : Family) (U : list nat) => List.forallb (fun T : list nat => implb (negb (PeanoNat.Nat.eqb (length T) 0) && PeanoNat.Nat.ltb (length T) b) (saturation_witnessb T A)) (sublists U) : nat -> Family -> list nat -> bool Arguments saturation_certificate b%nat_scope A U%list_scope
+
+a6f3e5868449bc66  thm LinkCombine.g_at_most_of_descent_and_meeting
+    g_at_most_of_descent_and_meeting : forall b N M H : nat, LinkDescent b N M -> MeetingBound b H -> GAtMost b (PeanoNat.Nat.max M (N - 1 + H))
+
+adfd5d9edeaeb612  thm LinkCombine.g_four_at_most_78
+    g_four_at_most_78 : LinkDescent 4 23 54 -> MeetingBound 4 56 -> GAtMost 4 78
+
+f6ee2321f5152131  thm LinkCombine.g_four_at_most_83_of_iota
+    g_four_at_most_83_of_iota : IotaAtMost 4 27 -> MeetingBound 4 56 -> GAtMost 4 83

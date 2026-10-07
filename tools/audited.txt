@@ -1106,3 +1106,6 @@ thm Stability4.single_member_not_saturated
 def Stability4.TraceSaturated
 def Stability4.DisjointFrom
 def Stability4.saturation_certificate
+thm LinkCombine.g_at_most_of_descent_and_meeting
+thm LinkCombine.g_four_at_most_78
+thm LinkCombine.g_four_at_most_83_of_iota
