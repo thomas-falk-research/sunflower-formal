@@ -1119,3 +1119,10 @@ thm LinkCerts25.g_four_at_most_80_of_census_25
 thm LinkCerts24.descent_24
 thm LinkCerts24.g_four_at_most_79_of_census_24
 thm LinkCerts23.bound_of_covered_link
+thm Link23.rows_valid
+thm Link23.tree_sound
+thm Link23.bound_of_tree
+thm Link23.finer_class_bound
+thm Link23.descent_of_census2
+thm Link23Certs.descent_23
+thm Link23Certs.g_four_at_most_78_of_census_23

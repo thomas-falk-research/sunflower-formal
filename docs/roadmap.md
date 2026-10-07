@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 87 modules, 833 audited theorems, 161 audited
+The development is now 100 modules, 840 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -14816,6 +14816,12 @@ enumerable. Size 20 (308 million) does not.
 
 ## 65. The 11 remaining classes at 23: all certified, so a link of 23 or more members forces `|F| ≤ 54`
 
+> **Superseded by §69.** The Python model below mixed trace labels with
+> profile positions in its exclusion rows and was over-constrained, so its
+> DRAT and branch-and-bound certificates certified the wrong program
+> (§69.2). The corrected model is `coq/Link23.v`; it certifies the same
+> eleven classes in the kernel. This section stays as the record.
+
 §64.6 left 11 link classes of size 23 that the §64 constraint system
 cannot certify. They close under a finer model, `tools/iota4/link23.py`.
 
@@ -15211,3 +15217,163 @@ in six waves of four. Every data module that carries a computation
 Owed, in order: (1) the 11 classes at 23 that need the finer model, which is a second LP
 whose validity would need its own proof; (2) the census itself (§59.4
 item 1), which no part of this section touches.
+
+## 69. The finer link model in the kernel: `coq/Link23.v`, and the descent from 23
+
+§68 left exactly eleven link classes at size 23 outside the kernel: the
+ones that §64's LP cannot certify and §65 closed with the finer type
+model of `tools/iota4/link23.py`. That model is now a Coq theory
+(`coq/Link23.v`, 1,500 lines), its branch-and-bound certificates are
+decided by `vm_compute` (`coq/Link23c*.v`), and the descent at 23 is a
+kernel theorem with the same two premises as the rest of §68:
+`ι(4) ≤ 27` and the completeness of the census. **`g(4) ≤ 78` is now in
+the kernel on those premises** (`Link23Certs.g_four_at_most_78_of_census_23`).
+Python is out of the trust base at every link size from 23 up.
+
+The formalisation also found a bug in the §65 Python model (69.2).
+
+### 69.1 The model as Coq sees it
+
+The setting is §64's: `F` 4-uniform, 3-sunflower-free, `R ∈ F` with a
+largest link `D`, `V` the points of `D`, and `M` the members other than
+`R` that meet `R` (`Others R F`). A member `S` of `M` has a type
+`typeof V R S = (tr V S, prof R S)`: its canonical trace on `V` and its
+**positional** profile, the set of positions `k < 4` with `nth k R ∈ S`.
+Profiles are positional so that the type list `types D` and every row
+depend on the link alone; the check for a class is then a closed
+computation, and the family's own `R` enters only through `typeof`.
+
+* `types D`: the M1 types (unwitnessed trace, profile, together at most
+  4 points) in the order of `unwit D`, then the M0 types (empty trace,
+  profile of at most 3 positions). `typeof_in_types` and `tcount_sum`:
+  every member of `M` has a type in the list, and the type counts
+  `tcount V R M t` sum to `|M|`.
+* Caps per type, `tcount_le_ub`: for `(T, P)` with `e = 4 − |T| − |P|`
+  extras, the members of that type all contain the `(4 − e)`-set
+  `T ∪ lab R P`, so their outer parts are a distinct `e`-uniform
+  sunflower-free family (`superset_count_le`, the general form of
+  `LinkLP.trace_class_cap`): at most `g(0) = 1`, `g(1) = 2`, `g(2) ≤ 6`.
+  For M0 types the outer parts are also pairwise intersecting, because
+  two disjoint ones make a sunflower with `R` (`m0_outer_intersecting`),
+  so `ι(2) ≤ 3` and `ι(1) = 1` cap profiles of 2 and 3 positions
+  (`m0_count_le`); a profile of one position is capped by `g(3) ≤ 26`.
+* The tagged rows, each a theorem for the actual counts (`rows_valid`):
+
+  | tag | row | theorem | argument |
+  |---|---|---|---|
+  | `RCap T` | members with trace `T`: `≤ cap T` | `cap_row` | `LinkLP.trace_class_cap` on `Meeting R F ⊇ M` |
+  | `RLink C` | members whose trace misses `C ∈ D`: `≤ \|D\| − 1` | `link_row` | `LinkLP.link_constraint` gives `≤ \|D(C)\| ≤ \|D\|` on `Meeting R F`, and `R` itself is one of them (`count_M_le`) |
+  | `RStar k` | members through position `k` of `R`: `≤ 25` | `star_row` | `superset_count_le [r]` with `g(3) ≤ 26`, and `R` is one of the 26 |
+  | `RDet i` | type `i` determined (`\|T\| + \|P\| = 4`): `big·x_i + Σ_{t certainly disjoint} x_t ≤ \|D\| − #\{C ∈ D : C ∩ T = ∅\} + big` | `det_row` | a determined member is exactly `T ∪ lab R P` (`type_exact`), so a type with trace and profile disjoint from its own is certainly disjoint from it, as is every link member avoiding `T`; all of them lie in its link, which has at most `\|D\|` members. `big = Σ ub + 1` makes the row slack when `x_i = 0`; `x_i ≤ 1` is the cap |
+  | `RExcl i j` | type `i` determined and `exclb D a b`: `ub_j·x_i + x_j ≤ ub_j` | `excl_row` | a member of each type would form a 3-sunflower (`three_sunflower`): with `R` (equal profiles, disjoint traces), with a link member `C` (both traces meet `C` in the common trace, profiles disjoint), or with a link member avoiding both traces (three pairwise disjoint sets). `inter_det` computes the intersection of a determined member with any other exactly |
+
+  A malformed tag yields the trivial row `0 ≤ 0`, so `rows_valid`
+  quantifies over all tags and the checker needs no side conditions.
+* Dual certificates and trees. A leaf carries integer multipliers scaled
+  by `lK`: `ly` on tagged rows, `lu` on the upper bounds, `lv` on the
+  lower bounds. Weak duality in the natural numbers (`leaf_sound`): if
+  for every type `j`, `lK + v_j ≤ Σ_r y_r a_rj + u_j`, and
+  `Σ_r y_r b_r + Σ_j u_j hi_j < Σ_j v_j lo_j + lK·T`, then every count
+  vector within the bounds has `Σ_j x_j < T`; `lK = 0` is the Farkas
+  form. A node splits `x_i ≤ f` / `x_i ≥ f + 1` (`tree_sound`, by
+  induction with the bounds as invariant). The stored certificates use
+  binary numbers (`leafN`, multipliers in the thousands), and
+  `leafcheck_to_nat` bridges to the unary proof.
+* `bound_of_tree`: a checked tree for `D(R)` gives `|F| ≤ 54`
+  (`|F| = |D| + |M| + 1` and `|M| < 54 − |D|`).
+  `finer_class_bound` transports a check on a canonical class `Dk` to
+  any `F` whose largest link is `Dk` up to relabelling and set equality:
+  rather than proving the check label-free, it rebuilds the relabelled
+  family as `Dk ++ Meeting R' F'`, which has the same size and the same
+  properties and whose link of `R'` is literally `Dk`.
+* `Census2 reps trees lo` and `descent_of_census2`: every intersecting
+  3-sunflower-free family of ≥ `lo` distinct 4-sets is, up to
+  relabelling, an LP-certified representative or a tree-certified one;
+  then `LinkDescent 4 lo 54`. `Link23Certs.descent_23` instantiates it
+  with `cls23_all` (14,794 LP classes at 23–27) and `link23_all` (the
+  11 trees), and `g_four_at_most_78_of_census_23` adds `MeetingBound 4 56`.
+
+### 69.2 A label confusion in the §65 Python model, found by the formalisation
+
+`tools/iota4/link23.py` represented traces by their points of `V`
+(integers) and profiles by `range(4)`, and tested its exclusions on
+`K = (Ta & Tb) | (Pa & Pb)` — a union of the two label spaces. With `V`
+labelled `0, 1, 2, …`, a trace point and a profile position with the same
+number coincide in `K`. The exclusion "sunflower with `R`" required
+`Pa == Pb == K`, which also fires when `Ta ∩ Tb` is a nonempty set of
+positions-looking points; the exclusion "sunflower with `C`" compared
+`Ta ∩ C` and `Tb ∩ C` with a `K` that may carry profile positions. Both
+can exclude pairs of types that do not form any sunflower. Counting
+against the corrected semantics (traces and profiles compared
+separately, as `Link23.exclb` does):
+
+| class | types | rows | integer optimum (corrected model) | tree nodes | leaves | old exclusion rows | of them unjustified |
+|---|---|---|---|---|---|---|---|
+| 1722 | 178 | 3519 | 26 | 473 | 237 | 3386 | 16 |
+| 1726 | 124 | 1449 | 30 | 379 | 190 | 1374 | 30 |
+| 10590 | 362 | 34321 | 28 | 39 | 20 | 34103 | 81 |
+| 10591 | 254 | 14466 | 28 | 31 | 16 | 14326 | 64 |
+| 10592 | 172 | 5498 | 28 | 23 | 12 | 5411 | 49 |
+| 10593 | 172 | 5498 | 28 | 23 | 12 | 5411 | 49 |
+| 10594 | 112 | 1860 | 28 | 15 | 8 | 1806 | 36 |
+| 10595 | 172 | 5498 | 28 | 23 | 12 | 5411 | 49 |
+| 10596 | 112 | 1860 | 28 | 15 | 8 | 1806 | 36 |
+| 10597 | 70 | 583 | 28 | 7 | 4 | 547 | 25 |
+| 14708 | 46 | 835 | 22 | 15 | 8 | 788 | 20 |
+
+So every §65 model was over-constrained, and **§65's certificates — the
+DRAT refutations and the branch-and-bound trees — certified the wrong
+program.** Its hand review ("every constraint valid") missed it, as did
+the independent re-implementation, which matched the optima because it
+reproduced the same representation. What the formalisation forces is a
+separate profile space; the mistake was invisible until the rows had to
+be proved for actual counts. The LP relaxations of the two models agree
+at the root (34, 32, 34 for the three classes compared); the integer
+optima of the corrected model are in the table, all `≤ 30 = 54 − 23 − 1`,
+so **the conclusion of §65 survives, on new certificates**. The old
+ones stay in `docs/ladder/iota4_replication/link23_bnb/` and
+`link23_proofs/` as the record of what was checked; nothing in the
+kernel depends on them.
+
+### 69.3 Certificates and the kernel check
+
+`tools/iota4/link23_coq.py` rebuilds in Python exactly the Coq
+enumeration (`nodup` keeps the *last* occurrence of a point, `subs_le`
+puts the subsets containing the head first, `PROF` is `subs_le 4 [0;1;2;3]`
+without the empty set) and the tagged rows, solves by LP-based
+branch-and-bound (scipy/HiGHS), scales every leaf's dual by one common
+denominator (1,000 suffices everywhere, after raising `u` where a column
+falls short), re-checks every leaf in exact integer arithmetic with the
+Coq semantics, and emits `coq/Link23cK.v` with `trees_okb [(D, t)] = true`
+by `vm_compute`.
+
+* Branching matters. Most-fractional branching, which the §65 trees
+  used, passed 20,000 nodes on class 14708 in 90 s without finishing
+  under the corrected model (the over-strong exclusions had pruned it to
+  127 nodes before). Branching first on a fractional *determined* type
+  (cap 1; these switch the big-M rows on and off) gives the trees above:
+  15 nodes for 14708, at most 473 (class 1722).
+* Time. All eleven class modules and `Link23Certs.v` build in 66 s of
+  wall time (`make -j3`), against hours for the LP shards of §68: the
+  trees are small, the leaves carry at most a few hundred multipliers,
+  and the rows are rebuilt once per leaf. `Print Assumptions` on
+  `descent_23` and `g_four_at_most_78_of_census_23`: closed under the
+  global context.
+* Independent re-check: `coqchk` on `Link23` and the eleven class
+  modules — running at the time of this commit; the result is recorded in the follow-up commit. `Link23Certs` adds no computation beyond the
+  class modules and `LinkCerts23`, whose `coqchk` is recorded in §68.3.
+
+### 69.4 Standing
+
+| claim | status |
+|---|---|
+| the finer model's rows are consequences of sunflower-freeness and of `D` being largest | **PROVEN** (kernel, `Link23.rows_valid`, `tcount_le_ub`) |
+| weak duality for a branch-and-bound tree, and the transport to a canonical class | **PROVEN** (kernel, `tree_sound`, `bound_of_tree`, `finer_class_bound`) |
+| the eleven classes at 23 pass the check | **COMPUTED** in the kernel (`vm_compute`, 11 modules, 66 s) |
+| a link of ≥ 23 members forces `\|F\| ≤ 54` (`Link23Certs.descent_23`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 23–27** (`Census2`) |
+| `g(4) ≤ 78` (`Link23Certs.g_four_at_most_78_of_census_23`) | **PROVEN given `ι(4) ≤ 27`, the census at 23–27 and `MeetingBound 4 56`** |
+| the §65 Python model | **WRONG** (label confusion in the exclusions, 69.2); superseded, its conclusion re-established |
+
+Owed: the census itself (§59.4 item 1), and `ι(4) ≤ 27` (§60) — the
+two premises every kernel theorem of §68–§69 carries. Nothing of the
+`b = 4` descent now rests on Python.
