@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 57 modules, 828 audited theorems, 161 audited
+The development is now 62 modules, 832 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -15194,17 +15194,16 @@ sublists of at most three points (the earlier `subsets` was `2^|V|`).
 | `IotaAtMost 4 27 → reps_okb → Census lo → LinkDescent 4 lo 54` | **PROVEN** (kernel, `descent_of_census`) |
 | `reps_okb cls_all = true`, 305 classes at 25–27 | **COMPUTED** in the kernel (`vm_compute`) |
 | a link of ≥ 25 members forces `\|F\| ≤ 54` | **PROVEN given `ι(4) ≤ 27` and census completeness at 25–27** — Python no longer in the trust base |
-| the same at 23–24 (§64.6, §65) | still Python-checked certificates (sizes 24 and 12,513 classes at 23) plus the finer `link23` model for 11 classes, **not formalised** |
-| `g(4) ≤ 80` | kernel, given the three hypotheses above |
-| `g(4) ≤ 78` (§67) | needs 23–24 in the kernel; 1,976 classes at 24 would give 79 at about 1.5 h of `vm_compute` |
+| `reps_okb` for the 1,976 classes at 24 (`coq/LinkCerts24s0.v`–`s3.v`) | **COMPUTED** in the kernel; four shards of 494, 42–60 min each of `vm_compute` on a loaded 4-core machine |
+| a link of ≥ 24 members forces `\|F\| ≤ 54` (`LinkCerts24.descent_24`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 24–27** |
+| size 23 (§64.6, §65) | still Python-checked certificates (12,513 classes) plus the finer `link23` model for 11 classes, **not formalised** |
+| `g(4) ≤ 79` (`LinkCerts24.g_four_at_most_79_of_census_24`) | kernel, given `ι(4) ≤ 27`, the census at 24–27 and `MeetingBound 4 56` |
+| `g(4) ≤ 78` (§67) | needs size 23 in the kernel |
+| `coqchk` on the data modules | **not run**: re-checking a `vm_compute` proof re-runs the computation, about three hours for the six modules; `coqc` accepted each, and `Print Assumptions` is closed |
 
-Owed, in order: (1) the 1,976 size-24 certificates are exported
-(`coq/LinkCerts24s0.v`–`s3.v`, `coq/LinkCerts24.v`, all re-checked in
-exact arithmetic by the exporter) and were compiling when this was
-written; they are **not yet in `_CoqProject`** and the kernel 79 is not
-claimed until they are; (2) the
-12,513 LP-certified classes at 23 — about 9 h of `vm_compute`, or less
-with `native_compute`; (3) the 11 classes at 23 that need the finer
-model, which is a second LP whose validity would need its own proof;
-(4) the census itself (§59.4 item 1), which no part of this section
-touches.
+Owed, in order: (1) `make coqchk` over the data modules, on a machine
+that can give it three hours; (2) the 12,513 LP-certified classes at 23
+— about 9 h of `vm_compute` in shards, or less with `native_compute`;
+(3) the 11 classes at 23 that need the finer model, which is a second LP
+whose validity would need its own proof; (4) the census itself (§59.4
+item 1), which no part of this section touches.

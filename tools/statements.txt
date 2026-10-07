@@ -2518,8 +2518,8 @@ ec0a9d87164ea389  thm Support.two_points_shrink
 28b87c43f0bd837a  thm Support.support_from_two_points
     support_from_two_points : forall (b : nat) (F : Family) (S0 P : list nat), Uniform b F -> (forall A : list nat, List.In A F -> exists x y : nat, x <> y /\ List.In x A /\ List.In y A /\ List.In x S0 /\ List.In y S0) -> List.NoDup P -> (forall p : nat, List.In p P -> exists A : list nat, List.In A F /\ List.In p A) -> length P <= length S0 + (b - 2) * length F
 
-5633efdfa29942c9  def Support.cap
-    cap = fun A0 A : list nat => List.filter (fun w : nat => memb w A) A0 : list nat -> list nat -> list nat Arguments cap (A0 A)%list_scope
+fe15ae7fca3bfade  def Support.cap
+    Support.cap = fun A0 A : list nat => List.filter (fun w : nat => memb w A) A0 : list nat -> list nat -> list nat Arguments Support.cap (A0 A)%list_scope
 
 c0faec5da243971a  thm Support.anchored_support_bound
     anchored_support_bound : forall (b : nat) (F : Family) (P : list nat), 2 <= b -> Uniform b F -> Distinct F -> Intersecting F -> ~ ContainsKSunflower 3 F -> List.NoDup P -> (forall p : nat, List.In p P -> exists A : list nat, List.In A F /\ List.In p A) -> length P <= 4 * b - 3 + (b - 2) * length F
@@ -2958,3 +2958,30 @@ adfd5d9edeaeb612  thm LinkCombine.g_four_at_most_78
 
 f6ee2321f5152131  thm LinkCombine.g_four_at_most_83_of_iota
     g_four_at_most_83_of_iota : IotaAtMost 4 27 -> MeetingBound 4 56 -> GAtMost 4 83
+
+880aa6a160bce55c  thm LinkLP.link_lp_bound
+    link_lp_bound : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (c : cert), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> DisjointFrom R F <> nil -> certcheck (DisjointFrom R F) c (54 - length (DisjointFrom R F)) = true -> length F <= 54
+
+01a88779596c6549  thm LinkLP.certcheck_transfer
+    certcheck_transfer : forall (D D' : list (list nat)) (c : cert) (b : nat), SetNoDup D -> SetNoDup D' -> SubFamilySetEq D D' -> SubFamilySetEq D' D -> certcheck D' c b = true -> certcheck D c b = true
+
+b6051953b6f04163  thm LinkLP.class_bound
+    class_bound : IotaAtMost 4 27 -> forall (Dk : Family) (ck : cert), SetNoDup Dk -> certcheck Dk ck (54 - length Dk) = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> DisjointFrom R F <> nil -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
+
+71fa898e96690595  thm LinkLP.descent_of_census
+    descent_of_census : IotaAtMost 4 27 -> forall (reps : list (Family * cert)) (lo : nat), 1 <= lo -> reps_okb reps = true -> Census reps lo -> LinkDescent 4 lo 54
+
+c4ecdd9782e113ad  thm LinkLP.g_four_at_most_80_of_census
+    g_four_at_most_80_of_census : IotaAtMost 4 27 -> forall reps : list (Family * cert), reps_okb reps = true -> Census reps 25 -> MeetingBound 4 56 -> GAtMost 4 80
+
+8be99448a3be76e2  thm LinkCerts25.descent_25
+    descent_25 : IotaAtMost 4 27 -> Census cls_all 25 -> LinkDescent 4 25 54
+
+35b49b3b4a66b2c7  thm LinkCerts25.g_four_at_most_80_of_census_25
+    g_four_at_most_80_of_census_25 : IotaAtMost 4 27 -> Census cls_all 25 -> MeetingBound 4 56 -> GAtMost 4 80
+
+d49e2a7c3d53d6e8  thm LinkCerts24.descent_24
+    descent_24 : IotaAtMost 4 27 -> Census cls24_all 24 -> LinkDescent 4 24 54
+
+2c5659089cf68a6c  thm LinkCerts24.g_four_at_most_79_of_census_24
+    g_four_at_most_79_of_census_24 : IotaAtMost 4 27 -> Census cls24_all 24 -> MeetingBound 4 56 -> GAtMost 4 79
