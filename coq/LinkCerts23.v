@@ -8,16 +8,44 @@
     classes.  See docs/roadmap.md §68.3. *)
 From Coq Require Import List Lia Bool.
 Import ListNotations.
-From Sunflower Require Import Sets Sunflower IotaRate Stability4 LinkCombine LinkLP
+From Sunflower Require Import Sets Sunflower IotaRate Stability4 DirectSum LinkCombine LinkLP
   LinkCerts25 LinkCerts24 LinkCerts23s0 LinkCerts23s1 LinkCerts23s2 LinkCerts23s3 LinkCerts23s4 LinkCerts23s5 LinkCerts23s6 LinkCerts23s7 LinkCerts23s8 LinkCerts23s9 LinkCerts23s10 LinkCerts23s11 LinkCerts23s12 LinkCerts23s13 LinkCerts23s14 LinkCerts23s15 LinkCerts23s16 LinkCerts23s17 LinkCerts23s18 LinkCerts23s19 LinkCerts23s20 LinkCerts23s21 LinkCerts23s22 LinkCerts23s23.
 
 Definition cls23_all : list (Family * cert) :=
   cls24_all ++ c23s0_all ++ c23s1_all ++ c23s2_all ++ c23s3_all ++ c23s4_all ++ c23s5_all ++ c23s6_all ++ c23s7_all ++ c23s8_all ++ c23s9_all ++ c23s10_all ++ c23s11_all ++ c23s12_all ++ c23s13_all ++ c23s14_all ++ c23s15_all ++ c23s16_all ++ c23s17_all ++ c23s18_all ++ c23s19_all ++ c23s20_all ++ c23s21_all ++ c23s22_all ++ c23s23_all.
 
+Lemma reps_okb_app_true :
+  forall a b, reps_okb a = true -> reps_okb b = true -> reps_okb (a ++ b) = true.
+Proof. intros a b Ha Hb; rewrite reps_okb_app, Ha, Hb; reflexivity. Qed.
+
 Lemma cls23_all_ok : reps_okb cls23_all = true.
 Proof.
-  unfold cls23_all. repeat rewrite reps_okb_app.
-  rewrite cls24_all_ok, c23s0_all_ok, c23s1_all_ok, c23s2_all_ok, c23s3_all_ok, c23s4_all_ok, c23s5_all_ok, c23s6_all_ok, c23s7_all_ok, c23s8_all_ok, c23s9_all_ok, c23s10_all_ok, c23s11_all_ok, c23s12_all_ok, c23s13_all_ok, c23s14_all_ok, c23s15_all_ok, c23s16_all_ok, c23s17_all_ok, c23s18_all_ok, c23s19_all_ok, c23s20_all_ok, c23s21_all_ok, c23s22_all_ok, c23s23_all_ok. reflexivity.
+  unfold cls23_all.
+  apply reps_okb_app_true; [exact cls24_all_ok |].
+  apply reps_okb_app_true; [exact c23s0_all_ok |].
+  apply reps_okb_app_true; [exact c23s1_all_ok |].
+  apply reps_okb_app_true; [exact c23s2_all_ok |].
+  apply reps_okb_app_true; [exact c23s3_all_ok |].
+  apply reps_okb_app_true; [exact c23s4_all_ok |].
+  apply reps_okb_app_true; [exact c23s5_all_ok |].
+  apply reps_okb_app_true; [exact c23s6_all_ok |].
+  apply reps_okb_app_true; [exact c23s7_all_ok |].
+  apply reps_okb_app_true; [exact c23s8_all_ok |].
+  apply reps_okb_app_true; [exact c23s9_all_ok |].
+  apply reps_okb_app_true; [exact c23s10_all_ok |].
+  apply reps_okb_app_true; [exact c23s11_all_ok |].
+  apply reps_okb_app_true; [exact c23s12_all_ok |].
+  apply reps_okb_app_true; [exact c23s13_all_ok |].
+  apply reps_okb_app_true; [exact c23s14_all_ok |].
+  apply reps_okb_app_true; [exact c23s15_all_ok |].
+  apply reps_okb_app_true; [exact c23s16_all_ok |].
+  apply reps_okb_app_true; [exact c23s17_all_ok |].
+  apply reps_okb_app_true; [exact c23s18_all_ok |].
+  apply reps_okb_app_true; [exact c23s19_all_ok |].
+  apply reps_okb_app_true; [exact c23s20_all_ok |].
+  apply reps_okb_app_true; [exact c23s21_all_ok |].
+  apply reps_okb_app_true; [exact c23s22_all_ok |].
+  exact c23s23_all_ok.
 Qed.
 
 (** A family whose largest link is, up to relabelling, one of the

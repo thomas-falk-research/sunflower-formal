@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 62 modules, 832 audited theorems, 161 audited
+The development is now 87 modules, 833 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -15200,9 +15200,11 @@ sublists of at most three points (the earlier `subsets` was `2^|V|`).
 | `g(4) ≤ 79` (`LinkCerts24.g_four_at_most_79_of_census_24`) | kernel, given `ι(4) ≤ 27`, the census at 24–27 and `MeetingBound 4 56` |
 | `g(4) ≤ 78` (§67) | needs size 23 in the kernel |
 | `coqchk` on the data modules | **PASS** on `LinkCerts25` (24 min) and the four size-24 shards (run in parallel, each about an hour); `LinkCerts24` itself adds no computation and was not re-checked separately |
-| size 23, the 12,513 LP-certified classes | exported as 24 shards (`coq/LinkCerts23s0.v`–`s23.v`, `coq/LinkCerts23.v`), skipping exactly the 11 finer-model classes; compiling in waves of four when this was written, **not yet in `_CoqProject`**, nothing claimed until they pass |
+| `reps_okb` for the 12,513 LP-certified classes at 23 (`coq/LinkCerts23s0.v`–`s23.v`) | **COMPUTED** in the kernel: 24 shards of about 521 classes, 42–46 min each, four at a time, about 6 h of wall time; the exporter skipped exactly the 11 classes whose LP certificate does not reach the bound |
+| `LinkCerts23.bound_of_covered_link`: a family whose largest link is one of the 14,794 certified classes at 23–27 has at most 54 members | kernel statement written; the combining module was **compiling** when this was committed, so not yet claimed |
+| `descent_23`, hence a kernel `g(4) ≤ 78` | **not stated**: the 11 classes at 23 that §65 closed with the finer `link23` model (DRAT and branch-and-bound) are outside the kernel, so no `Census … 23` hypothesis is true for this list. The Python trust base at size 23 is now exactly those 11 classes |
 
-Owed, in order: (1) the size-23 shards, about 6 h of wall time in
-waves of four; (2) the 11 classes at 23 that need the finer model, which is a second LP
+Owed, in order: (1) `coqchk` on the 24 size-23 shards, about 6 h in
+waves of four, not run; (2) the 11 classes at 23 that need the finer model, which is a second LP
 whose validity would need its own proof; (3) the census itself (§59.4
 item 1), which no part of this section touches.

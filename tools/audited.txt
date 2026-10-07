@@ -1118,3 +1118,4 @@ thm LinkCerts25.descent_25
 thm LinkCerts25.g_four_at_most_80_of_census_25
 thm LinkCerts24.descent_24
 thm LinkCerts24.g_four_at_most_79_of_census_24
+thm LinkCerts23.bound_of_covered_link
