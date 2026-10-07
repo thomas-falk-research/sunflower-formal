@@ -15360,7 +15360,7 @@ by `vm_compute`.
   `descent_23` and `g_four_at_most_78_of_census_23`: closed under the
   global context.
 * Independent re-check: `coqchk` on `Link23` and the eleven class
-  modules — running at the time of this commit; the result is recorded in the follow-up commit. `Link23Certs` adds no computation beyond the
+  modules — **PASS**, 8 min 20 s in one run (the class modules share `Link23` and `LinkLP`, which are re-checked once). `Link23Certs` adds no computation beyond the
   class modules and `LinkCerts23`, whose `coqchk` is recorded in §68.3.
 
 ### 69.4 Standing
