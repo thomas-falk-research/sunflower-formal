@@ -48,6 +48,17 @@ Proof.
   exact c23s23_all_ok.
 Qed.
 
+(** Extracting one entry from a checked list, stated over an abstract list
+    so that the concrete 14,794-entry list is never unfolded. *)
+Lemma reps_okb_entry :
+  forall reps Dk ck, reps_okb reps = true -> In (Dk, ck) reps ->
+    SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true.
+Proof.
+  intros reps Dk ck Hok Hin. unfold reps_okb in Hok. rewrite forallb_forall in Hok.
+  specialize (Hok (Dk, ck) Hin). simpl in Hok. apply andb_true_iff in Hok as [Hnd Hck].
+  split; [apply setnodupb_correct; exact Hnd | exact Hck].
+Qed.
+
 (** A family whose largest link is, up to relabelling, one of the
     14,794 certified classes at sizes 23–27 has at most 54 members. *)
 Theorem bound_of_covered_link :
@@ -63,8 +74,6 @@ Theorem bound_of_covered_link :
     length F <= 54.
 Proof.
   intros Hi F R Dk ck g h Hin Hgh Hhg HU HD Hno HR Hmax Hne H1 H2.
-  pose proof cls23_all_ok as Hok. unfold reps_okb in Hok; rewrite forallb_forall in Hok.
-  specialize (Hok (Dk, ck) Hin); simpl in Hok; apply andb_true_iff in Hok as [Hnd Hck].
-  apply setnodupb_correct in Hnd.
+  destruct (reps_okb_entry cls23_all Dk ck cls23_all_ok Hin) as [Hnd Hck].
   exact (class_bound Hi Dk ck Hnd Hck F R g h Hgh Hhg HU HD Hno HR Hmax Hne H1 H2).
 Qed.

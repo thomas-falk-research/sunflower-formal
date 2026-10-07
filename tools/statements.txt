@@ -2985,3 +2985,6 @@ d49e2a7c3d53d6e8  thm LinkCerts24.descent_24
 
 2c5659089cf68a6c  thm LinkCerts24.g_four_at_most_79_of_census_24
     g_four_at_most_79_of_census_24 : IotaAtMost 4 27 -> Census cls24_all 24 -> MeetingBound 4 56 -> GAtMost 4 79
+
+a0d4f8f990ec123c  thm LinkCerts23.bound_of_covered_link
+    bound_of_covered_link : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (Dk : Family) (ck : cert) (g h : nat -> nat), List.In (Dk, ck) cls23_all -> (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> DisjointFrom R F <> nil -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
