@@ -1109,3 +1109,8 @@ def Stability4.saturation_certificate
 thm LinkCombine.g_at_most_of_descent_and_meeting
 thm LinkCombine.g_four_at_most_78
 thm LinkCombine.g_four_at_most_83_of_iota
+thm LinkLP.link_lp_bound
+thm LinkLP.certcheck_transfer
+thm LinkLP.class_bound
+thm LinkLP.descent_of_census
+thm LinkLP.g_four_at_most_80_of_census

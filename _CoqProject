@@ -56,3 +56,5 @@ coq/Audit.v
 coq/VCSunflower.v
 coq/Stability4.v
 coq/LinkCombine.v
+coq/LinkLP.v
+coq/LinkCerts25.v

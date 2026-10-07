@@ -361,10 +361,10 @@ Highlights of the less-routine parts:
 ## Verifying
 
 ```bash
-make verify        # builds all 55 Coq files, then runs the axiom audit
+make verify        # builds all 57 Coq files, then runs the axiom audit
 ```
 
-Expected: every audited theorem (823 of them, including `f_2_3_eq_7`,
+Expected: every audited theorem (828 of them, including `f_2_3_eq_7`,
 `hall_marriage_theorem`, `koenig_theorem`,
 `lower_bound_exponential`, `spread_reduction`, `spread_erdos_rado`)
 reports
