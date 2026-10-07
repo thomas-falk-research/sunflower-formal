@@ -56,10 +56,15 @@ def main():
              "From Coq Require Import List.", "Import ListNotations.",
              "From Coq Require Import Lia.", "From Sunflower Require Import Sunflower IotaRate LinkCombine LinkLP.", ""]
     names = []
+    skipped = []
     for k, (F, c) in enumerate(zip(fams, C)):
         linkcert.validate(F)
         B = linkcert.unwitnessed(F)
-        K, yi, zi, wi = scale(F, B, c)
+        try:
+            K, yi, zi, wi = scale(F, B, c)
+        except AssertionError:
+            skipped.append(k)      # certificate does not reach 54 - |D| (the link23 classes)
+            continue
         D = coq_list(coq_list(sorted(S)) for S in F)
         Y = coq_list(f"({coq_list(sorted(S))}, {yi[i]})" for i, S in enumerate(F) if yi[i])
         Z = coq_list(f"({coq_list(sorted(T))}, {zi[j]})" for j, T in enumerate(B) if zi[j])
@@ -78,7 +83,7 @@ def main():
     lines.append("")
     if not emit_closing:
         open(out, "w").write("\n".join(lines))
-        print("wrote", out, "classes", len(names), "(shard, no closing theorems)")
+        print("wrote", out, "classes", len(names), "(shard, no closing theorems)", "skipped", len(skipped), skipped)
         return
     lo = min(len(F) for F in fams)
     lines.append(f"(** The descent at link size {lo} and above, conditional only on [ι(4) ≤ 27]")
@@ -95,7 +100,8 @@ def main():
     lines.append("Qed.")
     lines.append("")
     open(out, "w").write("\n".join(lines))
-    print("wrote", out, "classes", len(names), "sizes", sorted(set(len(F) for F in fams)))
+    print("wrote", out, "classes", len(names), "sizes", sorted(set(len(F) for F in fams)),
+          "skipped", len(skipped), skipped[:20])
 
 if __name__ == "__main__":
     main()

@@ -15199,11 +15199,10 @@ sublists of at most three points (the earlier `subsets` was `2^|V|`).
 | size 23 (§64.6, §65) | still Python-checked certificates (12,513 classes) plus the finer `link23` model for 11 classes, **not formalised** |
 | `g(4) ≤ 79` (`LinkCerts24.g_four_at_most_79_of_census_24`) | kernel, given `ι(4) ≤ 27`, the census at 24–27 and `MeetingBound 4 56` |
 | `g(4) ≤ 78` (§67) | needs size 23 in the kernel |
-| `coqchk` on the data modules | **not run**: re-checking a `vm_compute` proof re-runs the computation, about three hours for the six modules; `coqc` accepted each, and `Print Assumptions` is closed |
+| `coqchk` on the data modules | **PASS** on `LinkCerts25` (24 min) and the four size-24 shards (run in parallel, each about an hour); `LinkCerts24` itself adds no computation and was not re-checked separately |
+| size 23, the 12,513 LP-certified classes | exported as 24 shards (`coq/LinkCerts23s0.v`–`s23.v`, `coq/LinkCerts23.v`), skipping exactly the 11 finer-model classes; compiling in waves of four when this was written, **not yet in `_CoqProject`**, nothing claimed until they pass |
 
-Owed, in order: (1) `make coqchk` over the data modules, on a machine
-that can give it three hours; (2) the 12,513 LP-certified classes at 23
-— about 9 h of `vm_compute` in shards, or less with `native_compute`;
-(3) the 11 classes at 23 that need the finer model, which is a second LP
-whose validity would need its own proof; (4) the census itself (§59.4
+Owed, in order: (1) the size-23 shards, about 6 h of wall time in
+waves of four; (2) the 11 classes at 23 that need the finer model, which is a second LP
+whose validity would need its own proof; (3) the census itself (§59.4
 item 1), which no part of this section touches.

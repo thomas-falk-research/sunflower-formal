@@ -2792,3 +2792,25 @@ three pages they came from were rendered and looked at in this container
 readings are the report's, and are labelled as such above rather than
 promoted. That is rule 30's clause, applied: a commissioned reading is
 evidence about the commission until the page is on screen here.
+
+### [OAI26] github.com/openai/math — searched 7 Oct 2026, nothing on sunflowers
+
+The repository released on 7 October 2026 holds, per its README, "722
+mathematical manuscripts organised into 372 families" produced by an
+unreleased internal model, "at different stages of verification", with
+Lean formalisations for "many, but not all". Its manuscript map
+`CONTENTS.md` (640,371 characters, 9,169 lines, downloaded and grepped
+locally, not read through a summariser) was searched for *sunflower*,
+*Erdős–Rado*, *Delta-system*, *Δ-system*, *intersecting families*,
+*extremal set theory*, *Erdős–Ko–Rado*, *spread lemma*, *Kahn–Kalai*,
+*hypergraph Turán*. **One hit, and it is not about sunflowers:** entry
+176, *The second Kahn–Kalai conjecture with an edge-count bound*
+(`preprints/The-second-Kahn-Kalai-conjecture-September-24-2026/`),
+claiming the threshold for a copy of `H` in `G(n,p)` is at most
+`C·p_E(n,H)(1 + log₂ h)`; its neighbour entry claims Talagrand's
+discrete-convexity conjecture. Both sit in the threshold literature
+adjacent to the spread lemma (`ALWZ.Rao20_lemma2`), neither touches
+`f(n,k)`, and neither is marked as Lean-formalised in the map. Verdict
+for this repository: **nothing to cite, nothing to compete with on the
+sunflower problem; the whole collection is unverified by its own
+description** (rule 4 applies to every entry).
