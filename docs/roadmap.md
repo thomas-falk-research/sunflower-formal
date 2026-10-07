@@ -15204,7 +15204,10 @@ sublists of at most three points (the earlier `subsets` was `2^|V|`).
 | `LinkCerts23.bound_of_covered_link`: a family whose largest link is one of the 14,794 certified classes at 23–27 has at most 54 members | **PROVEN** given `ι(4) ≤ 27` (kernel). Lesson recorded: a `rewrite forallb_forall` on a hypothesis about the *concrete* 14,794-entry list made the unifier evaluate the whole check with the slow tactic-level reduction (over an hour, killed); extracting one entry through a lemma stated over an abstract list (`reps_okb_entry`) takes seconds |
 | `descent_23`, hence a kernel `g(4) ≤ 78` | **not stated**: the 11 classes at 23 that §65 closed with the finer `link23` model (DRAT and branch-and-bound) are outside the kernel, so no `Census … 23` hypothesis is true for this list. The Python trust base at size 23 is now exactly those 11 classes |
 
-Owed, in order: (1) `coqchk` on the 24 size-23 shards, about 6 h in
-waves of four, not run; (2) the 11 classes at 23 that need the finer model, which is a second LP
-whose validity would need its own proof; (3) the census itself (§59.4
+`coqchk` on the 24 size-23 shards: **PASS**, all 24, about 20 min each
+in six waves of four. Every data module that carries a computation
+(sizes 23–27) has now passed the separate kernel checker.
+
+Owed, in order: (1) the 11 classes at 23 that need the finer model, which is a second LP
+whose validity would need its own proof; (2) the census itself (§59.4
 item 1), which no part of this section touches.
