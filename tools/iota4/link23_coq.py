@@ -206,7 +206,7 @@ def solve(D, out):
             if bound < sum(vs[i] * lo[i] for i in range(n)) + Dn * c * T:
                 break
         else:
-            raise SystemExit("rounding broke a leaf certificate")
+            return None            # too close to the threshold: branch instead
         ys = {j: q for j, q in ys.items() if q}
         if c == 0:                # homogeneous: divide by the gcd
             g = 0
@@ -225,16 +225,39 @@ def solve(D, out):
         stats["nodes"] += 1
         r = linprog(-np.ones(n), A_ub=A, b_ub=b, bounds=list(zip(lo, hi)), method="highs")
         if r.status == 2:
-            stats["leaves"] += 1
-            return {"leaf": leaf_cert(lo, hi, 0)}
-        assert r.status == 0, r.message
-        val = -r.fun
-        if val < goal + 1 - 1e-6:
-            stats["leaves"] += 1
-            return {"leaf": leaf_cert(lo, hi, 1)}
-        x = r.x
+            c = leaf_cert(lo, hi, 0)
+            if c is not None:
+                stats["leaves"] += 1
+                return {"leaf": c}
+            x = None
+        else:
+            assert r.status == 0, r.message
+            val = -r.fun
+            if val < goal + 1 - 1e-6:
+                c = leaf_cert(lo, hi, 1)
+                if c is not None:
+                    stats["leaves"] += 1
+                    return {"leaf": c}
+            x = r.x
+        if x is None:                 # infeasible but the Farkas certificate would not round: split anyway
+            frac = [i for i in range(n) if lo[i] < hi[i]]
+            if not frac:
+                raise SystemExit("infeasible box with no room to split")
+            i = frac[0]
+            f = (lo[i] + hi[i]) // 2
+            h2 = list(hi); h2[i] = f
+            l2 = list(lo); l2[i] = f + 1
+            return {"var": i, "f": f, "le": rec(lo, h2), "ge": rec(l2, hi)}
         frac = [i for i in range(n) if abs(x[i] - round(x[i])) > 1e-6]
         if not frac:
+            if val < goal + 1 - 1e-6:   # integral LP optimum below the threshold, but the dual would not round
+                frac = [i for i in range(n) if lo[i] < hi[i]]
+                if not frac:
+                    raise SystemExit("integral box that will not certify")
+                i = frac[0]; f = int(round(x[i])) if lo[i] <= round(x[i]) < hi[i] else lo[i]
+                h2 = list(hi); h2[i] = f
+                l2 = list(lo); l2[i] = f + 1
+                return {"var": i, "f": f, "le": rec(lo, h2), "ge": rec(l2, hi)}
             raise SystemExit(f"integer point with sum {val}: the class is NOT certified")
         # branch on a fractional determined type (cap 1) first: those switch the
         # big-M rows on and off, and the LP is weak until they are fixed
