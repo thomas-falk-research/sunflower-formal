@@ -122,6 +122,9 @@ def rows_of(D, U, ts, big):
     out = []
     for T in U:
         out.append((("RCap", T), {i: 1 for i, t in enumerate(ts) if t[0] == T}, cap(T)))
+    for T in U:      # trace inside a link member: outer parts pairwise intersect
+        if any(all(x in C for x in T) for C in D):
+            out.append((("RCapI", T), {i: 1 for i, t in enumerate(ts) if t[0] == T}, {1: 13, 2: 3}.get(len(T), 1)))
     for C in D:
         out.append((("RLink", C), {i: 1 for i, t in enumerate(ts) if disjf(t[0], C)}, Delta - 1))
     for k in POS:
@@ -307,7 +310,7 @@ def coq_list(items):
 
 
 def coq_tag(tag):
-    if tag[0] == "RCap" or tag[0] == "RLink":
+    if tag[0] in ("RCap", "RCapI", "RLink"):
         return f"{tag[0]} {coq_list(tag[1])}"
     if tag[0] == "RStar" or tag[0] == "RDet":
         return f"{tag[0]} {tag[1]}"
@@ -347,16 +350,22 @@ def batch(cls, size, shard, out):
     i, n = map(int, shard.split("/"))
     keep = keep[i::n]
     docs = []
+    failed = []
     for k in keep:
         D = canon(fams[k])
-        stats, doc = solve(D, None)
+        try:
+            stats, doc = solve(D, None)
+        except SystemExit as e:          # the model does not certify this class
+            failed.append(k)
+            print(k, "FAILED:", e, flush=True)
+            continue
         check_doc(D, doc)
         doc["k"] = k
         docs.append(doc)
         print(k, stats, flush=True)
     with gzip.open(out, "wt") as fh:
         json.dump(docs, fh)
-    print("wrote", out, len(docs), "classes")
+    print("wrote", out, len(docs), "classes; failed", len(failed), failed)
 
 
 def emit_shard(cls, path, out, name):

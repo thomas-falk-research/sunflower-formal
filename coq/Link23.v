@@ -304,7 +304,12 @@ Inductive tag : Type :=
 | RStar (k : nat)              (* members through position [k] of [R]: at most 25 *)
 | RDet (i : nat)               (* type [i] determined: its link has at most [|D|] members *)
 | RExcl (i j : nat)           (* type [i] determined: it excludes type [j] *)
-| RIota.                       (* members missing the link's points: at most 27, by [ι(4) ≤ 27] *)
+| RIota                        (* members missing the link's points: at most 27, by [ι(4) ≤ 27] *)
+| RCapI (T : list nat).        (* trace [T] inside a link member: at most [icap T], by [ι(4 − |T|)] *)
+
+(** The cap when the outer parts must pairwise intersect: [ι(3) ≤ 13],
+    [ι(2) ≤ 3], [ι(1) = 1]. *)
+Definition icap (T : list nat) : nat := match length T with 1 => 13 | 2 => 3 | _ => 1 end.
 
 Definition row : Type := ((ltype -> nat) * nat)%type.
 Definition trivial_row : row := (fun _ => 0, 0).
@@ -329,6 +334,8 @@ Definition rowc (D : Family) (U : list (list nat)) (ts : list ltype) (big : nat)
         else trivial_row
       else trivial_row
   | RIota => if 1 <=? length D then (fun t => Nat.b2n (nilb (fst t)), 27) else trivial_row
+  | RCapI T => if inlb T U && existsb (subsetf T) D then (fun t => Nat.b2n (leqb (fst t) T), icap T)
+               else trivial_row
   end.
 
 Definition rowsat (ts : list ltype) (x : ltype -> nat) (r : row) : Prop :=
@@ -1187,6 +1194,88 @@ Section Model.
     destruct (tr V S); [exfalso; apply NE; reflexivity | discriminate].
   Qed.
 
+  (** A trace inside a link member [C]: two members with that trace and
+      disjoint outer parts would form a sunflower with [C], so the outer
+      parts pairwise intersect and [ι] caps them instead of [g]. *)
+  Lemma capI_row : forall T C, In T (unwit D) -> In C D -> Subset T C ->
+    suml (map (fun t => Nat.b2n (leqb (fst t) T) * tcount V R M t) (types D)) <= icap T.
+  Proof.
+    intros T C HT HC HTC. rewrite row_sum, suml_b2n.
+    set (MT := filter (fun S => leqb (fst (typeof V R S)) T) M).
+    assert (HMT : forall S, In S MT -> In S M /\ tr V S = T).
+    { intros S HS; unfold MT in HS; apply filter_In in HS as [H1 H2]; split; [exact H1 |].
+      apply leqb_true_iff in H2; exact H2. }
+    change (length MT <= icap T).
+    assert (HTne : T <> []).
+    { intro E; subst; unfold unwit in HT; apply filter_In in HT as [HT _];
+      apply in_traces_length in HT; simpl in HT; lia. }
+    assert (HT3 : length T <= 3).
+    { unfold unwit in HT; apply filter_In in HT as [HT _]; apply in_traces_length in HT; lia. }
+    assert (HTnd : NoDup T).
+    { unfold unwit in HT; apply filter_In in HT as [HT _]; apply in_traces in HT as [HT _].
+      apply (subs_le_elem_NoDup 3 V T (points_NoDup D) HT). }
+    assert (HTsub : forall S, In S MT -> Subset T S).
+    { intros S HS x Hx; destruct (HMT S HS) as [_ E]; rewrite <- E in Hx; apply in_tr in Hx; tauto. }
+    set (O := map (outer T) MT).
+    assert (HOlen : length O = length MT) by (unfold O; apply map_length).
+    rewrite <- HOlen.
+    assert (HOU : Uniform (4 - length T) O).
+    { unfold Uniform; apply Forall_forall; intros Y HY.
+      apply in_map_iff in HY as [S [E HS]]; subst Y.
+      destruct (HMT S HS) as [HSM _].
+      destruct (member_uniform F HU S (M_in_F S HSM)) as [HL HN].
+      split; [| apply NoDup_filter; exact HN].
+      pose proof (outer_length T S HTnd HN (HTsub S HS)). lia. }
+    assert (HOD : Distinct O).
+    { unfold O; apply SetNoDup_map.
+      - unfold MT; apply SetNoDup_filter; apply M_SetNoDup.
+      - intros a b Ha Hb [H1 H2]; split; intros x Hx.
+        + destruct (in_dec_nat x T) as [HxT | HxT]; [apply (HTsub b Hb); exact HxT |].
+          assert (In x (outer T a)) by (apply in_outer; tauto).
+          apply H1 in H; apply in_outer in H; tauto.
+        + destruct (in_dec_nat x T) as [HxT | HxT]; [apply (HTsub a Ha); exact HxT |].
+          assert (In x (outer T b)) by (apply in_outer; tauto).
+          apply H2 in H; apply in_outer in H; tauto. }
+    assert (HOI : Intersecting O).
+    { intros A B HA HB Hd.
+      apply in_map_iff in HA as [S1 [E1 H1]]; apply in_map_iff in HB as [S2 [E2 H2]]; subst A B.
+      destruct (HMT S1 H1) as [HS1 T1]; destruct (HMT S2 H2) as [HS2 T2].
+      destruct (list_eq_dec Nat.eq_dec S1 S2) as [E | NE].
+      - subst S2. destruct (member_uniform F HU S1 (M_in_F S1 HS1)) as [HL HN].
+        pose proof (outer_length T S1 HTnd HN (HTsub S1 H1)).
+        destruct (outer T S1) as [| z o] eqn:Eo; [simpl in H; lia |].
+        exact (Hd z (or_introl eq_refl) (or_introl eq_refl)).
+      - assert (HCF : In C F) by (apply in_DisjointFrom in HC; tauto).
+        assert (HS12 : ~ SetEq S1 S2).
+        { intro E; apply NE; apply (SetNoDup_setEq_eq HD (M_in_F S1 HS1) (M_in_F S2 HS2) E). }
+        assert (HI1 : SetEq (inter S1 C) T).
+        { split; intros x Hx.
+          - apply in_inter_iff in Hx as [Hx1 Hx2]. rewrite <- T1. apply in_tr; split; [| exact Hx1].
+            apply (member_Subset_points D C HC); exact Hx2.
+          - apply in_inter_iff; split; [apply (HTsub S1 H1); exact Hx | apply HTC; exact Hx]. }
+        assert (HI2 : SetEq (inter S2 C) T).
+        { split; intros x Hx.
+          - apply in_inter_iff in Hx as [Hx1 Hx2]. rewrite <- T2. apply in_tr; split; [| exact Hx1].
+            apply (member_Subset_points D C HC); exact Hx2.
+          - apply in_inter_iff; split; [apply (HTsub S2 H2); exact Hx | apply HTC; exact Hx]. }
+        assert (HI12 : SetEq (inter S1 S2) T).
+        { split; intros x Hx.
+          - apply in_inter_iff in Hx as [Hx1 Hx2].
+            destruct (in_dec_nat x T) as [| HxT]; [assumption | exfalso].
+            apply (Hd x); apply in_outer; tauto.
+          - apply in_inter_iff; split; [apply (HTsub S1 H1) | apply (HTsub S2 H2)]; exact Hx. }
+        exact (three_sunflower S1 S2 C T (M_in_F S1 HS1) (M_in_F S2 HS2) HCF HS12
+                 (not_SetEq_M_D S1 C HS1 HC) (not_SetEq_M_D S2 C HS2 HC) HI12 HI1 HI2). }
+    assert (HOno : ~ ContainsKSunflower 3 O).
+    { intro HK. apply (outer_sunflower_lift T MT); [| exact HK].
+      intros S HS; split; [apply M_in_F; apply HMT; exact HS | apply HTsub; exact HS]. }
+    assert (HT1 : 1 <= length T) by (destruct T; [exfalso; apply HTne; reflexivity | simpl; lia]).
+    unfold icap. destruct (length T) as [| [| [| [| n]]]] eqn:EL; try lia.
+    - replace (4 - 1) with 3 in HOU by lia. apply iota_three_at_most_thirteen; assumption.
+    - replace (4 - 2) with 2 in HOU by lia. apply iota_two_at_most_three; assumption.
+    - replace (4 - 3) with 1 in HOU by lia. apply iota_one_at_most_one; assumption.
+  Qed.
+
   (** A determined type in the list has cap 1. *)
   Lemma ub_of_det : forall a, In a (types D) -> dett a = true -> ub_of a = 1.
   Proof.
@@ -1205,7 +1294,7 @@ Section Model.
   (** Every tagged row holds for the actual counts. *)
   Theorem rows_valid : forall tg, rowsat (types D) (tcount V R M) (rowc D (unwit D) (types D) (bigof (types D)) tg).
   Proof.
-    intros tg. unfold rowc. destruct tg as [T | C | k | i | i j |].
+    intros tg. unfold rowc. destruct tg as [T | C | k | i | i j | | T].
     - destruct (inlb T (unwit D)) eqn:E; [| apply trivial_row_sat].
       apply inlb_true_iff in E. unfold rowsat; cbn [fst snd]; unfold ltype in *. apply cap_row; exact E.
     - destruct (inlb C D) eqn:E; [| apply trivial_row_sat].
@@ -1256,6 +1345,10 @@ Section Model.
       assert (Hne : D <> []) by (intro E; rewrite E in ED; simpl in ED; lia).
       unfold rowsat; cbn [fst snd]; unfold ltype in *.
       pose proof (iota_row Hne) as H; unfold ltype in H. lia.
+    - destruct (inlb T (unwit D) && existsb (subsetf T) D) eqn:E; [| apply trivial_row_sat].
+      apply andb_true_iff in E as [E1 E2]. apply inlb_true_iff in E1.
+      apply existsb_exists in E2 as [C [HC HTC]]. apply subsetf_correct in HTC.
+      unfold rowsat; cbn [fst snd]. apply capI_row with C; assumption.
   Qed.
 End Model.
 
