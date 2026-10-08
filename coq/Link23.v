@@ -176,7 +176,8 @@ Inductive tag : Type :=
 | RLink (C : list nat)         (* members missing [C ∈ D]: at most [|D| − 1] *)
 | RStar (k : nat)              (* members through position [k] of [R]: at most 25 *)
 | RDet (i : nat)               (* type [i] determined: its link has at most [|D|] members *)
-| RExcl (i j : nat).           (* type [i] determined: it excludes type [j] *)
+| RExcl (i j : nat)           (* type [i] determined: it excludes type [j] *)
+| RIota.                       (* members missing the link's points: at most 27, by [ι(4) ≤ 27] *)
 
 Definition row : Type := ((ltype -> nat) * nat)%type.
 Definition trivial_row : row := (fun _ => 0, 0).
@@ -200,6 +201,7 @@ Definition rowc (D : Family) (U : list (list nat)) (ts : list ltype) (big : nat)
         if dett a && exclb D a b then (fun t => ub_of b * eqt t a + eqt t b, ub_of b)
         else trivial_row
       else trivial_row
+  | RIota => if 1 <=? length D then (fun t => Nat.b2n (nilb (fst t)), 27) else trivial_row
   end.
 
 Definition rowsat (ts : list ltype) (x : ltype -> nat) (r : row) : Prop :=
@@ -794,6 +796,7 @@ Section Model.
   (** ** The rows for the actual counts *)
 
   Hypothesis Hmax : forall C, In C F -> length (DisjointFrom C F) <= length D.
+  Hypothesis Hiota : IotaAtMost 4 27.
 
   Lemma row_sum : forall (g : ltype -> nat),
     suml (map (fun t => g t * tcount V R M t) (types D)) = suml (map (fun S => g (typeof V R S)) M).
@@ -1052,6 +1055,19 @@ Section Model.
         split; intros x Hx; [apply in_interb in Hx as [Hx1 Hx2]; exfalso; exact (H3 x Hx1 Hx2) | inversion Hx].
   Qed.
 
+  (** Members missing [V]: §64's constraint (c), [LinkLP.m0_constraint]. *)
+  Lemma iota_row : D <> [] ->
+    suml (map (fun t => Nat.b2n (nilb (fst t)) * tcount V R M t) (types D)) <= 27.
+  Proof.
+    intros Hne. rewrite row_sum, suml_b2n.
+    pose proof (m0_constraint F R HU HD Hno Hiota Hne) as H. fold D V in H.
+    eapply Nat.le_trans; [| exact H].
+    unfold count, M, Others. rewrite filter_filter_comm. apply length_filter_impl.
+    intros S _ H'. apply andb_true_iff in H' as [H1 _]. cbn [typeof fst] in H1.
+    destruct (list_eq_dec Nat.eq_dec (tr V S) []) as [E | NE]; [reflexivity |].
+    destruct (tr V S); [exfalso; apply NE; reflexivity | discriminate].
+  Qed.
+
   (** A determined type in the list has cap 1. *)
   Lemma ub_of_det : forall a, In a (types D) -> dett a = true -> ub_of a = 1.
   Proof.
@@ -1070,7 +1086,7 @@ Section Model.
   (** Every tagged row holds for the actual counts. *)
   Theorem rows_valid : forall tg, rowsat (types D) (tcount V R M) (rowc D (unwit D) (types D) (bigof (types D)) tg).
   Proof.
-    intros tg. unfold rowc. destruct tg as [T | C | k | i | i j].
+    intros tg. unfold rowc. destruct tg as [T | C | k | i | i j |].
     - destruct (inlb T (unwit D)) eqn:E; [| apply trivial_row_sat].
       apply inlb_true_iff in E. unfold rowsat; cbn [fst snd]; unfold ltype in *. apply cap_row; exact E.
     - destruct (inlb C D) eqn:E; [| apply trivial_row_sat].
@@ -1116,6 +1132,11 @@ Section Model.
       pose proof (tcount_le_ub b Hb) as Hub.
       destruct (tcount V R M a) as [| [| na]] eqn:Ea; [lia | | lia].
       pose proof (excl_row a b Hab Ed Ex ltac:(lia)) as H. lia.
+    - destruct (1 <=? length D) eqn:ED; [| apply trivial_row_sat].
+      apply Nat.leb_le in ED.
+      assert (Hne : D <> []) by (intro E; rewrite E in ED; simpl in ED; lia).
+      unfold rowsat; cbn [fst snd]; unfold ltype in *.
+      pose proof (iota_row Hne) as H; unfold ltype in H. lia.
   Qed.
 End Model.
 
@@ -1344,15 +1365,16 @@ Definition classcheck (D : Family) (tr : tree) : bool :=
   treecheck ts (rowc D U ts (bigof ts)) (repeat 0 (length ts)) (map ub_of ts) (54 - length D) tr.
 
 Theorem bound_of_tree :
+  IotaAtMost 4 27 ->
   forall (F : Family) (R : list nat) (tr : tree),
     Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
     (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
     classcheck (DisjointFrom R F) tr = true ->
     length F <= 54.
 Proof.
-  intros F R tr HU HD Hno HR Hmax Hc. unfold classcheck in Hc. cbv zeta in Hc.
+  intros Hiota F R tr HU HD Hno HR Hmax Hc. unfold classcheck in Hc. cbv zeta in Hc.
   set (D := DisjointFrom R F) in *. set (V := points D) in *. set (M := Others R F) in *.
-  pose proof (rows_valid F R HU HD Hno HR Hmax) as Hrows. cbv zeta in Hrows. fold D V M in Hrows.
+  pose proof (rows_valid F R HU HD Hno HR Hmax Hiota) as Hrows. cbv zeta in Hrows. fold D V M in Hrows.
   assert (Hb : Bounded (types D) (tcount V R M) (repeat 0 (length (types D))) (map ub_of (types D))).
   { intros j Hj. rewrite nth_repeat. split; [lia |].
     rewrite (List.nth_indep (map ub_of (types D)) 0 (ub_of dflt)) by (rewrite map_length; exact Hj).
@@ -1400,6 +1422,7 @@ Proof.
 Qed.
 
 Theorem finer_class_bound :
+  IotaAtMost 4 27 ->
   forall (Dk : Family) (tr : tree),
     Uniform 4 Dk -> SetNoDup Dk -> classcheck Dk tr = true ->
     forall (F : Family) (R : list nat) (g h : nat -> nat),
@@ -1410,7 +1433,7 @@ Theorem finer_class_bound :
       SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) ->
       length F <= 54.
 Proof.
-  intros Dk tr HUk HDk Hck F R g h Hgh Hhg HU HD Hno HR Hmax H1 H2.
+  intros Hiota Dk tr HUk HDk Hck F R g h Hgh Hhg HU HD Hno HR Hmax H1 H2.
   set (F' := rmapF h F). set (R' := rmap h R).
   assert (HU' : Uniform 4 F') by (apply (rmapF_Uniform h g Hhg); exact HU).
   assert (HD' : Distinct F') by (apply (rmapF_Distinct h g Hhg); exact HD).
@@ -1480,7 +1503,7 @@ Proof.
     change (length (DisjointFrom R' F') + length (Meeting R' F') = length F') in Hp.
     rewrite Hlen in Hp. assert (HF'len : length F' = length F) by (unfold F'; apply rmapF_length). lia. }
   rewrite <- Hlen2.
-  apply (bound_of_tree F2 R' tr HU2 HD2 Hno2 HR2 Hmax2). rewrite HDR2. exact Hck.
+  apply (bound_of_tree Hiota F2 R' tr HU2 HD2 Hno2 HR2 Hmax2). rewrite HDR2. exact Hck.
 Qed.
 
 (** ** The descent with both kinds of certificate
@@ -1562,5 +1585,5 @@ Proof.
   - destruct (Hreps Dk ck Hin) as [Hnd Hck].
     exact (class_bound Hiota Dk ck Hnd Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax HDne H1 H2).
   - destruct (trees_okb_entry trees Dk tr Htrees Hin) as [HUk [HDk Hck]].
-    exact (finer_class_bound Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
+    exact (finer_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
 Qed.
