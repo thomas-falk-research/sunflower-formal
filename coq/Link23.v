@@ -40,11 +40,13 @@ Definition ltype := (list nat * list nat)%type.    (* (trace on V, positional pr
 (** The type list, in a fixed order: M1 types (unwitnessed trace, any
     profile, together at most 4 points) then M0 types (empty trace,
     proper profile). *)
-Definition types (D : Family) : list ltype :=
+Definition types_of (U : list (list nat)) : list ltype :=
   flat_map (fun T => map (fun P => (T, P))
                          (filter (fun P => length T + length P <=? 4) PROF))
-           (unwit D)
+           U
   ++ map (fun P => ([], P)) (filter (fun P => length P <=? 3) PROF).
+
+Definition types (D : Family) : list ltype := types_of (unwit D).
 
 Definition typeof (V R S : list nat) : ltype := (tr V S, prof R S).
 
@@ -106,7 +108,7 @@ Qed.
 
 Lemma types_NoDup : forall D, NoDup (types D).
 Proof.
-  intros D; unfold types.
+  intros D; unfold types, types_of.
   assert (HU : NoDup (unwit D)) by (apply SetNoDup_NoDup; apply unwit_SetNoDup).
   pose proof PROF_NoDup as HP.
   apply NoDup_app_disjoint.
@@ -122,6 +124,131 @@ Proof.
   - intros x H1 H2. apply in_flat_map in H1 as [T [HT H1]]. apply in_map_iff in H1 as [P [E _]]; subst x.
     apply in_map_iff in H2 as [P' [E _]]. injection E; intros _ ET; subst T.
     unfold unwit in HT; apply filter_In in HT as [HT _]; apply in_traces_length in HT; simpl in HT; lia.
+Qed.
+
+Lemma membf_false_iff : forall x A, membf x A = false <-> ~ In x A.
+Proof.
+  intros x A; split.
+  - intros H Hin; apply membf_true_iff in Hin; rewrite Hin in H; discriminate.
+  - intros H; destruct (membf x A) eqn:E; [exfalso; apply H; apply membf_true_iff; exact E | reflexivity].
+Qed.
+
+Definition subsetf (X S : list nat) : bool := forallb (fun x => membf x S) X.
+
+Lemma subsetf_correct : forall X S, subsetf X S = true <-> Subset X S.
+Proof.
+  intros X S; unfold subsetf, Subset; rewrite forallb_forall; split; intros H x Hx;
+    [apply membf_true_iff; apply H; exact Hx | apply membf_true_iff; apply H; exact Hx].
+Qed.
+
+(** ** A faster enumeration of the unwitnessed traces
+
+    [LinkLP.witnessedb] recomputes the core of every ordered pair of
+    link members for every trace.  [pairw] computes each unordered
+    pair's core [K] and the rest [W] of its union once; a trace is
+    witnessed by the pair iff it contains [K] and misses [W]. *)
+
+Definition pairof (C1 C2 : list nat) : list nat * list nat :=
+  let K := interb C1 C2 in (K, filter (fun x => negb (membf x K)) (C1 ++ C2)).
+
+Fixpoint pairw (D : Family) : list (list nat * list nat) :=
+  match D with
+  | [] => []
+  | C1 :: D' => map (pairof C1) (filter (fun C2 => negb (seteqf C1 C2)) D') ++ pairw D'
+  end.
+
+Definition witnessedw (T : list nat) (P : list (list nat * list nat)) : bool :=
+  existsb (fun p => subsetf (fst p) T && disjf T (snd p)) P.
+
+Definition unwitw (D : Family) : list (list nat) :=
+  filter (fun T => negb (witnessedw T (pairw D))) (traces (points D)).
+
+Lemma pair_cond :
+  forall T C1 C2,
+    (subsetf (fst (pairof C1 C2)) T && disjf T (snd (pairof C1 C2)) = true)
+    <-> (seteqf (interb T C1) (interb C1 C2) = true /\ seteqf (interb T C2) (interb C1 C2) = true).
+Proof.
+  intros T C1 C2; unfold pairof; cbn [fst snd].
+  rewrite andb_true_iff, subsetf_correct, disjf_correct, seteqf_correct, seteqf_correct.
+  split.
+  - intros [HK HW]. split; split; intros x Hx.
+    + apply in_interb in Hx as [HxT HxC].
+      destruct (in_dec_nat x (interb C1 C2)) as [| Hn]; [assumption | exfalso].
+      apply (HW x HxT). apply filter_In; split; [apply in_app_iff; auto |].
+      apply negb_true_iff; apply membf_false_iff; exact Hn.
+    + apply in_interb; split; [apply HK; exact Hx | apply in_interb in Hx; tauto].
+    + apply in_interb in Hx as [HxT HxC].
+      destruct (in_dec_nat x (interb C1 C2)) as [| Hn]; [assumption | exfalso].
+      apply (HW x HxT). apply filter_In; split; [apply in_app_iff; auto |].
+      apply negb_true_iff; apply membf_false_iff; exact Hn.
+    + apply in_interb; split; [apply HK; exact Hx | apply in_interb in Hx; tauto].
+  - intros [[H1 H1'] [H2 H2']]. split.
+    + intros x Hx. apply H1' in Hx. apply in_interb in Hx; tauto.
+    + intros x HxT HxW. apply filter_In in HxW as [HxU Hn].
+      apply negb_true_iff in Hn; apply membf_false_iff in Hn.
+      apply in_app_iff in HxU as [Hx | Hx]; apply Hn.
+      * apply H1; apply in_interb; tauto.
+      * apply H2; apply in_interb; tauto.
+Qed.
+
+Lemma in_pairw :
+  forall D p, In p (pairw D) ->
+    exists C1 C2, In C1 D /\ In C2 D /\ seteqf C1 C2 = false /\ p = pairof C1 C2.
+Proof.
+  induction D as [| C D IH]; intros p Hp; [inversion Hp |].
+  simpl in Hp; apply in_app_iff in Hp as [Hp | Hp].
+  - apply in_map_iff in Hp as [C2 [E HC2]]; apply filter_In in HC2 as [HC2 Hne].
+    apply negb_true_iff in Hne. exists C, C2; simpl; auto.
+  - destruct (IH p Hp) as [C1 [C2 [H1 [H2 [H3 H4]]]]]. exists C1, C2; simpl; auto.
+Qed.
+
+Lemma pairw_cover :
+  forall D C1 C2, In C1 D -> In C2 D -> seteqf C1 C2 = false ->
+    In (pairof C1 C2) (pairw D) \/ In (pairof C2 C1) (pairw D).
+Proof.
+  induction D as [| C D IH]; intros C1 C2 H1 H2 Hne; [inversion H1 |].
+  simpl. destruct H1 as [E1 | H1]; destruct H2 as [E2 | H2].
+  - subst C1; subst C2. exfalso. assert (seteqf C C = true) by (apply seteqf_correct; apply SetEq_refl). congruence.
+  - subst C1. left. apply in_app_iff; left. apply in_map_iff. exists C2; split; [reflexivity |].
+    apply filter_In; split; [exact H2 | apply negb_true_iff; exact Hne].
+  - subst C2. right. apply in_app_iff; left. apply in_map_iff. exists C1; split; [reflexivity |].
+    apply filter_In; split; [exact H1 | apply negb_true_iff].
+    destruct (seteqf C C1) eqn:E; [| reflexivity]. apply seteqf_correct in E; apply SetEq_sym in E;
+      apply seteqf_correct in E; congruence.
+  - destruct (IH C1 C2 H1 H2 Hne) as [H | H]; [left | right]; apply in_app_iff; right; exact H.
+Qed.
+
+Lemma pair_cond_sym :
+  forall T C1 C2,
+    (seteqf (interb T C1) (interb C1 C2) = true /\ seteqf (interb T C2) (interb C1 C2) = true)
+    <-> (seteqf (interb T C2) (interb C2 C1) = true /\ seteqf (interb T C1) (interb C2 C1) = true).
+Proof.
+  intros T C1 C2. rewrite !seteqf_correct.
+  assert (E : SetEq (interb C1 C2) (interb C2 C1)).
+  { split; intros x Hx; apply in_interb in Hx; apply in_interb; tauto. }
+  split; intros [H1 H2]; split;
+    (eapply SetEq_trans; [eassumption | solve [exact E | apply SetEq_sym; exact E]]).
+Qed.
+
+Lemma witnessedw_correct : forall T D, witnessedw T (pairw D) = witnessedb T D.
+Proof.
+  intros T D. apply eq_true_iff_eq. unfold witnessedw, witnessedb.
+  rewrite existsb_exists, existsb_exists. split.
+  - intros [p [Hp Hc]]. destruct (in_pairw D p Hp) as [C1 [C2 [H1 [H2 [Hne E]]]]]; subst p.
+    apply pair_cond in Hc as [Hc1 Hc2].
+    exists C1; split; [exact H1 |]. apply existsb_exists. exists C2; split; [exact H2 |].
+    rewrite Hne, Hc1, Hc2; reflexivity.
+  - intros [C1 [H1 Hc]]. apply existsb_exists in Hc as [C2 [H2 Hc]].
+    apply andb_true_iff in Hc as [Hc Hc2]; apply andb_true_iff in Hc as [Hne Hc1].
+    apply negb_true_iff in Hne.
+    destruct (pairw_cover D C1 C2 H1 H2 Hne) as [Hp | Hp].
+    + exists (pairof C1 C2); split; [exact Hp | apply pair_cond; tauto].
+    + exists (pairof C2 C1); split; [exact Hp | apply pair_cond; apply pair_cond_sym; tauto].
+Qed.
+
+Lemma unwitw_eq : forall D, unwitw D = unwit D.
+Proof.
+  intros D; unfold unwitw, unwit; apply filter_ext; intros T; rewrite witnessedw_correct; reflexivity.
 Qed.
 
 (** [typeof] depends on the member only as a set. *)
@@ -402,7 +529,7 @@ Section Model.
   (** Every member of [M] has a type in the list. *)
   Lemma typeof_in_types : forall S, In S M -> In (typeof V R S) (types D).
   Proof.
-    intros S HS. unfold typeof, types. apply in_app_iff.
+    intros S HS. unfold typeof, types, types_of. apply in_app_iff.
     assert (HP : In (prof R S) PROF).
     { apply in_PROF; split; [| apply profile_nonempty; exact HS].
       apply (filter_in_subs_le (fun k => memb (nth k R 0) S) POS 4).
@@ -456,14 +583,6 @@ Section Model.
       form a distinct, [(4 − |X|)]-uniform, sunflower-free family, so
       their number is bounded by [g(4 − |X|)].  This generalises
       [LinkLP.trace_class_cap] from a canonical trace to any [X]. *)
-
-  Definition subsetf (X S : list nat) : bool := forallb (fun x => membf x S) X.
-
-  Lemma subsetf_correct : forall X S, subsetf X S = true <-> Subset X S.
-  Proof.
-    intros X S; unfold subsetf, Subset; rewrite forallb_forall; split; intros H x Hx;
-      [apply membf_true_iff; apply H; exact Hx | apply membf_true_iff; apply H; exact Hx].
-  Qed.
 
   Lemma superset_count_le :
     forall X Mb, NoDup X -> length X <= 3 -> GAtMost (4 - length X) Mb ->
@@ -742,7 +861,7 @@ Section Model.
   (** Every type count respects its upper bound. *)
   Theorem tcount_le_ub : forall t, In t (types D) -> tcount V R M t <= ub_of t.
   Proof.
-    intros [T P] Ht. unfold types in Ht; apply in_app_iff in Ht as [Ht | Ht].
+    intros [T P] Ht. unfold types, types_of in Ht; apply in_app_iff in Ht as [Ht | Ht].
     - (* M1 *)
       apply in_flat_map in Ht as [T' [HT' Ht]]; apply in_map_iff in Ht as [P' [E HP']].
       injection E; intros; subst P' T'.
@@ -1072,7 +1191,7 @@ Section Model.
   Lemma ub_of_det : forall a, In a (types D) -> dett a = true -> ub_of a = 1.
   Proof.
     intros [T P] Ha Hd. unfold dett in Hd; simpl in Hd; apply Nat.eqb_eq in Hd.
-    unfold types in Ha; apply in_app_iff in Ha as [Ha | Ha].
+    unfold types, types_of in Ha; apply in_app_iff in Ha as [Ha | Ha].
     - apply in_flat_map in Ha as [T' [HT' Ha]]; apply in_map_iff in Ha as [P' [E _]]; injection E; intros; subst.
       destruct T as [| t0 T0].
       + exfalso. unfold unwit in HT'; apply filter_In in HT' as [HT' _]; apply in_traces_length in HT'; simpl in HT'; lia.
@@ -1360,8 +1479,8 @@ End Dual.
     below by 0 and above by [ub_of], and the tree must show
     [Σ x < 54 − |D|], i.e. [|D| + Σ x + 1 ≤ 54]. *)
 Definition classcheck (D : Family) (tr : tree) : bool :=
-  let U := unwit D in
-  let ts := types D in
+  let U := unwitw D in
+  let ts := types_of U in
   treecheck ts (rowc D U ts (bigof ts)) (repeat 0 (length ts)) (map ub_of ts) (54 - length D) tr.
 
 Theorem bound_of_tree :
@@ -1373,6 +1492,7 @@ Theorem bound_of_tree :
     length F <= 54.
 Proof.
   intros Hiota F R tr HU HD Hno HR Hmax Hc. unfold classcheck in Hc. cbv zeta in Hc.
+  rewrite unwitw_eq in Hc. change (types_of (unwit (DisjointFrom R F))) with (types (DisjointFrom R F)) in Hc.
   set (D := DisjointFrom R F) in *. set (V := points D) in *. set (M := Others R F) in *.
   pose proof (rows_valid F R HU HD Hno HR Hmax Hiota) as Hrows. cbv zeta in Hrows. fold D V M in Hrows.
   assert (Hb : Bounded (types D) (tcount V R M) (repeat 0 (length (types D))) (map ub_of (types D))).
