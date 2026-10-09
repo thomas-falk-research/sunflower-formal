@@ -57,14 +57,16 @@ print-assumptions: coq
 	@echo "============================================"
 	@echo "  Print Assumptions audit (closed theorems)"
 	@echo "============================================"
-	@total=0; for thm in $$(sed -n 's/^thm //p' tools/audited.txt); do \
+	@total=0; missing=0; for thm in $$(sed -n 's/^thm //p' tools/audited.txt); do \
 	  result=$$(printf 'From Sunflower Require Import $(MODULES).\nPrint Assumptions %s.\n' "$$thm" \
 	    | coqtop -q -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
+	  if [ -z "$$result" ]; then result="NO RESULT (coqtop failed or was killed)"; missing=$$((missing + 1)); fi; \
 	  printf "  %-60s %s\n" "$$thm" "$$result"; \
 	  total=$$((total + 1)); \
 	done; \
 	echo "  --------------------------------------------"; \
-	echo "  audited theorems: $$total"
+	echo "  audited theorems: $$total, without a result: $$missing"; \
+	[ "$$missing" -eq 0 ]
 	@echo "============================================"
 
 axiom-audit: coq
