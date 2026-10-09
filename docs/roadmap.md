@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 100 modules, 840 audited theorems, 161 audited
+The development is now 245 modules, 842 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -15377,3 +15377,97 @@ by `vm_compute`.
 Owed: the census itself (§59.4 item 1), and `ι(4) ≤ 27` (§60) — the
 two premises every kernel theorem of §68–§69 carries. Nothing of the
 `b = 4` descent now rests on Python.
+
+## 70. Link size 22 in the kernel: `g(4) ≤ 77`
+
+§69 put the descent at `Δ ≥ 23` in the kernel. The next size down,
+22, was "not done, by choice" in §66 (69,616 classes, 30 core-hours of
+shard reruns, a Python checker). It is now done, and in the kernel on
+the same two premises: `ι(4) ≤ 27` and the completeness of the census
+from 22 up. **`g(4) ≤ 77`** (`Link22Certs.g_four_at_most_77_of_census_22`).
+
+### 70.1 The classes
+
+The 75 shards whose ledger records reach size 22 were re-run with the
+printing threshold at 22 (`tools/iota4/isearch2p22.patch`, the same
+`isearch2.c` and nauty 2.8.8), four at a time, 29.9 ledger-hours in
+about 8 h of wall time.
+
+* All 75 reproduce their ledger records' accepted vectors exactly
+  (`big22_shards_rerun.log`; `tools/iota4/collect22.py` refuses a shard
+  that does not).
+* They print 69,616 families at size 22 — the census count — and
+  these are pairwise non-isomorphic: `tools/iota4/canon.c` computes the
+  nauty canonical form of each family's incidence graph (points and
+  members as the two colour classes), and the 69,616 forms are
+  distinct. On the 14,805 classes at 23–27 the same tool reports 14,805
+  distinct forms, agreeing with §64.6's VF2 check.
+* The list is `classes_22.txt.gz` (sha256 of the uncompressed file
+  `cd11dba7f3b5e9c38f65d2625f1a56647798e777c77b29a335631426371bd32b`).
+
+### 70.2 One more row, found by the model failing
+
+At 22 the allowance is `54 − 22 − 1 = 31` members meeting `R` other than
+`R`. A survey of every 200th class under the §69 model (with §64's
+constraint (c), tagged `RIota`, added so that one checker serves every
+class) found one with integer optimum 33. Its link has two points of
+degree one, and the optimum stacks members on traces such as `{0, 7}`
+with one extra point each.
+
+What the model missed: if a trace `T` lies inside a link member `C`,
+two members with trace `T` and disjoint outer parts form a sunflower
+with `C` (core `T`), because each meets `C` exactly in `T`. So the outer
+parts of the members with such a trace are pairwise intersecting as
+well as sunflower-free, and `ι` caps them instead of `g`: `ι(3) ≤ 13`,
+`ι(2) ≤ 3`, `ι(1) = 1` for `|T| = 1, 2, 3` (`Link23.capI_row`, tag
+`RCapI`; the kernel's `ι(3)` bound is `PureLink.iota_three_at_most_thirteen`).
+With it the class's optimum is 29, and the survey's largest is 25.
+
+The row is genuinely new to the model: §64's cap (b) and §65's per-type
+caps lift sunflowers through the outer parts but never use a link
+member as the third petal. It is also the only addition needed: with
+it, every one of the 69,616 classes certifies.
+
+### 70.3 Certificates and the kernel check
+
+`tools/iota4/link23_coq.py batch` solved all 69,616 classes in four
+processes, about 2.5 h of wall time, no class refused: 68,487 trees are a
+single leaf (the LP dual alone suffices), 83,206 leaves in all, the
+largest tree 648 leaves (a class whose LP optimum sits at the threshold,
+where the dual would not round to the common denominator and the solver
+splits instead). Every leaf is re-checked in exact integer arithmetic
+with the Coq semantics before it is written.
+
+Two changes to the kernel check made this affordable:
+
+* `Link23.unwitw`: the unwitnessed traces are enumerated from the cores
+  of the unordered pairs of link members, computed once (`pairw`,
+  proved equal to `LinkLP.unwit` by `unwitw_eq`), and the type list is
+  built from that enumeration once. A class check dropped from 3.2 s to
+  0.67 s; the enumeration had been two thirds of the cost, done twice.
+* Binary numbers for the multipliers (§69).
+
+The 144 shards `coq/Link22s0.v`–`s143.v` (484 classes each, 139 MB of
+source in all) build with `make -j3` in about 11 h of wall time, 15 min
+per shard at about 0.6 GB; a first cut of 36 shards of 1,934 classes
+ran past 7 GB each and was killed by the 15 GB memory limit three at a
+time. One shard (31, which holds the largest class, 1,134 types) needs
+7.6 GB and an hour on its own. `Link22Certs.descent_22` and
+`g_four_at_most_77_of_census_22` are closed under the global context.
+`coqchk`: running at the time of this commit, in three groups of 48 shards; the result is recorded in the follow-up commit.
+
+### 70.4 Standing
+
+| claim | status |
+|---|---|
+| the 69,616 classes at 22 are the census | **VALIDATED** (75 shards reproduce the ledger; canonical forms distinct; count equals the census) |
+| the `RCapI` row | **PROVEN** (kernel, `capI_row`) |
+| every class at 22 passes `classcheck` | **COMPUTED** in the kernel (36 shards) |
+| a link of ≥ 22 members forces `\|F\| ≤ 54` (`descent_22`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 22–27** |
+| `g(4) ≤ 77` | **PROVEN given `ι(4) ≤ 27`, the census at 22–27 and `MeetingBound 4 56`** |
+| `g(4) = 54` | open: a 55-member family needs every link of size ≤ 21 |
+
+Next down: size 21 has 407,115 classes (41.4 ledger-hours of reruns,
+about six times the kernel time of 22); size 20 has 308 million and
+is out of reach. The census itself (§59.4 item 1) remains the premise
+nothing here touches.

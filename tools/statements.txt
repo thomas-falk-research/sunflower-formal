@@ -3009,3 +3009,9 @@ e338c067e1e63ce5  thm Link23.finer_class_bound
 
 33c858953aeee1eb  thm Link23Certs.g_four_at_most_78_of_census_23
     g_four_at_most_78_of_census_23 : IotaAtMost 4 27 -> Census2 cls23_all link23_all 23 -> MeetingBound 4 56 -> GAtMost 4 78
+
+7b6d7fd19551228e  thm Link22Certs.descent_22
+    descent_22 : IotaAtMost 4 27 -> Census2 cls23_all (link23_all ++ link22_all) 22 -> LinkDescent 4 22 54
+
+bc5ea390272b009e  thm Link22Certs.g_four_at_most_77_of_census_22
+    g_four_at_most_77_of_census_22 : IotaAtMost 4 27 -> Census2 cls23_all (link23_all ++ link22_all) 22 -> MeetingBound 4 56 -> GAtMost 4 77

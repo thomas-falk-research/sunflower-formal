@@ -1126,3 +1126,5 @@ thm Link23.finer_class_bound
 thm Link23.descent_of_census2
 thm Link23Certs.descent_23
 thm Link23Certs.g_four_at_most_78_of_census_23
+thm Link22Certs.descent_22
+thm Link22Certs.g_four_at_most_77_of_census_22

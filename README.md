@@ -29,14 +29,14 @@ distinct and the difference is the point of this repository.
 | Trust level | What it means | Headline results | Where |
 |---|---|---|---|
 | **Kernel-proved** | Coq, zero admits, no axiom (`Print Assumptions` closed, `coqchk` clean) | Erdős–Rado $f(n,k)\le(k-1)^n n!+1$; the product lower bound; $f(2,3)=7$; $f(n,3)\ge 20^{n/3}+1$ by supermultiplicativity; $2\iota(b)\le g(b)\le 2b\,\iota(b)$, so the conjecture at $k=3$ is equivalent to an exponential bound on intersecting families; the spread reduction and an axiom-free $f(n,k)\le(n(k-1)+1)^n+1$; **the conjecture for families of bounded VC-dimension** (Ge–Wang–Xu–Zhao 2026, new elementary proof); $I(3,3)=10$; Hall and Kőnig from scratch | `coq/ErdosRado.v`, `ProductLowerBound.v`, `F23.v`, `DirectSum.v`, `IotaRate.v`, `SpreadReduction.v`, `VCSunflower.v`, `TauThreeTen.v`, `KoenigHall.v` |
-| **Kernel-proved, given named hypotheses** | A Coq theorem whose premises are stated facts that are not themselves in the kernel | The link descent at uniformity 4 (§64–§69): a 4-uniform 3-sunflower-free family with a link of ≥ 23 members has ≤ 54 members, given $\iota(4)\le 27$ and the link census; with the published meeting bound, $g(4)\le 78$. Weak duality, label-independence and the per-class transport are theorems; 14,794 link classes at sizes 23–27 are certified by LP duals and 11 more by branch-and-bound trees, all by `vm_compute` and re-checked by `coqchk` | `coq/LinkLP.v`, `Link23.v`, `LinkCombine.v`, `LinkCerts2*.v`, `Link23c*.v`, `Stability4.v` |
+| **Kernel-proved, given named hypotheses** | A Coq theorem whose premises are stated facts that are not themselves in the kernel | The link descent at uniformity 4 (§64–§70): a 4-uniform 3-sunflower-free family with a link of ≥ 22 members has ≤ 54 members, given $\iota(4)\le 27$ and the link census; with the published meeting bound, $g(4)\le 77$. Weak duality, label-independence and the per-class transport are theorems; 14,794 link classes at sizes 23–27 are certified by LP duals and 69,627 at sizes 22–23 by branch-and-bound trees, all by `vm_compute` and re-checked by `coqchk` | `coq/LinkLP.v`, `Link23.v`, `LinkCombine.v`, `LinkCerts2*.v`, `Link23c*.v`, `Link22s*.v`, `Stability4.v` |
 | **Proved on paper, Python-checked** | Hand argument plus exact-arithmetic or DRAT certificates outside the kernel | Nothing of the $b=4$ descent any more: the §65 Python model turned out to be over-constrained (a label confusion in its exclusions, §69.2) and was superseded by the kernel model; the record of what was Python-checked stays in `docs/roadmap.md` §60–§65 | `docs/roadmap.md` §65, §69 |
 | **Validated by computation, not proved** | Two independent exhaustive searches agree to the unit; no certificate exists | $\iota(4)=27$ and the uniqueness of the 27-family ($10^{11}$ nodes, agreeing with arXiv:2609.06175); the census of link classes at sizes 23–27 | `docs/ladder/iota4_replication/` |
 | **Cited** | Taken from the literature, read on rendered pages, not re-proved | the 2020 spread lemma (the one axiom); $f(3,3)=20$ (Abbott–Gardner 1969); $\psi(3,3,2)=10$ and $|N[R]|\le 56$ (Axante et al. 2026) | `coq/ALWZ.v`, `docs/reading.md` |
-| **Open** | | the conjecture; $g(4)\in[54,78]$ (Pálvölgyi's $g(4)=54$ holds whenever some link has ≥ 23 members); whether $r^*(3,3)$ is 3 or 4 | `coq/Conjecture.v`, `docs/roadmap.md` §66–§69 |
+| **Open** | | the conjecture; $g(4)\in[54,77]$ (Pálvölgyi's $g(4)=54$ holds whenever some link has ≥ 22 members); whether $r^*(3,3)$ is 3 or 4 | `coq/Conjecture.v`, `docs/roadmap.md` §66–§70 |
 
 The current bracket at uniformity 4 is therefore
-$54 \le g(4) \le 78$, against the published $54 \le g(4) \le 83$; the 78
+$54 \le g(4) \le 77$, against the published $54 \le g(4) \le 83$; the 77
 is in the kernel given $\iota(4)\le 27$, the validated census and the
 published meeting bound, and the lower end is the doubled Abbott–Hanson
 family. What would move it: a
@@ -48,23 +48,23 @@ $56+\Delta$).
 ## Verifying
 
 ```bash
-make verify        # builds all 100 Coq files, then runs the axiom audit
+make verify        # builds all 245 Coq files, then runs the axiom audit
 make coqchk        # Coq's separate kernel checker; exactly one axiom library-wide
 make mutants       # weaken each definition in turn; see what breaks
 make testbed       # exhaustive falsification of the spread hypothesis
 cd rust && cargo test --release
 ```
 
-`make verify` reports every audited theorem (840 of them) as
+`make verify` reports every audited theorem (842 of them) as
 `Closed under the global context`, then prints the full statement of
 the one axiom under the modern bound. Of 180 mutations, 177 are killed outright;
 the two survivors are proved redundant hypotheses and one is a control.
 The certificate modules (`coq/LinkCerts2*.v`) take about 2.5 s per
 link class under `vm_compute`, roughly ten core-hours in all, and
 twice that under `coqchk`; `tools/iota4/linkcert_coq.py` regenerates
-them from the census files. The eleven branch-and-bound modules
-(`coq/Link23c*.v`, from `tools/iota4/link23_coq.py`) take about a
-minute together.
+them from the census files. The branch-and-bound modules
+(`coq/Link23c*.v` and the 144 shards `coq/Link22s*.v`, from
+`tools/iota4/link23_coq.py`) take about 0.7 s per class.
 
 Requirements: Coq 8.18 (`apt-get install coq` on Ubuntu 24.04), Rust,
 Python 3 for the gates. The gates — statement baselines, quoted-number
