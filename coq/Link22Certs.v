@@ -2,7 +2,7 @@
 
     The 69,616 link classes of size 22 ([classes_22.txt.gz]) each carry a
     branch-and-bound tree over the finer model of [Link23], checked by
-    [classcheck] in 144 shards ([Link22s0] to [Link22s143]).  With the
+    [classcheck] in 150 shards ([Link22s0] to [Link22s149]).  With the
     LP census of sizes 23–27 and the eleven trees at 23 this gives the
     descent at 22 and [g(4) ≤ 77], conditional on [ι(4) ≤ 27] and on the
     census being complete from 22 up.  See docs/roadmap.md §70. *)
@@ -10,7 +10,7 @@
 From Coq Require Import List Lia.
 Import ListNotations.
 From Sunflower Require Import Sunflower IotaRate LinkCombine LinkLP Link23 LinkCerts23 Link23Certs
-  Link22s0 Link22s1 Link22s2 Link22s3 Link22s4 Link22s5 Link22s6 Link22s7 Link22s8 Link22s9 Link22s10 Link22s11 Link22s12 Link22s13 Link22s14 Link22s15 Link22s16 Link22s17 Link22s18 Link22s19 Link22s20 Link22s21 Link22s22 Link22s23 Link22s24 Link22s25 Link22s26 Link22s27 Link22s28 Link22s29 Link22s30 Link22s31 Link22s32 Link22s33 Link22s34 Link22s35 Link22s36 Link22s37 Link22s38 Link22s39 Link22s40 Link22s41 Link22s42 Link22s43 Link22s44 Link22s45 Link22s46 Link22s47 Link22s48 Link22s49 Link22s50 Link22s51 Link22s52 Link22s53 Link22s54 Link22s55 Link22s56 Link22s57 Link22s58 Link22s59 Link22s60 Link22s61 Link22s62 Link22s63 Link22s64 Link22s65 Link22s66 Link22s67 Link22s68 Link22s69 Link22s70 Link22s71 Link22s72 Link22s73 Link22s74 Link22s75 Link22s76 Link22s77 Link22s78 Link22s79 Link22s80 Link22s81 Link22s82 Link22s83 Link22s84 Link22s85 Link22s86 Link22s87 Link22s88 Link22s89 Link22s90 Link22s91 Link22s92 Link22s93 Link22s94 Link22s95 Link22s96 Link22s97 Link22s98 Link22s99 Link22s100 Link22s101 Link22s102 Link22s103 Link22s104 Link22s105 Link22s106 Link22s107 Link22s108 Link22s109 Link22s110 Link22s111 Link22s112 Link22s113 Link22s114 Link22s115 Link22s116 Link22s117 Link22s118 Link22s119 Link22s120 Link22s121 Link22s122 Link22s123 Link22s124 Link22s125 Link22s126 Link22s127 Link22s128 Link22s129 Link22s130 Link22s131 Link22s132 Link22s133 Link22s134 Link22s135 Link22s136 Link22s137 Link22s138 Link22s139 Link22s140 Link22s141 Link22s142 Link22s143.
+  Link22s0 Link22s1 Link22s2 Link22s3 Link22s4 Link22s5 Link22s6 Link22s7 Link22s8 Link22s9 Link22s10 Link22s11 Link22s12 Link22s13 Link22s14 Link22s15 Link22s16 Link22s17 Link22s18 Link22s19 Link22s20 Link22s21 Link22s22 Link22s23 Link22s24 Link22s25 Link22s26 Link22s27 Link22s28 Link22s29 Link22s30 Link22s31 Link22s32 Link22s33 Link22s34 Link22s35 Link22s36 Link22s37 Link22s38 Link22s39 Link22s40 Link22s41 Link22s42 Link22s43 Link22s44 Link22s45 Link22s46 Link22s47 Link22s48 Link22s49 Link22s50 Link22s51 Link22s52 Link22s53 Link22s54 Link22s55 Link22s56 Link22s57 Link22s58 Link22s59 Link22s60 Link22s61 Link22s62 Link22s63 Link22s64 Link22s65 Link22s66 Link22s67 Link22s68 Link22s69 Link22s70 Link22s71 Link22s72 Link22s73 Link22s74 Link22s75 Link22s76 Link22s77 Link22s78 Link22s79 Link22s80 Link22s81 Link22s82 Link22s83 Link22s84 Link22s85 Link22s86 Link22s87 Link22s88 Link22s89 Link22s90 Link22s91 Link22s92 Link22s93 Link22s94 Link22s95 Link22s96 Link22s97 Link22s98 Link22s99 Link22s100 Link22s101 Link22s102 Link22s103 Link22s104 Link22s105 Link22s106 Link22s107 Link22s108 Link22s109 Link22s110 Link22s111 Link22s112 Link22s113 Link22s114 Link22s115 Link22s116 Link22s117 Link22s118 Link22s119 Link22s120 Link22s121 Link22s122 Link22s123 Link22s124 Link22s125 Link22s126 Link22s127 Link22s128 Link22s129 Link22s130 Link22s131 Link22s132 Link22s133 Link22s134 Link22s135 Link22s136 Link22s137 Link22s138 Link22s139 Link22s140 Link22s141 Link22s142 Link22s143 Link22s144 Link22s145 Link22s146 Link22s147 Link22s148 Link22s149.
 
 Definition link22_all : list (Family * tree) :=
   l22s0_all ++
@@ -156,7 +156,13 @@ Definition link22_all : list (Family * tree) :=
   l22s140_all ++
   l22s141_all ++
   l22s142_all ++
-  l22s143_all.
+  l22s143_all ++
+  l22s144_all ++
+  l22s145_all ++
+  l22s146_all ++
+  l22s147_all ++
+  l22s148_all ++
+  l22s149_all.
 
 Lemma link22_all_ok : trees_okb link22_all = true.
 Proof.
@@ -304,7 +310,13 @@ Proof.
   apply trees_okb_app; [exact l22s140_all_ok |].
   apply trees_okb_app; [exact l22s141_all_ok |].
   apply trees_okb_app; [exact l22s142_all_ok |].
-  exact l22s143_all_ok.
+  apply trees_okb_app; [exact l22s143_all_ok |].
+  apply trees_okb_app; [exact l22s144_all_ok |].
+  apply trees_okb_app; [exact l22s145_all_ok |].
+  apply trees_okb_app; [exact l22s146_all_ok |].
+  apply trees_okb_app; [exact l22s147_all_ok |].
+  apply trees_okb_app; [exact l22s148_all_ok |].
+  exact l22s149_all_ok.
 Qed.
 (** The descent at link size 22 and above. *)
 Theorem descent_22 :
