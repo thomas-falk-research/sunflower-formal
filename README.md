@@ -48,7 +48,7 @@ $56+\Delta$).
 ## Verifying
 
 ```bash
-make verify        # builds all 245 Coq files, then runs the axiom audit
+make verify        # builds all 251 Coq files, then runs the axiom audit
 make coqchk        # Coq's separate kernel checker; exactly one axiom library-wide
 make mutants       # weaken each definition in turn; see what breaks
 make testbed       # exhaustive falsification of the spread hypothesis
@@ -63,7 +63,7 @@ The certificate modules (`coq/LinkCerts2*.v`) take about 2.5 s per
 link class under `vm_compute`, roughly ten core-hours in all, and
 twice that under `coqchk`; `tools/iota4/linkcert_coq.py` regenerates
 them from the census files. The branch-and-bound modules
-(`coq/Link23c*.v` and the 144 shards `coq/Link22s*.v`, from
+(`coq/Link23c*.v` and the 150 shards `coq/Link22s*.v`, from
 `tools/iota4/link23_coq.py`) take about 0.7 s per class.
 
 Requirements: Coq 8.18 (`apt-get install coq` on Ubuntu 24.04), Rust,

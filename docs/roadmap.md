@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 245 modules, 842 audited theorems, 161 audited
+The development is now 251 modules, 842 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -15447,14 +15447,23 @@ Two changes to the kernel check made this affordable:
   0.67 s; the enumeration had been two thirds of the cost, done twice.
 * Binary numbers for the multipliers (§69).
 
-The 144 shards `coq/Link22s0.v`–`s143.v` (484 classes each, 139 MB of
-source in all) build with `make -j3` in about 11 h of wall time, 15 min
-per shard at about 0.6 GB; a first cut of 36 shards of 1,934 classes
-ran past 7 GB each and was killed by the 15 GB memory limit three at a
-time. One shard (31, which holds the largest class, 1,134 types) needs
-7.6 GB and an hour on its own. `Link22Certs.descent_22` and
-`g_four_at_most_77_of_census_22` are closed under the global context.
-`coqchk`: running at the time of this commit, in three groups of 48 shards; the result is recorded in the follow-up commit.
+The 150 shards `coq/Link22s0.v`–`s149.v` (139 MB of source in all;
+142 of 484 classes, and the two that held the heaviest classes split
+into eight of 121) build with `make -j3` in about 11 h of wall time,
+15 min per shard at about 0.6 GB; a first cut of 36 shards of 1,934
+classes ran past 7 GB each and was killed by the 15 GB memory limit
+three at a time, and the 484-class shard holding the largest class
+(1,134 types) needed 7.6 GB and an hour on its own.
+`Link22Certs.descent_22` and `g_four_at_most_77_of_census_22` are
+closed under the global context.
+
+`coqchk`: **PASS on all 150 shards**, one `coqchk` process per shard
+(median 10 min, longest 42 min, 29 CPU-hours in all, four at a time).
+Two things learned about `coqchk` on this scale: a single invocation
+over 48 shards ran for 9 CPU-hours without finishing while one shard
+alone takes 7 min, so it degrades badly as modules accumulate in one
+run; and its memory on a 484-class shard with 1,134-type classes passed
+15 GB, which is why those two shards were split.
 
 ### 70.4 Standing
 
