@@ -2029,3 +2029,86 @@ Proof.
   - destruct (htrees_okb_entry htrees Dk hs tr Hh Hin) as [HUk [HDk Hck]].
     exact (hinted_class_bound Hiota Dk hs tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
 Qed.
+
+(** ** Census over class lists, certificates kept opaque
+
+    A certificate module states only which classes it certifies; the
+    certificates themselves sit inside an opaque proof, which [Require]
+    does not load.  This keeps a module that combines hundreds of
+    thousands of classes within memory. *)
+
+Definition CheckedClass (D : Family) : Prop :=
+  Uniform 4 D /\ SetNoDup D /\ exists hs tr, classcheck_h D hs tr = true.
+
+Lemma checked_of_htrees :
+  forall (L : list (Family * (list nat * tree))) (C : list Family),
+    htrees_okb L = true -> map fst L = C -> forall D, In D C -> CheckedClass D.
+Proof.
+  intros L C Hok E D HD. subst C. apply in_map_iff in HD as [[Dk [hs tr]] [E HD]]. simpl in E; subst Dk.
+  destruct (htrees_okb_entry L D hs tr Hok HD) as [H1 [H2 H3]].
+  split; [exact H1 | split; [exact H2 | exists hs, tr; exact H3]].
+Qed.
+
+(** A class certified by any of the three kinds of certificate. *)
+Definition CheckedAny (D : Family) : Prop :=
+  (SetNoDup D /\ exists ck, certcheck D ck (54 - length D) = true)
+  \/ (Uniform 4 D /\ SetNoDup D /\ exists tr, classcheck D tr = true)
+  \/ CheckedClass D.
+
+Lemma checked_app : forall (A B : list Family),
+  (forall D, In D A -> CheckedAny D) -> (forall D, In D B -> CheckedAny D) ->
+  forall D, In D (A ++ B) -> CheckedAny D.
+Proof. intros A B HA HB D HD; apply in_app_iff in HD as [HD | HD]; [apply HA | apply HB]; exact HD. Qed.
+
+Lemma checked_hinted : forall C, (forall D, In D C -> CheckedClass D) -> forall D, In D C -> CheckedAny D.
+Proof. intros C H D HD; right; right; apply H; exact HD. Qed.
+
+Lemma checked_reps : forall reps, reps_okb reps = true -> forall D, In D (map fst reps) -> CheckedAny D.
+Proof.
+  intros reps Hok D HD. apply in_map_iff in HD as [[Dk ck] [E HD]]; simpl in E; subst Dk.
+  unfold reps_okb in Hok; rewrite forallb_forall in Hok. specialize (Hok (D, ck) HD); simpl in Hok.
+  apply andb_true_iff in Hok as [Hnd Hck]. left; split; [apply setnodupb_correct; exact Hnd | exists ck; exact Hck].
+Qed.
+
+Lemma checked_trees : forall trees, trees_okb trees = true -> forall D, In D (map fst trees) -> CheckedAny D.
+Proof.
+  intros trees Hok D HD. apply in_map_iff in HD as [[Dk tr] [E HD]]; simpl in E; subst Dk.
+  destruct (trees_okb_entry trees D tr Hok HD) as [H1 [H2 H3]].
+  right; left; split; [exact H1 | split; [exact H2 | exists tr; exact H3]].
+Qed.
+
+(** [CensusL L lo]: every intersecting 3-sunflower-free family of at
+    least [lo] distinct 4-sets is, up to relabelling, a class of [L].
+    As with [LinkLP.Census], this is the enumeration's claim and is NOT
+    proved here. *)
+Definition CensusL (L : list Family) (lo : nat) : Prop :=
+  forall D : Family,
+    Uniform 4 D -> Distinct D -> Intersecting D -> ~ ContainsKSunflower 3 D ->
+    lo <= length D -> exists Dk, In Dk L /\ Covered D Dk.
+
+Theorem descent_of_censusL :
+  IotaAtMost 4 27 ->
+  forall (L : list Family) (lo : nat), 1 <= lo ->
+    (forall Dk, In Dk L -> CheckedAny Dk) ->
+    CensusL L lo -> LinkDescent 4 lo 54.
+Proof.
+  intros Hiota L lo Hlo1 Hchk Hcen F R HU HD Hno HR Hlo.
+  assert (HFne : F <> []) by (intro E; rewrite E in HR; inversion HR).
+  destruct (exists_max_link F HFne) as [R0 [HR0 Hmax]].
+  set (D := DisjointFrom R0 F).
+  assert (HDlo : lo <= length D) by (unfold D; pose proof (Hmax R HR); lia).
+  assert (HDne : D <> []).
+  { intro E. pose proof (Hmax R HR) as H. unfold D in E. rewrite E in H. simpl in H. lia. }
+  assert (HDU : Uniform 4 D).
+  { apply (Uniform_sublist HU); intros C HC; apply in_DisjointFrom in HC; tauto. }
+  assert (HDD : Distinct D) by (unfold D, DisjointFrom; apply SetNoDup_filter; exact HD).
+  assert (HDI : Intersecting D) by (apply DisjointFrom_Intersecting; assumption).
+  assert (HDno : ~ ContainsKSunflower 3 D).
+  { intro Hc; apply Hno; eapply ContainsKSunflower_SubFamilySetEq; [exact Hc |].
+    apply SubFamilySetEq_incl; intros C HC; apply in_DisjointFrom in HC; tauto. }
+  destruct (Hcen D HDU HDD HDI HDno HDlo) as [Dk [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]].
+  destruct (Hchk Dk Hin) as [[Hnd [ck Hck]] | [[HUk [HDk [tr Hck]]] | [HUk [HDk [hs [tr Hck]]]]]].
+  - exact (class_bound Hiota Dk ck Hnd Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax HDne H1 H2).
+  - exact (finer_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
+  - exact (hinted_class_bound Hiota Dk hs tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
+Qed.

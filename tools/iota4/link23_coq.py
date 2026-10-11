@@ -454,6 +454,35 @@ def emit_shard_h(cls, path, out, name, fams=None):
     print("wrote", out, len(names), "classes")
 
 
+def emit_shard_c(cls, path, out, name, fams=None):
+    """One module: the class list as a definition, the hinted certificates
+    only inside the opaque proof of [NAME_ok] ([Link23.checked_of_htrees]),
+    so that requiring the module does not load them."""
+    fams = load(cls) if fams is None else fams
+    docs = json.load(gzip.open(path, "rt"))
+    Ds, entries = [], []
+    for doc in docs:
+        D = canon(fams[doc["k"]])
+        d = coq_list(coq_list(C_) for C_ in D)
+        Ds.append(d)
+        entries.append(f"({d}, ({coq_list(hints_fast(D))}, {coq_tree(doc['tree'])}))")
+    lines = list(HEADER)
+    lines.append(f"(** {len(Ds)} link classes; ids in the class file: {coq_list(doc['k'] for doc in docs)}. *)")
+    lines.append(f"Definition {name}_classes : list Family :=")
+    lines.append("  [" + ";\n   ".join(Ds) + "].")
+    lines.append("")
+    lines.append(f"Lemma {name}_ok : forall D, In D {name}_classes -> CheckedClass D.")
+    lines.append("Proof.")
+    lines.append("  apply (checked_of_htrees")
+    lines.append("    [" + ";\n     ".join(entries) + "]).")
+    lines.append("  - vm_compute. reflexivity.")
+    lines.append("  - vm_compute. reflexivity.")
+    lines.append("Qed.")
+    lines.append("")
+    open(out, "w").write("\n".join(lines))
+    print("wrote", out, len(Ds), "classes")
+
+
 def emit_shard(cls, path, out, name):
     fams = load(cls)
     docs = json.load(gzip.open(path, "rt"))
@@ -483,6 +512,12 @@ if __name__ == "__main__":
         emit_shard(cls, sys.argv[3], sys.argv[4], sys.argv[5]); sys.exit(0)
     if mode == "coqshard_h":     # coqshard_h CLASSES.gz TREES.json.gz OUT.v NAME   (with witness hints)
         emit_shard_h(cls, sys.argv[3], sys.argv[4], sys.argv[5]); sys.exit(0)
+    if mode == "coqshards_c":    # coqshards_c CLASSES.gz TREEDIR PREFIX FIRST LAST: opaque-certificate modules
+        fams = load(cls)
+        for i in range(int(sys.argv[5]), int(sys.argv[6]) + 1):
+            emit_shard_c(cls, f"{sys.argv[3]}/shard_{i}.json.gz", f"coq/{sys.argv[4]}{i}.v",
+                         f"l{sys.argv[4][4:].lower()}{i}", fams)
+        sys.exit(0)
     if mode == "coqshards_h":    # coqshards_h CLASSES.gz TREEDIR PREFIX FIRST LAST: TREEDIR/shard_i.json.gz -> coq/PREFIXi.v
         fams = load(cls)
         for i in range(int(sys.argv[5]), int(sys.argv[6]) + 1):

@@ -1124,3 +1124,5 @@ thm Link23.bound_of_hinted
 thm Link23.transport_bound
 thm Link23.hinted_class_bound
 thm Link23.descent_of_census3
+thm Link23.checked_of_htrees
+thm Link23.descent_of_censusL

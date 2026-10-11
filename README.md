@@ -57,7 +57,7 @@ make testbed       # exhaustive falsification of the spread hypothesis
 cd rust && cargo test --release
 ```
 
-`make verify` reports every audited theorem (838 of them) as
+`make verify` reports every audited theorem (840 of them) as
 `Closed under the global context`, then prints the full statement of
 the one axiom under the modern bound. Of 180 mutations, 177 are killed outright;
 the two survivors are proved redundant hypotheses and one is a control.
