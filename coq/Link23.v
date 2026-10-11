@@ -258,6 +258,70 @@ Proof.
   intros D; unfold unwitw, unwit; apply filter_ext; intros T; rewrite witnessedw_correct; reflexivity.
 Qed.
 
+(** ** The unwitnessed traces by bitmask
+
+    The same enumeration as [unwitw], with each point set as a binary
+    number: [K ⊆ T] is [K land T = K], [T ∩ W = ∅] is [T land W = 0]. *)
+
+Definition mask (l : list nat) : N := fold_right (fun x m => N.lor (N.shiftl 1 (N.of_nat x)) m) 0%N l.
+
+Lemma mask_bit : forall l n, N.testbit (mask l) n = membf (N.to_nat n) l.
+Proof.
+  induction l as [| x l IH]; intros n.
+  - apply N.bits_0.
+  - change (mask (x :: l)) with (N.lor (N.shiftl 1 (N.of_nat x)) (mask l)).
+    change (membf (N.to_nat n) (x :: l)) with (Nat.eqb (N.to_nat n) x || membf (N.to_nat n) l).
+    rewrite N.lor_spec, (IH n), N.shiftl_1_l, N.pow2_bits_eqb. f_equal.
+    destruct (N.eqb_spec (N.of_nat x) n) as [E | NE]; destruct (Nat.eqb_spec (N.to_nat n) x) as [E' | NE'];
+      try reflexivity; exfalso.
+    + apply NE'; subst; rewrite Nat2N.id; reflexivity.
+    + apply NE; subst; apply N2Nat.id.
+Qed.
+
+Lemma mask_subset : forall K T, (N.land (mask K) (mask T) =? mask K)%N = subsetf K T.
+Proof.
+  intros K T. apply eq_true_iff_eq. rewrite N.eqb_eq, subsetf_correct. split.
+  - intros E x Hx. assert (H := f_equal (fun m => N.testbit m (N.of_nat x)) E). cbv beta in H.
+    rewrite N.land_spec, !mask_bit, Nat2N.id in H. apply membf_true_iff in Hx. rewrite Hx in H.
+    apply membf_true_iff; exact H.
+  - intros Hs. apply N.bits_inj; intros n. rewrite N.land_spec, !mask_bit.
+    destruct (membf (N.to_nat n) K) eqn:E; [| reflexivity].
+    apply membf_true_iff, Hs, membf_true_iff in E. rewrite E; reflexivity.
+Qed.
+
+Lemma mask_disj : forall T W, (N.land (mask T) (mask W) =? 0)%N = disjf T W.
+Proof.
+  intros T W. apply eq_true_iff_eq. rewrite N.eqb_eq, disjf_correct. split.
+  - intros E x HT HW. assert (H := f_equal (fun m => N.testbit m (N.of_nat x)) E). cbv beta in H.
+    rewrite N.land_spec, !mask_bit, Nat2N.id, N.bits_0 in H.
+    apply membf_true_iff in HT; apply membf_true_iff in HW. rewrite HT, HW in H; discriminate.
+  - intros Hd. apply N.bits_inj; intros n. rewrite N.land_spec, !mask_bit, N.bits_0.
+    destruct (membf (N.to_nat n) T) eqn:E1; destruct (membf (N.to_nat n) W) eqn:E2; try reflexivity.
+    exfalso; apply membf_true_iff in E1; apply membf_true_iff in E2; exact (Hd _ E1 E2).
+Qed.
+
+Definition witmask (t : N) (P : list (N * N)) : bool :=
+  existsb (fun p => (N.land (fst p) t =? fst p)%N && (N.land t (snd p) =? 0)%N) P.
+
+Definition unwitm (D : Family) : list (list nat) :=
+  let P := map (fun p => (mask (fst p), mask (snd p))) (pairw D) in
+  filter (fun T => negb (witmask (mask T) P)) (traces (points D)).
+
+Lemma witmask_eq : forall T P,
+  witmask (mask T) (map (fun p => (mask (fst p), mask (snd p))) P) = witnessedw T P.
+Proof.
+  intros T P; induction P as [| [K W] P IH]; [reflexivity |].
+  simpl. rewrite IH. f_equal. f_equal.
+  - apply mask_subset.
+  - apply mask_disj.
+Qed.
+
+Lemma unwitm_eq : forall D, unwitm D = unwit D.
+Proof.
+  intros D; unfold unwitm, unwit; cbv zeta. apply filter_ext; intros T.
+  rewrite witmask_eq, witnessedw_correct; reflexivity.
+Qed.
+
 (** [typeof] depends on the member only as a set. *)
 Lemma memb_SetEq : forall S S' x, SetEq S S' -> memb x S = memb x S'.
 Proof.
@@ -1389,7 +1453,17 @@ Definition leaf_of_N (c : leafN) : leaf :=
   mkleaf (N.to_nat (lKN c)) (map (fun p => (fst p, N.to_nat (snd p))) (lyN c))
          (map N.to_nat (luN c)) (map N.to_nat (lvN c)).
 
-Inductive tree : Type := Leaf (c : leafN) | Node (i f : nat) (l r : tree).
+(** A leaf with sparse [u] and [v]: only the nonzero entries, as
+    (type index, value).  It is checked as the dense leaf it denotes. *)
+Record leafS : Type := mkleafS { lKS : N; lyS : list (tag * N); luS : list (nat * N); lvS : list (nat * N) }.
+
+Definition nlook (j : nat) (l : list (nat * N)) : N :=
+  match find (fun p => Nat.eqb (fst p) j) l with Some p => snd p | None => 0%N end.
+
+Definition densify (n : nat) (c : leafS) : leafN :=
+  mkleafN (lKS c) (lyS c) (map (fun j => nlook j (luS c)) (seq 0 n)) (map (fun j => nlook j (lvS c)) (seq 0 n)).
+
+Inductive tree : Type := Leaf (c : leafN) | Node (i f : nat) (l r : tree) | LeafS (c : leafS).
 
 Definition sumN (l : list N) : N := fold_right N.add 0%N l.
 
@@ -1508,6 +1582,7 @@ Section Dual.
   Fixpoint treecheck (lo hi : list nat) (T : nat) (tr : tree) : bool :=
     match tr with
     | Leaf c => leafcheck lo hi T c
+    | LeafS c => leafcheck lo hi T (densify (length ts) c)
     | Node i f l r =>
         treecheck lo (set_nth i (Nat.min f (nth i hi 0)) hi) T l
         && treecheck (set_nth i (Nat.max (S f) (nth i lo 0)) lo) hi T r
@@ -1562,7 +1637,7 @@ Section Dual.
   Lemma tree_sound : forall tr lo hi T,
     Bounded lo hi -> treecheck lo hi T tr = true -> suml (map x ts) < T.
   Proof.
-    induction tr as [c | i f l IHl r IHr]; intros lo hi T Hb Hc; cbn [treecheck] in Hc.
+    induction tr as [c | i f l IHl r IHr | c]; intros lo hi T Hb Hc; cbn [treecheck] in Hc.
     - exact (leaf_sound lo hi T (leaf_of_N c) Hb (leafcheck_to_nat lo hi T c Hc)).
     - apply andb_true_iff in Hc as [Hl Hr].
       destruct (le_lt_dec (x (nth i ts dflt)) f) as [Hle | Hgt].
@@ -1580,6 +1655,7 @@ Section Dual.
           -- rewrite set_nth_overflow by exact Ho. exact H1.
           -- rewrite nth_set_nth_same by exact Hi. apply Nat.max_lub; [lia | exact H1].
         * rewrite nth_set_nth_other by exact NE. exact H1.
+    - exact (leaf_sound lo hi T (leaf_of_N (densify (length ts) c)) Hb (leafcheck_to_nat lo hi T _ Hc)).
   Qed.
 End Dual.
 
@@ -2030,6 +2106,41 @@ Proof.
     exact (hinted_class_bound Hiota Dk hs tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
 Qed.
 
+(** ** The bitmask class check *)
+
+Definition classcheck_m (D : Family) (tr : tree) : bool := check_with D (unwitm D) tr.
+
+Theorem bound_of_masked :
+  IotaAtMost 4 27 ->
+  forall (F : Family) (R : list nat) (tr : tree),
+    Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
+    (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
+    classcheck_m (DisjointFrom R F) tr = true ->
+    length F <= 54.
+Proof.
+  intros Hiota F R tr HU HD Hno HR Hmax Hc. unfold classcheck_m in Hc. rewrite unwitm_eq in Hc.
+  exact (bound_of_check Hiota F R _ tr HU HD Hno HR Hmax (unwit_TraceList _) Hc).
+Qed.
+
+Theorem masked_class_bound :
+  IotaAtMost 4 27 ->
+  forall (Dk : Family) (tr : tree),
+    Uniform 4 Dk -> SetNoDup Dk -> classcheck_m Dk tr = true ->
+    forall (F : Family) (R : list nat) (g h : nat -> nat),
+      (forall x, h (g x) = x) -> (forall x, g (h x) = x) ->
+      Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
+      (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
+      SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) ->
+      SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) ->
+      length F <= 54.
+Proof.
+  intros Hiota Dk tr. apply (transport_bound (fun D => classcheck_m D tr)).
+  intros F R HU HD Hno HR Hmax Hc; exact (bound_of_masked Hiota F R tr HU HD Hno HR Hmax Hc).
+Qed.
+
+Definition mtrees_okb (L : list (Family * tree)) : bool :=
+  forallb (fun p => uniform4b (fst p) && setnodupb (fst p) && classcheck_m (fst p) (snd p)) L.
+
 (** ** Census over class lists, certificates kept opaque
 
     A certificate module states only which classes it certifies; the
@@ -2038,15 +2149,16 @@ Qed.
     thousands of classes within memory. *)
 
 Definition CheckedClass (D : Family) : Prop :=
-  Uniform 4 D /\ SetNoDup D /\ exists hs tr, classcheck_h D hs tr = true.
+  Uniform 4 D /\ SetNoDup D /\ exists tr, classcheck_m D tr = true.
 
-Lemma checked_of_htrees :
-  forall (L : list (Family * (list nat * tree))) (C : list Family),
-    htrees_okb L = true -> map fst L = C -> forall D, In D C -> CheckedClass D.
+Lemma checked_of_mtrees :
+  forall (L : list (Family * tree)) (C : list Family),
+    mtrees_okb L = true -> map fst L = C -> forall D, In D C -> CheckedClass D.
 Proof.
-  intros L C Hok E D HD. subst C. apply in_map_iff in HD as [[Dk [hs tr]] [E HD]]. simpl in E; subst Dk.
-  destruct (htrees_okb_entry L D hs tr Hok HD) as [H1 [H2 H3]].
-  split; [exact H1 | split; [exact H2 | exists hs, tr; exact H3]].
+  intros L C Hok E D HD. subst C. apply in_map_iff in HD as [[Dk tr] [E HD]]. simpl in E; subst Dk.
+  unfold mtrees_okb in Hok; rewrite forallb_forall in Hok. specialize (Hok (D, tr) HD); simpl in Hok.
+  apply andb_true_iff in Hok as [Hok H3]; apply andb_true_iff in Hok as [H1 H2].
+  split; [apply uniform4b_correct; exact H1 | split; [apply setnodupb_correct; exact H2 | exists tr; exact H3]].
 Qed.
 
 (** A class certified by any of the three kinds of certificate. *)
@@ -2107,8 +2219,8 @@ Proof.
   { intro Hc; apply Hno; eapply ContainsKSunflower_SubFamilySetEq; [exact Hc |].
     apply SubFamilySetEq_incl; intros C HC; apply in_DisjointFrom in HC; tauto. }
   destruct (Hcen D HDU HDD HDI HDno HDlo) as [Dk [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]].
-  destruct (Hchk Dk Hin) as [[Hnd [ck Hck]] | [[HUk [HDk [tr Hck]]] | [HUk [HDk [hs [tr Hck]]]]]].
+  destruct (Hchk Dk Hin) as [[Hnd [ck Hck]] | [[HUk [HDk [tr Hck]]] | [HUk [HDk [tr Hck]]]]].
   - exact (class_bound Hiota Dk ck Hnd Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax HDne H1 H2).
   - exact (finer_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
-  - exact (hinted_class_bound Hiota Dk hs tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
+  - exact (masked_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
 Qed.

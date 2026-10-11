@@ -454,18 +454,22 @@ def emit_shard_h(cls, path, out, name, fams=None):
     print("wrote", out, len(names), "classes")
 
 
-def emit_shard_c(cls, path, out, name, fams=None):
-    """One module: the class list as a definition, the hinted certificates
-    only inside the opaque proof of [NAME_ok] ([Link23.checked_of_htrees]),
-    so that requiring the module does not load them."""
-    fams = load(cls) if fams is None else fams
-    docs = json.load(gzip.open(path, "rt"))
-    Ds, entries = [], []
-    for doc in docs:
-        D = canon(fams[doc["k"]])
-        d = coq_list(coq_list(C_) for C_ in D)
-        Ds.append(d)
-        entries.append(f"({d}, ({coq_list(hints_fast(D))}, {coq_tree(doc['tree'])}))")
+def coq_tree_sparse(node):
+    """[coq_tree] with [LeafS]: only the nonzero entries of u and v."""
+    if "leaf" in node:
+        c = node["leaf"]
+        ys = coq_list(f"({coq_tag(tag)}, {y}%N)" for tag, y in c["y"])
+        us = coq_list(f"({i}, {q}%N)" for i, q in enumerate(c["u"]) if q)
+        vs = coq_list(f"({i}, {q}%N)" for i, q in enumerate(c["v"]) if q)
+        return f"(LeafS (mkleafS {c['K']}%N {ys} {us} {vs}))"
+    return f"(Node {node['var']} {node['f']} {coq_tree_sparse(node['le'])} {coq_tree_sparse(node['ge'])})"
+
+
+def emit_shard_m(cls, docs, out, name, fams):
+    """One module: the class list as a definition; the trees (sparse leaves,
+    checked by [Link23.classcheck_m], no hints) only inside the opaque proof
+    of [NAME_ok], so that requiring the module does not load them."""
+    Ds = [coq_list(coq_list(C_) for C_ in canon(fams[doc["k"]])) for doc in docs]
     lines = list(HEADER)
     lines.append(f"(** {len(Ds)} link classes; ids in the class file: {coq_list(doc['k'] for doc in docs)}. *)")
     lines.append(f"Definition {name}_classes : list Family :=")
@@ -473,11 +477,44 @@ def emit_shard_c(cls, path, out, name, fams=None):
     lines.append("")
     lines.append(f"Lemma {name}_ok : forall D, In D {name}_classes -> CheckedClass D.")
     lines.append("Proof.")
-    lines.append("  apply (checked_of_htrees")
-    lines.append("    [" + ";\n     ".join(entries) + "]).")
+    lines.append("  apply (checked_of_mtrees")
+    lines.append("    [" + ";\n     ".join(f"(nth {i} {name}_classes [], {coq_tree_sparse(doc['tree'])})"
+                                          for i, doc in enumerate(docs)) + "]).")
     lines.append("  - vm_compute. reflexivity.")
     lines.append("  - vm_compute. reflexivity.")
     lines.append("Qed.")
+    lines.append("")
+    open(out, "w").write("\n".join(lines))
+
+
+def emit_shard_c(cls, path, out, name, fams=None):
+    """One module: the class list as a definition; the hinted certificates
+    as section-local [Let]s, so that only [NAME_classes] and [NAME_ok]
+    survive the section and [Require] does not load the certificates."""
+    fams = load(cls) if fams is None else fams
+    docs = json.load(gzip.open(path, "rt"))
+    Ds, ents = [], []
+    lets = []
+    for doc in docs:
+        k = doc["k"]; D = canon(fams[k])
+        d = coq_list(coq_list(C_) for C_ in D)
+        Ds.append(d)
+        lets.append(f"  Let h{k} : list nat := {coq_list(hints_fast(D))}.")
+        lets.append(f"  Let t{k} : tree := {coq_tree(doc['tree'])}.")
+        ents.append(f"(nth {len(ents)} {name}_classes [], (h{k}, t{k}))")
+    lines = list(HEADER)
+    lines.append(f"(** {len(Ds)} link classes; ids in the class file: {coq_list(doc['k'] for doc in docs)}. *)")
+    lines.append(f"Definition {name}_classes : list Family :=")
+    lines.append("  [" + ";\n   ".join(Ds) + "].")
+    lines.append("")
+    lines.append(f"Section {name.upper()}.")
+    lines.extend(lets)
+    lines.append(f"  Let all : list (Family * (list nat * tree)) :=")
+    lines.append("    [" + ";\n     ".join(ents) + "].")
+    lines.append(f"  Let all_ok : htrees_okb all = true. Proof. vm_compute. reflexivity. Qed.")
+    lines.append(f"  Lemma {name}_ok : forall D, In D {name}_classes -> CheckedClass D.")
+    lines.append(f"  Proof. apply (checked_of_htrees all); [exact all_ok | vm_compute; reflexivity]. Qed.")
+    lines.append(f"End {name.upper()}.")
     lines.append("")
     open(out, "w").write("\n".join(lines))
     print("wrote", out, len(Ds), "classes")
@@ -512,6 +549,25 @@ if __name__ == "__main__":
         emit_shard(cls, sys.argv[3], sys.argv[4], sys.argv[5]); sys.exit(0)
     if mode == "coqshard_h":     # coqshard_h CLASSES.gz TREES.json.gz OUT.v NAME   (with witness hints)
         emit_shard_h(cls, sys.argv[3], sys.argv[4], sys.argv[5]); sys.exit(0)
+    if mode == "coqshards_m":    # coqshards_m CLASSES.gz TREES1.json.gz,... PREFIX BUDGET: modules of about BUDGET bytes of certificate
+        fams = load(cls)
+        docs = []
+        for f in sys.argv[3].split(","):
+            docs += json.load(gzip.open(f, "rt"))
+        docs.sort(key=lambda d: d["k"])
+        budget = int(sys.argv[5])       # compile memory grows with the certificate text (about 3 GB per MB)
+        groups, cur, size = [], [], 0
+        for d in docs:
+            c = len(coq_tree_sparse(d["tree"])) + 300
+            if cur and size + c > budget:
+                groups.append(cur); cur, size = [], 0
+            cur.append(d); size += c
+        if cur:
+            groups.append(cur)
+        for n, g in enumerate(groups):
+            emit_shard_m(cls, g, f"coq/{sys.argv[4]}{n}.v", f"l{sys.argv[4][4:].lower()}{n}", fams)
+        print("wrote", len(groups), "modules for", len(docs), "classes")
+        sys.exit(0)
     if mode == "coqshards_c":    # coqshards_c CLASSES.gz TREEDIR PREFIX FIRST LAST: opaque-certificate modules
         fams = load(cls)
         for i in range(int(sys.argv[5]), int(sys.argv[6]) + 1):

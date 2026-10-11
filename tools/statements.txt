@@ -3004,8 +3004,14 @@ b6de74eb549a1542  thm Link23.hinted_class_bound
 92d526abd7d4737c  thm Link23.descent_of_census3
     descent_of_census3 : IotaAtMost 4 27 -> forall (reps : list (list (list nat) * cert)) (trees : list (Family * tree)) (htrees : list (Family * (list nat * tree))) (lo : nat), 1 <= lo -> (forall (Dk : list (list nat)) (ck : cert), List.In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) -> trees_okb trees = true -> htrees_okb htrees = true -> Census3 reps trees htrees lo -> LinkDescent 4 lo 54
 
-04b04ab4fe1cde8c  thm Link23.checked_of_htrees
-    checked_of_htrees : forall (L : list (Family * (list nat * tree))) (C : list Family), htrees_okb L = true -> List.map fst L = C -> forall D : Family, List.In D C -> CheckedClass D
+a276297770ce4b08  thm Link23.checked_of_mtrees
+    checked_of_mtrees : forall (L : list (Family * tree)) (C : list Family), mtrees_okb L = true -> List.map fst L = C -> forall D : Family, List.In D C -> CheckedClass D
+
+0cfd09d9bd42dc4c  thm Link23.bound_of_masked
+    bound_of_masked : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (tr : tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> classcheck_m (DisjointFrom R F) tr = true -> length F <= 54
+
+e76c35165d75d061  thm Link23.masked_class_bound
+    masked_class_bound : IotaAtMost 4 27 -> forall (Dk : Family) (tr : tree), Uniform 4 Dk -> SetNoDup Dk -> classcheck_m Dk tr = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
 
 f3dea80f390ff904  thm Link23.descent_of_censusL
     descent_of_censusL : IotaAtMost 4 27 -> forall (L : list Family) (lo : nat), 1 <= lo -> (forall Dk : Family, List.In Dk L -> CheckedAny Dk) -> CensusL L lo -> LinkDescent 4 lo 54
