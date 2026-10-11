@@ -14,6 +14,7 @@ Coq semantics, and emits a Coq module whose single lemma is decided by
   link23_coq.py coq   CLASSES.gz INDEX TREE.json.gz OUT.v NAME   emit Coq
   link23_coq.py batch CLASSES.gz SIZE i/n OUT.json.gz          trees for shard i/n of one link size
   link23_coq.py coqshard CLASSES.gz TREES.json.gz OUT.v NAME   emit one module for a shard
+  link23_coq.py coqshard_h CLASSES.gz TREES.json.gz OUT.v NAME emit one hinted module ([classcheck_h])
 
 The checker here is only a convenience: the kernel check is
 [Link23.classcheck] in Coq.
@@ -61,6 +62,45 @@ def witnessed(T, D):
 
 def unwit(D):
     return [T for T in traces(coq_points(D)) if not witnessed(T, D)]
+
+
+def pairw(D):
+    """[Link23.pairw]: for each unordered pair (in Coq order), its core K and
+    the rest W of its union (C1 ++ C2 order, K removed)."""
+    out = []
+    for a, C1 in enumerate(D):
+        for C2 in D[a + 1:]:
+            if set(C1) == set(C2):
+                continue
+            K = [x for x in C1 if x in C2]
+            W = [x for x in C1 + C2 if x not in K]
+            out.append((K, W))
+    return out
+
+
+def hints_fast(D):
+    """[hints] with bitmasks; same result (first witnessing pair, in order)."""
+    P = [(sum(1 << x for x in K), sum(1 << x for x in W)) for K, W in pairw(D)]
+    hs = []
+    for T in traces(coq_points(D)):
+        t = sum(1 << x for x in T)
+        j = next((i for i, (k, w) in enumerate(P) if k & t == k and not (t & w)), None)
+        hs.append(0 if j is None else j + 1)
+    return hs
+
+
+def hints(D):
+    """[Link23.unwith] hints: per trace of points D, 0 if unwitnessed, else
+    1 + the index of the first witnessing pair."""
+    P = pairw(D)
+    hs = []
+    for T in traces(coq_points(D)):
+        j = next((i for i, (K, W) in enumerate(P) if all(x in T for x in K) and not any(x in W for x in T)), None)
+        hs.append(0 if j is None else j + 1)
+    # the hinted list must be exactly unwit(D), so the stored trees stay valid
+    kept = [T for T, h in zip(traces(coq_points(D)), hs) if h == 0]
+    assert kept == unwit(D), "hints disagree with unwit"
+    return hs
 
 
 POS = [0, 1, 2, 3]
@@ -391,6 +431,29 @@ def batch(cls, size, shard, out):
     print("wrote", out, len(docs), "classes; failed", len(failed), failed)
 
 
+def emit_shard_h(cls, path, out, name, fams=None):
+    """One module of hinted trees ([Link23.htrees_okb])."""
+    fams = load(cls) if fams is None else fams
+    docs = json.load(gzip.open(path, "rt"))
+    lines = list(HEADER)
+    names = []
+    for doc in docs:
+        k = doc["k"]; D = canon(fams[k]); nm = f"{name}_{k}"
+        lines.append(f"Definition {nm}_D : Family := {coq_list(coq_list(C_) for C_ in D)}.")
+        lines.append(f"Definition {nm}_h : list nat := {coq_list(hints_fast(D))}.")
+        lines.append(f"Definition {nm}_t : tree := {coq_tree(doc['tree'])}.")
+        names.append(nm)
+    lines.append("")
+    lines.append(f"Definition {name}_all : list (Family * (list nat * tree)) :=")
+    lines.append("  [" + ";\n   ".join(f"({nm}_D, ({nm}_h, {nm}_t))" for nm in names) + "].")
+    lines.append("")
+    lines.append(f"Lemma {name}_all_ok : htrees_okb {name}_all = true.")
+    lines.append("Proof. vm_compute. reflexivity. Qed.")
+    lines.append("")
+    open(out, "w").write("\n".join(lines))
+    print("wrote", out, len(names), "classes")
+
+
 def emit_shard(cls, path, out, name):
     fams = load(cls)
     docs = json.load(gzip.open(path, "rt"))
@@ -418,6 +481,14 @@ if __name__ == "__main__":
         batch(cls, int(sys.argv[3]), sys.argv[4], sys.argv[5]); sys.exit(0)
     if mode == "coqshard":       # coqshard CLASSES.gz TREES.json.gz OUT.v NAME
         emit_shard(cls, sys.argv[3], sys.argv[4], sys.argv[5]); sys.exit(0)
+    if mode == "coqshard_h":     # coqshard_h CLASSES.gz TREES.json.gz OUT.v NAME   (with witness hints)
+        emit_shard_h(cls, sys.argv[3], sys.argv[4], sys.argv[5]); sys.exit(0)
+    if mode == "coqshards_h":    # coqshards_h CLASSES.gz TREEDIR PREFIX FIRST LAST: TREEDIR/shard_i.json.gz -> coq/PREFIXi.v
+        fams = load(cls)
+        for i in range(int(sys.argv[5]), int(sys.argv[6]) + 1):
+            emit_shard_h(cls, f"{sys.argv[3]}/shard_{i}.json.gz", f"coq/{sys.argv[4]}{i}.v",
+                         f"l{sys.argv[4][4:].lower()}{i}", fams)
+        sys.exit(0)
     k = int(sys.argv[3])
     D = canon(load(cls)[k])
     if mode == "solve":

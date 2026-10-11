@@ -12,6 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
+        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk \
         axiom-audit statements statements-accept docnumbers ceilings prcheck \
         manifest
 
@@ -65,7 +66,8 @@ print-assumptions: coq
 	  total=$$((total + 1)); \
 	done; \
 	echo "  --------------------------------------------"; \
-	echo "  audited theorems: $$total, without a result: $$missing"; \
+	echo "  audited theorems: $$total"; \
+	echo "  without a result: $$missing"; \
 	[ "$$missing" -eq 0 ]
 	@echo "============================================"
 
@@ -257,11 +259,53 @@ MUTANT_JOBS ?= 4
 manifest:
 	@python3 tools/mutate.py --validate
 
+# ---- certificate modules (_CoqProject.certs) ----------------------------
+# The class data and vm_compute checks of the link descent. Tens of
+# CPU-hours to build and more to coqchk, so they are outside `make coq`
+# and CI; nothing in the theory imports them. CERT_JOBS sets the
+# parallelism (memory: about 0.6 GB per build job, up to 9 GB per coqchk
+# process on the heaviest size-22 modules).
+CERT_JOBS ?= 3
+CERTFILES   := $(shell sed -n 's|^\(coq/.*\.v\)[[:space:]]*$$|\1|p' _CoqProject.certs)
+CERTMODULES := $(patsubst coq/%.v,Sunflower.%,$(CERTFILES))
+
+Makefile.certs: _CoqProject.certs $(CERTFILES)
+	coq_makefile -f _CoqProject.certs -o Makefile.certs
+
+certs: coq Makefile.certs
+	$(MAKE) -f Makefile.certs -j$(CERT_JOBS)
+
+certs-assumptions: certs
+	@total=0; missing=0; for thm in $$(sed -n 's/^thm //p' tools/audited_certs.txt); do \
+	  mod=$${thm%%.*}; \
+	  result=$$(printf 'From Sunflower Require Import %s.\nPrint Assumptions %s.\n' "$$mod" "$$thm" \
+	    | coqtop -q -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
+	  if [ -z "$$result" ]; then result="NO RESULT (coqtop failed or was killed)"; missing=$$((missing + 1)); fi; \
+	  printf "  %-60s %s\n" "$$thm" "$$result"; \
+	  total=$$((total + 1)); \
+	done; \
+	echo "  certificate theorems audited: $$total, without a result: $$missing"; \
+	[ "$$missing" -eq 0 ]
+
+certs-statements: certs
+	@python3 tools/statements.py --certs
+
+certs-statements-accept: certs
+	@python3 tools/statements.py --certs --accept
+
+# One coqchk process per module: a single invocation over many of these
+# modules slows down sharply as they accumulate (§70.3).
+certs-coqchk: certs
+	@printf '%s\n' $(CERTMODULES) | xargs -P $(CERT_JOBS) -I{} sh -c \
+	  'coqchk -Q coq Sunflower -o -silent {} > /dev/null 2>&1 && echo "  coqchk ok   {}" || { echo "  coqchk FAIL {}"; exit 255; }'
+
 mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)
 
 clean:
 	@if [ -f Makefile.coq ]; then $(MAKE) -f Makefile.coq cleanall; fi
+	@if [ -f Makefile.certs ]; then $(MAKE) -f Makefile.certs cleanall; fi
+	@rm -f Makefile.certs Makefile.certs.conf
 	@rm -f Makefile.coq Makefile.coq.conf coq/*.vo coq/*.vok coq/*.vos \
 	       coq/*.glob coq/.*.aux coq/*.d
 	@if [ -d rust/target ]; then rm -rf rust/target; fi

@@ -2974,23 +2974,8 @@ b6051953b6f04163  thm LinkLP.class_bound
 c4ecdd9782e113ad  thm LinkLP.g_four_at_most_80_of_census
     g_four_at_most_80_of_census : IotaAtMost 4 27 -> forall reps : list (Family * cert), reps_okb reps = true -> Census reps 25 -> MeetingBound 4 56 -> GAtMost 4 80
 
-8be99448a3be76e2  thm LinkCerts25.descent_25
-    descent_25 : IotaAtMost 4 27 -> Census cls_all 25 -> LinkDescent 4 25 54
-
-35b49b3b4a66b2c7  thm LinkCerts25.g_four_at_most_80_of_census_25
-    g_four_at_most_80_of_census_25 : IotaAtMost 4 27 -> Census cls_all 25 -> MeetingBound 4 56 -> GAtMost 4 80
-
-d49e2a7c3d53d6e8  thm LinkCerts24.descent_24
-    descent_24 : IotaAtMost 4 27 -> Census cls24_all 24 -> LinkDescent 4 24 54
-
-2c5659089cf68a6c  thm LinkCerts24.g_four_at_most_79_of_census_24
-    g_four_at_most_79_of_census_24 : IotaAtMost 4 27 -> Census cls24_all 24 -> MeetingBound 4 56 -> GAtMost 4 79
-
-a0d4f8f990ec123c  thm LinkCerts23.bound_of_covered_link
-    bound_of_covered_link : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (Dk : Family) (ck : cert) (g h : nat -> nat), List.In (Dk, ck) cls23_all -> (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> DisjointFrom R F <> nil -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
-
-ec435ba41ce150cf  thm Link23.rows_valid
-    rows_valid : forall (F : Family) (R : list nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> IotaAtMost 4 27 -> forall tg : tag, rowsat (types (DisjointFrom R F)) (tcount (points (DisjointFrom R F)) R (Others R F)) (rowc (DisjointFrom R F) (unwit (DisjointFrom R F)) (types (DisjointFrom R F)) (bigof (types (DisjointFrom R F))) tg)
+b516541650bb7f78  thm Link23.rows_valid
+    rows_valid : forall (F : Family) (R : list nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> forall U : list (list nat), (forall T : list nat, List.In T U -> List.In T (traces (points (DisjointFrom R F)))) -> (forall T : list nat, List.In T (traces (points (DisjointFrom R F))) -> witnessedb T (DisjointFrom R F) = false -> List.In T U) -> List.NoDup U -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> IotaAtMost 4 27 -> forall tg : tag, rowsat (types_of U) (tcount (points (DisjointFrom R F)) R (Others R F)) (rowc (DisjointFrom R F) U (types_of U) (bigof (types_of U)) tg)
 
 84bef6be7b6d5e83  thm Link23.tree_sound
     tree_sound : forall (ts : list ltype) (x : ltype -> nat) (rc : tag -> row), (forall tg : tag, rowsat ts x (rc tg)) -> forall (tr : tree) (lo hi : list nat) (T : nat), Bounded ts x lo hi -> treecheck ts rc lo hi T tr = true -> suml (List.map x ts) < T
@@ -3004,14 +2989,17 @@ e338c067e1e63ce5  thm Link23.finer_class_bound
 6cfcaa3804dc1fb0  thm Link23.descent_of_census2
     descent_of_census2 : IotaAtMost 4 27 -> forall (reps : list (list (list nat) * cert)) (trees : list (Family * tree)) (lo : nat), 1 <= lo -> (forall (Dk : list (list nat)) (ck : cert), List.In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) -> trees_okb trees = true -> Census2 reps trees lo -> LinkDescent 4 lo 54
 
-548281df128a0b7e  thm Link23Certs.descent_23
-    descent_23 : IotaAtMost 4 27 -> Census2 cls23_all link23_all 23 -> LinkDescent 4 23 54
+d8c0b04083947d5a  thm Link23.bound_of_check
+    bound_of_check : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (U : list (list nat)) (tr : tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> TraceList (DisjointFrom R F) U -> check_with (DisjointFrom R F) U tr = true -> length F <= 54
 
-33c858953aeee1eb  thm Link23Certs.g_four_at_most_78_of_census_23
-    g_four_at_most_78_of_census_23 : IotaAtMost 4 27 -> Census2 cls23_all link23_all 23 -> MeetingBound 4 56 -> GAtMost 4 78
+d23ce56c7466102d  thm Link23.bound_of_hinted
+    bound_of_hinted : IotaAtMost 4 27 -> forall (F : Family) (R h : list nat) (tr : tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> classcheck_h (DisjointFrom R F) h tr = true -> length F <= 54
 
-7b6d7fd19551228e  thm Link22Certs.descent_22
-    descent_22 : IotaAtMost 4 27 -> Census2 cls23_all (link23_all ++ link22_all) 22 -> LinkDescent 4 22 54
+68104476115e4222  thm Link23.transport_bound
+    transport_bound : forall chk : Family -> bool, SoundCheck chk -> forall Dk : Family, Uniform 4 Dk -> SetNoDup Dk -> chk Dk = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
 
-bc5ea390272b009e  thm Link22Certs.g_four_at_most_77_of_census_22
-    g_four_at_most_77_of_census_22 : IotaAtMost 4 27 -> Census2 cls23_all (link23_all ++ link22_all) 22 -> MeetingBound 4 56 -> GAtMost 4 77
+b6de74eb549a1542  thm Link23.hinted_class_bound
+    hinted_class_bound : IotaAtMost 4 27 -> forall (Dk : Family) (hs : list nat) (tr : tree), Uniform 4 Dk -> SetNoDup Dk -> classcheck_h Dk hs tr = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
+
+92d526abd7d4737c  thm Link23.descent_of_census3
+    descent_of_census3 : IotaAtMost 4 27 -> forall (reps : list (list (list nat) * cert)) (trees : list (Family * tree)) (htrees : list (Family * (list nat * tree))) (lo : nat), 1 <= lo -> (forall (Dk : list (list nat)) (ck : cert), List.In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) -> trees_okb trees = true -> htrees_okb htrees = true -> Census3 reps trees htrees lo -> LinkDescent 4 lo 54

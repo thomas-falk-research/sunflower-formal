@@ -48,18 +48,26 @@ $56+\Delta$).
 ## Verifying
 
 ```bash
-make verify        # builds all 251 Coq files, then runs the axiom audit
+make verify        # builds all 57 Coq files of the theory, then runs the axiom audit
 make coqchk        # Coq's separate kernel checker; exactly one axiom library-wide
+make certs         # builds the 194 certificate modules of the link descent (hours; not in CI)
+make certs-assumptions certs-statements certs-coqchk   # audit them
 make mutants       # weaken each definition in turn; see what breaks
 make testbed       # exhaustive falsification of the spread hypothesis
 cd rust && cargo test --release
 ```
 
-`make verify` reports every audited theorem (842 of them) as
+`make verify` reports every audited theorem (838 of them) as
 `Closed under the global context`, then prints the full statement of
 the one axiom under the modern bound. Of 180 mutations, 177 are killed outright;
 the two survivors are proved redundant hypotheses and one is a control.
-The certificate modules (`coq/LinkCerts2*.v`) take about 2.5 s per
+The certificate modules are listed in `_CoqProject.certs`, apart from
+the theory: they need tens of CPU-hours, which no CI job allows, and no
+theory module imports them. Their theorems are audited by
+`make certs-assumptions` and `make certs-statements` against
+`tools/audited_certs.txt`, and `make certs-coqchk` re-checks them one
+module per process.
+The LP certificate modules (`coq/LinkCerts2*.v`) take about 2.5 s per
 link class under `vm_compute`, roughly ten core-hours in all, and
 twice that under `coqchk`; `tools/iota4/linkcert_coq.py` regenerates
 them from the census files. The branch-and-bound modules

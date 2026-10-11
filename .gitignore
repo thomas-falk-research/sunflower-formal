@@ -24,3 +24,6 @@ rust/Cargo.lock
 __pycache__/
 *.pyc
 rust/out/
+Makefile.certs
+Makefile.certs.conf
+.Makefile.certs.d

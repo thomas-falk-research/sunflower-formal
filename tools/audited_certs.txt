@@ -1,0 +1,14 @@
+# The audit list for the certificate modules (_CoqProject.certs).
+# Same format as tools/audited.txt; checked by `make certs-assumptions`
+# (Print Assumptions) and `make certs-statements` (baseline
+# tools/statements_certs.txt), which need `make certs` first.
+
+thm LinkCerts25.descent_25
+thm LinkCerts25.g_four_at_most_80_of_census_25
+thm LinkCerts24.descent_24
+thm LinkCerts24.g_four_at_most_79_of_census_24
+thm LinkCerts23.bound_of_covered_link
+thm Link23Certs.descent_23
+thm Link23Certs.g_four_at_most_78_of_census_23
+thm Link22Certs.descent_22
+thm Link22Certs.g_four_at_most_77_of_census_22
