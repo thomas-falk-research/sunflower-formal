@@ -15480,3 +15480,75 @@ Next down: size 21 has 407,115 classes (41.4 ledger-hours of reruns,
 about six times the kernel time of 22); size 20 has 308 million and
 is out of reach. The census itself (§59.4 item 1) remains the premise
 nothing here touches.
+
+## 71. Certificates at scale: a theory/certificate split, a faster check, and size 22 rebuilt
+
+Preparing size 21 (407,115 classes, about six times size 22) exposed
+four limits of the §69–§70 setup. Each is now removed; size 22 has been
+rebuilt on the new footing and its two theorems are unchanged in
+substance.
+
+### 71.1 CI could not run
+
+The `verify` job built every module, and the certificate shards alone
+are tens of CPU-hours: the Coq and `coqchk` jobs ran into GitHub's
+6-hour limit, and the mutation harness, which gives its baseline build
+10 minutes, had failed on every run since the first certificate module.
+The certificate modules now live in `_CoqProject.certs` and are built
+by `make certs`; `make certs-assumptions`, `make certs-statements`
+(`tools/audited_certs.txt`, baseline `tools/statements_certs.txt`) and
+`make certs-coqchk` (one `coqchk` process per module) audit them. No
+theory module imports them. The default build and CI cover the theory.
+
+### 71.2 The check was dominated by the trace enumeration
+
+Profiling a size-22 class: of the 0.55 s the check took, 0.5 s was
+`unwitw`, which tests every trace (about 175) against every pair of link
+members (231). Two ways out were built and proved:
+
+* `classcheck_h`: the certificate names a witnessing pair per witnessed
+  trace; only those are checked. The model section is generalised over
+  any trace list containing only traces and every unwitnessed one
+  (`TraceList`, `bound_of_check`), so a wrong hint can only weaken the
+  bound. 55 s per 484-class shard instead of 15 min. Superseded by:
+* `classcheck_m`: the same enumeration with point sets as binary
+  numbers (`unwitm`, `unwitm_eq`): `K ⊆ T` is `K land T = K`. 0.04 s per
+  class, no extra data.
+
+Leaves now store `u` and `v` sparsely (`LeafS`, checked as the dense
+leaf it denotes); they were about 360 numbers per leaf, nearly all 0.
+
+### 71.3 Combining the shards ran out of memory
+
+`Link22Certs` needed more than 14 GB: every module that requires a
+certificate shard loads all its certificates, about 83 MB per 484
+classes. Size 21 would have needed about 70 GB. Now a certificate
+module exports only its class list and the lemma that every class is
+`CheckedClass`; the certificates sit inside that lemma's opaque proof,
+which `Require` does not load. The census is stated over the class
+list (`CensusL`, `descent_of_censusL`), and `CheckedAny` admits the
+three kinds of certificate (LP, list check, bitmask check). Measured:
+
+| | before | now |
+|---|---|---|
+| compile, 484-class shard | 0.6 GB, 15 min | 1.5 GB, 69 s |
+| `coqchk`, same shard | 7–40 min | 229 s |
+| `Link22Certs` (all size-22 shards) | over 14 GB, killed | builds; Print Assumptions in 1.6 GB |
+
+Compile memory grows with the certificate text (about 3 GB per MB), so
+`tools/iota4/link23_coq.py coqshards_m` cuts modules by a text budget
+rather than a class count: size 22 is now 133 modules.
+
+Two dead ends, for the record: certificates as section-local `Let`s
+(discharge inlines them into the proof: a 147 MB `.vo`, 7.3 GB to
+compile), and the hinted check with transparent certificates (cheap to
+compile, but loads everything).
+
+### 71.4 Standing
+
+| claim | status |
+|---|---|
+| `bound_of_check`, `bound_of_masked`, `masked_class_bound`, `checked_of_mtrees`, `descent_of_censusL` | **PROVEN** (kernel; closed) |
+| size 22 rebuilt (133 modules), `Link22Certs.descent_22`, `g_four_at_most_77_of_census_22` | **COMPUTED / PROVEN** given `ι(4) ≤ 27`, `CensusL classes22 22` and `MeetingBound 4 56`; closed under the global context |
+| `make certs-assumptions` | all 9 certificate theorems closed |
+| `coqchk` on the rebuilt size-22 modules | not yet run on this form |
