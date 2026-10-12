@@ -50,7 +50,7 @@ $56+\Delta$).
 ```bash
 make verify        # builds all 57 Coq files of the theory, then runs the axiom audit
 make coqchk        # Coq's separate kernel checker; exactly one axiom library-wide
-make certs         # builds the 177 certificate modules of the link descent (hours; not in CI)
+make certs         # builds the 716 certificate modules of the link descent (hours; not in CI)
 make certs-assumptions certs-statements certs-coqchk   # audit them
 make mutants       # weaken each definition in turn; see what breaks
 make testbed       # exhaustive falsification of the spread hypothesis
