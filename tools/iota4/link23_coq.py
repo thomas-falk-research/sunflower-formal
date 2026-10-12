@@ -21,7 +21,7 @@ The checker here is only a convenience: the kernel check is
 """
 import sys, os, json, gzip, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from linkcert import load, validate
+from linkcert import load, load_some, validate
 
 
 # ---------------------------------------------------------------- Coq mirror
@@ -460,10 +460,9 @@ def emit(D, path, out, name):
 
 def batch(cls, size, shard, out):
     """Trees for every class of the given link size in shard i/n, as one JSON list."""
-    fams = load(cls)
-    keep = [k for k, F in enumerate(fams) if len(F) == size]
     i, n = map(int, shard.split("/"))
-    keep = keep[i::n]
+    fams = load_some(cls, size, lambda j: j % n == i)     # the same classes as keep[i::n] over [load]
+    keep = sorted(fams)
     docs = []
     failed = []
     for k in keep:
