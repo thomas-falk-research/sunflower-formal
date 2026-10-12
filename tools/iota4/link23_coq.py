@@ -155,7 +155,59 @@ def exclb(D, a, b):
     return False
 
 
+def _m(l):
+    return sum(1 << x for x in l)
+
+
 def rows_of(D, U, ts, big):
+    return rows_of_fast(D, U, ts, big)
+
+
+def rows_of_fast(D, U, ts, big):
+    """[rows_of_ref] with bitmasks; the same rows in the same order."""
+    n = len(ts)
+    Delta = len(D)
+    Cm = [_m(C) for C in D]
+    Tm = [_m(t[0]) for t in ts]
+    Pm = [_m(t[1]) for t in ts]
+    out = []
+    for T in U:
+        out.append((("RCap", T), {i: 1 for i, t in enumerate(ts) if t[0] == T}, cap(T)))
+    for T in U:
+        tm = _m(T)
+        if any(tm & c == tm for c in Cm):
+            out.append((("RCapI", T), {i: 1 for i, t in enumerate(ts) if t[0] == T}, {1: 13, 2: 3}.get(len(T), 1)))
+    for C, c in zip(D, Cm):
+        out.append((("RLink", C), {i: 1 for i in range(n) if not Tm[i] & c}, Delta - 1))
+    for k in POS:
+        out.append((("RStar", k), {i: 1 for i, t in enumerate(ts) if k in t[1]}, 25))
+    if Delta >= 1:
+        out.append((("RIota",), {i: 1 for i, t in enumerate(ts) if t[0] == []}, 27))
+    for i, a in enumerate(ts):
+        if not dett(a):
+            continue
+        ta, pa = Tm[i], Pm[i]
+        avoid = sum(1 for c in Cm if not ta & c)
+        coef = {}
+        for j in range(n):
+            cj = (big if j == i else 0) + (1 if (not Tm[j] & ta and not Pm[j] & pa) else 0)
+            if cj:
+                coef[j] = cj
+        out.append((("RDet", i), coef, Delta - avoid + big))
+        for j in range(n):
+            if j == i:
+                continue
+            tb, pb = Tm[j], Pm[j]
+            TT, PP = ta & tb, pa & pb
+            ex = (pa == pb and TT == 0) \
+                or (PP == 0 and any((ta & c) == TT and (tb & c) == TT for c in Cm)) \
+                or (TT == 0 and PP == 0 and any(not ta & c and not tb & c for c in Cm))
+            if ex:
+                out.append((("RExcl", i, j), {i: ub_of(ts[j]), j: 1}, ub_of(ts[j])))
+    return out
+
+
+def rows_of_ref(D, U, ts, big):
     """All tags with a nontrivial row, as (tag, {col: coef}, rhs)."""
     n = len(ts)
     Delta = len(D)

@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
-"""Collect the link classes of size 22 from the size-22 shard reruns.
+"""Collect the link classes of one size from the shard reruns at that size.
 
-  collect22.py LEDGER_LOG_DIR SHARD_LOG_DIR CANON_BIN OUT.txt.gz
+  collect22.py LEDGER_LOG_DIR SHARD_LOG_DIR CANON_BIN OUT.txt.gz [SIZE]
+
+SIZE defaults to 22; the shard list is SHARD_LOG_DIR/../shardsSIZE.txt.
 
 Every shard log must end with DONE exit=20, reproduce its ledger record
-(the ACCEPTED vector) exactly, and the BIG lines of size 22 are kept;
+(the ACCEPTED vector) exactly, and the BIG lines of size SIZE are kept;
 duplicates up to isomorphism (nauty canonical form of the incidence
 graph, CANON_BIN) are reported and must be absent.
 """
 import sys, os, re, glob, gzip, subprocess, hashlib
 
 ledger_dir, shard_dir, canon, out = sys.argv[1:5]
+size = int(sys.argv[5]) if len(sys.argv) > 5 else 22
 ledger = {}
 for f in sorted(glob.glob(os.path.join(ledger_dir, "chunk_*.log"))):
     lines = open(f).read().split("\n")
     for i, l in enumerate(lines):
         if l.startswith("SHARD"):
             ledger[int(l.split()[1])] = lines[i + 1].strip()
-shards = [int(x) for x in open(os.path.join(shard_dir, "..", "shards22.txt")).read().split()]
+shards = [int(x) for x in open(os.path.join(shard_dir, "..", f"shards{size}.txt")).read().split()]
 big = []
 ok = 0
 for s in shards:
@@ -34,9 +37,9 @@ for s in shards:
     for l in lines:
         if l.startswith("BIG "):
             r = int(l.split()[1])
-            if r == 22:
+            if r == size:
                 big.append(f"{s} {l}")
-print("shards ok", ok, "of", len(shards), "size-22 families", len(big))
+print("shards ok", ok, "of", len(shards), f"size-{size} families", len(big))
 res = subprocess.run([canon], input="\n".join(big) + "\n", capture_output=True, text=True, check=True)
 forms = res.stdout.split("\n")[:len(big)]
 assert len(forms) == len(big) and all(forms)
