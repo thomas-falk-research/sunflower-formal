@@ -15552,3 +15552,77 @@ compile, but loads everything).
 | size 22 rebuilt (133 modules), `Link22Certs.descent_22`, `g_four_at_most_77_of_census_22` | **COMPUTED / PROVEN** given `ι(4) ≤ 27`, `CensusL classes22 22` and `MeetingBound 4 56`; closed under the global context |
 | `make certs-assumptions` | all 9 certificate theorems closed |
 | `coqchk` on the rebuilt size-22 modules | not yet run on this form |
+
+## 72. Link size 21 in the kernel: `g(4) ≤ 76`
+
+On the footing of §71, size 21 went through without new mathematics:
+the model of §69–§70 certifies every class. **`g(4) ≤ 76`** is now a
+kernel theorem, `Link21Certs.g_four_at_most_76_of_census_21`, with the
+same three premises as before: `ι(4) ≤ 27`, the census complete from 21
+up (`CensusL classes21 21`), and `MeetingBound 4 56`. A 4-uniform
+3-sunflower-free family with a link of 21 or more members has at most
+54 members (`descent_21`).
+
+### 72.1 The classes
+
+The 172 shards whose ledger records reach size 21 were re-run with the
+printing threshold at 21 (`tools/iota4/isearch2p21.patch`; 42.7 hours of
+shard time, four at a time).
+
+* All 172 reproduce their ledger records' accepted vectors exactly
+  (`big21_shards_rerun.log`; `tools/iota4/collect.py … 21` refuses a
+  shard that does not).
+* They print 407,115 families at size 21, the census count, and their
+  nauty canonical forms are pairwise distinct (`tools/iota4/canon.c`).
+* `classes_21.txt.gz`, sha256 of the uncompressed file
+  `57ef6f3426ee1479bf59f9b3da3b47476b17ec0afa95295cdf49bb1f3d14a443`.
+
+An early survey of 223 classes under the model found integer optima of
+at most 29 against the allowance `54 − 21 − 1 = 32`.
+
+### 72.2 Certificates
+
+`link23_coq.py batch` solved all 407,115 classes in 80 resumable slices
+(four processes, about 12 hours; three slices were killed by the memory
+limit and re-run, after which each slice loads only its own classes,
+`linkcert.load_some`). No class was refused. Every leaf was re-checked
+in exact integer arithmetic with the Coq semantics before it was
+written.
+
+| | |
+|---|---|
+| classes | 407,115 |
+| single-leaf trees (the LP dual alone) | 394,700 |
+| leaves in all | 449,007 |
+| largest tree | 36 leaves |
+
+The trees are `docs/ladder/iota4_replication/link21_trees/` (18 MB).
+Building the rows with bitmasks (`rows_of_fast`) is six times faster
+than the reference and produced identical rows on 40 random classes.
+
+### 72.3 The kernel check
+
+`coqshards_m` cut the classes into 538 modules of about 500 KB of
+certificate each (`coq/Link21s0.v`–`s537.v`, 274 MB of source). With two
+jobs the build took 10.6 hours; no module failed or was killed (one had
+been killed with three jobs beside `coqchk`: a size-21 module peaks at
+about 4.7 GB). `Link21Certs` combines the class list of sizes 22–27 with
+the 538 new lists. `Print Assumptions` on `descent_21` and
+`g_four_at_most_76_of_census_21`: closed under the global context
+(1,376 s and 6.1 GB: it walks all 538 opaque proofs).
+`make certs-assumptions` covers both; `tools/statements_certs.txt` holds
+their statements. `coqchk` (one `-norec` check per module, §71): running at the time of this commit; the result is recorded in the follow-up commit.
+
+### 72.4 Standing
+
+| claim | status |
+|---|---|
+| the 407,115 classes at 21 are the census | **VALIDATED** (172 shards reproduce the ledger; canonical forms distinct; count equals the census) |
+| every class at 21 passes `classcheck_m` | **COMPUTED** in the kernel (538 modules) |
+| a link of ≥ 21 members forces `\|F\| ≤ 54` (`descent_21`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 21–27** |
+| `g(4) ≤ 76` | **PROVEN given `ι(4) ≤ 27`, the census at 21–27 and `MeetingBound 4 56`** |
+| `g(4) = 54` | open: a 55-member family needs every link of size ≤ 20 |
+
+Size 20 has 308 million classes, beyond enumeration. Below 21 the link
+descent needs a class-free argument (§66, direction 1), and the census
+itself remains the premise nothing here touches.
