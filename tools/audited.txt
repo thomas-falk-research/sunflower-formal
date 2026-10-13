@@ -1138,3 +1138,16 @@ thm LPCertExamples.rej_scale
 thm LPCertExamples.rej_bound
 thm LPCertExamples.rej_dimension
 thm LPCertExamples.rej_phantom_branch
+thm CensusGen.lexb_insert_last
+thm CensusGen.parent_improves
+thm CensusGen.lexb_first_diff
+thm CensusGen.gap_improves
+thm CensusGen.MinK_parent
+thm CensusGen.MinK_no_gap
+thm CensusGen.last_in_cand
+thm CensusGen.level_complete
+thm CensusGen.argmin_spec
+thm CensusGen.minimal_relabel
+thm CensusSearch.node_of_family
+thm CensusSearch.census_of_search
+thm CensusSearch.iota_of_search

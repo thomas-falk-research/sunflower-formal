@@ -3045,3 +3045,42 @@ e103bce7988fe4af  thm LPCertExamples.rej_bound
 
 8ed4879aa20dc19e  thm LPCertExamples.rej_phantom_branch
     rej_phantom_branch : check nat (list_rows rows2) free 1 nil BinNums.Z0 nil (Leaf BinNums.Z0 ((Br 5, BinNums.Zpos BinNums.xH) :: nil)) = false
+
+ee8c0133b18fd1a1  thm CensusGen.lexb_insert_last
+    lexb_insert_last : forall (A B : list BinNums.N) (x y : BinNums.N), lexb A B = true -> ~ List.In x A -> (forall z : BinNums.N, List.In z B -> BinNat.N.lt z y) -> lexb (insertN x A) (B ++ y :: nil) = true
+
+5f316c09d445b142  thm CensusGen.parent_improves
+    parent_improves : forall g h : nat -> nat, (forall x : nat, h (g x) = x) -> forall (G : list (list nat)) (r : list nat), (forall s : list nat, List.In s G -> BinNat.N.lt (rowmask s) (rowmask r)) -> improves g G = true -> improves g (G ++ r :: nil) = true
+
+6c50d97f692572fb  thm CensusGen.lexb_first_diff
+    lexb_first_diff : forall A B : list BinNums.N, ssorted A -> ssorted B -> length A = length B -> forall x : BinNums.N, List.In x A -> ~ List.In x B -> (forall y : BinNums.N, BinNat.N.lt y x -> List.In y A <-> List.In y B) -> lexb A B = true
+
+f7e6caad826da561  thm CensusGen.gap_improves
+    gap_improves : forall (F : list (list nat)) (a : nat), List.NoDup (List.map rowmask F) -> S a < nl F -> ~ List.In a (List.concat F) -> improves (pf (swp (nl F) a (nl F - 1))) F = true
+
+8a92379f045398f8  thm CensusGen.MinK_parent
+    MinK_parent : forall (K : list BinNums.N) (y : BinNums.N), ssorted (K ++ y :: nil) -> MinK (K ++ y :: nil) -> MinK K
+
+a096ac27197442e2  thm CensusGen.MinK_no_gap
+    MinK_no_gap : forall K : list BinNums.N, ssorted K -> MinK K -> forall i : nat, i < nl (fam K) -> List.In i (List.concat (fam K))
+
+df0965d02c796f29  thm CensusGen.last_in_cand
+    last_in_cand : forall (b : nat) (K : list BinNums.N) (y : BinNums.N), ssorted (K ++ y :: nil) -> MinK (K ++ y :: nil) -> length (bits y) = b -> List.In y (cand b K)
+
+0ea4c2aa0195ba50  thm CensusGen.level_complete
+    level_complete : forall (b : nat) (P : list (list nat) -> Prop) (validb : list BinNums.N -> bool), (forall K : list BinNums.N, P (fam K) -> validb K = true) -> (forall (K : list BinNums.N) (y : BinNums.N), P (fam (K ++ y :: nil)) -> P (fam K)) -> forall (oracle : list BinNums.N -> option (list nat)) (K : list BinNums.N), ssorted K -> (forall m : BinNums.N, List.In m K -> length (bits m) = b) -> P (fam K) -> MinK K -> List.In K (level b validb oracle (length K)) /\ keep oracle K = true
+
+c0b20ac4df296057  thm CensusGen.argmin_spec
+    argmin_spec : forall (F l : list (list nat)) (best : list nat), List.In (argmin F best l) (best :: l) /\ (forall p : list nat, List.In p (best :: l) -> lexb (rkey F p) (rkey F (argmin F best l)) = false)
+
+be5b4998bd731dcc  thm CensusGen.minimal_relabel
+    minimal_relabel : forall F : list (list nat), List.NoDup (List.map rowmask F) -> exists p : list nat, is_permb p = true /\ length p = nl F /\ MinK (key (relab (pf p) F))
+
+db8503887c62c27c  thm CensusSearch.node_of_family
+    node_of_family : forall (b : nat) (D : Family), PB b D -> exists K : list BinNums.N, ssorted K /\ (forall m : BinNums.N, List.In m K -> length (bits m) = b) /\ PB b (fam K) /\ MinK K /\ length K = length D /\ Covered D (fam K)
+
+d0cf2cbcedc3013a  thm CensusSearch.census_of_search
+    census_of_search : forall (b : nat) (validb : list BinNums.N -> bool) (oracle : list BinNums.N -> option (list nat)) (L : list Family) (lo hi : nat), (forall K : list BinNums.N, PB b (fam K) -> validb K = true) -> (forall K : list BinNums.N, List.In K (level b validb oracle (S hi)) -> keep oracle K = false) -> (forall (n : nat) (K : list BinNums.N), lo <= n -> n <= hi -> List.In K (level b validb oracle n) -> keep oracle K = true -> exists Dk : Family, List.In Dk L /\ Covered (fam K) Dk) -> CensusB b L lo
+
+5f213c6cf59b5994  thm CensusSearch.iota_of_search
+    iota_of_search : forall (b : nat) (validb : list BinNums.N -> bool) (oracle : list BinNums.N -> option (list nat)) (N : nat), (forall K : list BinNums.N, PB b (fam K) -> validb K = true) -> (forall K : list BinNums.N, List.In K (level b validb oracle (S N)) -> keep oracle K = false) -> IotaAtMost b N

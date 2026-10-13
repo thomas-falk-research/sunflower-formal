@@ -92,7 +92,7 @@ Qed.
     the row as a set ([mask_ext]).  A family's key is the sorted list of
     its rows' keys. *)
 
-Definition mask (l : list nat) : N := fold_right (fun x m => N.lor (N.shiftl 1 (N.of_nat x)) m) 0 l.
+Definition rowmask (l : list nat) : N := fold_right (fun x m => N.lor (N.shiftl 1 (N.of_nat x)) m) 0 l.
 
 Definition inb (x : nat) (A : list nat) : bool := existsb (Nat.eqb x) A.
 
@@ -103,11 +103,11 @@ Proof.
   - intros H; exists x; split; [exact H | apply Nat.eqb_refl].
 Qed.
 
-Lemma mask_bit : forall l n, N.testbit (mask l) n = inb (N.to_nat n) l.
+Lemma rowmask_bit : forall l n, N.testbit (rowmask l) n = inb (N.to_nat n) l.
 Proof.
   induction l as [| x l IH]; intros n.
   - apply N.bits_0.
-  - change (mask (x :: l)) with (N.lor (N.shiftl 1 (N.of_nat x)) (mask l)).
+  - change (rowmask (x :: l)) with (N.lor (N.shiftl 1 (N.of_nat x)) (rowmask l)).
     change (inb (N.to_nat n) (x :: l)) with (Nat.eqb (N.to_nat n) x || inb (N.to_nat n) l).
     rewrite N.lor_spec, (IH n), N.shiftl_1_l, N.pow2_bits_eqb. f_equal.
     destruct (N.eqb_spec (N.of_nat x) n) as [E | NE]; destruct (Nat.eqb_spec (N.to_nat n) x) as [E' | NE'];
@@ -116,26 +116,26 @@ Proof.
     + apply NE; subst; apply N2Nat.id.
 Qed.
 
-Lemma mask_ext : forall a b, mask a = mask b <-> (forall x, In x a <-> In x b).
+Lemma mask_ext : forall a b, rowmask a = rowmask b <-> (forall x, In x a <-> In x b).
 Proof.
   intros a b; split.
   - intros E x. rewrite <- !inb_iff.
-    pose proof (mask_bit a (N.of_nat x)) as Ha; pose proof (mask_bit b (N.of_nat x)) as Hb.
+    pose proof (rowmask_bit a (N.of_nat x)) as Ha; pose proof (rowmask_bit b (N.of_nat x)) as Hb.
     rewrite Nat2N.id in Ha, Hb. rewrite <- Ha, <- Hb, E. reflexivity.
   - intros H. apply N.bits_inj_iff. intros n.
-    rewrite !mask_bit. destruct (inb (N.to_nat n) a) eqn:Ea; destruct (inb (N.to_nat n) b) eqn:Eb; try reflexivity.
+    rewrite !rowmask_bit. destruct (inb (N.to_nat n) a) eqn:Ea; destruct (inb (N.to_nat n) b) eqn:Eb; try reflexivity.
     + apply inb_iff, H, inb_iff in Ea. congruence.
     + apply inb_iff, H, inb_iff in Eb. congruence.
 Qed.
 
-Definition key (F : list (list nat)) : list N := sortN (map mask F).
+Definition key (F : list (list nat)) : list N := sortN (map rowmask F).
 
 (** Relabelling by [g]: every point [x] becomes [g x]. *)
-Definition rmapF (g : nat -> nat) (F : list (list nat)) : list (list nat) := map (map g) F.
+Definition relab (g : nat -> nat) (F : list (list nat)) : list (list nat) := map (map g) F.
 
 (** [g] makes [F] strictly smaller in the order: a witness that [F] is
     not the minimal member of its class. *)
-Definition improves (g : nat -> nat) (F : list (list nat)) : bool := lexb (key (rmapF g F)) (key F).
+Definition improves (g : nat -> nat) (F : list (list nat)) : bool := lexb (key (relab g F)) (key F).
 
 Lemma insertN_max : forall y A, (forall z, In z A -> z < y) -> insertN y A = A ++ [y].
 Proof.
@@ -145,11 +145,11 @@ Proof.
   rewrite IH; [reflexivity |]. intros z Hz; apply H; right; exact Hz.
 Qed.
 
-Lemma key_app1 : forall F r, key (F ++ [r]) = insertN (mask r) (key F).
+Lemma key_app1 : forall F r, key (F ++ [r]) = insertN (rowmask r) (key F).
 Proof. intros F r; unfold key; rewrite map_app; simpl; apply sortN_app1. Qed.
 
 Lemma mask_map_inj : forall (g h : nat -> nat), (forall x, h (g x) = x) ->
-  forall a b, mask (map g a) = mask (map g b) -> mask a = mask b.
+  forall a b, rowmask (map g a) = rowmask (map g b) -> rowmask a = rowmask b.
 Proof.
   intros g h Hhg a b E. apply mask_ext. intros x. apply mask_ext with (x := g x) in E.
   rewrite !in_map_iff in E. split; intros Hx.
@@ -165,16 +165,16 @@ Qed.
     inverse on the left) that improves [G] improves [F]: so if [F] is
     minimal in its class, so is [G]. *)
 Theorem parent_improves : forall (g h : nat -> nat), (forall x, h (g x) = x) ->
-  forall G r, (forall s, In s G -> mask s < mask r) ->
+  forall G r, (forall s, In s G -> rowmask s < rowmask r) ->
   improves g G = true -> improves g (G ++ [r]) = true.
 Proof.
   intros g h Hhg G r Hmax Hi. unfold improves in *.
-  unfold rmapF; rewrite map_app; fold (rmapF g G); simpl.
+  unfold relab; rewrite map_app; fold (relab g G); simpl.
   rewrite !key_app1.
-  rewrite (insertN_max (mask r) (key G)).
+  rewrite (insertN_max (rowmask r) (key G)).
   2: { intros z Hz. unfold key in Hz. rewrite in_sortN, in_map_iff in Hz. destruct Hz as [s [<- Hs]]. apply Hmax, Hs. }
   apply lexb_insert_last; [exact Hi | |].
-  - intros Hin. unfold key, rmapF in Hin. rewrite in_sortN, map_map in Hin.
+  - intros Hin. unfold key, relab in Hin. rewrite in_sortN, map_map in Hin.
     apply in_map_iff in Hin as [s [E Hs]].
     apply (mask_map_inj g h Hhg) in E. pose proof (Hmax s Hs) as Hlt. rewrite E in Hlt. lia.
   - intros z Hz. unfold key in Hz. rewrite in_sortN, in_map_iff in Hz. destruct Hz as [s [<- Hs]]. apply Hmax, Hs.
@@ -266,17 +266,17 @@ Qed.
     permutation of [0 .. length p − 1]. *)
 Definition pf (p : list nat) (x : nat) : nat := if (x <? length p)%nat then nth x p 0%nat else x.
 
-Fixpoint nodupb (l : list nat) : bool :=
-  match l with [] => true | a :: l' => negb (inb a l') && nodupb l' end.
+Fixpoint cg_nodupb (l : list nat) : bool :=
+  match l with [] => true | a :: l' => negb (inb a l') && cg_nodupb l' end.
 
-Lemma nodupb_NoDup : forall l, nodupb l = true -> NoDup l.
+Lemma nodupb_NoDup : forall l, cg_nodupb l = true -> NoDup l.
 Proof.
   induction l as [| a l IH]; intros H; simpl in H; [constructor |].
   apply andb_true_iff in H as [H1 H2]. apply negb_true_iff in H1.
   constructor; [intro Hin; apply inb_iff in Hin; congruence | apply IH, H2].
 Qed.
 
-Definition is_permb (p : list nat) : bool := forallb (fun i => (i <? length p)%nat) p && nodupb p.
+Definition is_permb (p : list nat) : bool := forallb (fun i => (i <? length p)%nat) p && cg_nodupb p.
 
 Fixpoint index_of (x : nat) (l : list nat) : nat :=
   match l with [] => 0 | a :: l' => if Nat.eqb a x then 0 else S (index_of x l') end.
@@ -380,7 +380,7 @@ Qed.
     with [c] is at least [2^c].  So a minimal family uses exactly the
     labels [0 .. nl F − 1]. *)
 
-Lemma NoDup_nodupb : forall l, NoDup l -> nodupb l = true.
+Lemma NoDup_nodupb : forall l, NoDup l -> cg_nodupb l = true.
 Proof.
   induction l as [| a l IH]; intros H; [reflexivity |].
   inversion H as [| ? ? Ha Hl]; subst. simpl. apply andb_true_iff; split.
@@ -432,20 +432,20 @@ Proof.
   - apply N.log2_lt_pow2; [lia | exact Hb].
 Qed.
 
-Lemma mask_lt_pow : forall l c, (forall x, In x l -> (x < c)%nat) -> mask l < 2 ^ N.of_nat c.
+Lemma mask_lt_pow : forall l c, (forall x, In x l -> (x < c)%nat) -> rowmask l < 2 ^ N.of_nat c.
 Proof.
   induction l as [| x l IH]; intros c H.
   - simpl. apply N.neq_0_lt_0, N.pow_nonzero; lia.
-  - change (mask (x :: l)) with (N.lor (N.shiftl 1 (N.of_nat x)) (mask l)).
+  - change (rowmask (x :: l)) with (N.lor (N.shiftl 1 (N.of_nat x)) (rowmask l)).
     apply lor_lt_pow; [| apply IH; intros y Hy; apply H; right; exact Hy].
     rewrite N.shiftl_1_l. apply N.pow_lt_mono_r; [lia |]. specialize (H x (or_introl eq_refl)). lia.
 Qed.
 
-Lemma mask_ge_pow : forall l c, In c l -> 2 ^ N.of_nat c <= mask l.
+Lemma mask_ge_pow : forall l c, In c l -> 2 ^ N.of_nat c <= rowmask l.
 Proof.
-  intros l c Hc. destruct (N.lt_ge_cases (mask l) (2 ^ N.of_nat c)) as [Hlt | Hge]; [exfalso | exact Hge].
-  assert (Hb : N.testbit (mask l) (N.of_nat c) = true) by (rewrite mask_bit, Nat2N.id; apply inb_iff, Hc).
-  destruct (N.eq_dec (mask l) 0) as [E | NE]; [rewrite E, N.bits_0 in Hb; discriminate |].
+  intros l c Hc. destruct (N.lt_ge_cases (rowmask l) (2 ^ N.of_nat c)) as [Hlt | Hge]; [exfalso | exact Hge].
+  assert (Hb : N.testbit (rowmask l) (N.of_nat c) = true) by (rewrite rowmask_bit, Nat2N.id; apply inb_iff, Hc).
+  destruct (N.eq_dec (rowmask l) 0) as [E | NE]; [rewrite E, N.bits_0 in Hb; discriminate |].
   rewrite N.bits_above_log2 in Hb; [discriminate |]. apply N.log2_lt_pow2; [lia | exact Hlt].
 Qed.
 
@@ -484,7 +484,7 @@ Proof.
       destruct Hx as [E | [E | Hx]]; [subst x; lia | subst x; lia | apply Hle; right; exact Hx].
 Qed.
 
-Lemma in_key : forall F y, In y (key F) <-> exists s, In s F /\ y = mask s.
+Lemma in_key : forall F y, In y (key F) <-> exists s, In s F /\ y = rowmask s.
 Proof.
   intros F y; unfold key; rewrite in_sortN, in_map_iff. split.
   - intros [s [E Hs]]; exists s; split; [exact Hs | symmetry; exact E].
@@ -503,7 +503,7 @@ Proof.
 Qed.
 
 Theorem gap_improves : forall F a,
-  NoDup (map mask F) -> (S a < nl F)%nat -> ~ In a (concat F) ->
+  NoDup (map rowmask F) -> (S a < nl F)%nat -> ~ In a (concat F) ->
   improves (pf (swp (nl F) a (nl F - 1))) F = true.
 Proof.
   intros F a Hnd Ha Hun.
@@ -517,7 +517,7 @@ Proof.
     pose proof (nl_bound F x Hxc). unfold c; lia. }
   assert (Hna : forall s, In s F -> ~ In a s).
   { intros s Hs Has. apply Hun, in_concat. exists s; split; assumption. }
-  assert (Hfix : forall s, In s F -> ~ In c s -> mask (map t s) = mask s).
+  assert (Hfix : forall s, In s F -> ~ In c s -> rowmask (map t s) = rowmask s).
   { intros s Hs Hcs. apply mask_ext. intros y. rewrite in_map_iff. split.
     - intros [z [<- Hz]]. rewrite Ht. unfold swf.
       destruct (Nat.eqb_spec z a) as [-> | _]; [exfalso; exact (Hna s Hs Hz) |].
@@ -525,35 +525,35 @@ Proof.
     - intros Hy. exists y; split; [| exact Hy]. rewrite Ht. unfold swf.
       destruct (Nat.eqb_spec y a) as [-> | _]; [exfalso; exact (Hna s Hs Hy) |].
       destruct (Nat.eqb_spec y c) as [-> | _]; [contradiction | reflexivity]. }
-  assert (Hlow : forall s, In s F -> mask (map t s) < 2 ^ N.of_nat c \/ ~ In c s).
+  assert (Hlow : forall s, In s F -> rowmask (map t s) < 2 ^ N.of_nat c \/ ~ In c s).
   { intros s Hs. destruct (in_dec Nat.eq_dec c s) as [Hcs | Hcs]; [left | right; exact Hcs].
     apply mask_lt_pow. intros y Hy. apply in_map_iff in Hy as [z [<- Hz]]. rewrite Ht. unfold swf.
     destruct (Nat.eqb_spec z a) as [-> | _]; [exfalso; exact (Hna s Hs Hz) |].
     destruct (Nat.eqb_spec z c) as [-> | Hzc]; [exact Hac |]. pose proof (Hlab s z Hs Hz). lia. }
-  assert (Hlow' : forall s, In s F -> In c s -> mask (map t s) < 2 ^ N.of_nat c).
+  assert (Hlow' : forall s, In s F -> In c s -> rowmask (map t s) < 2 ^ N.of_nat c).
   { intros s Hs Hcs. destruct (Hlow s Hs) as [H | H]; [exact H | contradiction]. }
   (* the smallest changed row *)
   apply in_concat in Hc as [s0 [Hs0 Hcs0]].
-  set (T := map (fun s => mask (map t s)) (filter (fun s => inb c s) F)).
-  assert (HT0 : In (mask (map t s0)) T).
+  set (T := map (fun s => rowmask (map t s)) (filter (fun s => inb c s) F)).
+  assert (HT0 : In (rowmask (map t s0)) T).
   { apply in_map_iff. exists s0; split; [reflexivity |]. apply filter_In; split; [exact Hs0 | apply inb_iff, Hcs0]. }
   destruct T as [| y0 rest] eqn:ET; [destruct HT0 |].
   destruct (minN_spec rest y0) as [Hxin Hxle]. set (x := minN y0 rest) in *.
   rewrite <- ET in Hxin, Hxle.
-  assert (HxT : exists s1, In s1 F /\ In c s1 /\ x = mask (map t s1)).
+  assert (HxT : exists s1, In s1 F /\ In c s1 /\ x = rowmask (map t s1)).
   { unfold T in Hxin. apply in_map_iff in Hxin as [s1 [E Hs1]]. apply filter_In in Hs1 as [Hs1 Hc1].
     apply inb_iff in Hc1. exists s1; split; [exact Hs1 | split; [exact Hc1 | symmetry; exact E]]. }
   destruct HxT as [s1 [Hs1 [Hcs1 Ex]]].
   assert (Hxlow : x < 2 ^ N.of_nat c) by (rewrite Ex; apply Hlow', Hcs1; exact Hs1).
-  assert (HxT' : forall s, In s F -> In c s -> x <= mask (map t s)).
+  assert (HxT' : forall s, In s F -> In c s -> x <= rowmask (map t s)).
   { intros s Hs Hcs. apply Hxle. unfold T. apply in_map_iff. exists s; split; [reflexivity |].
     apply filter_In; split; [exact Hs | apply inb_iff, Hcs]. }
   unfold improves.
-  assert (HndA : NoDup (map mask (rmapF t F))).
-  { unfold rmapF. rewrite map_map. apply (NoDup_map_transfer _ _ mask (fun s => mask (map t s)) F Hnd).
+  assert (HndA : NoDup (map rowmask (relab t F))).
+  { unfold relab. rewrite map_map. apply (NoDup_map_transfer _ _ rowmask (fun s => rowmask (map t s)) F Hnd).
     intros u v _ _ E. apply (mask_map_inj t t Htt) in E; exact E. }
   apply (lexb_first_diff _ _ (sortN_ssorted _ HndA) (sortN_ssorted _ Hnd)) with (x := x).
-  - unfold key. rewrite !length_sortN, !map_length. unfold rmapF; rewrite map_length; reflexivity.
+  - unfold key. rewrite !length_sortN, !map_length. unfold relab; rewrite map_length; reflexivity.
   - apply in_key. exists (map t s1); split; [apply in_map, Hs1 | exact Ex].
   - intros Hin. apply in_key in Hin as [s [Hs E]].
     destruct (in_dec Nat.eq_dec c s) as [Hcs | Hcs].
@@ -561,8 +561,8 @@ Proof.
     + apply (Hna s Hs). rewrite Ex in E. symmetry in E. apply mask_ext with (x := a) in E.
       apply E, in_map_iff. exists c; split; [| exact Hcs1]. rewrite Ht; unfold swf.
       destruct (Nat.eqb_spec c a) as [E' | _]; [lia | rewrite Nat.eqb_refl; reflexivity].
-  - intros y Hy. change (In y (key (rmapF t F)) <-> In y (key F)). rewrite !in_key. split.
-    + intros [s' [Hs' E]]. unfold rmapF in Hs'. apply in_map_iff in Hs' as [s [<- Hs]].
+  - intros y Hy. change (In y (key (relab t F)) <-> In y (key F)). rewrite !in_key. split.
+    + intros [s' [Hs' E]]. unfold relab in Hs'. apply in_map_iff in Hs' as [s [<- Hs]].
       destruct (in_dec Nat.eq_dec c s) as [Hcs | Hcs].
       * exfalso. pose proof (HxT' s Hs Hcs). lia.
       * exists s; split; [exact Hs | rewrite E; apply Hfix; assumption].
@@ -573,7 +573,7 @@ Qed.
 
 (** ** Nodes are sorted lists of masks *)
 
-(** The row of a mask: its set bits, ascending. *)
+(** The row of a rowmask: its set bits, ascending. *)
 Definition bits (m : N) : list nat := filter (fun i => N.testbit m (N.of_nat i)) (seq 0 (N.to_nat (N.size m))).
 
 Lemma in_bits : forall m i, In i (bits m) <-> N.testbit m (N.of_nat i) = true.
@@ -586,9 +586,9 @@ Proof.
   rewrite N.size_log2 in Hi by exact Hm. lia.
 Qed.
 
-Lemma mask_bits : forall m, mask (bits m) = m.
+Lemma mask_bits : forall m, rowmask (bits m) = m.
 Proof.
-  intros m. apply N.bits_inj_iff. intros n. rewrite mask_bit.
+  intros m. apply N.bits_inj_iff. intros n. rewrite rowmask_bit.
   destruct (inb (N.to_nat n) (bits m)) eqn:E.
   - apply inb_iff, in_bits in E. rewrite N2Nat.id in E. symmetry; exact E.
   - destruct (N.testbit m n) eqn:E'; [| reflexivity].
@@ -623,15 +623,15 @@ Proof.
   rewrite (map_ext _ (fun x => x)) by (intros; apply mask_bits). rewrite map_id. apply sortN_sorted_id, H.
 Qed.
 
-(** ** Candidate rows: all [k]-subsets *)
+(** ** Candidate rows: all [k]-ksubsets *)
 
 Local Close Scope N_scope.
 
-Fixpoint subsets (k : nat) (l : list nat) : list (list nat) :=
+Fixpoint ksubsets (k : nat) (l : list nat) : list (list nat) :=
   match k, l with
   | 0, _ => [[]]
   | S _, [] => []
-  | S k', x :: l' => map (cons x) (subsets k' l') ++ subsets k l'
+  | S k', x :: l' => map (cons x) (ksubsets k' l') ++ ksubsets k l'
   end.
 
 Lemma length_remove_in : forall x r, NoDup r -> In x r -> length (remove Nat.eq_dec x r) = pred (length r).
@@ -650,9 +650,9 @@ Proof.
   constructor; [| apply IH, Hr]. intros Hin. apply in_remove in Hin as [Hin _]. contradiction.
 Qed.
 
-(** Every [k]-set inside [l] is, as a set, one of [subsets k l]. *)
+(** Every [k]-set inside [l] is, as a set, one of [ksubsets k l]. *)
 Lemma subsets_complete : forall l r, NoDup l -> NoDup r -> incl r l ->
-  exists s, In s (subsets (length r) l) /\ (forall z, In z s <-> In z r).
+  exists s, In s (ksubsets (length r) l) /\ (forall z, In z s <-> In z r).
 Proof.
   induction l as [| x l IH]; intros r Hl Hr Hinc.
   - destruct r as [| y r]; [| exfalso; apply (Hinc y); left; reflexivity].
@@ -699,7 +699,7 @@ Section Search.
   Hypothesis P_hered : forall K y, P (fam (K ++ [y])) -> P (fam K).
   Variable oracle : list N -> option (list nat).
 
-  Definition cand (K : list N) : list N := map mask (subsets b (seq 0 (nl (fam K) + b))).
+  Definition cand (K : list N) : list N := map rowmask (ksubsets b (seq 0 (nl (fam K) + b))).
 
   Definition children (K : list N) : list (list N) :=
     map (fun y => K ++ [y]) (filter (fun y => forallb (fun z => (z <? y)%N) K && validb (K ++ [y])) (cand K)).
@@ -735,8 +735,8 @@ Section Search.
     rewrite E in Hin. apply H, nl_bound in Hin. lia.
   Qed.
 
-  Lemma rmapF_ext : forall g g' F, (forall x, g x = g' x) -> rmapF g F = rmapF g' F.
-  Proof. intros g g' F H. unfold rmapF. apply map_ext. intros r. apply map_ext, H. Qed.
+  Lemma rmapF_ext : forall g g' F, (forall x, g x = g' x) -> relab g F = relab g' F.
+  Proof. intros g g' F H. unfold relab. apply map_ext. intros r. apply map_ext, H. Qed.
 
   Lemma improves_ext : forall g g' F, (forall x, g x = g' x) -> improves g F = improves g' F.
   Proof. intros g g' F H. unfold improves. rewrite (rmapF_ext g g' F H). reflexivity. Qed.
@@ -748,7 +748,7 @@ Section Search.
     intros Hin. rewrite Forall_forall in Ha. specialize (Ha a Hin). lia.
   Qed.
 
-  Lemma map_mask_fam : forall K, map mask (fam K) = K.
+  Lemma map_mask_fam : forall K, map rowmask (fam K) = K.
   Proof.
     intros K. unfold fam. rewrite map_map. rewrite (map_ext _ (fun x => x)) by (intros; apply mask_bits). apply map_id.
   Qed.
@@ -865,8 +865,8 @@ Proof.
 Qed.
 
 (** The key of a family depends only on the set of its rows' masks. *)
-Lemma key_ext : forall F G, NoDup (map mask F) -> NoDup (map mask G) ->
-  (forall m, In m (map mask F) <-> In m (map mask G)) -> key F = key G.
+Lemma key_ext : forall F G, NoDup (map rowmask F) -> NoDup (map rowmask G) ->
+  (forall m, In m (map rowmask F) <-> In m (map rowmask G)) -> key F = key G.
 Proof.
   intros F G HF HG H. apply ssorted_ext; [apply sortN_ssorted, HF | apply sortN_ssorted, HG |].
   intros x. unfold key. rewrite !in_sortN. apply H.
@@ -970,7 +970,7 @@ Proof.
     intros x y E. rewrite <- (pinv_pf q Hq x), E, pinv_pf by exact Hq. reflexivity.
 Qed.
 
-Definition rkey (F : list (list nat)) (p : list nat) : list N := key (rmapF (pf p) F).
+Definition rkey (F : list (list nat)) (p : list nat) : list N := key (relab (pf p) F).
 
 Fixpoint argmin (F : list (list nat)) (best : list nat) (l : list (list nat)) : list nat :=
   match l with
@@ -979,7 +979,7 @@ Fixpoint argmin (F : list (list nat)) (best : list nat) (l : list (list nat)) : 
   end.
 
 Lemma rkey_length : forall F p, length (rkey F p) = length F.
-Proof. intros F p. unfold rkey, key, rmapF. rewrite length_sortN, !map_length. reflexivity. Qed.
+Proof. intros F p. unfold rkey, key, relab. rewrite length_sortN, !map_length. reflexivity. Qed.
 
 Lemma argmin_spec : forall F l best,
   In (argmin F best l) (best :: l) /\
@@ -1014,11 +1014,11 @@ Proof.
   intros g a b H y. rewrite !in_map_iff. split; intros [z [E Hz]]; exists z; split; try exact E; apply H, Hz.
 Qed.
 
-Lemma bits_mask_seteq : forall s z, In z (bits (mask s)) <-> In z s.
+Lemma bits_mask_seteq : forall s z, In z (bits (rowmask s)) <-> In z s.
 Proof. intros s. apply mask_ext. rewrite mask_bits. reflexivity. Qed.
 
-Theorem minimal_relabel : forall F, NoDup (map mask F) ->
-  exists p, is_permb p = true /\ length p = nl F /\ MinK (key (rmapF (pf p) F)).
+Theorem minimal_relabel : forall F, NoDup (map rowmask F) ->
+  exists p, is_permb p = true /\ length p = nl F /\ MinK (key (relab (pf p) F)).
 Proof.
   intros F HF.
   set (v := nl F). set (l := perms (seq 0 v)). set (ps := argmin F (seq 0 v) l).
@@ -1027,16 +1027,16 @@ Proof.
   assert (Hlen : length ps = v) by (rewrite <- (Permutation_length Hps), seq_length; reflexivity).
   assert (Hpp : is_permb ps = true) by (apply seq_is_permb; rewrite Hlen; exact Hps).
   exists ps; split; [exact Hpp | split; [exact Hlen |]].
-  set (K := key (rmapF (pf ps) F)).
-  assert (HndA : NoDup (map mask (rmapF (pf ps) F))).
-  { unfold rmapF; rewrite map_map. apply (NoDup_map_transfer _ _ mask _ F HF).
+  set (K := key (relab (pf ps) F)).
+  assert (HndA : NoDup (map rowmask (relab (pf ps) F))).
+  { unfold relab; rewrite map_map. apply (NoDup_map_transfer _ _ rowmask _ F HF).
     intros u w _ _ E. apply (mask_map_inj (pf ps) (pinv ps) (pinv_pf ps Hpp)), E. }
   assert (HK : ssorted K) by (apply sortN_ssorted, HndA).
   intros q Hq Hlq. destruct (improves (pf q) (fam K)) eqn:Ei; [exfalso | reflexivity].
   (* the labels of [K] are below [v] *)
   assert (Hlab : forall x, In x (concat (fam K)) -> x < v).
   { intros x Hx. apply in_concat in Hx as [t [Ht Hx]]. unfold fam in Ht. apply in_map_iff in Ht as [k [<- Hk]].
-    apply in_key in Hk as [s [Hs Ek]]. unfold rmapF in Hs. apply in_map_iff in Hs as [s0 [<- Hs0]].
+    apply in_key in Hk as [s [Hs Ek]]. unfold relab in Hs. apply in_map_iff in Hs as [s0 [<- Hs0]].
     rewrite Ek in Hx. apply bits_mask_seteq, in_map_iff in Hx as [y [<- Hy]].
     rewrite <- Hlen. apply pf_lt; [exact Hpp |]. rewrite Hlen. apply nl_bound, in_concat. exists s0; split; assumption. }
   assert (Hnl : nl (fam K) <= v).
@@ -1054,27 +1054,27 @@ Proof.
   specialize (Hle r Hrl).
   assert (Hrf : forall x, pf r x = pf q (pf ps x)) by (intros x; unfold r; rewrite pf_comp by lia; apply Hqq).
   unfold improves in Ei. rewrite key_fam in Ei by exact HK.
-  assert (Ek : key (rmapF (pf q) (fam K)) = rkey F r).
+  assert (Ek : key (relab (pf q) (fam K)) = rkey F r).
   { apply key_ext.
-    - unfold rmapF; rewrite map_map. apply (NoDup_map_transfer _ _ mask _ (fam K)).
+    - unfold relab; rewrite map_map. apply (NoDup_map_transfer _ _ rowmask _ (fam K)).
       + rewrite map_mask_fam. apply ssorted_NoDup, HK.
       + intros u w _ _ E. apply (mask_map_inj (pf q) (pinv q) (pinv_pf q Hq)), E.
-    - unfold rmapF; rewrite map_map. apply (NoDup_map_transfer _ _ mask _ F HF).
+    - unfold relab; rewrite map_map. apply (NoDup_map_transfer _ _ rowmask _ F HF).
       intros u w _ _ E. apply (mask_map_inj (pf r) (pinv r) (pinv_pf r Hr)), E.
     - intros m. rewrite !in_map_iff. split.
-      + intros [s' [Em Hs']]. unfold rmapF in Hs'. apply in_map_iff in Hs' as [t [<- Ht]].
+      + intros [s' [Em Hs']]. unfold relab in Hs'. apply in_map_iff in Hs' as [t [<- Ht]].
         unfold fam in Ht. apply in_map_iff in Ht as [k [<- Hk]].
-        apply in_key in Hk as [s [Hs Ek]]. unfold rmapF in Hs. apply in_map_iff in Hs as [s0 [<- Hs0]].
+        apply in_key in Hk as [s [Hs Ek]]. unfold relab in Hs. apply in_map_iff in Hs as [s0 [<- Hs0]].
         exists (map (pf r) s0); split; [| apply in_map, Hs0]. rewrite <- Em. apply mask_ext. intros y.
         rewrite (seteq_map (pf q) (bits k) (map (pf ps) s0)) by (intros z; rewrite Ek; apply bits_mask_seteq).
         rewrite map_map. rewrite (map_ext (pf r) (fun x => pf q (pf ps x))) by exact Hrf. reflexivity.
-      + intros [s' [Em Hs']]. unfold rmapF in Hs'. apply in_map_iff in Hs' as [s0 [<- Hs0]].
-        set (k := mask (map (pf ps) s0)).
+      + intros [s' [Em Hs']]. unfold relab in Hs'. apply in_map_iff in Hs' as [s0 [<- Hs0]].
+        set (k := rowmask (map (pf ps) s0)).
         exists (map (pf q) (bits k)); split.
         * rewrite <- Em. apply mask_ext. intros y.
           rewrite (seteq_map (pf q) (bits k) (map (pf ps) s0)) by (intros z; apply bits_mask_seteq).
           rewrite map_map. rewrite (map_ext (pf r) (fun x => pf q (pf ps x))) by exact Hrf. reflexivity.
-        * unfold rmapF. apply in_map. unfold fam. apply in_map. apply in_key.
+        * unfold relab. apply in_map. unfold fam. apply in_map. apply in_key.
           exists (map (pf ps) s0); split; [apply in_map, Hs0 | reflexivity]. }
   rewrite Ek in Ei. unfold rkey in Hle at 2. fold K in Hle. congruence.
 Qed.
