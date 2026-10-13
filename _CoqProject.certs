@@ -1,9 +1,15 @@
 # Certificate modules: the class data and the vm_compute checks of the
-# link descent (docs/roadmap.md §68-§70). Built by `make certs`, not by
+# link descent (docs/roadmap.md §68-§73). Built by `make certs`, not by
 # `make coq`: they need tens of CPU-hours, more than CI can give, and
 # no theory module imports them. `make certs-coqchk` re-checks each
 # with coqchk; `make certs-assumptions` and `make certs-statements`
 # audit the theorems listed in tools/audited_certs.txt.
+#
+# Link23s*, Link22s*, Link21s* and their combining modules carry the
+# census chain: every certificate is checked by LPCert.check through
+# Link23.lpclass (§73). LinkCerts* are §64's LP certificates for sizes
+# 23-27, checked by LinkLP.certcheck: an independent cross-check by a
+# different model and checker, on which no census theorem depends.
 -Q coq Sunflower
 -arg -w -arg -notation-overridden,-deprecated-syntactic-definition,-deprecated-hint-without-locality
 coq/LinkCerts25.v
@@ -37,17 +43,17 @@ coq/LinkCerts23s21.v
 coq/LinkCerts23s22.v
 coq/LinkCerts23s23.v
 coq/LinkCerts23.v
-coq/Link23c1722.v
-coq/Link23c1726.v
-coq/Link23c10590.v
-coq/Link23c10591.v
-coq/Link23c10592.v
-coq/Link23c10593.v
-coq/Link23c10594.v
-coq/Link23c10595.v
-coq/Link23c10596.v
-coq/Link23c10597.v
-coq/Link23c14708.v
+coq/Link23s0.v
+coq/Link23s1.v
+coq/Link23s2.v
+coq/Link23s3.v
+coq/Link23s4.v
+coq/Link23s5.v
+coq/Link23s6.v
+coq/Link23s7.v
+coq/Link23s8.v
+coq/Link23s9.v
+coq/Link23s10.v
 coq/Link23Certs.v
 coq/Link22s0.v
 coq/Link22s1.v
@@ -178,10 +184,6 @@ coq/Link22s125.v
 coq/Link22s126.v
 coq/Link22s127.v
 coq/Link22s128.v
-coq/Link22s129.v
-coq/Link22s130.v
-coq/Link22s131.v
-coq/Link22s132.v
 coq/Link22Certs.v
 coq/Link21s0.v
 coq/Link21s1.v
@@ -699,26 +701,4 @@ coq/Link21s512.v
 coq/Link21s513.v
 coq/Link21s514.v
 coq/Link21s515.v
-coq/Link21s516.v
-coq/Link21s517.v
-coq/Link21s518.v
-coq/Link21s519.v
-coq/Link21s520.v
-coq/Link21s521.v
-coq/Link21s522.v
-coq/Link21s523.v
-coq/Link21s524.v
-coq/Link21s525.v
-coq/Link21s526.v
-coq/Link21s527.v
-coq/Link21s528.v
-coq/Link21s529.v
-coq/Link21s530.v
-coq/Link21s531.v
-coq/Link21s532.v
-coq/Link21s533.v
-coq/Link21s534.v
-coq/Link21s535.v
-coq/Link21s536.v
-coq/Link21s537.v
 coq/Link21Certs.v
