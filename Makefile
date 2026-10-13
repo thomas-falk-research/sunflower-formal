@@ -293,11 +293,26 @@ certs-statements: certs
 certs-statements-accept: certs
 	@python3 tools/statements.py --certs --accept
 
-# One coqchk process per module: a single invocation over many of these
-# modules slows down sharply as they accumulate (§70.3).
+# coqchk for the certificate modules. `coqchk M` re-checks every
+# dependency of M, so checking a combining module that way repeats every
+# shard, and one invocation over many modules slows down sharply as they
+# accumulate (§70.3). Instead: the theory is checked in full by
+# `make coqchk`; each certificate module is checked on its own with
+# -norec (dependencies admitted, each of them checked by its own run).
+# Under -norec the context summary also lists the parameters of the
+# standard library's opaque module Coq.ssr.ssrunder.Under_rel, because
+# the standard library is admitted; a full check reports none (§72). The
+# gate therefore rejects any axiom named in the Sunflower library and any
+# kernel escape hatch. Logs: coqchk-certs/<module>.log.
 certs-coqchk: certs
-	@printf '%s\n' $(CERTMODULES) | xargs -P $(CERT_JOBS) -I{} sh -c \
-	  'coqchk -Q coq Sunflower -o -silent {} > /dev/null 2>&1 && echo "  coqchk ok   {}" || { echo "  coqchk FAIL {}"; exit 255; }'
+	@mkdir -p coqchk-certs
+	@printf '%s\n' $(CERTMODULES) | xargs -P $(CERT_JOBS) -I{} sh -c '\
+	  log=coqchk-certs/{}.log; \
+	  coqchk -Q coq Sunflower -o -silent -norec {} > $$log 2>&1 || { echo "  coqchk FAIL {}"; exit 255; }; \
+	  if grep -qE "^    Sunflower\." $$log; then echo "  coqchk AXIOM {}"; exit 255; fi; \
+	  for hatch in "relying on type-in-type: <none>" "relying on unsafe (co)fixpoints: <none>" "positivity is assumed: <none>"; do \
+	    grep -q "$$hatch" $$log || { echo "  coqchk HATCH {}"; exit 255; }; done; \
+	  echo "  coqchk ok   {}"'
 
 mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)

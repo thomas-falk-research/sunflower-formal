@@ -27,3 +27,4 @@ rust/out/
 Makefile.certs
 Makefile.certs.conf
 .Makefile.certs.d
+coqchk-certs/
