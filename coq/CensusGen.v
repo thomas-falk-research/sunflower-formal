@@ -570,3 +570,262 @@ Proof.
       * exfalso. pose proof (mask_ge_pow s c Hcs). lia.
       * exists (map t s); split; [apply in_map, Hs | rewrite E; symmetry; apply Hfix; assumption].
 Qed.
+
+(** ** Nodes are sorted lists of masks *)
+
+(** The row of a mask: its set bits, ascending. *)
+Definition bits (m : N) : list nat := filter (fun i => N.testbit m (N.of_nat i)) (seq 0 (N.to_nat (N.size m))).
+
+Lemma in_bits : forall m i, In i (bits m) <-> N.testbit m (N.of_nat i) = true.
+Proof.
+  intros m i; unfold bits; rewrite filter_In, in_seq. split; [tauto |].
+  intros H; split; [| exact H]. split; [lia |].
+  destruct (Nat.lt_ge_cases i (N.to_nat (N.size m))) as [Hi | Hi]; [exact Hi | exfalso].
+  rewrite N.bits_above_log2 in H; [discriminate |].
+  destruct (N.eq_dec m 0) as [-> | Hm]; [rewrite N.bits_0 in H; discriminate |].
+  rewrite N.size_log2 in Hi by exact Hm. lia.
+Qed.
+
+Lemma mask_bits : forall m, mask (bits m) = m.
+Proof.
+  intros m. apply N.bits_inj_iff. intros n. rewrite mask_bit.
+  destruct (inb (N.to_nat n) (bits m)) eqn:E.
+  - apply inb_iff, in_bits in E. rewrite N2Nat.id in E. symmetry; exact E.
+  - destruct (N.testbit m n) eqn:E'; [| reflexivity].
+    exfalso. assert (H : In (N.to_nat n) (bits m)) by (apply in_bits; rewrite N2Nat.id; exact E').
+    apply inb_iff in H. congruence.
+Qed.
+
+Lemma bits_NoDup : forall m, NoDup (bits m).
+Proof. intros m. unfold bits. apply NoDup_filter, seq_NoDup. Qed.
+
+Definition fam (K : list N) : list (list nat) := map bits K.
+
+Lemma ssorted_snoc : forall A y, ssorted (A ++ [y]) -> ssorted A /\ (forall z, In z A -> z < y).
+Proof.
+  induction A as [| a A IH]; intros y H; simpl in *.
+  - split; [constructor | intros z []].
+  - inversion H as [| ? ? H' Ha]; subst. destruct (IH y H') as [HA Hy]. split.
+    + constructor; [exact HA |]. rewrite Forall_forall in Ha |- *. intros z Hz; apply Ha, in_app_iff; left; exact Hz.
+    + intros z [<- | Hz]; [| apply Hy, Hz]. rewrite Forall_forall in Ha. apply Ha, in_app_iff; right; left; reflexivity.
+Qed.
+
+Lemma sortN_sorted_id : forall K, ssorted K -> sortN K = K.
+Proof.
+  intros K. induction K as [| y K IH] using rev_ind; intros H; [reflexivity |].
+  apply ssorted_snoc in H as [HK Hlt]. rewrite sortN_app1, IH by exact HK.
+  apply insertN_max, Hlt.
+Qed.
+
+Lemma key_fam : forall K, ssorted K -> key (fam K) = K.
+Proof.
+  intros K H. unfold key, fam. rewrite map_map.
+  rewrite (map_ext _ (fun x => x)) by (intros; apply mask_bits). rewrite map_id. apply sortN_sorted_id, H.
+Qed.
+
+(** ** Candidate rows: all [k]-subsets *)
+
+Local Close Scope N_scope.
+
+Fixpoint subsets (k : nat) (l : list nat) : list (list nat) :=
+  match k, l with
+  | 0, _ => [[]]
+  | S _, [] => []
+  | S k', x :: l' => map (cons x) (subsets k' l') ++ subsets k l'
+  end.
+
+Lemma length_remove_in : forall x r, NoDup r -> In x r -> length (remove Nat.eq_dec x r) = pred (length r).
+Proof.
+  intros x r; induction r as [| y r IH]; intros Hnd Hx; [destruct Hx |].
+  inversion Hnd as [| ? ? Hy Hr]; subst. simpl. destruct (Nat.eq_dec x y) as [-> | Hxy].
+  - rewrite notin_remove by exact Hy. reflexivity.
+  - destruct Hx as [E | Hx]; [congruence |]. simpl. rewrite IH by assumption.
+    destruct r; [destruct Hx | reflexivity].
+Qed.
+
+Lemma NoDup_remove_nat : forall x r, NoDup r -> NoDup (remove Nat.eq_dec x r).
+Proof.
+  intros x r; induction r as [| y r IH]; intros H; simpl; [constructor |].
+  inversion H as [| ? ? Hy Hr]; subst. destruct (Nat.eq_dec x y) as [_ | _]; [apply IH, Hr |].
+  constructor; [| apply IH, Hr]. intros Hin. apply in_remove in Hin as [Hin _]. contradiction.
+Qed.
+
+(** Every [k]-set inside [l] is, as a set, one of [subsets k l]. *)
+Lemma subsets_complete : forall l r, NoDup l -> NoDup r -> incl r l ->
+  exists s, In s (subsets (length r) l) /\ (forall z, In z s <-> In z r).
+Proof.
+  induction l as [| x l IH]; intros r Hl Hr Hinc.
+  - destruct r as [| y r]; [| exfalso; apply (Hinc y); left; reflexivity].
+    exists []; split; [left; reflexivity | tauto].
+  - inversion Hl as [| ? ? Hx Hl']; subst.
+    destruct r as [| y0 r0] eqn:Er.
+    + exists []; split; [simpl; left; reflexivity | tauto].
+    + rewrite <- Er in *. assert (Hlr : length r = S (length r0)) by (rewrite Er; reflexivity).
+      rewrite Hlr; simpl.
+      destruct (in_dec Nat.eq_dec x r) as [Hxr | Hxr].
+      * set (r' := remove Nat.eq_dec x r).
+        assert (Hr' : NoDup r') by (apply NoDup_remove_nat, Hr).
+        assert (Hlen : length r' = length r0) by (unfold r'; rewrite length_remove_in, Hlr by assumption; reflexivity).
+        assert (Hinc' : incl r' l).
+        { intros z Hz. apply in_remove in Hz as [Hz Hzx]. destruct (Hinc z Hz) as [E | H]; [congruence | exact H]. }
+        destruct (IH r' Hl' Hr' Hinc') as [s [Hs Hse]]. rewrite Hlen in Hs.
+        exists (x :: s); split.
+        -- apply in_app_iff; left. apply in_map, Hs.
+        -- intros z; simpl; rewrite Hse. split.
+           ++ intros [<- | Hz]; [exact Hxr | apply in_remove in Hz; tauto].
+           ++ intros Hz. destruct (Nat.eq_dec x z) as [E | NE]; [left; exact E |].
+              right. apply in_in_remove; [intro E; apply NE; symmetry; exact E | exact Hz].
+      * assert (Hinc' : incl r l).
+        { intros z Hz. destruct (Hinc z Hz) as [E | H]; [subst; contradiction | exact H]. }
+        destruct (IH r Hl' Hr Hinc') as [s [Hs Hse]]. rewrite Hlr in Hs.
+        exists s; split; [apply in_app_iff; right; exact Hs | exact Hse].
+Qed.
+
+(** ** The search, and its completeness
+
+    Generic in the row size [b], in a property [P] of families that is
+    kept when the last row is removed, in a test [validb] that accepts
+    every node whose family has [P], and in the oracle.  [level n] is the
+    list of nodes with [n] rows; a node is expanded only if the oracle
+    has no checked witness against it ([keep]).  [level_complete]: every
+    minimal node whose family has [P] is in its level and is kept,
+    whatever the oracle answers. *)
+
+Section Search.
+  Variable b : nat.
+  Variable P : list (list nat) -> Prop.
+  Variable validb : list N -> bool.
+  Hypothesis validb_complete : forall K, P (fam K) -> validb K = true.
+  Hypothesis P_hered : forall K y, P (fam (K ++ [y])) -> P (fam K).
+  Variable oracle : list N -> option (list nat).
+
+  Definition cand (K : list N) : list N := map mask (subsets b (seq 0 (nl (fam K) + b))).
+
+  Definition children (K : list N) : list (list N) :=
+    map (fun y => K ++ [y]) (filter (fun y => forallb (fun z => (z <? y)%N) K && validb (K ++ [y])) (cand K)).
+
+  Definition keep (K : list N) : bool :=
+    match oracle K with
+    | Some p => negb (is_permb p && Nat.eqb (length p) (nl (fam K)) && improves (pf p) (fam K))
+    | None => true
+    end.
+
+  Fixpoint level (n : nat) : list (list N) :=
+    match n with
+    | 0 => [[]]
+    | S n' => flat_map children (filter keep (level n'))
+    end.
+
+  (** Minimal: no permutation of its label range improves it. *)
+  Definition MinK (K : list N) : Prop :=
+    forall p, is_permb p = true -> length p = nl (fam K) -> improves (pf p) (fam K) = false.
+
+  Lemma keep_min : forall K, MinK K -> keep K = true.
+  Proof.
+    intros K H. unfold keep. destruct (oracle K) as [p |]; [| reflexivity].
+    destruct (is_permb p) eqn:Ep; [| reflexivity].
+    destruct (Nat.eqb_spec (length p) (nl (fam K))) as [El | _]; [| reflexivity].
+    rewrite (H p Ep El). reflexivity.
+  Qed.
+
+  Lemma nl_mono : forall F G, incl (concat F) (concat G) -> nl F <= nl G.
+  Proof.
+    intros F G H. destruct (nl F) as [| n] eqn:E; [lia |].
+    assert (Hin : In (nl F - 1) (concat F)) by (apply nl_attained; lia).
+    rewrite E in Hin. apply H, nl_bound in Hin. lia.
+  Qed.
+
+  Lemma rmapF_ext : forall g g' F, (forall x, g x = g' x) -> rmapF g F = rmapF g' F.
+  Proof. intros g g' F H. unfold rmapF. apply map_ext. intros r. apply map_ext, H. Qed.
+
+  Lemma improves_ext : forall g g' F, (forall x, g x = g' x) -> improves g F = improves g' F.
+  Proof. intros g g' F H. unfold improves. rewrite (rmapF_ext g g' F H). reflexivity. Qed.
+
+  Lemma ssorted_NoDup : forall K, ssorted K -> NoDup K.
+  Proof.
+    induction K as [| a K IH]; intros H; [constructor |].
+    inversion H as [| ? ? HK Ha]; subst. constructor; [| apply IH, HK].
+    intros Hin. rewrite Forall_forall in Ha. specialize (Ha a Hin). lia.
+  Qed.
+
+  Lemma map_mask_fam : forall K, map mask (fam K) = K.
+  Proof.
+    intros K. unfold fam. rewrite map_map. rewrite (map_ext _ (fun x => x)) by (intros; apply mask_bits). apply map_id.
+  Qed.
+
+  Lemma fam_app1 : forall K y, fam (K ++ [y]) = fam K ++ [bits y].
+  Proof. intros K y; unfold fam; rewrite map_app; reflexivity. Qed.
+
+  (** The parent of a minimal node is minimal. *)
+  Lemma MinK_parent : forall K y, ssorted (K ++ [y]) -> MinK (K ++ [y]) -> MinK K.
+  Proof.
+    intros K y Hs Hmin p Hp Hl. destruct (improves (pf p) (fam K)) eqn:Ei; [exfalso | reflexivity].
+    apply ssorted_snoc in Hs as [HK Hy].
+    set (m := nl (fam (K ++ [y])) - length p).
+    assert (Hle : nl (fam K) <= nl (fam (K ++ [y]))).
+    { apply nl_mono. unfold fam; rewrite map_app, concat_app. intros z Hz; apply in_app_iff; left; exact Hz. }
+    set (p' := p ++ seq (length p) m).
+    assert (Hp' : is_permb p' = true) by apply is_permb_extend, Hp.
+    assert (Hl' : length p' = nl (fam (K ++ [y]))) by (unfold p', m; rewrite app_length, seq_length; lia).
+    assert (Hi : improves (pf p') (fam K) = true) by (rewrite (improves_ext _ (pf p)) by apply pf_extend; exact Ei).
+    assert (Hi' : improves (pf p') (fam K ++ [bits y]) = true).
+    { apply (parent_improves (pf p') (pinv p') (pinv_pf p' Hp')); [| exact Hi].
+      intros s Hs. unfold fam in Hs. apply in_map_iff in Hs as [z [<- Hz]]. rewrite !mask_bits. apply Hy, Hz. }
+    rewrite <- fam_app1 in Hi'. rewrite (Hmin p' Hp' Hl') in Hi'. discriminate.
+  Qed.
+
+  (** A minimal node uses every label below [nl]. *)
+  Lemma MinK_no_gap : forall K, ssorted K -> MinK K -> forall i, i < nl (fam K) -> In i (concat (fam K)).
+  Proof.
+    intros K Hs Hmin i Hi. destruct (in_dec Nat.eq_dec i (concat (fam K))) as [H | H]; [exact H | exfalso].
+    destruct (Nat.eq_dec i (nl (fam K) - 1)) as [E | NE].
+    - apply H. rewrite E. apply nl_attained. lia.
+    - assert (Hg := gap_improves (fam K) i).
+      rewrite map_mask_fam in Hg. specialize (Hg (ssorted_NoDup K Hs) ltac:(lia) H).
+      rewrite (Hmin _ (swp_perm (nl (fam K)) i (nl (fam K) - 1) ltac:(lia) ltac:(lia))) in Hg; [discriminate |].
+      unfold swp; rewrite map_length, seq_length; reflexivity.
+  Qed.
+
+  (** The largest row of a minimal node is a candidate of its parent. *)
+  Lemma last_in_cand : forall K y, ssorted (K ++ [y]) -> MinK (K ++ [y]) -> length (bits y) = b ->
+    In y (cand K).
+  Proof.
+    intros K y Hs Hmin Hb.
+    assert (HminK : MinK K) by (apply (MinK_parent K y Hs Hmin)).
+    set (v := nl (fam K)). set (w := nl (fam (K ++ [y]))).
+    assert (Hcat : concat (fam (K ++ [y])) = concat (fam K) ++ bits y) by (unfold fam; rewrite map_app, concat_app; simpl; rewrite app_nil_r; reflexivity).
+    (* the labels in [v, w) are all in the new row *)
+    assert (Hnew : incl (seq v (w - v)) (bits y)).
+    { intros i Hi. apply in_seq in Hi.
+      assert (Hu : In i (concat (fam (K ++ [y])))) by (apply (MinK_no_gap _ Hs Hmin); lia).
+      rewrite Hcat in Hu. apply in_app_iff in Hu as [Hu | Hu]; [| exact Hu].
+      apply nl_bound in Hu. fold v in Hu. lia. }
+    assert (Hw : w <= v + b).
+    { pose proof (NoDup_incl_length (seq_NoDup (w - v) v) Hnew) as H. rewrite seq_length, Hb in H. lia. }
+    assert (Hrow : incl (bits y) (seq 0 (v + b))).
+    { intros i Hi. apply in_seq. split; [lia |].
+      assert (Hu : In i (concat (fam (K ++ [y])))) by (rewrite Hcat; apply in_app_iff; right; exact Hi).
+      apply nl_bound in Hu. fold w in Hu. lia. }
+    destruct (subsets_complete (seq 0 (v + b)) (bits y) (seq_NoDup _ _) (bits_NoDup y) Hrow) as [s [Hs' Hse]].
+    rewrite Hb in Hs'. unfold cand. fold v. apply in_map_iff. exists s; split; [| exact Hs'].
+    rewrite <- (mask_bits y). apply mask_ext, Hse.
+  Qed.
+
+  Theorem level_complete : forall K, ssorted K -> (forall m, In m K -> length (bits m) = b) ->
+    P (fam K) -> MinK K -> In K (level (length K)) /\ keep K = true.
+  Proof.
+    induction K as [| y K IH] using rev_ind; intros Hs Hb HP Hmin.
+    - split; [left; reflexivity | apply keep_min, Hmin].
+    - split; [| apply keep_min, Hmin].
+      assert (HK := Hs). apply ssorted_snoc in HK as [HK Hy].
+      destruct (IH HK (fun m Hm => Hb m (proj2 (in_app_iff _ _ _) (or_introl Hm))) (P_hered K y HP)
+                  (MinK_parent K y Hs Hmin)) as [Hin Hkeep].
+      rewrite app_length, Nat.add_comm. simpl.
+      apply in_flat_map. exists K; split; [apply filter_In; split; assumption |].
+      unfold children. apply in_map_iff. exists y; split; [reflexivity |].
+      apply filter_In; split.
+      + apply last_in_cand; [exact Hs | exact Hmin | apply Hb, in_app_iff; right; left; reflexivity].
+      + apply andb_true_iff; split; [| apply validb_complete, HP].
+        apply forallb_forall. intros z Hz. apply N.ltb_lt, Hy, Hz.
+  Qed.
+End Search.
