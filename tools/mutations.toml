@@ -2772,3 +2772,65 @@ Lowering 2d + 3 to 2d + 1 must break the proof, or the constant is decoration.""
 find = "  2 * d + 3 + Nat.log2 ((64 * d + 8) * k)."
 replace = "  2 * d + 1 + Nat.log2 ((64 * d + 8) * k)."
 expect = "killed"
+
+# ----------------------------------------------------------------
+# LPCert: every condition of the leaf check is load-bearing, and the
+# branching rows are exactly as strong as they need to be.
+# ----------------------------------------------------------------
+
+[[mutation]]
+id = "lpcert-drop-scale-nonneg"
+file = "coq/LPCert.v"
+question = "Is K >= 0 needed? A negative scale flips the inequality K·c·x < K·T."
+find = "    (0 <=? K) && forallb (fun q => 0 <=? snd q) rs && idx_ok n c"
+replace = "    true && forallb (fun q => 0 <=? snd q) rs && idx_ok n c"
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-drop-multiplier-nonneg"
+file = "coq/LPCert.v"
+question = "Are nonnegative multipliers needed? A negative multiplier reverses its row."
+find = "    (0 <=? K) && forallb (fun q => 0 <=? snd q) rs && idx_ok n c"
+replace = "    (0 <=? K) && forallb (fun q => true) rs && idx_ok n c"
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-drop-index-range"
+file = "coq/LPCert.v"
+question = """Is the index check needed? The coefficient comparison runs over \
+0..n-1 only, so a coefficient at an index >= n would escape it."""
+find = """    (0 <=? K) && forallb (fun q => 0 <=? snd q) rs && idx_ok n c
+    && forallb (fun q => idx_ok n (fst (fst q))) rs"""
+replace = """    (0 <=? K) && forallb (fun q => 0 <=? snd q) rs && true
+    && forallb (fun q => true) rs"""
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-weak-final-inequality"
+file = "coq/LPCert.v"
+question = "Is the final comparison strict? Σ y·b <= K·T only gives c·x <= T."
+find = "    && (zsum (map (fun q => snd q * snd (fst q)) rs) <? K * T)."
+replace = "    && (zsum (map (fun q => snd q * snd (fst q)) rs) <=? K * T)."
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-branch-gap"
+file = "coq/LPCert.v"
+question = """Does a right branch a·x >= f + 2 (leaving a·x = f + 1 uncovered) \
+break soundness?"""
+find = "    | Node a f l r => check n c T (P ++ [(a, f)]) l && check n c T (P ++ [(neg a, - f - 1)]) r"
+replace = "    | Node a f l r => check n c T (P ++ [(a, f)]) l && check n c T (P ++ [(neg a, - f - 2)]) r"
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-branch-overlap"
+file = "coq/LPCert.v"
+question = """A right branch a·x >= f overlaps the left one. That is still \
+sound (a weaker branching row only gives less), so the soundness proof \
+should survive; does anything pin the exact strength of the branching row?"""
+find = "    | Node a f l r => check n c T (P ++ [(a, f)]) l && check n c T (P ++ [(neg a, - f - 1)]) r"
+replace = "    | Node a f l r => check n c T (P ++ [(a, f)]) l && check n c T (P ++ [(neg a, - f)]) r"
+expect = "killed"
+# Killed by the computation in coq/LPCertExamples.v, not by the proof: the
+# right leaf of ex2 combines 2·x0 <= 1 with 2·(-x0 <= -1) to reach 0 <= -1,
+# and with the weaker -x0 <= 0 the sum is 0 <= 1, so ex2_ok no longer holds.

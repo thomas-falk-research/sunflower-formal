@@ -215,9 +215,9 @@ Section Check.
     - exact (leaf_sound n c T P K ys HP Hc).
     - apply andb_true_iff in Hc as [Hl Hr].
       destruct (Z.le_gt_cases (dot a x) f) as [Hf | Hf].
-      + apply (IHl (P ++ [(a, f)])); [| exact Hl].
-        intros q Hq; apply in_app_iff in Hq as [Hq | [E | []]]; [apply HP; exact Hq | subst q; exact Hf].
-      + apply (IHr (P ++ [(neg a, - f - 1)])); [| exact Hr].
+      + eapply IHl; [| exact Hl].
+        intros q Hq; apply in_app_iff in Hq as [Hq | [E | []]]; [apply HP; exact Hq | subst q; unfold sat; simpl; lia].
+      + eapply IHr; [| exact Hr].
         intros q Hq; apply in_app_iff in Hq as [Hq | [E | []]]; [apply HP; exact Hq |].
         subst q; unfold sat; simpl; rewrite dot_neg; lia.
   Qed.

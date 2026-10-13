@@ -59,7 +59,7 @@ cd rust && cargo test --release
 
 `make verify` reports every audited theorem (854 of them) as
 `Closed under the global context`, then prints the full statement of
-the one axiom under the modern bound. Of 180 mutations, 177 are killed outright;
+the one axiom under the modern bound. Of 186 mutations, 183 are killed outright;
 the two survivors are proved redundant hypotheses and one is a control.
 The certificate modules are listed in `_CoqProject.certs`, apart from
 the theory: they need tens of CPU-hours, which no CI job allows, and no
