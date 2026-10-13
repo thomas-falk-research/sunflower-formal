@@ -60,3 +60,4 @@ coq/LinkLP.v
 coq/Link23.v
 coq/LPCert.v
 coq/LPCertExamples.v
+coq/CensusGen.v
