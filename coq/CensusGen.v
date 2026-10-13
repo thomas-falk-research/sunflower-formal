@@ -829,3 +829,252 @@ Section Search.
         apply forallb_forall. intros z Hz. apply N.ltb_lt, Hy, Hz.
   Qed.
 End Search.
+
+(** ** Every family has a minimal relabelling
+
+    The relabelling with the least key among all permutations of the
+    label range ([argmin]) is minimal ([MinK]): any improvement of it
+    would compose to a permutation beating the least key. *)
+
+Lemma lexb_trans : forall A B C, lexb A B = true -> lexb B C = true -> lexb A C = true.
+Proof.
+  induction A as [| a A IH]; intros [| b B] [| c C] H1 H2; simpl in *; try discriminate.
+  apply orb_true_iff in H1 as [H1 | H1]; apply orb_true_iff in H2 as [H2 | H2].
+  - apply N.ltb_lt in H1, H2. apply orb_true_iff; left; apply N.ltb_lt; lia.
+  - apply andb_true_iff in H2 as [E _]. apply N.eqb_eq in E; subst. rewrite H1; reflexivity.
+  - apply andb_true_iff in H1 as [E _]. apply N.eqb_eq in E; subst. rewrite H2; reflexivity.
+  - apply andb_true_iff in H1 as [E1 H1]; apply andb_true_iff in H2 as [E2 H2].
+    apply N.eqb_eq in E1, E2; subst. rewrite N.ltb_irrefl, N.eqb_refl, (IH B C H1 H2). reflexivity.
+Qed.
+
+(** Strictly sorted lists with the same elements are equal. *)
+Lemma ssorted_ext : forall A B, ssorted A -> ssorted B -> (forall x, In x A <-> In x B) -> A = B.
+Proof.
+  induction A as [| a A IH]; intros [| b B] HA HB H.
+  - reflexivity.
+  - exfalso. apply (proj2 (H b)). left; reflexivity.
+  - exfalso. apply (proj1 (H a)). left; reflexivity.
+  - inversion HA as [| ? ? HA' Ha]; inversion HB as [| ? ? HB' Hb]; subst. rewrite Forall_forall in Ha, Hb.
+    assert (Eab : a = b).
+    { destruct (proj1 (H a) (or_introl eq_refl)) as [E | Ha']; [symmetry; exact E |].
+      destruct (proj2 (H b) (or_introl eq_refl)) as [E | Hb']; [exact E |].
+      pose proof (Hb a Ha'); pose proof (Ha b Hb'); lia. }
+    subst b. f_equal. apply IH; [exact HA' | exact HB' |]. intros x. split; intros Hx.
+    + destruct (proj1 (H x) (or_intror Hx)) as [E | Hx']; [subst; pose proof (Ha x Hx); lia | exact Hx'].
+    + destruct (proj2 (H x) (or_intror Hx)) as [E | Hx']; [subst; pose proof (Hb x Hx); lia | exact Hx'].
+Qed.
+
+(** The key of a family depends only on the set of its rows' masks. *)
+Lemma key_ext : forall F G, NoDup (map mask F) -> NoDup (map mask G) ->
+  (forall m, In m (map mask F) <-> In m (map mask G)) -> key F = key G.
+Proof.
+  intros F G HF HG H. apply ssorted_ext; [apply sortN_ssorted, HF | apply sortN_ssorted, HG |].
+  intros x. unfold key. rewrite !in_sortN. apply H.
+Qed.
+
+From Coq Require Import Permutation.
+
+Lemma lexb_total : forall A B, length A = length B -> A = B \/ lexb A B = true \/ lexb B A = true.
+Proof.
+  induction A as [| a A IH]; intros [| b B] H; simpl in H; try discriminate; [left; reflexivity |].
+  simpl. destruct (N.lt_trichotomy a b) as [Hab | [-> | Hab]].
+  - right; left. apply orb_true_iff; left; apply N.ltb_lt, Hab.
+  - rewrite N.ltb_irrefl, N.eqb_refl. simpl.
+    destruct (IH B ltac:(lia)) as [-> | [H1 | H1]]; [left; reflexivity | right; left; exact H1 | right; right; exact H1].
+  - right; right. apply orb_true_iff; left; apply N.ltb_lt, Hab.
+Qed.
+
+Fixpoint inserts (x : nat) (l : list nat) : list (list nat) :=
+  match l with
+  | [] => [[x]]
+  | y :: l' => (x :: l) :: map (cons y) (inserts x l')
+  end.
+
+Fixpoint perms (l : list nat) : list (list nat) :=
+  match l with [] => [[]] | x :: l' => flat_map (inserts x) (perms l') end.
+
+Lemma in_inserts : forall x p1 p2, In (p1 ++ x :: p2) (inserts x (p1 ++ p2)).
+Proof.
+  intros x p1 p2; induction p1 as [| y p1 IH]; simpl.
+  - destruct p2; simpl; left; reflexivity.
+  - right. apply in_map, IH.
+Qed.
+
+Lemma inserts_perm : forall x l q, In q (inserts x l) -> Permutation (x :: l) q.
+Proof.
+  intros x l; induction l as [| y l IH]; intros q H; simpl in H.
+  - destruct H as [<- | []]. reflexivity.
+  - destruct H as [<- | H]; [reflexivity |].
+    apply in_map_iff in H as [q' [<- Hq']]. specialize (IH q' Hq').
+    transitivity (y :: x :: l); [apply perm_swap | apply perm_skip, IH].
+Qed.
+
+Lemma perms_complete : forall l p, Permutation l p -> In p (perms l).
+Proof.
+  induction l as [| x l IH]; intros p H.
+  - apply Permutation_nil in H. subst. left; reflexivity.
+  - assert (Hx : In x p) by (apply (Permutation_in x H); left; reflexivity).
+    apply in_split in Hx as [p1 [p2 ->]].
+    apply Permutation_cons_app_inv in H. simpl. apply in_flat_map.
+    exists (p1 ++ p2); split; [apply IH, H | apply in_inserts].
+Qed.
+
+Lemma perms_sound : forall l p, In p (perms l) -> Permutation l p.
+Proof.
+  induction l as [| x l IH]; intros p H; simpl in H.
+  - destruct H as [<- | []]. reflexivity.
+  - apply in_flat_map in H as [q [Hq Hp]]. apply inserts_perm in Hp.
+    transitivity (x :: q); [apply perm_skip, IH, Hq | exact Hp].
+Qed.
+
+Lemma is_permb_seq : forall p, is_permb p = true -> Permutation (seq 0 (length p)) p.
+Proof.
+  intros p H. destruct (is_permb_spec p H) as [Hnd [Hlt Hin]].
+  apply NoDup_Permutation; [apply seq_NoDup | exact Hnd |].
+  intros x. rewrite in_seq. split; [intros [_ Hx]; apply Hin, Hx | intros Hx; split; [lia | apply Hlt, Hx]].
+Qed.
+
+Lemma seq_is_permb : forall p, Permutation (seq 0 (length p)) p -> is_permb p = true.
+Proof.
+  intros p H. unfold is_permb. apply andb_true_iff; split.
+  - apply forallb_forall. intros i Hi. apply Nat.ltb_lt.
+    apply (Permutation_in i (Permutation_sym H)) in Hi. apply in_seq in Hi. lia.
+  - apply NoDup_nodupb. apply (Permutation_NoDup H), seq_NoDup.
+Qed.
+
+(** Composition of witnesses of the same length. *)
+Definition comp (q p : list nat) : list nat := map (pf q) p.
+
+Lemma pf_lt : forall p x, is_permb p = true -> x < length p -> pf p x < length p.
+Proof.
+  intros p x H Hx. destruct (is_permb_spec p H) as [_ [Hlt _]]. unfold pf.
+  apply Nat.ltb_lt in Hx as Hx'. rewrite Hx'. apply Hlt, nth_In, Hx.
+Qed.
+
+Lemma pf_comp : forall q p, length q = length p -> forall x, pf (comp q p) x = pf q (pf p x).
+Proof.
+  intros q p Hl x. unfold pf at 1 3, comp. rewrite map_length.
+  destruct (Nat.ltb_spec x (length p)) as [Hx | Hx].
+  - rewrite (nth_indep _ 0 (pf q 0)) by (rewrite map_length; exact Hx). rewrite map_nth. reflexivity.
+  - unfold pf. rewrite Hl. apply Nat.ltb_ge in Hx as Hx'. rewrite Hx'. reflexivity.
+Qed.
+
+Lemma comp_is_permb : forall q p, is_permb q = true -> is_permb p = true -> length q = length p ->
+  is_permb (comp q p) = true.
+Proof.
+  intros q p Hq Hp Hl. destruct (is_permb_spec p Hp) as [Hnd [Hlt _]].
+  unfold is_permb, comp. apply andb_true_iff; split.
+  - apply forallb_forall. intros i Hi. apply in_map_iff in Hi as [j [<- Hj]]. apply Nat.ltb_lt.
+    rewrite map_length, <- Hl. apply pf_lt; [exact Hq | rewrite Hl; apply Hlt, Hj].
+  - apply NoDup_nodupb. apply FinFun.Injective_map_NoDup; [| exact Hnd].
+    intros x y E. rewrite <- (pinv_pf q Hq x), E, pinv_pf by exact Hq. reflexivity.
+Qed.
+
+Definition rkey (F : list (list nat)) (p : list nat) : list N := key (rmapF (pf p) F).
+
+Fixpoint argmin (F : list (list nat)) (best : list nat) (l : list (list nat)) : list nat :=
+  match l with
+  | [] => best
+  | p :: l' => argmin F (if lexb (rkey F p) (rkey F best) then p else best) l'
+  end.
+
+Lemma rkey_length : forall F p, length (rkey F p) = length F.
+Proof. intros F p. unfold rkey, key, rmapF. rewrite length_sortN, !map_length. reflexivity. Qed.
+
+Lemma argmin_spec : forall F l best,
+  In (argmin F best l) (best :: l) /\
+  (forall p, In p (best :: l) -> lexb (rkey F p) (rkey F (argmin F best l)) = false).
+Proof.
+  intros F l; induction l as [| p0 l IH]; intros best; simpl.
+  - split; [left; reflexivity | intros p [E | []]; subst; apply lexb_irrefl].
+  - destruct (lexb (rkey F p0) (rkey F best)) eqn:Ep0.
+    + destruct (IH p0) as [Hin Hle]. set (m := argmin F p0 l) in *. split.
+      * destruct Hin as [E | Hin]; [right; left; exact E | right; right; exact Hin].
+      * intros p Hp'. destruct Hp' as [E | [E | Hp]]; [subst p | subst p |].
+        -- destruct (lexb (rkey F best) (rkey F m)) eqn:E; [exfalso | reflexivity].
+           pose proof (lexb_trans _ _ _ Ep0 E) as H. rewrite (Hle p0 (or_introl eq_refl)) in H. discriminate.
+        -- apply Hle; left; reflexivity.
+        -- apply Hle; right; exact Hp.
+    + destruct (IH best) as [Hin Hle]. set (m := argmin F best l) in *. split.
+      * destruct Hin as [E | Hin]; [left; exact E | right; right; exact Hin].
+      * intros p Hp'. destruct Hp' as [E | [E | Hp]]; [subst p | subst p |].
+        -- apply Hle; left; reflexivity.
+        -- destruct (lexb (rkey F p0) (rkey F m)) eqn:E; [exfalso | reflexivity].
+           pose proof (Hle best (or_introl eq_refl)) as Hb.
+           destruct (lexb_total (rkey F p0) (rkey F best) ltac:(rewrite !rkey_length; reflexivity)) as [Eq | [H1 | H1]].
+           ++ rewrite Eq, Hb in E. discriminate.
+           ++ congruence.
+           ++ pose proof (lexb_trans _ _ _ H1 E) as H2. rewrite Hb in H2. discriminate.
+        -- apply Hle; right; exact Hp.
+Qed.
+
+Lemma seteq_map : forall (g : nat -> nat) a b, (forall z, In z a <-> In z b) ->
+  forall y, In y (map g a) <-> In y (map g b).
+Proof.
+  intros g a b H y. rewrite !in_map_iff. split; intros [z [E Hz]]; exists z; split; try exact E; apply H, Hz.
+Qed.
+
+Lemma bits_mask_seteq : forall s z, In z (bits (mask s)) <-> In z s.
+Proof. intros s. apply mask_ext. rewrite mask_bits. reflexivity. Qed.
+
+Theorem minimal_relabel : forall F, NoDup (map mask F) ->
+  exists p, is_permb p = true /\ length p = nl F /\ MinK (key (rmapF (pf p) F)).
+Proof.
+  intros F HF.
+  set (v := nl F). set (l := perms (seq 0 v)). set (ps := argmin F (seq 0 v) l).
+  destruct (argmin_spec F l (seq 0 v)) as [Hin Hle]. fold ps in Hin, Hle.
+  assert (Hps : Permutation (seq 0 v) ps) by (destruct Hin as [E | Hin]; [rewrite <- E; reflexivity | apply perms_sound, Hin]).
+  assert (Hlen : length ps = v) by (rewrite <- (Permutation_length Hps), seq_length; reflexivity).
+  assert (Hpp : is_permb ps = true) by (apply seq_is_permb; rewrite Hlen; exact Hps).
+  exists ps; split; [exact Hpp | split; [exact Hlen |]].
+  set (K := key (rmapF (pf ps) F)).
+  assert (HndA : NoDup (map mask (rmapF (pf ps) F))).
+  { unfold rmapF; rewrite map_map. apply (NoDup_map_transfer _ _ mask _ F HF).
+    intros u w _ _ E. apply (mask_map_inj (pf ps) (pinv ps) (pinv_pf ps Hpp)), E. }
+  assert (HK : ssorted K) by (apply sortN_ssorted, HndA).
+  intros q Hq Hlq. destruct (improves (pf q) (fam K)) eqn:Ei; [exfalso | reflexivity].
+  (* the labels of [K] are below [v] *)
+  assert (Hlab : forall x, In x (concat (fam K)) -> x < v).
+  { intros x Hx. apply in_concat in Hx as [t [Ht Hx]]. unfold fam in Ht. apply in_map_iff in Ht as [k [<- Hk]].
+    apply in_key in Hk as [s [Hs Ek]]. unfold rmapF in Hs. apply in_map_iff in Hs as [s0 [<- Hs0]].
+    rewrite Ek in Hx. apply bits_mask_seteq, in_map_iff in Hx as [y [<- Hy]].
+    rewrite <- Hlen. apply pf_lt; [exact Hpp |]. rewrite Hlen. apply nl_bound, in_concat. exists s0; split; assumption. }
+  assert (Hnl : nl (fam K) <= v).
+  { destruct (nl (fam K)) as [| n] eqn:E; [lia |].
+    assert (Ha : In (nl (fam K) - 1) (concat (fam K))) by (apply nl_attained; lia).
+    apply Hlab in Ha. lia. }
+  set (q' := q ++ seq (length q) (v - length q)).
+  assert (Hq' : is_permb q' = true) by (apply is_permb_extend, Hq).
+  assert (Hlq' : length q' = v) by (unfold q'; rewrite app_length, seq_length; lia).
+  assert (Hqq : forall x, pf q' x = pf q x) by (intros x; apply pf_extend).
+  set (r := comp q' ps).
+  assert (Hr : is_permb r = true) by (apply comp_is_permb; [exact Hq' | exact Hpp | lia]).
+  assert (Hlr : length r = v) by (unfold r, comp; rewrite map_length; exact Hlen).
+  assert (Hrl : In r (seq 0 v :: l)) by (right; apply perms_complete; rewrite <- Hlr; apply is_permb_seq, Hr).
+  specialize (Hle r Hrl).
+  assert (Hrf : forall x, pf r x = pf q (pf ps x)) by (intros x; unfold r; rewrite pf_comp by lia; apply Hqq).
+  unfold improves in Ei. rewrite key_fam in Ei by exact HK.
+  assert (Ek : key (rmapF (pf q) (fam K)) = rkey F r).
+  { apply key_ext.
+    - unfold rmapF; rewrite map_map. apply (NoDup_map_transfer _ _ mask _ (fam K)).
+      + rewrite map_mask_fam. apply ssorted_NoDup, HK.
+      + intros u w _ _ E. apply (mask_map_inj (pf q) (pinv q) (pinv_pf q Hq)), E.
+    - unfold rmapF; rewrite map_map. apply (NoDup_map_transfer _ _ mask _ F HF).
+      intros u w _ _ E. apply (mask_map_inj (pf r) (pinv r) (pinv_pf r Hr)), E.
+    - intros m. rewrite !in_map_iff. split.
+      + intros [s' [Em Hs']]. unfold rmapF in Hs'. apply in_map_iff in Hs' as [t [<- Ht]].
+        unfold fam in Ht. apply in_map_iff in Ht as [k [<- Hk]].
+        apply in_key in Hk as [s [Hs Ek]]. unfold rmapF in Hs. apply in_map_iff in Hs as [s0 [<- Hs0]].
+        exists (map (pf r) s0); split; [| apply in_map, Hs0]. rewrite <- Em. apply mask_ext. intros y.
+        rewrite (seteq_map (pf q) (bits k) (map (pf ps) s0)) by (intros z; rewrite Ek; apply bits_mask_seteq).
+        rewrite map_map. rewrite (map_ext (pf r) (fun x => pf q (pf ps x))) by exact Hrf. reflexivity.
+      + intros [s' [Em Hs']]. unfold rmapF in Hs'. apply in_map_iff in Hs' as [s0 [<- Hs0]].
+        set (k := mask (map (pf ps) s0)).
+        exists (map (pf q) (bits k)); split.
+        * rewrite <- Em. apply mask_ext. intros y.
+          rewrite (seteq_map (pf q) (bits k) (map (pf ps) s0)) by (intros z; apply bits_mask_seteq).
+          rewrite map_map. rewrite (map_ext (pf r) (fun x => pf q (pf ps x))) by exact Hrf. reflexivity.
+        * unfold rmapF. apply in_map. unfold fam. apply in_map. apply in_key.
+          exists (map (pf ps) s0); split; [apply in_map, Hs0 | reflexivity]. }
+  rewrite Ek in Ei. unfold rkey in Hle at 2. fold K in Hle. congruence.
+Qed.
