@@ -1128,3 +1128,15 @@ thm Link23.checked_of_mtrees
 thm Link23.bound_of_masked
 thm Link23.masked_class_bound
 thm Link23.descent_of_censusL
+thm LPCert.tree_sound
+thm LPCert.infeasible_of_tree
+thm LPCert.tree_sound_list
+thm LPCertExamples.ex1
+thm LPCertExamples.ex2
+thm LPCertExamples.ex2_no_single_leaf
+thm LPCertExamples.rej_coefficient
+thm LPCertExamples.rej_negative
+thm LPCertExamples.rej_scale
+thm LPCertExamples.rej_bound
+thm LPCertExamples.rej_dimension
+thm LPCertExamples.rej_phantom_branch

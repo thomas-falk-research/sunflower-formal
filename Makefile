@@ -12,7 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk \
+        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk lpcert-test \
         axiom-audit statements statements-accept docnumbers ceilings prcheck \
         manifest
 
@@ -44,6 +44,7 @@ verify:
 	$(MAKE) statements
 	$(MAKE) docnumbers
 	$(MAKE) ceilings
+	$(MAKE) lpcert-test
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."
@@ -313,6 +314,10 @@ certs-coqchk: certs
 	  for hatch in "relying on type-in-type: <none>" "relying on unsafe (co)fixpoints: <none>" "positivity is assumed: <none>"; do \
 	    grep -q "$$hatch" $$log || { echo "  coqchk HATCH {}"; exit 255; }; done; \
 	  echo "  coqchk ok   {}"'
+
+# LPCert's Python tools against its Coq checker (seconds).
+lpcert-test: coq
+	python3 tools/lpcert/test_lpcert.py --coq
 
 mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)

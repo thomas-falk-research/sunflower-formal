@@ -58,3 +58,5 @@ coq/Stability4.v
 coq/LinkCombine.v
 coq/LinkLP.v
 coq/Link23.v
+coq/LPCert.v
+coq/LPCertExamples.v
