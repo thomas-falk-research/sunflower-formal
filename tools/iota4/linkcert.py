@@ -75,6 +75,23 @@ def load_some(path, size, pick):
     return out
 
 
+def load_ks(path, ks):
+    """{k: family} for the given indices k (as [load] numbers them, over
+    all sizes); parses only those."""
+    ks = set(ks)
+    op = gzip.open if path.endswith(".gz") else open
+    out, k = {}, -1
+    for line in op(path, "rt"):
+        if "BIG" not in line:
+            continue
+        k += 1
+        if k in ks:
+            p = line.split()
+            out[k] = _parse(p[p.index("BIG"):])
+    assert len(out) == len(ks), "missing class indices"
+    return out
+
+
 def validate(F):
     assert all(len(S) == 4 for S in F) and len(set(F)) == len(F)
     assert all(a & b for a, b in itertools.combinations(F, 2))

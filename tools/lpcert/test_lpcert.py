@@ -6,13 +6,20 @@
 
 1. The examples of coq/LPCertExamples.v, with the same verdicts.
 2. 300 random small integer programs: the brute-force optimum `opt` over
-   the box; the solver proves c·x < opt + 1 and the checker accepts;
+   the box (its lower faces given as rows -x_i <= 0 in even trials and as
+   nonnegativity declarations in odd ones); the solver proves c·x < opt + 1
+   and the checker accepts;
    c·x < opt is refused by the solver (it finds an integer point) and no
    leaf the checker accepts exists for it at the root; infeasible ones are
    refuted with K = 0 leaves.
-3. Tampering: every solved tree with one multiplier changed is rejected.
-4. (--coq) A branching certificate exported to Coq compiles; the same with
-   one multiplier changed does not.
+3. Tampering: one multiplier of each solved tree increased by one.  The
+   checker agrees with an independent dense reference on every tampered
+   tree; without declarations every one is rejected (an equality breaks);
+   with declarations the extra slack may leave a valid proof of the same
+   true claim, which both accept.  Trees that use a declaration are
+   rejected without it.
+4. (--coq) Branching certificates exported to Coq (one without and one
+   with declarations) compile; the same with one multiplier changed do not.
 """
 import itertools, json, os, random, subprocess, sys, tempfile, copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -49,6 +56,11 @@ expect(not L.check(P1, {"leaf": {"K": -1, "y": [[["base", 0], -1]]}}), "rej_scal
 expect(not L.check({**P1, "T": 1}, t1), "rej_bound")
 expect(not L.check({**P1, "n": 1}, t1), "rej_dimension")
 expect(not L.check(P2, {"leaf": {"K": 0, "y": [[["br", 5], 1]]}}), "rej_phantom_branch")
+P3 = {"n": 2, "rows": [[[[0, 1], [1, 1]], 1]], "c": [[0, 1]], "T": 2, "nonneg": [1]}
+t3 = {"leaf": {"K": 1, "y": [[["base", 0], 1]]}}
+expect(L.check(P3, t3), "ex3_ok")
+expect(not L.check({**P3, "nonneg": []}, t3), "rej_undeclared")
+expect(not L.check({**P3, "nonneg": [0]}, t3), "rej_wrong_declared")
 print("examples: done")
 
 # 2-3. random programs against brute force
@@ -59,8 +71,11 @@ for trial in range(300):
     n = rng.randint(1, 3)
     box = 3
     rows = []
+    declare = trial % 2 == 1
     for i in range(n):
-        rows.append([[[i, -1]], 0]); rows.append([[[i, 1]], box])
+        if not declare:
+            rows.append([[[i, -1]], 0])
+        rows.append([[[i, 1]], box])
     for _ in range(rng.randint(1, 3)):
         a = [[i, rng.randint(-4, 4)] for i in range(n)]
         a = [p for p in a if p[1]]
@@ -72,12 +87,12 @@ for trial in range(300):
     pts = [x for x in itertools.product(range(box + 1), repeat=n)
            if all(sum(v * x[i] for i, v in a) <= b for a, b in rows)]
     if not pts:
-        P = {"n": n, "rows": rows, "c": [], "T": 0}
+        P = {"n": n, "rows": rows, "c": [], "T": 0, "nonneg": list(range(n)) if declare else []}
         t = L.solve(P)
         expect(L.check(P, t), f"infeasible {trial}")
         infeasible += 1; trees.append((P, t)); continue
     opt = max(sum(v * x[i] for i, v in c) for x in pts)
-    P = {"n": n, "rows": rows, "c": c, "T": opt + 1}
+    P = {"n": n, "rows": rows, "c": c, "T": opt + 1, "nonneg": list(range(n)) if declare else []}
     t = L.solve(P)
     expect(L.check(P, t), f"bound {trial}")
     solved += 1; branched += "branch" in t; trees.append((P, t))
@@ -87,9 +102,41 @@ for trial in range(300):
     except L.CertError:
         pass
     # no root leaf can certify the false claim: the LP optimum is >= opt
-    expect(L._leaf(n, c, opt, [(a, b) for a, b in rows], [], False) is None, f"false root leaf {trial}")
+    expect(L._leaf(n, c, opt, [(a, b) for a, b in rows], [], False, frozenset(P["nonneg"])) is None,
+           f"false root leaf {trial}")
 
-tampered = 0
+def ref_tree(P, node, path=()):
+    """An independent dense re-implementation of the acceptance condition
+    (no shared code with lpcert.py), used to judge tampered trees."""
+    n = P["n"]; nn = set(P.get("nonneg", []))
+    def dense(v):
+        if any(not (0 <= i < n) for i, _ in v):
+            return None
+        d = [0] * n
+        for i, a in v:
+            d[i] += a
+        return d
+    if "branch" in node:
+        a, f = node["branch"], node["f"]
+        return (ref_tree(P, node["le"], path + ((a, f),))
+                and ref_tree(P, node["ge"], path + (([[i, -x] for i, x in a], -f - 1),)))
+    K, ys = node["leaf"]["K"], node["leaf"]["y"]
+    cd = dense(P["c"])
+    if K < 0 or cd is None:
+        return False
+    tot = [0] * n; rhs = 0
+    for (kind, k), y in ys:
+        src = P["rows"] if kind == "base" else path
+        a, b = src[k] if 0 <= k < len(src) else ([], 0)
+        ad = dense(a)
+        if y < 0 or ad is None:
+            return False
+        tot = [u + y * v for u, v in zip(tot, ad)]; rhs += y * b
+    return (all((K * cd[j] <= tot[j]) if j in nn else (K * cd[j] == tot[j]) for j in range(n))
+            and rhs < K * P["T"])
+
+
+tampered = still_valid = 0
 for P, t in trees:
     def leaves(node):
         if "leaf" in node:
@@ -102,18 +149,44 @@ for P, t in trees:
             if row is not None and not any(v for _, v in row[0]):
                 continue
             lf["leaf"]["y"][idx][1] = y + 1
-            expect(not L.check(P, t), "tampered certificate accepted")
-            lf["leaf"]["y"][idx][1] = y
+            acc = L.check(P, t)
+            # the two implementations agree; without declarations a changed
+            # multiplier always breaks an equality, so it must be rejected;
+            # with them, extra slack can leave a valid proof of the same
+            # (true, brute-forced) claim
+            expect(acc == ref_tree(P, t), "checker and reference disagree on a tampered tree")
+            expect(not acc or P["nonneg"], "tampered certificate accepted without declarations")
+            still_valid += acc
             tampered += 1
+            lf["leaf"]["y"][idx][1] = y
             break
-print(f"random: {solved} bounds ({branched} needing branches), {infeasible} infeasible, {tampered} tamperings rejected")
+# a tree accepted only with the declarations is rejected without them
+needed = 0
+for P, t in trees:
+    if P["nonneg"] and not L.check({**P, "nonneg": []}, t):
+        needed += 1
+expect(needed > 0, "no certificate depended on its nonnegativity declarations")
+for P, t in trees:
+    expect(ref_tree(P, t), "reference rejects a solved tree")
+print(f"random: {solved} bounds ({branched} needing branches), {infeasible} infeasible; "
+      f"{tampered} tamperings, {tampered - still_valid} rejected, {still_valid} still valid proofs "
+      f"(declared programs, agreeing with the reference); "
+      f"{needed} certificates rejected without their declarations")
 
 # 4. Coq round trip
 if "--coq" in sys.argv:
-    P, t = next((P, t) for P, t in trees if "branch" in t and P["c"])
+    cases = []
+    for decl in (False, True):
+        P, t = next((P, t) for P, t in trees if "branch" in t and P["c"] and bool(P["nonneg"]) == decl
+                    and (not decl or not L.check({**P, "nonneg": []}, t)))
+        sfx = "_nn" if decl else ""
+        cases += [(P, f"rt_ok{sfx}", t, 0), (P, f"rt_bad{sfx}", None, 1)]
+        if decl:
+            cases.append(({**P, "nonneg": []}, "rt_undeclared", t, 1))
     with tempfile.TemporaryDirectory() as d:
-        for name, tree, want in (("rt_ok", t, 0), ("rt_bad", None, 1)):
+        for P, name, tree, want in cases:
             if tree is None:
+                t = next(tt for PP, nm, tt, w in cases if PP is P and tt is not None)
                 tree = copy.deepcopy(t)
                 node = tree
                 while "leaf" not in node:

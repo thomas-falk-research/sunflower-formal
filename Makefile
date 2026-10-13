@@ -12,7 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk lpcert-test \
+        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk lpcert-test lpport-test \
         axiom-audit statements statements-accept docnumbers ceilings prcheck \
         manifest
 
@@ -45,6 +45,7 @@ verify:
 	$(MAKE) docnumbers
 	$(MAKE) ceilings
 	$(MAKE) lpcert-test
+	$(MAKE) lpport-test
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."
@@ -318,6 +319,11 @@ certs-coqchk: certs
 # LPCert's Python tools against its Coq checker (seconds).
 lpcert-test: coq
 	python3 tools/lpcert/test_lpcert.py --coq
+
+# The Link23 -> LPCert port: tree conversion, exact checks, tampering, and a
+# Coq round trip through Link23.lpclass (tools/iota4/test_lpport.py).
+lpport-test: coq
+	python3 tools/iota4/test_lpport.py --coq
 
 mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)

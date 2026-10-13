@@ -11,14 +11,17 @@
       point of the parent;
     - a leaf gives a scale [K ≥ 0] and multipliers [y ≥ 0] on rows in force
       (the problem's rows and the branching rows on the path), with
-      [K·c = Σ y·a] coefficient by coefficient and [Σ y·b < K·T].
+      [K·c_j = (Σ y·a)_j] for every variable [j], or [K·c_j ≤ (Σ y·a)_j]
+      for a variable declared nonnegative ([nonneg j = true]), and
+      [Σ y·b < K·T].
 
     [tree_sound]: if [check] accepts a tree for [c] and [T], every integer
-    point satisfying all the rows has [c·x < T]; a tree all of whose leaves
-    have [K = 0] proves that there is no such point.  The arithmetic is
+    point satisfying all the rows, and nonnegative on the declared
+    variables, has [c·x < T]; a tree all of whose leaves have [K = 0]
+    proves that there is no such point.  The arithmetic is
     exact ([Z]); there is no floating point and nothing is assumed. *)
 
-From Coq Require Import ZArith List Lia Bool.
+From Coq Require Import ZArith List Lia Bool FMapPositive.
 Import ListNotations.
 Local Open Scope Z_scope.
 
@@ -124,6 +127,44 @@ Proof.
     rewrite zsum_map_add, zsum_indicator; [reflexivity | apply seq_NoDup | apply in_seq; lia].
 Qed.
 
+(** ** Accumulating sparse vectors
+
+    The leaf check adds up its rows into a finite map from indices to
+    coefficients ([PositiveMap], index [j] at key [Pos.of_succ_nat j]), at
+    a cost of [O(log n)] per stored coefficient, and then reads one
+    coefficient per variable.  [zget_zcomb] says what the map holds: the
+    coefficient-wise sum, in terms of [sget]. *)
+
+Definition zmap := PositiveMap.t Z.
+
+Definition zget (m : zmap) (j : nat) : Z :=
+  match PositiveMap.find (Pos.of_succ_nat j) m with Some z => z | None => 0 end.
+
+Definition zadd (m : zmap) (j : nat) (a : Z) : zmap :=
+  PositiveMap.add (Pos.of_succ_nat j) (zget m j + a) m.
+
+(** [m + y·v] *)
+Fixpoint zaddv (y : Z) (v : svec) (m : zmap) : zmap :=
+  match v with [] => m | p :: v' => zaddv y v' (zadd m (fst p) (y * snd p)) end.
+
+Lemma zget_empty : forall j, zget (PositiveMap.empty Z) j = 0.
+Proof. intros j; unfold zget; rewrite PositiveMap.gempty; reflexivity. Qed.
+
+Lemma zget_zadd : forall m i a j, zget (zadd m i a) j = zget m j + (if Nat.eqb i j then a else 0).
+Proof.
+  intros m i a j; unfold zadd. destruct (Nat.eqb_spec i j) as [E | NE].
+  - subst j. unfold zget at 1. rewrite PositiveMap.gss. lia.
+  - unfold zget at 1. rewrite PositiveMap.gso.
+    + fold (zget m j); lia.
+    + intro E; apply NE; symmetry; apply SuccNat2Pos.inj; exact E.
+Qed.
+
+Lemma zget_zaddv : forall y v m j, zget (zaddv y v m) j = zget m j + y * sget v j.
+Proof.
+  intros y v; induction v as [| [i a] v IH]; intros m j; simpl; [lia |].
+  rewrite IH, zget_zadd. destruct (Nat.eqb i j); lia.
+Qed.
+
 (** ** Rows, tags and trees *)
 
 Definition row : Type := (svec * Z)%type.
@@ -139,6 +180,9 @@ Proof. intros x; unfold sat; simpl; lia. Qed.
 Section Check.
   Variable tag : Type.
   Variable rowf : tag -> row.
+  (** The variables known to be nonnegative.  For them the leaf may leave
+      slack in the coefficient comparison. *)
+  Variable nonneg : nat -> bool.
 
   (** A multiplier names a problem row, or the [k]-th branching row on
       the path to the leaf. *)
@@ -151,11 +195,22 @@ Section Check.
   Definition rget (P : list row) (rt : rtag) : row :=
     match rt with Base t => rowf t | Br k => nth k P trivial_row end.
 
+  (** The combination [Σ y·a] of the multiplied rows, as a map. *)
+  Fixpoint zcomb (rs : list (row * Z)) (m : zmap) : zmap :=
+    match rs with [] => m | q :: rs' => zcomb rs' (zaddv (snd q) (fst (fst q)) m) end.
+
+  (** The coefficient comparison reads [K·c_j] and [(Σ y·a)_j] from maps
+      ([zget_zcomb] below: they are [K * sget c j] and
+      [zsum (map (fun q => snd q * sget (fst (fst q)) j) rs)]). *)
   Definition leafcheck (n : nat) (c : svec) (T : Z) (P : list row) (K : Z) (ys : list (rtag * Z)) : bool :=
     let rs := map (fun p => (rget P (fst p), snd p)) ys in
+    let cm := zaddv K c (PositiveMap.empty Z) in
+    let am := zcomb rs (PositiveMap.empty Z) in
     (0 <=? K) && forallb (fun q => 0 <=? snd q) rs && idx_ok n c
     && forallb (fun q => idx_ok n (fst (fst q))) rs
-    && forallb (fun j => K * sget c j =? zsum (map (fun q => snd q * sget (fst (fst q)) j) rs)) (seq 0 n)
+    && forallb (fun j => let lhs := zget cm j in
+                         let rhs := zget am j in
+                         if nonneg j then lhs <=? rhs else lhs =? rhs) (seq 0 n)
     && (zsum (map (fun q => snd q * snd (fst q)) rs) <? K * T).
 
   Fixpoint check (n : nat) (c : svec) (T : Z) (P : list row) (tr : tree) : bool :=
@@ -164,8 +219,16 @@ Section Check.
     | Node a f l r => check n c T (P ++ [(a, f)]) l && check n c T (P ++ [(neg a, - f - 1)]) r
     end.
 
+  Lemma zget_zcomb : forall rs m j,
+    zget (zcomb rs m) j = zget m j + zsum (map (fun q => snd q * sget (fst (fst q)) j) rs).
+  Proof.
+    intros rs; induction rs as [| q rs IH]; intros m j; simpl; [unfold zsum; simpl; lia |].
+    rewrite IH, zget_zaddv. unfold zsum; simpl. symmetry; apply Z.add_assoc.
+  Qed.
+
   Variable x : nat -> Z.
   Hypothesis Hrows : forall t, sat (rowf t) x.
+  Hypothesis Hnonneg : forall j, nonneg j = true -> 0 <= x j.
 
   Lemma rget_sat : forall P rt, (forall r, In r P -> sat r x) -> sat (rget P rt) x.
   Proof.
@@ -186,19 +249,23 @@ Section Check.
     apply Z.leb_le in HK; apply Z.ltb_lt in Hb; rewrite forallb_forall in Hy, Hidx, Hcoef.
     assert (Hsat : forall q, In q rs -> sat (fst q) x).
     { intros q Hq; unfold rs in Hq; apply in_map_iff in Hq as [p [E _]]; subst q; apply rget_sat; exact HP. }
-    (* K (c·x) = Σ_q y_q (a_q·x) *)
-    assert (E : K * dot c x = zsum (map (fun q => snd q * dot (fst (fst q)) x) rs)).
+    (* K (c·x) ≤ Σ_q y_q (a_q·x): termwise, with equality on the free
+       variables and slack times a nonnegative x_j on the others *)
+    assert (E : K * dot c x <= zsum (map (fun q => snd q * dot (fst (fst q)) x) rs)).
     { rewrite (dot_dense n c x Hcidx), <- zsum_map_scale.
-      rewrite (zsum_map_ext (fun j => K * (sget c j * x j))
-                            (fun j => zsum (map (fun q => snd q * sget (fst (fst q)) j * x j) rs))).
-      - rewrite zsum_exchange. apply zsum_map_ext; intros q Hq.
-        rewrite (dot_dense n (fst (fst q)) x (Hidx q Hq)), <- zsum_map_scale.
-        apply zsum_map_ext; intros j _; lia.
-      - intros j Hj. specialize (Hcoef j Hj). apply Z.eqb_eq in Hcoef.
-        rewrite Z.mul_assoc, Hcoef.
+      apply Z.le_trans with (zsum (map (fun j => zsum (map (fun q => snd q * sget (fst (fst q)) j * x j) rs)) (seq 0 n))).
+      - apply zsum_map_le. intros j Hj. specialize (Hcoef j Hj). cbv zeta in Hcoef.
+        rewrite zget_zaddv, zget_zcomb, !zget_empty, !Z.add_0_l in Hcoef.
         rewrite (zsum_map_ext (fun q => snd q * sget (fst (fst q)) j * x j)
                               (fun q => x j * (snd q * sget (fst (fst q)) j))) by (intros; lia).
-        rewrite zsum_map_scale; lia. }
+        rewrite zsum_map_scale, Z.mul_assoc.
+        destruct (nonneg j) eqn:Enn.
+        + apply Z.leb_le in Hcoef. pose proof (Hnonneg j Enn). rewrite (Z.mul_comm (x j)).
+          apply Z.mul_le_mono_nonneg_r; assumption.
+        + apply Z.eqb_eq in Hcoef. rewrite Hcoef; lia.
+      - rewrite zsum_exchange. apply Z.eq_le_incl. apply zsum_map_ext; intros q Hq.
+        rewrite (dot_dense n (fst (fst q)) x (Hidx q Hq)), <- zsum_map_scale.
+        apply zsum_map_ext; intros j _; lia. }
     assert (Hle : zsum (map (fun q => snd q * dot (fst (fst q)) x) rs) <= zsum (map (fun q => snd q * snd (fst q)) rs)).
     { apply zsum_map_le; intros q Hq. apply Z.mul_le_mono_nonneg_l.
       - apply Z.leb_le; exact (Hy q Hq).
@@ -233,23 +300,24 @@ Arguments Node {tag} a f l r.
 (** If [check] accepts [tr] (from the empty path), every integer point
     satisfying all the rows has [c·x < T]. *)
 Theorem tree_sound :
-  forall (tag : Type) (rowf : tag -> row) (n : nat) (c : svec) (T : Z) (tr : tree tag),
-    check tag rowf n c T [] tr = true ->
-    forall x : nat -> Z, (forall t, sat (rowf t) x) -> dot c x < T.
+  forall (tag : Type) (rowf : tag -> row) (nonneg : nat -> bool) (n : nat) (c : svec) (T : Z) (tr : tree tag),
+    check tag rowf nonneg n c T [] tr = true ->
+    forall x : nat -> Z, (forall t, sat (rowf t) x) -> (forall j, nonneg j = true -> 0 <= x j) ->
+    dot c x < T.
 Proof.
-  intros tag rowf n c T tr Hc x Hx.
-  exact (check_sound tag rowf x Hx n c T tr [] (fun r H => match H with end) Hc).
+  intros tag rowf nonneg n c T tr Hc x Hx Hnn.
+  exact (check_sound tag rowf nonneg x Hx Hnn n c T tr [] (fun r H => match H with end) Hc).
 Qed.
 
 (** A tree whose every leaf has [K = 0] (checked against any [T]) shows
     the rows have no integer solution: it is accepted for [c = 0] and
     [T = 0], and [0 < 0] is false. *)
 Corollary infeasible_of_tree :
-  forall (tag : Type) (rowf : tag -> row) (n : nat) (tr : tree tag),
-    check tag rowf n [] 0 [] tr = true ->
-    forall x : nat -> Z, ~ (forall t, sat (rowf t) x).
+  forall (tag : Type) (rowf : tag -> row) (nonneg : nat -> bool) (n : nat) (tr : tree tag),
+    check tag rowf nonneg n [] 0 [] tr = true ->
+    forall x : nat -> Z, (forall j, nonneg j = true -> 0 <= x j) -> ~ (forall t, sat (rowf t) x).
 Proof.
-  intros tag rowf n tr Hc x Hx. pose proof (tree_sound tag rowf n [] 0 tr Hc x Hx) as H.
+  intros tag rowf nonneg n tr Hc x Hnn Hx. pose proof (tree_sound tag rowf nonneg n [] 0 tr Hc x Hx Hnn) as H.
   simpl in H; lia.
 Qed.
 
@@ -257,12 +325,36 @@ Qed.
 Definition list_rows (rows : list row) : nat -> row := fun k => nth k rows trivial_row.
 
 Corollary tree_sound_list :
-  forall (rows : list row) (n : nat) (c : svec) (T : Z) (tr : tree nat),
-    check nat (list_rows rows) n c T [] tr = true ->
-    forall x : nat -> Z, (forall r, In r rows -> sat r x) -> dot c x < T.
+  forall (rows : list row) (nonneg : nat -> bool) (n : nat) (c : svec) (T : Z) (tr : tree nat),
+    check nat (list_rows rows) nonneg n c T [] tr = true ->
+    forall x : nat -> Z, (forall r, In r rows -> sat r x) -> (forall j, nonneg j = true -> 0 <= x j) ->
+    dot c x < T.
 Proof.
-  intros rows n c T tr Hc x Hx. apply (tree_sound nat (list_rows rows) n c T tr Hc x).
+  intros rows nonneg n c T tr Hc x Hx Hnn. apply (tree_sound nat (list_rows rows) nonneg n c T tr Hc x); [| exact Hnn].
   intros k; unfold list_rows. destruct (Nat.lt_ge_cases k (length rows)) as [Hk | Hk].
   - apply Hx; apply nth_In; exact Hk.
   - rewrite nth_overflow by exact Hk; apply sat_trivial.
+Qed.
+
+(** No variable declared nonnegative: the pure equality form. *)
+Definition free : nat -> bool := fun _ => false.
+
+(** The variables listed in [l] are declared nonnegative. *)
+Definition nonneg_of (l : list nat) : nat -> bool := fun j => existsb (Nat.eqb j) l.
+
+Lemma nonneg_of_spec : forall l j, nonneg_of l j = true -> In j l.
+Proof.
+  intros l j H. unfold nonneg_of in H. apply existsb_exists in H.
+  destruct H as [i [Hi Hj]]. apply Nat.eqb_eq in Hj. subst i. exact Hi.
+Qed.
+
+(** The list form with the nonnegative variables given as a list. *)
+Corollary tree_sound_list_nn :
+  forall (rows : list row) (l : list nat) (n : nat) (c : svec) (T : Z) (tr : tree nat),
+    check nat (list_rows rows) (nonneg_of l) n c T [] tr = true ->
+    forall x : nat -> Z, (forall r, In r rows -> sat r x) -> (forall j, In j l -> 0 <= x j) ->
+    dot c x < T.
+Proof.
+  intros rows l n c T tr Hc x Hx Hl. apply (tree_sound_list rows (nonneg_of l) n c T tr Hc x Hx).
+  intros j Hj. apply Hl, nonneg_of_spec, Hj.
 Qed.

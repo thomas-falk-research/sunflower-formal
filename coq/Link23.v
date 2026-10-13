@@ -6,17 +6,19 @@
     unwitnessed trace) and its canonical profile [P] on [R] (nonempty,
     and a proper part of [R] when [T] is empty).  [tools/iota4/link23.py]
     bounds the type counts by an integer program whose rows are
-    consequences of sunflower-freeness and of [D] being largest; §65
-    certified eleven link classes at size 23 with exact branch-and-bound
-    trees over that program.  This module proves the rows for the actual
-    counts ([Link23.rows_valid]) and checks such trees by computation
-    ([treecheck]), so that [bound_of_tree] turns a checked tree into
-    [|F| ≤ 54].  See docs/roadmap.md §69. *)
+    consequences of sunflower-freeness and of [D] being largest.  This
+    module proves the rows for the actual counts ([rows_valid]), hands the
+    program to the generic checker [LPCert.check] ([lpclass]), and turns
+    an accepted certificate into [|F| ≤ 54] ([bound_of_lpclass]), for any
+    family whose largest link is the class up to relabelling
+    ([lpclass_bound]) and, over a census of classes, into the link
+    descent ([descent_of_censusL]).  See docs/roadmap.md §69 and §73. *)
 
-From Coq Require Import List Arith NArith Lia Bool.
+From Coq Require Import List Arith NArith ZArith Lia Bool.
 Import ListNotations.
 From Sunflower Require Import Sets Sunflower Intersecting IotaRate Spread
   Counting LowerBound PureLink Product Stability4 DirectSum LinkCombine LinkLP.
+From Sunflower Require LPCert.
 
 (** ** Types *)
 
@@ -1433,276 +1435,16 @@ Section Model.
   Qed.
 End Model.
 
-(** ** Dual certificates and branch-and-bound trees
+(** ** Admissible trace lists
 
-    A leaf carries integer multipliers scaled by [lK]: [ly] on tagged
-    rows, [lu] on the upper bounds [hi], [lv] on the lower bounds [lo].
-    Weak duality in the natural numbers: if for every type [j]
-    [lK + v_j ≤ Σ_r y_r a_rj + u_j] and
-    [Σ_r y_r b_r + Σ_j u_j hi_j < Σ_j v_j lo_j + lK·T], then every count
-    vector within the bounds has [Σ_j x_j < T] ([lK = 0] is the Farkas
-    form: the bounds are infeasible).  A node splits a variable [i] at
-    [f]: [x_i ≤ f] on the left, [x_i ≥ f + 1] on the right. *)
-
-Record leaf : Type := mkleaf { lK : nat; ly : list (tag * nat); lu : list nat; lv : list nat }.
-
-(** The certificates are stored with binary numbers ([N]): multipliers
-    reach the thousands, and unary arithmetic would not do. *)
-Record leafN : Type := mkleafN { lKN : N; lyN : list (tag * N); luN : list N; lvN : list N }.
-Definition leaf_of_N (c : leafN) : leaf :=
-  mkleaf (N.to_nat (lKN c)) (map (fun p => (fst p, N.to_nat (snd p))) (lyN c))
-         (map N.to_nat (luN c)) (map N.to_nat (lvN c)).
-
-(** A leaf with sparse [u] and [v]: only the nonzero entries, as
-    (type index, value).  It is checked as the dense leaf it denotes. *)
-Record leafS : Type := mkleafS { lKS : N; lyS : list (tag * N); luS : list (nat * N); lvS : list (nat * N) }.
-
-Definition nlook (j : nat) (l : list (nat * N)) : N :=
-  match find (fun p => Nat.eqb (fst p) j) l with Some p => snd p | None => 0%N end.
-
-Definition densify (n : nat) (c : leafS) : leafN :=
-  mkleafN (lKS c) (lyS c) (map (fun j => nlook j (luS c)) (seq 0 n)) (map (fun j => nlook j (lvS c)) (seq 0 n)).
-
-Inductive tree : Type := Leaf (c : leafN) | Node (i f : nat) (l r : tree) | LeafS (c : leafS).
-
-Definition sumN (l : list N) : N := fold_right N.add 0%N l.
-
-Lemma sumN_to_nat : forall l, N.to_nat (sumN l) = suml (map N.to_nat l).
-Proof.
-  induction l as [| a l IH]; [reflexivity |].
-  unfold sumN in *; cbn [fold_right map]; rewrite N2Nat.inj_add, IH; reflexivity.
-Qed.
-
-Lemma N_le_to_nat : forall a b, (a <= b)%N -> N.to_nat a <= N.to_nat b.
-Proof. intros a b H; unfold N.le in H; rewrite N2Nat.inj_compare in H; apply Nat.compare_le_iff; exact H. Qed.
-
-Lemma N_lt_to_nat : forall a b, (a < b)%N -> N.to_nat a < N.to_nat b.
-Proof. intros a b H; unfold N.lt in H; rewrite N2Nat.inj_compare in H; apply Nat.compare_lt_iff; exact H. Qed.
-
-Lemma nth_map_to_nat : forall l j, nth j (map N.to_nat l) 0 = N.to_nat (nth j l 0%N).
-Proof. intros l j; apply (map_nth N.to_nat l 0%N j). Qed.
-
-Fixpoint set_nth (i v : nat) (l : list nat) : list nat :=
-  match l with
-  | [] => []
-  | a :: l' => match i with 0 => v :: l' | S i' => a :: set_nth i' v l' end
-  end.
-
-Lemma nth_set_nth_same : forall i v l, i < length l -> nth i (set_nth i v l) 0 = v.
-Proof.
-  intros i v l; revert i; induction l as [| a l IH]; intros [| i] H; simpl in *; try lia;
-    try reflexivity; try (apply IH; lia).
-Qed.
-
-Lemma nth_set_nth_other : forall i j v l, j <> i -> nth j (set_nth i v l) 0 = nth j l 0.
-Proof.
-  intros i j v l; revert i j; induction l as [| a l IH]; intros [| i] [| j] H; simpl; try reflexivity;
-    try congruence. apply IH; congruence.
-Qed.
-
-Lemma set_nth_overflow : forall i v l, length l <= i -> set_nth i v l = l.
-Proof.
-  intros i v l; revert i; induction l as [| a l IH]; intros [| i] H; simpl in *; try lia; try reflexivity;
-    try (rewrite IH by lia; reflexivity).
-Qed.
-
-Lemma suml_map_seq : forall {X} (d : X) (f : X -> nat) (l : list X),
-  suml (map f l) = suml (map (fun j => f (nth j l d)) (seq 0 (length l))).
-Proof.
-  intros X d f l; induction l as [| a l IH]; [reflexivity |].
-  cbn [length seq map nth]. rewrite suml_cons, suml_cons. f_equal.
-  rewrite <- seq_shift, map_map. rewrite IH. apply suml_map_ext; intros j _; reflexivity.
-Qed.
-
-Section Dual.
-  Variable ts : list ltype.
-  Variable x : ltype -> nat.
-  Variable rc : tag -> row.
-  Hypothesis Hrows : forall tg, rowsat ts x (rc tg).
-
-  (** The rows of a leaf, each built once. *)
-  Definition lrows (ly : list (tag * nat)) : list (row * nat) := map (fun p => (rc (fst p), snd p)) ly.
-  Definition ysum (rows : list (row * nat)) (t : ltype) : nat :=
-    suml (map (fun q => snd q * fst (fst q) t) rows).
-  Definition ybsum (rows : list (row * nat)) : nat :=
-    suml (map (fun q => snd q * snd (fst q)) rows).
-
-  Definition leafcheck_nat (lo hi : list nat) (T : nat) (c : leaf) : bool :=
-    let rows := lrows (ly c) in
-    let J := seq 0 (length ts) in
-    forallb (fun j => lK c + nth j (lv c) 0 <=? ysum rows (nth j ts dflt) + nth j (lu c) 0) J
-    && (ybsum rows + suml (map (fun j => nth j (lu c) 0 * nth j hi 0) J)
-        <? suml (map (fun j => nth j (lv c) 0 * nth j lo 0) J) + lK c * T).
-
-  (** The same check in binary arithmetic. *)
-  Definition ysumN (rows : list (row * N)) (t : ltype) : N :=
-    sumN (map (fun q => (snd q * N.of_nat (fst (fst q) t))%N) rows).
-  Definition ybsumN (rows : list (row * N)) : N :=
-    sumN (map (fun q => (snd q * N.of_nat (snd (fst q)))%N) rows).
-
-  Definition leafcheck (lo hi : list nat) (T : nat) (c : leafN) : bool :=
-    let rows := map (fun p => (rc (fst p), snd p)) (lyN c) in
-    let J := seq 0 (length ts) in
-    forallb (fun j => (lKN c + nth j (lvN c) 0 <=? ysumN rows (nth j ts dflt) + nth j (luN c) 0)%N) J
-    && (ybsumN rows + sumN (map (fun j => (nth j (luN c) 0 * N.of_nat (nth j hi 0%nat))%N) J)
-        <? sumN (map (fun j => (nth j (lvN c) 0 * N.of_nat (nth j lo 0%nat))%N) J) + lKN c * N.of_nat T)%N.
-
-  Lemma leafcheck_to_nat : forall lo hi T c,
-    leafcheck lo hi T c = true -> leafcheck_nat lo hi T (leaf_of_N c) = true.
-  Proof.
-    intros lo hi T c H. unfold leafcheck in H. unfold leafcheck_nat, leaf_of_N, lrows; cbn [lK ly lu lv].
-    apply andb_true_iff in H as [H1 H2]. apply andb_true_iff. split.
-    - rewrite forallb_forall in H1 |- *. intros j Hj. specialize (H1 j Hj).
-      apply N.leb_le in H1. apply Nat.leb_le. apply N_le_to_nat in H1.
-      rewrite N2Nat.inj_add, N2Nat.inj_add in H1.
-      rewrite nth_map_to_nat, nth_map_to_nat. unfold ysum, ysumN in *.
-      rewrite !sumN_to_nat, !map_map in H1.
-      rewrite map_map; cbn [fst snd].
-      rewrite (suml_map_ext (fun x => N.to_nat (snd x * N.of_nat (fst (rc (fst x)) (nth j ts dflt))))
-                            (fun x => N.to_nat (snd x) * fst (rc (fst x)) (nth j ts dflt))) in H1
-        by (intros p _; rewrite N2Nat.inj_mul, Nat2N.id; reflexivity).
-      rewrite !map_map; cbn [fst snd]. exact H1.
-    - apply N.ltb_lt in H2. apply Nat.ltb_lt. apply N_lt_to_nat in H2.
-      rewrite N2Nat.inj_add, N2Nat.inj_add, N2Nat.inj_mul, Nat2N.id in H2.
-      unfold ybsumN in H2.
-      rewrite !sumN_to_nat, !map_map in H2.
-      unfold ybsum. rewrite map_map; cbn [fst snd].
-      rewrite (suml_map_ext (fun x => N.to_nat (snd x * N.of_nat (snd (rc (fst x)))))
-                            (fun x => N.to_nat (snd x) * snd (rc (fst x)))) in H2
-        by (intros p _; rewrite N2Nat.inj_mul, Nat2N.id; reflexivity).
-      rewrite (suml_map_ext (fun j => N.to_nat (nth j (luN c) 0%N * N.of_nat (nth j hi 0)))
-                            (fun j => nth j (map N.to_nat (luN c)) 0 * nth j hi 0)) in H2
-        by (intros j _; rewrite N2Nat.inj_mul, Nat2N.id, nth_map_to_nat; reflexivity).
-      rewrite (suml_map_ext (fun j => N.to_nat (nth j (lvN c) 0%N * N.of_nat (nth j lo 0)))
-                            (fun j => nth j (map N.to_nat (lvN c)) 0 * nth j lo 0)) in H2
-        by (intros j _; rewrite N2Nat.inj_mul, Nat2N.id, nth_map_to_nat; reflexivity).
-      rewrite !map_map; cbn [fst snd]. exact H2.
-  Qed.
-
-  Fixpoint treecheck (lo hi : list nat) (T : nat) (tr : tree) : bool :=
-    match tr with
-    | Leaf c => leafcheck lo hi T c
-    | LeafS c => leafcheck lo hi T (densify (length ts) c)
-    | Node i f l r =>
-        treecheck lo (set_nth i (Nat.min f (nth i hi 0)) hi) T l
-        && treecheck (set_nth i (Nat.max (S f) (nth i lo 0)) lo) hi T r
-    end.
-
-  Definition Bounded (lo hi : list nat) : Prop :=
-    forall j, j < length ts -> nth j lo 0 <= x (nth j ts dflt) <= nth j hi 0.
-
-  Lemma leaf_sound : forall lo hi T c,
-    Bounded lo hi -> leafcheck_nat lo hi T c = true -> suml (map x ts) < T.
-  Proof.
-    intros lo hi T c Hb Hc. unfold leafcheck_nat in Hc. apply andb_true_iff in Hc as [H1 H2].
-    rewrite forallb_forall in H1. apply Nat.ltb_lt in H2.
-    set (xj := fun j => x (nth j ts dflt)) in *.
-    set (J := seq 0 (length ts)) in *.
-    set (rows := lrows (ly c)) in *.
-    assert (HJ : forall j, In j J -> j < length ts) by (intros j Hj; apply in_seq in Hj; lia).
-    assert (S1 : suml (map (fun j => (lK c + nth j (lv c) 0) * xj j) J)
-                 <= suml (map (fun j => (ysum rows (nth j ts dflt) + nth j (lu c) 0) * xj j) J)).
-    { apply suml_map_le; intros j Hj. apply Nat.mul_le_mono_r. apply Nat.leb_le. exact (H1 j Hj). }
-    assert (S2 : suml (map (fun j => ysum rows (nth j ts dflt) * xj j) J) <= ybsum rows).
-    { unfold ysum, ybsum.
-      rewrite (suml_map_ext (fun j => suml (map (fun q => snd q * fst (fst q) (nth j ts dflt)) rows) * xj j)
-                            (fun j => suml (map (fun q => snd q * (fst (fst q) (nth j ts dflt) * xj j)) rows)))
-        by (intros j _; rewrite <- suml_map_mul_r; apply suml_map_ext; intros q _; lia).
-      rewrite suml_exchange.
-      apply suml_map_le; intros q Hq.
-      rewrite suml_map_mul_l. apply Nat.mul_le_mono_l.
-      unfold rows, lrows in Hq; apply in_map_iff in Hq as [p [E Hp]]; subst q; cbn [fst snd].
-      pose proof (Hrows (fst p)) as Hr; unfold rowsat in Hr.
-      rewrite (suml_map_seq dflt) in Hr. exact Hr. }
-    assert (S3 : suml (map (fun j => nth j (lu c) 0 * xj j) J)
-                 <= suml (map (fun j => nth j (lu c) 0 * nth j hi 0) J)).
-    { apply suml_map_le; intros j Hj; apply Nat.mul_le_mono_l; apply Hb; apply HJ; exact Hj. }
-    assert (S4 : suml (map (fun j => nth j (lv c) 0 * nth j lo 0) J)
-                 <= suml (map (fun j => nth j (lv c) 0 * xj j) J)).
-    { apply suml_map_le; intros j Hj; apply Nat.mul_le_mono_l; apply Hb; apply HJ; exact Hj. }
-    assert (E1 : suml (map (fun j => (lK c + nth j (lv c) 0) * xj j) J)
-                 = lK c * suml (map xj J) + suml (map (fun j => nth j (lv c) 0 * xj j) J)).
-    { rewrite <- suml_map_mul_l, <- suml_map_add. apply suml_map_ext; intros; lia. }
-    assert (E2 : suml (map (fun j => (ysum rows (nth j ts dflt) + nth j (lu c) 0) * xj j) J)
-                 = suml (map (fun j => ysum rows (nth j ts dflt) * xj j) J)
-                   + suml (map (fun j => nth j (lu c) 0 * xj j) J)).
-    { rewrite <- suml_map_add. apply suml_map_ext; intros; lia. }
-    assert (Hsum : suml (map x ts) = suml (map xj J)) by (apply (suml_map_seq dflt)).
-    rewrite Hsum.
-    assert (H : lK c * suml (map xj J) < lK c * T) by lia.
-    destruct (lK c) as [| K']; [simpl in H; lia |].
-    apply Nat.mul_lt_mono_pos_l in H; [exact H | lia].
-  Qed.
-
-  Lemma tree_sound : forall tr lo hi T,
-    Bounded lo hi -> treecheck lo hi T tr = true -> suml (map x ts) < T.
-  Proof.
-    induction tr as [c | i f l IHl r IHr | c]; intros lo hi T Hb Hc; cbn [treecheck] in Hc.
-    - exact (leaf_sound lo hi T (leaf_of_N c) Hb (leafcheck_to_nat lo hi T c Hc)).
-    - apply andb_true_iff in Hc as [Hl Hr].
-      destruct (le_lt_dec (x (nth i ts dflt)) f) as [Hle | Hgt].
-      + apply (IHl lo (set_nth i (Nat.min f (nth i hi 0)) hi) T); [| exact Hl].
-        intros j Hj. destruct (Hb j Hj) as [H1 H2]. split; [exact H1 |].
-        destruct (Nat.eq_dec j i) as [E | NE].
-        * subst j. destruct (le_lt_dec (length hi) i) as [Ho | Hi].
-          -- rewrite set_nth_overflow by exact Ho. exact H2.
-          -- rewrite nth_set_nth_same by exact Hi. apply Nat.min_glb; [exact Hle | exact H2].
-        * rewrite nth_set_nth_other by exact NE. exact H2.
-      + apply (IHr (set_nth i (Nat.max (S f) (nth i lo 0)) lo) hi T); [| exact Hr].
-        intros j Hj. destruct (Hb j Hj) as [H1 H2]. split; [| exact H2].
-        destruct (Nat.eq_dec j i) as [E | NE].
-        * subst j. destruct (le_lt_dec (length lo) i) as [Ho | Hi].
-          -- rewrite set_nth_overflow by exact Ho. exact H1.
-          -- rewrite nth_set_nth_same by exact Hi. apply Nat.max_lub; [lia | exact H1].
-        * rewrite nth_set_nth_other by exact NE. exact H1.
-    - exact (leaf_sound lo hi T (leaf_of_N (densify (length ts) c)) Hb (leafcheck_to_nat lo hi T _ Hc)).
-  Qed.
-End Dual.
-
-(** ** The class check and the bound it gives *)
-
-(** The whole check for a link [D] and a tree: the counts are bounded
-    below by 0 and above by [ub_of], and the tree must show
-    [Σ x < 54 − |D|], i.e. [|D| + Σ x + 1 ≤ 54]. *)
-Definition classcheck (D : Family) (tr : tree) : bool :=
-  let U := unwitw D in
-  let ts := types_of U in
-  treecheck ts (rowc D U ts (bigof ts)) (repeat 0 (length ts)) (map ub_of ts) (54 - length D) tr.
-
+    A trace list for the type list: only traces of [points D], every
+    unwitnessed one, no repeats.  A list with extra (witnessed) traces
+    only adds variables, which can only weaken the bound. *)
 (** The bound, for any admissible trace list [U]. *)
 Definition TraceList (D : Family) (U : list (list nat)) : Prop :=
   (forall T, In T U -> In T (traces (points D))) /\
   (forall T, In T (traces (points D)) -> witnessedb T D = false -> In T U) /\
   NoDup U.
-
-Definition check_with (D : Family) (U : list (list nat)) (tr : tree) : bool :=
-  let ts := types_of U in
-  treecheck ts (rowc D U ts (bigof ts)) (repeat 0 (length ts)) (map ub_of ts) (54 - length D) tr.
-
-Theorem bound_of_check :
-  IotaAtMost 4 27 ->
-  forall (F : Family) (R : list nat) (U : list (list nat)) (tr : tree),
-    Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
-    (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
-    TraceList (DisjointFrom R F) U ->
-    check_with (DisjointFrom R F) U tr = true ->
-    length F <= 54.
-Proof.
-  intros Hiota F R U tr HU HD Hno HR Hmax [HUt [HUw HUn]] Hc. unfold check_with in Hc. cbv zeta in Hc.
-  set (D := DisjointFrom R F) in *. set (V := points D) in *. set (M := Others R F) in *.
-  pose proof (rows_valid F R HU HD Hno HR U HUt HUw HUn Hmax Hiota) as Hrows. cbv zeta in Hrows. fold D V M in Hrows.
-  assert (Hb : Bounded (types_of U) (tcount V R M) (repeat 0 (length (types_of U))) (map ub_of (types_of U))).
-  { intros j Hj. rewrite nth_repeat. split; [lia |].
-    rewrite (List.nth_indep (map ub_of (types_of U)) 0 (ub_of dflt)) by (rewrite map_length; exact Hj).
-    rewrite List.map_nth. apply (tcount_le_ub F R HU HD Hno HR U HUt). apply nth_In; exact Hj. }
-  pose proof (tree_sound (types_of U) (tcount V R M) _ Hrows tr _ _ _ Hb Hc) as H. clear Hc.
-  assert (Hs : suml (map (tcount V R M) (types_of U)) = length M) by (apply (tcount_sum F R HU Hno HR U HUt HUw HUn)).
-  rewrite Hs in H.
-  assert (Ho : length M + 1 = length (Meeting R F)) by (apply Others_length; assumption).
-  pose proof (count_partition (fun C => disjointb R C) F) as Hp. unfold count in Hp.
-  change (length D + length (Meeting R F) = length F) in Hp.
-  lia.
-Qed.
 
 Lemma traces_NoDup : forall V, NoDup V -> NoDup (traces V).
 Proof. intros V HV; unfold traces; apply NoDup_filter; apply subs_le_NoDup; exact HV. Qed.
@@ -1715,96 +1457,119 @@ Proof.
   - apply NoDup_filter; apply traces_NoDup; apply points_NoDup.
 Qed.
 
-Theorem bound_of_tree :
-  IotaAtMost 4 27 ->
-  forall (F : Family) (R : list nat) (tr : tree),
-    Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
-    (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
-    classcheck (DisjointFrom R F) tr = true ->
-    length F <= 54.
-Proof.
-  intros Hiota F R tr HU HD Hno HR Hmax Hc. unfold classcheck in Hc. cbv zeta in Hc.
-  rewrite unwitw_eq in Hc.
-  exact (bound_of_check Hiota F R (unwit (DisjointFrom R F)) tr HU HD Hno HR Hmax (unwit_TraceList _) Hc).
-Qed.
+(** ** The class check, by LPCert
 
-(** ** A check with witness hints
+    The integer program of a link class in the form [LPCert.check]
+    decides.  The variables are the type counts, [x_j = tcount] of the
+    [j]-th type, all declared nonnegative; the rows are the tagged rows of
+    [rowc] ([ZRow]) and the upper bounds [x_j ≤ ub_of] ([ZUb j]); the
+    objective is [Σ_j x_j] with target [54 − |D|].  [rows_valid] and
+    [tcount_le_ub] show that the actual counts satisfy every row, so
+    [LPCert.tree_sound] bounds them, and the rest is counting.  There is
+    no other certificate checker in this development's census chain. *)
 
-    For each trace of [points D], in order, the certificate gives [0]
-    (claimed unwitnessed) or [j + 1] (witnessed by the [j]-th pair of
-    [pairw D]).  Only the witnessing claims are checked, one pair each;
-    a claimed-unwitnessed trace is simply kept, which can only weaken the
-    bound.  So the trace list is admissible whatever the hints say. *)
-
-Definition witp (T : list nat) (p : list nat * list nat) : bool := subsetf (fst p) T && disjf T (snd p).
-
-Fixpoint keep_unw (P : list (list nat * list nat)) (Ts : list (list nat)) (h : list nat) : list (list nat) :=
-  match Ts with
+(** The row [f] over the type list, as a sparse integer vector whose
+    indices start at [j]; zero coefficients are left out. *)
+Fixpoint zrowv (f : ltype -> nat) (j : nat) (ts : list ltype) : LPCert.svec :=
+  match ts with
   | [] => []
-  | T :: Ts' =>
-      let k := match h with [] => 0 | k :: _ => k end in
-      let h' := match h with [] => [] | _ :: h' => h' end in
-      let w := match k with 0 => false | S j => match nth_error P j with Some p => witp T p | None => false end end in
-      if w then keep_unw P Ts' h' else T :: keep_unw P Ts' h'
+  | t :: ts' => if f t =? 0 then zrowv f (S j) ts' else (j, Z.of_nat (f t)) :: zrowv f (S j) ts'
   end.
 
-Definition unwith (D : Family) (h : list nat) : list (list nat) := keep_unw (pairw D) (traces (points D)) h.
+Inductive ztag : Type :=
+| ZRow (tg : tag)      (* a tagged row of [rowc] *)
+| ZUb (j : nat).       (* the upper bound of the [j]-th type *)
 
-Lemma keep_unw_sub : forall P Ts h T, In T (keep_unw P Ts h) -> In T Ts.
+Definition zrowf (D : Family) (U : list (list nat)) (ts : list ltype) (big : nat) (zt : ztag) : LPCert.row :=
+  match zt with
+  | ZRow tg => let r := rowc D U ts big tg in (zrowv (fst r) 0 ts, Z.of_nat (snd r))
+  | ZUb j => if j <? length ts then ([(j, 1%Z)], Z.of_nat (ub_of (nth j ts dflt))) else LPCert.trivial_row
+  end.
+
+Definition allnonneg : nat -> bool := fun _ => true.
+
+(** The check for a link [D] and an admissible trace list [U]. *)
+Definition lpcheck (D : Family) (U : list (list nat)) (tr : LPCert.tree ztag) : bool :=
+  let ts := types_of U in
+  LPCert.check ztag (zrowf D U ts (bigof ts)) allnonneg (length ts) (zrowv (fun _ => 1) 0 ts)
+               (Z.of_nat (54 - length D)) [] tr.
+
+Lemma dot_zrowv : forall (f X : ltype -> nat) (x : nat -> Z) ts j,
+  (forall i, i < length ts -> x (j + i) = Z.of_nat (X (nth i ts dflt))) ->
+  LPCert.dot (zrowv f j ts) x = Z.of_nat (suml (map (fun t => f t * X t) ts)).
 Proof.
-  intros P Ts; induction Ts as [| T0 Ts IH]; intros h T HT; [inversion HT |].
-  simpl in HT. destruct (match (match h with [] => 0 | k :: _ => k end) with 0 => false
-                         | S j => match nth_error P j with Some p => witp T0 p | None => false end end).
-  - right; exact (IH _ _ HT).
-  - destruct HT as [E | HT]; [left; exact E | right; exact (IH _ _ HT)].
+  intros f X x ts; induction ts as [| t ts IH]; intros j Hx; [reflexivity |].
+  assert (Hx0 : x j = Z.of_nat (X t)) by (rewrite <- (Nat.add_0_r j); apply (Hx 0); simpl; lia).
+  assert (Hx' : forall i, i < length ts -> x (S j + i) = Z.of_nat (X (nth i ts dflt))).
+  { intros i Hi. replace (S j + i) with (j + S i) by lia. apply (Hx (S i)); simpl; lia. }
+  cbn [zrowv map]. rewrite suml_cons. destruct (Nat.eqb_spec (f t) 0) as [E | NE].
+  - rewrite (IH (S j) Hx'), E. reflexivity.
+  - change (LPCert.dot ((j, Z.of_nat (f t)) :: zrowv f (S j) ts) x)
+      with (Z.of_nat (f t) * x j + LPCert.dot (zrowv f (S j) ts) x)%Z.
+    rewrite (IH (S j) Hx'), Hx0. lia.
 Qed.
 
-Lemma keep_unw_NoDup : forall P Ts h, NoDup Ts -> NoDup (keep_unw P Ts h).
-Proof.
-  intros P Ts; induction Ts as [| T0 Ts IH]; intros h HN; [constructor |].
-  inversion HN as [| ? ? Hn HN']; subst. simpl.
-  destruct (match (match h with [] => 0 | k :: _ => k end) with 0 => false
-            | S j => match nth_error P j with Some p => witp T0 p | None => false end end).
-  - apply IH; exact HN'.
-  - constructor; [intro H; apply Hn; exact (keep_unw_sub _ _ _ _ H) | apply IH; exact HN'].
-Qed.
-
-Lemma keep_unw_complete : forall P Ts h T,
-  In T Ts -> (forall p, In p P -> witp T p = false) -> In T (keep_unw P Ts h).
-Proof.
-  intros P Ts; induction Ts as [| T0 Ts IH]; intros h T HT Hw; [inversion HT |].
-  simpl. destruct HT as [E | HT].
-  - subst T0. destruct (match h with [] => 0 | k :: _ => k end) as [| j]; [left; reflexivity |].
-    destruct (nth_error P j) as [p |] eqn:Ep; [| left; reflexivity].
-    rewrite (Hw p (nth_error_In P j Ep)). left; reflexivity.
-  - destruct (match (match h with [] => 0 | k :: _ => k end) with 0 => false
-              | S j => match nth_error P j with Some p => witp T0 p | None => false end end);
-      [| right]; apply IH; assumption.
-Qed.
-
-Lemma unwith_TraceList : forall D h, TraceList D (unwith D h).
-Proof.
-  intros D h; split; [| split].
-  - intros T HT; exact (keep_unw_sub _ _ _ _ HT).
-  - intros T HT Hw. apply keep_unw_complete; [exact HT |].
-    intros p Hp. destruct (witp T p) eqn:E; [exfalso | reflexivity].
-    assert (witnessedw T (pairw D) = true) by (unfold witnessedw; apply existsb_exists; exists p; split; [exact Hp | exact E]).
-    rewrite witnessedw_correct in H. congruence.
-  - apply keep_unw_NoDup; apply traces_NoDup; apply points_NoDup.
-Qed.
-
-Definition classcheck_h (D : Family) (h : list nat) (tr : tree) : bool := check_with D (unwith D h) tr.
-
-Theorem bound_of_hinted :
+(** The bound, for any admissible trace list [U]. *)
+Theorem bound_of_lpcheck :
   IotaAtMost 4 27 ->
-  forall (F : Family) (R : list nat) (h : list nat) (tr : tree),
+  forall (F : Family) (R : list nat) (U : list (list nat)) (tr : LPCert.tree ztag),
     Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
     (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
-    classcheck_h (DisjointFrom R F) h tr = true ->
+    TraceList (DisjointFrom R F) U ->
+    lpcheck (DisjointFrom R F) U tr = true ->
     length F <= 54.
 Proof.
-  intros Hiota F R h tr HU HD Hno HR Hmax Hc.
-  exact (bound_of_check Hiota F R _ tr HU HD Hno HR Hmax (unwith_TraceList _ h) Hc).
+  intros Hiota F R U tr HU HD Hno HR Hmax [HUt [HUw HUn]] Hc. unfold lpcheck in Hc. cbv zeta in Hc.
+  set (D := DisjointFrom R F) in *. set (V := points D) in *. set (M := Others R F) in *.
+  set (ts := types_of U) in *.
+  set (X := tcount V R M).
+  set (x := fun k => Z.of_nat (X (nth k ts dflt))).
+  assert (Hx : forall i, i < length ts -> x (0 + i) = Z.of_nat (X (nth i ts dflt))) by reflexivity.
+  pose proof (rows_valid F R HU HD Hno HR U HUt HUw HUn Hmax Hiota) as Hrows. cbv zeta in Hrows. fold D V M ts in Hrows.
+  assert (Hsat : forall zt, LPCert.sat (zrowf D U ts (bigof ts) zt) x).
+  { intros [tg | j]; unfold LPCert.sat; cbn [zrowf].
+    - cbn [fst snd]. rewrite (dot_zrowv _ X x ts 0 Hx). apply Nat2Z.inj_le. exact (Hrows tg).
+    - destruct (Nat.ltb_spec j (length ts)) as [Hj | Hj]; [| simpl; lia].
+      cbn [fst snd]. change (LPCert.dot [(j, 1%Z)] x) with (1 * x j + 0)%Z.
+      pose proof (tcount_le_ub F R HU HD Hno HR U HUt (nth j ts dflt) (nth_In ts dflt Hj)) as Hub.
+      change (tcount V R M (nth j ts dflt) <= ub_of (nth j ts dflt)) in Hub.
+      unfold x, X; cbv beta. lia. }
+  assert (Hnn : forall j, allnonneg j = true -> (0 <= x j)%Z) by (intros j _; unfold x; lia).
+  pose proof (LPCert.tree_sound ztag _ allnonneg _ _ _ tr Hc x Hsat Hnn) as H. clear Hc.
+  rewrite (dot_zrowv _ X x ts 0 Hx) in H.
+  rewrite (suml_map_ext (fun t => 1 * X t) X) in H by (intros; lia).
+  assert (Hs : suml (map X ts) = length M) by (apply (tcount_sum F R HU Hno HR U HUt HUw HUn)).
+  rewrite Hs in H. apply Nat2Z.inj_lt in H.
+  assert (Ho : length M + 1 = length (Meeting R F)) by (apply Others_length; assumption).
+  pose proof (count_partition (fun C => disjointb R C) F) as Hp. unfold count in Hp.
+  change (length D + length (Meeting R F) = length F) in Hp.
+  lia.
+Qed.
+
+(** Short constructors for the generated certificates (numbers in
+    binary).  They only build trees; every tree is checked. *)
+Definition yR (tg : tag) (y : N) : LPCert.rtag ztag * Z := (LPCert.Base (ZRow tg), Z.of_N y).
+Definition yU (j : nat) (y : N) : LPCert.rtag ztag * Z := (LPCert.Base (ZUb j), Z.of_N y).
+Definition yB (k : nat) (y : N) : LPCert.rtag ztag * Z := (LPCert.Br k, Z.of_N y).
+Definition lf (K : N) (ys : list (LPCert.rtag ztag * Z)) : LPCert.tree ztag := LPCert.Leaf (Z.of_N K) ys.
+(** [x_i ≤ f] on the left, [x_i ≥ f + 1] on the right. *)
+Definition nd (i : nat) (f : N) (l r : LPCert.tree ztag) : LPCert.tree ztag :=
+  LPCert.Node [(i, 1%Z)] (Z.of_N f) l r.
+
+(** The class check: the trace list is the bitmask enumeration of the
+    unwitnessed traces. *)
+Definition lpclass (D : Family) (tr : LPCert.tree ztag) : bool := lpcheck D (unwitm D) tr.
+
+Theorem bound_of_lpclass :
+  IotaAtMost 4 27 ->
+  forall (F : Family) (R : list nat) (tr : LPCert.tree ztag),
+    Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
+    (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
+    lpclass (DisjointFrom R F) tr = true ->
+    length F <= 54.
+Proof.
+  intros Hiota F R tr HU HD Hno HR Hmax Hc. unfold lpclass in Hc. rewrite unwitm_eq in Hc.
+  exact (bound_of_lpcheck Hiota F R _ tr HU HD Hno HR Hmax (unwit_TraceList _) Hc).
 Qed.
 
 (** ** Transport to a canonical representative
@@ -1933,10 +1698,10 @@ Proof.
   apply (Hsound F2 R' HU2 HD2 Hno2 HR2 Hmax2). rewrite HDR2. exact Hck.
 Qed.
 
-Theorem finer_class_bound :
+Theorem lpclass_bound :
   IotaAtMost 4 27 ->
-  forall (Dk : Family) (tr : tree),
-    Uniform 4 Dk -> SetNoDup Dk -> classcheck Dk tr = true ->
+  forall (Dk : Family) (tr : LPCert.tree ztag),
+    Uniform 4 Dk -> SetNoDup Dk -> lpclass Dk tr = true ->
     forall (F : Family) (R : list nat) (g h : nat -> nat),
       (forall x, h (g x) = x) -> (forall x, g (h x) = x) ->
       Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
@@ -1945,45 +1710,18 @@ Theorem finer_class_bound :
       SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) ->
       length F <= 54.
 Proof.
-  intros Hiota Dk tr. apply (transport_bound (fun D => classcheck D tr)).
-  intros F R HU HD Hno HR Hmax Hc; exact (bound_of_tree Hiota F R tr HU HD Hno HR Hmax Hc).
+  intros Hiota Dk tr. apply (transport_bound (fun D => lpclass D tr)).
+  intros F R HU HD Hno HR Hmax Hc; exact (bound_of_lpclass Hiota F R tr HU HD Hno HR Hmax Hc).
 Qed.
 
-Theorem hinted_class_bound :
-  IotaAtMost 4 27 ->
-  forall (Dk : Family) (hs : list nat) (tr : tree),
-    Uniform 4 Dk -> SetNoDup Dk -> classcheck_h Dk hs tr = true ->
-    forall (F : Family) (R : list nat) (g h : nat -> nat),
-      (forall x, h (g x) = x) -> (forall x, g (h x) = x) ->
-      Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
-      (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
-      SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) ->
-      SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) ->
-      length F <= 54.
-Proof.
-  intros Hiota Dk hs tr. apply (transport_bound (fun D => classcheck_h D hs tr)).
-  intros F R HU HD Hno HR Hmax Hc; exact (bound_of_hinted Hiota F R hs tr HU HD Hno HR Hmax Hc).
-Qed.
+(** ** Census over class lists, certificates kept opaque
 
-(** ** The descent with both kinds of certificate
-
-    [Census2 reps trees lo]: every intersecting 3-sunflower-free family
-    of at least [lo] distinct 4-sets is, up to relabelling, either an
-    LP-certified representative or a tree-certified one.  As with
-    [LinkLP.Census], this is what the exhaustive search found and is NOT
-    proved here. *)
+    [Covered D Dk]: [D] is [Dk] up to relabelling and set equality. *)
 
 Definition Covered (D Dk : Family) : Prop :=
   exists g h : nat -> nat,
     (forall x, h (g x) = x) /\ (forall x, g (h x) = x) /\
     SubFamilySetEq D (rmapF g Dk) /\ SubFamilySetEq (rmapF g Dk) D.
-
-Definition Census2 (reps : list (Family * cert)) (trees : list (Family * tree)) (lo : nat) : Prop :=
-  forall D : Family,
-    Uniform 4 D -> Distinct D -> Intersecting D -> ~ ContainsKSunflower 3 D ->
-    lo <= length D ->
-    (exists Dk ck, In (Dk, ck) reps /\ Covered D Dk)
-    \/ (exists Dk tr, In (Dk, tr) trees /\ Covered D Dk).
 
 Fixpoint nodupb (l : list nat) : bool :=
   match l with [] => true | a :: l' => negb (membf a l') && nodupb l' end.
@@ -2004,195 +1742,36 @@ Proof.
   split; [apply Nat.eqb_eq; exact H1 | apply nodupb_correct; exact H2].
 Qed.
 
-(** Every tree-certified representative is 4-uniform, distinct and passes
-    its check — decided by [vm_compute]. *)
-Definition trees_okb (trees : list (Family * tree)) : bool :=
-  forallb (fun p => uniform4b (fst p) && setnodupb (fst p) && classcheck (fst p) (snd p)) trees.
 
-Lemma trees_okb_entry : forall trees Dk tr, trees_okb trees = true -> In (Dk, tr) trees ->
-  Uniform 4 Dk /\ SetNoDup Dk /\ classcheck Dk tr = true.
-Proof.
-  intros trees Dk tr Hok Hin. unfold trees_okb in Hok; rewrite forallb_forall in Hok.
-  specialize (Hok (Dk, tr) Hin); simpl in Hok.
-  apply andb_true_iff in Hok as [Hok H3]; apply andb_true_iff in Hok as [H1 H2].
-  split; [apply uniform4b_correct; exact H1 | split; [apply setnodupb_correct; exact H2 | exact H3]].
-Qed.
-
-Theorem descent_of_census2 :
-  IotaAtMost 4 27 ->
-  forall reps trees lo, 1 <= lo ->
-    (forall Dk ck, In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) ->
-    trees_okb trees = true ->
-    Census2 reps trees lo -> LinkDescent 4 lo 54.
-Proof.
-  intros Hiota reps trees lo Hlo1 Hreps Htrees Hcen F R HU HD Hno HR Hlo.
-  assert (HFne : F <> []) by (intro E; rewrite E in HR; inversion HR).
-  destruct (exists_max_link F HFne) as [R0 [HR0 Hmax]].
-  set (D := DisjointFrom R0 F).
-  assert (HDlo : lo <= length D) by (unfold D; pose proof (Hmax R HR); lia).
-  assert (HDne : D <> []).
-  { intro E. pose proof (Hmax R HR) as H. unfold D in E. rewrite E in H. simpl in H. lia. }
-  assert (HDU : Uniform 4 D).
-  { apply (Uniform_sublist HU); intros C HC; apply in_DisjointFrom in HC; tauto. }
-  assert (HDD : Distinct D) by (unfold D, DisjointFrom; apply SetNoDup_filter; exact HD).
-  assert (HDI : Intersecting D) by (apply DisjointFrom_Intersecting; assumption).
-  assert (HDno : ~ ContainsKSunflower 3 D).
-  { intro Hc; apply Hno; eapply ContainsKSunflower_SubFamilySetEq; [exact Hc |].
-    apply SubFamilySetEq_incl; intros C HC; apply in_DisjointFrom in HC; tauto. }
-  destruct (Hcen D HDU HDD HDI HDno HDlo) as [[Dk [ck [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]]]
-                                            | [Dk [tr [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]]]].
-  - destruct (Hreps Dk ck Hin) as [Hnd Hck].
-    exact (class_bound Hiota Dk ck Hnd Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax HDne H1 H2).
-  - destruct (trees_okb_entry trees Dk tr Htrees Hin) as [HUk [HDk Hck]].
-    exact (finer_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
-Qed.
-
-(** ** The descent with hinted trees as well *)
-
-Definition Census3 (reps : list (Family * cert)) (trees : list (Family * tree))
-    (htrees : list (Family * (list nat * tree))) (lo : nat) : Prop :=
-  forall D : Family,
-    Uniform 4 D -> Distinct D -> Intersecting D -> ~ ContainsKSunflower 3 D ->
-    lo <= length D ->
-    (exists Dk ck, In (Dk, ck) reps /\ Covered D Dk)
-    \/ (exists Dk tr, In (Dk, tr) trees /\ Covered D Dk)
-    \/ (exists Dk hs tr, In (Dk, (hs, tr)) htrees /\ Covered D Dk).
-
-Definition htrees_okb (htrees : list (Family * (list nat * tree))) : bool :=
-  forallb (fun p => uniform4b (fst p) && setnodupb (fst p) && classcheck_h (fst p) (fst (snd p)) (snd (snd p))) htrees.
-
-Lemma htrees_okb_app :
-  forall a b, htrees_okb a = true -> htrees_okb b = true -> htrees_okb (a ++ b) = true.
-Proof. intros a b Ha Hb; unfold htrees_okb in *; rewrite forallb_app, Ha, Hb; reflexivity. Qed.
-
-Lemma htrees_okb_entry : forall htrees Dk hs tr, htrees_okb htrees = true -> In (Dk, (hs, tr)) htrees ->
-  Uniform 4 Dk /\ SetNoDup Dk /\ classcheck_h Dk hs tr = true.
-Proof.
-  intros htrees Dk hs tr Hok Hin. unfold htrees_okb in Hok; rewrite forallb_forall in Hok.
-  specialize (Hok (Dk, (hs, tr)) Hin); simpl in Hok.
-  apply andb_true_iff in Hok as [Hok H3]; apply andb_true_iff in Hok as [H1 H2].
-  split; [apply uniform4b_correct; exact H1 | split; [apply setnodupb_correct; exact H2 | exact H3]].
-Qed.
-
-Theorem descent_of_census3 :
-  IotaAtMost 4 27 ->
-  forall reps trees htrees lo, 1 <= lo ->
-    (forall Dk ck, In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) ->
-    trees_okb trees = true -> htrees_okb htrees = true ->
-    Census3 reps trees htrees lo -> LinkDescent 4 lo 54.
-Proof.
-  intros Hiota reps trees htrees lo Hlo1 Hreps Htrees Hh Hcen F R HU HD Hno HR Hlo.
-  assert (HFne : F <> []) by (intro E; rewrite E in HR; inversion HR).
-  destruct (exists_max_link F HFne) as [R0 [HR0 Hmax]].
-  set (D := DisjointFrom R0 F).
-  assert (HDlo : lo <= length D) by (unfold D; pose proof (Hmax R HR); lia).
-  assert (HDne : D <> []).
-  { intro E. pose proof (Hmax R HR) as H. unfold D in E. rewrite E in H. simpl in H. lia. }
-  assert (HDU : Uniform 4 D).
-  { apply (Uniform_sublist HU); intros C HC; apply in_DisjointFrom in HC; tauto. }
-  assert (HDD : Distinct D) by (unfold D, DisjointFrom; apply SetNoDup_filter; exact HD).
-  assert (HDI : Intersecting D) by (apply DisjointFrom_Intersecting; assumption).
-  assert (HDno : ~ ContainsKSunflower 3 D).
-  { intro Hc; apply Hno; eapply ContainsKSunflower_SubFamilySetEq; [exact Hc |].
-    apply SubFamilySetEq_incl; intros C HC; apply in_DisjointFrom in HC; tauto. }
-  destruct (Hcen D HDU HDD HDI HDno HDlo) as [[Dk [ck [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]]]
-                                            | [[Dk [tr [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]]]
-                                            | [Dk [hs [tr [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]]]]]].
-  - destruct (Hreps Dk ck Hin) as [Hnd Hck].
-    exact (class_bound Hiota Dk ck Hnd Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax HDne H1 H2).
-  - destruct (trees_okb_entry trees Dk tr Htrees Hin) as [HUk [HDk Hck]].
-    exact (finer_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
-  - destruct (htrees_okb_entry htrees Dk hs tr Hh Hin) as [HUk [HDk Hck]].
-    exact (hinted_class_bound Hiota Dk hs tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
-Qed.
-
-(** ** The bitmask class check *)
-
-Definition classcheck_m (D : Family) (tr : tree) : bool := check_with D (unwitm D) tr.
-
-Theorem bound_of_masked :
-  IotaAtMost 4 27 ->
-  forall (F : Family) (R : list nat) (tr : tree),
-    Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
-    (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
-    classcheck_m (DisjointFrom R F) tr = true ->
-    length F <= 54.
-Proof.
-  intros Hiota F R tr HU HD Hno HR Hmax Hc. unfold classcheck_m in Hc. rewrite unwitm_eq in Hc.
-  exact (bound_of_check Hiota F R _ tr HU HD Hno HR Hmax (unwit_TraceList _) Hc).
-Qed.
-
-Theorem masked_class_bound :
-  IotaAtMost 4 27 ->
-  forall (Dk : Family) (tr : tree),
-    Uniform 4 Dk -> SetNoDup Dk -> classcheck_m Dk tr = true ->
-    forall (F : Family) (R : list nat) (g h : nat -> nat),
-      (forall x, h (g x) = x) -> (forall x, g (h x) = x) ->
-      Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> In R F ->
-      (forall C, In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) ->
-      SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) ->
-      SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) ->
-      length F <= 54.
-Proof.
-  intros Hiota Dk tr. apply (transport_bound (fun D => classcheck_m D tr)).
-  intros F R HU HD Hno HR Hmax Hc; exact (bound_of_masked Hiota F R tr HU HD Hno HR Hmax Hc).
-Qed.
-
-Definition mtrees_okb (L : list (Family * tree)) : bool :=
-  forallb (fun p => uniform4b (fst p) && setnodupb (fst p) && classcheck_m (fst p) (snd p)) L.
-
-(** ** Census over class lists, certificates kept opaque
-
-    A certificate module states only which classes it certifies; the
+(** A certificate module states only which classes it certifies; the
     certificates themselves sit inside an opaque proof, which [Require]
     does not load.  This keeps a module that combines hundreds of
     thousands of classes within memory. *)
 
 Definition CheckedClass (D : Family) : Prop :=
-  Uniform 4 D /\ SetNoDup D /\ exists tr, classcheck_m D tr = true.
+  Uniform 4 D /\ SetNoDup D /\ exists tr, lpclass D tr = true.
 
-Lemma checked_of_mtrees :
-  forall (L : list (Family * tree)) (C : list Family),
-    mtrees_okb L = true -> map fst L = C -> forall D, In D C -> CheckedClass D.
+Definition ltrees_okb (L : list (Family * LPCert.tree ztag)) : bool :=
+  forallb (fun p => uniform4b (fst p) && setnodupb (fst p) && lpclass (fst p) (snd p)) L.
+
+Lemma checked_of_ltrees :
+  forall (L : list (Family * LPCert.tree ztag)) (C : list Family),
+    ltrees_okb L = true -> map fst L = C -> forall D, In D C -> CheckedClass D.
 Proof.
   intros L C Hok E D HD. subst C. apply in_map_iff in HD as [[Dk tr] [E HD]]. simpl in E; subst Dk.
-  unfold mtrees_okb in Hok; rewrite forallb_forall in Hok. specialize (Hok (D, tr) HD); simpl in Hok.
+  unfold ltrees_okb in Hok; rewrite forallb_forall in Hok. specialize (Hok (D, tr) HD); simpl in Hok.
   apply andb_true_iff in Hok as [Hok H3]; apply andb_true_iff in Hok as [H1 H2].
   split; [apply uniform4b_correct; exact H1 | split; [apply setnodupb_correct; exact H2 | exists tr; exact H3]].
 Qed.
 
-(** A class certified by any of the three kinds of certificate. *)
-Definition CheckedAny (D : Family) : Prop :=
-  (SetNoDup D /\ exists ck, certcheck D ck (54 - length D) = true)
-  \/ (Uniform 4 D /\ SetNoDup D /\ exists tr, classcheck D tr = true)
-  \/ CheckedClass D.
-
 Lemma checked_app : forall (A B : list Family),
-  (forall D, In D A -> CheckedAny D) -> (forall D, In D B -> CheckedAny D) ->
-  forall D, In D (A ++ B) -> CheckedAny D.
+  (forall D, In D A -> CheckedClass D) -> (forall D, In D B -> CheckedClass D) ->
+  forall D, In D (A ++ B) -> CheckedClass D.
 Proof. intros A B HA HB D HD; apply in_app_iff in HD as [HD | HD]; [apply HA | apply HB]; exact HD. Qed.
-
-Lemma checked_hinted : forall C, (forall D, In D C -> CheckedClass D) -> forall D, In D C -> CheckedAny D.
-Proof. intros C H D HD; right; right; apply H; exact HD. Qed.
-
-Lemma checked_reps : forall reps, reps_okb reps = true -> forall D, In D (map fst reps) -> CheckedAny D.
-Proof.
-  intros reps Hok D HD. apply in_map_iff in HD as [[Dk ck] [E HD]]; simpl in E; subst Dk.
-  unfold reps_okb in Hok; rewrite forallb_forall in Hok. specialize (Hok (D, ck) HD); simpl in Hok.
-  apply andb_true_iff in Hok as [Hnd Hck]. left; split; [apply setnodupb_correct; exact Hnd | exists ck; exact Hck].
-Qed.
-
-Lemma checked_trees : forall trees, trees_okb trees = true -> forall D, In D (map fst trees) -> CheckedAny D.
-Proof.
-  intros trees Hok D HD. apply in_map_iff in HD as [[Dk tr] [E HD]]; simpl in E; subst Dk.
-  destruct (trees_okb_entry trees D tr Hok HD) as [H1 [H2 H3]].
-  right; left; split; [exact H1 | split; [exact H2 | exists tr; exact H3]].
-Qed.
 
 (** [CensusL L lo]: every intersecting 3-sunflower-free family of at
     least [lo] distinct 4-sets is, up to relabelling, a class of [L].
-    As with [LinkLP.Census], this is the enumeration's claim and is NOT
-    proved here. *)
+    This is the enumeration's claim and is NOT proved here. *)
 Definition CensusL (L : list Family) (lo : nat) : Prop :=
   forall D : Family,
     Uniform 4 D -> Distinct D -> Intersecting D -> ~ ContainsKSunflower 3 D ->
@@ -2201,7 +1780,7 @@ Definition CensusL (L : list Family) (lo : nat) : Prop :=
 Theorem descent_of_censusL :
   IotaAtMost 4 27 ->
   forall (L : list Family) (lo : nat), 1 <= lo ->
-    (forall Dk, In Dk L -> CheckedAny Dk) ->
+    (forall Dk, In Dk L -> CheckedClass Dk) ->
     CensusL L lo -> LinkDescent 4 lo 54.
 Proof.
   intros Hiota L lo Hlo1 Hchk Hcen F R HU HD Hno HR Hlo.
@@ -2209,8 +1788,6 @@ Proof.
   destruct (exists_max_link F HFne) as [R0 [HR0 Hmax]].
   set (D := DisjointFrom R0 F).
   assert (HDlo : lo <= length D) by (unfold D; pose proof (Hmax R HR); lia).
-  assert (HDne : D <> []).
-  { intro E. pose proof (Hmax R HR) as H. unfold D in E. rewrite E in H. simpl in H. lia. }
   assert (HDU : Uniform 4 D).
   { apply (Uniform_sublist HU); intros C HC; apply in_DisjointFrom in HC; tauto. }
   assert (HDD : Distinct D) by (unfold D, DisjointFrom; apply SetNoDup_filter; exact HD).
@@ -2219,8 +1796,6 @@ Proof.
   { intro Hc; apply Hno; eapply ContainsKSunflower_SubFamilySetEq; [exact Hc |].
     apply SubFamilySetEq_incl; intros C HC; apply in_DisjointFrom in HC; tauto. }
   destruct (Hcen D HDU HDD HDI HDno HDlo) as [Dk [Hin [g [h [Hgh [Hhg [H1 H2]]]]]]].
-  destruct (Hchk Dk Hin) as [[Hnd [ck Hck]] | [[HUk [HDk [tr Hck]]] | [HUk [HDk [tr Hck]]]]].
-  - exact (class_bound Hiota Dk ck Hnd Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax HDne H1 H2).
-  - exact (finer_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
-  - exact (masked_class_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
+  destruct (Hchk Dk Hin) as [HUk [HDk [tr Hck]]].
+  exact (lpclass_bound Hiota Dk tr HUk HDk Hck F R0 g h Hgh Hhg HU HD Hno HR0 Hmax H1 H2).
 Qed.

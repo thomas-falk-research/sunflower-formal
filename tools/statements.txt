@@ -2977,53 +2977,35 @@ c4ecdd9782e113ad  thm LinkLP.g_four_at_most_80_of_census
 b516541650bb7f78  thm Link23.rows_valid
     rows_valid : forall (F : Family) (R : list nat), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> forall U : list (list nat), (forall T : list nat, List.In T U -> List.In T (traces (points (DisjointFrom R F)))) -> (forall T : list nat, List.In T (traces (points (DisjointFrom R F))) -> witnessedb T (DisjointFrom R F) = false -> List.In T U) -> List.NoDup U -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> IotaAtMost 4 27 -> forall tg : tag, rowsat (types_of U) (tcount (points (DisjointFrom R F)) R (Others R F)) (rowc (DisjointFrom R F) U (types_of U) (bigof (types_of U)) tg)
 
-291e21b6cef5dbff  thm Link23.tree_sound
-    Link23.tree_sound : forall (ts : list ltype) (x : ltype -> nat) (rc : tag -> Link23.row), (forall tg : tag, rowsat ts x (rc tg)) -> forall (tr : Link23.tree) (lo hi : list nat) (T : nat), Bounded ts x lo hi -> treecheck ts rc lo hi T tr = true -> suml (List.map x ts) < T
+ef4bd5ad41a6e974  thm Link23.bound_of_lpcheck
+    bound_of_lpcheck : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (U : list (list nat)) (tr : tree ztag), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> TraceList (DisjointFrom R F) U -> lpcheck (DisjointFrom R F) U tr = true -> length F <= 54
 
-ad26b120843dd5fc  thm Link23.bound_of_tree
-    bound_of_tree : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (tr : Link23.tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> classcheck (DisjointFrom R F) tr = true -> length F <= 54
-
-a513a683d84321d0  thm Link23.finer_class_bound
-    finer_class_bound : IotaAtMost 4 27 -> forall (Dk : Family) (tr : Link23.tree), Uniform 4 Dk -> SetNoDup Dk -> classcheck Dk tr = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
-
-80cbb67de6bd6328  thm Link23.descent_of_census2
-    descent_of_census2 : IotaAtMost 4 27 -> forall (reps : list (list (list nat) * cert)) (trees : list (Family * Link23.tree)) (lo : nat), 1 <= lo -> (forall (Dk : list (list nat)) (ck : cert), List.In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) -> trees_okb trees = true -> Census2 reps trees lo -> LinkDescent 4 lo 54
-
-422996fc5986eef9  thm Link23.bound_of_check
-    bound_of_check : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (U : list (list nat)) (tr : Link23.tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> TraceList (DisjointFrom R F) U -> check_with (DisjointFrom R F) U tr = true -> length F <= 54
-
-121fe7b3c0cd7bc9  thm Link23.bound_of_hinted
-    bound_of_hinted : IotaAtMost 4 27 -> forall (F : Family) (R h : list nat) (tr : Link23.tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> classcheck_h (DisjointFrom R F) h tr = true -> length F <= 54
+6d8315778b08e220  thm Link23.bound_of_lpclass
+    bound_of_lpclass : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (tr : tree ztag), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> lpclass (DisjointFrom R F) tr = true -> length F <= 54
 
 68104476115e4222  thm Link23.transport_bound
     transport_bound : forall chk : Family -> bool, SoundCheck chk -> forall Dk : Family, Uniform 4 Dk -> SetNoDup Dk -> chk Dk = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
 
-fd68ba6b2f1fe213  thm Link23.hinted_class_bound
-    hinted_class_bound : IotaAtMost 4 27 -> forall (Dk : Family) (hs : list nat) (tr : Link23.tree), Uniform 4 Dk -> SetNoDup Dk -> classcheck_h Dk hs tr = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
+2b9557b0a09c72c1  thm Link23.lpclass_bound
+    lpclass_bound : IotaAtMost 4 27 -> forall (Dk : Family) (tr : tree ztag), Uniform 4 Dk -> SetNoDup Dk -> lpclass Dk tr = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
 
-ecb96756fc92a256  thm Link23.descent_of_census3
-    descent_of_census3 : IotaAtMost 4 27 -> forall (reps : list (list (list nat) * cert)) (trees : list (Family * Link23.tree)) (htrees : list (Family * (list nat * Link23.tree))) (lo : nat), 1 <= lo -> (forall (Dk : list (list nat)) (ck : cert), List.In (Dk, ck) reps -> SetNoDup Dk /\ certcheck Dk ck (54 - length Dk) = true) -> trees_okb trees = true -> htrees_okb htrees = true -> Census3 reps trees htrees lo -> LinkDescent 4 lo 54
+bca2009b82b251e7  thm Link23.checked_of_ltrees
+    checked_of_ltrees : forall (L : list (Family * tree ztag)) (C : list Family), ltrees_okb L = true -> List.map fst L = C -> forall D : Family, List.In D C -> CheckedClass D
 
-5d7c20e534badbba  thm Link23.checked_of_mtrees
-    checked_of_mtrees : forall (L : list (Family * Link23.tree)) (C : list Family), mtrees_okb L = true -> List.map fst L = C -> forall D : Family, List.In D C -> CheckedClass D
+ef542060874902ea  thm Link23.descent_of_censusL
+    descent_of_censusL : IotaAtMost 4 27 -> forall (L : list Family) (lo : nat), 1 <= lo -> (forall Dk : Family, List.In Dk L -> CheckedClass Dk) -> CensusL L lo -> LinkDescent 4 lo 54
 
-413e58d39af46c70  thm Link23.bound_of_masked
-    bound_of_masked : IotaAtMost 4 27 -> forall (F : Family) (R : list nat) (tr : Link23.tree), Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> classcheck_m (DisjointFrom R F) tr = true -> length F <= 54
+db9852d0cce59496  thm LPCert.tree_sound
+    tree_sound : forall (tag : Type) (rowf : tag -> row) (nonneg : nat -> bool) (n : nat) (c : svec) (T : BinNums.Z) (tr : tree tag), check tag rowf nonneg n c T nil tr = true -> forall x : nat -> BinNums.Z, (forall t : tag, sat (rowf t) x) -> (forall j : nat, nonneg j = true -> BinInt.Z.le BinNums.Z0 (x j)) -> BinInt.Z.lt (dot c x) T
 
-107eec2795ed1813  thm Link23.masked_class_bound
-    masked_class_bound : IotaAtMost 4 27 -> forall (Dk : Family) (tr : Link23.tree), Uniform 4 Dk -> SetNoDup Dk -> classcheck_m Dk tr = true -> forall (F : Family) (R : list nat) (g h : nat -> nat), (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Uniform 4 F -> Distinct F -> ~ ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (DisjointFrom C F) <= length (DisjointFrom R F)) -> SubFamilySetEq (DisjointFrom R F) (rmapF g Dk) -> SubFamilySetEq (rmapF g Dk) (DisjointFrom R F) -> length F <= 54
+0ce05a89c0b2bc71  thm LPCert.infeasible_of_tree
+    infeasible_of_tree : forall (tag : Type) (rowf : tag -> row) (nonneg : nat -> bool) (n : nat) (tr : tree tag), check tag rowf nonneg n nil BinNums.Z0 nil tr = true -> forall x : nat -> BinNums.Z, (forall j : nat, nonneg j = true -> BinInt.Z.le BinNums.Z0 (x j)) -> ~ (forall t : tag, sat (rowf t) x)
 
-f3dea80f390ff904  thm Link23.descent_of_censusL
-    descent_of_censusL : IotaAtMost 4 27 -> forall (L : list Family) (lo : nat), 1 <= lo -> (forall Dk : Family, List.In Dk L -> CheckedAny Dk) -> CensusL L lo -> LinkDescent 4 lo 54
+723c553814e274de  thm LPCert.tree_sound_list
+    tree_sound_list : forall (rows : list row) (nonneg : nat -> bool) (n : nat) (c : svec) (T : BinNums.Z) (tr : tree nat), check nat (list_rows rows) nonneg n c T nil tr = true -> forall x : nat -> BinNums.Z, (forall r : row, List.In r rows -> sat r x) -> (forall j : nat, nonneg j = true -> BinInt.Z.le BinNums.Z0 (x j)) -> BinInt.Z.lt (dot c x) T
 
-525f13c434d0f9c1  thm LPCert.tree_sound
-    tree_sound : forall (tag : Type) (rowf : tag -> row) (n : nat) (c : svec) (T : BinNums.Z) (tr : tree tag), check tag rowf n c T nil tr = true -> forall x : nat -> BinNums.Z, (forall t : tag, sat (rowf t) x) -> BinInt.Z.lt (dot c x) T
-
-d3bd4ef91dcaed79  thm LPCert.infeasible_of_tree
-    infeasible_of_tree : forall (tag : Type) (rowf : tag -> row) (n : nat) (tr : tree tag), check tag rowf n nil BinNums.Z0 nil tr = true -> forall x : nat -> BinNums.Z, ~ (forall t : tag, sat (rowf t) x)
-
-0f61cd046fad5635  thm LPCert.tree_sound_list
-    tree_sound_list : forall (rows : list row) (n : nat) (c : svec) (T : BinNums.Z) (tr : tree nat), check nat (list_rows rows) n c T nil tr = true -> forall x : nat -> BinNums.Z, (forall r : row, List.In r rows -> sat r x) -> BinInt.Z.lt (dot c x) T
+696ea5d001220ddc  thm LPCert.tree_sound_list_nn
+    tree_sound_list_nn : forall (rows : list row) (l : list nat) (n : nat) (c : svec) (T : BinNums.Z) (tr : tree nat), check nat (list_rows rows) (nonneg_of l) n c T nil tr = true -> forall x : nat -> BinNums.Z, (forall r : row, List.In r rows -> sat r x) -> (forall j : nat, List.In j l -> BinInt.Z.le BinNums.Z0 (x j)) -> BinInt.Z.lt (dot c x) T
 
 2f9fb2b71bc907cf  thm LPCertExamples.ex1
     ex1 : forall x : nat -> BinNums.Z, (forall r : row, List.In r rows1 -> sat r x) -> BinInt.Z.lt (dot c1 x) (BinNums.Zpos (BinNums.xO BinNums.xH))
@@ -3031,23 +3013,35 @@ d3bd4ef91dcaed79  thm LPCert.infeasible_of_tree
 2ec2514f97bb918d  thm LPCertExamples.ex2
     ex2 : forall x : nat -> BinNums.Z, ~ (forall r : row, List.In r rows2 -> sat r x)
 
-f4e9b18006a7b431  thm LPCertExamples.ex2_no_single_leaf
-    ex2_no_single_leaf : check nat (list_rows rows2) 1 nil BinNums.Z0 nil (Leaf BinNums.Z0 ((Base 0, BinNums.Zpos BinNums.xH) :: (Base 1, BinNums.Zpos BinNums.xH) :: nil)) = false
+4a144402eadbbe51  thm LPCertExamples.ex2_no_single_leaf
+    ex2_no_single_leaf : check nat (list_rows rows2) free 1 nil BinNums.Z0 nil (Leaf BinNums.Z0 ((Base 0, BinNums.Zpos BinNums.xH) :: (Base 1, BinNums.Zpos BinNums.xH) :: nil)) = false
 
-f7a1017f13663f4c  thm LPCertExamples.rej_coefficient
-    rej_coefficient : check nat (list_rows rows2) 1 nil BinNums.Z0 nil (Node ((0, BinNums.Zpos BinNums.xH) :: nil)%list BinNums.Z0 (Leaf BinNums.Z0 ((Br 0, BinNums.Zpos BinNums.xH) :: (Base 1, BinNums.Zpos BinNums.xH) :: nil)) (Leaf BinNums.Z0 ((Base 0, BinNums.Zpos BinNums.xH) :: (Br 0, BinNums.Zpos (BinNums.xO BinNums.xH)) :: nil))) = false
+eb4d6769cf67929d  thm LPCertExamples.ex3
+    ex3 : forall x : nat -> BinNums.Z, (forall r : row, List.In r rows3 -> sat r x) -> BinInt.Z.le BinNums.Z0 (x 1) -> BinInt.Z.lt (dot c3 x) (BinNums.Zpos (BinNums.xO BinNums.xH))
 
-e94002427211b33a  thm LPCertExamples.rej_negative
-    rej_negative : check nat (list_rows rows1) 2 c1 (BinNums.Zpos BinNums.xH) nil (Leaf (BinNums.Zpos BinNums.xH) ((Base 0, BinNums.Zpos BinNums.xH) :: (Base 1, BinNums.Zneg BinNums.xH) :: nil)) = false
+263db9df6c2b641c  thm LPCertExamples.ex3_needs_nonneg
+    ex3_needs_nonneg : let x := fun j : nat => match j with | 0 => BinNums.Zpos (BinNums.xI (BinNums.xO BinNums.xH)) | S _ => BinNums.Zneg (BinNums.xO (BinNums.xO BinNums.xH)) end in (forall r : row, List.In r rows3 -> sat r x) /\ BinInt.Z.le (BinNums.Zpos (BinNums.xO BinNums.xH)) (dot c3 x)
 
-34cea37a210c5e3f  thm LPCertExamples.rej_scale
-    rej_scale : check nat (list_rows rows1) 2 c1 (BinNums.Zpos (BinNums.xO BinNums.xH)) nil (Leaf (BinNums.Zneg BinNums.xH) ((Base 0, BinNums.Zneg BinNums.xH) :: nil)) = false
+46d97db515abde19  thm LPCertExamples.rej_undeclared
+    rej_undeclared : check nat (list_rows rows3) free 2 c3 (BinNums.Zpos (BinNums.xO BinNums.xH)) nil t3 = false
 
-8dd5e75c68a05888  thm LPCertExamples.rej_bound
-    rej_bound : check nat (list_rows rows1) 2 c1 (BinNums.Zpos BinNums.xH) nil t1 = false
+b10595b436cc51bf  thm LPCertExamples.rej_wrong_declared
+    rej_wrong_declared : check nat (list_rows rows3) (nonneg_of (0 :: nil)) 2 c3 (BinNums.Zpos (BinNums.xO BinNums.xH)) nil t3 = false
 
-865fbd91a4711747  thm LPCertExamples.rej_dimension
-    rej_dimension : check nat (list_rows rows1) 1 c1 (BinNums.Zpos (BinNums.xO BinNums.xH)) nil t1 = false
+e67c8030d81a447e  thm LPCertExamples.rej_coefficient
+    rej_coefficient : check nat (list_rows rows2) free 1 nil BinNums.Z0 nil (Node ((0, BinNums.Zpos BinNums.xH) :: nil)%list BinNums.Z0 (Leaf BinNums.Z0 ((Br 0, BinNums.Zpos BinNums.xH) :: (Base 1, BinNums.Zpos BinNums.xH) :: nil)) (Leaf BinNums.Z0 ((Base 0, BinNums.Zpos BinNums.xH) :: (Br 0, BinNums.Zpos (BinNums.xO BinNums.xH)) :: nil))) = false
 
-6a588edbdd54d63a  thm LPCertExamples.rej_phantom_branch
-    rej_phantom_branch : check nat (list_rows rows2) 1 nil BinNums.Z0 nil (Leaf BinNums.Z0 ((Br 5, BinNums.Zpos BinNums.xH) :: nil)) = false
+3ee81bbc69d01953  thm LPCertExamples.rej_negative
+    rej_negative : check nat (list_rows rows1) free 2 c1 (BinNums.Zpos BinNums.xH) nil (Leaf (BinNums.Zpos BinNums.xH) ((Base 0, BinNums.Zpos BinNums.xH) :: (Base 1, BinNums.Zneg BinNums.xH) :: nil)) = false
+
+da3ef789777a31ac  thm LPCertExamples.rej_scale
+    rej_scale : check nat (list_rows rows1) free 2 c1 (BinNums.Zpos (BinNums.xO BinNums.xH)) nil (Leaf (BinNums.Zneg BinNums.xH) ((Base 0, BinNums.Zneg BinNums.xH) :: nil)) = false
+
+e103bce7988fe4af  thm LPCertExamples.rej_bound
+    rej_bound : check nat (list_rows rows1) free 2 c1 (BinNums.Zpos BinNums.xH) nil t1 = false
+
+84ebf0a9dac89cee  thm LPCertExamples.rej_dimension
+    rej_dimension : check nat (list_rows rows1) free 1 c1 (BinNums.Zpos (BinNums.xO BinNums.xH)) nil t1 = false
+
+8ed4879aa20dc19e  thm LPCertExamples.rej_phantom_branch
+    rej_phantom_branch : check nat (list_rows rows2) free 1 nil BinNums.Z0 nil (Leaf BinNums.Z0 ((Br 5, BinNums.Zpos BinNums.xH) :: nil)) = false

@@ -21,7 +21,7 @@ The checker here is only a convenience: the kernel check is
 """
 import sys, os, json, gzip, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from linkcert import load, load_some, validate
+from linkcert import load, load_some, load_ks, validate
 
 
 # ---------------------------------------------------------------- Coq mirror
@@ -418,6 +418,169 @@ def check_doc(D, C):
     return cnt
 
 
+# ---------------------------------------------------------------- LPCert form (coq/LPCert.v)
+#
+# [Link23.lpclass]: variables are the type counts (all nonnegative), rows
+# are ["row", tag] (the tagged rows) and ["ub", j] (x_j <= ub_of t_j);
+# a node ["branch"] on x_i at f; a leaf K, y on ["base", rowtag] and
+# ["br", k] (the k-th branching row on the path: x_i <= f on the left,
+# -x_i <= -f-1 on the right).
+
+def lp_of_doc(doc, ub):
+    """Convert a tree in the §69 form (bounds lo/hi, leaf u/v) to LPCert form.
+    u_i goes onto the row that gives hi_i (["ub", i] or a branching row),
+    v_i onto the branching row that gives lo_i; v_i with lo_i = 0 is
+    dropped (the slack of x_i >= 0).  The leaf inequalities are then
+    exactly the old ones, coefficient by coefficient."""
+    n = doc["n"]
+
+    def walk(node, depth, hi, his, lo, los):
+        if "leaf" in node:
+            c = node["leaf"]
+            ys = [[["base", ["row", tag]], y] for tag, y in c["y"] if y]
+            for i, u in enumerate(c["u"]):
+                if u:
+                    ys.append([["base", ["ub", i]] if his[i] is None else ["br", his[i]], u])
+            for i, v in enumerate(c["v"]):
+                if v and los[i] is not None:
+                    ys.append([["br", los[i]], v])
+            return {"leaf": {"K": c["K"], "y": ys}}
+        i, f = node["var"], node["f"]
+        h2, hs2, l2, ls2 = list(hi), list(his), list(lo), list(los)
+        assert type(i) is int and 0 <= i < n and type(f) is int and f >= 0
+        if f < hi[i]:
+            h2[i], hs2[i] = f, depth
+        if f + 1 > lo[i]:
+            l2[i], ls2[i] = f + 1, depth
+        return {"branch": i, "f": f,
+                "le": walk(node["le"], depth + 1, h2, hs2, lo, los),
+                "ge": walk(node["ge"], depth + 1, hi, his, l2, ls2)}
+
+    assert len(ub) == n
+    return walk(doc["tree"], 0, list(ub), [None] * n, [0] * n, [None] * n)
+
+
+def lp_check(D, lt, mdl=None):
+    """[Link23.lpclass D lt] with the LPCert semantics, exactly: every
+    leaf has K >= 0, y >= 0, indices < n, K·c_j <= (Σ y·a)_j for every
+    j (all variables are nonnegative, c = all ones), Σ y·b < K·T.
+    Unknown tags are the trivial row 0 <= 0, as in Coq."""
+    U, ts, ub, big, rows = model(D) if mdl is None else mdl
+    n = len(ts)
+    T = 54 - len(D) if len(D) <= 54 else 0
+    byt = {tagkey(tag): (coef, rhs) for tag, coef, rhs in rows}
+    cnt = {"nodes": 0, "leaves": 0}
+
+    def rowof(rt, P):
+        kind, t = rt
+        if kind == "br":
+            assert type(t) is int and t >= 0
+            return P[t] if t < len(P) else ({}, 0)
+        assert kind == "base"
+        if t[0] == "ub":
+            j = t[1]
+            assert type(j) is int and j >= 0
+            return ({j: 1}, ub[j]) if j < n else ({}, 0)
+        assert t[0] == "row"
+        return byt.get(tagkey(t[1]), ({}, 0))
+
+    def leaf(c, P):
+        K = c["K"]
+        assert type(K) is int and K >= 0, "K"
+        acc = {}
+        rhs = 0
+        for rt, y in c["y"]:
+            assert type(y) is int and y >= 0, "y"
+            coef, b = rowof(rt, P)
+            for j, a in coef.items():
+                assert 0 <= j < n, "index"
+                acc[j] = acc.get(j, 0) + y * a
+            rhs += y * b
+        for j in range(n):
+            assert K <= acc.get(j, 0), ("column", j)
+        assert rhs < K * T, ("bound", rhs, K * T)
+
+    def walk(node, P):
+        cnt["nodes"] += 1
+        if "leaf" in node:
+            cnt["leaves"] += 1
+            leaf(node["leaf"], P)
+            return
+        i, f = node["branch"], node["f"]
+        assert type(i) is int and type(f) is int and 0 <= i and f >= 0
+        walk(node["le"], P + [({i: 1}, f)])
+        walk(node["ge"], P + [({i: -1}, -f - 1)])
+
+    walk(lt, [])
+    return cnt
+
+
+def lp_problem(D, mdl=None):
+    """The class as a generic tools/lpcert problem, with a map from the
+    tags here to its row indices (for cross-checking with lpcert.py)."""
+    U, ts, ub, big, rows = model(D) if mdl is None else mdl
+    n = len(ts)
+    prows, idx = [], {}
+    for tag, coef, rhs in rows:
+        idx[json.dumps(["row", tag])] = len(prows)
+        prows.append([[[j, a] for j, a in sorted(coef.items())], rhs])
+    for j in range(n):
+        idx[json.dumps(["ub", j])] = len(prows)
+        prows.append([[[j, 1]], ub[j]])
+    prob = {"n": n, "rows": prows, "c": [[j, 1] for j in range(n)], "T": 54 - len(D), "nonneg": list(range(n))}
+
+    def tr(node):
+        if "leaf" in node:
+            c = node["leaf"]
+            return {"leaf": {"K": c["K"], "y": [[["base", idx[json.dumps(rt[1])]] if rt[0] == "base" else rt, y]
+                                                for rt, y in c["y"]]}}
+        return {"branch": [[node["branch"], 1]], "f": node["f"], "le": tr(node["le"]), "ge": tr(node["ge"])}
+    return prob, tr
+
+
+def coq_lp_tag(rt, y):
+    if rt[0] == "br":
+        return f"yB {rt[1]} {y}"
+    t = rt[1]
+    if t[0] == "ub":
+        return f"yU {t[1]} {y}"
+    return f"yR ({coq_tag(t[1])}) {y}"
+
+
+def coq_lp_tree(node):
+    if "leaf" in node:
+        c = node["leaf"]
+        return f"(lf {c['K']} {coq_list(coq_lp_tag(rt, y) for rt, y in c['y'])})"
+    return f"(nd {node['branch']} {node['f']} {coq_lp_tree(node['le'])} {coq_lp_tree(node['ge'])})"
+
+
+LPHEADER = ["(* Generated by tools/iota4/link23_coq.py; do not edit. *)",
+            "From Coq Require Import List NArith.", "Import ListNotations.",
+            "From Sunflower Require Import Sunflower Link23.", ""]
+
+
+def emit_shard_lp(items, out, name):
+    """One module: the class list as a definition; the LPCert trees only
+    inside the opaque proof of [NAME_ok] ([Link23.checked_of_ltrees]),
+    so that requiring the module does not load them.  items: (id, D, lptree)."""
+    Ds = [coq_list(coq_list(C_) for C_ in D) for _, D, _ in items]
+    lines = list(LPHEADER)
+    lines.append(f"(** {len(Ds)} link classes; ids: {coq_list(k for k, _, _ in items)}. *)")
+    lines.append(f"Definition {name}_classes : list Family :=")
+    lines.append("  [" + ";\n   ".join(Ds) + "].")
+    lines.append("")
+    lines.append(f"Lemma {name}_ok : forall D, In D {name}_classes -> CheckedClass D.")
+    lines.append("Proof.")
+    lines.append("  apply (checked_of_ltrees")
+    lines.append("    [" + ";\n     ".join(f"(nth {i} {name}_classes [], {coq_lp_tree(lt)})"
+                                          for i, (_, _, lt) in enumerate(items)) + "]).")
+    lines.append("  - vm_compute. reflexivity.")
+    lines.append("  - vm_compute. reflexivity.")
+    lines.append("Qed.")
+    lines.append("")
+    open(out, "w").write("\n".join(lines))
+
+
 # ---------------------------------------------------------------- Coq output
 
 def coq_list(items):
@@ -592,8 +755,56 @@ def emit_shard(cls, path, out, name):
     print("wrote", out, len(names), "classes")
 
 
+def lpconvert(cls, trees, out):
+    """Every tree of TREES (§69 form) in LPCert form, each checked exactly
+    with the LPCert semantics ([lp_check]) after conversion; one JSON list
+    of {"k", "D", "lt"} with D the class as Coq sees it."""
+    docs = []
+    for f in trees.split(","):
+        docs += json.load(gzip.open(f, "rt"))
+    fams = load_ks(cls, [d["k"] for d in docs])
+    res = []
+    for d in docs:
+        D = canon(fams[d["k"]])
+        mdl = model(D)
+        assert d["n"] == len(mdl[1]) and d["Delta"] == len(D)
+        lt = lp_of_doc(d, mdl[2])
+        lp_check(D, lt, mdl)
+        res.append({"k": d["k"], "D": D, "lt": lt})
+    with gzip.open(out + ".tmp", "wt") as fh:
+        json.dump(res, fh)
+    os.replace(out + ".tmp", out)
+    print("converted", len(res), "->", out, flush=True)
+
+
+def lpshards(inputs, prefix, budget):
+    """Modules coq/PREFIXi.v of about BUDGET bytes of certificate text each,
+    classes in increasing k; returns the module count."""
+    items = []
+    for f in inputs.split(","):
+        items += [(e["k"], e["D"], e["lt"]) for e in json.load(gzip.open(f, "rt"))]
+    items.sort(key=lambda e: e[0])
+    assert len(set(k for k, _, _ in items)) == len(items), "a class twice"
+    groups, cur, size = [], [], 0
+    for it in items:
+        c = len(coq_lp_tree(it[2])) + 300
+        if cur and size + c > budget:
+            groups.append(cur); cur, size = [], 0
+        cur.append(it); size += c
+    if cur:
+        groups.append(cur)
+    for n, g in enumerate(groups):
+        emit_shard_lp(g, f"coq/{prefix}{n}.v", f"l{prefix[4:].lower()}{n}")
+    print("wrote", len(groups), "modules for", len(items), "classes", flush=True)
+    return len(groups)
+
+
 if __name__ == "__main__":
     mode, cls = sys.argv[1], sys.argv[2]
+    if mode == "lpconvert":      # lpconvert CLASSES.gz TREES1.json.gz,... OUT.json.gz
+        lpconvert(cls, sys.argv[3], sys.argv[4]); sys.exit(0)
+    if mode == "lpshards":       # lpshards - CONVERTED1.json.gz,... PREFIX BUDGET
+        lpshards(sys.argv[3], sys.argv[4], int(sys.argv[5])); sys.exit(0)
     if mode == "batch":          # batch CLASSES.gz SIZE i/n OUT.json.gz
         batch(cls, int(sys.argv[3]), sys.argv[4], sys.argv[5]); sys.exit(0)
     if mode == "coqshard":       # coqshard CLASSES.gz TREES.json.gz OUT.v NAME

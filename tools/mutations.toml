@@ -2834,3 +2834,57 @@ expect = "killed"
 # Killed by the computation in coq/LPCertExamples.v, not by the proof: the
 # right leaf of ex2 combines 2·x0 <= 1 with 2·(-x0 <= -1) to reach 0 <= -1,
 # and with the weaker -x0 <= 0 the sum is 0 <= 1, so ex2_ok no longer holds.
+
+[[mutation]]
+id = "lpcert-slack-everywhere"
+file = "coq/LPCert.v"
+question = """Is the nonnegativity declaration needed? Allow slack K·c_j <= (Σ y·a)_j \
+on every variable, declared or not."""
+find = "                         if nonneg j then lhs <=? rhs else lhs =? rhs) (seq 0 n)"
+replace = "                         lhs <=? rhs) (seq 0 n)"
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-slack-reversed"
+file = "coq/LPCert.v"
+question = """Is the direction of the slack right? Accept (Σ y·a)_j <= K·c_j on a \
+declared variable instead."""
+find = "                         if nonneg j then lhs <=? rhs else lhs =? rhs) (seq 0 n)"
+replace = "                         if nonneg j then rhs <=? lhs else lhs =? rhs) (seq 0 n)"
+expect = "killed"
+
+[[mutation]]
+id = "lpcert-declare-all"
+file = "coq/LPCert.v"
+question = """Does the list form tie the declaration to the listed variables? Make \
+nonneg_of declare every variable."""
+find = "Definition nonneg_of (l : list nat) : nat -> bool := fun j => existsb (Nat.eqb j) l."
+replace = "Definition nonneg_of (l : list nat) : nat -> bool := fun j => true."
+expect = "killed"
+
+[[mutation]]
+id = "link23-lp-ub-tight"
+file = "coq/Link23.v"
+question = """Are the upper-bound rows given to LPCert actually proved? Tighten \
+x_j <= ub_of t_j to x_j <= ub_of t_j - 1."""
+find = "  | ZUb j => if j <? length ts then ([(j, 1%Z)], Z.of_nat (ub_of (nth j ts dflt))) else LPCert.trivial_row"
+replace = "  | ZUb j => if j <? length ts then ([(j, 1%Z)], Z.of_nat (ub_of (nth j ts dflt) - 1)) else LPCert.trivial_row"
+expect = "killed"
+
+[[mutation]]
+id = "link23-lp-target"
+file = "coq/Link23.v"
+question = """Is the target tied to |F| <= 54? Let the certificates prove only \
+Σ x < 55 - |D|."""
+find = "               (Z.of_nat (54 - length D)) [] tr."
+replace = "               (Z.of_nat (55 - length D)) [] tr."
+expect = "killed"
+
+[[mutation]]
+id = "link23-lp-objective"
+file = "coq/Link23.v"
+question = """Is the objective the number of members? Make it 0, so that a \
+certificate shows only 0 < 54 - |D|."""
+find = "  LPCert.check ztag (zrowf D U ts (bigof ts)) allnonneg (length ts) (zrowv (fun _ => 1) 0 ts)"
+replace = "  LPCert.check ztag (zrowf D U ts (bigof ts)) allnonneg (length ts) (zrowv (fun _ => 0) 0 ts)"
+expect = "killed"

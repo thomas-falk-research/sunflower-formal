@@ -3,7 +3,8 @@
 Coq's kernel by coq/LPCert.v (specification: docs/lpcert.md).
 
 A problem is integer variables x_0 .. x_{n-1}, rows a·x <= b with integer
-coefficients (bounds are rows too), an integer objective c and a target T.
+coefficients (bounds are rows too), an optional list of variables declared
+nonnegative, an integer objective c and a target T.
 A certificate is a tree proving c·x < T for every integer point satisfying
 the rows (or, with c = [] and T = 0, that there is none).
 
@@ -15,7 +16,8 @@ The Python checker is a convenience and a second implementation; the
 trusted check is Coq's `LPCert.check`, decided by `vm_compute`.
 
 JSON form (docs/lpcert.md):
-  problem = {"n": int, "rows": [[[[j, a], ...], b], ...], "c": [[j, c], ...], "T": int}
+  problem = {"n": int, "rows": [[[[j, a], ...], b], ...], "c": [[j, c], ...], "T": int,
+             "nonneg": [j, ...]}                       (optional; default [])
   tree    = {"leaf": {"K": int, "y": [[["base", r] | ["br", k], y], ...]}}
           | {"branch": [[j, a], ...], "f": int, "le": tree, "ge": tree}
 """
@@ -63,7 +65,7 @@ def rget(rows, P, tag):
     return ([], 0)       # [LPCert.trivial_row]: 0 <= 0, which can only help nothing
 
 
-def leafcheck(n, c, T, rows, P, K, ys):
+def leafcheck(n, c, T, rows, P, K, ys, nonneg=frozenset()):
     _need(type(K) is int, "K is not an integer", K)
     _need(isinstance(ys, list), "y is not a list")
     rs = []
@@ -75,22 +77,23 @@ def leafcheck(n, c, T, rows, P, K, ys):
     if not idx_ok(n, c) or not all(idx_ok(n, r[0]) for r, _ in rs):
         return False
     for j in range(n):
-        if K * sget(c, j) != sum(y * sget(r[0], j) for r, y in rs):
+        lhs, rhs = K * sget(c, j), sum(y * sget(r[0], j) for r, y in rs)
+        if not (lhs <= rhs if j in nonneg else lhs == rhs):
             return False
     return sum(y * r[1] for r, y in rs) < K * T
 
 
-def check_tree(n, c, T, rows, P, node):
+def check_tree(n, c, T, rows, P, node, nonneg=frozenset()):
     _need(isinstance(node, dict), "node is not an object")
     if "leaf" in node:
         _need(set(node) == {"leaf"} and set(node["leaf"]) == {"K", "y"}, "bad leaf", sorted(node))
-        return leafcheck(n, c, T, rows, P, node["leaf"]["K"], node["leaf"]["y"])
+        return leafcheck(n, c, T, rows, P, node["leaf"]["K"], node["leaf"]["y"], nonneg)
     _need(set(node) == {"branch", "f", "le", "ge"}, "bad node", sorted(node))
     a, f = node["branch"], node["f"]
     _ints(a, "branch"); _need(type(f) is int, "f is not an integer")
     neg = [[i, -x] for i, x in a]
-    return (check_tree(n, c, T, rows, P + [(a, f)], node["le"])
-            and check_tree(n, c, T, rows, P + [(neg, -f - 1)], node["ge"]))
+    return (check_tree(n, c, T, rows, P + [(a, f)], node["le"], nonneg)
+            and check_tree(n, c, T, rows, P + [(neg, -f - 1)], node["ge"], nonneg))
 
 
 def check(problem, tree):
@@ -103,7 +106,15 @@ def check(problem, tree):
         _need(isinstance(r, list) and len(r) == 2 and type(r[1]) is int, "bad row", r)
         _ints(r[0], "row")
         rows.append((r[0], r[1]))
-    return check_tree(n, c, T, rows, [], tree)
+    return check_tree(n, c, T, rows, [], tree, _nonneg(problem))
+
+
+def _nonneg(problem):
+    """[LPCert.nonneg_of]: membership in the declared list (any int may be
+    listed; one outside 0 .. n-1 is never consulted)."""
+    nn = problem.get("nonneg", [])
+    _need(isinstance(nn, list) and all(type(j) is int for j in nn), "bad nonneg list", nn)
+    return frozenset(nn)
 
 
 # ---------------------------------------------------------------- exact linear algebra
@@ -147,9 +158,10 @@ def _lcm(a, b):
 
 # ---------------------------------------------------------------- the solver
 
-def _leaf(n, c, T, rows, P, infeasible):
+def _leaf(n, c, T, rows, P, infeasible, nonneg=frozenset()):
     """An exact leaf for the rows in force, or None.  Solves the dual LP with
-    HiGHS, then re-solves the equations exactly on the LP's support."""
+    HiGHS, then re-solves exactly on the LP's support the equations for the
+    free variables and for the declared nonnegative ones the LP left tight."""
     import numpy as np
     from scipy.optimize import linprog
     allrows = [("base", i, r) for i, r in enumerate(rows)] + [("br", k, r) for k, r in enumerate(P)]
@@ -163,22 +175,31 @@ def _leaf(n, c, T, rows, P, infeasible):
     if not infeasible:
         for i, v in c:
             cv[i] += v
-    # min b·y  s.t.  A y = c (K = 1), y >= 0   or   A y = 0, sum y = 1 (Farkas)
-    Aeq, beq = A, cv
+    # min b·y  s.t.  (A y)_j = c_j (free j), (A y)_j >= c_j (nonnegative j),
+    # y >= 0, with K = 1; or with c = 0 and sum y = 1 (Farkas)
+    eq = [j for j in range(n) if j not in nonneg]
+    ge = [j for j in range(n) if j in nonneg]
+    Aeq, beq = A[eq, :], cv[eq]
     if infeasible:
-        Aeq = np.vstack([A, np.ones((1, m))])
-        beq = np.concatenate([cv, [1.0]])
-    res = linprog(b, A_eq=Aeq, b_eq=beq, bounds=[(0, None)] * m, method="highs")
+        Aeq = np.vstack([Aeq, np.ones((1, m))])
+        beq = np.concatenate([beq, [1.0]])
+    kw = {}
+    if ge:
+        kw = {"A_ub": -A[ge, :], "b_ub": -cv[ge]}
+    if Aeq.shape[0]:
+        kw.update(A_eq=Aeq, b_eq=beq)
+    res = linprog(b, bounds=[(0, None)] * m, method="highs", **kw)
     if res.status != 0:
         return None
     support = [i for i in range(m) if res.x[i] > 1e-9]
-    if not support:
-        support = []
-    M = [[int(round(A[j, col])) for col in support] for j in range(n)]
-    rhs = [sget(c, j) if not infeasible else 0 for j in range(n)]
+    Ay = A @ res.x
+    tight = [j for j in range(n) if j not in nonneg or abs(Ay[j] - cv[j]) <= 1e-7]
+    M = [[int(round(A[j, col])) for col in support] for j in tight]
+    rhs = [sget(c, j) if not infeasible else 0 for j in tight]
     if infeasible:
         M.append([1] * len(support)); rhs.append(1)
-    y = _solve_exact(M, rhs) if support else None
+    # an empty support is a leaf with no multipliers (leafcheck decides it)
+    y = _solve_exact(M, rhs) if support else []
     if y is None or any(v < 0 for v in y):
         return None
     K = 1
@@ -186,7 +207,7 @@ def _leaf(n, c, T, rows, P, infeasible):
         K = _lcm(K, v.denominator)
     ys = [[[allrows[col][0], allrows[col][1]], int(v * K)] for col, v in zip(support, y) if v != 0]
     leaf = {"leaf": {"K": 0 if infeasible else K, "y": ys}}
-    return leaf if leafcheck(n, [] if infeasible else c, T, rows, P, leaf["leaf"]["K"], ys) else None
+    return leaf if leafcheck(n, [] if infeasible else c, T, rows, P, leaf["leaf"]["K"], ys, nonneg) else None
 
 
 def solve(problem, max_nodes=100000):
@@ -195,6 +216,8 @@ def solve(problem, max_nodes=100000):
     from scipy.optimize import linprog
     n, c, T = problem["n"], problem["c"], problem["T"]
     rows = [(r[0], r[1]) for r in problem["rows"]]
+    nonneg = _nonneg(problem)
+    bounds = [(0 if i in nonneg else None, None) for i in range(n)]
     count = [0]
 
     def rec(P):
@@ -210,9 +233,9 @@ def solve(problem, max_nodes=100000):
         cv = np.zeros(n)
         for i, v in c:
             cv[i] += v
-        res = linprog(-cv, A_ub=A, b_ub=b, bounds=[(None, None)] * n, method="highs")
+        res = linprog(-cv, A_ub=A, b_ub=b, bounds=bounds, method="highs")
         if res.status == 2:
-            leaf = _leaf(n, c, T, rows, P, infeasible=True)
+            leaf = _leaf(n, c, T, rows, P, infeasible=True, nonneg=nonneg)
             if leaf is not None:
                 return leaf
             raise CertError("infeasible node without an exact Farkas leaf")
@@ -222,7 +245,7 @@ def solve(problem, max_nodes=100000):
             raise CertError("LP failed", res.message)
         val = -res.fun
         if val < T - 1e-9:
-            leaf = _leaf(n, c, T, rows, P, infeasible=False)
+            leaf = _leaf(n, c, T, rows, P, infeasible=False, nonneg=nonneg)
             if leaf is not None:
                 return leaf
         x = res.x
@@ -252,17 +275,20 @@ def _tree(node):
 
 def to_coq(problem, tree, name):
     rows = "[" + ";\n   ".join(f"({_svec(a)}, ({b}))" for a, b in problem["rows"]) + "]"
+    nn = "[" + "; ".join(f"{j}%nat" for j in problem.get("nonneg", [])) + "]"
     return "\n".join([
         "(* Generated by tools/lpcert/lpcert.py; do not edit. *)",
         "From Coq Require Import ZArith List.", "Import ListNotations.",
         "From Sunflower Require Import LPCert.", "Local Open Scope Z_scope.", "",
         f"Definition {name}_rows : list row :=\n  {rows}.",
         f"Definition {name}_c : svec := {_svec(problem['c'])}.",
+        f"Definition {name}_nonneg : list nat := {nn}.",
         f"Definition {name}_tree : tree nat := {_tree(tree)}.", "",
-        f"Lemma {name}_ok : check nat (list_rows {name}_rows) {problem['n']} {name}_c ({problem['T']}) [] {name}_tree = true.",
+        f"Lemma {name}_ok : check nat (list_rows {name}_rows) (nonneg_of {name}_nonneg) {problem['n']} {name}_c ({problem['T']}) [] {name}_tree = true.",
         "Proof. vm_compute. reflexivity. Qed.", "",
-        f"Theorem {name} : forall x : nat -> Z, (forall r, In r {name}_rows -> sat r x) -> dot {name}_c x < {problem['T']}.",
-        f"Proof. exact (tree_sound_list {name}_rows {problem['n']} {name}_c ({problem['T']}) {name}_tree {name}_ok). Qed.", ""])
+        f"Theorem {name} : forall x : nat -> Z, (forall r, In r {name}_rows -> sat r x) ->",
+        f"  (forall j, In j {name}_nonneg -> 0 <= x j) -> dot {name}_c x < {problem['T']}.",
+        f"Proof. exact (tree_sound_list_nn {name}_rows {name}_nonneg {problem['n']} {name}_c ({problem['T']}) {name}_tree {name}_ok). Qed.", ""])
 
 
 if __name__ == "__main__":
