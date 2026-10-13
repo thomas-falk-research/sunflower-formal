@@ -1,8 +1,9 @@
 # Certifying the census: a staged plan
 
-**Status: plan, with stage 2 started.** Nothing in this document is a
-result yet; each stage says what it would establish and what it would
-still trust. The decision points are measurements, not opinions.
+**Status: stage 2 done (below); stage 1 scheduled after the LPCert port;
+stages 3–5 not started.** Each stage says what it would establish and
+what it would still trust. The decision points are measurements, not
+opinions.
 
 ## The premise in question
 
@@ -108,6 +109,61 @@ Some 10¹¹ certificates are far beyond the kernel. Two levers:
 
 Decision point after stage 3: about 10⁸ surviving nodes or fewer → a
 kernel-checked census; otherwise the extracted or CakeML route.
+
+## Stage 2 — done
+
+`coq/CensusGen.v`, `coq/CensusSearch.v` and `coq/CensusDemo.v`, all in
+the theory build and all closed under the global context
+(`make print-assumptions`):
+
+* **The order and the hereditary lemma.** `lexb_insert_last`,
+  `parent_improves`: a relabelling that improves the parent improves the
+  child. `MinK_parent`: the parent of a minimal node is minimal.
+* **No gaps.** `gap_improves`: an unused label below the largest one
+  can be swapped in to strictly improve the family, via
+  `lexb_first_diff` (the order on strictly sorted lists through the
+  smallest element of the symmetric difference). `MinK_no_gap`,
+  `last_in_cand`: the largest row of a minimal node is among its parent's
+  candidates, the `b`-subsets of `0 .. nl + b − 1`.
+* **Witnesses.** A witness is a list checked by `is_permb` (a
+  permutation of `0 .. n − 1`, the identity above), with a proved
+  inverse; the oracle is any function, and a node is pruned only when its
+  witness checks and has exactly the node's label range.
+* **Completeness.** `level_complete`: every minimal node whose family
+  has the property is in its level and is kept, *whatever the oracle
+  answers*. `minimal_relabel`: every family with distinct rows has a
+  minimal relabelling (the least key over all permutations of its label
+  range, `argmin_spec`, with `perms_complete` and composition).
+* **The census.** `census_of_search`: if every node kept at levels
+  `lo .. hi` is covered by a class of `L` and no node is kept at level
+  `hi + 1`, then `CensusB b L lo` — for `b = 4` exactly
+  `Link23.CensusL L lo` (`CensusB_4`). `iota_of_search` is the case
+  `L = []`. The node test need only accept every valid node
+  (`validb_complete` for the concrete `validb b`); it never has to be
+  proved to reject anything.
+* **End to end in the kernel at `b = 2`.** `CensusDemo.iota_two_by_search`:
+  `ι(2) ≤ 3` by running the search with `vm_compute` and no oracle at
+  all (levels of 1, 1, 4, 2, 0 nodes).
+
+One lesson recorded: `CensusGen` first reused five names of the library
+(`mask`, `mask_bit`, `nodupb`, `rmapF`, `subsets`). With every module
+loaded, existing statements then printed with qualified names and the
+statement baseline flagged them as changed; the definitions were renamed
+and the baseline diff is now the new entries only.
+
+**What stage 2 leaves open.** The coverage hypothesis of
+`census_of_search` (each kept node at levels `lo .. hi` covered by a
+class) is abstract; for execution it needs a checked form (a witness
+permutation and a class index per node, checked by comparing keys),
+which belongs with stage 4.
+
+**Measured for the pilot at `b = 3`.** Without an oracle the levels
+grow about seventeen-fold per row (1, 1, 18, 513, 8,511 nodes at rows
+0–4, `vm_compute`), so even `ι(3) = 10` needs pruning. The oracle can be
+a precomputed table looked up by a hash of the node: collisions or wrong
+entries cost only extra work, never soundness, because every witness is
+checked. `ι(3) ≤ 10` through that route is the natural pilot before
+stage 3's measurement at `b = 4`.
 
 ## Precedents (from memory; each to be checked before it is cited)
 

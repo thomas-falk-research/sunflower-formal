@@ -3084,3 +3084,15 @@ d0cf2cbcedc3013a  thm CensusSearch.census_of_search
 
 5f213c6cf59b5994  thm CensusSearch.iota_of_search
     iota_of_search : forall (b : nat) (validb : list BinNums.N -> bool) (oracle : list BinNums.N -> option (list nat)) (N : nat), (forall K : list BinNums.N, PB b (fam K) -> validb K = true) -> (forall K : list BinNums.N, List.In K (level b validb oracle (S N)) -> keep oracle K = false) -> IotaAtMost b N
+
+04540388c2ee98dd  thm CensusSearch.validb_complete
+    validb_complete : forall (b : nat) (K : list BinNums.N), PB b (fam K) -> validb b K = true
+
+14896467d67b194c  thm CensusDemo.census_demo_levels
+    census_demo_levels : List.map (fun n : nat => length (level 2 (validb 2) (fun _ : list BinNums.N => None) n)) (0 :: 1 :: 2 :: 3 :: 4 :: nil) = (1 :: 1 :: 4 :: 2 :: 0 :: nil)%list
+
+7a4a5a839ddea9b9  thm CensusDemo.census_demo_level4
+    census_demo_level4 : level 2 (validb 2) (fun _ : list BinNums.N => None) 4 = nil
+
+622317da6c2073cb  thm CensusDemo.iota_two_by_search
+    iota_two_by_search : IotaAtMost 2 3

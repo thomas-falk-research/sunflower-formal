@@ -1151,3 +1151,7 @@ thm CensusGen.minimal_relabel
 thm CensusSearch.node_of_family
 thm CensusSearch.census_of_search
 thm CensusSearch.iota_of_search
+thm CensusSearch.validb_complete
+thm CensusDemo.census_demo_levels
+thm CensusDemo.census_demo_level4
+thm CensusDemo.iota_two_by_search

@@ -224,3 +224,102 @@ Proof.
   destruct (census_of_search b validb oracle [] (S N) N Hv Hend
               ltac:(intros n K Hn1 Hn2; lia) H HU HD HI Hno Hl) as [Dk [[] _]].
 Qed.
+
+(** ** A concrete node test, and its completeness
+
+    [validb b] looks at the newest row [y] of a node: it has [b] points,
+    it meets every earlier row, and no two earlier rows [z ≠ w] form a
+    sunflower with it (equal pairwise intersections, read off the masks
+    by [N.land]).  [validb_complete]: every node whose family is valid
+    passes. *)
+
+Definition validb (b : nat) (K : list N) : bool :=
+  match rev K with
+  | [] => true
+  | y :: rK =>
+      let K' := rev rK in
+      Nat.eqb (length (CensusGen.bits y)) b
+      && forallb (fun z => negb (N.eqb (N.land z y) 0)) K'
+      && forallb (fun z => forallb (fun w =>
+            negb (negb (N.eqb z w) && N.eqb (N.land z w) (N.land z y) && N.eqb (N.land z y) (N.land w y))) K') K'
+  end.
+
+Lemma in_bits_land : forall u v x, In x (CensusGen.bits (N.land u v)) <-> In x (CensusGen.bits u) /\ In x (CensusGen.bits v).
+Proof.
+  intros u v x. rewrite !CensusGen.in_bits, N.land_spec. apply andb_true_iff.
+Qed.
+
+Lemma inter_bits : forall u v, SetEq (inter (CensusGen.bits u) (CensusGen.bits v)) (CensusGen.bits (N.land u v)).
+Proof.
+  intros u v. split; intros x Hx.
+  - unfold inter in Hx. apply filter_In in Hx as [Hu Hv]. destruct (in_dec_nat x (CensusGen.bits v)) as [Hv' | _]; [| discriminate].
+    apply in_bits_land; split; assumption.
+  - apply in_bits_land in Hx as [Hu Hv]. unfold inter. apply filter_In; split; [exact Hu |].
+    destruct (in_dec_nat x (CensusGen.bits v)) as [_ | Hn]; [reflexivity | contradiction].
+Qed.
+
+Lemma bits_mask_eq : forall u v, SetEq (CensusGen.bits u) (CensusGen.bits v) -> u = v.
+Proof.
+  intros u v H. rewrite <- (CensusGen.mask_bits u), <- (CensusGen.mask_bits v). apply SetEq_mask, H.
+Qed.
+
+Lemma SetNoDup_last : forall A B, SetNoDup (A ++ [B]) -> forall X, In X A -> ~ SetEq X B.
+Proof.
+  induction A as [| C A IH]; intros B H X HX; [destruct HX |].
+  inversion H as [| ? ? Hni Hs]; subst. destruct HX as [<- | HX].
+  - apply Hni, in_app_iff; right; left; reflexivity.
+  - apply (IH B Hs X HX).
+Qed.
+
+Lemma validb_complete : forall b K, PB b (CensusGen.fam K) -> validb b K = true.
+Proof.
+  intros b K HP. unfold validb. destruct (rev K) as [| y rK] eqn:E; [reflexivity |].
+  assert (EK : K = rev rK ++ [y]) by (rewrite <- (rev_involutive K), E; reflexivity).
+  set (K' := rev rK) in *. cbv zeta.
+  rewrite EK, CensusGen.fam_app1 in HP. destruct HP as [HU [HD [HI Hno]]].
+  set (F := CensusGen.fam K' ++ [CensusGen.bits y]) in *.
+  assert (Hy : In (CensusGen.bits y) F) by (apply in_app_iff; right; left; reflexivity).
+  assert (Hz : forall z, In z K' -> In (CensusGen.bits z) F) by (intros z Hz; apply in_app_iff; left; apply in_map, Hz).
+  assert (Hdy : forall z, In z K' -> z <> y).
+  { intros z Hzk Ezy. subst z. apply (SetNoDup_last _ _ HD (CensusGen.bits y)); [apply in_map, Hzk | apply SetEq_refl]. }
+  apply andb_true_iff; split; [apply andb_true_iff; split |].
+  - apply Nat.eqb_eq. unfold Uniform in HU. rewrite Forall_forall in HU. apply (HU _ Hy).
+  - apply forallb_forall. intros z Hzk. apply negb_true_iff. destruct (N.eqb_spec (N.land z y) 0) as [E0 | _]; [exfalso | reflexivity].
+    apply (HI _ _ (Hz z Hzk) Hy). intros x Hx1 Hx2.
+    assert (Hx : In x (CensusGen.bits (N.land z y))) by (apply in_bits_land; split; assumption).
+    rewrite E0 in Hx. unfold CensusGen.bits in Hx. simpl in Hx. exact Hx.
+  - apply forallb_forall. intros z Hzk. apply forallb_forall. intros w Hwk. apply negb_true_iff.
+    destruct (N.eqb_spec z w) as [_ | Hzw]; [reflexivity |]. simpl.
+    destruct (N.eqb_spec (N.land z w) (N.land z y)) as [E1 | _]; [| reflexivity].
+    destruct (N.eqb_spec (N.land z y) (N.land w y)) as [E2 | _]; [exfalso | reflexivity].
+    apply Hno. set (A := CensusGen.bits z). set (B := CensusGen.bits w). set (C := CensusGen.bits y).
+    set (core := CensusGen.bits (N.land z w)).
+    assert (Hne : forall u v, u <> v -> ~ SetEq (CensusGen.bits u) (CensusGen.bits v)).
+    { intros u v Huv Hs. apply Huv, bits_mask_eq, Hs. }
+    assert (Hpair : forall u v, (u = z \/ u = w \/ u = y) -> (v = z \/ v = w \/ v = y) -> u <> v ->
+              SetEq (inter (CensusGen.bits u) (CensusGen.bits v)) core).
+    { intros u v Hu Hv Huv. eapply SetEq_trans; [apply inter_bits |]. unfold core.
+      assert (Hl : N.land u v = N.land z w).
+      { destruct Hu as [-> | [-> | ->]]; destruct Hv as [-> | [-> | ->]]; try (exfalso; apply Huv; reflexivity).
+        - reflexivity.
+        - symmetry; exact E1.
+        - rewrite N.land_comm. reflexivity.
+        - rewrite <- E2, <- E1. reflexivity.
+        - rewrite N.land_comm, <- E1. reflexivity.
+        - rewrite N.land_comm, <- E2, <- E1. reflexivity. }
+      rewrite Hl. apply SetEq_refl. }
+    exists [A; B; C]. split.
+    + apply SubFamilySetEq_incl. intros X [<- | [<- | [<- | []]]]; [apply Hz, Hzk | apply Hz, Hwk | exact Hy].
+    + split; [reflexivity |]. exists core. split.
+      * constructor; [| constructor; [| constructor; [| constructor]]].
+        -- intros X [<- | [<- | []]]; [apply Hne, Hzw | apply Hne, Hdy, Hzk].
+        -- intros X [<- | []]. apply Hne, Hdy, Hwk.
+        -- intros X [].
+      * intros X Y HX HY HXY.
+        destruct HX as [<- | [<- | [<- | []]]]; destruct HY as [<- | [<- | [<- | []]]];
+          try (exfalso; apply HXY; reflexivity).
+        all: apply Hpair; [auto | auto |];
+             first [ exact Hzw | intro Euv; apply Hzw; symmetry; exact Euv
+                   | exact (Hdy z Hzk) | intro Euv; apply (Hdy z Hzk); symmetry; exact Euv
+                   | exact (Hdy w Hwk) | intro Euv; apply (Hdy w Hwk); symmetry; exact Euv ].
+Qed.
