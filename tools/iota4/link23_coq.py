@@ -758,7 +758,11 @@ def emit_shard(cls, path, out, name):
 def lpconvert(cls, trees, out):
     """Every tree of TREES (§69 form) in LPCert form, each checked exactly
     with the LPCert semantics ([lp_check]) after conversion; one JSON list
-    of {"k", "D", "lt"} with D the class as Coq sees it."""
+    of {"k", "D", "lt"} with D the class as Coq sees it.  Does nothing if
+    OUT exists (resumable, and safe for two workers on one list)."""
+    if os.path.exists(out):
+        print("exists:", out, flush=True)
+        return
     docs = []
     for f in trees.split(","):
         docs += json.load(gzip.open(f, "rt"))
