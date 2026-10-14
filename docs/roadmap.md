@@ -15611,7 +15611,7 @@ the 538 new lists. `Print Assumptions` on `descent_21` and
 `g_four_at_most_76_of_census_21`: closed under the global context
 (1,376 s and 6.1 GB: it walks all 538 opaque proofs).
 `make certs-assumptions` covers both; `tools/statements_certs.txt` holds
-their statements. `coqchk` (one `-norec` check per module, §71): running at the time of this commit; the result is recorded in the follow-up commit.
+their statements. `coqchk` (one `-norec` check per module, §71) was started on these modules and passed 89 of them; the port of §73 then replaced the checker and regenerated every module, which invalidated that run (§73.3), and the new modules are checked there.
 
 ### 72.4 Standing
 
@@ -15626,3 +15626,146 @@ their statements. `coqchk` (one `-norec` check per module, §71): running at the
 Size 20 has 308 million classes, beyond enumeration. Below 21 the link
 descent needs a class-free argument (§66, direction 1), and the census
 itself remains the premise nothing here touches.
+
+## 73. One checker: the link descent on LPCert
+
+Every certificate of the link descent, at every size from 21 to 27, is
+now checked by `LPCert.check` (`docs/lpcert.md`) and by nothing else.
+Before this section the chain used three: §64's LP checker
+(`LinkLP.certcheck`, 14,794 classes at 23–27), the tree checker of
+`Link23.v` (11 classes at 23, and in its bitmask form every class at 21
+and 22), and its hinted variant. The statements are unchanged in form —
+`descent_23`, `descent_22`, `descent_21` and `g(4) ≤ 78, 77, 76`, each
+from `ι(4) ≤ 27`, `CensusL classesN N` and `MeetingBound 4 56` — and
+the class lists are the same families as before, term for term
+(checked: the 14,805 lists at 23–27 generated from
+`classes_23_27.txt.gz` equal, as a multiset, those of `LinkCerts23–25`
+and the eleven `Link23c` modules; sizes 22 and 21 are generated from
+the same class files as before).
+
+### 73.1 LPCert, extended
+
+* **Declared nonnegative variables.** `LPCert.check` takes
+  `nonneg : nat -> bool`; for a declared variable a leaf may leave slack,
+  `K·c_j ≤ (Σ y·a)_j`, and `tree_sound` gains the hypothesis
+  `nonneg j = true -> 0 ≤ x j`. Without it a leaf would carry an
+  explicit row `−x_j ≤ 0` for every type with slack: measured on 876
+  leaves of the census certificates, 19% more multipliers and 9% more
+  certificate text (4.9% of the type columns of a size-21 leaf have
+  slack, and the median leaf has none). An earlier draft of this
+  section said "most of the types of most leaves"; the measurement
+  replaced it.
+  `LPCertExamples` section 3 has a certificate accepted only with the
+  declaration (rejected without it, and with it on the wrong variable)
+  and the point showing that the claim needs it. Mutations
+  `lpcert-slack-everywhere`, `lpcert-slack-reversed` and
+  `lpcert-declare-all` are killed.
+* **A leaf in `O((nnz + n) log n)`.** The leaf check adds the multiplied
+  rows into a `PositiveMap` and reads one coefficient per variable
+  (`zcomb`, `zget_zcomb`); the first version read each coefficient by a
+  linear scan, quadratic in the number of types.
+* Python (`tools/lpcert`): the declaration in the problem JSON, the
+  checker and the solver; the test compares every tampered certificate
+  with an independent dense reference checker (a tampering may leave a
+  valid proof once slack is allowed, and both checkers then accept it;
+  without declarations every tampering is still rejected).
+
+### 73.2 Link23 on LPCert
+
+`Link23.v` keeps the model — the type list, the tagged rows and
+`rows_valid` — and states the class program as LPCert rows (`zrowf`):
+each tagged row as a sparse integer row, and the upper bounds
+`x_j ≤ ub_of t_j` as rows `ZUb j`; every type count is declared
+nonnegative; the objective is `Σ_j x_j` and the target `54 − |D|`.
+`bound_of_lpcheck` proves `|F| ≤ 54` from `LPCert.tree_sound`,
+`rows_valid` and `tcount_le_ub`; `lpclass_bound` transports it to every
+family whose largest link is the class up to relabelling, and
+`descent_of_censusL` now asks of each class only `CheckedClass`
+(4-uniform, distinct members, an `lpclass` certificate). The list,
+hinted and bitmask checkers, `Census2`, `Census3` and `CheckedAny` are
+deleted; `Link23.v` no longer refers to `LinkLP.certcheck`. Three
+mutations (`link23-lp-ub-tight`, `link23-lp-target`,
+`link23-lp-objective`: a tighter bound row, a weaker target, a zero
+objective) are killed.
+
+The existing trees converted without re-solving (`link23_coq.py
+lpconvert`): `y` is unchanged; `u_i` moves onto the row that gave the
+upper bound in force (`ZUb i`, or the branching row on the path), `v_i`
+onto the branching row that gave the lower bound, and `v_i` at a lower
+bound of 0 is dropped into the slack of `x_i ≥ 0`. The leaf inequalities
+are then those the old checker tested. Every converted tree was
+re-checked in exact arithmetic with the LPCert semantics before it was
+written; `tools/iota4/test_lpport.py` (in `make verify`) checks converted
+trees against the generic `tools/lpcert` checker too, tampered ones
+included, and compiles a module through `lpclass` while the same with a
+needed multiplier zeroed fails.
+
+The classes at 23–27, which had LP certificates, were solved afresh
+under the Link23 model (`link23_coq.py batch`, 58 minutes of wall time on three
+cores): all 14,805 certified, none refused; 14,798 trees are a single
+leaf (the LP dual alone), 14,844 leaves in all, at most 14 in one tree
+(`docs/ladder/iota4_replication/link2327_trees/`, 192 KB). Their class
+lists are the families of `LinkCerts23–25` and the eleven `Link23c`
+modules term for term, as a multiset, so the census premise is about
+the same classes as before. The 69,616 trees at 22 and the 407,115 at 21
+were converted, each re-checked exactly before it was written.
+
+### 73.3 The kernel check
+
+`lpshards` cut the certificates into modules of about 500 KB of text,
+as before (a class whose tree alone is larger gets a module of its own:
+`Link22s8` holds the single class 9050).
+
+| | modules | source | kernel time | largest module | peak memory |
+|---|---|---|---|---|---|
+| 23–27 | 11 (`Link23s*`) | 6.2 MB | 4,149 s | 533 s | 2.2 GB |
+| 22 | 129 (`Link22s*`) | 64 MB | 27,162 s | 466 s | 5.7 GB |
+| 21 | 516 (`Link21s*`) | 263 MB | 97,256 s | 492 s | 5.0 GB |
+
+About 35.7 core-hours, 0.26 s per class, on two jobs; no module failed.
+The first module compiled in the old and the new form side by side:
+170.5 s and 1.89 GB as LPCert against 171.7 s and 1.78 GB before, so
+the generic checker costs nothing here. `make certs` then built the
+three combining modules (40 s together, 5.0 GB: the certificates sit in
+opaque proofs that `Require` does not load) and exits 0.
+
+* `make certs-assumptions`: all eleven certificate theorems closed under
+  the global context, `descent_21` and `g_four_at_most_76_of_census_21`
+  among them (2,021 s, 6.0 GB; it walks every opaque proof).
+* `make certs-statements`: the only changes are `descent_23` and
+  `g_four_at_most_78_of_census_23`, whose hypothesis is now
+  `CensusL classes23 23` in place of `Census2 cls23_all link23_all 23`;
+  the size-22 and size-21 statements print exactly as before.
+* `coqchk`, one `-norec` check per module with the gate of §71, on all
+  690 modules of `_CoqProject.certs`: running at the time of this commit; the
+  result is recorded in the follow-up commit.
+
+Two operational events, neither touching a result. Rebuilding
+`Link23.vo` while the §72 coqchk run was in progress made every module
+still waiting fail to load ("Inductive Sunflower.Link23.tree does not
+appear in the environment" — the type the port deletes); that run had
+passed 89 of 538 modules, was stopped, and concerned modules that no
+longer exist. And when the size-21 build was moved to two workers, one
+module (`Link21s109`) was compiled twice at once for 48 s; the
+duplicate was stopped before it wrote anything, the module's output was
+deleted, and it was rebuilt alone (102.6 s).
+The coqchk run on the old-format size-21 modules (§72.3) passed 89 of
+538 modules and was then invalidated by this port: rebuilding
+`Link23.vo` changed a dependency of the modules still waiting, which
+then failed to load ("Inductive Sunflower.Link23.tree does not appear in
+the environment" — the type the port deletes). Those failures say
+nothing about the certificates; the run was stopped, and the modules it
+concerned no longer exist. The regenerated modules are checked below.
+
+### 73.4 Standing
+
+| claim | status |
+|---|---|
+| every class at 21–27 has a certificate accepted by `LPCert.check` through `Link23.lpclass` | **COMPUTED** in the kernel (656 modules) |
+| a link of ≥ 21 members forces `\|F\| ≤ 54` (`descent_21`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 21–27** |
+| `g(4) ≤ 76` | **PROVEN given `ι(4) ≤ 27`, the census at 21–27 and `MeetingBound 4 56`** |
+| trusted checkers in the chain | one: `LPCert.check` (soundness `LPCert.tree_sound`, closed) |
+| `LinkLP.certcheck` | an independent cross-check for 23–27, outside the chain |
+
+The census premise itself is unchanged and is the subject of
+`docs/census_certification.md`.

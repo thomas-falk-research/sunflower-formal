@@ -29,7 +29,7 @@ distinct and the difference is the point of this repository.
 | Trust level | What it means | Headline results | Where |
 |---|---|---|---|
 | **Kernel-proved** | Coq, zero admits, no axiom (`Print Assumptions` closed, `coqchk` clean) | Erdős–Rado $f(n,k)\le(k-1)^n n!+1$; the product lower bound; $f(2,3)=7$; $f(n,3)\ge 20^{n/3}+1$ by supermultiplicativity; $2\iota(b)\le g(b)\le 2b\,\iota(b)$, so the conjecture at $k=3$ is equivalent to an exponential bound on intersecting families; the spread reduction and an axiom-free $f(n,k)\le(n(k-1)+1)^n+1$; **the conjecture for families of bounded VC-dimension** (Ge–Wang–Xu–Zhao 2026, new elementary proof); $I(3,3)=10$; Hall and Kőnig from scratch | `coq/ErdosRado.v`, `ProductLowerBound.v`, `F23.v`, `DirectSum.v`, `IotaRate.v`, `SpreadReduction.v`, `VCSunflower.v`, `TauThreeTen.v`, `KoenigHall.v` |
-| **Kernel-proved, given named hypotheses** | A Coq theorem whose premises are stated facts that are not themselves in the kernel | The link descent at uniformity 4 (§64–§72): a 4-uniform 3-sunflower-free family with a link of ≥ 21 members has ≤ 54 members, given $\iota(4)\le 27$ and the link census; with the published meeting bound, $g(4)\le 76$. Weak duality, label-independence and the per-class transport are theorems; 14,794 link classes at sizes 23–27 are certified by LP duals and 476,742 at sizes 21–23 by branch-and-bound trees, all by `vm_compute` and re-checked by `coqchk` | `coq/LinkLP.v`, `Link23.v`, `LinkCombine.v`, `LinkCerts2*.v`, `Link23c*.v`, `Link22s*.v`, `Link21s*.v`, `Stability4.v` |
+| **Kernel-proved, given named hypotheses** | A Coq theorem whose premises are stated facts that are not themselves in the kernel | The link descent at uniformity 4 (§64–§73): a 4-uniform 3-sunflower-free family with a link of ≥ 21 members has ≤ 54 members, given $\iota(4)\le 27$ and the link census; with the published meeting bound, $g(4)\le 76$. Weak duality, label-independence and the per-class transport are theorems; every one of the 491,536 link classes at sizes 21–27 carries a certificate checked by one generic checker, `LPCert.check` (through `Link23.lpclass`), by `vm_compute`, with `coqchk` re-checking every module (running at the time of this commit, §73.3); §64's LP certificates for 23–27 remain as an independent cross-check | `coq/LPCert.v`, `Link23.v`, `LinkCombine.v`, `Link23s*.v`, `Link22s*.v`, `Link21s*.v`, `Stability4.v` (cross-check: `LinkLP.v`, `LinkCerts2*.v`) |
 | **Proved on paper, Python-checked** | Hand argument plus exact-arithmetic or DRAT certificates outside the kernel | Nothing of the $b=4$ descent any more: the §65 Python model turned out to be over-constrained (a label confusion in its exclusions, §69.2) and was superseded by the kernel model; the record of what was Python-checked stays in `docs/roadmap.md` §60–§65 | `docs/roadmap.md` §65, §69 |
 | **Validated by computation, not proved** | Two independent exhaustive searches agree to the unit; no certificate exists | $\iota(4)=27$ and the uniqueness of the 27-family ($10^{11}$ nodes, agreeing with arXiv:2609.06175); the census of link classes at sizes 23–27 | `docs/ladder/iota4_replication/` |
 | **Cited** | Taken from the literature, read on rendered pages, not re-proved | the 2020 spread lemma (the one axiom); $f(3,3)=20$ (Abbott–Gardner 1969); $\psi(3,3,2)=10$ and $|N[R]|\le 56$ (Axante et al. 2026) | `coq/ALWZ.v`, `docs/reading.md` |
@@ -70,9 +70,10 @@ module per process.
 The LP certificate modules (`coq/LinkCerts2*.v`) take about 2.5 s per
 link class under `vm_compute`, roughly ten core-hours in all, and
 twice that under `coqchk`; `tools/iota4/linkcert_coq.py` regenerates
-them from the census files. The branch-and-bound modules
-(`coq/Link23c*.v` and the 150 shards `coq/Link22s*.v`, from
-`tools/iota4/link23_coq.py`) take about 0.7 s per class.
+them from the census files. The modules of the census chain
+(`coq/Link23s*.v`, `Link22s*.v`, `Link21s*.v`: 656 modules, from
+`tools/iota4/link23_coq.py lpshards`) take about 0.26 s per class
+under `vm_compute`, 35.7 core-hours in all, at most 5.7 GB per module.
 
 Requirements: Coq 8.18 (`apt-get install coq` on Ubuntu 24.04), Rust,
 Python 3 for the gates. The gates — statement baselines, quoted-number
