@@ -38,8 +38,11 @@ Corollary tree_sound_list_nn : (and the nonnegative variables as a list, nonneg_
   `nonneg_of l`: those listed). A declaration is a hypothesis of the
   theorem, so it must be discharged for the `x` at hand. It lets a leaf
   leave slack on those variables (condition 3 below) instead of spending
-  one explicit row `-x_j ≤ 0` per variable, which for the sunflower
-  certificates would multiply their size.
+  one explicit row `-x_j ≤ 0` per variable with slack. Measured on 876
+  leaves of the census certificates (sizes 21, 22 and 23–27): such rows
+  would add 19% to the multipliers and 9% to the certificate text, a
+  modest saving; the declaration also states the variables' sign as a
+  hypothesis of the theorem instead of as rows.
 
 ## The certificate
 
