@@ -39,3 +39,9 @@ c0c5f28ce526284e  thm Link21Certs.descent_21
 
 3040291e8bfca354  thm Link21Certs.g_four_at_most_76_of_census_21
     g_four_at_most_76_of_census_21 : IotaRate.IotaAtMost 4 27 -> Link23.CensusL classes21 21 -> LinkCombine.MeetingBound 4 56 -> IotaRate.GAtMost 4 76
+
+d3826e88d84b33e1  thm CensusIota.iota_of_census
+    iota_of_census : Link23.CensusL classes21 21 -> IotaRate.IotaAtMost 4 27
+
+73e634367e167009  thm CensusIota.g_four_at_most_76_of_census
+    g_four_at_most_76_of_census : Link23.CensusL classes21 21 -> LinkCombine.MeetingBound 4 56 -> IotaRate.GAtMost 4 76
