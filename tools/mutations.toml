@@ -2888,3 +2888,42 @@ certificate shows only 0 < 54 - |D|."""
 find = "  LPCert.check ztag (zrowf D U ts (bigof ts)) allnonneg (length ts) (zrowv (fun _ => 1) 0 ts)"
 replace = "  LPCert.check ztag (zrowf D U ts (bigof ts)) allnonneg (length ts) (zrowv (fun _ => 0) 0 ts)"
 expect = "killed"
+
+[[mutation]]
+id = "lrat-accept-zero"
+file = "coq/LRAT.v"
+question = """Is the check that an added clause contains no 0 needed? Without it a \
+clause [0] reads as a tautology and is added with no justification."""
+find = "  forallb (fun l => negb (l =? 0)) C &&"
+replace = "  true &&"
+expect = "killed"
+
+[[mutation]]
+id = "lrat-chain-no-conflict"
+file = "coq/LRAT.v"
+question = """Must the hint chain end in a conflict? Accept a chain that runs out of \
+hints without one."""
+find = """  match hs with
+  | [] => false
+  | h :: hs' =>"""
+replace = """  match hs with
+  | [] => true
+  | h :: hs' =>"""
+expect = "killed"
+
+[[mutation]]
+id = "lrat-ignore-true-literal"
+file = "coq/LRAT.v"
+question = """Must a hinted clause with a true literal be refused? Skip true literals as \
+if they were false."""
+find = "      | Some true => None"
+replace = "      | Some true => unit_status a D' u"
+expect = "killed"
+
+[[mutation]]
+id = "lrat-no-rup"
+file = "coq/LRAT.v"
+question = "Is an added clause checked at all? Add every clause unchecked."
+find = "      rup d C hs && (match C with [] => true | _ => check_steps (PositiveMap.add i C d) ps' end)"
+replace = "      true && (match C with [] => true | _ => check_steps (PositiveMap.add i C d) ps' end)"
+expect = "killed"
