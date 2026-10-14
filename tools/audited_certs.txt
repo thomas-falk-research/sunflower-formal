@@ -14,3 +14,5 @@ thm Link22Certs.descent_22
 thm Link22Certs.g_four_at_most_77_of_census_22
 thm Link21Certs.descent_21
 thm Link21Certs.g_four_at_most_76_of_census_21
+thm CensusIota.iota_of_census
+thm CensusIota.g_four_at_most_76_of_census
