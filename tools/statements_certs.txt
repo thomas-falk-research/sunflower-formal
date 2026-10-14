@@ -22,11 +22,11 @@ f71fe9f4eb2edc52  thm LinkCerts25.descent_25
 cf76ee20a21ac577  thm LinkCerts23.bound_of_covered_link
     bound_of_covered_link : IotaRate.IotaAtMost 4 27 -> forall (F : Sunflower.Family) (R : list nat) (Dk : Sunflower.Family) (ck : LinkLP.cert) (g h : nat -> nat), List.In (Dk, ck) cls23_all -> (forall x : nat, h (g x) = x) -> (forall x : nat, g (h x) = x) -> Sunflower.Uniform 4 F -> Sunflower.Distinct F -> ~ Sunflower.ContainsKSunflower 3 F -> List.In R F -> (forall C : list nat, List.In C F -> length (Stability4.DisjointFrom C F) <= length (Stability4.DisjointFrom R F)) -> Stability4.DisjointFrom R F <> nil -> Sunflower.SubFamilySetEq (Stability4.DisjointFrom R F) (DirectSum.rmapF g Dk) -> Sunflower.SubFamilySetEq (DirectSum.rmapF g Dk) (Stability4.DisjointFrom R F) -> length F <= 54
 
-7d95e5db7b3c6d7e  thm Link23Certs.descent_23
-    descent_23 : IotaRate.IotaAtMost 4 27 -> Link23.Census2 cls23_all link23_all 23 -> LinkCombine.LinkDescent 4 23 54
+8e29cfa47aae2734  thm Link23Certs.descent_23
+    descent_23 : IotaRate.IotaAtMost 4 27 -> Link23.CensusL classes23 23 -> LinkCombine.LinkDescent 4 23 54
 
-652659ca80a601c4  thm Link23Certs.g_four_at_most_78_of_census_23
-    g_four_at_most_78_of_census_23 : IotaRate.IotaAtMost 4 27 -> Link23.Census2 cls23_all link23_all 23 -> LinkCombine.MeetingBound 4 56 -> IotaRate.GAtMost 4 78
+0afdc0b6c8b7c975  thm Link23Certs.g_four_at_most_78_of_census_23
+    g_four_at_most_78_of_census_23 : IotaRate.IotaAtMost 4 27 -> Link23.CensusL classes23 23 -> LinkCombine.MeetingBound 4 56 -> IotaRate.GAtMost 4 78
 
 a948632de45f1ec0  thm Link22Certs.descent_22
     descent_22 : IotaRate.IotaAtMost 4 27 -> Link23.CensusL classes22 22 -> LinkCombine.LinkDescent 4 22 54
