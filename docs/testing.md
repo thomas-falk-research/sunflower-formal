@@ -909,6 +909,7 @@ make ceilings   # every route's best possible bound, against the record
 make prcheck    # the pull request template; PR_BODY=body.md for a real one
 make lpcert-test # LPCert's Python checker and solver against coq/LPCert.v (in verify)
 make lpport-test # the Link23 -> LPCert certificate conversion, tampering, Coq round trip (in verify)
+make lrat-test   # the LRAT checker against CaDiCaL proofs, a semantic oracle, tampering, Coq round trip (needs cadical; not in verify)
 make certs certs-assumptions certs-statements certs-coqchk   # the census certificates (CPU-days)
 cd rust && cargo test --release   # everything on the Rust side
 cargo run --release --example iota_structure   # the extremal families, dumped

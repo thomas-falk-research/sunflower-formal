@@ -48,7 +48,7 @@ $56+\Delta$).
 ## Verifying
 
 ```bash
-make verify        # builds all 62 Coq files of the theory, then runs the axiom audit
+make verify        # builds all 64 Coq files of the theory, then runs the axiom audit
 make coqchk        # Coq's separate kernel checker; exactly one axiom library-wide
 make certs         # builds the 691 certificate modules of the link descent (hours; not in CI)
 make certs-assumptions certs-statements certs-coqchk   # audit them
@@ -57,7 +57,7 @@ make testbed       # exhaustive falsification of the spread hypothesis
 cd rust && cargo test --release
 ```
 
-`make verify` reports every audited theorem (869 of them) as
+`make verify` reports every audited theorem (877 of them) as
 `Closed under the global context`, then prints the full statement of
 the one axiom under the modern bound. Of 192 mutations, 189 are killed outright;
 the two survivors are proved redundant hypotheses and one is a control.

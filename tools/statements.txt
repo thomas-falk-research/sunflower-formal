@@ -3096,3 +3096,27 @@ d0cf2cbcedc3013a  thm CensusSearch.census_of_search
 
 622317da6c2073cb  thm CensusDemo.iota_two_by_search
     iota_two_by_search : IotaAtMost 2 3
+
+3e4c22a59ba04aab  thm LRAT.rup_sound
+    rup_sound : forall (d : db) (v : BinNums.positive -> bool) (C : clause) (hs : list BinNums.positive), db_sat d v -> rup d C hs = true -> clause_sat v C = true
+
+1f2e13eb87876304  thm LRAT.lrat_sound
+    lrat_sound : forall (F : list clause) (ps : list step), lrat_check F ps = true -> forall v : BinNums.positive -> bool, cnf_sat v F = false
+
+f57dd49eff065bc5  thm LRATExamples.php43_unsat
+    php43_unsat : forall v : BinNums.positive -> bool, cnf_sat v php43 = false
+
+d797fe962814d704  thm LRATExamples.rej_truncated
+    rej_truncated : lrat_check php43 (List.firstn 14 php43_proof) = false
+
+4ae4445aa8cc44be  thm LRATExamples.rej_shortcut
+    rej_shortcut : lrat_check php43 (A (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xI (BinNums.xO (BinNums.xO (BinNums.xI BinNums.xH))))))) nil (BinNums.Zpos BinNums.xH :: BinNums.Zpos (BinNums.xO BinNums.xH) :: BinNums.Zpos (BinNums.xI BinNums.xH) :: BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)) :: BinNums.Zpos (BinNums.xI (BinNums.xO BinNums.xH)) :: BinNums.Zpos (BinNums.xO (BinNums.xI BinNums.xH)) :: BinNums.Zpos (BinNums.xI (BinNums.xI BinNums.xH)) :: BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))) :: BinNums.Zpos (BinNums.xI (BinNums.xO (BinNums.xO BinNums.xH))) :: BinNums.Zpos (BinNums.xO (BinNums.xI (BinNums.xO BinNums.xH))) :: BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xO BinNums.xH))) :: BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xI BinNums.xH))) :: BinNums.Zpos (BinNums.xI (BinNums.xO (BinNums.xI BinNums.xH))) :: BinNums.Zpos (BinNums.xO (BinNums.xI (BinNums.xI BinNums.xH))) :: BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH))) :: BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xI (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xO (BinNums.xI (BinNums.xO (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xO (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xI (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xI (BinNums.xO (BinNums.xI (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xO (BinNums.xI (BinNums.xI (BinNums.xO BinNums.xH)))) :: nil) :: nil) = false
+
+798aa02f96b12743  thm LRATExamples.rej_missing
+    rej_missing : lrat_check php43 (A (BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xI (BinNums.xO BinNums.xH))))) (BinNums.Zneg (BinNums.xI (BinNums.xI (BinNums.xO BinNums.xH))) :: BinNums.Zneg (BinNums.xO (BinNums.xO (BinNums.xI BinNums.xH))) :: nil) ((BinNums.Zpos (BinNums.xO (BinNums.xI (BinNums.xI (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xO (BinNums.xO BinNums.xH)))) :: BinNums.Zpos (BinNums.xI (BinNums.xO (BinNums.xI BinNums.xH))) :: BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) :: BinNums.Zpos BinNums.xH :: BinNums.Zpos (BinNums.xI BinNums.xH) :: nil) ++ BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xI (BinNums.xO (BinNums.xO (BinNums.xI (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH))))))))) :: nil) :: List.tl php43_proof) = false
+
+3af050af532309ec  thm LRATExamples.rej_zero
+    rej_zero : lrat_check ((BinNums.Zpos BinNums.xH :: nil)%list :: (BinNums.Zneg BinNums.xH :: nil)%list :: nil) (A (BinNums.Zpos (BinNums.xI BinNums.xH)) (BinNums.Z0 :: nil) nil :: A (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) nil (BinNums.Zpos BinNums.xH :: BinNums.Zpos (BinNums.xO BinNums.xH) :: nil) :: nil) = false
+
+128a432b5a12fcf7  thm LRATExamples.ok_unit
+    ok_unit : lrat_check ((BinNums.Zpos BinNums.xH :: nil)%list :: (BinNums.Zneg BinNums.xH :: nil)%list :: nil) (A (BinNums.Zpos (BinNums.xI BinNums.xH)) nil (BinNums.Zpos BinNums.xH :: BinNums.Zpos (BinNums.xO BinNums.xH) :: nil) :: nil) = true

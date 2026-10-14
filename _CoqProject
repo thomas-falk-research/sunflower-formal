@@ -63,3 +63,5 @@ coq/LPCertExamples.v
 coq/CensusGen.v
 coq/CensusSearch.v
 coq/CensusDemo.v
+coq/LRAT.v
+coq/LRATExamples.v

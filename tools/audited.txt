@@ -1155,3 +1155,11 @@ thm CensusSearch.validb_complete
 thm CensusDemo.census_demo_levels
 thm CensusDemo.census_demo_level4
 thm CensusDemo.iota_two_by_search
+thm LRAT.rup_sound
+thm LRAT.lrat_sound
+thm LRATExamples.php43_unsat
+thm LRATExamples.rej_truncated
+thm LRATExamples.rej_shortcut
+thm LRATExamples.rej_missing
+thm LRATExamples.rej_zero
+thm LRATExamples.ok_unit

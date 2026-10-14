@@ -12,7 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
-        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk lpcert-test lpport-test \
+        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk lpcert-test lpport-test lrat-test \
         axiom-audit statements statements-accept docnumbers ceilings prcheck \
         manifest
 
@@ -324,6 +324,11 @@ lpcert-test: coq
 # Coq round trip through Link23.lpclass (tools/iota4/test_lpport.py).
 lpport-test: coq
 	python3 tools/iota4/test_lpport.py --coq
+
+# The LRAT checker's Python tools against coq/LRAT.v. Needs cadical on PATH,
+# so it is not part of verify (CI has no SAT solver); see docs/lrat.md.
+lrat-test: coq
+	python3 tools/lrat/test_lrat.py --coq
 
 mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)
