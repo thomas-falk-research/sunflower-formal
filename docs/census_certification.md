@@ -1,7 +1,7 @@
 # Certifying the census: a staged plan
 
-**Status: stage 2 done (below); stage 1 scheduled after the LPCert port;
-stages 3–5 not started.** Each stage says what it would establish and
+**Status: stages 1 and 2 done (`coq/CensusIota.v`, and below); stages 3–5
+not started.** Each stage says what it would establish and
 what it would still trust. The decision points are measurements, not
 opinions.
 
@@ -34,8 +34,9 @@ class of the same size. The lemma is short (the maximum class size is
 decided by `vm_compute`), and `g(4) ≤ 76` then rests on the census and
 the meeting bound alone. This is not a reduction of trust in substance
 — both premises come from the same search — but it makes the paper's
-assumption one precise statement. *Scheduled after the LPCert port
-(roadmap §73) finishes, since it imports `Link21Certs`.*
+assumption one precise statement. *Done:* `CensusIota.iota_of_census` and
+`CensusIota.g_four_at_most_76_of_census`, closed under the global
+context, `coqchk` passing (roadmap §74).
 
 ## The idea: certify completeness only
 

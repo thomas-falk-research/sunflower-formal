@@ -15737,8 +15737,14 @@ opaque proofs that `Require` does not load) and exits 0.
   `CensusL classes23 23` in place of `Census2 cls23_all link23_all 23`;
   the size-22 and size-21 statements print exactly as before.
 * `coqchk`, one `-norec` check per module with the gate of §71, on all
-  690 modules of `_CoqProject.certs`: running at the time of this commit; the
-  result is recorded in the follow-up commit.
+  690 modules of `_CoqProject.certs`: **all pass** — no `Sunflower.*`
+  axiom in any module, and type-in-type, unsafe fixpoints and assumed
+  positivity all `<none>`. The only entries in the assumption section
+  are the standard library's `Coq.ssr.ssrunder.Under_rel` module
+  parameters, an artifact of `-norec` (§71). The run took about 30 hours
+  of wall time (2026-10-14 07:14 to 2026-10-15 13:34 UTC): two resumable
+  instances of the gate with two jobs each, one working from each end of
+  the list, one module at the meeting point checked by both.
 
 Two operational events, neither touching a result. Rebuilding
 `Link23.vo` while the §72 coqchk run was in progress made every module
@@ -15769,3 +15775,38 @@ concerned no longer exist. The regenerated modules are checked below.
 
 The census premise itself is unchanged and is the subject of
 `docs/census_certification.md`.
+
+## 74. The census as the one premise, its certification begun, and an LRAT checker
+
+Three pieces of `docs/census_certification.md`, each closed under the
+global context.
+
+* **Stage 1 (`coq/CensusIota.v`).** `iota_of_census : CensusL classes21
+  21 -> IotaAtMost 4 27`: `Covered` preserves the number of distinct
+  members, and every listed class has at most 27 members
+  (`classes21_at_most_27`, by `vm_compute`). Hence
+  `g_four_at_most_76_of_census : CensusL classes21 21 -> MeetingBound 4
+  56 -> GAtMost 4 76`: **`g(4) ≤ 76` rests on the census and the meeting
+  bound alone.** Both former premises came from one search, so this
+  removes no trust in substance; it makes the assumption one statement.
+  `coqchk` passes on the module.
+* **Stage 2 (`coq/CensusGen.v`, `CensusSearch.v`, `CensusDemo.v`).** The
+  mathematics of a certifying isomorph-free search: orderly generation
+  over families keyed by sorted row masks, pruning only on a checked
+  witness permutation from an untrusted oracle. `level_complete`: the
+  minimal member of every class is generated and kept whatever the oracle
+  answers; `census_of_search`: covered kept levels and an empty level
+  above give `CensusB b L lo` (`CensusL` at `b = 4`); `iota_two_by_search`
+  runs it end to end in the kernel at `b = 2`. What remains is execution
+  at scale (stages 3–4).
+* **LRAT (`coq/LRAT.v`, `docs/lrat.md`).** A kernel checker for LRAT
+  refutations (reverse unit propagation along hint chains, a
+  `PositiveMap` clause database): `lrat_sound`. CaDiCaL's proof that four
+  pigeons do not fit three holes is checked in the kernel
+  (`LRATExamples.php43_unsat`); `make lrat-test` runs 48 refutations, 37
+  satisfiable controls and 8,344 tampered proofs against a brute-force
+  semantic oracle; four mutations are killed. It proves theorems about
+  CNFs; for the `ι(4, 11)` ladder a proof that the CNF encodes the
+  question is still needed, and the ladder's proofs may exceed what the
+  kernel can check.
+
