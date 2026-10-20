@@ -517,7 +517,7 @@ mutation runner measured rather than by taste.
 * **Generate the mutations instead of hand-writing them.** For every
   `≤` in a `Definition`, emit a `<`; for every `NoDup X ->`, emit a
   drop. Then report which definitions no mutation covers. That turns
-  mutation testing from 180 anecdotes into a coverage metric over the
+  mutation testing from 196 anecdotes into a coverage metric over the
   definitions.
 
 * **Derive the audit list from source annotations.** `tools/audited.txt`
@@ -9842,7 +9842,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 54 modules, 820 audited theorems, 161 audited
+The development is now 64 modules, 877 audited theorems, 161 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -14816,6 +14816,12 @@ enumerable. Size 20 (308 million) does not.
 
 ## 65. The 11 remaining classes at 23: all certified, so a link of 23 or more members forces `|F| ≤ 54`
 
+> **Superseded by §69.** The Python model below mixed trace labels with
+> profile positions in its exclusion rows and was over-constrained, so its
+> DRAT and branch-and-bound certificates certified the wrong program
+> (§69.2). The corrected model is `coq/Link23.v`; it certifies the same
+> eleven classes in the kernel. This section stays as the record.
+
 §64.6 left 11 link classes of size 23 that the §64 constraint system
 cannot certify. They close under a finer model, `tools/iota4/link23.py`.
 
@@ -14992,4 +14998,820 @@ intersecting sunflower-free family. Three directions, none attempted:
 (exact branch-and-bound with a hardened checker),
 `isearch2p*.patch` (printing classes from shard reruns). The lessons are
 in §65's operational notes.
+
+
+## 67. `g(4) ≤ 78`: the descent and the published meeting bound, combined; and why the two-root count cannot go lower
+
+**One line.** A 4-uniform 3-sunflower-free family has at most 78
+members. Status: **PROVEN given the same two VALIDATED inputs as §65**
+(`ι(4) ≤ 27` and the link census at sizes 23–27) **and [ABCDN26]
+Proposition 6.5.** The published bracket was `54 ≤ g(4) ≤ 83`
+([ABCDN26] Thm. 6.9); it is now `54 ≤ g(4) ≤ 78`, on strictly more
+hypotheses than the 83 (the census), and no fewer than the 54-descent
+already carried. Nothing here touches `g(4) = 54`.
+
+### 67.1 The argument, and where each piece comes from
+
+Fix a member `R`. Every other member is disjoint from `R` or meets it,
+so `|F| = |D(R)| + |N[R]|`, where `N[R]` counts `R` itself.
+
+* **[ABCDN26] Prop. 6.5 (p. 26, rendered this session):** `|N[R]| ≤ 56`
+  for every `R`. Its proof (pp. 24–26) is a linear count over the exact
+  traces of members on `R`: with `s, p, t` the numbers of members whose
+  trace is a point, a pair, a triple, it has `s_x ≤ 10` (Lemma 6.2:
+  exact-trace residues are *intersecting* and sunflower-free, so
+  `ψ(3,3,2) = 10` — their Prop. 6.1, DRAT-checked), `p_xy ≤ 3`,
+  `t_m ≤ 1`, the incidence count `s + 2p + 3t ≤ 4(20 − 1) = 76` from
+  `d(x) ≤ f(3,3) = 20` (Abbott–Gardner 1969), and Lemma 6.3
+  (`r_x ≤ 6` at a saturated point), linearised as `3s + 2p ≤ 144`. The
+  LP maximum of `s + p + t` is 56, attained only at `(40, 12, 4)`, which
+  Lemma 6.4 excludes by hand; so `h ≤ 55` and `|N[R]| = 1 + h ≤ 56`.
+  **Re-derived here independently** (`tools/g4/tworoot_lp.py` has the
+  single-root constraints; the LP and the integer enumeration both give
+  56 with `(40,12,4)` the unique optimum). Lemmas 6.3 and 6.4 were read
+  on the rendered pages and not re-proved.
+* **§62–§65:** if `|D(R)| ≥ 23` for some `R`, then `|F| ≤ 54`.
+* So either some link has 23 or more members and `|F| ≤ 54`, or every
+  link has at most 22 and `|F| ≤ 22 + 56 = 78`.
+
+The combination is kernel-checked with both inputs as explicit premises:
+
+```coq
+LinkCombine.g_at_most_of_descent_and_meeting :
+  forall b N M H, LinkDescent b N M -> MeetingBound b H ->
+  GAtMost b (Nat.max M (N - 1 + H))
+LinkCombine.g_four_at_most_78 :
+  LinkDescent 4 23 54 -> MeetingBound 4 56 -> GAtMost 4 78
+LinkCombine.g_four_at_most_83_of_iota :
+  IotaAtMost 4 27 -> MeetingBound 4 56 -> GAtMost 4 83
+```
+
+All three are `Closed under the global context`; `coqchk` passes on the
+module. `LinkDescent 4 23 54` is §65's theorem and `MeetingBound 4 56` is
+[ABCDN26] Prop. 6.5; neither is proved in the kernel, and the module
+says so in its header. The third theorem is the published 83 in the same
+shape, so that the two routes differ in exactly one premise.
+
+### 67.2 What the two-root count gives, measured: exactly `56 + Δ`
+
+§66 direction 2 asked whether fixing *two* roots helps. Along a disjoint
+pair `R, S` (one exists unless `F` is intersecting, when `|F| ≤ 27`),
+`F = {R, S} ∪ X ∪ Y ∪ Z` with `X = D(R) ∖ {S}`, `Y = D(S) ∖ {R}` and
+`Z` the members meeting both; `X ∩ Y = ∅` by triangle-freeness of the
+disjointness graph, so `|F| = 2 + |X| + |Y| + |Z|`. Every constraint of
+Prop. 6.5 holds at `R` and at `S` simultaneously, with each `Z` member
+typed by `(|Z ∩ R|, |Z ∩ S|)` and counted at both roots, and
+`|X|, |Y| ≤ Δ − 1`. `tools/g4/tworoot_lp.py` solves the joint integer
+program:
+
+```text
+  all links <= Delta:   27   22   20   16   12
+  joint IP maximum:     83   78   76   72   68      (= 56 + Delta, every time)
+```
+
+The optimum puts `|Z| = 34` with `h = 55` at both roots. **So the
+constraints Prop. 6.5 proves at one root, even imposed at two roots
+jointly, cannot beat `56 + Δ`.** Anything below 78 needs a constraint on
+`Z` that is not a consequence of the single-root ones. CONJECTURED: none
+of the obvious candidates (per-pair degrees `d(xy) ≤ 6`, the
+`Σ|A|·|B| ≤ 96` incidence count) is binding at the optimum; they were
+checked and are not.
+
+### 67.3 How large `|Z|` and `|N[R]|` get, measured
+
+Exact SAT on bounded outer ground sets (`tools/g4/zmax.py`,
+`tools/g4/nrmax.py`, CaDiCaL 1.7.4; every row is a found family, so a
+lower bound on the true maximum):
+
+```text
+  outer points k:        4     5     6     8    10
+  max |Z|       >=      24    26    28     -     -     (§61.2 had 23 at k = 4)
+  max |N[R]|    >=       -     -    29    32     ?     (§61.2 had 28 at k = 6; 36 at k = 10 undecided in 900 s)
+```
+
+Both grow by about two per outer point with no plateau in sight. So a
+bound `|Z| ≤ 33`, which is what the two-root route would need, is not
+supported by measurement, and Prop. 6.5's 55 is not visibly loose at
+these sizes. Neither row is a verdict on the true maxima.
+
+### 67.4 Standing
+
+| claim | status |
+|---|---|
+| `\|N[R]\| ≤ 56` for every member `R` | PROVEN by [ABCDN26] (hand + DRAT); LP step re-derived here; Lemmas 6.3–6.4 read, not re-proved |
+| some link `≥ 23` ⇒ `\|F\| ≤ 54` | PROVEN given `ι(4) ≤ 27` and the census (§65) |
+| **`g(4) ≤ 78`** | **PROVEN given the two rows above**; combination kernel-checked (`LinkCombine.g_four_at_most_78`) |
+| two-root ABCDN count beats `56 + Δ` | **REFUTED** (67.2): the joint IP is exactly `56 + Δ` |
+| `\|Z\| ≤ 33` or `\|N[R]\| ≤ 50` | not supported by measurement (67.3); open |
+| `g(4) = 54` | open |
+
+### 67.5 What is owed
+
+1. A constraint on `Z` (members meeting both of a disjoint pair) that the
+   single-root count does not imply. Candidates not yet tried: the links
+   of `Z` members themselves (each `≤ Δ`), and the requirement that
+   blocks from three saturated classes never be pairwise disjoint.
+2. Re-proving [ABCDN26] Lemmas 6.3 and 6.4 in the kernel, which would
+   make `MeetingBound 4 56` a theorem modulo `f(3,3) = 20` and
+   `ψ(3,3,2) = 10` only.
+3. The census dependency is unchanged from §65 and is the larger trust
+   item; §59.4 item 1 still names the fix.
+
+## 68. The link LP of the descent, kernel-checked: `coq/LinkLP.v`
+
+§64's descent rested on a Python checker for its LP certificates. The
+whole argument is now in the kernel, so that for link sizes 25–27 the
+descent is a Coq theorem conditional on exactly two things: `ι(4) ≤ 27`
+and the completeness of the §60 census at those sizes. Python is out of
+the trust base for that range; `vm_compute` is in.
+
+### 68.1 What is proved, by theorem
+
+`coq/LinkLP.v` (1,443 lines), every theorem `Closed under the global
+context`, `coqchk` clean:
+
+* **The constraint system of §64 (a)–(c), as theorems about any 4-uniform
+  3-sunflower-free `F` with a member `R` whose link `D` is largest.**
+  `witnessed_no_member`: a trace on `V = points D` with a witness pair in
+  `D` carries no member (the three would be a sunflower).
+  `trace_class_cap`: the members with a given trace `T` number at most
+  26, 6, 2 for `|T| = 1, 2, 3`, by lifting a sunflower among their outer
+  parts back to `F` (`PureLink.g_three_at_most_26`,
+  `PureLink.g_two_at_most_six`, `Product.g_one_at_most_two`).
+  `link_constraint`: the members whose trace misses `C ∈ D` lie in the
+  link of `C`, so there are at most `Δ` of them. `m0_constraint`: the
+  members missing `V` are intersecting, so at most 27 (`IotaAtMost 4 27`).
+* **Weak duality**, `link_lp_bound`: an integer dual certificate
+  `(cK, cy, cz, cw)` that passes `certcheck D c (54 − Δ)` forces
+  `|F| ≤ 54`. The certificate is a rational one scaled by its common
+  denominator `cK`; all 305 shipped certificates are already integral.
+  The multipliers are keyed by member and by trace, looked up by set
+  equality, so that
+* **`certcheck_transfer`**: the check depends on the link only as a
+  family of sets. If `D'` is the same family as `D` up to set equality of
+  members (both duplicate-free), `certcheck D' c b = true` implies
+  `certcheck D c b = true`. The proof is a permutation argument on images
+  of set-equal families (`map_Permutation_of_SetEq`), the uniqueness of
+  canonical traces (`subs_le_SetEq_eq`: two sublists of a duplicate-free
+  list with the same elements are equal), and transfer of the witness
+  predicate across set-equal members.
+* **`class_bound`**: a labelled representative `Dk` with a checked
+  certificate bounds every `F` whose largest link is `Dk` up to a
+  relabelling `g` with inverse `h`: relabel `F` by `h`, its link becomes
+  the family `Dk`, transfer, apply `link_lp_bound`.
+* **`descent_of_census`**: `IotaAtMost 4 27 → reps_okb reps = true →
+  Census reps lo → LinkDescent 4 lo 54` for `lo ≥ 1`. `Census reps lo`
+  says every intersecting 3-sunflower-free family of at least `lo`
+  distinct 4-sets is, up to relabelling, one of `reps`; `reps_okb`
+  checks by computation that each representative is duplicate-free and
+  its certificate passes. A member with a largest link is chosen
+  (`exists_max_link`); its link is intersecting
+  (`DisjointFrom_Intersecting`), so the census applies.
+* **`g_four_at_most_80_of_census`** and, with the data,
+  `LinkCerts25.g_four_at_most_80_of_census_25`: with
+  `MeetingBound 4 56`, `GAtMost 4 80`. The 78 of §67 needs sizes 23–24
+  as well (68.3).
+
+### 68.2 The data: `coq/LinkCerts25.v`
+
+Generated by `tools/iota4/linkcert_coq.py` from
+`docs/ladder/iota4_replication/classes_25_27.txt.gz` and
+`linkcerts_25_27.json.gz`: 305 representatives with their certificates
+(1 at 27, 6 at 26, 298 at 25) and one lemma,
+`cls_all_ok : reps_okb cls_all = true`, by `vm_compute`. The exporter
+re-checks every scaled certificate in exact integer arithmetic before
+emitting it. Then `descent_25 : IotaAtMost 4 27 → Census cls_all 25 →
+LinkDescent 4 25 54`.
+
+Cost: about 2.5 s per class under `vm_compute`, dominated by the witness
+search over all traces of up to three points against all pairs of link
+members (`witnessedb`). `Sets.inter`, `memb`, `seteqb` and `disjointb`
+go through `in_dec` and were two orders of magnitude slower; the check
+uses `Nat.eqb`-based primitives (`membf`, `interb`, `seteqf`, `disjf`),
+each proved equivalent. The trace enumerator `subs_le 3` generates only
+sublists of at most three points (the earlier `subsets` was `2^|V|`).
+
+### 68.3 Standing, and what is owed
+
+| claim | status |
+|---|---|
+| §64 constraints (a)–(c) and weak duality | **PROVEN** (kernel, `link_lp_bound`) |
+| the check is label-free (`certcheck_transfer`) | **PROVEN** (kernel) |
+| `IotaAtMost 4 27 → reps_okb → Census lo → LinkDescent 4 lo 54` | **PROVEN** (kernel, `descent_of_census`) |
+| `reps_okb cls_all = true`, 305 classes at 25–27 | **COMPUTED** in the kernel (`vm_compute`) |
+| a link of ≥ 25 members forces `\|F\| ≤ 54` | **PROVEN given `ι(4) ≤ 27` and census completeness at 25–27** — Python no longer in the trust base |
+| `reps_okb` for the 1,976 classes at 24 (`coq/LinkCerts24s0.v`–`s3.v`) | **COMPUTED** in the kernel; four shards of 494, 42–60 min each of `vm_compute` on a loaded 4-core machine |
+| a link of ≥ 24 members forces `\|F\| ≤ 54` (`LinkCerts24.descent_24`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 24–27** |
+| size 23 (§64.6, §65) | still Python-checked certificates (12,513 classes) plus the finer `link23` model for 11 classes, **not formalised** |
+| `g(4) ≤ 79` (`LinkCerts24.g_four_at_most_79_of_census_24`) | kernel, given `ι(4) ≤ 27`, the census at 24–27 and `MeetingBound 4 56` |
+| `g(4) ≤ 78` (§67) | needs size 23 in the kernel |
+| `coqchk` on the data modules | **PASS** on `LinkCerts25` (24 min) and the four size-24 shards (run in parallel, each about an hour); `LinkCerts24` itself adds no computation and was not re-checked separately |
+| `reps_okb` for the 12,513 LP-certified classes at 23 (`coq/LinkCerts23s0.v`–`s23.v`) | **COMPUTED** in the kernel: 24 shards of about 521 classes, 42–46 min each, four at a time, about 6 h of wall time; the exporter skipped exactly the 11 classes whose LP certificate does not reach the bound |
+| `LinkCerts23.bound_of_covered_link`: a family whose largest link is one of the 14,794 certified classes at 23–27 has at most 54 members | **PROVEN** given `ι(4) ≤ 27` (kernel). Lesson recorded: a `rewrite forallb_forall` on a hypothesis about the *concrete* 14,794-entry list made the unifier evaluate the whole check with the slow tactic-level reduction (over an hour, killed); extracting one entry through a lemma stated over an abstract list (`reps_okb_entry`) takes seconds |
+| `descent_23`, hence a kernel `g(4) ≤ 78` | **not stated**: the 11 classes at 23 that §65 closed with the finer `link23` model (DRAT and branch-and-bound) are outside the kernel, so no `Census … 23` hypothesis is true for this list. The Python trust base at size 23 is now exactly those 11 classes |
+
+`coqchk` on the 24 size-23 shards: **PASS**, all 24, about 20 min each
+in six waves of four. Every data module that carries a computation
+(sizes 23–27) has now passed the separate kernel checker.
+
+Owed, in order: (1) the 11 classes at 23 that need the finer model, which is a second LP
+whose validity would need its own proof; (2) the census itself (§59.4
+item 1), which no part of this section touches.
+
+## 69. The finer link model in the kernel: `coq/Link23.v`, and the descent from 23
+
+§68 left exactly eleven link classes at size 23 outside the kernel: the
+ones that §64's LP cannot certify and §65 closed with the finer type
+model of `tools/iota4/link23.py`. That model is now a Coq theory
+(`coq/Link23.v`, 1,500 lines), its branch-and-bound certificates are
+decided by `vm_compute` (`coq/Link23c*.v`), and the descent at 23 is a
+kernel theorem with the same two premises as the rest of §68:
+`ι(4) ≤ 27` and the completeness of the census. **`g(4) ≤ 78` is now in
+the kernel on those premises** (`Link23Certs.g_four_at_most_78_of_census_23`).
+Python is out of the trust base at every link size from 23 up.
+
+The formalisation also found a bug in the §65 Python model (69.2).
+
+### 69.1 The model as Coq sees it
+
+The setting is §64's: `F` 4-uniform, 3-sunflower-free, `R ∈ F` with a
+largest link `D`, `V` the points of `D`, and `M` the members other than
+`R` that meet `R` (`Others R F`). A member `S` of `M` has a type
+`typeof V R S = (tr V S, prof R S)`: its canonical trace on `V` and its
+**positional** profile, the set of positions `k < 4` with `nth k R ∈ S`.
+Profiles are positional so that the type list `types D` and every row
+depend on the link alone; the check for a class is then a closed
+computation, and the family's own `R` enters only through `typeof`.
+
+* `types D`: the M1 types (unwitnessed trace, profile, together at most
+  4 points) in the order of `unwit D`, then the M0 types (empty trace,
+  profile of at most 3 positions). `typeof_in_types` and `tcount_sum`:
+  every member of `M` has a type in the list, and the type counts
+  `tcount V R M t` sum to `|M|`.
+* Caps per type, `tcount_le_ub`: for `(T, P)` with `e = 4 − |T| − |P|`
+  extras, the members of that type all contain the `(4 − e)`-set
+  `T ∪ lab R P`, so their outer parts are a distinct `e`-uniform
+  sunflower-free family (`superset_count_le`, the general form of
+  `LinkLP.trace_class_cap`): at most `g(0) = 1`, `g(1) = 2`, `g(2) ≤ 6`.
+  For M0 types the outer parts are also pairwise intersecting, because
+  two disjoint ones make a sunflower with `R` (`m0_outer_intersecting`),
+  so `ι(2) ≤ 3` and `ι(1) = 1` cap profiles of 2 and 3 positions
+  (`m0_count_le`); a profile of one position is capped by `g(3) ≤ 26`.
+* The tagged rows, each a theorem for the actual counts (`rows_valid`):
+
+  | tag | row | theorem | argument |
+  |---|---|---|---|
+  | `RCap T` | members with trace `T`: `≤ cap T` | `cap_row` | `LinkLP.trace_class_cap` on `Meeting R F ⊇ M` |
+  | `RLink C` | members whose trace misses `C ∈ D`: `≤ \|D\| − 1` | `link_row` | `LinkLP.link_constraint` gives `≤ \|D(C)\| ≤ \|D\|` on `Meeting R F`, and `R` itself is one of them (`count_M_le`) |
+  | `RStar k` | members through position `k` of `R`: `≤ 25` | `star_row` | `superset_count_le [r]` with `g(3) ≤ 26`, and `R` is one of the 26 |
+  | `RDet i` | type `i` determined (`\|T\| + \|P\| = 4`): `big·x_i + Σ_{t certainly disjoint} x_t ≤ \|D\| − #\{C ∈ D : C ∩ T = ∅\} + big` | `det_row` | a determined member is exactly `T ∪ lab R P` (`type_exact`), so a type with trace and profile disjoint from its own is certainly disjoint from it, as is every link member avoiding `T`; all of them lie in its link, which has at most `\|D\|` members. `big = Σ ub + 1` makes the row slack when `x_i = 0`; `x_i ≤ 1` is the cap |
+  | `RExcl i j` | type `i` determined and `exclb D a b`: `ub_j·x_i + x_j ≤ ub_j` | `excl_row` | a member of each type would form a 3-sunflower (`three_sunflower`): with `R` (equal profiles, disjoint traces), with a link member `C` (both traces meet `C` in the common trace, profiles disjoint), or with a link member avoiding both traces (three pairwise disjoint sets). `inter_det` computes the intersection of a determined member with any other exactly |
+
+  A malformed tag yields the trivial row `0 ≤ 0`, so `rows_valid`
+  quantifies over all tags and the checker needs no side conditions.
+* Dual certificates and trees. A leaf carries integer multipliers scaled
+  by `lK`: `ly` on tagged rows, `lu` on the upper bounds, `lv` on the
+  lower bounds. Weak duality in the natural numbers (`leaf_sound`): if
+  for every type `j`, `lK + v_j ≤ Σ_r y_r a_rj + u_j`, and
+  `Σ_r y_r b_r + Σ_j u_j hi_j < Σ_j v_j lo_j + lK·T`, then every count
+  vector within the bounds has `Σ_j x_j < T`; `lK = 0` is the Farkas
+  form. A node splits `x_i ≤ f` / `x_i ≥ f + 1` (`tree_sound`, by
+  induction with the bounds as invariant). The stored certificates use
+  binary numbers (`leafN`, multipliers in the thousands), and
+  `leafcheck_to_nat` bridges to the unary proof.
+* `bound_of_tree`: a checked tree for `D(R)` gives `|F| ≤ 54`
+  (`|F| = |D| + |M| + 1` and `|M| < 54 − |D|`).
+  `finer_class_bound` transports a check on a canonical class `Dk` to
+  any `F` whose largest link is `Dk` up to relabelling and set equality:
+  rather than proving the check label-free, it rebuilds the relabelled
+  family as `Dk ++ Meeting R' F'`, which has the same size and the same
+  properties and whose link of `R'` is literally `Dk`.
+* `Census2 reps trees lo` and `descent_of_census2`: every intersecting
+  3-sunflower-free family of ≥ `lo` distinct 4-sets is, up to
+  relabelling, an LP-certified representative or a tree-certified one;
+  then `LinkDescent 4 lo 54`. `Link23Certs.descent_23` instantiates it
+  with `cls23_all` (14,794 LP classes at 23–27) and `link23_all` (the
+  11 trees), and `g_four_at_most_78_of_census_23` adds `MeetingBound 4 56`.
+
+### 69.2 A label confusion in the §65 Python model, found by the formalisation
+
+`tools/iota4/link23.py` represented traces by their points of `V`
+(integers) and profiles by `range(4)`, and tested its exclusions on
+`K = (Ta & Tb) | (Pa & Pb)` — a union of the two label spaces. With `V`
+labelled `0, 1, 2, …`, a trace point and a profile position with the same
+number coincide in `K`. The exclusion "sunflower with `R`" required
+`Pa == Pb == K`, which also fires when `Ta ∩ Tb` is a nonempty set of
+positions-looking points; the exclusion "sunflower with `C`" compared
+`Ta ∩ C` and `Tb ∩ C` with a `K` that may carry profile positions. Both
+can exclude pairs of types that do not form any sunflower. Counting
+against the corrected semantics (traces and profiles compared
+separately, as `Link23.exclb` does):
+
+| class | types | rows | integer optimum (corrected model) | tree nodes | leaves | old exclusion rows | of them unjustified |
+|---|---|---|---|---|---|---|---|
+| 1722 | 178 | 3519 | 26 | 473 | 237 | 3386 | 16 |
+| 1726 | 124 | 1449 | 30 | 379 | 190 | 1374 | 30 |
+| 10590 | 362 | 34321 | 28 | 39 | 20 | 34103 | 81 |
+| 10591 | 254 | 14466 | 28 | 31 | 16 | 14326 | 64 |
+| 10592 | 172 | 5498 | 28 | 23 | 12 | 5411 | 49 |
+| 10593 | 172 | 5498 | 28 | 23 | 12 | 5411 | 49 |
+| 10594 | 112 | 1860 | 28 | 15 | 8 | 1806 | 36 |
+| 10595 | 172 | 5498 | 28 | 23 | 12 | 5411 | 49 |
+| 10596 | 112 | 1860 | 28 | 15 | 8 | 1806 | 36 |
+| 10597 | 70 | 583 | 28 | 7 | 4 | 547 | 25 |
+| 14708 | 46 | 835 | 22 | 15 | 8 | 788 | 20 |
+
+So every §65 model was over-constrained, and **§65's certificates — the
+DRAT refutations and the branch-and-bound trees — certified the wrong
+program.** Its hand review ("every constraint valid") missed it, as did
+the independent re-implementation, which matched the optima because it
+reproduced the same representation. What the formalisation forces is a
+separate profile space; the mistake was invisible until the rows had to
+be proved for actual counts. The LP relaxations of the two models agree
+at the root (34, 32, 34 for the three classes compared); the integer
+optima of the corrected model are in the table, all `≤ 30 = 54 − 23 − 1`,
+so **the conclusion of §65 survives, on new certificates**. The old
+ones stay in `docs/ladder/iota4_replication/link23_bnb/` and
+`link23_proofs/` as the record of what was checked; nothing in the
+kernel depends on them.
+
+### 69.3 Certificates and the kernel check
+
+`tools/iota4/link23_coq.py` rebuilds in Python exactly the Coq
+enumeration (`nodup` keeps the *last* occurrence of a point, `subs_le`
+puts the subsets containing the head first, `PROF` is `subs_le 4 [0;1;2;3]`
+without the empty set) and the tagged rows, solves by LP-based
+branch-and-bound (scipy/HiGHS), scales every leaf's dual by one common
+denominator (1,000 suffices everywhere, after raising `u` where a column
+falls short), re-checks every leaf in exact integer arithmetic with the
+Coq semantics, and emits `coq/Link23cK.v` with `trees_okb [(D, t)] = true`
+by `vm_compute`.
+
+* Branching matters. Most-fractional branching, which the §65 trees
+  used, passed 20,000 nodes on class 14708 in 90 s without finishing
+  under the corrected model (the over-strong exclusions had pruned it to
+  127 nodes before). Branching first on a fractional *determined* type
+  (cap 1; these switch the big-M rows on and off) gives the trees above:
+  15 nodes for 14708, at most 473 (class 1722).
+* Time. All eleven class modules and `Link23Certs.v` build in 66 s of
+  wall time (`make -j3`), against hours for the LP shards of §68: the
+  trees are small, the leaves carry at most a few hundred multipliers,
+  and the rows are rebuilt once per leaf. `Print Assumptions` on
+  `descent_23` and `g_four_at_most_78_of_census_23`: closed under the
+  global context.
+* Independent re-check: `coqchk` on `Link23` and the eleven class
+  modules — **PASS**, 8 min 20 s in one run (the class modules share `Link23` and `LinkLP`, which are re-checked once). `Link23Certs` adds no computation beyond the
+  class modules and `LinkCerts23`, whose `coqchk` is recorded in §68.3.
+
+### 69.4 Standing
+
+| claim | status |
+|---|---|
+| the finer model's rows are consequences of sunflower-freeness and of `D` being largest | **PROVEN** (kernel, `Link23.rows_valid`, `tcount_le_ub`) |
+| weak duality for a branch-and-bound tree, and the transport to a canonical class | **PROVEN** (kernel, `tree_sound`, `bound_of_tree`, `finer_class_bound`) |
+| the eleven classes at 23 pass the check | **COMPUTED** in the kernel (`vm_compute`, 11 modules, 66 s) |
+| a link of ≥ 23 members forces `\|F\| ≤ 54` (`Link23Certs.descent_23`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 23–27** (`Census2`) |
+| `g(4) ≤ 78` (`Link23Certs.g_four_at_most_78_of_census_23`) | **PROVEN given `ι(4) ≤ 27`, the census at 23–27 and `MeetingBound 4 56`** |
+| the §65 Python model | **WRONG** (label confusion in the exclusions, 69.2); superseded, its conclusion re-established |
+
+Owed: the census itself (§59.4 item 1), and `ι(4) ≤ 27` (§60) — the
+two premises every kernel theorem of §68–§69 carries. Nothing of the
+`b = 4` descent now rests on Python.
+
+## 70. Link size 22 in the kernel: `g(4) ≤ 77`
+
+§69 put the descent at `Δ ≥ 23` in the kernel. The next size down,
+22, was "not done, by choice" in §66 (69,616 classes, 30 core-hours of
+shard reruns, a Python checker). It is now done, and in the kernel on
+the same two premises: `ι(4) ≤ 27` and the completeness of the census
+from 22 up. **`g(4) ≤ 77`** (`Link22Certs.g_four_at_most_77_of_census_22`).
+
+### 70.1 The classes
+
+The 75 shards whose ledger records reach size 22 were re-run with the
+printing threshold at 22 (`tools/iota4/isearch2p22.patch`, the same
+`isearch2.c` and nauty 2.8.8), four at a time, 29.9 ledger-hours in
+about 8 h of wall time.
+
+* All 75 reproduce their ledger records' accepted vectors exactly
+  (`big22_shards_rerun.log`; `tools/iota4/collect22.py` refuses a shard
+  that does not).
+* They print 69,616 families at size 22 — the census count — and
+  these are pairwise non-isomorphic: `tools/iota4/canon.c` computes the
+  nauty canonical form of each family's incidence graph (points and
+  members as the two colour classes), and the 69,616 forms are
+  distinct. On the 14,805 classes at 23–27 the same tool reports 14,805
+  distinct forms, agreeing with §64.6's VF2 check.
+* The list is `classes_22.txt.gz` (sha256 of the uncompressed file
+  `cd11dba7f3b5e9c38f65d2625f1a56647798e777c77b29a335631426371bd32b`).
+
+### 70.2 One more row, found by the model failing
+
+At 22 the allowance is `54 − 22 − 1 = 31` members meeting `R` other than
+`R`. A survey of every 200th class under the §69 model (with §64's
+constraint (c), tagged `RIota`, added so that one checker serves every
+class) found one with integer optimum 33. Its link has two points of
+degree one, and the optimum stacks members on traces such as `{0, 7}`
+with one extra point each.
+
+What the model missed: if a trace `T` lies inside a link member `C`,
+two members with trace `T` and disjoint outer parts form a sunflower
+with `C` (core `T`), because each meets `C` exactly in `T`. So the outer
+parts of the members with such a trace are pairwise intersecting as
+well as sunflower-free, and `ι` caps them instead of `g`: `ι(3) ≤ 13`,
+`ι(2) ≤ 3`, `ι(1) = 1` for `|T| = 1, 2, 3` (`Link23.capI_row`, tag
+`RCapI`; the kernel's `ι(3)` bound is `PureLink.iota_three_at_most_thirteen`).
+With it the class's optimum is 29, and the survey's largest is 25.
+
+The row is genuinely new to the model: §64's cap (b) and §65's per-type
+caps lift sunflowers through the outer parts but never use a link
+member as the third petal. It is also the only addition needed: with
+it, every one of the 69,616 classes certifies.
+
+### 70.3 Certificates and the kernel check
+
+`tools/iota4/link23_coq.py batch` solved all 69,616 classes in four
+processes, about 2.5 h of wall time, no class refused: 68,487 trees are a
+single leaf (the LP dual alone suffices), 83,206 leaves in all, the
+largest tree 648 leaves (a class whose LP optimum sits at the threshold,
+where the dual would not round to the common denominator and the solver
+splits instead). Every leaf is re-checked in exact integer arithmetic
+with the Coq semantics before it is written.
+
+Two changes to the kernel check made this affordable:
+
+* `Link23.unwitw`: the unwitnessed traces are enumerated from the cores
+  of the unordered pairs of link members, computed once (`pairw`,
+  proved equal to `LinkLP.unwit` by `unwitw_eq`), and the type list is
+  built from that enumeration once. A class check dropped from 3.2 s to
+  0.67 s; the enumeration had been two thirds of the cost, done twice.
+* Binary numbers for the multipliers (§69).
+
+The 150 shards `coq/Link22s0.v`–`s149.v` (139 MB of source in all;
+142 of 484 classes, and the two that held the heaviest classes split
+into eight of 121) build with `make -j3` in about 11 h of wall time,
+15 min per shard at about 0.6 GB; a first cut of 36 shards of 1,934
+classes ran past 7 GB each and was killed by the 15 GB memory limit
+three at a time, and the 484-class shard holding the largest class
+(1,134 types) needed 7.6 GB and an hour on its own.
+`Link22Certs.descent_22` and `g_four_at_most_77_of_census_22` are
+closed under the global context.
+
+`coqchk`: **PASS on all 150 shards**, one `coqchk` process per shard
+(median 10 min, longest 42 min, 29 CPU-hours in all, four at a time).
+Two things learned about `coqchk` on this scale: a single invocation
+over 48 shards ran for 9 CPU-hours without finishing while one shard
+alone takes 7 min, so it degrades badly as modules accumulate in one
+run; and its memory on a 484-class shard with 1,134-type classes passed
+15 GB, which is why those two shards were split.
+
+### 70.4 Standing
+
+| claim | status |
+|---|---|
+| the 69,616 classes at 22 are the census | **VALIDATED** (75 shards reproduce the ledger; canonical forms distinct; count equals the census) |
+| the `RCapI` row | **PROVEN** (kernel, `capI_row`) |
+| every class at 22 passes `classcheck` | **COMPUTED** in the kernel (36 shards) |
+| a link of ≥ 22 members forces `\|F\| ≤ 54` (`descent_22`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 22–27** |
+| `g(4) ≤ 77` | **PROVEN given `ι(4) ≤ 27`, the census at 22–27 and `MeetingBound 4 56`** |
+| `g(4) = 54` | open: a 55-member family needs every link of size ≤ 21 |
+
+Next down: size 21 has 407,115 classes (41.4 ledger-hours of reruns,
+about six times the kernel time of 22); size 20 has 308 million and
+is out of reach. The census itself (§59.4 item 1) remains the premise
+nothing here touches.
+
+## 71. Certificates at scale: a theory/certificate split, a faster check, and size 22 rebuilt
+
+Preparing size 21 (407,115 classes, about six times size 22) exposed
+four limits of the §69–§70 setup. Each is now removed; size 22 has been
+rebuilt on the new footing and its two theorems are unchanged in
+substance.
+
+### 71.1 CI could not run
+
+The `verify` job built every module, and the certificate shards alone
+are tens of CPU-hours: the Coq and `coqchk` jobs ran into GitHub's
+6-hour limit, and the mutation harness, which gives its baseline build
+10 minutes, had failed on every run since the first certificate module.
+The certificate modules now live in `_CoqProject.certs` and are built
+by `make certs`; `make certs-assumptions`, `make certs-statements`
+(`tools/audited_certs.txt`, baseline `tools/statements_certs.txt`) and
+`make certs-coqchk` (one `coqchk` process per module) audit them. No
+theory module imports them. The default build and CI cover the theory.
+
+### 71.2 The check was dominated by the trace enumeration
+
+Profiling a size-22 class: of the 0.55 s the check took, 0.5 s was
+`unwitw`, which tests every trace (about 175) against every pair of link
+members (231). Two ways out were built and proved:
+
+* `classcheck_h`: the certificate names a witnessing pair per witnessed
+  trace; only those are checked. The model section is generalised over
+  any trace list containing only traces and every unwitnessed one
+  (`TraceList`, `bound_of_check`), so a wrong hint can only weaken the
+  bound. 55 s per 484-class shard instead of 15 min. Superseded by:
+* `classcheck_m`: the same enumeration with point sets as binary
+  numbers (`unwitm`, `unwitm_eq`): `K ⊆ T` is `K land T = K`. 0.04 s per
+  class, no extra data.
+
+Leaves now store `u` and `v` sparsely (`LeafS`, checked as the dense
+leaf it denotes); they were about 360 numbers per leaf, nearly all 0.
+
+### 71.3 Combining the shards ran out of memory
+
+`Link22Certs` needed more than 14 GB: every module that requires a
+certificate shard loads all its certificates, about 83 MB per 484
+classes. Size 21 would have needed about 70 GB. Now a certificate
+module exports only its class list and the lemma that every class is
+`CheckedClass`; the certificates sit inside that lemma's opaque proof,
+which `Require` does not load. The census is stated over the class
+list (`CensusL`, `descent_of_censusL`), and `CheckedAny` admits the
+three kinds of certificate (LP, list check, bitmask check). Measured:
+
+| | before | now |
+|---|---|---|
+| compile, 484-class shard | 0.6 GB, 15 min | 1.5 GB, 69 s |
+| `coqchk`, same shard | 7–40 min | 229 s |
+| `Link22Certs` (all size-22 shards) | over 14 GB, killed | builds; Print Assumptions in 1.6 GB |
+
+Compile memory grows with the certificate text (about 3 GB per MB), so
+`tools/iota4/link23_coq.py coqshards_m` cuts modules by a text budget
+rather than a class count: size 22 is now 133 modules.
+
+Two dead ends, for the record: certificates as section-local `Let`s
+(discharge inlines them into the proof: a 147 MB `.vo`, 7.3 GB to
+compile), and the hinted check with transparent certificates (cheap to
+compile, but loads everything).
+
+### 71.4 Standing
+
+| claim | status |
+|---|---|
+| `bound_of_check`, `bound_of_masked`, `masked_class_bound`, `checked_of_mtrees`, `descent_of_censusL` | **PROVEN** (kernel; closed) |
+| size 22 rebuilt (133 modules), `Link22Certs.descent_22`, `g_four_at_most_77_of_census_22` | **COMPUTED / PROVEN** given `ι(4) ≤ 27`, `CensusL classes22 22` and `MeetingBound 4 56`; closed under the global context |
+| `make certs-assumptions` | all 9 certificate theorems closed |
+| `coqchk` on the rebuilt size-22 modules | not yet run on this form |
+
+## 72. Link size 21 in the kernel: `g(4) ≤ 76`
+
+On the footing of §71, size 21 went through without new mathematics:
+the model of §69–§70 certifies every class. **`g(4) ≤ 76`** is now a
+kernel theorem, `Link21Certs.g_four_at_most_76_of_census_21`, with the
+same three premises as before: `ι(4) ≤ 27`, the census complete from 21
+up (`CensusL classes21 21`), and `MeetingBound 4 56`. A 4-uniform
+3-sunflower-free family with a link of 21 or more members has at most
+54 members (`descent_21`).
+
+### 72.1 The classes
+
+The 172 shards whose ledger records reach size 21 were re-run with the
+printing threshold at 21 (`tools/iota4/isearch2p21.patch`; 42.7 hours of
+shard time, four at a time).
+
+* All 172 reproduce their ledger records' accepted vectors exactly
+  (`big21_shards_rerun.log`; `tools/iota4/collect.py … 21` refuses a
+  shard that does not).
+* They print 407,115 families at size 21, the census count, and their
+  nauty canonical forms are pairwise distinct (`tools/iota4/canon.c`).
+* `classes_21.txt.gz`, sha256 of the uncompressed file
+  `57ef6f3426ee1479bf59f9b3da3b47476b17ec0afa95295cdf49bb1f3d14a443`.
+
+An early survey of 223 classes under the model found integer optima of
+at most 29 against the allowance `54 − 21 − 1 = 32`.
+
+### 72.2 Certificates
+
+`link23_coq.py batch` solved all 407,115 classes in 80 resumable slices
+(four processes, about 12 hours; three slices were killed by the memory
+limit and re-run, after which each slice loads only its own classes,
+`linkcert.load_some`). No class was refused. Every leaf was re-checked
+in exact integer arithmetic with the Coq semantics before it was
+written.
+
+| | |
+|---|---|
+| classes | 407,115 |
+| single-leaf trees (the LP dual alone) | 394,700 |
+| leaves in all | 449,007 |
+| largest tree | 36 leaves |
+
+The trees are `docs/ladder/iota4_replication/link21_trees/` (18 MB).
+Building the rows with bitmasks (`rows_of_fast`) is six times faster
+than the reference and produced identical rows on 40 random classes.
+
+### 72.3 The kernel check
+
+`coqshards_m` cut the classes into 538 modules of about 500 KB of
+certificate each (`coq/Link21s0.v`–`s537.v`, 274 MB of source). With two
+jobs the build took 10.6 hours; no module failed or was killed (one had
+been killed with three jobs beside `coqchk`: a size-21 module peaks at
+about 4.7 GB). `Link21Certs` combines the class list of sizes 22–27 with
+the 538 new lists. `Print Assumptions` on `descent_21` and
+`g_four_at_most_76_of_census_21`: closed under the global context
+(1,376 s and 6.1 GB: it walks all 538 opaque proofs).
+`make certs-assumptions` covers both; `tools/statements_certs.txt` holds
+their statements. `coqchk` (one `-norec` check per module, §71) was started on these modules and passed 89 of them; the port of §73 then replaced the checker and regenerated every module, which invalidated that run (§73.3), and the new modules are checked there.
+
+### 72.4 Standing
+
+| claim | status |
+|---|---|
+| the 407,115 classes at 21 are the census | **VALIDATED** (172 shards reproduce the ledger; canonical forms distinct; count equals the census) |
+| every class at 21 passes `classcheck_m` | **COMPUTED** in the kernel (538 modules) |
+| a link of ≥ 21 members forces `\|F\| ≤ 54` (`descent_21`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 21–27** |
+| `g(4) ≤ 76` | **PROVEN given `ι(4) ≤ 27`, the census at 21–27 and `MeetingBound 4 56`** |
+| `g(4) = 54` | open: a 55-member family needs every link of size ≤ 20 |
+
+Size 20 has 308 million classes, beyond enumeration. Below 21 the link
+descent needs a class-free argument (§66, direction 1), and the census
+itself remains the premise nothing here touches.
+
+## 73. One checker: the link descent on LPCert
+
+Every certificate of the link descent, at every size from 21 to 27, is
+now checked by `LPCert.check` (`docs/lpcert.md`) and by nothing else.
+Before this section the chain used three: §64's LP checker
+(`LinkLP.certcheck`, 14,794 classes at 23–27), the tree checker of
+`Link23.v` (11 classes at 23, and in its bitmask form every class at 21
+and 22), and its hinted variant. The statements are unchanged in form —
+`descent_23`, `descent_22`, `descent_21` and `g(4) ≤ 78, 77, 76`, each
+from `ι(4) ≤ 27`, `CensusL classesN N` and `MeetingBound 4 56` — and
+the class lists are the same families as before, term for term
+(checked: the 14,805 lists at 23–27 generated from
+`classes_23_27.txt.gz` equal, as a multiset, those of `LinkCerts23–25`
+and the eleven `Link23c` modules; sizes 22 and 21 are generated from
+the same class files as before).
+
+### 73.1 LPCert, extended
+
+* **Declared nonnegative variables.** `LPCert.check` takes
+  `nonneg : nat -> bool`; for a declared variable a leaf may leave slack,
+  `K·c_j ≤ (Σ y·a)_j`, and `tree_sound` gains the hypothesis
+  `nonneg j = true -> 0 ≤ x j`. Without it a leaf would carry an
+  explicit row `−x_j ≤ 0` for every type with slack: measured on 876
+  leaves of the census certificates, 19% more multipliers and 9% more
+  certificate text (4.9% of the type columns of a size-21 leaf have
+  slack, and the median leaf has none). An earlier draft of this
+  section said "most of the types of most leaves"; the measurement
+  replaced it.
+  `LPCertExamples` section 3 has a certificate accepted only with the
+  declaration (rejected without it, and with it on the wrong variable)
+  and the point showing that the claim needs it. Mutations
+  `lpcert-slack-everywhere`, `lpcert-slack-reversed` and
+  `lpcert-declare-all` are killed.
+* **A leaf in `O((nnz + n) log n)`.** The leaf check adds the multiplied
+  rows into a `PositiveMap` and reads one coefficient per variable
+  (`zcomb`, `zget_zcomb`); the first version read each coefficient by a
+  linear scan, quadratic in the number of types.
+* Python (`tools/lpcert`): the declaration in the problem JSON, the
+  checker and the solver; the test compares every tampered certificate
+  with an independent dense reference checker (a tampering may leave a
+  valid proof once slack is allowed, and both checkers then accept it;
+  without declarations every tampering is still rejected).
+
+### 73.2 Link23 on LPCert
+
+`Link23.v` keeps the model — the type list, the tagged rows and
+`rows_valid` — and states the class program as LPCert rows (`zrowf`):
+each tagged row as a sparse integer row, and the upper bounds
+`x_j ≤ ub_of t_j` as rows `ZUb j`; every type count is declared
+nonnegative; the objective is `Σ_j x_j` and the target `54 − |D|`.
+`bound_of_lpcheck` proves `|F| ≤ 54` from `LPCert.tree_sound`,
+`rows_valid` and `tcount_le_ub`; `lpclass_bound` transports it to every
+family whose largest link is the class up to relabelling, and
+`descent_of_censusL` now asks of each class only `CheckedClass`
+(4-uniform, distinct members, an `lpclass` certificate). The list,
+hinted and bitmask checkers, `Census2`, `Census3` and `CheckedAny` are
+deleted; `Link23.v` no longer refers to `LinkLP.certcheck`. Three
+mutations (`link23-lp-ub-tight`, `link23-lp-target`,
+`link23-lp-objective`: a tighter bound row, a weaker target, a zero
+objective) are killed.
+
+The existing trees converted without re-solving (`link23_coq.py
+lpconvert`): `y` is unchanged; `u_i` moves onto the row that gave the
+upper bound in force (`ZUb i`, or the branching row on the path), `v_i`
+onto the branching row that gave the lower bound, and `v_i` at a lower
+bound of 0 is dropped into the slack of `x_i ≥ 0`. The leaf inequalities
+are then those the old checker tested. Every converted tree was
+re-checked in exact arithmetic with the LPCert semantics before it was
+written; `tools/iota4/test_lpport.py` (in `make verify`) checks converted
+trees against the generic `tools/lpcert` checker too, tampered ones
+included, and compiles a module through `lpclass` while the same with a
+needed multiplier zeroed fails.
+
+The classes at 23–27, which had LP certificates, were solved afresh
+under the Link23 model (`link23_coq.py batch`, 58 minutes of wall time on three
+cores): all 14,805 certified, none refused; 14,798 trees are a single
+leaf (the LP dual alone), 14,844 leaves in all, at most 14 in one tree
+(`docs/ladder/iota4_replication/link2327_trees/`, 192 KB). Their class
+lists are the families of `LinkCerts23–25` and the eleven `Link23c`
+modules term for term, as a multiset, so the census premise is about
+the same classes as before. The 69,616 trees at 22 and the 407,115 at 21
+were converted, each re-checked exactly before it was written.
+
+### 73.3 The kernel check
+
+`lpshards` cut the certificates into modules of about 500 KB of text,
+as before (a class whose tree alone is larger gets a module of its own:
+`Link22s8` holds the single class 9050).
+
+| | modules | source | kernel time | largest module | peak memory |
+|---|---|---|---|---|---|
+| 23–27 | 11 (`Link23s*`) | 6.2 MB | 4,149 s | 533 s | 2.2 GB |
+| 22 | 129 (`Link22s*`) | 64 MB | 27,162 s | 466 s | 5.7 GB |
+| 21 | 516 (`Link21s*`) | 263 MB | 97,256 s | 492 s | 5.0 GB |
+
+About 35.7 core-hours, 0.26 s per class, on two jobs; no module failed.
+The first module compiled in the old and the new form side by side:
+170.5 s and 1.89 GB as LPCert against 171.7 s and 1.78 GB before, so
+the generic checker costs nothing here. `make certs` then built the
+three combining modules (40 s together, 5.0 GB: the certificates sit in
+opaque proofs that `Require` does not load) and exits 0.
+
+* `make certs-assumptions`: all eleven certificate theorems closed under
+  the global context, `descent_21` and `g_four_at_most_76_of_census_21`
+  among them (2,021 s, 6.0 GB; it walks every opaque proof).
+* `make certs-statements`: the only changes are `descent_23` and
+  `g_four_at_most_78_of_census_23`, whose hypothesis is now
+  `CensusL classes23 23` in place of `Census2 cls23_all link23_all 23`;
+  the size-22 and size-21 statements print exactly as before.
+* `coqchk`, one `-norec` check per module with the gate of §71, on all
+  690 modules of `_CoqProject.certs`: **all pass** — no `Sunflower.*`
+  axiom in any module, and type-in-type, unsafe fixpoints and assumed
+  positivity all `<none>`. The only entries in the assumption section
+  are the standard library's `Coq.ssr.ssrunder.Under_rel` module
+  parameters, an artifact of `-norec` (§71). The run took about 30 hours
+  of wall time (2026-10-14 07:14 to 2026-10-15 13:34 UTC): two resumable
+  instances of the gate with two jobs each, one working from each end of
+  the list, one module at the meeting point checked by both.
+
+The raw outputs of all of this — per-module build lines and logs, `make
+certs`, the assumptions and statement audits, every `coqchk` log, the
+mutation runs, the solves and conversions — are kept, with checksums, in
+`docs/ladder/lpcert_port_audit/`.
+
+Two operational events, neither touching a result. Rebuilding
+`Link23.vo` while the §72 coqchk run was in progress made every module
+still waiting fail to load ("Inductive Sunflower.Link23.tree does not
+appear in the environment" — the type the port deletes); that run had
+passed 89 of 538 modules, was stopped, and concerned modules that no
+longer exist. And when the size-21 build was moved to two workers, one
+module (`Link21s109`) was compiled twice at once for 48 s; the
+duplicate was stopped before it wrote anything, the module's output was
+deleted, and it was rebuilt alone (102.6 s).
+The coqchk run on the old-format size-21 modules (§72.3) passed 89 of
+538 modules and was then invalidated by this port: rebuilding
+`Link23.vo` changed a dependency of the modules still waiting, which
+then failed to load ("Inductive Sunflower.Link23.tree does not appear in
+the environment" — the type the port deletes). Those failures say
+nothing about the certificates; the run was stopped, and the modules it
+concerned no longer exist. The regenerated modules are checked below.
+
+### 73.4 Standing
+
+| claim | status |
+|---|---|
+| every class at 21–27 has a certificate accepted by `LPCert.check` through `Link23.lpclass` | **COMPUTED** in the kernel (656 modules) |
+| a link of ≥ 21 members forces `\|F\| ≤ 54` (`descent_21`) | **PROVEN given `ι(4) ≤ 27` and census completeness at 21–27** |
+| `g(4) ≤ 76` | **PROVEN given `ι(4) ≤ 27`, the census at 21–27 and `MeetingBound 4 56`** |
+| trusted checkers in the chain | one: `LPCert.check` (soundness `LPCert.tree_sound`, closed) |
+| `LinkLP.certcheck` | an independent cross-check for 23–27, outside the chain |
+
+The census premise itself is unchanged and is the subject of
+`docs/census_certification.md`.
+
+## 74. The census as the one premise, its certification begun, and an LRAT checker
+
+Three pieces of `docs/census_certification.md`, each closed under the
+global context.
+
+* **Stage 1 (`coq/CensusIota.v`).** `iota_of_census : CensusL classes21
+  21 -> IotaAtMost 4 27`: `Covered` preserves the number of distinct
+  members, and every listed class has at most 27 members
+  (`classes21_at_most_27`, by `vm_compute`). Hence
+  `g_four_at_most_76_of_census : CensusL classes21 21 -> MeetingBound 4
+  56 -> GAtMost 4 76`: **`g(4) ≤ 76` rests on the census and the meeting
+  bound alone.** Both former premises came from one search, so this
+  removes no trust in substance; it makes the assumption one statement.
+  `coqchk` passes on the module.
+* **Stage 2 (`coq/CensusGen.v`, `CensusSearch.v`, `CensusDemo.v`).** The
+  mathematics of a certifying isomorph-free search: orderly generation
+  over families keyed by sorted row masks, pruning only on a checked
+  witness permutation from an untrusted oracle. `level_complete`: the
+  minimal member of every class is generated and kept whatever the oracle
+  answers; `census_of_search`: covered kept levels and an empty level
+  above give `CensusB b L lo` (`CensusL` at `b = 4`); `iota_two_by_search`
+  runs it end to end in the kernel at `b = 2`. What remains is execution
+  at scale (stages 3–4).
+* **LRAT (`coq/LRAT.v`, `docs/lrat.md`).** A kernel checker for LRAT
+  refutations (reverse unit propagation along hint chains, a
+  `PositiveMap` clause database): `lrat_sound`. CaDiCaL's proof that four
+  pigeons do not fit three holes is checked in the kernel
+  (`LRATExamples.php43_unsat`); `make lrat-test` runs 48 refutations, 37
+  satisfiable controls and 8,344 tampered proofs against a brute-force
+  semantic oracle; four mutations are killed. It proves theorems about
+  CNFs; for the `ι(4, 11)` ladder a proof that the CNF encodes the
+  question is still needed, and the ladder's proofs may exceed what the
+  kernel can check.
 

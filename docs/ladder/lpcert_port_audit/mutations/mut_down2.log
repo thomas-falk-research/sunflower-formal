@@ -1,0 +1,19 @@
+==============================================================================
+  Mutation testing: does the development notice a weakened definition?
+==============================================================================
+  3 mutations, 2 parallel builds
+
+  baseline ... builds clean
+
+  [ok ] upperbound-strict          killed        coq/ErdosRado.v           10.8s
+  [ok ] distinct-is-nodup          killed        coq/ErdosRado.v           10.9s
+  [ok ] canary-alpha-rename        survived      -                        437.6s
+
+------------------------------------------------------------------------------
+  mutation                   expected      actual        first file to break
+------------------------------------------------------------------------------
+  canary-alpha-rename        survived      survived      -
+  distinct-is-nodup          killed        killed        coq/ErdosRado.v
+  upperbound-strict          killed        killed        coq/ErdosRado.v
+------------------------------------------------------------------------------
+  killed: 2   killed (script only): 0   survived: 0   controls passing: 1/1   unexpected: 0

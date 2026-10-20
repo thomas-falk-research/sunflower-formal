@@ -12,6 +12,7 @@ $(error no .v files found in _CoqProject; the COQFILES extraction is broken)
 endif
 
 .PHONY: all coq verify coqchk rust test testbed mutants clean print-assumptions \
+        certs certs-assumptions certs-statements certs-statements-accept certs-coqchk lpcert-test lpport-test lrat-test \
         axiom-audit statements statements-accept docnumbers ceilings prcheck \
         manifest
 
@@ -43,6 +44,8 @@ verify:
 	$(MAKE) statements
 	$(MAKE) docnumbers
 	$(MAKE) ceilings
+	$(MAKE) lpcert-test
+	$(MAKE) lpport-test
 	@echo
 	@echo "[verify] All proofs compiled."
 	@echo "[verify] See axiom audit above."
@@ -57,14 +60,17 @@ print-assumptions: coq
 	@echo "============================================"
 	@echo "  Print Assumptions audit (closed theorems)"
 	@echo "============================================"
-	@total=0; for thm in $$(sed -n 's/^thm //p' tools/audited.txt); do \
+	@total=0; missing=0; for thm in $$(sed -n 's/^thm //p' tools/audited.txt); do \
 	  result=$$(printf 'From Sunflower Require Import $(MODULES).\nPrint Assumptions %s.\n' "$$thm" \
 	    | coqtop -q -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
+	  if [ -z "$$result" ]; then result="NO RESULT (coqtop failed or was killed)"; missing=$$((missing + 1)); fi; \
 	  printf "  %-60s %s\n" "$$thm" "$$result"; \
 	  total=$$((total + 1)); \
 	done; \
 	echo "  --------------------------------------------"; \
-	echo "  audited theorems: $$total"
+	echo "  audited theorems: $$total"; \
+	echo "  without a result: $$missing"; \
+	[ "$$missing" -eq 0 ]
 	@echo "============================================"
 
 axiom-audit: coq
@@ -255,11 +261,82 @@ MUTANT_JOBS ?= 4
 manifest:
 	@python3 tools/mutate.py --validate
 
+# ---- certificate modules (_CoqProject.certs) ----------------------------
+# The class data and vm_compute checks of the link descent. Tens of
+# CPU-hours to build and more to coqchk, so they are outside `make coq`
+# and CI; nothing in the theory imports them. CERT_JOBS sets the
+# parallelism (memory: about 0.6 GB per build job, up to 9 GB per coqchk
+# process on the heaviest size-22 modules).
+CERT_JOBS ?= 3
+CERTFILES   := $(shell sed -n 's|^\(coq/.*\.v\)[[:space:]]*$$|\1|p' _CoqProject.certs)
+CERTMODULES := $(patsubst coq/%.v,Sunflower.%,$(CERTFILES))
+
+Makefile.certs: _CoqProject.certs $(CERTFILES)
+	coq_makefile -f _CoqProject.certs -o Makefile.certs
+
+certs: coq Makefile.certs
+	$(MAKE) -f Makefile.certs -j$(CERT_JOBS)
+
+certs-assumptions: certs
+	@total=0; missing=0; for thm in $$(sed -n 's/^thm //p' tools/audited_certs.txt); do \
+	  mod=$${thm%%.*}; \
+	  result=$$(printf 'From Sunflower Require Import %s.\nPrint Assumptions %s.\n' "$$mod" "$$thm" \
+	    | coqtop -q -Q coq Sunflower 2>/dev/null | grep -m1 -E '^(Closed|Axioms)'); \
+	  if [ -z "$$result" ]; then result="NO RESULT (coqtop failed or was killed)"; missing=$$((missing + 1)); fi; \
+	  printf "  %-60s %s\n" "$$thm" "$$result"; \
+	  total=$$((total + 1)); \
+	done; \
+	echo "  certificate theorems audited: $$total, without a result: $$missing"; \
+	[ "$$missing" -eq 0 ]
+
+certs-statements: certs
+	@python3 tools/statements.py --certs
+
+certs-statements-accept: certs
+	@python3 tools/statements.py --certs --accept
+
+# coqchk for the certificate modules. `coqchk M` re-checks every
+# dependency of M, so checking a combining module that way repeats every
+# shard, and one invocation over many modules slows down sharply as they
+# accumulate (§70.3). Instead: the theory is checked in full by
+# `make coqchk`; each certificate module is checked on its own with
+# -norec (dependencies admitted, each of them checked by its own run).
+# Under -norec the context summary also lists the parameters of the
+# standard library's opaque module Coq.ssr.ssrunder.Under_rel, because
+# the standard library is admitted; a full check reports none (§72). The
+# gate therefore rejects any axiom named in the Sunflower library and any
+# kernel escape hatch. Logs: coqchk-certs/<module>.log.
+certs-coqchk: certs
+	@mkdir -p coqchk-certs
+	@printf '%s\n' $(CERTMODULES) | xargs -P $(CERT_JOBS) -I{} sh -c '\
+	  log=coqchk-certs/{}.log; \
+	  coqchk -Q coq Sunflower -o -silent -norec {} > $$log 2>&1 || { echo "  coqchk FAIL {}"; exit 255; }; \
+	  if grep -qE "^    Sunflower\." $$log; then echo "  coqchk AXIOM {}"; exit 255; fi; \
+	  for hatch in "relying on type-in-type: <none>" "relying on unsafe (co)fixpoints: <none>" "positivity is assumed: <none>"; do \
+	    grep -q "$$hatch" $$log || { echo "  coqchk HATCH {}"; exit 255; }; done; \
+	  echo "  coqchk ok   {}"'
+
+# LPCert's Python tools against its Coq checker (seconds).
+lpcert-test: coq
+	python3 tools/lpcert/test_lpcert.py --coq
+
+# The Link23 -> LPCert port: tree conversion, exact checks, tampering, and a
+# Coq round trip through Link23.lpclass (tools/iota4/test_lpport.py).
+lpport-test: coq
+	python3 tools/iota4/test_lpport.py --coq
+
+# The LRAT checker's Python tools against coq/LRAT.v. Needs cadical on PATH,
+# so it is not part of verify (CI has no SAT solver); see docs/lrat.md.
+lrat-test: coq
+	python3 tools/lrat/test_lrat.py --coq
+
 mutants: manifest
 	python3 tools/mutate.py --jobs $(MUTANT_JOBS)
 
 clean:
 	@if [ -f Makefile.coq ]; then $(MAKE) -f Makefile.coq cleanall; fi
+	@if [ -f Makefile.certs ]; then $(MAKE) -f Makefile.certs cleanall; fi
+	@rm -f Makefile.certs Makefile.certs.conf
 	@rm -f Makefile.coq Makefile.coq.conf coq/*.vo coq/*.vok coq/*.vos \
 	       coq/*.glob coq/.*.aux coq/*.d
 	@if [ -d rust/target ]; then rm -rf rust/target; fi

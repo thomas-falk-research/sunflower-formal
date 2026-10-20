@@ -55,3 +55,13 @@ coq/Palvolgyi.v
 coq/Audit.v
 coq/VCSunflower.v
 coq/Stability4.v
+coq/LinkCombine.v
+coq/LinkLP.v
+coq/Link23.v
+coq/LPCert.v
+coq/LPCertExamples.v
+coq/CensusGen.v
+coq/CensusSearch.v
+coq/CensusDemo.v
+coq/LRAT.v
+coq/LRATExamples.v

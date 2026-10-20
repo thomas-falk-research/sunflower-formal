@@ -38,6 +38,12 @@ from fractions import Fraction as Fr
 CAP = {1: 26, 2: 6, 3: 2}
 
 
+def _parse(p):
+    F = [frozenset(i for i in range(128) if int(h, 16) >> i & 1) for h in p[3:]]
+    assert len(F) == int(p[1])
+    return F
+
+
 def load(path):
     op = gzip.open if path.endswith(".gz") else open
     fams = []
@@ -45,11 +51,45 @@ def load(path):
         if "BIG" not in line:
             continue
         p = line.split()
-        p = p[p.index("BIG"):]
-        F = [frozenset(i for i in range(128) if int(h, 16) >> i & 1) for h in p[3:]]
-        assert len(F) == int(p[1])
-        fams.append(F)
+        fams.append(_parse(p[p.index("BIG"):]))
     return fams
+
+
+def load_some(path, size, pick):
+    """{k: family} for the classes of the given size whose position among
+    the classes of that size, j, satisfies pick(j); k is the index that
+    [load] would give.  Parses only those, so memory follows the slice."""
+    op = gzip.open if path.endswith(".gz") else open
+    out, k, j = {}, -1, -1
+    for line in op(path, "rt"):
+        if "BIG" not in line:
+            continue
+        k += 1
+        p = line.split()
+        p = p[p.index("BIG"):]
+        if int(p[1]) != size:
+            continue
+        j += 1
+        if pick(j):
+            out[k] = _parse(p)
+    return out
+
+
+def load_ks(path, ks):
+    """{k: family} for the given indices k (as [load] numbers them, over
+    all sizes); parses only those."""
+    ks = set(ks)
+    op = gzip.open if path.endswith(".gz") else open
+    out, k = {}, -1
+    for line in op(path, "rt"):
+        if "BIG" not in line:
+            continue
+        k += 1
+        if k in ks:
+            p = line.split()
+            out[k] = _parse(p[p.index("BIG"):])
+    assert len(out) == len(ks), "missing class indices"
+    return out
 
 
 def validate(F):

@@ -1,0 +1,27 @@
+==============================================================================
+  Mutation testing: does the development notice a weakened definition?
+==============================================================================
+  7 mutations, 2 parallel builds
+
+  baseline ... builds clean
+
+  [ok ] lpcert-slack-everywhere    killed        coq/LPCert.v             563.4s
+  [ok ] canary-alpha-rename        survived      -                        574.9s
+  [ok ] lpcert-slack-reversed      killed        coq/LPCert.v             568.0s
+  [ok ] lpcert-declare-all         killed        coq/LPCert.v             570.6s
+  [ok ] link23-lp-ub-tight         killed        coq/Link23.v             575.9s
+  [ok ] link23-lp-target           killed        coq/Link23.v             572.1s
+  [ok ] link23-lp-objective        killed        coq/Link23.v             444.6s
+
+------------------------------------------------------------------------------
+  mutation                   expected      actual        first file to break
+------------------------------------------------------------------------------
+  canary-alpha-rename        survived      survived      -
+  link23-lp-objective        killed        killed        coq/Link23.v
+  link23-lp-target           killed        killed        coq/Link23.v
+  link23-lp-ub-tight         killed        killed        coq/Link23.v
+  lpcert-declare-all         killed        killed        coq/LPCert.v
+  lpcert-slack-everywhere    killed        killed        coq/LPCert.v
+  lpcert-slack-reversed      killed        killed        coq/LPCert.v
+------------------------------------------------------------------------------
+  killed: 6   killed (script only): 0   survived: 0   controls passing: 1/1   unexpected: 0

@@ -53,6 +53,7 @@ def truths() -> dict[str, tuple[int, str]]:
     ceilings = read("tools/ceiling.py")
 
     modules = len(re.findall(r"^coq/\S+\.v\s*$", project, re.M))
+    cert_modules = len(re.findall(r"^coq/\S+\.v\s*$", read("_CoqProject.certs"), re.M))
     thms = len(re.findall(r"^thm \S+", audited, re.M))
     defs = len(re.findall(r"^def \S+", audited, re.M))
     mutations = len(re.findall(r"^\[\[mutation\]\]", manifest, re.M))
@@ -70,6 +71,7 @@ def truths() -> dict[str, tuple[int, str]]:
         "routes": (routes, "tools/ceiling.py (ROUTES entries)"),
         "routes_losing": (routes_losing, "tools/ceiling.py (verdict=LOSES)"),
         "modules": (modules, "_CoqProject"),
+        "cert_modules": (cert_modules, "_CoqProject.certs"),
         "audited_thms": (thms, "tools/audited.txt (thm lines)"),
         "audited_defs": (defs, "tools/audited.txt (def lines)"),
         "audited_total": (thms + defs, "tools/audited.txt (thm + def lines)"),
@@ -95,6 +97,7 @@ CLAIMS: list[tuple[str, str, str]] = [
     ("routes", "docs/testing.md", r"of\s+the\s+(\d+)\s+routes\s+this\s+development"),
     ("routes_losing", "docs/testing.md", r"\*\*(\d+)\s+lose\s+to\s+1960"),
     ("modules", "README.md", r"builds all (\d+) Coq files"),
+    ("cert_modules", "README.md", r"builds the (\d+) certificate modules"),
     ("modules", "STATUS.md", r"anywhere\*\* in the (\d+) modules"),
     ("modules", "STATUS.md", r"re-verifies all (\d+) modules"),
     ("audited_thms", "README.md", r"every audited theorem \((\d+) of them"),

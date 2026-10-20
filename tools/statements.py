@@ -59,8 +59,15 @@ BASELINE = ROOT / "tools" / "statements.txt"
 PRINTING_WIDTH = 500
 
 
+CERTS = False   # set by --certs: audit tools/audited_certs.txt instead
+
+
 def modules() -> list[str]:
-    """The library's modules, in dependency order, from _CoqProject."""
+    """The modules to import, in dependency order: the theory from
+    _CoqProject, or (with --certs) the certificate modules that hold the
+    audited theorems; they load everything they depend on."""
+    if CERTS:
+        return sorted({name.split(".", 1)[0] for _, name in entries()})
     text = (ROOT / "_CoqProject").read_text()
     return [
         pathlib.PurePath(line.strip()).stem
@@ -183,10 +190,21 @@ def main() -> int:
         action="store_true",
         help="rewrite the baseline instead of checking against it",
     )
+    ap.add_argument(
+        "--certs",
+        action="store_true",
+        help="audit tools/audited_certs.txt against tools/statements_certs.txt",
+    )
     args = ap.parse_args()
+    global AUDITED, BASELINE, CERTS
+    if args.certs:
+        CERTS = True
+        AUDITED = ROOT / "tools" / "audited_certs.txt"
+        BASELINE = ROOT / "tools" / "statements_certs.txt"
 
     items = entries()
-    check_audit_covers_the_audit_file(items)
+    if not CERTS:
+        check_audit_covers_the_audit_file(items)
     current = render(items, collect(items))
 
     if args.accept:

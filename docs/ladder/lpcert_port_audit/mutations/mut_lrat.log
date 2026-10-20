@@ -1,0 +1,33 @@
+==============================================================================
+  Mutation testing: does the development notice a weakened definition?
+==============================================================================
+  5 mutations, 2 parallel builds
+
+  baseline ... builds clean
+
+  [BAD] lrat-accept-zero           timeout       -                        603.4s
+  [BAD] canary-alpha-rename        timeout       -                        603.5s
+  [BAD] lrat-chain-no-conflict     timeout       -                        602.3s
+  [BAD] lrat-ignore-true-literal   timeout       -                        603.9s
+  [ok ] lrat-no-rup                killed        coq/LRAT.v               515.0s
+
+------------------------------------------------------------------------------
+  mutation                   expected      actual        first file to break
+------------------------------------------------------------------------------
+  canary-alpha-rename        survived      timeout       -
+  lrat-accept-zero           killed        timeout       -
+  lrat-chain-no-conflict     killed        timeout       -
+  lrat-ignore-true-literal   killed        timeout       -
+  lrat-no-rup                killed        killed        coq/LRAT.v
+------------------------------------------------------------------------------
+  killed: 1   killed (script only): 0   survived: 0   controls passing: 0/1   unexpected: 4
+
+  Mutations whose outcome differs from the manifest:
+    canary-alpha-rename: expected survived, got timeout
+      timeout
+    lrat-accept-zero: expected killed, got timeout
+      timeout
+    lrat-chain-no-conflict: expected killed, got timeout
+      timeout
+    lrat-ignore-true-literal: expected killed, got timeout
+      timeout

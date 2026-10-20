@@ -80,6 +80,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-coq
+      - name: Install the LPCert test dependencies
+        run: |
+          # `make verify` runs tools/lpcert/test_lpcert.py, whose solver
+          # uses scipy's HiGHS. The checker it tests is Coq's; scipy only
+          # produces certificates.
+          sudo apt-get install -y python3-numpy python3-scipy
       - name: Build all proofs and run the Print Assumptions audit
         run: |
           # Without pipefail the exit status of this step is tee's, so a
