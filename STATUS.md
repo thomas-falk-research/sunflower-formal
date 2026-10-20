@@ -4,7 +4,11 @@ Run `make verify` for the live audit. Below is the static state of
 the development. Definition-level testing — the checks the kernel
 cannot make — is described in [`docs/testing.md`](docs/testing.md);
 what to work on next is in [`docs/roadmap.md`](docs/roadmap.md), whose
-**§59 is the current handover** and the right place to start cold (§57 is the previous one, and still the handover for the `r*(3,3)` line).
+**§76 is the current handover** and the right place to start cold.
+§66 was a handover for the `b = 4` descent, but none followed §67–§74
+(the descent in the kernel, LPCert, the census as the one premise, the
+LRAT checker); §76 records their state. §59 is the previous general
+handover, and §57 still the one for the `r*(3,3)` line.
 
 ## Closed (machine-checked, zero admits, zero axioms used)
 
@@ -90,7 +94,7 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `sunflower_free_star_bound` | `coq/Intersecting.v` | **`g(b) ≤ 2b·ι(b)`** — the converse of the doubling. A sunflower-free family has no three pairwise disjoint members, so a *maximal* disjoint subfamily has at most two and spans at most `2b` points; maximality makes that set meet every member; pigeonhole gives a point in at least `\|F\|/(2b)` of them; and the star at that point is `b`-uniform, distinct, sunflower-free and — for the silliest reason, every member contains the point — **intersecting**. So it is an `ι` witness |
 | `star_Intersecting`, `star_no_sunflower` | `coq/Intersecting.v` | The two properties of the star the bound rests on. Intersecting-ness needs no hypothesis at all; sunflower-freeness is inherited from any superfamily |
 | `sunflower3b_complete`, `contains_3_sunflower_dec` | `coq/F23.v` | **`ContainsKSunflower 3` is decidable.** Not obvious from the definition, which quantifies over *arbitrary* lists of sets that happen to be set-equal to members — an infinite search space. `sunflower3b_sound` (already proved) collapses it via `contains_sunflower_literal`; the converse here is immediate, and together they decide. `upper_bound_of_sunflower_free_bound` is what consumes it: any bound on sunflower-free families becomes an `UpperBound`. This closes the cost recorded in `SpreadRestrictions.v` at `k = 3` |
-| `iota_le_g`, `g_le_iota_scaled`, `iota_g_sandwich` | `coq/IotaRate.v` | **`2·ι(b) ≤ g(b) ≤ 2b·ι(b)`.** The two extremal quantities are within a factor `b` of each other. `IotaAtMost b N` reads "ι(b) ≤ N" and `GAtMost b M` reads "g(b) ≤ M"; neither `g` nor `ι` is a function here, since neither is known |
+| `iota_le_g`, `g_le_iota_scaled`, `iota_g_sandwich` | `coq/IotaRate.v` | **`2·ι(b) ≤ g(b) ≤ 2b·ι(b)`.** The two extremal quantities are within a factor `b` of each other. The lower half is in print: Pálvölgyi, Polymath10 comment 23193 (`docs/reading.md` A17/A17a); the two-sided sandwich was not found there or elsewhere (B10, not exhaustive). `IotaAtMost b N` reads "ι(b) ≤ N" and `GAtMost b M` reads "g(b) ≤ M"; neither `g` nor `ι` is a function here, since neither is known |
 | `every_construction_is_within_2b_of_iota` | `coq/IotaRate.v` | Any sunflower-free family at uniformity `b`, **however built**, has at most `2b·ι(b)` members. So the Abbott–Hanson–Sauer substitution is not competing with other constructions — it is within a subexponential factor of the extremal function itself, and no variant of it beats computing `ι` for larger `b` |
 | `two_b_le_pow_two`, `scaled_power_absorbs` | `coq/IotaRate.v` | `2b ≤ 2^b` and hence `2b·C^b ≤ (2C)^b` — the step where the sandwich's factor disappears into the base, which is the whole reason it says anything about rates |
 | `iota_exponential_iff` | `coq/IotaRate.v` | **`ι` and `g` have the same exponential rate**: `∃C ∀b, ι(b) ≤ C^b` iff `∃c ∀b, g(b) ≤ c^b`, with `c = 2C`. Finitistic — no limit is taken, and none is needed |
@@ -190,7 +194,7 @@ Every theorem in this table compiles with Coq 8.18 and reports
 | `star_defect_is_the_singleton_spread_clause`, `star_bounded_refutes_spread`, `the_two_branches_of_the_dichotomy` | `coq/StarDefect.v` | **The correction, as a theorem.** `ρ` is *not* an unnamed quantity: `Spread.Spread F r` is `∀T, NoDup T → r^\|T\|·deg T F ≤ \|F\|`, and at `T = [x]` that is exactly `ρ(F) ≥ r`. So `ρ` is the singleton clause of **spreadness** — `κ` in [ALWZ20] Def 1.10, which notes it was called *regularity* earlier, and Def 2.5 of [Lovett]'s PCMI notes, both read from rendered pages. Consequences: `star_defect_bound` is the "structured" branch of the classical Erdős–Rado dichotomy ([Lovett] Lemma 2.2, constant `(r−1)n` = `2b` at `r = 3`), and the *other* branch, `SpreadReduction.elementary_spread_disjoint`, was already here at `2b+1` — `the_two_branches_of_the_dichotomy` puts them side by side. `StarBounded c` says no sunflower-free family is `(c+1)`-spread *at singletons*, a non-existence statement where the spread lemma is a size bound, which is why it is so much stronger and why it is false. `docs/roadmap.md` §14.5 withdraws the novelty claim in full |
 | `star_bounded_needs_c_at_least_five`, `the_ratio_at_four_is_between_the_witness_and_the_ceiling` | `coq/StarDefect.v` | **And it is not a constant.** `ρ` is exactly multiplicative under the Abbott–Hanson–Sauer substitution — the `\|H\|^(a−1)` in `maxdeg` cancels — so iterating on `ι(3)` gives `ρ = 2^k` at `b = 3^k`, i.e. `ρ = b^{log₃2} = b^{0.63}`, verified directly at `b = 9` where 10,000 members have maximum degree 2500. The measured row 2, 3, 2.75 looked flat only because it stopped at `b = 3`. Formalising the refutation needs `substitute` in Coq; what is proved is that the doubling of `ι(4,9)` forces `c ≥ 5` against the proved ceiling `2b = 8`. What survives is the *geometric mean*, which tends to `√10` while the maximum diverges — so no proof of the conjecture can be a per-level estimate |
 | `bounds_coherent_er`, `bounds_coherent_spread`, `bounds_coherent_f_2_3` | `coq/Audit.v` | The development's own lower and upper bounds fit in one order — *derived* from the formal statements, so a contradictory pair would make these proofs of `False` |
-| `vc_sunflower_bound`, `vc_sunflower_conjecture` | `coq/VCSunflower.v` | **The Erdős–Rado conjecture for families of bounded VC-dimension**: every `n`-uniform distinct family with `VCdimLe d F` and at least `K(d,k)^n + 1` members contains a `k`-sunflower, `K(d,k) = 2^(2d+3+log2((64d+8)k))` independent of `n`. **Axiom-free** — it does not use `Rao20_lemma2`. The theorem is Ge–Wang–Xu–Zhao (arXiv:2609.18995, 2026, constant `50dk`); the proof here is elementary and different at three steps (`docs/roadmap.md` §59.1). A case of the conjecture itself, on a class that excludes the Erdős–Rado product construction (`product_vc_full`). Only the uniform form of their Theorem 1.1 is formalised, not the `ℓ`-bounded one |
+| `vc_sunflower_bound`, `vc_sunflower_conjecture` | `coq/VCSunflower.v` | **The Erdős–Rado conjecture for families of bounded VC-dimension**: every `n`-uniform distinct family with `VCdimLe d F` and at least `K(d,k)^n + 1` members contains a `k`-sunflower, `K(d,k) = 2^(2d+3+log2((64d+8)k))` independent of `n`. **Axiom-free** — it does not use `Rao20_lemma2`. The theorem is Ge–Wang–Xu–Zhao (arXiv:2609.18995, 2026, constant `50dk`); the formal proof is elementary and departs from theirs at four places (`docs/roadmap.md` §59.1), with prior art for that route PLAUSIBLE-not-novel and no novelty claimed. A case of the conjecture itself, on a class that excludes the Erdős–Rado product construction (`product_vc_full`). Only the uniform form of their Theorem 1.1 is formalised, not the `ℓ`-bounded one |
 | `sauer_shelah`, `Phi_le_pow`, `traces_count` | `coq/VCSunflower.v` | **Sauer–Shelah**, proved over canonical traces (sublists of `E` in `E`'s order, so distinct traces are distinct lists): no `(d+1)`-set shattered gives at most `Φ_d(\|E\|) ≤ (\|E\|+1)^d` traces |
 | `trace_sum_bound` | `coq/VCSunflower.v` | **The entropy step, without entropy.** An `R`-spread family (`R ≥ 2`) with at most `R^t` traces on `E` has `Σ_{x∈E} deg(x) ≤ (2t+1)\|F\|`: members with small traces contribute at most `t`, large traces are grouped and each group is small by spreadness |
 | `sum_deg_sq_bound` | `coq/VCSunflower.v` | **Second moment of the degrees**: `2^s · Σ_x deg(x)² ≤ (32d+4)\|F\|²` for a `2^s`-spread family of VC-dimension `≤ d`, `s ≥ 2d+2`, by dyadic layers each of which Sauer–Shelah and the tail bound keep small |
@@ -405,7 +409,7 @@ what it does and does not cover, is in [`docs/testing.md`](docs/testing.md).
 | Mutation testing | `make mutants` | A hypothesis in a definition that no theorem is sensitive to |
 | Statement baselines | `make statements` | A *statement* that changed — which nothing else here can see, since a weakened theorem still compiles, still reports closed, and still re-typechecks |
 | Documentation numbers | `make docnumbers` | A count quoted in `README.md` or `STATUS.md` that no longer matches the list it counts — the same drift one level up. Three were already wrong when the gate was added |
-| Route ceilings | `make ceilings` | A reduction whose declared best case disagrees with its own arithmetic; a route being worked on whose best possible bound loses to Erdős–Rado 1960. Six of the nine routes here do |
+| Route ceilings | `make ceilings` | A reduction whose declared best case disagrees with its own arithmetic; a route being worked on whose best possible bound loses to Erdős–Rado 1960. Seven of the twelve routes here do, and one bounds nothing |
 | The pull request | `make prcheck` | A write-up whose counts have gone stale, whose cited theorem no longer exists under that name, or that calls a result new without a literature search. It found six unaudited theorems on its first run |
 
 Current mutation results: 196 mutations, all matching the outcome
@@ -582,12 +586,17 @@ the routes compare by their base.
 
 ```
   route                                     base(50) base(200)    g  verdict
-  elementary cover, r = 2n+1                     101       401 0.99  linear: loses
-  greedy cover, r = 2n                           100       400 1.00  linear: loses
-  quadratic split, r = 1+sqrt(3n^2-4n+3)          87       347 0.99  linear: loses
-  star extremality, pinned at r = n+1             51       201 0.99  linear: loses
+  elementary cover, r = 2n+1                     101       401 0.99  linear or worse: loses
+  greedy cover, r = 2n                           100       400 1.00  linear or worse: loses
+  quadratic split, r = 1+sqrt(3n^2-4n+3)          87       347 0.99  linear or worse: loses
+  matching split, method ceiling r = n+1          51       201 0.99  linear or worse: loses
+  star extremality, pinned at r = n+1             51       201 0.99  linear or worse: loses
+  tau-indexed bound, r = n                        50       200 1.00  linear or worse: loses
   Erdos-Rado profile via the reduction            38       149 0.98  linear: equals
   spread lemma, r ~ 3 log2(3n)                    24        30 0.22  sublinear
+  vector tester, BHL (6 sqrt D)^n via ASU        inf       inf  inf  none: no finite bound
+  vector tester, (2 log2 D)^n via ASU           2997     14846 1.16  linear or worse: loses
+  vector tester, D-uniform 3^n via ASU             9         9 0.00  constant
   constant threshold (the conjecture)              8         8 0.00  constant
   ---
   Erdos-Rado 1960 (the bar)                       38       149 1.00
@@ -597,7 +606,10 @@ the routes compare by their base.
 `g` is the measured exponent in `base(n) ~ n^g`. **A route needs a
 sublinear base to be in the running at all**: `r*(n,3) ≤ c·n` beats
 Erdős–Rado exactly when `c < 2/e = 0.7357…`, and every linear route above
-has `c ≥ 1`. Each route declares the verdict it expects and a mismatch
+has `c ≥ 1`. The `(2 log₂ D)^n` vector row is superlinear, and a vector
+bound with any power of the alphabet, `(A·D^α)^n`, bounds nothing once fed
+through [ASU12]'s reduction, whose alphabet is the ground set
+([`docs/roadmap.md`](docs/roadmap.md) §75.1). Each route declares the verdict it expects and a mismatch
 fails `make verify`, so a reduction cannot be described as a path to a
 record once its own ceiling says otherwise.
 

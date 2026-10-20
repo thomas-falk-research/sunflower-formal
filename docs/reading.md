@@ -130,6 +130,10 @@ literature, resolved.
 | B19g | The absolute-one-level corner of B19d's 2×2 is empty | **REFUTED — it is the Duke–Erdős function, and the corpus already holds the paper** | [Kup25] p. 57, rendered, §1.9.3: `f(n,k,ℓ,s)` is the largest `k`-uniform family with no `Δ(s)`-system of kernel size `ℓ`, which the survey states for `k=3, ℓ=2` as *"no pair of elements is contained in `s` triples"* — that is `deg T < s` for every `\|T\| = ℓ`, an **absolute cap at one level**. Quoted values: `f(n,3,2,s) ~ (1/6)sn²`; `f(n,k,ℓ,s) = Θ_k(s^(ℓ+1)n^(k−ℓ−1))` for `k ≥ 2ℓ+2` (Bradač–Bucić–Sudakov). So Rao's condition is the **simultaneous, geometric** version of Duke–Erdős's single-level cap. **With one precision, found on p. 34 and worth the correction:** `f(n,k,ℓ,s)` forbids a `Δ(s)`-*system* with kernel of size `ℓ`, and a sunflower needs **pairwise disjoint petals**, so that condition is strictly *weaker* than `deg T < s` for `|T| = ℓ` — except at `ℓ = k−1`, where the petals are singletons and disjointness is automatic. p. 57's phrasing is exactly that case (`k=3, ℓ=2`). So Duke–Erdős occupies the corner **exactly at `ℓ = k−1`** and only approximately below it. `dukeerdos.pdf` has been in the corpus throughout and was never connected to `I(m,r)`. |
 | B19f-KM | Whether [KM17]'s `B*(H)` layers impose sunflower-freeness as a hypothesis, or derive it | **CONFIRMED BY RENDERING, both exponents exactly as previously extracted — and it is a DERIVED structural decomposition, not an imposed hypothesis. A23's verdict stands.** | [KM17] p. 5, rendered: *"Define `B*(H)` to be the set of `T ⊂ V(H)` such that (i) `0 < |T| < r`, and (ii) `T` is the core of an `(r+1)^{|T|}`-sunflower in `H`."* Then `B′(H)` = inclusion-minimal members, `B″(H)` = edges containing no member of `B*(H)`, `B(H) = B′ ∪ B″`, `B_i` = members of size `i`. p. 6, rendered: *"Claim. `B_i` contains no `(r+1)^{i−1}`-sunflower."* with a half-page proof, then *"Applying the Claim and Lemma 11 yields `|B_i| < f((r+1)^{i−1}, i)` for all `i > 1`."* The **only** hypotheses on `H` (p. 5) are *"intersecting `r`-graph with `τ(H) ≥ 2` and `|H| > hm″(n,r)`"*, and the paper attributes the machinery: *"The following crucial claim proved by Frankl can be found in Lemma 1 in [6, 8]"* — Frankl's `Δ`-system base construction, applied with petal count `r+1` chosen by the authors. **So it is a theorem *about* intersecting families that *produces* a sunflower-free base, not a theorem *bounding* intersecting families *assumed* sunflower-free with prescribed `τ`.** It does not replace the `ι(4,11)` computation. Note the degree-type condition is **relative** (`n` large, `|H| ~ (r−2)·C(n, r−2)`), stated at **one** level at a time but for **every** `i` — Rao's shape in the fractional setting, which is B19d's *relative / every level* corner again. |
 | B19f-KN | Where [KN24] sits in B19d's 2×2, from the primary source rather than from the survey | **Absolute, one level — B19g confirmed from the primary.** Read pp. 1–8 of 61. | p. 1, abstract, rendered: the Duke–Erdős problem *"determine the maximum size of an `n`-vertex `k`-uniform hypergraph without a sunflower with `s` petals and a kernel of size `ℓ`"* — the extremal function `f(n,k,ℓ,s)`, an **absolute** cap (`< s` petals on a kernel of size exactly `ℓ`) at a **single** level `ℓ`. Main results pp. 2–4: exact `f(n,k,ℓ,s)` for `n ≥ n₀(k,s)` in several `(k,ℓ)` ranges plus extremal structure, via the `Δ`-system method with spread approximations. **No intersecting hypothesis and no cap at every level.** B19g reached this corner through [Kup25] p. 57; this reaches it through the paper. |
+| B23 | An induced matching inside the support of a tensor bounds its slice rank from below (`docs/roadmap.md` §75.2, hypothesis 2(a)) | **CONFIRMED in print; not new** | [BCCGNSU17] Prop. 4.8, p. 18, rendered: *"If M is a tricolored sum-free set in an abelian group H, then \|M\| ≤ slice-rank(D_H)"*, proved by *"slice-rank(F\|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)"* and Lemma 4.7 (diagonal ⇒ slice rank `\|X\|`, p. 15); the proof uses only the support. Also [ST16] Lemma 3 (projections do not raise rank) with Example 5, and [KL26] p. 2. See Tier 3c. |
+| B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **NOT FOUND in the eight Tier 3c sources. NOT EXHAUSTIVE.** | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. **Not searched:** Kleinberg–Sawin–Speyer, Norin, Pebody, Christandl–Vrana–Zuidam, Strassen's support functionals — the asymptotic-spectrum literature is where such a barrier would most likely be. |
+| B25 | The alphabet-indexed multicolored capacity `Λ(D) = lim_n M(D,n)^{1/n}` (`docs/roadmap.md` §75.2) as the obstruction to `D`-uniform vector-tester bounds | **SPLIT. The quantity and `D`-dependent upper bounds on it are IN PRINT; its use as the barrier, and any lower bound growing with `D`, NOT FOUND, NOT EXHAUSTIVE — "new to this repository" for that part only.** The first draft of this row said no Tier 3c source varies the alphabet; a fresh-context review found two that do. | [NaSa17] Remark 7, p. 3, rendered: *"The proofs of theorems 3 and 5 can be extended without modification to handle a multicolored version of the problem analogous to multicolored sum-free sets as defined in [2]."* [BHL26] p. 12: *"The new bound on the vector sunflower problem of Alon, Shpilka and Umans [2] (Theorem 2) extends to indexed multicolored sunflowers [2, 45]"*. [ASU12] Conjecture 6 (p. 8) is alphabet 3 only. Same unsearched list as B24. |
+| A25 | [NaSa17] p. 2 says the **Erdős–Rado** conjecture is equivalent to `c_D < D^{1−ε}` (this file's [NaSa17] entry until 2026-10-20) | **REFUTED — a paraphrase error in this register** | p. 2 re-rendered: *"the now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to proving that c_D < D^{1−ε} … [1, Theorem 2.7]"*. [ASU12] Thm. 2.7 (p. 6, rendered) ties Conjecture 4 to Conjecture 2, which p. 3 states as Erdős–Szemerédi. The [NaSa17] entry is corrected in place; `docs/roadmap.md` §75.1 is the arithmetic of why a `D`-power saving gives nothing for Erdős–Rado. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -865,10 +869,25 @@ Two further things from the full read:
 * **Theorem 8, p. 4**: `μ₃^S ≤ √(1+C)` where `C ≤ 2.7552` is the capset
   capacity (Ellenberg–Gijswijt), giving `1.938` — weaker than Theorem 3,
   and a clean statement of how the two capacities relate.
+* **Remark 7, p. 3** (all five pages re-rendered 2026-10-20): the proofs
+  of Theorems 3 and 5 *"can be extended without modification to handle a
+  multicolored version of the problem analogous to multicolored sum-free
+  sets as defined in [2]"* — the alphabet-`D` multicolored bound that
+  `docs/roadmap.md` §75.2 F6 uses (register B25).
 * **Theorem 5, p. 2**: for sunflower-free `A ⊂ (Z/DZ)^n`, `|A| ≤ c_D^n`
   with `c_D = (3/2^{2/3})(D−1)^{2/3}`. That is the [ASU12] Conjecture 4
-  setting, and p. 2 notes the Erdős–Rado conjecture is equivalent to
-  `c_D < D^{1−ε}` [ASU12, Thm 2.7].
+  setting. **Corrected 2026-10-20:** this bullet used to say that p. 2
+  notes *the Erdős–Rado conjecture* is equivalent to `c_D < D^{1−ε}`.
+  It does not. p. 2, re-rendered (PyMuPDF, 110 dpi): *"we remark that the
+  now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to
+  proving that c_D < D^{1−ε} for some ε and all D sufficiently large [1,
+  Theorem 2.7]"*. The Erdős–Rado statement on the same page is the
+  `D`-uniform one: *"if there exists a constant C independent of D such
+  that any 3-sunflower-free set in (Z/DZ)^n has size at most C^n, then
+  Conjecture 1 holds for k = 3 with c_3 = e·C"*. The paraphrase had
+  exactly the Erdős–Rado / Erdős–Szemerédi conflation `docs/references.md`
+  warns about, and in the direction that makes a power saving in `D` look
+  like progress on Erdős–Rado. It does not: `docs/roadmap.md` §75.1.
 
 ### [Mis26] Mishra, *Erdős Rado Sunflower Theorem for Shifted Families*, arXiv:2606.02667v2
 
@@ -908,7 +927,7 @@ results) instead. Five hits post-date the Tier 3 list:
 
 ```
 2026-09-24  2609.30263  Thresholds and spread in set systems of bounded VC-dimension   [read, delegated]
-2026-09-22  2609.27044  Limitations of the slice rank method in additive combinatorics [abstract only]
+2026-09-22  2609.27044  Limitations of the slice rank method in additive combinatorics [abstract only; read in full 2026-10-20, Tier 3c]
 2026-09-07  2609.07268  The exponent of harmonic LCM avoidance                         [abstract only]
 2026-09-05  2609.06175  Sunflower-Free Uniform Families: Recursive Constructions ...   [read, delegated]
 2026-07-17  2609.18995  Bounded VC-dimension implies the Erdős–Rado sunflower conj.   [read]
@@ -1030,9 +1049,254 @@ artifact, noted while reading its code: its README cites a
   tensor supported exactly on the `k`-sunflower relation has maximal slice
   rank, ruling out exponential savings by that method. Abstract only; it
   bears on `coq/SliceRank.v`'s framing (the method is a `k = 3`
-  phenomenon) and on nothing proved.
+  phenomenon) and on nothing proved. **Superseded: read in full on
+  2026-10-20, see Tier 3c [KL26].**
 * **arXiv:2609.07268**, Luo–Yang–Zhu (7 Sep 2026): harmonic-LCM exponent
   `γ_k` via weighted sunflower-free families. Abstract only.
+
+---
+
+## Tier 3c — the vector-tester route (session of 2026-10-20)
+
+Read for `docs/roadmap.md` §75. **Rendering deviation from rule 1,
+recorded:** `pdftoppm` is not installed in this container; every page
+below was rendered with PyMuPDF 1.26.3 (`page.get_pixmap(dpi=110)`) and
+looked at as an image. Pages rendered and read: [BHL26] 1–16, [KL26] 1–11,
+[ASU12] 3–14, [CKSU05] 1–10, [BCCGNSU17] 1–27, [ALWZ20] 15–17, [NaSa17]
+1–5. No quotation below comes from extracted text. The one non-PDF source,
+[ST16], is a blog post retrieved as JSON through the WordPress API (rule
+31), with formulas taken from the LaTeX `alt` text the JSON carries.
+
+**One identifier was recalled rather than looked up, and was wrong.**
+`arXiv:1612.07342` was fetched for Sawin–Tao; it is *"Towards New
+Frontiers in the Exploration of Charmless Non-Leptonic B Decays"*
+(Fleischer, Jaarsma, Vos). The Sawin–Tao notes are not on arXiv; the
+WordPress search API (`public-api.wordpress.com/rest/v1.1/sites/terrytao.wordpress.com/posts/?search=slice%20rank`)
+returned post 9271. The same failure as the `[ASU12]` note above; the
+same rule applies.
+
+### [BHL26] Bucić, He, Lee, *Proof of the Erdős–Szemerédi sunflower conjecture*, arXiv:2610.26686v1
+
+**Read in full: 16 of 16 rendered pages.** v1, 19 Oct 2026 (arXiv API
+`<published>2026-10-19T16:32:32Z`), unrefereed.
+
+* **Theorem 1, p. 2:** *"For every integer k ≥ 3 and every integer n ≥ 1,
+  any subset of 2^[n] not containing a sunflower consisting of k sets has
+  size at most 3(2 − 1/(16k³))^n."* A ground-set (Erdős–Szemerédi) bound,
+  not an Erdős–Rado one.
+* **Theorem 2, p. 3:** *"Let k ≥ 3 and D, n ≥ 1 be integers. Then
+  V_k(D,n) ≤ (C_k · D^{1−1/(k−1)})^n, where C_k = (2k)^{2/(k−1)}."* At
+  `k = 3`, `C_3 = 6` and the bound is `(6√D)^n`; p. 12: *"for k = 3 our
+  argument does improve the O(D^{2/3})^n bound from [45] to O(√D)^n"*.
+* **Definition of the vector problem, p. 2:** *"a k-sunflower in [D]^n is
+  a collection of k pairwise distinct vectors x_0, …, x_{k−1} ∈ [D]^n such
+  that, in each coordinate, their entries are either all equal or pairwise
+  distinct."*
+* **Lemma 3, p. 4** (the dimension argument; proof pp. 4–5 read):
+  *"Let k ≥ 2, and let V ⊆ U be finite sets. Let f : ⟨U⟩^k → Q be
+  k-diagonal on V. Suppose that there is a finite-dimensional Q-vector
+  space P of functions from U to Q, with a basis p_1, …, p_d, such that
+  f(x_0, …, x_{k−1}) = Σ_{i=1}^{k−1} Σ_{j=1}^{d} p_j(x_i) G_{i,j}(x_0, …,
+  x̂_i, …, x_{k−1}) for some functions G_{i,j} : ⟨U⟩^{k−1} → Q … Then
+  |V| ≤ dim P."* p. 4 calls it a refinement of *"the usual (see [53,
+  Lemma 1]) argument with diagonal tensors"*.
+* **The tester, p. 5:** *"For a function c : ⟨[D]⟩^k → Q, which is
+  nonvanishing on rainbow tuples, we define a function q_c"* — `1` on
+  monochromatic tuples, `c` on rainbow ones, `0` otherwise — and
+  `T_c(x_0, …, x_{k−1}) = Π_{i∈[n]} q_c((x_0)_i, …, (x_{k−1})_i)`. **So
+  `c` is required to be nonzero on every rainbow tuple**; the `c` Lemma 6
+  builds is (p. 8) *"nonvanishing on rainbow tuples and vanishes
+  elsewhere"*. Zeros on rainbow tuples are outside the paper's class,
+  though Lemma 3 itself would accept them (§75.2).
+* **p. 11, verbatim:** *"The implication in the other direction remains
+  open, although Alon, Shpilka, and Umans [2] showed that if one can show
+  an exponential upper bound in the vector variant of the problem (namely
+  V_k(D,n)) which is independent of the alphabet size D, then one would
+  prove the Erdős-Rado Conjecture. Our bounds, while yielding a polynomial
+  saving in alphabet size, remain heavily alphabet-dependent."*
+* **p. 13, on [KL26]:** *"Their obstruction concerns the set-sunflower
+  relation. Our construction instead gives a tester for vector
+  sunflowers, and we transfer the resulting vector bound to set families;
+  thus their result does not directly apply to our tester."*
+* **p. 13, AI statement:** the proof of Theorem 2 *"was found by ChatGPT 6
+  Astra Pro"*; *"The proof has been verified in Lean 4.35; the
+  verification will be made available on the Palomar repository."* That
+  Lean development was **not** looked for or checked.
+* Steps checked on the page: Lemma 3's proof; Observation 5; the Claim in
+  Lemma 6 (the interpolation keeps `R_h` nonzero exactly on rainbow
+  prefixes); Lemma 7's pigeonhole and monomial count; the `D ≤ 4k²`
+  case of Theorem 2 (`C_k D^{1−1/(k−1)} ≥ D ⟺ D ≤ (2k)² = 4k²`); the
+  Chernoff step (with `μ = n(k−1)/D`, `t = n/(k−1)`, `(eμ/t)^t =
+  (e(k−1)²/D)^{n/(k−1)} ≤ (4k²/D)^{n/(k−1)}`). **No error found** in those
+  steps. Two labelling slips, harmless: p. 8 ends Lemma 6's proof *"This
+  completes the proof of Theorem 6"*, and p. 11 says *"Applying Theorem 8"*
+  for Proposition 8.
+
+### [KL26] Karingula, Lovett, *Limitations of the slice rank method in additive combinatorics*, arXiv:2609.27044v1
+
+**Read in full: 11 of 11 rendered pages.**
+
+* **Theorem 1, p. 3:** *"Let F be any field, k ≥ 4, and n ≥ 0. Every
+  tensor T : ({0,1}^n)^k → F that faithfully realizes the sunflower
+  relation satisfies sr(T) = 2^n."* **Corollary 2, p. 3:** distinct-input
+  realisations have `sr(T) ≥ 2^{n−k}`. Both are about the **set**
+  relation on `{0,1}^n` and **`k ≥ 4`**; at `k = 3` Naslund–Sawin's
+  `(3/2^{2/3})^{n+o(n)}` (their eq. (2), p. 3) stands.
+* p. 2, the two facts hypothesis 2(a) of §75.2 rests on: *"Restricting the
+  inputs independently cannot increase slice rank, since a restricted
+  slice is still a slice or is zero. A tensor is diagonal if it vanishes
+  unless x_1 = ··· = x_k. If all its diagonal entries are nonzero, its
+  slice rank is |X| [7]."*
+* p. 4: partition rank may do better; *"we obtained a lower bound of
+  1.96^n for 4-sunflowers … We omit the proof"*. Not checkable.
+* **Bearing here:** no barrier for the vector tester at `k = 3`; BHL p. 13
+  says the same.
+
+### [ASU12] — what this session added (pp. 3–14)
+
+* **Conjecture 2, p. 3** is Erdős–Szemerédi: *"There exists ε > 0 such
+  that any family F of subsets of [n] (n ≥ 2) of size |F| ≥ 2^{(1−ε)·n}
+  contains a 3-sunflower."*
+* **Conjecture 3, p. 5:** *"For every k there is an absolute constant b_k
+  so that for every D and every n any set of at least b_k^n vectors in
+  Z_D^n contains a k-sunflower."* **Theorem 2.6, p. 5:** *"If Conjecture 1
+  holds for c_k then Conjecture 3 is true for b_k = c_k. Similarly, if
+  Conjecture 3 holds for b_k, then Conjecture 1 is true with c_k = e · b_k."*
+* **The proof of 3 ⇒ 1, p. 6 — the reduction §75.1 costs:** *"Given a
+  family F of c^s subsets of U we shall define a corresponding family
+  inside Z_D^s, for some large D. Indeed, we can assume w.l.o.g. that
+  |U| ≤ s · c^s. For convenience assume that U = [D] for D ≤ s · c^s. Pick
+  a map from [D] to [s] uniformly at random from all such maps. For a
+  given s-set A ⊂ [D], the probability that A was mapped injectively to
+  [s] is exactly s!/s^s > e^{−s}."* The alphabet is the ground set.
+* **Conjecture 4, p. 6** (weak, `D`-dependent): *"There is an ε > 0 so
+  that for D > D_0 and n > n_0, any set of at least D^{(1−ε)n} vectors in
+  Z_D^n contains a 3-sunflower."* **Theorem 2.7, p. 6** makes it
+  equivalent to **Conjecture 2**, Erdős–Szemerédi — not to Erdős–Rado.
+* **Multicolored, p. 8:** *"We say that such a triple (x, y, z) is an
+  ordered sunflower if the set {x, y, z} is a sunflower in Z_3^n … We say
+  that a collection of ordered triples contains a multicolored sunflower
+  if it contains three triples, (x^(1), y^(1), z^(1)), (x^(2), y^(2),
+  z^(2)), (x^(3), y^(3), z^(3)), not all equal, for which {x^(1), y^(2),
+  z^(3)} form a sunflower."* **Conjecture 6** asks for `3^{(1−ε)n}` at
+  alphabet 3 only. p. 13, Figure 2's caption: *"it would not be overly
+  surprising if everything to the left of Conjecture 3 and 4 in this
+  figure turned out to be false."*
+* **The lower bound, pp. 12–13:** *"we obtain a lower bound of
+  (2^{4/3} − o(1))^n > 2.51^n on the maximum cardinality of a collection
+  of ordered sunflowers in Z_3^n × Z_3^n × Z_3^n containing no
+  multicolored sunflower"*, from the strong-USP capacity `≥ 2^{2/3}` of
+  [CKSU05] through Theorem 3.7 (pp. 10–12; Lemma 3.8 is [BCS97] Lemma
+  15.31, a degeneration made into a restriction by level sets, p. 12).
+
+### [CKSU05] Cohn, Kleinberg, Szegedy, Umans, *Group-theoretic algorithms for matrix multiplication*, arXiv:math/0511460v1 (FOCS 2005)
+
+**Read in full: 10 of 10 rendered pages** (proceedings pp. 379–388).
+**Proposition 3.8, p. 383:** *"For each k ≥ 1, there exists a strong USP
+of size 2^{k−1}(2^k + 1) and width 3k."*, followed, outside the
+proposition, by *"It follows that the strong USP capacity is at least
+2^{2/3} and ω < 2.48."* Everything is over the three
+symbols `{1,2,3}`; there is **no alphabet parameter**, so nothing here
+speaks to how the multicolored quantity grows with `D`. Lemma 3.2's
+`3/2^{2/3}` cap on USP capacity (p. 382) and Conjecture 3.4 are the
+objects [BCCGNSU17] later refutes.
+
+### [BCCGNSU17] Blasiak, Church, Cohn, Grochow, Naslund, Sawin, Umans, *On cap sets and the group-theoretic approach to matrix multiplication*, Discrete Analysis 2017:3, arXiv:1605.06702v4
+
+**Read in full: 27 of 27 rendered pages** (corpus file
+`blasiak_capset.pdf`).
+
+* **Proposition 4.8, p. 18 — hypothesis 2(a), in print:** *"If M is a
+  tricolored sum-free set in an abelian group H, then |M| ≤
+  slice-rank(D_H)."* Proof: *"When we restrict a function F : X × Y × Z →
+  F to subsets X_0, Y_0, Z_0, we can also restrict any decomposition as in
+  (4.1), showing that slice-rank(F|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)."* then
+  Lemma 4.7 (p. 15: a diagonal has slice rank `|X|`). The argument uses
+  nothing about `D_H` beyond its support, so it holds for every tensor and
+  every induced matching in its support.
+* **Theorem A′, p. 2:** *"There exists an absolute constant δ = 2ε =
+  0.05663… such that if H ≅ (Z/qZ)^n for some prime power q, then every
+  tricolored sum-free set in H has size at most 3 · |H|^{1−δ/log q}."* At
+  `q = 3` that is `3·(3e^{−δ})^n` with `3e^{−δ} = 2.8348…` (computed this
+  session from `δ = log((2/3)2^{2/3})`, as p. 23 defines it).
+* **Lemma 3.4, p. 8:** a *border* tricolored sum-free set (a degeneration)
+  of size `|M|` and range `t` gives genuine ones of size `|M|^N/(2Nt+1)³`
+  in `H^N` — the level-set device, the one tool here that turns a
+  degeneration lower bound into an induced-matching lower bound.
+* **Theorem 4.14, p. 22:** *"If H is an abelian group H ≅ (Z/qZ)^n × G
+  where q is a prime power, then every tricolored sum-free set in H has
+  cardinality at most 3 · |H| · J(q)^n."* At `q = 3`, `G` trivial, that is
+  `3·(3J(3))^n` with `3J(3) = inf_{0<x<1}(1+x+x²)x^{−2/3} = 2.755104…`
+  (from (4.10), p. 20; minimised numerically this session) — sharper than
+  Thm. A′, which p. 3 says is stated *"with a slightly worse exponent as
+  we have stated it uniformly in p"*. p. 22: Theorem 4.14 is *"known to
+  be sharp up to a subexponential factor by [14, Theorem 2], conditional
+  on a conjecture … later proved independently in [18] and [19]"* —
+  [KSS], Norin, Pebody; none of the three was read.
+
+### [ST16] Sawin, Tao, *Notes on the "slice rank" of tensors*, What's New, 24 Aug 2016
+
+WordPress post 9271 (JSON `author` field `williamsawin`; the post opens
+*"[This blog post was written jointly by Terry Tao and Will Sawin.]"*).
+**Read: lines 1–180 of a 386-line plain-text conversion of the JSON
+`content` field (41,293 characters)** — the introduction through the
+statement of Proposition 6 and the start of its proof. Lines 181–386
+(Propositions 7–11, the entropy optimisation, the capset and
+Naslund–Sawin computations) **not read**; a keyword listing showed their
+statements, which is not reading them.
+
+* **Lemma 3:** for linear maps `φ_j`, `rank((⊗φ_j)(v)) ≤ rank(v)`, with
+  equality when every `φ_j` is injective — restriction to sub-alphabets is
+  a coordinate projection, so it cannot raise slice rank.
+* **Example 5:** a diagonal `Σ_t c_t e_{1,t} ⊗ ⋯ ⊗ e_{k,t}` with every
+  `c_t ≠ 0` *"has rank d"*.
+* **Proposition 4** (lower bound (5)) and **Proposition 6** (asymptotic
+  lower bound (11)): with total orders on the index sets, the slice rank
+  of `v^{⊗n}` is at least `exp((H′ + o(1))n)`, `H′` the best min-marginal
+  entropy of a distribution on the **maximal elements** `Γ′` of the
+  support. §75.2 (F7) shows this bound is at most `9^{n+o(n)}` on the
+  sunflower support, for every choice of orders.
+
+### [ALWZ20] §5 — the two rainbow conjectures (Secondary B)
+
+Same file and version as the [ALWZ20] entry above (v3); pp. 15–17
+re-rendered this session.
+
+* **Conjecture 5.1, p. 15** (Rainbow sunflower conjecture): *"There exists
+  a constant C such that the following holds. Let F be a w-set system of
+  size |F| ≥ C^w over a ground set X. Assume that the elements of X are
+  colored with either red, green, or blue uniformly and independently at
+  random. Then with high probability, there exists distinct sets S_i, S_j,
+  S_k ∈ F such that if Y = S_i ∩ S_j ∩ S_k, then all elements of S_i \ Y
+  are red, all elements of S_j \ Y are green, and all elements of S_k \ Y
+  are blue."* p. 15: *"Note that Conjecture 5.1 implies Conjecture 1.3 for
+  r = 3. Furthermore, this paper gives a proof of Conjecture 5.1 where C^w
+  is replaced by (log w)^{w(1+o(1))}, and Rao [19] improved the bound to
+  (C log w)^w for some constant C. Unlike in Theorem 1.9, we do not know
+  if (C log w)^w is tight, and in fact we suspect this is not the case."*
+* **Conjecture 5.2, p. 15:** *"There exists a constant C such that the
+  following holds. Let F be a w-set system of size |F| ≥ C^w over a
+  ground set X. Assume that the elements of X are colored with either red
+  or blue uniformly and independently. In addition let S ∈ F be sampled
+  uniformly. Then with high probability, there exists distinct sets S_i,
+  S_j ∈ F such that all elements of S_i \ S are red, all elements of
+  S_j \ S are blue, and S_i ∩ S = S_j ∩ S ⊊ S."* p. 16: *"Conjecture 5.2
+  also implies Conjecture 1.3 for r = 3, but we do not know of any
+  nontrivial bounds for it. It would be interesting to have even a
+  w^{o(w)} bound."*
+* **Cost, rules 14 and 20.** Both conjectures *imply* the `k = 3`
+  conjecture, so as routes their ceiling is the target itself (constant
+  base) and their cost is that each is at least as hard as the target.
+  5.1's best known bound, `(C log w)^w`, is the record's shape and no
+  better, so a route through 5.1 has to remove exactly the `log` the
+  spread route has to remove; nothing in §5 says how. 5.2 has, in the
+  authors' words, no nontrivial bound at all, and the bound they would
+  find interesting, `w^{o(w)}`, is still weaker than the record shape
+  `(C log w)^w` already known for the target — so the first result a
+  route through 5.2 could produce would not move `f(n,3)`. Neither is
+  attempted here; neither is added to `tools/ceiling.py`, whose rows are
+  reductions with a computable best case, not strengthenings of the
+  target.
 
 ---
 
@@ -1235,12 +1499,19 @@ been citing second-hand for the matrix-multiplication obstruction.
   gives `(2.51…)^n` multicolored 3-sunflower-free sets, beating
   `(2.21…)^n` [Edel04] for ordinary 3-sunflower-free sets in `Z_3^n`.
 
+**Session of 2026-10-20: pp. 3–14 rendered and read** (PyMuPDF, 110 dpi;
+pp. 15–16, the rest of the reference list, not read). With the earlier
+pass that is **pp. 1–14 of 16**. What it added is in Tier 3c below: the
+proof of Theorem 2.6 (p. 6), Conjecture 4 and Theorem 2.7 (p. 6), and the
+multicolored material of §3 (pp. 8–13).
+
 ### Also downloaded and rendered, not read
 
 `blasiak_capset.pdf` (27pp, arXiv:1605.06702, Blasiak–Church–Cohn–
-Grochow–Naslund–Sawin–Umans, the cap-set obstruction) and
+Grochow–Naslund–Sawin–Umans, the cap-set obstruction) — **read in full on
+2026-10-20, 27 of 27 pages; see Tier 3c [BCCGNSU17]** — and
 `gmr_dnf.pdf` (27pp, arXiv:1205.3534, Gopalan–Meka–Reingold, DNF
-sparsification).
+sparsification), still not read.
 
 **Coding theory (Schrijver's SDP, Gijswijt, the Terwilliger algebra of
 the Johnson scheme), design-theoretic nonexistence (Fisher,

@@ -89,11 +89,12 @@ def record(n: int) -> int:
 # a theorem, the pin is what goes here, and the theorem is named.
 # --------------------------------------------------------------------------
 
-LOSES = "linear: loses to Erdos-Rado"
+LOSES = "linear or worse: loses to Erdos-Rado"
 EQUALS_ER = "linear: equals Erdos-Rado"
 BEATS_ER = "linear: beats Erdos-Rado"
 BEATS_RECORD = "sublinear: record shape"
 SETTLES = "constant: settles k=3"
+NOTHING = "none: implies no finite bound"
 
 ROUTES: list[dict] = [
     dict(
@@ -161,6 +162,30 @@ ROUTES: list[dict] = [
         note="alpha=1 is a guess; only the log shape is claimed. The live line",
     ),
     dict(
+        name="vector tester, BHL (6 sqrt D)^n via ASU",
+        carrier="docs/roadmap.md section 75.1 ([BHL26] Thm 2, [ASU12] Thm 2.6)",
+        ceiling=lambda n: vector_route(n, alpha=Fraction(1, 2), A=6),
+        status="published bound (unrefereed), no bound",
+        verdict=NOTHING,
+        note="D <= n*m in the reduction, so any (A D^alpha)^n is void for n >= 1/alpha",
+    ),
+    dict(
+        name="vector tester, (2 log2 D)^n via ASU",
+        carrier="docs/roadmap.md section 75.1 (hypothetical; A=2 forced by V_3(2,n)=2^n)",
+        ceiling=lambda n: vector_log_route(n, A=2),
+        status="hypothetical improvement",
+        verdict=LOSES,
+        note="base ~ e*A*n*log2(n): superlinear, worse than 1960, not just the record",
+    ),
+    dict(
+        name="vector tester, D-uniform 3^n via ASU",
+        carrier="docs/roadmap.md section 75.1 ([ASU12] Thm 2.6, c = e*b <= 3b)",
+        ceiling=lambda n: 9**n + 1,
+        status="open (equivalent to the conjecture)",
+        verdict=SETTLES,
+        note="b = 3 is illustrative; any D-independent b gives base <= 3b",
+    ),
+    dict(
         name="constant threshold (the conjecture)",
         carrier="Conjecture.spread_conjecture",
         ceiling=lambda n: 8**n + 1,
@@ -169,6 +194,49 @@ ROUTES: list[dict] = [
         note="c(3)=8 as in Sharp.sharp_gives_the_constant; any constant does",
     ),
 ]
+
+
+# The vector routes. [ASU12] Thm 2.6 (proof rendered, p. 6): a family of
+# m distinct n-sets lives on |U| <= n*m points; a uniformly random colouring
+# U -> [n] is injective on a fixed n-set with probability n!/n^n, so some
+# colouring keeps at least m*n!/n^n members, and they become a sunflower-free
+# set of vectors in [D]^n with D = |U| <= n*m. Hence a bound V_3(D,n) <= B(D)^n
+# gives  m * n! <= n^n * B(n*m)^n,  and the route's ceiling is the largest m
+# that inequality allows (plus one, for f).
+
+
+def vector_route(n: int, alpha: Fraction, A: int):
+    """B(D) = A * D^alpha. Returns None when the inequality bounds nothing.
+
+    m * n! <= n^n * A^n * (n*m)^(alpha*n): the right side grows like
+    m^(alpha*n), so for alpha*n >= 1 every m satisfies it once m is large
+    (at alpha*n = 1 exactly, it reads n! <= n^(n+1) A^n, true for all m).
+    The tail of the table is n >= 40, so any alpha >= 1/40 is void there.
+    """
+    if alpha * n >= 1:
+        return None
+    raise ValueError("alpha*n < 1 is not on the costed tail")
+
+
+def vector_log_route(n: int, A: int) -> int:
+    """B(D) = A * log2(D), with log2 rounded up (an over-estimate, so the
+    ceiling is the route's best case). Largest m with
+    m * n! <= n^n * (A * ceil_log2(n*m))^n, by doubling then bisection; the
+    predicate is monotone above m = e^n, and it first fails far above that.
+    """
+    def ok(m: int) -> bool:
+        return m * factorial(n) <= n**n * (A * max(1, (n * m - 1).bit_length())) ** n
+
+    lo, hi = 1, 2
+    while ok(hi):
+        lo, hi = hi, hi * 2
+    while hi - lo > 1:
+        mid = (lo + hi) // 2
+        if ok(mid):
+            lo = mid
+        else:
+            hi = mid
+    return lo + 1
 
 
 def isqrt_ceil(x: int) -> int:
@@ -212,6 +280,8 @@ def growth(route: dict) -> float:
     the arithmetic here is entitled to say.
     """
     lo, hi = TAIL[0], TAIL[-1]
+    if route["ceiling"](lo) is None or route["ceiling"](hi) is None:
+        return math.inf
     b_lo, b_hi = base(route["ceiling"](lo), lo), base(route["ceiling"](hi), hi)
     if b_hi == b_lo:
         return 0.0
@@ -220,6 +290,8 @@ def growth(route: dict) -> float:
 
 def classify(route: dict) -> str:
     ceil = route["ceiling"]
+    if any(ceil(n) is None for n in TAIL):
+        return NOTHING
     g = growth(route)
     if g == 0.0:
         return SETTLES
@@ -252,9 +324,12 @@ def table() -> list[str]:
         f"  {'-' * 44} {'-' * 9:>9} {'-' * 10:>10} {'-' * 10:>10} {'-' * 5:>5}  {'-' * 26}",
     ]
     for r in ROUTES:
-        bs = [base(r["ceiling"](n), n) for n in ns]
+        cells = []
+        for n in ns:
+            v = r["ceiling"](n)
+            cells.append("inf" if v is None else str(int(base(v, n))))
         out.append(
-            f"  {r['name']:<44} {int(bs[0]):>9} {int(bs[1]):>10} {int(bs[2]):>10}"
+            f"  {r['name']:<44} {cells[0]:>9} {cells[1]:>10} {cells[2]:>10}"
             f" {growth(r):>5.2f}  {classify(r)}"
         )
     out += [

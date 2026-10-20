@@ -15815,3 +15815,374 @@ global context.
   question is still needed, and the ladder's proofs may exceed what the
   kernel can check.
 
+## 75. The vector-tester route at `k = 3`: no ceiling below the target, and the barrier reduced to one capacity
+
+**Tier 2** (barrier and reduction claims, artefacts read from rendered
+pages). Sources: `docs/reading.md` Tier 3c — [BHL26] 16/16 pages, [KL26]
+11/11, [ASU12] pp. 3–14 (pp. 1–14 with the earlier pass), [CKSU05] 10/10,
+[BCCGNSU17] 27/27, [ST16] lines 1–180 of 386, [ALWZ20] pp. 15–17,
+[NaSa17] pp. 1–5.
+
+**One line.** A bound `V_3(D,n) ≤ B(D)^n` on vector sunflower-free sets
+moves `f(n,3)` only if `B` is essentially bounded: any `D^α` with `α > 0`
+gives **no bound at all** through [ASU12] Thm. 2.6, and `A·log D` gives a
+bound **worse than Erdős–Rado 1960**. So "improve the `D`-exponent" is not
+a route; the only route is "remove `D`", which is [ASU12] Conjecture 3 and
+equivalent to the conjecture. Whether the slice-rank / dimension method
+*can* remove `D` reduces to one combinatorial capacity, `Λ(D)`, defined in
+§75.2; its status is **open**, and the two possible answers are not
+symmetric: `sup_D Λ(D) < ∞` would itself prove the conjecture at `k = 3`,
+while `Λ(D) → ∞` would close the route and contradict nothing known.
+
+### 75.1 The ceiling of "improve the `D`-exponent" (rules 14 and 20)
+
+**The reduction, from the rendered page.** [ASU12] p. 6 proves Conjecture
+3 ⇒ Conjecture 1 by colour coding: a family of `m` distinct `s`-sets lives
+on `|U| ≤ s·m` points; a uniformly random map `U → [s]` is injective on a
+fixed `s`-set with probability `s!/s^s`; so some map keeps at least
+`m·s!/s^s` members, and they become a sunflower-free set of vectors in
+`[D]^s` with **`D = |U| ≤ s·m`**. Hence a bound `V_3(D,s) ≤ B(D)^s` gives
+
+```text
+  m · s!  ≤  s^s · B(s·m)^s                                        (★)
+```
+
+and the route's best case is the largest `m` that (★) allows.
+
+* **`B(D) = A·D^α`, `α > 0`.** The right side of (★) grows like
+  `m^{α s}`, so for `α s ≥ 1` every large `m` satisfies it (at `α s = 1`
+  exactly it reads `s! ≤ s^{s+1}A^s`, true for all `m`). **No bound for
+  any `s ≥ 1/α`. PROVEN** (arithmetic on (★)). [BHL26] Thm. 2 at `k = 3`
+  is `A = 6`, `α = 1/2`: void for every `s ≥ 2`.
+* **`B(D) = A·log₂ D`.** `A ≥ 2` is necessary, because `V_3(2,n) = 2^n`
+  (two letters admit no rainbow coordinate, so no three distinct vectors
+  in `[2]^n` are a sunflower: **PROVEN**, one line); the gate uses `A = 2`,
+  the route's best case. The base `x` of the resulting bound satisfies
+  `x ≈ e·A·log₂(s·x^s)`, i.e. grows like `s·log s` for **every** `A > 0`:
+  **superlinear**, so it loses to Erdős–Rado's
+  `~2s/e`, not merely to the record. **VALIDATED** by the gate
+  (exact integers): base 2997 / 6732 / 14846 at `s = 50 / 100 / 200`,
+  against Erdős–Rado's 38 / 75 / 149, measured exponent `g = 1.16`.
+* **The general shape** (derived by the same substitution, not gated):
+  `x ≈ e·B(s·x^s)`. `B = (log D)^β` gives a base polynomial in `s`, so a
+  sublinear one only for `β < 1` and never the record's `log s`;
+  `B = log log D` gives `x ~ log s`, the record shape; only a bounded `B`
+  settles. **PLAUSIBLE** (asymptotics, not checked beyond the two gated
+  instances).
+* **Is `D ≤ s·m` an artefact of this reduction?** A reduction that kept
+  `D` bounded by a **constant** would put the family on `s·D = O(s)`
+  points, a ground-set bound of the `SliceRank.GroundBounded` kind, and
+  that already settles `k = 3` by counting
+  (`IotaGround.ground_bounded_settles_k3_by_counting`), with no vector
+  bound needed. A reduction with `D = g(s)` growing gives `s·g(s)` points,
+  which `GroundBounded` does not cover; through (★) it is void for
+  `D^α` exactly when `g(s)^{α}` is unbounded. A hashing reduction `U → [D']` per coordinate keeps a
+  non-sunflower witness coordinate `(a,a,b)` with probability `1 − 1/D'`,
+  so preserving the witnesses of the `~m³` triples needs `D'` polynomial
+  in `m`. **PLAUSIBLE** that every reduction of this kind pays `D ≥ m^{Ω(1)}`;
+  not proved, and no other reduction was looked for.
+
+`tools/ceiling.py` now carries all three cases, with a fourth verdict,
+*none*, for a reduction whose best case bounds nothing:
+
+```text
+  vector tester, BHL (6 sqrt D)^n via ASU            inf        inf        inf   inf  none: implies no finite bound
+  vector tester, (2 log2 D)^n via ASU               2997       6732      14846  1.16  linear or worse: loses to Erdos-Rado
+  vector tester, D-uniform 3^n via ASU                 9          9          9  0.00  constant: settles k=3
+```
+
+**The premise this refutes was in this repository.** `docs/reading.md`'s
+[NaSa17] entry said the Erdős–Rado conjecture is equivalent to
+`c_D < D^{1−ε}`. NaSa17 p. 2 says *Erdős–Szemerédi* ([ASU12] Thm. 2.7,
+whose Conjecture 2 is Erdős–Szemerédi, p. 3). Corrected in place;
+register row A25. [BHL26] p. 11 states the correct relationship itself:
+their bounds *"remain heavily alphabet-dependent"*.
+
+### 75.2 The barrier question, stated before it is used
+
+Notation. `S_D = {(a,b,c) ∈ [D]³ : a = b = c, or a, b, c pairwise
+distinct}`; `S_D^{(n)} ⊂ ([D]^n)³` the triples that lie in `S_D` in every
+coordinate (the vector sunflower relation, degenerate triples included).
+[BHL26] p. 5: for `c` on rainbow tuples, `q_c = 1` on monochromatic, `c`
+on rainbow, `0` elsewhere, and `T_c = q_c^{⊗n}`. An *induced matching* in
+the support of a tensor `T` on `X×Y×Z` is a set of triples
+`(x_i, y_i, z_i)` with `T(x_i, y_j, z_l) ≠ 0` **iff** `i = j = l`. (The
+`x_i` are then distinct: `x_i = x_j` with `i ≠ j` would make
+`T(x_j, y_i, z_i) = T(x_i, y_i, z_i) ≠ 0` at a non-constant index; likewise
+`y`, `z`.)
+
+**Hypothesis 2(a) — Lemma 75.A. An induced matching of size `m` in the
+support of `T` gives `slice-rank(T) ≥ m`.** **PROVEN in print, not new**
+(register B23): restrict `T` to `{x_i} × {y_i} × {z_i}` — restriction
+cannot raise slice rank ([BCCGNSU17] p. 18; [ST16] Lemma 3; [KL26] p. 2) —
+and the restriction is a diagonal with nonzero entries, whose slice rank
+is `m` ([BCCGNSU17] Lemma 4.7, p. 15; [ST16] Example 5). [BCCGNSU17]
+Prop. 4.8 is this argument for the group tensor; its proof uses only the
+support.
+
+**Hypothesis 2(c) — Lemma 75.B. `dim P ≥ slice-rank(T)/(k−1)`.**
+**PROVEN** (one line). [BHL26] Lemma 3's decomposition
+`f = Σ_{i=1}^{k−1} Σ_{j=1}^{d} p_j(x_i) G_{i,j}(…x̂_i…)` *is* a slice
+decomposition in the sense of [KL26] p. 2 with `(k−1)·d` slices, so
+`slice-rank(f) ≤ (k−1)·dim P`. At `k = 3`, `dim P ≥ slice-rank/2`, and a
+slice-rank lower bound counts against the method up to that factor 2,
+which does not change an exponential rate.
+
+**Hypothesis 2(b), per `c`.** [BHL26] requires `c` nonzero on every
+rainbow tuple (p. 5). For every such `c`, `supp T_c = S_D^{(n)}` exactly,
+so by 75.A–75.B
+
+```text
+  dim P(c)  ≥  slice-rank(T_c)/2  ≥  M(D,n)/2,
+  M(D,n) := the largest induced matching in S_D^{(n)}.
+```
+
+**The bound does not depend on `c` at all inside [BHL26]'s class**, and it
+holds for *every* tensor whose support is exactly `S_D^{(n)}` (any faithful
+realisation of the vector relation, product or not). Lemma 3 of [BHL26]
+also accepts `c` with zeros: `T_c` is still diagonal on every
+sunflower-free set. Then `supp T_c = S_c^{(n)}` with `S_c ⊂ S_D`, the
+bound is the largest induced matching `M_c(D,n)` in `S_c^{(n)}`, and at the
+extreme `c = 0`, `T_0` is the diagonal of size `D^n` and has slice rank
+`D^n`. Nothing below is claimed about `M_c` beyond `M_c ≥ V_3` (F2's
+argument works for every `S_c`).
+
+**`M(D,n)` is [ASU12]'s multicolored quantity with the alphabet freed.**
+[ASU12] p. 8 defines, over `Z_3^n`, collections of ordered sunflowers with
+no *multicolored sunflower* — three triples, not all equal, whose
+`x^(1), y^(2), z^(3)` form a sunflower. Reading "form a sunflower" by
+Definition 2.5 on the three listed vectors (so two equal and one different
+is not a sunflower — this reading is ours, the page does not discuss the
+case), such a collection is exactly an induced matching in `S_3^{(n)}`.
+`M(D,n)` replaces `Z_3` by `[D]`.
+
+What is known about it:
+
+| | statement | status |
+|---|---|---|
+| F1 | `M(D, n₁+n₂) ≥ M(D,n₁)·M(D,n₂)` (product of matchings: a non-constant index triple is non-constant in one factor, whose block then leaves `S_D`), and `M` is nondecreasing in `D` (`S_{D'}` is `S_D` restricted to a sub-alphabet). So `Λ(D) := lim_n M(D,n)^{1/n} = sup_n M(D,n)^{1/n}` exists (Fekete) and is nondecreasing | PROVEN |
+| F2 | `M(D,n) ≥ V_3(D,n)`: `{(x,x,x) : x ∈ A}` is induced exactly when `A` is sunflower-free | PROVEN |
+| F3 | **`sup_D Λ(D) < ∞` implies the conjecture at `k = 3`.** By F1, `M(D,n) ≤ Λ(D)^n ≤ L^n`; by F2, `V_3(D,n) ≤ L^n` for all `D`, so every set of at least `b^n` vectors with `b > L` contains a 3-sunflower — [ASU12] Conjecture 3 at `k = 3` — and Thm. 2.6 gives Conjecture 1 with `c_3 = e·b` | PROVEN given [ASU12] Thm. 2.6 (read) |
+| F4 | `M(D,1) = 2` for every `D ≥ 2`: no single coordinate carries an induced matching of size 3. `D = 9` decides all `D` (three triples use at most nine letters, and `S_D` depends only on the equality pattern) | COMPUTED: exhaustive, `tools/multicolored/m1.py` at `D = 2..9`; the reduction to `D = 9` PROVEN |
+| F5 | `2.519… = 2^{4/3} ≤ Λ(3) ≤ 3J(3) = 2.7551…`, with `3J(3) = inf_{0<x<1} (1+x+x²)x^{−2/3}` ([BCCGNSU17] (4.10), p. 20; evaluated this session, minimum at `x = 0.59307`). `S_3 = {(a,b,c) : a+b+c ≡ 0 mod 3}` (a pattern `(a,a,b)` sums to `2a+b`, which is `0` only when `b = a`), so `M(3,n)` is the largest tricolored sum-free set in `F_3^n`. Upper: [BCCGNSU17] Thm. 4.14 (p. 22) at `q = 3`, `|M| ≤ 3·(3J(3))^n` (Thm. A′'s `3e^{−δ} = 2.8348` is its weaker uniform form). Lower, in what was read: [ASU12] pp. 12–13 from [CKSU05] Prop. 3.8. **`Λ(3) = 2.7551…` exactly** if p. 22's report holds — that Thm. 4.14 *"is known to be sharp up to a subexponential factor"* by Kleinberg–Sawin–Speyer with Norin and Pebody — which were not read | upper bound and `2^{4/3}`: PROVEN in print (read); the identification of `S_3`: PROVEN; equality: CONDITIONAL on three unread papers |
+| F6 | `Λ(D) ≤ D` always; `Λ(D) ≤ (3/2^{2/3})(D−1)^{2/3}` by [NaSa17] Remark 7 (p. 3: the proof of Thm. 5 *"can be extended without modification to handle a multicolored version"*); and `Λ(D) ≤ 6√D` for `D > 36`: [BHL26]'s `c` is nonzero on rainbow tuples, so `M(D,n) ≤ slice-rank(T_c) ≤ 2·dim P ≤ 2(6√D)^n` (Lemma 7 and the Chernoff step of Thm. 2, pp. 8–9), as [BHL26] p. 12 itself says: the bound *"extends to indexed multicolored sunflowers [2, 45]"*. **So the alphabet-`D` multicolored quantity, with `D`-dependent upper bounds, is in print** (register B25) | the NaSa17 bound: claimed in print without a separate proof; the `6√D` bound: CONDITIONAL on [BHL26] (unrefereed; steps checked) |
+| F7 | Sawin–Tao's lower bound (11) ([ST16] Prop. 6: orders on `[D]`, lexicographic on `[D]^n`, maximal elements `Γ′`) is at most `9^{n+o(n)}` on support `S_D`, for every choice of orders. A maximal rainbow `(a,b,c)` has `a` among the top 3 of its order (else some `a′` above `a` avoids `b, c` and `(a′,b,c)` dominates); a maximal `(a,a,a)` has `a` among the top 2 of some order (else each up-set has ≥ 3 letters, and three distinct representatives form a dominating rainbow triple). So each projection of `Γ′` has at most `3 + 6 = 9` letters and `H′ ≤ log 9`. **That technique, in the standard basis with product (lexicographic) orders, cannot exhibit a `D`-growing barrier.** Props. 4 and 6 also allow other bases and Prop. 4 arbitrary orders on `[D]^n`; those are not covered | PROVEN (in the stated scope) |
+| F8 | small values, §75.4 | COMPUTED |
+
+**Verdict on step 2.** The barrier quantity for the whole of [BHL26]'s
+class — indeed for every faithful vector tester — is `M(D,n)`, and the
+question is **whether `Λ(D)` is unbounded in `D`**:
+
+* if `Λ(D) ≥ D^δ` (or merely `Λ(D) → ∞`), no tester whose support is
+  `S_D^{(n)}` gives a `D`-uniform bound by slice rank or by `dim P`: the
+  route is dead for that class, and nothing known is contradicted;
+* if `sup_D Λ(D) < ∞`, there is no induced-matching barrier — but proving
+  that *is* proving the conjecture at `k = 3` (F3), so "the route
+  survives" cannot be established more cheaply than the target. And even
+  then the true obstruction is the asymptotic slice rank
+  `σ(D) := inf_c liminf_n slice-rank(T_c)^{1/n} ≥ Λ(D)` (liminf: slice rank is not known to be submultiplicative), which can exceed `Λ`.
+
+Neither branch is settled here: **status open** (outcome (c) of the brief).
+Rule 17: the quantity itself is **in print** — [NaSa17] Remark 7 and
+[BHL26] p. 12 bound it from above (F6), which an independent review of
+this section caught after the first draft had called it unnamed. What is
+new to this repository is only its use as the obstruction to
+`D`-uniform tester bounds, and the asymmetry F3; register rows B24–B25
+record what was searched (eight sources) and what was not
+(Kleinberg–Sawin–Speyer, Norin, Pebody, Christandl–Vrana–Zuidam,
+Strassen's support functionals).
+
+### 75.3 Route ledger
+
+| route | best case (`tools/ceiling.py`) | status |
+|---|---|---|
+| any `D`-power saving, `(A·D^α)^n` ([BHL26], [NaSa17]) | none | dead as a route to `f(n,3)`; [BHL26] proves Erdős–Szemerédi, which it is |
+| `(A·log D)^n` | superlinear base | dead: loses to 1960 |
+| `(A·log log D)^n` | record shape | not gated; PLAUSIBLE from §75.1's shape rule |
+| `D`-uniform `b^n` (ASU Conj. 3) | constant | equivalent to the target |
+| slice rank / `dim P` with a faithful vector tester | `≥ M(D,n)` | open: dead iff `Λ(D) → ∞` |
+| [ALWZ20] Conj. 5.1, 5.2 (Secondary B) | the target itself | each implies the target; 5.1's best bound is the record shape, 5.2 has none (Tier 3c) |
+
+Twelve routes are now costed by the gate, seven of them losing to 1960.
+
+### 75.4 Small values of `M(D,n)` (one table, COMPUTED)
+
+`tools/multicolored/mdn.py`: one variable per triple of `S_D^{(n)}`,
+at-most-one per `x`, `y`, `z` value, closure clauses
+`X_x ∧ Y_y ∧ Z_z → s_(x,y,z)` (equivalent to inducedness given the
+at-most-one constraints), a sequential counter for `≥ m`, and one sound
+symmetry clause (some chosen triple is canonical: one permutation of
+`[D]` per coordinate, applied to `x`, `y` and `z` alike, and permutations
+of the coordinates preserve `S_D^{(n)}` and inducedness; separate
+permutations of the three slots would not). CaDiCaL 1.7.3 (Ubuntu package `cadical 1.7.4-1`). Every SAT
+witness is re-checked by brute force; **UNSAT verdicts carry no proof log**
+and are the solver's word.
+
+```text
+  M(D,n)      n = 1                 n = 2                    n = 3
+  D = 3       2                     4  (>= 5 UNSAT, 0.0 s)    >= 9  (>= 10 undecided at 1500 s)
+  D = 4       2                     4  (>= 5 UNSAT, 3.8 s)    not run
+  D = 5       2                     4  (>= 5 UNSAT, 123.2 s)  not run
+  any D >= 2  2  (F4, exhaustive)
+```
+
+Read with care. At `n = 2` the value is `4 = M(D,1)²` for `D = 3, 4, 5`:
+**no growth with the alphabet is visible at two coordinates** (COMPUTED,
+solver UNSAT without proof logs). At `n = 3`, `D = 3`, a collection of 9
+exceeds `2³`, so the rate exceeds 2 by `n = 3`, consistent with
+`Λ(3) ≥ 2^{4/3} = 2.52` (F5) — and `9^{1/3} = 2.08` is still far below
+it, which is the usual reason small-`n` values say little about a
+capacity. One `D = 4`, `n = 2` run without the symmetry clause had not
+finished after roughly 25 minutes and was stopped; with it the same
+question took 3.8 s. Nothing here bears on whether `Λ(D)` grows.
+
+### 75.5 Not done
+
+* **Step 5 (Lemma 75.A in Coq).** Not attempted. Slice rank needs vector
+  spaces and rank over a field, which this stdlib-only development does
+  not have; a list-and-`Q` formalisation is a project of its own, and the
+  lemma is standard and in print (B23), so a kernel proof would buy little.
+* No rule-17 search beyond the eight sources (B24, B25 list the gaps).
+* No construction of large multicolored collections was attempted, and
+  `M_c` for `c` with zeros was not studied.
+* `M(3,3) ≥ 10`, and every `n = 3` entry at `D ≥ 4`, were not decided.
+
+### 75.6 The case against this section (candor pass)
+
+* **The barrier quantity may be the wrong one.** `Λ(D)` lower-bounds the
+  method; a bounded `Λ` would not mean the method works, because slice
+  rank can exceed every induced matching (`σ ≥ Λ`, possibly strictly).
+* **`dim P` is only lower-bounded.** Lemma 75.B is one-directional; the
+  method's real cost for a given `c` could be much larger than its slice
+  rank, which only strengthens a barrier and weakens nothing here.
+* **"Through the ASU reduction" is load-bearing.** §75.1 costs one
+  reduction. Another reduction with `D` growing slower than any power of
+  `m` would change the `log D` row; the `D^α` row survives any reduction
+  with `D ≥ m^{Ω(1)}`, which is PLAUSIBLE, not proved.
+* **F6 rests on an unrefereed preprint** whose Lean verification is
+  announced and was not inspected.
+* **F5's identification relies on our reading of [ASU12] Definition 2.5**
+  for triples with a repeated vector; the upper bound uses only `S_3` and
+  [BCCGNSU17], and does not depend on it.
+
+### 75.7 Gates at the tip
+
+Every row was run on this tree in this container; none is written from
+expectation. Coq 8.18.0 (Ubuntu `coq 8.18.0+dfsg-1build2`).
+
+```text
+  verify        pass   exit 0 from `make clean` (the target cleans first);
+                       877 audited theorems, every one "Closed under the
+                       global context"; axiom audit lists exactly
+                       Rao20_lemma2; 1038 statements match the baseline;
+                       18 quoted numbers match; 12 routes costed, every
+                       declared verdict matches; lpcert-test and
+                       lpport-test ALL PASS. The first run failed at
+                       lpcert-test only because scipy was missing (§76.5)
+  coqchk        pass   exit 0; axioms exactly Sunflower.ALWZ.Rao20_lemma2;
+                       no type-in-type, no unsafe (co)fixpoints, no
+                       assumed positivity
+  docnumbers    pass   re-run after the last prose edit: 18 numbers match
+  ceilings      pass   re-run after the last edit: verdicts match
+  prcheck       pass   template only (`make prcheck`); no PR body drafted
+  statements    pass   (inside verify) no Coq statement changed
+  mutants       not-run   no definition changed
+  lrat-test     not-run   no LRAT code changed
+  rust          not-run   no Rust changed
+```
+
+The prose of this section and of Tier 3c was reviewed by a fresh-context
+agent against the rendered pages before commit: 22 quotations confirmed;
+three substantive errors found and fixed (F5 used Thm. A′ where Thm. 4.14
+on a page already read gives `2.7551`; register row B25 had said no source
+varies the alphabet, where [NaSa17] Remark 7 and [BHL26] p. 12 do; and
+§75.1 said "a function of `s`" where only a constant gives a ground-set
+bound), plus five smaller corrections. The new register rows were first
+numbered B20–B22 and A20, which already existed further down the file;
+they are B23–B25 and A25.
+
+## 76. Handover — the vector-tester route costed; the state of everything since §66
+
+Start here. §59 was the last general handover; §66 was one for the
+`b = 4` descent, and **none followed §67–§74**, so this section also
+states where those lines stand.
+
+### 76.1 What moved this session
+
+* **The ceiling of "improve the `D`-exponent" is nothing** (§75.1): any
+  vector bound `(A·D^α)^n`, `α > 0`, gives no bound on `f(n,3)` through
+  [ASU12]'s reduction, and `(A·log D)^n` gives a superlinear base, worse
+  than 1960. In the gate: `tools/ceiling.py` has three vector rows and a
+  fourth verdict, *none*.
+* **The barrier question is reduced to one capacity** (§75.2): for every
+  tester whose support is the vector sunflower relation — all of
+  [BHL26]'s class, whatever `c` — slice rank and `dim P` are at least
+  `M(D,n)/2`, the multicolored quantity of [ASU12] with the alphabet
+  freed; the route is dead iff `Λ(D) → ∞`, and `sup_D Λ(D) < ∞` would
+  prove the conjecture at `k = 3`. Hypotheses 2(a) and 2(c) are settled
+  (2(a) is in print, B23; 2(c) is one line). Sawin–Tao's maximal-element
+  lower bound provably cannot show growth (F7).
+* **A register error with a direction to it, corrected:** the [NaSa17]
+  entry made a `D`-power saving read as Erdős–Rado progress; the page says
+  Erdős–Szemerédi (A25).
+* **Literature:** [BHL26], [KL26], [CKSU05], [BCCGNSU17] read in full,
+  [ASU12] to p. 14, [ST16] in part, [ALWZ20] Conjectures 5.1–5.2
+  registered with their cost (Tier 3c).
+* **Hygiene:** `STATUS.md` now points here; the README's VC wording
+  matches §59.1; `2ι(b) ≤ g(b)` is attributed to Pálvölgyi (A17/A17a) with
+  the two-sided form "not found" (B10).
+
+### 76.2 What did not move
+
+* `Λ(D)`: `2^{4/3} ≤ Λ(3) ≤ 2.7551` (from print, with equality reported
+  in unread sources) and `Λ(D) ≤ min(1.89(D−1)^{2/3}, 6√D)` (a remark in
+  [NaSa17], and an unrefereed preprint); nothing on growth. The route is neither closed nor
+  shown open.
+* No theorem, definition or statement changed in Coq; the kernel state is
+  §74's. No campaign was run; the one table (§75.4) is small and partly
+  undecided.
+* Every line §60–§74 left open is still open, unchanged by this session:
+  `54 ≤ g(4) ≤ 76` given the link census and [ABCDN26] Prop. 6.5
+  (`CensusIota.g_four_at_most_76_of_census`); census certification stages
+  1–2 done, 3–5 not started (`docs/census_certification.md`); the LRAT
+  checker exists but no `ι(4,11)` or `r*(3,3)` cube has a checked proof
+  log, so `r*(3,3) ∈ {3, 4}` stands as recorded in `STATUS.md`;
+  `Rao20_lemma2` Stage C is untouched.
+
+### 76.3 Open questions, ranked
+
+1. **Is `Λ(D)` unbounded?** A construction of multicolored-sunflower-free
+   collections in `[D]^n` of size `Λ^n` with `Λ → ∞` closes the
+   slice-rank / dimension route for every faithful vector tester. The
+   device most likely to give one is a degeneration made into a
+   restriction by level sets ([BCCGNSU17] Lemma 3.4, [ASU12] p. 12).
+2. **Is the asymptotic slice rank of a tensor supported on `S_D` known in
+   the asymptotic-spectrum literature?** If it is computed there, `σ(D)`
+   decides the route outright (B24, B25 list the unsearched sources).
+3. **Testers with zeros on rainbow tuples** (`M_c`, §75.2): unstudied.
+4. Everything in §59.4 and §67.5 not superseded above.
+
+### 76.4 The exact next step
+
+Fetch Kleinberg–Sawin–Speyer, *The growth rate of tri-colored sum-free
+sets* (arXiv:1607.00047, [BCCGNSU17] reference [14]) and Christandl–
+Vrana–Zuidam, *Barriers for fast matrix multiplication from
+irreversibility* (Theory Comput. 17 (2021), [BHL26] reference [12]); look
+both identifiers up rather than recalling them; render and read the
+sections that characterise the asymptotic induced-matching number or the
+asymptotic slice rank of a tensor in terms of its support; and decide,
+as a continuation of register row B24, whether either computes or bounds
+`Λ(D)` or `σ(D)` for the support `S_D`. Only if neither does, attempt
+question 1 with a small construction search at `D = 4, 5` (one table, as
+§75.4).
+
+### 76.5 Environment, as found and as left
+
+The container lacked `coqc`, `cadical`, `scipy`, `pdftoppm` and PyMuPDF.
+Installed: `coq 8.18.0+dfsg-1build2` and `cadical 1.7.4-1` (which reports
+`1.7.3`) from Ubuntu noble; `scipy 1.16.2` by `pip --only-binary`,
+because Ubuntu's `python3-scipy` is built for Python 3.12 and fails to
+import under this container's Python 3.13 with numpy 2.5.3 (it was
+removed again); PyMuPDF 1.26.3 in a scratch virtual environment for
+rendering only. `make verify` fails at `lpcert-test` without `scipy`,
+for that reason alone.

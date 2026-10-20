@@ -1154,7 +1154,8 @@ session N+15.
 
 - **[ASU12]** N. Alon, A. Shpilka, C. Umans, *On Sunflowers and Matrix
   Multiplication*. ECCC Report No. 67 (2011); CCC 2012.
-  **Read pp. 1–5 and 8 of 16 (rendered).** Not on arXiv — an ECCC report.
+  **Read pp. 1–5 and 8 of 16 (rendered); pp. 3–14 re-rendered and read
+  2026-10-20, so pp. 1–14 of 16.** Not on arXiv — an ECCC report.
   Four things bear here:
 
   * **Theorem 1.1**, p. 2, is a third independent rendering of what
@@ -1178,8 +1179,39 @@ session N+15.
 
 - **[BCCGNSU17]** J. Blasiak, T. Church, H. Cohn, J. A. Grochow,
   E. Naslund, W. F. Sawin, C. Umans, *On cap sets and the group-theoretic
-  approach to matrix multiplication*. arXiv:1605.06702, 27pp.
-  **Downloaded and rendered; not read.**
+  approach to matrix multiplication*. Discrete Analysis 2017:3;
+  arXiv:1605.06702v4, 27pp. **Read in full, 27 of 27 rendered pages
+  (2026-10-20).** Prop. 4.8 (p. 18) is the induced-matching lower bound on
+  slice rank; Thm. A′ (p. 2) bounds tricolored sum-free sets in
+  `(Z/qZ)^n`. `docs/reading.md` Tier 3c, register B23.
+
+- **[CKSU05]** H. Cohn, R. Kleinberg, B. Szegedy, C. Umans,
+  *Group-theoretic algorithms for matrix multiplication*. FOCS 2005,
+  379–388; arXiv:math/0511460v1. **Read in full, 10 of 10 rendered pages
+  (2026-10-20).** Prop. 3.8: strong USP capacity `≥ 2^{2/3}`, the input to
+  [ASU12]'s `2.51^n` multicolored lower bound. `docs/reading.md` Tier 3c.
+
+- **[ST16]** W. Sawin, T. Tao, *Notes on the "slice rank" of tensors*.
+  What's New (blog), 24 Aug 2016, WordPress post 9271. **Read lines 1–180
+  of 386** (introduction through Proposition 6's statement), retrieved as
+  JSON via the WordPress API. Not on arXiv: `arXiv:1612.07342`, recalled
+  for it, is a physics paper. `docs/reading.md` Tier 3c.
+
+- **[BHL26]** M. Bucić, F. He, H. Lee, *Proof of the Erdős–Szemerédi
+  sunflower conjecture*. arXiv:2610.26686v1, 19 Oct 2026, 16pp;
+  **unrefereed**. **Read in full, 16 of 16 rendered pages (2026-10-20).**
+  Thm. 1: `k`-sunflower-free subsets of `2^[n]` have at most
+  `3(2 − 1/(16k³))^n` members. Thm. 2: `V_k(D,n) ≤ (C_k D^{1−1/(k−1)})^n`,
+  `C_k = (2k)^{2/(k−1)}`, i.e. `(6√D)^n` at `k = 3`. Through [ASU12]'s
+  reduction the second gives **no** bound on `f(n,3)`
+  (`docs/roadmap.md` §75.1). `docs/reading.md` Tier 3c.
+
+- **[KL26]** S. R. Karingula, S. Lovett, *Limitations of the slice rank
+  method in additive combinatorics*. arXiv:2609.27044v1, 22 Sep 2026,
+  11pp. **Read in full, 11 of 11 rendered pages (2026-10-20).** Maximal
+  slice rank for every faithful realisation of the `k`-sunflower **set**
+  relation, `k ≥ 4`; nothing at `k = 3`, nothing about vector testers.
+  `docs/reading.md` Tier 3c.
 
 - **[GMR12]** P. Gopalan, R. Meka, O. Reingold, *DNF Sparsification and a
   Faster Deterministic Counting Algorithm*. arXiv:1205.3534, 27pp.

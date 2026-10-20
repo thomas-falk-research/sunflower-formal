@@ -798,20 +798,27 @@ A route whose declared verdict disagrees with its own arithmetic fails
 the build. `make ceilings` runs it, `make verify` includes it, and CI
 gates on it.
 
-What it made checkable that was previously a judgement call: of the 9
-routes this development has built or considered, **6 lose to 1960 in
-their own best case**, one equals it, and the remaining two reach the
-record shape or better. That ratio was not knowable from any single
-session's notes, and it is now a line the tool prints — `9 routes
-costed; 2 can reach the record or better` — rather than an impression.
+What it made checkable that was previously a judgement call: of the 12
+routes this development has built or considered, **7 lose to 1960 in
+their own best case**, one equals it, one implies no finite bound at
+all, and the remaining three reach the record shape or better (two of
+those three are the open conjecture in two forms). That ratio was not
+knowable from any single session's notes, and it is now a line the tool
+prints — `12 routes costed; 3 can reach the record or better` — rather
+than an impression. The three vector-tester routes (`docs/roadmap.md`
+§75.1) were added with a fourth verdict, *none*, for a reduction whose
+best case bounds nothing: an alphabet-dependent bound `(A·D^α)^n` fed
+through [ASU12] Thm 2.6, where the alphabet `D` is the ground set and is
+only bounded by `n·m`.
 (Both counts in that sentence are themselves gated, by §6's
 `tools/docnumbers.py`, against `tools/ceiling.py`'s own route list.)
 
 `--linear` adds the number underneath the classification. A route with
 `r*(n,3) ≤ c·n` gives `f(n,3) ≤ (cn)ⁿ + 1`, and Erdős–Rado is
 `2ⁿn! + 1 ~ √(2πn)·(2n/e)ⁿ`, so a linear route beats 1960 exactly when
-`c < 2/e = 0.7357588823…`. Each of the six losing routes above is of
-that form, with `c` in `{2, 2, √3, 1, 1, 1}`. The best of them, `c = 1`,
+`c < 2/e = 0.7357588823…`. Six of the seven losing routes above are of
+that form, with `c` in `{2, 2, √3, 1, 1, 1}`; the seventh, a vector
+bound `(2 log₂ D)^n` fed through [ASU12], is superlinear (`g = 1.16`). The best of them, `c = 1`,
 would have to fall by a factor of `1.36` to reach the threshold. That is
 a number, not an opinion, and it is why "linear" is a verdict here
 rather than a description.
