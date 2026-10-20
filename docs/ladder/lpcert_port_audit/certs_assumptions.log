@@ -1,0 +1,22 @@
+make -f Makefile.coq
+make[1]: Entering directory '/home/user/sunflower-formal'
+make[2]: Nothing to be done for 'real-all'.
+make[1]: Leaving directory '/home/user/sunflower-formal'
+make -f Makefile.certs -j3
+make[1]: Entering directory '/home/user/sunflower-formal'
+make[2]: Nothing to be done for 'real-all'.
+make[1]: Leaving directory '/home/user/sunflower-formal'
+  LinkCerts25.descent_25                                       Closed under the global context
+  LinkCerts25.g_four_at_most_80_of_census_25                   Closed under the global context
+  LinkCerts24.descent_24                                       Closed under the global context
+  LinkCerts24.g_four_at_most_79_of_census_24                   Closed under the global context
+  LinkCerts23.bound_of_covered_link                            Closed under the global context
+  Link23Certs.descent_23                                       Closed under the global context
+  Link23Certs.g_four_at_most_78_of_census_23                   Closed under the global context
+  Link22Certs.descent_22                                       Closed under the global context
+  Link22Certs.g_four_at_most_77_of_census_22                   Closed under the global context
+  Link21Certs.descent_21                                       Closed under the global context
+  Link21Certs.g_four_at_most_76_of_census_21                   Closed under the global context
+  certificate theorems audited: 11, without a result: 0
+rc 0 2020.8 s maxrss 5.95 GB
+ASSUMPTIONS EXIT 0

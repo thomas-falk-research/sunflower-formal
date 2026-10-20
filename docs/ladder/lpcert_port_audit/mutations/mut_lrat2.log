@@ -1,0 +1,21 @@
+==============================================================================
+  Mutation testing: does the development notice a weakened definition?
+==============================================================================
+  4 mutations, 1 parallel builds
+
+  baseline ... builds clean
+
+  [ok ] canary-alpha-rename        survived      -                        456.1s
+  [ok ] lrat-accept-zero           killed        coq/LRAT.v               441.3s
+  [ok ] lrat-chain-no-conflict     killed        coq/LRAT.v               445.9s
+  [ok ] lrat-ignore-true-literal   killed        coq/LRAT.v               447.3s
+
+------------------------------------------------------------------------------
+  mutation                   expected      actual        first file to break
+------------------------------------------------------------------------------
+  canary-alpha-rename        survived      survived      -
+  lrat-accept-zero           killed        killed        coq/LRAT.v
+  lrat-chain-no-conflict     killed        killed        coq/LRAT.v
+  lrat-ignore-true-literal   killed        killed        coq/LRAT.v
+------------------------------------------------------------------------------
+  killed: 3   killed (script only): 0   survived: 0   controls passing: 1/1   unexpected: 0

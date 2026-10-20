@@ -1,0 +1,27 @@
+==============================================================================
+  Mutation testing: does the development notice a weakened definition?
+==============================================================================
+  7 mutations, 2 parallel builds
+
+  baseline ... builds clean
+
+  [ok ] lpcert-drop-scale-nonneg   killed        coq/LPCert.v             463.5s
+  [ok ] canary-alpha-rename        survived      -                        473.1s
+  [ok ] lpcert-drop-multiplier-nonneg killed        coq/LPCert.v             456.7s
+  [ok ] lpcert-drop-index-range    killed        coq/LPCert.v             455.7s
+  [ok ] lpcert-weak-final-inequality killed        coq/LPCert.v             432.4s
+  [ok ] lpcert-branch-gap          killed        coq/LPCert.v             438.0s
+  [ok ] lpcert-branch-overlap      killed        coq/LPCertExamples.v     434.1s
+
+------------------------------------------------------------------------------
+  mutation                   expected      actual        first file to break
+------------------------------------------------------------------------------
+  canary-alpha-rename        survived      survived      -
+  lpcert-branch-gap          killed        killed        coq/LPCert.v
+  lpcert-branch-overlap      killed        killed        coq/LPCertExamples.v
+  lpcert-drop-index-range    killed        killed        coq/LPCert.v
+  lpcert-drop-multiplier-nonneg killed        killed        coq/LPCert.v
+  lpcert-drop-scale-nonneg   killed        killed        coq/LPCert.v
+  lpcert-weak-final-inequality killed        killed        coq/LPCert.v
+------------------------------------------------------------------------------
+  killed: 6   killed (script only): 0   survived: 0   controls passing: 1/1   unexpected: 0

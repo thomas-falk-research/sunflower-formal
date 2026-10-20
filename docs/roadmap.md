@@ -15746,6 +15746,11 @@ opaque proofs that `Require` does not load) and exits 0.
   instances of the gate with two jobs each, one working from each end of
   the list, one module at the meeting point checked by both.
 
+The raw outputs of all of this — per-module build lines and logs, `make
+certs`, the assumptions and statement audits, every `coqchk` log, the
+mutation runs, the solves and conversions — are kept, with checksums, in
+`docs/ladder/lpcert_port_audit/`.
+
 Two operational events, neither touching a result. Rebuilding
 `Link23.vo` while the §72 coqchk run was in progress made every module
 still waiting fail to load ("Inductive Sunflower.Link23.tree does not

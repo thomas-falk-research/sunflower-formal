@@ -1,0 +1,14 @@
+make -f Makefile.coq
+make[1]: Entering directory '/home/user/sunflower-formal'
+make[2]: Nothing to be done for 'real-all'.
+make[1]: Leaving directory '/home/user/sunflower-formal'
+coq_makefile -f _CoqProject.certs -o Makefile.certs
+make -f Makefile.certs -j1
+make[1]: Entering directory '/home/user/sunflower-formal'
+COQDEP VFILES
+COQC coq/Link23Certs.v
+COQC coq/Link22Certs.v
+COQC coq/Link21Certs.v
+make[1]: Leaving directory '/home/user/sunflower-formal'
+rc 0 39.6 s maxrss 4.99 GB
+CERTS EXIT 0 elapsed 40s

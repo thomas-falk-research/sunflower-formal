@@ -1,0 +1,23 @@
+==============================================================================
+  Mutation testing: does the development notice a weakened definition?
+==============================================================================
+  3 mutations, 2 parallel builds
+
+  baseline ... builds clean
+
+  [ok ] lowerbound-at-least        survived      -                        452.8s
+  [ok ] canary-alpha-rename        survived      -                        455.6s
+  [ok ] iotaatleast-at-least       survived      -                        457.9s
+
+------------------------------------------------------------------------------
+  mutation                   expected      actual        first file to break
+------------------------------------------------------------------------------
+  canary-alpha-rename        survived      survived      -
+  iotaatleast-at-least       survived      survived      -
+  lowerbound-at-least        survived      survived      -
+------------------------------------------------------------------------------
+  killed: 0   killed (script only): 0   survived: 2   controls passing: 1/1   unexpected: 0
+
+  Surviving mutations -- hypotheses no theorem is sensitive to:
+    iotaatleast-at-least: The same question lowerbound-at-least asks of LowerBound, asked of the new predicate: is IotaAtLeast's `length H = N` a constraint, or is it documentation?
+    lowerbound-at-least: LowerBound pins the family size exactly. Is the equality used?
