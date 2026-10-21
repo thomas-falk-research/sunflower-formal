@@ -10,7 +10,8 @@ With s = 3^n K + 1 the uniform distribution on Phi has every marginal
 entropy above n log2 3, so SR_C(q_c) > 3 per letter (sections 79, 80).
 
 Master (HiGHS MILP through highspy): binary z_t with (a), (b), (c), symmetry
-breaking, and the cuts found so far. Subproblem: for the master's Phi solve
+breaking, the rectangle-conflict rows of Lemma 81.A, and the cuts found so
+far. Subproblem: for the master's Phi solve
 the Farkas system
     sum_{t in Phi} lambda_t v_t + sum_{t notin Phi} mu_t v_t = 0,
     mu >= 0, sum mu >= 1, minimise sum |lambda| + sum mu,
@@ -19,8 +20,9 @@ iff (d) fails; then every Phi' containing supp(lambda) and avoiding
 supp(mu) fails (d) by the same certificate, giving the no-good cut
     sum_{supp lambda} (1 - z_t) + sum_{supp mu} z_t >= 1.
 If the Farkas system is infeasible, (d) holds: the face LP is solved, its
-weights scaled and rounded to integers, and the result re-checked exactly by
-tools/multicolored/degen2.py verify before it is reported.
+weights scaled and rounded to integers, and the zero set and nonnegativity
+re-checked in exact integers before it is reported. Freeness comes from the
+master; tools/multicolored/degen2.py verify re-checks all three from scratch.
 
 Symmetry: run r forces the orbit representative with r monochromatic
 coordinates into Phi and forbids triples with more (as in bmatch.py); the

@@ -16785,3 +16785,192 @@ Run on this tree after the last edit; no Coq or Rust changed.
 ```
 
 No fresh-context review was run on this section.
+
+## 81. A combinatorial Benders loop for `K = 2` at `D = 4`: calibrated, one new conflict lemma, and the target still undecided
+
+**Tier 2.** This is §80.5's next step. The tool is
+`tools/multicolored/benders.py`; it calls HiGHS through `highspy 1.11.0`
+for both the master problem and the subproblems. The question is the one
+from §79: is there a free face `Φ` of `S_4^{(2)}` with every word used at
+most `K = 2` times per leg and `|Φ| ≥ 19 = 9K + 1`? Such a `Φ` would give
+a per-letter bound above 3.
+
+### 81.1 The loop
+
+* **Master problem.** Binary `z_t` over `S_D^{(n)}`, with these rows:
+  * freeness: at most one element per fibre, written as clique rows;
+  * at most `K` uses of each word in each leg;
+  * `Σ z ≥ s`;
+  * the orbit-type symmetry breaking of §80. Run `r` forces the canonical
+    triple with `r` monochromatic coordinates into `Φ` and excludes
+    triples with more. Each set of triples with a given number of
+    monochromatic coordinates is a single group orbit, so the runs
+    together cover every `Φ`;
+  * the conflict rows of Lemma 81.A (below);
+  * the cuts found so far.
+* **Subproblem.** Take the master's `Φ` and solve the Farkas system
+  `Σ_{Φ} λ_t v_t + Σ_{outside} μ_t v_t = 0`, with `μ ≥ 0` and `Σμ ≥ 1`.
+  Here `v_t` is the incidence vector of `t`'s three words.
+  * If the system has a solution, the same certificate shows that no
+    `Φ' ⊇ supp λ` avoiding `supp μ` is a face. That gives the cut
+    `Σ_{supp λ}(1 − z_t) + Σ_{supp μ} z_t ≥ 1`. **PROVEN** by Farkas'
+    lemma applied to the face LP (`w = 0` on `Φ`, `w ≥ 1` outside).
+  * If it has no solution, `Φ` is a face. The tool solves the face LP,
+    rounds the weights to integers, and re-checks the zero set and
+    nonnegativity in exact integers.
+* **Strengthening the cuts.** A deletion filter shrinks each certificate
+  until no single element can be removed. Each cut is then added together
+  with all its images under the stabiliser of the forced triple; a cut is
+  a statement about `S_D^{(n)}` alone, so every image is valid. At
+  `D = 4, n = 2` the group has order 6912, and the stabilisers for runs
+  2, 1 and 0 have orders 432, 36 and 12 (COMPUTED).
+* **Scope of a negative verdict.** The Farkas test ranges over all real
+  weights, so the loop has no weight bound. §79's MILP had one
+  (`|u| ≤ 64`). An "infeasible" verdict therefore rests only on HiGHS's
+  floating-point LP and MILP verdicts, which are not certified. In this
+  repository's terms it is COMPUTED, not PROVEN.
+
+**Lemma 81.A (rectangle conflict).** Take `a, b ∈ S_D^{(n)}` and a leg `i`
+with `a_i ≠ b_i`. Let `c` be `a` with its leg-`i` word replaced by `b_i`,
+and `d` be `b` with its leg-`i` word replaced by `a_i`. If both `c` and `d`
+lie in `S_D^{(n)}`, then no free face contains both `a` and `b`.
+
+*Proof.* `a` and `b` together use the same words in each leg as `c` and
+`d` together. So `w(a) + w(b) = w(c) + w(d)` for every weight. Suppose
+`a` and `b` both lie in a face `Φ`. Then `w(c) + w(d) = 0`, and since
+`w ≥ 0` on `S_D^{(n)}`, `w(c) = 0`, so `c ∈ Φ`. But `c` agrees with `a`
+in the two legs other than `i` and differs in leg `i`: `c` and `a` are
+two elements of the same leg-`i` fibre, so `Φ` is not free. ∎
+
+**PROVEN**; new to this repository (no rule-17 search was run).
+
+The conflict counts (COMPUTED, `rectangle_conflicts`):
+
+```text
+  D n  |S|   pairs     conflicting pairs
+  3 1    9        36        0
+  3 2   81     3,240        0
+  4 1   28       378       72
+  4 2  784   306,936   29,952
+```
+
+There are none at `D = 3` for any `n`. **PROVEN**: a non-monochromatic,
+non-rainbow triple `(x, x, y)` has `2x + y ≢ 0 (mod 3)` unless `y = x`,
+so `S_3` is exactly the triples with `a + b + c ≡ 0 (mod 3)`, and
+`S_3^{(n)}` is the triples whose three words sum to zero in `(Z/3)^n`.
+Then `c ∈ S_3^{(n)}` forces `b_i = a_i`. The table confirms it for
+`n = 1, 2` (COMPUTED).
+
+Falsification check (COMPUTED). None of the eight certified faces in
+`tools/multicolored/certs/` contains a conflicting pair. They are `S3`,
+`S4`, `S5`, `S6`, `S4n2_L11` (23 elements), `S4n2_product81`,
+`BM3n2_m5` and `BM4n2_m6`. The certificates at `D ≥ 4` are the
+non-trivial tests.
+
+### 81.2 Calibration (COMPUTED, on the committed tool)
+
+```text
+  D n K  s   result      cuts per run (run r)          known answer
+  3 1 1  2   found       0                             single-letter matchings: 2 (§80.2)
+  3 1 1  3   infeasible  2 (r=1), 1 (r=0)              same
+  3 1 3  9   found       0                             S_3 itself (Lemma 78.A)
+  3 1 3 10   infeasible  0, 0                          by counting: 3 words per leg × cap 3
+  4 1 3  9   found       120                           S4 certificate
+  4 1 9 10   infeasible  90 (r=1), 0 (r=0)             Lemma 78.B: 3 words per leg, so ≤ 9
+  3 2 1  5   found       192                           §80.2: max 5, exhaustive
+  3 2 1  6   infeasible  8,088 / 6,063 / 883 (r=2/1/0) §80.2: max 5, exhaustive
+             372.2 s; mean cut size 10.9 / 11.2 / 11.0 literals
+```
+
+Each "found" certificate passes `degen2.py verify`, the exact integer
+check of nonnegativity, the zero set and freeness, which shares no code
+with the search.
+
+`D = 3, n = 2, K = 1, s = 6` is the only non-trivial two-letter
+calibration. It took 382.2 s on an earlier run and 372.2 s on the re-run,
+with identical cut counts. `D = 3, n = 2, K = 2, s = 19` does not
+calibrate anything: counting alone rules it out (9 words per leg × cap 2
+allows at most 18 elements), and the master reported it infeasible in
+0.1 s with no cuts.
+
+The strengthening was necessary. Before the deletion filter and the
+stabiliser images were added, plain Benders spent its whole 600 s budget
+on run 2 of `D = 3, K = 1, s = 6`, adding 4,558 cuts without a verdict.
+Runs 1 and 0 never started. The pre-strengthening result file did not
+record cut sizes.
+
+### 81.3 The `D = 4` target
+
+`D = 4, n = 2, K = 2, s = 19` is **undecided**. Each run class had
+7,000 s, with the three run in parallel:
+
+```text
+  run r  stabiliser  cuts added  ended by
+  2      432         152,748     master MILP hit its time limit
+  1      36           47,040     loop time limit (mean cut 17.6 literals: 7.3 in λ, 10.3 in μ)
+  0      12           30,396     master MILP hit its time limit
+```
+
+No `Φ` was found, and no run reached an infeasible master. That leaves
+the target open: these runs neither find such a `Φ` nor rule one out.
+
+Why it stalled is CONJECTURED. The minimised cuts at `D = 4` have about
+17.6 literals, against about 11 at `D = 3`, so each cut excludes a
+smaller part of the search space. As the cuts accumulate, the master
+MILP gets harder to solve. Stabiliser images alone do not explain the
+stall: run 0 adds at most 12 images per cut, and its master still timed
+out.
+
+### 81.4 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19 | undecided (§79 MILP 1,200 s with `\|u\| ≤ 64`; §81 Benders, 3 × 7,000 s) |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 81.5 Next step
+
+None of the following has been tried. The first is the cheapest.
+
+1. **More structure in the master.** Lemma 81.A comes from the
+   shortest linear relation among incidence vectors,
+   `v_a + v_b = v_c + v_d`. The general mechanism is a forcing rule. If
+   `Σ_{t∈P} v_t = Σ_{t∈Q} v_t` as multisets and `P ⊆ Φ`, then
+   `w = 0` on every `t ∈ Q`, so `Q ⊆ Φ`. As rows this reads
+   `z_q ≥ Σ_{P} z − (|P| − 1)` for each `q ∈ Q`. The master can then
+   combine these rows with freeness and the caps; Lemma 81.A is the case
+   `|P| = 2` combined with freeness. Lemma 78.B's step (4) uses the same
+   forcing with `P` the three monochromatic triples, each counted twice,
+   and `Q` the six permutations. Enumerating the relations with
+   `|P| = |Q| = 3` once, and adding them before any cut is generated, is
+   the natural next family.
+2. **Fewer cut images.** Add an image only when it is violated by one of
+   the next few master solutions, instead of adding all of them up front.
+3. **Theory.** Bound `|Φ|/K` directly, via the two-letter analogue of
+   Lemma 78.B (§79.4 item 2). One computational fact already constrains
+   it: by Lemma 81.A, any free face of `S_4^{(2)}` must avoid 29,952
+   specific pairs.
+
+Running this loop for longer without one of these changes is not
+recommended. Three 2-hour runs added 230,184 cuts and closed no run
+class.
+
+### 81.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  benders       pass   calibration table of 81.2 reproduced on the committed tool
+  degen2 verify pass   every "found" certificate of 81.2
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+A fresh-context review of this section had been started but had not
+returned when this was committed.

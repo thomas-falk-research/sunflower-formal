@@ -4,7 +4,7 @@ Run `make verify` for the live audit. Below is the static state of
 the development. Definition-level testing — the checks the kernel
 cannot make — is described in [`docs/testing.md`](docs/testing.md);
 what to work on next is in [`docs/roadmap.md`](docs/roadmap.md), whose
-**§76 is the current handover**, with its addenda **§77**–**§80** (§80.5 is the current next step), and the right place to start cold.
+**§76 is the current handover**, with its addenda **§77**–**§81** (§81.5 is the current next step), and the right place to start cold.
 §66 was a handover for the `b = 4` descent, but none followed §67–§74
 (the descent in the kernel, LPCert, the census as the one premise, the
 LRAT checker); §76 records their state. §59 is the previous general
