@@ -9,13 +9,16 @@ on every t in S_D; its zero set Phi = {t in S_D : w(t) = 0}. Phi is *free*
 For such Phi and any distribution P on Phi, every tensor with support S_D has
 asymptotic slice rank over C at least 2^(min_j H(P_j)) (section 78.1).
 
-    search:  python3 -I tools/multicolored/degen.py search D [cap] [timelimit_s]
-             MILP (scipy/HiGHS): maximise |Phi| subject to freeness and, if cap
-             is given, at most `cap` elements of Phi per letter per coordinate.
+    search:  python3 -I tools/multicolored/degen.py search D [cap|-] [timelimit_s] [B]
+             MILP (scipy/HiGHS): maximise |Phi| over integer weights |u| <= B
+             (default 3D) on the full S_D (no sub-box), subject to freeness
+             and, if cap is given, at most `cap` elements of Phi per letter
+             per coordinate.
     verify:  python3 -I tools/multicolored/degen.py verify CERT.json
              independent exact check of a certificate, sharing nothing with the
              search: recompute every weight in integers, the zero set, freeness;
-             then compute max_P min_j H(P_j) over P on Phi.
+             then compute max_P min_j H(P_j) over P on Phi (floating-point
+             SLSQP; the weights, zero set and freeness checks are exact).
 """
 import itertools, json, math, sys
 
@@ -137,7 +140,8 @@ if __name__ == "__main__":
         D = int(sys.argv[2])
         cap = int(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3] != "-" else None
         tl = float(sys.argv[4]) if len(sys.argv) > 4 else 600.0
-        print(json.dumps(search(D, cap, tl)))
+        B = int(sys.argv[5]) if len(sys.argv) > 5 else None
+        print(json.dumps(search(D, cap, tl, B)))
     elif sys.argv[1] == "verify":
         r = verify(json.load(open(sys.argv[2])))
         r.pop("phi", None) if len(r.get("phi", [])) > 40 else None

@@ -1380,8 +1380,9 @@ and these authors) before fetching.
   `docs/roadmap.md` §77.1 is closed over `C`.
 * **The single-letter form, Lemma 5.4 proof, p. 48:** by the minimax
   theorem *"min_θ E^θ(t) = … = max_{(r_1,…,r_k)∈Δ_t} min_{j∈[k]} H(r_j)"*,
-  `Δ_t` the moment (entanglement) polytope, defined p. 27 as the closure
-  of the marginal spectra over the orbit closure `G·t`.
+  `Δ_t` the moment (entanglement) polytope, defined p. 27 as the set of
+  marginal spectra of unit vectors in the orbit closure `G·t` (Theorem
+  3.29, p. 27, characterises it as a Euclidean closure).
 * **Free supports, Theorem 4.20, pp. 39–40:** *"Let t be free. Let
   θ ∈ P_s(B). Then ρ^θ(t) = E^θ(t) = E_θ(t)."* The proof shows, for a
   free `supp_C t`, *"that for any P ∈ P(supp_C t) the tuple of ordered
@@ -1402,9 +1403,11 @@ and these authors) before fetching.
 * **Remark 4.24, p. 41** summarises the chain
   `ζ^θ ≥ F^θ = F_θ ≥ ζ_θ` for `θ ∈ P_s(B)`; Remark 5.11, p. 51, the chain
   `Q̰ ≤ MSR̰ ≤ SR̰ ≤ F^θ ≤ ζ^θ`.
-* **Over other fields:** Theorem 5.9 (p. 50) is the only slice-rank
-  statement for arbitrary fields, and it is an **upper** bound
-  (`SR̰ ≤ ζ^θ`); the lower bound of Corollary 5.7 is over `C` only. p. 5:
+* **Over other fields:** Theorem 5.9 (p. 50) bounds slice rank from
+  **above** over any field (`SR̰ ≤ ζ^θ`), and Corollary 5.10 (same page)
+  makes asymptotic slice rank equal asymptotic subrank for **tight**
+  3-tensors over any field. The general lower bound of Corollary 5.7 is
+  over `C` only. p. 5:
   the quantum functionals *"do not play a role for cap sets (we cannot
   work over C for this problem)"*.
 * p. 37: *"This upper bound was shown to be an equality in the three

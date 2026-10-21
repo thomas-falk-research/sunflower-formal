@@ -15965,7 +15965,7 @@ What is known about it:
 | F3 | **`sup_D Λ(D) < ∞` implies the conjecture at `k = 3`.** By F1, `M(D,n) ≤ Λ(D)^n ≤ L^n`; by F2, `V_3(D,n) ≤ L^n` for all `D`, so every set of at least `b^n` vectors with `b > L` contains a 3-sunflower — [ASU12] Conjecture 3 at `k = 3` — and Thm. 2.6 gives Conjecture 1 with `c_3 = e·b` | PROVEN given [ASU12] Thm. 2.6 (read) |
 | F4 | `M(D,1) = 2` for every `D ≥ 2`: no single coordinate carries an induced matching of size 3. `D = 9` decides all `D` (three triples use at most nine letters, and `S_D` depends only on the equality pattern) | COMPUTED: exhaustive, `tools/multicolored/m1.py` at `D = 2..9`; the reduction to `D = 9` PROVEN |
 | F5 | `2.519… = 2^{4/3} ≤ Λ(3) ≤ 3J(3) = 2.7551…`, with `3J(3) = inf_{0<x<1} (1+x+x²)x^{−2/3}` ([BCCGNSU17] (4.10), p. 20; evaluated this session, minimum at `x = 0.59307`). `S_3 = {(a,b,c) : a+b+c ≡ 0 mod 3}` (a pattern `(a,a,b)` sums to `2a+b`, which is `0` only when `b = a`), so `M(3,n)` is the largest tricolored sum-free set in `F_3^n`. Upper: [BCCGNSU17] Thm. 4.14 (p. 22) at `q = 3`, `|M| ≤ 3·(3J(3))^n` (Thm. A′'s `3e^{−δ} = 2.8348` is its weaker uniform form). Lower, in what was read: [ASU12] pp. 12–13 from [CKSU05] Prop. 3.8. **`Λ(3) = 2.7551…` exactly** if p. 22's report holds — that Thm. 4.14 *"is known to be sharp up to a subexponential factor"* by Kleinberg–Sawin–Speyer with Norin and Pebody — which were not read | upper bound and `2^{4/3}`: PROVEN in print (read); the identification of `S_3`: PROVEN; equality: CONDITIONAL on three unread papers |
-| F6 | `Λ(D) ≤ D` always; `Λ(D) ≤ (3/2^{2/3})(D−1)^{2/3}` by [NaSa17] Remark 7 (p. 3: the proof of Thm. 5 *"can be extended without modification to handle a multicolored version"*); and `Λ(D) ≤ 6√D` for `D > 36`: [BHL26]'s `c` is nonzero on rainbow tuples, so `M(D,n) ≤ slice-rank(T_c) ≤ 2·dim P ≤ 2(6√D)^n` (Lemma 7 and the Chernoff step of Thm. 2, pp. 8–9), as [BHL26] p. 12 itself says: the bound *"extends to indexed multicolored sunflowers [2, 45]"*. **So the alphabet-`D` multicolored quantity, with `D`-dependent upper bounds, is in print** (register B25) | the NaSa17 bound: claimed in print without a separate proof; the `6√D` bound: CONDITIONAL on [BHL26] (unrefereed; steps checked) |
+| F6 | `Λ(D) ≤ D` always; `Λ(D) ≤ (3/2^{2/3})(D−1)^{2/3}` for `D ≥ 3` (Theorem 5's hypothesis, p. 2) by [NaSa17] Remark 7 (p. 3: the proof of Thm. 5 *"can be extended without modification to handle a multicolored version"*); and `Λ(D) ≤ 6√D` for `D > 36`: [BHL26]'s `c` is nonzero on rainbow tuples, so `M(D,n) ≤ slice-rank(T_c) ≤ 2·dim P ≤ 2(6√D)^n` (Lemma 7 and the Chernoff step of Thm. 2, pp. 8–9), as [BHL26] p. 12 itself says: the bound *"extends to indexed multicolored sunflowers [2, 45]"*. **So the alphabet-`D` multicolored quantity, with `D`-dependent upper bounds, is in print** (register B25) | the NaSa17 bound: claimed in print without a separate proof; the `6√D` bound: CONDITIONAL on [BHL26] (unrefereed; steps checked) |
 | F7 | Sawin–Tao's lower bound (11) ([ST16] Prop. 6: orders on `[D]`, lexicographic on `[D]^n`, maximal elements `Γ′`) is at most `9^{n+o(n)}` on support `S_D`, for every choice of orders. A maximal rainbow `(a,b,c)` has `a` among the top 3 of its order (else some `a′` above `a` avoids `b, c` and `(a′,b,c)` dominates); a maximal `(a,a,a)` has `a` among the top 2 of some order (else each up-set has ≥ 3 letters, and three distinct representatives form a dominating rainbow triple). So each projection of `Γ′` has at most `3 + 6 = 9` letters and `H′ ≤ log 9`. **That technique, in the standard basis with product (lexicographic) orders, cannot exhibit a `D`-growing barrier.** Props. 4 and 6 also allow other bases and Prop. 4 arbitrary orders on `[D]^n`; those are not covered | PROVEN (in the stated scope) |
 | F8 | small values, §75.4 | COMPUTED |
 
@@ -16343,7 +16343,7 @@ ledger and §76.1 and is corrected there. The reviewer also proposed the
 distribution of Lemma 77.C, which was checked here by hand and
 numerically before it was adopted.
 
-## 78. [CVZ18] read: the slice-rank barrier in characteristic 0 has a single-letter formula, a `c`-independent floor of 3, and the support-only technique stops there
+## 78. [CVZ18] read: the slice-rank barrier in characteristic 0 has a single-letter formula, a `c`-independent floor of 3, and free combinatorial degenerations stop there
 
 **Tier 2.** §77.4's next step, done. [CVZ18] (*Universal points in the
 asymptotic spectrum of tensors*, arXiv:1709.07851v3) read in full, 57 of
@@ -16353,8 +16353,8 @@ asymptotic spectrum of tensors*, arXiv:1709.07851v3) read in full, 57 of
 **One line.** Over `C`, the asymptotic slice rank of BHL's single-letter
 tester `q_c` is a single-letter quantity (max over the moment polytope of
 the least marginal entropy), and it is at least 3 for every admissible
-`c` and every `D ≥ 3`. Any support-only argument of the free
-combinatorial-degeneration kind is capped at exactly 3. So the decisive
+`c` and every `D ≥ 3`. Arguments of the free combinatorial-degeneration
+kind are capped at exactly 3. So the decisive
 question — does it grow with `D`? — is now a question about the moment
 polytopes of `D × D × D` tensors, not about tensor powers. It is **still
 open**, and the tool that would have been cheapest to try provably
@@ -16374,8 +16374,9 @@ monochromatic, `c` on rainbow, 0 elsewhere, support `S_D`), and
    only the moment polytopes of `D × D × D` tensors.
 3. **Scope: characteristic 0.** Corollary 5.7 is over `C`. BHL's tester is
    over `Q`, and a `Q`-decomposition is a `C`-decomposition, so
-   `slicerank_Q ≥ slicerank_C` and every lower bound here counts against
-   BHL. **It says nothing about testers over a field of positive
+   `slicerank_Q ≥ slicerank_C` for rational `c` (BHL's), and every lower
+   bound here counts against BHL; for complex `c` the bound applies to
+   `slicerank_C` directly. **It says nothing about testers over a field of positive
    characteristic.** Over `F_3` the cap-set tensor has the same support as
    `S_3` and asymptotic slice rank `2.755 < 3`: [CVZ18] p. 5 puts it in
    the orbit of the tight tensor `F_3[x]/(x³)`, whose asymptotic subrank
@@ -16404,10 +16405,13 @@ letters, so `min_j H(P_j) = log₂ 3`. By item 2 of §78.1,
 `SR̰_C(q_c) ≥ 3`. (iv) At `D = 3`, `slicerank ≤ min_i dim = 3^n`.
 **PROVEN**, given [CVZ18] Cor. 5.7 and Thm. 4.20 (read; no error found).
 Consistent with [NaSa17] Thm. 5, whose characteristic-0 constant at
-`D = 3` is `(3/2^{2/3})·2^{2/3} = 3` exactly. Rule 17: new to this
-repository (register B27).
+`D = 3` is `(3/2^{2/3})·2^{2/3} = 3` exactly: its tensor (p. 5, eq. (3.1))
+has per-coordinate value 2 on monochromatic, −1 on rainbow and 0 on
+two-equal triples (p. 4), i.e. it is `q_c` with `c ≡ −1/2` up to a
+scalar. Rule 17: new to this repository (register B27).
 
-The general technique behind (i)–(iii): `q_c` restricts and degenerates
+The general technique behind (i)–(iii) (PROVEN by the same citations;
+new to this repository): `q_c` restricts and degenerates
 ([CVZ18] Prop. 4.10; Theorem 3.5(4) for monotonicity) to `q_c|_Φ` for any
 combinatorial degeneration `Φ` of a sub-box of `S_D`. When `Φ` is free,
 `SR̰_C(q_c) ≥ 2^{max_P min_j H(P_j)}` over distributions `P` on `Φ`, and
@@ -16438,14 +16442,25 @@ not in `Φ`, so each has positive weight; but their weights sum to
 `2(m(x) + m(y) + m(z)) = 0`. So at most 2.
 (5) A free set with at most 3 letters per coordinate has at most 9
 elements (each pair of coordinates fixes the third), and `H(P_j) ≤ log₂ 3`.
-**PROVEN.** Compositions of a restriction and repeated combinatorial
+**PROVEN**; new to this repository (register B27). Compositions of a restriction and repeated combinatorial
 degenerations are again of this form (scale the earlier weights by a
 large integer and add the later ones), so the cap covers them too.
 
 **VALIDATED by computation**, independently of the proof:
 `tools/multicolored/degen.py search` (MILP, HiGHS through scipy 1.16.2)
-maximises `|Φ|` over integer weights `|u| ≤ B`. The optimum is exactly 9
-at `D = 3, 4, 5, 6` (`B = 3D`), and at `D = 4, 5` with `B = 200`. The
+maximises `|Φ|` over integer weights `|u| ≤ B` on the full `S_D` (no
+sub-box). The optimum is exactly 9 at `D = 3, 4, 5, 6` (`B = 3D`), at
+`D = 4, 5` with `B = 200` and at `D = 8` with `B = 60`, all proven
+optimal by HiGHS; at `D = 6` (`B = 100`) and `D = 7` (`B = 60`) the
+900 s limit was hit with incumbent 9, not proven optimal. A
+fresh-context reviewer independently sampled about 50,000 random free
+degenerations of random sub-boxes at `D = 4, 5` and ran its own sub-box
+MILP at `D = 4`; nothing exceeded 3 letters per coordinate or 9
+elements. The `verify` mode re-derives the weights, zero set and
+freeness in exact integers, sharing no code with the search; the
+max-min entropy it reports comes from a floating-point optimiser
+(SLSQP), and is exact here only because the uniform distribution on
+`S_3`'s nine elements attains `log₂ 3` by hand. The
 `verify` mode re-derives each certificate in exact integers, sharing no
 code with the search. The certificates are in
 `tools/multicolored/certs/S{3,4,5,6}.json`; each has 9 elements, 3
@@ -16453,10 +16468,18 @@ letters per coordinate, 6 of them rainbow, and the bound `2^h = 3.0`.
 
 ### 78.3 What it does not settle, and why
 
-* **Growth in `D` is still open.** `3 ≤ SR̰_C(q_c) ≤ min(D,
-  1.89(D−1)^{2/3}, 6√D)` (the last two from [NaSa17] Thm. 5 and [BHL26],
-  §75.2 F6). Lemma 78.B shows that support-only arguments with standard
-  basis vectors and a single letter cannot go past 3.
+* **Growth in `D` is still open.** For every admissible `c`,
+  `3 ≤ SR̰_C(q_c) ≤ D`. The better upper bounds hold for particular `c`
+  only, so they bound the infimum: `inf_c SR̰_C(q_c) ≤ (3/2^{2/3})(D−1)^{2/3}`
+  for `D ≥ 3` ([NaSa17] Thm. 5, `c ≡ −1/2`), and `≤ 6√D` for `D > 36`
+  through [BHL26]'s `c` (its bound is on `dim P`; slice rank is at most
+  `2 dim P` by Lemma 75.B, so `≤ 2(6√D)^n`, CONDITIONAL on [BHL26]).
+  Lemma 78.B shows free combinatorial degenerations of a single-letter
+  sub-box cannot go past 3. Other support-only bounds are not covered:
+  the maximal-element bound of §75.2 F7 is capped at 9 there, and the
+  reviewer's exhaustive check found at most 3 letters per coordinate
+  among maximal elements at `D = 4, 5` under every triple of orders —
+  PLAUSIBLE that it too stops at 3, not proved.
 * **What could go further, each untried:**
   (a) Non-monomial degenerations or other bases, i.e. points of
   `Δ_{q_c}` not coming from a free support. These depend on `c`, and the
@@ -16511,5 +16534,15 @@ Run on this tree after the last edit; no Coq or Rust changed.
   coqchk        not-run   same reason
 ```
 
-A fresh-context review of this section is running at commit time; its
-corrections, if any, follow in a separate commit.
+A fresh-context review checked this section against the rendered pages
+after the first commit: all [CVZ18] quotations confirmed; Lemmas 78.A and
+78.B confirmed, with no counterexample to 78.B in about 50,000 sampled
+degenerations and an independent sub-box MILP at `D = 4`. Fixed in the
+follow-up commit: the §78.3 upper bounds held for particular `c` only and
+now bound the infimum (MAJOR); the [NaSa17] bound needs `D ≥ 3`, now
+stated here and in §75.2 F6; scope wording narrowed from "support-only"
+to "free combinatorial degenerations"; rule-17 labels added; the
+reading entry's account of other fields corrected (Cor. 5.10); the
+`Δ_t` definition corrected; `degen.py` now takes the weight bound `B` on
+the command line, so the `B = 200` runs reproduce (re-run: `D = 4`,
+`B = 200`, optimum 9, proven).
