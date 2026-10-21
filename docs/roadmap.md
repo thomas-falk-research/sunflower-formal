@@ -16000,7 +16000,7 @@ Strassen's support functionals).
 | `(A·log D)^n` | superlinear base | dead: loses to 1960 |
 | `(A·log log D)^n` | record shape | not gated; PLAUSIBLE from §75.1's shape rule |
 | `D`-uniform `b^n` (ASU Conj. 3) | constant | equivalent to the target |
-| slice rank / `dim P` with a faithful vector tester | `≥ M(D,n)` | open: dead iff `Λ(D) → ∞` |
+| slice rank / `dim P` with a faithful vector tester | `≥ M(D,n)` | open: dead if `Λ(D) → ∞` (sufficient, not necessary; an earlier "iff" here was corrected in §77.1) |
 | [ALWZ20] Conj. 5.1, 5.2 (Secondary B) | the target itself | each implies the target; 5.1's best bound is the record shape, 5.2 has none (Tier 3c) |
 
 Twelve routes are now costed by the gate, seven of them losing to 1960.
@@ -16118,7 +16118,7 @@ states where those lines stand.
   tester whose support is the vector sunflower relation — all of
   [BHL26]'s class, whatever `c` — slice rank and `dim P` are at least
   `M(D,n)/2`, the multicolored quantity of [ASU12] with the alphabet
-  freed; the route is dead iff `Λ(D) → ∞`, and `sup_D Λ(D) < ∞` would
+  freed; the route is dead if `Λ(D) → ∞` ("iff" in the first draft; corrected in §77.1), and `sup_D Λ(D) < ∞` would
   prove the conjecture at `k = 3`. Hypotheses 2(a) and 2(c) are settled
   (2(a) is in print, B23; 2(c) is one line). Sawin–Tao's maximal-element
   lower bound provably cannot show growth (F7).
@@ -16195,12 +16195,13 @@ both identifiers looked up through the arXiv API, not recalled.
 Register rows B24 (updated), B26 (new).
 
 **One line.** Neither paper settles the route. They name the barrier
-quantity (it is an asymptotic monomial subrank), pin its value at `D = 3`
-(`2.7551…`, conditional on Pebody 2018), give a formula for the
-quantity that actually decides the slice-rank route (the minimum of the
-quantum functionals, via [CVZ18]), and every evaluation theorem they quote
-needs a support condition that `S_D` fails in the standard basis for every
-`D ≥ 4`. **Status of the route: still open.**
+quantity (it is an asymptotic monomial subrank) and pin its value at
+`D = 3` (`Λ(3) = 2.7551…`, with the one step KSS left to Pebody checked
+here directly at `q = 3`, Lemma 77.C). Through [CVZ18] they give a formula
+for the asymptotic slice rank over `C`, whose growth in `D` would close the
+slice-rank route. Every evaluation theorem they quote needs a support
+condition that `S_D` fails in the standard basis for every `D ≥ 4`.
+**Status of the route: still open.**
 
 ### 77.1 What `Λ(D)` is
 
@@ -16236,8 +16237,12 @@ the asymptotic slice rank ([CVZ22] eq. (68)). **PROVEN.** Over `C`,
   σ_C(D) = inf_c  min_θ F^θ(T_c)        (CONDITIONAL on [CVZ18], unread)
 ```
 
-and the route is dead iff `σ_C(D) → ∞`; `Λ(D) → ∞` is sufficient, not
-necessary.
+and the route is dead **if** `σ_C(D) → ∞` (`Λ(D) → ∞` is a sufficient
+condition for that). The converse is not established: `dim P ≥ sr/2` is
+one-directional (§75.6) and `sr_Q` may exceed `sr_C`. And [CVZ22] eq. (69)
+equates `min_θ F^θ` with the **limsup** of `sr^{1/n}`, while §75.2 defines
+`σ` with a **liminf**; identifying the two needs [CVZ18] to show the limit
+exists. All of this is CONDITIONAL on [CVZ18], unread.
 
 ### 77.2 Why the published equalities do not apply
 
@@ -16252,26 +16257,30 @@ entries."*
 * `S_3` is free in the standard basis (it is the support of `⟨Z/3Z⟩` after
   relabelling one slot). **COMPUTED** (exhaustive over the 9 triples).
 * `S_D` is **not** free in the standard basis for any `D ≥ 4`:
-  `(0,1,2)` and `(0,1,3)` are both rainbow and differ in one entry.
+  `(0,1,2)` and `(0,1,3)` (letters `0, …, D−1`, as in `tools/multicolored/`)
+  are both rainbow and differ in one entry.
   **PROVEN.** Hence not oblique and not tight in that basis either.
   (Checked exhaustively for `D = 4..7` as a control.)
 * Whether `T_c` is free, oblique or tight **in some other basis** depends
   on `c` and was not studied. It is the condition under which the
   support-functional formula would become usable.
 
-[KSS18]'s construction does not transfer either, for a stated reason: it
-works inside the tight integer relation `a + b + c = q − 1` and needs Lemma
-8 (fixed coordinate sums on a type class) to lift a mod-`q` coincidence to
-an integer one — additive structure `S_D` does not have for `D ≥ 4`. The
-authors say of their own construction (p. 6, Remark 7) that *"it may be
-hard to lift our constructions out of the colored setting."*
+[KSS18]'s construction **does not transfer directly** — PLAUSIBLE, this
+repository's reading, not something the paper states: it works inside the
+tight integer relation `a + b + c = q − 1` and needs Lemma 8 (fixed
+coordinate sums on a type class) to lift a mod-`q` coincidence to an
+integer one, additive structure `S_D` does not have for `D ≥ 4`. (KSS's
+Remark 7, p. 6, about lifting *"out of the colored setting"*, concerns the
+gap between tri-colored and ordinary 3-AP-free sets — in this repository's
+terms `M` against `V_3`, F2 — and says nothing about other alphabets; an
+earlier draft of this paragraph cited it for the wrong point.)
 
 ### 77.3 What moved
 
 | | before (§75.2) | now |
 |---|---|---|
-| `Λ(3)` | `2^{4/3} ≤ Λ(3) ≤ 2.7551` | **`Λ(3) = 3J(3) = 2.755104…`**: upper [BCCGNSU17] Thm. 4.14; lower [KSS18] Thm. 2 with Pebody's Theorem 4; also stated in [CVZ22] p. 10. CONDITIONAL on Pebody 2018 (refereed, unread) |
-| `Λ(D)`, `D ≥ 4` | `≥ 2^{4/3}` | **`≥ 2.7551`** by monotonicity (F1), same condition; upper `min(1.89(D−1)^{2/3}, 6√D)` unchanged; growth undecided |
+| `Λ(3)` | `2^{4/3} ≤ Λ(3) ≤ 2.7551` | **`Λ(3) = 3J(3) = 2.755104…`**: upper [BCCGNSU17] Thm. 4.14; lower [KSS18] Thm. 2, whose one outsourced step (Theorem 4) is checked at `q = 3` by Lemma 77.C. PROVEN given those two papers (both read, no error found). [CVZ22] p. 10 states the value but cites only the upper-bound papers, so it is not independent evidence for the lower bound |
+| `Λ(D)`, `D ≥ 4` | `≥ 2^{4/3}` | **`≥ 2.7551`** by monotonicity (F1); upper `min(1.89(D−1)^{2/3}, 6√D)` unchanged; growth undecided |
 | what `Λ` is | the multicolored capacity | the asymptotic monomial subrank of `T_c` (Lemma 77.A, PROVEN) |
 | the per-`c` barrier | `M(D,n)/2` | `Q(T_c^{⊗n})/2`, possibly larger and `c`-dependent (77.B, PROVEN) |
 | the deciding quantity | asymptotic slice rank, no formula | `inf_c min_θ F^θ(T_c)` over `C` (CONDITIONAL on [CVZ18]); not known to be efficiently computable ([CVZ22] p. 22) |
@@ -16279,6 +16288,21 @@ hard to lift our constructions out of the colored setting."*
 
 Rule 17: nothing here is claimed as new; Lemma 77.A is a reading of
 [CVZ22]'s definitions.
+
+**Lemma 77.C (KSS Theorem 4 at `q = 3`).** With `ρ = (√33 − 1)/8 =
+0.593070…`, the positive root of `4ρ² + ρ − 2 = 0`, and `Z = 1 + ρ + ρ²`,
+put weight `ρ²/Z` on each of the three permutations of `(2,0,0)` and
+`ρ/(2Z)` on each of the three permutations of `(0,1,1)`. This is an
+`S_3`-symmetric distribution on `T = {(a,b,c) ∈ {0,1,2}³ : a+b+c = 2}`
+whose marginal is `ψ = (1, ρ, ρ²)/Z`: the marginal puts `ρ²/Z` on 2 and
+`2·ρ/(2Z) = ρ/Z` on 1 by construction, and `2ρ²/Z + ρ/(2Z)` on 0, which is
+`1/Z` exactly when `4ρ² + ρ − 2 = 0`. That equation is also the
+stationarity condition of `(1+ρ+ρ²)ρ^{−2/3}`
+(`3ρ(1+2ρ) = 2(1+ρ+ρ²)`), so this `ρ` is KSS's. **PROVEN** (two lines of
+algebra), and VALIDATED numerically: total mass 1, all three marginals
+equal `ψ` to 12 places, `θ = 2.755104613…`. The construction was
+suggested by the fresh-context reviewer of this section and checked here
+before use. So at `q = 3` KSS's Theorem 2 does not need Pebody [20].
 
 ### 77.4 The exact next step (replaces §76.4)
 
@@ -16305,3 +16329,14 @@ Run on this tree after the last edit; no Coq, Rust or tool code changed.
   verify        not-run   no .v file, statement or audited name changed
   coqchk        not-run   same reason
 ```
+
+A fresh-context reviewer checked this section against the rendered pages:
+18 quotations, 17 confirmed and one transcription slip (a dropped tilde,
+`Q_M` for `Q̰_M`, CVZ p. 10), fixed. Lemma 77.A and the inequalities of
+77.B confirmed. Two MAJOR findings, both fixed: "the route is dead iff
+`σ_C → ∞`" claimed a converse nobody has (now "if", with the
+liminf/limsup gap stated), and KSS's Remark 7 had been cited for a point
+it does not make. The same "iff" overclaim, about `Λ`, sat in the §75.3
+ledger and §76.1 and is corrected there. The reviewer also proposed the
+distribution of Lemma 77.C, which was checked here by hand and
+numerically before it was adopted.

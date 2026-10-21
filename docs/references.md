@@ -1211,7 +1211,8 @@ session N+15.
   10pp. **Read in full, 10 of 10 rendered pages (2026-10-21).** Tri-colored
   sum-free sets in `C_q^n` of size `θ^{n−o(n)}`, `θ = qJ(q)` (`2.7551` at
   `q = 3`), conditional on its Theorem 4, proved by Pebody (Discrete
-  Analysis 2018:13, not read). `docs/reading.md` Tier 3c.
+  Analysis 2018:13, not read); at `q = 3` Theorem 4 is checked directly in
+  `docs/roadmap.md` Lemma 77.C. `docs/reading.md` Tier 3c.
 
 - **[CVZ22]** M. Christandl, P. Vrana, J. Zuiddam, *Barriers for fast
   matrix multiplication from irreversibility*. arXiv:1812.06952v4 (5 Mar

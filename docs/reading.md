@@ -133,7 +133,7 @@ literature, resolved.
 | B23 | An induced matching inside the support of a tensor bounds its slice rank from below (`docs/roadmap.md` §75.2, hypothesis 2(a)) | **CONFIRMED in print; not new** | [BCCGNSU17] Prop. 4.8, p. 18, rendered: *"If M is a tricolored sum-free set in an abelian group H, then \|M\| ≤ slice-rank(D_H)"*, proved by *"slice-rank(F\|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)"* and Lemma 4.7 (diagonal ⇒ slice rank `\|X\|`, p. 15); the proof uses only the support. Also [ST16] Lemma 3 (projections do not raise rank) with Example 5, and [KL26] p. 2. See Tier 3c. |
 | B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **NOT FOUND in the ten Tier 3c sources (KSS18 and CVZ22 added 2026-10-21). NOT EXHAUSTIVE.** | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. [KSS18] constructs at alphabet `C_q` only; [CVZ22] states the general equalities (tight/oblique/free supports), which `S_D` fails in the standard basis for `D ≥ 4` (`docs/roadmap.md` §77.2). **Not searched:** [CVZ18], [Str91], Pebody, Norin — the first two are where an evaluation of the asymptotic slice rank for support `S_D` would be. |
 | B25 | The alphabet-indexed multicolored capacity `Λ(D) = lim_n M(D,n)^{1/n}` (`docs/roadmap.md` §75.2) as the obstruction to `D`-uniform vector-tester bounds | **SPLIT. The quantity and `D`-dependent upper bounds on it are IN PRINT; its use as the barrier, and any lower bound growing with `D`, NOT FOUND, NOT EXHAUSTIVE — "new to this repository" for that part only.** The first draft of this row said no Tier 3c source varies the alphabet; a fresh-context review found two that do. | [NaSa17] Remark 7, p. 3, rendered: *"The proofs of theorems 3 and 5 can be extended without modification to handle a multicolored version of the problem analogous to multicolored sum-free sets as defined in [2]."* [BHL26] p. 12: *"The new bound on the vector sunflower problem of Alon, Shpilka and Umans [2] (Theorem 2) extends to indexed multicolored sunflowers [2, 45]"*. [ASU12] Conjecture 6 (p. 8) is alphabet 3 only. Same unsearched list as B24. |
-| B26 | `Λ(D)` is a named quantity: the asymptotic monomial subrank `Q̰_M` of any tensor with support `S_D` | **CONFIRMED from definitions, not a novelty** | [CVZ22] p. 9 defines monomial restriction by generalized sub-permutation matrices and notes `Q_M` depends only on the support; a monomial restriction onto the unit tensor `⟨m⟩` is exactly an induced matching of size `m` in the support (`docs/roadmap.md` §77.1, PROVEN there). p. 10: *"It is known that Q_M(⟨Z/3Z⟩_F) = 2.755..."* — the `D = 3` value, matching [KSS18] with [BCCGNSU17] Thm. 4.14. |
+| B26 | `Λ(D)` is a named quantity: the asymptotic monomial subrank `Q̰_M` of any tensor with support `S_D` | **CONFIRMED from definitions, not a novelty** | [CVZ22] p. 9 defines monomial restriction by generalized sub-permutation matrices and notes `Q_M` depends only on the support; a monomial restriction onto the unit tensor `⟨m⟩` is exactly an induced matching of size `m` in the support (`docs/roadmap.md` §77.1, PROVEN there). p. 10: *"It is known that Q̰_M(⟨Z/3Z⟩_F) = 2.755..."* (asymptotic; tilde on the page) — the `D = 3` value, matching [KSS18] with [BCCGNSU17] Thm. 4.14. |
 | A25 | [NaSa17] p. 2 says the **Erdős–Rado** conjecture is equivalent to `c_D < D^{1−ε}` (this file's [NaSa17] entry until 2026-10-20) | **REFUTED — a paraphrase error in this register** | p. 2 re-rendered: *"the now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to proving that c_D < D^{1−ε} … [1, Theorem 2.7]"*. [ASU12] Thm. 2.7 (p. 6, rendered) ties Conjecture 4 to Conjecture 2, which p. 3 states as Erdős–Szemerédi. The [NaSa17] entry is corrected in place; `docs/roadmap.md` §75.1 is the arithmetic of why a `D`-power saving gives nothing for Erdős–Rado. |
 
 ### Tier C — the four proofs, and the formalisation decision
@@ -1295,16 +1295,19 @@ recalled.
   random linear map into `F_p` and keep the triples landing on a
   Behrend-type 3-AP-free set `S` (p. 5), and delete collisions (Lemma 12,
   pp. 7–8). **No error found.**
-* **Remark 7, p. 6** (assumes `q` odd) records that the construction is
-  intrinsically *colored*: the three components have different letter
-  distributions, so *"it may be hard to lift our constructions out of the
-  colored setting."*
+* **Remark 7, p. 6** (assumes `q` odd): converted to a tri-colored
+  **3-AP**-free set, the middle component has a different letter
+  distribution from the other two, unlike `{(x,x,x)}` for an ordinary
+  3-AP-free set, so *"it may be hard to lift our constructions out of the
+  colored setting."* (In the sum-free set itself all three components have
+  distribution `ψ`.) It is about tri-colored against uncolored, not about
+  alphabets.
 * **Bearing here.** `S_3` (`docs/roadmap.md` §75.2) is the mod-3 relation
-  up to relabelling one slot, so this paper, with Pebody's Theorem 4, gives
-  `Λ(3) ≥ 3J(3)`; with [BCCGNSU17] Thm. 4.14, **`Λ(3) = 2.755104…`**,
-  conditional only on Pebody [20]. Nothing in it concerns an alphabet
-  other than `C_q`, and its Lemma 8 uses the additive structure that `S_D`
-  lacks for `D ≥ 4`.
+  up to relabelling one slot, so this paper gives `Λ(3) ≥ 3J(3)`; its
+  Theorem 4 is checked directly at `q = 3` in `docs/roadmap.md` Lemma 77.C,
+  so with [BCCGNSU17] Thm. 4.14, **`Λ(3) = 2.755104…`** without Pebody.
+  Nothing in it concerns an alphabet other than `C_q`, and its Lemma 8
+  uses the additive structure that `S_D` lacks for `D ≥ 4`.
 
 ### [CVZ22] Christandl, Vrana, Zuiddam, *Barriers for fast matrix multiplication from irreversibility*, arXiv:1812.06952v4 (5 Mar 2022)
 
@@ -1321,10 +1324,12 @@ Comput. 17 (2021)*.
   (A_1, A_2, A_3) · t = s."* and *"Note that the notions Q_M and Q̰_M only
   depend on the support of the tensor, and not on the particular values of
   the nonzero coefficients."*
-* **p. 10:** *"It is known that Q_M(⟨Z/3Z⟩_F) = 2.755... This is proven in
-  [EG17, Tao16], see also [CVZ18] for the connection to [Str91]."* — a
-  second rendered source for `Λ(3) = 2.755…` (see `docs/roadmap.md` §77 for
-  the identification of `Λ` with `Q̰_M`).
+* **p. 10:** *"It is known that Q̰_M(⟨Z/3Z⟩_F) = 2.755... This is proven
+  in [EG17, Tao16], see also [CVZ18] for the connection to [Str91]."* (the
+  `Q` carries the tilde of the asymptotic version on the page; a first
+  transcription dropped it). It states the value of `Λ(3)` (see
+  `docs/roadmap.md` §77 for `Λ = Q̰_M`), but [EG17] and [Tao16] give only
+  the upper bound, so it is not independent evidence for the lower bound.
 * **Support functionals, p. 16:** `ζ^θ(t) = 2^{ρ^θ(t)}`,
   `ρ^θ(t) = min_{s≅t} max_{P∈P(supp(s))} Σ_i θ_i H(P_i)`; *"Strassen proves
   in [Str91] the fundamental property that Q̰(t) ≤ ζ^θ(t)"*; *"Strassen
