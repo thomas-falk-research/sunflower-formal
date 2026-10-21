@@ -16567,7 +16567,7 @@ question is whether `|Φ| ≥ 9K + 1` is possible for some `K`.
 ### 79.1 Results (all COMPUTED; certificates verified in exact integers)
 
 ```text
-  question at D = 4, n = 2                         result (time limit)              
+  question at D = 4, n = 2                         result (time limit)
   max min-letters-per-leg (no cap)                 L >= 11 found; not optimal (1800 s; dual bound 16)
      its Phi: 23 elements, 11/11/11 words,         h = 3.039 bits, per letter 2^(h/2) = 2.867 < 3
   calibration: |Phi| >= 81 with K = 9             FEASIBLE, found (the product S_3 x S_3)
