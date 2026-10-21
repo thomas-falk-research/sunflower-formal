@@ -16546,3 +16546,99 @@ reading entry's account of other fields corrected (Cor. 5.10); the
 `Δ_t` definition corrected; `degen.py` now takes the weight bound `B` on
 the command line, so the `B = 200` runs reproduce (re-run: `D = 4`,
 `B = 200`, optimum 9, proven).
+
+## 79. Two-letter free degenerations at `D = 4`: the single-letter cap breaks, the value 3 does not (yet)
+
+**Tier 2.** §78.5 item 1, done as one table. Tool:
+`tools/multicolored/degen2.py` (MILP through scipy 1.16.2 / HiGHS, plus
+an exact verifier sharing no code with the search). Support
+`S_D^{(2)}`, each leg's alphabet `[D]²` (16 words at `D = 4`), integer
+weights `|u| ≤ 4D² = 64` per word, **not** of product form.
+
+**What a certificate buys.** `q_c^{⊗2}` has support `S_D^{(2)}` and
+`SR̰(q_c^{⊗2}) = SR̰(q_c)²` ([CVZ18] Cor. 5.7). So a free combinatorial
+degeneration `Φ` with `h = max_P min_j H(P_j)` gives
+`SR̰_C(q_c) ≥ 2^{h/2}` for every `c` nonzero on rainbow tuples (Lemma
+78.A's argument, PROVEN). Beating the single-letter value 3 needs
+`h > log₂ 9`. With at most `K` uses of any word in any leg, the uniform
+`P` gives `h ≥ log₂(|Φ|/K)`; since `|Φ| ≤ 9K` exactly reproduces 3, the
+question is whether `|Φ| ≥ 9K + 1` is possible for some `K`.
+
+### 79.1 Results (all COMPUTED; certificates verified in exact integers)
+
+```text
+  question at D = 4, n = 2                         result (time limit)              
+  max min-letters-per-leg (no cap)                 L >= 11 found; not optimal (1800 s; dual bound 16)
+     its Phi: 23 elements, 11/11/11 words,         h = 3.039 bits, per letter 2^(h/2) = 2.867 < 3
+  calibration: |Phi| >= 81 with K = 9             FEASIBLE, found (the product S_3 x S_3)
+  |Phi| >= 10 with K = 1   (would give > 3)        UNDECIDED: no solution, no proof (1200 s)
+     (K = 1 is a matching: feasible would also give Lambda(4) >= sqrt(10) by [CVZ18] Lemma 4.13)
+  |Phi| >= 19 with K = 2   (would give > 3)        UNDECIDED (1200 s)
+  |Phi| >= 82 with K = 9   (would give > 3)        UNDECIDED (1200 s)
+  sanity: D = 3, n = 2, max min-letters            L = 9, Phi = S_3^(2), 81 elements, proven optimal
+```
+
+Certificates: `tools/multicolored/certs/S4n2_L11.json` (23 elements,
+11 words per leg) and `S4n2_product81.json` (81 elements, bound 3.0).
+
+### 79.2 What this settles and what it does not
+
+* **Lemma 78.B does not extend to two letters (COMPUTED, exact
+  certificate).** A free combinatorial degeneration of `S_4^{(2)}` uses 11
+  words in every leg, where the single-letter cap would allow at most
+  `3² = 9`. This matches the proof-level observation in §78.3(b): at two
+  letters a word's admissible replacements are constrained coordinate by
+  coordinate, and the step "every other first letter lies among the top
+  element's three" weakens to "among up to `4D − 4` words". So the cap of 3
+  is a single-letter fact, not a property of the support.
+* **But no certificate here beats 3.** The 11-word `Φ` is too small (23
+  elements) and gives 2.867. The three runs that would beat 3 are
+  undecided at 20 minutes each, so **nothing is concluded about whether
+  two-letter degenerations can exceed 3**. The calibration run shows the
+  solver can find an 81-element `Φ` when one exists under the stated
+  constraints, but that is no evidence the undecided instances are
+  infeasible: an infeasibility proof needs the LP bound to close, and
+  the earlier uncapped run's dual bound stayed at the trivial 16 words.
+* **The weight bound is a restriction.** `|u| ≤ 64` per word. A negative
+  verdict from this search would hold only within that bound.
+
+### 79.3 A bug found and fixed during the run
+
+The first capped runs (`K = 1..4`) silently ignored the cap: the cap
+constraints were appended after the constraint matrix had been built. All
+four returned the same 24-element `Φ`, which at `K = 1` would need 24
+distinct words per leg out of 16 — impossible, and that is how it was
+caught. The `D = 3, K = 9` sanity check had passed only because that
+cap does not bind. Fixed in commit `2ecd8c9`;
+`verify` now reports the maximum uses per word, so a violated cap is
+visible in every result. No result from the buggy runs is used above.
+
+### 79.4 Next step
+
+Two ways to decide the undecided rows, cheapest first:
+1. **Symmetry and a better formulation.** `S_D^{(n)}` is invariant under
+   `Sym(D)` per coordinate (acting on all three legs alike) and under
+   permuting coordinates; fixing one element of `Φ` to a canonical triple
+   and ordering words by weight would cut the search sharply. The
+   big-M linking `w_t ≤ M(1 − z_t)` is the likely reason the LP bound is
+   trivial; an indicator formulation, or enumerating `Φ` directly and
+   checking each candidate with an LP (a free `Φ` is at most one element
+   per fibre, so candidates are partial Latin-square-like objects),
+   should be tighter.
+2. **Theory.** Find the two-letter analogue of Lemma 78.B's order
+   argument, which bounds `|Φ|/K` rather than the number of words.
+   §79.1's certificate shows any such bound must allow 11 words per leg.
+
+### 79.5 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  degen2 verify pass   S4n2_L11 (23 elements, 11/11/11 words, 2.867) and
+                       S4n2_product81 (81 elements, 3.0)
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
