@@ -16642,3 +16642,146 @@ Run on this tree after the last edit; no Coq or Rust changed.
   verify        not-run   no .v file, statement or audited name changed
   coqchk        not-run   same reason
 ```
+
+## 80. Border matchings in `S_D^{(2)}`: a tight exact search, and at `D = 4` no matching of 10 — the `K = 1` case cannot beat 3
+
+**Tier 2.** §79.4 item 1, done for the case it can settle exactly.
+Tool: `tools/multicolored/bmatch.py` (last change `c88a50d`); LPs through
+HiGHS via `highspy 1.11.0`.
+
+### 80.1 The tighter formulation
+
+§79's MILP had a trivial LP bound because the big-M link
+`w_t ≤ M(1 − z_t)` lets fractional `z` ignore the weights; the face
+condition only acts at integrality. For **matchings** (`K = 1`: each word
+used once per leg) the weights can be eliminated. With
+`Φ = {(x_i, y_i, z_i)}`, set `u_1(x_i) = α_i`, `u_2(y_i) = β_i`,
+`u_3(z_i) = −α_i − β_i`, and give every word outside `Φ` a weight larger
+than all others. Then `Φ` is a free combinatorial degeneration of
+`S_D^{(n)}` exactly when
+
+```text
+  α_i + β_j − α_l − β_l ≥ 1   for every non-constant (i, j, l) with (x_i, y_j, z_l) ∈ S_D^{(n)}   (*)
+```
+
+is feasible. **PROVEN** (every element of `S_D^{(n)}` touching an outside
+word is positive by the choice of the large weight; the rest are exactly
+the triples in (*); `Φ` is free because a matching uses each word once).
+(*) is hereditary, so an exhaustive search over sets with pruning is
+exact. This is [CVZ18] Theorem 4.11's setting: a feasible `Φ` of size `m`
+gives `Λ(D) ≥ m^{1/n}` (Lemma 4.13) and `SR̰_C(q_c) ≥ m^{1/n}` for every
+admissible `c` (Lemma 78.A's argument).
+
+The search:
+* **Pairwise conflicts in closed form.** For two triples, (*) reduces to
+  signs of `Δα`, `Δβ` and `Δγ = Δα + Δβ`; it is infeasible exactly on a
+  2-cycle in one of them, or when `Δα, Δβ > 0` with `Δγ < 0` (or the
+  mirror image). **PROVEN** (a two-variable sign argument, written out
+  in the tool's docstring).
+* **Symmetry, two levels.** `Sym(D)^n ⋊ S_n × S_3` (letters per
+  coordinate on all legs alike, coordinates, legs) preserves
+  `S_D^{(n)}` and (*). A triple's orbit is its number of monochromatic
+  coordinates, so run `r` forces that orbit's representative `R` and
+  forbids triples with more than `r`. Inside a run, one top-level branch
+  per orbit of `Stab(R)` (explicit group of order `24² · 2 · 6 = 6912` at
+  `D = 4, n = 2`), each exploring all sets containing `R` and the branch
+  representative. Both are valid set-level reductions (a set is mapped
+  into the searched family, never dropped).
+* **Bounds.** Tomita-style greedy colouring of the compatibility graph;
+  forward checking (candidates re-filtered by LP feasibility with the
+  current set, exact because (*) is hereditary); an exact acyclicity
+  prefilter on the pure `α`, `β`, `γ` difference constraints.
+* **Engineering, measured.** Profiling showed scipy's `linprog` spending
+  most of its time validating options; calling HiGHS directly took
+  0.036 ms per LP against about 1.7 ms. At `D = 3, n = 2` the full search
+  went from 15,457 nodes in 71 s to 2,994 nodes in 5.7 s.
+
+### 80.2 Validation (all COMPUTED, before the `D = 4` claim)
+
+```text
+  instance            max border matching   cross-check
+  D = 3, 4, 5; n = 1   2   (exhaustive)     degen.py capped MILP: 2 (proven optimal, D = 4, 5);
+                                            within Lemma 78.B's cap of 3 letters
+  D = 3, n = 2         5   (exhaustive)     degen2.py capped MILP, K = 1: 5, proven optimal;
+                                            must be <= Lambda(3)^2 = 7.59 ([KSS18], Lemma 77.C)
+  run split, D = 3     1,126 + 1,526 + 342 = 2,994 nodes = full run; branch split additive (1,526)
+  forced 0.5 s limit   reported non-exhaustive
+```
+
+Every certificate found is re-checked in exact integers by
+`degen2.py verify` (nonnegativity on all of `S_D^{(n)}`, zero set exactly
+`Φ`, freeness). `tools/multicolored/certs/BM3n2_m5.json` is the `D = 3`
+maximum and `BM4n2_m6.json` the best found at `D = 4`.
+
+### 80.3 The `D = 4` result
+
+**No free combinatorial degeneration of `S_4^{(2)}` is a matching of 10
+or more triples.** COMPUTED, exhaustive, target mode 10:
+
+```text
+  run (monochromatic coords)   stabiliser   top orbits   nodes      time      verdict
+  2                            432          6            150,036    3,179 s   none, exhaustive
+  1                             36         26            335,308    7,000 s   branches 0-22 complete (limit hit in 23)
+     branches 23, 24, 25 re-run separately: 18,692 / 9,964 / 17,890 nodes, 375 / 185 / 364 s, none, exhaustive
+  0                             12         41            164,141    2,775 s   none, exhaustive
+```
+
+Branch 23 of run 1 is counted from the re-run only: the first run's
+counter increments after a branch returns, including one cut by the time
+limit, so branch 23 there may be incomplete; branches 0–22 completed
+before the limit.
+
+**Consequences.**
+* At `D = 4` the `K = 1` two-letter route gives at most `√9 = 3`: it
+  cannot beat the single-letter value. The best found is 6
+  (`√6 = 2.449`, certificate verified exactly); whether the maximum is
+  6, 7, 8 or 9 is **not** decided (target 7 was not run to completion).
+* The same holds for `Λ`: no two-letter border matching certifies
+  `Λ(4) > 3`.
+* Single-letter border matchings have size exactly 2 at `D = 3, 4, 5`,
+  below Lemma 78.B's cap of 3 letters (the 9-element `S_3` degeneration
+  is not a matching).
+
+**Caveat on the label.** Every pruned node rests on HiGHS declaring a
+small LP infeasible (or on the exact prefilters). No infeasibility was
+re-checked in exact arithmetic, so the negative is COMPUTED, not PROVEN.
+The LPs are tiny and integral with margin 1, which makes a wrong verdict
+unlikely but not impossible.
+
+### 80.4 What is still open
+
+* **`K ≥ 2` (general `Φ`).** The weight elimination needs each word used
+  once. For repeated words the face condition is a Farkas condition (no
+  nonnegative combination of outside elements in the span of `Φ`) with
+  no small reformulation found. §79's undecided rows (`K = 2`,
+  `|Φ| ≥ 19`; `K = 9`, `|Φ| ≥ 82`) stand.
+* **Larger `n` or `D`.** `n = 3` at `D = 4` has 21,952 triples; the
+  search as written will not reach it.
+* So whether *any* support-only, combinatorial-degeneration argument
+  shows the slice rank of BHL's tester grows with `D` remains open; the
+  cheapest two cases (single letter, and two-letter matchings at `D = 4`)
+  both stop at 3.
+
+### 80.5 Next step
+
+A combinatorial Benders loop for `K ≥ 2`: a master problem over `z`
+(freeness cliques, caps, size) and, for each candidate `Φ`, the face LP;
+when it is infeasible, the Farkas certificate's support gives a no-good
+cut `Σ_{supp λ}(1 − z_t) + Σ_{supp μ} z_t ≥ 1`, with its images under the
+group. Run it at `D = 4, n = 2`, `K = 2` (target 19) first.
+
+### 80.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  bmatch        pass   calibration table of 80.2 reproduced on the final tool
+  degen2 verify pass   BM3n2_m5 (5 elements) and the D = 4 six-element certificate
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
+
+No fresh-context review was run on this section.
