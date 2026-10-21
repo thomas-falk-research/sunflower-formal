@@ -27,10 +27,12 @@ triple is its number of monochromatic coordinates. Run r forces the
 representative with r monochromatic coordinates into Phi and forbids triples
 with more than r (a set containing one is covered by an earlier run).
 
-    python3 -I tools/multicolored/bmatch.py max D n [timelimit_s] [target|-] [runs]
+    python3 -I tools/multicolored/bmatch.py max D n [timelimit_s] [target|-] [runs] [branches]
         (runs: comma list of numbers of monochromatic coordinates, e.g. 1 or
         2,1; each run is the sets whose largest such number is that value,
-        so the union of separate runs is the whole search)
+        so the union of separate runs is the whole search; branches: comma
+        list of top-level orbit indices within the run, in the fixed order
+        of the 'symmetry' statistics, so a run can be split or resumed)
         (with target: decide whether a border matching of size >= target
         exists; exhaustive and not found means none, up to the LP)
         largest m found, with the certificate (alpha, beta, Phi) as JSON;
@@ -204,7 +206,7 @@ def pair_ok(t, s, inS):
     return True
 
 
-def search_max(D, n, tl=600.0, target=None, only_runs=None):
+def search_max(D, n, tl=600.0, target=None, only_runs=None, branches=None):
     T = Sn(D, n)
     inS = set(T)
     N = len(T)
@@ -328,7 +330,9 @@ def search_max(D, n, tl=600.0, target=None, only_runs=None):
         progress.update(run=r, top_done=0, top_total=len(reps2))
         if best["m"] < 1:
             best.update(m=1, phi=[R], alpha=[0.0], beta=[0.0])
-        for k in reps2:
+        for bi, k in enumerate(reps2):
+            if branches is not None and bi not in branches:
+                continue
             sub = cand0 & adj[k]
             v, keep = sub, 0
             while v:
@@ -348,6 +352,7 @@ def search_max(D, n, tl=600.0, target=None, only_runs=None):
     if only_runs is not None and set(only_runs) - set(finished_runs):
         exhaustive = False
     return {"D": D, "n": n, "target": target, "found": found, "only_runs": only_runs,
+            "branches": branches,
             "max_m_found": best["m"] if found else None, "exhaustive": exhaustive,
             "seconds": round(time.time() - t0, 1), "nodes": nodes[0],
             "finished_runs_by_nmono": finished_runs, "progress_at_stop": dict(progress),
@@ -381,6 +386,7 @@ if __name__ == "__main__":
         tl = float(sys.argv[4]) if len(sys.argv) > 4 else 600.0
         target = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[5] != "-" else None
         only = [int(v) for v in sys.argv[6].split(",")] if len(sys.argv) > 6 else None
-        r = search_max(D, n, tl, target, only)
+        br = [int(v) for v in sys.argv[7].split(",")] if len(sys.argv) > 7 else None
+        r = search_max(D, n, tl, target, only, br)
         r["cert"] = cert(r) if r["phi"] else None
         print(json.dumps(r))
