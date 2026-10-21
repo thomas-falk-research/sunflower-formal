@@ -17012,3 +17012,221 @@ are all fixed in the text:
   (rechecked by stubbing the rounding step to fail);
 * the calibration rows were re-run after that change, with unchanged
   results.
+
+## 82. Three-against-three forcing rows at `D = 4, K = 2`: valid and complete, the target still undecided, and the bottleneck located
+
+**Tier 2.** This is §81.5 item 1. The tool is `tools/multicolored/benders.py`
+with its new optional `rows3` argument (`off`, `upfront`, `lazy`, `both`),
+and its default behaviour is unchanged. The question is still §79's: does
+`S_4^{(2)}` have a free face with at most 2 uses per word per leg and at
+least 19 elements? Such a face would give a per-letter bound above 3.
+
+### 82.1 The rows
+
+**Lemma 82.A (forcing).** Let `P` and `Q` be multisets of triples in
+`S_D^{(n)}` with `Σ_{t∈P} v_t = Σ_{t∈Q} v_t`, where `v_t` is the
+incidence vector of `t`'s three words. If every element of `P` lies in a
+face `Φ`, so does every element of `Q`.
+
+*Proof.* `w(t) = ⟨u, v_t⟩` is linear in `v_t`, so `Σ_P w = Σ_Q w`. The
+left side is 0. Since `w ≥ 0` on `S_D^{(n)}`, every `w(q)` is 0. ∎
+
+**PROVEN.** The fact itself is elementary LP: the zero set of a
+nonnegative linear functional is closed under such dependencies. Its use
+here to build rows is new to this repository; no rule-17 search was run.
+Lemma 81.A is the case `|P| = |Q| = 2` combined with freeness.
+
+**Corollary 82.B (three-set conflict).** Take `P = {p_1, p_2, p_3}`. For
+leg permutations `(σ, τ)` other than the identity, let
+`Q = {(x_j, y_{σ(j)}, z_{τ(j)})}`. Suppose every element of `Q` lies in
+`S_D^{(n)}` and none lies in `P`. The relation of Lemma 82.A holds,
+because each leg uses the same words on both sides. If `P ∪ Q` then
+contains a pair in one fibre, or a Lemma 81.A pair, or uses some word
+more than `K` times among its distinct elements, then no free face with
+cap `K` contains `P`. **PROVEN**, from Lemma 82.A, Lemma 81.A and the
+definitions.
+
+These give two kinds of master row:
+* a **conflict row** `z_{p_1} + z_{p_2} + z_{p_3} ≤ 2` for each
+  three-set of Corollary 82.B;
+* **forcing rows** `z_q ≥ z_{p_1} + z_{p_2} + z_{p_3} − 2`, one for each
+  `q ∈ Q`, for every other relation.
+
+In `upfront` mode, every conflict row whose three variables are allowed
+in the run is added before the loop starts. In `lazy` mode, each master
+solution is checked first. Every relation with `P ⊆ Φ` that it violates
+is added, as a conflict row or as forcing rows, together with its
+stabiliser images, before any Farkas subproblem is solved. `both`
+combines up-front conflict rows with lazy forcing rows.
+
+### 82.2 How many there are (COMPUTED)
+
+The relations are enumerated over all three-sets `P` with no
+incompatible pair and all 35 non-identity `(σ, τ)`.
+
+```text
+  D n K   distinct (P, Q)   3-sets with a relation   conflict 3-sets   other 3-sets (their relations)
+  3 1 1           6                    3                     3              0
+  3 1 3           6                    3                     0              3   (6)
+  4 1 2         600                  408                   324             84   (96)
+  3 2 1       1,512                1,404                 1,404              0
+  3 2 2       1,512                1,404                     0          1,404   (1,512)
+  4 2 2   4,411,776            4,068,096             3,497,472        570,624   (582,528)
+```
+
+At `D = 4, n = 2`, enumerating and classifying the relations took 85 s and
+113 s in two timed runs, with a peak of 1.3 GB measured in the first. A
+scratch version of the diagnostic below added the conflict rows to HiGHS one
+at a time. It was killed at about 7 GB, under a memory limit it shared with
+three other jobs. `relax82.py` and `upfront` mode add them in bulk. At `D = 3`, every relation is a conflict when `K = 1` and none is
+when `K = 2`. This matches §81.1: `S_3^{(n)}` has no two triples in one
+fibre and no Lemma 81.A pair, so only the cap can create a conflict.
+
+**Falsification checks (COMPUTED).**
+* **The certified faces.** None of the eight in
+  `tools/multicolored/certs/` contains a conflict three-set at its own
+  cap. Every relation with `P` inside one of them also has `Q` inside it.
+  For `S4n2_product81` that covers all 1,512 relations of `S_3^{(2)}`.
+* **Random faces at `D = 4, n = 1`.** 20,000 random integer weightings
+  gave 109,756 relations with `P` inside the face, all with `Q` inside
+  too. Among the 9,122 free faces (largest 9 elements), none contains a
+  conflict relation at its own cap.
+* **Random faces at `D = 4, n = 2`.** 4,000 random weightings gave
+  20,764,248 relations with `P` inside the face, all with `Q` inside too.
+  Among the 144 free faces (largest 9 elements), none contains a
+  conflict relation at its own cap.
+
+The random weightings draw `u` uniformly from `{0, …, b}^{3 × A}`, with
+`b ∈ {1, 2, 3}` uniform for each trial, and NumPy `default_rng(20261021)`.
+The scripts are in the session scratchpad, not in the repository; they
+use only `benders.py`'s functions plus exact integer arithmetic.
+* **The enumerator.** On 20 random subsets each at `D = 4, n = 1`,
+  `D = 3, n = 2` and `D = 5, n = 1`, the restricted enumeration (`within`)
+  equals the full enumeration filtered to `P` inside the subset. Every
+  listed relation has equal word multisets per leg and `P ∩ Q = ∅`.
+
+### 82.3 Calibration (COMPUTED)
+
+On the fast rows of §81.2 (`3 1 1 3`, `3 1 3 9`, `4 1 3 9`, `4 1 9 10`,
+`3 2 1 5`), all four modes give §81.2's verdicts. Mode `off` gives the
+same cut counts as before, and every certificate found passes
+`degen2.py verify`.
+
+The non-trivial row, `D = 3, n = 2, K = 1, s = 6`, came out infeasible in
+every run class and every mode:
+
+```text
+  mode      seconds   Farkas cuts (r = 2/1/0)   three-set rows (r = 2/1/0)
+  off        372.2    8,088 / 6,063 / 883        —
+  lazy       272.3    6,456 / 4,950 / 675        364 / 248 / 16 lazy
+  upfront    317.1    7,140 / 4,914 / 630        1,404 / 960 / 48 up front
+  both       322.8    7,140 / 4,914 / 630        1,404 / 960 / 48 up front, 0 lazy
+```
+
+The `off` run was made alone and the other three in parallel, so the
+times are not a controlled comparison. The cut counts are: the new rows
+remove 12–29% of the Farkas cuts per run class, and the cuts that remain
+still average about 11 literals. At `D = 3`, the obstruction is mostly longer
+relations.
+
+**Diagnostic: the combinatorial rows alone (COMPUTED,
+`tools/multicolored/relax82.py`).** This is the largest `Φ` allowed by
+freeness, the cap, Lemma 81.A and every conflict three-set, with no face
+condition:
+* `D = 3, n = 2, K = 1`: 9, 8 and 7 in run classes 2, 1 and 0, all
+  proven optimal, against a true maximum of 5. In run class 2 it is also
+  9 without the three-set rows.
+* `D = 4, n = 2, K = 2`, run class 2: a 21-element set found, with the
+  upper bound still at the trivial 32 after 1,800 s.
+
+So conflict rows alone cannot rule out `s = 19`. Any proof must also use
+the face condition.
+
+### 82.4 The `D = 4` target
+
+`D = 4, n = 2, K = 2, s = 19`: **undecided** in both new modes. Each run
+class had 7,000 s, three in parallel per mode (COMPUTED):
+
+```text
+  mode   r   conflict rows up front   lazy rows added   Farkas cuts   ended by
+  both   2        3,497,472               178,128             0        loop time limit
+  both   1        3,387,264                51,189             0        master MILP time limit
+  both   0        1,721,088                     0             0        master MILP time limit (first solve)
+  lazy   2                0             1,430,784             0        loop time limit
+  lazy   1                0               640,932             0        master MILP time limit
+  lazy   0                0               168,699             0        master MILP time limit
+```
+
+Two findings, both COMPUTED:
+* **No master solution was ever closed under the three-against-three
+  relations.** In all six runs the Farkas subproblem was never reached.
+  Every candidate `Φ` the master produced violated some relation of
+  Corollary 82.B or Lemma 82.A. §81's runs, without these rows, spent
+  their time on Farkas cuts averaging 17.6 literals (run 1). Those cuts
+  were in large part re-deriving three-set relations in a weaker form.
+  That last point is CONJECTURED; §81 did not record which relations its
+  cuts encoded.
+* **Loading every conflict row up front makes the master too large.**
+  With 1,721,088 rows in run class 0, the first master solve did not
+  finish in 7,000 s.
+
+The MILP master is therefore the wrong engine for this structure. Its
+rows are almost all implications among three or four binary variables,
+and an LP relaxation propagates those poorly. That reading is
+CONJECTURED.
+
+### 82.5 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19 | undecided (§79 MILP 1,200 s; §81 Benders 3 × 7,000 s; §82 with three-set rows, 2 modes × 3 × 7,000 s) |
+| `K = 2`, ignoring the face condition | a 21-element candidate exists (§82.3), so the face condition is essential |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 82.6 Next step
+
+**A SAT master in place of the MILP master** (counterexample-guided, the
+same loop as §81.1).
+* **Clauses.**
+  * at-most-one per fibre;
+  * the 27,072 Lemma 81.A pairs beyond freeness, as binary clauses;
+  * the 3,497,472 conflict three-sets, as clauses `¬p_1 ∨ ¬p_2 ∨ ¬p_3`;
+  * the 582,528 remaining relations, as Horn clauses
+    `¬p_1 ∨ ¬p_2 ∨ ¬p_3 ∨ q`, one per `q`, so at most 1.75M;
+  * the caps and `|Φ| ≥ 19` as cardinality encodings.
+* **Why SAT.** Unit propagation carries out Lemma 82.A exactly, and
+  conflict learning generalises it. These are about 5–6M short clauses
+  over 784 variables, a routine size for CaDiCaL (1.7.3 is installed
+  here).
+* **The face condition.** Each SAT model that is closed under the
+  relations goes to the existing Farkas subproblem, and its minimised
+  certificate comes back as a clause.
+* **Evidence.** An UNSAT verdict should be checked with DRAT proof output
+  and an independent checker (`drat-trim`). In this repository's terms
+  that would make the combinatorial part PROVEN, not just COMPUTED.
+* **Calibration first.** Run it on §81.2's table before the `D = 4`
+  target.
+
+Do not run the MILP modes again for longer. Six more 2-hour runs neither
+found a `Φ` nor reached a single Farkas subproblem.
+
+### 82.7 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  benders       pass   §81.2 fast rows in all four modes; mode off reproduces §81.2's cut counts
+  degen2 verify pass   every "found" certificate of 82.3
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+At this commit, the `D = 4` diagnostic was being re-run from the committed
+`relax82.py` (the figure above comes from a scratch version of it), and a
+fresh-context review of this section had not yet returned.
