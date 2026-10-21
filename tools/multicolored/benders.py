@@ -21,7 +21,8 @@ supp(mu) fails (d) by the same certificate, giving the no-good cut
     sum_{supp lambda} (1 - z_t) + sum_{supp mu} z_t >= 1.
 If the Farkas system is infeasible, (d) holds: the face LP is solved, its
 weights scaled and rounded to integers, and the zero set and nonnegativity
-re-checked in exact integers before it is reported. Freeness comes from the
+re-checked in exact integers. A run reports "found" only when that check
+passes, and "face, no integer certificate" otherwise. Freeness comes from the
 master; tools/multicolored/degen2.py verify re-checks all three from scratch.
 
 Symmetry: run r forces the orbit representative with r monochromatic
@@ -271,7 +272,8 @@ def run_one(D, n, K, s, r, tl, t0):
         cert = farkas(T, A, phi)
         if cert is None:
             u = face_weights(T, A, phi)
-            return {"run": r, "status": "found", "cuts": cuts, "phi_size": len(phi),
+            return {"run": r, "status": "found" if u else "face, no integer certificate",
+                    "cuts": cuts, "phi_size": len(phi),
                     "cert": {"D": D, "n": n, "u": u} if u else None}
         lam, mu = minimise(T, A, phi, *cert)
         sizes.append(len(lam) + len(mu))
@@ -299,11 +301,12 @@ if __name__ == "__main__":
     for r in runs:
         res = run_one(D, n, K, s, r, tl, t0)
         out["runs"].append(res)
-        if res["status"] == "found":
+        if res["status"].startswith(("found", "face")):
             break
     out["seconds"] = round(time.time() - t0, 1)
     sts = [x["status"] for x in out["runs"]]
     out["verdict"] = ("found" if "found" in sts else
+                      "face found, not certified" if "face, no integer certificate" in sts else
                       "none (all runs infeasible)" if len(sts) == len(runs) and all(v == "infeasible" for v in sts)
                       else "undecided")
     print(json.dumps(out))
