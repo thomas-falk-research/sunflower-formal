@@ -5,8 +5,10 @@ docs/roadmap.md section 82.3. Maximises |Phi| over subsets of S_D^(n) that
 are free, use each word at most K times per leg, avoid every Lemma 81.A pair
 and (with rows3 = 1) every conflict three-set of Corollary 82.B, in the run
 class r of benders.py (its forced triple, no triple with more monochromatic
-coordinates). There is no face condition, so the optimum is an upper bound
-on what the Benders search can find in that run class, not a face.
+coordinates). Only these consequences of the face condition are used, so the
+optimum is an upper bound on what the Benders search can find in that run
+class, and the set found need not be a face. The incumbent is printed and
+re-checked exactly against the rows.
 
     python3 -I tools/multicolored/relax82.py D n K r timelimit_s rows3(0|1)
 """
@@ -62,6 +64,25 @@ if with3:
 m.setOptionValue("time_limit", tl); m.setOptionValue("mip_rel_gap", 0.0)
 t0 = time.time(); m.run()
 info = m.getInfo()
-print(json.dumps({"D": D, "n": n, "K": K, "run": r, "rows3": n3, "status": str(m.getModelStatus()),
-                  "best": -info.objective_function_value, "bound": -info.mip_dual_bound,
-                  "seconds": round(time.time() - t0, 1)}))
+out = {"D": D, "n": n, "K": K, "run": r, "rows3": n3, "status": str(m.getModelStatus()),
+       "best": -info.objective_function_value, "bound": -info.mip_dual_bound,
+       "seconds": round(time.time() - t0, 1)}
+if info.primal_solution_status:
+    # re-check the incumbent exactly, independently of the MILP tolerances
+    phi = sorted(k for k, v in enumerate(m.getSolution().col_value) if v > 0.5)
+    fibres = [{tuple(T[k][j] for j in range(3) if j != i) for k in phi} for i in range(3)]
+    rect = {frozenset(p) for p in B.rectangle_conflicts(T)}
+    inphi = set(phi)
+    conf3 = 0
+    if with3:
+        conf3 = int(np.isin(Pc, phi).all(1).sum())
+    out["phi"] = phi
+    out["recheck"] = {
+        "size": len(phi),
+        "forced_triple_in": rep in inphi,
+        "all_allowed": all(allowed[k] for k in phi),
+        "free": all(len(f) == len(phi) for f in fibres),
+        "max_uses_per_word": max(sum(1 for k in phi if T[k][i] == x) for i in range(3) for x in range(A)),
+        "lemma_81A_pairs_inside": sum(1 for a in phi for b in phi if a < b and frozenset((a, b)) in rect),
+        "conflict_3sets_inside": conf3}
+print(json.dumps(out))
