@@ -17170,12 +17170,20 @@ forcing rows, no two-plus-one pairs, no longer relations):
   proven optimal, against a true maximum of 5. In run class 2 it is also
   9 without the three-set rows.
 * `D = 4, n = 2, K = 2`, run class 2: a 21-element set found, with the
-  upper bound still at the trivial 32 after 1,800 s.
+  upper bound still at the trivial 32 after 1,800 s. Three runs gave the
+  same figures: a scratch version, `relax82.py` before the re-check was
+  added, and `relax82.py` with it.
+  * **Exact re-check.** The set passes: forced triple in, free, at most
+    2 uses per word, no Lemma 81.A pair, no conflict three-set. Its
+    indices are `[0, 9, 18, 27, 41, 143, 261, 270, 279, 286, 308, 334,
+    399, 513, 522, 531, 633, 670, 765, 771, 783]`.
+  * **It is not a face.** 100 `relations3` rows have `P` inside it and
+    `Q` not, so it breaks forcing rows. The minimised Farkas certificate
+    is itself three-against-three (`|supp λ| = 3`, `|supp μ| = 3`).
 
 So in run class 2, conflict rows and Lemma 81.A alone cannot rule out
-`s = 19`. A proof must use more of the face condition. The 21-element set
-is HiGHS's incumbent. `relax82.py` does not re-check it, so it is
-COMPUTED to MILP tolerance only.
+`s = 19`. A proof must use more of the face condition, and the forcing
+rows are the first thing the 21-element candidate violates.
 
 ### 82.4 The `D = 4` target
 
@@ -17299,7 +17307,5 @@ fixed in the text:
 * the `K = 1` statement is proved for every `D` and `n`;
 * the clause total is 5.3M.
 
-`relax82.py` now re-checks its incumbent exactly. At this commit it was
-being re-run at `D = 4` with that check; the 21-element figure above
-comes from a scratch version that differs only by an empty-row guard and
-the output.
+`relax82.py` now prints its incumbent and re-checks it exactly, and the
+`D = 4` figure above was re-run with that check (§82.3).
