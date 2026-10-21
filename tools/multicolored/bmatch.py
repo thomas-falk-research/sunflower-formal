@@ -27,7 +27,10 @@ triple is its number of monochromatic coordinates. Run r forces the
 representative with r monochromatic coordinates into Phi and forbids triples
 with more than r (a set containing one is covered by an earlier run).
 
-    python3 -I tools/multicolored/bmatch.py max D n [timelimit_s] [target]
+    python3 -I tools/multicolored/bmatch.py max D n [timelimit_s] [target|-] [runs]
+        (runs: comma list of numbers of monochromatic coordinates, e.g. 1 or
+        2,1; each run is the sets whose largest such number is that value,
+        so the union of separate runs is the whole search)
         (with target: decide whether a border matching of size >= target
         exists; exhaustive and not found means none, up to the LP)
         largest m found, with the certificate (alpha, beta, Phi) as JSON;
@@ -201,7 +204,7 @@ def pair_ok(t, s, inS):
     return True
 
 
-def search_max(D, n, tl=600.0, target=None):
+def search_max(D, n, tl=600.0, target=None, only_runs=None):
     T = Sn(D, n)
     inS = set(T)
     N = len(T)
@@ -252,6 +255,7 @@ def search_max(D, n, tl=600.0, target=None):
         nodes[0] += 1
         if time.time() - t0 > tl:
             exhaustive = False
+            timed_out[0] = True
             return
         if len(chosen) > best["m"]:
             ok, al, be = feasible([T[k] for k in chosen], inS)
@@ -289,6 +293,7 @@ def search_max(D, n, tl=600.0, target=None):
                 progress["top_done"] += 1
             if time.time() - t0 > tl:
                 exhaustive = False
+                timed_out[0] = True
                 return
 
     # Symmetry inside a run: with R forced, its stabiliser H acts on the sets
@@ -301,7 +306,10 @@ def search_max(D, n, tl=600.0, target=None):
     index = {t: k for k, t in enumerate(T)}
     finished_runs = []
     stats = []
+    timed_out = [False]
     for r, rep, allowed in runs:
+        if only_runs is not None and r not in only_runs:
+            continue
         R = T[rep]
         H = [g for g in G if g(R) == R]
         cand0 = allowed & adj[rep]
@@ -332,12 +340,14 @@ def search_max(D, n, tl=600.0, target=None):
             progress["top_done"] += 1
             if time.time() - t0 > tl:
                 break
-        if time.time() - t0 > tl:
+        if timed_out[0]:
             exhaustive = False
             break
         finished_runs.append(r)
     found = bool(best["phi"])
-    return {"D": D, "n": n, "target": target, "found": found,
+    if only_runs is not None and set(only_runs) - set(finished_runs):
+        exhaustive = False
+    return {"D": D, "n": n, "target": target, "found": found, "only_runs": only_runs,
             "max_m_found": best["m"] if found else None, "exhaustive": exhaustive,
             "seconds": round(time.time() - t0, 1), "nodes": nodes[0],
             "finished_runs_by_nmono": finished_runs, "progress_at_stop": dict(progress),
@@ -369,7 +379,8 @@ if __name__ == "__main__":
     if sys.argv[1] == "max":
         D, n = int(sys.argv[2]), int(sys.argv[3])
         tl = float(sys.argv[4]) if len(sys.argv) > 4 else 600.0
-        target = int(sys.argv[5]) if len(sys.argv) > 5 else None
-        r = search_max(D, n, tl, target)
+        target = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[5] != "-" else None
+        only = [int(v) for v in sys.argv[6].split(",")] if len(sys.argv) > 6 else None
+        r = search_max(D, n, tl, target, only)
         r["cert"] = cert(r) if r["phi"] else None
         print(json.dumps(r))
