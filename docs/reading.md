@@ -131,8 +131,9 @@ literature, resolved.
 | B19f-KM | Whether [KM17]'s `B*(H)` layers impose sunflower-freeness as a hypothesis, or derive it | **CONFIRMED BY RENDERING, both exponents exactly as previously extracted — and it is a DERIVED structural decomposition, not an imposed hypothesis. A23's verdict stands.** | [KM17] p. 5, rendered: *"Define `B*(H)` to be the set of `T ⊂ V(H)` such that (i) `0 < |T| < r`, and (ii) `T` is the core of an `(r+1)^{|T|}`-sunflower in `H`."* Then `B′(H)` = inclusion-minimal members, `B″(H)` = edges containing no member of `B*(H)`, `B(H) = B′ ∪ B″`, `B_i` = members of size `i`. p. 6, rendered: *"Claim. `B_i` contains no `(r+1)^{i−1}`-sunflower."* with a half-page proof, then *"Applying the Claim and Lemma 11 yields `|B_i| < f((r+1)^{i−1}, i)` for all `i > 1`."* The **only** hypotheses on `H` (p. 5) are *"intersecting `r`-graph with `τ(H) ≥ 2` and `|H| > hm″(n,r)`"*, and the paper attributes the machinery: *"The following crucial claim proved by Frankl can be found in Lemma 1 in [6, 8]"* — Frankl's `Δ`-system base construction, applied with petal count `r+1` chosen by the authors. **So it is a theorem *about* intersecting families that *produces* a sunflower-free base, not a theorem *bounding* intersecting families *assumed* sunflower-free with prescribed `τ`.** It does not replace the `ι(4,11)` computation. Note the degree-type condition is **relative** (`n` large, `|H| ~ (r−2)·C(n, r−2)`), stated at **one** level at a time but for **every** `i` — Rao's shape in the fractional setting, which is B19d's *relative / every level* corner again. |
 | B19f-KN | Where [KN24] sits in B19d's 2×2, from the primary source rather than from the survey | **Absolute, one level — B19g confirmed from the primary.** Read pp. 1–8 of 61. | p. 1, abstract, rendered: the Duke–Erdős problem *"determine the maximum size of an `n`-vertex `k`-uniform hypergraph without a sunflower with `s` petals and a kernel of size `ℓ`"* — the extremal function `f(n,k,ℓ,s)`, an **absolute** cap (`< s` petals on a kernel of size exactly `ℓ`) at a **single** level `ℓ`. Main results pp. 2–4: exact `f(n,k,ℓ,s)` for `n ≥ n₀(k,s)` in several `(k,ℓ)` ranges plus extremal structure, via the `Δ`-system method with spread approximations. **No intersecting hypothesis and no cap at every level.** B19g reached this corner through [Kup25] p. 57; this reaches it through the paper. |
 | B23 | An induced matching inside the support of a tensor bounds its slice rank from below (`docs/roadmap.md` §75.2, hypothesis 2(a)) | **CONFIRMED in print; not new** | [BCCGNSU17] Prop. 4.8, p. 18, rendered: *"If M is a tricolored sum-free set in an abelian group H, then \|M\| ≤ slice-rank(D_H)"*, proved by *"slice-rank(F\|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)"* and Lemma 4.7 (diagonal ⇒ slice rank `\|X\|`, p. 15); the proof uses only the support. Also [ST16] Lemma 3 (projections do not raise rank) with Example 5, and [KL26] p. 2. See Tier 3c. |
-| B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **NOT FOUND in the eight Tier 3c sources. NOT EXHAUSTIVE.** | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. **Not searched:** Kleinberg–Sawin–Speyer, Norin, Pebody, Christandl–Vrana–Zuidam, Strassen's support functionals — the asymptotic-spectrum literature is where such a barrier would most likely be. |
+| B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **NOT FOUND in the ten Tier 3c sources (KSS18 and CVZ22 added 2026-10-21). NOT EXHAUSTIVE.** | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. [KSS18] constructs at alphabet `C_q` only; [CVZ22] states the general equalities (tight/oblique/free supports), which `S_D` fails in the standard basis for `D ≥ 4` (`docs/roadmap.md` §77.2). **Not searched:** [CVZ18], [Str91], Pebody, Norin — the first two are where an evaluation of the asymptotic slice rank for support `S_D` would be. |
 | B25 | The alphabet-indexed multicolored capacity `Λ(D) = lim_n M(D,n)^{1/n}` (`docs/roadmap.md` §75.2) as the obstruction to `D`-uniform vector-tester bounds | **SPLIT. The quantity and `D`-dependent upper bounds on it are IN PRINT; its use as the barrier, and any lower bound growing with `D`, NOT FOUND, NOT EXHAUSTIVE — "new to this repository" for that part only.** The first draft of this row said no Tier 3c source varies the alphabet; a fresh-context review found two that do. | [NaSa17] Remark 7, p. 3, rendered: *"The proofs of theorems 3 and 5 can be extended without modification to handle a multicolored version of the problem analogous to multicolored sum-free sets as defined in [2]."* [BHL26] p. 12: *"The new bound on the vector sunflower problem of Alon, Shpilka and Umans [2] (Theorem 2) extends to indexed multicolored sunflowers [2, 45]"*. [ASU12] Conjecture 6 (p. 8) is alphabet 3 only. Same unsearched list as B24. |
+| B26 | `Λ(D)` is a named quantity: the asymptotic monomial subrank `Q̰_M` of any tensor with support `S_D` | **CONFIRMED from definitions, not a novelty** | [CVZ22] p. 9 defines monomial restriction by generalized sub-permutation matrices and notes `Q_M` depends only on the support; a monomial restriction onto the unit tensor `⟨m⟩` is exactly an induced matching of size `m` in the support (`docs/roadmap.md` §77.1, PROVEN there). p. 10: *"It is known that Q_M(⟨Z/3Z⟩_F) = 2.755..."* — the `D = 3` value, matching [KSS18] with [BCCGNSU17] Thm. 4.14. |
 | A25 | [NaSa17] p. 2 says the **Erdős–Rado** conjecture is equivalent to `c_D < D^{1−ε}` (this file's [NaSa17] entry until 2026-10-20) | **REFUTED — a paraphrase error in this register** | p. 2 re-rendered: *"the now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to proving that c_D < D^{1−ε} … [1, Theorem 2.7]"*. [ASU12] Thm. 2.7 (p. 6, rendered) ties Conjecture 4 to Conjecture 2, which p. 3 states as Erdős–Szemerédi. The [NaSa17] entry is corrected in place; `docs/roadmap.md` §75.1 is the arithmetic of why a `D`-power saving gives nothing for Erdős–Rado. |
 
 ### Tier C — the four proofs, and the formalisation decision
@@ -1061,7 +1062,8 @@ artifact, noted while reading its code: its README cites a
 Read for `docs/roadmap.md` §75. **Rendering deviation from rule 1,
 recorded:** `pdftoppm` is not installed in this container; every page
 below was rendered with PyMuPDF 1.26.3 (`page.get_pixmap(dpi=110)`) and
-looked at as an image. Pages rendered and read: [BHL26] 1–16, [KL26] 1–11,
+looked at as an image. Pages rendered and read: [KSS18] 1–10 and [CVZ22]
+1–26 (added 2026-10-21), [BHL26] 1–16, [KL26] 1–11,
 [ASU12] 3–14, [CKSU05] 1–10, [BCCGNSU17] 1–27, [ALWZ20] 15–17, [NaSa17]
 1–5. No quotation below comes from extracted text. The one non-PDF source,
 [ST16], is a blog post retrieved as JSON through the WordPress API (rule
@@ -1232,7 +1234,8 @@ objects [BCCGNSU17] later refutes.
   we have stated it uniformly in p"*. p. 22: Theorem 4.14 is *"known to
   be sharp up to a subexponential factor by [14, Theorem 2], conditional
   on a conjecture … later proved independently in [18] and [19]"* —
-  [KSS], Norin, Pebody; none of the three was read.
+  [KSS], Norin, Pebody. [KSS] was read in full on 2026-10-21 (entry
+  [KSS18] below); Norin and Pebody were not.
 
 ### [ST16] Sawin, Tao, *Notes on the "slice rank" of tensors*, What's New, 24 Aug 2016
 
@@ -1256,6 +1259,103 @@ statements, which is not reading them.
   entropy of a distribution on the **maximal elements** `Γ′` of the
   support. §75.2 (F7) shows this bound is at most `9^{n+o(n)}` on the
   sunflower support, for every choice of orders.
+
+### [KSS18] Kleinberg, Sawin, Speyer, *The growth rate of tri-colored sum-free sets*, Discrete Analysis 2018:12, arXiv:1607.00047v3
+
+**Read in full: 10 of 10 rendered pages** (session of 2026-10-21;
+PyMuPDF 1.26.3, 110 dpi). Identifier looked up through the arXiv API
+(`id_list=1607.00047` returned this title and these authors), not
+recalled.
+
+* **Abstract, p. 1:** *"Let θ = min_{ρ>0}(1 + ρ + ··· + ρ^{q−1})ρ^{−(q−1)/3}.
+  Blasiak, Church, Cohn, Grochow, Naslund, Sawin, and Umans … showed that
+  a tri-colored sum-free set in C_q^n has size at most 3θ^n. Between this
+  paper and a paper of Pebody, we will show that, for any δ > 0, and n
+  sufficiently large, there are tri-colored sum-free sets in C_q^n of size
+  (θ − δ)^n."* p. 1: *"this paper will raise the bound to 2.755^n and show
+  that this bound is tight."* p. 2: *"(What we denote θ is called qJ(q) in
+  [5].)"* — so `θ` at `q = 3` is [BCCGNSU17]'s `3J(3) = 2.755104…`.
+* **Theorem 2, p. 2:** *"Fix an integer q ≥ 2. Define θ as above. For n
+  sufficiently large, there are sum-free sets in C_q^n with size
+  ≥ θ^n e^{−2√((2 log 2 log θ)n) − O_q(log n)}."* p. 2: *"In this paper, we
+  show Theorem 2 except for a hypothesis on the existence of a probability
+  distribution satisfying certain properties (Theorem 4). In [20], Pebody
+  will verify Theorem 4, completing the proof of Theorem 2."* [20] is
+  *L. Pebody, Proof of a conjecture of Kleinberg–Sawin–Speyer, Discrete
+  Analysis 2018:13* (p. 10) — **not read**. p. 4, fn. 5: a proof was also
+  claimed by Norin [19], *"but we are unable to confirm all the steps in
+  the argument."*
+* **The construction, pp. 3–8, read step by step.** Work in the *tight*
+  integer relation `T = {(a,b,c) ∈ I³ : a + b + c = q − 1}`, `I = {0,…,q−1}`
+  (p. 3); fix one type class `W` (all vectors with letter distribution
+  `ψ′`, p. 5); Lemma 8 (p. 6): every vector in `W` has coordinate sum
+  `n(q−1)/3`, so a cross triple whose sum is `t` **mod `q`** has it in `Z`
+  as well (Lemma 9, p. 6) — this is the step that lets an induced matching
+  of the integer relation avoid the whole mod-`q` relation; then hash by a
+  random linear map into `F_p` and keep the triples landing on a
+  Behrend-type 3-AP-free set `S` (p. 5), and delete collisions (Lemma 12,
+  pp. 7–8). **No error found.**
+* **Remark 7, p. 6** (assumes `q` odd) records that the construction is
+  intrinsically *colored*: the three components have different letter
+  distributions, so *"it may be hard to lift our constructions out of the
+  colored setting."*
+* **Bearing here.** `S_3` (`docs/roadmap.md` §75.2) is the mod-3 relation
+  up to relabelling one slot, so this paper, with Pebody's Theorem 4, gives
+  `Λ(3) ≥ 3J(3)`; with [BCCGNSU17] Thm. 4.14, **`Λ(3) = 2.755104…`**,
+  conditional only on Pebody [20]. Nothing in it concerns an alphabet
+  other than `C_q`, and its Lemma 8 uses the additive structure that `S_D`
+  lacks for `D ≥ 4`.
+
+### [CVZ22] Christandl, Vrana, Zuiddam, *Barriers for fast matrix multiplication from irreversibility*, arXiv:1812.06952v4 (5 Mar 2022)
+
+**Read in full: 26 of 26 rendered pages** (session of 2026-10-21).
+Identifier looked up through the arXiv API (title search), not recalled.
+The published version was not fetched; [BHL26] cites it as *Theory
+Comput. 17 (2021)*.
+
+* **Monomial restriction, p. 9:** *"A generalized sub-permutation matrix is
+  a matrix for which every row and every column has at most one nonzero
+  coefficient. … we write t ≥_M s and say t monomially restricts to s if
+  there are linear maps A_i … the corresponding matrices of which are
+  generalized sub-permutation matrices in the standard basis, such that
+  (A_1, A_2, A_3) · t = s."* and *"Note that the notions Q_M and Q̰_M only
+  depend on the support of the tensor, and not on the particular values of
+  the nonzero coefficients."*
+* **p. 10:** *"It is known that Q_M(⟨Z/3Z⟩_F) = 2.755... This is proven in
+  [EG17, Tao16], see also [CVZ18] for the connection to [Str91]."* — a
+  second rendered source for `Λ(3) = 2.755…` (see `docs/roadmap.md` §77 for
+  the identification of `Λ` with `Q̰_M`).
+* **Support functionals, p. 16:** `ζ^θ(t) = 2^{ρ^θ(t)}`,
+  `ρ^θ(t) = min_{s≅t} max_{P∈P(supp(s))} Σ_i θ_i H(P_i)`; *"Strassen proves
+  in [Str91] the fundamental property that Q̰(t) ≤ ζ^θ(t)"*; *"Strassen
+  proved that equality holds for the family of tight tensors [Str91]."*
+  **Footnote 3:** *"A tensor t is called tight if for some choice of basis
+  there are injective maps α_1, α_2, α_3 such that for every a ∈ supp(t) it
+  holds that α_1(a_1) + α_2(a_2) + α_3(a_3) = 0."* p. 17: by minimax,
+  `min_θ ρ^θ(t) = min_{s≅t} max_P min_i H(P_i)`.
+* **Asymptotic slice rank, p. 23, eq. (68):** *"Q̰(t) ≤ limsup_n
+  slicerank(t^{⊗n})^{1/n} ≤ min_θ ζ^θ(t)"*; *"for oblique tensors the
+  right-most inequality is an equality [TS16] … and, as mentioned in
+  Section 4.2, for tight tensors both inequalities are equalities [Str91]."*
+  **Eq. (69):** *"It was shown in [CVZ18] that the minimum over the
+  parameter θ of F^θ equals the asymptotic slice rank"*, `F^θ` the quantum
+  functionals (p. 22: `log_2 F^θ(t) = max_{P∈Π(t)} Σ θ_i H(P_i)`, `Π(t)` the
+  moment polytope; *"It is an open problem whether the quantum functionals
+  are efficiently computable."*). **Footnotes 4–5:** oblique = support an
+  antichain in some basis; free = *"in some basis any two different
+  a, b ∈ supp(t) differ in at least two entries. Every tight tensor is
+  oblique and every oblique tensor is free."*
+* **Bearing here.** (i) It names our quantity: `Λ(D)` is the asymptotic
+  monomial subrank of any tester with support `S_D` (`docs/roadmap.md`
+  §77.1). (ii) It supplies, through [CVZ18], an exact formula for the
+  asymptotic slice rank over `C` — the quantity the slice-rank route
+  actually needs — but not a way to evaluate it. (iii) Every equality it
+  quotes needs the support to be tight, oblique or free in some basis;
+  `S_D` is free in the standard basis only at `D = 3` (§77.2).
+  **Nothing in it concerns `S_D` or any alphabet-indexed family.**
+  [CVZ18] (*Universal points in the asymptotic spectrum of tensors*, STOC
+  2018, arXiv:1709.07851 as printed on p. 25), [Str91] and [TS16]-in-full
+  are cited above second-hand and **not read**.
 
 ### [ALWZ20] §5 — the two rainbow conjectures (Secondary B)
 

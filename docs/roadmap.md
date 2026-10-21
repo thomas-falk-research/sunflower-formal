@@ -16186,3 +16186,122 @@ import under this container's Python 3.13 with numpy 2.5.3 (it was
 removed again); PyMuPDF 1.26.3 in a scratch virtual environment for
 rendering only. `make verify` fails at `lpcert-test` without `scipy`,
 for that reason alone.
+
+## 77. Addendum to §76: Kleinberg–Sawin–Speyer and Christandl–Vrana–Zuiddam read — `Λ` named, `Λ(3)` pinned, `Λ(D)` for `D ≥ 4` still open
+
+**Tier 2.** §76.4's next step, done. Both papers read in full from
+rendered pages (`docs/reading.md` Tier 3c: [KSS18] 10/10, [CVZ22] 26/26);
+both identifiers looked up through the arXiv API, not recalled.
+Register rows B24 (updated), B26 (new).
+
+**One line.** Neither paper settles the route. They name the barrier
+quantity (it is an asymptotic monomial subrank), pin its value at `D = 3`
+(`2.7551…`, conditional on Pebody 2018), give a formula for the
+quantity that actually decides the slice-rank route (the minimum of the
+quantum functionals, via [CVZ18]), and every evaluation theorem they quote
+needs a support condition that `S_D` fails in the standard basis for every
+`D ≥ 4`. **Status of the route: still open.**
+
+### 77.1 What `Λ(D)` is
+
+**Lemma 77.A.** For a tensor `t`, `t ≥_M ⟨m⟩` ([CVZ22] p. 9: restriction
+by generalized sub-permutation matrices) **iff** `supp(t)` contains an
+induced matching of size `m`. *Proof.* Each row of `A_i` has at most one
+nonzero entry, at column `π_i(j)` say, so
+`((A_1,A_2,A_3)·t)_{j_1 j_2 j_3}` is a nonzero multiple of
+`t_{π_1(j_1), π_2(j_2), π_3(j_3)}` or zero. Equality with `⟨m⟩` forces every
+row nonempty, `t_{π_1(j),π_2(j),π_3(j)} ≠ 0`, and
+`t_{π_1(j_1),π_2(j_2),π_3(j_3)} = 0` unless `j_1 = j_2 = j_3`; the column
+condition makes each `π_i` injective. That is an induced matching
+`{(π_1(j), π_2(j), π_3(j))}`; conversely an induced matching gives the
+`A_i` by selecting and rescaling. **PROVEN.**
+
+Hence `M(D,n) = Q_M(T_c^{⊗n})` for every `c` nonzero on rainbow tuples, and
+**`Λ(D) = Q̰_M(T_c)`, the asymptotic monomial subrank** — which [CVZ22]
+p. 9 notes depends only on the support (register B26).
+
+**Corollary 77.B (the barrier, sharpened per `c`).** If `T ≥ ⟨m⟩` then
+`slice-rank(T) ≥ m` ([ST16] Lemma 3 and Example 5), so
+`slice-rank(T_c^{⊗n}) ≥ Q(T_c^{⊗n}) ≥ M(D,n)`, and with Lemma 75.B
+`dim P(c) ≥ Q(T_c^{⊗n})/2`. The asymptotic subrank `Q̰(T_c)` may depend on
+the values of `c`, not only on its support, and lies between `Λ(D)` and
+the asymptotic slice rank ([CVZ22] eq. (68)). **PROVEN.** Over `C`,
+[CVZ22] eq. (69) quotes [CVZ18]: the asymptotic slice rank **equals**
+`min_θ F^θ(T_c)`, the quantum functionals. Since BHL's `c` is rational, a
+`Q`-decomposition is a `C`-decomposition and
+`slice-rank_C ≤ slice-rank_Q`, so lower bounds over `C` count against
+`dim P`. So the exact quantity deciding the slice-rank form of the route is
+
+```text
+  σ_C(D) = inf_c  min_θ F^θ(T_c)        (CONDITIONAL on [CVZ18], unread)
+```
+
+and the route is dead iff `σ_C(D) → ∞`; `Λ(D) → ∞` is sufficient, not
+necessary.
+
+### 77.2 Why the published equalities do not apply
+
+[CVZ22] quotes three equality theorems: for **tight** tensors
+`Q̰ = asymptotic slice rank = min_θ ζ^θ` ([Str91]); for **oblique**
+tensors asymptotic slice rank `= min_θ ζ^θ` ([TS16]); for **free** tensors
+`min_θ F^θ = min_θ ζ^θ` ([CVZ18]). By its footnote 5 every tight tensor is
+oblique and every oblique tensor is free, and free means some basis in
+which *"any two different a, b ∈ supp(t) differ in at least two
+entries."*
+
+* `S_3` is free in the standard basis (it is the support of `⟨Z/3Z⟩` after
+  relabelling one slot). **COMPUTED** (exhaustive over the 9 triples).
+* `S_D` is **not** free in the standard basis for any `D ≥ 4`:
+  `(0,1,2)` and `(0,1,3)` are both rainbow and differ in one entry.
+  **PROVEN.** Hence not oblique and not tight in that basis either.
+  (Checked exhaustively for `D = 4..7` as a control.)
+* Whether `T_c` is free, oblique or tight **in some other basis** depends
+  on `c` and was not studied. It is the condition under which the
+  support-functional formula would become usable.
+
+[KSS18]'s construction does not transfer either, for a stated reason: it
+works inside the tight integer relation `a + b + c = q − 1` and needs Lemma
+8 (fixed coordinate sums on a type class) to lift a mod-`q` coincidence to
+an integer one — additive structure `S_D` does not have for `D ≥ 4`. The
+authors say of their own construction (p. 6, Remark 7) that *"it may be
+hard to lift our constructions out of the colored setting."*
+
+### 77.3 What moved
+
+| | before (§75.2) | now |
+|---|---|---|
+| `Λ(3)` | `2^{4/3} ≤ Λ(3) ≤ 2.7551` | **`Λ(3) = 3J(3) = 2.755104…`**: upper [BCCGNSU17] Thm. 4.14; lower [KSS18] Thm. 2 with Pebody's Theorem 4; also stated in [CVZ22] p. 10. CONDITIONAL on Pebody 2018 (refereed, unread) |
+| `Λ(D)`, `D ≥ 4` | `≥ 2^{4/3}` | **`≥ 2.7551`** by monotonicity (F1), same condition; upper `min(1.89(D−1)^{2/3}, 6√D)` unchanged; growth undecided |
+| what `Λ` is | the multicolored capacity | the asymptotic monomial subrank of `T_c` (Lemma 77.A, PROVEN) |
+| the per-`c` barrier | `M(D,n)/2` | `Q(T_c^{⊗n})/2`, possibly larger and `c`-dependent (77.B, PROVEN) |
+| the deciding quantity | asymptotic slice rank, no formula | `inf_c min_θ F^θ(T_c)` over `C` (CONDITIONAL on [CVZ18]); not known to be efficiently computable ([CVZ22] p. 22) |
+| B24 (barrier in print?) | not found in 8 sources | not found in 10 sources |
+
+Rule 17: nothing here is claimed as new; Lemma 77.A is a reading of
+[CVZ22]'s definitions.
+
+### 77.4 The exact next step (replaces §76.4)
+
+Read [CVZ18] (*Universal points in the asymptotic spectrum of tensors*;
+[CVZ22] p. 25 prints arXiv:1709.07851 — look it up through the API before
+fetching): the definition of the moment polytope and the quantum
+functionals, the proof that `min_θ F^θ` is the asymptotic slice rank, and
+its §4.3 on free tensors. Decide whether `min_θ F^θ(T_c)` can be bounded
+below for every `c` by a quantity growing in `D` — the natural attempt is
+a point of the moment polytope `Π(T_c)` whose three marginals all have
+entropy `≥ δ log D`. If [CVZ18] gives no handle, attempt the construction
+search §76.3 item 1 names, at `D = 4, 5`, one table only. [Str91] (J. Reine
+Angew. Math. 413) is the other source; check open access before
+attempting, and report a failed acquisition per rule 29.
+
+### 77.5 Gates at the tip
+
+Run on this tree after the last edit; no Coq, Rust or tool code changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```

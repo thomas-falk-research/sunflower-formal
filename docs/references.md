@@ -1206,6 +1206,21 @@ session N+15.
   reduction the second gives **no** bound on `f(n,3)`
   (`docs/roadmap.md` §75.1). `docs/reading.md` Tier 3c.
 
+- **[KSS18]** R. Kleinberg, W. Sawin, D. E. Speyer, *The growth rate of
+  tri-colored sum-free sets*. Discrete Analysis 2018:12; arXiv:1607.00047v3,
+  10pp. **Read in full, 10 of 10 rendered pages (2026-10-21).** Tri-colored
+  sum-free sets in `C_q^n` of size `θ^{n−o(n)}`, `θ = qJ(q)` (`2.7551` at
+  `q = 3`), conditional on its Theorem 4, proved by Pebody (Discrete
+  Analysis 2018:13, not read). `docs/reading.md` Tier 3c.
+
+- **[CVZ22]** M. Christandl, P. Vrana, J. Zuiddam, *Barriers for fast
+  matrix multiplication from irreversibility*. arXiv:1812.06952v4 (5 Mar
+  2022), 26pp; Theory Comput. 17 (2021) per [BHL26]'s reference list, not
+  fetched. **Read in full, 26 of 26 rendered pages (2026-10-21).**
+  Monomial subrank (p. 9), support functionals (p. 16), and the relations
+  between asymptotic subrank, asymptotic slice rank, support and quantum
+  functionals (pp. 22–23). `docs/reading.md` Tier 3c.
+
 - **[KL26]** S. R. Karingula, S. Lovett, *Limitations of the slice rank
   method in additive combinatorics*. arXiv:2609.27044v1, 22 Sep 2026,
   11pp. **Read in full, 11 of 11 rendered pages (2026-10-20).** Maximal
