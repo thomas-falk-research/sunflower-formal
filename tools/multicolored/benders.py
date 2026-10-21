@@ -29,7 +29,13 @@ Symmetry: run r forces the orbit representative with r monochromatic
 coordinates into Phi and forbids triples with more (as in bmatch.py); the
 union of the runs is the whole search.
 
-    python3 -I tools/multicolored/benders.py D n K s [timelimit_s] [runs]
+    python3 -I tools/multicolored/benders.py D n K s [timelimit_s] [runs|-] [rows3]
+
+rows3 (section 82) adds the three-against-three rows of Lemma 82.A: "off"
+(default), "upfront" (every conflict row Sum_P z <= 2 before the loop),
+"lazy" (conflict rows and forcing rows z_q >= Sum_P z - 2 separated from
+each master solution, with their stabiliser images, before any Farkas
+subproblem), or "both" (upfront conflict rows, lazy forcing rows).
 A run ends "infeasible" when the master becomes infeasible: then no Phi
 exists in that run (up to the floating LP verdicts behind each cut).
 """
@@ -85,6 +91,81 @@ def rectangle_conflicts(T):
                     out.append((ka, kb))
                     break
     return out
+
+
+def incompatible(T):
+    """N x N boolean matrix: the pair lies in one fibre or is a Lemma 81.A
+    conflict, so no free face contains both."""
+    Tn = np.array(T)
+    N = len(T)
+    bad = np.zeros((N, N), bool)
+    for i in range(3):
+        j, k = [x for x in range(3) if x != i]
+        bad |= (Tn[:, None, j] == Tn[None, :, j]) & (Tn[:, None, k] == Tn[None, :, k])
+    for a, b in rectangle_conflicts(T):
+        bad[a, b] = bad[b, a] = True
+    np.fill_diagonal(bad, False)
+    return bad
+
+
+def relations3(T, A, bad, within=None):
+    """Three-against-three relations (Lemma 82.A in docs/roadmap.md): 3-sets
+    P = {p1, p2, p3} with no incompatible pair, and Q = {(x_j, y_s(j), z_t(j))}
+    for leg permutations (s, t) other than the identity, with every q in
+    S_D^(n) and no q in P. Then sum_P v = sum_Q v (each leg uses the same
+    words), so P in a face forces Q into it. Only P inside `within` (a list
+    of indices; default all of S_D^(n)) are listed. Returns two M x 3 arrays;
+    a relation produced by several (s, t) appears once for each, and callers
+    deduplicate."""
+    Tn = np.array(T)
+    N = len(T)
+    idx = -np.ones((A, A, A), np.int64)
+    idx[Tn[:, 0], Tn[:, 1], Tn[:, 2]] = np.arange(N)
+    ids = np.arange(N) if within is None else np.array(sorted(within))
+    perms = list(itertools.permutations(range(3)))
+    st = [(s, t) for s in perms for t in perms if s != (0, 1, 2) or t != (0, 1, 2)]
+    Ps, Qs = [np.zeros((0, 3), np.int64)], [np.zeros((0, 3), np.int64)]
+    for p1 in ids:
+        cand = ids[(ids > p1) & ~bad[p1, ids]]
+        if len(cand) < 2:
+            continue
+        a, b = np.triu_indices(len(cand), 1)
+        a, b = cand[a], cand[b]
+        ok = ~bad[a, b]
+        P = np.stack([np.full(int(ok.sum()), p1), a[ok], b[ok]])
+        X, Y, Z = Tn[P, 0], Tn[P, 1], Tn[P, 2]
+        for s, t in st:
+            q = idx[X, Y[list(s)], Z[list(t)]]
+            keep = (q >= 0).all(0)
+            for j in range(3):
+                for k in range(3):
+                    keep &= q[j] != P[k]
+            if keep.any():
+                Ps.append(P[:, keep].T)
+                Qs.append(q[:, keep].T)
+    return np.concatenate(Ps), np.concatenate(Qs)
+
+
+def conflicting3(T, P, Q, K, bad):
+    """For each relation (P, Q) of relations3: True if P u Q cannot lie in a
+    free face with at most K uses per word per leg (an incompatible pair, or a
+    word used more than K times by the distinct elements of P u Q)."""
+    Tn = np.array(T)
+    U = np.concatenate([P, Q], 1)
+    M = len(U)
+    c = np.zeros(M, bool)
+    for u in range(6):
+        for v in range(max(u + 1, 3), 6):       # pairs inside P are compatible
+            c |= bad[U[:, u], U[:, v]]
+    first = np.ones((M, 6), bool)               # P's elements are distinct, and not in Q
+    for v in range(4, 6):
+        for w in range(3, v):
+            first[:, v] &= U[:, v] != U[:, w]
+    for leg in range(3):
+        W = Tn[U, leg]
+        for u in range(6):
+            c |= ((W == W[:, u:u + 1]) & first).sum(1) > K
+    return c
 
 
 def quiet():
@@ -213,7 +294,7 @@ def face_weights(T, A, phi_set):
     return None
 
 
-def run_one(D, n, K, s, r, tl, t0):
+def run_one(D, n, K, s, r, tl, t0, rows3="off"):
     T = Sn(D, n)
     A = D ** n
     N = len(T)
@@ -252,10 +333,23 @@ def run_one(D, n, K, s, r, tl, t0):
     conf = rectangle_conflicts(T)                       # Lemma 81.A
     for ka, kb in conf:
         add_row(-inf, 1.0, [ka, kb], [1.0, 1.0])
-    cuts, sizes, lm = 0, [], []
+    if rows3 != "off":
+        bad = incompatible(T)
+    n_up = 0
+    if rows3 in ("upfront", "both"):                    # Lemma 82.A conflict rows
+        P, Q = relations3(T, A, bad)
+        Pc = np.unique(np.sort(P[conflicting3(T, P, Q, K, bad)], 1), axis=0)
+        Pc = Pc[np.array([all(allowed[k] for k in row) for row in Pc], bool)] if len(Pc) else Pc
+        n_up = len(Pc)
+        if n_up:
+            m.addRows(n_up, np.full(n_up, -inf), np.full(n_up, 2.0), 3 * n_up,
+                      np.arange(0, 3 * n_up, 3, dtype=np.int32),
+                      Pc.reshape(-1).astype(np.int32), np.ones(3 * n_up))
+    seen3 = set()
+    cuts, sizes, lm, n_lazy = 0, [], [], 0
     while True:
         if time.time() - t0 > tl:
-            return {"run": r, "status": "time", "cuts": cuts,
+            return {"run": r, "status": "time", "cuts": cuts, "rows3_upfront": n_up, "rows3_lazy": n_lazy,
                     "mean_cut_size": (sum(sizes) / len(sizes)) if sizes else None,
                     "lam_mu_mean": (sum(a for a, _ in lm) / len(lm), sum(b for _, b in lm) / len(lm)) if lm else None}
         m.setOptionValue("time_limit", max(1.0, tl - (time.time() - t0)))
@@ -263,17 +357,42 @@ def run_one(D, n, K, s, r, tl, t0):
         st = m.getModelStatus()
         if st == highspy.HighsModelStatus.kInfeasible:
             return {"run": r, "status": "infeasible", "cuts": cuts, "rect_conflicts": len(conf),
+                    "rows3_upfront": n_up, "rows3_lazy": n_lazy,
                     "mean_cut_size": (sum(sizes) / len(sizes)) if sizes else None,
                     "max_cut_size": max(sizes) if sizes else None}
         if st != highspy.HighsModelStatus.kOptimal:
-            return {"run": r, "status": f"master {st}", "cuts": cuts}
+            return {"run": r, "status": f"master {st}", "cuts": cuts, "rows3_upfront": n_up, "rows3_lazy": n_lazy}
         z = m.getSolution().col_value
         phi = {k for k in range(N) if z[k] > 0.5}
+        if rows3 in ("lazy", "both"):                   # separate Lemma 82.A rows first
+            P, Q = relations3(T, A, bad, within=phi)
+            c = conflicting3(T, P, Q, K, bad)
+            added = 0
+            for pr, qr, cf in zip(P.tolist(), Q.tolist(), c.tolist()):
+                if not cf and all(q in phi for q in qr):
+                    continue
+                for g in H:
+                    gp = frozenset(index[g(T[k])] for k in pr)
+                    if cf:
+                        key, rows = ("c", gp), [(-inf, 2.0, list(gp), [1.0] * 3)]
+                    else:
+                        gq = frozenset(index[g(T[k])] for k in qr)
+                        key = ("f", gp, gq)
+                        rows = [(-2.0, inf, list(gp) + [q], [-1.0] * 3 + [1.0]) for q in gq]
+                    if key in seen3:
+                        continue
+                    seen3.add(key)
+                    for row in rows:
+                        add_row(*row)
+                        added += 1
+            if added:
+                n_lazy += added
+                continue
         cert = farkas(T, A, phi)
         if cert is None:
             u = face_weights(T, A, phi)
             return {"run": r, "status": "found" if u else "face, no integer certificate",
-                    "cuts": cuts, "phi_size": len(phi),
+                    "cuts": cuts, "rows3_upfront": n_up, "rows3_lazy": n_lazy, "phi_size": len(phi),
                     "cert": {"D": D, "n": n, "u": u} if u else None}
         lam, mu = minimise(T, A, phi, *cert)
         sizes.append(len(lam) + len(mu))
@@ -295,11 +414,14 @@ def run_one(D, n, K, s, r, tl, t0):
 if __name__ == "__main__":
     D, n, K, s = (int(v) for v in sys.argv[1:5])
     tl = float(sys.argv[5]) if len(sys.argv) > 5 else 600.0
-    runs = [int(v) for v in sys.argv[6].split(",")] if len(sys.argv) > 6 else list(range(n, -1, -1))
+    runs = ([int(v) for v in sys.argv[6].split(",")] if len(sys.argv) > 6 and sys.argv[6] != "-"
+            else list(range(n, -1, -1)))
+    rows3 = sys.argv[7] if len(sys.argv) > 7 else "off"
+    assert rows3 in ("off", "lazy", "upfront", "both"), rows3
     t0 = time.time()
-    out = {"D": D, "n": n, "K": K, "s": s, "runs": []}
+    out = {"D": D, "n": n, "K": K, "s": s, "rows3": rows3, "runs": []}
     for r in runs:
-        res = run_one(D, n, K, s, r, tl, t0)
+        res = run_one(D, n, K, s, r, tl, t0, rows3)
         out["runs"].append(res)
         if res["status"].startswith(("found", "face")):
             break
