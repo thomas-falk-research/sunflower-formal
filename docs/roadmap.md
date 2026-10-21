@@ -16242,7 +16242,9 @@ condition for that). The converse is not established: `dim P ≥ sr/2` is
 one-directional (§75.6) and `sr_Q` may exceed `sr_C`. And [CVZ22] eq. (69)
 equates `min_θ F^θ` with the **limsup** of `sr^{1/n}`, while §75.2 defines
 `σ` with a **liminf**; identifying the two needs [CVZ18] to show the limit
-exists. All of this is CONDITIONAL on [CVZ18], unread.
+exists. All of this is CONDITIONAL on [CVZ18], unread. *(Addendum, §78:
+[CVZ18] Cor. 5.7, read, proves the limit exists over `C`, so `σ_C` is
+well defined; the converse direction remains unestablished.)*
 
 ### 77.2 Why the published equalities do not apply
 
@@ -16340,3 +16342,174 @@ it does not make. The same "iff" overclaim, about `Λ`, sat in the §75.3
 ledger and §76.1 and is corrected there. The reviewer also proposed the
 distribution of Lemma 77.C, which was checked here by hand and
 numerically before it was adopted.
+
+## 78. [CVZ18] read: the slice-rank barrier in characteristic 0 has a single-letter formula, a `c`-independent floor of 3, and the support-only technique stops there
+
+**Tier 2.** §77.4's next step, done. [CVZ18] (*Universal points in the
+asymptotic spectrum of tensors*, arXiv:1709.07851v3) read in full, 57 of
+57 rendered pages, identifier confirmed through the arXiv API
+(`docs/reading.md` Tier 3c [CVZ18]; register row B27).
+
+**One line.** Over `C`, the asymptotic slice rank of BHL's single-letter
+tester `q_c` is a single-letter quantity (max over the moment polytope of
+the least marginal entropy), and it is at least 3 for every admissible
+`c` and every `D ≥ 3`. Any support-only argument of the free
+combinatorial-degeneration kind is capped at exactly 3. So the decisive
+question — does it grow with `D`? — is now a question about the moment
+polytopes of `D × D × D` tensors, not about tensor powers. It is **still
+open**, and the tool that would have been cheapest to try provably
+cannot settle it.
+
+### 78.1 What the paper settles
+
+`q_c` is BHL's single-coordinate tester (`docs/roadmap.md` §75.2: 1 on
+monochromatic, `c` on rainbow, 0 elsewhere, support `S_D`), and
+`T_c = q_c^{⊗n}`.
+
+1. **The limit exists** ([CVZ18] Cor. 5.7, p. 50): over `C`,
+   `SR̰(q_c) = lim_n slicerank(q_c^{⊗n})^{1/n} = min_θ 2^{E^θ(q_c)}`. The
+   liminf/limsup gap §77.1 recorded is closed over `C`.
+2. **Single-letter** (Lemma 5.4 proof, p. 48): `log₂ SR̰(q_c) = max over
+   the moment polytope Δ_{q_c} of min_j H(r_j)`. Deciding the route needs
+   only the moment polytopes of `D × D × D` tensors.
+3. **Scope: characteristic 0.** Corollary 5.7 is over `C`. BHL's tester is
+   over `Q`, and a `Q`-decomposition is a `C`-decomposition, so
+   `slicerank_Q ≥ slicerank_C` and every lower bound here counts against
+   BHL. **It says nothing about testers over a field of positive
+   characteristic.** Over `F_3` the cap-set tensor has the same support as
+   `S_3` and asymptotic slice rank `2.755 < 3`: [CVZ18] p. 5 puts it in
+   the orbit of the tight tensor `F_3[x]/(x³)`, whose asymptotic subrank
+   is `z(3) = 2.75510` (p. 36 table), and Cor. 5.10 (p. 50, any field)
+   makes asymptotic slice rank equal asymptotic subrank for tight
+   3-tensors. Lemma 78.A below shows no characteristic-0 tester can
+   do that.
+
+### 78.2 Two lemmas
+
+**Lemma 78.A (`c`-independent floor).** For every `D ≥ 3` and every `c`
+nonzero on rainbow tuples, `SR̰_C(q_c) ≥ 3`. Hence
+`slicerank_Q(T_c) ≥ slicerank_C(T_c) ≥ 3^{n−o(n)}` and
+`dim P(c) ≥ 3^{n−o(n)}/2` (Lemma 75.B). At `D = 3` this is equality:
+`SR̰_C(q_c) = 3` for every such `c`. **A characteristic-0 product tester
+gives no saving at `D = 3`, whatever `c` is.**
+
+*Proof.* (i) Restriction does not raise slice rank, and `q_c` restricted
+to the letters `{0,1,2}` in each coordinate has support `S_3`
+(`docs/roadmap.md` §77.2: `S_3` is free in the standard basis). (ii) For a
+tensor `t` with free support and any distribution `P` on that support,
+the ordered marginals of `P` lie in `Δ_t` ([CVZ18] Thm. 4.20 proof,
+pp. 39–40), so `max_{Δ_t} min_j H(r_j) ≥ min_j H(P_j)`. (iii) Take `P`
+uniform on the nine elements of `S_3`: each marginal is uniform on three
+letters, so `min_j H(P_j) = log₂ 3`. By item 2 of §78.1,
+`SR̰_C(q_c) ≥ 3`. (iv) At `D = 3`, `slicerank ≤ min_i dim = 3^n`.
+**PROVEN**, given [CVZ18] Cor. 5.7 and Thm. 4.20 (read; no error found).
+Consistent with [NaSa17] Thm. 5, whose characteristic-0 constant at
+`D = 3` is `(3/2^{2/3})·2^{2/3} = 3` exactly. Rule 17: new to this
+repository (register B27).
+
+The general technique behind (i)–(iii): `q_c` restricts and degenerates
+([CVZ18] Prop. 4.10; Theorem 3.5(4) for monotonicity) to `q_c|_Φ` for any
+combinatorial degeneration `Φ` of a sub-box of `S_D`. When `Φ` is free,
+`SR̰_C(q_c) ≥ 2^{max_P min_j H(P_j)}` over distributions `P` on `Φ`, and
+`c` does not enter: `q_c|_Φ` has support exactly `Φ` because `c ≠ 0` on
+rainbow tuples.
+
+**Lemma 78.B (the technique stops at 3).** Let `Φ` be a free
+combinatorial degeneration of `S_D ∩ (W_1 × W_2 × W_3)` for any sub-boxes
+`W_i ⊆ [D]`. Then every coordinate projection of `Φ` has at most 3
+letters, so `|Φ| ≤ 9` and `max_P min_j H(P_j) ≤ log₂ 3`.
+
+*Proof.* Write `w(a,b,c) = u_1(a) + u_2(b) + u_3(c) ≥ 0` on the box's part
+of `S_D`, with zero set `Φ`, and `m(x) = w(x,x,x)`.
+(1) Let `(a,b,c) ∈ Φ` be rainbow and `d ∈ W_1 ∖ {a,b,c}`. Then `(d,b,c)` is
+rainbow, so it lies in `S_D`, and it differs from `(a,b,c)` in one
+coordinate, so it is not in `Φ` by freeness. Thus
+`0 < w(d,b,c) = u_1(d) − u_1(a)`. Likewise in coordinates 2 and 3.
+(2) Among the rainbow elements of `Φ`, take `(a_0,b_0,c_0)` with `u_1(a_0)`
+largest. Every other rainbow first letter `a` has `u_1(a) ≤ u_1(a_0)`, so
+by (1) `a ∈ {a_0, b_0, c_0}`: at most 3 rainbow first letters, and
+likewise in each coordinate.
+(3) If `(x,x,x) ∈ Φ` and `x ∉ {a,b,c}` for some rainbow `(a,b,c) ∈ Φ`, then
+by (1) `m(x) > w(a,b,c) = 0`, a contradiction. So when `Φ` has a rainbow
+element its monochromatic letters lie in `{a_0,b_0,c_0}`.
+(4) If `Φ` has no rainbow element and three monochromatic letters
+`x, y, z`, the six permutations of `(x,y,z)` are rainbow, in the box and
+not in `Φ`, so each has positive weight; but their weights sum to
+`2(m(x) + m(y) + m(z)) = 0`. So at most 2.
+(5) A free set with at most 3 letters per coordinate has at most 9
+elements (each pair of coordinates fixes the third), and `H(P_j) ≤ log₂ 3`.
+**PROVEN.** Compositions of a restriction and repeated combinatorial
+degenerations are again of this form (scale the earlier weights by a
+large integer and add the later ones), so the cap covers them too.
+
+**VALIDATED by computation**, independently of the proof:
+`tools/multicolored/degen.py search` (MILP, HiGHS through scipy 1.16.2)
+maximises `|Φ|` over integer weights `|u| ≤ B`. The optimum is exactly 9
+at `D = 3, 4, 5, 6` (`B = 3D`), and at `D = 4, 5` with `B = 200`. The
+`verify` mode re-derives each certificate in exact integers, sharing no
+code with the search. The certificates are in
+`tools/multicolored/certs/S{3,4,5,6}.json`; each has 9 elements, 3
+letters per coordinate, 6 of them rainbow, and the bound `2^h = 3.0`.
+
+### 78.3 What it does not settle, and why
+
+* **Growth in `D` is still open.** `3 ≤ SR̰_C(q_c) ≤ min(D,
+  1.89(D−1)^{2/3}, 6√D)` (the last two from [NaSa17] Thm. 5 and [BHL26],
+  §75.2 F6). Lemma 78.B shows that support-only arguments with standard
+  basis vectors and a single letter cannot go past 3.
+* **What could go further, each untried:**
+  (a) Non-monomial degenerations or other bases, i.e. points of
+  `Δ_{q_c}` not coming from a free support. These depend on `c`, and the
+  adversary picks `c`.
+  (b) Multi-letter combinatorial degenerations of `S_D^{(n)}` with weights
+  not of product form. Lemma 78.B's step (1) used that every rainbow
+  triple stays in `S_D` when one letter is replaced by any fresh letter.
+  In `S_D^{(n)}` the allowed replacements are constrained coordinate by
+  coordinate, and that freedom is what [KSS18] exploits at `D = 3`.
+  (c) A direct handle on `inf_c max_{Δ_{q_c}} min_j H(r_j)`, for example
+  the Hilbert–Mumford/instability description of [CVZ18] §4.4.3, which
+  bounds `ρ^θ` from above only (Theorem 4.35).
+* **Positive characteristic is untouched.** Every lower bound here is
+  over `C`. A tester over `F_p` is outside its reach, and at `D = 3` such
+  testers are known to beat `3` (the cap-set tensor).
+
+### 78.4 Route ledger update
+
+| route | status |
+|---|---|
+| slice rank / `dim P`, characteristic-0 product tester | floor `3^{n−o(n)}` for every `c` (78.A); growth open; support-only methods capped at 3 (78.B) |
+| same, positive characteristic | no lower bound beyond `Λ(D)`; open |
+| everything else in §75.3 | unchanged |
+
+### 78.5 The exact next step (replaces §77.4)
+
+Two independent options, in order of cost:
+1. **Multi-letter search, one table.** Run `degen.py`'s MILP on
+   `S_D^{(2)}` (alphabet `[D]²` in each of the three legs, weights on
+   pairs, freeness meaning two elements differ in at least two of the
+   three legs) at `D = 3, 4`. Report the largest free
+   combinatorial degeneration and its max-min entropy per letter
+   (`h/2`). If the per-letter value at `D = 4` exceeds `log₂ 3`, growth
+   from multi-letter structure is real and the next question is its rate.
+   This is the question (b) above, at its smallest size.
+2. **Literature, rule 17 before any novelty.** Search work citing
+   [CVZ18] for moment polytopes or asymptotic slice rank of tensors with
+   a prescribed support pattern (Bürgisser–Garg–Oliveira–Walter–Wigderson
+   arXiv:1711.08039 is cited on p. 52 for the null-cone connection), and
+   Strassen's [Str91] for the support of `S_D`-type tensors.
+
+### 78.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  degen verify  pass   S3, S4, S5, S6 certificates: 9 elements, bound 3.0
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
+
+A fresh-context review of this section is running at commit time; its
+corrections, if any, follow in a separate commit.

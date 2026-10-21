@@ -1222,6 +1222,14 @@ session N+15.
   between asymptotic subrank, asymptotic slice rank, support and quantum
   functionals (pp. 22–23). `docs/reading.md` Tier 3c.
 
+- **[CVZ18]** M. Christandl, P. Vrana, J. Zuiddam, *Universal points in
+  the asymptotic spectrum of tensors*. STOC 2018; arXiv:1709.07851v3,
+  57pp. **Read in full, 57 of 57 rendered pages (2026-10-21).** Quantum
+  functionals; asymptotic slice rank over `C` exists and equals their
+  minimum (Cor. 5.7); free tensors (Thm. 4.20); combinatorial
+  degeneration (Def. 4.9, Prop. 4.10, Thm. 4.11). `docs/reading.md`
+  Tier 3c.
+
 - **[KL26]** S. R. Karingula, S. Lovett, *Limitations of the slice rank
   method in additive combinatorics*. arXiv:2609.27044v1, 22 Sep 2026,
   11pp. **Read in full, 11 of 11 rendered pages (2026-10-20).** Maximal

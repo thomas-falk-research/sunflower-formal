@@ -131,9 +131,10 @@ literature, resolved.
 | B19f-KM | Whether [KM17]'s `B*(H)` layers impose sunflower-freeness as a hypothesis, or derive it | **CONFIRMED BY RENDERING, both exponents exactly as previously extracted — and it is a DERIVED structural decomposition, not an imposed hypothesis. A23's verdict stands.** | [KM17] p. 5, rendered: *"Define `B*(H)` to be the set of `T ⊂ V(H)` such that (i) `0 < |T| < r`, and (ii) `T` is the core of an `(r+1)^{|T|}`-sunflower in `H`."* Then `B′(H)` = inclusion-minimal members, `B″(H)` = edges containing no member of `B*(H)`, `B(H) = B′ ∪ B″`, `B_i` = members of size `i`. p. 6, rendered: *"Claim. `B_i` contains no `(r+1)^{i−1}`-sunflower."* with a half-page proof, then *"Applying the Claim and Lemma 11 yields `|B_i| < f((r+1)^{i−1}, i)` for all `i > 1`."* The **only** hypotheses on `H` (p. 5) are *"intersecting `r`-graph with `τ(H) ≥ 2` and `|H| > hm″(n,r)`"*, and the paper attributes the machinery: *"The following crucial claim proved by Frankl can be found in Lemma 1 in [6, 8]"* — Frankl's `Δ`-system base construction, applied with petal count `r+1` chosen by the authors. **So it is a theorem *about* intersecting families that *produces* a sunflower-free base, not a theorem *bounding* intersecting families *assumed* sunflower-free with prescribed `τ`.** It does not replace the `ι(4,11)` computation. Note the degree-type condition is **relative** (`n` large, `|H| ~ (r−2)·C(n, r−2)`), stated at **one** level at a time but for **every** `i` — Rao's shape in the fractional setting, which is B19d's *relative / every level* corner again. |
 | B19f-KN | Where [KN24] sits in B19d's 2×2, from the primary source rather than from the survey | **Absolute, one level — B19g confirmed from the primary.** Read pp. 1–8 of 61. | p. 1, abstract, rendered: the Duke–Erdős problem *"determine the maximum size of an `n`-vertex `k`-uniform hypergraph without a sunflower with `s` petals and a kernel of size `ℓ`"* — the extremal function `f(n,k,ℓ,s)`, an **absolute** cap (`< s` petals on a kernel of size exactly `ℓ`) at a **single** level `ℓ`. Main results pp. 2–4: exact `f(n,k,ℓ,s)` for `n ≥ n₀(k,s)` in several `(k,ℓ)` ranges plus extremal structure, via the `Δ`-system method with spread approximations. **No intersecting hypothesis and no cap at every level.** B19g reached this corner through [Kup25] p. 57; this reaches it through the paper. |
 | B23 | An induced matching inside the support of a tensor bounds its slice rank from below (`docs/roadmap.md` §75.2, hypothesis 2(a)) | **CONFIRMED in print; not new** | [BCCGNSU17] Prop. 4.8, p. 18, rendered: *"If M is a tricolored sum-free set in an abelian group H, then \|M\| ≤ slice-rank(D_H)"*, proved by *"slice-rank(F\|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)"* and Lemma 4.7 (diagonal ⇒ slice rank `\|X\|`, p. 15); the proof uses only the support. Also [ST16] Lemma 3 (projections do not raise rank) with Example 5, and [KL26] p. 2. See Tier 3c. |
-| B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **NOT FOUND in the ten Tier 3c sources (KSS18 and CVZ22 added 2026-10-21). NOT EXHAUSTIVE.** | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. [KSS18] constructs at alphabet `C_q` only; [CVZ22] states the general equalities (tight/oblique/free supports), which `S_D` fails in the standard basis for `D ≥ 4` (`docs/roadmap.md` §77.2). **Not searched:** [CVZ18], [Str91], Pebody, Norin — the first two are where an evaluation of the asymptotic slice rank for support `S_D` would be. |
+| B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **NOT FOUND in the 11 Tier 3c sources (KSS18, CVZ22, CVZ18 added 2026-10-21). NOT EXHAUSTIVE.** | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. [KSS18] constructs at alphabet `C_q` only; [CVZ22] states the general equalities (tight/oblique/free supports), which `S_D` fails in the standard basis for `D ≥ 4` (`docs/roadmap.md` §77.2). [CVZ18] (read in full) gives the formula and the tools but never treats `S_D`. **Not searched:** [Str91], Pebody, Norin, later work citing [CVZ18]. |
 | B25 | The alphabet-indexed multicolored capacity `Λ(D) = lim_n M(D,n)^{1/n}` (`docs/roadmap.md` §75.2) as the obstruction to `D`-uniform vector-tester bounds | **SPLIT. The quantity and `D`-dependent upper bounds on it are IN PRINT; its use as the barrier, and any lower bound growing with `D`, NOT FOUND, NOT EXHAUSTIVE — "new to this repository" for that part only.** The first draft of this row said no Tier 3c source varies the alphabet; a fresh-context review found two that do. | [NaSa17] Remark 7, p. 3, rendered: *"The proofs of theorems 3 and 5 can be extended without modification to handle a multicolored version of the problem analogous to multicolored sum-free sets as defined in [2]."* [BHL26] p. 12: *"The new bound on the vector sunflower problem of Alon, Shpilka and Umans [2] (Theorem 2) extends to indexed multicolored sunflowers [2, 45]"*. [ASU12] Conjecture 6 (p. 8) is alphabet 3 only. Same unsearched list as B24. |
 | B26 | `Λ(D)` is a named quantity: the asymptotic monomial subrank `Q̰_M` of any tensor with support `S_D` | **CONFIRMED from definitions, not a novelty** | [CVZ22] p. 9 defines monomial restriction by generalized sub-permutation matrices and notes `Q_M` depends only on the support; a monomial restriction onto the unit tensor `⟨m⟩` is exactly an induced matching of size `m` in the support (`docs/roadmap.md` §77.1, PROVEN there). p. 10: *"It is known that Q̰_M(⟨Z/3Z⟩_F) = 2.755..."* (asymptotic; tilde on the page) — the `D = 3` value, matching [KSS18] with [BCCGNSU17] Thm. 4.14. |
+| B27 | A `c`-independent lower bound on the asymptotic slice rank of a vector-sunflower tester, and the limit of the free-combinatorial-degeneration technique on `S_D` | **NOT FOUND in the 11 Tier 3c sources; NOT EXHAUSTIVE. Written as "new to this repository", per rule 17.** The ingredients are all [CVZ18]'s (Cor. 5.7, Thm. 4.20, Prop. 4.10, Lemma 3.6); what is not found is their application to `S_D` (`docs/roadmap.md` Lemma 78.A) and the cap of 3 (Lemma 78.B). | [CVZ18] read in full (57/57); it treats tight, oblique, free and generic tensors and the cap-set tensor, never `S_D`. [BHL26], [NaSa17] bound the same tensors from above only. Not searched: Bürgisser's and Tobler's theses, [Str91], later work citing [CVZ18]. |
 | A25 | [NaSa17] p. 2 says the **Erdős–Rado** conjecture is equivalent to `c_D < D^{1−ε}` (this file's [NaSa17] entry until 2026-10-20) | **REFUTED — a paraphrase error in this register** | p. 2 re-rendered: *"the now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to proving that c_D < D^{1−ε} … [1, Theorem 2.7]"*. [ASU12] Thm. 2.7 (p. 6, rendered) ties Conjecture 4 to Conjecture 2, which p. 3 states as Erdős–Szemerédi. The [NaSa17] entry is corrected in place; `docs/roadmap.md` §75.1 is the arithmetic of why a `D`-power saving gives nothing for Erdős–Rado. |
 
 ### Tier C — the four proofs, and the formalisation decision
@@ -1062,8 +1063,8 @@ artifact, noted while reading its code: its README cites a
 Read for `docs/roadmap.md` §75. **Rendering deviation from rule 1,
 recorded:** `pdftoppm` is not installed in this container; every page
 below was rendered with PyMuPDF 1.26.3 (`page.get_pixmap(dpi=110)`) and
-looked at as an image. Pages rendered and read: [KSS18] 1–10 and [CVZ22]
-1–26 (added 2026-10-21), [BHL26] 1–16, [KL26] 1–11,
+looked at as an image. Pages rendered and read: [CVZ18] 1–57, [KSS18]
+1–10 and [CVZ22] 1–26 (added 2026-10-21), [BHL26] 1–16, [KL26] 1–11,
 [ASU12] 3–14, [CKSU05] 1–10, [BCCGNSU17] 1–27, [ALWZ20] 15–17, [NaSa17]
 1–5. No quotation below comes from extracted text. The one non-PDF source,
 [ST16], is a blog post retrieved as JSON through the WordPress API (rule
@@ -1361,6 +1362,58 @@ Comput. 17 (2021)*.
   [CVZ18] (*Universal points in the asymptotic spectrum of tensors*, STOC
   2018, arXiv:1709.07851 as printed on p. 25), [Str91] and [TS16]-in-full
   are cited above second-hand and **not read**.
+
+### [CVZ18] Christandl, Vrana, Zuiddam, *Universal points in the asymptotic spectrum of tensors*, arXiv:1709.07851v3 (26 May 2018; STOC 2018)
+
+**Read in full: 57 of 57 rendered pages** (session of 2026-10-21;
+PyMuPDF 1.26.3, 110 dpi). Identifier taken from [CVZ22] p. 25 and
+confirmed through the arXiv API (`id_list=1709.07851` returned this title
+and these authors) before fetching.
+
+* **Asymptotic slice rank over `C`, Corollary 5.7, p. 50:** *"For complex
+  tensors, asymptotic slice rank exists and equals the minimum value of
+  the support functionals over θ ∈ P([k]), SR̰(t) := lim_{n→∞}
+  slicerank(t^{⊗n})^{1/n} = min_{θ∈P([k])} 2^{E^θ(t)}."* (The phrase
+  "support functionals" is on the page; the formula is the quantum
+  functional `E^θ`, and Remark 5.11 item 1, p. 51, restates it with
+  `F^θ`.) So the limit **exists** — the liminf/limsup gap recorded in
+  `docs/roadmap.md` §77.1 is closed over `C`.
+* **The single-letter form, Lemma 5.4 proof, p. 48:** by the minimax
+  theorem *"min_θ E^θ(t) = … = max_{(r_1,…,r_k)∈Δ_t} min_{j∈[k]} H(r_j)"*,
+  `Δ_t` the moment (entanglement) polytope, defined p. 27 as the closure
+  of the marginal spectra over the orbit closure `G·t`.
+* **Free supports, Theorem 4.20, pp. 39–40:** *"Let t be free. Let
+  θ ∈ P_s(B). Then ρ^θ(t) = E^θ(t) = E_θ(t)."* The proof shows, for a
+  free `supp_C t`, *"that for any P ∈ P(supp_C t) the tuple of ordered
+  marginals of P is in the entanglement polytope Δ_t"* (p. 40). Free is
+  Definition 4.17, p. 39: *"For any x, y ∈ Φ, if x ≠ y, then the tuples x
+  and y differ in at least two positions."*
+* **Monotonicity under degeneration:** Theorem 3.5(4), p. 18, *"If s ⊵ t,
+  then F^θ(s) ≥ F^θ(t)"*, via Lemma 3.6 (p. 19, proof read).
+* **Combinatorial degeneration, Definition 4.9, p. 33:** *"We say that Φ is
+  a combinatorial degeneration of Ψ, and write Ψ ⊵ Φ, if there are maps
+  u_i : I_i → Z (i ∈ [k]) such that for all α ∈ I_1 × ··· × I_k, if
+  α ∈ Ψ \ Φ, then Σ_{i=1}^k u_i(α_i) > 0, and if α ∈ Φ, then
+  Σ_{i=1}^k u_i(α_i) = 0."* **Proposition 4.10, p. 33** (cited to [BCS97]
+  Prop. 15.30, not re-proved there): *"Let f ∈ V_1 ⊗ ··· ⊗ V_k. Let
+  Ψ = supp_C f. Let Φ ⊆ Ψ such that Ψ ⊵ Φ. Then f ⊵ f|_Φ."* **Theorem
+  4.11 and Lemma 4.13, pp. 33–34** (proof read): `Ψ ⊵ Φ` implies
+  `Q̰(Ψ) ≥ Q(Φ)` for the monomial ("free diagonal") subrank.
+* **Remark 4.24, p. 41** summarises the chain
+  `ζ^θ ≥ F^θ = F_θ ≥ ζ_θ` for `θ ∈ P_s(B)`; Remark 5.11, p. 51, the chain
+  `Q̰ ≤ MSR̰ ≤ SR̰ ≤ F^θ ≤ ζ^θ`.
+* **Over other fields:** Theorem 5.9 (p. 50) is the only slice-rank
+  statement for arbitrary fields, and it is an **upper** bound
+  (`SR̰ ≤ ζ^θ`); the lower bound of Corollary 5.7 is over `C` only. p. 5:
+  the quantum functionals *"do not play a role for cap sets (we cannot
+  work over C for this problem)"*.
+* p. 37: *"This upper bound was shown to be an equality in the three
+  papers [KSS16, Nor16, Peb16]. Theorem 4.16. s̰_3(Z/3Z) = 3(207 +
+  33√33)^{1/3}/8."* — a third source for `Λ(3) = 2.7551…`.
+* **Bearing here:** `docs/roadmap.md` §78 — a `c`-independent lower bound
+  `SR̰_C(q_c) ≥ 3` for every BHL-type tester, the proof that free
+  combinatorial degenerations of `S_D` cannot give more than 3, and the
+  characteristic-0 scope of all of it.
 
 ### [ALWZ20] §5 — the two rainbow conjectures (Secondary B)
 
