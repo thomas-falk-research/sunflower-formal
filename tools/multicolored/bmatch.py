@@ -27,10 +27,12 @@ triple is its number of monochromatic coordinates. Run r forces the
 representative with r monochromatic coordinates into Phi and forbids triples
 with more than r (a set containing one is covered by an earlier run).
 
-    python3 -I tools/multicolored/bmatch.py max D n [timelimit_s]
+    python3 -I tools/multicolored/bmatch.py max D n [timelimit_s] [target]
+        (with target: decide whether a border matching of size >= target
+        exists; exhaustive and not found means none, up to the LP)
         largest m found, with the certificate (alpha, beta, Phi) as JSON;
         "exhaustive": true when every run finished.
-LP: scipy linprog (HiGHS), floating point. A found certificate is re-checked
+LP: HiGHS through highspy 1.11.0, floating point. A found certificate is re-checked
 in exact integers by tools/multicolored/degen2.py verify (see `cert`); an
 infeasible verdict at a node is the LP's word (no exact re-check), so an
 exhaustive negative is COMPUTED, not PROVEN.
@@ -63,29 +65,93 @@ def nmono(D, n, t):
     return c
 
 
+def acyclic_prefilter(chosen, inS):
+    """Necessary condition for (*): the pure difference constraints are
+    acyclic. (i,l,l) in S gives alpha_i > alpha_l; (l,i,l) gives beta_i > beta_l;
+    (i,i,l) gives gamma_i > gamma_l, gamma = alpha + beta. A directed cycle in
+    any of the three graphs makes (*) infeasible. Exact (no floating point)."""
+    m = len(chosen)
+    for kind in range(3):
+        succ = [[] for _ in range(m)]
+        for i in range(m):
+            for l in range(m):
+                if i == l:
+                    continue
+                if kind == 0:
+                    t = (chosen[i][0], chosen[l][1], chosen[l][2])
+                elif kind == 1:
+                    t = (chosen[l][0], chosen[i][1], chosen[l][2])
+                else:
+                    t = (chosen[i][0], chosen[i][1], chosen[l][2])
+                if t in inS:
+                    succ[i].append(l)
+        state = [0] * m                       # 0 new, 1 on stack, 2 done
+        def visit(v):
+            state[v] = 1
+            for w in succ[v]:
+                if state[w] == 1 or (state[w] == 0 and not visit(w)):
+                    return False
+            state[v] = 2
+            return True
+        for v in range(m):
+            if state[v] == 0 and not visit(v):
+                return False
+    return True
+
+
+_HIGHS = None
+
+
 def feasible(chosen, inS):
-    """LP feasibility of (*) for the chosen triples."""
+    """LP feasibility of (*) for the chosen triples, by HiGHS through highspy
+    (scipy's linprog wrapper spent most of its time validating options; the
+    LPs are tiny). alpha_0 = beta_0 = 0 fixes the translation."""
+    global _HIGHS
     import numpy as np
-    from scipy.optimize import linprog
+    import highspy
+    if not acyclic_prefilter(chosen, inS):
+        return False, None, None
     m = len(chosen)
     if m <= 1:
         return True, [0.0] * m, [0.0] * m
-    rows = []
+    start, index, value = [0], [], []
     for i, j, l in itertools.product(range(m), repeat=3):
         if i == j == l:
             continue
         if (chosen[i][0], chosen[j][1], chosen[l][2]) in inS:
-            r = np.zeros(2 * m)
-            r[i] -= 1; r[m + j] -= 1; r[l] += 1; r[m + l] += 1   # -(a_i+b_j-a_l-b_l) <= -1
-            rows.append(r)
-    if not rows:
+            coef = {}
+            for col, v in ((i, -1), (m + j, -1), (l, 1), (m + l, 1)):
+                coef[col] = coef.get(col, 0) + v          # -(a_i+b_j-a_l-b_l) <= -1
+            for col, v in coef.items():
+                if v:
+                    index.append(col); value.append(float(v))
+            start.append(len(index))
+    nrow = len(start) - 1
+    if nrow == 0:
         return True, [0.0] * m, [0.0] * m
-    A = np.array(rows)
-    bounds = [(0, 0)] + [(-1e4, 1e4)] * (m - 1) + [(0, 0)] + [(-1e4, 1e4)] * (m - 1)
-    res = linprog(np.zeros(2 * m), A_ub=A, b_ub=-np.ones(len(rows)), bounds=bounds, method="highs")
-    if res.status != 0:
+    if _HIGHS is None:
+        _HIGHS = highspy.Highs()
+        _HIGHS.setOptionValue("output_flag", False)
+    h = _HIGHS
+    h.clearModel()
+    lp = highspy.HighsLp()
+    lp.num_col_, lp.num_row_ = 2 * m, nrow
+    lp.col_cost_ = np.zeros(2 * m)
+    lo = np.full(2 * m, -1e4); hi = np.full(2 * m, 1e4)
+    lo[0] = hi[0] = lo[m] = hi[m] = 0.0
+    lp.col_lower_, lp.col_upper_ = lo, hi
+    lp.row_lower_ = np.full(nrow, -highspy.kHighsInf)
+    lp.row_upper_ = np.full(nrow, -1.0)
+    lp.a_matrix_.format_ = highspy.MatrixFormat.kRowwise
+    lp.a_matrix_.start_ = np.array(start, dtype=np.int32)
+    lp.a_matrix_.index_ = np.array(index, dtype=np.int32)
+    lp.a_matrix_.value_ = np.array(value)
+    h.passModel(lp)
+    h.run()
+    if h.getModelStatus() != highspy.HighsModelStatus.kOptimal:
         return False, None, None
-    return True, res.x[:m].tolist(), res.x[m:].tolist()
+    x = list(h.getSolution().col_value)
+    return True, x[:m], x[m:]
 
 
 def pair_ok(t, s, inS):
@@ -109,7 +175,7 @@ def pair_ok(t, s, inS):
     return True
 
 
-def search_max(D, n, tl=600.0):
+def search_max(D, n, tl=600.0, target=None):
     T = Sn(D, n)
     inS = set(T)
     N = len(T)
@@ -120,7 +186,9 @@ def search_max(D, n, tl=600.0):
             if pair_ok(T[a], T[b], inS):
                 adj[a] |= 1 << b
                 adj[b] |= 1 << a
-    best = {"m": 0, "phi": [], "alpha": [], "beta": []}
+    # target mode: prune every branch that cannot reach `target`; a run that
+    # finishes without finding one proves (up to the LP) that none exists
+    best = {"m": (target - 1) if target else 0, "phi": [], "alpha": [], "beta": []}
     exhaustive = True
     mono = [nmono(D, n, t) for t in T]
     runs = []
@@ -135,6 +203,16 @@ def search_max(D, n, tl=600.0):
 
     def popcount(v):
         return bin(v).count("1")
+
+    def word_bound(cand):
+        ws = [set(), set(), set()]
+        v = cand
+        while v:
+            k = v.bit_length() - 1
+            v &= ~(1 << k)
+            t = T[k]
+            ws[0].add(t[0]); ws[1].add(t[1]); ws[2].add(t[2])
+        return min(len(w) for w in ws)
 
     def dfs(chosen, cand):
         nonlocal exhaustive
@@ -152,6 +230,8 @@ def search_max(D, n, tl=600.0):
         while cand:
             if len(chosen) + popcount(cand) <= best["m"]:
                 return
+            if len(chosen) + word_bound(cand) <= best["m"]:
+                return                          # distinct words per leg
             k = cand.bit_length() - 1
             cand &= ~(1 << k)
             new = chosen + [k]
@@ -163,7 +243,9 @@ def search_max(D, n, tl=600.0):
 
     for r, rep, allowed in runs:
         dfs([rep], allowed & adj[rep])
-    return {"D": D, "n": n, "max_m_found": best["m"], "exhaustive": exhaustive,
+    found = bool(best["phi"])
+    return {"D": D, "n": n, "target": target, "found": found,
+            "max_m_found": best["m"] if found else None, "exhaustive": exhaustive,
             "seconds": round(time.time() - t0, 1), "nodes": nodes[0],
             "phi": best["phi"], "alpha": best["alpha"], "beta": best["beta"]}
 
@@ -192,6 +274,7 @@ if __name__ == "__main__":
     if sys.argv[1] == "max":
         D, n = int(sys.argv[2]), int(sys.argv[3])
         tl = float(sys.argv[4]) if len(sys.argv) > 4 else 600.0
-        r = search_max(D, n, tl)
+        target = int(sys.argv[5]) if len(sys.argv) > 5 else None
+        r = search_max(D, n, tl, target)
         r["cert"] = cert(r) if r["phi"] else None
         print(json.dumps(r))
