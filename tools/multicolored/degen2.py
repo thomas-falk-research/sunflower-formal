@@ -14,10 +14,12 @@ h <= log2(min_i #letters of Phi in leg i), beating the single-letter value
 log2 3 per letter needs more than 3^n letters in every leg; the search
 therefore maximises L = min_i #letters used in leg i.
 
-    search:  python3 -I tools/multicolored/degen2.py search D n [timelimit_s] [B|-] [cap]
+    search:  python3 -I tools/multicolored/degen2.py search D n [timelimit_s] [B|-] [cap] [atleast]
              (with cap K: maximise |Phi| with at most K elements of Phi per
              letter per leg, so the uniform P gives h >= log2(|Phi|/K);
-             without: maximise the least number of letters used per leg)
+             with cap and atleast: feasibility of |Phi| >= atleast under
+             the cap; without: maximise the least number of letters used
+             per leg)
              MILP (scipy/HiGHS) over integer weights |u| <= B (default 4*D^n).
              Freeness is one clique constraint per leg and per pair of other
              letters: at most one element of Phi in each fibre.
@@ -48,7 +50,7 @@ def Sn(D, n):
     return out
 
 
-def search(D, n, tl=600.0, B=None, cap=None):
+def search(D, n, tl=600.0, B=None, cap=None, atleast=None):
     import numpy as np
     from scipy.optimize import milp, LinearConstraint, Bounds
     from scipy.sparse import lil_matrix
@@ -60,7 +62,6 @@ def search(D, n, tl=600.0, B=None, cap=None):
     N = iL + 1
     M = 3 * B + 1
     cons = []                                   # (dict col->coef, lo, hi)
-    Amat_rows = cons
     for k, t in enumerate(T):
         base = {i * A + t[i]: 1 for i in range(3)}
         r = dict(base); r[iz + k] = 1
@@ -88,22 +89,25 @@ def search(D, n, tl=600.0, B=None, cap=None):
         for x in range(A):
             r[iy + i * A + x] = -1
         cons.append((r, -np.inf, 0))            # L <= sum_x y_{i,x}
-    Amat = lil_matrix((len(cons), N))
-    lo, hi = [], []
-    for row, (d, l, h) in enumerate(cons):
-        for col, v in d.items():
-            Amat[row, col] = v
-        lo.append(l); hi.append(h)
     if cap:                                     # at most `cap` elements per letter per leg
         for i in range(3):
             use = {}
             for k, t in enumerate(T):
                 use.setdefault(t[i], []).append(k)
             for ks in use.values():
-                cons_cap = {iz + k: 1 for k in ks}
-                Amat_rows.append((cons_cap, -np.inf, cap))
+                cons.append(({iz + k: 1 for k in ks}, -np.inf, cap))
+    if atleast:                                 # |Phi| >= atleast
+        cons.append(({iz + k: 1 for k in range(nz)}, atleast, np.inf))
+    Amat = lil_matrix((len(cons), N))
+    lo, hi = [], []
+    for row, (d, l, h) in enumerate(cons):
+        for col, v in d.items():
+            Amat[row, col] = v
+        lo.append(l); hi.append(h)
     c = np.zeros(N)
-    if cap:
+    if cap and atleast:
+        pass                                    # feasibility: any Phi meeting both constraints
+    elif cap:
         c[iz:iz + nz] = -1                      # maximise |Phi| under the cap
     else:
         c[iL] = -1                              # maximise the least letters per leg
@@ -112,7 +116,7 @@ def search(D, n, tl=600.0, B=None, cap=None):
     res = milp(c, constraints=LinearConstraint(Amat.tocsr(), lo, hi),
                integrality=np.ones(N), bounds=Bounds(lb, ub),
                options={"time_limit": tl, "disp": False})
-    out = {"D": D, "n": n, "B": B, "cap": cap, "status": res.message, "optimal": res.status == 0,
+    out = {"D": D, "n": n, "B": B, "cap": cap, "atleast": atleast, "status": res.message, "optimal": res.status == 0,
            "mip_dual_bound_L": getattr(res, "mip_dual_bound", None)}
     if res.x is not None:
         x = np.round(res.x).astype(int)
@@ -170,7 +174,9 @@ def verify(cert):
             seen[key] = t
     h = maxmin_entropy(phi)
     letters = [len({t[j] for t in phi}) for j in range(3)]
+    maxuse = max(max(sum(1 for t in phi if t[j] == x) for x in {t[j] for t in phi}) for j in range(3)) if phi else 0
     return {"ok": True, "D": D, "n": n, "phi_size": len(phi), "letters_per_leg": letters,
+            "max_uses_per_letter": maxuse,
             "maxmin_entropy_bits": h, "per_letter_bound_2^(h/n)": 2 ** (h / n),
             "single_letter_value": 3.0}
 
@@ -181,6 +187,7 @@ if __name__ == "__main__":
         tl = float(sys.argv[4]) if len(sys.argv) > 4 else 600.0
         B = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[5] != "-" else None
         cap = int(sys.argv[6]) if len(sys.argv) > 6 else None
-        print(json.dumps(search(D, n, tl, B, cap)))
+        atleast = int(sys.argv[7]) if len(sys.argv) > 7 else None
+        print(json.dumps(search(D, n, tl, B, cap, atleast)))
     elif sys.argv[1] == "verify":
         print(json.dumps(verify(json.load(open(sys.argv[2])))))
