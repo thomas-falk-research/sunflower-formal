@@ -39,8 +39,9 @@ section 81.1's, not something a per-clause check can establish.
     python3 -I tools/multicolored/checkcnf.py delta DELTA.cnf D n K r LEAVES.json k
 
 cover (section 84) recomputes cubes.py's cube tree from the definitions,
-with its own implementation of the symmetry group, and compares it with
-the leaf list. delta checks one cube's delta file: Farkas clauses exactly,
+with its own implementation of the symmetry group, compares it with the
+leaf list, and checks that every expanded node fixes fewer than s triples
+(the hypothesis of Lemma 84.A). delta checks one cube's delta file: Farkas clauses exactly,
 plus exactly the leaf's units. Together with the base CNF's check, these
 make every clause of a cube's full CNF (base + delta) checked.
 
@@ -184,13 +185,14 @@ def cover(path):
     assert len({tuple(g) for g in G.tolist()}) == len(G), "group elements not distinct"
     rep = min(k for k in range(N) if mono[k] == r)
     allowed = [m <= r for m in mono]
-    mine, stack, expanded = [], [((), (rep,), set(), G[G[:, rep] == rep])], 0
+    mine, stack, expanded, small = [], [((), (rep,), set(), G[G[:, rep] == rep])], 0, True
     while stack:
         p, fixed, forb, H = stack.pop(0)
         if not grow(p):
             mine.append({"path": list(p), "fixed": list(fixed), "forbidden": sorted(forb), "group_order": len(H)})
             continue
         expanded += 1
+        small = small and len(fixed) < spec["s"]  # Lemma 84.A needs |F| < s at every expanded node
         cand = [k for k in range(N) if allowed[k] and k not in fixed and k not in forb
                 and not any(bad[f, k] for f in fixed)]
         orbits, seen = [], set()
@@ -206,11 +208,12 @@ def cover(path):
             kids.append((p + (j,), fixed + (o,), set(acc), H[H[:, o] == o]))
             acc |= orb
         stack = kids + stack
-    ok = mine == spec["leaves"]
+    ok = mine == spec["leaves"] and small
     if spec.get("expand") is not None:          # every expanded node must exist in the tree
         ok = ok and expanded == len(spec["expand"])
     print(json.dumps({"leaves": path, "D": D, "n": n, "run": r, "group_order": len(G),
                       "root_stabiliser": int((G[:, rep] == rep).sum()), "expanded_nodes": expanded,
+                      "fixed_below_s_at_every_expanded_node": small,
                       "leaf_count": len(mine), "ok": ok}))
 
 

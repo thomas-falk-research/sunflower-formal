@@ -106,9 +106,11 @@ def main():
     spec = {"D": D, "n": n, "K": K, "s": s, "run": r,
             "expand": (sorted(list(p) for p in expand) if isinstance(expand, set) else None),
             "depth": expand if isinstance(expand, int) else None, "leaves": L}
+    assert all(len(l["fixed"]) <= s for l in L), "an expanded node fixes s or more triples (Lemma 84.A)"
     if prefix and w == 0:
-        with open(f"{prefix}_r{r}_leaves.json", "w") as f:
+        with open(f"{prefix}_r{r}_leaves.json.tmp", "w") as f:
             json.dump(spec, f)
+        os.replace(f"{prefix}_r{r}_leaves.json.tmp", f"{prefix}_r{r}_leaves.json")
     # easiest first: most forbidden triples, then most fixed
     order = sorted(range(len(L)), key=lambda k: (-len(L[k]["forbidden"]), -len(L[k]["fixed"]), k))
     out = {"D": D, "n": n, "K": K, "s": s, "run": r, "tree": tree, "worker": w, "workers": W,
@@ -144,6 +146,7 @@ def main():
             break
     sts = [c["status"] for c in out["cubes"]]
     out["seconds"] = round(time.time() - t0, 1)
+    # the verdict covers this worker's share of the leaves (or the "under" subtree) only
     out["verdict"] = ("found" if "found" in sts else
                       "all cubes infeasible" if sts and all(x.startswith("infeasible") for x in sts)
                       else "undecided")

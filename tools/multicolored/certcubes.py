@@ -8,7 +8,9 @@ docs/roadmap.md section 84. For prefix P and run class r:
      delta, and base + delta (concatenated here) must be proved
      unsatisfiable by the standalone cadical binary with a DRAT proof that
      drat-trim verifies.
-The class has no face of the question when every step passes.
+When every step passes, the run class has no face of the question:
+CONDITIONAL on the size-encoding assumption of roadmap section 83.2, and
+on Lemma 84.A, whose hypothesis |F| < s step 2 checks.
 
     python3 -I tools/multicolored/certcubes.py P r K s samples DRAT_TRIM [workdir|-] [leaves.json]
 
@@ -34,6 +36,9 @@ def main():
     leaves_path = sys.argv[8] if len(sys.argv) > 8 else f"{P}_r{r}_leaves.json"
     spec = json.load(open(leaves_path))
     D, n = spec["D"], spec["n"]
+    # the leaf list must be for this run class and question, or the base and
+    # the deltas could contradict each other vacuously
+    assert (spec["run"], spec["K"], spec["s"]) == (r, K, s), (spec["run"], spec["K"], spec["s"], r, K, s)
     check = [sys.executable, "-I", os.path.join(HERE, "checkcnf.py")]
     out = {"prefix": P, "run": r, "leaves": len(spec["leaves"])}
     base = f"{P}_r{r}_base.cnf"
