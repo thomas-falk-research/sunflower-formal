@@ -17,13 +17,14 @@ Every leaf is solved by satmaster.solve_loop under the assumptions "F true,
 X false". All leaves of one worker share one incremental solver, so Farkas
 clauses learned in one cube (valid for every face) help the next.
 
-    python3 -I tools/multicolored/cubes.py D n K s r TREE worker workers cube_tl total_tl [prefix]
+    python3 -I tools/multicolored/cubes.py D n K s r TREE worker workers cube_tl total_tl [prefix|-] [under]
 
 TREE is a depth d (every node above depth d is expanded) or a JSON file
 {"expand": [path, ...]} naming the expanded nodes, a path being the list of
 child indices from the root ([] is the root). Leaves are ordered easiest
 first (most forbidden triples), and worker w solves those at positions
-= w (mod workers) in that order. With prefix, worker
+= w (mod workers) in that order. With under (a path such as 5-48), only
+the leaves below that node are solved. With prefix, worker
 0 writes the base CNF to prefix_r<r>_base.cnf; every worker records the
 SHA-256 of its own base clauses (so all workers can be checked to share it)
 and, for every leaf it proves infeasible, writes
@@ -92,7 +93,8 @@ def main():
     w, W = int(sys.argv[7]), int(sys.argv[8])
     expand = int(tree) if tree.isdigit() else {tuple(p) for p in json.load(open(tree))["expand"]}
     cube_tl, total_tl = float(sys.argv[9]), float(sys.argv[10])
-    prefix = sys.argv[11] if len(sys.argv) > 11 else None
+    prefix = sys.argv[11] if len(sys.argv) > 11 and sys.argv[11] != "-" else None
+    under = [int(x) for x in sys.argv[12].split("-")] if len(sys.argv) > 12 else None
     t0 = time.time()
     st = S.build(D, n, K, s, r, keep=prefix is not None)
     base = st["C"].all[:st["nbase"]] if prefix else []
@@ -112,6 +114,8 @@ def main():
     out = {"D": D, "n": n, "K": K, "s": s, "run": r, "tree": tree, "worker": w, "workers": W,
            "leaves": len(L), "setup_s": st["setup"], "base_sha256": sha, "cubes": []}
     v = lambda k: k + 1
+    if under is not None:                       # only the leaves below one node
+        order = [k for k in order if L[k]["path"][:len(under)] == under]
     for pos, k in enumerate(order):
         leaf = L[k]
         if pos % W != w:
