@@ -131,6 +131,7 @@ class Clauses:
 
 
 def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
+    t_run = time.time()
     T = B.Sn(D, n)
     A = D ** n
     N = len(T)
@@ -189,7 +190,7 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
         top = max(top, enc.nv)
         for cl in enc.clauses:
             C.add("size", cl)
-    setup = round(time.time() - t0, 1)
+    setup = round(time.time() - t_run, 1)      # this run class's setup alone
     if cnf_prefix:                              # the clauses before any Farkas clause
         with open(f"{cnf_prefix}_r{r}_base.cnf", "w") as f:
             f.write(f"p cnf {top} {len(C.all)}\n")

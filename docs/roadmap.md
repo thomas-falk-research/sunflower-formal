@@ -17310,7 +17310,7 @@ fixed in the text:
 `relax82.py` now prints its incumbent and re-checks it exactly, and the
 `D = 4` figure above was re-run with that check (§82.3).
 
-## 83. A SAT master for the face search: a hundredfold faster on calibration, certified end to end there, and `D = 4, K = 2` still undecided
+## 83. A SAT master for the face search: 72–98 times faster on the hard calibration row, certified there up to PySAT's size encoding, and `D = 4, K = 2` still undecided
 
 **Tier 2.** This is §82.6's next step. The master is a SAT solver, and
 every infeasible verdict is checked independently. The question is
@@ -17321,8 +17321,9 @@ above 3.
 ### 83.1 The tools
 
 * **`tools/multicolored/satmaster.py`.** The `benders.py` loop with an
-  incremental SAT master: CaDiCaL 1.9.5 through PySAT `1.9.dev15`, pinned
-  and installed with pip. There is one variable per triple. The clauses
+  incremental SAT master: CaDiCaL 1.9.5 through PySAT `1.9.dev15`,
+  installed with pip. The version is pinned in the tools' docstrings; the
+  repository has no requirements file. There is one variable per triple. The clauses
   are:
   * fibre, as pairwise at-most-one;
   * Lemma 81.A pairs;
@@ -17336,7 +17337,10 @@ above 3.
   For each model that is not a face, the minimised Farkas certificate of
   `benders.py` is re-checked in exact rational arithmetic. It is then
   added as a clause, with its images under the stabiliser of the forced
-  triple. A model that is a face is reported with exact integer weights.
+  triple. A model that is a face is reported with integer weights whose
+  zero set and nonnegativity are re-checked exactly. Its freeness, caps
+  and size come from the SAT model. For the four "found" rows of §83.2,
+  the review in §83.6 checked all three directly.
   The tool can export each run class's CNF: the base clauses, and on an
   infeasible verdict the full set.
 * **`tools/multicolored/checkcnf.py`.** An independent clause checker. It
@@ -17352,7 +17356,10 @@ above 3.
     parameters.
 
   It then tests the encodings semantically with a different solver
-  (Glucose 4), on random and boundary assignments.
+  (Glucose 4), in both directions: on every assignment when an encoding
+  has at most 12 input literals, and otherwise on random and boundary
+  samples. It also requires each CNF line to be exactly one clause,
+  terminated by a single 0.
 * **Proof check.** `drat-trim` (Heule), built with `gcc -std=c99 -O2`
   from commit `2e3b2dc` (2024-11-25), checks a DRAT proof produced by the
   system's standalone CaDiCaL 1.7.3. That is a different build and
@@ -17368,10 +17375,16 @@ Then no free face contains both `a` and `b`.
 leg 1. ∎
 
 **PROVEN**; new to this repository (no rule-17 search was run).
-* **Coverage.** This is the closed form of §82.1's two-plus-one family.
-  For a pair differing in every leg, `2v_a + v_b` always equals the sum
-  of the three swaps, so the relation exists exactly when the swaps lie
-  in `S`.
+* **Coverage.** For a pair differing in every leg, the only non-trivial
+  way to write `2v_a + v_b` as a sum of three triples is the three swaps.
+  Every other split contains `a`, and either cancels to a Lemma 81.A
+  rectangle or is trivial. A pair agreeing in one leg reduces the same
+  way, and a pair agreeing in two shares a fibre.
+* **Relation to §82.1.** Lemma 83.A covers at least §82.1's family. That
+  family came from `relations3`, which also requires the swaps to be
+  pairwise compatible. The two coincide at `D = 4, 5` (`n = 1`) and at
+  `D = 4, n = 2`, but not in general. At `D = 6, n = 1` there are 720
+  Lemma 83.A pairs, and only 360 have compatible swaps (review, §83.6).
 * **Counts (COMPUTED).** 0 at `D = 3` (`n = 1, 2`), 24 at `D = 4, n = 1`,
   120 at `D = 5, n = 1` and 5,376 at `D = 4, n = 2`. None is already
   incompatible. The `D = 4` counts equal those of the §82 review, which
@@ -17398,13 +17411,20 @@ Lemma 81.A, Lemma 83.A and forcing clauses are all empty (§81.1, §82.2),
 so each CNF holds units, 1,404 conflict three-sets, the encodings and
 the Farkas clauses.
 
-**Certification of that verdict.** For each run class, the exported
-full CNF was checked in three ways:
+**Certification of that verdict (CONDITIONAL on the size-encoding
+assumption below).** For each run class, the exported full CNF was
+checked in three ways:
 * the standalone CaDiCaL 1.7.3 reports it unsatisfiable;
 * `drat-trim` reports `s VERIFIED` on its DRAT proof;
 * `checkcnf.py` explains every clause (7,119, 11,586 and 13,953 clauses
-  in run classes 0, 1 and 2), with 200 semantic samples per encoding
-  and no failures.
+  in run classes 0, 1 and 2). Each class's 27 cap encodings (9 input
+  literals each) were checked on every assignment, in both directions.
+  The one size encoding (81 inputs) was checked on 200 samples. There
+  were no failures.
+
+`drat-trim` prints 46 duplicate-literal warnings per proof. They come
+from size-encoding clauses that repeat a literal, such as
+`-298 -298 1514`, and are harmless.
 
 Negative tests:
 * `drat-trim` rejects a half-truncated proof (`s NOT VERIFIED`);
@@ -17421,30 +17441,48 @@ Negative tests:
 * clause validity (checked as above);
 * DRAT unsatisfiability (checked by `drat-trim`).
 
-One gap remains: ASSUMED(L3, the correctness of PySAT's cardinality
-encoders, owner PySAT). The check confirms the clauses equal PySAT's
-output and passes the semantic samples; it does not prove the encoders.
-The calibration instance was already settled exhaustively by §80, so
-this is a test of the chain, not a new result.
+One gap remains at this instance: ASSUMED(L3, that the cardinality
+network encoding `|Φ| ≥ 6` over 81 inputs lets every assignment with at
+least 6 true inputs extend to its auxiliary variables, owner PySAT).
+This is the direction an unsatisfiability verdict needs. The check
+confirms that the clauses equal PySAT's output and pass 200 semantic
+samples in both directions; it does not prove the direction. The chain
+also trusts:
+* `checkcnf.py` itself (reviewed in §83.6);
+* `drat-trim`;
+* Python, NumPy and Glucose 4, as used by the checker.
+
+The calibration instance was already settled exhaustively by §80, so this
+is a test of the chain, not a new result.
 
 ### 83.3 The `D = 4` target
 
-`D = 4, n = 2, K = 2, s = 19`. In every run class the base CNF has
-53,423 variables and 5,366,848 clauses (units 1 / 17 / 209 for run
-classes 2 / 1 / 0):
+`D = 4, n = 2, K = 2, s = 19`. Each base CNF has 53,423 variables. The
+clause counts are 5,366,640 / 5,366,656 / 5,366,848 for run classes
+2 / 1 / 0, differing only in their units (1 / 17 / 209). The other
+families are the same in every class:
 
 ```text
   fibre 2,880   rect 29,952   2+1 5,376   conf3 3,497,472   force3 1,747,584
   cap 11,184    size 72,191
 ```
 
-`checkcnf.py` explains every clause of run class 0's base CNF in 225 s:
-209 units, 38,208 pairs, 3,497,472 three-sets, 1,747,584 Horn clauses
-and 83,375 encoding clauses, with 9,800 semantic samples and no
-failures. The setup takes 115–122 s and about 2.2 GB per run class.
+**Clause check.** `checkcnf.py` explains every clause of run class 0's
+base CNF: 209 units, 38,208 pairs, 3,497,472 three-sets, 1,747,584 Horn
+clauses and 83,375 encoding clauses. It used 200 semantic samples for
+each of the 49 encodings, all with more than 12 inputs, and found no
+failures. That was a version without the exhaustive mode, in 225 s; the
+review re-ran it in 290 s with identical counts.
+
+**Cost.** The setup takes 115–123 s per run class. While the clauses were
+being kept for export, `ps` showed about 2.15 GB resident per process;
+the review measured a 1.75 GB peak without export.
 
 **Runs (COMPUTED).** Three in parallel, 7,000 s budget each, with
-`timeout 7300` as the hard limit:
+`timeout 7300` as the hard limit. They used `satmaster.py` at commit
+`956b322`; later commits changed only logging and the meaning of
+`setup_s`. Run class 0 was ended by the hard limit inside its first
+solve, so its result and log files are empty:
 
 ```text
   run r   result      SAT solves   Farkas certificates   Farkas clauses (with images)
@@ -17456,8 +17494,7 @@ failures. The setup takes 115–122 s and about 2.2 GB per run class.
 **Profile of run class 2 (COMPUTED, a separate 1,200 s run).**
 * 19 iterations, of which the SAT solves took 982 s (largest 249.6 s,
   first 149.5 s).
-* The Farkas steps took under 0.005 s each (the logged times round to
-  0.00).
+* The Farkas steps took 0.01–0.04 s each, 0.35 s in all.
 * Certificates average 17.7 literals (8–27).
 
 **Run class 0 alone.** The standalone CaDiCaL 1.7.3 ran on the base CNF
@@ -17467,17 +17504,28 @@ when a container restart ended them; their last log lines are at
 13,483 s, 13,537 s and 13,545 s.
 
 **What this shows.**
-* **The LP step is negligible.** At `D = 3` the SAT master is 72–98
-  times faster than the MILP masters.
+* **The LP step is negligible.** The profile shows it. Separately, at
+  `D = 3` the SAT master was 72–98 times faster than the MILP masters,
+  on one instance, against MILP timings that were not taken under
+  controlled conditions (§82.3).
 * **At `D = 4` the combinatorial core is itself hard for CDCL.** In run
   class 0, more than 13,500 s of solving neither found a set satisfying
   the base clauses nor refuted them. That set need not be a face; it
   only has to meet freeness, the cap, `|Φ| ≥ 19` and the pair,
   three-set and forcing clauses. Whether such a set exists is open.
 * **Classes 1 and 2 are slow but moving.** They get past the first
-  solve in about 150 s, and then each Farkas clause costs a 50–250 s
-  re-solve. That is why the iterations are slow and the certificates
-  long. This reading is CONJECTURED.
+  solve in about 150 s, and the re-solves after each Farkas clause vary
+  widely. Measured as gaps between successive solves in the 7,000 s
+  logs (COMPUTED):
+
+  ```text
+    run class   under 2 s   2–50 s   50–250 s   250 s or more   longest
+    2              35          5         35            2          764.7 s
+    1              84         38         36            2          302.0 s
+  ```
+
+  So roughly half the iterations are cheap, and the long re-solves set
+  the pace.
 
 ### 83.4 Where the two-letter `D = 4` questions stand
 
@@ -17516,7 +17564,9 @@ or Rust changed.
   prcheck       pass   template only; no PR body drafted
   satmaster     pass   all nine rows of 83.2 reproduced (same solve and certificate counts)
   proof chain   pass   3 2 1 6, every run class: CaDiCaL 1.7.3 UNSAT, drat-trim
-                       s VERIFIED, checkcnf.py ok (7,119 / 11,586 / 13,953 clauses)
+                       s VERIFIED, checkcnf.py ok (7,119 / 11,586 / 13,953 clauses;
+                       27 cap encodings exhaustive, 1 size encoding sampled), and
+                       the four checkcnf.py negative tests rejected, on the final tool
   verify        not-run   no .v file, statement or audited name changed
   coqchk        not-run   same reason
   mutants       not-run   no definition changed
@@ -17528,5 +17578,40 @@ the start of the line. A first gate script anchored it and printed
 nothing; the verdicts above come from re-running with an unanchored
 match.
 
-A fresh-context review of this section had been started but had not
-returned when this was committed.
+**Fresh-context review.** A reviewer with no access to this session
+re-ran every calibration row and the full proof chain, including the
+negative tests. It also checked, with its own scripts:
+* the Lemma 83.A counts, by brute force;
+* all 13,281 Farkas clauses of the `3 2 1 6` CNFs, by its own exact
+  nullspace computation: every kernel 1-dimensional, no failures;
+* random free, capped faces against the non-encoding clauses: 394 faces
+  at `D = 3, n = 2`, 2,597 at `D = 4, n = 1` and 3,560 at `D = 3, n = 2`
+  with `K = 2`, with no violation;
+* every number in §83.3 against the result files.
+
+It confirmed:
+* Lemma 83.A and its coverage;
+* the soundness of every clause family;
+* the independence and soundness of `checkcnf.py`;
+* that a failed exact check stops the run safely, as "undecided".
+
+It found nothing HIGH. Two MEDIUM points concerned the labelling of the
+certified verdict and the wording of what the encoding check
+establishes. The title, the CONDITIONAL label and the ASSUMED statement
+now say exactly what is assumed, and the D = 3 cap encodings are now
+checked exhaustively, so only the size encoding remains. The LOW
+findings are fixed:
+* the per-class clause counts;
+* the LP step times (0.01–0.04 s, not under 0.005 s);
+* the re-solve times, whose earlier "50–250 s each" reading was false;
+* the setup range and the memory source;
+* the commit used for the long runs, and what run class 0's empty files
+  mean;
+* the speed claim's scope;
+* where the version pin lives;
+* the §82.1 relation, which holds as an inclusion and not in general as
+  an equality;
+* the "found" path;
+* strict CNF parsing in `checkcnf.py`;
+* `setup_s`, which counted from program start and is now per run class.
+

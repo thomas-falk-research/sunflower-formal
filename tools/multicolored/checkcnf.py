@@ -25,8 +25,12 @@ clause on its own:
   auxiliary  clauses with auxiliary variables must equal, as a multiset,
              PySAT's encodings regenerated with satmaster.py's parameters,
              and the encodings are tested semantically on random assignments
-             with a different SAT solver (Glucose 4). That PySAT's
-             encoders are correct is an assumption, recorded in section 83.
+             with a different SAT solver (Glucose 4): every assignment,
+             both directions, when an encoding has at most 12 input
+             literals; otherwise random and boundary samples. For a
+             sampled encoding, that every allowed assignment extends to
+             the auxiliary variables (the direction an unsatisfiability
+             verdict needs) is an assumption, recorded in section 83.
 The run-class argument (the union of the run classes covers every Phi) is
 section 81.1's, not something a per-clause check can establish.
 
@@ -85,7 +89,11 @@ def main():
     with open(path) as f:
         header = f.readline().split()
         nv, ncl = int(header[2]), int(header[3])
-        clauses = [list(map(int, line.split()[:-1])) for line in f]
+        clauses = []
+        for line in f:
+            toks = list(map(int, line.split()))
+            assert toks and toks[-1] == 0 and 0 not in toks[:-1], line   # one clause per line
+            clauses.append(toks[:-1])
     assert len(clauses) == ncl, (len(clauses), ncl)
     # the cardinality encodings, regenerated with satmaster.py's parameters
     from pysat.card import CardEnc, EncType
@@ -236,9 +244,17 @@ def main():
     if +pending:
         fails.append(("regenerated encoding clauses missing from the CNF", sum(pending.values())))
     rng = random.Random(83)
-    sem_fail = 0
+    sem_fail, exhaustive = 0, 0
     for kind, lits, cls in groups:
         bound = K if kind == "cap" else s
+        if len(lits) <= 12:                     # small encodings: every assignment, both directions
+            exhaustive += 1
+            with Solver(name="glucose4", bootstrap_with=cls) as g:
+                for bits in itertools.product((0, 1), repeat=len(lits)):
+                    allowed = sum(bits) <= K if kind == "cap" else sum(bits) >= s
+                    if g.solve(assumptions=[l if b else -l for l, b in zip(lits, bits)]) != allowed:
+                        sem_fail += 1
+            continue
         for j in range(samples):
             # half the samples sit at the boundary (bound - 1, bound, bound + 1)
             want = (min(max(bound + rng.choice((-1, 0, 1)), 0), len(lits)) if j % 2
@@ -252,7 +268,8 @@ def main():
     if sem_fail:
         fails.append(("encoding semantics", sem_fail))
     print(json.dumps({"cnf": path, "D": D, "n": n, "K": K, "s": s, "run": r, "vars": nv, "clauses": ncl,
-                      "checked": dict(kinds), "encoding_samples": samples * len(groups),
+                      "checked": dict(kinds), "encodings_exhaustive": exhaustive,
+                      "encodings_sampled": len(groups) - exhaustive, "samples_each": samples,
                       "ok": not fails, "failures": fails[:10]}))
 
 
