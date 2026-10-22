@@ -35,6 +35,14 @@ The run-class argument (the union of the run classes covers every Phi) is
 section 81.1's, not something a per-clause check can establish.
 
     python3 -I tools/multicolored/checkcnf.py CNF D n K s r [samples]
+    python3 -I tools/multicolored/checkcnf.py cover LEAVES.json
+    python3 -I tools/multicolored/checkcnf.py delta DELTA.cnf D n K r LEAVES.json k
+
+cover (section 84) recomputes cubes.py's cube tree from the definitions,
+with its own implementation of the symmetry group, and compares it with
+the leaf list. delta checks one cube's delta file: Farkas clauses exactly,
+plus exactly the leaf's units. Together with the base CNF's check, these
+make every clause of a cube's full CNF (base + delta) checked.
 
 Requires numpy and python-sat==1.9.dev15 (for the encodings only).
 """
@@ -58,17 +66,13 @@ def support(D, n):
     return T, mono
 
 
-def main():
-    path = sys.argv[1]
-    D, n, K, s, r = (int(x) for x in sys.argv[2:7])
-    samples = int(sys.argv[7]) if len(sys.argv) > 7 else 200
-    T, mono = support(D, n)
+def pairs(T, D, n):
+    """The pairs no free face contains: one fibre, Lemma 81.A, Lemma 83.A."""
     N, A = len(T), D ** n
     Tn = np.array(T)
     idx = -np.ones((A, A, A), np.int64)
     idx[Tn[:, 0], Tn[:, 1], Tn[:, 2]] = np.arange(N)
     inS = idx >= 0
-    # pair relations, computed from the definitions
     agree = sum((Tn[:, None, i] == Tn[None, :, i]).astype(int) for i in range(3))
     fibre = agree == 2
     rect = np.zeros((N, N), bool)
@@ -85,7 +89,47 @@ def main():
     tpo |= tpo.T
     badpair = fibre | rect | tpo
     np.fill_diagonal(badpair, False)
+    return Tn, idx, badpair
 
+
+def exact(T, A, L, M):
+    """Is there a rational x != 0 on L + M with sum_t x_t v_t = 0, x >= 0 on M
+    and sum_M x > 0? Tries each vector of an exact kernel basis."""
+    cols = L + M
+    rows = []
+    for i in range(3):
+        for wd in range(A):
+            row = [Fraction(int(T[t][i] == wd)) for t in cols]
+            if any(row):
+                rows.append(row)
+    m = len(cols)
+    pivots, rk = [], 0
+    for c in range(m):
+        p = next((j for j in range(rk, len(rows)) if rows[j][c] != 0), None)
+        if p is None:
+            continue
+        rows[rk], rows[p] = rows[p], rows[rk]
+        rows[rk] = [x / rows[rk][c] for x in rows[rk]]
+        for j in range(len(rows)):
+            if j != rk and rows[j][c] != 0:
+                f = rows[j][c]
+                rows[j] = [x - f * y for x, y in zip(rows[j], rows[rk])]
+        pivots.append(c)
+        rk += 1
+    free = [c for c in range(m) if c not in pivots]
+    for fc in free:
+        x = [Fraction(0)] * m
+        x[fc] = Fraction(1)
+        for j, c in enumerate(pivots):
+            x[c] = -rows[j][fc]
+        xm = x[len(L):]
+        for sgn in (1, -1):
+            if all(sgn * v >= 0 for v in xm) and sgn * sum(xm) > 0:
+                return True
+    return False
+
+
+def read_cnf(path):
     with open(path) as f:
         header = f.readline().split()
         nv, ncl = int(header[2]), int(header[3])
@@ -95,6 +139,110 @@ def main():
             assert toks and toks[-1] == 0 and 0 not in toks[:-1], line   # one clause per line
             clauses.append(toks[:-1])
     assert len(clauses) == ncl, (len(clauses), ncl)
+    return nv, clauses
+
+
+def group(D, n, T):
+    """Sym(D)^n x| S_n x S_3 as permutations of the indices of T (each letter
+    of each coordinate permuted, coordinates permuted, legs permuted)."""
+    A = D ** n
+    index = {t: k for k, t in enumerate(T)}
+    digs = []
+    for w in range(A):
+        d = []
+        for _ in range(n):
+            d.append(w % D)
+            w //= D
+        digs.append(d[::-1])                    # most significant coordinate first
+    out = []
+    for sig in itertools.product(list(itertools.permutations(range(D))), repeat=n):
+        for pi in itertools.permutations(range(n)):
+            wm = []
+            for w in range(A):
+                x = 0
+                for k in range(n):
+                    x = x * D + sig[k][digs[w][pi[k]]]
+                wm.append(x)
+            for rho in itertools.permutations(range(3)):
+                out.append([index[(wm[t[rho[0]]], wm[t[rho[1]]], wm[t[rho[2]]])] for t in T])
+    return np.array(out, dtype=np.int64)
+
+
+def cover(path):
+    """Recompute the cube tree of cubes.py from the definitions and compare."""
+    spec = json.load(open(path))
+    D, n, r, depth = spec["D"], spec["n"], spec["run"], spec["depth"]
+    T, mono = support(D, n)
+    N = len(T)
+    _, _, bad = pairs(T, D, n)
+    G = group(D, n, T)
+    assert len({tuple(g) for g in G.tolist()}) == len(G), "group elements not distinct"
+    rep = min(k for k in range(N) if mono[k] == r)
+    allowed = [m <= r for m in mono]
+    level = [((rep,), set(), G[G[:, rep] == rep])]
+    for _ in range(depth):
+        nxt = []
+        for fixed, forb, H in level:
+            cand = [k for k in range(N) if allowed[k] and k not in fixed and k not in forb
+                    and not any(bad[f, k] for f in fixed)]
+            orbits, seen = [], set()
+            for k in cand:
+                if k not in seen:
+                    orb = set(H[:, k].tolist())
+                    assert orb <= set(cand), "candidates not invariant"
+                    seen |= orb
+                    orbits.append(orb)
+            acc = set(forb)
+            for orb in orbits:
+                o = min(orb)
+                nxt.append((fixed + (o,), set(acc), H[H[:, o] == o]))
+                acc |= orb
+        level = nxt
+    mine = [{"fixed": list(f), "forbidden": sorted(x), "group_order": len(H)} for f, x, H in level]
+    print(json.dumps({"leaves": path, "D": D, "n": n, "run": r, "depth": depth, "group_order": len(G),
+                      "root_stabiliser": int((G[:, rep] == rep).sum()), "leaf_count": len(mine),
+                      "ok": mine == spec["leaves"]}))
+
+
+def delta(path, D, n, K, r, leaves_path, k):
+    """A cube's delta file: every clause must be an exact Farkas clause or one
+    of the leaf's units, and every unit of the leaf must be present."""
+    T, mono = support(D, n)
+    N, A = len(T), D ** n
+    leaf = json.load(open(leaves_path))["leaves"][k]
+    want = {f + 1 for f in leaf["fixed"]} | {-(x + 1) for x in leaf["forbidden"]}
+    _, clauses = read_cnf(path)
+    kinds, fails, got = Counter(), [], set()
+    for cl in clauses:
+        if len(cl) == 1 and cl[0] in want:
+            got.add(cl[0])
+            kinds["leaf unit"] += 1
+            continue
+        if not cl or any(abs(l) > N for l in cl):
+            fails.append(("not a Farkas clause", cl))
+            continue
+        L = sorted(-l - 1 for l in cl if l < 0)
+        M = sorted(l - 1 for l in cl if l > 0)
+        if M and exact(T, A, L, M):
+            kinds["Farkas"] += 1
+        else:
+            fails.append(("unexplained", cl))
+    if got != want:
+        fails.append(("leaf units missing", len(want - got)))
+    print(json.dumps({"delta": path, "cube": k, "clauses": len(clauses), "checked": dict(kinds),
+                      "ok": not fails, "failures": fails[:10]}))
+
+
+def main():
+    path = sys.argv[1]
+    D, n, K, s, r = (int(x) for x in sys.argv[2:7])
+    samples = int(sys.argv[7]) if len(sys.argv) > 7 else 200
+    T, mono = support(D, n)
+    N, A = len(T), D ** n
+    Tn, idx, badpair = pairs(T, D, n)
+
+    nv, clauses = read_cnf(path)
+    ncl = len(clauses)
     # the cardinality encodings, regenerated with satmaster.py's parameters
     from pysat.card import CardEnc, EncType
     from pysat.solvers import Solver
@@ -199,44 +347,10 @@ def main():
         for k in np.where(~ok)[0]:
             other.append(horn[k][2])
 
-    # Farkas clauses, exactly
-    def exact(L, M):
-        cols = L + M
-        rows = []
-        for i in range(3):
-            for wd in range(A):
-                row = [Fraction(int(T[t][i] == wd)) for t in cols]
-                if any(row):
-                    rows.append(row)
-        m = len(cols)
-        pivots, rk = [], 0
-        for c in range(m):
-            p = next((j for j in range(rk, len(rows)) if rows[j][c] != 0), None)
-            if p is None:
-                continue
-            rows[rk], rows[p] = rows[p], rows[rk]
-            rows[rk] = [x / rows[rk][c] for x in rows[rk]]
-            for j in range(len(rows)):
-                if j != rk and rows[j][c] != 0:
-                    f = rows[j][c]
-                    rows[j] = [x - f * y for x, y in zip(rows[j], rows[rk])]
-            pivots.append(c)
-            rk += 1
-        free = [c for c in range(m) if c not in pivots]
-        for fc in free:                                  # try each kernel basis vector
-            x = [Fraction(0)] * m
-            x[fc] = Fraction(1)
-            for j, c in enumerate(pivots):
-                x[c] = -rows[j][fc]
-            xm = x[len(L):]
-            for sgn in (1, -1):
-                if all(sgn * v >= 0 for v in xm) and sgn * sum(xm) > 0:
-                    return True
-        return False
     for cl in other:
         L = sorted(-l - 1 for l in cl if l < 0)
         M = sorted(l - 1 for l in cl if l > 0)
-        if M and exact(L, M):
+        if M and exact(T, A, L, M):
             kinds["Farkas"] += 1
         else:
             fails.append(("unexplained", cl))
@@ -274,4 +388,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1] == "cover":
+        cover(sys.argv[2])
+    elif sys.argv[1] == "delta":
+        delta(sys.argv[2], *(int(x) for x in sys.argv[3:7]), sys.argv[7], int(sys.argv[8]))
+    else:
+        main()

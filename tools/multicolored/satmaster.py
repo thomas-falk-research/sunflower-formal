@@ -130,7 +130,8 @@ class Clauses:
             self.all.append(cl)
 
 
-def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
+def build(D, n, K, s, r, keep=False):
+    """The run class's solver with every clause before any Farkas clause."""
     t_run = time.time()
     T = B.Sn(D, n)
     A = D ** n
@@ -141,7 +142,7 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
     H = [g for g in B.group_maps(D, n) if g(T[rep]) == T[rep]]
     v = lambda k: k + 1
     solver = Solver(name="cadical195")
-    C = Clauses(solver, cnf_prefix is not None)
+    C = Clauses(solver, keep)
     C.add("unit", [v(rep)])
     for k in range(N):
         if mono[k] > r:
@@ -190,56 +191,57 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
         top = max(top, enc.nv)
         for cl in enc.clauses:
             C.add("size", cl)
-    setup = round(time.time() - t_run, 1)      # this run class's setup alone
-    if cnf_prefix:                              # the clauses before any Farkas clause
-        with open(f"{cnf_prefix}_r{r}_base.cnf", "w") as f:
-            f.write(f"p cnf {top} {len(C.all)}\n")
-            for cl in C.all:
-                f.write(" ".join(map(str, cl)) + " 0\n")
-    certs, seen, nsolve = [], set(), 0
+    return {"D": D, "n": n, "K": K, "s": s, "r": r, "T": T, "A": A, "N": N, "mono": mono, "rep": rep,
+            "index": index, "H": H, "solver": solver, "C": C, "top": top, "nbase": len(C.all),
+            "certs": [], "seen": set(), "setup": round(time.time() - t_run, 1)}
+
+
+def write_cnf(path, top, clauses):
+    with open(path, "w") as f:
+        f.write(f"p cnf {top} {len(clauses)}\n")
+        for cl in clauses:
+            f.write(" ".join(map(str, cl)) + " 0\n")
+
+
+def solve_loop(st, assumptions, tl, t0, tag=None):
+    """The Benders loop under the given assumptions. Farkas clauses are valid
+    for every face, so they stay in st for later calls."""
+    T, A, N, H, index, C, solver = st["T"], st["A"], st["N"], st["H"], st["index"], st["C"], st["solver"]
+    r, certs, seen = st["r"], st["certs"], st["seen"]
+    v = lambda k: k + 1
+    nsolve, ncert0 = 0, len(certs)
     mean = lambda: (sum(len(a) + len(b) for a, b in certs) / len(certs)) if certs else None
+    common = lambda: {"run": r, "setup_s": st["setup"], "solves": nsolve, "clauses": dict(C.count),
+                      "farkas_certs": len(certs)}
     while True:
         left = tl - (time.time() - t0)
         if left <= 0:
-            return {"run": r, "status": "time", "setup_s": setup, "solves": nsolve, "clauses": C.count,
-                    "farkas_certs": len(certs), "mean_cert_size": mean()}
+            return {**common(), "status": "time", "mean_cert_size": mean()}
         ts = time.time()
-        res = solver.solve()                    # CaDiCaL in PySAT cannot be interrupted
+        res = solver.solve(assumptions=assumptions)   # CaDiCaL in PySAT cannot be interrupted
         nsolve += 1
-        print(json.dumps({"run": r, "solve": nsolve, "result": res, "farkas_certs": len(certs),
-                          "solve_s": round(time.time() - ts, 2), "elapsed_s": round(time.time() - t0, 1)}),
-              file=sys.stderr, flush=True)
+        line = {"run": r, "solve": nsolve, "result": res, "farkas_certs": len(certs),
+                "solve_s": round(time.time() - ts, 2), "elapsed_s": round(time.time() - t0, 1)}
+        if tag is not None:
+            line["cube"] = tag
+        print(json.dumps(line), file=sys.stderr, flush=True)
         if res is False:
-            out = {"run": r, "status": "infeasible", "setup_s": setup, "solves": nsolve, "clauses": C.count,
-                   "farkas_certs": len(certs),
-                   "mean_cert_size": mean()}
-            if cnf_prefix:
-                path = f"{cnf_prefix}_r{r}.cnf"
-                with open(path, "w") as f:
-                    f.write(f"p cnf {top} {len(C.all)}\n")
-                    for cl in C.all:
-                        f.write(" ".join(map(str, cl)) + " 0\n")
-                with open(f"{cnf_prefix}_r{r}.certs.json", "w") as f:
-                    json.dump({"D": D, "n": n, "K": K, "s": s, "run": r,
-                               "certs": [[sorted(a), sorted(b)] for a, b in certs]}, f)
-                out["cnf"] = path
-            return out
+            return {**common(), "status": "infeasible", "mean_cert_size": mean(),
+                    "new_certs": len(certs) - ncert0}
         model = solver.get_model()
         phi = {k for k in range(N) if model[k] > 0}
         ts = time.time()
         cert = B.farkas(T, A, phi)
         if cert is None:
             u = B.face_weights(T, A, phi)
-            return {"run": r, "status": "found" if u else "face, no integer certificate",
-                    "setup_s": setup, "solves": nsolve, "clauses": C.count, "farkas_certs": len(certs),
+            return {**common(), "status": "found" if u else "face, no integer certificate",
                     "phi_size": len(phi), "phi": sorted(phi),
-                    "cert": {"D": D, "n": n, "u": u} if u else None}
+                    "cert": {"D": st["D"], "n": st["n"], "u": u} if u else None}
         lam, mu = B.minimise(T, A, phi, *cert)
         if exact_farkas(T, A, lam, mu) is None:
             # the floating-point certificate does not survive the exact check:
             # add nothing for it, and stop rather than loop on the same model
-            return {"run": r, "status": "inexact certificate", "setup_s": setup, "solves": nsolve,
-                    "clauses": C.count, "farkas_certs": len(certs), "lam": sorted(lam), "mu": sorted(mu)}
+            return {**common(), "status": "inexact certificate", "lam": sorted(lam), "mu": sorted(mu)}
         certs.append((lam, mu))
         print(json.dumps({"run": r, "cut": len(certs), "lam": len(lam), "mu": len(mu),
                           "lp_s": round(time.time() - ts, 2)}), file=sys.stderr, flush=True)
@@ -250,6 +252,22 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
                 continue
             seen.add((gl, gm))
             C.add("farkas", [-v(k) for k in gl] + [v(k) for k in gm])
+
+
+def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
+    st = build(D, n, K, s, r, keep=cnf_prefix is not None)
+    if cnf_prefix:                              # the clauses before any Farkas clause
+        write_cnf(f"{cnf_prefix}_r{r}_base.cnf", st["top"], st["C"].all)
+    out = solve_loop(st, [], tl, t0)
+    out.pop("new_certs", None)
+    if out["status"] == "infeasible" and cnf_prefix:
+        path = f"{cnf_prefix}_r{r}.cnf"
+        write_cnf(path, st["top"], st["C"].all)
+        with open(f"{cnf_prefix}_r{r}.certs.json", "w") as f:
+            json.dump({"D": D, "n": n, "K": K, "s": s, "run": r,
+                       "certs": [[sorted(a), sorted(b)] for a, b in st["certs"]]}, f)
+        out["cnf"] = path
+    return out
 
 
 if __name__ == "__main__":
