@@ -13,7 +13,7 @@ The class has no face of the question when every step passes.
     python3 -I tools/multicolored/certcubes.py P r K s samples DRAT_TRIM [workdir]
 
 The concatenated CNF and the proof of each leaf go to workdir (default: the
-directory of P) and are deleted after a successful check.
+directory of P) and are deleted after the check, whatever its outcome.
 """
 import json, os, subprocess, sys
 
@@ -66,15 +66,16 @@ def main():
             f.write(base_body)
             f.write(dbody)
         code, _, _ = run(["cadical", "-q", full, proof])
+        o = run([drat, full, proof])[1] if code == 20 else ""
+        for x in (full, proof):                 # proofs can be large: never keep them
+            if os.path.exists(x):
+                os.remove(x)
         if code != 20:
             fails.append((nm, f"cadical exit {code}"))
             continue
-        _, o, e = run([drat, full, proof])
         if "s VERIFIED" not in o:                # drat-trim prefixes its result line with a carriage return
             fails.append((nm, "drat-trim", o[-200:]))
             continue
-        os.remove(full)
-        os.remove(proof)
         leaf_ok += 1
     out["leaves_certified"] = leaf_ok
     out["failures"] = fails[:10]
