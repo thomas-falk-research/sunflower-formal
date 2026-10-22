@@ -26,6 +26,8 @@ A model that is a face is reported with integer weights re-checked exactly.
 
     python3 -I tools/multicolored/satmaster.py D n K s [timelimit_s] [runs|-] [cnf_prefix]
 
+Requires python-sat==1.9.dev15 (PySAT; pip), as well as numpy and highspy.
+
 CaDiCaL cannot be interrupted through PySAT, so the time limit is checked
 between solves only; a single long solve can overrun it, and a hard limit
 must come from outside (e.g. timeout). One JSON progress line per solve goes

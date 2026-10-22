@@ -31,6 +31,8 @@ The run-class argument (the union of the run classes covers every Phi) is
 section 81.1's, not something a per-clause check can establish.
 
     python3 -I tools/multicolored/checkcnf.py CNF D n K s r [samples]
+
+Requires numpy and python-sat==1.9.dev15 (for the encodings only).
 """
 import itertools, json, random, sys
 from collections import Counter

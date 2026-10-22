@@ -17309,3 +17309,224 @@ fixed in the text:
 
 `relax82.py` now prints its incumbent and re-checks it exactly, and the
 `D = 4` figure above was re-run with that check (§82.3).
+
+## 83. A SAT master for the face search: a hundredfold faster on calibration, certified end to end there, and `D = 4, K = 2` still undecided
+
+**Tier 2.** This is §82.6's next step. The master is a SAT solver, and
+every infeasible verdict is checked independently. The question is
+§79's: does `S_4^{(2)}` have a free face with at most 2 uses per word per
+leg and at least 19 elements? Such a face would give a per-letter bound
+above 3.
+
+### 83.1 The tools
+
+* **`tools/multicolored/satmaster.py`.** The `benders.py` loop with an
+  incremental SAT master: CaDiCaL 1.9.5 through PySAT `1.9.dev15`, pinned
+  and installed with pip. There is one variable per triple. The clauses
+  are:
+  * fibre, as pairwise at-most-one;
+  * Lemma 81.A pairs;
+  * Lemma 83.A pairs (below);
+  * the conflict three-sets of Corollary 82.B;
+  * the forcing relations of Lemma 82.A, as Horn clauses;
+  * the cap and `|Φ| ≥ s`, as cardinality encodings (PySAT sequential
+    counter and cardinality network);
+  * the run class's units.
+
+  For each model that is not a face, the minimised Farkas certificate of
+  `benders.py` is re-checked in exact rational arithmetic. It is then
+  added as a clause, with its images under the stabiliser of the forced
+  triple. A model that is a face is reported with exact integer weights.
+  The tool can export each run class's CNF: the base clauses, and on an
+  infeasible verdict the full set.
+* **`tools/multicolored/checkcnf.py`.** An independent clause checker. It
+  shares no code with `benders.py` or `satmaster.py`, and rebuilds
+  `S_D^{(n)}` and the variable numbering from the definitions. Each
+  clause must be one of the following:
+  * a valid unit;
+  * a fibre, Lemma 81.A or Lemma 83.A pair;
+  * a three-set made a conflict by some leg-permutation relation;
+  * a Horn clause backed by such a relation;
+  * a Farkas clause with an exact rational certificate;
+  * or one of the cardinality-encoding clauses, regenerated with the same
+    parameters.
+
+  It then tests the encodings semantically with a different solver
+  (Glucose 4), on random and boundary assignments.
+* **Proof check.** `drat-trim` (Heule), built with `gcc -std=c99 -O2`
+  from commit `2e3b2dc` (2024-11-25), checks a DRAT proof produced by the
+  system's standalone CaDiCaL 1.7.3. That is a different build and
+  version from the solver that found the verdict.
+
+**Lemma 83.A (two-plus-one).** Let `a, b ∈ S_D^{(n)}` differ in every
+leg, and suppose `q_i = a[i ← b_i]` lies in `S_D^{(n)}` for `i = 1, 2, 3`.
+Then no free face contains both `a` and `b`.
+
+*Proof.* `w(q_i) = w(a) − u_i(a_i) + u_i(b_i)`, so
+`Σ_i w(q_i) = 2w(a) + w(b)`. If `a, b ∈ Φ`, every `w(q_i)` is 0, so
+`q_1 ∈ Φ`. But `q_1` agrees with `a` in legs 2 and 3 and differs in
+leg 1. ∎
+
+**PROVEN**; new to this repository (no rule-17 search was run).
+* **Coverage.** This is the closed form of §82.1's two-plus-one family.
+  For a pair differing in every leg, `2v_a + v_b` always equals the sum
+  of the three swaps, so the relation exists exactly when the swaps lie
+  in `S`.
+* **Counts (COMPUTED).** 0 at `D = 3` (`n = 1, 2`), 24 at `D = 4, n = 1`,
+  120 at `D = 5, n = 1` and 5,376 at `D = 4, n = 2`. None is already
+  incompatible. The `D = 4` counts equal those of the §82 review, which
+  were obtained differently, by reversing `relations3`.
+
+### 83.2 Calibration (COMPUTED)
+
+All of §81.2's rows give their known verdicts (`3 1 1 2`, `3 1 1 3`,
+`3 1 3 9`, `3 1 3 10`, `4 1 3 9`, `4 1 9 10`, `3 2 1 5`, `3 2 2 19`).
+
+The non-trivial row is `D = 3, n = 2, K = 1, s = 6`. It is infeasible in
+**3.8 s**, against 272–372 s for the MILP masters (§82.3), so 72–98 times
+faster:
+
+```text
+  run r   SAT solves   Farkas certificates   mean size   Farkas clauses (with images)
+  2         161             160                11.46          7,512
+  1         434             433                11.44          5,136
+  0          56              55                11.67            633
+```
+
+Every certificate passed the exact rational check. At `D = 3` the fibre,
+Lemma 81.A, Lemma 83.A and forcing clauses are all empty (§81.1, §82.2),
+so each CNF holds units, 1,404 conflict three-sets, the encodings and
+the Farkas clauses.
+
+**Certification of that verdict.** For each run class, the exported
+full CNF was checked in three ways:
+* the standalone CaDiCaL 1.7.3 reports it unsatisfiable;
+* `drat-trim` reports `s VERIFIED` on its DRAT proof;
+* `checkcnf.py` explains every clause (7,119, 11,586 and 13,953 clauses
+  in run classes 0, 1 and 2), with 200 semantic samples per encoding
+  and no failures.
+
+Negative tests:
+* `drat-trim` rejects a half-truncated proof (`s NOT VERIFIED`);
+* `drat-trim` rejects the full proof against the CNF minus its last
+  Farkas clause, and CaDiCaL finds that smaller CNF satisfiable;
+* `checkcnf.py` rejects each of four corruptions:
+  * a flipped literal in a Farkas clause;
+  * an invented pair clause;
+  * a negative unit on a triple of the run's own class;
+  * a changed encoding clause.
+
+**What the certified verdict rests on.** The chain is:
+* the run-class argument (§81.1, PROVEN);
+* clause validity (checked as above);
+* DRAT unsatisfiability (checked by `drat-trim`).
+
+One gap remains: ASSUMED(L3, the correctness of PySAT's cardinality
+encoders, owner PySAT). The check confirms the clauses equal PySAT's
+output and passes the semantic samples; it does not prove the encoders.
+The calibration instance was already settled exhaustively by §80, so
+this is a test of the chain, not a new result.
+
+### 83.3 The `D = 4` target
+
+`D = 4, n = 2, K = 2, s = 19`. In every run class the base CNF has
+53,423 variables and 5,366,848 clauses (units 1 / 17 / 209 for run
+classes 2 / 1 / 0):
+
+```text
+  fibre 2,880   rect 29,952   2+1 5,376   conf3 3,497,472   force3 1,747,584
+  cap 11,184    size 72,191
+```
+
+`checkcnf.py` explains every clause of run class 0's base CNF in 225 s:
+209 units, 38,208 pairs, 3,497,472 three-sets, 1,747,584 Horn clauses
+and 83,375 encoding clauses, with 9,800 semantic samples and no
+failures. The setup takes 115–122 s and about 2.2 GB per run class.
+
+**Runs (COMPUTED).** Three in parallel, 7,000 s budget each, with
+`timeout 7300` as the hard limit:
+
+```text
+  run r   result      SAT solves   Farkas certificates   Farkas clauses (with images)
+  2       undecided       78               78                  33,696
+  1       undecided      161              161                   5,796
+  0       undecided        0                0                       0   (first solve unfinished at 7,300 s)
+```
+
+**Profile of run class 2 (COMPUTED, a separate 1,200 s run).**
+* 19 iterations, of which the SAT solves took 982 s (largest 249.6 s,
+  first 149.5 s).
+* The Farkas steps took under 0.005 s each (the logged times round to
+  0.00).
+* Certificates average 17.7 literals (8–27).
+
+**Run class 0 alone.** The standalone CaDiCaL 1.7.3 ran on the base CNF
+in three configurations (`--default`, `--unsat`, `--sat`) in parallel,
+with a 14,400 s limit. All three were still running, with no verdict,
+when a container restart ended them; their last log lines are at
+13,483 s, 13,537 s and 13,545 s.
+
+**What this shows.**
+* **The LP step is negligible.** At `D = 3` the SAT master is 72–98
+  times faster than the MILP masters.
+* **At `D = 4` the combinatorial core is itself hard for CDCL.** In run
+  class 0, more than 13,500 s of solving neither found a set satisfying
+  the base clauses nor refuted them. That set need not be a face; it
+  only has to meet freeness, the cap, `|Φ| ≥ 19` and the pair,
+  three-set and forcing clauses. Whether such a set exists is open.
+* **Classes 1 and 2 are slow but moving.** They get past the first
+  solve in about 150 s, and then each Farkas clause costs a 50–250 s
+  re-solve. That is why the iterations are slow and the certificates
+  long. This reading is CONJECTURED.
+
+### 83.4 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19 | undecided (§79 MILP; §81 Benders 3 × 7,000 s; §82 with three-set rows, 2 modes × 3 × 7,000 s; §83 SAT master, 3 × 7,000 s, plus run class 0's base CNF, 3 configurations × about 13,500 s) |
+| `K = 2`, base clauses only (no Farkas), run class 0 | undecided after about 13,500 s in each of 3 configurations |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 83.5 Next step
+
+**Cube-and-conquer on the same CNF.** None of this has been tried.
+* **Split** each run class on a second forced triple, one per orbit of
+  the forced triple's stabiliser (orders 432, 36 and 12) among the
+  triples compatible with it.
+* **Solve** the cubes independently on the four cores. A cube that
+  ends unsatisfiable is checked exactly as in §83.2: an exported CNF
+  with the cube's units, `drat-trim`, `checkcnf.py`, and a check that
+  the cubes cover the class.
+* **Calibrate first** on `D = 3, n = 2, K = 1, s = 6`, then attack run
+  class 0 at `D = 4`, where the base CNF alone is the obstacle.
+* **Further structure in the CNF** (relations longer than three against
+  three, or lex-leader symmetry breaking for the residual stabiliser)
+  should come only after the split has shown which cubes stay hard.
+
+### 83.6 Gates at the tip
+
+Run on this tree after the last edit, after a container restart; no Coq
+or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  satmaster     pass   all nine rows of 83.2 reproduced (same solve and certificate counts)
+  proof chain   pass   3 2 1 6, every run class: CaDiCaL 1.7.3 UNSAT, drat-trim
+                       s VERIFIED, checkcnf.py ok (7,119 / 11,586 / 13,953 clauses)
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+`drat-trim` starts its result line with a carriage return left by its
+progress output, so match `s VERIFIED` without anchoring the pattern to
+the start of the line. A first gate script anchored it and printed
+nothing; the verdicts above come from re-running with an unanchored
+match.
+
+A fresh-context review of this section had been started but had not
+returned when this was committed.
