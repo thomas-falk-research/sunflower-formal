@@ -10,7 +10,10 @@ docs/roadmap.md section 84. For prefix P and run class r:
      drat-trim verifies.
 The class has no face of the question when every step passes.
 
-    python3 -I tools/multicolored/certcubes.py P r K s samples DRAT_TRIM [workdir]
+    python3 -I tools/multicolored/certcubes.py P r K s samples DRAT_TRIM [workdir|-] [leaves.json]
+
+leaves.json defaults to P_r<r>_leaves.json; another leaf list (for instance a
+copy taken before the tree was refined) can be given instead.
 
 The concatenated CNF and the proof of each leaf go to workdir (default: the
 directory of P) and are deleted after the check, whatever its outcome.
@@ -27,8 +30,8 @@ def run(cmd):
 
 def main():
     P, r, K, s, samples, drat = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), sys.argv[5], sys.argv[6]
-    work = sys.argv[7] if len(sys.argv) > 7 else os.path.dirname(os.path.abspath(P))
-    leaves_path = f"{P}_r{r}_leaves.json"
+    work = sys.argv[7] if len(sys.argv) > 7 and sys.argv[7] != "-" else os.path.dirname(os.path.abspath(P))
+    leaves_path = sys.argv[8] if len(sys.argv) > 8 else f"{P}_r{r}_leaves.json"
     spec = json.load(open(leaves_path))
     D, n = spec["D"], spec["n"]
     check = [sys.executable, "-I", os.path.join(HERE, "checkcnf.py")]
@@ -43,7 +46,9 @@ def main():
         base_body = f.read()
     nv, nb = int(head[2]), int(head[3])
     leaf_ok, fails = 0, []
-    for k, leaf in enumerate(spec["leaves"]):
+    order = sorted(range(len(spec["leaves"])), key=lambda k: -len(spec["leaves"][k]["forbidden"]))
+    for k in order:                             # easiest first, so partial runs certify the most
+        leaf = spec["leaves"][k]
         nm = "-".join(map(str, leaf["path"])) or "root"
         dpath = f"{P}_r{r}_cube_{nm}.delta.cnf"
         if not os.path.exists(dpath):
@@ -77,6 +82,7 @@ def main():
             fails.append((nm, "drat-trim", o[-200:]))
             continue
         leaf_ok += 1
+        print(json.dumps({"leaf": nm, "certified": True}), file=sys.stderr, flush=True)
     out["leaves_certified"] = leaf_ok
     out["failures"] = fails[:10]
     out["ok"] = out["base"] is True and out["cover"] is True and leaf_ok == len(spec["leaves"])

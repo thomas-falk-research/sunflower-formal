@@ -97,8 +97,9 @@ def main():
     st = S.build(D, n, K, s, r, keep=prefix is not None)
     base = st["C"].all[:st["nbase"]] if prefix else []
     sha = hashlib.sha256("\n".join(" ".join(map(str, c)) for c in base).encode()).hexdigest() if prefix else None
-    if prefix and w == 0:
-        S.write_cnf(f"{prefix}_r{r}_base.cnf", st["top"], base)
+    if prefix and w == 0:                       # written atomically: a checker may be reading it
+        S.write_cnf(f"{prefix}_r{r}_base.cnf.tmp", st["top"], base)
+        os.replace(f"{prefix}_r{r}_base.cnf.tmp", f"{prefix}_r{r}_base.cnf")
     L = leaves(st, expand)
     spec = {"D": D, "n": n, "K": K, "s": s, "run": r,
             "expand": (sorted(list(p) for p in expand) if isinstance(expand, set) else None),
