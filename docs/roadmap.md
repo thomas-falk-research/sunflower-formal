@@ -17615,3 +17615,223 @@ findings are fixed:
 * strict CNF parsing in `checkcnf.py`;
 * `setup_s`, which counted from program start and is now per run class.
 
+
+## 84. Cube-and-conquer: certified at `D = 3`; at `D = 4`, run class 0 is 84% closed and every closed cube falls to the combinatorial clauses alone
+
+**Tier 2.** This is §83.5's next step. The question is still §79's: does
+`S_4^{(2)}` have a free face with at most 2 uses per word per leg and at
+least 19 elements? Such a face would give a per-letter bound above 3.
+
+### 84.1 The cubes, and why they cover
+
+`tools/multicolored/cubes.py` builds a tree of cubes for one run class.
+* **Cubes.** A cube is a node `(F, X, G)`: fixed triples `F`, forbidden
+  triples `X`, and a group `G`. The root is the run class's
+  representative, with nothing forbidden and `G` its stabiliser.
+* **Expanding a node.**
+  * The *candidates* are the triples allowed in the run class (no more
+    monochromatic coordinates than `r`), outside `F ∪ X`, and compatible
+    with every element of `F`: no fibre pair, no Lemma 81.A pair, no
+    Lemma 83.A pair.
+  * They split into `G`-orbits `O_1, O_2, …`, ordered by their least
+    index, with representatives `o_j = min O_j`.
+  * Child `j` is `(F + [o_j], X ∪ O_1 ∪ … ∪ O_{j−1}, Stab_G(o_j))`.
+* **Trees.** A tree is given by a uniform depth, or by the list of nodes
+  to expand, and its leaves are named by their paths.
+
+**Lemma 84.A (cover).** Fix a run class `r` and any finite tree built
+this way. If the run class contains a face `Φ` of the question, then for
+some leaf `(F, X, G)` there is a group element `g` such that `g(Φ)` is a
+face of the question containing `F` and avoiding `X`.
+
+*Proof.* We show that each expanded node passes the property to one of
+its children; induction from the root gives the lemma. The root holds by
+the run-class argument (§81.1). Suppose `ψ` is a face of the question
+containing `F` and avoiding `X`, at an expanded node `(F, X, G)`.
+* **`ψ` has a candidate.** `|ψ| ≥ s > |F|`, so `ψ` has an element
+  outside `F`. It is allowed, and it is not in `X`. It is compatible with
+  `F`, because no free face contains an incompatible pair. So it is a
+  candidate.
+* **Choosing the child.** Let `j` be the least index of an orbit meeting
+  `ψ`, and pick `h ∈ G` that maps an element of `ψ ∩ O_j` to `o_j`.
+* **`h(ψ)` fits child `j`.** Every element of `G` fixes `F` pointwise.
+  It maps allowed triples to allowed triples, since it preserves the
+  number of monochromatic coordinates. It preserves `X`, because `X` is
+  a union of orbits of the parent's group, which contains `G`. It
+  preserves compatibility and each orbit `O_i`. It maps faces of the
+  question to faces of the question, because freeness, the cap and the
+  face condition are all invariant. So `h(ψ)` is a face of the question.
+  It contains `F + [o_j]`, avoids `X`, and avoids `O_1 ∪ … ∪ O_{j−1}`,
+  because `ψ` met none of those orbits. That is child `j`'s constraint,
+  and the child's group is `Stab_G(o_j)`.
+
+Hence, if every leaf is infeasible, the run class has no face of the
+question. ∎ **PROVEN**. The orbit split with lower orbits forbidden is
+the standard isomorph-free branching of orderly generation; its use here
+is new to this repository (no rule-17 search was run).
+
+### 84.2 Tools and certification
+
+* **`cubes.py`.** It solves every leaf with `satmaster.solve_loop` under
+  the assumptions "`F` true, `X` false". One incremental solver serves
+  each worker, so Farkas clauses (valid for every face) carry over
+  between cubes. Leaves are taken easiest first, meaning most forbidden
+  triples. Each infeasible leaf gets a delta file: the Farkas clauses
+  learned so far, plus the leaf's units. A leaf with a delta file is
+  skipped on a rerun, which is how a tree is refined.
+* **`satmaster.py`.** It is split into `build` and `solve_loop`. Its
+  behaviour is unchanged: the §83.2 calibration counts are identical,
+  and the `3 2 1 6` CNFs are byte-identical.
+* **`checkcnf.py cover`.** It recomputes the tree from the definitions,
+  with its own implementation of the 6,912-element group (it shares no
+  code with `cubes.py` or `benders.py`), and compares every leaf's path,
+  fixed and forbidden sets and group order. It also checks that every
+  listed expanded node exists.
+* **`checkcnf.py delta`.** It checks a delta file: every clause is an
+  exact Farkas clause or one of the leaf's units, and every unit is
+  present.
+* **`certcubes.py`.** It runs the whole chain for one run class:
+  * `checkcnf.py` on the base CNF;
+  * the cover check;
+  * the delta check of every leaf;
+  * for every leaf, a standalone CaDiCaL 1.7.3 proof of base plus delta,
+    verified by `drat-trim`.
+
+  The run class is certified when all of these pass. The result is
+  CONDITIONAL on the §83.2 assumption about PySAT's size encoding.
+
+### 84.3 Calibration at `D = 3, n = 2, K = 1, s = 6` (COMPUTED)
+
+Every leaf is infeasible in every tree, and `certcubes.py` certifies
+every leaf: base, cover, delta, and CaDiCaL plus `drat-trim`.
+
+```text
+  tree                                   leaves (r = 2 / 1 / 0)   total
+  depth 1                                     6 / 11 / 7            24
+  depth 2                                   100 / 246 / 70         416
+  mixed: expand [], [0], [2], [2,1], [5]    109 / 143 / 50         302
+```
+
+**Negative tests** (on the mixed tree, run class 1, final tool). The
+genuine leaf list and delta pass, and these corruptions are rejected:
+* `checkcnf.py cover`, four corrupted leaf lists:
+  * a leaf dropped;
+  * a triple added to a leaf's forbidden set;
+  * a leaf's last fixed triple changed;
+  * a non-existent node added to the expanded list.
+* `checkcnf.py delta`:
+  * a negative unit added from outside the leaf;
+  * a delta checked against the wrong leaf.
+  * An earlier version of the tool also rejected an added positive unit
+    from outside the leaf.
+* A first "extra unit" test used `-7`, which turned out to be one of the
+  leaf's own units. It was rightly accepted, and was replaced by units
+  from outside the leaf.
+
+### 84.4 `D = 4, n = 2, K = 2, s = 19`, run class 0 (COMPUTED)
+
+All runs used CaDiCaL 1.9.5 through PySAT, in one or more 2–3 hour
+rounds of 2–4 workers. In each round, worker 0 wrote the same base CNF
+(SHA-256 `f616cf20…`, 5,366,848 clauses).
+
+| stage | cubes | closed | solve time of the closed (s) | note |
+|---|---|---|---|---|
+| depth 1 | 50 | 36 | 10,823 in total, at most 3,806 | 14 left open (cubes 0–13: 0–139 forbidden) |
+| depth 2, children of those 14 | 4,392 | 3,693 | 46,369 in total, at most 604.5; median 0.2 in the first round | 699 never started (budget) |
+| depth 3, probe of open cube `5-48` | 298 | 298 | 277 in total, at most 17, median 0.1 | `5-48` had 94 forbidden, the median among the open cubes |
+
+* **No Farkas clause was ever needed.** Every closed cube was refuted by
+  its first SAT solve, with 0 Farkas certificates, at every level. So
+  within run class 0, every refuted region dies on the combinatorial
+  clauses alone: freeness, the cap, `|Φ| ≥ 19`, the pair and three-set
+  conflicts, and forcing.
+* **Coverage so far.**
+  * Of the 4,428 leaves of the depth-2 tree, 3,729 are closed (84%).
+  * One more open leaf, `5-48`, is closed through its 298 depth-3
+    children.
+  * 698 depth-2 leaves remain open.
+  * **Nothing is concluded about run class 0 as a whole.**
+* **Cover checks.** `checkcnf.py cover` passes for the depth-1 tree
+  (50 leaves), the depth-2 tree (4,428) and the probe tree (4,725).
+* **Certified so far.**
+  * All 36 closed depth-1 cubes, with the base and cover checks, in
+    8,699 s.
+  * A sample of 100 closed depth-2 cubes, in 6,012 s: the 20 slowest of
+    the first round, plus 80 chosen at random with seed 84.
+  * Every one passed: delta check, CaDiCaL 1.7.3 unsatisfiable, and
+    `drat-trim` `s VERIFIED`.
+  * The other 3,593 closed depth-2 cubes and the 298 probe cubes are not
+    yet certified.
+* **Run classes 1 and 2 have not been started.** In §83 their masters
+  needed Farkas clauses (78 and 161 iterations without closing), so
+  their cubes will need the full loop.
+
+### 84.5 What finishing would cost (CONJECTURED)
+
+* **The search.** Depth-2 cubes with fewer forbidden triples are harder.
+  Every closed one has at least 123 forbidden
+  triples, and the slowest (336–605 s) have 124–139. The probe suggests that splitting an open cube to
+  depth 3 costs about the solve time of a moderately hard depth-2 cube:
+  277 s for 298 children.
+  * Extrapolating: the 698 open cubes at depth 3 cost roughly
+    `698 × (300–3,000 s)`, about 60–600 CPU-hours.
+  * That range is wide. It rests on one probe, and the open cubes
+    without any forbidden triples (`0-0`, `1-0`, …) may need depth 4.
+* **Certification per leaf.** Each leaf costs at least about 9 s: one
+  pass of `drat-trim` over the 95 MB CNF (measured on the easy depth-1 cube `49`:
+  CaDiCaL 1 s, proof 33 MB, check 9 s). For hundreds of thousands of depth-3 leaves
+  that is too slow.
+* **Certifying coarser nodes instead.** Lemma 84.A holds for every tree,
+  so a closed subtree can be certified as its root node alone. Run the
+  standalone CaDiCaL on base plus the node's units, with the node a leaf
+  of a coarser tree. That costs about one direct solve of the node,
+  instead of one `drat-trim` pass per leaf. In run class 0 the deltas
+  are pure units, because no Farkas clause arises, so a node's delta can
+  be written directly. `certcubes.py` cannot do this yet.
+
+### 84.6 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19, run class 0 | 84% of the depth-2 tree closed, by base clauses alone; 698 cubes open (§84.4) |
+| `K = 2`, size ≥ 19, run classes 1 and 2 | undecided (§83); cubes not started |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 84.7 Next step
+
+1. **Finish run class 0** in rounds. Expand the remaining open depth-2
+   cubes to depth 3, and the hardest of those to depth 4. Use 4 workers,
+   each resuming from the existing delta files. Budget: CONJECTURED at
+   60–600 CPU-hours (§84.5).
+2. **Teach `certcubes.py` to certify an internal node**, with a units-only
+   delta and the coarser tree's cover check. Then certify run class 0 at
+   depth 2, or at depth 1 where a depth-1 cube is entirely closed, rather
+   than leaf by leaf.
+3. **Run classes 1 and 2**, at depth 1 then 2. These need Farkas clauses,
+   so calibrate their loop on one cube first.
+
+Before spending the compute in item 1, someone should decide whether the
+answer is worth roughly a CPU-week. A theory bound on `|Φ|/K`
+(§79.4 item 2) would make all of this unnecessary.
+
+### 84.8 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  satmaster     pass   refactor: §83.2 counts and the 3 2 1 6 CNFs byte-identical
+  cubes (D = 3) pass   depth 1, depth 2 and mixed trees, every leaf certified (84.3)
+  checkcnf      pass   the §83 regression and its four negative tests; cover and delta
+                       negative tests (84.3)
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+A fresh-context review of this section had been started but had not
+returned when this was committed.
