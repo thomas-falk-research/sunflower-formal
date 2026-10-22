@@ -31,8 +31,9 @@ between solves only; a single long solve can overrun it, and a hard limit
 must come from outside (e.g. timeout). One JSON progress line per solve goes
 to stderr.
 
-With cnf_prefix, each run class that ends unsatisfiable writes its full
-clause set to cnf_prefix_r<r>.cnf (DIMACS) and its Farkas certificates to
+With cnf_prefix, each run class writes its clauses before any Farkas clause
+to cnf_prefix_r<r>_base.cnf, and, if it ends unsatisfiable, its full clause
+set to cnf_prefix_r<r>.cnf (DIMACS) and its Farkas certificates to
 cnf_prefix_r<r>.certs.json, for an independent proof run and re-check.
 """
 import itertools, json, os, sys, time
@@ -187,20 +188,28 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
         for cl in enc.clauses:
             C.add("size", cl)
     setup = round(time.time() - t0, 1)
+    if cnf_prefix:                              # the clauses before any Farkas clause
+        with open(f"{cnf_prefix}_r{r}_base.cnf", "w") as f:
+            f.write(f"p cnf {top} {len(C.all)}\n")
+            for cl in C.all:
+                f.write(" ".join(map(str, cl)) + " 0\n")
     certs, seen, nsolve = [], set(), 0
+    mean = lambda: (sum(len(a) + len(b) for a, b in certs) / len(certs)) if certs else None
     while True:
         left = tl - (time.time() - t0)
         if left <= 0:
             return {"run": r, "status": "time", "setup_s": setup, "solves": nsolve, "clauses": C.count,
-                    "farkas_certs": len(certs)}
+                    "farkas_certs": len(certs), "mean_cert_size": mean()}
+        ts = time.time()
         res = solver.solve()                    # CaDiCaL in PySAT cannot be interrupted
         nsolve += 1
         print(json.dumps({"run": r, "solve": nsolve, "result": res, "farkas_certs": len(certs),
-                          "elapsed_s": round(time.time() - t0, 1)}), file=sys.stderr, flush=True)
+                          "solve_s": round(time.time() - ts, 2), "elapsed_s": round(time.time() - t0, 1)}),
+              file=sys.stderr, flush=True)
         if res is False:
             out = {"run": r, "status": "infeasible", "setup_s": setup, "solves": nsolve, "clauses": C.count,
                    "farkas_certs": len(certs),
-                   "mean_cert_size": (sum(len(a) + len(b) for a, b in certs) / len(certs)) if certs else None}
+                   "mean_cert_size": mean()}
             if cnf_prefix:
                 path = f"{cnf_prefix}_r{r}.cnf"
                 with open(path, "w") as f:
@@ -214,6 +223,7 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
             return out
         model = solver.get_model()
         phi = {k for k in range(N) if model[k] > 0}
+        ts = time.time()
         cert = B.farkas(T, A, phi)
         if cert is None:
             u = B.face_weights(T, A, phi)
@@ -228,6 +238,8 @@ def run_one(D, n, K, s, r, tl, t0, cnf_prefix=None):
             return {"run": r, "status": "inexact certificate", "setup_s": setup, "solves": nsolve,
                     "clauses": C.count, "farkas_certs": len(certs), "lam": sorted(lam), "mu": sorted(mu)}
         certs.append((lam, mu))
+        print(json.dumps({"run": r, "cut": len(certs), "lam": len(lam), "mu": len(mu),
+                          "lp_s": round(time.time() - ts, 2)}), file=sys.stderr, flush=True)
         for g in H:
             gl = frozenset(index[g(T[k])] for k in lam)
             gm = frozenset(index[g(T[k])] for k in mu)
