@@ -4,7 +4,7 @@
 docs/roadmap.md section 84. For prefix P and run class r:
   1. checkcnf.py on P_r<r>_base.cnf (every base clause valid);
   2. checkcnf.py cover on P_r<r>_leaves.json (the leaves cover the class);
-  3. for each leaf k: P_r<r>_cube<k>.delta.cnf must exist, pass checkcnf.py
+  3. for each leaf: P_r<r>_cube_<path>.delta.cnf must exist, pass checkcnf.py
      delta, and base + delta (concatenated here) must be proved
      unsatisfiable by the standalone cadical binary with a DRAT proof that
      drat-trim verifies.
@@ -43,22 +43,23 @@ def main():
         base_body = f.read()
     nv, nb = int(head[2]), int(head[3])
     leaf_ok, fails = 0, []
-    for k in range(len(spec["leaves"])):
-        dpath = f"{P}_r{r}_cube{k}.delta.cnf"
+    for k, leaf in enumerate(spec["leaves"]):
+        nm = "-".join(map(str, leaf["path"])) or "root"
+        dpath = f"{P}_r{r}_cube_{nm}.delta.cnf"
         if not os.path.exists(dpath):
-            fails.append((k, "no delta file"))
+            fails.append((nm, "no delta file"))
             continue
         _, o, e = run(check + ["delta", dpath, str(D), str(n), str(K), str(r), leaves_path, str(k)])
         if not (o and json.loads(o)["ok"]):
-            fails.append((k, "delta check", (o or e)[-300:]))
+            fails.append((nm, "delta check", (o or e)[-300:]))
             continue
         with open(dpath) as f:
             dh = f.readline().split()
             dbody = f.read()
         if int(dh[2]) != nv:
-            fails.append((k, "variable count differs from the base"))
+            fails.append((nm, "variable count differs from the base"))
             continue
-        full = os.path.join(work, f"_full_r{r}_cube{k}.cnf")
+        full = os.path.join(work, f"_full_r{r}_cube_{nm}.cnf")
         proof = full + ".drat"
         with open(full, "w") as f:
             f.write(f"p cnf {nv} {nb + int(dh[3])}\n")
@@ -66,11 +67,11 @@ def main():
             f.write(dbody)
         code, _, _ = run(["cadical", "-q", full, proof])
         if code != 20:
-            fails.append((k, f"cadical exit {code}"))
+            fails.append((nm, f"cadical exit {code}"))
             continue
         _, o, e = run([drat, full, proof])
         if "s VERIFIED" not in o:                # drat-trim prefixes its result line with a carriage return
-            fails.append((k, "drat-trim", o[-200:]))
+            fails.append((nm, "drat-trim", o[-200:]))
             continue
         os.remove(full)
         os.remove(proof)

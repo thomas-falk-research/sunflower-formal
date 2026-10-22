@@ -171,7 +171,12 @@ def group(D, n, T):
 def cover(path):
     """Recompute the cube tree of cubes.py from the definitions and compare."""
     spec = json.load(open(path))
-    D, n, r, depth = spec["D"], spec["n"], spec["run"], spec["depth"]
+    D, n, r = spec["D"], spec["n"], spec["run"]
+    if spec.get("expand") is not None:
+        expand = {tuple(p) for p in spec["expand"]}
+        grow = lambda p: p in expand
+    else:
+        grow = lambda p: len(p) < spec["depth"]
     T, mono = support(D, n)
     N = len(T)
     _, _, bad = pairs(T, D, n)
@@ -179,29 +184,34 @@ def cover(path):
     assert len({tuple(g) for g in G.tolist()}) == len(G), "group elements not distinct"
     rep = min(k for k in range(N) if mono[k] == r)
     allowed = [m <= r for m in mono]
-    level = [((rep,), set(), G[G[:, rep] == rep])]
-    for _ in range(depth):
-        nxt = []
-        for fixed, forb, H in level:
-            cand = [k for k in range(N) if allowed[k] and k not in fixed and k not in forb
-                    and not any(bad[f, k] for f in fixed)]
-            orbits, seen = [], set()
-            for k in cand:
-                if k not in seen:
-                    orb = set(H[:, k].tolist())
-                    assert orb <= set(cand), "candidates not invariant"
-                    seen |= orb
-                    orbits.append(orb)
-            acc = set(forb)
-            for orb in orbits:
-                o = min(orb)
-                nxt.append((fixed + (o,), set(acc), H[H[:, o] == o]))
-                acc |= orb
-        level = nxt
-    mine = [{"fixed": list(f), "forbidden": sorted(x), "group_order": len(H)} for f, x, H in level]
-    print(json.dumps({"leaves": path, "D": D, "n": n, "run": r, "depth": depth, "group_order": len(G),
-                      "root_stabiliser": int((G[:, rep] == rep).sum()), "leaf_count": len(mine),
-                      "ok": mine == spec["leaves"]}))
+    mine, stack, expanded = [], [((), (rep,), set(), G[G[:, rep] == rep])], 0
+    while stack:
+        p, fixed, forb, H = stack.pop(0)
+        if not grow(p):
+            mine.append({"path": list(p), "fixed": list(fixed), "forbidden": sorted(forb), "group_order": len(H)})
+            continue
+        expanded += 1
+        cand = [k for k in range(N) if allowed[k] and k not in fixed and k not in forb
+                and not any(bad[f, k] for f in fixed)]
+        orbits, seen = [], set()
+        for k in cand:
+            if k not in seen:
+                orb = set(H[:, k].tolist())
+                assert orb <= set(cand), "candidates not invariant"
+                seen |= orb
+                orbits.append(orb)
+        acc, kids = set(forb), []
+        for j, orb in enumerate(orbits):
+            o = min(orb)
+            kids.append((p + (j,), fixed + (o,), set(acc), H[H[:, o] == o]))
+            acc |= orb
+        stack = kids + stack
+    ok = mine == spec["leaves"]
+    if spec.get("expand") is not None:          # every expanded node must exist in the tree
+        ok = ok and expanded == len(spec["expand"])
+    print(json.dumps({"leaves": path, "D": D, "n": n, "run": r, "group_order": len(G),
+                      "root_stabiliser": int((G[:, rep] == rep).sum()), "expanded_nodes": expanded,
+                      "leaf_count": len(mine), "ok": ok}))
 
 
 def delta(path, D, n, K, r, leaves_path, k):
