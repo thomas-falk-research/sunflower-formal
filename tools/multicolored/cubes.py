@@ -17,14 +17,16 @@ Every leaf is solved by satmaster.solve_loop under the assumptions "F true,
 X false". All leaves of one worker share one incremental solver, so Farkas
 clauses learned in one cube (valid for every face) help the next.
 
-    python3 -I tools/multicolored/cubes.py D n K s r TREE worker workers cube_tl total_tl [prefix|-] [under]
+    python3 -I tools/multicolored/cubes.py D n K s r TREE worker workers cube_tl total_tl [prefix|-] [under|-] [only.json]
 
 TREE is a depth d (every node above depth d is expanded) or a JSON file
 {"expand": [path, ...]} naming the expanded nodes, a path being the list of
 child indices from the root ([] is the root). Leaves are ordered easiest
 first (most forbidden triples), and worker w solves those at positions
 = w (mod workers) in that order. With under (a path such as 5-48), only
-the leaves below that node are solved. With prefix, worker
+the leaves below that node are solved. With only.json (a list of node
+paths), only the leaves below those nodes are even built, which keeps very
+large trees manageable; the leaf list is then not written. With prefix, worker
 0 writes the base CNF to prefix_r<r>_base.cnf; every worker records the
 SHA-256 of its own base clauses (so all workers can be checked to share it)
 and, for every leaf it proves infeasible, appends a line to
@@ -47,10 +49,12 @@ import benders as B
 import satmaster as S
 
 
-def leaves(st, expand):
+def leaves(st, expand, only=None):
     """The leaves of the cube tree. expand is either an int d (expand every
     node at depth below d) or a set of node paths (tuples of child indices)
-    to expand; the root is the path ()."""
+    to expand; the root is the path (). With only (a list of paths), just the
+    leaves at or below those nodes are returned: other subtrees are not
+    descended into (their forbidden sets do not depend on it)."""
     T, N, mono, r, rep, index = st["T"], st["N"], st["mono"], st["r"], st["rep"], st["index"]
     perms = np.array([[index[g(T[k])] for k in range(N)] for g in st["H"]], dtype=np.int64)
     bad = B.incompatible(T)
@@ -58,6 +62,8 @@ def leaves(st, expand):
         bad[a, b] = bad[b, a] = True
     allowed = np.array([m <= r for m in mono])
     grow = (lambda p: len(p) < expand) if isinstance(expand, int) else (lambda p: p in expand)
+    keep = (lambda p: True) if only is None else (
+        lambda p: any(p[:len(u)] == u or u[:len(p)] == p for u in only))
     out, stack = [], [((), (rep,), frozenset(), perms)]
     while stack:
         path, fixed, forb, G = stack.pop(0)
@@ -83,7 +89,7 @@ def leaves(st, expand):
             o = orb[0]
             kids.append((path + (j,), fixed + (o,), frozenset(acc), G[G[:, o] == o]))
             acc |= set(orb)
-        stack = kids + stack                    # depth first, children in order
+        stack = [c for c in kids if keep(c[0])] + stack   # depth first, children in order
     return out
 
 
@@ -134,7 +140,9 @@ def main():
     expand = int(tree) if tree.isdigit() else {tuple(p) for p in json.load(open(tree))["expand"]}
     cube_tl, total_tl = float(sys.argv[9]), float(sys.argv[10])
     prefix = sys.argv[11] if len(sys.argv) > 11 and sys.argv[11] != "-" else None
-    under = [int(x) for x in sys.argv[12].split("-")] if len(sys.argv) > 12 else None
+    under = [int(x) for x in sys.argv[12].split("-")] if len(sys.argv) > 12 and sys.argv[12] != "-" else None
+    # only_file: a JSON list of node paths; only the leaves below them are built and solved
+    only = [tuple(p) for p in json.load(open(sys.argv[13]))] if len(sys.argv) > 13 else None
     t0 = time.time()
     st = S.build(D, n, K, s, r, keep=prefix is not None)
     base = st["C"].all[:st["nbase"]] if prefix else []
@@ -142,13 +150,13 @@ def main():
     if prefix and w == 0:                       # written atomically: a checker may be reading it
         S.write_cnf(f"{prefix}_r{r}_base.cnf.tmp", st["top"], base)
         os.replace(f"{prefix}_r{r}_base.cnf.tmp", f"{prefix}_r{r}_base.cnf")
-    L = leaves(st, expand)
+    L = leaves(st, expand, only)
     spec = {"D": D, "n": n, "K": K, "s": s, "run": r,
             "expand": (sorted(list(p) for p in expand) if isinstance(expand, set) else None),
             "depth": expand if isinstance(expand, int) else None, "leaves": L}
     assert all(len(l["fixed"]) <= s for l in L), "an expanded node fixes s or more triples (Lemma 84.A)"
     done = closed_cubes(prefix, r) if prefix else set()
-    if prefix and w == 0:
+    if prefix and w == 0 and only is None:      # a partial leaf list is not written
         with open(f"{prefix}_r{r}_leaves.json.tmp", "w") as f:
             json.dump(spec, f)
         os.replace(f"{prefix}_r{r}_leaves.json.tmp", f"{prefix}_r{r}_leaves.json")
