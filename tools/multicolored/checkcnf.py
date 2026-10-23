@@ -169,6 +169,26 @@ def group(D, n, T):
     return np.array(out, dtype=np.int64)
 
 
+def mask(xs):
+    m = 0
+    for x in xs:
+        m |= 1 << x
+    return m
+
+
+def forbidden_of(leaf):
+    """A leaf's forbidden set: a list, or a hexadecimal bitmask (bit k = triple k)."""
+    f = leaf["forbidden"]
+    if isinstance(f, list):
+        return set(f)
+    m = int(f, 16)
+    return {k for k in range(m.bit_length()) if m >> k & 1}
+
+
+def canon(leaf):
+    return (list(leaf["path"]), list(leaf["fixed"]), mask(forbidden_of(leaf)), leaf["group_order"])
+
+
 def cover(path):
     """Recompute the cube tree of cubes.py from the definitions and compare."""
     spec = json.load(open(path))
@@ -208,7 +228,8 @@ def cover(path):
             kids.append((p + (j,), fixed + (o,), set(acc), H[H[:, o] == o]))
             acc |= orb
         stack = kids + stack
-    ok = mine == spec["leaves"] and small
+    ok = len(mine) == len(spec["leaves"]) and small and all(
+        canon(x) == canon(y) for x, y in zip(mine, spec["leaves"]))
     if spec.get("expand") is not None:          # every expanded node must exist in the tree
         ok = ok and expanded == len(spec["expand"])
     print(json.dumps({"leaves": path, "D": D, "n": n, "run": r, "group_order": len(G),
@@ -223,7 +244,7 @@ def delta(path, D, n, K, r, leaves_path, k):
     T, mono = support(D, n)
     N, A = len(T), D ** n
     leaf = json.load(open(leaves_path))["leaves"][k]
-    want = {f + 1 for f in leaf["fixed"]} | {-(x + 1) for x in leaf["forbidden"]}
+    want = {f + 1 for f in leaf["fixed"]} | {-(x + 1) for x in forbidden_of(leaf)}
     _, clauses = read_cnf(path)
     kinds, fails, got = Counter(), [], set()
     for cl in clauses:

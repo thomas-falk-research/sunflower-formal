@@ -4,10 +4,13 @@
 docs/roadmap.md section 84. For prefix P and run class r:
   1. checkcnf.py on P_r<r>_base.cnf (every base clause valid);
   2. checkcnf.py cover on P_r<r>_leaves.json (the leaves cover the class);
-  3. for each leaf: P_r<r>_cube_<path>.delta.cnf must exist, pass checkcnf.py
-     delta, and base + delta (concatenated here) must be proved
-     unsatisfiable by the standalone cadical binary with a DRAT proof that
-     drat-trim verifies.
+  3. for each leaf: its delta (P_r<r>_cube_<path>.delta.cnf, or, for a leaf a
+     worker's log records as closed with no Farkas clause, the leaf's units
+     written from the leaf list) must pass checkcnf.py delta, and base +
+     delta (concatenated here) must be proved unsatisfiable by the
+     standalone cadical binary with a DRAT proof that drat-trim verifies.
+     The logs are not trusted: a leaf recorded as closed that is not is
+     caught when cadical finds base + units satisfiable.
 When every step passes, the run class has no face of the question:
 CONDITIONAL on the size-encoding assumption of roadmap section 83.2, and
 on Lemma 84.A, whose hypothesis |F| < s step 2 checks.
@@ -50,15 +53,34 @@ def main():
         head = f.readline().split()
         base_body = f.read()
     nv, nb = int(head[2]), int(head[3])
+    # leaves closed with no Farkas clause are recorded in the workers' logs
+    units_only = set()
+    d = os.path.dirname(os.path.abspath(P))
+    stem = os.path.basename(P) + f"_r{r}_closed_w"
+    for fn in os.listdir(d):
+        if fn.startswith(stem) and fn.endswith(".jsonl"):
+            for line in open(os.path.join(d, fn)):
+                if line.endswith("\n") and json.loads(line).get("units_only"):
+                    units_only.add(json.loads(line)["cube"])
+    nforb = lambda l: l["nforbidden"] if "nforbidden" in l else len(l["forbidden"])
     leaf_ok, fails = 0, []
-    order = sorted(range(len(spec["leaves"])), key=lambda k: -len(spec["leaves"][k]["forbidden"]))
+    order = sorted(range(len(spec["leaves"])), key=lambda k: -nforb(spec["leaves"][k]))
     for k in order:                             # easiest first, so partial runs certify the most
         leaf = spec["leaves"][k]
         nm = "-".join(map(str, leaf["path"])) or "root"
         dpath = f"{P}_r{r}_cube_{nm}.delta.cnf"
         if not os.path.exists(dpath):
-            fails.append((nm, "no delta file"))
-            continue
+            if nm not in units_only:
+                fails.append((nm, "not closed"))
+                continue
+            # the delta of a units-only leaf is its units, written from the leaf list
+            # (which the cover check verifies) and then checked like any delta
+            f = leaf["forbidden"]
+            forb = f if isinstance(f, list) else [k for k in range(int(f, 16).bit_length()) if int(f, 16) >> k & 1]
+            units = [x + 1 for x in leaf["fixed"]] + [-(x + 1) for x in forb]
+            dpath = os.path.join(work, f"_delta_r{r}_cube_{nm}.cnf")
+            with open(dpath, "w") as fo:
+                fo.write(f"p cnf {nv} {len(units)}\n" + "".join(f"{u} 0\n" for u in units))
         _, o, e = run(check + ["delta", dpath, str(D), str(n), str(K), str(r), leaves_path, str(k)])
         if not (o and json.loads(o)["ok"]):
             fails.append((nm, "delta check", (o or e)[-300:]))
@@ -77,7 +99,7 @@ def main():
             f.write(dbody)
         code, _, _ = run(["cadical", "-q", full, proof])
         o = run([drat, full, proof])[1] if code == 20 else ""
-        for x in (full, proof):                 # proofs can be large: never keep them
+        for x in (full, proof) + ((dpath,) if os.path.basename(dpath).startswith("_delta_") else ()):
             if os.path.exists(x):
                 os.remove(x)
         if code != 20:

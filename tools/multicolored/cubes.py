@@ -27,10 +27,14 @@ first (most forbidden triples), and worker w solves those at positions
 the leaves below that node are solved. With prefix, worker
 0 writes the base CNF to prefix_r<r>_base.cnf; every worker records the
 SHA-256 of its own base clauses (so all workers can be checked to share it)
-and, for every leaf it proves infeasible, writes
-prefix_r<r>_cube_<path>.delta.cnf (path joined by "-", "root" for the root):
-the Farkas clauses it had learned so far, plus the leaf's units. A leaf whose
-delta file already exists is skipped, so a run can be resumed or refined. The base
+and, for every leaf it proves infeasible, appends a line to
+prefix_r<r>_closed_w<w>.jsonl. If it had learned Farkas clauses by then, it
+also writes prefix_r<r>_cube_<path>.delta.cnf (path joined by "-", "root" for
+the root): those clauses plus the leaf's units. Otherwise the line says
+"units_only", since the delta would be the leaf's units, which the leaf list
+determines. A leaf with a delta file or a units-only line is skipped, so a
+run can be resumed or refined. Forbidden sets are stored in the leaf list as
+hexadecimal bitmasks (bit k = triple k). The base
 plus a delta is the leaf's full CNF. The leaf list goes to
 prefix_r<r>_leaves.json for tools/multicolored/checkcnf.py cover.
 """
@@ -58,8 +62,8 @@ def leaves(st, expand):
     while stack:
         path, fixed, forb, G = stack.pop(0)
         if not grow(path):
-            out.append({"path": list(path), "fixed": list(fixed), "forbidden": sorted(forb),
-                        "group_order": len(G)})
+            out.append({"path": list(path), "fixed": list(fixed), "forbidden": to_hex(forb),
+                        "nforbidden": len(forb), "group_order": len(G)})
             continue
         ok = allowed.copy()
         ok[list(fixed)] = False
@@ -87,6 +91,42 @@ def name(leaf):
     return "-".join(map(str, leaf["path"])) or "root"
 
 
+def to_hex(xs):
+    """A set of triple indices as a hexadecimal bitmask (bit k = triple k)."""
+    m = 0
+    for x in xs:
+        m |= 1 << x
+    return format(m, "x")
+
+
+def forbidden(leaf):
+    """The forbidden indices of a leaf, from a bitmask or (older files) a list."""
+    f = leaf["forbidden"]
+    if isinstance(f, list):
+        return f
+    m = int(f, 16)
+    return [k for k in range(m.bit_length()) if m >> k & 1]
+
+
+def closed_cubes(prefix, r):
+    """Leaves already closed: a delta file, or a units-only record in a
+    worker's log (prefix_r<r>_closed_w<w>.jsonl)."""
+    done = set()
+    d = os.path.dirname(os.path.abspath(prefix))
+    base = os.path.basename(prefix) + f"_r{r}_"
+    for fn in os.listdir(d):
+        if fn.startswith(base + "cube_") and fn.endswith(".delta.cnf"):
+            done.add(fn[len(base + "cube_"):-len(".delta.cnf")])
+        elif fn.startswith(base + "closed_w") and fn.endswith(".jsonl"):
+            with open(os.path.join(d, fn)) as f:
+                for line in f:
+                    if line.endswith("\n"):          # a line cut by a crash is ignored
+                        rec = json.loads(line)
+                        if rec.get("units_only"):
+                            done.add(rec["cube"])
+    return done
+
+
 def main():
     D, n, K, s, r = (int(x) for x in sys.argv[1:6])
     tree = sys.argv[6]
@@ -107,14 +147,17 @@ def main():
             "expand": (sorted(list(p) for p in expand) if isinstance(expand, set) else None),
             "depth": expand if isinstance(expand, int) else None, "leaves": L}
     assert all(len(l["fixed"]) <= s for l in L), "an expanded node fixes s or more triples (Lemma 84.A)"
+    done = closed_cubes(prefix, r) if prefix else set()
     if prefix and w == 0:
         with open(f"{prefix}_r{r}_leaves.json.tmp", "w") as f:
             json.dump(spec, f)
         os.replace(f"{prefix}_r{r}_leaves.json.tmp", f"{prefix}_r{r}_leaves.json")
     # easiest first: most forbidden triples, then most fixed
-    order = sorted(range(len(L)), key=lambda k: (-len(L[k]["forbidden"]), -len(L[k]["fixed"]), k))
+    order = sorted(range(len(L)), key=lambda k: (-L[k]["nforbidden"], -len(L[k]["fixed"]), k))
     out = {"D": D, "n": n, "K": K, "s": s, "run": r, "tree": tree, "worker": w, "workers": W,
-           "leaves": len(L), "setup_s": st["setup"], "base_sha256": sha, "cubes": []}
+           "leaves": len(L), "setup_s": st["setup"], "base_sha256": sha, "closed_before": 0,
+           "not_started": 0, "cubes": []}
+    log = open(f"{prefix}_r{r}_closed_w{w}.jsonl", "a") if prefix else None
     v = lambda k: k + 1
     if under is not None:                       # only the leaves below one node
         order = [k for k in order if L[k]["path"][:len(under)] == under]
@@ -123,22 +166,29 @@ def main():
         if pos % W != w:
             continue
         dpath = f"{prefix}_r{r}_cube_{name(leaf)}.delta.cnf" if prefix else None
-        if dpath and os.path.exists(dpath):
-            out["cubes"].append({"cube": name(leaf), "status": "infeasible (earlier run)"})
+        if name(leaf) in done:
+            out["closed_before"] += 1
             continue
         left = total_tl - (time.time() - t0)
         if left <= 0:
-            out["cubes"].append({"cube": name(leaf), "status": "not started"})
+            out["not_started"] += 1
             continue
-        units = [v(f) for f in leaf["fixed"]] + [-v(x) for x in leaf["forbidden"]]
+        units = [v(f) for f in leaf["fixed"]] + [-v(x) for x in forbidden(leaf)]
         tc = time.time()
         res = S.solve_loop(st, units, min(cube_tl, left), tc, tag=name(leaf))
-        res = {"cube": name(leaf), "forbidden": len(leaf["forbidden"]), "seconds": round(time.time() - tc, 1),
+        res = {"cube": name(leaf), "forbidden": leaf["nforbidden"], "seconds": round(time.time() - tc, 1),
                **{x: res[x] for x in res if x != "clauses"}}
         if res["status"] == "infeasible" and prefix:
-            delta = st["C"].all[st["nbase"]:] + [[u] for u in units]
-            S.write_cnf(dpath + ".tmp", st["top"], delta)
-            os.replace(dpath + ".tmp", dpath)   # a delta file exists only once complete
+            farkas = st["C"].all[st["nbase"]:]
+            if farkas:                          # the delta needs its Farkas clauses: write it out
+                S.write_cnf(dpath + ".tmp", st["top"], farkas + [[u] for u in units])
+                os.replace(dpath + ".tmp", dpath)   # a delta file exists only once complete
+            # with no Farkas clause the delta is the leaf's units, which the leaf
+            # list determines: record the closure in the worker's log instead
+            log.write(json.dumps({"cube": name(leaf), "units_only": not farkas, "seconds": res["seconds"],
+                                  "solves": res["solves"], "farkas_certs": res["farkas_certs"]}) + "\n")
+            log.flush()
+            os.fsync(log.fileno())
         out["cubes"].append(res)
         print(json.dumps({"cube": name(leaf), "status": res["status"], "seconds": res["seconds"]}),
               file=sys.stderr, flush=True)
@@ -148,8 +198,8 @@ def main():
     out["seconds"] = round(time.time() - t0, 1)
     # the verdict covers this worker's share of the leaves (or the "under" subtree) only
     out["verdict"] = ("found" if "found" in sts else
-                      "all cubes infeasible" if sts and all(x.startswith("infeasible") for x in sts)
-                      else "undecided")
+                      "all attempted cubes infeasible, none left" if all(x == "infeasible" for x in sts)
+                      and out["not_started"] == 0 else "undecided")
     print(json.dumps(out))
 
 
