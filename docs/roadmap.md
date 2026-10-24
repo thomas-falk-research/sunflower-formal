@@ -17676,8 +17676,9 @@ which is sound: by the hypothesis, such a node holds no face of the
 question. ∎ **PROVEN**.
 * **Hypothesis checked.** `checkcnf.py cover` verifies `|F| < s` at
   every expanded node, and `cubes.py` refuses a tree that breaks it. In
-  every tree used here the largest fixed set is at most 4: against
-  `s = 6` at `D = 3`, and `s = 19` at `D = 4`.
+  every tree used here an expanded node fixes at most 4 triples, and a
+  leaf at most 5 (the depth-4 leaves of §85): against `s = 6` at `D = 3`,
+  and `s = 19` at `D = 4`.
 * **Prior art.** The scheme resembles orbital branching (Ostrowski,
   Linderoth, Rossi and Smriglio). That attribution is from memory: the
   paper was not retrieved or read here, and no rule-17 search was run.
@@ -17925,7 +17926,9 @@ coordinates, up to symmetry.
 
 **Run class 0 contains no face of the question.**
 * **Label.** COMPUTED: every leaf of the cube tree was refuted by a SAT
-  solver.
+  solver. This rests on the per-leaf closure logs, which exist only in
+  the session scratchpad, and on the size-encoding assumption of §83.2:
+  the uncertified leaves use the same base CNF.
 * **Certification.**
   * 256 of the 222,183 leaves are certified: the base check, a standalone
     CaDiCaL 1.7.3 DRAT proof per leaf, and `drat-trim`.
@@ -17967,8 +17970,9 @@ and timings exist only in the session scratchpad.
     identical in 8 cases.
 * **`cubes_sa.py` (new).** Each leaf runs as its own process: base plus
   the leaf's units, piped to the standalone `cadical`.
-  * *Why.* CaDiCaL simplifies the formula under the units before
-    searching, which the incremental solver cannot do with assumptions.
+  * *Why (CONJECTURED).* Presumably CaDiCaL simplifies the formula under
+    the units before searching, which the incremental solver cannot do
+    with assumptions.
   * *Models.* They go through `satmaster.py`'s Benders step: exact
     Farkas check and stabiliser images.
   * *Timeouts.* A leaf can be timed out on its own.
@@ -17979,8 +17983,9 @@ and timings exist only in the session scratchpad.
 * **`checkcnf.py` and `certcubes.py`.** They read both formats.
   `certcubes.py` writes a units-only leaf's delta from the leaf list and
   checks it like any other.
-  * *The logs are not trusted.* A false closure record fails when
-    CaDiCaL finds base plus units satisfiable. That was tested at
+  * *Certification does not trust the logs.* A false closure record fails
+    when CaDiCaL finds base plus units satisfiable. The COMPUTED verdict
+    for the uncertified leaves does rest on the logs. That was tested at
     `D = 3, s = 5`: CaDiCaL exit 10 on the two feasible leaves.
 
 ### 85.3 How the remaining cubes were closed (COMPUTED)
@@ -17988,7 +17993,9 @@ and timings exist only in the session scratchpad.
 * **Round 3.** The 699 open depth-2 cubes of §84 were expanded to depth 3,
   giving 217,777 cubes. Four PySAT workers ran easiest first (most
   forbidden triples first). Per-leaf time grew 2.3–3.5 times for each
-  25 fewer forbidden triples. By bin of forbidden-set size:
+  25 fewer forbidden triples. By bin of forbidden-set size (bin `b` means
+  `b` to `b + 24` forbidden; a snapshot taken before the switch, the
+  final data give 9.22 s for the 100 bin):
 
   ```text
     bin   mean time    bin   mean time
@@ -17998,7 +18005,8 @@ and timings exist only in the session scratchpad.
   ```
 
   Extrapolated, the 18,620 cubes left at that point (all with fewer than
-  100 forbidden) projected to about 270 CPU-hours (CONJECTURED).
+  125 forbidden: 2,111 of the 100 bin and all 16,509 below it) projected
+  to about 270 CPU-hours (CONJECTURED).
 * **Depth 4 does not help much.** Two probes:
   * `0-0-40` (40 forbidden): 314 children closed in 106 s in total, about
     equal to the extrapolated direct solve of about 110 s.
@@ -18007,15 +18015,18 @@ and timings exist only in the session scratchpad.
   Both are now expanded in the tree.
 * **The standalone solver does.** One leaf each, base plus units into the
   standalone `cadical`:
-  * `0-0-80` took 0.66 s, against about 25 s extrapolated for PySAT;
-  * `0-0-30` took 35 s, against about 150 s;
+  * `0-0-80` took 0.66 s, against about 25 s extrapolated for PySAT from
+    the bin means;
+  * `0-0-30` took 35 s, against about 150 s, also extrapolated;
   * `0-0-5` took 49 s, against the 390 s of its depth-4 split.
 
   The run switched to `cubes_sa.py` for every leaf still open. Four
   workers closed the remaining 18,468: 2,782 before a container restart,
   and 15,686 after it, from the logs. That took about 6.5 hours of work,
-  with nothing running for the 8 hours the container was down. No leaf timed out at 7,200 s, and the
-  slowest took 354 s. The causal reading (root-level simplification under
+  with nothing running for the 8 hours the container was down. The
+  per-leaf limit was 7,200 s; it was set on the command line and is not
+  stored in the result files. No leaf timed out, and the slowest took
+  354 s. The causal reading (root-level simplification under
   the units) is CONJECTURED.
 * **No Farkas clause anywhere.** Every closure record is units-only, and
   every one of the 4,027 delta files is pure units. In run class 0 the
@@ -18036,24 +18047,35 @@ and timings exist only in the session scratchpad.
     and 80 more drawn by `random.Random(85)` from the rest, all from the
     round-4 leaf list.
 
-  That is 256 leaves, with no failure. The sample took about 6 CPU-hours
-  (3 processes, 1 h 58 min), and the full-tree cover check passed.
-* **Not certified.** The other 221,927 leaves. Each costs at least about
-  5 s in `drat-trim` just to parse and propagate the 95 MB formula (one
-  measurement, on leaf `4-50-70`). That puts per-leaf
-  certification at several hundred CPU-hours.
+  That is 256 leaves, with no failure. The sample took 5.4 CPU-hours
+  (three processes of 1:37, 1:50 and 1:57), an average of about 160 s per
+  leaf including the solve. The full-tree cover check passed.
+* **An independent spot check.** The review (§85.7) separately certified
+  three uncertified leaves chosen with its own seed: `3-79-205`,
+  `5-11-16` and the depth-4 leaf `0-0-5-64`, all `s VERIFIED`. No depth-4
+  leaf is among the 256.
+* **Not certified.** The other 221,927 leaves.
+  * **A lower bound per leaf.** About 5 s in `drat-trim` just to parse and
+    propagate the 95 MB formula: one measurement, on leaf `4-50-70`, in
+    the scratchpad's `cc/certexp/dt0.out`.
+  * **Measured.** The review's measurements give 8–52 s per leaf, and the
+    sample averaged about 160 s.
+  * **Total.** Per-leaf certification would cost about 1,000–3,000
+    CPU-hours (CONJECTURED).
 * **What a scalable certificate needs (CONJECTURED).** One checker run
   over many leaves, in one of two ways:
-  * a single RUP-only derivation (LRAT, checked for the absence of RAT
-    steps), whose lemmas carry each cube's negated literals and whose
-    lemma list includes every cube's negation;
+  * a single RUP-only derivation, whose lemmas carry each cube's negated
+    literals and whose lemma list includes every cube's negation. It is
+    checked by `drat-trim -f -U`: forward mode, RUP additions only. The
+    review tested this: it rejects a RAT lemma and accepts a RUP-only
+    derivation;
   * leaves batched by depth-2 parent, each parent's subtree certified by
     one proof of base plus the parent's units, where that solve is
     affordable (§84.5).
 
-  `drat-trim`'s forward mode reports "VERIFIED derivation" only in the
-  sense that its lemmas preserve satisfiability (RAT). That is not
-  enough here: each cube's negation must follow from the base.
+  Without `-U`, `drat-trim`'s forward mode reports "VERIFIED derivation"
+  only in the sense that its lemmas preserve satisfiability (RAT). That
+  is not enough here: each cube's negation must follow from the base.
 
 ### 85.5 Where the two-letter `D = 4` questions stand
 
@@ -18096,5 +18118,33 @@ Run on this tree after the last edit; no Coq or Rust changed.
   mutants       not-run   no definition changed
 ```
 
-A fresh-context review of this section had been started but had not
-returned when this was committed.
+**Fresh-context review.** A reviewer with no access to this session
+recomputed the round-4 tree and its 222,183 leaves, and re-ran the
+full-tree cover check. It found every leaf closed exactly once, with no
+stray name. It also checked:
+* *determinism:* a node's cube depends only on its path. 221,504
+  round-4 leaves are field-for-field identical to their round-3
+  versions, and `only.json` matches the filtered full tree at `D = 4`;
+* *the delta files:* all 4,027 equal their leaves' units;
+* every number of §85.1–§85.3, and the sample's composition;
+* the `D = 3` calibration, which it re-ran.
+
+It also spot-certified three uncertified leaves, and found nothing HIGH.
+
+* **MEDIUM.** The scalable-certificate route needs no LRAT (`drat-trim -U`
+  suffices), and the certification cost was underestimated. Both are
+  corrected in §85.4.
+* **LOW, all fixed.**
+  * the "fewer than 100 forbidden" slip, and the bins being a snapshot;
+  * the size-encoding condition and the reliance on the logs, which also
+    apply to the COMPUTED verdict;
+  * a causal claim in §85.2 left unlabelled;
+  * the sample's CPU time;
+  * the unrecorded per-leaf limit;
+  * the record's leaf-list hash, which is of `json.dumps(leaves,
+    sort_keys=True)`, not of the file;
+  * `cubes.py`'s base-SHA docstring;
+  * `cubes_sa.py` reporting a face without an integer certificate as
+    "found";
+  * §84.1's "largest fixed set at most 4", which holds for expanded
+    nodes, while the depth-4 leaves fix 5.

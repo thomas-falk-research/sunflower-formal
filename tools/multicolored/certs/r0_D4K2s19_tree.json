@@ -2871,9 +2871,11 @@
   "file": "satmaster.build(4, 2, 2, 19, 0) written by cubes.py worker 0",
   "clauses": 5366848,
   "variables": 53423,
-  "sha256_of_file": "9096cbdafc34b5bfec6ad071570fc73340002216607f026e617c6723dbf54265"
+  "sha256_of_file": "9096cbdafc34b5bfec6ad071570fc73340002216607f026e617c6723dbf54265",
+  "content_hash_by_cubes_py": "f616cf209fda27470c69aba63902bbbef3d94bb977961e39e04897a42d14ad22 (SHA-256 of the clause text without the header line, as cubes.py reports it)"
  },
  "leaf_list_sha256": "7e46b9ec5d73b7a1a5ceb58fa3aef759ec360ea8e2b235e5df82b3f9c2522ba0",
  "closure": "every leaf: base + its units unsatisfiable (CaDiCaL 1.9.5 via PySAT 1.9.dev15 for 203,715 leaves, standalone CaDiCaL 1.7.3 for 18,468); no Farkas clause used",
- "roadmap": "docs/roadmap.md section 85"
+ "roadmap": "docs/roadmap.md section 85",
+ "leaf_list_sha256_of": "json.dumps(leaves, sort_keys=True) of the leaf list's \"leaves\" field, not of the file"
 }

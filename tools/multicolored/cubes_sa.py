@@ -4,8 +4,9 @@
 docs/roadmap.md section 85. For each open leaf of the tree, base + the leaf's
 units goes to cadical on standard input. cadical simplifies the formula under
 the units before it searches, which the incremental solver of cubes.py
-cannot do with assumptions; on the hard leaves of D = 4 run class 0 this was
-4 to 40 times faster. If cadical finds a model, the Benders step of
+cannot do with assumptions; on three hard leaves of D = 4 run class 0 it was
+4 to 40 times faster than PySAT times extrapolated from comparable leaves
+(roadmap section 85.3; the cause is conjectured). If cadical finds a model, the Benders step of
 satmaster.py runs on it: a face is reported, or the minimised Farkas
 certificate is re-checked exactly and added as a clause, with its images
 under the run class representative's stabiliser, for every later leaf of this
@@ -20,7 +21,9 @@ first, worker w taking positions = w (mod workers). A leaf proved
 unsatisfiable is logged to prefix_r<r>_closed_w<tag>.jsonl (tag defaults to
 sa<worker>), units_only when no Farkas clause was in the formula, and
 otherwise also written as a delta file. A leaf that runs past leaf_tl
-seconds is logged to prefix_r<r>_timeout_w<tag>.jsonl and left open.
+seconds is logged to prefix_r<r>_timeout_w<tag>.jsonl and left open. A model
+that is a face stops the worker: "found" with integer weights re-checked
+exactly, or "face, no integer certificate".
 """
 import json, os, subprocess, sys, time
 
@@ -105,7 +108,7 @@ def main():
                 cert = B.farkas(T, A, phi)
                 if cert is None:
                     u = B.face_weights(T, A, phi)
-                    status = "found"
+                    status = "found" if u else "face, no integer certificate"
                     out["found"] = {"cube": nm, "phi": sorted(phi), "cert": {"D": D, "n": n, "u": u} if u else None}
                     break
                 lam, mu = B.minimise(T, A, phi, *cert)

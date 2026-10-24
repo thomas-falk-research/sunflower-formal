@@ -27,8 +27,9 @@ first (most forbidden triples), and worker w solves those at positions
 the leaves below that node are solved. With only.json (a list of node
 paths), only the leaves below those nodes are even built, which keeps very
 large trees manageable; the leaf list is then not written. With prefix, worker
-0 writes the base CNF to prefix_r<r>_base.cnf; every worker records the
-SHA-256 of its own base clauses (so all workers can be checked to share it)
+0 writes the base CNF to prefix_r<r>_base.cnf; every worker reports, in its
+summary at the end of a run, the SHA-256 of its own base clauses (the clause
+text without the header; a run killed before its end reports none)
 and, for every leaf it proves infeasible, appends a line to
 prefix_r<r>_closed_w<w>.jsonl. If it had learned Farkas clauses by then, it
 also writes prefix_r<r>_cube_<path>.delta.cnf (path joined by "-", "root" for
