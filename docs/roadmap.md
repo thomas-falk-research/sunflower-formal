@@ -15983,10 +15983,12 @@ question is **whether `Λ(D)` is unbounded in `D`**:
   `σ(D) := inf_c liminf_n slice-rank(T_c)^{1/n} ≥ Λ(D)` (liminf: slice rank is not known to be submultiplicative), which can exceed `Λ`.
 
 Neither branch is settled here: **status open** (outcome (c) of the brief).
-**Update, §78.7 (2026-10-27):** for product testers the route is dead
-whatever `Λ` does — `σ(D) ≥ D^{1/3}` for every `c` over every field, by
-[BCLSZ25] Theorem 1.8 (Lemma 78.C). `Λ(D)` stays open as a quantity, and
-F3 stands, but it no longer decides this route.
+**Update, §78.7 (2026-10-27):** no product tester gives a `D`-uniform
+`b^n` bound, whatever `Λ` does — `σ(D) ≥ D^{1/3}` for every `c` over every
+field, by [BCLSZ25] Theorem 1.8 (Lemma 78.C). This is a fixed-`D`,
+`n → ∞` statement, as this branch's `Λ` argument also was; it does not
+bound the method in §75.1's colour-coding regime `D = s·m`. `Λ(D)` stays
+open as a quantity, and F3 stands.
 Rule 17: the quantity itself is **in print** — [NaSa17] Remark 7 and
 [BHL26] p. 12 bound it from above (F6), which an independent review of
 this section caught after the first draft had called it unnamed. What is
@@ -16515,7 +16517,7 @@ letters per coordinate, 6 of them rainbow, and the bound `2^h = 3.0`.
 
 | route | status |
 |---|---|
-| slice rank / `dim P`, characteristic-0 product tester | floor `max(3, D^{1/3})^{n−o(n)}` for every `c` (78.A, 78.C); growth settled by 78.C (2026-10-27), so the route cannot remove `D` (§75.1); free combinatorial degenerations capped at 3 (78.B) |
+| slice rank / `dim P`, characteristic-0 product tester | floor `max(3, D^{1/3})^{n−o(n)}` for every `c` (78.A, 78.C); growth settled by 78.C (2026-10-27), so no product tester gives a `D`-uniform bound (the shape of [ASU12] Conj. 3); free combinatorial degenerations capped at 3 (78.B) |
 | same, positive characteristic | floor `D^{(1/3)(n−o(n))}` for every `c` (78.C, 2026-10-27; was "open") |
 | everything else in §75.3 | unchanged |
 
@@ -16589,7 +16591,11 @@ read: 1, 3, 7–11, 13–21 of 51; pp. 9 and 13 re-read for this section.
 over any field. Then for every `n`,
 `slice-rank(q^{⊗n}) ≥ Q(q^{⊗n})` and `lim_n Q(q^{⊗n})^{1/n} = Q̰(q) ≥ D^{1/3}`;
 so `liminf_n slice-rank(q^{⊗n})^{1/n} ≥ D^{1/3}`, and over `C`,
-`SR̰_C(q_c) ≥ max(3, D^{1/3})` with 78.A.
+`SR̰_C(q_c) ≥ max(3, D^{1/3})` with 78.A. (78.A is stated for `c`
+nonzero on rainbow tuples; its proof covers every `c`: the restricted
+support is a subset of the free set `S_3` containing the three
+monochromatic triples, and the uniform distribution on those has uniform
+marginals.)
 
 *Proof.* Conciseness: in the first flattening (rows `a`, columns
 `(b,c)`), restrict to the columns `(b,b)`. The entry `q(a,b,b)` is
@@ -16601,29 +16607,54 @@ Subrank is supermultiplicative, so `Q̰(q) = lim_n Q(q^{⊗n})^{1/n}`
 (Fekete; the definition, p. 7), and `Q ≤ SR` termwise (p. 14). No
 submultiplicativity of slice rank is used — §75.2 records that it is not
 known — which is why the conclusion is a `liminf`. ∎ **PROVEN given
-[BCLSZ25] Theorem 1.8** (refereed; finite fields CONDITIONAL on [Str88]
-Thm. 3.10).
+[BCLSZ25] Theorem 1.8** (refereed; its proof rests on [Str88] eq. (4.6)
+and, for small fields, Thm. 3.10, neither read here. For the slice-rank
+conclusion Thm. 3.10 is not needed: a slice decomposition over `F` is one
+over its algebraic closure `F̄`, so `SR_F ≥ SR_{F̄}`, and Thm. 1.8 is
+applied over `F̄`.) The proof was checked against rendered pp. 7, 9, 13,
+14 and 20 by a fresh-context review.
+
+For `c` invariant under permuting the three legs (e.g. [NaSa17]'s
+`c ≡ −1/2`), [BCLSZ25] Theorem 1.9 (p. 10, *"Let T ∈ F^n ⊗ F^n ⊗ F^n be
+concise and symmetric. Then Q̰(T) ≥ n^{1/2}."*) gives `SR̰(q_c) ≥ √D`;
+its proof (§5.3, pp. 22–51) was not read, so its field scope is
+unverified.
 
 **What it changes.**
-* **The route.** By Lemma 75.B, `dim P(c) ≥ slice-rank(T_c)/2 ≥
-  D^{(1/3)(n−o(n))}/2` for every `c`. That is a `D^α` with `α = 1/3`,
-  and §75.1 shows any `D^α`, `α > 0`, gives no bound through [ASU12]
-  Thm. 2.6. **So the slice-rank / `dim P` method with a product tester
-  cannot remove `D`, in any characteristic.** This is the first branch of
-  §75.2's verdict, reached without `Λ`. `tools/ceiling.py` is unchanged:
-  its "`D`-uniform `3^n`" row costs the *bound*, which other methods may
-  still seek, not this method.
+* **The route.** By Lemma 75.B, `dim P(c) ≥ slice-rank(T_c)/2`, and by
+  78.C `liminf_n slice-rank(T_c)^{1/n} ≥ D^{1/3}` for every fixed `c`. The
+  review of 2026-10-27 reports, from rendered pp. 19–20, that the proof of
+  [BCLSZ25] Thm. 1.8 (Lemmas 2.8, 2.12, 2.13, Thm. 2.1) makes this uniform
+  in `c` at fixed `D`, because `q_c^{⊠3}` restricts to one of finitely many
+  matrix-multiplication tensors `⟨a,b,c⟩` with `min(ab,bc,ca) ≥ D`
+  (CONDITIONAL on that reading of the proof). **So no product tester, with
+  `c` allowed to vary with `n`, can give a bound of [ASU12] Conjecture 3's
+  shape (`b^n` uniform in `D`), in any characteristic** — the first branch
+  of §75.2's verdict restricted to product testers, reached without `Λ`.
+  This is a fixed-`D`, `n → ∞` statement: it does not bound the method's
+  output in §75.1's colour-coding regime `D = s·m`, `n = s` (that would
+  need one-shot subrank bounds; not attempted). The same caveat applies to
+  §75.2's `Λ` branch. `tools/ceiling.py` is unchanged: its "`D`-uniform
+  `3^n`" row costs the *bound*, which other methods may still seek, not
+  this method.
 * **Scope.** Product testers `q^{⊗n}`, including block testers
   `q_m^{⊗(n/m)}` on `[D]^m` (the same proof at alphabet `D^m` gives the
   same rate). A tester on `[D]^n` that is not a tensor power is **not**
   covered: Theorem 1.8 bounds its asymptotic subrank, and without
   submultiplicativity of slice rank that does not bound its own slice
-  rank.
+  rank. Block testers need `q_m(x,x,x) ≠ 0` for every `x ∈ [D]^m`.
+  Products `⊠_i q_{c_i}` with coordinate-dependent `c_i` are not covered
+  by the statement of Thm. 1.8 (its proof covers them at fixed `D`, per the
+  same reading of pp. 19–20).
 * **78.A and 78.B.** 78.A's floor of 3 is stronger than `D^{1/3}` for
   `D ≤ 26` and stays as stated. 78.B is about free combinatorial
   degenerations and is untouched. §79–§85 ask whether `SR̰_C(q_c) > 3` at
   `D = 4`; `4^{1/3} ≈ 1.59`, so 78.C says nothing there, and that question
   is now about the exact value at one alphabet, not about growth.
+* **Consequence for §79–§86.** Their answer no longer moves the route
+  ledger for product testers, in either direction; they test Lemma
+  78.B-type techniques and the exact value at `D = 4` only. They should
+  continue only if that value is wanted for its own sake.
 * **Rule 17.** Lemma 78.C is two lines on a published theorem and is not
   stated for sunflower testers in any source read (register B24, B27): new
   to this repository, no novelty claimed. [BCLSZ25] was found by the

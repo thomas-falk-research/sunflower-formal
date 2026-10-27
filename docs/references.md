@@ -1203,8 +1203,10 @@ session N+15.
   checked 2026-10-27). **Read pp. 1, 3, 7–11, 13–21 of 51 (rendered)**;
   Theorem 1.8 (p. 9) and the definition of *concise* (p. 13) re-read here.
   Theorem 1.8: a concise tensor has asymptotic subrank at least
-  `(min_ℓ n_ℓ)^{1/3}`. Its field-extension step (p. 20) cites [Str88]
-  Thm. 3.10, not read. `docs/roadmap.md` Lemma 78.C; `docs/reading.md`
+  `(min_ℓ n_ℓ)^{1/3}`. Its proof rests on [Str88] eq. (4.6) and, for
+  small fields, Thm. 3.10 (p. 20), neither read here. The Crossref record
+  for the DOI is defective (slug title, no authors); "2025:15" is from the
+  page footer. `docs/roadmap.md` Lemma 78.C; `docs/reading.md`
   B24, B27.
 
 - **[BHL26]** M. Bucić, F. He, H. Lee, *Proof of the Erdős–Szemerédi
@@ -1387,7 +1389,9 @@ in this file.
   2026-10-27). **Read in full by a delegated reader, 20 of 20 rendered
   pages**, for the rule-17 search of 2026-10-27. Eq. (12) at `s = 1` is
   the cone `ι(k+1) ≥ g(k)`; eqs. (12) and (14) compose to
-  `g(b) ≤ 2b·ι(b)`. `docs/reading.md` B10, B11.
+  `g(b) ≤ 2b·ι(b)`. `docs/reading.md` B10, B11. Called [FW25] in the
+  rule-17 notes and report; that key is taken here by the covering-number
+  paper above.
 
 ### Tools
 
