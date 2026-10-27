@@ -116,8 +116,8 @@ def forbidden(leaf):
 
 
 def closed_cubes(prefix, r):
-    """Leaves already closed: a delta file, or a units-only record in a
-    worker's log (prefix_r<r>_closed_w<w>.jsonl)."""
+    """Leaves already closed: a delta file, or a units-only or pool record in
+    a worker's log (prefix_r<r>_closed_w<w>.jsonl)."""
     done = set()
     d = os.path.dirname(os.path.abspath(prefix))
     base = os.path.basename(prefix) + f"_r{r}_"
@@ -129,7 +129,7 @@ def closed_cubes(prefix, r):
                 for line in f:
                     if line.endswith("\n"):          # a line cut by a crash is ignored
                         rec = json.loads(line)
-                        if rec.get("units_only"):
+                        if rec.get("units_only") or "pool" in rec:   # pool: cubes_sa.py
                             done.add(rec["cube"])
     return done
 

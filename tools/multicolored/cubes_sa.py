@@ -15,12 +15,18 @@ worker; the leaf is then solved again.
     python3 -I tools/multicolored/cubes_sa.py D n K s r TREE worker workers leaf_tl total_tl prefix [tag]
 
 TREE is as for cubes.py. The base CNF is read from prefix_r<r>_base.cnf.
-Leaves already closed (a delta file, or a units-only line in any
+Leaves already closed (a delta file, or a units-only or pool line in any
 prefix_r<r>_closed_*.jsonl) are skipped; the open ones are taken easiest
 first, worker w taking positions = w (mod workers). A leaf proved
 unsatisfiable is logged to prefix_r<r>_closed_w<tag>.jsonl (tag defaults to
-sa<worker>), units_only when no Farkas clause was in the formula, and
-otherwise also written as a delta file. A leaf that runs past leaf_tl
+sa<worker>), units_only when no Farkas clause was in the formula. The
+Farkas clauses a worker learns are appended, in the order learned, to its
+pool file prefix_r<r>_pool_w<tag>_<start>.cnf (one clause per line, no
+header; start is the worker's start time in seconds), and a leaf closed with
+Farkas clauses in the formula records the pool and the number of its clauses
+used: its delta is those clauses plus its units, which certcubes.py rebuilds.
+(A delta file per leaf, the earlier format, repeated the worker's clauses
+in every file; certcubes.py reads both.) A leaf that runs past leaf_tl
 seconds is logged to prefix_r<r>_timeout_w<tag>.jsonl and left open. A model
 that is a face stops the worker: "found" with integer weights re-checked
 exactly, or "face, no integer certificate".
@@ -71,13 +77,17 @@ def main():
             done.add(fn[len(stem + "cube_"):-len(".delta.cnf")])
         elif fn.startswith(stem + "closed_") and fn.endswith(".jsonl"):
             for line in open(os.path.join(d, fn)):
-                if line.endswith("\n") and json.loads(line).get("units_only"):
-                    done.add(json.loads(line)["cube"])
+                if line.endswith("\n"):            # a line cut by a crash is ignored
+                    rec = json.loads(line)
+                    if rec.get("units_only") or "pool" in rec:
+                        done.add(rec["cube"])
     todo = [l for l in L if cubes.name(l) not in done]
     todo.sort(key=lambda l: (-l["nforbidden"], -len(l["fixed"]), l["path"]))
     mine = todo[w::W]
     log = open(f"{prefix}_r{r}_closed_w{tag}.jsonl", "a")
     tlog = open(f"{prefix}_r{r}_timeout_w{tag}.jsonl", "a")
+    pool_name = os.path.basename(prefix) + f"_r{r}_pool_w{tag}_{int(t0)}.cnf"
+    pool = open(os.path.join(d, pool_name), "a")
     farkas, seen = [], set()
     out = {"D": D, "n": n, "K": K, "s": s, "run": r, "tree": tree, "worker": w, "workers": W,
            "leaves": len(L), "open": len(todo), "mine": len(mine), "closed": 0, "timeouts": 0,
@@ -122,16 +132,18 @@ def main():
                     if (gl, gm) not in seen:
                         seen.add((gl, gm))
                         farkas.append([-(k + 1) for k in gl] + [k + 1 for k in gm])
+                        pool.write(" ".join(map(str, farkas[-1])) + " 0\n")
+                pool.flush()
+                os.fsync(pool.fileno())             # on disk before any log line uses it
             else:
                 status = f"cadical exit {p.returncode}"
         secs = round(time.time() - tc, 1)
         if status == "infeasible":
+            rec = {"cube": nm, "units_only": not farkas, "seconds": secs, "solves": solves,
+                   "farkas_certs": out["farkas_certs"], "engine": "cadical"}
             if farkas:
-                dpath = f"{prefix}_r{r}_cube_{nm}.delta.cnf"
-                S.write_cnf(dpath + ".tmp", nv, farkas + [[u] for u in units])
-                os.replace(dpath + ".tmp", dpath)
-            log.write(json.dumps({"cube": nm, "units_only": not farkas, "seconds": secs, "solves": solves,
-                                  "farkas_certs": out["farkas_certs"], "engine": "cadical"}) + "\n")
+                rec.update(pool=pool_name, pool_clauses=len(farkas))
+            log.write(json.dumps(rec) + "\n")
             log.flush()
             os.fsync(log.fileno())
             out["closed"] += 1
