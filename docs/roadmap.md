@@ -15983,6 +15983,10 @@ question is **whether `Λ(D)` is unbounded in `D`**:
   `σ(D) := inf_c liminf_n slice-rank(T_c)^{1/n} ≥ Λ(D)` (liminf: slice rank is not known to be submultiplicative), which can exceed `Λ`.
 
 Neither branch is settled here: **status open** (outcome (c) of the brief).
+**Update, §78.7 (2026-10-27):** for product testers the route is dead
+whatever `Λ` does — `σ(D) ≥ D^{1/3}` for every `c` over every field, by
+[BCLSZ25] Theorem 1.8 (Lemma 78.C). `Λ(D)` stays open as a quantity, and
+F3 stands, but it no longer decides this route.
 Rule 17: the quantity itself is **in print** — [NaSa17] Remark 7 and
 [BHL26] p. 12 bound it from above (F6), which an independent review of
 this section caught after the first draft had called it unnamed. What is
@@ -16360,6 +16364,12 @@ polytopes of `D × D × D` tensors, not about tensor powers. It is **still
 open**, and the tool that would have been cheapest to try provably
 cannot settle it.
 
+**Corrected 2026-10-27 (§78.7).** Growth in `D` is not open: a published
+theorem ([BCLSZ25] Theorem 1.8) gives `SR̰(q_c) ≥ D^{1/3}` for every `c`
+over every field. What stays open is the exact value at small `D` — the
+floor of 3 (78.A) is the better bound for `D ≤ 26` — and Lemma 78.B
+stands as a statement about one technique.
+
 ### 78.1 What the paper settles
 
 `q_c` is BHL's single-coordinate tester (`docs/roadmap.md` §75.2: 1 on
@@ -16468,7 +16478,9 @@ letters per coordinate, 6 of them rainbow, and the bound `2^h = 3.0`.
 
 ### 78.3 What it does not settle, and why
 
-* **Growth in `D` is still open.** For every admissible `c`,
+* ~~**Growth in `D` is still open.**~~ **Corrected (§78.7): growth is
+  settled, `max(3, D^{1/3}) ≤ SR̰_C(q_c) ≤ D` for every admissible `c`; the
+  rest of this bullet is about the exact value.** For every admissible `c`,
   `3 ≤ SR̰_C(q_c) ≤ D`. The better upper bounds hold for particular `c`
   only, so they bound the infimum: `inf_c SR̰_C(q_c) ≤ (3/2^{2/3})(D−1)^{2/3}`
   for `D ≥ 3` ([NaSa17] Thm. 5, `c ≡ −1/2`), and `≤ 6√D` for `D > 36`
@@ -16492,19 +16504,26 @@ letters per coordinate, 6 of them rainbow, and the bound `2^h = 3.0`.
   (c) A direct handle on `inf_c max_{Δ_{q_c}} min_j H(r_j)`, for example
   the Hilbert–Mumford/instability description of [CVZ18] §4.4.3, which
   bounds `ρ^θ` from above only (Theorem 4.35).
-* **Positive characteristic is untouched.** Every lower bound here is
-  over `C`. A tester over `F_p` is outside its reach, and at `D = 3` such
-  testers are known to beat `3` (the cap-set tensor).
+* ~~**Positive characteristic is untouched.**~~ **Corrected (§78.7):
+  Lemma 78.C gives `D^{1/3}` over every field; only the floor of 3 and the
+  single-letter formula are characteristic-0 statements.** Every lower
+  bound in 78.1–78.2 is over `C`. A tester over `F_p` is outside their
+  reach, and at `D = 3` such testers are known to beat `3` (the cap-set
+  tensor).
 
 ### 78.4 Route ledger update
 
 | route | status |
 |---|---|
-| slice rank / `dim P`, characteristic-0 product tester | floor `3^{n−o(n)}` for every `c` (78.A); growth open; support-only methods capped at 3 (78.B) |
-| same, positive characteristic | no lower bound beyond `Λ(D)`; open |
+| slice rank / `dim P`, characteristic-0 product tester | floor `max(3, D^{1/3})^{n−o(n)}` for every `c` (78.A, 78.C); growth settled by 78.C (2026-10-27), so the route cannot remove `D` (§75.1); free combinatorial degenerations capped at 3 (78.B) |
+| same, positive characteristic | floor `D^{(1/3)(n−o(n))}` for every `c` (78.C, 2026-10-27; was "open") |
 | everything else in §75.3 | unchanged |
 
 ### 78.5 The exact next step (replaces §77.4)
+
+*Note of 2026-10-27:* both items were aimed at whether `SR̰(q_c)` grows
+with `D`. §78.7 settles that for every product tester; what the items
+can still decide is only whether the value exceeds 3 at small `D`.
 
 Two independent options, in order of cost:
 1. **Multi-letter search, one table.** Run `degen.py`'s MILP on
@@ -16546,6 +16565,70 @@ reading entry's account of other fields corrected (Cor. 5.10); the
 `Δ_t` definition corrected; `degen.py` now takes the weight bound `B` on
 the command line, so the `B = 200` runs reproduce (re-run: `D = 4`,
 `B = 200`, optimum 9, proven).
+
+### 78.7 Correction from the rule-17 search: a published floor `D^{1/3}`, every `c`, every field (2026-10-27)
+
+**Tier 2.** Source: [BCLSZ25] (Briët, Christandl, Leigh, Shpilka, Zuiddam,
+*Discreteness of asymptotic tensor ranks*, Discrete Analysis 2025:15,
+arXiv:2306.01718v4), found by the recent-literature sweep of the rule-17
+search (`reports/Sunflower novelty prior art search.md`). Rendered pages
+read: 1, 3, 7–11, 13–21 of 51; pp. 9 and 13 re-read for this section.
+
+* **Theorem 1.8 (p. 9):** *"Let T ∈ F^{n1} ⊗ F^{n2} ⊗ F^{n3} be concise.
+  Then Q̰(T) ≥ (min_ℓ n_ℓ)^{1/3}."* The field is arbitrary (§1.4, p. 13:
+  *"Let F be any field."*); the proof's field-extension step (p. 20) cites
+  [Str88] Thm. 3.10, which was not read — CONDITIONAL on it for finite
+  fields.
+* **Concise (p. 13):** *"We call T concise if R_ℓ(T) = n_ℓ for every
+  ℓ ∈ [3]."*, `R_ℓ` the rank of the `ℓ`-th flattening.
+* **Subrank below slice rank (p. 14):** *"Q(T) ≤ SR(T) ≤ R_ℓ(T) ≤ R(T)"*.
+
+**Lemma 78.C.** Let `F` be any field and `q ∈ F^{[D]×[D]×[D]}` with
+`q(a,a,a) ≠ 0` for every `a` and `q(a,b,c) = 0` whenever exactly two of
+`a, b, c` are equal — every BHL tester `q_c` (any `c`, zeros allowed),
+over any field. Then for every `n`,
+`slice-rank(q^{⊗n}) ≥ Q(q^{⊗n})` and `lim_n Q(q^{⊗n})^{1/n} = Q̰(q) ≥ D^{1/3}`;
+so `liminf_n slice-rank(q^{⊗n})^{1/n} ≥ D^{1/3}`, and over `C`,
+`SR̰_C(q_c) ≥ max(3, D^{1/3})` with 78.A.
+
+*Proof.* Conciseness: in the first flattening (rows `a`, columns
+`(b,c)`), restrict to the columns `(b,b)`. The entry `q(a,b,b)` is
+`q(b,b,b) ≠ 0` when `a = b` and `0` otherwise (exactly two equal), so the
+`D × D` submatrix is diagonal with nonzero diagonal and the flattening
+has rank `D`. The other two flattenings are the same argument on the
+columns `(a,a)`. Theorem 1.8 with `n_ℓ = D` gives `Q̰(q) ≥ D^{1/3}`.
+Subrank is supermultiplicative, so `Q̰(q) = lim_n Q(q^{⊗n})^{1/n}`
+(Fekete; the definition, p. 7), and `Q ≤ SR` termwise (p. 14). No
+submultiplicativity of slice rank is used — §75.2 records that it is not
+known — which is why the conclusion is a `liminf`. ∎ **PROVEN given
+[BCLSZ25] Theorem 1.8** (refereed; finite fields CONDITIONAL on [Str88]
+Thm. 3.10).
+
+**What it changes.**
+* **The route.** By Lemma 75.B, `dim P(c) ≥ slice-rank(T_c)/2 ≥
+  D^{(1/3)(n−o(n))}/2` for every `c`. That is a `D^α` with `α = 1/3`,
+  and §75.1 shows any `D^α`, `α > 0`, gives no bound through [ASU12]
+  Thm. 2.6. **So the slice-rank / `dim P` method with a product tester
+  cannot remove `D`, in any characteristic.** This is the first branch of
+  §75.2's verdict, reached without `Λ`. `tools/ceiling.py` is unchanged:
+  its "`D`-uniform `3^n`" row costs the *bound*, which other methods may
+  still seek, not this method.
+* **Scope.** Product testers `q^{⊗n}`, including block testers
+  `q_m^{⊗(n/m)}` on `[D]^m` (the same proof at alphabet `D^m` gives the
+  same rate). A tester on `[D]^n` that is not a tensor power is **not**
+  covered: Theorem 1.8 bounds its asymptotic subrank, and without
+  submultiplicativity of slice rank that does not bound its own slice
+  rank.
+* **78.A and 78.B.** 78.A's floor of 3 is stronger than `D^{1/3}` for
+  `D ≤ 26` and stays as stated. 78.B is about free combinatorial
+  degenerations and is untouched. §79–§85 ask whether `SR̰_C(q_c) > 3` at
+  `D = 4`; `4^{1/3} ≈ 1.59`, so 78.C says nothing there, and that question
+  is now about the exact value at one alphabet, not about growth.
+* **Rule 17.** Lemma 78.C is two lines on a published theorem and is not
+  stated for sunflower testers in any source read (register B24, B27): new
+  to this repository, no novelty claimed. [BCLSZ25] was found by the
+  sweep, after §78 had called growth open — the same failure as B9's,
+  one search later.
 
 ## 79. Two-letter free degenerations at `D = 4`: the single-letter cap breaks, the value 3 does not (yet)
 
@@ -16760,7 +16843,10 @@ unlikely but not impossible.
 * So whether *any* support-only, combinatorial-degeneration argument
   shows the slice rank of BHL's tester grows with `D` remains open; the
   cheapest two cases (single letter, and two-letter matchings at `D = 4`)
-  both stop at 3.
+  both stop at 3. *(2026-10-27: the growth itself is settled by a
+  different method, §78.7; this bullet is now only about the technique,
+  and about whether `SR̰(q_c) > 3` at `D = 4`, where `D^{1/3} ≈ 1.59`
+  says nothing.)*
 
 ### 80.5 Next step
 

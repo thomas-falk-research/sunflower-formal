@@ -1197,6 +1197,16 @@ session N+15.
   JSON via the WordPress API. Not on arXiv: `arXiv:1612.07342`, recalled
   for it, is a physics paper. `docs/reading.md` Tier 3c.
 
+- **[BCLSZ25]** J. Briët, M. Christandl, I. Leigh, A. Shpilka, J. Zuiddam,
+  *Discreteness of asymptotic tensor ranks*. **Discrete Analysis**
+  2025:15, `doi:10.19086/da.143834`; arXiv:2306.01718v4 (arXiv API record
+  checked 2026-10-27). **Read pp. 1, 3, 7–11, 13–21 of 51 (rendered)**;
+  Theorem 1.8 (p. 9) and the definition of *concise* (p. 13) re-read here.
+  Theorem 1.8: a concise tensor has asymptotic subrank at least
+  `(min_ℓ n_ℓ)^{1/3}`. Its field-extension step (p. 20) cites [Str88]
+  Thm. 3.10, not read. `docs/roadmap.md` Lemma 78.C; `docs/reading.md`
+  B24, B27.
+
 - **[BHL26]** M. Bucić, F. He, H. Lee, *Proof of the Erdős–Szemerédi
   sunflower conjecture*. arXiv:2610.26686v1, 19 Oct 2026, 16pp;
   **unrefereed**. **Read in full, 16 of 16 rendered pages (2026-10-20).**
@@ -1370,6 +1380,14 @@ in this file.
   checked (`rust/tests/frankl_wang.rs`). Establishes that the
   covering-number literature cannot bound the nine- and eleven-point
   questions below 32; `docs/roadmap.md` §37.6.
+
+- **[FW25b]** P. Frankl and J. Wang, *New Bounds on Families without
+  Large Sunflowers*. **The Electronic Journal of Combinatorics** **32**(2)
+  (2025), **P2.43**; `doi:10.37236/13277` (Crossref record, checked
+  2026-10-27). **Read in full by a delegated reader, 20 of 20 rendered
+  pages**, for the rule-17 search of 2026-10-27. Eq. (12) at `s = 1` is
+  the cone `ι(k+1) ≥ g(k)`; eqs. (12) and (14) compose to
+  `g(b) ≤ 2b·ι(b)`. `docs/reading.md` B10, B11.
 
 ### Tools
 
