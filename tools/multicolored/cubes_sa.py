@@ -30,13 +30,28 @@ in every file; certcubes.py reads both.) A leaf that runs past leaf_tl
 seconds is logged to prefix_r<r>_timeout_w<tag>.jsonl and left open. A model
 that is a face stops the worker: "found" with integer weights re-checked
 exactly, or "face, no integer certificate".
+
+A worker stopped by SIGTERM, SIGINT or SIGHUP kills its cadical child
+before it exits, and each child is asked (Linux prctl PR_SET_PDEATHSIG) to
+be killed if the worker dies by SIGKILL. Without this a killed worker left
+its solver running (roadmap section 86.2).
 """
-import json, os, subprocess, sys, time
+import ctypes, json, os, signal, subprocess, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import benders as B
 import cubes
 import satmaster as S
+
+
+def _die_with_parent():
+    # runs in the child between fork and exec: PR_SET_PDEATHSIG = 1
+    ctypes.CDLL(None, use_errno=True).prctl(1, signal.SIGKILL, 0, 0, 0)
+
+
+def _stop(signum, frame):
+    # an exception inside subprocess.run makes it kill the child first
+    raise SystemExit(128 + signum)
 
 
 def model_of(out, N):
@@ -48,6 +63,8 @@ def model_of(out, N):
 
 
 def main():
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(sig, _stop)
     D, n, K, s, r = (int(x) for x in sys.argv[1:6])
     tree = sys.argv[6]
     w, W = int(sys.argv[7]), int(sys.argv[8])
@@ -106,7 +123,8 @@ def main():
                    + "".join(" ".join(map(str, c)) + " 0\n" for c in extra).encode())
             budget = min(leaf_tl - (time.time() - tc), left - (time.time() - tc))
             try:
-                p = subprocess.run(["cadical", "-q"], input=cnf, capture_output=True, timeout=max(1.0, budget))
+                p = subprocess.run(["cadical", "-q"], input=cnf, capture_output=True, timeout=max(1.0, budget),
+                                   preexec_fn=_die_with_parent)
             except subprocess.TimeoutExpired:
                 status = "time"
                 break
