@@ -150,6 +150,15 @@ estimate. Both are marked below.
 - **[AbHa74]** H. L. Abbott and D. Hanson, *On finite $\Delta$-systems*.
   Discrete Mathematics 8 (1974), 1–12. The source usually credited for
   the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
+  **Read in full 2026-10-28: 12 of 12 pages rendered at 150 dpi, from a
+  copy supplied by the user** (SHA-256 `66ee050f…`; not in the
+  repository). It restates $\psi$, Lemma 6 and Lemma 4 from [AHS72]
+  (p. 9), bounds $\phi(3,k)$ from above for $k \ge 7$ (Theorem 2.1,
+  p. 3), and gives lower bounds for $\phi(n,4)$, $\phi(n,6)$ (pp. 9–11,
+  Table 2). It credits $\phi(2,3) = 6$ to Erdős–Rado (p. 1), i.e.
+  $f(2,3) = 7$ in this repository's threshold convention. A $\Delta(k)$
+  system is *"a family of k distinct sets which have pairwise the same
+  intersection"* (p. 1).
 
 - **[NaSa17]** E. Naslund, W. Sawin, *Upper bounds for sunflower-free
   sets*. Forum of Mathematics Sigma 5 (2017), e15; arXiv:1606.09575.
@@ -196,6 +205,21 @@ estimate. Both are marked below.
   Series A**, vol. **12**, issue **3**, May **1972**, pp. **381–389**.
   Elsevier. **DOI `10.1016/0097-3165(72)90103-3`** — verified against
   Crossref, not recalled.
+
+  **READ IN FULL 2026-10-28: 9 of 9 pages rendered at 150 dpi, from a
+  copy supplied by the user** (SHA-256 `db6cf560…`; the file is not in
+  the repository). What it contains, by page: Theorem 1, the exact
+  $\phi(2,k)$ (p. 382); Theorem 2, $\phi(n,k) \le (n+1)!\,c^n$,
+  $c = (k-1+(k^2+6k-7)^{1/2})/4$ (p. 382); Theorem 3,
+  $\phi(n,3) > 10^{(n/2)-c\log n}$ (p. 382); the intersecting function
+  $\psi(n)$, which is this repository's $\iota(n)$, with $\psi(3) = 10$
+  cited to Abbott–Gardner (p. 386); Lemma 4 $\phi(n) \ge 2\psi(n)$,
+  Lemma 5 $\psi(a+b) \ge \psi(a)\phi(b)$ (p. 386); Lemma 6
+  $\psi(ab) \ge \psi(a)\psi(b)^a$ (p. 387); $\psi(4) \ge 27$,
+  $\phi(4) \ge 54$ (p. 388). **Correction:** the recursion printed is
+  Lemma 6 on $\psi$, not $g(ab) \ge g(a)\,g(b)^a$ as this entry said;
+  `docs/reading.md` A3 records which form the proof gives. The text below
+  is kept as written before the paper was read.
 
   **Closed access, established rather than assumed.** OpenAlex's record
   for that DOI gives `oa_status: "closed"` and
