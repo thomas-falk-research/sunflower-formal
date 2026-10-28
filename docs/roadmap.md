@@ -18458,3 +18458,113 @@ counts leaves and the cover is meaningful only once every leaf is closed;
 files the rates of about 8,000 and 700 leaves an hour (its own estimate
 from summed solve seconds: about 7,600 at the start and about 990 at the
 end), the 2.5-hour orphaned solver, or the time of the restart.
+
+## 87. Handover — the vector-tester route closed for product testers; the state of everything since §76
+
+Start here. §76 was the last handover; §77–§86 followed it with no
+summary, and the rule-17 search of 2026-10-27 changed several of §76's
+statements. Where this section and §76 disagree, this section is right.
+
+### 87.1 What moved since §76
+
+* **The vector-tester route, for product testers: closed (§78.7).**
+  [BCLSZ25] Theorem 1.8 with the conciseness of every one-letter tester
+  gives `liminf_n slice-rank(q^{⊗n})^{1/n} ≥ D^{1/3}` for every `c`, over
+  every field (Lemma 78.C; PROVEN given that theorem). So no product tester
+  gives a `b^n` bound uniform in `D`, the shape [ASU12] Conjecture 3 needs.
+  §76.2's "the route is neither closed nor shown open" is superseded for
+  this class. Two caveats stay attached: it is a fixed-`D`, `n → ∞`
+  statement, and its uniformity in `c` comes from the proof of Theorem 1.8
+  as read by a review (§78.7).
+* **What `D = 4` can still say.** §79–§86 asked whether a two-letter free
+  face beats 3 at `D = 4`. That no longer bears on the route; a face would
+  only witness `SR̰_C(q_c) > 3` at one alphabet. Status: `K = 1` none
+  (§80); `K = 2`, `|Φ| ≥ 19`: run class 0 none (§85, COMPUTED, 256 leaves
+  certified), run class 2 undecided with 70,343 of 100,762 leaves closed
+  and no face (§86), run class 1 not started. The runs were stopped by
+  decision (§86).
+* **Tools.** `satmaster.py` (SAT master with exact Farkas certificates,
+  §83), `cubes.py` and `cubes_sa.py` (cube-and-conquer, §84–§85),
+  `checkcnf.py` (independent clause, cover and delta checks), and
+  `certcubes.py` (per-leaf DRAT certification). `cubes_sa.py` now stores
+  Farkas clauses once per worker in a pool file (`b1ad200`) and kills its
+  solver child when the worker stops (`bd46d5e`).
+* **The rule-17 search (2026-10-27) and the two Abbott papers
+  (2026-10-28).** Report: `reports/Sunflower novelty prior art search.md`;
+  register rows updated in place.
+  * **B10 — no novelty.** `2ι(b) ≤ g(b)` is [AHS72] Lemma 4 (1972), the
+    cone is the `a = 1` case of its Lemma 5, the `k = 3` equivalence is
+    Kalai's (Polymath10 22224, 2015), and the upper half's argument is
+    Gowers's (22417) and follows from [FW25b] (12)+(14). Only the
+    machine-checked statement (`coq/IotaRate.v`) is this repository's own.
+  * **`ι` has had a name since 1972:** `ψ(n)`, [AHS72] p. 386 (B9, A17).
+  * **B27 — partial.** The floor of 3 for `D ≤ 26` (78.A) and Lemma 78.B
+    remain not found, not exhaustive; [BCLSZ25] supersedes 78.A for
+    `D ≥ 27`.
+  * **A20 resolved**, A3 corrected: [AHS72]'s substitution is printed on
+    `ψ` alone (Lemma 6); `g(ab) ≥ g(a)ι(b)^a` follows from its proof.
+  * **A19c stale:** [ABCDN26] claims `ι(4) = 27`.
+
+### 87.2 What did not move
+
+* No Coq theorem, definition or statement changed since §74; the kernel
+  state is §74's, and `Rao20_lemma2` is still the one axiom.
+* The lines §76.2 lists for `g(4)` (`54 ≤ g(4) ≤ 76` given the census),
+  census certification stages 3–5, `r*(3,3) ∈ {3, 4}` and `Rao20_lemma2`
+  Stage C are untouched. The current brief forbids new enumeration
+  campaigns on `g(4)`, `ι(4)`, `r*(3,3)` and census stages 3–4, and Stage C.
+* `Λ(D)` for `D ≥ 4`: still open as a quantity. F3 stands
+  (`sup_D Λ(D) < ∞` would prove the conjecture at `k = 3`).
+
+### 87.3 Open questions, ranked
+
+1. **Testers that are not tensor powers.** Lemma 78.C does not cover a
+   tester on `[D]^n` that is not `q^{⊗n}` (or a block power), because
+   slice rank is not known to be submultiplicative. This is the one part
+   of the vector-tester route still open. A lower bound on the slice rank
+   of every tensor supported on `S_D^{(n)}` with nonzero diagonal would
+   close it; [BCLSZ25]'s one-shot restrictions (Lemma 2.12) are the place
+   to look, and the colour-coding regime `D = s·m` of §75.1 is the regime
+   that matters.
+2. **`Λ(D)` growth** (§75.2): a construction of large induced matchings in
+   `S_D^{(n)}` with `Λ → ∞`. Now of interest for its own sake and for
+   non-power testers, not for product testers.
+3. **The exact value of `SR̰_C(q_c)` at small `D`.** Only if wanted:
+   resume §86 from `certs/r2_D4K2s19_partial.json`.
+4. Everything in §59.4 and §67.5 not superseded above, subject to the
+   brief's limits.
+
+### 87.4 The exact next step
+
+Read [BCLSZ25] pp. 22–51 (rendered; pp. 1–21 are read), in particular
+§5 (the second proof of Theorem 1.8, and Theorem 1.9's proof) and §6
+(slice rank against subrank). Decide, as a continuation of §78.7, whether
+any statement there bounds the slice rank — not the asymptotic subrank —
+of a single concise tensor from below, which is what non-power testers
+need (question 1). Also read [Str88] Theorem 3.10 and eq. (4.6), on which
+Theorem 1.8's proof rests. Only if neither gives a one-shot bound, attempt
+question 1 directly at `n = 2, D = 4` by computing the slice rank of a
+few non-product testers on `S_4^{(2)}` (one table).
+
+### 87.5 Environment, as left
+
+`coqc` (8.18), `cadical` 1.7.3, `pdftoppm`, scipy 1.16.2 with numpy 2.5.3,
+`highspy`, and python-sat 1.9.dev15 are installed. `drat-trim` and
+`lrat-check` are built in the session scratchpad (`bin/`), which does not
+survive the container. The run data of §83–§86 (closure logs, delta files,
+pools) are scratchpad-only; the trees, hashes and open lists are in
+`tools/multicolored/certs/`.
+
+### 87.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  cubes_sa      pass   kill tests (bd46d5e) and the D = 3 calibration regression
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
