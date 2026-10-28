@@ -1008,6 +1008,23 @@ thm Substitution.iota3_is_maximal
 thm Substitution.iota3_tau
 thm Substitution.triangle_squared_is_maximal
 thm Substitution.iota3_into_triangle_is_maximal
+
+# ---- SubstitutionFree: g(ab) >= g(a) iota(b)^a, [AHS72] Lemma 6 repaired ----
+thm SubstitutionFree.in_trace_assemble
+thm SubstitutionFree.in_substitute_inv
+thm SubstitutionFree.triple_collapse
+thm SubstitutionFree.assemble_SetEq_inv
+thm SubstitutionFree.substitute_no_sunflower
+thm SubstitutionFree.length_substitute
+thm SubstitutionFree.Uniform_substitute
+thm SubstitutionFree.Distinct_substitute
+thm SubstitutionFree.substitute_lower_bound
+thm SubstitutionFree.lower_bound_9_3_20000
+thm SubstitutionFree.flat_threshold_fails_at_nine
+thm SubstitutionFree.spread_constant_at_three_is_at_least_four
+thm SubstitutionFree.Intersecting_substitute
+thm SubstitutionFree.substitute_iota_lower_bound
+thm SubstitutionFree.iota_nine_at_least_10000
 thm Substitution.iota3_squared_is_maximal
 thm Substitution.the_nine_uniform_boundary_is_closed_to_extension
 thm Substitution.the_margin_at_four_is_five

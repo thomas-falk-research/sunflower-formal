@@ -3288,7 +3288,7 @@ where it breaks first:
    4        81           54   g(4) >= 2*iota(4)
    6       729          600   g(6) >= g(2)*iota(3)^2
    7      2187         1080   g(7) >= g(3)*g(4)   (direct sum)
-   8      6561         5400   g(8) >= g(4)*iota(2)^4
+   8      6561         4374   g(8) >= g(4)*iota(2)^4   (was 5400; 54*3^4 = 4374, corrected 2026-10-28)
    9     19683        20000   g(9) >= g(3)*iota(3)^3   <-- BREAKS
   12    531441       540000   g(12) >= g(4)*iota(3)^4
 ```
@@ -16581,7 +16581,10 @@ read: 1, 3, 7–11, 13–21 of 51; pp. 9 and 13 re-read for this section.
   Then Q̰(T) ≥ (min_ℓ n_ℓ)^{1/3}."* The field is arbitrary (§1.4, p. 13:
   *"Let F be any field."*); the proof's field-extension step (p. 20) cites
   [Str88] Thm. 3.10, which was not read — CONDITIONAL on it for finite
-  fields.
+  fields. *(2026-10-28: [Str88] Thm. 3.10, p. 126, is now read — asymptotic
+  subrank is unchanged by field extension — so this condition is
+  discharged — with Thm. 3.8, p. 124, viewed by the delegated reader only;
+  §88.3.)*
 * **Concise (p. 13):** *"We call T concise if R_ℓ(T) = n_ℓ for every
   ℓ ∈ [3]."*, `R_ℓ` the rank of the `ℓ`-th flattening.
 * **Subrank below slice rank (p. 14):** *"Q(T) ≤ SR(T) ≤ R_ℓ(T) ≤ R(T)"*.
@@ -16609,7 +16612,7 @@ Subrank is supermultiplicative, so `Q̰(q) = lim_n Q(q^{⊗n})^{1/n}`
 submultiplicativity of slice rank is used — §75.2 records that it is not
 known — which is why the conclusion is a `liminf`. ∎ **PROVEN given
 [BCLSZ25] Theorem 1.8** (refereed; its proof rests on [Str88] eq. (4.6)
-and, for small fields, Thm. 3.10, neither read here. For the slice-rank
+and, for small fields, Thm. 3.10, both read on 2026-10-28, §88.3. For the slice-rank
 conclusion Thm. 3.10 is not needed: a slice decomposition over `F` is one
 over its algebraic closure `F̄`, so `SR_F ≥ SR_{F̄}`, and Thm. 1.8 is
 applied over `F̄`.) The proof was checked against rendered pp. 7, 9, 13,
@@ -18602,3 +18605,156 @@ p. 9 restates; its page range and `φ(3,5) ≥ 88`; "rediscoveries" became
 being in the repository; [BCLSZ25] pp. 22–51 never rendered; this file's
 own "Read §32 first" header; the environment list. Optional hardening not
 done: checking `prctl`'s return value and `getppid()` after it.
+
+## 88. The substitution in the kernel — [AHS72] Lemma 6 repaired and formalised, `LowerBound 9 3 20000` and `c(3) ≥ 4` unconditional; and §87.4: no one-shot slice-rank bound from conciseness
+
+**Tier 2.** Two pieces of work. §88.1–§88.2 answer the gap the review of
+2026-10-28 found in [AHS72]'s proof (`docs/reading.md` A3). §88.3–§88.4
+are §87.4's next step.
+
+### 88.1 The gap and the repair
+
+[AHS72] Lemma 6, p. 387: *"ψ(ab) ≥ ψ(a) ψ(b)^a."* The family is the
+substitution: replace each point of an outer member by an inner member
+on its own block. The proof that it has no 3-sunflower (pp. 387–388)
+says: if three members have pairwise the same intersection, their outer
+generators have pairwise the same intersection, so (outer family
+sunflower-free) *"we must therefore have F1 = F2 = F3"*; then *"there is
+a least integer m … such that F^(1), F^(2), F^(3) are all distinct"* in
+block `m`, and these three inner members form a sunflower. Two steps are
+unjustified as printed:
+
+* **The least `m` need not exist.** With two blocks, inner patterns
+  `(A, A, B)` and `(C, D, D)` give three distinct members with no block of
+  three distinct inner members. (Found by the review, §87.)
+* **An omission, not a gap:** *"we must therefore have F1 = F2 = F3"*
+  for the outer generators skips the case where exactly two coincide.
+  The paper's own `K_ij = ∅` with equal sizes excludes it (if
+  `F1 = F2 ≠ F3` then `K12 = F1 − F3 ≠ ∅`); `triple_collapse` covers it
+  explicitly. (The review of §88 found this; it is recorded as an
+  omission.) p. 388 also ends *"This completes the proof of Lemma 5"*,
+  which should read Lemma 6.
+
+**The repair** is one lemma, used twice (`SubstitutionFree.triple_collapse`):
+three members `X, Y, Z` of a uniform 3-sunflower-free family with
+`X ∩ Y = X ∩ Z = Y ∩ Z` (as sets) are equal. *Proof.* If they are
+pairwise distinct, they are a sunflower. If two are equal, say `X = Y`,
+then `X = X ∩ Y = X ∩ Z ⊆ Z`, and equal sizes give `X = Z`; the other two
+cases are the same. ∎ Apply it to the outer generators — their pairwise
+intersections are the sets of blocks where the members' intersections are
+nonempty, which agree because the *inner* family is intersecting — and
+then to the three inner members in every block. The three members are
+equal, so no sunflower. The argument needs: outer family uniform and
+sunflower-free; inner family uniform, sunflower-free and intersecting.
+Intersection of the *outer* family is needed only for the conclusion to
+be intersecting, i.e. for Lemma 6 as printed; without it the same proof
+gives `g(ab) ≥ g(a)·ι(b)^a`, the form this repository has always used.
+
+### 88.2 What is now kernel-checked (`coq/SubstitutionFree.v`, axiom-free)
+
+```text
+  triple_collapse                 the repair lemma above
+  substitute_no_sunflower         outer: uniform, no 3-sunflower; inner: uniform,
+                                  intersecting, no 3-sunflower => substitute has none
+  Uniform_substitute, Distinct_substitute, length_substitute
+                                  size |O|·|I|^a, uniformity a·b, pairwise distinct sets
+  substitute_lower_bound          LowerBound (a·b) 3 (|O|·|I|^a): g(ab) >= g(a)·ι(b)^a
+  Intersecting_substitute,        [AHS72] Lemma 6 as printed: IotaAtLeast (a·b) (|O|·|I|^a)
+  substitute_iota_lower_bound     when the outer family is intersecting too
+  lower_bound_9_3_20000           LowerBound 9 3 (3^9 + 317), from the 20-member g(3) family
+                                  and iota3 on six points
+  flat_threshold_fails_at_nine    ~ SpreadYieldsDisjoint 9 3 3   (was conditional, IotaRate §18.2)
+  spread_constant_at_three_is_at_least_four
+                                  any constant witnessing Conjecture.spread_conjecture
+                                  has c(3) >= 4                  (was conditional)
+  iota_nine_at_least_10000        IotaAtLeast 9 10000: the b = 9 rung of the tower,
+                                  one below Sharp's refutation threshold 10001
+```
+
+`Print Assumptions` reports every one closed under the global context.
+This is §5 item 2 ("formalise the substitution"), open since §5.
+**Novelty:** none claimed — the inequality is [AHS72]'s; what is this
+repository's is the repair written out and the machine check.
+`IotaRate.v`'s comments still describe the two corollaries as
+conditional and `[substitute]` as unformalised; they are superseded by
+this section (a comment-only edit, owed with §87.3 item 5).
+
+### 88.3 §87.4: no one-shot lower bound on slice rank from conciseness
+
+A delegated reader rendered and viewed [BCLSZ25] pp. 14–51 (so pp. 22–51
+are now read; pp. 2, 4–6 and 12 are the only pages never viewed across
+all passes) and [Str88] printed pp. 102, 112, 116–128, 130–134 (from the
+Göttingen Digitization Center, after De Gruyter returned a bot challenge
+and DigiZeitschriften, discontinued on 31 December 2025, a 404). Notes:
+`research_notes/BCLSZ and Strassen one-shot bounds/notes.md`. Results:
+
+* **No published one-shot bound, and none is possible from conciseness
+  alone.** [BCLSZ25] Example 2.5 (p. 18) is concise with slice rank at
+  most 2 (reader's derivation). Inside the tester class: the one-letter
+  tester with `c ≡ −1/2` satisfies
+  `−2·q(x,y,z) = [x ≠ y] − [x = z] − [y = z]` — check the five equality
+  patterns: all equal `−2`, rainbow `1`, and `0` for each of the three
+  two-equal patterns (PROVEN by that case check; also checked
+  numerically for `D = 2..8`). Each term is a slice, so
+  **`slice-rank(q_{−1/2}) ≤ 3` for every `D`**, while
+  `SR̰(q_{−1/2}) ≥ D^{1/3}` (78.C) and `≥ √D` (Thm. 1.9). Slice rank of a
+  single tester therefore carries no `D`-growth; any lower bound for
+  non-power testers has to use powers or the support, not conciseness.
+* **Slice rank is not multiplicative**, in print: [BCLSZ25] p. 45,
+  *"Unlike rank and subrank, slice rank is not sub- or super-multiplicative
+  under Kronecker product"*; the example above is a concrete instance
+  inside the tester class once `D ≥ 10`: `SR(q) ≤ 3`, but
+  `liminf SR(q^{⊗n})^{1/n} ≥ Q̰(q) ≥ √D > 3` (Thm. 1.9, `q_c` being
+  symmetric; `D ≥ 28` from 78.C's `D^{1/3}` alone), and one-shot
+  `SR(q^{⊠2}) ≥ ⌈√D⌉ > 9` for `D ≥ 82`. [BCLSZ25] Example 2.5 is an
+  instance outside the class for every `n ≥ 5` (`SR ≤ 2`, `Q̰ = 2√(n−1)`).
+  The identity needs characteristic ≠ 2.
+  Lemma 6.9 (p. 45), `Q̲(T^{⊠3}) ≥ (3/64)·SR(T)^2`, bounds `SR(T)` from
+  *above* by the cube, not from below.
+* **What does hold for single tensors** (reader's reading, pp. 16–20,
+  not re-checked here): for every concise `T` on `[D]^n`,
+  `SR(T^{⊠2}) ≥ D^{n/2}` (Cor. 2.2, Lemma 2.9, `Q ≤ SR`); the cube gives
+  border subrank `≥ (3/4)·D^n` (Lemma 2.12, Thm. 2.1, [Str87] Thm. 6.6).
+  These are bounds on squares and cubes of a tester, not on the tester.
+* **[Str88] Theorem 3.10, p. 126** (viewed here): *"Let k ⊂ K be a field
+  extension and let (X, u) ∈ Pop k. Then Δ(u) = Δ(u^K)."* With Thm. 3.8
+  this makes asymptotic subrank invariant under field extension, which
+  discharges §78.7's finite-field condition on Lemma 78.C. Eq. (4.6),
+  p. 134 (reader): *"Q̰(⟨e, h, l⟩) = min{eh, hl, le}"*, an asymptotic
+  statement.
+
+### 88.4 The `n = 2, D = 4` table of §87.4: not run, and why
+
+§87.4 asked for it if no one-shot bound was found, and none was, so it
+was due; it is skipped on the judgement below. It would compute
+bounds on the slice rank of a few non-product testers on `S_4^{(2)}`
+(16 × 16 × 16). Exact slice rank is out of reach at that size unless an
+explicit decomposition meets a lower bound, and §88.3 shows why the
+numbers could not speak to growth: one letter already has testers of
+slice rank at most 3, the asymptotic floor at `D = 4` is only
+`4^{1/3} ≈ 1.59` per letter (`4^{2/3} ≈ 2.5` at `n = 2`), and slice rank
+is not submultiplicative ([BCLSZ25] p. 45) — a product of a slice in one
+leg with a slice in another leg is not a slice — so no bound
+`SR(q⊠q) ≤ SR(q)^2` is available for product testers at `n = 2`; the
+elementary bound is `SR(A⊠B) ≤ SR(A)·max_ℓ n_ℓ(B)`, e.g.
+`2 ≤ SR(q_{−1/2}^{⊠2}) ≤ 12` at `D = 4`. A table at this size would
+compare bounds for non-product testers against products whose own slice
+rank is not known either, and nothing in §87.3 turns on the outcome. The reader's cost estimate was under an
+hour; the judgement is that the hour buys no information. It can be run
+on request.
+
+### 88.5 Where §87.3 stands now
+
+1. **Non-power testers** — sharpened, not answered: a lower bound must
+   come from the support or from powers; conciseness gives nothing for a
+   single tensor (§88.3).
+2. `Λ(D)` growth — unchanged.
+3. Exact value at small `D` — unchanged.
+5. Owed documentation — now also the `IotaRate.v` comments (§88.2).
+
+The cheapest next step with a definite answer is the rate:
+iterate `substitute_iota_lower_bound` to put `ι(3^k) ≥ 10^{(3^k−1)/2}` in
+the kernel (the step `IotaAtLeast a N → IotaAtLeast (3a) (N·10^a)` is
+`substitute_iota_lower_bound` with inner `iota3`, `w = 6`, and needs no
+ground bookkeeping), then pass to general `n` via [AHS72] Lemmas 4–5 /
+`DirectSum` for `10^{(n − O(log n))/2}`.

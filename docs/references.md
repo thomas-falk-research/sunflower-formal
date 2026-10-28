@@ -1232,7 +1232,9 @@ session N+15.
 - **[BCLSZ25]** J. Briët, M. Christandl, I. Leigh, A. Shpilka, J. Zuiddam,
   *Discreteness of asymptotic tensor ranks*. **Discrete Analysis**
   2025:15, `doi:10.19086/da.143834`; arXiv:2306.01718v4 (arXiv API record
-  checked 2026-10-27). **Read pp. 1, 3, 7–11, 13–21 of 51 (rendered)**;
+  checked 2026-10-27). **Read pp. 1, 3, 7–11, 13–51 of 51 (rendered),
+  pp. 14–51 on 2026-10-28 (`docs/roadmap.md` §88.3); never viewed: pp. 2,
+  4–6, 12**. Earlier note:
   Theorem 1.8 (p. 9) and the definition of *concise* (p. 13) re-read here.
   Theorem 1.8: a concise tensor has asymptotic subrank at least
   `(min_ℓ n_ℓ)^{1/3}`. Its proof rests on [Str88] eq. (4.6) and, for
@@ -1240,6 +1242,15 @@ session N+15.
   for the DOI is defective (slug title, no authors); "2025:15" is from the
   page footer. `docs/roadmap.md` Lemma 78.C; `docs/reading.md`
   B24, B27.
+
+- **[Str88]** V. Strassen, *The asymptotic spectrum of tensors*. J. reine
+  angew. Math. **384** (1988), 102–152. Obtained 2026-10-28 from the
+  Göttingen Digitization Center (scanned images, no text layer; De Gruyter
+  returned a bot challenge, DigiZeitschriften a 404). **Read printed
+  pp. 102, 112, 116–128, 130–134** (delegated reader; p. 126 re-viewed
+  here). Theorem 3.10 (p. 126): asymptotic spectra are unchanged by field
+  extension; eq. (4.6) (p. 134): the asymptotic subrank of a
+  matrix-multiplication tensor. `docs/roadmap.md` §88.3.
 
 - **[BHL26]** M. Bucić, F. He, H. Lee, *Proof of the Erdős–Szemerédi
   sunflower conjecture*. arXiv:2610.26686v1, 19 Oct 2026, 16pp;

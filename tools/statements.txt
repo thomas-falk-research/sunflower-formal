@@ -2656,6 +2656,51 @@ dbd9e7fb2f1bf80c  thm Substitution.tri_tau
 dcaf9553f847245c  thm Substitution.iota3_into_triangle_is_maximal
     iota3_into_triangle_is_maximal : MaximalIntersecting 6 (substitute 6 tri iota3)
 
+b7da855d7016b32a  thm SubstitutionFree.in_trace_assemble
+    in_trace_assemble : forall (w : nat) (I : Family) (T : list nat) (f : nat -> list nat) (v u : nat), Grounded I (List.seq 0 w) -> (forall x : nat, List.In x T -> List.In (f x) I) -> List.In u (trace w v (assemble w T f)) <-> List.In v T /\ List.In u (f v)
+
+2db8065e21ab4acb  thm SubstitutionFree.in_substitute_inv
+    in_substitute_inv : forall (a w : nat) (O I : Family) (X : list nat), Uniform a O -> List.In X (substitute w O I) -> exists (T : list nat) (f : nat -> list nat), List.In T O /\ (forall v : nat, List.In v T -> List.In (f v) I) /\ X = assemble w T f
+
+4905faaae1400413  thm SubstitutionFree.triple_collapse
+    triple_collapse : forall (n : nat) (F : list (list nat)) (X Y Z : list nat), UniformSet n X -> UniformSet n Y -> UniformSet n Z -> List.In X F -> List.In Y F -> List.In Z F -> ~ ContainsKSunflower 3 F -> (forall x : nat, List.In x X /\ List.In x Y <-> List.In x X /\ List.In x Z) -> (forall x : nat, List.In x X /\ List.In x Y <-> List.In x Y /\ List.In x Z) -> SetEq X Y /\ SetEq X Z
+
+ed7dc287170e441e  thm SubstitutionFree.assemble_SetEq_inv
+    assemble_SetEq_inv : forall (w : nat) (I : Family) (T T' : list nat) (f f' : nat -> list nat), Grounded I (List.seq 0 w) -> (forall M : list nat, List.In M I -> M <> nil) -> (forall x : nat, List.In x T -> List.In (f x) I) -> (forall x : nat, List.In x T' -> List.In (f' x) I) -> SetEq (assemble w T f) (assemble w T' f') -> SetEq T T' /\ (forall v : nat, List.In v T -> SetEq (f v) (f' v))
+
+d4c21db7f662c8e0  thm SubstitutionFree.substitute_no_sunflower
+    substitute_no_sunflower : forall (a b w : nat) (O0 I : Family), Uniform a O0 -> ~ ContainsKSunflower 3 O0 -> Uniform b I -> Intersecting I -> ~ ContainsKSunflower 3 I -> Grounded I (List.seq 0 w) -> ~ ContainsKSunflower 3 (substitute w O0 I)
+
+0333fcfaa1e94abe  thm SubstitutionFree.length_substitute
+    length_substitute : forall (a w : nat) (O I : Family), Uniform a O -> length (substitute w O I) = length O * PeanoNat.Nat.pow (length I) a
+
+ca9a2a3d416be030  thm SubstitutionFree.Uniform_substitute
+    Uniform_substitute : forall (a b w : nat) (O0 I : Family), Uniform a O0 -> Uniform b I -> Grounded I (List.seq 0 w) -> Uniform (a * b) (substitute w O0 I)
+
+649d398d96665c5e  thm SubstitutionFree.Distinct_substitute
+    Distinct_substitute : forall (a b w : nat) (O0 I : Family), 1 <= b -> Uniform a O0 -> Distinct O0 -> Uniform b I -> Distinct I -> Grounded I (List.seq 0 w) -> Distinct (substitute w O0 I)
+
+3a0c9bb80eac0999  thm SubstitutionFree.substitute_lower_bound
+    substitute_lower_bound : forall (a b w : nat) (O0 I : Family), 1 <= b -> Uniform a O0 -> Distinct O0 -> ~ ContainsKSunflower 3 O0 -> Uniform b I -> Distinct I -> Intersecting I -> ~ ContainsKSunflower 3 I -> Grounded I (List.seq 0 w) -> LowerBound (a * b) 3 (length O0 * PeanoNat.Nat.pow (length I) a)
+
+983afaa2b1756cfc  thm SubstitutionFree.lower_bound_9_3_20000
+    lower_bound_9_3_20000 : LowerBound 9 3 (PeanoNat.Nat.pow 3 9 + 317)
+
+8d0cc9a56636b16e  thm SubstitutionFree.flat_threshold_fails_at_nine
+    flat_threshold_fails_at_nine : ~ SpreadYieldsDisjoint 9 3 3
+
+9a785f439b40f31d  thm SubstitutionFree.spread_constant_at_three_is_at_least_four
+    spread_constant_at_three_is_at_least_four : forall c : nat -> nat, (forall k : nat, 2 <= k -> 1 <= c k) -> (forall n k : nat, 1 <= n -> 2 <= k -> SpreadYieldsDisjoint n k (c k)) -> 4 <= c 3
+
+a1c105a4896585e8  thm SubstitutionFree.Intersecting_substitute
+    Intersecting_substitute : forall (a w : nat) (O0 I : Family), Uniform a O0 -> Intersecting O0 -> Intersecting I -> Grounded I (List.seq 0 w) -> Intersecting (substitute w O0 I)
+
+9d9db3e4437c2fd7  thm SubstitutionFree.substitute_iota_lower_bound
+    substitute_iota_lower_bound : forall (a b w : nat) (O0 I : Family), 1 <= b -> Uniform a O0 -> Distinct O0 -> Intersecting O0 -> ~ ContainsKSunflower 3 O0 -> Uniform b I -> Distinct I -> Intersecting I -> ~ ContainsKSunflower 3 I -> Grounded I (List.seq 0 w) -> IotaAtLeast (a * b) (length O0 * PeanoNat.Nat.pow (length I) a)
+
+34d64b8c9f533add  thm SubstitutionFree.iota_nine_at_least_10000
+    iota_nine_at_least_10000 : IotaAtLeast 9 (10 * PeanoNat.Nat.pow 10 3)
+
 976d9410226eec5e  thm Substitution.iota3_squared_is_maximal
     iota3_squared_is_maximal : MaximalIntersecting 9 (substitute 6 iota3 iota3)
 
