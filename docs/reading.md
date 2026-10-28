@@ -98,7 +98,7 @@ literature, resolved.
 | A1b | `log2_up` over-estimates, so the axiom demands more of `r` | **Confirmed** | [Ra20, p. 3]: *"All logarithms are taken base 2."* `Nat.log2_up (S (k*n)) ≥ log₂(kn)`. |
 | A1c | The axiom quantifies over all `r ≥ threshold`; Rao fixes one `r` | **New, unrecorded, now discharged** | [Ra20, p. 2] states Lemma 2 at `r(p,k)` only. `ALWZ.fractional_form_gives_the_axiom_shape` now derives the quantified shape from the fractional single-threshold form. |
 | A2 | Whether the `log` is necessary in the *disjointness* form is open; "looked for and not found" | **Confirmed, and found** | [Ra20, p. 2]: *"As far as we know, it is possible that Lemma 2 holds even when r(p,k) = O(p). Such a strengthening of Lemma 2 would imply the sunflower conjecture of Erdős and Rado."* [ALWZ20] Lemma 3.1 and [BCW21] Lemma 4 are both tightness examples for the **robust/covering** form, not disjointness. |
-| A3 | [AHS72] gives `ι(3)=10`, `g(ab) ≥ g(a)ι(b)^a`, and the exact `f(2,k)` | **Unreadable (primary); corroborated (secondary, now from rendered pages)** | Paywalled, see the entry below for the four attempts. [Kup25] pp. 5–6 rendered confirms both quoted sentences verbatim. |
+| A3 | [AHS72] gives `ι(3)=10`, `g(ab) ≥ g(a)ι(b)^a`, and the exact `f(2,k)` | **READ IN FULL 2026-10-28 — partly confirmed, partly corrected.** ~~**Unreadable (primary); corroborated (secondary, now from rendered pages)**~~ | Paywalled, see the entry below for the four attempts. [Kup25] pp. 5–6 rendered confirms both quoted sentences verbatim. **Primary, [AHS72] and [AbHa74] read in full on 2026-10-28 (9/9 and 12/12 rendered pages, from copies supplied by the user).** [AHS72] p. 382, Theorem 1, is the exact `φ(2,k)` (`k(k−1)` for odd `k`, `(k−1)² + (k−2)/2` for even). p. 386 defines *"ψ(n) is the largest integer for which there exists a family F of ψ(n) sets such that (a) each set has n elements, (b) no three members of F have pairwise the same intersection and (c) any two members of F have non-empty intersection."* — that is `ι(n)` — and says *"It can be shown that ψ(3) = 10"* with the family `{(123)(124)(135)(146)(156)(236)(245)(256)(345)(346)}` *"(see [2])"*, [2] being Abbott–Gardner. **The substitution as printed is on `ψ` alone:** p. 387, *"LEMMA 6. ψ(ab) ≥ ψ(a) ψ(b)^a."* The form `g(ab) ≥ g(a)·ι(b)^a` that this repository states is **not printed**; the first half of Lemma 6's proof (p. 387, *"First we show that F* ∈ P(ab)"*) uses only `F ∈ P(a)` and inner families in `Q(b)`, so it proves that form too — this repository's reading of the proof, not a sentence of the paper. | **Review note (2026-10-28):** the printed step *"there is a least integer m … such that F^(1), F^(2), F^(3) are all distinct"* (p. 388) need not exist (with `a = 2`, block patterns `(A,A,B)` and `(C,D,D)`); a block where exactly two agree separates the intersections directly, so the conclusion stands after a two-line repair, which Lemma 6 itself also needs. The first half runs over pp. 387–388, and *"F_im ∈ P(a)"* on p. 388 should read `P(b)`. **Repaired and kernel-checked 2026-10-28:** `coq/SubstitutionFree.v` proves the substitution sunflower-free (`substitute_no_sunflower`) with the gap closed by `triple_collapse` — three members of a uniform sunflower-free family with equal pairwise intersections are equal — applied to the outer generators and to the inner members of every block; the printed *"we must therefore have F1 = F2 = F3"* for the outer generators skips the case of exactly two equal — an omission the paper's own `K_ij = ∅` with equal sizes covers — and the same lemma covers it explicitly. p. 388 also ends *"This completes the proof of Lemma 5"*, which should read Lemma 6. Both `g(ab) ≥ g(a)·ι(b)^a` and Lemma 6 as printed are theorems there (`docs/roadmap.md` §88). **Theorem 3's lower bound, 2026-10-28:** (22), and (23) up to its last `>`, are kernel-checked in `coq/SubstitutionRate.v` (`iota_three_power`, `iota_theorem3`, `g_theorem3`; Theorem 3 (p. 382, free constant `c`) in integer form is `g_log_loss`; Lemma 5 in general is `iota_plus_g`) — `docs/roadmap.md` §89–§90. Read on the rendered p. 388: (21) prints a strict `>` that is an equality (`ψ(3) = 10`); (22) prints its exponent as *"10(3^k − 1)/2"*; (23)'s last `>`, `10^{(n−l)/2}2^{l−1} > 10^{(n − log n)/2}`, needs a base of `log` the page does not state — COMPUTED for `n ≤ 200000`: with natural log it fails only at `n = 1, 2, 4, 5, 8`, with base 10 at 105830 values — and fails at `n = 1` in every base (§90.3). |
 | A4 | Erdős–Rado 1960's constant is `(k−1)ⁿ·n!` | **Refuted as "the original constant"; the Coq theorem is unaffected** | [ErRa60] read in full (6pp, 85–90). Theorem III's constant is `b!a^{b+1}(1 − 1/(2!a) − … )` for *systems with repeats*; the distinct-family bound the paper actually derives is `φ(a,b) ≤ b!a^b(1 − 1/(2!a) − …)`, **strictly sharper** than `b!a^b`. |
 | A5 | `f(n,3) ≳ 10^{n/2}` is still the record in July 2026 | **Confirmed** (no counterexample found; search described below) | arXiv sweep of `all:sunflower AND cat:math.CO` and `all:"sunflower-free"`, 2024-06 → 2026-07, 30 hits: no lower-bound improvement. [Kup25] p. 6 still states `φ(k,3) ⩾ 10^{(k/2)−c log k}` as the bound. |
 | A6 | Current best upper bound | **Confirmed: `(Cp log k)^k`, Bell–Chueluecha–Warnke** | [BCW21] read in full (3pp). Theorem 1, p. 1: *"There is a constant C ≥ 4 such that Sun(p,k) ≤ (Cp log k)^k for all integers p, k ≥ 2."* One 2025 preprint claims better; see A6a. |
@@ -110,11 +110,11 @@ literature, resolved.
 
 | # | Claim | Verdict | Evidence |
 |---|---|---|---|
-| B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **Not found under three vocabularies — sunflower, `Δ`-system, `s`-star — and the `[63]`/`[54]` chase is now COMPLETE. Still NOT EXHAUSTIVE.** The row's earlier caveat is discharged; its "not exhaustive" is not. | Not in [Kup25] (read in full, 66pp), [Ra20] (8pp), [ALWZ20] (19pp), [Lovett] (28pp), [Rao25] (12pp). **The caveat that opened this row is now chased.** [Kup25] fn. 6, p. 21 records that *"it is in this paper that `Δ(s)`-systems are called **`s`-stars**, a name that appears in the follow-up papers of Frankl and Füredi."* The two papers it names are [Kup25] `[63]` = Füredi, *On finite set-systems whose every intersection is a kernel of a star*, Disc. Math. 47 (1983) 129–132, and `[54]` = Frankl–Füredi, *Forbidding just one intersection*, JCTA 39 (1985) 160–176 — **both reference-list entries confirmed here by rendering [Kup25] pp. 63–64**. A commissioned session (N+15) then rendered and read both papers in full, 4/4 and 17/17 pages: [Fü83] p. 129 defines *"a `Δ`-system … or a `t`-star"* and proves a structural theorem; [FF85] p. 163 defines *"a strong `Δ`-system or an `s`-star"* and uses stars as a proof tool. **Neither names an intersecting sunflower-free extremal function.** **And the third vocabulary has a trap — see rule 33:** in [FT85] (Füredi–Tuza, *Hypergraphs without a large star*, Disc. Math. 55 (1985) 317–321, 5/5 rendered) a *"`t`-star"* is a **different object** — `t` sets each with a private point — not a `Δ`-system. Same word, same author, adjacent years. Still unfetched, so still not exhaustive: Chung 1983 ([Kup25] `[17]`, the origin of "`s`-star") and Chung–Frankl 1987 (`[19]`). |
-| B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **Not found — and the negative now stands on the RIGHT KIND of evidence.** The rule-18 objection is discharged: session N+15 rendered 136 pages and read 96 as images, no text extraction at any point, and the chain is on none of them. Still **NOT EXHAUSTIVE**. | Same corpus, plus the nine sources of the N+15 rendered pass. Specifically: [Kup25] pp. 5–7 (the `φ(k,s)`/AHS pages) carry `φ(k,3) ⩾ 10^{k/2 − c log k}` and Observation 2 `φ(a+b,s) ⩾ φ(a,s)φ(b,s)` — **no intersecting-side function and no two-sided chain**; §1.7 pp. 47–53 none; [Fü83], [FF85], [FT85], [Fü80], [EL75], [KM17] none. **The nearest published relative, and it is close enough to name:** [EL75] p. 612 Theorem 7, `r!(e−1) ≤ M(r) ≤ r^r`, where `M(r)` is the maximum number of edges of a 3-chromatic `r`-uniform *clique* — that is, an intersecting family with `τ = r` — and p. 623 §4 states the same bounds for *"`r`-uniform cliques which cannot be covered by less than `r` points"*. So an intersecting extremal function **is** bounded on both sides in print; the hypothesis is `τ`, not sunflower-freeness, and no unrestricted sunflower-free function stands beside it. Corpus still not searched: [AHS72] (unreachable, see below), Abbott–Hanson 1974/1977, Kostochka's `Δ`-system survey. But see B10a — the *ingredients* are all published. |
+| B9 | `ι(b)` (max *intersecting* sunflower-free family) is unnamed | **REFUTED 2026-10-27; earliest source read 2026-10-28: [AHS72] p. 386 (1972)** — `ι` is named there as `ψ(n)`, and later in [ABCDN26] p. 3, Kalai 22224 and MathOverflow 163689 (2014); A17 had already refuted the same claim in this file. Superseded verdict: ~~**Not found under three vocabularies — sunflower, `Δ`-system, `s`-star — and the `[63]`/`[54]` chase is now COMPLETE. Still NOT EXHAUSTIVE.** The row's earlier caveat is discharged; its "not exhaustive" is not.~~ | Not in [Kup25] (read in full, 66pp), [Ra20] (8pp), [ALWZ20] (19pp), [Lovett] (28pp), [Rao25] (12pp). **The caveat that opened this row is now chased.** [Kup25] fn. 6, p. 21 records that *"it is in this paper that `Δ(s)`-systems are called **`s`-stars**, a name that appears in the follow-up papers of Frankl and Füredi."* The two papers it names are [Kup25] `[63]` = Füredi, *On finite set-systems whose every intersection is a kernel of a star*, Disc. Math. 47 (1983) 129–132, and `[54]` = Frankl–Füredi, *Forbidding just one intersection*, JCTA 39 (1985) 160–176 — **both reference-list entries confirmed here by rendering [Kup25] pp. 63–64**. A commissioned session (N+15) then rendered and read both papers in full, 4/4 and 17/17 pages: [Fü83] p. 129 defines *"a `Δ`-system … or a `t`-star"* and proves a structural theorem; [FF85] p. 163 defines *"a strong `Δ`-system or an `s`-star"* and uses stars as a proof tool. **Neither names an intersecting sunflower-free extremal function.** **And the third vocabulary has a trap — see rule 33:** in [FT85] (Füredi–Tuza, *Hypergraphs without a large star*, Disc. Math. 55 (1985) 317–321, 5/5 rendered) a *"`t`-star"* is a **different object** — `t` sets each with a private point — not a `Δ`-system. Same word, same author, adjacent years. Still unfetched, so still not exhaustive: Chung 1983 ([Kup25] `[17]`, the origin of "`s`-star") and Chung–Frankl 1987 (`[19]`). **REFUTED 2026-10-27 — `ι` is named, and this repository already held the page that names it.** [ABCDN26] p. 3 (read in full, 35/35, and recorded in Tier 3b below since September) defines `ψ(w,k,2)` as the maximum over intersecting `w`-uniform families without a `k`-sunflower, so `ι(w) = ψ(w,3,2)`, and attributes `ψ` to Abbott–Hanson, Discrete Math. 8 (1974) — second-hand; the 1974 paper is still unread (A20). Earlier first-hand namings, primary text through the WordPress and StackExchange APIs: Kalai, Polymath10 comment **22224** (2015-11-04), and "Mirko", MathOverflow 163689, comment of **2014-04-21** (*"Make this a function g(k)"*, his `g` being the intersecting function). The novelty audit has to run against this repository first: the row stayed "not found" for a month after the paper that refutes it was read here — and it was already refuted in this file by A17 (Pálvölgyi, Polymath10 comment 23193, 2015-12-23), which B9 never cross-referenced; the failure is two internal misses, not one. **Rule-17 search of 2026-10-27** (`reports/Sunflower novelty prior art search.md`; notes in `research_notes/Sunflower novelty prior art search/`). **Update 2026-10-28, primary:** [AHS72] p. 386 defines `ψ(n)` = `ι(n)` in 1972 (A17). [AHS72] and [AbHa74] read in full on 2026-10-28 (9/9 and 12/12 rendered pages, from copies supplied by the user). The general-`k` intersecting function `ψ(n,k,2)` — [ABCDN26]'s `ψ(w,k,2)`, Pálvölgyi's `f^{int}` — is [AbHa74] p. 9 (1974), so [ABCDN26]'s attribution of `ψ(w,k,2)` to 1974 is correct; the `k = 3` case is [AHS72]'s. |
+| B10 | The sandwich `2ι(b) ≤ g(b) ≤ 2b·ι(b)`, and the `k=3` equivalence | **NO NOVELTY 2026-10-27** — every part is in print or on Polymath10, or is a two-line composition of printed inequalities; only the single two-sided display is not found. Superseded verdict: ~~**Not found — and the negative now stands on the RIGHT KIND of evidence.** The rule-18 objection is discharged: session N+15 rendered 136 pages and read 96 as images, no text extraction at any point, and the chain is on none of them. Still **NOT EXHAUSTIVE**.~~ | Same corpus, plus the nine sources of the N+15 rendered pass. Specifically: [Kup25] pp. 5–7 (the `φ(k,s)`/AHS pages) carry `φ(k,3) ⩾ 10^{k/2 − c log k}` and Observation 2 `φ(a+b,s) ⩾ φ(a,s)φ(b,s)` — **no intersecting-side function and no two-sided chain**; §1.7 pp. 47–53 none; [Fü83], [FF85], [FT85], [Fü80], [EL75], [KM17] none. **The nearest published relative, and it is close enough to name:** [EL75] p. 612 Theorem 7, `r!(e−1) ≤ M(r) ≤ r^r`, where `M(r)` is the maximum number of edges of a 3-chromatic `r`-uniform *clique* — that is, an intersecting family with `τ = r` — and p. 623 §4 states the same bounds for *"`r`-uniform cliques which cannot be covered by less than `r` points"*. So an intersecting extremal function **is** bounded on both sides in print; the hypothesis is `τ`, not sunflower-freeness, and no unrestricted sunflower-free function stands beside it. Corpus still not searched: [AHS72] (unreachable, see below), Abbott–Hanson 1974/1977. (Kostochka's `Δ`-system survey is [Kos00], read; removed from this list 2026-10-27.) But see B10a — the *ingredients* are all published. **SUPERSEDED 2026-10-27: every part is in print or on Polymath10, or is a two-line composition of printed inequalities — NO NOVELTY; what remains this repository's own is the machine-checked statement (`coq/IotaRate.v`).** By part: **lower half** `2ι ≤ g` — Mirko, MO 163689, 2014-04-21, *"f(k)≥2g(k)"*; [ABCDN26] p. 6 eq. (3.5); [FW25b] p. 4 records only the values `ι(3) = 10`, `g(3) = 20`, attributed to Abbott–Hanson 1974 (A17 below). **Equivalence at `k = 3`** — Kalai, Polymath10 comment 22224 (2015-11-04), verbatim: *"Also an upper bound k! for the intersecting case gives you an upper (k+1)! for the general case since for any collection without delta system of size r you get an intersecting family by adding a new element to your ground set and then adding it to all the sets."* — the cone route (B11), with the trivial converse. **Upper half** `g ≤ 2b·ι` — PARTIAL: the argument is Gowers's, Polymath10 comments 22235 (2015-11-04) and 22417 (2015-11-12), the latter verbatim *"The simple upper bound is around 2km. This one proves by taking a maximal disjoint subfamily, which contains at most two sets, and using the pigeonhole principle to find at least m sets that all contain the same element from the union of this subfamily."* — stated for the Ramsey question (three disjoint sets or `m` intersecting), not for `ι`; and [FW25b] p. 5, rendered, eq. (14) *"m_k(r⃗) ⩽ k r_0 · m_{k−1}(r_1,…,r_{k−1})"* with eq. (12) at `s = 1` composes to the stronger `g(b) ≤ 2b·g(b−1) ≤ 2b·ι(b)`, a composition the paper does not write. **The two-sided chain as one display: NOT FOUND, NOT EXHAUSTIVE** — a presentation point, not a result. Still unread: [AHS72], Abbott–Hanson 1974 and 1977 (ScienceDirect 403 from this container; OpenAlex lists them as free to read on the publisher site), Guo–Wang–Wu, *Sunflower problems in 3-uniform intersecting hypergraphs*, Appl. Math. Comput. 535 (2027) 130313 (title only), the Polymath10 wiki (404). **Rule-17 search of 2026-10-27** (`reports/Sunflower novelty prior art search.md`; notes in `research_notes/Sunflower novelty prior art search/`). **Update 2026-10-28, primary ([AHS72] and [AbHa74] read in full on 2026-10-28 (9/9 and 12/12 rendered pages, from copies supplied by the user)):** the lower half is [AHS72] p. 386, Lemma 4, *"φ(n) ≥ 2ψ(n)"*, 1972. The cone is the `a = 1` case of [AHS72] Lemma 5, *"ψ(a + b) ≥ ψ(a) φ(b)"* (p. 386), since `ψ(1) = 1` (two 1-sets meet only if equal); the paper does not state that case, and the specialisation is this repository's. Neither paper has the upper half `g ≤ 2b·ι` or the `k = 3` equivalence. **Correction (review of 2026-10-28):** both ingredients of the upper half *are* in [AHS72]: p. 381 eq. (2), Erdős–Rado 1960 quoted, *"φ(n, k) ≤ n(k − 1) φ(n − 1, k) − (k − 1)(n − 1)"*, at `k = 3` is `g(b) ≤ 2b·g(b−1) − 2(b−1)`, and Lemma 5 at `a = 1` is `g(b−1) ≤ ι(b)`; so the upper half is a two-line composition of inequalities printed in 1972, and the `k = 3` equivalence is Lemmas 4 and 5. Neither paper writes the composition. |
 | B10a | "the intersecting side has never been pointed at" | **REFUTED** | [ALWZ20] §4.2, titled *Intersecting set systems*, Theorem 4.2 p. 13: *"If F is an intersecting w-uniform set system, and for all T, \|F_T\| ≤ κ^{−\|T\|}\|F\|, then κ = O(log w)."* Different hypothesis from `ι` (spread, not sunflower-free), but the claim as written is false. Withdrawn in `coq/IotaRate.v`; the elementary version is now `IotaRate.intersecting_not_spread_above_uniformity`. |
 | B10b | Theorem 4.2 is independent of the spread lemma, so it could give the modern bound at `k=3` without the axiom | **REFUTED, and the target it supported is closed** | The *proof* is on the same page as the statement, four lines below, and had never been read. [ALWZ20] p. 13 introduces it with *"We note the following corollary of Theorem 2.5:"* and proves it in full by *"If `F` is intersecting then it is not `(1/2, 1/2)`-satisfying (apply Lemma 1.6 for `r = 2`). Thus by the improvement of Theorem 2.5 from [19], it cannot be `(C log w)`-spread for a large enough constant `C`."* Theorem 2.5 **is** the spread lemma and [19] is Rao, i.e. `ALWZ.Rao20_lemma2`. Formalising 4.2 would consume the axiom, not demote it. Independently, the chain it was to feed is arithmetically worse than Erdős–Rado — see `docs/roadmap.md` §21.2 and `coq/IntersectingSpread.v`. Rule 6: page 1 is not the paper, and neither is the statement of a theorem on it.|
-| B11 | The cone `g(b−1) ≤ ι(b)` is folklore | **Technique found; exact statement still not found** | Hunter's answer uses the same move — *"start with a maximal `t`-sunflower-free collection in uniformity `k−1`, and then add a unique 'dummy element' to each edge"* — in exactly this context. His dummies are *distinct per edge* (which grows the ground set); the repository adds *one shared* fresh point to every member (which makes the family intersecting). Same idea, different construction, different conclusion. No novelty was claimed and none is now. |
+| B11 | The cone `g(b−1) ≤ ι(b)` is folklore | **FOUND 2026-10-27** — verbatim in [ABCDN26] (3.4) and Kalai 22224, and as the `s = 1` case of [FW25b] (12). Superseded verdict: ~~**Technique found; exact statement still not found**~~ | Hunter's answer uses the same move — *"start with a maximal `t`-sunflower-free collection in uniformity `k−1`, and then add a unique 'dummy element' to each edge"* — in exactly this context. His dummies are *distinct per edge* (which grows the ground set); the repository adds *one shared* fresh point to every member (which makes the family intersecting). Same idea, different construction, different conclusion. No novelty was claimed and none is now. **FOUND 2026-10-27: verbatim in two places, and as a special case in a third.** [FW25b] p. 5, rendered, refereed: *"Applying (11) with ℓ = 1, m_1(s) = s yields m_{k+1}(s, r_0,…,r_{k−1}) ⩾ s m_k(r⃗). (12)"* — not verbatim; its `s = 1`, `r⃗ = (2,…,2)` case is `ι(k+1) ≥ g(k)`. [ABCDN26] p. 6, Lemma 3.3 (*"Star and split"*), eq. (3.4): *"ψ(w,k,2) ≥ f(w−1,k)"*, proved by adding one new point to every member — this repository's shared-point construction exactly. Kalai, Polymath10 comment 22224 (2015-11-04), quoted in B10. **Rule-17 search of 2026-10-27** (`reports/Sunflower novelty prior art search.md`; notes in `research_notes/Sunflower novelty prior art search/`). **Update 2026-10-28:** also the `a = 1` case of [AHS72] Lemma 5 (p. 386), *"ψ(a + b) ≥ ψ(a) φ(b)"*, with `ψ(1) = 1` — a specialisation the paper does not write (B10). |
 | B12 | `τ(substitute(G,H)) = τ(G)τ(H)`, and the maximality of the AHS families | **Split verdict, and the halves now go opposite ways. The OPERATION is FOUND, published in 1975. The IDENTITY is still not found, now on rendered evidence rather than on a broken extractor.** | [Kup25] read in full; §1.7 *Approaches to constructing bases* is this material under names this repository did not search for — **base**, **nucleus**, **generating set**, **crosscut**, **minimal cover**. p. 52: *"the produced sets ... give exactly the family of **minimal covers** for the sets in `F`. These are the bases of the type used by Frankl in [44]. In a recent paper of Frankl [52], the family of minimal covers is efficiently analyzed in order to bound the maximal diversity of an intersecting family."* — and the construction is *"essentially due to Erdős and Lovász [39]"*. **Session N+15 followed `[39]` to the source and the operation is there verbatim.** [EL75] p. 620, construction (d), rendered: *"Let `H` be a 3-chromatic `r`-uniform clique, `V(H) = {1, …, n}`. Let `H₁, …, Hₙ` be 3-chromatic `ρ`-uniform cliques, `V(Hᵢ) ∩ V(Hⱼ) = ∅`. Define `H* = {E_{i₁} ∪ … ∪ E_{iᵣ} : Eᵢ ∈ Hᵢ, {i₁, …, iᵣ} ∈ H}`. Then `H*` is a `(ρr)`-uniform 3-chromatic clique."* That is `substitute` — `coq/Substitution.v` — and the paper records that it preserves intersecting-and-not-2-colourable. **What is multiplied there is the SIZE, not `τ`:** p. 621, proof of Theorem 6, *"`|H^{(k+1)}| = 7^{3^k} · |H^{(k)}|`, whence `|H^{(k)}| = 7^{(3^k−1)/2}`"* — iterated substitution with the Fano plane, the same shape as AHS's `10^{b/2}` with a 7-set base. The paper's `τ` statements are p. 621 (the `r^r` upper bound uses only *"that `H` is an `r`-uniform clique which cannot be covered by less than `r` points"*) and p. 623 §4; **no line states `τ(H*)` in terms of `τ(H)` and `τ(Hᵢ)`**, and `τ(H*) = ρr` is implied only through 3-chromaticity, never written. [Fü80] (*Maximal intersecting families of finite sets*, JCTA 28 (1980) 282–289, 8/8 rendered) is the follow-up on maximal intersecting families with `τ = k`: Proposition 3 gives `|H| ≤ k^r` with equality *"only in the case described in the statement"* — a maximality statement for a `τ`-extremal family, but for the Erdős–Lovász problem, not for AHS sunflower-free families. **So: cite [EL75] for the operation. The identity and the AHS maximality remain not found.** See also the [52] mis-citation recorded in session N+15. |
 | B13 | `ρ` multiplicativity, and the AHS spreadness profile `κ = b^{log₃2}` | **Not found — and, like B10, the negative now rests on rendered pages rather than on extraction.** Still **NOT EXHAUSTIVE**. | Not in [ALWZ20] §3 (read), not in [Kup25] (read in full). Session N+15 re-rendered the two regions that could hold it. [Kup25] §1.7 p. 49, rendered: *"A family `F` is `r`-spread for some `r > 1` if `|F(X)| < r^{−|X|}|F|` for any set `X`. We will see that `r`-spread families in many ways behave like sunflowers with `r` petals, albeit they are much easier to find."* — spread is a **tool** here, via Kupavskii–Zakharov **peeling-simplification** and **spread approximation**. pp. 49–53 contain **no spreadness computed for any explicit construction and no product rule**; pp. 5–7 (the AHS pages) contain no spreadness statement at all. **The exponent `log₃ 2` appears on no rendered page.** The object the profile describes *is* in print — [EL75] p. 621's iterated 3-fold substitution `|H^{(k)}| = 7^{(3^k−1)/2}` on `3^k`-uniform families — but no degree or spreadness statistic is computed for it there. Corpus not re-rendered: ALWZ20 §3, Rao 2020, Lovett's notes, Kupavskii–Zakharov 2022 — all previously extraction-read only, so rule 18 still stands over that part. |
 | B14 | Zach Hunter's ground-set equivalence, credited to MathOverflow | **FOUND AND READ IN FULL** | `mathoverflow.net/a/463150`, 30 Jan 2024, answering domotorp's question 462924. Retrieved verbatim through the StackExchange API after `WebFetch` was blocked for the site. Quoted in full below; it confirms the equivalence *and* contains two further things this repository has. |
@@ -130,6 +130,12 @@ literature, resolved.
 | B19g | The absolute-one-level corner of B19d's 2×2 is empty | **REFUTED — it is the Duke–Erdős function, and the corpus already holds the paper** | [Kup25] p. 57, rendered, §1.9.3: `f(n,k,ℓ,s)` is the largest `k`-uniform family with no `Δ(s)`-system of kernel size `ℓ`, which the survey states for `k=3, ℓ=2` as *"no pair of elements is contained in `s` triples"* — that is `deg T < s` for every `\|T\| = ℓ`, an **absolute cap at one level**. Quoted values: `f(n,3,2,s) ~ (1/6)sn²`; `f(n,k,ℓ,s) = Θ_k(s^(ℓ+1)n^(k−ℓ−1))` for `k ≥ 2ℓ+2` (Bradač–Bucić–Sudakov). So Rao's condition is the **simultaneous, geometric** version of Duke–Erdős's single-level cap. **With one precision, found on p. 34 and worth the correction:** `f(n,k,ℓ,s)` forbids a `Δ(s)`-*system* with kernel of size `ℓ`, and a sunflower needs **pairwise disjoint petals**, so that condition is strictly *weaker* than `deg T < s` for `|T| = ℓ` — except at `ℓ = k−1`, where the petals are singletons and disjointness is automatic. p. 57's phrasing is exactly that case (`k=3, ℓ=2`). So Duke–Erdős occupies the corner **exactly at `ℓ = k−1`** and only approximately below it. `dukeerdos.pdf` has been in the corpus throughout and was never connected to `I(m,r)`. |
 | B19f-KM | Whether [KM17]'s `B*(H)` layers impose sunflower-freeness as a hypothesis, or derive it | **CONFIRMED BY RENDERING, both exponents exactly as previously extracted — and it is a DERIVED structural decomposition, not an imposed hypothesis. A23's verdict stands.** | [KM17] p. 5, rendered: *"Define `B*(H)` to be the set of `T ⊂ V(H)` such that (i) `0 < |T| < r`, and (ii) `T` is the core of an `(r+1)^{|T|}`-sunflower in `H`."* Then `B′(H)` = inclusion-minimal members, `B″(H)` = edges containing no member of `B*(H)`, `B(H) = B′ ∪ B″`, `B_i` = members of size `i`. p. 6, rendered: *"Claim. `B_i` contains no `(r+1)^{i−1}`-sunflower."* with a half-page proof, then *"Applying the Claim and Lemma 11 yields `|B_i| < f((r+1)^{i−1}, i)` for all `i > 1`."* The **only** hypotheses on `H` (p. 5) are *"intersecting `r`-graph with `τ(H) ≥ 2` and `|H| > hm″(n,r)`"*, and the paper attributes the machinery: *"The following crucial claim proved by Frankl can be found in Lemma 1 in [6, 8]"* — Frankl's `Δ`-system base construction, applied with petal count `r+1` chosen by the authors. **So it is a theorem *about* intersecting families that *produces* a sunflower-free base, not a theorem *bounding* intersecting families *assumed* sunflower-free with prescribed `τ`.** It does not replace the `ι(4,11)` computation. Note the degree-type condition is **relative** (`n` large, `|H| ~ (r−2)·C(n, r−2)`), stated at **one** level at a time but for **every** `i` — Rao's shape in the fractional setting, which is B19d's *relative / every level* corner again. |
 | B19f-KN | Where [KN24] sits in B19d's 2×2, from the primary source rather than from the survey | **Absolute, one level — B19g confirmed from the primary.** Read pp. 1–8 of 61. | p. 1, abstract, rendered: the Duke–Erdős problem *"determine the maximum size of an `n`-vertex `k`-uniform hypergraph without a sunflower with `s` petals and a kernel of size `ℓ`"* — the extremal function `f(n,k,ℓ,s)`, an **absolute** cap (`< s` petals on a kernel of size exactly `ℓ`) at a **single** level `ℓ`. Main results pp. 2–4: exact `f(n,k,ℓ,s)` for `n ≥ n₀(k,s)` in several `(k,ℓ)` ranges plus extremal structure, via the `Δ`-system method with spread approximations. **No intersecting hypothesis and no cap at every level.** B19g reached this corner through [Kup25] p. 57; this reaches it through the paper. |
+| B23 | An induced matching inside the support of a tensor bounds its slice rank from below (`docs/roadmap.md` §75.2, hypothesis 2(a)) | **CONFIRMED in print; not new** | [BCCGNSU17] Prop. 4.8, p. 18, rendered: *"If M is a tricolored sum-free set in an abelian group H, then \|M\| ≤ slice-rank(D_H)"*, proved by *"slice-rank(F\|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)"* and Lemma 4.7 (diagonal ⇒ slice rank `\|X\|`, p. 15); the proof uses only the support. Also [ST16] Lemma 3 (projections do not raise rank) with Example 5, and [KL26] p. 2. See Tier 3c. |
+| B24 | A published slice-rank or dimension barrier for **vector**-sunflower testers at `k = 3` | **PARTIAL 2026-10-27** — for product testers, a two-line corollary of [BCLSZ25] Thm. 1.8 (the corollary itself not in print); the barrier as a stated published result: NOT FOUND, NOT EXHAUSTIVE. Superseded verdict: ~~**NOT FOUND in the 11 Tier 3c sources (KSS18, CVZ22, CVZ18 added 2026-10-21). NOT EXHAUSTIVE.**~~ | [KL26] Thm. 1 (p. 3) is `k ≥ 4` and the **set** relation on `{0,1}^n`; [BHL26] p. 13 says it *"does not directly apply to our tester"*. [ASU12], [CKSU05], [BCCGNSU17] work at alphabet 3 or over abelian groups; [ST16] read to line 180 of 386. [KSS18] constructs at alphabet `C_q` only; [CVZ22] states the general equalities (tight/oblique/free supports), which `S_D` fails in the standard basis for `D ≥ 4` (`docs/roadmap.md` §77.2). [CVZ18] (read in full) gives the formula and the tools but never treats `S_D`. **Not searched:** [Str91], Pebody, Norin, later work citing [CVZ18]. **UPDATED 2026-10-27: a published theorem gives the barrier for product testers in two lines, over every field.** [BCLSZ25] Theorem 1.8 (p. 9, rendered): *"Let T ∈ F^{n1} ⊗ F^{n2} ⊗ F^{n3} be concise. Then Q̰(T) ≥ (min_ℓ n_ℓ)^{1/3}."* Every one-letter tester supported in `S_D` with nonzero monochromatic entries is concise, so `slice-rank(q^{⊗n}) ≥ D^{n/3 − o(n)}` for every such `q` — `docs/roadmap.md` Lemma 78.C. The corollary is not stated for sunflower testers in any source read; it is this repository's, written "new to this repository", and it is two lines on a published theorem. **Rule-17 search of 2026-10-27** (`reports/Sunflower novelty prior art search.md`; notes in `research_notes/Sunflower novelty prior art search/`). |
+| B25 | The alphabet-indexed multicolored capacity `Λ(D) = lim_n M(D,n)^{1/n}` (`docs/roadmap.md` §75.2) as the obstruction to `D`-uniform vector-tester bounds | **SPLIT. The quantity and `D`-dependent upper bounds on it are IN PRINT; its use as the barrier, and any lower bound growing with `D`, NOT FOUND, NOT EXHAUSTIVE — "new to this repository" for that part only.** The first draft of this row said no Tier 3c source varies the alphabet; a fresh-context review found two that do. | [NaSa17] Remark 7, p. 3, rendered: *"The proofs of theorems 3 and 5 can be extended without modification to handle a multicolored version of the problem analogous to multicolored sum-free sets as defined in [2]."* [BHL26] p. 12: *"The new bound on the vector sunflower problem of Alon, Shpilka and Umans [2] (Theorem 2) extends to indexed multicolored sunflowers [2, 45]"*. [ASU12] Conjecture 6 (p. 8) is alphabet 3 only. Same unsearched list as B24. |
+| B26 | `Λ(D)` is a named quantity: the asymptotic monomial subrank `Q̰_M` of any tensor with support `S_D` | **CONFIRMED from definitions, not a novelty** | [CVZ22] p. 9 defines monomial restriction by generalized sub-permutation matrices and notes `Q_M` depends only on the support; a monomial restriction onto the unit tensor `⟨m⟩` is exactly an induced matching of size `m` in the support (`docs/roadmap.md` §77.1, PROVEN there). p. 10: *"It is known that Q̰_M(⟨Z/3Z⟩_F) = 2.755..."* (asymptotic; tilde on the page) — the `D = 3` value, matching [KSS18] with [BCCGNSU17] Thm. 4.14. |
+| B27 | A `c`-independent lower bound on the asymptotic slice rank of a vector-sunflower tester, and the limit of the free-combinatorial-degeneration technique on `S_D` | **PARTIAL 2026-10-27** — a `c`- and field-independent floor `D^{1/3}` follows from [BCLSZ25] Thm. 1.8; the floor of exactly 3 (`D ≤ 26`) and Lemma 78.B: NOT FOUND, NOT EXHAUSTIVE. Superseded verdict: ~~**NOT FOUND in the 11 Tier 3c sources; NOT EXHAUSTIVE. Written as "new to this repository", per rule 17.** The ingredients are all [CVZ18]'s (Cor. 5.7, Thm. 4.20, Prop. 4.10, Lemma 3.6); what is not found is their application to `S_D` (`docs/roadmap.md` Lemma 78.A) and the cap of 3 (Lemma 78.B).~~ | [CVZ18] read in full (57/57); it treats tight, oblique, free and generic tensors and the cap-set tensor, never `S_D`. [BHL26], [NaSa17] bound the same tensors from above only. Not searched: Bürgisser's and Tobler's theses, [Str91], later work citing [CVZ18]. **PARTIAL 2026-10-27.** A `c`-independent, field-independent floor is in print by a different method: [BCLSZ25] Theorem 1.8 with the conciseness of `q_c` gives `SR̰(q_c) ≥ D^{1/3}` for every `c` over every field (`docs/roadmap.md` Lemma 78.C), which implies Lemma 78.A's floor of 3 for `D ≥ 27`. **Still NOT FOUND, NOT EXHAUSTIVE:** the floor of exactly 3 for `3 ≤ D ≤ 26`, and Lemma 78.B. Read for this: [ST16] to the end, Bürgisser's 1990 thesis (26/26), Sakabe–Doğan–Walter arXiv:2601.21553v2 (20/20; asymptotic slice rank as a minimum over bases for every complex tensor, never `S_D`), [BCLSZ25] pp. 1, 3, 7–11, 13–21; in part: Tobler's 1991 thesis (PDF pp. 2–8, 19–20, 23–24, 46; its "bequeme" supports are the nearest published notion to 78.B's object, applied to generic tensors only), the Wigderson–Zuiddam survey (pp. 1, 30–32, 95–97). Word-located only (weak, rule 2): 32 papers citing [CVZ18]. **Unreachable:** [Str91] (De Gruyter challenge page, DigiZeitschriften 404); the forward citations of [ASU12] (Semantic Scholar rate limit). Not attempted: Pebody, Norin, Fox–Sauermann, [Str88]. **Rule-17 search of 2026-10-27** (`reports/Sunflower novelty prior art search.md`; notes in `research_notes/Sunflower novelty prior art search/`). |
+| A25 | [NaSa17] p. 2 says the **Erdős–Rado** conjecture is equivalent to `c_D < D^{1−ε}` (this file's [NaSa17] entry until 2026-10-20) | **REFUTED — a paraphrase error in this register** | p. 2 re-rendered: *"the now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to proving that c_D < D^{1−ε} … [1, Theorem 2.7]"*. [ASU12] Thm. 2.7 (p. 6, rendered) ties Conjecture 4 to Conjecture 2, which p. 3 states as Erdős–Szemerédi. The [NaSa17] entry is corrected in place; `docs/roadmap.md` §75.1 is the arithmetic of why a `D`-power saving gives nothing for Erdős–Rado. |
 
 ### Tier C — the four proofs, and the formalisation decision
 
@@ -865,10 +871,25 @@ Two further things from the full read:
 * **Theorem 8, p. 4**: `μ₃^S ≤ √(1+C)` where `C ≤ 2.7552` is the capset
   capacity (Ellenberg–Gijswijt), giving `1.938` — weaker than Theorem 3,
   and a clean statement of how the two capacities relate.
+* **Remark 7, p. 3** (all five pages re-rendered 2026-10-20): the proofs
+  of Theorems 3 and 5 *"can be extended without modification to handle a
+  multicolored version of the problem analogous to multicolored sum-free
+  sets as defined in [2]"* — the alphabet-`D` multicolored bound that
+  `docs/roadmap.md` §75.2 F6 uses (register B25).
 * **Theorem 5, p. 2**: for sunflower-free `A ⊂ (Z/DZ)^n`, `|A| ≤ c_D^n`
   with `c_D = (3/2^{2/3})(D−1)^{2/3}`. That is the [ASU12] Conjecture 4
-  setting, and p. 2 notes the Erdős–Rado conjecture is equivalent to
-  `c_D < D^{1−ε}` [ASU12, Thm 2.7].
+  setting. **Corrected 2026-10-20:** this bullet used to say that p. 2
+  notes *the Erdős–Rado conjecture* is equivalent to `c_D < D^{1−ε}`.
+  It does not. p. 2, re-rendered (PyMuPDF, 110 dpi): *"we remark that the
+  now resolved Erdős-Szemerédi conjecture for k = 3 is equivalent to
+  proving that c_D < D^{1−ε} for some ε and all D sufficiently large [1,
+  Theorem 2.7]"*. The Erdős–Rado statement on the same page is the
+  `D`-uniform one: *"if there exists a constant C independent of D such
+  that any 3-sunflower-free set in (Z/DZ)^n has size at most C^n, then
+  Conjecture 1 holds for k = 3 with c_3 = e·C"*. The paraphrase had
+  exactly the Erdős–Rado / Erdős–Szemerédi conflation `docs/references.md`
+  warns about, and in the direction that makes a power saving in `D` look
+  like progress on Erdős–Rado. It does not: `docs/roadmap.md` §75.1.
 
 ### [Mis26] Mishra, *Erdős Rado Sunflower Theorem for Shifted Families*, arXiv:2606.02667v2
 
@@ -908,7 +929,7 @@ results) instead. Five hits post-date the Tier 3 list:
 
 ```
 2026-09-24  2609.30263  Thresholds and spread in set systems of bounded VC-dimension   [read, delegated]
-2026-09-22  2609.27044  Limitations of the slice rank method in additive combinatorics [abstract only]
+2026-09-22  2609.27044  Limitations of the slice rank method in additive combinatorics [abstract only; read in full 2026-10-20, Tier 3c]
 2026-09-07  2609.07268  The exponent of harmonic LCM avoidance                         [abstract only]
 2026-09-05  2609.06175  Sunflower-Free Uniform Families: Recursive Constructions ...   [read, delegated]
 2026-07-17  2609.18995  Bounded VC-dimension implies the Erdős–Rado sunflower conj.   [read]
@@ -1030,9 +1051,421 @@ artifact, noted while reading its code: its README cites a
   tensor supported exactly on the `k`-sunflower relation has maximal slice
   rank, ruling out exponential savings by that method. Abstract only; it
   bears on `coq/SliceRank.v`'s framing (the method is a `k = 3`
-  phenomenon) and on nothing proved.
+  phenomenon) and on nothing proved. **Superseded: read in full on
+  2026-10-20, see Tier 3c [KL26].**
 * **arXiv:2609.07268**, Luo–Yang–Zhu (7 Sep 2026): harmonic-LCM exponent
   `γ_k` via weighted sunflower-free families. Abstract only.
+
+---
+
+## Tier 3c — the vector-tester route (session of 2026-10-20)
+
+Read for `docs/roadmap.md` §75. **Rendering deviation from rule 1,
+recorded:** `pdftoppm` is not installed in this container; every page
+below was rendered with PyMuPDF 1.26.3 (`page.get_pixmap(dpi=110)`) and
+looked at as an image. Pages rendered and read: [CVZ18] 1–57, [KSS18]
+1–10 and [CVZ22] 1–26 (added 2026-10-21), [BHL26] 1–16, [KL26] 1–11,
+[ASU12] 3–14, [CKSU05] 1–10, [BCCGNSU17] 1–27, [ALWZ20] 15–17, [NaSa17]
+1–5. No quotation below comes from extracted text. The one non-PDF source,
+[ST16], is a blog post retrieved as JSON through the WordPress API (rule
+31), with formulas taken from the LaTeX `alt` text the JSON carries.
+
+**One identifier was recalled rather than looked up, and was wrong.**
+`arXiv:1612.07342` was fetched for Sawin–Tao; it is *"Towards New
+Frontiers in the Exploration of Charmless Non-Leptonic B Decays"*
+(Fleischer, Jaarsma, Vos). The Sawin–Tao notes are not on arXiv; the
+WordPress search API (`public-api.wordpress.com/rest/v1.1/sites/terrytao.wordpress.com/posts/?search=slice%20rank`)
+returned post 9271. The same failure as the `[ASU12]` note above; the
+same rule applies.
+
+### [BHL26] Bucić, He, Lee, *Proof of the Erdős–Szemerédi sunflower conjecture*, arXiv:2610.26686v1
+
+**Read in full: 16 of 16 rendered pages.** v1, 19 Oct 2026 (arXiv API
+`<published>2026-10-19T16:32:32Z`), unrefereed.
+
+* **Theorem 1, p. 2:** *"For every integer k ≥ 3 and every integer n ≥ 1,
+  any subset of 2^[n] not containing a sunflower consisting of k sets has
+  size at most 3(2 − 1/(16k³))^n."* A ground-set (Erdős–Szemerédi) bound,
+  not an Erdős–Rado one.
+* **Theorem 2, p. 3:** *"Let k ≥ 3 and D, n ≥ 1 be integers. Then
+  V_k(D,n) ≤ (C_k · D^{1−1/(k−1)})^n, where C_k = (2k)^{2/(k−1)}."* At
+  `k = 3`, `C_3 = 6` and the bound is `(6√D)^n`; p. 12: *"for k = 3 our
+  argument does improve the O(D^{2/3})^n bound from [45] to O(√D)^n"*.
+* **Definition of the vector problem, p. 2:** *"a k-sunflower in [D]^n is
+  a collection of k pairwise distinct vectors x_0, …, x_{k−1} ∈ [D]^n such
+  that, in each coordinate, their entries are either all equal or pairwise
+  distinct."*
+* **Lemma 3, p. 4** (the dimension argument; proof pp. 4–5 read):
+  *"Let k ≥ 2, and let V ⊆ U be finite sets. Let f : ⟨U⟩^k → Q be
+  k-diagonal on V. Suppose that there is a finite-dimensional Q-vector
+  space P of functions from U to Q, with a basis p_1, …, p_d, such that
+  f(x_0, …, x_{k−1}) = Σ_{i=1}^{k−1} Σ_{j=1}^{d} p_j(x_i) G_{i,j}(x_0, …,
+  x̂_i, …, x_{k−1}) for some functions G_{i,j} : ⟨U⟩^{k−1} → Q … Then
+  |V| ≤ dim P."* p. 4 calls it a refinement of *"the usual (see [53,
+  Lemma 1]) argument with diagonal tensors"*.
+* **The tester, p. 5:** *"For a function c : ⟨[D]⟩^k → Q, which is
+  nonvanishing on rainbow tuples, we define a function q_c"* — `1` on
+  monochromatic tuples, `c` on rainbow ones, `0` otherwise — and
+  `T_c(x_0, …, x_{k−1}) = Π_{i∈[n]} q_c((x_0)_i, …, (x_{k−1})_i)`. **So
+  `c` is required to be nonzero on every rainbow tuple**; the `c` Lemma 6
+  builds is (p. 8) *"nonvanishing on rainbow tuples and vanishes
+  elsewhere"*. Zeros on rainbow tuples are outside the paper's class,
+  though Lemma 3 itself would accept them (§75.2).
+* **p. 11, verbatim:** *"The implication in the other direction remains
+  open, although Alon, Shpilka, and Umans [2] showed that if one can show
+  an exponential upper bound in the vector variant of the problem (namely
+  V_k(D,n)) which is independent of the alphabet size D, then one would
+  prove the Erdős-Rado Conjecture. Our bounds, while yielding a polynomial
+  saving in alphabet size, remain heavily alphabet-dependent."*
+* **p. 13, on [KL26]:** *"Their obstruction concerns the set-sunflower
+  relation. Our construction instead gives a tester for vector
+  sunflowers, and we transfer the resulting vector bound to set families;
+  thus their result does not directly apply to our tester."*
+* **p. 13, AI statement:** the proof of Theorem 2 *"was found by ChatGPT 6
+  Astra Pro"*; *"The proof has been verified in Lean 4.35; the
+  verification will be made available on the Palomar repository."* That
+  Lean development was **not** looked for or checked.
+* Steps checked on the page: Lemma 3's proof; Observation 5; the Claim in
+  Lemma 6 (the interpolation keeps `R_h` nonzero exactly on rainbow
+  prefixes); Lemma 7's pigeonhole and monomial count; the `D ≤ 4k²`
+  case of Theorem 2 (`C_k D^{1−1/(k−1)} ≥ D ⟺ D ≤ (2k)² = 4k²`); the
+  Chernoff step (with `μ = n(k−1)/D`, `t = n/(k−1)`, `(eμ/t)^t =
+  (e(k−1)²/D)^{n/(k−1)} ≤ (4k²/D)^{n/(k−1)}`). **No error found** in those
+  steps. Two labelling slips, harmless: p. 8 ends Lemma 6's proof *"This
+  completes the proof of Theorem 6"*, and p. 11 says *"Applying Theorem 8"*
+  for Proposition 8.
+
+### [KL26] Karingula, Lovett, *Limitations of the slice rank method in additive combinatorics*, arXiv:2609.27044v1
+
+**Read in full: 11 of 11 rendered pages.**
+
+* **Theorem 1, p. 3:** *"Let F be any field, k ≥ 4, and n ≥ 0. Every
+  tensor T : ({0,1}^n)^k → F that faithfully realizes the sunflower
+  relation satisfies sr(T) = 2^n."* **Corollary 2, p. 3:** distinct-input
+  realisations have `sr(T) ≥ 2^{n−k}`. Both are about the **set**
+  relation on `{0,1}^n` and **`k ≥ 4`**; at `k = 3` Naslund–Sawin's
+  `(3/2^{2/3})^{n+o(n)}` (their eq. (2), p. 3) stands.
+* p. 2, the two facts hypothesis 2(a) of §75.2 rests on: *"Restricting the
+  inputs independently cannot increase slice rank, since a restricted
+  slice is still a slice or is zero. A tensor is diagonal if it vanishes
+  unless x_1 = ··· = x_k. If all its diagonal entries are nonzero, its
+  slice rank is |X| [7]."*
+* p. 4: partition rank may do better; *"we obtained a lower bound of
+  1.96^n for 4-sunflowers … We omit the proof"*. Not checkable.
+* **Bearing here:** no barrier for the vector tester at `k = 3`; BHL p. 13
+  says the same.
+
+### [ASU12] — what this session added (pp. 3–14)
+
+* **Conjecture 2, p. 3** is Erdős–Szemerédi: *"There exists ε > 0 such
+  that any family F of subsets of [n] (n ≥ 2) of size |F| ≥ 2^{(1−ε)·n}
+  contains a 3-sunflower."*
+* **Conjecture 3, p. 5:** *"For every k there is an absolute constant b_k
+  so that for every D and every n any set of at least b_k^n vectors in
+  Z_D^n contains a k-sunflower."* **Theorem 2.6, p. 5:** *"If Conjecture 1
+  holds for c_k then Conjecture 3 is true for b_k = c_k. Similarly, if
+  Conjecture 3 holds for b_k, then Conjecture 1 is true with c_k = e · b_k."*
+* **The proof of 3 ⇒ 1, p. 6 — the reduction §75.1 costs:** *"Given a
+  family F of c^s subsets of U we shall define a corresponding family
+  inside Z_D^s, for some large D. Indeed, we can assume w.l.o.g. that
+  |U| ≤ s · c^s. For convenience assume that U = [D] for D ≤ s · c^s. Pick
+  a map from [D] to [s] uniformly at random from all such maps. For a
+  given s-set A ⊂ [D], the probability that A was mapped injectively to
+  [s] is exactly s!/s^s > e^{−s}."* The alphabet is the ground set.
+* **Conjecture 4, p. 6** (weak, `D`-dependent): *"There is an ε > 0 so
+  that for D > D_0 and n > n_0, any set of at least D^{(1−ε)n} vectors in
+  Z_D^n contains a 3-sunflower."* **Theorem 2.7, p. 6** makes it
+  equivalent to **Conjecture 2**, Erdős–Szemerédi — not to Erdős–Rado.
+* **Multicolored, p. 8:** *"We say that such a triple (x, y, z) is an
+  ordered sunflower if the set {x, y, z} is a sunflower in Z_3^n … We say
+  that a collection of ordered triples contains a multicolored sunflower
+  if it contains three triples, (x^(1), y^(1), z^(1)), (x^(2), y^(2),
+  z^(2)), (x^(3), y^(3), z^(3)), not all equal, for which {x^(1), y^(2),
+  z^(3)} form a sunflower."* **Conjecture 6** asks for `3^{(1−ε)n}` at
+  alphabet 3 only. p. 13, Figure 2's caption: *"it would not be overly
+  surprising if everything to the left of Conjecture 3 and 4 in this
+  figure turned out to be false."*
+* **The lower bound, pp. 12–13:** *"we obtain a lower bound of
+  (2^{4/3} − o(1))^n > 2.51^n on the maximum cardinality of a collection
+  of ordered sunflowers in Z_3^n × Z_3^n × Z_3^n containing no
+  multicolored sunflower"*, from the strong-USP capacity `≥ 2^{2/3}` of
+  [CKSU05] through Theorem 3.7 (pp. 10–12; Lemma 3.8 is [BCS97] Lemma
+  15.31, a degeneration made into a restriction by level sets, p. 12).
+
+### [CKSU05] Cohn, Kleinberg, Szegedy, Umans, *Group-theoretic algorithms for matrix multiplication*, arXiv:math/0511460v1 (FOCS 2005)
+
+**Read in full: 10 of 10 rendered pages** (proceedings pp. 379–388).
+**Proposition 3.8, p. 383:** *"For each k ≥ 1, there exists a strong USP
+of size 2^{k−1}(2^k + 1) and width 3k."*, followed, outside the
+proposition, by *"It follows that the strong USP capacity is at least
+2^{2/3} and ω < 2.48."* Everything is over the three
+symbols `{1,2,3}`; there is **no alphabet parameter**, so nothing here
+speaks to how the multicolored quantity grows with `D`. Lemma 3.2's
+`3/2^{2/3}` cap on USP capacity (p. 382) and Conjecture 3.4 are the
+objects [BCCGNSU17] later refutes.
+
+### [BCCGNSU17] Blasiak, Church, Cohn, Grochow, Naslund, Sawin, Umans, *On cap sets and the group-theoretic approach to matrix multiplication*, Discrete Analysis 2017:3, arXiv:1605.06702v4
+
+**Read in full: 27 of 27 rendered pages** (corpus file
+`blasiak_capset.pdf`).
+
+* **Proposition 4.8, p. 18 — hypothesis 2(a), in print:** *"If M is a
+  tricolored sum-free set in an abelian group H, then |M| ≤
+  slice-rank(D_H)."* Proof: *"When we restrict a function F : X × Y × Z →
+  F to subsets X_0, Y_0, Z_0, we can also restrict any decomposition as in
+  (4.1), showing that slice-rank(F|_{X_0×Y_0×Z_0}) ≤ slice-rank(F)."* then
+  Lemma 4.7 (p. 15: a diagonal has slice rank `|X|`). The argument uses
+  nothing about `D_H` beyond its support, so it holds for every tensor and
+  every induced matching in its support.
+* **Theorem A′, p. 2:** *"There exists an absolute constant δ = 2ε =
+  0.05663… such that if H ≅ (Z/qZ)^n for some prime power q, then every
+  tricolored sum-free set in H has size at most 3 · |H|^{1−δ/log q}."* At
+  `q = 3` that is `3·(3e^{−δ})^n` with `3e^{−δ} = 2.8348…` (computed this
+  session from `δ = log((2/3)2^{2/3})`, as p. 23 defines it).
+* **Lemma 3.4, p. 8:** a *border* tricolored sum-free set (a degeneration)
+  of size `|M|` and range `t` gives genuine ones of size `|M|^N/(2Nt+1)³`
+  in `H^N` — the level-set device, the one tool here that turns a
+  degeneration lower bound into an induced-matching lower bound.
+* **Theorem 4.14, p. 22:** *"If H is an abelian group H ≅ (Z/qZ)^n × G
+  where q is a prime power, then every tricolored sum-free set in H has
+  cardinality at most 3 · |H| · J(q)^n."* At `q = 3`, `G` trivial, that is
+  `3·(3J(3))^n` with `3J(3) = inf_{0<x<1}(1+x+x²)x^{−2/3} = 2.755104…`
+  (from (4.10), p. 20; minimised numerically this session) — sharper than
+  Thm. A′, which p. 3 says is stated *"with a slightly worse exponent as
+  we have stated it uniformly in p"*. p. 22: Theorem 4.14 is *"known to
+  be sharp up to a subexponential factor by [14, Theorem 2], conditional
+  on a conjecture … later proved independently in [18] and [19]"* —
+  [KSS], Norin, Pebody. [KSS] was read in full on 2026-10-21 (entry
+  [KSS18] below); Norin and Pebody were not.
+
+### [ST16] Sawin, Tao, *Notes on the "slice rank" of tensors*, What's New, 24 Aug 2016
+
+WordPress post 9271 (JSON `author` field `williamsawin`; the post opens
+*"[This blog post was written jointly by Terry Tao and Will Sawin.]"*).
+**Read: lines 1–180 of a 386-line plain-text conversion of the JSON
+`content` field (41,293 characters)** — the introduction through the
+statement of Proposition 6 and the start of its proof. Lines 181–386
+(Propositions 7–11, the entropy optimisation, the capset and
+Naslund–Sawin computations) **not read**; a keyword listing showed their
+statements, which is not reading them.
+
+* **Lemma 3:** for linear maps `φ_j`, `rank((⊗φ_j)(v)) ≤ rank(v)`, with
+  equality when every `φ_j` is injective — restriction to sub-alphabets is
+  a coordinate projection, so it cannot raise slice rank.
+* **Example 5:** a diagonal `Σ_t c_t e_{1,t} ⊗ ⋯ ⊗ e_{k,t}` with every
+  `c_t ≠ 0` *"has rank d"*.
+* **Proposition 4** (lower bound (5)) and **Proposition 6** (asymptotic
+  lower bound (11)): with total orders on the index sets, the slice rank
+  of `v^{⊗n}` is at least `exp((H′ + o(1))n)`, `H′` the best min-marginal
+  entropy of a distribution on the **maximal elements** `Γ′` of the
+  support. §75.2 (F7) shows this bound is at most `9^{n+o(n)}` on the
+  sunflower support, for every choice of orders.
+  **Correction, 2026-10-28** (`docs/roadmap.md` §91.2; lines 41–82 of a
+  220-line re-retrieval read in full): Proposition 4's bound (5) is
+  **one-shot** — for any tensor `v` with nonzero coefficients on support
+  `Γ` and any total orders on the index sets, slice rank `≥` the slice
+  cover number of the maximal elements `Γ′`; only Proposition 6 is about
+  `v^{⊗n}`. Lemma 91.A: on the sunflower support, under every choice of
+  orders, the undominated diagonal is sunflower-free, so the bound exceeds
+  `V_3(D,n)` only through the non-diagonal maximal elements (§91.3).
+
+### [KSS18] Kleinberg, Sawin, Speyer, *The growth rate of tri-colored sum-free sets*, Discrete Analysis 2018:12, arXiv:1607.00047v3
+
+**Read in full: 10 of 10 rendered pages** (session of 2026-10-21;
+PyMuPDF 1.26.3, 110 dpi). Identifier looked up through the arXiv API
+(`id_list=1607.00047` returned this title and these authors), not
+recalled.
+
+* **Abstract, p. 1:** *"Let θ = min_{ρ>0}(1 + ρ + ··· + ρ^{q−1})ρ^{−(q−1)/3}.
+  Blasiak, Church, Cohn, Grochow, Naslund, Sawin, and Umans … showed that
+  a tri-colored sum-free set in C_q^n has size at most 3θ^n. Between this
+  paper and a paper of Pebody, we will show that, for any δ > 0, and n
+  sufficiently large, there are tri-colored sum-free sets in C_q^n of size
+  (θ − δ)^n."* p. 1: *"this paper will raise the bound to 2.755^n and show
+  that this bound is tight."* p. 2: *"(What we denote θ is called qJ(q) in
+  [5].)"* — so `θ` at `q = 3` is [BCCGNSU17]'s `3J(3) = 2.755104…`.
+* **Theorem 2, p. 2:** *"Fix an integer q ≥ 2. Define θ as above. For n
+  sufficiently large, there are sum-free sets in C_q^n with size
+  ≥ θ^n e^{−2√((2 log 2 log θ)n) − O_q(log n)}."* p. 2: *"In this paper, we
+  show Theorem 2 except for a hypothesis on the existence of a probability
+  distribution satisfying certain properties (Theorem 4). In [20], Pebody
+  will verify Theorem 4, completing the proof of Theorem 2."* [20] is
+  *L. Pebody, Proof of a conjecture of Kleinberg–Sawin–Speyer, Discrete
+  Analysis 2018:13* (p. 10) — **not read**. p. 4, fn. 5: a proof was also
+  claimed by Norin [19], *"but we are unable to confirm all the steps in
+  the argument."*
+* **The construction, pp. 3–8, read step by step.** Work in the *tight*
+  integer relation `T = {(a,b,c) ∈ I³ : a + b + c = q − 1}`, `I = {0,…,q−1}`
+  (p. 3); fix one type class `W` (all vectors with letter distribution
+  `ψ′`, p. 5); Lemma 8 (p. 6): every vector in `W` has coordinate sum
+  `n(q−1)/3`, so a cross triple whose sum is `t` **mod `q`** has it in `Z`
+  as well (Lemma 9, p. 6) — this is the step that lets an induced matching
+  of the integer relation avoid the whole mod-`q` relation; then hash by a
+  random linear map into `F_p` and keep the triples landing on a
+  Behrend-type 3-AP-free set `S` (p. 5), and delete collisions (Lemma 12,
+  pp. 7–8). **No error found.**
+* **Remark 7, p. 6** (assumes `q` odd): converted to a tri-colored
+  **3-AP**-free set, the middle component has a different letter
+  distribution from the other two, unlike `{(x,x,x)}` for an ordinary
+  3-AP-free set, so *"it may be hard to lift our constructions out of the
+  colored setting."* (In the sum-free set itself all three components have
+  distribution `ψ`.) It is about tri-colored against uncolored, not about
+  alphabets.
+* **Bearing here.** `S_3` (`docs/roadmap.md` §75.2) is the mod-3 relation
+  up to relabelling one slot, so this paper gives `Λ(3) ≥ 3J(3)`; its
+  Theorem 4 is checked directly at `q = 3` in `docs/roadmap.md` Lemma 77.C,
+  so with [BCCGNSU17] Thm. 4.14, **`Λ(3) = 2.755104…`** without Pebody.
+  Nothing in it concerns an alphabet other than `C_q`, and its Lemma 8
+  uses the additive structure that `S_D` lacks for `D ≥ 4`.
+
+### [CVZ22] Christandl, Vrana, Zuiddam, *Barriers for fast matrix multiplication from irreversibility*, arXiv:1812.06952v4 (5 Mar 2022)
+
+**Read in full: 26 of 26 rendered pages** (session of 2026-10-21).
+Identifier looked up through the arXiv API (title search), not recalled.
+The published version was not fetched; [BHL26] cites it as *Theory
+Comput. 17 (2021)*.
+
+* **Monomial restriction, p. 9:** *"A generalized sub-permutation matrix is
+  a matrix for which every row and every column has at most one nonzero
+  coefficient. … we write t ≥_M s and say t monomially restricts to s if
+  there are linear maps A_i … the corresponding matrices of which are
+  generalized sub-permutation matrices in the standard basis, such that
+  (A_1, A_2, A_3) · t = s."* and *"Note that the notions Q_M and Q̰_M only
+  depend on the support of the tensor, and not on the particular values of
+  the nonzero coefficients."*
+* **p. 10:** *"It is known that Q̰_M(⟨Z/3Z⟩_F) = 2.755... This is proven
+  in [EG17, Tao16], see also [CVZ18] for the connection to [Str91]."* (the
+  `Q` carries the tilde of the asymptotic version on the page; a first
+  transcription dropped it). It states the value of `Λ(3)` (see
+  `docs/roadmap.md` §77 for `Λ = Q̰_M`), but [EG17] and [Tao16] give only
+  the upper bound, so it is not independent evidence for the lower bound.
+* **Support functionals, p. 16:** `ζ^θ(t) = 2^{ρ^θ(t)}`,
+  `ρ^θ(t) = min_{s≅t} max_{P∈P(supp(s))} Σ_i θ_i H(P_i)`; *"Strassen proves
+  in [Str91] the fundamental property that Q̰(t) ≤ ζ^θ(t)"*; *"Strassen
+  proved that equality holds for the family of tight tensors [Str91]."*
+  **Footnote 3:** *"A tensor t is called tight if for some choice of basis
+  there are injective maps α_1, α_2, α_3 such that for every a ∈ supp(t) it
+  holds that α_1(a_1) + α_2(a_2) + α_3(a_3) = 0."* p. 17: by minimax,
+  `min_θ ρ^θ(t) = min_{s≅t} max_P min_i H(P_i)`.
+* **Asymptotic slice rank, p. 23, eq. (68):** *"Q̰(t) ≤ limsup_n
+  slicerank(t^{⊗n})^{1/n} ≤ min_θ ζ^θ(t)"*; *"for oblique tensors the
+  right-most inequality is an equality [TS16] … and, as mentioned in
+  Section 4.2, for tight tensors both inequalities are equalities [Str91]."*
+  **Eq. (69):** *"It was shown in [CVZ18] that the minimum over the
+  parameter θ of F^θ equals the asymptotic slice rank"*, `F^θ` the quantum
+  functionals (p. 22: `log_2 F^θ(t) = max_{P∈Π(t)} Σ θ_i H(P_i)`, `Π(t)` the
+  moment polytope; *"It is an open problem whether the quantum functionals
+  are efficiently computable."*). **Footnotes 4–5:** oblique = support an
+  antichain in some basis; free = *"in some basis any two different
+  a, b ∈ supp(t) differ in at least two entries. Every tight tensor is
+  oblique and every oblique tensor is free."*
+* **Bearing here.** (i) It names our quantity: `Λ(D)` is the asymptotic
+  monomial subrank of any tester with support `S_D` (`docs/roadmap.md`
+  §77.1). (ii) It supplies, through [CVZ18], an exact formula for the
+  asymptotic slice rank over `C` — the quantity the slice-rank route
+  actually needs — but not a way to evaluate it. (iii) Every equality it
+  quotes needs the support to be tight, oblique or free in some basis;
+  `S_D` is free in the standard basis only at `D = 3` (§77.2).
+  **Nothing in it concerns `S_D` or any alphabet-indexed family.**
+  [CVZ18] (*Universal points in the asymptotic spectrum of tensors*, STOC
+  2018, arXiv:1709.07851 as printed on p. 25), [Str91] and [TS16]-in-full
+  are cited above second-hand and **not read**.
+
+### [CVZ18] Christandl, Vrana, Zuiddam, *Universal points in the asymptotic spectrum of tensors*, arXiv:1709.07851v3 (26 May 2018; STOC 2018)
+
+**Read in full: 57 of 57 rendered pages** (session of 2026-10-21;
+PyMuPDF 1.26.3, 110 dpi). Identifier taken from [CVZ22] p. 25 and
+confirmed through the arXiv API (`id_list=1709.07851` returned this title
+and these authors) before fetching.
+
+* **Asymptotic slice rank over `C`, Corollary 5.7, p. 50:** *"For complex
+  tensors, asymptotic slice rank exists and equals the minimum value of
+  the support functionals over θ ∈ P([k]), SR̰(t) := lim_{n→∞}
+  slicerank(t^{⊗n})^{1/n} = min_{θ∈P([k])} 2^{E^θ(t)}."* (The phrase
+  "support functionals" is on the page; the formula is the quantum
+  functional `E^θ`, and Remark 5.11 item 1, p. 51, restates it with
+  `F^θ`.) So the limit **exists** — the liminf/limsup gap recorded in
+  `docs/roadmap.md` §77.1 is closed over `C`.
+* **The single-letter form, Lemma 5.4 proof, p. 48:** by the minimax
+  theorem *"min_θ E^θ(t) = … = max_{(r_1,…,r_k)∈Δ_t} min_{j∈[k]} H(r_j)"*,
+  `Δ_t` the moment (entanglement) polytope, defined p. 27 as the set of
+  marginal spectra of unit vectors in the orbit closure `G·t` (Theorem
+  3.29, p. 27, characterises it as a Euclidean closure).
+* **Free supports, Theorem 4.20, pp. 39–40:** *"Let t be free. Let
+  θ ∈ P_s(B). Then ρ^θ(t) = E^θ(t) = E_θ(t)."* The proof shows, for a
+  free `supp_C t`, *"that for any P ∈ P(supp_C t) the tuple of ordered
+  marginals of P is in the entanglement polytope Δ_t"* (p. 40). Free is
+  Definition 4.17, p. 39: *"For any x, y ∈ Φ, if x ≠ y, then the tuples x
+  and y differ in at least two positions."*
+* **Monotonicity under degeneration:** Theorem 3.5(4), p. 18, *"If s ⊵ t,
+  then F^θ(s) ≥ F^θ(t)"*, via Lemma 3.6 (p. 19, proof read).
+* **Combinatorial degeneration, Definition 4.9, p. 33:** *"We say that Φ is
+  a combinatorial degeneration of Ψ, and write Ψ ⊵ Φ, if there are maps
+  u_i : I_i → Z (i ∈ [k]) such that for all α ∈ I_1 × ··· × I_k, if
+  α ∈ Ψ \ Φ, then Σ_{i=1}^k u_i(α_i) > 0, and if α ∈ Φ, then
+  Σ_{i=1}^k u_i(α_i) = 0."* **Proposition 4.10, p. 33** (cited to [BCS97]
+  Prop. 15.30, not re-proved there): *"Let f ∈ V_1 ⊗ ··· ⊗ V_k. Let
+  Ψ = supp_C f. Let Φ ⊆ Ψ such that Ψ ⊵ Φ. Then f ⊵ f|_Φ."* **Theorem
+  4.11 and Lemma 4.13, pp. 33–34** (proof read): `Ψ ⊵ Φ` implies
+  `Q̰(Ψ) ≥ Q(Φ)` for the monomial ("free diagonal") subrank.
+* **Remark 4.24, p. 41** summarises the chain
+  `ζ^θ ≥ F^θ = F_θ ≥ ζ_θ` for `θ ∈ P_s(B)`; Remark 5.11, p. 51, the chain
+  `Q̰ ≤ MSR̰ ≤ SR̰ ≤ F^θ ≤ ζ^θ`.
+* **Over other fields:** Theorem 5.9 (p. 50) bounds slice rank from
+  **above** over any field (`SR̰ ≤ ζ^θ`), and Corollary 5.10 (same page)
+  makes asymptotic slice rank equal asymptotic subrank for **tight**
+  3-tensors over any field. The general lower bound of Corollary 5.7 is
+  over `C` only. p. 5:
+  the quantum functionals *"do not play a role for cap sets (we cannot
+  work over C for this problem)"*.
+* p. 37: *"This upper bound was shown to be an equality in the three
+  papers [KSS16, Nor16, Peb16]. Theorem 4.16. s̰_3(Z/3Z) = 3(207 +
+  33√33)^{1/3}/8."* — a third source for `Λ(3) = 2.7551…`.
+* **Bearing here:** `docs/roadmap.md` §78 — a `c`-independent lower bound
+  `SR̰_C(q_c) ≥ 3` for every BHL-type tester, the proof that free
+  combinatorial degenerations of `S_D` cannot give more than 3, and the
+  characteristic-0 scope of all of it.
+
+### [ALWZ20] §5 — the two rainbow conjectures (Secondary B)
+
+Same file and version as the [ALWZ20] entry above (v3); pp. 15–17
+re-rendered this session.
+
+* **Conjecture 5.1, p. 15** (Rainbow sunflower conjecture): *"There exists
+  a constant C such that the following holds. Let F be a w-set system of
+  size |F| ≥ C^w over a ground set X. Assume that the elements of X are
+  colored with either red, green, or blue uniformly and independently at
+  random. Then with high probability, there exists distinct sets S_i, S_j,
+  S_k ∈ F such that if Y = S_i ∩ S_j ∩ S_k, then all elements of S_i \ Y
+  are red, all elements of S_j \ Y are green, and all elements of S_k \ Y
+  are blue."* p. 15: *"Note that Conjecture 5.1 implies Conjecture 1.3 for
+  r = 3. Furthermore, this paper gives a proof of Conjecture 5.1 where C^w
+  is replaced by (log w)^{w(1+o(1))}, and Rao [19] improved the bound to
+  (C log w)^w for some constant C. Unlike in Theorem 1.9, we do not know
+  if (C log w)^w is tight, and in fact we suspect this is not the case."*
+* **Conjecture 5.2, p. 15:** *"There exists a constant C such that the
+  following holds. Let F be a w-set system of size |F| ≥ C^w over a
+  ground set X. Assume that the elements of X are colored with either red
+  or blue uniformly and independently. In addition let S ∈ F be sampled
+  uniformly. Then with high probability, there exists distinct sets S_i,
+  S_j ∈ F such that all elements of S_i \ S are red, all elements of
+  S_j \ S are blue, and S_i ∩ S = S_j ∩ S ⊊ S."* p. 16: *"Conjecture 5.2
+  also implies Conjecture 1.3 for r = 3, but we do not know of any
+  nontrivial bounds for it. It would be interesting to have even a
+  w^{o(w)} bound."*
+* **Cost, rules 14 and 20.** Both conjectures *imply* the `k = 3`
+  conjecture, so as routes their ceiling is the target itself (constant
+  base) and their cost is that each is at least as hard as the target.
+  5.1's best known bound, `(C log w)^w`, is the record's shape and no
+  better, so a route through 5.1 has to remove exactly the `log` the
+  spread route has to remove; nothing in §5 says how. 5.2 has, in the
+  authors' words, no nontrivial bound at all, and the bound they would
+  find interesting, `w^{o(w)}`, is still weaker than the record shape
+  `(C log w)^w` already known for the target — so the first result a
+  route through 5.2 could produce would not move `f(n,3)`. Neither is
+  attempted here; neither is added to `tools/ceiling.py`, whose rows are
+  reductions with a computable best case, not strengthenings of the
+  target.
 
 ---
 
@@ -1235,12 +1668,19 @@ been citing second-hand for the matrix-multiplication obstruction.
   gives `(2.51…)^n` multicolored 3-sunflower-free sets, beating
   `(2.21…)^n` [Edel04] for ordinary 3-sunflower-free sets in `Z_3^n`.
 
+**Session of 2026-10-20: pp. 3–14 rendered and read** (PyMuPDF, 110 dpi;
+pp. 15–16, the rest of the reference list, not read). With the earlier
+pass that is **pp. 1–14 of 16**. What it added is in Tier 3c below: the
+proof of Theorem 2.6 (p. 6), Conjecture 4 and Theorem 2.7 (p. 6), and the
+multicolored material of §3 (pp. 8–13).
+
 ### Also downloaded and rendered, not read
 
 `blasiak_capset.pdf` (27pp, arXiv:1605.06702, Blasiak–Church–Cohn–
-Grochow–Naslund–Sawin–Umans, the cap-set obstruction) and
+Grochow–Naslund–Sawin–Umans, the cap-set obstruction) — **read in full on
+2026-10-20, 27 of 27 pages; see Tier 3c [BCCGNSU17]** — and
 `gmr_dnf.pdf` (27pp, arXiv:1205.3534, Gopalan–Meka–Reingold, DNF
-sparsification).
+sparsification), still not read.
 
 **Coding theory (Schrijver's SDP, Gijswijt, the Terwilliger algebra of
 the Johnson scheme), design-theoretic nonexistence (Fisher,
@@ -1655,7 +2095,7 @@ in the form Rao asks about.
   here"*. `docs/roadmap.md` §22.2's table lists the row flat, with no
   caveat, next to rows that are theorems; both that table and `STATUS.md`
   are corrected in this session's commit. It is the one number in the
-  brief that failed rule 9.
+  brief that failed rule 9. *(2026-10-28: formalised, `coq/SubstitutionFree.v`, `docs/roadmap.md` §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 
 ### A derived route, stated as "the gap", that had never been measured
 
@@ -2366,15 +2806,15 @@ one row that matters. Evidence classes below are exact about that.
 
 | # | Claim | Verdict | Evidence |
 |---|---|---|---|
-| A17 | `ι` is unnamed in the literature (asserted by this repository in every session since N+9) | **REFUTED — it was named in 2015, on a research blog** | Dömötör Pálvölgyi ("domotorp"), comment **23193** on *Polymath 10 Post 3: How are we doing?*, **2015-12-23T17:53:31+03:00**, verbatim: *"A further possible simplification could be to try constructions for intersecting families. If we denote the size of the largest k-uniform intersecting family without an r-sunflower by `f^{int}(k,r)`, then we have `(r-1)\cdot f^{int}(k,r)\le f(k,r)`."* In local notation `f^{int}(k,3) = ι(k)`. **PRIMARY, retrieved and read in this container** — see the retrieval note below; the LaTeX is from the `alt` attributes of the two rendered formula images, which is where WordPress keeps the source. |
+| A17 | `ι` is unnamed in the literature (asserted by this repository in every session since N+9) | **REFUTED, and the earliest source read is 1972: [AHS72] p. 386 names `ι` as `ψ(n)` and proves the doubling as its Lemma 4** (Abbott–Gardner 1969, cited there for `ψ(3) = 10`, is unread and may be earlier). ~~**REFUTED — it was named in 2015, on a research blog**~~ | Dömötör Pálvölgyi ("domotorp"), comment **23193** on *Polymath 10 Post 3: How are we doing?*, **2015-12-23T17:53:31+03:00**, verbatim: *"A further possible simplification could be to try constructions for intersecting families. If we denote the size of the largest k-uniform intersecting family without an r-sunflower by `f^{int}(k,r)`, then we have `(r-1)\cdot f^{int}(k,r)\le f(k,r)`."* In local notation `f^{int}(k,3) = ι(k)`. **PRIMARY, retrieved and read in this container** — see the retrieval note below; the LaTeX is from the `alt` attributes of the two rendered formula images, which is where WordPress keeps the source. **Correction 2026-10-27: not the first.** Pálvölgyi's comment is the source this repository found first, not the earliest. Kalai named the intersecting function in Polymath10 comment 22224 (2015-11-04), seven weeks earlier, and "Mirko" named it and stated `f(k) ≥ 2g(k)` (his `g` intersecting) on MathOverflow 163689 on 2014-04-21 — both primary text through the platforms' APIs. [ABCDN26] attributes `ψ` (p. 3), the doubling (3.5) (p. 6) and `ι(3) = 10` (p. 23) to Abbott–Hanson 1974; [FW25b] p. 4 attributes `ι(3) = 10` and `g(3) = 20` to the same paper (all second-hand; A20). `coq/Palvolgyi.v` keeps its name — `PalvolgyiEquality` is A17b's *equality* remark, which is his — but `Intersecting.doubling_lower_bound` owes the earlier citations. **Primary, [AHS72] and [AbHa74] read in full on 2026-10-28 (9/9 and 12/12 rendered pages, from copies supplied by the user).** [AHS72] p. 386: *"ψ(n) is the largest integer for which there exists a family F of ψ(n) sets such that (a) each set has n elements, (b) no three members of F have pairwise the same intersection and (c) any two members of F have non-empty intersection."* and *"LEMMA 4. φ(n) ≥ 2ψ(n)."* — this repository's `Intersecting.doubling_lower_bound`, in 1972, proved by the same two-disjoint-copies construction (*"suppose each set in F_1 is disjoint from each set in F_2"*). [ABCDN26] and [FW25b] attribute it to Abbott–Hanson 1974; [AbHa74] p. 9 restates it from [AHS72] (*"It was proved in [3] that … φ(n, 3) ≥ 2ψ(n)"*). So the citation `Intersecting.v` owes is [AHS72], and Mirko (2014), Kalai (2015) and Pálvölgyi (2015) are later statements of it. The general-`k` function `ψ(n,k,2)` is [AbHa74] p. 9 (1974), so [ABCDN26]'s and [FW25b]'s attribution of the general function to 1974 is correct; only the `k = 3` case and the doubling go back to 1972. | |
 | A17a | The inequality `(r−1)·f^{int} ≤ f` is this repository's own `Intersecting.doubling_lower_bound` | **YES — and this is the load-bearing hit, not the naming** | At `r = 3` Pálvölgyi's inequality reads `2·ι(k) ≤ g(k)`, which is `Intersecting.doubling_lower_bound` on the nose (proved here by `double`, the same two-disjoint-copies construction). The repository re-derived a December 2015 blog result and built five modules on top of it. That is the citation `Intersecting.v` now owes; it does not change a single proof. |
 | A17b | Pálvölgyi's *equality* remark | **New to this repository, and directly about its central object** | Same comment, continuing verbatim: *"In fact, if I understood well, it is even possible (though unlikely) that equality holds for all values of k and r. This is the case for all best constructions for r=3, but not for r=4, k=3 (see our wiki and Abbott-Exoo)."* At `r = 3` that is `g(k) = 2·ι(k)`, which holds at the two known points (`g(2)=6=2·3`, `g(3)=20=2·10`) and is **stated by its own proposer as unlikely**. Carried as `Palvolgyi.PalvolgyiEquality` (`coq/Palvolgyi.v`), with the kernel checking what it is worth; see `docs/roadmap.md` §36. Note the second sentence: equality is *known to fail* at `r = 4, k = 3`, so this is a conjecture about `r = 3` and nothing wider. |
 | A18 | Nobody has proposed the `ι(4)` search this repository is running | **REFUTED** | Same author, comment **23032**, **2015-12-14T01:50:01+03:00**, verbatim: *"So for example, for k=4, one could try to search for an intersecting sunflower-free family on 10 elements by enumerating all permutation groups of size at most 30 or so, and check whether they yield a solution. Unfortunately, I really have no clue how many such groups there are and I don't have enough confidence in my coding skills to attempt to write such a program, but maybe someone else is more talented."* That is the `ι(4)` ground-set search, and it is the *orbit* method `rust/src/orbit.rs` implements and §13.3 reports as exhausted over 136 (ground, group) pairs. Same idea, arrived at independently, eleven years apart. Gil Kalai replied (comment **23212**, 2015-12-25): *"I will also try to get some experimentation going in a few weeks."* Nothing in any of the seven Polymath10 threads reports that it happened. |
 | A19 | No executed computational work on **intersecting** sunflower-free families exists | **REFUTED BY MY OWN RETRIEVAL — but read the scope line before quoting this row** | Philip Gibbs ("GFP"), comment **22690** on *Polymath10, Post 2: Homological Approach*, **2015-11-25T22:42:32+03:00**, verbatim: *"I have implemented a small variation of the process, where I also require that the family is intersecting."* He then reports, over **100 runs per parameter**, the mean and max family size at fifteen `(k, n)` pairs. His maxima: **`k=3`: 10** (at `n = 7, 10, 13`); **`k=4`: 21, 22, 24, 21** (at `n = 9, 13, 17, 21`); **`k=5`: 42, 46, 58, 49, 52** (at `n = 11 … 31`). See A19a for what those numbers are worth. **Scope, exactly.** The previous version of this row said *"no executed intersecting search **in any refereed source**"*, and that qualified claim still stands — a blog comment is not a refereed source. What is refuted is the unqualified belief the qualified sentence was standing in for, which is how every session since N+9 has used it, and which the commissioned report restated without the qualifier. The lesson is rule 13's again: a negative survives only inside the scope it was searched in, and a scope that lives in a subordinate clause will be dropped by the next reader. Note also that Gibbs's run **predates** Pálvölgyi's proposal by three weeks and is a different method — a random fill, not the permutation-group enumeration of A18. A18's "never executed" is about the permutation-group search and is *not* refuted by this row. |
 | A19a | Where this repository stands against the one executed intersecting computation | **Ahead at `b = 4` and `b = 5`, level at `b = 3`** | `ι(3) = 10` exhaustively (`wide.rs`) against his max 10 — an independent 2015 corroboration of the value, by a different method. `ι(4) ≥ 27` (`Product.iota_four_at_least_27`) against his max **24**. `ι(5) ≥ 78` (§13, `plateau`) against his max **58**. One coincidence worth recording rather than reading into: `docs/roadmap.md` §9 reports `ι(5,10) ≥ 42` as *"the first value ever computed at `b = 5` here"*, and Gibbs's maximum at `(5, 11)` is also **42** — a SAT decision and a hundred random fills, eleven years apart, stopping on the same number. **His search was randomised, not exhaustive**, so none of it is an upper bound and none of it is in tension with anything here; and the repository is strictly better at both rungs where the answer is unknown. `rust/examples/gibbs2015.rs` re-runs all fifteen rows — see A19b. |
 | A19b | The 2015 process is reproducible here, and reproducing it explains its own ceiling | **Reproduced; fourteen of fifteen rows, every mean within 0.5** | `plateau::search` with zero force moves *is* the random-fill process. Re-run at 100 runs per row it gives means 8.49 / 7.55 / 6.83 (`k=3`) against his 8.61 / 7.24 / 6.97, and 17.93 / 17.47 / 17.32 / 17.30 (`k=4`) against his 18.06 / 17.56 / 17.67 / 17.45. `(5, 31)` is beyond `plateau::candidates`' 28-point enumerator and was not re-run. **What the reproduction buys:** at `(4, 9)` — the ground set the 27-member family actually lives on — the fill reaches 27 nineteen times in a million runs. In 100 runs the expected number of hits is 0.002, so the 2015 report of 21 was not near-miss bad luck; the experiment was about five hundred times too small to see the answer once. `docs/roadmap.md` §36.2. |
-| A19c | `ι(4)` is known, or bounded better than `[27, 71]`, or has been searched exhaustively | **NOT FOUND** | Routes (commissioned): arXiv full-text, Google Scholar forward-citation chains from AHS 1972 and from Kostochka's survey, Springer, ScienceDirect, zbMATH, Semantic Scholar. Routes (here, first-hand): all seven Polymath10 comment threads, **434 comments**, read through the WordPress API and grepped for `intersecting`. The completeness is checked rather than assumed — the API returns a `found` total per thread and the seven totals (143, 127, 104, 12, 37, 6, 5) match the number of distinct comments retrieved, so nothing was truncated by paging. No exact value, no improved bound, **no exhaustive intersecting search anywhere**. The interval `[27, 71]` is not a literature interval and should never be cited as one: 27 is this repository's substitution witness and 71 is `PureLink.iota_four_at_most_71_if_iota_three_is_ten`. Both ends are its own. |
-| A20 | The AHS substitution and the value 10 are attributable to Abbott–Hanson–Sauer 1972 | **STILL DISPUTED, and the correction has itself been corrected** | The first report gave Abbott–Hanson, *On finite Δ-systems*, Discrete Math. **8** (1974), 1–12 for `α(3,3) = 10`; the verification report moves it to *On finite Δ-systems II*, Discrete Math. **17** (1977), 121–126, and adds the point that decides how much any of this matters: **`α` is the weak Δ-system function** — `r` sets with *equal* pairwise intersections, not a common core. Kalai says so in the same thread (comment **23773**, 2016-02-04, verbatim: *"r sets with equal pairwise intersecting size are called weak delta system"*), which is first-hand here. So `α` is **a different object from `ι` and from `g`**, and an `α` attribution cannot settle a `g` attribution either way. Row A10 still rests on a rendered page of Kostochka in which the intersecting construction is *"their"* — Abbott, Hanson and Sauer's — and rule 4 forbids preferring an abstract to a rendered page. **Owed: one of the three primaries.** Until then the repository's attribution stands. **What *is* now settled is the bibliography**, from Crossref (`api.crossref.org` — a registry rather than a snippet, and reachable from this container): Abbott–Hanson–Sauer, *Intersection theorems for systems of sets*, **J. Combin. Theory Ser. A 12 (1972), 381–389**, `doi:10.1016/0097-3165(72)90103-3`; Abbott–Hanson, *On finite Δ-systems*, **Discrete Math. 8(1) (1974), 1–12**, `doi:10.1016/0012-365X(74)90103-4`; Abbott–Hanson, *On finite Δ-systems II*, **Discrete Math. 17(2) (1977), 121–126**, `doi:10.1016/0012-365X(77)90139-X`; and, confirming row A13, Abbott–Exoo, *On set systems not containing delta systems*, **Graphs and Combin. 8(1) (1992), 1–9**, `doi:10.1007/BF01271703`. So all three Abbott papers exist with the years both reports gave, and the disagreement is purely about *which one contains the substitution* — a content question a registry cannot answer. Abbott–Gardner 1969 is **not** in Crossref, which is expected of a chapter in an Academic Press volume, so its title stays unconfirmed and `coq/AbbottGardner.v`'s wording is not changed on a report's say-so. |
+| A19c | `ι(4)` is known, or bounded better than `[27, 71]`, or has been searched exhaustively | **SUPERSEDED (stale since September 2026)** — [ABCDN26] claims `ι(4) = 27`. Superseded verdict: ~~**NOT FOUND**~~ | Routes (commissioned): arXiv full-text, Google Scholar forward-citation chains from AHS 1972 and from Kostochka's survey, Springer, ScienceDirect, zbMATH, Semantic Scholar. Routes (here, first-hand): all seven Polymath10 comment threads, **434 comments**, read through the WordPress API and grepped for `intersecting`. The completeness is checked rather than assumed — the API returns a `found` total per thread and the seven totals (143, 127, 104, 12, 37, 6, 5) match the number of distinct comments retrieved, so nothing was truncated by paging. No exact value, no improved bound, **no exhaustive intersecting search anywhere**. The interval `[27, 71]` is not a literature interval and should never be cited as one: 27 is this repository's substitution witness and 71 is `PureLink.iota_four_at_most_71_if_iota_three_is_ten`. Both ends are its own. **STALE since September 2026.** [ABCDN26] Props. 6.7–6.8 (p. 28) claim `ι(4) = 27`, the exclusion by an exhaustive, certificate-free search (Tier 3b entry above), and this repository replicated the exclusion independently (`docs/roadmap.md` §60; [ABCDN26] in `docs/references.md`). The "NOT FOUND" verdict above was true when written and is no longer the state of knowledge; `[27, 71]` is superseded by the claimed `ι(4) = 27`. **Update 2026-10-28:** the lower end is not this repository's own either: [AHS72] p. 388, *"if we take a = b = 2 in Lemma 6, we obtain ψ(4) ≥ 27"*. |
+| A20 | The AHS substitution and the value 10 are attributable to Abbott–Hanson–Sauer 1972 | **RESOLVED 2026-10-28 from the primaries: the substitution, `ψ(4) ≥ 27` and the doubling are [AHS72]; the value 10 is cited there to Abbott–Gardner; the notion in both papers ([AbHa74]'s `Δ(k)`; [AHS72]'s "pairwise the same intersection") is the common-core (strong) one.** ~~**STILL DISPUTED, and the correction has itself been corrected**~~ | The first report gave Abbott–Hanson, *On finite Δ-systems*, Discrete Math. **8** (1974), 1–12 for `α(3,3) = 10`; the verification report moves it to *On finite Δ-systems II*, Discrete Math. **17** (1977), 121–126, and adds the point that decides how much any of this matters: **`α` is the weak Δ-system function** — `r` sets with *equal* pairwise intersections, not a common core. Kalai says so in the same thread (comment **23773**, 2016-02-04, verbatim: *"r sets with equal pairwise intersecting size are called weak delta system"*), which is first-hand here. So `α` is **a different object from `ι` and from `g`**, and an `α` attribution cannot settle a `g` attribution either way. Row A10 still rests on a rendered page of Kostochka in which the intersecting construction is *"their"* — Abbott, Hanson and Sauer's — and rule 4 forbids preferring an abstract to a rendered page. **Owed: one of the three primaries.** Until then the repository's attribution stands. **What *is* now settled is the bibliography**, from Crossref (`api.crossref.org` — a registry rather than a snippet, and reachable from this container): Abbott–Hanson–Sauer, *Intersection theorems for systems of sets*, **J. Combin. Theory Ser. A 12 (1972), 381–389**, `doi:10.1016/0097-3165(72)90103-3`; Abbott–Hanson, *On finite Δ-systems*, **Discrete Math. 8(1) (1974), 1–12**, `doi:10.1016/0012-365X(74)90103-4`; Abbott–Hanson, *On finite Δ-systems II*, **Discrete Math. 17(2) (1977), 121–126**, `doi:10.1016/0012-365X(77)90139-X`; and, confirming row A13, Abbott–Exoo, *On set systems not containing delta systems*, **Graphs and Combin. 8(1) (1992), 1–9**, `doi:10.1007/BF01271703`. So all three Abbott papers exist with the years both reports gave, and the disagreement is purely about *which one contains the substitution* — a content question a registry cannot answer. Abbott–Gardner 1969 is **not** in Crossref, which is expected of a chapter in an Academic Press volume, so its title stays unconfirmed and `coq/AbbottGardner.v`'s wording is not changed on a report's say-so. **Primary, [AHS72] and [AbHa74] read in full on 2026-10-28 (9/9 and 12/12 rendered pages, from copies supplied by the user).** [AHS72] p. 386 (Lemma 4, `φ(n) ≥ 2ψ(n)`; Lemma 5, `ψ(a+b) ≥ ψ(a)φ(b)`), p. 387 (Lemma 6, `ψ(ab) ≥ ψ(a)ψ(b)^a`), p. 388 (*"if we take a = b = 2 in Lemma 6, we obtain ψ(4) ≥ 27 and hence, by Lemma 4, φ(4) ≥ 54"*). The value 10 is *"It can be shown that ψ(3) = 10 … (see [2])"*, [2] = Abbott–Gardner, *On a combinatorial theorem of Erdős and Rado*, to appear (p. 389) — so the value is Abbott–Gardner's (printed 1969, *Recent Progress in Combinatorics* 211–215, per [AbHa74] ref. [2]; unread); [AHS72] is the earliest source read here. [AbHa74] p. 9 restates `ψ`, Lemma 6 (as (21)), Lemma 4 (as (22)) and the `a = b = 2` and `(2,3)` instances from [AHS72], not Lemma 5: *"In [3] the following function is defined: Denote by ψ(n) the largest integer for which there exists a (ψ(n), n) system F which does not contain any Δ(3) system and such that no two sets in F are disjoint."*, [3] = [AHS72]. **The weak-Δ worry does not apply to these two papers:** [AbHa74] p. 1, *"A Δ(k) system is a family of k distinct sets which have pairwise the same intersection"*, and [AHS72] p. 381 uses the same words — equal intersections, a common core, i.e. a sunflower. What Kalai's comment 23773 calls a weak Δ-system is a different notion and not the one in these papers. Abbott–Hanson 1977 (*II*) is still unread. | |
 | A21 | Rows A14 (greedy-cover barrier), and the AHS-optimality conjecture, and the maximality of substitution families | **All three still NOT FOUND, now against a wider search** | No named conjecture for `ι(b)² ≤ 10^(b−1)` beyond Kostochka's prose; no published maximality statement for the AHS families; no barrier statement for the classical greedy/covering method. Consistent with A12, A14 and §13.1. Three independent negatives do not make an exhaustive search, and none of these is upgraded. **A19b is now a barrier *measurement* for one specific greedy method**, which is not the same thing as a barrier theorem and is not recorded as one. |
 
 | A22 | The covering-number literature can close the `ι(4,11)` rung, because `τ ∈ {3,4}` is forced there and a maximum below 32 would end it (`docs/roadmap.md` §37.5's proposal) | **REFUTED, decisively, and the refutation is checked here** | Commissioned search, then verified first-hand. **`k=4, τ=3`:** the maximum is not bounded below 32. Frankl–Wang, *Intersecting families with covering number three*, arXiv:2207.05487v3, Example 1.3 (JCTB **171** (2025), 96–139) construct `G(n,k)`, and at `n=11` it has **74 members**. ~~it grows like `Θ(n³)`~~ — **corrected in session N+13, see A24a: the growth is `Θ(n)`, and exactly `13n − 69` for `n ≥ 8`.** The conclusion is unaffected, because `13·8 − 69 = 35 > 32` already at the smallest admissible `n`. **`k=4, τ=4`:** this is Erdős–Lovász's `r(k)`; the best bracket is `42 ≤ r(4) ≤ 64`, with the classical `n`-free bound `k^k = 256`. Every one of these is above 32. **So no citation from that literature excludes a 32-member family**, and the reduction below 32 must come from 3-sunflower-freeness. |
@@ -2694,6 +3134,9 @@ answers, and it is the second time this file has recorded it.
    user-agent. That is a fifth failed route. Rows A3, A20 and B10 still
    owe it, and rule 29 applies: this is a statement about the routes
    tried, not about the paper.
+   **Discharged 2026-10-28:** the user supplied copies of [AHS72] and
+   [AbHa74]; both were rendered at 150 dpi and read in full (9/9, 12/12).
+   Rows A3, A17, A20, B9, B10 and B11 are updated from them.
 2. **Chung 1983 (`[17]`) and Chung–Frankl 1987 (`[19]`)** were not
    fetched, so B9 stays non-exhaustive on the vocabulary that started it.
 3. **Frankl 1978 (`[44]`)** is the last of B19f's four targets still

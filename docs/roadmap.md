@@ -7,7 +7,8 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
-> **Starting cold? Read §32 first.** It is the most recent session's
+> **Starting cold? Read §87 first** (the current handover, with addenda §88–§91 consolidated in §92 — start at §92; `STATUS.md`
+> agrees). What follows was written when §32 was: **Read §32 first.** It was the then most recent session's
 > handover: what moved, what did not, the five open questions that would
 > count as new mathematics, and the failure modes to skip. Then §1 (the
 > axiom, and how far its discharge has got), and `docs/reading.md`'s
@@ -598,7 +599,7 @@ and three things follow, all checked:
   computationally in `rust/tests/intersecting.rs` (`g(4) >= 54` and
   `g(6) >= 600`, against the direct sum's 36 and 216), with a control
   showing it breaks the moment the inner family is not intersecting.
-  **Not formalised** — see below.
+  **Not formalised** — see below. *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 * **The rate.** Iterating has fixed point `c^b = c * iota(b)`, i.e.
   `iota(b)^(1/(b-1))` per point.
 
@@ -871,7 +872,7 @@ graph-colouring bound only sees the binary intersecting one, and on
 these parameters the intersection graph is far too dense for it to say
 anything.
 
-**2. Formalise the substitution.** It is verified but not proved, and it
+**2. Formalise the substitution.** *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)* It is verified but not proved, and it
 is the difference between a rate of `20^(1/3) = 2.714` (what the
 doubling plus `DirectSum.lower_bound_power` gives, and what is proved)
 and `10^(1/2) = 3.162` (what AHS reach). The construction decomposes as
@@ -3287,7 +3288,7 @@ where it breaks first:
    4        81           54   g(4) >= 2*iota(4)
    6       729          600   g(6) >= g(2)*iota(3)^2
    7      2187         1080   g(7) >= g(3)*g(4)   (direct sum)
-   8      6561         5400   g(8) >= g(4)*iota(2)^4
+   8      6561         4374   g(8) >= g(4)*iota(2)^4   (was 5400; 54*3^4 = 4374, corrected 2026-10-28)
    9     19683        20000   g(9) >= g(3)*iota(3)^3   <-- BREAKS
   12    531441       540000   g(12) >= g(4)*iota(3)^4
 ```
@@ -4423,6 +4424,7 @@ So the honest state of the sequence is:
 > `IotaRate.substitution_would_refute_the_flat_threshold_at_nine` assumes
 > `LowerBound 9 3 (3^9 + 317)`, which rests on the Abbott–Hanson–Sauer
 > substitution — not formalised here. Every other row is a theorem.
+> *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 
 
 Two exact terms, not two-and-a-conjecture. The interval at `m = 4` is
@@ -5932,7 +5934,7 @@ Abbott–Hanson–Sauer substitution, *"which is not formalised here"*. So
 `r*(9,3) >= 4` is conditional on an unformalised construction, and
 §22.2's table — which lists it flat, in the same column as the proved
 rows — overstates it. Corrected there and in `STATUS.md` in the same
-commit.
+commit. *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 
 The consequence matters for §25.5: it is **not** a theorem of this
 development that the sequence is non-constant. What is a theorem is
@@ -9842,12 +9844,12 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 64 modules, 877 audited theorems, 161 audited
-definitions, 180 mutations, and 43 Rust integration suites. (That count
+The development is now 66 modules, 910 audited theorems, 162 audited
+definitions, 196 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
-`cube_budget.rs` in §49; `coq/VCSunflower.v` and five mutations in §59. The two paragraphs above quoting
+`cube_budget.rs` in §49; `coq/VCSunflower.v` and five mutations in §59; `coq/SubstitutionFree.v` in §88 and `coq/SubstitutionRate.v` in §89. The two paragraphs above quoting
 31 and 32 suites are historical records of earlier sessions and are
 correct as written.)
 
@@ -15815,3 +15817,3364 @@ global context.
   question is still needed, and the ladder's proofs may exceed what the
   kernel can check.
 
+## 75. The vector-tester route at `k = 3`: no ceiling below the target, and the barrier reduced to one capacity
+
+**Tier 2** (barrier and reduction claims, artefacts read from rendered
+pages). Sources: `docs/reading.md` Tier 3c — [BHL26] 16/16 pages, [KL26]
+11/11, [ASU12] pp. 3–14 (pp. 1–14 with the earlier pass), [CKSU05] 10/10,
+[BCCGNSU17] 27/27, [ST16] lines 1–180 of 386, [ALWZ20] pp. 15–17,
+[NaSa17] pp. 1–5.
+
+**One line.** A bound `V_3(D,n) ≤ B(D)^n` on vector sunflower-free sets
+moves `f(n,3)` only if `B` is essentially bounded: any `D^α` with `α > 0`
+gives **no bound at all** through [ASU12] Thm. 2.6, and `A·log D` gives a
+bound **worse than Erdős–Rado 1960**. So "improve the `D`-exponent" is not
+a route; the only route is "remove `D`", which is [ASU12] Conjecture 3 and
+equivalent to the conjecture. Whether the slice-rank / dimension method
+*can* remove `D` reduces to one combinatorial capacity, `Λ(D)`, defined in
+§75.2; its status is **open**, and the two possible answers are not
+symmetric: `sup_D Λ(D) < ∞` would itself prove the conjecture at `k = 3`,
+while `Λ(D) → ∞` would close the route and contradict nothing known.
+
+### 75.1 The ceiling of "improve the `D`-exponent" (rules 14 and 20)
+
+**The reduction, from the rendered page.** [ASU12] p. 6 proves Conjecture
+3 ⇒ Conjecture 1 by colour coding: a family of `m` distinct `s`-sets lives
+on `|U| ≤ s·m` points; a uniformly random map `U → [s]` is injective on a
+fixed `s`-set with probability `s!/s^s`; so some map keeps at least
+`m·s!/s^s` members, and they become a sunflower-free set of vectors in
+`[D]^s` with **`D = |U| ≤ s·m`**. Hence a bound `V_3(D,s) ≤ B(D)^s` gives
+
+```text
+  m · s!  ≤  s^s · B(s·m)^s                                        (★)
+```
+
+and the route's best case is the largest `m` that (★) allows.
+
+* **`B(D) = A·D^α`, `α > 0`.** The right side of (★) grows like
+  `m^{α s}`, so for `α s ≥ 1` every large `m` satisfies it (at `α s = 1`
+  exactly it reads `s! ≤ s^{s+1}A^s`, true for all `m`). **No bound for
+  any `s ≥ 1/α`. PROVEN** (arithmetic on (★)). [BHL26] Thm. 2 at `k = 3`
+  is `A = 6`, `α = 1/2`: void for every `s ≥ 2`.
+* **`B(D) = A·log₂ D`.** `A ≥ 2` is necessary, because `V_3(2,n) = 2^n`
+  (two letters admit no rainbow coordinate, so no three distinct vectors
+  in `[2]^n` are a sunflower: **PROVEN**, one line); the gate uses `A = 2`,
+  the route's best case. The base `x` of the resulting bound satisfies
+  `x ≈ e·A·log₂(s·x^s)`, i.e. grows like `s·log s` for **every** `A > 0`:
+  **superlinear**, so it loses to Erdős–Rado's
+  `~2s/e`, not merely to the record. **VALIDATED** by the gate
+  (exact integers): base 2997 / 6732 / 14846 at `s = 50 / 100 / 200`,
+  against Erdős–Rado's 38 / 75 / 149, measured exponent `g = 1.16`.
+* **The general shape** (derived by the same substitution, not gated):
+  `x ≈ e·B(s·x^s)`. `B = (log D)^β` gives a base polynomial in `s`, so a
+  sublinear one only for `β < 1` and never the record's `log s`;
+  `B = log log D` gives `x ~ log s`, the record shape; only a bounded `B`
+  settles. **PLAUSIBLE** (asymptotics, not checked beyond the two gated
+  instances).
+* **Is `D ≤ s·m` an artefact of this reduction?** A reduction that kept
+  `D` bounded by a **constant** would put the family on `s·D = O(s)`
+  points, a ground-set bound of the `SliceRank.GroundBounded` kind, and
+  that already settles `k = 3` by counting
+  (`IotaGround.ground_bounded_settles_k3_by_counting`), with no vector
+  bound needed. A reduction with `D = g(s)` growing gives `s·g(s)` points,
+  which `GroundBounded` does not cover; through (★) it is void for
+  `D^α` exactly when `g(s)^{α}` is unbounded. A hashing reduction `U → [D']` per coordinate keeps a
+  non-sunflower witness coordinate `(a,a,b)` with probability `1 − 1/D'`,
+  so preserving the witnesses of the `~m³` triples needs `D'` polynomial
+  in `m`. **PLAUSIBLE** that every reduction of this kind pays `D ≥ m^{Ω(1)}`;
+  not proved, and no other reduction was looked for.
+
+`tools/ceiling.py` now carries all three cases, with a fourth verdict,
+*none*, for a reduction whose best case bounds nothing:
+
+```text
+  vector tester, BHL (6 sqrt D)^n via ASU            inf        inf        inf   inf  none: implies no finite bound
+  vector tester, (2 log2 D)^n via ASU               2997       6732      14846  1.16  linear or worse: loses to Erdos-Rado
+  vector tester, D-uniform 3^n via ASU                 9          9          9  0.00  constant: settles k=3
+```
+
+**The premise this refutes was in this repository.** `docs/reading.md`'s
+[NaSa17] entry said the Erdős–Rado conjecture is equivalent to
+`c_D < D^{1−ε}`. NaSa17 p. 2 says *Erdős–Szemerédi* ([ASU12] Thm. 2.7,
+whose Conjecture 2 is Erdős–Szemerédi, p. 3). Corrected in place;
+register row A25. [BHL26] p. 11 states the correct relationship itself:
+their bounds *"remain heavily alphabet-dependent"*.
+
+### 75.2 The barrier question, stated before it is used
+
+Notation. `S_D = {(a,b,c) ∈ [D]³ : a = b = c, or a, b, c pairwise
+distinct}`; `S_D^{(n)} ⊂ ([D]^n)³` the triples that lie in `S_D` in every
+coordinate (the vector sunflower relation, degenerate triples included).
+[BHL26] p. 5: for `c` on rainbow tuples, `q_c = 1` on monochromatic, `c`
+on rainbow, `0` elsewhere, and `T_c = q_c^{⊗n}`. An *induced matching* in
+the support of a tensor `T` on `X×Y×Z` is a set of triples
+`(x_i, y_i, z_i)` with `T(x_i, y_j, z_l) ≠ 0` **iff** `i = j = l`. (The
+`x_i` are then distinct: `x_i = x_j` with `i ≠ j` would make
+`T(x_j, y_i, z_i) = T(x_i, y_i, z_i) ≠ 0` at a non-constant index; likewise
+`y`, `z`.)
+
+**Hypothesis 2(a) — Lemma 75.A. An induced matching of size `m` in the
+support of `T` gives `slice-rank(T) ≥ m`.** **PROVEN in print, not new**
+(register B23): restrict `T` to `{x_i} × {y_i} × {z_i}` — restriction
+cannot raise slice rank ([BCCGNSU17] p. 18; [ST16] Lemma 3; [KL26] p. 2) —
+and the restriction is a diagonal with nonzero entries, whose slice rank
+is `m` ([BCCGNSU17] Lemma 4.7, p. 15; [ST16] Example 5). [BCCGNSU17]
+Prop. 4.8 is this argument for the group tensor; its proof uses only the
+support.
+
+**Hypothesis 2(c) — Lemma 75.B. `dim P ≥ slice-rank(T)/(k−1)`.**
+**PROVEN** (one line). [BHL26] Lemma 3's decomposition
+`f = Σ_{i=1}^{k−1} Σ_{j=1}^{d} p_j(x_i) G_{i,j}(…x̂_i…)` *is* a slice
+decomposition in the sense of [KL26] p. 2 with `(k−1)·d` slices, so
+`slice-rank(f) ≤ (k−1)·dim P`. At `k = 3`, `dim P ≥ slice-rank/2`, and a
+slice-rank lower bound counts against the method up to that factor 2,
+which does not change an exponential rate.
+
+**Hypothesis 2(b), per `c`.** [BHL26] requires `c` nonzero on every
+rainbow tuple (p. 5). For every such `c`, `supp T_c = S_D^{(n)}` exactly,
+so by 75.A–75.B
+
+```text
+  dim P(c)  ≥  slice-rank(T_c)/2  ≥  M(D,n)/2,
+  M(D,n) := the largest induced matching in S_D^{(n)}.
+```
+
+**The bound does not depend on `c` at all inside [BHL26]'s class**, and it
+holds for *every* tensor whose support is exactly `S_D^{(n)}` (any faithful
+realisation of the vector relation, product or not). Lemma 3 of [BHL26]
+also accepts `c` with zeros: `T_c` is still diagonal on every
+sunflower-free set. Then `supp T_c = S_c^{(n)}` with `S_c ⊂ S_D`, the
+bound is the largest induced matching `M_c(D,n)` in `S_c^{(n)}`, and at the
+extreme `c = 0`, `T_0` is the diagonal of size `D^n` and has slice rank
+`D^n`. Nothing below is claimed about `M_c` beyond `M_c ≥ V_3` (F2's
+argument works for every `S_c`).
+
+**`M(D,n)` is [ASU12]'s multicolored quantity with the alphabet freed.**
+[ASU12] p. 8 defines, over `Z_3^n`, collections of ordered sunflowers with
+no *multicolored sunflower* — three triples, not all equal, whose
+`x^(1), y^(2), z^(3)` form a sunflower. Reading "form a sunflower" by
+Definition 2.5 on the three listed vectors (so two equal and one different
+is not a sunflower — this reading is ours, the page does not discuss the
+case), such a collection is exactly an induced matching in `S_3^{(n)}`.
+`M(D,n)` replaces `Z_3` by `[D]`.
+
+What is known about it:
+
+| | statement | status |
+|---|---|---|
+| F1 | `M(D, n₁+n₂) ≥ M(D,n₁)·M(D,n₂)` (product of matchings: a non-constant index triple is non-constant in one factor, whose block then leaves `S_D`), and `M` is nondecreasing in `D` (`S_{D'}` is `S_D` restricted to a sub-alphabet). So `Λ(D) := lim_n M(D,n)^{1/n} = sup_n M(D,n)^{1/n}` exists (Fekete) and is nondecreasing | PROVEN |
+| F2 | `M(D,n) ≥ V_3(D,n)`: `{(x,x,x) : x ∈ A}` is induced exactly when `A` is sunflower-free | PROVEN |
+| F3 | **`sup_D Λ(D) < ∞` implies the conjecture at `k = 3`.** By F1, `M(D,n) ≤ Λ(D)^n ≤ L^n`; by F2, `V_3(D,n) ≤ L^n` for all `D`, so every set of at least `b^n` vectors with `b > L` contains a 3-sunflower — [ASU12] Conjecture 3 at `k = 3` — and Thm. 2.6 gives Conjecture 1 with `c_3 = e·b` | PROVEN given [ASU12] Thm. 2.6 (read) |
+| F4 | `M(D,1) = 2` for every `D ≥ 2`: no single coordinate carries an induced matching of size 3. `D = 9` decides all `D` (three triples use at most nine letters, and `S_D` depends only on the equality pattern) | COMPUTED: exhaustive, `tools/multicolored/m1.py` at `D = 2..9`; the reduction to `D = 9` PROVEN |
+| F5 | `2.519… = 2^{4/3} ≤ Λ(3) ≤ 3J(3) = 2.7551…`, with `3J(3) = inf_{0<x<1} (1+x+x²)x^{−2/3}` ([BCCGNSU17] (4.10), p. 20; evaluated this session, minimum at `x = 0.59307`). `S_3 = {(a,b,c) : a+b+c ≡ 0 mod 3}` (a pattern `(a,a,b)` sums to `2a+b`, which is `0` only when `b = a`), so `M(3,n)` is the largest tricolored sum-free set in `F_3^n`. Upper: [BCCGNSU17] Thm. 4.14 (p. 22) at `q = 3`, `|M| ≤ 3·(3J(3))^n` (Thm. A′'s `3e^{−δ} = 2.8348` is its weaker uniform form). Lower, in what was read: [ASU12] pp. 12–13 from [CKSU05] Prop. 3.8. **`Λ(3) = 2.7551…` exactly** if p. 22's report holds — that Thm. 4.14 *"is known to be sharp up to a subexponential factor"* by Kleinberg–Sawin–Speyer with Norin and Pebody — which were not read | upper bound and `2^{4/3}`: PROVEN in print (read); the identification of `S_3`: PROVEN; equality: CONDITIONAL on three unread papers |
+| F6 | `Λ(D) ≤ D` always; `Λ(D) ≤ (3/2^{2/3})(D−1)^{2/3}` for `D ≥ 3` (Theorem 5's hypothesis, p. 2) by [NaSa17] Remark 7 (p. 3: the proof of Thm. 5 *"can be extended without modification to handle a multicolored version"*); and `Λ(D) ≤ 6√D` for `D > 36`: [BHL26]'s `c` is nonzero on rainbow tuples, so `M(D,n) ≤ slice-rank(T_c) ≤ 2·dim P ≤ 2(6√D)^n` (Lemma 7 and the Chernoff step of Thm. 2, pp. 8–9), as [BHL26] p. 12 itself says: the bound *"extends to indexed multicolored sunflowers [2, 45]"*. **So the alphabet-`D` multicolored quantity, with `D`-dependent upper bounds, is in print** (register B25) | the NaSa17 bound: claimed in print without a separate proof; the `6√D` bound: CONDITIONAL on [BHL26] (unrefereed; steps checked) |
+| F7 | Sawin–Tao's lower bound (11) ([ST16] Prop. 6: orders on `[D]`, lexicographic on `[D]^n`, maximal elements `Γ′`) is at most `9^{n+o(n)}` on support `S_D`, for every choice of orders. A maximal rainbow `(a,b,c)` has `a` among the top 3 of its order (else some `a′` above `a` avoids `b, c` and `(a′,b,c)` dominates); a maximal `(a,a,a)` has `a` among the top 2 of some order (else each up-set has ≥ 3 letters, and three distinct representatives form a dominating rainbow triple). So each projection of `Γ′` has at most `3 + 6 = 9` letters and `H′ ≤ log 9`. **That technique, in the standard basis with product (lexicographic) orders, cannot exhibit a `D`-growing barrier.** Props. 4 and 6 also allow other bases and Prop. 4 arbitrary orders on `[D]^n`; those are not covered | PROVEN (in the stated scope) |
+| F8 | small values, §75.4 | COMPUTED |
+
+**Verdict on step 2.** The barrier quantity for the whole of [BHL26]'s
+class — indeed for every faithful vector tester — is `M(D,n)`, and the
+question is **whether `Λ(D)` is unbounded in `D`**:
+
+* if `Λ(D) ≥ D^δ` (or merely `Λ(D) → ∞`), no tester whose support is
+  `S_D^{(n)}` gives a `D`-uniform bound by slice rank or by `dim P`: the
+  route is dead for that class, and nothing known is contradicted;
+* if `sup_D Λ(D) < ∞`, there is no induced-matching barrier — but proving
+  that *is* proving the conjecture at `k = 3` (F3), so "the route
+  survives" cannot be established more cheaply than the target. And even
+  then the true obstruction is the asymptotic slice rank
+  `σ(D) := inf_c liminf_n slice-rank(T_c)^{1/n} ≥ Λ(D)` (liminf: slice rank is not known to be submultiplicative), which can exceed `Λ`.
+
+Neither branch is settled here: **status open** (outcome (c) of the brief).
+**Update, §78.7 (2026-10-27):** no product tester gives a `D`-uniform
+`b^n` bound, whatever `Λ` does — `σ(D) ≥ D^{1/3}` for every `c` over every
+field, by [BCLSZ25] Theorem 1.8 (Lemma 78.C). This is a fixed-`D`,
+`n → ∞` statement, as this branch's `Λ` argument also was; it does not
+bound the method in §75.1's colour-coding regime `D = s·m`. `Λ(D)` stays
+open as a quantity, and F3 stands.
+Rule 17: the quantity itself is **in print** — [NaSa17] Remark 7 and
+[BHL26] p. 12 bound it from above (F6), which an independent review of
+this section caught after the first draft had called it unnamed. What is
+new to this repository is only its use as the obstruction to
+`D`-uniform tester bounds, and the asymmetry F3; register rows B24–B25
+record what was searched (eight sources) and what was not
+(Kleinberg–Sawin–Speyer, Norin, Pebody, Christandl–Vrana–Zuidam,
+Strassen's support functionals).
+
+### 75.3 Route ledger
+
+| route | best case (`tools/ceiling.py`) | status |
+|---|---|---|
+| any `D`-power saving, `(A·D^α)^n` ([BHL26], [NaSa17]) | none | dead as a route to `f(n,3)`; [BHL26] proves Erdős–Szemerédi, which it is |
+| `(A·log D)^n` | superlinear base | dead: loses to 1960 |
+| `(A·log log D)^n` | record shape | not gated; PLAUSIBLE from §75.1's shape rule |
+| `D`-uniform `b^n` (ASU Conj. 3) | constant | equivalent to the target |
+| slice rank / `dim P` with a faithful vector tester | `≥ M(D,n)` | open: dead if `Λ(D) → ∞` (sufficient, not necessary; an earlier "iff" here was corrected in §77.1) |
+| [ALWZ20] Conj. 5.1, 5.2 (Secondary B) | the target itself | each implies the target; 5.1's best bound is the record shape, 5.2 has none (Tier 3c) |
+
+Twelve routes are now costed by the gate, seven of them losing to 1960.
+
+### 75.4 Small values of `M(D,n)` (one table, COMPUTED)
+
+`tools/multicolored/mdn.py`: one variable per triple of `S_D^{(n)}`,
+at-most-one per `x`, `y`, `z` value, closure clauses
+`X_x ∧ Y_y ∧ Z_z → s_(x,y,z)` (equivalent to inducedness given the
+at-most-one constraints), a sequential counter for `≥ m`, and one sound
+symmetry clause (some chosen triple is canonical: one permutation of
+`[D]` per coordinate, applied to `x`, `y` and `z` alike, and permutations
+of the coordinates preserve `S_D^{(n)}` and inducedness; separate
+permutations of the three slots would not). CaDiCaL 1.7.3 (Ubuntu package `cadical 1.7.4-1`). Every SAT
+witness is re-checked by brute force; **UNSAT verdicts carry no proof log**
+and are the solver's word.
+
+```text
+  M(D,n)      n = 1                 n = 2                    n = 3
+  D = 3       2                     4  (>= 5 UNSAT, 0.0 s)    >= 9  (>= 10 undecided at 1500 s)
+  D = 4       2                     4  (>= 5 UNSAT, 3.8 s)    not run
+  D = 5       2                     4  (>= 5 UNSAT, 123.2 s)  not run
+  any D >= 2  2  (F4, exhaustive)
+```
+
+Read with care. At `n = 2` the value is `4 = M(D,1)²` for `D = 3, 4, 5`:
+**no growth with the alphabet is visible at two coordinates** (COMPUTED,
+solver UNSAT without proof logs). At `n = 3`, `D = 3`, a collection of 9
+exceeds `2³`, so the rate exceeds 2 by `n = 3`, consistent with
+`Λ(3) ≥ 2^{4/3} = 2.52` (F5) — and `9^{1/3} = 2.08` is still far below
+it, which is the usual reason small-`n` values say little about a
+capacity. One `D = 4`, `n = 2` run without the symmetry clause had not
+finished after roughly 25 minutes and was stopped; with it the same
+question took 3.8 s. Nothing here bears on whether `Λ(D)` grows.
+
+### 75.5 Not done
+
+* **Step 5 (Lemma 75.A in Coq).** Not attempted. Slice rank needs vector
+  spaces and rank over a field, which this stdlib-only development does
+  not have; a list-and-`Q` formalisation is a project of its own, and the
+  lemma is standard and in print (B23), so a kernel proof would buy little.
+* No rule-17 search beyond the eight sources (B24, B25 list the gaps).
+* No construction of large multicolored collections was attempted, and
+  `M_c` for `c` with zeros was not studied.
+* `M(3,3) ≥ 10`, and every `n = 3` entry at `D ≥ 4`, were not decided.
+
+### 75.6 The case against this section (candor pass)
+
+* **The barrier quantity may be the wrong one.** `Λ(D)` lower-bounds the
+  method; a bounded `Λ` would not mean the method works, because slice
+  rank can exceed every induced matching (`σ ≥ Λ`, possibly strictly).
+* **`dim P` is only lower-bounded.** Lemma 75.B is one-directional; the
+  method's real cost for a given `c` could be much larger than its slice
+  rank, which only strengthens a barrier and weakens nothing here.
+* **"Through the ASU reduction" is load-bearing.** §75.1 costs one
+  reduction. Another reduction with `D` growing slower than any power of
+  `m` would change the `log D` row; the `D^α` row survives any reduction
+  with `D ≥ m^{Ω(1)}`, which is PLAUSIBLE, not proved.
+* **F6 rests on an unrefereed preprint** whose Lean verification is
+  announced and was not inspected.
+* **F5's identification relies on our reading of [ASU12] Definition 2.5**
+  for triples with a repeated vector; the upper bound uses only `S_3` and
+  [BCCGNSU17], and does not depend on it.
+
+### 75.7 Gates at the tip
+
+Every row was run on this tree in this container; none is written from
+expectation. Coq 8.18.0 (Ubuntu `coq 8.18.0+dfsg-1build2`).
+
+```text
+  verify        pass   exit 0 from `make clean` (the target cleans first);
+                       877 audited theorems, every one "Closed under the
+                       global context"; axiom audit lists exactly
+                       Rao20_lemma2; 1038 statements match the baseline;
+                       18 quoted numbers match; 12 routes costed, every
+                       declared verdict matches; lpcert-test and
+                       lpport-test ALL PASS. The first run failed at
+                       lpcert-test only because scipy was missing (§76.5)
+  coqchk        pass   exit 0; axioms exactly Sunflower.ALWZ.Rao20_lemma2;
+                       no type-in-type, no unsafe (co)fixpoints, no
+                       assumed positivity
+  docnumbers    pass   re-run after the last prose edit: 18 numbers match
+  ceilings      pass   re-run after the last edit: verdicts match
+  prcheck       pass   template only (`make prcheck`); no PR body drafted
+  statements    pass   (inside verify) no Coq statement changed
+  mutants       not-run   no definition changed
+  lrat-test     not-run   no LRAT code changed
+  rust          not-run   no Rust changed
+```
+
+The prose of this section and of Tier 3c was reviewed by a fresh-context
+agent against the rendered pages before commit: 22 quotations confirmed;
+three substantive errors found and fixed (F5 used Thm. A′ where Thm. 4.14
+on a page already read gives `2.7551`; register row B25 had said no source
+varies the alphabet, where [NaSa17] Remark 7 and [BHL26] p. 12 do; and
+§75.1 said "a function of `s`" where only a constant gives a ground-set
+bound), plus five smaller corrections. The new register rows were first
+numbered B20–B22 and A20, which already existed further down the file;
+they are B23–B25 and A25.
+
+## 76. Handover — the vector-tester route costed; the state of everything since §66
+
+Start here. §59 was the last general handover; §66 was one for the
+`b = 4` descent, and **none followed §67–§74**, so this section also
+states where those lines stand.
+
+### 76.1 What moved this session
+
+* **The ceiling of "improve the `D`-exponent" is nothing** (§75.1): any
+  vector bound `(A·D^α)^n`, `α > 0`, gives no bound on `f(n,3)` through
+  [ASU12]'s reduction, and `(A·log D)^n` gives a superlinear base, worse
+  than 1960. In the gate: `tools/ceiling.py` has three vector rows and a
+  fourth verdict, *none*.
+* **The barrier question is reduced to one capacity** (§75.2): for every
+  tester whose support is the vector sunflower relation — all of
+  [BHL26]'s class, whatever `c` — slice rank and `dim P` are at least
+  `M(D,n)/2`, the multicolored quantity of [ASU12] with the alphabet
+  freed; the route is dead if `Λ(D) → ∞` ("iff" in the first draft; corrected in §77.1), and `sup_D Λ(D) < ∞` would
+  prove the conjecture at `k = 3`. Hypotheses 2(a) and 2(c) are settled
+  (2(a) is in print, B23; 2(c) is one line). Sawin–Tao's maximal-element
+  lower bound provably cannot show growth (F7).
+* **A register error with a direction to it, corrected:** the [NaSa17]
+  entry made a `D`-power saving read as Erdős–Rado progress; the page says
+  Erdős–Szemerédi (A25).
+* **Literature:** [BHL26], [KL26], [CKSU05], [BCCGNSU17] read in full,
+  [ASU12] to p. 14, [ST16] in part, [ALWZ20] Conjectures 5.1–5.2
+  registered with their cost (Tier 3c).
+* **Hygiene:** `STATUS.md` now points here; the README's VC wording
+  matches §59.1; `2ι(b) ≤ g(b)` is attributed to Pálvölgyi (A17/A17a) with
+  the two-sided form "not found" (B10).
+
+### 76.2 What did not move
+
+* `Λ(D)`: `2^{4/3} ≤ Λ(3) ≤ 2.7551` (from print, with equality reported
+  in unread sources) and `Λ(D) ≤ min(1.89(D−1)^{2/3}, 6√D)` (a remark in
+  [NaSa17], and an unrefereed preprint); nothing on growth. The route is neither closed nor
+  shown open.
+* No theorem, definition or statement changed in Coq; the kernel state is
+  §74's. No campaign was run; the one table (§75.4) is small and partly
+  undecided.
+* Every line §60–§74 left open is still open, unchanged by this session:
+  `54 ≤ g(4) ≤ 76` given the link census and [ABCDN26] Prop. 6.5
+  (`CensusIota.g_four_at_most_76_of_census`); census certification stages
+  1–2 done, 3–5 not started (`docs/census_certification.md`); the LRAT
+  checker exists but no `ι(4,11)` or `r*(3,3)` cube has a checked proof
+  log, so `r*(3,3) ∈ {3, 4}` stands as recorded in `STATUS.md`;
+  `Rao20_lemma2` Stage C is untouched.
+
+### 76.3 Open questions, ranked
+
+1. **Is `Λ(D)` unbounded?** A construction of multicolored-sunflower-free
+   collections in `[D]^n` of size `Λ^n` with `Λ → ∞` closes the
+   slice-rank / dimension route for every faithful vector tester. The
+   device most likely to give one is a degeneration made into a
+   restriction by level sets ([BCCGNSU17] Lemma 3.4, [ASU12] p. 12).
+2. **Is the asymptotic slice rank of a tensor supported on `S_D` known in
+   the asymptotic-spectrum literature?** If it is computed there, `σ(D)`
+   decides the route outright (B24, B25 list the unsearched sources).
+3. **Testers with zeros on rainbow tuples** (`M_c`, §75.2): unstudied.
+4. Everything in §59.4 and §67.5 not superseded above.
+
+### 76.4 The exact next step
+
+Fetch Kleinberg–Sawin–Speyer, *The growth rate of tri-colored sum-free
+sets* (arXiv:1607.00047, [BCCGNSU17] reference [14]) and Christandl–
+Vrana–Zuidam, *Barriers for fast matrix multiplication from
+irreversibility* (Theory Comput. 17 (2021), [BHL26] reference [12]); look
+both identifiers up rather than recalling them; render and read the
+sections that characterise the asymptotic induced-matching number or the
+asymptotic slice rank of a tensor in terms of its support; and decide,
+as a continuation of register row B24, whether either computes or bounds
+`Λ(D)` or `σ(D)` for the support `S_D`. Only if neither does, attempt
+question 1 with a small construction search at `D = 4, 5` (one table, as
+§75.4).
+
+### 76.5 Environment, as found and as left
+
+The container lacked `coqc`, `cadical`, `scipy`, `pdftoppm` and PyMuPDF.
+Installed: `coq 8.18.0+dfsg-1build2` and `cadical 1.7.4-1` (which reports
+`1.7.3`) from Ubuntu noble; `scipy 1.16.2` by `pip --only-binary`,
+because Ubuntu's `python3-scipy` is built for Python 3.12 and fails to
+import under this container's Python 3.13 with numpy 2.5.3 (it was
+removed again); PyMuPDF 1.26.3 in a scratch virtual environment for
+rendering only. `make verify` fails at `lpcert-test` without `scipy`,
+for that reason alone.
+
+## 77. Addendum to §76: Kleinberg–Sawin–Speyer and Christandl–Vrana–Zuiddam read — `Λ` named, `Λ(3)` pinned, `Λ(D)` for `D ≥ 4` still open
+
+**Tier 2.** §76.4's next step, done. Both papers read in full from
+rendered pages (`docs/reading.md` Tier 3c: [KSS18] 10/10, [CVZ22] 26/26);
+both identifiers looked up through the arXiv API, not recalled.
+Register rows B24 (updated), B26 (new).
+
+**One line.** Neither paper settles the route. They name the barrier
+quantity (it is an asymptotic monomial subrank) and pin its value at
+`D = 3` (`Λ(3) = 2.7551…`, with the one step KSS left to Pebody checked
+here directly at `q = 3`, Lemma 77.C). Through [CVZ18] they give a formula
+for the asymptotic slice rank over `C`, whose growth in `D` would close the
+slice-rank route. Every evaluation theorem they quote needs a support
+condition that `S_D` fails in the standard basis for every `D ≥ 4`.
+**Status of the route: still open.**
+
+### 77.1 What `Λ(D)` is
+
+**Lemma 77.A.** For a tensor `t`, `t ≥_M ⟨m⟩` ([CVZ22] p. 9: restriction
+by generalized sub-permutation matrices) **iff** `supp(t)` contains an
+induced matching of size `m`. *Proof.* Each row of `A_i` has at most one
+nonzero entry, at column `π_i(j)` say, so
+`((A_1,A_2,A_3)·t)_{j_1 j_2 j_3}` is a nonzero multiple of
+`t_{π_1(j_1), π_2(j_2), π_3(j_3)}` or zero. Equality with `⟨m⟩` forces every
+row nonempty, `t_{π_1(j),π_2(j),π_3(j)} ≠ 0`, and
+`t_{π_1(j_1),π_2(j_2),π_3(j_3)} = 0` unless `j_1 = j_2 = j_3`; the column
+condition makes each `π_i` injective. That is an induced matching
+`{(π_1(j), π_2(j), π_3(j))}`; conversely an induced matching gives the
+`A_i` by selecting and rescaling. **PROVEN.**
+
+Hence `M(D,n) = Q_M(T_c^{⊗n})` for every `c` nonzero on rainbow tuples, and
+**`Λ(D) = Q̰_M(T_c)`, the asymptotic monomial subrank** — which [CVZ22]
+p. 9 notes depends only on the support (register B26).
+
+**Corollary 77.B (the barrier, sharpened per `c`).** If `T ≥ ⟨m⟩` then
+`slice-rank(T) ≥ m` ([ST16] Lemma 3 and Example 5), so
+`slice-rank(T_c^{⊗n}) ≥ Q(T_c^{⊗n}) ≥ M(D,n)`, and with Lemma 75.B
+`dim P(c) ≥ Q(T_c^{⊗n})/2`. The asymptotic subrank `Q̰(T_c)` may depend on
+the values of `c`, not only on its support, and lies between `Λ(D)` and
+the asymptotic slice rank ([CVZ22] eq. (68)). **PROVEN.** Over `C`,
+[CVZ22] eq. (69) quotes [CVZ18]: the asymptotic slice rank **equals**
+`min_θ F^θ(T_c)`, the quantum functionals. Since BHL's `c` is rational, a
+`Q`-decomposition is a `C`-decomposition and
+`slice-rank_C ≤ slice-rank_Q`, so lower bounds over `C` count against
+`dim P`. So the exact quantity deciding the slice-rank form of the route is
+
+```text
+  σ_C(D) = inf_c  min_θ F^θ(T_c)        (CONDITIONAL on [CVZ18], unread)
+```
+
+and the route is dead **if** `σ_C(D) → ∞` (`Λ(D) → ∞` is a sufficient
+condition for that). The converse is not established: `dim P ≥ sr/2` is
+one-directional (§75.6) and `sr_Q` may exceed `sr_C`. And [CVZ22] eq. (69)
+equates `min_θ F^θ` with the **limsup** of `sr^{1/n}`, while §75.2 defines
+`σ` with a **liminf**; identifying the two needs [CVZ18] to show the limit
+exists. All of this is CONDITIONAL on [CVZ18], unread. *(Addendum, §78:
+[CVZ18] Cor. 5.7, read, proves the limit exists over `C`, so `σ_C` is
+well defined; the converse direction remains unestablished.)*
+
+### 77.2 Why the published equalities do not apply
+
+[CVZ22] quotes three equality theorems: for **tight** tensors
+`Q̰ = asymptotic slice rank = min_θ ζ^θ` ([Str91]); for **oblique**
+tensors asymptotic slice rank `= min_θ ζ^θ` ([TS16]); for **free** tensors
+`min_θ F^θ = min_θ ζ^θ` ([CVZ18]). By its footnote 5 every tight tensor is
+oblique and every oblique tensor is free, and free means some basis in
+which *"any two different a, b ∈ supp(t) differ in at least two
+entries."*
+
+* `S_3` is free in the standard basis (it is the support of `⟨Z/3Z⟩` after
+  relabelling one slot). **COMPUTED** (exhaustive over the 9 triples).
+* `S_D` is **not** free in the standard basis for any `D ≥ 4`:
+  `(0,1,2)` and `(0,1,3)` (letters `0, …, D−1`, as in `tools/multicolored/`)
+  are both rainbow and differ in one entry.
+  **PROVEN.** Hence not oblique and not tight in that basis either.
+  (Checked exhaustively for `D = 4..7` as a control.)
+* Whether `T_c` is free, oblique or tight **in some other basis** depends
+  on `c` and was not studied. It is the condition under which the
+  support-functional formula would become usable.
+
+[KSS18]'s construction **does not transfer directly** — PLAUSIBLE, this
+repository's reading, not something the paper states: it works inside the
+tight integer relation `a + b + c = q − 1` and needs Lemma 8 (fixed
+coordinate sums on a type class) to lift a mod-`q` coincidence to an
+integer one, additive structure `S_D` does not have for `D ≥ 4`. (KSS's
+Remark 7, p. 6, about lifting *"out of the colored setting"*, concerns the
+gap between tri-colored and ordinary 3-AP-free sets — in this repository's
+terms `M` against `V_3`, F2 — and says nothing about other alphabets; an
+earlier draft of this paragraph cited it for the wrong point.)
+
+### 77.3 What moved
+
+| | before (§75.2) | now |
+|---|---|---|
+| `Λ(3)` | `2^{4/3} ≤ Λ(3) ≤ 2.7551` | **`Λ(3) = 3J(3) = 2.755104…`**: upper [BCCGNSU17] Thm. 4.14; lower [KSS18] Thm. 2, whose one outsourced step (Theorem 4) is checked at `q = 3` by Lemma 77.C. PROVEN given those two papers (both read, no error found). [CVZ22] p. 10 states the value but cites only the upper-bound papers, so it is not independent evidence for the lower bound |
+| `Λ(D)`, `D ≥ 4` | `≥ 2^{4/3}` | **`≥ 2.7551`** by monotonicity (F1); upper `min(1.89(D−1)^{2/3}, 6√D)` unchanged; growth undecided |
+| what `Λ` is | the multicolored capacity | the asymptotic monomial subrank of `T_c` (Lemma 77.A, PROVEN) |
+| the per-`c` barrier | `M(D,n)/2` | `Q(T_c^{⊗n})/2`, possibly larger and `c`-dependent (77.B, PROVEN) |
+| the deciding quantity | asymptotic slice rank, no formula | `inf_c min_θ F^θ(T_c)` over `C` (CONDITIONAL on [CVZ18]); not known to be efficiently computable ([CVZ22] p. 22) |
+| B24 (barrier in print?) | not found in 8 sources | not found in 10 sources |
+
+Rule 17: nothing here is claimed as new; Lemma 77.A is a reading of
+[CVZ22]'s definitions.
+
+**Lemma 77.C (KSS Theorem 4 at `q = 3`).** With `ρ = (√33 − 1)/8 =
+0.593070…`, the positive root of `4ρ² + ρ − 2 = 0`, and `Z = 1 + ρ + ρ²`,
+put weight `ρ²/Z` on each of the three permutations of `(2,0,0)` and
+`ρ/(2Z)` on each of the three permutations of `(0,1,1)`. This is an
+`S_3`-symmetric distribution on `T = {(a,b,c) ∈ {0,1,2}³ : a+b+c = 2}`
+whose marginal is `ψ = (1, ρ, ρ²)/Z`: the marginal puts `ρ²/Z` on 2 and
+`2·ρ/(2Z) = ρ/Z` on 1 by construction, and `2ρ²/Z + ρ/(2Z)` on 0, which is
+`1/Z` exactly when `4ρ² + ρ − 2 = 0`. That equation is also the
+stationarity condition of `(1+ρ+ρ²)ρ^{−2/3}`
+(`3ρ(1+2ρ) = 2(1+ρ+ρ²)`), so this `ρ` is KSS's. **PROVEN** (two lines of
+algebra), and VALIDATED numerically: total mass 1, all three marginals
+equal `ψ` to 12 places, `θ = 2.755104613…`. The construction was
+suggested by the fresh-context reviewer of this section and checked here
+before use. So at `q = 3` KSS's Theorem 2 does not need Pebody [20].
+
+### 77.4 The exact next step (replaces §76.4)
+
+Read [CVZ18] (*Universal points in the asymptotic spectrum of tensors*;
+[CVZ22] p. 25 prints arXiv:1709.07851 — look it up through the API before
+fetching): the definition of the moment polytope and the quantum
+functionals, the proof that `min_θ F^θ` is the asymptotic slice rank, and
+its §4.3 on free tensors. Decide whether `min_θ F^θ(T_c)` can be bounded
+below for every `c` by a quantity growing in `D` — the natural attempt is
+a point of the moment polytope `Π(T_c)` whose three marginals all have
+entropy `≥ δ log D`. If [CVZ18] gives no handle, attempt the construction
+search §76.3 item 1 names, at `D = 4, 5`, one table only. [Str91] (J. Reine
+Angew. Math. 413) is the other source; check open access before
+attempting, and report a failed acquisition per rule 29.
+
+### 77.5 Gates at the tip
+
+Run on this tree after the last edit; no Coq, Rust or tool code changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
+
+A fresh-context reviewer checked this section against the rendered pages:
+18 quotations, 17 confirmed and one transcription slip (a dropped tilde,
+`Q_M` for `Q̰_M`, CVZ p. 10), fixed. Lemma 77.A and the inequalities of
+77.B confirmed. Two MAJOR findings, both fixed: "the route is dead iff
+`σ_C → ∞`" claimed a converse nobody has (now "if", with the
+liminf/limsup gap stated), and KSS's Remark 7 had been cited for a point
+it does not make. The same "iff" overclaim, about `Λ`, sat in the §75.3
+ledger and §76.1 and is corrected there. The reviewer also proposed the
+distribution of Lemma 77.C, which was checked here by hand and
+numerically before it was adopted.
+
+## 78. [CVZ18] read: the slice-rank barrier in characteristic 0 has a single-letter formula, a `c`-independent floor of 3, and free combinatorial degenerations stop there
+
+**Tier 2.** §77.4's next step, done. [CVZ18] (*Universal points in the
+asymptotic spectrum of tensors*, arXiv:1709.07851v3) read in full, 57 of
+57 rendered pages, identifier confirmed through the arXiv API
+(`docs/reading.md` Tier 3c [CVZ18]; register row B27).
+
+**One line.** Over `C`, the asymptotic slice rank of BHL's single-letter
+tester `q_c` is a single-letter quantity (max over the moment polytope of
+the least marginal entropy), and it is at least 3 for every admissible
+`c` and every `D ≥ 3`. Arguments of the free combinatorial-degeneration
+kind are capped at exactly 3. So the decisive
+question — does it grow with `D`? — is now a question about the moment
+polytopes of `D × D × D` tensors, not about tensor powers. It is **still
+open**, and the tool that would have been cheapest to try provably
+cannot settle it.
+
+**Corrected 2026-10-27 (§78.7).** Growth in `D` is not open: a published
+theorem ([BCLSZ25] Theorem 1.8) gives `SR̰(q_c) ≥ D^{1/3}` for every `c`
+over every field. What stays open is the exact value at small `D` — the
+floor of 3 (78.A) is the better bound for `D ≤ 26` — and Lemma 78.B
+stands as a statement about one technique.
+
+### 78.1 What the paper settles
+
+`q_c` is BHL's single-coordinate tester (`docs/roadmap.md` §75.2: 1 on
+monochromatic, `c` on rainbow, 0 elsewhere, support `S_D`), and
+`T_c = q_c^{⊗n}`.
+
+1. **The limit exists** ([CVZ18] Cor. 5.7, p. 50): over `C`,
+   `SR̰(q_c) = lim_n slicerank(q_c^{⊗n})^{1/n} = min_θ 2^{E^θ(q_c)}`. The
+   liminf/limsup gap §77.1 recorded is closed over `C`.
+2. **Single-letter** (Lemma 5.4 proof, p. 48): `log₂ SR̰(q_c) = max over
+   the moment polytope Δ_{q_c} of min_j H(r_j)`. Deciding the route needs
+   only the moment polytopes of `D × D × D` tensors.
+3. **Scope: characteristic 0.** Corollary 5.7 is over `C`. BHL's tester is
+   over `Q`, and a `Q`-decomposition is a `C`-decomposition, so
+   `slicerank_Q ≥ slicerank_C` for rational `c` (BHL's), and every lower
+   bound here counts against BHL; for complex `c` the bound applies to
+   `slicerank_C` directly. **It says nothing about testers over a field of positive
+   characteristic.** Over `F_3` the cap-set tensor has the same support as
+   `S_3` and asymptotic slice rank `2.755 < 3`: [CVZ18] p. 5 puts it in
+   the orbit of the tight tensor `F_3[x]/(x³)`, whose asymptotic subrank
+   is `z(3) = 2.75510` (p. 36 table), and Cor. 5.10 (p. 50, any field)
+   makes asymptotic slice rank equal asymptotic subrank for tight
+   3-tensors. Lemma 78.A below shows no characteristic-0 tester can
+   do that.
+
+### 78.2 Two lemmas
+
+**Lemma 78.A (`c`-independent floor).** For every `D ≥ 3` and every `c`
+nonzero on rainbow tuples, `SR̰_C(q_c) ≥ 3`. Hence
+`slicerank_Q(T_c) ≥ slicerank_C(T_c) ≥ 3^{n−o(n)}` and
+`dim P(c) ≥ 3^{n−o(n)}/2` (Lemma 75.B). At `D = 3` this is equality:
+`SR̰_C(q_c) = 3` for every such `c`. **A characteristic-0 product tester
+gives no saving at `D = 3`, whatever `c` is.**
+
+*Proof.* (i) Restriction does not raise slice rank, and `q_c` restricted
+to the letters `{0,1,2}` in each coordinate has support `S_3`
+(`docs/roadmap.md` §77.2: `S_3` is free in the standard basis). (ii) For a
+tensor `t` with free support and any distribution `P` on that support,
+the ordered marginals of `P` lie in `Δ_t` ([CVZ18] Thm. 4.20 proof,
+pp. 39–40), so `max_{Δ_t} min_j H(r_j) ≥ min_j H(P_j)`. (iii) Take `P`
+uniform on the nine elements of `S_3`: each marginal is uniform on three
+letters, so `min_j H(P_j) = log₂ 3`. By item 2 of §78.1,
+`SR̰_C(q_c) ≥ 3`. (iv) At `D = 3`, `slicerank ≤ min_i dim = 3^n`.
+**PROVEN**, given [CVZ18] Cor. 5.7 and Thm. 4.20 (read; no error found).
+Consistent with [NaSa17] Thm. 5, whose characteristic-0 constant at
+`D = 3` is `(3/2^{2/3})·2^{2/3} = 3` exactly: its tensor (p. 5, eq. (3.1))
+has per-coordinate value 2 on monochromatic, −1 on rainbow and 0 on
+two-equal triples (p. 4), i.e. it is `q_c` with `c ≡ −1/2` up to a
+scalar. Rule 17: new to this repository (register B27).
+
+The general technique behind (i)–(iii) (PROVEN by the same citations;
+new to this repository): `q_c` restricts and degenerates
+([CVZ18] Prop. 4.10; Theorem 3.5(4) for monotonicity) to `q_c|_Φ` for any
+combinatorial degeneration `Φ` of a sub-box of `S_D`. When `Φ` is free,
+`SR̰_C(q_c) ≥ 2^{max_P min_j H(P_j)}` over distributions `P` on `Φ`, and
+`c` does not enter: `q_c|_Φ` has support exactly `Φ` because `c ≠ 0` on
+rainbow tuples.
+
+**Lemma 78.B (the technique stops at 3).** Let `Φ` be a free
+combinatorial degeneration of `S_D ∩ (W_1 × W_2 × W_3)` for any sub-boxes
+`W_i ⊆ [D]`. Then every coordinate projection of `Φ` has at most 3
+letters, so `|Φ| ≤ 9` and `max_P min_j H(P_j) ≤ log₂ 3`.
+
+*Proof.* Write `w(a,b,c) = u_1(a) + u_2(b) + u_3(c) ≥ 0` on the box's part
+of `S_D`, with zero set `Φ`, and `m(x) = w(x,x,x)`.
+(1) Let `(a,b,c) ∈ Φ` be rainbow and `d ∈ W_1 ∖ {a,b,c}`. Then `(d,b,c)` is
+rainbow, so it lies in `S_D`, and it differs from `(a,b,c)` in one
+coordinate, so it is not in `Φ` by freeness. Thus
+`0 < w(d,b,c) = u_1(d) − u_1(a)`. Likewise in coordinates 2 and 3.
+(2) Among the rainbow elements of `Φ`, take `(a_0,b_0,c_0)` with `u_1(a_0)`
+largest. Every other rainbow first letter `a` has `u_1(a) ≤ u_1(a_0)`, so
+by (1) `a ∈ {a_0, b_0, c_0}`: at most 3 rainbow first letters, and
+likewise in each coordinate.
+(3) If `(x,x,x) ∈ Φ` and `x ∉ {a,b,c}` for some rainbow `(a,b,c) ∈ Φ`, then
+by (1) `m(x) > w(a,b,c) = 0`, a contradiction. So when `Φ` has a rainbow
+element its monochromatic letters lie in `{a_0,b_0,c_0}`.
+(4) If `Φ` has no rainbow element and three monochromatic letters
+`x, y, z`, the six permutations of `(x,y,z)` are rainbow, in the box and
+not in `Φ`, so each has positive weight; but their weights sum to
+`2(m(x) + m(y) + m(z)) = 0`. So at most 2.
+(5) A free set with at most 3 letters per coordinate has at most 9
+elements (each pair of coordinates fixes the third), and `H(P_j) ≤ log₂ 3`.
+**PROVEN**; new to this repository (register B27). Compositions of a restriction and repeated combinatorial
+degenerations are again of this form (scale the earlier weights by a
+large integer and add the later ones), so the cap covers them too.
+
+**VALIDATED by computation**, independently of the proof:
+`tools/multicolored/degen.py search` (MILP, HiGHS through scipy 1.16.2)
+maximises `|Φ|` over integer weights `|u| ≤ B` on the full `S_D` (no
+sub-box). The optimum is exactly 9 at `D = 3, 4, 5, 6` (`B = 3D`), at
+`D = 4, 5` with `B = 200` and at `D = 8` with `B = 60`, all proven
+optimal by HiGHS; at `D = 6` (`B = 100`) and `D = 7` (`B = 60`) the
+900 s limit was hit with incumbent 9, not proven optimal. A
+fresh-context reviewer independently sampled about 50,000 random free
+degenerations of random sub-boxes at `D = 4, 5` and ran its own sub-box
+MILP at `D = 4`; nothing exceeded 3 letters per coordinate or 9
+elements. The `verify` mode re-derives the weights, zero set and
+freeness in exact integers, sharing no code with the search; the
+max-min entropy it reports comes from a floating-point optimiser
+(SLSQP), and is exact here only because the uniform distribution on
+`S_3`'s nine elements attains `log₂ 3` by hand. The
+`verify` mode re-derives each certificate in exact integers, sharing no
+code with the search. The certificates are in
+`tools/multicolored/certs/S{3,4,5,6}.json`; each has 9 elements, 3
+letters per coordinate, 6 of them rainbow, and the bound `2^h = 3.0`.
+
+### 78.3 What it does not settle, and why
+
+* ~~**Growth in `D` is still open.**~~ **Corrected (§78.7): growth is
+  settled, `max(3, D^{1/3}) ≤ SR̰_C(q_c) ≤ D` for every admissible `c`; the
+  rest of this bullet is about the exact value.** For every admissible `c`,
+  `3 ≤ SR̰_C(q_c) ≤ D`. The better upper bounds hold for particular `c`
+  only, so they bound the infimum: `inf_c SR̰_C(q_c) ≤ (3/2^{2/3})(D−1)^{2/3}`
+  for `D ≥ 3` ([NaSa17] Thm. 5, `c ≡ −1/2`), and `≤ 6√D` for `D > 36`
+  through [BHL26]'s `c` (its bound is on `dim P`; slice rank is at most
+  `2 dim P` by Lemma 75.B, so `≤ 2(6√D)^n`, CONDITIONAL on [BHL26]).
+  Lemma 78.B shows free combinatorial degenerations of a single-letter
+  sub-box cannot go past 3. Other support-only bounds are not covered:
+  the maximal-element bound of §75.2 F7 is capped at 9 there, and the
+  reviewer's exhaustive check found at most 3 letters per coordinate
+  among maximal elements at `D = 4, 5` under every triple of orders —
+  PLAUSIBLE that it too stops at 3, not proved.
+* **What could go further, each untried:**
+  (a) Non-monomial degenerations or other bases, i.e. points of
+  `Δ_{q_c}` not coming from a free support. These depend on `c`, and the
+  adversary picks `c`.
+  (b) Multi-letter combinatorial degenerations of `S_D^{(n)}` with weights
+  not of product form. Lemma 78.B's step (1) used that every rainbow
+  triple stays in `S_D` when one letter is replaced by any fresh letter.
+  In `S_D^{(n)}` the allowed replacements are constrained coordinate by
+  coordinate, and that freedom is what [KSS18] exploits at `D = 3`.
+  (c) A direct handle on `inf_c max_{Δ_{q_c}} min_j H(r_j)`, for example
+  the Hilbert–Mumford/instability description of [CVZ18] §4.4.3, which
+  bounds `ρ^θ` from above only (Theorem 4.35).
+* ~~**Positive characteristic is untouched.**~~ **Corrected (§78.7):
+  Lemma 78.C gives `D^{1/3}` over every field; only the floor of 3 and the
+  single-letter formula are characteristic-0 statements.** Every lower
+  bound in 78.1–78.2 is over `C`. A tester over `F_p` is outside their
+  reach, and at `D = 3` such testers are known to beat `3` (the cap-set
+  tensor).
+
+### 78.4 Route ledger update
+
+| route | status |
+|---|---|
+| slice rank / `dim P`, characteristic-0 product tester | floor `max(3, D^{1/3})^{n−o(n)}` for every `c` (78.A, 78.C); growth settled by 78.C (2026-10-27), so no product tester gives a `D`-uniform bound (the shape of [ASU12] Conj. 3); free combinatorial degenerations capped at 3 (78.B) |
+| same, positive characteristic | floor `D^{(1/3)(n−o(n))}` for every `c` (78.C, 2026-10-27; was "open") |
+| everything else in §75.3 | unchanged |
+
+### 78.5 The exact next step (replaces §77.4)
+
+*Note of 2026-10-27:* both items were aimed at whether `SR̰(q_c)` grows
+with `D`. §78.7 settles that for every product tester; what the items
+can still decide is only whether the value exceeds 3 at small `D`.
+
+Two independent options, in order of cost:
+1. **Multi-letter search, one table.** Run `degen.py`'s MILP on
+   `S_D^{(2)}` (alphabet `[D]²` in each of the three legs, weights on
+   pairs, freeness meaning two elements differ in at least two of the
+   three legs) at `D = 3, 4`. Report the largest free
+   combinatorial degeneration and its max-min entropy per letter
+   (`h/2`). If the per-letter value at `D = 4` exceeds `log₂ 3`, growth
+   from multi-letter structure is real and the next question is its rate.
+   This is the question (b) above, at its smallest size.
+2. **Literature, rule 17 before any novelty.** Search work citing
+   [CVZ18] for moment polytopes or asymptotic slice rank of tensors with
+   a prescribed support pattern (Bürgisser–Garg–Oliveira–Walter–Wigderson
+   arXiv:1711.08039 is cited on p. 52 for the null-cone connection), and
+   Strassen's [Str91] for the support of `S_D`-type tensors.
+
+### 78.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  degen verify  pass   S3, S4, S5, S6 certificates: 9 elements, bound 3.0
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
+
+A fresh-context review checked this section against the rendered pages
+after the first commit: all [CVZ18] quotations confirmed; Lemmas 78.A and
+78.B confirmed, with no counterexample to 78.B in about 50,000 sampled
+degenerations and an independent sub-box MILP at `D = 4`. Fixed in the
+follow-up commit: the §78.3 upper bounds held for particular `c` only and
+now bound the infimum (MAJOR); the [NaSa17] bound needs `D ≥ 3`, now
+stated here and in §75.2 F6; scope wording narrowed from "support-only"
+to "free combinatorial degenerations"; rule-17 labels added; the
+reading entry's account of other fields corrected (Cor. 5.10); the
+`Δ_t` definition corrected; `degen.py` now takes the weight bound `B` on
+the command line, so the `B = 200` runs reproduce (re-run: `D = 4`,
+`B = 200`, optimum 9, proven).
+
+### 78.7 Correction from the rule-17 search: a published floor `D^{1/3}`, every `c`, every field (2026-10-27)
+
+**Tier 2.** Source: [BCLSZ25] (Briët, Christandl, Leigh, Shpilka, Zuiddam,
+*Discreteness of asymptotic tensor ranks*, Discrete Analysis 2025:15,
+arXiv:2306.01718v4), found by the recent-literature sweep of the rule-17
+search (`reports/Sunflower novelty prior art search.md`). Rendered pages
+read: 1, 3, 7–11, 13–21 of 51; pp. 9 and 13 re-read for this section.
+
+* **Theorem 1.8 (p. 9):** *"Let T ∈ F^{n1} ⊗ F^{n2} ⊗ F^{n3} be concise.
+  Then Q̰(T) ≥ (min_ℓ n_ℓ)^{1/3}."* The field is arbitrary (§1.4, p. 13:
+  *"Let F be any field."*); the proof's field-extension step (p. 20) cites
+  [Str88] Thm. 3.10, which was not read — CONDITIONAL on it for finite
+  fields. *(2026-10-28: [Str88] Thm. 3.10, p. 126, is now read — asymptotic
+  subrank is unchanged by field extension — so this condition is
+  discharged — with Thm. 3.8, p. 124, viewed by the delegated reader only;
+  §88.3.)*
+* **Concise (p. 13):** *"We call T concise if R_ℓ(T) = n_ℓ for every
+  ℓ ∈ [3]."*, `R_ℓ` the rank of the `ℓ`-th flattening.
+* **Subrank below slice rank (p. 14):** *"Q(T) ≤ SR(T) ≤ R_ℓ(T) ≤ R(T)"*.
+
+**Lemma 78.C.** Let `F` be any field and `q ∈ F^{[D]×[D]×[D]}` with
+`q(a,a,a) ≠ 0` for every `a` and `q(a,b,c) = 0` whenever exactly two of
+`a, b, c` are equal — every BHL tester `q_c` (any `c`, zeros allowed),
+over any field. Then for every `n`,
+`slice-rank(q^{⊗n}) ≥ Q(q^{⊗n})` and `lim_n Q(q^{⊗n})^{1/n} = Q̰(q) ≥ D^{1/3}`;
+so `liminf_n slice-rank(q^{⊗n})^{1/n} ≥ D^{1/3}`, and over `C`,
+`SR̰_C(q_c) ≥ max(3, D^{1/3})` with 78.A. (78.A is stated for `c`
+nonzero on rainbow tuples; its proof covers every `c`: the restricted
+support is a subset of the free set `S_3` containing the three
+monochromatic triples, and the uniform distribution on those has uniform
+marginals.)
+
+*Proof.* Conciseness: in the first flattening (rows `a`, columns
+`(b,c)`), restrict to the columns `(b,b)`. The entry `q(a,b,b)` is
+`q(b,b,b) ≠ 0` when `a = b` and `0` otherwise (exactly two equal), so the
+`D × D` submatrix is diagonal with nonzero diagonal and the flattening
+has rank `D`. The other two flattenings are the same argument on the
+columns `(a,a)`. Theorem 1.8 with `n_ℓ = D` gives `Q̰(q) ≥ D^{1/3}`.
+Subrank is supermultiplicative, so `Q̰(q) = lim_n Q(q^{⊗n})^{1/n}`
+(Fekete; the definition, p. 7), and `Q ≤ SR` termwise (p. 14). No
+submultiplicativity of slice rank is used — §75.2 records that it is not
+known — which is why the conclusion is a `liminf`. ∎ **PROVEN given
+[BCLSZ25] Theorem 1.8** (refereed; its proof rests on [Str88] eq. (4.6)
+and, for small fields, Thm. 3.10, both read on 2026-10-28, §88.3. For the slice-rank
+conclusion Thm. 3.10 is not needed: a slice decomposition over `F` is one
+over its algebraic closure `F̄`, so `SR_F ≥ SR_{F̄}`, and Thm. 1.8 is
+applied over `F̄`.) The proof was checked against rendered pp. 7, 9, 13,
+14 and 20 by a fresh-context review.
+
+For `c` invariant under permuting the three legs (e.g. [NaSa17]'s
+`c ≡ −1/2`), [BCLSZ25] Theorem 1.9 (p. 10, *"Let T ∈ F^n ⊗ F^n ⊗ F^n be
+concise and symmetric. Then Q̰(T) ≥ n^{1/2}."*) gives `SR̰(q_c) ≥ √D`;
+its proof (§5.3, pp. 22–51) was not read, so its field scope is
+unverified.
+
+**What it changes.**
+* **The route.** By Lemma 75.B, `dim P(c) ≥ slice-rank(T_c)/2`, and by
+  78.C `liminf_n slice-rank(T_c)^{1/n} ≥ D^{1/3}` for every fixed `c`. The
+  review of 2026-10-27 reports, from rendered pp. 19–20, that the proof of
+  [BCLSZ25] Thm. 1.8 (Lemmas 2.8, 2.12, 2.13, Thm. 2.1) makes this uniform
+  in `c` at fixed `D`, because `q_c^{⊠3}` restricts to one of finitely many
+  matrix-multiplication tensors `⟨a,b,c⟩` with `min(ab,bc,ca) ≥ D`
+  (CONDITIONAL on that reading of the proof). **So no product tester, with
+  `c` allowed to vary with `n`, can give a bound of [ASU12] Conjecture 3's
+  shape (`b^n` uniform in `D`), in any characteristic** — the first branch
+  of §75.2's verdict restricted to product testers, reached without `Λ`.
+  This is a fixed-`D`, `n → ∞` statement: it does not bound the method's
+  output in §75.1's colour-coding regime `D = s·m`, `n = s` (that would
+  need one-shot subrank bounds; not attempted). The same caveat applies to
+  §75.2's `Λ` branch. `tools/ceiling.py` is unchanged: its "`D`-uniform
+  `3^n`" row costs the *bound*, which other methods may still seek, not
+  this method.
+* **Scope.** Product testers `q^{⊗n}`, including block testers
+  `q_m^{⊗(n/m)}` on `[D]^m` (the same proof at alphabet `D^m` gives the
+  same rate). A tester on `[D]^n` that is not a tensor power is **not**
+  covered: Theorem 1.8 bounds its asymptotic subrank, and without
+  submultiplicativity of slice rank that does not bound its own slice
+  rank. Block testers need `q_m(x,x,x) ≠ 0` for every `x ∈ [D]^m`.
+  Products `⊠_i q_{c_i}` with coordinate-dependent `c_i` are not covered
+  by the statement of Thm. 1.8 (its proof covers them at fixed `D`, per the
+  same reading of pp. 19–20).
+* **78.A and 78.B.** 78.A's floor of 3 is stronger than `D^{1/3}` for
+  `D ≤ 26` and stays as stated. 78.B is about free combinatorial
+  degenerations and is untouched. §79–§85 ask whether `SR̰_C(q_c) > 3` at
+  `D = 4`; `4^{1/3} ≈ 1.59`, so 78.C says nothing there, and that question
+  is now about the exact value at one alphabet, not about growth.
+* **Consequence for §79–§86.** Their answer no longer moves the route
+  ledger for product testers, in either direction; they test Lemma
+  78.B-type techniques and the exact value at `D = 4` only. They should
+  continue only if that value is wanted for its own sake.
+* **Rule 17.** Lemma 78.C is two lines on a published theorem and is not
+  stated for sunflower testers in any source read (register B24, B27): new
+  to this repository, no novelty claimed. [BCLSZ25] was found by the
+  sweep, after §78 had called growth open — the same failure as B9's,
+  one search later.
+
+## 79. Two-letter free degenerations at `D = 4`: the single-letter cap breaks, the value 3 does not (yet)
+
+**Tier 2.** §78.5 item 1, done as one table. Tool:
+`tools/multicolored/degen2.py` (MILP through scipy 1.16.2 / HiGHS, plus
+an exact verifier sharing no code with the search). Support
+`S_D^{(2)}`, each leg's alphabet `[D]²` (16 words at `D = 4`), integer
+weights `|u| ≤ 4D² = 64` per word, **not** of product form.
+
+**What a certificate buys.** `q_c^{⊗2}` has support `S_D^{(2)}` and
+`SR̰(q_c^{⊗2}) = SR̰(q_c)²` ([CVZ18] Cor. 5.7). So a free combinatorial
+degeneration `Φ` with `h = max_P min_j H(P_j)` gives
+`SR̰_C(q_c) ≥ 2^{h/2}` for every `c` nonzero on rainbow tuples (Lemma
+78.A's argument, PROVEN). Beating the single-letter value 3 needs
+`h > log₂ 9`. With at most `K` uses of any word in any leg, the uniform
+`P` gives `h ≥ log₂(|Φ|/K)`; since `|Φ| ≤ 9K` exactly reproduces 3, the
+question is whether `|Φ| ≥ 9K + 1` is possible for some `K`.
+
+### 79.1 Results (all COMPUTED; certificates verified in exact integers)
+
+```text
+  question at D = 4, n = 2                         result (time limit)
+  max min-letters-per-leg (no cap)                 L >= 11 found; not optimal (1800 s; dual bound 16)
+     its Phi: 23 elements, 11/11/11 words,         h = 3.039 bits, per letter 2^(h/2) = 2.867 < 3
+  calibration: |Phi| >= 81 with K = 9             FEASIBLE, found (the product S_3 x S_3)
+  |Phi| >= 10 with K = 1   (would give > 3)        UNDECIDED: no solution, no proof (1200 s)
+     (K = 1 is a matching: feasible would also give Lambda(4) >= sqrt(10) by [CVZ18] Lemma 4.13)
+  |Phi| >= 19 with K = 2   (would give > 3)        UNDECIDED (1200 s)
+  |Phi| >= 82 with K = 9   (would give > 3)        UNDECIDED (1200 s)
+  sanity: D = 3, n = 2, max min-letters            L = 9, Phi = S_3^(2), 81 elements, proven optimal
+```
+
+Certificates: `tools/multicolored/certs/S4n2_L11.json` (23 elements,
+11 words per leg) and `S4n2_product81.json` (81 elements, bound 3.0).
+
+### 79.2 What this settles and what it does not
+
+* **Lemma 78.B does not extend to two letters (COMPUTED, exact
+  certificate).** A free combinatorial degeneration of `S_4^{(2)}` uses 11
+  words in every leg, where the single-letter cap would allow at most
+  `3² = 9`. This matches the proof-level observation in §78.3(b): at two
+  letters a word's admissible replacements are constrained coordinate by
+  coordinate, and the step "every other first letter lies among the top
+  element's three" weakens to "among up to `4D − 4` words". So the cap of 3
+  is a single-letter fact, not a property of the support.
+* **But no certificate here beats 3.** The 11-word `Φ` is too small (23
+  elements) and gives 2.867. The three runs that would beat 3 are
+  undecided at 20 minutes each, so **nothing is concluded about whether
+  two-letter degenerations can exceed 3**. The calibration run shows the
+  solver can find an 81-element `Φ` when one exists under the stated
+  constraints, but that is no evidence the undecided instances are
+  infeasible: an infeasibility proof needs the LP bound to close, and
+  the earlier uncapped run's dual bound stayed at the trivial 16 words.
+* **The weight bound is a restriction.** `|u| ≤ 64` per word. A negative
+  verdict from this search would hold only within that bound.
+
+### 79.3 A bug found and fixed during the run
+
+The first capped runs (`K = 1..4`) silently ignored the cap: the cap
+constraints were appended after the constraint matrix had been built. All
+four returned the same 24-element `Φ`, which at `K = 1` would need 24
+distinct words per leg out of 16 — impossible, and that is how it was
+caught. The `D = 3, K = 9` sanity check had passed only because that
+cap does not bind. Fixed in commit `2ecd8c9`;
+`verify` now reports the maximum uses per word, so a violated cap is
+visible in every result. No result from the buggy runs is used above.
+
+### 79.4 Next step
+
+Two ways to decide the undecided rows, cheapest first:
+1. **Symmetry and a better formulation.** `S_D^{(n)}` is invariant under
+   `Sym(D)` per coordinate (acting on all three legs alike) and under
+   permuting coordinates; fixing one element of `Φ` to a canonical triple
+   and ordering words by weight would cut the search sharply. The
+   big-M linking `w_t ≤ M(1 − z_t)` is the likely reason the LP bound is
+   trivial; an indicator formulation, or enumerating `Φ` directly and
+   checking each candidate with an LP (a free `Φ` is at most one element
+   per fibre, so candidates are partial Latin-square-like objects),
+   should be tighter.
+2. **Theory.** Find the two-letter analogue of Lemma 78.B's order
+   argument, which bounds `|Φ|/K` rather than the number of words.
+   §79.1's certificate shows any such bound must allow 11 words per leg.
+
+### 79.5 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  degen2 verify pass   S4n2_L11 (23 elements, 11/11/11 words, 2.867) and
+                       S4n2_product81 (81 elements, 3.0)
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
+
+## 80. Border matchings in `S_D^{(2)}`: a tight exact search, and at `D = 4` no matching of 10 — the `K = 1` case cannot beat 3
+
+**Tier 2.** §79.4 item 1, done for the case it can settle exactly.
+Tool: `tools/multicolored/bmatch.py` (last change `c88a50d`); LPs through
+HiGHS via `highspy 1.11.0`.
+
+### 80.1 The tighter formulation
+
+§79's MILP had a trivial LP bound because the big-M link
+`w_t ≤ M(1 − z_t)` lets fractional `z` ignore the weights; the face
+condition only acts at integrality. For **matchings** (`K = 1`: each word
+used once per leg) the weights can be eliminated. With
+`Φ = {(x_i, y_i, z_i)}`, set `u_1(x_i) = α_i`, `u_2(y_i) = β_i`,
+`u_3(z_i) = −α_i − β_i`, and give every word outside `Φ` a weight larger
+than all others. Then `Φ` is a free combinatorial degeneration of
+`S_D^{(n)}` exactly when
+
+```text
+  α_i + β_j − α_l − β_l ≥ 1   for every non-constant (i, j, l) with (x_i, y_j, z_l) ∈ S_D^{(n)}   (*)
+```
+
+is feasible. **PROVEN** (every element of `S_D^{(n)}` touching an outside
+word is positive by the choice of the large weight; the rest are exactly
+the triples in (*); `Φ` is free because a matching uses each word once).
+(*) is hereditary, so an exhaustive search over sets with pruning is
+exact. This is [CVZ18] Theorem 4.11's setting: a feasible `Φ` of size `m`
+gives `Λ(D) ≥ m^{1/n}` (Lemma 4.13) and `SR̰_C(q_c) ≥ m^{1/n}` for every
+admissible `c` (Lemma 78.A's argument).
+
+The search:
+* **Pairwise conflicts in closed form.** For two triples, (*) reduces to
+  signs of `Δα`, `Δβ` and `Δγ = Δα + Δβ`; it is infeasible exactly on a
+  2-cycle in one of them, or when `Δα, Δβ > 0` with `Δγ < 0` (or the
+  mirror image). **PROVEN** (a two-variable sign argument, written out
+  in the tool's docstring).
+* **Symmetry, two levels.** `Sym(D)^n ⋊ S_n × S_3` (letters per
+  coordinate on all legs alike, coordinates, legs) preserves
+  `S_D^{(n)}` and (*). A triple's orbit is its number of monochromatic
+  coordinates, so run `r` forces that orbit's representative `R` and
+  forbids triples with more than `r`. Inside a run, one top-level branch
+  per orbit of `Stab(R)` (explicit group of order `24² · 2 · 6 = 6912` at
+  `D = 4, n = 2`), each exploring all sets containing `R` and the branch
+  representative. Both are valid set-level reductions (a set is mapped
+  into the searched family, never dropped).
+* **Bounds.** Tomita-style greedy colouring of the compatibility graph;
+  forward checking (candidates re-filtered by LP feasibility with the
+  current set, exact because (*) is hereditary); an exact acyclicity
+  prefilter on the pure `α`, `β`, `γ` difference constraints.
+* **Engineering, measured.** Profiling showed scipy's `linprog` spending
+  most of its time validating options; calling HiGHS directly took
+  0.036 ms per LP against about 1.7 ms. At `D = 3, n = 2` the full search
+  went from 15,457 nodes in 71 s to 2,994 nodes in 5.7 s.
+
+### 80.2 Validation (all COMPUTED, before the `D = 4` claim)
+
+```text
+  instance            max border matching   cross-check
+  D = 3, 4, 5; n = 1   2   (exhaustive)     degen.py capped MILP: 2 (proven optimal, D = 4, 5);
+                                            within Lemma 78.B's cap of 3 letters
+  D = 3, n = 2         5   (exhaustive)     degen2.py capped MILP, K = 1: 5, proven optimal;
+                                            must be <= Lambda(3)^2 = 7.59 ([KSS18], Lemma 77.C)
+  run split, D = 3     1,126 + 1,526 + 342 = 2,994 nodes = full run; branch split additive (1,526)
+  forced 0.5 s limit   reported non-exhaustive
+```
+
+Every certificate found is re-checked in exact integers by
+`degen2.py verify` (nonnegativity on all of `S_D^{(n)}`, zero set exactly
+`Φ`, freeness). `tools/multicolored/certs/BM3n2_m5.json` is the `D = 3`
+maximum and `BM4n2_m6.json` the best found at `D = 4`.
+
+### 80.3 The `D = 4` result
+
+**No free combinatorial degeneration of `S_4^{(2)}` is a matching of 10
+or more triples.** COMPUTED, exhaustive, target mode 10:
+
+```text
+  run (monochromatic coords)   stabiliser   top orbits   nodes      time      verdict
+  2                            432          6            150,036    3,179 s   none, exhaustive
+  1                             36         26            335,308    7,000 s   branches 0-22 complete (limit hit in 23)
+     branches 23, 24, 25 re-run separately: 18,692 / 9,964 / 17,890 nodes, 375 / 185 / 364 s, none, exhaustive
+  0                             12         41            164,141    2,775 s   none, exhaustive
+```
+
+Branch 23 of run 1 is counted from the re-run only: the first run's
+counter increments after a branch returns, including one cut by the time
+limit, so branch 23 there may be incomplete; branches 0–22 completed
+before the limit.
+
+**Consequences.**
+* At `D = 4` the `K = 1` two-letter route gives at most `√9 = 3`: it
+  cannot beat the single-letter value. The best found is 6
+  (`√6 = 2.449`, certificate verified exactly); whether the maximum is
+  6, 7, 8 or 9 is **not** decided (target 7 was not run to completion).
+* The same holds for `Λ`: no two-letter border matching certifies
+  `Λ(4) > 3`.
+* Single-letter border matchings have size exactly 2 at `D = 3, 4, 5`,
+  below Lemma 78.B's cap of 3 letters (the 9-element `S_3` degeneration
+  is not a matching).
+
+**Caveat on the label.** Every pruned node rests on HiGHS declaring a
+small LP infeasible (or on the exact prefilters). No infeasibility was
+re-checked in exact arithmetic, so the negative is COMPUTED, not PROVEN.
+The LPs are tiny and integral with margin 1, which makes a wrong verdict
+unlikely but not impossible.
+
+### 80.4 What is still open
+
+* **`K ≥ 2` (general `Φ`).** The weight elimination needs each word used
+  once. For repeated words the face condition is a Farkas condition (no
+  nonnegative combination of outside elements in the span of `Φ`) with
+  no small reformulation found. §79's undecided rows (`K = 2`,
+  `|Φ| ≥ 19`; `K = 9`, `|Φ| ≥ 82`) stand.
+* **Larger `n` or `D`.** `n = 3` at `D = 4` has 21,952 triples; the
+  search as written will not reach it.
+* So whether *any* support-only, combinatorial-degeneration argument
+  shows the slice rank of BHL's tester grows with `D` remains open; the
+  cheapest two cases (single letter, and two-letter matchings at `D = 4`)
+  both stop at 3. *(2026-10-27: the growth itself is settled by a
+  different method, §78.7; this bullet is now only about the technique,
+  and about whether `SR̰(q_c) > 3` at `D = 4`, where `D^{1/3} ≈ 1.59`
+  says nothing.)*
+
+### 80.5 Next step
+
+A combinatorial Benders loop for `K ≥ 2`: a master problem over `z`
+(freeness cliques, caps, size) and, for each candidate `Φ`, the face LP;
+when it is infeasible, the Farkas certificate's support gives a no-good
+cut `Σ_{supp λ}(1 − z_t) + Σ_{supp μ} z_t ≥ 1`, with its images under the
+group. Run it at `D = 4, n = 2`, `K = 2` (target 19) first.
+
+### 80.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  bmatch        pass   calibration table of 80.2 reproduced on the final tool
+  degen2 verify pass   BM3n2_m5 (5 elements) and the D = 4 six-element certificate
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+```
+
+No fresh-context review was run on this section.
+
+## 81. A combinatorial Benders loop for `K = 2` at `D = 4`: calibrated, one new conflict lemma, and the target still undecided
+
+**Tier 2.** This is §80.5's next step. The tool is
+`tools/multicolored/benders.py`; it calls HiGHS through `highspy 1.11.0`
+for both the master problem and the subproblems. The question is the one
+from §79: is there a free face `Φ` of `S_4^{(2)}` with every word used at
+most `K = 2` times per leg and `|Φ| ≥ 19 = 9K + 1`? Such a `Φ` would give
+a per-letter bound above 3.
+
+### 81.1 The loop
+
+* **Master problem.** Binary `z_t` over `S_D^{(n)}`, with these rows:
+  * freeness: at most one element per fibre, written as clique rows;
+  * at most `K` uses of each word in each leg;
+  * `Σ z ≥ s`;
+  * the orbit-type symmetry breaking of §80. Run `r` forces the canonical
+    triple with `r` monochromatic coordinates into `Φ` and excludes
+    triples with more. Each set of triples with a given number of
+    monochromatic coordinates is a single group orbit, so the runs
+    together cover every `Φ`;
+  * the conflict rows of Lemma 81.A (below);
+  * the cuts found so far.
+* **Subproblem.** Take the master's `Φ` and solve the Farkas system
+  `Σ_{Φ} λ_t v_t + Σ_{outside} μ_t v_t = 0`, with `μ ≥ 0` and `Σμ ≥ 1`.
+  Here `v_t` is the incidence vector of `t`'s three words.
+  * If the system has a solution, the same certificate shows that no
+    `Φ' ⊇ supp λ` avoiding `supp μ` is a face. That gives the cut
+    `Σ_{supp λ}(1 − z_t) + Σ_{supp μ} z_t ≥ 1`. **PROVEN** by Farkas'
+    lemma applied to the face LP (`w = 0` on `Φ`, `w ≥ 1` outside).
+  * If it has no solution, `Φ` is a face. The tool solves the face LP,
+    rounds the weights to integers, and re-checks the zero set and
+    nonnegativity in exact integers. It reports "found" only if that
+    check passes, and "face, no integer certificate" otherwise. (Until
+    the review in §81.6, a failed rounding was also reported as "found";
+    no result here was affected.)
+* **Strengthening the cuts.** A deletion filter shrinks each certificate
+  until no single element can be removed. Each cut is then added together
+  with all its images under the stabiliser of the forced triple; a cut is
+  a statement about `S_D^{(n)}` alone, so every image is valid. At
+  `D = 4, n = 2` the group has order 6912, and the stabilisers for runs
+  2, 1 and 0 have orders 432, 36 and 12 (COMPUTED). The cut counts
+  below count rows, images included; the number of distinct certificates
+  was not recorded.
+* **Scope of a negative verdict.** The Farkas test ranges over all real
+  weights, so the loop has no weight bound. §79's MILP had one
+  (`|u| ≤ 64`). An "infeasible" verdict therefore rests only on HiGHS's
+  floating-point LP and MILP verdicts, which are not certified. In this
+  repository's terms it is COMPUTED, not PROVEN.
+
+**Lemma 81.A (rectangle conflict).** Take `a, b ∈ S_D^{(n)}` and a leg `i`
+with `a_i ≠ b_i`. Let `c` be `a` with its leg-`i` word replaced by `b_i`,
+and `d` be `b` with its leg-`i` word replaced by `a_i`. If both `c` and `d`
+lie in `S_D^{(n)}`, then no free face contains both `a` and `b`.
+
+*Proof.* `a` and `b` together use the same words in each leg as `c` and
+`d` together. So `w(a) + w(b) = w(c) + w(d)` for every weight. Suppose
+`a` and `b` both lie in a face `Φ`. Then `w(c) + w(d) = 0`, and since
+`w ≥ 0` on `S_D^{(n)}`, `w(c) = 0`, so `c ∈ Φ`. But `c` agrees with `a`
+in the two legs other than `i` and differs in leg `i`: `c` and `a` are
+two elements of the same leg-`i` fibre, so `Φ` is not free. ∎
+
+**PROVEN**; new to this repository (no rule-17 search was run).
+
+The conflict counts (COMPUTED, `rectangle_conflicts`):
+
+```text
+  D n  |S|   pairs     conflicting   of which same-fibre   beyond freeness
+  3 1    9        36        0             0                    0
+  3 2   81     3,240        0             0                    0
+  4 1   28       378       72            36                   36
+  4 2  784   306,936   29,952         2,880               27,072
+```
+
+A same-fibre pair satisfies the lemma trivially (`c = b`, `d = a`), and
+freeness already excludes it. Only the last column is new to the
+master.
+
+There are none at `D = 3` for any `n`. **PROVEN**: a non-monochromatic,
+non-rainbow triple `(x, x, y)` has `2x + y ≢ 0 (mod 3)` unless `y = x`,
+so `S_3` is exactly the triples with `a + b + c ≡ 0 (mod 3)`, and
+`S_3^{(n)}` is the triples whose three words sum to zero in `(Z/3)^n`.
+Then `c ∈ S_3^{(n)}` forces `b_i = a_i`. The table confirms it for
+`n = 1, 2` (COMPUTED).
+
+Falsification check (COMPUTED). None of the eight certified faces in
+`tools/multicolored/certs/` contains a conflicting pair. They are `S3`,
+`S4`, `S5`, `S6`, `S4n2_L11` (23 elements), `S4n2_product81`,
+`BM3n2_m5` and `BM4n2_m6`. The certificates at `D ≥ 4` are the
+non-trivial tests.
+
+### 81.2 Calibration (COMPUTED, on the committed tool)
+
+```text
+  D n K  s   result      cuts per run (run r)          known answer
+  3 1 1  2   found       0                             single-letter matchings: 2 (§80.2)
+  3 1 1  3   infeasible  2 (r=1), 1 (r=0)              same
+  3 1 3  9   found       0                             S_3 itself (Lemma 78.A)
+  3 1 3 10   infeasible  0, 0                          by counting: 3 words per leg × cap 3
+  4 1 3  9   found       120                           S4 certificate
+  4 1 9 10   infeasible  90 (r=1), 0 (r=0)             Lemma 78.B: 3 words per leg, so ≤ 9
+  3 2 1  5   found       192                           §80.2: max 5, exhaustive
+  3 2 1  6   infeasible  8,088 / 6,063 / 883 (r=2/1/0) §80.2: max 5, exhaustive
+             372.2 s; mean cut size 10.9 / 11.2 / 11.0 literals
+```
+
+Each "found" certificate passes `degen2.py verify`, the exact integer
+check of nonnegativity, the zero set and freeness, which shares no code
+with the search.
+
+`D = 3, n = 2, K = 1, s = 6` is the only non-trivial two-letter
+calibration. It took 372.2 s on the re-run, whose result file is kept. An earlier
+run in this session took 382.2 s with the same cut counts; only its
+console output survives, not a result file. `D = 3, n = 2, K = 2, s = 19` does not
+calibrate anything: counting alone rules it out (9 words per leg × cap 2
+allows at most 18 elements), and the master reported it infeasible in
+0.1 s with no cuts.
+
+Plain Benders did not finish this instance. Before the deletion filter
+and the stabiliser images were added, it spent its whole 600 s budget on
+run 2 of `D = 3, K = 1, s = 6`, adding 4,558 cuts without a verdict.
+Runs 1 and 0 then stopped at the time check with no cuts. That is one
+run, and both changes were made together, so it does not show which
+change mattered. The result file does not record cut sizes, and it does
+not record which code version produced it.
+
+### 81.3 The `D = 4` target
+
+`D = 4, n = 2, K = 2, s = 19` is **undecided**. Each run class had
+7,000 s, with the three run in parallel:
+
+```text
+  run r  stabiliser  cuts added  ended by
+  2      432         152,748     master MILP hit its time limit
+  1      36           47,040     loop time limit (mean cut 17.6 literals: 7.3 in λ, 10.3 in μ)
+  0      12           30,396     master MILP hit its time limit
+```
+
+No `Φ` was found, and no run reached an infeasible master. That leaves
+the target open: these runs neither find such a `Φ` nor rule one out.
+
+Why it stalled is CONJECTURED. In run 1, the only `D = 4` run that
+recorded cut sizes (a master timeout exits without them), the minimised
+cuts have 17.6 literals on average, against about 11 at `D = 3`. A
+longer cut excludes a smaller part of the search space. As the cuts accumulate, the master
+MILP gets harder to solve. Stabiliser images alone do not explain the
+stall: run 0 adds at most 12 images per cut, and its master still timed
+out.
+
+### 81.4 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19 | undecided (§79 MILP 1,200 s with `\|u\| ≤ 64`; §81 Benders, 3 × 7,000 s) |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 81.5 Next step
+
+None of the following has been tried. The first is the cheapest.
+
+1. **More structure in the master.** Lemma 81.A comes from the
+   shortest linear relation among incidence vectors,
+   `v_a + v_b = v_c + v_d`. The general mechanism is a forcing rule. Let
+   `P` and `Q` be multisets of triples in `S_D^{(n)}` with
+   `Σ_{t∈P} v_t = Σ_{t∈Q} v_t`. If every element of `P` lies in `Φ`, then
+   `Σ_Q w = 0`, and `w ≥ 0` on `S_D^{(n)}` gives `w = 0` on every
+   `t ∈ Q`, so `Q ⊆ Φ`. As rows this reads
+   `z_q ≥ Σ_p z_p − (k − 1)` for each `q ∈ Q`, where the sum runs over
+   the `k` distinct elements `p` of `P`. The master can then
+   combine these rows with freeness and the caps; Lemma 81.A is the case
+   `|P| = 2` combined with freeness. Lemma 78.B's step (4) uses the same
+   forcing with `P` the three monochromatic triples, each counted twice,
+   and `Q` the six permutations. Enumerating the relations with
+   `|P| = |Q| = 3` once, and adding them before any cut is generated, is
+   the natural next family.
+2. **Fewer cut images.** Add an image only when it is violated by one of
+   the next few master solutions, instead of adding all of them up front.
+3. **Theory.** Bound `|Φ|/K` directly, via the two-letter analogue of
+   Lemma 78.B (§79.4 item 2). One computational fact already constrains
+   it: by Lemma 81.A, a free face of `S_4^{(2)}` must avoid 27,072 pairs
+   beyond those freeness excludes.
+
+Running this loop for longer without one of these changes is not
+recommended. Three 2-hour runs added 230,184 cuts and closed no run
+class.
+
+### 81.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  benders       pass   calibration table of 81.2 reproduced on the committed tool
+  degen2 verify pass   every "found" certificate of 81.2
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+A fresh-context review, run with no access to this session, checked
+§81 against `benders.py`, §78–§80 and the result files. It recomputed
+the following with its own scripts:
+* the conflict counts and the stabiliser orders;
+* the eight-certificate falsification check, plus 4,000 random
+  weightings at `D = 4, n = 2`: 427 free faces, none containing a
+  conflicting pair;
+* every fast calibration row;
+* every number taken from the result files.
+
+It confirmed Lemma 81.A, the Farkas cut and `farkas()`, the mod-3
+argument, the single-orbit claim and the validity of the cut images. It
+raised one MEDIUM finding: the conflict count included the 2,880
+same-fibre pairs, which is now split out in §81.1. Its LOW findings
+are all fixed in the text:
+* "necessary" was narrowed to what one run shows;
+* the 17.6 figure is attributed to run 1;
+* the 382.2 s figure is marked as having no result file;
+* the forcing rule is stated for distinct elements and requires `Q` in
+  `S_D^{(n)}`;
+* "found" without an integer certificate is now reported separately
+  (rechecked by stubbing the rounding step to fail);
+* the calibration rows were re-run after that change, with unchanged
+  results.
+
+## 82. Three-against-three forcing rows at `D = 4, K = 2`: valid, the target still undecided, and the Farkas step never reached
+
+**Tier 2.** This is §81.5 item 1. The tool is `tools/multicolored/benders.py`
+with its new optional `rows3` argument (`off`, `upfront`, `lazy`, `both`),
+and its default behaviour is unchanged. The question is still §79's: does
+`S_4^{(2)}` have a free face with at most 2 uses per word per leg and at
+least 19 elements? Such a face would give a per-letter bound above 3.
+
+### 82.1 The rows
+
+**Lemma 82.A (forcing).** Let `P` and `Q` be multisets of triples in
+`S_D^{(n)}` with `Σ_{t∈P} v_t = Σ_{t∈Q} v_t`, where `v_t` is the
+incidence vector of `t`'s three words. If every element of `P` lies in a
+face `Φ`, so does every element of `Q`.
+
+*Proof.* `w(t) = ⟨u, v_t⟩` is linear in `v_t`, so `Σ_P w = Σ_Q w`. The
+left side is 0. Since `w ≥ 0` on `S_D^{(n)}`, every `w(q)` is 0. ∎
+
+**PROVEN.** The fact itself is elementary LP: the zero set of a
+nonnegative linear functional is closed under such dependencies. Its use
+here to build rows is new to this repository; no rule-17 search was run.
+Lemma 81.A is the case `|P| = |Q| = 2` combined with freeness.
+
+**Corollary 82.B (three-set conflict).** Take `P = {p_1, p_2, p_3}`. For
+leg permutations `(σ, τ)` other than the identity, let
+`Q = {(x_j, y_{σ(j)}, z_{τ(j)})}`. Suppose every element of `Q` lies in
+`S_D^{(n)}` and none lies in `P`. The relation of Lemma 82.A holds,
+because each leg uses the same words on both sides. If `P ∪ Q` then
+contains a pair in one fibre, or a Lemma 81.A pair, or uses some word
+more than `K` times among its distinct elements, then no free face with
+cap `K` contains `P`. **PROVEN**, from Lemma 82.A, Lemma 81.A and the
+definitions.
+
+Nothing is lost by requiring `Q ∩ P = ∅`. Suppose `P` is compatible and
+some `q` equals some `p`. Cancelling them leaves a two-against-two
+relation. That relation is either trivial, or a Lemma 81.A pair inside
+`P`, which compatibility excludes.
+
+**A family not covered: two-plus-one relations.** Lemma 82.A also allows
+a repeated element in `P`.
+* **Example.** At `D = 4`, with `a = (0,1,2)` and `b = (3,3,3)`,
+  `2v_a + v_b = v_{(0,1,3)} + v_{(0,3,2)} + v_{(3,1,2)}`, and all three
+  triples lie in `S_4`. A face containing `a` and `b` must contain
+  `(0,1,3)`, which shares a fibre with `a`, so no free face contains
+  both. Lemma 81.A misses this pair because `(0,3,3) ∉ S_4`.
+* **Counts (COMPUTED).** These pairs are exactly the reversals of the
+  relations of `relations3` whose `Q` repeats an element. There are 24 at
+  `D = 4, n = 1`, 5,376 at `D = 4, n = 2` and none at `D = 3, n = 2`.
+  All of them are conflicts, and none was already incompatible.
+* **Not in the master.** No mode adds them as rows. That does not affect
+  validity, since the Farkas step would cut any `Φ` containing such a
+  pair. In all six `D = 4` runs below, the Farkas step was never reached.
+* Found by the fresh-context review (§82.7).
+
+These give two kinds of master row:
+* a **conflict row** `z_{p_1} + z_{p_2} + z_{p_3} ≤ 2` for each
+  three-set of Corollary 82.B;
+* **forcing rows** `z_q ≥ z_{p_1} + z_{p_2} + z_{p_3} − 2`, one for each
+  `q ∈ Q`, for every other relation.
+
+In `upfront` mode, every conflict row whose three variables are allowed
+in the run is added before the loop starts. In `lazy` mode, each master
+solution is checked first. Every relation with `P ⊆ Φ` that it violates
+is added, as a conflict row or as forcing rows, together with its
+stabiliser images, before any Farkas subproblem is solved. `both`
+combines up-front conflict rows with lazy forcing rows.
+
+### 82.2 How many there are (COMPUTED)
+
+The relations are enumerated over all three-sets `P` with no
+incompatible pair and all 35 non-identity `(σ, τ)`.
+
+```text
+  D n K   distinct (P, Q)   3-sets with a relation   conflict 3-sets   other 3-sets (their relations)
+  3 1 1           6                    3                     3              0
+  3 1 3           6                    3                     0              3   (6)
+  4 1 2         600                  408                   324             84   (96)
+  3 2 1       1,512                1,404                 1,404              0
+  3 2 2       1,512                1,404                     0          1,404   (1,512)
+  4 2 2   4,411,776            4,068,096             3,497,472        570,624   (582,528)
+```
+
+At `D = 4, n = 2`, enumerating and classifying the relations took 85 s and
+113 s in two timed runs, with a peak of 1.3 GB measured in the first. A
+scratch version of the diagnostic below added the conflict rows to HiGHS one
+at a time. It was killed at about 7 GB, under a memory limit it shared with
+three other jobs. `relax82.py` and `upfront` mode add them in bulk.
+
+**When `K = 1`, every relation is a conflict, for every `D` and `n`
+(PROVEN).** `q_j` and `p_j` are distinct and share the leg-1 word `x_j`,
+which `P ∪ Q` then uses twice.
+
+**At `D = 3, K = 2`, no relation is a conflict (COMPUTED for
+`n = 1, 2`).** This matches §81.1: `S_3^{(n)}` has no two triples in one
+fibre and no Lemma 81.A pair, so only the cap can create a conflict.
+
+**Falsification checks (COMPUTED).**
+* **The certified faces.** None of the eight in
+  `tools/multicolored/certs/` contains a conflict three-set at its own
+  cap. Every relation with `P` inside one of them also has `Q` inside it.
+  For `S4n2_product81` that covers all 1,512 relations of `S_3^{(2)}`.
+* **Random faces at `D = 4, n = 1`.** 20,000 random integer weightings
+  gave 109,756 `relations3` rows with `P` inside the face, all with `Q`
+  inside too. These are rows, one per `(σ, τ)`, not distinct relations. Among the 9,122 free faces (largest 9 elements), none contains a
+  conflict relation at its own cap.
+* **Random faces at `D = 4, n = 2`.** 4,000 random weightings gave
+  20,764,248 such rows, all with `Q` inside too.
+  Among the 144 free faces (largest 9 elements), none contains a
+  conflict relation at its own cap.
+
+* **How the random faces are drawn.** `u` is drawn uniformly from
+  `{0, …, b}^{3 × A}`, with `b ∈ {1, 2, 3}` uniform for each trial, using
+  NumPy `default_rng(20261021)`. The face is the zero set of
+  `w − min w`.
+* **Scripts.** They are in the session scratchpad, not in the repository.
+  The random-face script uses `benders.py`'s functions. The
+  certified-face script used a scratch copy of the same functions.
+  Exact integer arithmetic throughout.
+* **The enumerator.** On 20 random subsets each at `D = 4, n = 1`,
+  `D = 3, n = 2` and `D = 5, n = 1`, the restricted enumeration (`within`)
+  equals the full enumeration filtered to `P` inside the subset. Every
+  listed relation has equal word multisets per leg and `P ∩ Q = ∅`.
+
+### 82.3 Calibration (COMPUTED)
+
+On the fast rows of §81.2 (`3 1 1 3`, `3 1 3 9`, `4 1 3 9`, `4 1 9 10`,
+`3 2 1 5`), all four modes give §81.2's verdicts. Mode `off` gives the
+same cut counts as before, and every certificate found passes
+`degen2.py verify`.
+
+The non-trivial row, `D = 3, n = 2, K = 1, s = 6`, came out infeasible in
+every run class and every mode:
+
+```text
+  mode      seconds   Farkas cuts (r = 2/1/0)   three-set rows (r = 2/1/0)
+  off        372.2    8,088 / 6,063 / 883        —   (§81.2's run, before rows3 existed)
+  lazy       272.3    6,456 / 4,950 / 675        364 / 248 / 16 lazy
+  upfront    317.1    7,140 / 4,914 / 630        1,404 / 960 / 48 up front
+  both       322.8    7,140 / 4,914 / 630        1,404 / 960 / 48 up front, 0 lazy
+```
+
+The `off` run was made alone and the other three in parallel, so the
+times are not a controlled comparison. The review in §82.7 re-ran `off`
+and `lazy` on the committed tool and got identical cut and row counts. The cut counts are: the new rows
+remove 12–29% of the Farkas cuts per run class, and the cuts that remain
+still average about 11 literals. So at `D = 3` the obstruction is mostly
+longer relations (CONJECTURED).
+
+**Diagnostic: the combinatorial rows alone (COMPUTED,
+`tools/multicolored/relax82.py`).** This is the largest `Φ` allowed by
+freeness, the cap, Lemma 81.A and every conflict three-set. Those rows
+are consequences of the face condition; nothing else from it is used (no
+forcing rows, no two-plus-one pairs, no longer relations):
+* `D = 3, n = 2, K = 1`: 9, 8 and 7 in run classes 2, 1 and 0, all
+  proven optimal, against a true maximum of 5. In run class 2 it is also
+  9 without the three-set rows.
+* `D = 4, n = 2, K = 2`, run class 2: a 21-element set found, with the
+  upper bound still at the trivial 32 after 1,800 s. Three runs gave the
+  same figures: a scratch version, `relax82.py` before the re-check was
+  added, and `relax82.py` with it.
+  * **Exact re-check.** The set passes: forced triple in, free, at most
+    2 uses per word, no Lemma 81.A pair, no conflict three-set. Its
+    indices are `[0, 9, 18, 27, 41, 143, 261, 270, 279, 286, 308, 334,
+    399, 513, 522, 531, 633, 670, 765, 771, 783]`.
+  * **It is not a face.** 100 `relations3` rows have `P` inside it and
+    `Q` not, so it breaks forcing rows. The minimised Farkas certificate
+    is itself three-against-three (`|supp λ| = 3`, `|supp μ| = 3`).
+
+So in run class 2, conflict rows and Lemma 81.A alone cannot rule out
+`s = 19`. A proof must use more of the face condition, and the forcing
+rows are the first thing the 21-element candidate violates.
+
+### 82.4 The `D = 4` target
+
+`D = 4, n = 2, K = 2, s = 19`: **undecided** in both new modes. Each run
+class had a 7,000 s budget, three in parallel per mode (COMPUTED). The
+time check sits at the top of the loop, so two runs went over: `both`
+r = 2 took 7,185.5 s and `lazy` r = 2 took 7,071.6 s.
+
+```text
+  mode   r   conflict rows up front   lazy rows added   Farkas cuts   ended by
+  both   2        3,497,472               178,128             0        loop time limit
+  both   1        3,387,264                51,189             0        master MILP time limit
+  both   0        1,721,088                     0             0        master MILP time limit (first solve)
+  lazy   2                0             1,430,784             0        loop time limit
+  lazy   1                0               640,932             0        master MILP time limit
+  lazy   0                0               168,699             0        master MILP time limit
+```
+
+Two findings, both COMPUTED:
+* **No master solution was ever closed under the three-against-three
+  relations.** In all six runs the Farkas subproblem was never reached.
+  Every candidate `Φ` the master produced violated some relation of
+  Corollary 82.B or Lemma 82.A. §81's runs, without these rows, spent
+  their time on Farkas cuts averaging 17.6 literals (run 1). Those cuts
+  were in large part re-deriving three-set relations in a weaker form.
+  That last point is CONJECTURED; §81 did not record which relations its
+  cuts encoded.
+* **With every conflict row loaded up front, run class 0 never
+  finished its first master solve.** It had 1,721,088 rows and 7,000 s.
+  The cause is CONJECTURED to be size: the lazy runs in classes 0 and 1
+  also ended on the master time limit, with only 168,699 and 640,932
+  rows.
+
+The MILP master is therefore the wrong engine for this structure. Its
+rows are almost all implications among three or four binary variables,
+and an LP relaxation propagates those poorly. That reading is
+CONJECTURED.
+
+### 82.5 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19 | undecided (§79 MILP 1,200 s; §81 Benders 3 × 7,000 s; §82 with three-set rows, 2 modes × 3 × 7,000 s) |
+| `K = 2`, under freeness, the cap, Lemma 81.A and conflict three-sets only (run class 2) | a 21-element candidate exists (§82.3) |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 82.6 Next step
+
+**A SAT master in place of the MILP master** (counterexample-guided, the
+same loop as §81.1).
+* **Clauses.**
+  * at-most-one per fibre;
+  * the 27,072 Lemma 81.A pairs beyond freeness, and the 5,376
+    two-plus-one pairs of §82.1, as binary clauses;
+  * the 3,497,472 conflict three-sets, as clauses `¬p_1 ∨ ¬p_2 ∨ ¬p_3`;
+  * the 582,528 remaining relations, as Horn clauses
+    `¬p_1 ∨ ¬p_2 ∨ ¬p_3 ∨ q`, one per `q`, so at most 1.75M;
+  * the caps and `|Φ| ≥ 19` as cardinality encodings.
+* **Why SAT.** Unit propagation carries out the three-set forcing of
+  Lemma 82.A exactly, and conflict learning generalises it.
+* **Size.** About 5.3M short clauses: 2,880 pairwise fibre clauses,
+  32,448 pair clauses, 3,497,472 three-set clauses, at most 1,747,584
+  Horn clauses, and about 40,000 for the cardinality encodings. That is
+  784 variables plus the encodings' auxiliaries, a routine size for
+  CaDiCaL (1.7.3 is installed here).
+* **The face condition.** Each SAT model that is closed under the
+  relations goes to the existing Farkas subproblem, and its minimised
+  certificate comes back as a clause.
+* **Evidence.** A DRAT proof checked by an independent checker
+  (`drat-trim` is not installed here) certifies only that the CNF is
+  unsatisfiable. A PROVEN verdict would also need two more checks:
+  * an exact rational re-check of every Farkas clause (they come from
+    floating-point LPs);
+  * an independent check of the clause generator.
+* **Calibration first.** Run it on §81.2's table before the `D = 4`
+  target.
+
+Do not run the MILP modes again for longer. Six more 2-hour runs neither
+found a `Φ` nor reached a single Farkas subproblem.
+
+### 82.7 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  benders       pass   §81.2 fast rows in all four modes; mode off reproduces §81.2's cut counts
+  degen2 verify pass   every "found" certificate of 82.3
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+**Fresh-context review.** A reviewer with no access to this session
+recomputed the section with its own code:
+* every table row (the five small rows fully independently, `D = 4, n = 2`
+  with its own classification);
+* the twenty fast calibration runs and the twelve certificates;
+* every number taken from a result file;
+* the symmetry invariance of the relations and their conflict status,
+  under every element of the group, leg permutations included.
+
+It confirmed Lemma 82.A, Corollary 82.B, `relations3` (against an
+enumeration of all multisets `Q`, which does not use it), `conflicting3`,
+the validity of the rows and their images, and termination of the lazy
+loop.
+
+It raised one MEDIUM finding: the two-plus-one pairs, now in §82.1 and
+§82.6. The section title no longer says "complete". Other findings,
+fixed in the text:
+* the relaxation's wording now matches what it uses (also MEDIUM);
+* the DRAT claim is narrowed (also MEDIUM);
+* the up-front finding is relabelled as a fact plus a CONJECTURED cause;
+* run times over 7,000 s are noted;
+* `relations3` rows are distinguished from distinct relations;
+* the random-face definition is stated;
+* the `K = 1` statement is proved for every `D` and `n`;
+* the clause total is 5.3M.
+
+`relax82.py` now prints its incumbent and re-checks it exactly, and the
+`D = 4` figure above was re-run with that check (§82.3).
+
+## 83. A SAT master for the face search: 72–98 times faster on the hard calibration row, certified there up to PySAT's size encoding, and `D = 4, K = 2` still undecided
+
+**Tier 2.** This is §82.6's next step. The master is a SAT solver, and
+every infeasible verdict is checked independently. The question is
+§79's: does `S_4^{(2)}` have a free face with at most 2 uses per word per
+leg and at least 19 elements? Such a face would give a per-letter bound
+above 3.
+
+### 83.1 The tools
+
+* **`tools/multicolored/satmaster.py`.** The `benders.py` loop with an
+  incremental SAT master: CaDiCaL 1.9.5 through PySAT `1.9.dev15`,
+  installed with pip. The version is pinned in the tools' docstrings; the
+  repository has no requirements file. There is one variable per triple. The clauses
+  are:
+  * fibre, as pairwise at-most-one;
+  * Lemma 81.A pairs;
+  * Lemma 83.A pairs (below);
+  * the conflict three-sets of Corollary 82.B;
+  * the forcing relations of Lemma 82.A, as Horn clauses;
+  * the cap and `|Φ| ≥ s`, as cardinality encodings (PySAT sequential
+    counter and cardinality network);
+  * the run class's units.
+
+  For each model that is not a face, the minimised Farkas certificate of
+  `benders.py` is re-checked in exact rational arithmetic. It is then
+  added as a clause, with its images under the stabiliser of the forced
+  triple. A model that is a face is reported with integer weights whose
+  zero set and nonnegativity are re-checked exactly. Its freeness, caps
+  and size come from the SAT model. For the four "found" rows of §83.2,
+  the review in §83.6 checked all three directly.
+  The tool can export each run class's CNF: the base clauses, and on an
+  infeasible verdict the full set.
+* **`tools/multicolored/checkcnf.py`.** An independent clause checker. It
+  shares no code with `benders.py` or `satmaster.py`, and rebuilds
+  `S_D^{(n)}` and the variable numbering from the definitions. Each
+  clause must be one of the following:
+  * a valid unit;
+  * a fibre, Lemma 81.A or Lemma 83.A pair;
+  * a three-set made a conflict by some leg-permutation relation;
+  * a Horn clause backed by such a relation;
+  * a Farkas clause with an exact rational certificate;
+  * or one of the cardinality-encoding clauses, regenerated with the same
+    parameters.
+
+  It then tests the encodings semantically with a different solver
+  (Glucose 4), in both directions: on every assignment when an encoding
+  has at most 12 input literals, and otherwise on random and boundary
+  samples. It also requires each CNF line to be exactly one clause,
+  terminated by a single 0.
+* **Proof check.** `drat-trim` (Heule), built with `gcc -std=c99 -O2`
+  from commit `2e3b2dc` (2024-11-25), checks a DRAT proof produced by the
+  system's standalone CaDiCaL 1.7.3. That is a different build and
+  version from the solver that found the verdict.
+
+**Lemma 83.A (two-plus-one).** Let `a, b ∈ S_D^{(n)}` differ in every
+leg, and suppose `q_i = a[i ← b_i]` lies in `S_D^{(n)}` for `i = 1, 2, 3`.
+Then no free face contains both `a` and `b`.
+
+*Proof.* `w(q_i) = w(a) − u_i(a_i) + u_i(b_i)`, so
+`Σ_i w(q_i) = 2w(a) + w(b)`. If `a, b ∈ Φ`, every `w(q_i)` is 0, so
+`q_1 ∈ Φ`. But `q_1` agrees with `a` in legs 2 and 3 and differs in
+leg 1. ∎
+
+**PROVEN**; new to this repository (no rule-17 search was run).
+* **Coverage.** For a pair differing in every leg, the only non-trivial
+  way to write `2v_a + v_b` as a sum of three triples is the three swaps.
+  Every other split contains `a`, and either cancels to a Lemma 81.A
+  rectangle or is trivial. A pair agreeing in one leg reduces the same
+  way, and a pair agreeing in two shares a fibre.
+* **Relation to §82.1.** Lemma 83.A covers at least §82.1's family. That
+  family came from `relations3`, which also requires the swaps to be
+  pairwise compatible. The two coincide at `D = 4, 5` (`n = 1`) and at
+  `D = 4, n = 2`, but not in general. At `D = 6, n = 1` there are 720
+  Lemma 83.A pairs, and only 360 have compatible swaps (review, §83.6).
+* **Counts (COMPUTED).** 0 at `D = 3` (`n = 1, 2`), 24 at `D = 4, n = 1`,
+  120 at `D = 5, n = 1` and 5,376 at `D = 4, n = 2`. None is already
+  incompatible. The `D = 4` counts equal those of the §82 review, which
+  were obtained differently, by reversing `relations3`.
+
+### 83.2 Calibration (COMPUTED)
+
+All of §81.2's rows give their known verdicts (`3 1 1 2`, `3 1 1 3`,
+`3 1 3 9`, `3 1 3 10`, `4 1 3 9`, `4 1 9 10`, `3 2 1 5`, `3 2 2 19`).
+
+The non-trivial row is `D = 3, n = 2, K = 1, s = 6`. It is infeasible in
+**3.8 s**, against 272–372 s for the MILP masters (§82.3), so 72–98 times
+faster:
+
+```text
+  run r   SAT solves   Farkas certificates   mean size   Farkas clauses (with images)
+  2         161             160                11.46          7,512
+  1         434             433                11.44          5,136
+  0          56              55                11.67            633
+```
+
+Every certificate passed the exact rational check. At `D = 3` the fibre,
+Lemma 81.A, Lemma 83.A and forcing clauses are all empty (§81.1, §82.2),
+so each CNF holds units, 1,404 conflict three-sets, the encodings and
+the Farkas clauses.
+
+**Certification of that verdict (CONDITIONAL on the size-encoding
+assumption below).** For each run class, the exported full CNF was
+checked in three ways:
+* the standalone CaDiCaL 1.7.3 reports it unsatisfiable;
+* `drat-trim` reports `s VERIFIED` on its DRAT proof;
+* `checkcnf.py` explains every clause (7,119, 11,586 and 13,953 clauses
+  in run classes 0, 1 and 2). Each class's 27 cap encodings (9 input
+  literals each) were checked on every assignment, in both directions.
+  The one size encoding (81 inputs) was checked on 200 samples. There
+  were no failures.
+
+`drat-trim` prints 46 duplicate-literal warnings per proof. They come
+from size-encoding clauses that repeat a literal, such as
+`-298 -298 1514`, and are harmless.
+
+Negative tests:
+* `drat-trim` rejects a half-truncated proof (`s NOT VERIFIED`);
+* `drat-trim` rejects the full proof against the CNF minus its last
+  Farkas clause, and CaDiCaL finds that smaller CNF satisfiable;
+* `checkcnf.py` rejects each of four corruptions:
+  * a flipped literal in a Farkas clause;
+  * an invented pair clause;
+  * a negative unit on a triple of the run's own class;
+  * a changed encoding clause.
+
+**What the certified verdict rests on.** The chain is:
+* the run-class argument (§81.1, PROVEN);
+* clause validity (checked as above);
+* DRAT unsatisfiability (checked by `drat-trim`).
+
+One gap remains at this instance: ASSUMED(L3, that the cardinality
+network encoding `|Φ| ≥ 6` over 81 inputs lets every assignment with at
+least 6 true inputs extend to its auxiliary variables, owner PySAT).
+This is the direction an unsatisfiability verdict needs. The check
+confirms that the clauses equal PySAT's output and pass 200 semantic
+samples in both directions; it does not prove the direction. The chain
+also trusts:
+* `checkcnf.py` itself (reviewed in §83.6);
+* `drat-trim`;
+* Python, NumPy and Glucose 4, as used by the checker.
+
+The calibration instance was already settled exhaustively by §80, so this
+is a test of the chain, not a new result.
+
+### 83.3 The `D = 4` target
+
+`D = 4, n = 2, K = 2, s = 19`. Each base CNF has 53,423 variables. The
+clause counts are 5,366,640 / 5,366,656 / 5,366,848 for run classes
+2 / 1 / 0, differing only in their units (1 / 17 / 209). The other
+families are the same in every class:
+
+```text
+  fibre 2,880   rect 29,952   2+1 5,376   conf3 3,497,472   force3 1,747,584
+  cap 11,184    size 72,191
+```
+
+**Clause check.** `checkcnf.py` explains every clause of run class 0's
+base CNF: 209 units, 38,208 pairs, 3,497,472 three-sets, 1,747,584 Horn
+clauses and 83,375 encoding clauses. It used 200 semantic samples for
+each of the 49 encodings, all with more than 12 inputs, and found no
+failures. That was a version without the exhaustive mode, in 225 s; the
+review re-ran it in 290 s with identical counts.
+
+**Cost.** The setup takes 115–123 s per run class. While the clauses were
+being kept for export, `ps` showed about 2.15 GB resident per process;
+the review measured a 1.75 GB peak without export.
+
+**Runs (COMPUTED).** Three in parallel, 7,000 s budget each, with
+`timeout 7300` as the hard limit. They used `satmaster.py` at commit
+`956b322`; later commits changed only logging and the meaning of
+`setup_s`. Run class 0 was ended by the hard limit inside its first
+solve, so its result and log files are empty:
+
+```text
+  run r   result      SAT solves   Farkas certificates   Farkas clauses (with images)
+  2       undecided       78               78                  33,696
+  1       undecided      161              161                   5,796
+  0       undecided        0                0                       0   (first solve unfinished at 7,300 s)
+```
+
+**Profile of run class 2 (COMPUTED, a separate 1,200 s run).**
+* 19 iterations, of which the SAT solves took 982 s (largest 249.6 s,
+  first 149.5 s).
+* The Farkas steps took 0.01–0.04 s each, 0.35 s in all.
+* Certificates average 17.7 literals (8–27).
+
+**Run class 0 alone.** The standalone CaDiCaL 1.7.3 ran on the base CNF
+in three configurations (`--default`, `--unsat`, `--sat`) in parallel,
+with a 14,400 s limit. All three were still running, with no verdict,
+when a container restart ended them; their last log lines are at
+13,483 s, 13,537 s and 13,545 s.
+
+**What this shows.**
+* **The LP step is negligible.** The profile shows it. Separately, at
+  `D = 3` the SAT master was 72–98 times faster than the MILP masters,
+  on one instance, against MILP timings that were not taken under
+  controlled conditions (§82.3).
+* **At `D = 4` the combinatorial core is itself hard for CDCL.** In run
+  class 0, more than 13,500 s of solving neither found a set satisfying
+  the base clauses nor refuted them. That set need not be a face; it
+  only has to meet freeness, the cap, `|Φ| ≥ 19` and the pair,
+  three-set and forcing clauses. Whether such a set exists is open.
+* **Classes 1 and 2 are slow but moving.** They get past the first
+  solve in about 150 s, and the re-solves after each Farkas clause vary
+  widely. Measured as gaps between successive solves in the 7,000 s
+  logs (COMPUTED):
+
+  ```text
+    run class   under 2 s   2–50 s   50–250 s   250 s or more   longest
+    2              35          5         35            2          764.7 s
+    1              84         38         36            2          302.0 s
+  ```
+
+  So roughly half the iterations are cheap, and the long re-solves set
+  the pace.
+
+### 83.4 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19 | undecided (§79 MILP; §81 Benders 3 × 7,000 s; §82 with three-set rows, 2 modes × 3 × 7,000 s; §83 SAT master, 3 × 7,000 s, plus run class 0's base CNF, 3 configurations × about 13,500 s) |
+| `K = 2`, base clauses only (no Farkas), run class 0 | undecided after about 13,500 s in each of 3 configurations |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 83.5 Next step
+
+**Cube-and-conquer on the same CNF.** None of this has been tried.
+* **Split** each run class on a second forced triple, one per orbit of
+  the forced triple's stabiliser (orders 432, 36 and 12) among the
+  triples compatible with it.
+* **Solve** the cubes independently on the four cores. A cube that
+  ends unsatisfiable is checked exactly as in §83.2: an exported CNF
+  with the cube's units, `drat-trim`, `checkcnf.py`, and a check that
+  the cubes cover the class.
+* **Calibrate first** on `D = 3, n = 2, K = 1, s = 6`, then attack run
+  class 0 at `D = 4`, where the base CNF alone is the obstacle.
+* **Further structure in the CNF** (relations longer than three against
+  three, or lex-leader symmetry breaking for the residual stabiliser)
+  should come only after the split has shown which cubes stay hard.
+
+### 83.6 Gates at the tip
+
+Run on this tree after the last edit, after a container restart; no Coq
+or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  satmaster     pass   all nine rows of 83.2 reproduced (same solve and certificate counts)
+  proof chain   pass   3 2 1 6, every run class: CaDiCaL 1.7.3 UNSAT, drat-trim
+                       s VERIFIED, checkcnf.py ok (7,119 / 11,586 / 13,953 clauses;
+                       27 cap encodings exhaustive, 1 size encoding sampled), and
+                       the four checkcnf.py negative tests rejected, on the final tool
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+`drat-trim` starts its result line with a carriage return left by its
+progress output, so match `s VERIFIED` without anchoring the pattern to
+the start of the line. A first gate script anchored it and printed
+nothing; the verdicts above come from re-running with an unanchored
+match.
+
+**Fresh-context review.** A reviewer with no access to this session
+re-ran every calibration row and the full proof chain, including the
+negative tests. It also checked, with its own scripts:
+* the Lemma 83.A counts, by brute force;
+* all 13,281 Farkas clauses of the `3 2 1 6` CNFs, by its own exact
+  nullspace computation: every kernel 1-dimensional, no failures;
+* random free, capped faces against the non-encoding clauses: 394 faces
+  at `D = 3, n = 2`, 2,597 at `D = 4, n = 1` and 3,560 at `D = 3, n = 2`
+  with `K = 2`, with no violation;
+* every number in §83.3 against the result files.
+
+It confirmed:
+* Lemma 83.A and its coverage;
+* the soundness of every clause family;
+* the independence and soundness of `checkcnf.py`;
+* that a failed exact check stops the run safely, as "undecided".
+
+It found nothing HIGH. Two MEDIUM points concerned the labelling of the
+certified verdict and the wording of what the encoding check
+establishes. The title, the CONDITIONAL label and the ASSUMED statement
+now say exactly what is assumed, and the D = 3 cap encodings are now
+checked exhaustively, so only the size encoding remains. The LOW
+findings are fixed:
+* the per-class clause counts;
+* the LP step times (0.01–0.04 s, not under 0.005 s);
+* the re-solve times, whose earlier "50–250 s each" reading was false;
+* the setup range and the memory source;
+* the commit used for the long runs, and what run class 0's empty files
+  mean;
+* the speed claim's scope;
+* where the version pin lives;
+* the §82.1 relation, which holds as an inclusion and not in general as
+  an equality;
+* the "found" path;
+* strict CNF parsing in `checkcnf.py`;
+* `setup_s`, which counted from program start and is now per run class.
+
+
+## 84. Cube-and-conquer: certified at `D = 3`; at `D = 4`, run class 0 is 84% closed, and no closed cube needed a Farkas clause
+
+**Tier 2.** This is §83.5's next step. The question is still §79's: does
+`S_4^{(2)}` have a free face with at most 2 uses per word per leg and at
+least 19 elements? Such a face would give a per-letter bound above 3.
+
+### 84.1 The cubes, and why they cover
+
+`tools/multicolored/cubes.py` builds a tree of cubes for one run class.
+* **Cubes.** A cube is a node `(F, X, G)`: fixed triples `F`, forbidden
+  triples `X`, and a group `G`. The root is the run class's
+  representative, with nothing forbidden and `G` its stabiliser.
+* **Expanding a node.**
+  * The *candidates* are the triples allowed in the run class (no more
+    monochromatic coordinates than `r`), outside `F ∪ X`, and compatible
+    with every element of `F`: no fibre pair, no Lemma 81.A pair, no
+    Lemma 83.A pair.
+  * They split into `G`-orbits `O_1, O_2, …`, ordered by their least
+    index, with representatives `o_j = min O_j`.
+  * Child `j` is `(F + [o_j], X ∪ O_1 ∪ … ∪ O_{j−1}, Stab_G(o_j))`.
+* **Trees.** A tree is given by a uniform depth, or by the list of nodes
+  to expand, and its leaves are named by their paths.
+
+**Lemma 84.A (cover).** Fix a run class `r` and a finite tree built
+this way in which every expanded node fixes fewer than `s` triples
+(`|F| < s`). If the run class contains a face `Φ` of the question, then
+for some leaf `(F, X, G)` there is a group element `g` such that `g(Φ)`
+is a face of the question containing `F` and avoiding `X`.
+
+*Proof.* We show that each expanded node passes the property to one of
+its children; induction from the root gives the lemma. The root holds by
+the run-class argument (§81.1). Suppose `ψ` is a face of the question
+containing `F` and avoiding `X`, at an expanded node `(F, X, G)`.
+* **`X` is `G`-invariant.** By induction down the tree: at the root `X`
+  is empty. A child's `X` adds orbits of its parent's group, and every
+  ancestor's group contains the child's group. An orbit of a larger
+  group is a union of orbits of a subgroup.
+* **`ψ` has a candidate.** By the hypothesis, `|ψ| ≥ s > |F|`, so `ψ`
+  has an element outside `F`. It is allowed, and it is not in `X`. It is compatible with
+  `F`, because no free face contains an incompatible pair. So it is a
+  candidate.
+* **Choosing the child.** Let `j` be the least index of an orbit meeting
+  `ψ`, and pick `h ∈ G` that maps an element of `ψ ∩ O_j` to `o_j`.
+* **`h(ψ)` fits child `j`.** Every element of `G` fixes `F` pointwise.
+  It maps allowed triples to allowed triples, since it preserves the
+  number of monochromatic coordinates. It preserves `X` (above). It
+  preserves compatibility, which is defined from membership in
+  `S_D^{(n)}` alone, and each orbit `O_i`. It maps faces of the
+  question to faces of the question, because freeness, the cap and the
+  face condition are all invariant. So `h(ψ)` is a face of the question.
+  It contains `F + [o_j]`, avoids `X`, and avoids `O_1 ∪ … ∪ O_{j−1}`,
+  because `ψ` met none of those orbits. That is child `j`'s constraint,
+  and the child's group is `Stab_G(o_j)`.
+
+Hence, if every leaf is infeasible, the run class has no face of the
+question. An expanded node with no candidates contributes no leaves,
+which is sound: by the hypothesis, such a node holds no face of the
+question. ∎ **PROVEN**.
+* **Hypothesis checked.** `checkcnf.py cover` verifies `|F| < s` at
+  every expanded node, and `cubes.py` refuses a tree that breaks it. In
+  every tree used here an expanded node fixes at most 4 triples, and a
+  leaf at most 5 (the depth-4 leaves of §85): against `s = 6` at `D = 3`,
+  and `s = 19` at `D = 4`.
+* **Prior art.** The scheme resembles orbital branching (Ostrowski,
+  Linderoth, Rossi and Smriglio). That attribution is from memory: the
+  paper was not retrieved or read here, and no rule-17 search was run.
+  Its use here is new to this repository.
+
+### 84.2 Tools and certification
+
+* **`cubes.py`.** It solves every leaf with `satmaster.solve_loop` under
+  the assumptions "`F` true, `X` false". One incremental solver serves
+  each worker, so Farkas clauses (valid for every face) carry over
+  between cubes. Leaves are taken easiest first, meaning most forbidden
+  triples. Each infeasible leaf gets a delta file: the Farkas clauses
+  learned so far, plus the leaf's units. A leaf with a delta file is
+  skipped on a rerun, which is how a tree is refined.
+* **`satmaster.py`.** It is split into `build` and `solve_loop`. Its
+  behaviour is unchanged: the §83.2 calibration counts are identical,
+  and the `3 2 1 6` CNFs are byte-identical.
+* **`checkcnf.py cover`.** It recomputes the tree from the definitions,
+  with its own implementation of the 6,912-element group (it shares no
+  code with `cubes.py` or `benders.py`), and compares every leaf's path,
+  fixed and forbidden sets and group order. It also checks that every
+  listed expanded node exists.
+* **`checkcnf.py delta`.** It checks a delta file: every clause is an
+  exact Farkas clause or one of the leaf's units, and every unit is
+  present.
+* **`certcubes.py`.** It runs the whole chain for one run class:
+  * `checkcnf.py` on the base CNF;
+  * the cover check;
+  * the delta check of every leaf;
+  * for every leaf, a standalone CaDiCaL 1.7.3 proof of base plus delta,
+    verified by `drat-trim`.
+
+  It requires the leaf list's run class, `K` and `s` to match its
+  arguments. Without that check, a mismatched leaf list could be
+  "certified" vacuously, which the review in §84.8 demonstrated. The run
+  class is certified when all of these pass. The result is CONDITIONAL
+  on the §83.2 assumption about PySAT's size encoding.
+
+### 84.3 Calibration at `D = 3, n = 2, K = 1, s = 6` (COMPUTED)
+
+Every leaf is infeasible in every tree, and `certcubes.py` certifies
+every leaf: base, cover, delta, and CaDiCaL plus `drat-trim`.
+
+```text
+  tree                                   leaves (r = 2 / 1 / 0)   total
+  depth 1                                     6 / 11 / 7            24
+  depth 2                                   100 / 246 / 70         416
+  mixed: expand [], [0], [2], [2,1], [5]    109 / 143 / 50         302
+```
+
+**Negative tests** (on the mixed tree, run class 1, final tool). The
+genuine leaf list and delta pass, and these corruptions are rejected:
+* `checkcnf.py cover`, four corrupted leaf lists:
+  * a leaf dropped;
+  * a triple added to a leaf's forbidden set;
+  * a leaf's last fixed triple changed;
+  * a non-existent node added to the expanded list.
+* `checkcnf.py delta`:
+  * a positive or a negative unit added from outside the leaf;
+  * a delta checked against the wrong leaf.
+* `certcubes.py` rejects a leaf list from another run class (run class
+  1's list under run class 0).
+* A first "extra unit" test used `-7`, which turned out to be one of the
+  leaf's own units. It was rightly accepted, and was replaced by units
+  from outside the leaf.
+
+### 84.4 `D = 4, n = 2, K = 2, s = 19`, run class 0 (COMPUTED)
+
+All runs used CaDiCaL 1.9.5 through PySAT: rounds of 2–3 hours on 2–4
+workers, plus the probe on one worker for 426 s. The base CNF has
+5,366,848 clauses and SHA-256 `f616cf20…` in the depth-2 rounds and in
+the probe. The depth-1 round's result files are empty, because the hard
+limit ended it, so its SHA is not recorded. Certification checks the
+base file itself, so this does not affect soundness.
+
+| stage | cubes | closed | solve time of the closed (s) | note |
+|---|---|---|---|---|
+| depth 1 | 50 | 36 | 10,823 in total, at most 3,806 | 14 left open (cubes 0–13: 0–133 forbidden) |
+| depth 2, children of those 14 | 4,392 | 3,693 | 46,369 in total, at most 604.5; median 0.2 in the first round | 699 never started (budget) |
+| depth 3, probe of open cube `5-48` | 298 | 298 | 277 in total, at most 17, median 0.1 | `5-48` had 94 forbidden: the median of the 839 cubes open after round 1, and at the 59th percentile of the 699 open now (their median is 85) |
+
+* **No Farkas clause was ever needed.** Every closed cube was refuted by
+  its first SAT solve, with 0 Farkas certificates, at every level. The
+  base clauses alone did it: freeness, the cap, `|Φ| ≥ 19`, the pair and
+  three-set conflicts, and the forcing clauses. Lemma 82.A's forcing
+  clauses come from face relations, so "combinatorial" is loose for
+  them. Every delta file written so far, 4,027 of them, holds units
+  only. This describes the cubes closed so far, not the open ones.
+* **Coverage so far.**
+  * Of the 4,428 leaves of the depth-2 tree, 3,729 are closed (84%).
+  * One more open leaf, `5-48`, is closed through its 298 depth-3
+    children.
+  * 698 depth-2 leaves remain open.
+  * **Nothing is concluded about run class 0 as a whole.**
+* **Cover checks.** `checkcnf.py cover` passes for the depth-1 tree
+  (50 leaves), the depth-2 tree (4,428) and the probe tree (4,725).
+* **Certified so far.**
+  * All 36 closed depth-1 cubes, with the base and cover checks, in
+    8,699 s.
+  * A sample of 100 closed depth-2 cubes, in 6,012 s. The sample was
+    the 20 slowest of the first round, plus 80 drawn from the depth-2
+    leaves already closed at 20:23. They were taken in leaf-list order
+    without those 20, shuffled with `random.Random(84)`, and the first
+    80 kept. The list is kept as `k2_r0_leaves_certsample.json`.
+    `certcubes.py` reports `cover: false` and `ok: false` for it, as
+    expected for a sub-list; the full trees' covers are checked
+    separately above.
+  * Both durations come from file timestamps.
+  * Every one passed: delta check, CaDiCaL 1.7.3 unsatisfiable, and
+    `drat-trim` `s VERIFIED`.
+  * The other 3,593 closed depth-2 cubes and the 298 probe cubes are not
+    yet certified.
+* **Run classes 1 and 2 have not been started.** In §83 their masters
+  needed Farkas clauses: 161 iterations in run class 1 and 78 in run
+  class 2, without closing. Their cubes will need the full loop.
+
+### 84.5 What finishing would cost (CONJECTURED)
+
+* **The search.** Depth-2 cubes with fewer forbidden triples are harder.
+  `cubes.py` reports its verdict for one worker's share of the leaves
+  (or for the `under` subtree) only; the totals here combine all of
+  them.
+  Every closed one has at least 123 forbidden
+  triples, and the slowest (336–605 s) have 124–139. The probe suggests that splitting an open cube to
+  depth 3 costs about the solve time of a moderately hard depth-2 cube:
+  277 s for 298 children.
+  * Extrapolating: the 698 open cubes at depth 3 cost roughly
+    `698 × (300–3,000 s)`, about 60–600 CPU-hours.
+  * That range is wide. It rests on one probe, whose cube sits at the
+    59th percentile, so about half the open cubes are harder. The lower
+    end is optimistic. The hardest open cubes (`0-0` with no forbidden
+    triples, `1-0` with 6, `2-0` with 18) may need depth 4.
+* **Certification per leaf.** Each leaf costs at least about 9 s: one
+  pass of `drat-trim` over the 95 MB CNF. That was measured once in this
+  session on the easy depth-1 cube `49` (CaDiCaL 1 s, proof 33 MB, check
+  9 s); no file was kept. For hundreds of thousands of depth-3 leaves
+  that is too slow.
+* **Certifying coarser nodes instead.** Lemma 84.A holds for every tree
+  that meets its hypothesis, so a closed subtree can be certified as its
+  root node alone. Run the standalone CaDiCaL on base plus the node's
+  units, with the node a leaf of a coarser tree.
+  * **It trades many cheap checks for one hard one.** The cost is a
+    direct solve of the node, plus `drat-trim` on a correspondingly
+    larger proof (whose default limit is 20,000 s, after which it reports
+    `s TIMEOUT`). The nodes worth certifying this way are the ones split
+    because their direct solve was too slow. So this helps only for
+    nodes of moderate difficulty, such as the depth-2 parents of depth-3
+    leaves. It does not help for depth-1 cubes 0–13, and not for the run
+    class itself, whose direct solve did not finish in about 13,500 s
+    (§83.3). CONJECTURED.
+  * **Writing the delta.** A node's delta can be written directly from
+    its units while a run class's deltas stay pure units, as in run class
+    0 so far. `certcubes.py` cannot do this yet.
+
+### 84.6 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19, run class 0 | 84% of the depth-2 tree closed, by base clauses alone; 698 cubes open (§84.4) |
+| `K = 2`, size ≥ 19, run classes 1 and 2 | undecided (§83); cubes not started |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 84.7 Next step
+
+1. **Finish run class 0** in rounds. Expand the remaining open depth-2
+   cubes to depth 3, and the hardest of those to depth 4. Use 4 workers,
+   each resuming from the existing delta files. Budget: CONJECTURED at
+   60–600 CPU-hours (§84.5).
+2. **Teach `certcubes.py` to certify an internal node**, with a units-only
+   delta and the coarser tree's cover check. Then certify run class 0's
+   depth-3 leaves through their depth-2 parents where a parent's direct
+   solve is affordable, and leaf by leaf elsewhere (§84.5).
+3. **Run classes 1 and 2**, at depth 1 then 2. These need Farkas clauses,
+   so calibrate their loop on one cube first.
+
+Before spending the compute in item 1, someone should decide whether the
+answer is worth roughly a CPU-week. A theory bound on `|Φ|/K`
+(§79.4 item 2) would make all of this unnecessary.
+
+### 84.8 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  satmaster     pass   refactor: §83.2 counts and the 3 2 1 6 CNFs byte-identical
+  cubes (D = 3) pass   depth 1, depth 2 and mixed trees, every leaf certified (84.3)
+  checkcnf      pass   the §83 regression and its four negative tests; cover and delta
+                       negative tests (84.3); |F| < s check on all three D = 4 trees
+  certcubes     pass   D = 3 mixed tree, run class 1: 143 of 143 leaves; a run class 1
+                       leaf list under run class 0 refused
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+**Fresh-context review.** A reviewer with no access to this session
+re-ran the `D = 3` calibration and its certification, and re-ran the
+three `D = 4` cover checks. It also checked every `D = 4` number against
+the result files, and confirmed:
+* the refactor, byte for byte;
+* the code's implementation of the tree rule, the independence of
+  `checkcnf.py cover`, and the corruption tests (including duplicate
+  and non-existent expanded nodes, reordered leaves, changed group
+  orders, a wrong run class, and dropped or invented units);
+* the soundness of solving under assumptions and of carrying Farkas
+  clauses across cubes.
+
+It raised two MEDIUM points, both fixed:
+* Lemma 84.A lacked its hypothesis `|F| < s`. It is now stated, checked
+  by `checkcnf.py cover`, and enforced by `cubes.py`. It holds in every
+  tree used.
+* `certcubes.py` did not tie the leaf list to its run class. It now
+  asserts it, and a mismatched list is refused.
+
+A third, MEDIUM-rated point was that the cost of certifying an internal
+node had been understated; §84.5 is corrected. The LOW findings are also
+fixed:
+* the forbidden range of cubes 0–13;
+* the probe cube's percentile;
+* which open cubes have no forbidden triples;
+* the swapped iteration counts of run classes 1 and 2;
+* the description of the rounds;
+* the unrecorded depth-1 SHA;
+* where the durations and the sample come from;
+* the scope of `cubes.py`'s per-worker verdict;
+* the hedge on the positive-unit test;
+* the atomic writing of the leaf list;
+* the prior-art attribution;
+* the wording around "combinatorial".
+
+## 85. Run class 0 at `D = 4, K = 2, s = 19` is closed: no face of the question (COMPUTED), every leaf refuted without a Farkas clause, certified on a sample
+
+**Tier 2.** This is §84.7 item 1. The question is §79's: does
+`S_4^{(2)}` have a free face with at most 2 uses per word per leg and at
+least 19 elements? Such a face would give a per-letter bound above 3.
+Run class 0 covers the faces whose every triple is rainbow in both
+coordinates, up to symmetry.
+
+### 85.1 Result
+
+**Run class 0 contains no face of the question.**
+* **Label.** COMPUTED: every leaf of the cube tree was refuted by a SAT
+  solver. This rests on the per-leaf closure logs, which exist only in
+  the session scratchpad, and on the size-encoding assumption of §83.2:
+  the uncertified leaves use the same base CNF.
+* **Certification.**
+  * 256 of the 222,183 leaves are certified: the base check, a standalone
+    CaDiCaL 1.7.3 DRAT proof per leaf, and `drat-trim`.
+  * The tree's cover is certified in full, by `checkcnf.py cover`.
+  * The certified part is CONDITIONAL on the size-encoding assumption of
+    §83.2.
+  * The rest is not certified (§85.4).
+* **What it does not settle.** Run classes 1 and 2 are still open, so
+  the question itself is too.
+
+```text
+  tree                       716 expanded nodes (the root, 14 depth-1, 699 depth-2, 2 depth-3)
+  leaves                     222,183: 36 at depth 1, 3,693 at depth 2, 217,775 at depth 3, 679 at depth 4
+  largest fixed set          5   (Lemma 84.A needs < s = 19 at every expanded node: holds)
+  cover                      checkcnf.py cover on the full leaf list: ok (6,912-element group, own code)
+  every leaf                 base + its units unsatisfiable, in one solve, no Farkas clause
+    by PySAT CaDiCaL 1.9.5   203,715 leaves (cubes.py, incremental, units as assumptions)
+    by standalone 1.7.3      18,468 leaves (cubes_sa.py, base + units per process)
+  solve time (sum over leaves)   about 101 CPU-hours (272,700 s PySAT, 91,700 s standalone)
+```
+
+Repository record: `tools/multicolored/certs/r0_D4K2s19_tree.json`. It holds
+the 716 expanded nodes, which determine every leaf by the rule of
+§84.1. It also holds the base CNF's size and SHA-256 (`9096cbda…`, of the
+file; the `f616cf20…` of §84 is `cubes.py`'s hash of the clause text
+without its header) and the leaf list's SHA-256. The per-leaf closure logs
+and timings exist only in the session scratchpad.
+
+### 85.2 What changed in the tools
+
+* **`cubes.py` scales to `10^5` leaves.**
+  * Forbidden sets are stored as hexadecimal bitmasks. The 222,183-leaf
+    list is 59.5 MB.
+  * A leaf closed with no Farkas clause gets a line in a per-worker
+    JSONL log instead of a delta file, since its delta would be its own
+    units.
+  * `only.json` builds just the leaves below chosen nodes. At `D = 3`
+    this was checked against the full tree, filtered to those nodes:
+    identical in 8 cases.
+* **`cubes_sa.py` (new).** Each leaf runs as its own process: base plus
+  the leaf's units, piped to the standalone `cadical`.
+  * *Why (CONJECTURED).* Presumably CaDiCaL simplifies the formula under
+    the units before searching, which the incremental solver cannot do
+    with assumptions.
+  * *Models.* They go through `satmaster.py`'s Benders step: exact
+    Farkas check and stabiliser images.
+  * *Timeouts.* A leaf can be timed out on its own.
+  * *Calibration at `D = 3, n = 2, K = 1`.* At `s = 6` on the mixed tree,
+    all 302 leaves closed and certified, using 641 Farkas certificates.
+    At `s = 5` it found a 5-element face, which `degen2.py verify`
+    confirms.
+* **`checkcnf.py` and `certcubes.py`.** They read both formats.
+  `certcubes.py` writes a units-only leaf's delta from the leaf list and
+  checks it like any other.
+  * *Certification does not trust the logs.* A false closure record fails
+    when CaDiCaL finds base plus units satisfiable. The COMPUTED verdict
+    for the uncertified leaves does rest on the logs. That was tested at
+    `D = 3, s = 5`: CaDiCaL exit 10 on the two feasible leaves.
+
+### 85.3 How the remaining cubes were closed (COMPUTED)
+
+* **Round 3.** The 699 open depth-2 cubes of §84 were expanded to depth 3,
+  giving 217,777 cubes. Four PySAT workers ran easiest first (most
+  forbidden triples first). Per-leaf time grew 2.3–3.5 times for each
+  25 fewer forbidden triples. By bin of forbidden-set size (bin `b` means
+  `b` to `b + 24` forbidden; a snapshot taken before the switch, the
+  final data give 9.22 s for the 100 bin):
+
+  ```text
+    bin   mean time    bin   mean time
+    225      0.04 s    150      1.12 s
+    200      0.13 s    125      3.89 s
+    175      0.40 s    100      9.13 s
+  ```
+
+  Extrapolated, the 18,620 cubes left at that point (all with fewer than
+  125 forbidden: 2,111 of the 100 bin and all 16,509 below it) projected
+  to about 270 CPU-hours (CONJECTURED).
+* **Depth 4 does not help much.** Two probes:
+  * `0-0-40` (40 forbidden): 314 children closed in 106 s in total, about
+    equal to the extrapolated direct solve of about 110 s.
+  * `0-0-5` (5 forbidden): 365 children closed in 390 s.
+
+  Both are now expanded in the tree.
+* **The standalone solver does.** One leaf each, base plus units into the
+  standalone `cadical`:
+  * `0-0-80` took 0.66 s, against about 25 s extrapolated for PySAT from
+    the bin means;
+  * `0-0-30` took 35 s, against about 150 s, also extrapolated;
+  * `0-0-5` took 49 s, against the 390 s of its depth-4 split.
+
+  The run switched to `cubes_sa.py` for every leaf still open. Four
+  workers closed the remaining 18,468: 2,782 before a container restart,
+  and 15,686 after it, from the logs. That took about 6.5 hours of work,
+  with nothing running for the 8 hours the container was down. The
+  per-leaf limit was 7,200 s; it was set on the command line and is not
+  stored in the result files. No leaf timed out, and the slowest took
+  354 s. The causal reading (root-level simplification under
+  the units) is CONJECTURED.
+* **No Farkas clause anywhere.** Every closure record is units-only, and
+  every one of the 4,027 delta files is pure units. In run class 0 the
+  base clauses alone refute every cube: freeness, the cap, `|Φ| ≥ 19`,
+  the pair and three-set conflicts, and the forcing clauses.
+* **A closure check.** A separate script rebuilt the tree's 222,183
+  leaves. It found each of them closed, by a delta file or a units-only
+  record, with no truncated log line.
+
+### 85.4 Certification
+
+* **Certified.** `certcubes.py` ran the full chain (base check, delta
+  check, CaDiCaL 1.7.3 proof, `drat-trim` `s VERIFIED`) on:
+  * all 36 depth-1 leaves (§84.4);
+  * 100 depth-2 leaves (§84.4);
+  * a stratified sample of 120 here. It holds the 20 slowest standalone
+    leaves (up to 354 s), the 20 slowest PySAT log leaves (up to 133 s),
+    and 80 more drawn by `random.Random(85)` from the rest, all from the
+    round-4 leaf list.
+
+  That is 256 leaves, with no failure. The sample took 5.4 CPU-hours
+  (three processes of 1:37, 1:50 and 1:57), an average of about 160 s per
+  leaf including the solve. The full-tree cover check passed.
+* **An independent spot check.** The review (§85.7) separately certified
+  three uncertified leaves chosen with its own seed: `3-79-205`,
+  `5-11-16` and the depth-4 leaf `0-0-5-64`, all `s VERIFIED`. No depth-4
+  leaf is among the 256.
+* **Not certified.** The other 221,927 leaves.
+  * **A lower bound per leaf.** About 5 s in `drat-trim` just to parse and
+    propagate the 95 MB formula: one measurement, on leaf `4-50-70`, in
+    the scratchpad's `cc/certexp/dt0.out`.
+  * **Measured.** The review's measurements give 8–52 s per leaf, and the
+    sample averaged about 160 s.
+  * **Total.** Per-leaf certification would cost about 1,000–3,000
+    CPU-hours (CONJECTURED).
+* **What a scalable certificate needs (CONJECTURED).** One checker run
+  over many leaves, in one of two ways:
+  * a single RUP-only derivation, whose lemmas carry each cube's negated
+    literals and whose lemma list includes every cube's negation. It is
+    checked by `drat-trim -f -U`: forward mode, RUP additions only. The
+    review tested this: it rejects a RAT lemma and accepts a RUP-only
+    derivation;
+  * leaves batched by depth-2 parent, each parent's subtree certified by
+    one proof of base plus the parent's units, where that solve is
+    affordable (§84.5).
+
+  Without `-U`, `drat-trim`'s forward mode reports "VERIFIED derivation"
+  only in the sense that its lemmas preserve satisfiability (RAT). That
+  is not enough here: each cube's negation must follow from the base.
+
+### 85.5 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19, run class 0 | **none** (§85; COMPUTED; 256 leaves and the cover certified) |
+| `K = 2`, size ≥ 19, run classes 1 and 2 | undecided (§83); cubes not started |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open |
+
+### 85.6 Next step
+
+1. **Run classes 1 and 2 with `cubes_sa.py`.** In §83 their masters needed
+   Farkas clauses (161 and 78 iterations), so their cubes will exercise
+   the Benders step. That step is calibrated at `D = 3` (641 certificates,
+   §85.2).
+   * Run class 2 has 8 depth-1 cubes (stabiliser of order 432) and 736 at
+     depth 2.
+   * Run class 1 has 33 depth-1 cubes and 6,376 at depth 2.
+   * Start at depth 2 with the standalone solver and a per-leaf timeout,
+     and split only the leaves that time out.
+2. **A scalable certificate (§85.4)**, if the result is to be PROVEN
+   rather than COMPUTED.
+
+### 85.7 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  cubes_sa      pass   D = 3 calibration (85.2): 302 leaves closed and certified; s = 5 face found
+  cubes         pass   bitmask and log formats: D = 3 mixed tree certified; negative tests (85.2)
+  cover         pass   the full D = 4 run class 0 leaf list (222,183 leaves)
+  certcubes     pass   120-leaf D = 4 sample, all certified
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+**Fresh-context review.** A reviewer with no access to this session
+recomputed the round-4 tree and its 222,183 leaves, and re-ran the
+full-tree cover check. It found every leaf closed exactly once, with no
+stray name. It also checked:
+* *determinism:* a node's cube depends only on its path. 221,504
+  round-4 leaves are field-for-field identical to their round-3
+  versions, and `only.json` matches the filtered full tree at `D = 4`;
+* *the delta files:* all 4,027 equal their leaves' units;
+* every number of §85.1–§85.3, and the sample's composition;
+* the `D = 3` calibration, which it re-ran.
+
+It also spot-certified three uncertified leaves, and found nothing HIGH.
+
+* **MEDIUM.** The scalable-certificate route needs no LRAT (`drat-trim -U`
+  suffices), and the certification cost was underestimated. Both are
+  corrected in §85.4.
+* **LOW, all fixed.**
+  * the "fewer than 100 forbidden" slip, and the bins being a snapshot;
+  * the size-encoding condition and the reliance on the logs, which also
+    apply to the COMPUTED verdict;
+  * a causal claim in §85.2 left unlabelled;
+  * the sample's CPU time;
+  * the unrecorded per-leaf limit;
+  * the record's leaf-list hash, which is of `json.dumps(leaves,
+    sort_keys=True)`, not of the file;
+  * `cubes.py`'s base-SHA docstring;
+  * `cubes_sa.py` reporting a face without an integer certificate as
+    "found";
+  * §84.1's "largest fixed set at most 4", which holds for expanded
+    nodes, while the depth-4 leaves fix 5.
+
+## 86. Run classes 1 and 2 at `D = 4, K = 2, s = 19`: stopped by decision, 70% of run class 2's leaves closed with no face, run class 1 not started
+
+**Tier 2.** §85.6 item 1, stopped partway. On 2026-10-27 the rule-17
+search found [BCLSZ25] Theorem 1.8, which settles for product testers the
+growth question that §79–§85 were built to probe (§78.7, Lemma 78.C).
+What a finished `D = 4` search could still contribute is at most a
+witness that `SR̰_C(q_c) > 3` at that one alphabet, if a face exists. A
+search that finds none rules out only this two-letter `K = 2`
+construction, not a value above 3. At about 700 leaves an hour, with
+roughly 30,000 leaves of run class 2 and all of run class 1 left, that was
+judged not worth at least two more days of four cores for run class 2
+alone, with the rate still falling, and run class 1 on top. The workers were
+stopped at 21:08 UTC on 2026-10-27. **Nothing here is a verdict on run
+class 2, on run class 1, or on the question.**
+
+### 86.1 Result (COMPUTED, partial)
+
+```text
+  run class 2                stabiliser of the representative: order 432
+  tree                       318 expanded nodes (the root, the 8 depth-1 cubes, 309 depth-2 cubes)
+  leaves                     100,762: 427 at depth 2, 100,335 at depth 3; largest fixed set 4
+  cover                      checkcnf.py cover on the full leaf list: ok (6,912-element group, own code)
+  closed                     70,343 leaves, each: base + Farkas clauses + its units unsatisfiable
+  open                       30,419 leaves, all at depth 3, all below depth-1 cubes 0-3
+                             (cubes 4-7 closed in full); open leaves have 0-362 forbidden
+                             triples, closed ones 355-730
+  face found                 none (no worker reported a model that is a face)
+  solve time                 92.1 CPU-hours summed over the closed leaves; depth-3 median
+                             1.9 s, mean 4.51 s, 99th percentile 37.9 s, slowest 3,269.9 s (1-4-42)
+  Benders step               48 closed leaves needed more than one solve (161 extra solves, so 161
+                             exact Farkas certificates; at least 6 more were computed in 4-15
+                             before its timeout and in leaves running at the stop); the most,
+                             14 solves, at 1-9 and at 4-6-6
+  timeouts                   one, 4-15 at 3,600 s in the depth-2 round; expanded since
+  run class 1                base CNF built (53,423 variables), 6,376 depth-2 cubes listed;
+                             no leaf solved
+```
+
+Repository record: `tools/multicolored/certs/r2_D4K2s19_partial.json`. It
+holds the 318 expanded nodes, the base CNF's size and SHA-256
+(`bb4bfedc…` of the file; `36cd550b…` is `cubes.py`'s hash of the clause
+text without its header), the leaf list's SHA-256 (`c9423542…`, of
+`json.dumps(leaves, sort_keys=True)`), and the 30,419 open leaves by
+name, so a later run can resume without this session's scratchpad. The
+closure logs, delta files and clause pools exist only in the scratchpad.
+As in §85.1, the 70,343 closures rest on these logs, and the certified
+leaves are CONDITIONAL on the size-encoding assumption of §83.2.
+
+**Run class 2 needs the Benders step; run class 0 never did.** §85
+closed all 222,183 leaves of run class 0 on base clauses alone. Here 48
+leaves had a first model that was not a face and needed one to thirteen
+Farkas certificates, each added as a clause with its images under the
+stabiliser, before CaDiCaL proved them unsatisfiable. What makes those
+closures sound is that every certificate is minimised and re-checked in
+exact rational arithmetic before it becomes a clause; §85.2's
+calibration exercised that path at `D = 3`.
+
+### 86.2 How the run went
+
+* **Depth 2 first.** The 736 depth-2 cubes were run easiest first with
+  `cubes_sa.py` (3,600 s per leaf) for about 1.5 hours. 427 closed
+  (16,012 s in total; 14 with Farkas clauses in the formula) and `4-15`
+  timed out; the per-leaf time grew steeply as the forbidden sets shrank.
+  The round was then stopped: the other 308 depth-2 cubes (0–451
+  forbidden) were expanded without having timed out, most of them never
+  attempted.
+* **Depth 3 for the rest.** These 309 depth-2 cubes (`4-15` and the 308
+  not closed) were expanded,
+  giving the 100,335 depth-3 leaves, run easiest first by four workers
+  with a per-leaf limit of 3,600 s and 85,000 s per worker run (set on
+  the command line; not stored in the result files).
+  The rate fell from about 8,000 leaves an hour to about 700 as the
+  forbidden sets shrank, as in run class 0 (§85.3).
+* **Interruptions.** Two container restarts (about 01:05 and 05:10 UTC)
+  and one deliberate restart at 08:58 for the format change below. Each
+  resumed from the logs; only the leaves in progress were repeated, and
+  the Farkas clauses learned so far were relearned as needed.
+* **One delta file per leaf did not scale here.** Once a worker has
+  learned Farkas clauses, every later leaf it closes has them in its
+  formula, and the delta file repeated all of them: a median of 326 KB
+  and a mean of 407 KB per file, the last ones 1.2 MB, with 3.5 GB on
+  disk by then and about 18 GB projected. From 08:58 each worker appends its clauses
+  once to a pool file, and a closed leaf's record names the pool and the
+  number of its clauses used (`b1ad200`). Of the 70,343 closure records,
+  49,256 are units-only, 8,390 have a delta file and 12,697 a pool
+  reference; the four pools hold 31,104 clauses. `certcubes.py` reads all
+  three.
+* **Defect found when stopping (not fixed).** `cubes_sa.py` runs CaDiCaL
+  as a child process and does not stop it when the worker is killed. One
+  orphaned solver ran on for about 2.5 hours until it was killed by hand.
+  A later run should stop the children too (for example a process group,
+  or a `SIGTERM` handler that kills the child).
+
+### 86.3 Certification (partial sample)
+
+* **Cover.** `checkcnf.py cover` passed on the full 100,762-leaf list,
+  including Lemma 84.A's hypothesis (fewer than `s` fixed at every
+  expanded node). Since the run did not finish, this certifies only that
+  the tree would cover run class 2 if every leaf were closed.
+* **Leaves.** An 87-leaf sample was drawn: the 20 slowest closed leaves,
+  the depth-2 leaves closed with Farkas clauses, 16 pool-format leaves and
+  10 delta-file depth-3 leaves (by `random.Random(86)`), and 30 more
+  closed leaves by the same generator. `certcubes.py` ran the full chain
+  (base check, delta check, standalone CaDiCaL 1.7.3 DRAT proof,
+  `drat-trim` `s VERIFIED`) in three processes. **47 leaves were
+  certified, with no failure**, before a container restart at about
+  23:55 stopped the processes; they were not restarted.
+  * By format: 24 delta-file leaves, 16 units-only, 7 pool references, so
+    the pool path of §86.2 is now exercised at `D = 4`.
+  * They include `1-9`, the leaf that needed 14 solves and 13 Farkas
+    certificates — the only certified leaf that needed the Benders step;
+    no certified depth-3 leaf did — and leaves whose solve took up to
+    1,436 s.
+  * Not certified: the other 40 of the sample, which include 17 of the 20
+    slowest leaves and 7 of the 48 leaves that needed the Benders step,
+    and the 70,256 closed leaves outside the sample.
+* **Cost.** The depth-2 leaves closed with Farkas clauses produced DRAT
+  proofs of 0.7–2.2 GB (complete proofs for `4-28`, `4-26`, `4-27`; the
+  proofs in progress at the restart had reached 1.0–2.7 GB), and
+  `drat-trim` ran for over an hour on `4-27` alone (sizes and times
+  observed during the run with `ls` and `ps`; no file kept). Per-leaf certification of
+  the slow leaves is therefore far more expensive than §85.4's estimate
+  for run class 0. §85.4's scalable-certificate options apply unchanged.
+
+### 86.4 Where the two-letter `D = 4` questions stand
+
+| question at `D = 4, n = 2` | status |
+|---|---|
+| `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
+| `K = 2`, size ≥ 19, run class 0 | none (§85; COMPUTED; 256 leaves and the cover certified) |
+| `K = 2`, size ≥ 19, run class 2 | **undecided; 70,343 of 100,762 leaves closed, no face (§86; COMPUTED; 47 leaves certified; cover checked, meaningful only once every leaf is closed)** |
+| `K = 2`, size ≥ 19, run class 1 | undecided; not started |
+| `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
+| any two-letter free face beating 3 | open; since §78.7 it bears on the value at `D = 4` only, not on the route |
+
+### 86.5 Next step
+
+None is owed for the route ledger (§78.7). If the exact value at
+`D = 4` is ever wanted:
+1. Fix the orphaned-child defect of §86.2.
+2. Resume run class 2 from `certs/r2_D4K2s19_partial.json` (its open
+   list), splitting the hardest open leaves (fewest forbidden triples;
+   `0-0-0` has none) further.
+3. Run class 1 at depth 2 with `cubes_sa.py`, then depth 3 for the
+   timeouts.
+4. A scalable certificate (§85.4), since the per-leaf proofs of the
+   Benders leaves are gigabytes.
+
+The theory alternative of §84.7, a bound on `|Φ|/K`, would replace all
+of it.
+
+### 86.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  cubes_sa      pass   pool format, D = 3 (b1ad200): all leaves of three run classes certified;
+                       four negative tests
+  cover         pass   the full D = 4 run class 2 leaf list (100,762 leaves)
+  certcubes     partial  47 of an 87-leaf D = 4 sample certified, no failure; stopped by a restart
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+**Correction to the record.** Commit `b1ad200`'s message says the `D = 3`
+pool test closed "24" leaves with Farkas clauses from the pool; its logs
+show 18 (5 + 8 + 5).
+
+**Fresh-context review.** A reviewer with no access to this session
+checked §86 and the record against the data files. It rebuilt the
+round-2 tree with its own code and no repository imports (6,912-element
+group, stabiliser 432); all 100,762 leaves matched field for field. It
+reproduced the open list and both hashes, every count of §86.1–§86.3,
+and the 87-leaf sample from `random.Random(86)`. It also certified one
+more uncertified leaf of its own choice, `3-63-135` (pool format), with
+no failure. It found nothing HIGH. Two MEDIUM findings are fixed: not all
+736 depth-2 cubes were run (§86.2), and a search that finds no face
+decides nothing about the value (opening). LOW, all fixed: the
+certificate count excluded `4-15` and the leaves running at the stop;
+soundness comes from the exact re-check, not the calibration; §85's two
+conditions were missing; the remaining-time estimate understated; the
+delta-file size was a median; "0 forbidden" fits one leaf only; the
+per-leaf limits were unrecorded; the proof sizes are observations; "70%"
+counts leaves and the cover is meaningful only once every leaf is closed;
+`1-9` is the only certified Benders leaf. It could not confirm from kept
+files the rates of about 8,000 and 700 leaves an hour (its own estimate
+from summed solve seconds: about 7,600 at the start and about 990 at the
+end), the 2.5-hour orphaned solver, or the time of the restart.
+
+## 87. Handover — the vector-tester route closed for product testers at fixed `D` (`D`-uniform shape); the state of everything since §76
+
+Start here. §76 was the last handover; §77–§86 followed it with no
+summary, and the rule-17 search of 2026-10-27 changed several of §76's
+statements. Where this section and §76 disagree, this section is right.
+
+### 87.1 What moved since §76
+
+* **The vector-tester route, for product testers: closed (§78.7).**
+  [BCLSZ25] Theorem 1.8 with the conciseness of every one-letter tester
+  gives `liminf_n slice-rank(q^{⊗n})^{1/n} ≥ D^{1/3}` for every `c`, over
+  every field (Lemma 78.C; PROVEN given that theorem). So no product tester
+  gives a `b^n` bound uniform in `D`, the shape [ASU12] Conjecture 3 needs.
+  §76.2's "the route is neither closed nor shown open" is superseded for
+  this class. Two caveats stay attached: it is a fixed-`D`, `n → ∞`
+  statement, and its uniformity in `c` comes from the proof of Theorem 1.8
+  as read by a review (§78.7).
+* **What `D = 4` can still say.** §79–§86 asked whether a two-letter free
+  face beats 3 at `D = 4`. That no longer bears on the route; a face would
+  only witness `SR̰_C(q_c) > 3` at one alphabet. Status: `K = 1` none
+  (§80); `K = 2`, `|Φ| ≥ 19`: run class 0 none (§85, COMPUTED, 256 leaves
+  certified), run class 2 undecided with 70,343 of 100,762 leaves closed
+  and no face (§86), run class 1 not started. The runs were stopped by
+  decision (§86).
+* **Tools.** `satmaster.py` (SAT master with exact Farkas certificates,
+  §83), `cubes.py` and `cubes_sa.py` (cube-and-conquer, §84–§85),
+  `checkcnf.py` (independent clause, cover and delta checks), and
+  `certcubes.py` (per-leaf DRAT certification). `cubes_sa.py` now stores
+  Farkas clauses once per worker in a pool file (`b1ad200`) and kills its
+  solver child when the worker stops (`bd46d5e`).
+* **The rule-17 search (2026-10-27) and the two Abbott papers
+  (2026-10-28).** Report: `reports/Sunflower novelty prior art search.md`;
+  register rows updated in place.
+  * **B10 — no novelty.** `2ι(b) ≤ g(b)` is [AHS72] Lemma 4 (1972), the
+    cone is the `a = 1` case of its Lemma 5, the `k = 3` equivalence is
+    in [AHS72] too (Lemmas 4 and 5), and the upper half composes [AHS72]
+    p. 381 eq. (2) (Erdős–Rado, quoted) with Lemma 5 at `a = 1` (also
+    Gowers 22417, [FW25b] (12)+(14)). Kalai stated the equivalence on
+    Polymath10 (22224, 2015). Only the machine-checked statement
+    (`coq/IotaRate.v`) is this repository's own.
+  * **`ι` has had a name since 1972:** `ψ(n)`, [AHS72] p. 386 (B9, A17);
+    the general-`k` function `ψ(n,k,2)` since [AbHa74] p. 9 (1974).
+    Abbott–Gardner 1969, cited there for `ψ(3) = 10`, is unread.
+  * **B27 — partial.** The floor of 3 for `D ≤ 26` (78.A) and Lemma 78.B
+    remain not found, not exhaustive; [BCLSZ25] supersedes 78.A for
+    `D ≥ 27`.
+  * **A20 resolved**, A3 corrected: [AHS72]'s substitution is printed on
+    `ψ` alone (Lemma 6); `g(ab) ≥ g(a)ι(b)^a` follows from its proof
+    (after a two-line repair, A3).
+  * **A19c stale:** [ABCDN26] claims `ι(4) = 27`, and `ι(4) ≥ 27` is
+    [AHS72] p. 388.
+
+### 87.2 What did not move
+
+* No Coq theorem, definition or statement changed since §74; the kernel
+  state is §74's, and `Rao20_lemma2` is still the one axiom.
+* The lines §76.2 lists for `g(4)` (`54 ≤ g(4) ≤ 76` given the census),
+  census certification stages 3–5, `r*(3,3) ∈ {3, 4}` and `Rao20_lemma2`
+  Stage C are untouched. The session brief of 2026-10-27/28 (not in the
+  repository) forbade new enumeration campaigns on `g(4)`, `ι(4)`,
+  `r*(3,3)` and census stages 3–4, and Stage C.
+* `Λ(D)` for `D ≥ 4`: still open as a quantity. F3 stands
+  (`sup_D Λ(D) < ∞` would prove the conjecture at `k = 3`).
+
+### 87.3 Open questions, ranked
+
+1. **Testers that are not tensor powers.** Lemma 78.C does not cover a
+   tester on `[D]^n` that is not `q^{⊗n}` (or a block power), because
+   slice rank is not known to be submultiplicative. With the colour-coding
+   regime `D = s·m`, `n = s` (open for product testers too, §78.7), this is
+   what is left of the vector-tester route. A lower bound on the slice rank
+   of every tensor supported on `S_D^{(n)}` with nonzero diagonal would
+   close it; [BCLSZ25]'s one-shot restrictions (Lemma 2.12) are the place
+   to look, and the colour-coding regime `D = s·m` of §75.1 is the regime
+   that matters.
+2. **`Λ(D)` growth** (§75.2): a construction of large induced matchings in
+   `S_D^{(n)}` with `Λ → ∞`. Now of interest for its own sake and for
+   non-power testers, not for product testers.
+3. **The exact value of `SR̰_C(q_c)` at small `D`.** Only if wanted:
+   resume §86 from `certs/r2_D4K2s19_partial.json`.
+4. Everything in §59.4 and §67.5 not superseded above, subject to the
+   brief's limits.
+5. **Owed (documentation, cheap).** The [AHS72] citation in
+   `coq/Intersecting.v` (the doubling, Lemma 4) and `coq/Palvolgyi.v`
+   (comments only, but a `.v` change, so it needs `make verify`).
+
+### 87.4 The exact next step
+
+Render and read [BCLSZ25] pp. 22–51 (pp. 1–21 are read, across two
+passes: `reports/Sunflower novelty prior art search.md`), in particular
+§5 (the second proof of Theorem 1.8, and Theorem 1.9's proof) and §6
+(slice rank against subrank). Decide, as a continuation of §78.7, whether
+any statement there bounds the slice rank — not the asymptotic subrank —
+of a single concise tensor from below, which is what non-power testers
+need (question 1). Also read [Str88] Theorem 3.10 and eq. (4.6), on which
+Theorem 1.8's proof rests. Only if neither gives a one-shot bound, attempt
+question 1 directly at `n = 2, D = 4` by computing the slice rank of a
+few non-product testers on `S_4^{(2)}` (one table).
+
+### 87.5 Environment, as left
+
+`coqc` (8.18.0), `cadical` 1.7.3, `pdftoppm` 24.02.0, scipy 1.16.2 with
+numpy 2.5.3, `highspy`, python-sat 1.9.dev15, and the Rust toolchain and
+`gcc` are installed; `nauty` is not. `drat-trim` and
+`lrat-check` are built in the session scratchpad (`bin/`), which does not
+survive the container. The run data of §83–§86 (closure logs, delta files,
+pools) are scratchpad-only; the trees, hashes and open lists are in
+`tools/multicolored/certs/`.
+
+### 87.6 Gates at the tip
+
+Run on this tree after the last edit; no Coq or Rust changed.
+
+```text
+  docnumbers    pass   18 quoted numbers match the development
+  ceilings      pass   12 routes costed, every declared verdict matches
+  prcheck       pass   template only; no PR body drafted
+  cubes_sa      pass   kill tests (bd46d5e) and the D = 3 calibration regression
+  verify        not-run   no .v file, statement or audited name changed
+  coqchk        not-run   same reason
+  mutants       not-run   no definition changed
+```
+
+**Fresh-context review (of `1cf328a`, `bd46d5e`, `e94faec`).** The
+reviewer viewed every page of both papers, re-checked the quotations and
+lemma numbers, verified the printed `ψ(3)` family by script, and found
+the `cubes_sa.py` fix correct: a child started through the new hook reads
+back `PR_GET_PDEATHSIG = 9`, signals leave no child, six random
+interrupts and a resume leave every log line whole and `certcubes` ok,
+and the `D = 3` regression matches. Nothing HIGH. MEDIUM, all fixed: the
+upper half and the `k = 3` equivalence are compositions of inequalities
+printed in [AHS72] (B10, 87.1); [AbHa74] defines the general `ψ(n,k,m)`
+(references, A17, B9); "earliest" became "earliest source read", since
+Abbott–Gardner 1969 is unread (A17, A20); A19c, `STATUS.md` (three rows)
+and `README.md` now agree with A17; §87's "closed" is qualified and the
+colour-coding regime listed as open. LOW, all fixed: the gap in Lemma 6's
+printed step and its two-line repair (A3); B9's verdict; what [AbHa74]
+p. 9 restates; its page range and `φ(3,5) ≥ 88`; "rediscoveries" became
+"later statements"; the name of the notion in [AHS72]; the brief not
+being in the repository; [BCLSZ25] pp. 22–51 never rendered; this file's
+own "Read §32 first" header; the environment list. Optional hardening not
+done: checking `prctl`'s return value and `getppid()` after it.
+
+## 88. The substitution in the kernel — [AHS72] Lemma 6 repaired and formalised, `LowerBound 9 3 20000` and `c(3) ≥ 4` unconditional; and §87.4: no one-shot slice-rank bound from conciseness
+
+**Tier 2.** Two pieces of work. §88.1–§88.2 answer the gap the review of
+2026-10-28 found in [AHS72]'s proof (`docs/reading.md` A3). §88.3–§88.4
+are §87.4's next step.
+
+### 88.1 The gap and the repair
+
+[AHS72] Lemma 6, p. 387: *"ψ(ab) ≥ ψ(a) ψ(b)^a."* The family is the
+substitution: replace each point of an outer member by an inner member
+on its own block. The proof that it has no 3-sunflower (pp. 387–388)
+says: if three members have pairwise the same intersection, their outer
+generators have pairwise the same intersection, so (outer family
+sunflower-free) *"we must therefore have F1 = F2 = F3"*; then *"there is
+a least integer m … such that F^(1), F^(2), F^(3) are all distinct"* in
+block `m`, and these three inner members form a sunflower. Two steps are
+unjustified as printed:
+
+* **The least `m` need not exist.** With two blocks, inner patterns
+  `(A, A, B)` and `(C, D, D)` give three distinct members with no block of
+  three distinct inner members. (Found by the review, §87.)
+* **An omission, not a gap:** *"we must therefore have F1 = F2 = F3"*
+  for the outer generators skips the case where exactly two coincide.
+  The paper's own `K_ij = ∅` with equal sizes excludes it (if
+  `F1 = F2 ≠ F3` then `K12 = F1 − F3 ≠ ∅`); `triple_collapse` covers it
+  explicitly. (The review of §88 found this; it is recorded as an
+  omission.) p. 388 also ends *"This completes the proof of Lemma 5"*,
+  which should read Lemma 6.
+
+**The repair** is one lemma, used twice (`SubstitutionFree.triple_collapse`):
+three members `X, Y, Z` of a uniform 3-sunflower-free family with
+`X ∩ Y = X ∩ Z = Y ∩ Z` (as sets) are equal. *Proof.* If they are
+pairwise distinct, they are a sunflower. If two are equal, say `X = Y`,
+then `X = X ∩ Y = X ∩ Z ⊆ Z`, and equal sizes give `X = Z`; the other two
+cases are the same. ∎ Apply it to the outer generators — their pairwise
+intersections are the sets of blocks where the members' intersections are
+nonempty, which agree because the *inner* family is intersecting — and
+then to the three inner members in every block. The three members are
+equal, so no sunflower. The argument needs: outer family uniform and
+sunflower-free; inner family uniform, sunflower-free and intersecting.
+Intersection of the *outer* family is needed only for the conclusion to
+be intersecting, i.e. for Lemma 6 as printed; without it the same proof
+gives `g(ab) ≥ g(a)·ι(b)^a`, the form this repository has always used.
+
+### 88.2 What is now kernel-checked (`coq/SubstitutionFree.v`, axiom-free)
+
+```text
+  triple_collapse                 the repair lemma above
+  substitute_no_sunflower         outer: uniform, no 3-sunflower; inner: uniform,
+                                  intersecting, no 3-sunflower => substitute has none
+  Uniform_substitute, Distinct_substitute, length_substitute
+                                  size |O|·|I|^a, uniformity a·b, pairwise distinct sets
+  substitute_lower_bound          LowerBound (a·b) 3 (|O|·|I|^a): g(ab) >= g(a)·ι(b)^a
+  Intersecting_substitute,        [AHS72] Lemma 6 as printed: IotaAtLeast (a·b) (|O|·|I|^a)
+  substitute_iota_lower_bound     when the outer family is intersecting too
+  lower_bound_9_3_20000           LowerBound 9 3 (3^9 + 317), from the 20-member g(3) family
+                                  and iota3 on six points
+  flat_threshold_fails_at_nine    ~ SpreadYieldsDisjoint 9 3 3   (was conditional, IotaRate §18.2)
+  spread_constant_at_three_is_at_least_four
+                                  any constant witnessing Conjecture.spread_conjecture
+                                  has c(3) >= 4                  (was conditional)
+  iota_nine_at_least_10000        IotaAtLeast 9 10000: the b = 9 rung of the tower,
+                                  one below Sharp's refutation threshold 10001
+```
+
+`Print Assumptions` reports every one closed under the global context.
+This is §5 item 2 ("formalise the substitution"), open since §5.
+**Novelty:** none claimed — the inequality is [AHS72]'s; what is this
+repository's is the repair written out and the machine check.
+`IotaRate.v`'s comments still describe the two corollaries as
+conditional and `[substitute]` as unformalised; they are superseded by
+this section (a comment-only edit, owed with §87.3 item 5).
+
+### 88.3 §87.4: no one-shot lower bound on slice rank from conciseness
+
+A delegated reader rendered and viewed [BCLSZ25] pp. 14–51 (so pp. 22–51
+are now read; pp. 2, 4–6 and 12 are the only pages never viewed across
+all passes) and [Str88] printed pp. 102, 112, 116–128, 130–134 (from the
+Göttingen Digitization Center, after De Gruyter returned a bot challenge
+and DigiZeitschriften, discontinued on 31 December 2025, a 404). Notes:
+`research_notes/BCLSZ and Strassen one-shot bounds/notes.md`. Results:
+
+* **No published one-shot bound, and none is possible from conciseness
+  alone.** [BCLSZ25] Example 2.5 (p. 18) is concise with slice rank at
+  most 2 (reader's derivation). Inside the tester class: the one-letter
+  tester with `c ≡ −1/2` satisfies
+  `−2·q(x,y,z) = [x ≠ y] − [x = z] − [y = z]` — check the five equality
+  patterns: all equal `−2`, rainbow `1`, and `0` for each of the three
+  two-equal patterns (PROVEN by that case check; also checked
+  numerically for `D = 2..8`). Each term is a slice, so
+  **`slice-rank(q_{−1/2}) ≤ 3` for every `D`**, while
+  `SR̰(q_{−1/2}) ≥ D^{1/3}` (78.C) and `≥ √D` (Thm. 1.9). Slice rank of a
+  single tester therefore carries no `D`-growth; any lower bound for
+  non-power testers has to use powers or the support, not conciseness.
+* **Slice rank is not multiplicative**, in print: [BCLSZ25] p. 45,
+  *"Unlike rank and subrank, slice rank is not sub- or super-multiplicative
+  under Kronecker product"*; the example above is a concrete instance
+  inside the tester class once `D ≥ 10`: `SR(q) ≤ 3`, but
+  `liminf SR(q^{⊗n})^{1/n} ≥ Q̰(q) ≥ √D > 3` (Thm. 1.9, `q_c` being
+  symmetric; `D ≥ 28` from 78.C's `D^{1/3}` alone), and one-shot
+  `SR(q^{⊠2}) ≥ ⌈√D⌉ > 9` for `D ≥ 82`. [BCLSZ25] Example 2.5 is an
+  instance outside the class for every `n ≥ 5` (`SR ≤ 2`, `Q̰ = 2√(n−1)`).
+  The identity needs characteristic ≠ 2.
+  Lemma 6.9 (p. 45), `Q̲(T^{⊠3}) ≥ (3/64)·SR(T)^2`, bounds `SR(T)` from
+  *above* by the cube, not from below.
+* **What does hold for single tensors** (reader's reading, pp. 16–20,
+  not re-checked here): for every concise `T` on `[D]^n`,
+  `SR(T^{⊠2}) ≥ D^{n/2}` (Cor. 2.2, Lemma 2.9, `Q ≤ SR`); the cube gives
+  border subrank `≥ (3/4)·D^n` (Lemma 2.12, Thm. 2.1, [Str87] Thm. 6.6).
+  These are bounds on squares and cubes of a tester, not on the tester.
+* **[Str88] Theorem 3.10, p. 126** (viewed here): *"Let k ⊂ K be a field
+  extension and let (X, u) ∈ Pop k. Then Δ(u) = Δ(u^K)."* With Thm. 3.8
+  this makes asymptotic subrank invariant under field extension, which
+  discharges §78.7's finite-field condition on Lemma 78.C. Eq. (4.6),
+  p. 134 (reader): *"Q̰(⟨e, h, l⟩) = min{eh, hl, le}"*, an asymptotic
+  statement.
+
+### 88.4 The `n = 2, D = 4` table of §87.4: not run, and why
+
+§87.4 asked for it if no one-shot bound was found, and none was, so it
+was due; it is skipped on the judgement below. It would compute
+bounds on the slice rank of a few non-product testers on `S_4^{(2)}`
+(16 × 16 × 16). Exact slice rank is out of reach at that size unless an
+explicit decomposition meets a lower bound, and §88.3 shows why the
+numbers could not speak to growth: one letter already has testers of
+slice rank at most 3, the asymptotic floor at `D = 4` is only
+`4^{1/3} ≈ 1.59` per letter (`4^{2/3} ≈ 2.5` at `n = 2`), and slice rank
+is not submultiplicative ([BCLSZ25] p. 45) — a product of a slice in one
+leg with a slice in another leg is not a slice — so no bound
+`SR(q⊠q) ≤ SR(q)^2` is available for product testers at `n = 2`; the
+elementary bound is `SR(A⊠B) ≤ SR(A)·max_ℓ n_ℓ(B)`, e.g.
+`2 ≤ SR(q_{−1/2}^{⊠2}) ≤ 12` at `D = 4`. A table at this size would
+compare bounds for non-product testers against products whose own slice
+rank is not known either, and nothing in §87.3 turns on the outcome. The reader's cost estimate was under an
+hour; the judgement is that the hour buys no information. It can be run
+on request.
+
+### 88.5 Where §87.3 stands now
+
+1. **Non-power testers** — sharpened, not answered: a lower bound must
+   come from the support or from powers; conciseness gives nothing for a
+   single tensor (§88.3).
+2. `Λ(D)` growth — unchanged.
+3. Exact value at small `D` — unchanged.
+5. Owed documentation — now also the `IotaRate.v` comments (§88.2).
+
+The cheapest next step with a definite answer is the rate:
+iterate `substitute_iota_lower_bound` to put `ι(3^k) ≥ 10^{(3^k−1)/2}` in
+the kernel (the step `IotaAtLeast a N → IotaAtLeast (3a) (N·10^a)` is
+`substitute_iota_lower_bound` with inner `iota3`, `w = 6`, and needs no
+ground bookkeeping), then pass to general `n` via [AHS72] Lemmas 4–5 /
+`DirectSum` for `10^{(n − O(log n))/2}`.
+
+## 89. The `10^{n/2}` rate in the kernel — [AHS72]'s tower and its base-3 extension to every `n`, at the published rate up to the `2^{l−1}` factor
+
+**Tier 2** (formal proof). §88.5's next step, done. New module
+`coq/SubstitutionRate.v` (after `coq/Audit.v` in `_CoqProject`, for
+`Audit.LowerBound_antitone`), axiom-free. Also two mutation-robustness
+repairs to §88's `coq/SubstitutionFree.v` (§89.3) and the owed
+comment and addendum edits (§89.4).
+
+### 89.1 What [AHS72] p. 388 says (rendered at 150 dpi, displays (21)–(23) re-read at 400 dpi)
+
+* (21): *"ψ(3^k) ≥ ψ(3) ψ(3^{k−1})^3 > 10 ψ(3^{k−1})^3"* for `k ≥ 2`
+  — Lemma 6 with `a = 3`, `b = 3^{k−1}`, i.e. `iota3` **outside**. The
+  second relation is printed as a strict `>`; since `ψ(3) = 10` it is an
+  equality (typo, harmless).
+* (22): printed *"ψ(3^k) ≥ 10(3^k − 1)/2"*: the exponent's typesetting is
+  lost; what (21) gives, and what is meant, is `ψ(3^k) ≥ 10^{(3^k−1)/2}`.
+* (23): *"write n in base 3"*, `n = 3^{k_1} + … + 3^{k_l}`, and by
+  Lemma 5 (`ψ(a+b) ≥ ψ(a)φ(b)`) and Lemma 4 (`φ ≥ 2ψ`),
+  `ψ(n) ≥ ψ(3^{k_1})⋯ψ(3^{k_l}) 2^{l−1} ≥ 10^{(n−l)/2} 2^{l−1} > 10^{(n − log n)/2}`
+  (the last index is printed `k_e`, the count `l`; normalised to `k_l` here).
+  The page does not say how a digit 2 is expanded (as two equal powers,
+  presumably, which makes `l` the digit sum `s_3(n)`), nor the base of
+  `log`; the last `>` is **not checked here**.
+
+### 89.2 What is now kernel-checked (`coq/SubstitutionRate.v`)
+
+```text
+  iota_triple_step       IotaAtLeast a N -> IotaAtLeast (a·3) (N·10^a)
+                         (substitute_iota_lower_bound, inner iota3, w = 6:
+                          iota3 *inside*, the other order from (21))
+  iota_tower             IotaAtLeast a N -> IotaAtLeast (a·3^j) (N·10^(a(3^j−1)/2))
+  iota_three_power       IotaAtLeast (3^j) (10^((3^j−1)/2))          [AHS72] (22)
+  digsum3, digsum3_values, digsum3_step, digsum3_le
+                         base-3 digit sum (fuel = n); s(100) = 4, s(26) = 6,
+                         s(27) = 1, s(80) = 8 by vm_compute; s(n) <= 2k when n < 3^k
+  iota_base_three        1 <= n -> IotaAtLeast n (10^((n − s_3(n))/2))
+  iota_log_loss          1 <= n < 3^k -> IotaAtLeast n (10^((n − 2k)/2))
+  g_base_three           1 <= n -> LowerBound n 3 (2·10^((n − s_3(n))/2))
+  iota_27t, iota_27t_beats_three
+                         IotaAtLeast (27t) (10^(13t)), and 3^(27t) < 10^(13t)
+```
+
+`Print Assumptions` reports these nine closed under
+the global context (`coqtop`, this session): `iota_triple_step`,
+`iota_tower`, `iota_three_power`, `digsum3_le`, `iota_base_three`,
+`iota_log_loss`, `g_base_three`, `iota_27t`, `iota_27t_beats_three`; all
+eleven audited theorems of the module are covered by `make verify`'s
+axiom audit (§89.5). **PROVEN** (kernel).
+
+`iota_base_three` is (23) **without the `2^{l−1}` factor**: the proof
+is an induction on `n = 3q + r`, taking `ψ(q)` to `ψ(3q)` by the step and
+adding the digit `r` by `Product.iota_supermultiplicative` with
+`ψ(r) ≥ 1`, which does not use Lemma 5's `φ`. Keeping the factor needs
+Lemma 5 in general (`ψ(a+b) ≥ ψ(a)·g(b)`; the repository has only its
+`a = 1` cone, `Product.iota_at_least_g_pred`); it changes the bound by
+`2^{O(log n)}`, i.e. not the rate. Not done.
+
+**The rate, by hand (not a theorem here).** From `iota_log_loss` and
+`g_base_three`, `ψ(n)^{1/n}` and `g(n)^{1/n}` are at least
+`10^{1/2 − (k+1)/n}` with `k = ⌈log_3(n+1)⌉`, so both have
+`liminf ≥ √10 = 3.1623`. Concretely `iota_27t_beats_three` puts the rate
+past 3 at every multiple of 27: `10^{13/27} = 3.0303` (computed, python3),
+against `20000^{1/9} = 3.0053` from `lower_bound_9_3_20000`. This is the
+row `f(n, 3) ≳ 10^{n/2}` of `STATUS.md`, now proved rather than cited.
+**Novelty: none** — it is [AHS72] Theorem 3's lower bound; what is this
+repository's is the machine check (and §88.1's repair underneath it).
+By `IotaRate.every_construction_is_within_2b_of_iota`, no further work
+on this construction can move the rate.
+
+### 89.3 A defect in §88's commit, found and fixed
+
+**MEDIUM.** `tools/mutations.toml` declares `lowerbound-at-least` and
+`iotaatleast-at-least` (`length F = m` weakened to `≥`) as expected
+**survivors**, under the proof-shape rule of `docs/testing.md` §4. Two
+proofs in `coq/SubstitutionFree.v` (commit 2d09b2f) broke that rule:
+`substitute_lower_bound` / `substitute_iota_lower_bound` closed the length
+goal with `exact (length_substitute …)`, and `lower_bound_9_3_20000`
+rewrote with the length equation of `lower_bound_3_3_20`. Under either
+mutation they fail to compile, so the mutation would be reported killed
+and the manifest check would fail. §88 did not run the mutation gate
+(no definition changed), which is why it went unseen. Fixed: `rewrite …;
+lia` for the former, and the outer family named concretely
+(`double iota3`, length by `vm_compute`) for the latter. The two
+mutations, with the alpha-rename positive control, were re-run on the
+final tree: §89.5.
+
+### 89.4 Owed edits, made
+
+* `coq/IotaRate.v`, `coq/Sharp.v`, `coq/Intersecting.v`: comments no
+  longer call the substitution unformalised (§88 review items 13–15);
+  "exactly when" → "when" in `Intersecting.v`.
+* [AHS72] Lemma 4 cited at `Intersecting.doubling_lower_bound` and in
+  `coq/Palvolgyi.v` (§87.3 item 5): the inequality `2ι ≤ g` is 1972;
+  Pálvölgyi's is the equality conjecture.
+* Dated addenda at §5 (substitution bullet and item 2), the §25.3
+  correction box, the `m = 9` paragraph of §25, and `docs/reading.md`'s
+  register entry (§88 review item 16).
+* `tools/audited.txt`: the four `Substitution.*` lines that the
+  `SubstitutionFree` block split off are back in their group (statement
+  baselines: moves only, no entry's text changed — `diff` of removed vs
+  added lines empty).
+
+### 89.5 Gates
+
+* On the tree of commit 5d1625f: `make verify` exit 0 (903 audited
+  theorems; 1065 statements match the baseline; 18 quoted numbers match),
+  `make coqchk` exit 0, `make prcheck` exit 0 ("66 modules, 903 audited
+  theorems, 196 mutations, 43 Rust suites"; the one declared axiom is
+  `ALWZ.Rao20_lemma2`, as before).
+* Mutation gate, targeted (`tools/mutate.py --only`): `lowerbound-at-least`
+  survived, `iotaatleast-at-least` survived, `canary-alpha-rename`
+  survived — all three as expected, 0 unexpected. The full manifest was
+  not re-run: no definition changed, and these are the two entries the
+  new and changed proofs could affect (§89.3).
+* Fresh-context review (one subagent, given the diff, the rendered
+  p. 388 and the sources, not my conclusions): no HIGH, no error in the
+  statements or the mathematics; it re-derived the parity facts that make
+  both floor divisions exact and checked §89.1's quotations against the
+  page. Its findings — §89.5/§89.6 cited before they existed, an unnamed
+  "nine", the stale mutation count `180` (now 196) in §35.5, a deprecated
+  `Nat.div_lt_upper_bound`, an overstated proof-shape comment, and the
+  `k_e`/`k_l` index — are fixed in the following commit, after which
+  `make verify` and `make coqchk` were re-run (results in that commit's
+  message).
+
+### 89.6 Next step
+
+The lower-bound line at `k = 3` is now at the published rate, and by
+`IotaRate.every_construction_is_within_2b_of_iota` no refinement of this
+construction moves the rate. The one definite, cheap step left on it is
+to complete [AHS72] Theorem 3 **as printed**: formalise Lemma 5 in
+general, `ψ(a+b) ≥ ψ(a)·g(b)` (the proof of
+`Product.iota_supermultiplicative` already discards the second family's
+intersecting property, so it should generalise directly), and with it
+the `2^{l−1}` factor of (23). This adds lower-order terms only.
+Everything else open is §87.3 items 1–3, which are research questions
+without a cheap definite next step; §87.3 item 5 is done (§89.4).
+
+## 90. [AHS72] Theorem 3's proof in the kernel: Lemma 5 in general, display (23) up to its last `>`, and Theorem 3 in integer form
+
+**Tier 2** (formal proof). §89.6's next step, done, in
+`coq/SubstitutionRate.v` (new final section), axiom-free.
+
+### 90.1 The source (rendered at 150 dpi, pp. 386–388)
+
+* p. 386, *"LEMMA 4. φ(n) ≥ 2ψ(n)."* and *"LEMMA 5. ψ(a + b) ≥ ψ(a) φ(b)."*
+  Lemma 5's proof (pp. 386–387): *"Let 𝓕₁ ∈ Q(a) and 𝓕₂ ∈ P(b). Let
+  𝓕 = {F | F = F₁ ∪ F₂, F₁ ∈ 𝓕₁, F₂ ∈ 𝓕₂}."* — `P` is "uniform, no three
+  members with pairwise the same intersection", `Q` is `P` plus
+  intersecting. That `𝓕 ∈ P(a+b)` *"can be proved by the argument used in
+  [1]"* (Abbott 1966, not read here); this repository's argument is
+  `DirectSum.sum_family_no_sunflower`. The intersecting half is printed and
+  is what `Product.sum_family_Intersecting` proves.
+* p. 382, *"THEOREM 3. For some constant c and all sufficiently large n
+  φ(n, 3) > 10^{(n/2)−c log n}."* — the statement. (23) is inside its
+  proof, p. 388; see §89.1.
+
+### 90.2 What is now kernel-checked
+
+```text
+  iota_plus_g              IotaAtLeast a p -> LowerBound b 3 q -> IotaAtLeast (a+b) (p·q)
+                           [AHS72] Lemma 5, ψ(a+b) >= ψ(a)·φ(b)
+  iota_plus_iota_doubled   1 <= b -> IotaAtLeast a p -> IotaAtLeast b q ->
+                           IotaAtLeast (a+b) (p·(2q))       Lemmas 4 + 5, the step (23) uses
+  digsum3_pos              1 <= n -> 1 <= s_3(n)
+  iota_digit               ψ(1) >= 1, ψ(2) >= 2
+  iota_theorem3            1 <= n -> IotaAtLeast n (10^((n − s_3(n))/2) · 2^(s_3(n) − 1))
+  g_theorem3               1 <= n -> LowerBound n 3 (2 · 10^((n − s_3(n))/2) · 2^(s_3(n) − 1))
+```
+
+`Print Assumptions`: all six closed under the global context (`coqtop`,
+this session). **PROVEN** (kernel). `iota_theorem3` is (23)'s
+conclusion through its last-but-one expression (the inequality between
+them; the proof does not follow (23)'s product chain, see below), `ψ(n) ≥ 10^{(n−l)/2} 2^{l−1}`, with
+`l = s_3(n)` (a digit 2 counted as two equal powers of 3 — the page does
+not say, §89.1, but this is the only reading under which `n − l` is the
+exponent sum). The proof is an induction on `n = 3q + r`: the step
+`iota_triple_step` for `3q`, and `iota_plus_iota_doubled` with
+`ψ(r) ≥ 2^{r−1}` for the digit, so each unit of digit sum past the
+first contributes the factor 2. `g_theorem3` is Theorem 3's lower bound
+by Lemma 4, as the paper ends ("Theorem 3 now follows from (23) and
+Lemma 4"). **Theorem 3 itself** (p. 382) has a free constant `c`, so it
+does not depend on the base of `log`; its integer form is
+`g_log_loss` (§90.6): `g(n) ≥ 2·10^{(n−2k)/2}` whenever `1 ≤ n < 3^k`.
+Taking `k = ⌊log₃ n⌋ + 1`, the exponent is at least
+`n/2 − log₃ n − 3/2`, which is `> n/2 − c log n` for every `c > 1/ln 3`
+(natural log) and `n` large enough — by hand, not a theorem here.
+
+### 90.3 The last `>` of (23) depends on the base of `log`, which is not stated
+
+The final step `10^{(n−l)/2} 2^{l−1} > 10^{(n − log n)/2}` is equivalent
+to `log n > (1 − 2 log₁₀ 2) l + 2 log₁₀ 2`, i.e.
+`log n > 0.398 l + 0.602`. **COMPUTED** (`python3 -I`, every
+`1 ≤ n ≤ 200000`, `l = s_3(n)`), counting the `n` where it fails:
+
+```text
+  base of log   failures   largest failing n (≤ 200000)
+  e             5          8          (n = 1, 2, 4, 5, 8)
+  2             2          2          (n = 1, 2)
+  3             9          26
+  10            105830     199988
+```
+
+At `n = 1` it fails in every base (`l = 1`: the left side is `1`, the
+right `10^{1/2}`). With `l ≤ 2⌊log₃ n⌋ + 2` (every `n < 3^k` has at most `k`
+digits, each at most 2), the natural-log inequality holds once
+`0.5 ln n > 0.362 ln n + 0.699`, i.e. — with exact constants, `ln n > 5.0731` — `n ≥ 160`
+(derived by hand; `0.362 = 0.398 / ln 3`); with the table, for every
+`n ≥ 9`. In base 10
+it fails infinitely often (`n = 3^k − 1`, `l = 2k`). (In base 3 the one exact tie is
+`n = 3`, `l = 1`, both sides equal; the strict `>` counts it as a
+failure.) So the printed `ψ(n) > 10^{(n − log n)/2}` is right for
+natural, binary or ternary `log` and `n` past a small threshold, and false as printed for `n = 1`. Harmless
+for the rate, and not formalised: `iota_theorem3` stops at the
+expression before it. Recorded in `docs/reading.md` A3.
+
+### 90.4 Gates
+
+`make verify`, `make coqchk`, `make prcheck` and the targeted mutation
+re-run (`lowerbound-at-least`, `iotaatleast-at-least`, the control) ran
+on the tree of commit d2c1de0 (which added this section, marked in
+progress); their results, and those of the re-run after the review fixes
+of §90.6, are in the message of the commit after it. No definition changed; `tools/statements.txt`
+gained six entries and changed none.
+
+### 90.5 Next step
+
+The `k = 3` lower-bound line is complete: [AHS72] Theorem 3's lower
+bound is in the kernel as printed, and by
+`IotaRate.every_construction_is_within_2b_of_iota` nothing more in this
+construction moves the rate. No cheap, definite step remains in the
+repository's open list. What is left is §87.3 items 1–3, which are
+research: item 1 (slice rank of testers that are not tensor powers, in
+the colour-coding regime `D = s·m`) is the recommended one, because it
+is the whole of what remains of the vector-tester route; its first move
+is §87.3's — [BCLSZ25] Lemma 2.12's one-shot restrictions applied at
+`D = s·m`.
+
+## 91. §87.3 item 1, the bounded step: no cheap closure; [ST16] Prop. 4 is a one-shot support bound, and its diagonal part is circular
+
+**Tier 2** (research reading and a hand proof). Asked for as a bounded
+step: read the support-only slice-rank lower bounds and decide whether
+`S_D^{(n)}` meets their hypotheses. **Outcome: no** — no published
+support-only bound closes item 1; the one that applies to non-power
+testers is, on its diagonal part, capped by the target quantity itself.
+Details below; nothing here is a campaign or a computation.
+
+### 91.1 The two sources proposed were already read, and do not apply
+
+* [BCLSZ25] Lemma 2.12 (with Thm. 2.1 and [Str87] Thm. 6.6) bounds the
+  border subrank of the **cube** of a tester (§88.3, the delegated
+  reader's reading, not re-checked); it says nothing about one tester.
+* [ST16] Proposition 6 bounds the slice rank of a **power** `v^{⊗n}`
+  (lexicographic orders), and §75.2 F7 already caps it at `9^{n+o(n)}` on
+  the sunflower support.
+
+The proposal to "read" them (my §90.5 and the reply that followed) was
+partly redundant: the repository had read both. Recorded so the next
+session does not repeat it.
+
+### 91.2 [ST16] Proposition 4 is one-shot (correction to `docs/reading.md`)
+
+Re-retrieved 2026-10-28 (WordPress.com public API, post 9271, converted to
+220 lines of text; lines 41–82 — Proposition 4's statement and proof —
+read in full. A different conversion from the 386-line one
+`docs/reading.md` cites; line numbers are not comparable.) Verbatim, (5): *"Now suppose that the coefficients
+c_{s_1,…,s_k} are all non-zero, that each of the S_j are equipped with a
+total ordering ≤_j, and Γ′ is the set of maximal elements of Γ … Then one
+has rank(v) ≥ min_{Γ′ = Γ_1 ∪ ⋯ ∪ Γ_k} |π_1(Γ_1)| + ⋯ + |π_k(Γ_k)|."*
+(`rank` is slice rank there.) It holds for **any** tensor `v` with
+support `Γ` in some product basis — no power structure — and for **any**
+total orders on the index sets, here `[D]^n` with orders not of product
+form. `docs/reading.md`'s [ST16] entry described Props. 4 and 6 together
+as bounds on `v^{⊗n}`; that is right for Prop. 6 only. This is the one
+support-only tool §75.2 F7 did not cover (F7: lexicographic orders, the
+asymptotic Prop. 6).
+
+### 91.3 Lemma 91.A: under any orders, the undominated diagonal is sunflower-free
+
+Let `T` have support `Γ ⊆ S_D^{(n)}` with every diagonal entry `(x,x,x)`
+nonzero, and suppose `Γ` contains every permutation of every triple of
+distinct vectors that forms a sunflower (true for every faithful tester:
+`supp T = S_D^{(n)}`, which is symmetric). Fix any total orders
+`≤_1, ≤_2, ≤_3` on `[D]^n`. Then the set `A` of `x` with `(x,x,x) ∈ Γ′`
+is sunflower-free. **PROVEN** (by hand, below).
+
+*Proof.* Let `x, y, z ∈ A` be distinct and form a sunflower. It suffices
+to find `w ∈ {x,y,z}` and a bijection `σ : {1,2,3} → {x,y,z}` with
+`σ(j) ≥_j w` for each `j`: then `(σ(1), σ(2), σ(3)) ∈ Γ` (a permutation of
+a sunflower), it differs from `(w,w,w)` (its entries are distinct), and it
+dominates `(w,w,w)`, contradicting `w ∈ A`. Take `w = min_{≤_1}`. Slot 1
+accepts any element, so `σ` exists unless slots 2 and 3 both accept only
+`w`, i.e. `w = max_{≤_2} = max_{≤_3}`. Take instead `w′ = min_{≤_2}`;
+symmetrically it fails only if `w′ = max_{≤_1} = max_{≤_3}`. If both fail,
+`w = max_{≤_3} = w′`, so `w` is both `min_{≤_1}` and `max_{≤_1}` of three
+distinct elements — impossible. ∎
+
+Write `cov(·)` for the minimum slice cover of (5). A diagonal set of size
+`m` needs `m` slices (each projection is injective on it), so
+`cov(Γ′ ∩ Δ) = |A|`, and covers add, so
+
+```text
+  cov(Γ′)  ≤  |A| + cov(Γ′ ∖ Δ)  ≤  V_3(D,n) + cov(Γ′ ∖ Δ).
+```
+
+`V_3(D,n)` — the largest sunflower-free set — is the quantity the tester
+is meant to bound, and every tester already has `slice-rank ≥ V_3(D,n)`
+(§75.2 F2 with Lemma 75.A). **So Prop. 4 can say more than that only
+through `cov(Γ′ ∖ Δ)`, the non-diagonal maximal elements**; on the
+diagonal it is circular as a barrier.
+
+Checked numerically by the review (`python3 -I`, `Γ = S_D^{(n)}`,
+brute-force domination): every triple of orders at `D = 3, 4`, `n = 1`
+(216 and 13,824), and random orders at `D = 5, n = 1` (3,000),
+`D = 3, n = 2` (2,000), `D = 4, n = 2` (300) — `A` sunflower-free in
+every case, with positive and negative controls passing. The exact
+`cov(Γ′)` under those random orders stayed at most 6 (VALIDATED for those
+samples only; random orders are not the adversarial case).
+
+### 91.4 What is left of item 1, precisely
+
+In the standard basis, a barrier from Prop. 4 for a non-power tester
+would have to come from **non-diagonal** maximal elements of
+`S_D^{(n)}` under orders that are not lexicographic — Lemma 91.A rules
+out the diagonal under every order, and F7 extends to Prop. 4 at finite
+`n` for lexicographic orders induced from orders on `[D]`: raising one
+coordinate's letter raises the vector, so a maximal triple is maximal
+letter by letter, each projection of `Γ′` has at most `9^n` elements, and
+`cov(Γ′) ≤ 9^n` (by hand). Other product bases change `Γ` and are covered
+by neither Lemma 91.A nor F7. Whether some orders on `[D]^n` make the
+non-diagonal part of `Γ′` have slice-cover number `≥ g(D)^n` with
+`g → ∞` (in the regime `D = s·m`) is open, and is a genuine research
+question: no published statement found, and no cheap test — the orders
+on `[D]^n` are `(D^n)!` per slot. By Lemma 75.A, every faithful tester
+also has `slice-rank ≥ M(D,n)`, so item 1 and item 2 (`Λ(D)`) meet here:
+an induced matching is one particular non-diagonal structure in `Γ′`.
+
+**Novelty:** Lemma 91.A is new to this repository (no rule-17 search
+recorded; not claimed novel). It is a two-line Hall argument; its value
+is negative — it closes the diagonal case of the last support-only tool.
+
+### 91.5 Recommendation
+
+Stop item 1 here, as the bounded step's "no" outcome. Continuing means
+research on the non-diagonal maxima, with no definite first computation.
+I'd only resume it together with item 2 (`Λ(D)` growth), since both now
+ask the same thing: how large a slice-cover-number structure the
+non-diagonal part of `S_D^{(n)}` carries.
+
+### 91.6 Gates (for §90's fixes and §91)
+
+Commit de7044b's Coq tree (unchanged since; later commits are
+documentation): targeted mutation re-run — `lowerbound-at-least`
+survived, `iotaatleast-at-least` survived, `canary-alpha-rename`
+survived, 0 unexpected (the earlier run on d2c1de0 had killed
+`lowerbound-at-least` through `iota_plus_g`, fixed in de7044b);
+`make verify` exit 0 (910 audited theorems, 1072 statements match the
+baseline, 18 quoted numbers match); `make coqchk` exit 0; `make prcheck`
+exit 0 ("66 modules, 910 audited theorems, 196 mutations, 43 Rust
+suites"; the one declared axiom `ALWZ.Rao20_lemma2`, as before).
+
+## 92. Handover — §87 with §88–§91 folded in
+
+Start here, then §87 (still right on everything below §88). This
+section only consolidates; every claim carries its label in the section
+it cites.
+
+### 92.1 What moved in §88–§91
+
+* **The Abbott–Hanson–Sauer construction is in the kernel, end to end.**
+  `coq/SubstitutionFree.v` (§88): the substitution is sunflower-free,
+  `g(ab) ≥ g(a)·ι(b)^a` and Lemma 6 `ι(ab) ≥ ι(a)·ι(b)^a`, with the
+  printed proof's gap (the "least m" need not exist) repaired by
+  `triple_collapse`; hence `LowerBound 9 3 20000`, the flat spread
+  threshold refuted at uniformity 9, and `c(3) ≥ 4` in
+  `Conjecture.spread_conjecture`, all unconditional.
+  `coq/SubstitutionRate.v` (§89–§90): the tower `ι(3^j) ≥ 10^{(3^j−1)/2}`,
+  `ι(n) ≥ 10^{(n−s_3(n))/2}·2^{s_3(n)−1}` (display (23) up to its last
+  `>`), Lemma 5 in general (`iota_plus_g`), and Theorem 3 in integer form
+  (`g_log_loss`). PROVEN, axiom-free. No novelty claimed: the mathematics
+  is [AHS72]'s; the repair and the machine check are this repository's.
+* **Three print errors in [AHS72] recorded** (`docs/reading.md` A3): the
+  gap above; (21)'s strict `>` that is an equality; (23)'s last `>`,
+  which needs an unstated base of `log` and fails at `n = 1` (COMPUTED,
+  §90.3).
+* **§87.3 item 1 (non-power testers): bounded step, outcome "no"** (§91).
+  [ST16] Prop. 4 is a one-shot support bound; Lemma 91.A (PROVEN by
+  hand, checked numerically by a review) puts its diagonal part at most
+  `V_3(D,n)` under every choice of orders. What remains is the
+  non-diagonal part under non-lexicographic orders — research, merged
+  with item 2.
+* **§87.4** (§88.3): no one-shot slice-rank lower bound follows from
+  conciseness; `slice-rank(q_{−1/2}) ≤ 3` for every `D`.
+* **Two defects of this session's own, found by its own gates and fixed:**
+  §88's proofs and §90's `iota_plus_g` each broke a mutation the manifest
+  declares a survivor (§89.3, §91.6). Both were caught by a targeted
+  mutation run; the lesson is that a new proof consuming `LowerBound` or
+  `IotaAtLeast` needs that run even when no definition changes.
+
+### 92.2 What did not move
+
+* No existing definition changed (the only new ones are
+  `SubstitutionRate.digsum3` and its fuel helper); every pre-existing Coq
+  file changed in comments only. `Rao20_lemma2` is still the one axiom.
+* `g(4)` (`54 ≤ g(4) ≤ 76` given the census), `ι(4)`, `r*(3,3) ∈ {3, 4}`,
+  census stages 3–5, Stage C: untouched, as the brief required.
+* `Λ(D)` for `D ≥ 4`: open. Run classes 1–2 at `D = 4`: as §86 left them.
+* The rate at `k = 3` from this construction: `√10`, and by
+  `IotaRate.every_construction_is_within_2b_of_iota` no refinement of it
+  moves the rate.
+
+### 92.3 Where to start
+
+There is no cheap, definite next step on the open list. The open
+questions are §87.3 items 1–3 (with §91.4 narrowing item 1 to the
+non-diagonal maxima of `S_D^{(n)}`), all research. Do not re-run: the
+`D = 4` face searches (§85–§86), the [BCLSZ25]/[Str88]/[ST16] reading
+(§88.3, §91), or the AHS72 formalisation.

@@ -388,7 +388,10 @@ Qed.
       [LowerBound 9 3 20000] because [substitute] is not formalised yet;
       formalising it discharges the hypothesis and yields [c(3) >= 4] in
       [Conjecture.spread_conjecture], the first lower bound on the
-      constant there.
+      constant there. (Discharged: [SubstitutionFree.lower_bound_9_3_20000],
+      with unconditional forms [flat_threshold_fails_at_nine] and
+      [spread_constant_at_three_is_at_least_four]; [IotaRate] cannot
+      import [SubstitutionFree], which imports it.)
 
     ** The measured points, and what they hint
 
@@ -462,7 +465,10 @@ Qed.
     substitution, which [rust/tests/intersecting.rs] verifies and
     [rust/tests/spread_axiom.rs] pins arithmetically, but which is not
     formalised here. Discharging [LowerBound 9 3 20000] is what the
-    [substitute] campaign buys. *)
+    [substitute] campaign buys. (Discharged:
+    [SubstitutionFree.lower_bound_9_3_20000] and
+    [SubstitutionFree.flat_threshold_fails_at_nine]; [IotaRate] cannot
+    import [SubstitutionFree], which imports it.) *)
 
 Corollary substitution_would_refute_the_flat_threshold_at_nine :
   LowerBound 9 3 (3 ^ 9 + 317) -> ~ SpreadYieldsDisjoint 9 3 3.

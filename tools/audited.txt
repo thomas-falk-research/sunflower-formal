@@ -1012,6 +1012,44 @@ thm Substitution.iota3_squared_is_maximal
 thm Substitution.the_nine_uniform_boundary_is_closed_to_extension
 thm Substitution.the_margin_at_four_is_five
 thm Substitution.maximality_is_not_an_upper_bound
+
+# ---- SubstitutionFree: g(ab) >= g(a) iota(b)^a, [AHS72] Lemma 6 repaired ----
+thm SubstitutionFree.in_trace_assemble
+thm SubstitutionFree.in_substitute_inv
+thm SubstitutionFree.triple_collapse
+thm SubstitutionFree.assemble_SetEq_inv
+thm SubstitutionFree.substitute_no_sunflower
+thm SubstitutionFree.length_substitute
+thm SubstitutionFree.Uniform_substitute
+thm SubstitutionFree.Distinct_substitute
+thm SubstitutionFree.substitute_lower_bound
+thm SubstitutionFree.lower_bound_9_3_20000
+thm SubstitutionFree.flat_threshold_fails_at_nine
+thm SubstitutionFree.spread_constant_at_three_is_at_least_four
+thm SubstitutionFree.Intersecting_substitute
+thm SubstitutionFree.substitute_iota_lower_bound
+thm SubstitutionFree.iota_nine_at_least_10000
+
+# ---- SubstitutionRate: [AHS72] iterated, psi(n) >= 10^((n - s_3(n))/2), g(n) >= 2 psi(n) ----
+thm SubstitutionRate.iota_triple_step
+thm SubstitutionRate.iota_tower
+thm SubstitutionRate.iota_three_power
+def SubstitutionRate.digsum3
+thm SubstitutionRate.digsum3_values
+thm SubstitutionRate.digsum3_step
+thm SubstitutionRate.digsum3_le
+thm SubstitutionRate.iota_base_three
+thm SubstitutionRate.iota_log_loss
+thm SubstitutionRate.g_base_three
+thm SubstitutionRate.iota_27t
+thm SubstitutionRate.iota_27t_beats_three
+thm SubstitutionRate.iota_plus_g
+thm SubstitutionRate.iota_plus_iota_doubled
+thm SubstitutionRate.digsum3_pos
+thm SubstitutionRate.iota_digit
+thm SubstitutionRate.iota_theorem3
+thm SubstitutionRate.g_theorem3
+thm SubstitutionRate.g_log_loss
 thm Palvolgyi.palvolgyi_implies_abbott_gardner
 thm Palvolgyi.palvolgyi_pins_g_three_exactly
 thm Palvolgyi.palvolgyi_beats_the_proved_bound_at_three

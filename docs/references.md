@@ -150,6 +150,21 @@ estimate. Both are marked below.
 - **[AbHa74]** H. L. Abbott and D. Hanson, *On finite $\Delta$-systems*.
   Discrete Mathematics 8 (1974), 1–12. The source usually credited for
   the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
+  **Read in full 2026-10-28: 12 of 12 pages rendered at 150 dpi, from a
+  copy supplied by the user** (SHA-256 `66ee050f…`; not in the
+  repository). It restates $\psi$, Lemma 6 (as (21)) and Lemma 4 (as
+  (22)) from [AHS72] (p. 9), not Lemma 5; it defines the general
+  $\psi(n,k,m)$ — the largest $\Delta(k)$-free $n$-uniform family with no
+  $m$ pairwise disjoint members, $\psi(n) = \psi(n,3,2)$ — and proves
+  Lemma 3.1, $\phi(n,k) \ge \psi(n,k,m_1) + \psi(n,k,m_2)$ for
+  $m_1 + m_2 = k + 1$ (p. 9), saying no analogue of (21) for
+  $\psi(n,k,m)$ is known (p. 11). It bounds $\phi(3,k)$ from above for
+  $k \ge 7$ (Theorem 2.1, p. 3), and gives lower bounds for $\phi(n,4)$,
+  $\phi(n,5)$ ($\phi(3,5) \ge 88$) and $\phi(n,6)$ (§3, pp. 8–11,
+  Tables 1–2). It credits $\phi(2,3) = 6$ to Erdős–Rado (p. 1), i.e.
+  $f(2,3) = 7$ in this repository's threshold convention. A $\Delta(k)$
+  system is *"a family of k distinct sets which have pairwise the same
+  intersection"* (p. 1).
 
 - **[NaSa17]** E. Naslund, W. Sawin, *Upper bounds for sunflower-free
   sets*. Forum of Mathematics Sigma 5 (2017), e15; arXiv:1606.09575.
@@ -196,6 +211,23 @@ estimate. Both are marked below.
   Series A**, vol. **12**, issue **3**, May **1972**, pp. **381–389**.
   Elsevier. **DOI `10.1016/0097-3165(72)90103-3`** — verified against
   Crossref, not recalled.
+
+  **READ IN FULL 2026-10-28: 9 of 9 pages rendered at 150 dpi, from a
+  copy supplied by the user** (SHA-256 `db6cf560…`; the file is not in
+  the repository). It cites $\psi(3) = 10$ to Abbott–Gardner, printed in
+  1969 (*Recent Progress in Combinatorics*, 211–215, per [AbHa74]
+  ref. [2]), which is unread. What it contains, by page: Theorem 1, the exact
+  $\phi(2,k)$ (p. 382); Theorem 2, $\phi(n,k) \le (n+1)!\,c^n$,
+  $c = (k-1+(k^2+6k-7)^{1/2})/4$ (p. 382); Theorem 3,
+  $\phi(n,3) > 10^{(n/2)-c\log n}$ (p. 382); the intersecting function
+  $\psi(n)$, which is this repository's $\iota(n)$, with $\psi(3) = 10$
+  cited to Abbott–Gardner (p. 386); Lemma 4 $\phi(n) \ge 2\psi(n)$,
+  Lemma 5 $\psi(a+b) \ge \psi(a)\phi(b)$ (p. 386); Lemma 6
+  $\psi(ab) \ge \psi(a)\psi(b)^a$ (p. 387); $\psi(4) \ge 27$,
+  $\phi(4) \ge 54$ (p. 388). **Correction:** the recursion printed is
+  Lemma 6 on $\psi$, not $g(ab) \ge g(a)\,g(b)^a$ as this entry said;
+  `docs/reading.md` A3 records which form the proof gives. The text below
+  is kept as written before the paper was read.
 
   **Closed access, established rather than assumed.** OpenAlex's record
   for that DOI gives `oa_status: "closed"` and
@@ -1154,7 +1186,8 @@ session N+15.
 
 - **[ASU12]** N. Alon, A. Shpilka, C. Umans, *On Sunflowers and Matrix
   Multiplication*. ECCC Report No. 67 (2011); CCC 2012.
-  **Read pp. 1–5 and 8 of 16 (rendered).** Not on arXiv — an ECCC report.
+  **Read pp. 1–5 and 8 of 16 (rendered); pp. 3–14 re-rendered and read
+  2026-10-20, so pp. 1–14 of 16.** Not on arXiv — an ECCC report.
   Four things bear here:
 
   * **Theorem 1.1**, p. 2, is a third independent rendering of what
@@ -1178,8 +1211,86 @@ session N+15.
 
 - **[BCCGNSU17]** J. Blasiak, T. Church, H. Cohn, J. A. Grochow,
   E. Naslund, W. F. Sawin, C. Umans, *On cap sets and the group-theoretic
-  approach to matrix multiplication*. arXiv:1605.06702, 27pp.
-  **Downloaded and rendered; not read.**
+  approach to matrix multiplication*. Discrete Analysis 2017:3;
+  arXiv:1605.06702v4, 27pp. **Read in full, 27 of 27 rendered pages
+  (2026-10-20).** Prop. 4.8 (p. 18) is the induced-matching lower bound on
+  slice rank; Thm. A′ (p. 2) bounds tricolored sum-free sets in
+  `(Z/qZ)^n`. `docs/reading.md` Tier 3c, register B23.
+
+- **[CKSU05]** H. Cohn, R. Kleinberg, B. Szegedy, C. Umans,
+  *Group-theoretic algorithms for matrix multiplication*. FOCS 2005,
+  379–388; arXiv:math/0511460v1. **Read in full, 10 of 10 rendered pages
+  (2026-10-20).** Prop. 3.8: strong USP capacity `≥ 2^{2/3}`, the input to
+  [ASU12]'s `2.51^n` multicolored lower bound. `docs/reading.md` Tier 3c.
+
+- **[ST16]** W. Sawin, T. Tao, *Notes on the "slice rank" of tensors*.
+  What's New (blog), 24 Aug 2016, WordPress post 9271. **Read lines 1–180
+  of 386** (introduction through Proposition 6's statement), retrieved as
+  JSON via the WordPress API. Not on arXiv: `arXiv:1612.07342`, recalled
+  for it, is a physics paper. `docs/reading.md` Tier 3c.
+
+- **[BCLSZ25]** J. Briët, M. Christandl, I. Leigh, A. Shpilka, J. Zuiddam,
+  *Discreteness of asymptotic tensor ranks*. **Discrete Analysis**
+  2025:15, `doi:10.19086/da.143834`; arXiv:2306.01718v4 (arXiv API record
+  checked 2026-10-27). **Read pp. 1, 3, 7–11, 13–51 of 51 (rendered),
+  pp. 14–51 on 2026-10-28 (`docs/roadmap.md` §88.3); never viewed: pp. 2,
+  4–6, 12**. Earlier note:
+  Theorem 1.8 (p. 9) and the definition of *concise* (p. 13) re-read here.
+  Theorem 1.8: a concise tensor has asymptotic subrank at least
+  `(min_ℓ n_ℓ)^{1/3}`. Its proof rests on [Str88] eq. (4.6) and, for
+  small fields, Thm. 3.10 (p. 20), neither read here. The Crossref record
+  for the DOI is defective (slug title, no authors); "2025:15" is from the
+  page footer. `docs/roadmap.md` Lemma 78.C; `docs/reading.md`
+  B24, B27.
+
+- **[Str88]** V. Strassen, *The asymptotic spectrum of tensors*. J. reine
+  angew. Math. **384** (1988), 102–152. Obtained 2026-10-28 from the
+  Göttingen Digitization Center (scanned images, no text layer; De Gruyter
+  returned a bot challenge, DigiZeitschriften a 404). **Read printed
+  pp. 102, 112, 116–128, 130–134** (delegated reader; p. 126 re-viewed
+  here). Theorem 3.10 (p. 126): asymptotic spectra are unchanged by field
+  extension; eq. (4.6) (p. 134): the asymptotic subrank of a
+  matrix-multiplication tensor. `docs/roadmap.md` §88.3.
+
+- **[BHL26]** M. Bucić, F. He, H. Lee, *Proof of the Erdős–Szemerédi
+  sunflower conjecture*. arXiv:2610.26686v1, 19 Oct 2026, 16pp;
+  **unrefereed**. **Read in full, 16 of 16 rendered pages (2026-10-20).**
+  Thm. 1: `k`-sunflower-free subsets of `2^[n]` have at most
+  `3(2 − 1/(16k³))^n` members. Thm. 2: `V_k(D,n) ≤ (C_k D^{1−1/(k−1)})^n`,
+  `C_k = (2k)^{2/(k−1)}`, i.e. `(6√D)^n` at `k = 3`. Through [ASU12]'s
+  reduction the second gives **no** bound on `f(n,3)`
+  (`docs/roadmap.md` §75.1). `docs/reading.md` Tier 3c.
+
+- **[KSS18]** R. Kleinberg, W. Sawin, D. E. Speyer, *The growth rate of
+  tri-colored sum-free sets*. Discrete Analysis 2018:12; arXiv:1607.00047v3,
+  10pp. **Read in full, 10 of 10 rendered pages (2026-10-21).** Tri-colored
+  sum-free sets in `C_q^n` of size `θ^{n−o(n)}`, `θ = qJ(q)` (`2.7551` at
+  `q = 3`), conditional on its Theorem 4, proved by Pebody (Discrete
+  Analysis 2018:13, not read); at `q = 3` Theorem 4 is checked directly in
+  `docs/roadmap.md` Lemma 77.C. `docs/reading.md` Tier 3c.
+
+- **[CVZ22]** M. Christandl, P. Vrana, J. Zuiddam, *Barriers for fast
+  matrix multiplication from irreversibility*. arXiv:1812.06952v4 (5 Mar
+  2022), 26pp; Theory Comput. 17 (2021) per [BHL26]'s reference list, not
+  fetched. **Read in full, 26 of 26 rendered pages (2026-10-21).**
+  Monomial subrank (p. 9), support functionals (p. 16), and the relations
+  between asymptotic subrank, asymptotic slice rank, support and quantum
+  functionals (pp. 22–23). `docs/reading.md` Tier 3c.
+
+- **[CVZ18]** M. Christandl, P. Vrana, J. Zuiddam, *Universal points in
+  the asymptotic spectrum of tensors*. STOC 2018; arXiv:1709.07851v3,
+  57pp. **Read in full, 57 of 57 rendered pages (2026-10-21).** Quantum
+  functionals; asymptotic slice rank over `C` exists and equals their
+  minimum (Cor. 5.7); free tensors (Thm. 4.20); combinatorial
+  degeneration (Def. 4.9, Prop. 4.10, Thm. 4.11). `docs/reading.md`
+  Tier 3c.
+
+- **[KL26]** S. R. Karingula, S. Lovett, *Limitations of the slice rank
+  method in additive combinatorics*. arXiv:2609.27044v1, 22 Sep 2026,
+  11pp. **Read in full, 11 of 11 rendered pages (2026-10-20).** Maximal
+  slice rank for every faithful realisation of the `k`-sunflower **set**
+  relation, `k ≥ 4`; nothing at `k = 3`, nothing about vector testers.
+  `docs/reading.md` Tier 3c.
 
 - **[GMR12]** P. Gopalan, R. Meka, O. Reingold, *DNF Sparsification and a
   Faster Deterministic Counting Algorithm*. arXiv:1205.3534, 27pp.
@@ -1314,6 +1425,16 @@ in this file.
   checked (`rust/tests/frankl_wang.rs`). Establishes that the
   covering-number literature cannot bound the nine- and eleven-point
   questions below 32; `docs/roadmap.md` §37.6.
+
+- **[FW25b]** P. Frankl and J. Wang, *New Bounds on Families without
+  Large Sunflowers*. **The Electronic Journal of Combinatorics** **32**(2)
+  (2025), **P2.43**; `doi:10.37236/13277` (Crossref record, checked
+  2026-10-27). **Read in full by a delegated reader, 20 of 20 rendered
+  pages**, for the rule-17 search of 2026-10-27. Eq. (12) at `s = 1` is
+  the cone `ι(k+1) ≥ g(k)`; eqs. (12) and (14) compose to
+  `g(b) ≤ 2b·ι(b)`. `docs/reading.md` B10, B11. Called [FW25] in the
+  rule-17 notes and report; that key is taken here by the covering-number
+  paper above.
 
 ### Tools
 
