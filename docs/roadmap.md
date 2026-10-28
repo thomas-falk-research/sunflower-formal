@@ -599,7 +599,7 @@ and three things follow, all checked:
   computationally in `rust/tests/intersecting.rs` (`g(4) >= 54` and
   `g(6) >= 600`, against the direct sum's 36 and 216), with a control
   showing it breaks the moment the inner family is not intersecting.
-  **Not formalised** — see below.
+  **Not formalised** — see below. *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 * **The rate.** Iterating has fixed point `c^b = c * iota(b)`, i.e.
   `iota(b)^(1/(b-1))` per point.
 
@@ -872,7 +872,7 @@ graph-colouring bound only sees the binary intersecting one, and on
 these parameters the intersection graph is far too dense for it to say
 anything.
 
-**2. Formalise the substitution.** It is verified but not proved, and it
+**2. Formalise the substitution.** *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)* It is verified but not proved, and it
 is the difference between a rate of `20^(1/3) = 2.714` (what the
 doubling plus `DirectSum.lower_bound_power` gives, and what is proved)
 and `10^(1/2) = 3.162` (what AHS reach). The construction decomposes as
@@ -4424,6 +4424,7 @@ So the honest state of the sequence is:
 > `IotaRate.substitution_would_refute_the_flat_threshold_at_nine` assumes
 > `LowerBound 9 3 (3^9 + 317)`, which rests on the Abbott–Hanson–Sauer
 > substitution — not formalised here. Every other row is a theorem.
+> *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 
 
 Two exact terms, not two-and-a-conjecture. The interval at `m = 4` is
@@ -5933,7 +5934,7 @@ Abbott–Hanson–Sauer substitution, *"which is not formalised here"*. So
 `r*(9,3) >= 4` is conditional on an unformalised construction, and
 §22.2's table — which lists it flat, in the same column as the proved
 rows — overstates it. Corrected there and in `STATUS.md` in the same
-commit.
+commit. *(2026-10-28: formalised, `coq/SubstitutionFree.v`, §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 
 The consequence matters for §25.5: it is **not** a theorem of this
 development that the sequence is non-constant. What is a theorem is
@@ -9843,12 +9844,12 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 64 modules, 877 audited theorems, 161 audited
+The development is now 66 modules, 903 audited theorems, 162 audited
 definitions, 180 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
-`cube_budget.rs` in §49; `coq/VCSunflower.v` and five mutations in §59. The two paragraphs above quoting
+`cube_budget.rs` in §49; `coq/VCSunflower.v` and five mutations in §59; `coq/SubstitutionFree.v` in §88 and `coq/SubstitutionRate.v` in §89. The two paragraphs above quoting
 31 and 32 suites are historical records of earlier sessions and are
 correct as written.)
 
@@ -18758,3 +18759,100 @@ the kernel (the step `IotaAtLeast a N → IotaAtLeast (3a) (N·10^a)` is
 `substitute_iota_lower_bound` with inner `iota3`, `w = 6`, and needs no
 ground bookkeeping), then pass to general `n` via [AHS72] Lemmas 4–5 /
 `DirectSum` for `10^{(n − O(log n))/2}`.
+
+## 89. The `10^{n/2}` rate in the kernel — [AHS72]'s tower and its base-3 extension to every `n`, at the published rate up to the `2^{l−1}` factor
+
+**Tier 2** (formal proof). §88.5's next step, done. New module
+`coq/SubstitutionRate.v` (after `coq/Audit.v` in `_CoqProject`, for
+`Audit.LowerBound_antitone`), axiom-free. Also two mutation-robustness
+repairs to §88's `coq/SubstitutionFree.v` (§89.3) and the owed
+comment and addendum edits (§89.4).
+
+### 89.1 What [AHS72] p. 388 says (rendered at 150 dpi, displays (21)–(23) re-read at 400 dpi)
+
+* (21): *"ψ(3^k) ≥ ψ(3) ψ(3^{k−1})^3 > 10 ψ(3^{k−1})^3"* for `k ≥ 2`
+  — Lemma 6 with `a = 3`, `b = 3^{k−1}`, i.e. `iota3` **outside**. The
+  second relation is printed as a strict `>`; since `ψ(3) = 10` it is an
+  equality (typo, harmless).
+* (22): printed *"ψ(3^k) ≥ 10(3^k − 1)/2"*: the exponent's typesetting is
+  lost; what (21) gives, and what is meant, is `ψ(3^k) ≥ 10^{(3^k−1)/2}`.
+* (23): *"write n in base 3"*, `n = 3^{k_1} + … + 3^{k_l}`, and by
+  Lemma 5 (`ψ(a+b) ≥ ψ(a)φ(b)`) and Lemma 4 (`φ ≥ 2ψ`),
+  `ψ(n) ≥ ψ(3^{k_1})⋯ψ(3^{k_l}) 2^{l−1} ≥ 10^{(n−l)/2} 2^{l−1} > 10^{(n − log n)/2}`.
+  The page does not say how a digit 2 is expanded (as two equal powers,
+  presumably, which makes `l` the digit sum `s_3(n)`), nor the base of
+  `log`; the last `>` is **not checked here**.
+
+### 89.2 What is now kernel-checked (`coq/SubstitutionRate.v`)
+
+```text
+  iota_triple_step       IotaAtLeast a N -> IotaAtLeast (a·3) (N·10^a)
+                         (substitute_iota_lower_bound, inner iota3, w = 6:
+                          iota3 *inside*, the other order from (21))
+  iota_tower             IotaAtLeast a N -> IotaAtLeast (a·3^j) (N·10^(a(3^j−1)/2))
+  iota_three_power       IotaAtLeast (3^j) (10^((3^j−1)/2))          [AHS72] (22)
+  digsum3, digsum3_values, digsum3_step, digsum3_le
+                         base-3 digit sum (fuel = n); s(100) = 4, s(26) = 6,
+                         s(27) = 1, s(80) = 8 by vm_compute; s(n) <= 2k when n < 3^k
+  iota_base_three        1 <= n -> IotaAtLeast n (10^((n − s_3(n))/2))
+  iota_log_loss          1 <= n < 3^k -> IotaAtLeast n (10^((n − 2k)/2))
+  g_base_three           1 <= n -> LowerBound n 3 (2·10^((n − s_3(n))/2))
+  iota_27t, iota_27t_beats_three
+                         IotaAtLeast (27t) (10^(13t)), and 3^(27t) < 10^(13t)
+```
+
+`Print Assumptions` reports all nine non-auxiliary theorems closed under
+the global context (`coqtop`, this session). **PROVEN** (kernel).
+
+`iota_base_three` is (23) **without the `2^{l−1}` factor**: the proof
+is an induction on `n = 3q + r`, taking `ψ(q)` to `ψ(3q)` by the step and
+adding the digit `r` by `Product.iota_supermultiplicative` with
+`ψ(r) ≥ 1`, which does not use Lemma 5's `φ`. Keeping the factor needs
+Lemma 5 in general (`ψ(a+b) ≥ ψ(a)·g(b)`; the repository has only its
+`a = 1` cone, `Product.iota_at_least_g_pred`); it changes the bound by
+`2^{O(log n)}`, i.e. not the rate. Not done.
+
+**The rate, by hand (not a theorem here).** From `iota_log_loss` and
+`g_base_three`, `ψ(n)^{1/n}` and `g(n)^{1/n}` are at least
+`10^{1/2 − (k+1)/n}` with `k = ⌈log_3(n+1)⌉`, so both have
+`liminf ≥ √10 = 3.1623`. Concretely `iota_27t_beats_three` puts the rate
+past 3 at every multiple of 27: `10^{13/27} = 3.0303` (computed, python3),
+against `20000^{1/9} = 3.0053` from `lower_bound_9_3_20000`. This is the
+row `f(n, 3) ≳ 10^{n/2}` of `STATUS.md`, now proved rather than cited.
+**Novelty: none** — it is [AHS72] Theorem 3's lower bound; what is this
+repository's is the machine check (and §88.1's repair underneath it).
+By `IotaRate.every_construction_is_within_2b_of_iota`, no further work
+on this construction can move the rate.
+
+### 89.3 A defect in §88's commit, found and fixed
+
+**MEDIUM.** `tools/mutations.toml` declares `lowerbound-at-least` and
+`iotaatleast-at-least` (`length F = m` weakened to `≥`) as expected
+**survivors**, under the proof-shape rule of `docs/testing.md` §4. Two
+proofs in `coq/SubstitutionFree.v` (commit 2d09b2f) broke that rule:
+`substitute_lower_bound` / `substitute_iota_lower_bound` closed the length
+goal with `exact (length_substitute …)`, and `lower_bound_9_3_20000`
+rewrote with the length equation of `lower_bound_3_3_20`. Under either
+mutation they fail to compile, so the mutation would be reported killed
+and the manifest check would fail. §88 did not run the mutation gate
+(no definition changed), which is why it went unseen. Fixed: `rewrite …;
+lia` for the former, and the outer family named concretely
+(`double iota3`, length by `vm_compute`) for the latter. The two
+mutations, with the alpha-rename positive control, were re-run on the
+final tree: §89.5.
+
+### 89.4 Owed edits, made
+
+* `coq/IotaRate.v`, `coq/Sharp.v`, `coq/Intersecting.v`: comments no
+  longer call the substitution unformalised (§88 review items 13–15);
+  "exactly when" → "when" in `Intersecting.v`.
+* [AHS72] Lemma 4 cited at `Intersecting.doubling_lower_bound` and in
+  `coq/Palvolgyi.v` (§87.3 item 5): the inequality `2ι ≤ g` is 1972;
+  Pálvölgyi's is the equality conjecture.
+* Dated addenda at §5 (substitution bullet and item 2), the §25.3
+  correction box, the `m = 9` paragraph of §25, and `docs/reading.md`'s
+  register entry (§88 review item 16).
+* `tools/audited.txt`: the four `Substitution.*` lines that the
+  `SubstitutionFree` block split off are back in their group (statement
+  baselines: moves only, no entry's text changed — `diff` of removed vs
+  added lines empty).

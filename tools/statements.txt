@@ -2656,6 +2656,18 @@ dbd9e7fb2f1bf80c  thm Substitution.tri_tau
 dcaf9553f847245c  thm Substitution.iota3_into_triangle_is_maximal
     iota3_into_triangle_is_maximal : MaximalIntersecting 6 (substitute 6 tri iota3)
 
+976d9410226eec5e  thm Substitution.iota3_squared_is_maximal
+    iota3_squared_is_maximal : MaximalIntersecting 9 (substitute 6 iota3 iota3)
+
+524fc89db37cd159  thm Substitution.the_nine_uniform_boundary_is_closed_to_extension
+    the_nine_uniform_boundary_is_closed_to_extension : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ (IotaAtLeast 9 (Nat.of_num_uint (Number.UIntDecimal (Decimal.D1 (Decimal.D0 (Decimal.D0 (Decimal.D0 (Decimal.D1 Decimal.Nil))))))) -> ~ AHSOptimal)
+
+a38b91c6cd670abd  thm Substitution.the_margin_at_four_is_five
+    the_margin_at_four_is_five : 27 * 27 <= PeanoNat.Nat.pow 10 (4 - 1) /\ 31 * 31 <= PeanoNat.Nat.pow 10 (4 - 1) < 32 * 32
+
+5b4665c96e92f509  thm Substitution.maximality_is_not_an_upper_bound
+    maximality_is_not_an_upper_bound : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ MaximalIntersecting 3 Maximal.fano /\ ContainsKSunflower 3 Maximal.fano /\ length Maximal.fano = 7
+
 b7da855d7016b32a  thm SubstitutionFree.in_trace_assemble
     in_trace_assemble : forall (w : nat) (I : Family) (T : list nat) (f : nat -> list nat) (v u : nat), Grounded I (List.seq 0 w) -> (forall x : nat, List.In x T -> List.In (f x) I) -> List.In u (trace w v (assemble w T f)) <-> List.In v T /\ List.In u (f v)
 
@@ -2701,17 +2713,41 @@ a1c105a4896585e8  thm SubstitutionFree.Intersecting_substitute
 34d64b8c9f533add  thm SubstitutionFree.iota_nine_at_least_10000
     iota_nine_at_least_10000 : IotaAtLeast 9 (10 * PeanoNat.Nat.pow 10 3)
 
-976d9410226eec5e  thm Substitution.iota3_squared_is_maximal
-    iota3_squared_is_maximal : MaximalIntersecting 9 (substitute 6 iota3 iota3)
+279fd742b1f9c769  thm SubstitutionRate.iota_triple_step
+    iota_triple_step : forall a N : nat, IotaAtLeast a N -> IotaAtLeast (a * 3) (N * PeanoNat.Nat.pow 10 a)
 
-524fc89db37cd159  thm Substitution.the_nine_uniform_boundary_is_closed_to_extension
-    the_nine_uniform_boundary_is_closed_to_extension : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ (IotaAtLeast 9 (Nat.of_num_uint (Number.UIntDecimal (Decimal.D1 (Decimal.D0 (Decimal.D0 (Decimal.D0 (Decimal.D1 Decimal.Nil))))))) -> ~ AHSOptimal)
+d985238a8b5ef1b7  thm SubstitutionRate.iota_tower
+    iota_tower : forall j a N : nat, IotaAtLeast a N -> IotaAtLeast (a * PeanoNat.Nat.pow 3 j) (N * PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (a * (PeanoNat.Nat.pow 3 j - 1)) 2))
 
-a38b91c6cd670abd  thm Substitution.the_margin_at_four_is_five
-    the_margin_at_four_is_five : 27 * 27 <= PeanoNat.Nat.pow 10 (4 - 1) /\ 31 * 31 <= PeanoNat.Nat.pow 10 (4 - 1) < 32 * 32
+9dd11601b2bedc13  thm SubstitutionRate.iota_three_power
+    iota_three_power : forall j : nat, IotaAtLeast (PeanoNat.Nat.pow 3 j) (PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (PeanoNat.Nat.pow 3 j - 1) 2))
 
-5b4665c96e92f509  thm Substitution.maximality_is_not_an_upper_bound
-    maximality_is_not_an_upper_bound : MaximalIntersecting 9 (substitute 6 iota3 iota3) /\ MaximalIntersecting 3 Maximal.fano /\ ContainsKSunflower 3 Maximal.fano /\ length Maximal.fano = 7
+df100a8eee93ab39  def SubstitutionRate.digsum3
+    digsum3 = fun n : nat => digsum3_aux n n : nat -> nat Arguments digsum3 n%nat_scope
+
+019ab2a3345e0548  thm SubstitutionRate.digsum3_values
+    digsum3_values : digsum3 100 = 4 /\ digsum3 26 = 6 /\ digsum3 27 = 1 /\ digsum3 80 = 8
+
+1fac95d5faca5d45  thm SubstitutionRate.digsum3_step
+    digsum3_step : forall n : nat, digsum3 n = PeanoNat.Nat.modulo n 3 + digsum3 (PeanoNat.Nat.div n 3)
+
+123bf91cbd0f2f1f  thm SubstitutionRate.digsum3_le
+    digsum3_le : forall k n : nat, n < PeanoNat.Nat.pow 3 k -> digsum3 n <= 2 * k
+
+af18cde54e12b806  thm SubstitutionRate.iota_base_three
+    iota_base_three : forall n : nat, 1 <= n -> IotaAtLeast n (PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - digsum3 n) 2))
+
+631bb818a14d3f8a  thm SubstitutionRate.iota_log_loss
+    iota_log_loss : forall k n : nat, 1 <= n -> n < PeanoNat.Nat.pow 3 k -> IotaAtLeast n (PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - 2 * k) 2))
+
+487e6d89de9bed02  thm SubstitutionRate.g_base_three
+    g_base_three : forall n : nat, 1 <= n -> LowerBound n 3 (2 * PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - digsum3 n) 2))
+
+5f2726cae413d2ea  thm SubstitutionRate.iota_27t
+    iota_27t : forall t : nat, 1 <= t -> IotaAtLeast (27 * t) (PeanoNat.Nat.pow 10 (13 * t))
+
+62dc8940654ce581  thm SubstitutionRate.iota_27t_beats_three
+    iota_27t_beats_three : forall t : nat, 1 <= t -> PeanoNat.Nat.pow 3 (27 * t) < PeanoNat.Nat.pow 10 (13 * t)
 
 10228918aa55e2b7  thm Palvolgyi.palvolgyi_implies_abbott_gardner
     palvolgyi_implies_abbott_gardner : PalvolgyiEquality -> IotaAtMost 3 10 -> AbbottGardner1969

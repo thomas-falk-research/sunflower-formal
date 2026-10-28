@@ -7,8 +7,9 @@
     ** Why the shift is the right normalisation
 
     The Abbott–Hanson–Sauer substitution gives
-    [iota(ab) >= iota(a) iota(b)^a] — verified computationally in
-    [rust/tests/intersecting.rs], not formalised here — and iterating it at
+    [iota(ab) >= iota(a) iota(b)^a] — proved in
+    [SubstitutionFree.substitute_iota_lower_bound] (and verified
+    computationally in [rust/tests/intersecting.rs]) — and iterating it at
     [b^k] extracts a rate of [iota(b)^(1/(b-1))] per point, not
     [iota(b)^(1/b)]. That is the quantity the 1972 paper's constant
     [10^(1/2) = 3.162...] is a value of: it is [iota(3)^(1/(3-1))].

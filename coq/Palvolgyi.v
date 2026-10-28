@@ -25,6 +25,9 @@
     copies. This module does not reprove it. It records that the
     statement is due to Palvolgyi in December 2015 and was re-derived
     here, and [docs/reading.md] row A17a carries the citation.
+    (2026-10-28: the inequality is older — it is [AHS72] Lemma 4,
+    [phi(n) >= 2 psi(n)], p. 386; [docs/reading.md] A17. What is
+    Palvolgyi's is the equality conjecture below.)
 
     ** The equality is new here, and is a conjecture its own proposer
        called unlikely

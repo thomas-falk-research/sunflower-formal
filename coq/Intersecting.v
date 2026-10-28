@@ -41,10 +41,11 @@
 
     ** Where this is going
 
-    [iota] is the right quantity for a second reason, which is not
-    formalised here. The Abbott–Hanson–Sauer *substitution* construction
+    [iota] is the right quantity for a second reason, formalised in
+    [SubstitutionFree] and [SubstitutionRate]. The Abbott–Hanson–Sauer
+    ([AHS72]) *substitution* construction
     — blow up each point of a member of an [a]-uniform family into a
-    member of a [b]-uniform one — is sunflower-free exactly when the
+    member of a [b]-uniform one — is sunflower-free when the
     inner family is intersecting, and iterating it has fixed point
     [c^b = c * iota(b)], i.e. a rate of [iota(b)^(1/(b-1))]. At
     [iota(3) = 10] that is [10^(1/2) = 3.162...], which is the published
@@ -279,7 +280,9 @@ Proof.
       | split; assumption ].
 Qed.
 
-(** ** [g(b) >= 2 * iota(b)] *)
+(** ** [g(b) >= 2 * iota(b)]
+
+    [AHS72] Lemma 4, [phi(n) >= 2 psi(n)], p. 386 ([docs/reading.md] A17). *)
 
 Theorem doubling_lower_bound :
   forall b (H : Family),

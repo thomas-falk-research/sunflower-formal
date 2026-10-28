@@ -2087,7 +2087,7 @@ in the form Rao asks about.
   here"*. `docs/roadmap.md` §22.2's table lists the row flat, with no
   caveat, next to rows that are theorems; both that table and `STATUS.md`
   are corrected in this session's commit. It is the one number in the
-  brief that failed rule 9.
+  brief that failed rule 9. *(2026-10-28: formalised, `coq/SubstitutionFree.v`, `docs/roadmap.md` §88; the `m = 9` row is now unconditional. Iterated to the rate in `coq/SubstitutionRate.v`, §89.)*
 
 ### A derived route, stated as "the gap", that had never been measured
 

@@ -563,7 +563,9 @@ Proof.
   exists (substitute w O I); repeat split.
   - exact (Uniform_substitute a b w O I HUO HUI HG).
   - exact (Distinct_substitute a b w O I Hb HUO HDO HUI HDI HG).
-  - exact (length_substitute a w O I HUO).
+  (* [rewrite; lia], not [exact]: the mutations [lowerbound-at-least] and
+     [iotaatleast-at-least] turn this equation into [>=] (docs/testing.md §4). *)
+  - rewrite (length_substitute a w O I HUO); lia.
   - exact (substitute_no_sunflower a b w O I HUO HnoO HUI HII HnoI HG).
 Qed.
 
@@ -576,13 +578,18 @@ Qed.
 
 Theorem lower_bound_9_3_20000 : LowerBound 9 3 (3 ^ 9 + 317).
 Proof.
-  destruct lower_bound_3_3_20 as [O [HUO [HDO [HlO HnoO]]]].
-  pose proof (substitute_lower_bound 3 3 6 O iota3 ltac:(lia) HUO HDO HnoO
-                iota3_uniform iota3_distinct iota3_intersecting iota3_no_sunflower
-                iota3_grounded) as H.
-  rewrite HlO in H.
-  replace (3 ^ 9 + 317) with (20 * length iota3 ^ 3) by (vm_compute; reflexivity).
-  exact H.
+  (* The outer family is named, [double iota3], rather than taken from
+     [lower_bound_3_3_20]: under the mutation [lowerbound-at-least] that
+     lemma only says "at least 20", and the count would not go through. *)
+  replace (3 ^ 9 + 317) with (length (double iota3) * length iota3 ^ 3)
+    by (vm_compute; reflexivity).
+  exact (substitute_lower_bound 3 3 6 (double iota3) iota3 ltac:(lia)
+           (double_Uniform 3 iota3 iota3_uniform)
+           (double_Distinct 3 iota3 ltac:(lia) iota3_uniform iota3_distinct)
+           (double_no_sunflower 3 iota3 ltac:(lia) iota3_uniform iota3_distinct
+              iota3_intersecting iota3_no_sunflower)
+           iota3_uniform iota3_distinct iota3_intersecting iota3_no_sunflower
+           iota3_grounded).
 Qed.
 
 (** [IotaRate]'s two conditional corollaries, now unconditional: the flat
@@ -635,7 +642,9 @@ Proof.
   - exact (Uniform_substitute a b w O I HUO HUI HG).
   - exact (Distinct_substitute a b w O I Hb HUO HDO HUI HDI HG).
   - exact (Intersecting_substitute a w O I HUO HIO HII HG).
-  - exact (length_substitute a w O I HUO).
+  (* [rewrite; lia], not [exact]: the mutations [lowerbound-at-least] and
+     [iotaatleast-at-least] turn this equation into [>=] (docs/testing.md §4). *)
+  - rewrite (length_substitute a w O I HUO); lia.
   - exact (substitute_no_sunflower a b w O I HUO HnoO HUI HII HnoI HG).
 Qed.
 
