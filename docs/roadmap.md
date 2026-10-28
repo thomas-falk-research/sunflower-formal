@@ -7,7 +7,7 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
-> **Starting cold? Read §87 first** (the current handover; `STATUS.md`
+> **Starting cold? Read §87 first** (the current handover, with addenda §88–§89; §89.6 is the next step; `STATUS.md`
 > agrees). What follows was written when §32 was: **Read §32 first.** It was the then most recent session's
 > handover: what moved, what did not, the five open questions that would
 > count as new mathematics, and the failure modes to skip. Then §1 (the
@@ -9845,7 +9845,7 @@ axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
 The development is now 66 modules, 903 audited theorems, 162 audited
-definitions, 180 mutations, and 43 Rust integration suites. (That count
+definitions, 196 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
 and §42, `wreath_ceiling.rs` in §44, `ten_points.rs` in §46, and
@@ -18778,7 +18778,8 @@ comment and addendum edits (§89.4).
   lost; what (21) gives, and what is meant, is `ψ(3^k) ≥ 10^{(3^k−1)/2}`.
 * (23): *"write n in base 3"*, `n = 3^{k_1} + … + 3^{k_l}`, and by
   Lemma 5 (`ψ(a+b) ≥ ψ(a)φ(b)`) and Lemma 4 (`φ ≥ 2ψ`),
-  `ψ(n) ≥ ψ(3^{k_1})⋯ψ(3^{k_l}) 2^{l−1} ≥ 10^{(n−l)/2} 2^{l−1} > 10^{(n − log n)/2}`.
+  `ψ(n) ≥ ψ(3^{k_1})⋯ψ(3^{k_l}) 2^{l−1} ≥ 10^{(n−l)/2} 2^{l−1} > 10^{(n − log n)/2}`
+  (the last index is printed `k_e`, the count `l`; normalised to `k_l` here).
   The page does not say how a digit 2 is expanded (as two equal powers,
   presumably, which makes `l` the digit sum `s_3(n)`), nor the base of
   `log`; the last `>` is **not checked here**.
@@ -18801,8 +18802,12 @@ comment and addendum edits (§89.4).
                          IotaAtLeast (27t) (10^(13t)), and 3^(27t) < 10^(13t)
 ```
 
-`Print Assumptions` reports all nine non-auxiliary theorems closed under
-the global context (`coqtop`, this session). **PROVEN** (kernel).
+`Print Assumptions` reports these nine closed under
+the global context (`coqtop`, this session): `iota_triple_step`,
+`iota_tower`, `iota_three_power`, `digsum3_le`, `iota_base_three`,
+`iota_log_loss`, `g_base_three`, `iota_27t`, `iota_27t_beats_three`; all
+eleven audited theorems of the module are covered by `make verify`'s
+axiom audit (§89.5). **PROVEN** (kernel).
 
 `iota_base_three` is (23) **without the `2^{l−1}` factor**: the proof
 is an induction on `n = 3q + r`, taking `ψ(q)` to `ψ(3q)` by the step and
@@ -18856,3 +18861,39 @@ final tree: §89.5.
   `SubstitutionFree` block split off are back in their group (statement
   baselines: moves only, no entry's text changed — `diff` of removed vs
   added lines empty).
+
+### 89.5 Gates
+
+* On the tree of commit 5d1625f: `make verify` exit 0 (903 audited
+  theorems; 1065 statements match the baseline; 18 quoted numbers match),
+  `make coqchk` exit 0, `make prcheck` exit 0 ("66 modules, 903 audited
+  theorems, 196 mutations, 43 Rust suites"; the one declared axiom is
+  `ALWZ.Rao20_lemma2`, as before).
+* Mutation gate, targeted (`tools/mutate.py --only`): `lowerbound-at-least`
+  survived, `iotaatleast-at-least` survived, `canary-alpha-rename`
+  survived — all three as expected, 0 unexpected. The full manifest was
+  not re-run: no definition changed, and these are the two entries the
+  new and changed proofs could affect (§89.3).
+* Fresh-context review (one subagent, given the diff, the rendered
+  p. 388 and the sources, not my conclusions): no HIGH, no error in the
+  statements or the mathematics; it re-derived the parity facts that make
+  both floor divisions exact and checked §89.1's quotations against the
+  page. Its findings — §89.5/§89.6 cited before they existed, an unnamed
+  "nine", the stale mutation count `180` (now 196) in §35.5, a deprecated
+  `Nat.div_lt_upper_bound`, an overstated proof-shape comment, and the
+  `k_e`/`k_l` index — are fixed in the following commit, after which
+  `make verify` and `make coqchk` were re-run (results in that commit's
+  message).
+
+### 89.6 Next step
+
+The lower-bound line at `k = 3` is now at the published rate, and by
+`IotaRate.every_construction_is_within_2b_of_iota` no refinement of this
+construction moves the rate. The one definite, cheap step left on it is
+to complete [AHS72] Theorem 3 **as printed**: formalise Lemma 5 in
+general, `ψ(a+b) ≥ ψ(a)·g(b)` (the proof of
+`Product.iota_supermultiplicative` already discards the second family's
+intersecting property, so it should generalise directly), and with it
+the `2^{l−1}` factor of (23). This adds lower-order terms only.
+Everything else open is §87.3 items 1–3, which are research questions
+without a cheap definite next step; §87.3 item 5 is done (§89.4).

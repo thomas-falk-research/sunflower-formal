@@ -28,10 +28,10 @@
     [g(n) >= 2 psi(n)] ([Intersecting.doubling_lower_bound]) carries the
     bound to the sunflower side ([g_base_three]).
 
-    Proof-shape rule ([docs/testing.md] §4): every [IotaAtLeast] or
-    [LowerBound] consumed here is passed through [IotaAtLeast_antitone]
-    or [Audit.LowerBound_antitone] rather than rewritten with its length
-    equation, so the survivors [iotaatleast-at-least] and
+    Proof-shape rule ([docs/testing.md] §4): the length equation of every
+    [IotaAtLeast] or [LowerBound] consumed here reaches only [lia] (often
+    through [IotaAtLeast_antitone] or [Audit.LowerBound_antitone]), never
+    [rewrite] or [exact], so the survivors [iotaatleast-at-least] and
     [lowerbound-at-least] stay survivors. This file comes after [Audit]
     in [_CoqProject] for [LowerBound_antitone]. *)
 
@@ -157,7 +157,7 @@ Proof.
   - rewrite digsum3_step.
     assert (Hm : n mod 3 < 3) by (apply Nat.mod_upper_bound; lia).
     assert (Hq : n / 3 < 3 ^ k)
-      by (apply Nat.div_lt_upper_bound; [lia | rewrite <- Nat.pow_succ_r'; exact Hn]).
+      by (apply Nat.Div0.div_lt_upper_bound; rewrite <- Nat.pow_succ_r'; exact Hn).
     pose proof (IH (n / 3) Hq); lia.
 Qed.
 
