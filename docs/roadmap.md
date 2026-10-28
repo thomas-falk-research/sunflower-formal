@@ -7,7 +7,7 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
-> **Starting cold? Read §87 first** (the current handover, with addenda §88–§91; §91.5 is the next step; `STATUS.md`
+> **Starting cold? Read §87 first** (the current handover, with addenda §88–§91 consolidated in §92 — start at §92; `STATUS.md`
 > agrees). What follows was written when §32 was: **Read §32 first.** It was the then most recent session's
 > handover: what moved, what did not, the five open questions that would
 > count as new mathematics, and the failure modes to skip. Then §1 (the
@@ -19120,3 +19120,61 @@ survived, 0 unexpected (the earlier run on d2c1de0 had killed
 baseline, 18 quoted numbers match); `make coqchk` exit 0; `make prcheck`
 exit 0 ("66 modules, 910 audited theorems, 196 mutations, 43 Rust
 suites"; the one declared axiom `ALWZ.Rao20_lemma2`, as before).
+
+## 92. Handover — §87 with §88–§91 folded in
+
+Start here, then §87 (still right on everything below §88). This
+section only consolidates; every claim carries its label in the section
+it cites.
+
+### 92.1 What moved in §88–§91
+
+* **The Abbott–Hanson–Sauer construction is in the kernel, end to end.**
+  `coq/SubstitutionFree.v` (§88): the substitution is sunflower-free,
+  `g(ab) ≥ g(a)·ι(b)^a` and Lemma 6 `ι(ab) ≥ ι(a)·ι(b)^a`, with the
+  printed proof's gap (the "least m" need not exist) repaired by
+  `triple_collapse`; hence `LowerBound 9 3 20000`, the flat spread
+  threshold refuted at uniformity 9, and `c(3) ≥ 4` in
+  `Conjecture.spread_conjecture`, all unconditional.
+  `coq/SubstitutionRate.v` (§89–§90): the tower `ι(3^j) ≥ 10^{(3^j−1)/2}`,
+  `ι(n) ≥ 10^{(n−s_3(n))/2}·2^{s_3(n)−1}` (display (23) up to its last
+  `>`), Lemma 5 in general (`iota_plus_g`), and Theorem 3 in integer form
+  (`g_log_loss`). PROVEN, axiom-free. No novelty claimed: the mathematics
+  is [AHS72]'s; the repair and the machine check are this repository's.
+* **Three print errors in [AHS72] recorded** (`docs/reading.md` A3): the
+  gap above; (21)'s strict `>` that is an equality; (23)'s last `>`,
+  which needs an unstated base of `log` and fails at `n = 1` (COMPUTED,
+  §90.3).
+* **§87.3 item 1 (non-power testers): bounded step, outcome "no"** (§91).
+  [ST16] Prop. 4 is a one-shot support bound; Lemma 91.A (PROVEN by
+  hand, checked numerically by a review) puts its diagonal part at most
+  `V_3(D,n)` under every choice of orders. What remains is the
+  non-diagonal part under non-lexicographic orders — research, merged
+  with item 2.
+* **§87.4** (§88.3): no one-shot slice-rank lower bound follows from
+  conciseness; `slice-rank(q_{−1/2}) ≤ 3` for every `D`.
+* **Two defects of this session's own, found by its own gates and fixed:**
+  §88's proofs and §90's `iota_plus_g` each broke a mutation the manifest
+  declares a survivor (§89.3, §91.6). Both were caught by a targeted
+  mutation run; the lesson is that a new proof consuming `LowerBound` or
+  `IotaAtLeast` needs that run even when no definition changes.
+
+### 92.2 What did not move
+
+* No existing definition changed (the only new ones are
+  `SubstitutionRate.digsum3` and its fuel helper); every pre-existing Coq
+  file changed in comments only. `Rao20_lemma2` is still the one axiom.
+* `g(4)` (`54 ≤ g(4) ≤ 76` given the census), `ι(4)`, `r*(3,3) ∈ {3, 4}`,
+  census stages 3–5, Stage C: untouched, as the brief required.
+* `Λ(D)` for `D ≥ 4`: open. Run classes 1–2 at `D = 4`: as §86 left them.
+* The rate at `k = 3` from this construction: `√10`, and by
+  `IotaRate.every_construction_is_within_2b_of_iota` no refinement of it
+  moves the rate.
+
+### 92.3 Where to start
+
+There is no cheap, definite next step on the open list. The open
+questions are §87.3 items 1–3 (with §91.4 narrowing item 1 to the
+non-diagonal maxima of `S_D^{(n)}`), all research. Do not re-run: the
+`D = 4` face searches (§85–§86), the [BCLSZ25]/[Str88]/[ST16] reading
+(§88.3, §91), or the AHS72 formalisation.
