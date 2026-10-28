@@ -7,7 +7,8 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
-> **Starting cold? Read §32 first.** It is the most recent session's
+> **Starting cold? Read §87 first** (the current handover; `STATUS.md`
+> agrees). What follows was written when §32 was: **Read §32 first.** It was the then most recent session's
 > handover: what moved, what did not, the five open questions that would
 > count as new mathematics, and the failure modes to skip. Then §1 (the
 > axiom, and how far its discharge has got), and `docs/reading.md`'s
@@ -18459,7 +18460,7 @@ files the rates of about 8,000 and 700 leaves an hour (its own estimate
 from summed solve seconds: about 7,600 at the start and about 990 at the
 end), the 2.5-hour orphaned solver, or the time of the restart.
 
-## 87. Handover — the vector-tester route closed for product testers; the state of everything since §76
+## 87. Handover — the vector-tester route closed for product testers at fixed `D` (`D`-uniform shape); the state of everything since §76
 
 Start here. §76 was the last handover; §77–§86 followed it with no
 summary, and the rule-17 search of 2026-10-27 changed several of §76's
@@ -18494,16 +18495,22 @@ statements. Where this section and §76 disagree, this section is right.
   register rows updated in place.
   * **B10 — no novelty.** `2ι(b) ≤ g(b)` is [AHS72] Lemma 4 (1972), the
     cone is the `a = 1` case of its Lemma 5, the `k = 3` equivalence is
-    Kalai's (Polymath10 22224, 2015), and the upper half's argument is
-    Gowers's (22417) and follows from [FW25b] (12)+(14). Only the
-    machine-checked statement (`coq/IotaRate.v`) is this repository's own.
-  * **`ι` has had a name since 1972:** `ψ(n)`, [AHS72] p. 386 (B9, A17).
+    in [AHS72] too (Lemmas 4 and 5), and the upper half composes [AHS72]
+    p. 381 eq. (2) (Erdős–Rado, quoted) with Lemma 5 at `a = 1` (also
+    Gowers 22417, [FW25b] (12)+(14)). Kalai stated the equivalence on
+    Polymath10 (22224, 2015). Only the machine-checked statement
+    (`coq/IotaRate.v`) is this repository's own.
+  * **`ι` has had a name since 1972:** `ψ(n)`, [AHS72] p. 386 (B9, A17);
+    the general-`k` function `ψ(n,k,2)` since [AbHa74] p. 9 (1974).
+    Abbott–Gardner 1969, cited there for `ψ(3) = 10`, is unread.
   * **B27 — partial.** The floor of 3 for `D ≤ 26` (78.A) and Lemma 78.B
     remain not found, not exhaustive; [BCLSZ25] supersedes 78.A for
     `D ≥ 27`.
   * **A20 resolved**, A3 corrected: [AHS72]'s substitution is printed on
-    `ψ` alone (Lemma 6); `g(ab) ≥ g(a)ι(b)^a` follows from its proof.
-  * **A19c stale:** [ABCDN26] claims `ι(4) = 27`.
+    `ψ` alone (Lemma 6); `g(ab) ≥ g(a)ι(b)^a` follows from its proof
+    (after a two-line repair, A3).
+  * **A19c stale:** [ABCDN26] claims `ι(4) = 27`, and `ι(4) ≥ 27` is
+    [AHS72] p. 388.
 
 ### 87.2 What did not move
 
@@ -18511,8 +18518,9 @@ statements. Where this section and §76 disagree, this section is right.
   state is §74's, and `Rao20_lemma2` is still the one axiom.
 * The lines §76.2 lists for `g(4)` (`54 ≤ g(4) ≤ 76` given the census),
   census certification stages 3–5, `r*(3,3) ∈ {3, 4}` and `Rao20_lemma2`
-  Stage C are untouched. The current brief forbids new enumeration
-  campaigns on `g(4)`, `ι(4)`, `r*(3,3)` and census stages 3–4, and Stage C.
+  Stage C are untouched. The session brief of 2026-10-27/28 (not in the
+  repository) forbade new enumeration campaigns on `g(4)`, `ι(4)`,
+  `r*(3,3)` and census stages 3–4, and Stage C.
 * `Λ(D)` for `D ≥ 4`: still open as a quantity. F3 stands
   (`sup_D Λ(D) < ∞` would prove the conjecture at `k = 3`).
 
@@ -18520,8 +18528,9 @@ statements. Where this section and §76 disagree, this section is right.
 
 1. **Testers that are not tensor powers.** Lemma 78.C does not cover a
    tester on `[D]^n` that is not `q^{⊗n}` (or a block power), because
-   slice rank is not known to be submultiplicative. This is the one part
-   of the vector-tester route still open. A lower bound on the slice rank
+   slice rank is not known to be submultiplicative. With the colour-coding
+   regime `D = s·m`, `n = s` (open for product testers too, §78.7), this is
+   what is left of the vector-tester route. A lower bound on the slice rank
    of every tensor supported on `S_D^{(n)}` with nonzero diagonal would
    close it; [BCLSZ25]'s one-shot restrictions (Lemma 2.12) are the place
    to look, and the colour-coding regime `D = s·m` of §75.1 is the regime
@@ -18533,10 +18542,14 @@ statements. Where this section and §76 disagree, this section is right.
    resume §86 from `certs/r2_D4K2s19_partial.json`.
 4. Everything in §59.4 and §67.5 not superseded above, subject to the
    brief's limits.
+5. **Owed (documentation, cheap).** The [AHS72] citation in
+   `coq/Intersecting.v` (the doubling, Lemma 4) and `coq/Palvolgyi.v`
+   (comments only, but a `.v` change, so it needs `make verify`).
 
 ### 87.4 The exact next step
 
-Read [BCLSZ25] pp. 22–51 (rendered; pp. 1–21 are read), in particular
+Render and read [BCLSZ25] pp. 22–51 (pp. 1–21 are read, across two
+passes: `reports/Sunflower novelty prior art search.md`), in particular
 §5 (the second proof of Theorem 1.8, and Theorem 1.9's proof) and §6
 (slice rank against subrank). Decide, as a continuation of §78.7, whether
 any statement there bounds the slice rank — not the asymptotic subrank —
@@ -18548,8 +18561,9 @@ few non-product testers on `S_4^{(2)}` (one table).
 
 ### 87.5 Environment, as left
 
-`coqc` (8.18), `cadical` 1.7.3, `pdftoppm`, scipy 1.16.2 with numpy 2.5.3,
-`highspy`, and python-sat 1.9.dev15 are installed. `drat-trim` and
+`coqc` (8.18.0), `cadical` 1.7.3, `pdftoppm` 24.02.0, scipy 1.16.2 with
+numpy 2.5.3, `highspy`, python-sat 1.9.dev15, and the Rust toolchain and
+`gcc` are installed; `nauty` is not. `drat-trim` and
 `lrat-check` are built in the session scratchpad (`bin/`), which does not
 survive the container. The run data of §83–§86 (closure logs, delta files,
 pools) are scratchpad-only; the trees, hashes and open lists are in
@@ -18568,3 +18582,23 @@ Run on this tree after the last edit; no Coq or Rust changed.
   coqchk        not-run   same reason
   mutants       not-run   no definition changed
 ```
+
+**Fresh-context review (of `1cf328a`, `bd46d5e`, `e94faec`).** The
+reviewer viewed every page of both papers, re-checked the quotations and
+lemma numbers, verified the printed `ψ(3)` family by script, and found
+the `cubes_sa.py` fix correct: a child started through the new hook reads
+back `PR_GET_PDEATHSIG = 9`, signals leave no child, six random
+interrupts and a resume leave every log line whole and `certcubes` ok,
+and the `D = 3` regression matches. Nothing HIGH. MEDIUM, all fixed: the
+upper half and the `k = 3` equivalence are compositions of inequalities
+printed in [AHS72] (B10, 87.1); [AbHa74] defines the general `ψ(n,k,m)`
+(references, A17, B9); "earliest" became "earliest source read", since
+Abbott–Gardner 1969 is unread (A17, A20); A19c, `STATUS.md` (three rows)
+and `README.md` now agree with A17; §87's "closed" is qualified and the
+colour-coding regime listed as open. LOW, all fixed: the gap in Lemma 6's
+printed step and its two-line repair (A3); B9's verdict; what [AbHa74]
+p. 9 restates; its page range and `φ(3,5) ≥ 88`; "rediscoveries" became
+"later statements"; the name of the notion in [AHS72]; the brief not
+being in the repository; [BCLSZ25] pp. 22–51 never rendered; this file's
+own "Read §32 first" header; the environment list. Optional hardening not
+done: checking `prctl`'s return value and `getppid()` after it.

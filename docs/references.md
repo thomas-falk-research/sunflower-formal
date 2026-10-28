@@ -152,10 +152,16 @@ estimate. Both are marked below.
   the small exact values, including $f(2,3) = 7$ (`coq/F23.v`).
   **Read in full 2026-10-28: 12 of 12 pages rendered at 150 dpi, from a
   copy supplied by the user** (SHA-256 `66ee050f…`; not in the
-  repository). It restates $\psi$, Lemma 6 and Lemma 4 from [AHS72]
-  (p. 9), bounds $\phi(3,k)$ from above for $k \ge 7$ (Theorem 2.1,
-  p. 3), and gives lower bounds for $\phi(n,4)$, $\phi(n,6)$ (pp. 9–11,
-  Table 2). It credits $\phi(2,3) = 6$ to Erdős–Rado (p. 1), i.e.
+  repository). It restates $\psi$, Lemma 6 (as (21)) and Lemma 4 (as
+  (22)) from [AHS72] (p. 9), not Lemma 5; it defines the general
+  $\psi(n,k,m)$ — the largest $\Delta(k)$-free $n$-uniform family with no
+  $m$ pairwise disjoint members, $\psi(n) = \psi(n,3,2)$ — and proves
+  Lemma 3.1, $\phi(n,k) \ge \psi(n,k,m_1) + \psi(n,k,m_2)$ for
+  $m_1 + m_2 = k + 1$ (p. 9), saying no analogue of (21) for
+  $\psi(n,k,m)$ is known (p. 11). It bounds $\phi(3,k)$ from above for
+  $k \ge 7$ (Theorem 2.1, p. 3), and gives lower bounds for $\phi(n,4)$,
+  $\phi(n,5)$ ($\phi(3,5) \ge 88$) and $\phi(n,6)$ (§3, pp. 8–11,
+  Tables 1–2). It credits $\phi(2,3) = 6$ to Erdős–Rado (p. 1), i.e.
   $f(2,3) = 7$ in this repository's threshold convention. A $\Delta(k)$
   system is *"a family of k distinct sets which have pairwise the same
   intersection"* (p. 1).
@@ -208,7 +214,9 @@ estimate. Both are marked below.
 
   **READ IN FULL 2026-10-28: 9 of 9 pages rendered at 150 dpi, from a
   copy supplied by the user** (SHA-256 `db6cf560…`; the file is not in
-  the repository). What it contains, by page: Theorem 1, the exact
+  the repository). It cites $\psi(3) = 10$ to Abbott–Gardner, printed in
+  1969 (*Recent Progress in Combinatorics*, 211–215, per [AbHa74]
+  ref. [2]), which is unread. What it contains, by page: Theorem 1, the exact
   $\phi(2,k)$ (p. 382); Theorem 2, $\phi(n,k) \le (n+1)!\,c^n$,
   $c = (k-1+(k^2+6k-7)^{1/2})/4$ (p. 382); Theorem 3,
   $\phi(n,3) > 10^{(n/2)-c\log n}$ (p. 382); the intersecting function
