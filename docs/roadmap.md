@@ -18266,15 +18266,18 @@ It also spot-certified three uncertified leaves, and found nothing HIGH.
   * §84.1's "largest fixed set at most 4", which holds for expanded
     nodes, while the depth-4 leaves fix 5.
 
-## 86. Run classes 1 and 2 at `D = 4, K = 2, s = 19`: stopped by decision, run class 2 70% closed with no face, run class 1 not started
+## 86. Run classes 1 and 2 at `D = 4, K = 2, s = 19`: stopped by decision, 70% of run class 2's leaves closed with no face, run class 1 not started
 
 **Tier 2.** §85.6 item 1, stopped partway. On 2026-10-27 the rule-17
 search found [BCLSZ25] Theorem 1.8, which settles for product testers the
 growth question that §79–§85 were built to probe (§78.7, Lemma 78.C).
-What a finished `D = 4` search could still decide is only whether
-`SR̰_C(q_c) > 3` at that one alphabet. At about 700 leaves an hour, with
+What a finished `D = 4` search could still contribute is at most a
+witness that `SR̰_C(q_c) > 3` at that one alphabet, if a face exists. A
+search that finds none rules out only this two-letter `K = 2`
+construction, not a value above 3. At about 700 leaves an hour, with
 roughly 30,000 leaves of run class 2 and all of run class 1 left, that was
-judged not worth about two more days of four cores. The workers were
+judged not worth at least two more days of four cores for run class 2
+alone, with the rate still falling, and run class 1 on top. The workers were
 stopped at 21:08 UTC on 2026-10-27. **Nothing here is a verdict on run
 class 2, on run class 1, or on the question.**
 
@@ -18292,8 +18295,10 @@ class 2, on run class 1, or on the question.**
   face found                 none (no worker reported a model that is a face)
   solve time                 92.1 CPU-hours summed over the closed leaves; depth-3 median
                              1.9 s, mean 4.51 s, 99th percentile 37.9 s, slowest 3,269.9 s (1-4-42)
-  Benders step               48 leaves needed more than one solve (161 extra solves, so 161
-                             exact Farkas certificates); the most, 14, at 1-9 and at 4-6-6
+  Benders step               48 closed leaves needed more than one solve (161 extra solves, so 161
+                             exact Farkas certificates; at least 6 more were computed in 4-15
+                             before its timeout and in leaves running at the stop); the most,
+                             14 solves, at 1-9 and at 4-6-6
   timeouts                   one, 4-15 at 3,600 s in the depth-2 round; expanded since
   run class 1                base CNF built (53,423 variables), 6,376 depth-2 cubes listed;
                              no leaf solved
@@ -18306,23 +18311,32 @@ text without its header), the leaf list's SHA-256 (`c9423542…`, of
 `json.dumps(leaves, sort_keys=True)`), and the 30,419 open leaves by
 name, so a later run can resume without this session's scratchpad. The
 closure logs, delta files and clause pools exist only in the scratchpad.
+As in §85.1, the 70,343 closures rest on these logs, and the certified
+leaves are CONDITIONAL on the size-encoding assumption of §83.2.
 
 **Run class 2 needs the Benders step; run class 0 never did.** §85
 closed all 222,183 leaves of run class 0 on base clauses alone. Here 48
 leaves had a first model that was not a face and needed one to thirteen
 Farkas certificates, each added as a clause with its images under the
-stabiliser, before CaDiCaL proved them unsatisfiable. The calibration of §85.2 is what made those
-closures sound: every certificate is minimised and re-checked in exact
-rational arithmetic before it becomes a clause.
+stabiliser, before CaDiCaL proved them unsatisfiable. What makes those
+closures sound is that every certificate is minimised and re-checked in
+exact rational arithmetic before it becomes a clause; §85.2's
+calibration exercised that path at `D = 3`.
 
 ### 86.2 How the run went
 
-* **Depth 2 first.** All 736 depth-2 cubes were run with `cubes_sa.py`
-  at a 3,600 s limit. 427 closed (16,012 s in total; 14 with Farkas
-  clauses in the formula); `4-15` timed out; the per-leaf time grew
-  steeply as the forbidden sets shrank.
-* **Depth 3 for the rest.** The 309 open depth-2 cubes were expanded,
-  giving the 100,335 depth-3 leaves, run easiest first by four workers.
+* **Depth 2 first.** The 736 depth-2 cubes were run easiest first with
+  `cubes_sa.py` (3,600 s per leaf) for about 1.5 hours. 427 closed
+  (16,012 s in total; 14 with Farkas clauses in the formula) and `4-15`
+  timed out; the per-leaf time grew steeply as the forbidden sets shrank.
+  The round was then stopped: the other 308 depth-2 cubes (0–451
+  forbidden) were expanded without having timed out, most of them never
+  attempted.
+* **Depth 3 for the rest.** These 309 depth-2 cubes (`4-15` and the 308
+  not closed) were expanded,
+  giving the 100,335 depth-3 leaves, run easiest first by four workers
+  with a per-leaf limit of 3,600 s and 85,000 s per worker run (set on
+  the command line; not stored in the result files).
   The rate fell from about 8,000 leaves an hour to about 700 as the
   forbidden sets shrank, as in run class 0 (§85.3).
 * **Interruptions.** Two container restarts (about 01:05 and 05:10 UTC)
@@ -18331,8 +18345,9 @@ rational arithmetic before it becomes a clause.
   the Farkas clauses learned so far were relearned as needed.
 * **One delta file per leaf did not scale here.** Once a worker has
   learned Farkas clauses, every later leaf it closes has them in its
-  formula, and the delta file repeated all of them: about 330 KB per leaf,
-  heading for about 18 GB. From 08:58 each worker appends its clauses
+  formula, and the delta file repeated all of them: a median of 326 KB
+  and a mean of 407 KB per file, the last ones 1.2 MB, with 3.5 GB on
+  disk by then and about 18 GB projected. From 08:58 each worker appends its clauses
   once to a pool file, and a closed leaf's record names the pool and the
   number of its clauses used (`b1ad200`). Of the 70,343 closure records,
   49,256 are units-only, 8,390 have a delta file and 12,697 a pool
@@ -18361,15 +18376,17 @@ rational arithmetic before it becomes a clause.
   * By format: 24 delta-file leaves, 16 units-only, 7 pool references, so
     the pool path of §86.2 is now exercised at `D = 4`.
   * They include `1-9`, the leaf that needed 14 solves and 13 Farkas
-    certificates, and leaves whose solve took up to 1,436 s.
+    certificates — the only certified leaf that needed the Benders step;
+    no certified depth-3 leaf did — and leaves whose solve took up to
+    1,436 s.
   * Not certified: the other 40 of the sample, which include 17 of the 20
     slowest leaves and 7 of the 48 leaves that needed the Benders step,
     and the 70,256 closed leaves outside the sample.
 * **Cost.** The depth-2 leaves closed with Farkas clauses produced DRAT
   proofs of 0.7–2.2 GB (complete proofs for `4-28`, `4-26`, `4-27`; the
   proofs in progress at the restart had reached 1.0–2.7 GB), and
-  `drat-trim` ran for over an hour on `4-27` alone (observed with `ps`;
-  no file kept). Per-leaf certification of
+  `drat-trim` ran for over an hour on `4-27` alone (sizes and times
+  observed during the run with `ls` and `ps`; no file kept). Per-leaf certification of
   the slow leaves is therefore far more expensive than §85.4's estimate
   for run class 0. §85.4's scalable-certificate options apply unchanged.
 
@@ -18379,7 +18396,7 @@ rational arithmetic before it becomes a clause.
 |---|---|
 | `K = 1` (matchings), size ≥ 10 | none; exhaustive (§80, COMPUTED) |
 | `K = 2`, size ≥ 19, run class 0 | none (§85; COMPUTED; 256 leaves and the cover certified) |
-| `K = 2`, size ≥ 19, run class 2 | **undecided; 70,343 of 100,762 leaves closed, no face (§86; COMPUTED; 47 leaves and the cover certified)** |
+| `K = 2`, size ≥ 19, run class 2 | **undecided; 70,343 of 100,762 leaves closed, no face (§86; COMPUTED; 47 leaves certified; cover checked, meaningful only once every leaf is closed)** |
 | `K = 2`, size ≥ 19, run class 1 | undecided; not started |
 | `K = 9`, size ≥ 82 | undecided (§79 MILP 1,200 s) |
 | any two-letter free face beating 3 | open; since §78.7 it bears on the value at `D = 4` only, not on the route |
@@ -18390,7 +18407,8 @@ None is owed for the route ledger (§78.7). If the exact value at
 `D = 4` is ever wanted:
 1. Fix the orphaned-child defect of §86.2.
 2. Resume run class 2 from `certs/r2_D4K2s19_partial.json` (its open
-   list), splitting the hardest open leaves (0 forbidden triples) further.
+   list), splitting the hardest open leaves (fewest forbidden triples;
+   `0-0-0` has none) further.
 3. Run class 1 at depth 2 with `cubes_sa.py`, then depth 3 for the
    timeouts.
 4. A scalable certificate (§85.4), since the per-leaf proofs of the
@@ -18419,3 +18437,24 @@ Run on this tree after the last edit; no Coq or Rust changed.
 **Correction to the record.** Commit `b1ad200`'s message says the `D = 3`
 pool test closed "24" leaves with Farkas clauses from the pool; its logs
 show 18 (5 + 8 + 5).
+
+**Fresh-context review.** A reviewer with no access to this session
+checked §86 and the record against the data files. It rebuilt the
+round-2 tree with its own code and no repository imports (6,912-element
+group, stabiliser 432); all 100,762 leaves matched field for field. It
+reproduced the open list and both hashes, every count of §86.1–§86.3,
+and the 87-leaf sample from `random.Random(86)`. It also certified one
+more uncertified leaf of its own choice, `3-63-135` (pool format), with
+no failure. It found nothing HIGH. Two MEDIUM findings are fixed: not all
+736 depth-2 cubes were run (§86.2), and a search that finds no face
+decides nothing about the value (opening). LOW, all fixed: the
+certificate count excluded `4-15` and the leaves running at the stop;
+soundness comes from the exact re-check, not the calibration; §85's two
+conditions were missing; the remaining-time estimate understated; the
+delta-file size was a median; "0 forbidden" fits one leaf only; the
+per-leaf limits were unrecorded; the proof sizes are observations; "70%"
+counts leaves and the cover is meaningful only once every leaf is closed;
+`1-9` is the only certified Benders leaf. It could not confirm from kept
+files the rates of about 8,000 and 700 leaves an hour (its own estimate
+from summed solve seconds: about 7,600 at the start and about 990 at the
+end), the 2.5-hour orphaned solver, or the time of the restart.
