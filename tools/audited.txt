@@ -1043,6 +1043,12 @@ thm SubstitutionRate.iota_log_loss
 thm SubstitutionRate.g_base_three
 thm SubstitutionRate.iota_27t
 thm SubstitutionRate.iota_27t_beats_three
+thm SubstitutionRate.iota_plus_g
+thm SubstitutionRate.iota_plus_iota_doubled
+thm SubstitutionRate.digsum3_pos
+thm SubstitutionRate.iota_digit
+thm SubstitutionRate.iota_theorem3
+thm SubstitutionRate.g_theorem3
 thm Palvolgyi.palvolgyi_implies_abbott_gardner
 thm Palvolgyi.palvolgyi_pins_g_three_exactly
 thm Palvolgyi.palvolgyi_beats_the_proved_bound_at_three

@@ -24,7 +24,9 @@
     with [s(n) <= 2k] when [n < 3^k] ([digsum3_le]), hence
     [psi(n) >= 10^((n - 2k)/2)], the [10^((n - O(log n))/2)] of [AHS72]
     p. 388. [AHS72] (23) also keeps a factor [2^(l-1)] (from Lemmas 4–5,
-    [psi(a+b) >= 2 psi(a) psi(b)]); that factor is not formalised here.
+    [psi(a+b) >= 2 psi(a) psi(b)]). The last section has it: Lemma 5 in
+    general ([iota_plus_g]), and (23) up to its final [>]
+    ([iota_theorem3], [g_theorem3]).
     [g(n) >= 2 psi(n)] ([Intersecting.doubling_lower_bound]) carries the
     bound to the sunflower side ([g_base_three]).
 
@@ -37,7 +39,7 @@
 
 From Coq Require Import List Arith Lia PeanoNat NArith Wf_nat.
 Import ListNotations.
-From Sunflower Require Import Sets Sunflower Intersecting Product Substitution SubstitutionFree Audit.
+From Sunflower Require Import Sets Sunflower DirectSum Intersecting Product Substitution SubstitutionFree Audit.
 
 Unset Implicit Arguments.
 
@@ -256,4 +258,134 @@ Proof.
   (* Compared in binary: [10^13] in unary [nat] is out of reach. *)
   apply Nat.compare_lt_iff; rewrite Nat2N.inj_compare, !Nat2N.inj_pow.
   vm_compute; reflexivity.
+Qed.
+
+(** ** [AHS72] Lemma 5 in general, and Theorem 3 as printed
+
+    Lemma 5, p. 386: [psi(a + b) >= psi(a) phi(b)] — an intersecting
+    family on one ground set, a sunflower-free one on a disjoint ground
+    set, and all unions. Intersecting because the first halves are;
+    sunflower-free by [DirectSum.sum_family_no_sunflower], which never
+    needs the second family to be intersecting. The proof is
+    [Product.iota_supermultiplicative]'s with the second family taken
+    from [LowerBound] instead of [IotaAtLeast]. *)
+
+Theorem iota_plus_g :
+  forall a b p q, IotaAtLeast a p -> LowerBound b 3 q -> IotaAtLeast (a + b) (p * q).
+Proof.
+  intros a b p q [H1 [HU1 [HD1 [HI1 [Hl1 Hn1]]]]] [H2 [HU2 [HD2 [Hl2 Hn2]]]].
+  destruct (relabel_preserves ev Nat.div2 div2_ev a 3 H1 HU1 HD1 Hn1)
+    as [GU1 [GD1 [GL1 GN1]]].
+  destruct (relabel_preserves od Nat.div2 div2_od b 3 H2 HU2 HD2 Hn2)
+    as [GU2 [GD2 [GL2 GN2]]].
+  assert (GI1 : Intersecting (rmapF ev H1))
+    by exact (Intersecting_rmapF ev Nat.div2 div2_ev H1 HI1).
+  assert (Hcross : CrossDisjoint (rmapF ev H1) (rmapF od H2)).
+  { intros A B HA HB.
+    unfold rmapF in HA, HB.
+    apply in_map_iff in HA as [A0 [EA _]].
+    apply in_map_iff in HB as [B0 [EB _]].
+    subst A B; apply ev_od_disjoint. }
+  exists (sum_family (rmapF ev H1) (rmapF od H2)).
+  split; [exact (sum_family_Uniform a b _ _ GU1 GU2 Hcross)|].
+  split; [exact (sum_family_Distinct a b _ _ GU1 GU2 GD1 GD2 Hcross)|].
+  split; [exact (sum_family_Intersecting _ _ GI1)|].
+  split.
+  (* [nia] against the length facts, never [rewrite] with them: the
+     survivors [lowerbound-at-least] and [iotaatleast-at-least]. *)
+  - rewrite sum_family_length, GL1, GL2; nia.
+  - exact (sum_family_no_sunflower a 3 _ _ ltac:(lia) GU1 GN1 GN2 Hcross).
+Qed.
+
+(** With Lemma 4 ([g >= 2 psi], [Intersecting.doubling_lower_bound]):
+    [psi(a + b) >= 2 psi(a) psi(b)], the step (23) uses. *)
+
+Corollary iota_plus_iota_doubled :
+  forall a b p q, 1 <= b -> IotaAtLeast a p -> IotaAtLeast b q ->
+    IotaAtLeast (a + b) (p * (2 * q)).
+Proof.
+  intros a b p q Hb HA [H [HU [HD [HI [Hlen Hno]]]]].
+  apply (IotaAtLeast_antitone (a + b) (p * (2 * length H))); [nia|].
+  exact (iota_plus_g a b p (2 * length H) HA (doubling_lower_bound b H Hb HU HD HI Hno)).
+Qed.
+
+Lemma digsum3_pos : forall n, 1 <= n -> 1 <= digsum3 n.
+Proof.
+  induction n as [n IH] using lt_wf_ind; intros Hn.
+  rewrite digsum3_step.
+  pose proof (Nat.div_mod_eq n 3) as Hdm.
+  destruct (Nat.eq_dec (n mod 3) 0) as [E | E]; [|lia].
+  assert (Hq : 1 <= n / 3) by lia.
+  pose proof (IH (n / 3) ltac:(lia) Hq); lia.
+Qed.
+
+(** One digit: [psi(1) >= 1], [psi(2) >= 2] (the doubling of [psi(1)]). *)
+
+Lemma iota_digit : forall r, 1 <= r -> r < 3 -> IotaAtLeast r (2 ^ (r - 1)).
+Proof.
+  intros r H1 H3.
+  destruct (Nat.eq_dec r 1) as [E | E].
+  - subst r; exact iota_one_at_least_one.
+  - replace r with 2 by lia.
+    exact (iota_at_least_doubles 1 1 ltac:(lia) iota_one_at_least_one).
+Qed.
+
+Lemma iota_theorem3_exponent :
+  forall n, 1 <= n ->
+    exists e, 2 * e + digsum3 n = n
+      /\ IotaAtLeast n (10 ^ e * 2 ^ (digsum3 n - 1)).
+Proof.
+  induction n as [n IH] using lt_wf_ind; intros Hn.
+  pose proof (Nat.div_mod_eq n 3) as Hdm.
+  assert (Hr : n mod 3 < 3) by (apply Nat.mod_upper_bound; lia).
+  set (q := n / 3) in *; set (r := n mod 3) in *.
+  assert (Hds : digsum3 n = r + digsum3 q) by exact (digsum3_step n).
+  destruct (Nat.eq_dec q 0) as [Eq | Eq].
+  - assert (H0 : digsum3 q = 0) by (rewrite Eq; reflexivity).
+    exists 0; split; [lia|].
+    replace (10 ^ 0 * 2 ^ (digsum3 n - 1)) with (2 ^ (n - 1))
+      by (rewrite Nat.pow_0_r, Nat.mul_1_l; f_equal; lia).
+    exact (iota_digit n Hn ltac:(lia)).
+  - destruct (IH q ltac:(lia) ltac:(lia)) as [e [He HLe]].
+    pose proof (digsum3_pos q ltac:(lia)) as Hsq.
+    pose proof (iota_triple_step q _ HLe) as H3.
+    exists (e + q); split; [lia|].
+    destruct (Nat.eq_dec r 0) as [Er | Er].
+    + replace (10 ^ (e + q) * 2 ^ (digsum3 n - 1))
+        with (10 ^ e * 2 ^ (digsum3 q - 1) * 10 ^ q)
+        by (rewrite Nat.pow_add_r; replace (digsum3 n) with (digsum3 q) by lia; ring).
+      replace n with (q * 3) by lia; exact H3.
+    + pose proof (iota_plus_iota_doubled (q * 3) r _ _ ltac:(lia) H3
+                    (iota_digit r ltac:(lia) Hr)) as HS.
+      replace (10 ^ (e + q) * 2 ^ (digsum3 n - 1))
+        with (10 ^ e * 2 ^ (digsum3 q - 1) * 10 ^ q * (2 * 2 ^ (r - 1))).
+      * replace n with (q * 3 + r) by lia; exact HS.
+      * replace (digsum3 n - 1) with ((digsum3 q - 1) + 1 + (r - 1)) by lia.
+        rewrite !Nat.pow_add_r, Nat.pow_1_r; ring.
+Qed.
+
+(** [AHS72] (23), first line to last but one:
+    [psi(n) >= 10^((n - l)/2) 2^(l - 1)], [l = s_3(n)] (each digit 2
+    expanded as two equal powers of 3). *)
+
+Theorem iota_theorem3 :
+  forall n, 1 <= n ->
+    IotaAtLeast n (10 ^ ((n - digsum3 n) / 2) * 2 ^ (digsum3 n - 1)).
+Proof.
+  intros n Hn.
+  destruct (iota_theorem3_exponent n Hn) as [e [He HL]].
+  replace ((n - digsum3 n) / 2) with e; [exact HL|].
+  symmetry; apply half_of_double; lia.
+Qed.
+
+(** [AHS72] Theorem 3's lower bound, by Lemma 4: [phi(n) >= 2 psi(n)]. *)
+
+Theorem g_theorem3 :
+  forall n, 1 <= n ->
+    LowerBound n 3 (2 * (10 ^ ((n - digsum3 n) / 2) * 2 ^ (digsum3 n - 1))).
+Proof.
+  intros n Hn.
+  destruct (iota_theorem3 n Hn) as [H [HU [HD [HI [Hlen Hno]]]]].
+  apply (@LowerBound_antitone n 3 (2 * length H)); [|lia].
+  exact (doubling_lower_bound n H Hn HU HD HI Hno).
 Qed.

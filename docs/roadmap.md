@@ -7,7 +7,7 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
-> **Starting cold? Read §87 first** (the current handover, with addenda §88–§89; §89.6 is the next step; `STATUS.md`
+> **Starting cold? Read §87 first** (the current handover, with addenda §88–§90; §90.5 is the next step; `STATUS.md`
 > agrees). What follows was written when §32 was: **Read §32 first.** It was the then most recent session's
 > handover: what moved, what did not, the five open questions that would
 > count as new mathematics, and the failure modes to skip. Then §1 (the
@@ -9844,7 +9844,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 66 modules, 903 audited theorems, 162 audited
+The development is now 66 modules, 909 audited theorems, 162 audited
 definitions, 196 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -18897,3 +18897,93 @@ intersecting property, so it should generalise directly), and with it
 the `2^{l−1}` factor of (23). This adds lower-order terms only.
 Everything else open is §87.3 items 1–3, which are research questions
 without a cheap definite next step; §87.3 item 5 is done (§89.4).
+
+## 90. [AHS72] Theorem 3's lower bound as printed: Lemma 5 in general, and display (23) up to its last `>`
+
+**Tier 2** (formal proof). §89.6's next step, done, in
+`coq/SubstitutionRate.v` (new final section), axiom-free.
+
+### 90.1 The source (rendered at 150 dpi, pp. 386–388)
+
+* p. 386, *"LEMMA 4. φ(n) ≥ 2ψ(n)."* and *"LEMMA 5. ψ(a + b) ≥ ψ(a) φ(b)."*
+  Lemma 5's proof (pp. 386–387): *"Let 𝓕₁ ∈ Q(a) and 𝓕₂ ∈ P(b). Let
+  𝓕 = {F | F = F₁ ∪ F₂, F₁ ∈ 𝓕₁, F₂ ∈ 𝓕₂}."* — `P` is "uniform, no three
+  members with pairwise the same intersection", `Q` is `P` plus
+  intersecting. That `𝓕 ∈ P(a+b)` *"can be proved by the argument used in
+  [1]"* (Abbott 1966, not read here); this repository's argument is
+  `DirectSum.sum_family_no_sunflower`. The intersecting half is printed and
+  is what `Product.sum_family_Intersecting` proves.
+* p. 388, display (23): see §89.1.
+
+### 90.2 What is now kernel-checked
+
+```text
+  iota_plus_g              IotaAtLeast a p -> LowerBound b 3 q -> IotaAtLeast (a+b) (p·q)
+                           [AHS72] Lemma 5, ψ(a+b) >= ψ(a)·φ(b)
+  iota_plus_iota_doubled   1 <= b -> IotaAtLeast a p -> IotaAtLeast b q ->
+                           IotaAtLeast (a+b) (p·(2q))       Lemmas 4 + 5, the step (23) uses
+  digsum3_pos              1 <= n -> 1 <= s_3(n)
+  iota_digit               ψ(1) >= 1, ψ(2) >= 2
+  iota_theorem3            1 <= n -> IotaAtLeast n (10^((n − s_3(n))/2) · 2^(s_3(n) − 1))
+  g_theorem3               1 <= n -> LowerBound n 3 (2 · 10^((n − s_3(n))/2) · 2^(s_3(n) − 1))
+```
+
+`Print Assumptions`: all six closed under the global context (`coqtop`,
+this session). **PROVEN** (kernel). `iota_theorem3` is (23) from its
+first line to its last but one, `ψ(n) ≥ 10^{(n−l)/2} 2^{l−1}`, with
+`l = s_3(n)` (a digit 2 counted as two equal powers of 3 — the page does
+not say, §89.1, but this is the only reading under which `n − l` is the
+exponent sum). The proof is an induction on `n = 3q + r`: the step
+`iota_triple_step` for `3q`, and `iota_plus_iota_doubled` with
+`ψ(r) ≥ 2^{r−1}` for the digit, so each unit of digit sum past the
+first contributes the factor 2. `g_theorem3` is Theorem 3's lower bound
+by Lemma 4, as the paper ends ("Theorem 3 now follows from (23) and
+Lemma 4").
+
+### 90.3 The last `>` of (23) depends on the base of `log`, which is not stated
+
+The final step `10^{(n−l)/2} 2^{l−1} > 10^{(n − log n)/2}` is equivalent
+to `log n > (1 − 2 log₁₀ 2) l + 2 log₁₀ 2`, i.e.
+`log n > 0.398 l + 0.602`. **COMPUTED** (`python3 -I`, every
+`1 ≤ n ≤ 200000`, `l = s_3(n)`), counting the `n` where it fails:
+
+```text
+  base of log   failures   largest failing n (≤ 200000)
+  e             5          8          (n = 1, 2, 4, 5, 8)
+  2             2          2          (n = 1, 2)
+  3             9          26
+  10            105830     199988
+```
+
+At `n = 1` it fails in every base (`l = 1`: the left side is `1`, the
+right `10^{1/2}`). With `l ≤ 2⌊log₃ n⌋ + 2` (every `n < 3^k` has at most `k`
+digits, each at most 2), the natural-log inequality holds once
+`0.5 ln n > 0.362 ln n + 0.699`, i.e. `ln n > 5.075`, `n ≥ 161`
+(derived by hand; `0.362 = 0.398 / ln 3`); with the table, for every
+`n ≥ 9`. In base 10
+it fails infinitely often (`n = 3^k − 1`, `l = 2k`). So the printed
+`ψ(n) > 10^{(n − log n)/2}` is right for natural or binary `log` and
+`n` past a small threshold, and false as printed for `n = 1`. Harmless
+for the rate, and not formalised: `iota_theorem3` stops at the
+expression before it. Recorded in `docs/reading.md` A3.
+
+### 90.4 Gates
+
+`make verify`, `make coqchk`, `make prcheck` and the targeted mutation
+re-run (`lowerbound-at-least`, `iotaatleast-at-least`, the control): the
+results are in the commit message of the commit that adds this section
+(they ran on that tree). No definition changed; `tools/statements.txt`
+gained six entries and changed none.
+
+### 90.5 Next step
+
+The `k = 3` lower-bound line is complete: [AHS72] Theorem 3's lower
+bound is in the kernel as printed, and by
+`IotaRate.every_construction_is_within_2b_of_iota` nothing more in this
+construction moves the rate. No cheap, definite step remains in the
+repository's open list. What is left is §87.3 items 1–3, which are
+research: item 1 (slice rank of testers that are not tensor powers, in
+the colour-coding regime `D = s·m`) is the recommended one, because it
+is the whole of what remains of the vector-tester route; its first move
+is §87.3's — [BCLSZ25] Lemma 2.12's one-shot restrictions applied at
+`D = s·m`.

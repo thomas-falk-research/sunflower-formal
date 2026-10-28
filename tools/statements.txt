@@ -2749,6 +2749,24 @@ af18cde54e12b806  thm SubstitutionRate.iota_base_three
 62dc8940654ce581  thm SubstitutionRate.iota_27t_beats_three
     iota_27t_beats_three : forall t : nat, 1 <= t -> PeanoNat.Nat.pow 3 (27 * t) < PeanoNat.Nat.pow 10 (13 * t)
 
+8763bb2ea0ddad26  thm SubstitutionRate.iota_plus_g
+    iota_plus_g : forall a b p q : nat, IotaAtLeast a p -> LowerBound b 3 q -> IotaAtLeast (a + b) (p * q)
+
+92dca110e4e564fb  thm SubstitutionRate.iota_plus_iota_doubled
+    iota_plus_iota_doubled : forall a b p q : nat, 1 <= b -> IotaAtLeast a p -> IotaAtLeast b q -> IotaAtLeast (a + b) (p * (2 * q))
+
+9d8bc7282778c7f7  thm SubstitutionRate.digsum3_pos
+    digsum3_pos : forall n : nat, 1 <= n -> 1 <= digsum3 n
+
+ed31bd5964475231  thm SubstitutionRate.iota_digit
+    iota_digit : forall r : nat, 1 <= r -> r < 3 -> IotaAtLeast r (PeanoNat.Nat.pow 2 (r - 1))
+
+b48e21108fc4e273  thm SubstitutionRate.iota_theorem3
+    iota_theorem3 : forall n : nat, 1 <= n -> IotaAtLeast n (PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - digsum3 n) 2) * PeanoNat.Nat.pow 2 (digsum3 n - 1))
+
+6e911e11d67af015  thm SubstitutionRate.g_theorem3
+    g_theorem3 : forall n : nat, 1 <= n -> LowerBound n 3 (2 * (PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - digsum3 n) 2) * PeanoNat.Nat.pow 2 (digsum3 n - 1)))
+
 10228918aa55e2b7  thm Palvolgyi.palvolgyi_implies_abbott_gardner
     palvolgyi_implies_abbott_gardner : PalvolgyiEquality -> IotaAtMost 3 10 -> AbbottGardner1969
 
