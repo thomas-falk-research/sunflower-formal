@@ -19108,3 +19108,15 @@ research on the non-diagonal maxima, with no definite first computation.
 I'd only resume it together with item 2 (`Λ(D)` growth), since both now
 ask the same thing: how large a slice-cover-number structure the
 non-diagonal part of `S_D^{(n)}` carries.
+
+### 91.6 Gates (for §90's fixes and §91)
+
+Commit de7044b's Coq tree (unchanged since; later commits are
+documentation): targeted mutation re-run — `lowerbound-at-least`
+survived, `iotaatleast-at-least` survived, `canary-alpha-rename`
+survived, 0 unexpected (the earlier run on d2c1de0 had killed
+`lowerbound-at-least` through `iota_plus_g`, fixed in de7044b);
+`make verify` exit 0 (910 audited theorems, 1072 statements match the
+baseline, 18 quoted numbers match); `make coqchk` exit 0; `make prcheck`
+exit 0 ("66 modules, 910 audited theorems, 196 mutations, 43 Rust
+suites"; the one declared axiom `ALWZ.Rao20_lemma2`, as before).
