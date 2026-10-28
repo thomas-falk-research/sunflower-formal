@@ -2767,6 +2767,9 @@ b48e21108fc4e273  thm SubstitutionRate.iota_theorem3
 6e911e11d67af015  thm SubstitutionRate.g_theorem3
     g_theorem3 : forall n : nat, 1 <= n -> LowerBound n 3 (2 * (PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - digsum3 n) 2) * PeanoNat.Nat.pow 2 (digsum3 n - 1)))
 
+14d1f017b050e604  thm SubstitutionRate.g_log_loss
+    g_log_loss : forall k n : nat, 1 <= n -> n < PeanoNat.Nat.pow 3 k -> LowerBound n 3 (2 * PeanoNat.Nat.pow 10 (PeanoNat.Nat.div (n - 2 * k) 2))
+
 10228918aa55e2b7  thm Palvolgyi.palvolgyi_implies_abbott_gardner
     palvolgyi_implies_abbott_gardner : PalvolgyiEquality -> IotaAtMost 3 10 -> AbbottGardner1969
 

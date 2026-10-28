@@ -260,7 +260,7 @@ Proof.
   vm_compute; reflexivity.
 Qed.
 
-(** ** [AHS72] Lemma 5 in general, and Theorem 3 as printed
+(** ** [AHS72] Lemma 5 in general, display (23), and Theorem 3
 
     Lemma 5, p. 386: [psi(a + b) >= psi(a) phi(b)] — an intersecting
     family on one ground set, a sunflower-free one on a disjoint ground
@@ -286,14 +286,17 @@ Proof.
     apply in_map_iff in HA as [A0 [EA _]].
     apply in_map_iff in HB as [B0 [EB _]].
     subst A B; apply ev_od_disjoint. }
+  (* The witness is built at its own size [|H1| |H2|] and then trimmed
+     to [p q] by antitonicity: under the mutation [lowerbound-at-least]
+     [|H2|] is only [>= q], and an exact [length = p * q] would not be
+     provable for the untrimmed family. *)
+  apply (IotaAtLeast_antitone (a + b) (length H1 * length H2)); [nia|].
   exists (sum_family (rmapF ev H1) (rmapF od H2)).
   split; [exact (sum_family_Uniform a b _ _ GU1 GU2 Hcross)|].
   split; [exact (sum_family_Distinct a b _ _ GU1 GU2 GD1 GD2 Hcross)|].
   split; [exact (sum_family_Intersecting _ _ GI1)|].
   split.
-  (* [nia] against the length facts, never [rewrite] with them: the
-     survivors [lowerbound-at-least] and [iotaatleast-at-least]. *)
-  - rewrite sum_family_length, GL1, GL2; nia.
+  - rewrite sum_family_length, GL1, GL2; lia.
   - exact (sum_family_no_sunflower a 3 _ _ ltac:(lia) GU1 GN1 GN2 Hcross).
 Qed.
 
@@ -378,7 +381,8 @@ Proof.
   symmetry; apply half_of_double; lia.
 Qed.
 
-(** [AHS72] Theorem 3's lower bound, by Lemma 4: [phi(n) >= 2 psi(n)]. *)
+(** (23) carried to [phi] by Lemma 4, [phi(n) >= 2 psi(n)], as the paper's
+    last sentence does. *)
 
 Theorem g_theorem3 :
   forall n, 1 <= n ->
@@ -386,6 +390,23 @@ Theorem g_theorem3 :
 Proof.
   intros n Hn.
   destruct (iota_theorem3 n Hn) as [H [HU [HD [HI [Hlen Hno]]]]].
+  apply (@LowerBound_antitone n 3 (2 * length H)); [|lia].
+  exact (doubling_lower_bound n H Hn HU HD HI Hno).
+Qed.
+
+(** [AHS72] Theorem 3, p. 382: "For some constant c and all sufficiently
+    large n, [phi(n,3) > 10^((n/2) - c log n)]". Its integer form: with
+    [k] the number of base-3 digits ([n < 3^k]), [phi(n) >= 2 * 10^((n -
+    2k)/2)]. Taking [k = floor(log_3 n) + 1], the exponent is at least
+    [n/2 - log_3 n - 3/2], which exceeds [n/2 - c ln n] for every
+    [c > 1/ln 3] and [n] large enough; that real-analytic last step is
+    not a theorem here. *)
+
+Corollary g_log_loss :
+  forall k n, 1 <= n -> n < 3 ^ k -> LowerBound n 3 (2 * 10 ^ ((n - 2 * k) / 2)).
+Proof.
+  intros k n Hn Hk.
+  destruct (iota_log_loss k n Hn Hk) as [H [HU [HD [HI [Hlen Hno]]]]].
   apply (@LowerBound_antitone n 3 (2 * length H)); [|lia].
   exact (doubling_lower_bound n H Hn HU HD HI Hno).
 Qed.

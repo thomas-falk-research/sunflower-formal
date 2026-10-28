@@ -4,7 +4,7 @@ Run `make verify` for the live audit. Below is the static state of
 the development. Definition-level testing — the checks the kernel
 cannot make — is described in [`docs/testing.md`](docs/testing.md);
 what to work on next is in [`docs/roadmap.md`](docs/roadmap.md), whose
-**§87 is the current handover** (it supersedes §76 where they disagree), with its addenda **§88**–**§90** (§90.5 is the current next step), and the right place to start cold.
+**§87 is the current handover** (it supersedes §76 where they disagree), with its addenda **§88**–**§91** (§91.5 is the current next step), and the right place to start cold.
 §66 was a handover for the `b = 4` descent, but none followed §67–§74
 (the descent in the kernel, LPCert, the census as the one premise, the
 LRAT checker); §76 records their state. §59 is the previous general
@@ -357,7 +357,7 @@ theorem above. The expected output is:
 Closed under the global context.
 ```
 
-for every theorem in the "Closed" table (909 of them). The current
+for every theorem in the "Closed" table (910 of them). The current
 state of the codebase satisfies this; the only `Axiom` in the entire
 Coq development is `ALWZ.Rao20_lemma2`, and it is *not used* by
 any closed theorem (confirmed by `Print Assumptions`).

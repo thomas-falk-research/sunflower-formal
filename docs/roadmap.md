@@ -7,7 +7,7 @@ whether it is feasible, and the failure mode that would sink it.
 The repository's state is in [`STATUS.md`](../STATUS.md); the testing
 layer and its limits are in [`testing.md`](testing.md).
 
-> **Starting cold? Read §87 first** (the current handover, with addenda §88–§90; §90.5 is the next step; `STATUS.md`
+> **Starting cold? Read §87 first** (the current handover, with addenda §88–§91; §91.5 is the next step; `STATUS.md`
 > agrees). What follows was written when §32 was: **Read §32 first.** It was the then most recent session's
 > handover: what moved, what did not, the five open questions that would
 > count as new mathematics, and the failure modes to skip. Then §1 (the
@@ -9844,7 +9844,7 @@ New this session's second half: `coq/Substitution.v` (one module, no
 axiom) and three mutations. **No new Rust**: the file written for this
 was a reimplementation of `rust/tests/extension.rs` and was deleted
 rather than committed — §35.1.
-The development is now 66 modules, 909 audited theorems, 162 audited
+The development is now 66 modules, 910 audited theorems, 162 audited
 definitions, 196 mutations, and 43 Rust integration suites. (That count
 is the current one, not §35's; `coq/Palvolgyi.v` and its three mutations
 arrived in §36, `rust/tests/tau_two.rs` and `support_bounds.rs` in §41
@@ -18997,3 +18997,92 @@ the colour-coding regime `D = s·m`) is the recommended one, because it
 is the whole of what remains of the vector-tester route; its first move
 is §87.3's — [BCLSZ25] Lemma 2.12's one-shot restrictions applied at
 `D = s·m`.
+
+## 91. §87.3 item 1, the bounded step: no cheap closure; [ST16] Prop. 4 is a one-shot support bound, and its diagonal part is circular
+
+**Tier 2** (research reading and a hand proof). Asked for as a bounded
+step: read the support-only slice-rank lower bounds and decide whether
+`S_D^{(n)}` meets their hypotheses. **Outcome: no** — no published
+support-only bound closes item 1; the one that applies to non-power
+testers is, on its diagonal part, capped by the target quantity itself.
+Details below; nothing here is a campaign or a computation.
+
+### 91.1 The two sources proposed were already read, and do not apply
+
+* [BCLSZ25] Lemma 2.12 bounds the border subrank of the **cube** of a
+  tester (§88.3); it says nothing about one tester.
+* [ST16] Proposition 6 bounds the slice rank of a **power** `v^{⊗n}`
+  (lexicographic orders), and §75.2 F7 already caps it at `9^{n+o(n)}` on
+  the sunflower support.
+
+The proposal to "read" them (my §90.5 and the reply that followed) was
+partly redundant: the repository had read both. Recorded so the next
+session does not repeat it.
+
+### 91.2 [ST16] Proposition 4 is one-shot (correction to `docs/reading.md`)
+
+Re-retrieved 2026-10-28 (WordPress.com public API, post 9271, converted to
+220 lines of text; lines 41–82 — Proposition 4's statement and proof —
+read in full). Verbatim, (5): *"Now suppose that the coefficients
+c_{s_1,…,s_k} are all non-zero, that each of the S_j are equipped with a
+total ordering ≤_j, and Γ′ is the set of maximal elements of Γ … Then one
+has rank(v) ≥ min_{Γ′ = Γ_1 ∪ ⋯ ∪ Γ_k} |π_1(Γ_1)| + ⋯ + |π_k(Γ_k)|."*
+(`rank` is slice rank there.) It holds for **any** tensor `v` with
+support `Γ` in some product basis — no power structure — and for **any**
+total orders on the index sets, here `[D]^n` with orders not of product
+form. `docs/reading.md`'s [ST16] entry described Props. 4 and 6 together
+as bounds on `v^{⊗n}`; that is right for Prop. 6 only. This is the one
+support-only tool §75.2 F7 did not cover (F7: lexicographic orders, the
+asymptotic Prop. 6).
+
+### 91.3 Lemma 91.A: under any orders, the undominated diagonal is sunflower-free
+
+Let `T` have support `Γ ⊆ S_D^{(n)}` with every diagonal entry `(x,x,x)`
+nonzero, and suppose `Γ` contains every permutation of every triple of
+distinct vectors that forms a sunflower (true for every faithful tester:
+`supp T = S_D^{(n)}`, which is symmetric). Fix any total orders
+`≤_1, ≤_2, ≤_3` on `[D]^n`. Then the set `A` of `x` with `(x,x,x) ∈ Γ′`
+is sunflower-free. **PROVEN** (by hand, below).
+
+*Proof.* Let `x, y, z ∈ A` be distinct and form a sunflower. It suffices
+to find `w ∈ {x,y,z}` and a bijection `σ : {1,2,3} → {x,y,z}` with
+`σ(j) ≥_j w` for each `j`: then `(σ(1), σ(2), σ(3)) ∈ Γ` (a permutation of
+a sunflower), it differs from `(w,w,w)` (its entries are distinct), and it
+dominates `(w,w,w)`, contradicting `w ∈ A`. Take `w = min_{≤_1}`. Slot 1
+accepts any element, so `σ` exists unless slots 2 and 3 both accept only
+`w`, i.e. `w = max_{≤_2} = max_{≤_3}`. Take instead `w′ = min_{≤_2}`;
+symmetrically it fails only if `w′ = max_{≤_1} = max_{≤_3}`. If both fail,
+`w = max_{≤_3} = w′`, so `w` is both `min_{≤_1}` and `max_{≤_1}` of three
+distinct elements — impossible. ∎
+
+Since a slice cover restricted to `Γ′ ∩ Δ` is a cover of it, and the
+diagonal's cover number is its size, the **diagonal part of Prop. 4's
+bound is at most `|A| ≤ V_3(D,n)`** — the largest sunflower-free set, i.e.
+the quantity the tester is meant to bound. On its diagonal, Prop. 4 can
+only recover `slice-rank(T) ≥ V_3(D,n)`, which every tester already
+satisfies (§75.2 F2) and which is circular as a barrier.
+
+### 91.4 What is left of item 1, precisely
+
+A barrier from Prop. 4 for a non-power tester would have to come from
+**non-diagonal** maximal elements of `S_D^{(n)}` under orders that are
+not of product form — F7 rules out product orders, Lemma 91.A the
+diagonal under every order. Whether some orders on `[D]^n` make the
+non-diagonal part of `Γ′` have slice-cover number `≥ g(D)^n` with
+`g → ∞` (in the regime `D = s·m`) is open, and is a genuine research
+question: no published statement found, and no cheap test — the orders
+on `[D]^n` are `(D^n)!` per slot. By Lemma 75.A, every faithful tester
+also has `slice-rank ≥ M(D,n)`, so item 1 and item 2 (`Λ(D)`) meet here:
+an induced matching is one particular non-diagonal structure in `Γ′`.
+
+**Novelty:** Lemma 91.A is new to this repository (no rule-17 search
+recorded; not claimed novel). It is a two-line Hall argument; its value
+is negative — it closes the diagonal case of the last support-only tool.
+
+### 91.5 Recommendation
+
+Stop item 1 here, as the bounded step's "no" outcome. Continuing means
+research on the non-diagonal maxima, with no definite first computation.
+I'd only resume it together with item 2 (`Λ(D)` growth), since both now
+ask the same thing: how large a slice-cover-number structure the
+non-diagonal part of `S_D^{(n)}` carries.

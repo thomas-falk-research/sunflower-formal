@@ -1260,6 +1260,13 @@ statements, which is not reading them.
   entropy of a distribution on the **maximal elements** `Γ′` of the
   support. §75.2 (F7) shows this bound is at most `9^{n+o(n)}` on the
   sunflower support, for every choice of orders.
+  **Correction, 2026-10-28** (`docs/roadmap.md` §91.2; lines 41–82 of a
+  220-line re-retrieval read in full): Proposition 4's bound (5) is
+  **one-shot** — for any tensor `v` with nonzero coefficients on support
+  `Γ` and any total orders on the index sets, slice rank `≥` the slice
+  cover number of the maximal elements `Γ′`; only Proposition 6 is about
+  `v^{⊗n}`. Lemma 91.A: on the sunflower support its diagonal part is at
+  most `V_3(D,n)` under every choice of orders.
 
 ### [KSS18] Kleinberg, Sawin, Speyer, *The growth rate of tri-colored sum-free sets*, Discrete Analysis 2018:12, arXiv:1607.00047v3
 
