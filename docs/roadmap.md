@@ -18898,7 +18898,7 @@ the `2^{l−1}` factor of (23). This adds lower-order terms only.
 Everything else open is §87.3 items 1–3, which are research questions
 without a cheap definite next step; §87.3 item 5 is done (§89.4).
 
-## 90. [AHS72] Theorem 3's lower bound as printed: Lemma 5 in general, and display (23) up to its last `>`
+## 90. [AHS72] Theorem 3's proof in the kernel: Lemma 5 in general, display (23) up to its last `>`, and Theorem 3 in integer form
 
 **Tier 2** (formal proof). §89.6's next step, done, in
 `coq/SubstitutionRate.v` (new final section), axiom-free.
@@ -18913,7 +18913,9 @@ without a cheap definite next step; §87.3 item 5 is done (§89.4).
   [1]"* (Abbott 1966, not read here); this repository's argument is
   `DirectSum.sum_family_no_sunflower`. The intersecting half is printed and
   is what `Product.sum_family_Intersecting` proves.
-* p. 388, display (23): see §89.1.
+* p. 382, *"THEOREM 3. For some constant c and all sufficiently large n
+  φ(n, 3) > 10^{(n/2)−c log n}."* — the statement. (23) is inside its
+  proof, p. 388; see §89.1.
 
 ### 90.2 What is now kernel-checked
 
@@ -18929,8 +18931,9 @@ without a cheap definite next step; §87.3 item 5 is done (§89.4).
 ```
 
 `Print Assumptions`: all six closed under the global context (`coqtop`,
-this session). **PROVEN** (kernel). `iota_theorem3` is (23) from its
-first line to its last but one, `ψ(n) ≥ 10^{(n−l)/2} 2^{l−1}`, with
+this session). **PROVEN** (kernel). `iota_theorem3` is (23)'s
+conclusion through its last-but-one expression (the inequality between
+them; the proof does not follow (23)'s product chain, see below), `ψ(n) ≥ 10^{(n−l)/2} 2^{l−1}`, with
 `l = s_3(n)` (a digit 2 counted as two equal powers of 3 — the page does
 not say, §89.1, but this is the only reading under which `n − l` is the
 exponent sum). The proof is an induction on `n = 3q + r`: the step
@@ -18938,7 +18941,12 @@ exponent sum). The proof is an induction on `n = 3q + r`: the step
 `ψ(r) ≥ 2^{r−1}` for the digit, so each unit of digit sum past the
 first contributes the factor 2. `g_theorem3` is Theorem 3's lower bound
 by Lemma 4, as the paper ends ("Theorem 3 now follows from (23) and
-Lemma 4").
+Lemma 4"). **Theorem 3 itself** (p. 382) has a free constant `c`, so it
+does not depend on the base of `log`; its integer form is
+`g_log_loss` (§90.6): `g(n) ≥ 2·10^{(n−2k)/2}` whenever `1 ≤ n < 3^k`.
+Taking `k = ⌊log₃ n⌋ + 1`, the exponent is at least
+`n/2 − log₃ n − 3/2`, which is `> n/2 − c log n` for every `c > 1/ln 3`
+(natural log) and `n` large enough — by hand, not a theorem here.
 
 ### 90.3 The last `>` of (23) depends on the base of `log`, which is not stated
 
@@ -18958,21 +18966,23 @@ to `log n > (1 − 2 log₁₀ 2) l + 2 log₁₀ 2`, i.e.
 At `n = 1` it fails in every base (`l = 1`: the left side is `1`, the
 right `10^{1/2}`). With `l ≤ 2⌊log₃ n⌋ + 2` (every `n < 3^k` has at most `k`
 digits, each at most 2), the natural-log inequality holds once
-`0.5 ln n > 0.362 ln n + 0.699`, i.e. `ln n > 5.075`, `n ≥ 161`
+`0.5 ln n > 0.362 ln n + 0.699`, i.e. — with exact constants, `ln n > 5.0731` — `n ≥ 160`
 (derived by hand; `0.362 = 0.398 / ln 3`); with the table, for every
 `n ≥ 9`. In base 10
-it fails infinitely often (`n = 3^k − 1`, `l = 2k`). So the printed
-`ψ(n) > 10^{(n − log n)/2}` is right for natural or binary `log` and
-`n` past a small threshold, and false as printed for `n = 1`. Harmless
+it fails infinitely often (`n = 3^k − 1`, `l = 2k`). (In base 3 the one exact tie is
+`n = 3`, `l = 1`, both sides equal; the strict `>` counts it as a
+failure.) So the printed `ψ(n) > 10^{(n − log n)/2}` is right for
+natural, binary or ternary `log` and `n` past a small threshold, and false as printed for `n = 1`. Harmless
 for the rate, and not formalised: `iota_theorem3` stops at the
 expression before it. Recorded in `docs/reading.md` A3.
 
 ### 90.4 Gates
 
 `make verify`, `make coqchk`, `make prcheck` and the targeted mutation
-re-run (`lowerbound-at-least`, `iotaatleast-at-least`, the control): the
-results are in the commit message of the commit that adds this section
-(they ran on that tree). No definition changed; `tools/statements.txt`
+re-run (`lowerbound-at-least`, `iotaatleast-at-least`, the control) ran
+on the tree of commit d2c1de0 (which added this section, marked in
+progress); their results, and those of the re-run after the review fixes
+of §90.6, are in the message of the commit after it. No definition changed; `tools/statements.txt`
 gained six entries and changed none.
 
 ### 90.5 Next step
