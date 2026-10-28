@@ -1265,8 +1265,9 @@ statements, which is not reading them.
   **one-shot** — for any tensor `v` with nonzero coefficients on support
   `Γ` and any total orders on the index sets, slice rank `≥` the slice
   cover number of the maximal elements `Γ′`; only Proposition 6 is about
-  `v^{⊗n}`. Lemma 91.A: on the sunflower support its diagonal part is at
-  most `V_3(D,n)` under every choice of orders.
+  `v^{⊗n}`. Lemma 91.A: on the sunflower support, under every choice of
+  orders, the undominated diagonal is sunflower-free, so the bound exceeds
+  `V_3(D,n)` only through the non-diagonal maximal elements (§91.3).
 
 ### [KSS18] Kleinberg, Sawin, Speyer, *The growth rate of tri-colored sum-free sets*, Discrete Analysis 2018:12, arXiv:1607.00047v3
 

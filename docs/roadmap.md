@@ -19009,8 +19009,9 @@ Details below; nothing here is a campaign or a computation.
 
 ### 91.1 The two sources proposed were already read, and do not apply
 
-* [BCLSZ25] Lemma 2.12 bounds the border subrank of the **cube** of a
-  tester (§88.3); it says nothing about one tester.
+* [BCLSZ25] Lemma 2.12 (with Thm. 2.1 and [Str87] Thm. 6.6) bounds the
+  border subrank of the **cube** of a tester (§88.3, the delegated
+  reader's reading, not re-checked); it says nothing about one tester.
 * [ST16] Proposition 6 bounds the slice rank of a **power** `v^{⊗n}`
   (lexicographic orders), and §75.2 F7 already caps it at `9^{n+o(n)}` on
   the sunflower support.
@@ -19023,7 +19024,8 @@ session does not repeat it.
 
 Re-retrieved 2026-10-28 (WordPress.com public API, post 9271, converted to
 220 lines of text; lines 41–82 — Proposition 4's statement and proof —
-read in full). Verbatim, (5): *"Now suppose that the coefficients
+read in full. A different conversion from the 386-line one
+`docs/reading.md` cites; line numbers are not comparable.) Verbatim, (5): *"Now suppose that the coefficients
 c_{s_1,…,s_k} are all non-zero, that each of the S_j are equipped with a
 total ordering ≤_j, and Γ′ is the set of maximal elements of Γ … Then one
 has rank(v) ≥ min_{Γ′ = Γ_1 ∪ ⋯ ∪ Γ_k} |π_1(Γ_1)| + ⋯ + |π_k(Γ_k)|."*
@@ -19055,19 +19057,39 @@ symmetrically it fails only if `w′ = max_{≤_1} = max_{≤_3}`. If both fail,
 `w = max_{≤_3} = w′`, so `w` is both `min_{≤_1}` and `max_{≤_1}` of three
 distinct elements — impossible. ∎
 
-Since a slice cover restricted to `Γ′ ∩ Δ` is a cover of it, and the
-diagonal's cover number is its size, the **diagonal part of Prop. 4's
-bound is at most `|A| ≤ V_3(D,n)`** — the largest sunflower-free set, i.e.
-the quantity the tester is meant to bound. On its diagonal, Prop. 4 can
-only recover `slice-rank(T) ≥ V_3(D,n)`, which every tester already
-satisfies (§75.2 F2) and which is circular as a barrier.
+Write `cov(·)` for the minimum slice cover of (5). A diagonal set of size
+`m` needs `m` slices (each projection is injective on it), so
+`cov(Γ′ ∩ Δ) = |A|`, and covers add, so
+
+```text
+  cov(Γ′)  ≤  |A| + cov(Γ′ ∖ Δ)  ≤  V_3(D,n) + cov(Γ′ ∖ Δ).
+```
+
+`V_3(D,n)` — the largest sunflower-free set — is the quantity the tester
+is meant to bound, and every tester already has `slice-rank ≥ V_3(D,n)`
+(§75.2 F2 with Lemma 75.A). **So Prop. 4 can say more than that only
+through `cov(Γ′ ∖ Δ)`, the non-diagonal maximal elements**; on the
+diagonal it is circular as a barrier.
+
+Checked numerically by the review (`python3 -I`, `Γ = S_D^{(n)}`,
+brute-force domination): every triple of orders at `D = 3, 4`, `n = 1`
+(216 and 13,824), and random orders at `D = 5, n = 1` (3,000),
+`D = 3, n = 2` (2,000), `D = 4, n = 2` (300) — `A` sunflower-free in
+every case, with positive and negative controls passing. The exact
+`cov(Γ′)` under those random orders stayed at most 6 (VALIDATED for those
+samples only; random orders are not the adversarial case).
 
 ### 91.4 What is left of item 1, precisely
 
-A barrier from Prop. 4 for a non-power tester would have to come from
-**non-diagonal** maximal elements of `S_D^{(n)}` under orders that are
-not of product form — F7 rules out product orders, Lemma 91.A the
-diagonal under every order. Whether some orders on `[D]^n` make the
+In the standard basis, a barrier from Prop. 4 for a non-power tester
+would have to come from **non-diagonal** maximal elements of
+`S_D^{(n)}` under orders that are not lexicographic — Lemma 91.A rules
+out the diagonal under every order, and F7 extends to Prop. 4 at finite
+`n` for lexicographic orders induced from orders on `[D]`: raising one
+coordinate's letter raises the vector, so a maximal triple is maximal
+letter by letter, each projection of `Γ′` has at most `9^n` elements, and
+`cov(Γ′) ≤ 9^n` (by hand). Other product bases change `Γ` and are covered
+by neither Lemma 91.A nor F7. Whether some orders on `[D]^n` make the
 non-diagonal part of `Γ′` have slice-cover number `≥ g(D)^n` with
 `g → ∞` (in the regime `D = s·m`) is open, and is a genuine research
 question: no published statement found, and no cheap test — the orders
