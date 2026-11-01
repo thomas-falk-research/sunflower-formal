@@ -1,5 +1,7 @@
 # Sunflower-Formal
 
+[![DOI](https://zenodo.org/badge/1311490063.svg)](https://doi.org/10.5281/zenodo.23865824)
+
 A stdlib-only Coq development around the **Erdős–Rado sunflower
 problem**, with a Rust search companion and a testing layer aimed at
 the errors a proof kernel cannot catch. It holds the classical bounds,

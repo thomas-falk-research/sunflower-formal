@@ -4,6 +4,7 @@ title: "Sunflower-Formal: a machine-checked Coq account of the Erdős–Rado sun
 type: software
 version: 0.1.0
 date-released: 2026-11-01
+doi: "10.5281/zenodo.23865824"
 repository-code: "https://github.com/thomas-falk-research/sunflower-formal"
 authors:
   - family-names: "Falk"
