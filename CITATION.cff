@@ -2,10 +2,16 @@ cff-version: 1.2.0
 message: "If you use this formalization, please cite it as below."
 title: "Sunflower-Formal: a machine-checked Coq account of the Erdős–Rado sunflower problem"
 type: software
+version: 0.1.0
+date-released: 2026-11-01
+repository-code: "https://github.com/thomas-falk-research/sunflower-formal"
 authors:
   - family-names: "Falk"
     given-names: "Thomas"
+    name-suffix: "III"
     alias: "thomas-falk-research"
+    orcid: "https://orcid.org/0009-0001-9478-6061"
+    email: "research@thomas-falk-research.com"
 keywords:
   - Coq
   - formal verification
@@ -18,15 +24,23 @@ keywords:
   - Alweiss-Lovett-Wu-Zhang
 license: MIT
 abstract: >-
-  Machine-checked Coq (8.18, stdlib-only) proofs of the Erdős–Rado
-  sunflower upper bound, the matching exponential lower bound
-  f(n,k) >= (k-1)^n + 1, the exact value f(2,3) = 7, and constructive
-  Hall and Kőnig theorems. The deterministic half of the 2020
-  Alweiss-Lovett-Wu-Zhang / Rao spread argument is formalised: the
-  reduction "every r-spread family of small sets has k pairwise
-  disjoint members implies f(n,k) <= r^n + 1" is proved, and yields an
-  unconditional bound f(n,k) <= (n(k-1)+1)^n + 1 when instantiated
-  with an elementary spread lemma proved here. The open Sunflower
-  Conjecture is stated formally, and the single axiom in the
-  development is the published 2020 spread lemma, cited and used only
-  by the one theorem explicitly derived from it.
+  A stdlib-only Coq 8.18 development around the Erdős–Rado sunflower
+  problem, with a Rust search companion and a testing layer aimed at
+  errors a proof kernel cannot catch. It contains the classical bounds
+  f(n,k) <= (k-1)^n n! + 1 and f(n,k) >= (k-1)^n + 1, the exact value
+  f(2,3) = 7, and constructive Hall and Kőnig theorems; the deterministic
+  half of the 2020 Alweiss-Lovett-Wu-Zhang / Rao spread argument, with an
+  axiom-free bound f(n,k) <= (n(k-1)+1)^n + 1; the Abbott-Hanson-Sauer
+  (1972) substitution and iterated lower-bound rates for 3-sunflower-free
+  and intersecting families; the conjecture for families of bounded
+  VC-dimension; generic checkers for integer-programming bounds and for
+  LRAT unsatisfiability proofs; and a kernel-checked bracket
+  54 <= g(4) <= 76 whose upper end is conditional on a link census
+  (validated by two independent exhaustive searches, not yet certified in
+  the kernel) and a published meeting bound. The open Sunflower
+  Conjecture is stated formally; this work does not resolve it and makes
+  no progress on it in general. The only axiom in the library is the
+  published 2020 spread lemma, quarantined in one file and used by one
+  theorem. The proofs were developed with substantial AI assistance
+  (Anthropic's Claude), directed and reviewed by the maintainer;
+  correctness rests on the Coq kernel, not on how they were written.
