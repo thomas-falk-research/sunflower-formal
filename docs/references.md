@@ -550,6 +550,9 @@ better; it is cited from memory and marked *not read*.
   proof of the best known bounds for the robust sunflower lemma"* and
   was **not read**; it may be a better formalisation target than
   Lovett §3.
+  **Published version:** *The story of sunflowers*, J. London Math. Soc.
+  **113** (2026), no. 1, e70380, **DOI `10.1112/jlms.70380`** — verified
+  against Crossref (2026-11-09); the journal text was not read.
 
 - **[Rao23]** A. Rao, *Sunflowers: from soil to oil*. Bulletin of the
   AMS 60(1):29–38, 2023. **Not attempted.** Discovered via [Mis26]'s
@@ -1306,6 +1309,20 @@ session N+15.
 - **[CGRSS25]** B. Cavalar, M. Göös, A. Riazanov, A. Sofronova,
   D. Sokolov, *Monotone Circuit Complexity of Matching*, arXiv:2507.16105.
   **Not attempted.** Discovered via [Rao25] §2.4.
+
+## Continuous (Motzkin–Straus type) formulations
+
+- **[RBP09]** S. Rota Bulò, M. Pelillo, *A generalization of the
+  Motzkin–Straus theorem to hypergraphs*. **Optimization Letters** **3**
+  (2009), no. 2, 287–295, **DOI `10.1007/s11590-008-0108-3`** — verified
+  against Crossref (2026-11-09). **Read pp. 287–293** (author PDF, text
+  extracted with `pdftotext`). Program (2):
+  `h(x) = L_{Ḡ}(x) + τ Σ x_i^k` over the simplex, `L_{Ḡ}` the Lagrangian
+  of the complement of the `k`-graph `G`. Theorem 3: *"h attains its
+  minimum over ∆ at τ ω(G)^{1−k} provided that 0 < τ ≤ 1/(k(k−1))"*.
+  With `k = 3`, `τ = 1/6` and `H = Ḡ` this is exactly
+  `min Σ p³ + 6 Σ_{abc ∈ E(H)} p_a p_b p_c = α(H)^{−2}`, the identity of
+  `docs/roadmap.md` §93; so that identity is **not new**.
 
 ## Surveys and textbooks
 

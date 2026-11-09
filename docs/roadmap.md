@@ -19178,3 +19178,131 @@ questions are §87.3 items 1–3 (with §91.4 narrowing item 1 to the
 non-diagonal maxima of `S_D^{(n)}`), all research. Do not re-run: the
 `D = 4` face searches (§85–§86), the [BCLSZ25]/[Str88]/[ST16] reading
 (§88.3, §91), or the AHS72 formalisation.
+
+## 93. External review: the "cubic-energy route" note (received 2026-11-09) — correct, not new, and no slack
+
+**Tier 2** (proof review, prior art, peer-review artifact). The owner
+supplied a research note and an exact-rational checker produced outside
+this repository (another vendor's model), asking for an independent
+critical review. Neither file is committed: what is recorded here is
+the review, a stronger checker (`tools/energy_check.py`), and the prior
+art it found. Nothing on §92's open list moves.
+
+### 93.1 What the note claims
+
+* **Theorem 1.** For every finite 3-uniform `H`,
+  `min_{p ∈ ∆} E_H(p) = α(H)^{−2}`, where
+  `E_H(p) = Σ_v p_v³ + 6 Σ_{abc ∈ E} p_a p_b p_c`. Proof: along
+  `p_a + t, p_b − t` the energy is quadratic with `t²`-coefficient
+  `K_ab = 3(p_a+p_b) − 6 Σ_{abz ∈ E} p_z`; on an edge `abc` in the support
+  `K_ab + K_ac + K_bc ≤ 0`, so some pair is concave and moving to an
+  endpoint kills a coordinate without raising the energy; at an
+  edge-free support of size `s ≤ α`, power mean gives `≥ s^{−2}`.
+* **Corollary 2.** For a family `F` of distinct `n`-sets and
+  `X, Y, Z ~ μ` i.i.d., `Pr[X∩Y = X∩Z = Y∩Z] = E_{H_F}(μ)`, `H_F` the
+  3-sunflower hypergraph; hence `inf_μ Pr = g(n)^{−2}`.
+* **§3.** (A) `g(n) ≤ C^n` ⇔ (B) `Pr_μ ≥ B^{−n}` for every `μ` on
+  `n`-sets; the same restricted to intersecting supports, via
+  `IotaRate.v`; a pair-link formula.
+* **§4.** Gates: coefficient 1 in place of 6 breaks Theorem 1;
+  `g(2) = 6` forces `B ≥ 6`; the [AHS72] rate `√10` forces `B ≥ 10`.
+
+### 93.2 Verdict, claim by claim
+
+* **Theorem 1: correct, and published.** The proof above was checked
+  step by step by hand (PROVEN, by hand). It is **[RBP09] Theorem 3**
+  with `k = 3`, `τ = 1/6`, applied to `G = H̄`: cliques of `G` are
+  independent sets of `H`, `L_{Ḡ} = Σ_{E(H)} p_a p_b p_c`, `E_H = 6h`,
+  and `τ = 1/(k(k−1))` is the endpoint of the range the theorem states
+  (`docs/references.md` [RBP09], PROVEN in the literature). [RBP09]'s
+  Lemma 2 also perturbs two coordinates of a missing edge, the same move
+  as the note's. The note said a focused search "did not establish
+  originality" and warned against a novelty claim; the warning was
+  right, the search missed an exact match. **Novelty: none.**
+* **Corollary 2: correct.** The repetition argument is
+  `SubstitutionFree.triple_collapse` (§88.1, kernel-checked). Equal
+  sizes are necessary: for `F = {{0}, {0,1}}`, `μ` uniform,
+  `Pr = 5/8` (AAA, BBB, and the three orderings of AAB) while
+  `E_{H_F}(μ) = 1/4` (COMPUTED, `tools/energy_check.py` §4).
+* **§3 equivalence: correct, but it has no slack, so it is not a new
+  target.** (B) ⇒ (A) — the only direction that could bound `g(n)` —
+  evaluates (B) at the uniform measure on a sunflower-free family and
+  never uses Theorem 1. Theorem 1 is used only for (A) ⇒ (B), i.e. to
+  show that (B) is not *stronger* than (A). So a proof of (B) must, in
+  particular, prove `|F|^{−2} ≥ B^{−n}` for every sunflower-free `F`,
+  which is (A) verbatim. The note's phrase "dimension-free reverse
+  correlation inequality" suggests a relaxation; there is none. This is
+  the usual situation for exact continuous reformulations of extremal
+  problems (Motzkin–Straus 1965 for cliques; hypergraph Lagrangians,
+  e.g. Frankl–Rödl 1984 and Mubayi, cited in [RBP09] §1): an exact
+  reformulation moves the difficulty, it does not remove it (FOLKLORE).
+* **Where the probability sits in this repository's map** (PROVEN, by
+  hand; checked exhaustively on the sampled families in
+  `tools/energy_check.py` §4): for subsets of a ground set,
+  `X∩Y = X∩Z = Y∩Z` iff no element lies in exactly two of `X, Y, Z`.
+  So `Pr_μ = T(μ, μ, μ)` with `T = ⊗_x t`, `t` the 0/1 tensor on
+  `{0,1}³` that vanishes on the three weight-2 patterns — the
+  coordinate-product tensor of the slice-rank programme ([NaSa17],
+  [BHL26]). Its product structure runs over **ground elements**, not
+  over the set size `n`, which is exactly the mismatch §75 measured
+  ([BHL26] gives no `f(n,3)` bound through [ASU12]'s reduction). The
+  note's "dimension-free" requirement is that same gap, renamed.
+* **Restricted (intersecting) version: correct;** it is
+  `IotaRate.conjecture_k_3_iff_iota_exponential` composed with the same
+  identity, so the same no-slack remark applies.
+* **Pair-link formula: correct** (COMPUTED, `tools/energy_check.py`
+  §5). On a sunflower-free support every `μ(L_{A,B})` is 0, so it says
+  nothing at the extremal measures.
+* **Gates: correct, one of them loose.** `B ≥ 6` from `F23.f_2_3_lower`
+  and `B ≥ 10` from §89 (`SubstitutionRate.g_base_three`) are right.
+  The coefficient-1 control is valid but far from the boundary: on one
+  edge, `(3 + c)/27 ≥ 1/4` iff `c ≥ 15/4` (PROVEN, arithmetic), so the
+  sharp control is `c = 37/10`. Whether `min = α^{−2}` holds for every
+  `c ∈ [15/4, 6)` was measured, not proved: a float local search found
+  no violation at `c ∈ {3.76, 3.8, 4.5}` over all labelled 3-graphs on
+  at most 5 vertices and 1500 random ones on 6–7 (CONJECTURED). It does
+  not matter for sunflowers: the probability fixes `c = 6`.
+* **Citations.** [BHL26] agrees with `docs/references.md`. The note's
+  Rao (2026) DOI `10.1112/jlms.70380` resolves (Crossref) to the
+  journal version of [Rao25].
+* **The submitted checker** reproduces as stated (3132 trials;
+  `(15, 75, 6)`; COMPUTED, Python 3.13). It does not test Corollary 2
+  — the one step that touches sunflowers — nor attainment, nor the
+  curvature formula against the polynomial; it does catch a wrong
+  energy coefficient, through the monotonicity assertion. The note
+  names it `weighted_sunflower_check.py`; the file supplied had another
+  name.
+
+### 93.3 `tools/energy_check.py`
+
+Standard library only; exact `Fraction` arithmetic in every assertion
+except §3 (a float search that can only fail to find a counterexample,
+tolerance `1e−12`); seeds fixed; exit 0 iff all pass; about 10 s.
+
+```text
+  1  t²-coefficient: 3rd finite difference 0, 2nd = 2K, against the polynomial   3000 trials
+  2  every labelled 3-graph on ≤ 5 vertices (1044): attainment on every maximum
+     independent set; compression from 5 starts: monotone, ≤ n steps,
+     simplex, edge-free support, ≥ α^{−2}                                   5220 runs
+  3  float local search, 400 random graphs on 4–7 vertices                  min gap −1.1e−16
+  4  Pr by brute force over ordered triples = E_{H_F}(μ); coordinate form;
+     unequal-size control (5/8 ≠ 1/4)                                       600 families
+  5  pair-link formula                                                       400 families
+  6  2-sets of [6]: α = 6, 75 = 60 stars + 15 matchings, two triangles 1/36
+  7  coefficient: one edge fails below 15/4 (exact); c = 3.8 printed, not asserted
+```
+
+Mutation check (by hand, `sed` on a scratch copy, each confirmed to
+change one line): energy coefficient 5 and 4, curvature `6→5` and
+`3→2`, `p³→p²`, a dropped `Y∩Z` in the sunflower test, the link with
+`A∪B` replaced by `⊇ A∩B`, and coefficient 4 in §4 alone — **8 of 8
+killed**.
+
+### 93.4 Recommendation
+
+Do not formalise Theorem 1: it is published, and it lies on the
+(A) ⇒ (B) side, which no bound on `g(n)` uses. Do not open a "reverse
+correlation" line on the strength of this note: its extremal measures
+are the sunflower-free families themselves. A route through
+`T(μ, μ, μ)` would need an inequality whose loss is per unit of set
+size rather than per ground element — the §75 obstruction, unchanged.
