@@ -19183,8 +19183,8 @@ non-diagonal maxima of `S_D^{(n)}`), all research. Do not re-run: the
 
 **Tier 2** (proof review, prior art, peer-review artifact). The owner
 supplied a research note and an exact-rational checker produced outside
-this repository (another vendor's model), asking for an independent
-critical review. Neither file is committed: what is recorded here is
+this repository (with another vendor's model, per the owner; the note
+itself does not say), asking for an independent critical review. Neither file is committed: what is recorded here is
 the review, a stronger checker (`tools/energy_check.py`), and the prior
 art it found. Nothing on §92's open list moves.
 
@@ -19215,12 +19215,20 @@ art it found. Nothing on §92's open list moves.
   independent sets of `H`, `L_{Ḡ} = Σ_{E(H)} p_a p_b p_c`, `E_H = 6h`,
   and `τ = 1/(k(k−1))` is the endpoint of the range the theorem states
   (`docs/references.md` [RBP09], PROVEN in the literature). [RBP09]'s
-  Lemma 2 also perturbs two coordinates of a missing edge, the same move
-  as the note's. The note said a focused search "did not establish
+  Lemma 2 also perturbs coordinates of a missing edge, but locally, and
+  at the boundary `τ = 1/(k(k−1))` it needs a three-coordinate,
+  third-order move (its Case 3); the note's move to an endpoint of the
+  concave line avoids that, so its proof is a genuine, shorter route to
+  the same theorem. [RBP09] Lemma 2 also gives more than the note
+  states: at `k = 3, τ = 1/6` every local minimiser is the uniform
+  vector on a maximal independent set. The note said a focused search "did not establish
   originality" and warned against a novelty claim; the warning was
   right, the search missed an exact match. **Novelty: none.**
-* **Corollary 2: correct.** The repetition argument is
-  `SubstitutionFree.triple_collapse` (§88.1, kernel-checked). Equal
+* **Corollary 2: correct** (PROVEN, by hand; COMPUTED below). The
+  repetition step is the one inside the proof of
+  `SubstitutionFree.triple_collapse` (§88.1); that lemma itself assumes
+  the family is sunflower-free, so it does not state the step for an
+  arbitrary family, and the probability identity is not kernel-checked. Equal
   sizes are necessary: for `F = {{0}, {0,1}}`, `μ` uniform,
   `Pr = 5/8` (AAA, BBB, and the three orderings of AAB) while
   `E_{H_F}(μ) = 1/4` (COMPUTED, `tools/energy_check.py` §4).
@@ -19257,19 +19265,28 @@ art it found. Nothing on §92's open list moves.
   and `B ≥ 10` from §89 (`SubstitutionRate.g_base_three`) are right.
   The coefficient-1 control is valid but far from the boundary: on one
   edge, `(3 + c)/27 ≥ 1/4` iff `c ≥ 15/4` (PROVEN, arithmetic), so the
-  sharp control is `c = 37/10`. Whether `min = α^{−2}` holds for every
-  `c ∈ [15/4, 6)` was measured, not proved: a float local search found
-  no violation at `c ∈ {3.76, 3.8, 4.5}` over all labelled 3-graphs on
-  at most 5 vertices and 1500 random ones on 6–7 (CONJECTURED). It does
-  not matter for sunflowers: the probability fixes `c = 6`.
+  threshold of that example is `15/4`, and `c = 37/10` already fails.
+  Since `E_c` is increasing in `c`, `c = 15/4` is the worst case of
+  `[15/4, 6)`. Whether `min = α^{−2}` holds there was measured, not
+  proved (CONJECTURED): `tools/energy_check.py` §7 runs a float local
+  search at `c = 15/4` over every labelled 3-graph on at most 5 vertices
+  and 300 random ones on 6–7 and finds nothing below `−1.4e−16`; the
+  independent review (§93.3) found none either, over all 38 isomorphism
+  classes on 3–5 vertices (bisected critical `c` at most `3.7500`),
+  about 2600 random graphs on 6–8 vertices and structured cases
+  (`K_n^{(3)}`, `n ≤ 8`; Fano and relatives; tight cycles; STS(9)), with
+  `15/4` attained and never exceeded — its scripts are not committed. It
+  does not matter for sunflowers: the probability fixes `c = 6`.
 * **Citations.** [BHL26] agrees with `docs/references.md`. The note's
   Rao (2026) DOI `10.1112/jlms.70380` resolves (Crossref) to the
   journal version of [Rao25].
 * **The submitted checker** reproduces as stated (3132 trials;
   `(15, 75, 6)`; COMPUTED, Python 3.13). It does not test Corollary 2
   — the one step that touches sunflowers — nor attainment, nor the
-  curvature formula against the polynomial; it does catch a wrong
-  energy coefficient, through the monotonicity assertion. The note
+  curvature formula against the polynomial. It catches a wrong energy
+  coefficient only from below: with 3, 4 or 5 its monotonicity assertion
+  fails, while with 7 or 12 it passes (COMPUTED, `sed` on a scratch
+  copy). The note
   names it `weighted_sunflower_check.py`; the file supplied had another
   name.
 
@@ -19277,26 +19294,40 @@ art it found. Nothing on §92's open list moves.
 
 Standard library only; exact `Fraction` arithmetic in every assertion
 except §3 (a float search that can only fail to find a counterexample,
-tolerance `1e−12`); seeds fixed; exit 0 iff all pass; about 10 s.
+tolerance `1e−12`); seeds fixed; exit 0 iff all pass; about 12 s.
 
 ```text
   1  t²-coefficient: 3rd finite difference 0, 2nd = 2K, against the polynomial   3000 trials
   2  every labelled 3-graph on ≤ 5 vertices (1044): attainment on every maximum
-     independent set; compression from 5 starts: monotone, ≤ n steps,
+     independent set; compression from 5 starts: monotone, ≤ n−2 steps,
      simplex, edge-free support, ≥ α^{−2}                                   5220 runs
   3  float local search, 400 random graphs on 4–7 vertices                  min gap −1.1e−16
   4  Pr by brute force over ordered triples = E_{H_F}(μ); coordinate form;
      unequal-size control (5/8 ≠ 1/4)                                       600 families
   5  pair-link formula                                                       400 families
   6  2-sets of [6]: α = 6, 75 = 60 stars + 15 matchings, two triangles 1/36
-  7  coefficient: one edge fails below 15/4 (exact); c = 3.8 printed, not asserted
+  7  coefficient: one edge fails below 15/4 (exact); search at c = 15/4 printed, not asserted
 ```
 
 Mutation check (by hand, `sed` on a scratch copy, each confirmed to
-change one line): energy coefficient 5 and 4, curvature `6→5` and
+change one line): energy coefficient 4, 5 and 7, curvature `6→5` and
 `3→2`, `p³→p²`, a dropped `Y∩Z` in the sunflower test, the link with
-`A∪B` replaced by `⊇ A∩B`, and coefficient 4 in §4 alone — **8 of 8
+`A∪B` replaced by `⊇ A∩B`, and coefficient 4 in §4 alone — **9 of 9
 killed**.
+
+**Independent review.** A fresh-context reviewer, given the note, both
+checkers, [RBP09]'s text and this section, attacked nine claims and
+refuted none: Theorem 1 = [RBP09] Theorem 3 (scaling and range
+checked); [RBP09] Lemma 2 Case 3 really proves the `k ≥ 3` boundary
+case (third-order term checked by hand at `k = 3`); no gap in the
+note's proof; the no-slack argument; the coordinate form; the 5/8
+control; the `15/4` measurements above. It found six faults in this
+section's first version (commit `2be3452`), all corrected here: an
+over-read of `triple_collapse`, an over-stated claim that the submitted
+checker catches a wrong coefficient, unreproducible threshold numbers,
+an unattributed provenance remark, a gloss over [RBP09]'s different
+move, and a mis-used "sharp"; and two weak assertions in the tool (a
+tautology, a loose step bound), removed and tightened.
 
 ### 93.4 Recommendation
 

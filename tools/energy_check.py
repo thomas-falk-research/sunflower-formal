@@ -119,9 +119,9 @@ def check_exhaustive(rng, reps=4):
                 traj = compress(E, p)
                 hist = [energy(E, q) for q in traj]
                 q = traj[-1]
-                assert hist[0] == energy(E, p)
                 assert all(x >= y for x, y in zip(hist, hist[1:])), "energy increased"
-                assert len(traj) - 1 <= n, "more steps than vertices"
+                # each step kills a support vertex; a support of <= 2 has no edge
+                assert len(traj) - 1 <= max(0, n - 2), "too many steps"
                 assert sum(q) == 1 and all(x >= 0 for x in q)
                 supp = [v for v in range(n) if q[v] > 0]
                 assert edge_free(E, supp) and len(supp) <= a
@@ -131,16 +131,17 @@ def check_exhaustive(rng, reps=4):
 
 
 # 3. Float local search for a counterexample (cannot prove, only refute) -----
-def local_min(E, p, n, rng, sweeps):
+def local_min(E, p, n, rng, sweeps, c=6.0):
     """Pairwise exact line search; energy along a pair line is quadratic."""
     def f(q):
-        return energy(E, q, 6.0)
+        return energy(E, q, c)
     for _ in range(sweeps):
         a, b = rng.sample(range(n), 2)
         lo, hi = -p[a], p[b]
         f0, flo, fhi = f(p), f(along(p, a, b, lo)), f(along(p, a, b, hi))
         cands = [0.0, lo, hi]
-        K = curvature(E, p, a, b)
+        K = 3 * (p[a] + p[b]) - c * sum(p[(set(e) - {a, b}).pop()]
+                                         for e in E if {a, b} <= set(e))
         if K > 0 and hi > lo:
             # minimiser of K t^2 + B t + f0 with B fitted from the endpoint values
             B = (fhi - f0 - K * hi * hi) / hi if hi else (flo - f0 - K * lo * lo) / lo
@@ -240,26 +241,26 @@ def check_coefficient(rng):
     assert energy(one, u, F(15, 4)) == F(1, 4)
     assert energy(one, u, F(37, 10)) < F(1, 4)
     assert energy(one, u, 1) == F(4, 27) < F(1, 4)  # the note's control
-    # Exploratory, asserts nothing: does any graph on <= 6 vertices go below
-    # alpha^-2 for a coefficient in [15/4, 6)?  Float search as in section 3.
+    # Exploratory, asserts nothing.  E_c is increasing in c (edge terms are
+    # >= 0), so c = 15/4 is the worst case of [15/4, 6): search there, over
+    # every labelled 3-graph on <= 5 vertices and 300 random ones on 6-7.
+    c = 3.75
     worst = float("inf")
-    c = 3.8
+    graphs = []
+    for n in range(3, 6):
+        T = list(combinations(range(n), 3))
+        graphs += [(n, [e for j, e in enumerate(T) if mask >> j & 1])
+                   for mask in range(1, 1 << len(T))]
     for _ in range(300):
-        n = rng.randint(3, 6)
-        E = rand_graph(rng, n)
-        if not E:
-            continue
+        n = rng.randint(6, 7)
+        graphs.append((n, rand_graph(rng, n)))
+    for n, E in graphs:
         a, _ = max_independent_sets(E, n)
         for _ in range(3):
-            raw = [rng.random() for _ in range(n)]
+            raw = [rng.random() ** 3 for _ in range(n)]
             p = [x / sum(raw) for x in raw]
-            for _ in range(300):
-                i, j = rng.sample(range(n), 2)
-                ts = [-p[i], p[j]] + [(-p[i]) + (p[i] + p[j]) * s / 16 for s in range(1, 16)]
-                t = min(ts, key=lambda s: energy(E, along(p, i, j, s), c))
-                p = along(p, i, j, t)
-            worst = min(worst, energy(E, p, c) - 1 / a ** 2)
-    return c, worst
+            worst = min(worst, local_min(E, p, n, rng, 150, c) - 1 / a ** 2)
+    return c, len(graphs), worst
 
 
 if __name__ == "__main__":
@@ -271,6 +272,6 @@ if __name__ == "__main__":
     print("4. Pr identity by brute force over ordered triples (exact):", check_probability_identity(rng), "families, pass; unequal-size control rejected")
     print("5. pair-link formula (exact):", check_pair_link(rng), "families, pass")
     print("6. 2-sets of [6]: alpha =", check_rank_two(), ", 75 = 60 stars + 15 matchings, two triangles Pr = 1/36, pass")
-    c, w = check_coefficient(rng)
-    print(f"7. coefficient: one edge fails below 15/4 (exact), pass; EXPLORATORY c = {c}: min(energy - alpha^-2) = {w:.3e} (asserts nothing)")
+    c, ng, w = check_coefficient(rng)
+    print(f"7. coefficient: one edge fails below 15/4 (exact), pass; EXPLORATORY c = {c}, {ng} graphs: min(energy - alpha^-2) = {w:.3e} (asserts nothing)")
     sys.exit(0)
