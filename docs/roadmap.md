@@ -19496,3 +19496,98 @@ clauses; the source of the 2501 remark; and two unrecorded checks
 (now: `F_1` in the tool, the binary-tree argument written out). It also
 found that `d4_check.py` printed, but did not assert, that each largest
 star is below `|F|/4`; it now asserts it.
+
+## 95. Three closure results for D4 (from the external reviewer), checked: products, subfamilies, and hereditary products cannot refute it
+
+**Tier 2.** Three propositions sent by the same outside reviewer in
+response to §94, checked here by hand and on the stored witnesses.
+Attribution: the statements and proofs are the reviewer's; this section
+is the check. No novelty is claimed for any of them (they are short
+consequences of `DirectSum`-type arguments and averaging), and no bound
+on `g(n)` changes.
+
+### 95.1 The statements, and why they hold (PROVEN, by hand)
+
+Write `m(F)` for the largest safe deletion (§94.1), `m_int(F)` for the
+largest with pairwise-intersecting images, and call `F` *hereditarily
+`q`-deletable* when every subfamily `S ⊆ F` has a safe deletion of at
+least `q|S|` members.
+
+* **Products.** For sunflower-free uniform `F`, `H` on disjoint grounds,
+  `m(F ⊗ H) ≥ m(F)·|H|` (and symmetrically `m(H)·|F|`). Deleting only in
+  the `F`-part gives the family `D ⊗ H`, `D` the image family, which is
+  distinct and sunflower-free by the direct-sum argument (the
+  `triple_collapse` step on each factor). So D4 for `F` gives D4 for
+  `F ⊗ H`, whatever `H` is.
+* **Orbit averaging.** If a group of automorphisms of `H` is transitive
+  on its members and `H` has an intersecting safe deletion of `r`
+  members, then every subfamily `S ⊆ H` has one of at least
+  `⌈r|S|/|H|⌉`. Under a uniformly random group element the witness's
+  image is again an intersecting safe deletion, each member of `H` lies
+  in it with probability `r/|H|`, so some image meets `S` in at least
+  the average; any part of a safe deletion is a safe deletion, and
+  intersecting stays intersecting. For `double(H)`, apply it in each
+  copy; two intersecting image families on disjoint grounds have no
+  sunflower between them (§94.3).
+* **Hereditary products.** If `F` is hereditarily `q`-deletable, so is
+  `F ⊗ H` for every sunflower-free uniform `H` on disjoint ground.
+  Split `S ⊆ F ⊗ H` into fibres by `H`-part and delete in the `F`-part
+  of each fibre by the hypothesis. A sunflower among the images would
+  have `H`-parts that are pairwise distinct (a sunflower in `H`) or two
+  equal and one different (impossible: `B = B∩B = B∩B'` forces
+  `B ⊆ B'`, hence `B = B'` by uniformity); so all three lie in one fibre,
+  where the certificate forbids it.
+
+### 95.2 What follows for the §94 families
+
+All three base families are substitutions whose natural automorphisms
+(outer automorphisms on blocks, inner automorphisms on each block) are
+transitive on members; `iota4` is literally `triangle[triangle]` on
+blocks `{0,1,5}, {2,3,4}, {6,7,8}` (COMPUTED, `tools/d4_check.py`).
+With the stored intersecting half-witnesses:
+
+```text
+  family                     hereditarily q-deletable with q =
+  doubled_iota4              9/27   = 1/3
+  double(triangle[iota3])    77/300 = 0.2567
+  double(iota3[triangle])    68/270 = 0.2519
+```
+
+So **no subfamily of these three, and no subfamily of any direct product
+having one of them as a factor, is a D4 counterexample** (PROVEN, given
+the witnesses, which are COMPUTED and checked without a solver). The
+values of `q` are lower bounds, like the witnesses they come from.
+
+VALIDATED on instances, in `tools/d4_check.py` (deterministic seed): for
+40 random subfamilies of each base family, an automorphism image of the
+stored witness restricted to the subfamily met `⌈q|S|⌉`, each checked as
+an intersecting safe deletion; for 60 random subfamilies of
+`iota3 ⊗ (two disjoint triangles)` (`q = 3/10`, from an intersecting safe
+deletion of 3 in `iota3`), the fibrewise certificates combined into a
+valid safe deletion of at least `0.3|S|`. Four planted mutations in
+these checks (a demand of `r + 1`, a corrupted witness, wrong blocks,
+`q = 4/10`) were all killed.
+
+### 95.3 Where a counterexample could still be
+
+Not in products or subfamilies of what is verified: only in families
+built by a step these arguments do not cover — above all the [AHS72]
+substitution, which is not a direct product. By the doubling formula
+(§94.3) the next two candidates have an exact falsification standard:
+
+```text
+  candidate                      rank  |F|     largest star  D4 needs  D4 refuted iff
+  double(triangle[iota4])          8   4374        648          1094    m(H) ≤ 1093 and m_int(H) ≤ 546
+  double(iota3[iota3])             9   20000      2500          5000    m(H) ≤ 4999 and m_int(H) ≤ 2499
+```
+
+(`H` the undoubled family; largest stars from `maxdeg(iota4) = 12`:
+`2·12·27`, and `5·5·100`.) Failing to find a large deletion proves
+neither upper bound. Each refutation would need an UNSAT-type
+certificate at a scale far beyond §94's encoding (`|H| = 2187` and
+10 000 members). Each confirmation needs only one witness, which the
+averaging and product arguments then extend to all subfamilies and
+products. Recommended next step, as in §94.3: a witness search for
+`m_int(triangle[iota4]) ≥ 547` restricted to deletions invariant under
+a subgroup of its automorphisms, which shrinks the variables to orbits;
+or a recursion for `m_int` under substitution.

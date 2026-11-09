@@ -20,9 +20,10 @@ tools/d4_sat.py, not here.  Exit 0 iff every check passes.
 """
 import json
 import os
+import random
 import sys
 from collections import Counter
-from itertools import combinations, product
+from itertools import combinations, permutations, product
 
 # coq/Intersecting.v iota3, coq/Product.v iota4
 IOTA3 = [(0, 1, 2), (0, 1, 3), (0, 2, 4), (1, 3, 4), (2, 3, 4),
@@ -107,6 +108,109 @@ def check_note_certificates():
     return maxdeg
 
 
+def automorphisms(fam, n):
+    S = {frozenset(A) for A in fam}
+    return [p for p in permutations(range(n)) if {frozenset(p[x] for x in A) for A in S} == S]
+
+
+def substitution_generators(outer, inner, w, n_outer):
+    """Outer automorphisms acting on blocks, and inner automorphisms on one block."""
+    gens = [{u * w + y: p[u] * w + y for u in range(n_outer) for y in range(w)}
+            for p in automorphisms(outer, n_outer)]
+    for u in range(n_outer):
+        for q in automorphisms(inner, w):
+            g = {v * w + y: v * w + y for v in range(n_outer) for y in range(w)}
+            g.update({u * w + y: u * w + q[y] for y in range(w)})
+            gens.append(g)
+    return gens
+
+
+def safe(H, w, intersecting):
+    P = [H[i] - {x} for i, x in w]
+    return (len({i for i, _ in w}) == len(w) and all(x in H[i] for i, x in w)
+            and len(set(P)) == len(P) and sunflower_free(P)
+            and (not intersecting or all(a & b for a, b in combinations(P, 2))))
+
+
+def check_section_95(W):
+    """Section 95: orbit averaging and hereditary products, validated on the
+    stored witnesses (the proofs are written; these are instances)."""
+    rng = random.Random(20261109)
+
+    def word(gens):
+        g = rng.choice(gens)
+        for _ in range(39):
+            h = rng.choice(gens)
+            g = {x: h[g[x]] for x in g}
+        return g
+
+    blocks = [(0, 1, 5), (2, 3, 4), (6, 7, 8)]
+    tt = {frozenset((blocks[a][e[0]], blocks[a][e[1]], blocks[b][f[0]], blocks[b][f[1]]))
+          for a, b in TRI for e in TRI for f in TRI}
+    assert tt == {frozenset(A) for A in IOTA4}, "iota4 is not triangle[triangle]"
+    relabel = {v: u * 3 + k for u, blk in enumerate(blocks) for k, v in enumerate(blk)}
+
+    def half(name, n):  # copy-1 part of a doubled witness, in H's own labels
+        return [(i, x // 2) for i, x in W[name] if i < n]
+    cases = [
+        ("iota4", [frozenset(relabel[x] for x in A) for A in IOTA4], substitution_generators(TRI, TRI, 3, 3),
+         [(i, relabel[x]) for i, x in half("doubled_iota4", 27)]),
+        ("triangle[iota3]", substitute(TRI, IOTA3, 6), substitution_generators(TRI, IOTA3, 6, 3),
+         half("double_tri_iota3", 300)),
+        ("iota3[triangle]", substitute(IOTA3, TRI, 3), substitution_generators(IOTA3, TRI, 3, 6),
+         half("double_iota3_tri", 270)),
+    ]
+    out = []
+    for name, H, gens, w in cases:
+        idx = {A: i for i, A in enumerate(H)}
+        assert all({frozenset(g[x] for x in A) for A in H} == set(H) for g in gens)
+        seen, todo = {0}, [0]
+        while todo:
+            i = todo.pop()
+            for g in gens:
+                j = idx[frozenset(g[x] for x in H[i])]
+                if j not in seen:
+                    seen.add(j)
+                    todo.append(j)
+        assert len(seen) == len(H), f"{name}: not member-transitive"
+        assert safe(H, w, True), f"{name}: half-witness not an intersecting safe deletion"
+        r, n = len(w), len(H)
+        for _ in range(40):
+            S = set(rng.sample(range(n), rng.randint(1, n)))
+            need = -(-r * len(S) // n)
+            for _ in range(300):
+                g = word(gens)
+                sub = [(j, g[x]) for j, x in ((idx[frozenset(g[z] for z in H[i])], x) for i, x in w) if j in S]
+                if len(sub) >= need:
+                    break
+            assert len(sub) >= need and safe(H, sub, True), f"{name}: averaging instance failed"
+        out.append(f"{name} {r}/{n}")
+    # hereditary product: iota3 (q = 3/10) times two disjoint triangles
+    F3 = [frozenset(A) for A in IOTA3]
+    gF = [{x: p[x] for x in range(6)} for p in automorphisms(IOTA3, 6)]
+    wF = [(0, 0), (1, 3), (2, 4)]
+    assert safe(F3, wF, True)
+    idxF = {A: i for i, A in enumerate(F3)}
+    Hh = [frozenset({10 + a, 10 + b}) for a, b in [(0, 1), (1, 2), (0, 2), (3, 4), (4, 5), (3, 5)]]
+    P3 = [A | B for A in F3 for B in Hh]
+    assert sunflower_free(P3)
+    for _ in range(60):
+        S = rng.sample(P3, rng.randint(1, len(P3)))
+        imgs = []
+        for B in Hh:
+            fib = {idxF[A - B] for A in S if B <= A}
+            need = -(-3 * len(fib) // 10)
+            for _ in range(500):
+                g = word(gF)
+                sub = [(j, g[x]) for j, x in ((idxF[frozenset(g[z] for z in F3[i])], x) for i, x in wF) if j in fib]
+                if len(sub) >= need:
+                    break
+            assert len(sub) >= need
+            imgs += [(F3[i] | B) - {x} for i, x in sub]
+        assert len(set(imgs)) == len(imgs) and sunflower_free(imgs) and 10 * len(imgs) >= 3 * len(S)
+    return out
+
+
 def check_dichotomy_counterexample():
     """The note's F_1 = iota3 (x) binary-tree paths of depth 3: rank 6,
     80 members, support 20, minimum degree 10, sunflower-free."""
@@ -135,4 +239,7 @@ if __name__ == "__main__":
         size, n, maxdeg, need, got = check_family(name, [tuple(p) for p in W[name]])
         print(f"{name}: |F| = {size}, rank {n}, largest star {maxdeg} (< {need} = ceil(|F|/4)), "
               f"verified safe deletion of {got}: D4 holds here")
+    q = check_section_95(W)
+    print("section 95: iota4 = triangle[triangle]; member-transitive; orbit averaging met ceil(q|S|) on 40 random"
+          " subfamilies each (" + ", ".join(q) + "); hereditary product iota3 x two-triangles on 60: pass")
     sys.exit(0)
