@@ -16,8 +16,12 @@ because a sunflower-free image family split over two disjoint grounds with
 both parts nonempty must be intersecting on each part (two disjoint images
 plus any image from the other part are a sunflower with empty core).
 
-Usage:  d4_sat.py QUERY K      QUERY in the table below; prints SAT (with a
-        verified witness size) or UNSAT for "value >= K".
+Usage:  d4_sat.py QUERY K [--fix-flag]
+        QUERY in the table below; prints SAT (with a verified witness size)
+        or UNSAT for "value >= K".  --fix-flag (iota3_tri queries only)
+        forces member 0 to delete its least point; valid because the
+        family's automorphism group is transitive on member-point flags,
+        which flag_orbit() recomputes before the clause is added.
 """
 import sys
 import time
@@ -93,10 +97,41 @@ def encode(F, intersecting):
     return pool, y, cl
 
 
-def query(name, K):
+def flag_orbit(F):
+    """Orbit of the flag (member 0, least point) under Aut(iota3) acting on
+    the six blocks and S_3 inside each block of iota3[triangle]."""
+    from itertools import permutations
+    I3 = {frozenset(t) for t in D.IOTA3}
+    gens = [{u * 3 + c: p[u] * 3 + c for u in range(6) for c in range(3)}
+            for p in permutations(range(6)) if {frozenset(p[x] for x in t) for t in I3} == I3]
+    for u in range(6):
+        for q in permutations(range(3)):
+            g = {v * 3 + c: v * 3 + c for v in range(6) for c in range(3)}
+            g.update({u * 3 + c: u * 3 + q[c] for c in range(3)})
+            gens.append(g)
+    idx = {A: i for i, A in enumerate(F)}
+    assert all({frozenset(g[x] for x in A) for A in F} == set(F) for g in gens)
+    seen = {(0, min(F[0]))}
+    todo = list(seen)
+    while todo:
+        i, x = todo.pop()
+        for g in gens:
+            f = (idx[frozenset(g[z] for z in F[i])], g[x])
+            if f not in seen:
+                seen.add(f)
+                todo.append(f)
+    return len(seen), sum(len(A) for A in F)
+
+
+def query(name, K, fix_flag=False):
     fam, inter = QUERIES[name]
     F = [frozenset(A) for A in BASE[fam]()]
     pool, y, cl = encode(F, inter)
+    if fix_flag:
+        assert fam == "iota3_tri"
+        orbit, flags = flag_orbit(F)
+        assert orbit == flags, "not flag-transitive: fixing a flag would be unsound"
+        cl.append([y[(0, min(F[0]))]])
     cl += CardEnc.atleast(list(y.values()), K, top_id=pool.top,
                           encoding=EncType.seqcounter).clauses
     t0 = time.time()
@@ -114,6 +149,7 @@ def query(name, K):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[1] not in QUERIES:
+    args = [a for a in sys.argv[1:] if a != "--fix-flag"]
+    if len(args) != 2 or args[0] not in QUERIES:
         sys.exit(__doc__)
-    print(query(sys.argv[1], int(sys.argv[2])))
+    print(query(args[0], int(args[1]), "--fix-flag" in sys.argv))

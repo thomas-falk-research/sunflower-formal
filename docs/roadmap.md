@@ -19337,3 +19337,129 @@ correlation" line on the strength of this note: its extremal measures
 are the sunflower-free families themselves. A route through
 `T(μ, μ, μ)` would need an inequality whose loss is per unit of set
 size rather than per ground element — the §75 obstruction, unchanged.
+
+## 94. External note 2: light-pivot rank drop (correct, elementary), and the first real tests of hypothesis D4 — three families, D4 survives all three, with margins 4, 4 and 1
+
+**Tier 2.** A second note from the same outside source as §93
+(supplied by the owner, 2026-11-09, with a standard-library checker),
+proposing a rank-reduction route. Not committed; this section records
+the review and the tests it led to. Nothing on §92's open list moves,
+and no bound on `g(n)` changes.
+
+### 94.1 What the note claims
+
+* **Theorem A (light-pivot rank drop).** For a distinct 3-sunflower-free
+  `n`-uniform `F` and `d ≥ 1`, let `L_d(F)` be the members containing a
+  point of degree `≤ d`. Then `|L_d(F)| ≤ 2(2d−1) g(n−1)`; for
+  `k`-sunflowers, `(k−1)(2d−1) g_k(n−1)`. Sharp at `d = 1` (two private
+  clones of each edge of two disjoint triangles: `12 = 2g(2)`).
+* **Adaptive deletion beats a star:** 6 of `iota3`'s 10 members, and 12
+  of a 20-member rank-4 family whose largest star is 10, delete one point
+  each to distinct, sunflower-free images.
+* **A dichotomy refuted:** "`F` lives on `O(n)` points or has a point of
+  degree `≤ d`" fails for `F_t = (iota3)^{⊗t} ⊗ (binary-tree paths of
+  depth 3t)`: rank `6t`, `80^t` members, support `6t + 2^{3t+1} − 2`,
+  minimum degree `10^t`.
+* **Hypothesis D4 (open, "moonshot"):** every such `F` (`n ≥ 2`) has a
+  *safe deletion* — members `G`, `|G| ≥ |F|/4`, one point `p(A) ∈ A`
+  each, images `A − p(A)` distinct and sunflower-free. Then
+  `g(n) ≤ 4g(n−1)`, so `g(n) ≤ 2·4^{n−1}`: the `k = 3` conjecture.
+  Gates: a constant below `g(3)/g(2) = 10/3` is impossible; at rank 27
+  the AHS tower's largest star is `|F|/8`, so D4 there needs adaptive
+  deletion; proposed next experiment: 2501 images from the rank-9,
+  10 000-member tower.
+
+### 94.2 Verdict on the note
+
+* **Theorem A: correct** (PROVEN, by hand: outdegree `≤ d−1` because
+  `p(A)` lies in at most `d` members; the conflict graph is
+  `(2d−2)`-degenerate, so a colour class has `≥ |L|/(2d−1)`; inside it
+  no pivot lies in another member, so pairwise intersections survive
+  deletion and a projected sunflower lifts; three members with one image
+  `T` are `T + p_i`, a sunflower with core `T`). COMPUTED: the note's
+  checker (34 813 families, 1836 sunflower-free, plus 1250 random) and
+  an independent implementation (1200 random family–`d` cases). Novelty
+  not assessed; the argument is elementary (PLAUSIBLE folklore). Its
+  reach is limited: for `d ≥ n/2` it is weaker than the Erdős–Rado star
+  step (`4d − 2` against `2n`), and it bounds `L_d(F)` only.
+* **The two certificates verify, but neither tests D4.** In both the
+  largest star already exceeds `|F|/4` (5 of 10; 10 of 20). Also a
+  mislabel: the 20-member family (`iota3 + {6}` and `iota3 + {7}` on the
+  same six points) is **not** the repository's doubling
+  (`Intersecting.double`: two disjoint copies, rank 3, the extremal
+  `g(3) = 20` family); it is a rank-4 family far below `g(4) ≥ 54`.
+* **The dichotomy counterexample is correct** (COMPUTED: `F_1`
+  exhaustively sunflower-free, all four parameters of `F_1` and `F_2`
+  reproduced; for all `t`, PROVEN by the direct-sum argument, i.e.
+  `SubstitutionFree.triple_collapse` applied coordinatewise).
+* **D4: the payoff is right, the gates are not.** D4 is the adaptive
+  form of `StarDefect.StarBounded 4`. Since a star is always a safe
+  deletion (a sunflower in a link lifts: `Sunflower.sunflower_lift`), **D4 is only tested by families whose
+  largest star is below `|F|/4`** — and the first such family in this
+  repository is at **rank 4**, not 27: `StarDefect.doubled_iota4`, 54
+  members, every point in at most 12 (`doubled_iota4_maxdeg`), in the
+  very file the note cites. Conversely, the proposed rank-9 experiment
+  is not a test: its largest star, 2500, already equals `|F|/4`.
+
+### 94.3 The first tests of D4
+
+**Doubling formula** (PROVEN, by hand). For `H` on its own ground,
+`m(double(H)) = max(m(H), 2·m_int(H))`, `m` the largest safe deletion
+and `m_int` the largest with pairwise-intersecting images. If both
+copies contribute images, two disjoint images in one copy and any image
+in the other are a sunflower with empty core, so each part is
+intersecting; conversely two intersecting parts on disjoint grounds
+have no sunflower. Checked at rank 4 by a direct SAT computation that
+does not use it: `m(doubled_iota4) = 18 = max(14, 2·9)`.
+
+Three families whose largest star is below `|F|/4`, all built from the
+[AHS72] substitution (`SubstitutionFree`) and `Intersecting.double`
+(COMPUTED; every witness re-checked member by member, without a solver,
+by `tools/d4_check.py`):
+
+```text
+  family                         rank  |F|   largest star  D4 needs  safe deletion found
+  doubled_iota4                    4    54       12           14      18 = 2·9   exact (UNSAT at 19)
+  double(triangle[iota3])          6   600      100          150     154 = 2·77  lower bound
+  double(iota3[triangle])          6   540       90          135     136 = 2·68  lower bound
+```
+
+* `doubled_iota4`: `m_int(iota4) = 9` (UNSAT at 10, 2 s),
+  `m(iota4) = 14` (UNSAT at 15, 383 s; equal to `g(3,9) = 14`, so the
+  images of the best one-copy deletion are an extremal nine-point
+  family), `m = 18` (direct, UNSAT at 19, 423 s).
+* `double(triangle[iota3])`: `m_int(triangle[iota3]) ≥ 77`; a search
+  for 78 was stopped, so 77 is a lower bound only.
+* `double(iota3[triangle])` — the decisive one: `m_int(iota3[triangle])`
+  needed 68; 67 took 1063 s, and 68 was found (479 s) only after
+  symmetry breaking. The family's automorphism group (`Aut(iota3)`, order
+  60, with `S_3` on each block) is transitive on all 1620 member–point
+  flags (computed), so fixing one flag loses no solution. Whether 69
+  exists was not decided. A greedy random search reached only 60, and
+  the `m(iota3[triangle]) ≥ 135` route (half the family) found nothing
+  in about 40 minutes and was stopped.
+
+So **D4 is not refuted, and it survives every family where it has
+content**, but by margins of 4, 4 and 1, and in each case only through
+adaptive deletion and only via the intersecting half of the doubling
+formula. The fractions found — `1/3`, `0.257`, `0.252` — fall toward
+`1/4` as rank grows. They are lower bounds, not the true values, so
+this trend is a warning, not evidence (CONJECTURED, nothing more). The
+next family that could refute D4 is the AHS tower at rank 8–9
+(`double(triangle[iota4])`, 4374 members; `iota3[iota3]`'s doubling,
+20 000). That is beyond this eager encoding (millions of sunflower
+clauses already at rank 6) and needs either structure — a recursion for
+`m_int` under substitution — or a stronger solver set-up.
+
+### 94.4 Tools
+
+* `tools/d4_check.py` — standard library, about 1.5 s: rebuilds the
+  three families, checks each is uniform, distinct and sunflower-free,
+  recomputes the largest star, and checks the witnesses in
+  `tools/d4/witnesses.json`; also checks the note's two certificates.
+* `tools/d4_sat.py` — `python-sat==1.9.dev15` (the version
+  `tools/multicolored/` pins), CaDiCaL 1.9.5: the SAT queries behind
+  §94.3 (`m`, `m_int` at a given `K`), with every witness re-checked by
+  `d4_check`'s code. `d4_sat.py mint_iota3_tri 68 --fix-flag` is the
+  symmetry-broken run; it recomputes the flag orbit (1620 of 1620) before
+  adding the unit clause.
