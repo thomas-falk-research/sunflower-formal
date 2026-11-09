@@ -82,6 +82,7 @@ def check_family(name, witness):
     assert sunflower_free(F), "input has a sunflower"
     maxdeg = max(Counter(x for A in F for x in A).values())
     need = -(-len(F) // 4)
+    assert maxdeg < need, "a star already meets |F|/4: not a D4 test"
     assert len({i for i, _ in witness}) == len(witness), "a member used twice"
     assert all(x in F[i] for i, x in witness), "deleted point not in member"
     P = [F[i] - {x} for i, x in witness]
@@ -106,11 +107,26 @@ def check_note_certificates():
     return maxdeg
 
 
+def check_dichotomy_counterexample():
+    """The note's F_1 = iota3 (x) binary-tree paths of depth 3: rank 6,
+    80 members, support 20, minimum degree 10, sunflower-free."""
+    paths = []
+    for leaf in range(8):
+        paths.append(frozenset(100 + (1 << d) - 2 + (leaf >> (3 - d)) for d in range(1, 4)))
+    assert len(set().union(*paths)) == 14 and sunflower_free(paths)
+    F1 = [frozenset(A) | B for A in IOTA3 for B in paths]
+    deg = Counter(x for A in F1 for x in A)
+    assert (len(set(F1)), len(F1[0]), len(deg), min(deg.values())) == (80, 6, 20, 10)
+    assert sunflower_free(F1)
+
+
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(here, "d4", "witnesses.json")) as fh:
         W = json.load(fh)
     md = check_note_certificates()
+    check_dichotomy_counterexample()
+    print("note's F_1 (rank 6, 80 members, support 20, min degree 10): sunflower-free, pass")
     print(f"note certificates 6/10 and 12/20: pass (the 20-member family's largest star is {md}, already >= 20/4)")
     for name in FAMILIES:
         if name not in W:
